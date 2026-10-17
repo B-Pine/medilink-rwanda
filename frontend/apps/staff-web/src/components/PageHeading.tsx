@@ -30,7 +30,11 @@ export function PageHeading({
   }, [navigationType]);
 
   return (
-    <h1 ref={ref} tabIndex={-1} className={cx("m-0 text-h1 text-fg focus:outline-none", className)}>
+    <h1
+      ref={ref}
+      tabIndex={-1}
+      className={cx("m-0 focus:outline-none", className ?? "text-h1 text-fg")}
+    >
       {children}
     </h1>
   );

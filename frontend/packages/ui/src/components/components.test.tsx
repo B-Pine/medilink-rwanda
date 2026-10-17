@@ -193,8 +193,21 @@ describe("misc components", () => {
 
   it("Logo has an accessible name and uses the generated brand assets", () => {
     renderWithProviders(<Logo />);
-    const images = screen.getAllByRole("img", { name: "MediLink Rwanda" });
-    expect(images[0]).toHaveAttribute("src", "/brand/medilink-logo-horizontal-color-120.png");
+    // One accessible name, whichever theme variant CSS shows.
+    const logo = screen.getByRole("img", { name: "MediLink Rwanda" });
+    const sources = Array.from(logo.querySelectorAll("img")).map((img) => img.getAttribute("src"));
+    expect(sources).toEqual([
+      "/brand/medilink-logo-horizontal-color-120.png",
+      "/brand/medilink-logo-horizontal-white-120.png",
+    ]);
+  });
+
+  it("Logo on deep forest uses the white asset", () => {
+    renderWithProviders(<Logo tone="onDark" />);
+    expect(screen.getByRole("img", { name: "MediLink Rwanda" })).toHaveAttribute(
+      "src",
+      "/brand/medilink-logo-horizontal-white-120.png",
+    );
   });
 
   it("composed form has no axe violations", async () => {

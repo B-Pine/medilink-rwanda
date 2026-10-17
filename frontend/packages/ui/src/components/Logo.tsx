@@ -65,7 +65,7 @@ export function Logo({ variant = "horizontal", tone = "auto", className, alt }: 
   const { t } = useTranslation("ui");
   const asset = ASSETS[variant];
   const label = alt ?? t("logo.alt");
-  const sizeClass = cx("inline-block h-10", className);
+  const sizeClass = cx("inline-block", className ?? "h-10");
 
   if (tone === "onDark") {
     return (
@@ -78,20 +78,25 @@ export function Logo({ variant = "horizontal", tone = "auto", className, alt }: 
       />
     );
   }
+  // Both variants are in the DOM and CSS shows one (theme). The wrapper carries the single
+  // accessible name so it never depends on which image is visible.
   return (
-    <span className="inline-flex">
+    <span
+      className="inline-flex"
+      {...(label ? { role: "img", "aria-label": label } : { "aria-hidden": true })}
+    >
       <LogoImage
         name={asset.color}
         width={asset.width}
         height={asset.height}
-        alt={label}
+        alt=""
         className={cx("ml-logo-for-light", sizeClass)}
       />
       <LogoImage
         name={asset.white}
         width={asset.width}
         height={asset.height}
-        alt={label}
+        alt=""
         className={cx("ml-logo-for-dark", sizeClass)}
       />
     </span>

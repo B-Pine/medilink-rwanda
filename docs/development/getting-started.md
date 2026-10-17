@@ -1,0 +1,110 @@
+# Getting started
+
+Status: v0.1 · Local setup from [architecture 01](../architecture/01-system-architecture.md) §4.
+
+> **The exact commands are finalised in `backend/README.md` and `frontend/README.md`**, which ship with the Sprint 0 code. If a command here differs from those files, follow those files and fix this guide.
+
+## 1. Prerequisites
+
+| Tool | Version | Notes |
+|---|---|---|
+| Git | Recent | Line endings are normalised to LF by `.gitattributes` |
+| Python | 3.12 or newer (3.14 supported) | For the backend |
+| Node.js | Current LTS | For the frontend |
+| pnpm | The version pinned in `frontend/package.json` (`packageManager`) | Install with Corepack (`corepack enable`) or `npm install -g pnpm` |
+| Docker | Docker Desktop (Windows, macOS) or Docker Engine with Compose v2 (Linux) | Runs PostgreSQL, Redis and Mailpit |
+| An authenticator app | Any TOTP app | Staff login always asks for a second factor, also in development |
+
+## 2. Clone
+
+```bash
+git clone https://github.com/B-Pine/medilink-rwanda.git
+cd medilink-rwanda
+```
+
+## 3. Start the local infrastructure
+
+From the repository root:
+
+```bash
+docker compose up -d
+docker compose ps        # all services should be "running" or "healthy"
+```
+
+| Service | Address | Notes |
+|---|---|---|
+| PostgreSQL 17 | `localhost:5433` | Host port 5433 avoids a clash with a local PostgreSQL on 5432 |
+| Redis 7 | `localhost:6379` | Channels, Celery broker, cache |
+| Mailpit | SMTP `localhost:1025`, web UI http://localhost:8025 | Catches every email (password reset, invitations) |
+
+Stop with `docker compose down`. Add `-v` only if you want to delete the local database.
+
+## 4. Run the backend
+
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate              # Windows PowerShell: .venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install -r requirements/dev.txt
+cp .env.example .env                   # Windows PowerShell: Copy-Item .env.example .env
+python manage.py migrate
+python manage.py seed_dev
+python manage.py runserver             # http://localhost:8000
+```
+
+- `seed_dev` creates a demo facility and one user per role, and prints their **development-only** passwords. It refuses to run when `DEBUG` is false.
+- Check that the API is up: open http://localhost:8000/api/v1/health/. The OpenAPI schema is at http://localhost:8000/api/v1/schema/.
+- Background jobs (from the sprints that need them): run a Celery worker in a second terminal, e.g. `celery -A config worker -l info` (on Windows add `--pool=solo`).
+- Tests: `pytest`. Lint and types: `ruff check .`, `ruff format --check .`, `mypy .`.
+
+## 5. Run the frontends
+
+```bash
+cd frontend
+pnpm install
+pnpm dev                                        # both apps
+# or one app at a time:
+pnpm --filter @medilink/staff-web dev           # http://localhost:5173
+pnpm --filter @medilink/patient-web dev         # http://localhost:5174
+```
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `VITE_API_BASE_URL` | `http://localhost:8000` | Where the apps call the API (real CORS and cookies, like production) |
+| `VITE_USE_MOCKS` | `false` | `true` runs the apps against MSW mocks of the sprint contract, **without the backend** |
+
+Put local overrides in each app's `.env.local` (Vite convention; git-ignored). Checks: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`.
+
+## 6. First login
+
+1. Staff: open http://localhost:5173 and log in with a seeded user. The first login asks you to set up the second factor: scan the QR code with your authenticator app and keep the recovery codes.
+2. Patients: open http://localhost:5174, sign up with any email address, and accept the terms and privacy notice.
+3. Emails (password reset, invitations) appear in Mailpit at http://localhost:8025.
+
+Use only synthetic data. Never enter real patient data, even locally ([SECURITY.md](../../SECURITY.md)).
+
+## 7. Windows notes
+
+| Topic | What to do |
+|---|---|
+| Shell | PowerShell or Git Bash both work. In PowerShell, activate the virtual environment with `.venv\Scripts\Activate.ps1`. |
+| Script execution blocked | Run once: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` |
+| Several Python versions | Create the environment with the launcher: `py -3.12 -m venv .venv` |
+| Docker | Install Docker Desktop with the WSL 2 backend and start it before `docker compose up -d` |
+| Line endings | `.gitattributes` keeps LF. If your editor converts to CRLF, set `git config core.autocrlf false` for this repository. |
+| Long paths | `node_modules` can exceed the Windows path limit: `git config --global core.longpaths true` |
+| Celery | The default pool doesn't work on Windows; use `--pool=solo` |
+| PDF generation (from S7) | WeasyPrint needs Pango/GTK libraries; run the PDF worker in Docker rather than installing them on Windows |
+
+## 8. Troubleshooting
+
+| Symptom | Likely cause and fix |
+|---|---|
+| `migrate` can't connect | Docker isn't running or PostgreSQL isn't ready yet: `docker compose ps`, then retry |
+| Port 5433, 6379, 8000, 5173 or 5174 already in use | Stop the other process, or change the port in your local `.env` / `.env.local` |
+| CORS error in the browser | Use `http://localhost:…` everywhere (not `127.0.0.1`), so the origin matches the backend's CORS allowlist |
+| `403 csrf_failed` | The app must call `GET /api/v1/csrf/` first and send `X-CSRFToken`; check `CSRF_TRUSTED_ORIGINS` in `backend/.env` |
+| Logged out right after login | On plain http the `__Host-` cookie prefix can't be used; development settings drop it ([Sprint 0 contract](../architecture/03-sprint-0-contract.md) check B4) |
+| `seed_dev` refuses to run | `DEBUG` is false in your `.env` |
+| The app works with mocks but not with the backend | Contract drift: regenerate the API types from `/api/v1/schema/` and compare with the MSW handlers ([testing strategy](testing-strategy.md) §5) |

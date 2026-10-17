@@ -17,7 +17,7 @@ DATABASES = {"default": database_config(role="owner")}
 SESSION_AUDIENCES = session_audiences(cookie_prefix="")
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
-CSRF_COOKIE_NAME = "ml_csrftoken"
+CSRF_COOKIE_NAME = "ml_csrf"
 
 CORS_ALLOWED_ORIGINS, CSRF_TRUSTED_ORIGINS, WS_ALLOWED_ORIGINS = origin_settings(
     ["http://localhost:5173", "http://localhost:5174"]

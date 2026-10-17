@@ -21,7 +21,7 @@ ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["localhost", "127.0.0.
 SESSION_AUDIENCES = session_audiences(cookie_prefix="")
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
-CSRF_COOKIE_NAME = env("CSRF_COOKIE_NAME", default="ml_csrftoken")
+CSRF_COOKIE_NAME = env("CSRF_COOKIE_NAME", default="ml_csrf")
 
 CORS_ALLOWED_ORIGINS, CSRF_TRUSTED_ORIGINS, WS_ALLOWED_ORIGINS = origin_settings(
     ["http://localhost:5173", "http://localhost:5174"]
@@ -49,7 +49,7 @@ LOGGING = {
     **LOGGING,
     "handlers": {
         "console": {
-            **LOGGING["handlers"]["console"],
+            **LOGGING["handlers"]["console"],  # type: ignore[index]
             "formatter": env("LOG_FORMAT", default="text"),
         }
     },

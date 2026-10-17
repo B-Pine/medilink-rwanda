@@ -81,7 +81,7 @@ def test_b13_prod_security_settings() -> None:
     assert "'unsafe-inline'" not in data["csp"]["script-src"]
     assert data["hsts"] == 31_536_000 and data["ssl"] is True and data["debug"] is False
     assert data["staff"] == "__Host-ml_staff" and data["patient"] == "__Host-ml_patient"
-    assert data["csrf"] == "__Host-csrftoken" and data["secure"] is True
+    assert data["csrf"] == "__Host-ml_csrf" and data["secure"] is True
     assert data["schema"] is False and data["admin"] is False and data["eager"] is False
     assert "statement_timeout=5000" in data["db_options"]["options"]
 

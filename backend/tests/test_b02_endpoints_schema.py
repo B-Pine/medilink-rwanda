@@ -122,4 +122,4 @@ def test_b2_health_and_csrf(api: Any) -> None:
     response = api.get("/api/v1/csrf/")
     assert response.status_code == 200
     assert len(response.json()["csrf_token"]) == 64
-    assert "ml_csrftoken" in response.cookies
+    assert "ml_csrf" in response.cookies

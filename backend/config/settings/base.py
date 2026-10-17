@@ -244,7 +244,7 @@ SESSION_COOKIE_DOMAIN = None  # host-only
 SESSION_COOKIE_NAME = SESSION_AUDIENCES["admin"]["COOKIE_NAME"]  # unused fallback
 
 # CSRF: the SPA fetches the token from GET /api/v1/csrf/ and sends X-CSRFToken (ADR 0006).
-CSRF_COOKIE_NAME = env("CSRF_COOKIE_NAME", default="__Host-csrftoken")
+CSRF_COOKIE_NAME = env("CSRF_COOKIE_NAME", default="__Host-ml_csrf")
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SAMESITE = "Lax"

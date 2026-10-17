@@ -203,11 +203,16 @@ unless `code` is `validation_error`. Codes: see API conventions §4. `429` respo
 because `tzdata` and `colorama` are listed explicitly):
 
 ```bash
-docker run --rm -v "$PWD:/src" -w /src python:3.14-slim sh -c "pip install pip-tools && \
-  pip-compile --generate-hashes --allow-unsafe --strip-extras -o requirements/base.txt requirements/base.in && \
-  pip-compile --generate-hashes --allow-unsafe --strip-extras -o requirements/prod.txt requirements/prod.in && \
-  pip-compile --generate-hashes --allow-unsafe --strip-extras -o requirements/dev.txt requirements/dev.in"
+docker run --rm -v "$PWD:/src" -w /src python:3.14-slim sh -c "pip install pip-tools==7.6.2 && \
+  python requirements/pip_compile.py --generate-hashes --allow-unsafe --strip-extras -o requirements/base.txt requirements/base.in && \
+  python requirements/pip_compile.py --generate-hashes --allow-unsafe --strip-extras -o requirements/prod.txt requirements/prod.in && \
+  python requirements/pip_compile.py --generate-hashes --allow-unsafe --strip-extras -o requirements/dev.txt requirements/dev.in"
 ```
+
+`requirements/pip_compile.py` runs the normal `pip-compile` CLI with one fix: pip-tools 7.6.x builds
+a wrong PyPI JSON URL and then downloads every wheel of every pinned version to hash it (hours for
+ruff/mypy). With the fix the same SHA-256 hashes come from PyPI's JSON API in seconds. Plain
+`pip-compile` produces identical files, just slowly.
 
 ## Container image
 

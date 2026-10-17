@@ -1,0 +1,41 @@
+{
+  "skipLink": "Skip to main content",
+  "loading": "Loading…",
+  "close": "Close",
+  "errorSummary": {
+    "title": "There is a problem"
+  },
+  "field": {
+    "optional": "(optional)",
+    "errorPrefix": "Error:"
+  },
+  "password": {
+    "show": "Show",
+    "hide": "Hide",
+    "showLabel": "Show password",
+    "hideLabel": "Hide password"
+  },
+  "language": {
+    "label": "Language",
+    "names": {
+      "rw": "Ikinyarwanda",
+      "en": "English",
+      "fr": "Français"
+    }
+  },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "logo": {
+    "alt": "MediLink Rwanda"
+  },
+  "alert": {
+    "info": "Information:",
+    "success": "Success:",
+    "warning": "Warning:",
+    "danger": "Error:"
+  }
+}

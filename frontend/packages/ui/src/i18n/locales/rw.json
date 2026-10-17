@@ -1,0 +1,41 @@
+{
+  "skipLink": "Simbuka ujye ku bikubiyemo by’ingenzi",
+  "loading": "Birimo gufunguka…",
+  "close": "Funga",
+  "errorSummary": {
+    "title": "Hari ikibazo"
+  },
+  "field": {
+    "optional": "(si ngombwa)",
+    "errorPrefix": "Ikosa:"
+  },
+  "password": {
+    "show": "Erekana",
+    "hide": "Hisha",
+    "showLabel": "Erekana ijambo ry’ibanga",
+    "hideLabel": "Hisha ijambo ry’ibanga"
+  },
+  "language": {
+    "label": "Ururimi",
+    "names": {
+      "rw": "Ikinyarwanda",
+      "en": "English",
+      "fr": "Français"
+    }
+  },
+  "theme": {
+    "label": "Imigaragarire",
+    "light": "Urumuri",
+    "dark": "Umwijima",
+    "system": "Nk’igikoresho"
+  },
+  "logo": {
+    "alt": "MediLink Rwanda"
+  },
+  "alert": {
+    "info": "Amakuru:",
+    "success": "Byagenze neza:",
+    "warning": "Icyitonderwa:",
+    "danger": "Ikosa:"
+  }
+}

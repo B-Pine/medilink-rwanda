@@ -1,0 +1,9 @@
+node_modules
+dist
+dev-dist
+coverage
+pnpm-lock.yaml
+**/public/mockServiceWorker.js
+**/public/**/*.png
+**/public/**/*.ico
+**/public/**/*.webp

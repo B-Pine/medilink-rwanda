@@ -1,0 +1,37 @@
+{
+  "name": "@medilink/frontend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MediLink Rwanda frontend workspace: staff-web, patient-web and shared packages.",
+  "type": "module",
+  "packageManager": "pnpm@12.9.1",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter \"./apps/*\" dev",
+    "dev:mock": "pnpm --parallel --filter \"./apps/*\" dev:mock",
+    "build": "pnpm --filter \"./apps/*\" build",
+    "build:mock": "pnpm --filter \"./apps/*\" build:mock",
+    "preview": "pnpm --parallel --filter \"./apps/*\" preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "typecheck": "pnpm -r typecheck",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "icons": "node scripts/generate-icons.mjs",
+    "i18n:review": "node scripts/i18n-review.mjs",
+    "generate-types": "pnpm --filter @medilink/api-client generate-types"
+  },
+  "devDependencies": {
+    "@medilink/config": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "png-to-ico": "^3.0.2",
+    "prettier": "catalog:",
+    "sharp": "^0.35.5",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

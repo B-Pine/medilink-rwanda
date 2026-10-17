@@ -1,0 +1,17 @@
+# Local development and CI tooling (includes everything in prod.in).
+-c prod.txt
+-r prod.in
+pytest>=8.4
+pytest-django>=4.11
+pytest-cov>=7.0
+factory-boy>=3.3
+ruff>=0.13
+mypy>=1.18
+django-stubs[compatible-mypy]>=5.2
+djangorestframework-stubs>=3.16
+pip-audit>=2.9
+pip-tools>=7.5
+# Self-hosted Swagger UI assets for the dev-only docs page (no CDN, CSP-friendly).
+drf-spectacular-sidecar>=2025.9
+# Windows-only transitive dependency of pytest/click; listed so one lock file works on Linux and Windows.
+colorama

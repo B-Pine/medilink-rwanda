@@ -1,0 +1,18 @@
+# Runtime dependencies (all environments).
+# Compile (on Linux, see backend/README.md "Dependencies"):
+#   pip-compile --generate-hashes --allow-unsafe --strip-extras -o requirements/base.txt requirements/base.in
+# Every new dependency needs a justification in the PR (docs/security/09 §3).
+Django>=6.1,<6.2
+djangorestframework>=3.18
+drf-spectacular>=0.28
+django-cors-headers>=4.7
+django-environ>=0.12
+channels>=4.3
+channels-redis>=4.3
+celery>=5.5
+redis>=6.0
+psycopg[binary]>=3.2
+argon2-cffi>=25.1
+django-otp>=1.6
+# Windows needs tzdata for zoneinfo; listed explicitly so one lock file works on Linux and Windows.
+tzdata

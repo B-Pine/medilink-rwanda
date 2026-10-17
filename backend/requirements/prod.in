@@ -1,0 +1,5 @@
+# Production image: runtime dependencies + ASGI server (HTTP + WebSockets).
+-c base.txt
+-r base.in
+uvicorn>=0.35
+websockets>=15.0

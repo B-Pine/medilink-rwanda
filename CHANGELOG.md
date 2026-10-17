@@ -21,6 +21,15 @@ This root changelog covers documentation and repository-wide changes (CI, toolin
 
 - `docs/README.md`, `docs/architecture/README.md`, root `README.md` and `CONTRIBUTING.md` link the new documentation; CONTRIBUTING states the changelog rule; the pull request template asks for changelog, API catalogue and traceability updates.
 
+### Fixed
+
+- Documentation inconsistencies found during review:
+  - permission matrix: the receptionist requests merges and raises counter disputes, and the facility admin approves merges
+  - NFR-UX-03 now says WCAG 2.2 AA
+  - security docs now use the audience cookie names, `/api/v1` prefixes, API-only `ALLOWED_HOSTS` and the master data write rule
+  - ADR 0003 has a version update note
+  - roadmap sprint placement: break-glass in S6, PIN lock in S1, the Expected list and remote join in S5
+
 ## [0.5.0] - 2026-10-17
 
 Architecture, contracts and roadmaps; backend and frontend separated ([#4](https://github.com/B-Pine/medilink-rwanda/pull/4)).

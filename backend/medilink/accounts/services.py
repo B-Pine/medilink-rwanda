@@ -7,6 +7,7 @@ from typing import Any
 
 from django.contrib import auth
 from django.http import HttpRequest
+from rest_framework import exceptions
 
 from medilink.accounts.mfa import has_confirmed_mfa
 from medilink.accounts.models import User, UserSession
@@ -57,6 +58,9 @@ def complete_staff_login(request: Any, user: User, mfa_method: str) -> Principal
     session[MFA_AT_KEY] = now
     session[MFA_METHOD_KEY] = mfa_method
     principal = resolve_principal(session, "staff")  # sets the RLS user context
+    if not principal.is_authenticated:  # e.g. membership ended while the MFA step was pending
+        session.flush()
+        raise exceptions.NotAuthenticated()
     memberships = active_memberships(user)
     if len(memberships) == 1:  # single facility: select it straight away
         session[ACTIVE_FACILITY_KEY] = str(memberships[0].facility_id)

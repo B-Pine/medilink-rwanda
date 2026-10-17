@@ -212,6 +212,20 @@ def test_b5_membership_ended_mid_session_drops_access(
     assert staff_client.get(ME).status_code == 401
 
 
+def test_b5_membership_ended_during_mfa_step_blocks_sign_in(api: APIClient, facility: Any) -> None:
+    from medilink.tenancy.context import rls_context
+    from medilink.tenancy.models import FacilityMembership
+
+    user = make_staff(facility)
+    _login(api, user)
+    with rls_context(facility_id=facility.pk):
+        FacilityMembership.objects.filter(user=user).update(is_active=False)
+    response = api.post("/api/v1/staff/auth/mfa/verify/", {"code": totp_code(user)})
+    assert response.status_code == 401
+    assert error_code(response) == "not_authenticated"
+    assert api.get(ME).status_code == 401
+
+
 def test_b5_multi_facility_user_has_no_active_facility_until_chosen(
     api: APIClient, facility: Any
 ) -> None:

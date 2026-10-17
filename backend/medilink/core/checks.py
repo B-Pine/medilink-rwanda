@@ -18,6 +18,10 @@ def check_session_audiences(app_configs: Any = None, **kwargs: Any) -> list[Chec
         )
     if getattr(settings, "CORS_ALLOW_ALL_ORIGINS", False):
         messages.append(Error("CORS_ALLOW_ALL_ORIGINS must stay False.", id="medilink.E002"))
+    if getattr(settings, "DEV_SKIP_STAFF_MFA", False) and not settings.DEBUG:
+        messages.append(
+            Error("DEV_SKIP_STAFF_MFA is for local development only (DEBUG).", id="medilink.E003")
+        )
     return messages
 
 
@@ -45,3 +49,15 @@ def check_deploy_cookies(app_configs: Any = None, **kwargs: Any) -> list[CheckMe
             Warning("CELERY_TASK_ALWAYS_EAGER must be off in production.", id="medilink.W004")
         )
     return messages
+
+
+@register(Tags.security, deploy=True)
+def check_deploy_mfa(app_configs: Any = None, **kwargs: Any) -> list[CheckMessage]:
+    if getattr(settings, "DEV_SKIP_STAFF_MFA", False):
+        return [
+            Error(
+                "DEV_SKIP_STAFF_MFA must be off in deployments: staff MFA is mandatory.",
+                id="medilink.E004",
+            )
+        ]
+    return []

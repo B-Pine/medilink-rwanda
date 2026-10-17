@@ -70,6 +70,12 @@ Emails (password reset) go to Mailpit: <http://localhost:8025>. In dev, Celery t
 (`CELERY_TASK_ALWAYS_EAGER=true`); to use a worker set it to `false` and run
 `celery -A config worker -l info` (Windows: add `--pool=solo`).
 
+**Testing without an authenticator app (dev only):** add `DEV_SKIP_STAFF_MFA=true` to `backend/.env`
+and restart the server. Staff then log in with email and password only; the audit log records
+`mfa_method: dev_skip`. It works only with `DEBUG` on: `manage.py check` refuses it otherwise
+(`medilink.E003`) and `check --deploy` always refuses it (`medilink.E004`). Never set it in staging
+or production, where staff MFA is mandatory.
+
 ### Useful URLs (dev)
 
 | What | URL |

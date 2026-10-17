@@ -10,6 +10,7 @@ from __future__ import annotations
 import logging
 from uuid import UUID
 
+from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.tokens import default_token_generator
 from django.db import IntegrityError, transaction
@@ -168,6 +169,19 @@ class StaffLoginView(_AuthView):
             return _login_failure(request, email, "staff", "not_staff")
 
         login_policy().reset(email)
+        if dev_skip_staff_mfa():
+            # Local development only (DEBUG + DEV_SKIP_STAFF_MFA): no second factor.
+            principal = complete_staff_login(request, user, mfa_method="dev_skip")
+            record(
+                actions.LOGIN_SUCCESS,
+                request=request,
+                metadata={"audience": "staff", "mfa_method": "dev_skip"},
+            )
+            return Response(
+                LoginResultSerializer(
+                    {"status": "authenticated", "user": staff_me_data(principal)}
+                ).data
+            )
         stage = (
             PrincipalState.MFA_REQUIRED
             if mfa.has_confirmed_mfa(user)
@@ -175,6 +189,11 @@ class StaffLoginView(_AuthView):
         )
         start_pending_mfa(request, user, stage)
         return Response(LoginResultSerializer({"status": str(stage), "user": None}).data)
+
+
+def dev_skip_staff_mfa() -> bool:
+    """True only in DEBUG with DEV_SKIP_STAFF_MFA on (never in staging or production)."""
+    return bool(settings.DEBUG and getattr(settings, "DEV_SKIP_STAFF_MFA", False))
 
 
 class StaffMfaSetupView(_AuthView):

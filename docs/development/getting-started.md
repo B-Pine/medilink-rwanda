@@ -80,7 +80,7 @@ Put local overrides in each app's `.env.local` (copy `.env.example`; git-ignored
 
 ## 6. First login
 
-1. Staff: open http://localhost:5173 and log in with a seeded user. The first login asks you to set up the second factor: scan the QR code with your authenticator app and keep the recovery codes.
+1. Staff: open http://localhost:5173 and log in with a seeded user. The first login asks you to set up the second factor: scan the QR code with your authenticator app and keep the recovery codes. To test without an authenticator app, add `DEV_SKIP_STAFF_MFA=true` to `backend/.env` and restart the API (development only; see [backend/README.md](../../backend/README.md)).
 2. Patients: open http://localhost:5174, sign up with any email address, and accept the terms and privacy notice.
 3. Emails (password reset, invitations) appear in Mailpit at http://localhost:8025.
 

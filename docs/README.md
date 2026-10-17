@@ -40,6 +40,10 @@ What the system must do and why. Read in order the first time.
 | [0004](decisions/0004-visit-centric-domain-model.md) | The visit is the central domain entity | Proposed |
 | [0005](decisions/0005-symptom-checker-ml-with-safety-rules.md) | ML symptom checker inside clinician-signed safety rules | Proposed |
 
+## Design research (v0.1)
+
+UI/UX direction, emerald colour system, dashboards, login/sign-up, homepage, patient app, tables, documents and accessibility: [design/research/README.md](design/research/README.md).
+
 ## Next: design
 
 The design phase will produce the system architecture, detailed database design, API specification, UI/UX design (flows, wireframes, design system) and a test strategy, all based on these documents.

@@ -1,0 +1,76 @@
+# Repository-wide security scans (docs/security/09-secure-development-lifecycle.md §3):
+# - gitleaks: secrets in the full git history
+# - Trivy: known vulnerabilities in lockfiles and misconfigurations (Dockerfiles, IaC)
+# Backend and frontend workflows add their own gates (SAST, pip-audit, npm audit, image scan).
+#
+# Tools run from container images pinned by version and digest; the only action used is
+# actions/checkout, pinned by commit SHA. Dependabot keeps the action up to date.
+name: security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "30 3 * * 1" # Mondays 05:30 Kigali: catches new advisories without code changes
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GITLEAKS_IMAGE: zricethezav/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
+  TRIVY_IMAGE: aquasec/trivy:0.75.0@sha256:af6acf9a6b85dfe389a1941505c0ce9efef52a4719635e1a962f022a3d855daa
+
+jobs:
+  secrets:
+    name: Secret scan (gitleaks)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out the full history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Scan the git history for secrets
+        run: |
+          docker run --rm \
+            -v "${GITHUB_WORKSPACE}:/repo" \
+            "${GITLEAKS_IMAGE}" \
+            git /repo --redact --verbose --no-banner
+
+  trivy:
+    name: Vulnerability and configuration scan (Trivy)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Prepare the Trivy cache
+        run: mkdir -p "${RUNNER_TEMP}/trivy-cache"
+
+      - name: Known vulnerabilities in dependency lockfiles (fixable high and critical)
+        run: |
+          docker run --rm \
+            -v "${GITHUB_WORKSPACE}:/src:ro" \
+            -v "${RUNNER_TEMP}/trivy-cache:/root/.cache/trivy" \
+            "${TRIVY_IMAGE}" \
+            fs --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed \
+            --exit-code 1 --no-progress /src
+
+      - name: Misconfigurations in Dockerfiles and infrastructure code (high and critical)
+        run: |
+          docker run --rm \
+            -v "${GITHUB_WORKSPACE}:/src:ro" \
+            -v "${RUNNER_TEMP}/trivy-cache:/root/.cache/trivy" \
+            "${TRIVY_IMAGE}" \
+            config --severity HIGH,CRITICAL --exit-code 1 /src

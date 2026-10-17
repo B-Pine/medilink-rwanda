@@ -26,7 +26,7 @@ request ─► authenticate ─► resolve active facility membership ─► pol
 | **Object lookups go through the scope** | `get_object_or_404(scoped_qs, pk=...)`, never on the global table, so another facility's ID returns **404, not 403** (no existence leak) |
 | **Field-level output** | Separate serializers per role (`VisitReceptionSerializer`, `VisitClinicalSerializer`); explicit `fields` lists, never `__all__` |
 | **Field-level input** | Explicit writable fields; unknown properties rejected (mass-assignment protection); server sets `facility_id`, `created_by`, prices, totals and statuses, never the client |
-| **Function-level** | Staff endpoints under `/api/staff/...` require a staff membership; patient endpoints under `/api/patient/...`; admin endpoints under `/api/platform/...` require super admin + step-up. Routes are not shared across audiences. |
+| **Function-level** | Staff endpoints under `/api/v1/staff/...` require a staff membership; patient endpoints under `/api/v1/patient/...`; admin endpoints under `/api/v1/platform/...` require super admin + step-up. Routes are not shared across audiences. |
 | **IDs** | UUIDs (v7) as public identifiers, so they can't be enumerated. **Never relied on for security**; checks still apply. |
 | **Facility context** | The active facility comes from the session (set at facility switch), not from a request parameter the client can change silently |
 | **WebSocket subscriptions** | Joining a channel group (e.g. `facility:{id}:queue`) requires the same policy check as the REST equivalent. Group names never come from client input unchecked. |
@@ -82,7 +82,7 @@ CREATE POLICY patient_own_records ON clinical_consultation FOR SELECT
   | `medilink_reporting` | Read-only on de-identified views |
   | `medilink_maint` | BYPASSRLS for audited maintenance only, through the VPN, with ticket reference |
 
-- RLS applies to all tables holding facility data: visits, tickets, consultations, prescriptions, bills, payments, documents metadata, disputes, facility patient records. Platform-wide tables (master data) are read-only to the app role.
+- RLS applies to all tables holding facility data: visits, tickets, consultations, prescriptions, bills, payments, documents metadata, disputes, facility patient records. Platform-wide tables (master data) are not facility-owned, so they have no RLS. They are writable only through `/api/v1/platform/` endpoints restricted to super admins by the policy layer; every change is versioned and audit-logged. All other endpoints read them only.
 
 ## 5. Testing authorisation
 

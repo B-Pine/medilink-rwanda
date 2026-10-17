@@ -20,7 +20,7 @@ Status: v0.1 · Process and Definition of Done: [roadmap README](README.md) · C
   - append-only hash-chained audit log
   - error format, request IDs, throttling; Channels + Celery skeletons
   - docker compose, `seed_dev`, CI
-- **Requirements:** FR-ACC-01..09, FR-SEC-01/02/04/05/06/07, NFR-OPS-01..08
+- **Requirements:** FR-ACC-01..08, FR-SEC-01/02/04/05/06 (MFA and re-authentication part)/07, NFR-OPS-01..08. FR-ACC-09 (break-glass) is built in S6.
 - **Contract:** [Sprint 0](../architecture/03-sprint-0-contract.md) (acceptance checks B1–B17)
 
 ### S1 · Platform and onboarding
@@ -30,7 +30,8 @@ Status: v0.1 · Process and Definition of Done: [roadmap README](README.md) · C
   - verification notes and history
   - master data (administrative locations, facility types, service catalogue, insurers, ICD-10 subset, drug catalogue import, holidays) with versioning and translations
   - super admin endpoints
-- **Requirements:** FR-ONB-01..03, 08, 10; FR-DOC-03 (uploads)
+- **Also in S1:** staff idle lock with PIN unlock and step-up re-authentication endpoints (FR-SEC-06 remainder)
+- **Requirements:** FR-ONB-01..03, 08, 10; FR-DOC-03 (uploads); FR-SEC-06 (PIN lock, step-up)
 - **Security:** upload pipeline ([security 06](../security/06-application-and-api-security.md) §4), platform step-up
 
 ### S2 · Facility setup and staff
@@ -67,7 +68,8 @@ Status: v0.1 · Process and Definition of Done: [roadmap README](README.md) · C
   - end-of-day job
   - WebSocket groups for boards, trackers and display (notify-then-fetch)
   - display tokens
-- **Requirements:** FR-QUE-01..17
+- **Scope note:** S4 delivers the on-site flow (walk-ins, check-in, ordering, call next, real-time, display). Booking-originated visits, the Expected list and remote joiners arrive with bookings in S5 (FR-QUE-02, the booked part of FR-QUE-03, FR-QUE-06, FR-QUE-07).
+- **Requirements:** FR-QUE-01, 03 (walk-ins), 04, 05, 08..17
 - **Tests:** concurrency tests (parallel call next / check-in); load test of the 06:00–10:00 peak (NFR-PERF-01, 04)
 
 ### S5 · Booking, remote join and calendars
@@ -80,7 +82,7 @@ Status: v0.1 · Process and Definition of Done: [roadmap README](README.md) · C
   - follow-up booking
   - `.ics` export / subscription feed
   - public discovery search (location, service, insurance, open now, availability) with estimated patient share
-- **Requirements:** FR-SCH-01..15; FR-BIL-03; FR-AI-01
+- **Requirements:** FR-SCH-01..15; FR-BIL-03; FR-AI-01; FR-QUE-02, 03 (booked check-in), 06, 07
 
 ### S6 · Clinical record and history
 - **Build:**
@@ -91,7 +93,7 @@ Status: v0.1 · Process and Definition of Done: [roadmap README](README.md) · C
   - history timeline API with filters
   - legacy import (register CSV with preview/validation/duplicates/rollback, scans, structured back-entry)
   - treatment-relationship rule + reason-for-access prompts
-- **Requirements:** FR-CLN-01..09; FR-PAT-10..12; FR-SEC-03, 09
+- **Requirements:** FR-CLN-01..09; FR-PAT-10..12; FR-SEC-03, 09; FR-ACC-09
 
 ### S7 · Pharmacy and documents
 - **Build:**

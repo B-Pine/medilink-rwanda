@@ -1,0 +1,64 @@
+# Weekly dependency updates (docs/security/09-secure-development-lifecycle.md §3).
+# Minor and patch updates are grouped into one pull request per ecosystem;
+# major updates arrive one by one. Security updates are raised as soon as advisories appear.
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /backend
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Africa/Kigali
+    open-pull-requests-limit: 5
+    labels: ["type:chore", "area:backend"]
+    commit-message:
+      prefix: "chore(backend)"
+    groups:
+      backend-minor-and-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Africa/Kigali
+    open-pull-requests-limit: 5
+    labels: ["type:chore", "area:frontend"]
+    commit-message:
+      prefix: "chore(frontend)"
+    groups:
+      frontend-minor-and-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Africa/Kigali
+    open-pull-requests-limit: 5
+    labels: ["type:chore"]
+    commit-message:
+      prefix: "ci"
+    groups:
+      actions-minor-and-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: docker
+    directory: /backend
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Africa/Kigali
+    open-pull-requests-limit: 5
+    labels: ["type:chore", "area:backend"]
+    commit-message:
+      prefix: "chore(backend)"
+    groups:
+      docker-minor-and-patch:
+        update-types: ["minor", "patch"]

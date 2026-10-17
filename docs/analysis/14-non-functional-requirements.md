@@ -41,7 +41,7 @@ Status: Draft v0.2 · Security and privacy requirements are in [12](12-security-
 |---|---|---|
 | NFR-UX-01 | **Kinyarwanda first**, English and French; no hard-coded user text; language switch everywhere | P1 |
 | NFR-UX-02 | Elderly and low-literacy friendly: large text option, icons with labels, short flows (booking in ≤ 5 steps) | P1 |
-| NFR-UX-03 | WCAG 2.1 AA for patient and staff apps | P1 |
+| NFR-UX-03 | WCAG 2.2 AA for patient and staff apps | P1 |
 | NFR-UX-04 | Reception: walk-in registration + ticket in < 60 seconds; check-in of a booked patient in < 15 seconds | P1 |
 | NFR-UX-05 | Keyboard shortcuts for reception and doctor high-frequency actions | P1 |
 | NFR-UX-06 | Dates and numbers in local formats; currency RWF without decimals | P1 |

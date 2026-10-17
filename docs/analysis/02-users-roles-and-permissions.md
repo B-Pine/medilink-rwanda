@@ -196,8 +196,8 @@ Legend: **✓** full · **own** only own records or own facility · **view** rea
 | Approve void / refund | — | — | ✓ | — | — | — |
 | Upload documents | own | ✓ (facility verification) | ✓ | ✓ (ID, insurance card) | ✓ (results) | — |
 | Import legacy records | — | — | ✓ | — | ltd (clinical history entry) | — |
-| Merge duplicate patients | — | ✓ (cross-facility) | request | — | — | — |
-| Raise dispute | ✓ | — | ✓ (vs platform) | — | — | — |
+| Merge duplicate patients | — | ✓ (approve cross-facility) | ✓ (approve within facility) | request | — | — |
+| Raise dispute | ✓ | — | ✓ (vs platform) | ltd (on behalf of a patient at the counter) | — | — |
 | Handle dispute | — | ✓ (escalated / platform) | ✓ (facility) | comment | comment | comment |
 | View reports | — | ✓ (platform) | ✓ (facility) | ltd (own shift) | ltd (own activity) | ltd (own activity) |
 | View audit log | own access history | ✓ (platform) | ✓ (facility) | — | — | — |

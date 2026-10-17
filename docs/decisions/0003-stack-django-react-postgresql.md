@@ -7,6 +7,9 @@ The team chose Python/Django for the backend and React for the front end. Python
 
 ## Decision
 
+> **Version update (2026-10-17):** current versions are Django 6.x, PostgreSQL 17 and React 19. See [architecture 01](../architecture/01-system-architecture.md) and [ADR 0007](0007-frontend-toolchain.md). Folder names follow [ADR 0006](0006-separate-frontend-and-backend-hosting.md) (`backend/`, `frontend/`).
+
+
 ### Backend (`backend/`)
 | Concern | Choice |
 |---|---|

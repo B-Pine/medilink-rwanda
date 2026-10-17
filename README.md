@@ -16,7 +16,7 @@ Facilities onboard their own staff and run the whole visit electronically:
 
 ## Documentation
 
-Start with [docs/README.md](docs/README.md): the system analysis, the requirements index and the architecture decisions.
+Start with [docs/README.md](docs/README.md): the system analysis, the requirements index, the architecture decisions, the API catalogue and the development guides.
 
 ## Phase-1 users
 
@@ -56,7 +56,9 @@ Details: [phasing](docs/analysis/16-roadmap-and-phasing.md) · sprint plans: [ba
 
 ## Getting started
 
-Setup steps will be added with the first code. Requirements: Python 3.12+, Node.js LTS, pnpm, Docker (for PostgreSQL and Redis).
+Follow [docs/development/getting-started.md](docs/development/getting-started.md): Docker for PostgreSQL, Redis and Mailpit, then the Django API on port 8000 and the two React apps on ports 5173 and 5174. Requirements: Python 3.12+, Node.js LTS, pnpm, Docker. The exact commands live in `backend/README.md` and `frontend/README.md`.
+
+What changed: [CHANGELOG.md](CHANGELOG.md) for documentation and repository-wide changes; `backend/CHANGELOG.md` and `frontend/CHANGELOG.md` for each deployable.
 
 ## Contributing
 
@@ -64,4 +66,4 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request, and [SECU
 
 ## License
 
-Proprietary. © MediLink Rwanda. All rights reserved.
+Proprietary. © 2026 MediLink Rwanda. All rights reserved. See [LICENSE](LICENSE).

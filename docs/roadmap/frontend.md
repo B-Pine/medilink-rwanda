@@ -32,6 +32,7 @@ Status: v0.1 · Process and Definition of Done: [roadmap README](README.md) · T
 - **Build:**
   - **public:** "For facilities" page and the facility application wizard (5 steps, autosave, uploads with progress, resume link)
   - **staff-web super admin:** applications pipeline, review screen (document viewer, notes, approve / request changes / reject), facilities list, master data screens
+  - **staff-web:** idle lock screen with PIN unlock, step-up re-authentication dialog (FR-SEC-06)
   - components: DataTable v1 (sorting, filters as chips, pagination, density, row side panel), FileUpload, Stepper, DocumentViewer
 - **Design:** [08 tables](../design/research/08-tables.md)
 
@@ -55,6 +56,7 @@ Status: v0.1 · Process and Definition of Done: [roadmap README](README.md) · T
   - **Display route** (kiosk, deep forest, large tickets, chime, no names)
   - real-time via WebSocket (notify-then-fetch) with a live indicator and reconnect
 - **patient-web:** **Live tracker** (ticket, position dots, wait range, time to leave, stages, "You're called" full-screen with sound/vibration, wake lock, offline last-known state)
+- **Scope note:** the Expected list and remote-join states use real bookings from S5. S4 shows them with mock data only.
 - **Design:** [04 dashboards](../design/research/04-dashboards.md) §3, [07 patient app](../design/research/07-patient-app-pages.md) §3.3
 - **Tests:** e2e "walk-in → called → completed"; real-time update latency check (NFR-PERF-04)
 

@@ -21,7 +21,7 @@ Status: v0.1 · Maps OWASP Top 10:2025 and OWASP API Security Top 10:2023 to con
 
 ```python
 DEBUG = False
-ALLOWED_HOSTS = ["staff.medilink.rw", "app.medilink.rw", "api.medilink.rw"]
+ALLOWED_HOSTS = ["api.medilink.rw"]          # frontends are static sites on other hosts (ADR 0006)
 SECRET_KEY = env("DJANGO_SECRET_KEY"); SECRET_KEY_FALLBACKS = env.list("DJANGO_SECRET_KEY_FALLBACKS", default=[])
 
 SECURE_SSL_REDIRECT = True
@@ -34,10 +34,13 @@ SECURE_REFERRER_POLICY = "same-origin"
 SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin"
 X_FRAME_OPTIONS = "DENY"
 
-SESSION_COOKIE_NAME = "__Host-session"; SESSION_COOKIE_SECURE = True
+# Audience-scoped session cookies "__Host-ml_staff" / "__Host-ml_patient" are chosen per request
+# path by a custom session middleware (ADR 0006); both use these flags:
+SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True; SESSION_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_NAME = "__Host-csrftoken"; CSRF_COOKIE_SECURE = True
-CSRF_TRUSTED_ORIGINS = ["https://staff.medilink.rw", "https://app.medilink.rw"]
+CSRF_COOKIE_NAME = "__Host-ml_csrf"; CSRF_COOKIE_SECURE = True   # token also returned by GET /api/v1/csrf/
+CSRF_TRUSTED_ORIGINS = ["https://staff.medilink.rw", "https://medilink.rw"]
+CORS_ALLOWED_ORIGINS = CSRF_TRUSTED_ORIGINS; CORS_ALLOW_CREDENTIALS = True
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 2_621_440        # JSON bodies
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2_621_440

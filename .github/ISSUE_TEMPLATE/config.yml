@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/B-Pine/medilink-rwanda/blob/main/SECURITY.md
+    about: Do not open a public issue for vulnerabilities. Follow SECURITY.md to report them privately.
+  - name: Read the documentation
+    url: https://github.com/B-Pine/medilink-rwanda/blob/main/docs/README.md
+    about: Requirements, architecture, API catalogue and development guides.

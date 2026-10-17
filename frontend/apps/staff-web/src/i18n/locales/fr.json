@@ -1,0 +1,188 @@
+{
+  "app": {
+    "name": "MediLink Personnel",
+    "titleSuffix": "MediLink Personnel"
+  },
+  "common": {
+    "back": "Retour",
+    "continue": "Continuer",
+    "retry": "Réessayer",
+    "logout": "Se déconnecter",
+    "copy": "Copier",
+    "copied": "Copié"
+  },
+  "errors": {
+    "generic": "Un problème est survenu. Réessayez.",
+    "network": "Impossible de joindre MediLink. Vérifiez votre connexion et réessayez.",
+    "rateLimited": "Trop de tentatives. Attendez {{seconds}} secondes, puis réessayez.",
+    "rateLimitedNoTime": "Trop de tentatives. Attendez une minute, puis réessayez.",
+    "sessionExpired": "Votre session a pris fin. Reconnectez-vous pour continuer.",
+    "loadFailed": "Impossible de charger votre compte."
+  },
+  "validation": {
+    "emailRequired": "Saisissez votre adresse e-mail",
+    "emailInvalid": "Saisissez une adresse e-mail au bon format, par exemple nom@example.rw",
+    "passwordRequired": "Saisissez votre mot de passe",
+    "newPasswordLength": "Utilisez au moins 12 caractères",
+    "codeRequired": "Saisissez le code à 6 chiffres de votre application d’authentification",
+    "codeFormat": "Le code doit comporter 6 chiffres",
+    "recoveryCodeRequired": "Saisissez l’un de vos codes de récupération",
+    "recoveryCodesSaved": "Confirmez que vous avez enregistré vos codes de récupération"
+  },
+  "brand": {
+    "tagline": "Chaque visite, à l’heure.",
+    "description": "Accueil, consultations, pharmacie et facturation de votre établissement, dans un espace de travail serein.",
+    "trust": "Chiffré · Données conservées au Rwanda"
+  },
+  "login": {
+    "title": "Se connecter à MediLink",
+    "intro": "Pour le personnel des établissements de santé vérifiés.",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "forgot": "Mot de passe oublié ?",
+    "submit": "Se connecter",
+    "invalidCredentials": "L’e-mail ou le mot de passe n’est pas correct. Vérifiez-les et réessayez.",
+    "patientHint": "Vous cherchez des soins ? Les patients utilisent l’application MediLink."
+  },
+  "mfaSetup": {
+    "title": "Configurer la connexion en deux étapes",
+    "intro": "Les comptes du personnel demandent une deuxième étape à la connexion pour protéger les données des patients.",
+    "preparing": "Préparation de la configuration…",
+    "setupFailed": "Impossible de démarrer la configuration. Reconnectez-vous.",
+    "step1Title": "1. Installez une application d’authentification",
+    "step1Body": "Par exemple Google Authenticator, Microsoft Authenticator ou une autre application TOTP, sur un téléphone que vous seul utilisez.",
+    "step2Title": "2. Scannez ce code QR avec l’application",
+    "qrLabel": "Code QR pour ajouter votre compte MediLink à une application d’authentification",
+    "manualKeyLabel": "Impossible de scanner ? Saisissez cette clé dans l’application",
+    "copyKey": "Copier la clé",
+    "step3Title": "3. Saisissez le code à 6 chiffres affiché par l’application",
+    "code": "Code à 6 chiffres",
+    "codeHint": "Le code change toutes les 30 secondes.",
+    "submit": "Confirmer et continuer",
+    "codesTitle": "Enregistrez vos codes de récupération",
+    "codesIntro": "Si vous perdez votre téléphone, chaque code permet de vous connecter une fois. Gardez-les en lieu sûr, loin de votre téléphone. Ils ne seront plus affichés.",
+    "codesListLabel": "Vos 10 codes de récupération",
+    "print": "Imprimer les codes",
+    "copyCodes": "Copier les codes",
+    "codesCopied": "Codes de récupération copiés",
+    "savedConfirm": "J’ai enregistré mes codes de récupération en lieu sûr",
+    "finish": "Continuer vers MediLink",
+    "printTitle": "Codes de récupération MediLink pour {{email}}"
+  },
+  "mfaVerify": {
+    "title": "Saisissez votre code de connexion",
+    "intro": "Ouvrez votre application d’authentification et saisissez le code à 6 chiffres de MediLink.",
+    "code": "Code à 6 chiffres",
+    "codeHint": "Collez ou tapez le code. Les espaces sont acceptés.",
+    "submit": "Vérifier et se connecter",
+    "useRecovery": "Utiliser plutôt un code de récupération",
+    "useApp": "Utiliser le code de mon application",
+    "recoveryTitle": "Utiliser un code de récupération",
+    "recoveryIntro": "Saisissez l’un des codes de récupération enregistrés lors de la configuration.",
+    "recoveryCode": "Code de récupération",
+    "recoveryHint": "Par exemple abcd-1234. Chaque code ne fonctionne qu’une fois.",
+    "backToLogin": "Retour à la connexion"
+  },
+  "facility": {
+    "title": "Choisissez votre établissement",
+    "intro": "Vous travaillez dans plusieurs établissements. Choisissez celui où vous travaillez maintenant. Vous pouvez changer à tout moment depuis la barre du haut.",
+    "choose": "Travailler à {{name}}",
+    "rolesLabel": "Vos rôles",
+    "switcherLabel": "Établissement actuel : {{name}}. Changer d’établissement",
+    "switchHeading": "Changer d’établissement",
+    "current": "Actuel",
+    "switchFailed": "Impossible de changer d’établissement. Réessayez.",
+    "noFacility": "Aucun établissement sélectionné",
+    "types": {
+      "health_post": "Poste de santé",
+      "health_center": "Centre de santé",
+      "district_hospital": "Hôpital de district",
+      "provincial_hospital": "Hôpital provincial",
+      "referral_hospital": "Hôpital de référence",
+      "private_clinic": "Clinique privée",
+      "polyclinic": "Polyclinique",
+      "private_hospital": "Hôpital privé",
+      "dental_clinic": "Cabinet dentaire",
+      "eye_clinic": "Clinique ophtalmologique",
+      "diagnostic_center": "Centre de diagnostic",
+      "other": "Établissement de santé"
+    },
+    "roles": {
+      "facility_admin": "Administrateur de l’établissement",
+      "receptionist": "Réceptionniste",
+      "doctor": "Médecin",
+      "pharmacist": "Pharmacien"
+    }
+  },
+  "shell": {
+    "navLabel": "Menu principal",
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu",
+    "platformAdmin": "Administrateur de la plateforme",
+    "nav": {
+      "today": "Aujourd’hui",
+      "queue": "File d’attente",
+      "calendar": "Agenda",
+      "patients": "Patients",
+      "pharmacy": "Pharmacie",
+      "payments": "Paiements",
+      "approvals": "Approbations",
+      "reports": "Rapports",
+      "staff": "Personnel",
+      "settings": "Paramètres",
+      "audit": "Journal d’audit",
+      "platformFacilities": "Demandes d’établissements"
+    },
+    "connection": {
+      "label": "Connexion",
+      "online": "En ligne",
+      "offline": "Hors ligne"
+    },
+    "userMenu": {
+      "label": "Menu du compte",
+      "signedInAs": "Connecté en tant que",
+      "theme": "Thème",
+      "language": "Langue",
+      "logout": "Se déconnecter",
+      "loggingOut": "Déconnexion…"
+    }
+  },
+  "today": {
+    "title": "Aujourd’hui",
+    "greeting": "Bonjour, {{name}}",
+    "facility": "Vous travaillez à {{facility}}.",
+    "platform": "Vous êtes connecté en tant qu’administrateur de la plateforme.",
+    "rolesLabel": "Vos rôles ici",
+    "placeholderTitle": "Votre tableau du jour arrive bientôt",
+    "placeholderBody": "Les patients attendus, les personnes sur place et la file en direct apparaîtront ici à partir du Sprint 4. Votre compte, vos rôles et votre établissement sont prêts."
+  },
+  "placeholder": {
+    "title": "{{section}}",
+    "body": "Cet espace de travail est prévu pour un prochain sprint.",
+    "back": "Retour à Aujourd’hui"
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "body": "Vérifiez l’adresse ou revenez à votre page Aujourd’hui.",
+    "home": "Aller à Aujourd’hui"
+  },
+  "forgot": {
+    "title": "Réinitialiser votre mot de passe",
+    "intro": "Saisissez votre e-mail professionnel. S’il correspond à un compte, nous enverrons un lien pour choisir un nouveau mot de passe.",
+    "email": "E-mail",
+    "submit": "Envoyer le lien",
+    "sentTitle": "Consultez vos e-mails",
+    "sentBody": "Si un compte existe pour {{email}}, un lien de réinitialisation est en route. Le lien est valable 30 minutes.",
+    "back": "Retour à la connexion"
+  },
+  "reset": {
+    "title": "Choisir un nouveau mot de passe",
+    "newPassword": "Nouveau mot de passe",
+    "hint": "Au moins 12 caractères. Une courte phrase est facile à retenir et difficile à deviner.",
+    "submit": "Enregistrer le mot de passe",
+    "doneTitle": "Mot de passe modifié",
+    "doneBody": "Votre mot de passe a été modifié et vous avez été déconnecté partout. Connectez-vous avec le nouveau mot de passe.",
+    "invalidLink": "Ce lien est incomplet. Ouvrez à nouveau le lien de l’e-mail ou demandez-en un nouveau.",
+    "toLogin": "Aller à la connexion"
+  }
+}

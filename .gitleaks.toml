@@ -10,3 +10,9 @@ description = "Synthetic values in the log-redaction test (B15) that prove secre
 condition = "AND"
 paths = ['''^backend/tests/test_b15_logging_env\.py$''']
 regexes = ['''abcdef123456''', '''hunter2-secret''']
+
+[[allowlists]]
+description = "Synthetic passphrase used by frontend tests against the MSW mocks; not a real credential"
+condition = "AND"
+paths = ['''^frontend/.*\.test\.tsx?$''']
+regexes = ['''a-long-passphrase-2026''']

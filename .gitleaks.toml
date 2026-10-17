@@ -1,0 +1,12 @@
+# gitleaks configuration (used by .github/workflows/security.yml, which scans the full history).
+# Keep allowlists as narrow as possible: a specific value in a specific file, never a whole rule.
+title = "MediLink Rwanda gitleaks config"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Synthetic values in the log-redaction test (B15) that prove secrets are redacted; not real secrets"
+condition = "AND"
+paths = ['''^backend/tests/test_b15_logging_env\.py$''']
+regexes = ['''abcdef123456''', '''hunter2-secret''']

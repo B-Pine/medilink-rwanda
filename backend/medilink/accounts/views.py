@@ -496,7 +496,7 @@ class PatientMeView(_AuthView):
         summary="Current patient account and the profiles it manages",
     )
     def get(self, request: Request) -> Response:
-        return Response(PatientMeSerializer(patient_me_data(request.user)).data)
+        return Response(PatientMeSerializer(patient_me_data(_principal_user(request))).data)
 
 
 # --------------------------------------------------------------------------------------------

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.sessions.base_session import AbstractBaseSession
@@ -23,7 +23,13 @@ def normalize_email(email: str | None) -> str:
     return (email or "").strip().lower()
 
 
-class UserManager(BaseUserManager):  # type: ignore[type-arg]
+if TYPE_CHECKING:
+    _UserManagerBase = BaseUserManager["User"]
+else:
+    _UserManagerBase = BaseUserManager
+
+
+class UserManager(_UserManagerBase):
     use_in_migrations = True
 
     def get_by_natural_key(self, username: str | None) -> User:

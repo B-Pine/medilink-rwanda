@@ -166,8 +166,9 @@ def api_exception_handler(exc: Exception, context: dict[str, Any]) -> Response |
             code = "unsupported_media_type"
         elif isinstance(exc, exceptions.Throttled):
             code = "rate_limited"
-            if exc.wait is not None:
-                headers["Retry-After"] = str(max(1, int(exc.wait + 0.999)))
+            wait = getattr(exc, "wait", None)
+            if wait is not None:
+                headers["Retry-After"] = str(max(1, int(wait + 0.999)))
         elif isinstance(exc, exceptions.ParseError):
             code = "bad_request"
         elif isinstance(exc, Conflict | BusinessRuleViolation):

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import time
-from typing import Any
+from typing import Any, cast
 
 from django.contrib import auth
 from django.http import HttpRequest
@@ -28,7 +28,7 @@ BACKEND = "medilink.accounts.backends.EmailBackend"
 
 
 def _django_request(request: Any) -> HttpRequest:
-    return getattr(request, "_request", request)  # type: ignore[no-any-return]
+    return cast(HttpRequest, getattr(request, "_request", request))
 
 
 def start_pending_mfa(request: Any, user: User, stage: PrincipalState) -> Principal:

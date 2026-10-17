@@ -79,8 +79,9 @@ class RedactPersonalDataFilter(logging.Filter):
             message = str(record.msg)
         record.msg = redact_text(message).replace("\r", "\\r").replace("\n", "\\n")
         record.args = None
-        if isinstance(getattr(record, "extra_data", None), dict):
-            record.extra_data = _redact_value(record.extra_data)
+        extra = getattr(record, "extra_data", None)
+        if isinstance(extra, dict):
+            record.extra_data = _redact_value(extra)
         return True
 
 

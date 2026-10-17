@@ -15,7 +15,7 @@ def uuid7() -> uuid.UUID:
     """Time-ordered UUID (RFC 9562 v7). Uses the stdlib on Python 3.14+."""
     native = getattr(uuid, "uuid7", None)
     if native is not None:
-        return native()  # type: ignore[no-any-return]
+        return native()
     ms = time.time_ns() // 1_000_000
     rand = int.from_bytes(os.urandom(10), "big")
     value = (ms & ((1 << 48) - 1)) << 80 | rand

@@ -12,8 +12,20 @@ from django.db import connection, transaction
 from django.db.migrations.state import ProjectState
 
 from medilink.tenancy.context import get_db_context, set_db_context
-from medilink.tenancy.models import Facility, FacilityMembership, FacilityNote, Organization, Permission, Role
-from medilink.tenancy.rls import FACILITY_CONTEXT_SQL, CreatePolicy, EnableFacilityRLS, context_uuid_sql
+from medilink.tenancy.models import (
+    Facility,
+    FacilityMembership,
+    FacilityNote,
+    Organization,
+    Permission,
+    Role,
+)
+from medilink.tenancy.rls import (
+    FACILITY_CONTEXT_SQL,
+    CreatePolicy,
+    EnableFacilityRLS,
+    context_uuid_sql,
+)
 from tests.factories import UserFactory, make_membership, make_note
 
 pytestmark = [pytest.mark.acceptance("B10"), pytest.mark.django_db]
@@ -23,14 +35,17 @@ TABLE = "tenancy_facilitynote"
 
 def _rls_flags() -> tuple[bool, bool]:
     with connection.cursor() as cursor:
-        cursor.execute("SELECT relrowsecurity, relforcerowsecurity FROM pg_class WHERE relname = %s", [TABLE])
+        cursor.execute(
+            "SELECT relrowsecurity, relforcerowsecurity FROM pg_class WHERE relname = %s", [TABLE]
+        )
         return cursor.fetchone()
 
 
 def _policies() -> set[str]:
     with connection.cursor() as cursor:
         cursor.execute(
-            "SELECT polname FROM pg_policy p JOIN pg_class c ON c.oid = p.polrelid WHERE c.relname = %s", [TABLE]
+            "SELECT polname FROM pg_policy p JOIN pg_class c ON c.oid = p.polrelid WHERE c.relname = %s",
+            [TABLE],
         )
         return {row[0] for row in cursor.fetchall()}
 

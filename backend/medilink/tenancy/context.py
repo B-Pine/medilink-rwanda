@@ -14,6 +14,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
+from typing import Any
 from uuid import UUID
 
 from django.db import connections, transaction
@@ -35,7 +36,7 @@ def _as_text(value: UUID | str | None) -> str:
     return str(value) if value else ""
 
 
-def _connection(using: str):  # type: ignore[no-untyped-def]
+def _connection(using: str) -> Any:
     return connections[using]
 
 

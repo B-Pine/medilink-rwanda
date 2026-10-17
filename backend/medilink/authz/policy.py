@@ -14,6 +14,7 @@ from __future__ import annotations
 from typing import Any
 from uuid import UUID
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.models import Model, QuerySet
 from rest_framework import exceptions
@@ -54,5 +55,5 @@ def get_scoped_object_or_404[M: Model](
 ) -> M:
     try:
         return scoped(principal, queryset).get(**lookup)
-    except (queryset.model.DoesNotExist, DjangoValidationError, ValueError, TypeError) as exc:
+    except (ObjectDoesNotExist, DjangoValidationError, ValueError, TypeError) as exc:
         raise exceptions.NotFound() from exc  # malformed IDs are "not found" too

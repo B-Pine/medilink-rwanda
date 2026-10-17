@@ -108,7 +108,7 @@ class BreachedPasswordValidator:
         self.hashes_file = hashes_file
 
     def _path(self) -> str:
-        return self.hashes_file or getattr(settings, "PASSWORD_BREACHED_HASHES_FILE", "")
+        return str(self.hashes_file or getattr(settings, "PASSWORD_BREACHED_HASHES_FILE", ""))
 
     def validate(self, password: str, user: Any = None) -> None:
         path = self._path()

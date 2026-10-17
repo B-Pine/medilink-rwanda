@@ -21,7 +21,7 @@ class RequestIDMiddleware:
 
     def __call__(self, request: HttpRequest) -> HttpResponse:
         incoming = request.headers.get(REQUEST_ID_HEADER)
-        request_id = incoming if is_valid_request_id(incoming) else new_request_id()
+        request_id = incoming if incoming and is_valid_request_id(incoming) else new_request_id()
         request.request_id = request_id  # type: ignore[attr-defined]
         token = request_id_var.set(request_id)
         try:

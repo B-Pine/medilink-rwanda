@@ -11,7 +11,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from django.http import HttpRequest, HttpResponse, HttpResponseBase
+from django.http import HttpRequest, HttpResponse, HttpResponseBase, HttpResponseForbidden
 from django.middleware.csrf import CsrfViewMiddleware
 
 
@@ -31,7 +31,7 @@ class ApiCsrfEnforcementMiddleware(CsrfViewMiddleware):
         callback: Callable[..., Any],
         callback_args: tuple[Any, ...],
         callback_kwargs: dict[str, Any],
-    ) -> HttpResponseBase | None:
+    ) -> HttpResponseForbidden | None:
         if not request.path_info.startswith(self.prefix):
             return None
         if getattr(request, "csrf_processing_done", False):

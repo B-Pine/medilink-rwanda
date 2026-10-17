@@ -90,7 +90,7 @@ class AudienceSessionAuthMiddleware(BaseMiddleware):
         return await super().__call__(scope, receive, send)
 
 
-class StaffPingConsumer(AsyncJsonWebsocketConsumer):  # type: ignore[misc]
+class StaffPingConsumer(AsyncJsonWebsocketConsumer):
     """Placeholder authenticated staff socket: proves origin checks, session auth and revocation."""
 
     groups_joined: list[str]

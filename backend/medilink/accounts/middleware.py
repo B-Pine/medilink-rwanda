@@ -45,7 +45,7 @@ class AudienceSessionMiddleware(SessionMiddleware):
                 cookie,
                 path=settings.SESSION_COOKIE_PATH,
                 domain=settings.SESSION_COOKIE_DOMAIN,
-                samesite=settings.SESSION_COOKIE_SAMESITE,
+                samesite=settings.SESSION_COOKIE_SAMESITE,  # type: ignore[arg-type]
             )
             patch_vary_headers(response, ("Cookie",))
             return response
@@ -72,8 +72,8 @@ class AudienceSessionMiddleware(SessionMiddleware):
                 expires=expires,
                 domain=settings.SESSION_COOKIE_DOMAIN,
                 path=settings.SESSION_COOKIE_PATH,
-                secure=settings.SESSION_COOKIE_SECURE or None,
-                httponly=settings.SESSION_COOKIE_HTTPONLY or None,
-                samesite=settings.SESSION_COOKIE_SAMESITE,
+                secure=bool(settings.SESSION_COOKIE_SECURE),
+                httponly=bool(settings.SESSION_COOKIE_HTTPONLY),
+                samesite=settings.SESSION_COOKIE_SAMESITE,  # type: ignore[arg-type]
             )
         return response

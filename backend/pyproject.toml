@@ -47,6 +47,12 @@ warn_redundant_casts = true
 check_untyped_defs = true
 exclude = ["migrations/", "\\.venv/"]
 
+# factory-boy is untyped (factories look like their own classes to mypy); tests are not part of
+# the type gate in Sprint 0. Application code (medilink/, config/) must be clean.
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+ignore_errors = true
+
 [tool.django-stubs]
 django_settings_module = "config.settings.test"
 

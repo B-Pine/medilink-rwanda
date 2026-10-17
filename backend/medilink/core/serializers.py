@@ -15,7 +15,7 @@ class CsrfTokenSerializer(serializers.Serializer):
 class ErrorDetailSerializer(serializers.Serializer):
     code = serializers.CharField(help_text="Stable machine-readable code, e.g. validation_error.")
     message = serializers.CharField(help_text="Localised human-readable message.")
-    fields = serializers.DictField(
+    fields = serializers.DictField(  # type: ignore[assignment]  # popped by the metaclass
         child=serializers.ListField(child=serializers.CharField()),
         help_text="Field name -> messages. Empty object when not a validation error.",
     )

@@ -6,7 +6,7 @@ into the patient cookie (or vice versa) is simply not found.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 from asgiref.sync import sync_to_async
 from django.conf import settings
@@ -34,28 +34,28 @@ class SessionStore(DBStore):
 
     def _get_session_from_db(self) -> UserSession | None:
         try:
-            return self.model.objects.get(  # type: ignore[no-any-return]
+            return UserSession.objects.get(
                 session_key=self.session_key,
                 audience=self.audience,
                 expire_date__gt=timezone.now(),
             )
-        except (self.model.DoesNotExist, SuspiciousOperation):
+        except (UserSession.DoesNotExist, SuspiciousOperation):
             self._session_key = None
             return None
 
     async def _aget_session_from_db(self) -> UserSession | None:
         try:
-            return await self.model.objects.aget(  # type: ignore[no-any-return]
+            return await UserSession.objects.aget(
                 session_key=self.session_key,
                 audience=self.audience,
                 expire_date__gt=timezone.now(),
             )
-        except (self.model.DoesNotExist, SuspiciousOperation):
+        except (UserSession.DoesNotExist, SuspiciousOperation):
             self._session_key = None
             return None
 
     def create_model_instance(self, data: dict[str, Any]) -> UserSession:
-        obj: UserSession = super().create_model_instance(data)
+        obj = cast(UserSession, super().create_model_instance(data))
         obj.audience = self.audience
         pending = data.get(PENDING_KEY) or {}
         obj.user_id = data.get(SESSION_KEY) or pending.get("user_id") or None
@@ -65,7 +65,7 @@ class SessionStore(DBStore):
         """Like Django's DB store, but updates only the mutable columns (keeps created_at)."""
         if self.session_key is None:
             return self.create()
-        data = self._get_session(no_load=must_create)
+        data = self._get_session(no_load=must_create)  # type: ignore[attr-defined]
         obj = self.create_model_instance(data)
         using = router.db_for_write(self.model, instance=obj)
         try:

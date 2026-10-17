@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Added
+
+- `DEV_SKIP_STAFF_MFA` (development only): staff log in without the second factor for local
+  testing. Requires `DEBUG`; system check `medilink.E003` refuses it otherwise and the deploy check
+  `medilink.E004` always refuses it. Logins record `mfa_method: dev_skip` in the audit log.
+
 ## [0.1.0] - 2026-10-17
 
 Sprint 0 (Foundations), see [docs/architecture/03-sprint-0-contract.md](../docs/architecture/03-sprint-0-contract.md).

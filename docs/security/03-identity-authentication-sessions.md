@@ -46,6 +46,7 @@ AUTH_PASSWORD_VALIDATORS = [
 - **Enrolment at first login** for staff (from the invite flow). Recovery codes are generated once (10 single-use codes, hashed at rest) and shown for printing.
 - **Libraries:** `django-otp` for TOTP; WebAuthn/passkeys via a maintained library (e.g. `webauthn` / django-allauth MFA).
 - **TOTP secrets** are encrypted at rest with the application key store ([05](05-data-protection-and-cryptography.md)).
+- **Development-only bypass:** `DEV_SKIP_STAFF_MFA` lets developers test locally without an authenticator app. It only works with `DEBUG` on, system checks refuse it everywhere else (`medilink.E003`, and `check --deploy` always: `medilink.E004`), and each use is audit-logged as `mfa_method: dev_skip`. It must never be set in staging or production.
 - **"Trust this device" (30 days)** is only offered on devices not marked as shared. Reception PCs are registered as shared devices by the facility admin.
 - **MFA reset** is done by the facility admin for their staff, or by the super admin for facility admins. It requires the requester's own MFA and is logged and notified to the affected user.
 - **Security notifications** go to the user on: new device login, MFA change, password change, role change.

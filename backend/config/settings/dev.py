@@ -14,6 +14,8 @@ from .base import (
 )
 
 DEBUG = True
+# Local testing without an authenticator app (see base.py); off unless set in backend/.env.
+DEV_SKIP_STAFF_MFA = env.bool("DEV_SKIP_STAFF_MFA", default=False)
 SECRET_KEY = env("DJANGO_SECRET_KEY", default="django-insecure-dev-only-change-me")
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 

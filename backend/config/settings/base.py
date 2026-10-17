@@ -194,6 +194,9 @@ OTP_TOTP_ISSUER = env("MFA_TOTP_ISSUER", default="MediLink Rwanda")
 MFA_PENDING_TIMEOUT = 10 * 60  # password OK -> second factor must follow within 10 minutes
 MFA_MAX_FAILURES = 5
 MFA_LOCK_SECONDS = 15 * 60
+# Development only: staff log in without the second factor. Refused unless DEBUG (medilink.E003)
+# and reported by `check --deploy` (medilink.E004). Never set in staging or production.
+DEV_SKIP_STAFF_MFA = False
 MFA_RECOVERY_CODE_COUNT = 10
 
 # Login protection (security 03 §6): progressive delay after 5 failures, 15 min lock after 10.

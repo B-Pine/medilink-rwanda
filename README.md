@@ -12,7 +12,7 @@ Facilities onboard their own staff and run the whole visit electronically:
 - billing and receipts
 - disputes
 
-> Status: **Sprint 0 (Foundations) in development.** Analysis, design research, security and architecture are documented. Phase 1 is a web platform; frontend and backend are hosted separately. The mobile app, SMS, WhatsApp and USSD follow later.
+> Status: **Sprint 0 (Foundations) done** (`backend-v0.1.0`, `frontend-v0.1.0`); Sprint 1 next. Analysis, design research, security and architecture are documented. Phase 1 is a web platform; frontend and backend are hosted separately. The mobile app, SMS, WhatsApp and USSD follow later.
 
 ## Documentation
 
@@ -56,9 +56,9 @@ Details: [phasing](docs/analysis/16-roadmap-and-phasing.md) · sprint plans: [ba
 
 ## Getting started
 
-Follow [docs/development/getting-started.md](docs/development/getting-started.md): Docker for PostgreSQL, Redis and Mailpit, then the Django API on port 8000 and the two React apps on ports 5173 and 5174. Requirements: Python 3.12+, Node.js LTS, pnpm, Docker. The exact commands live in `backend/README.md` and `frontend/README.md`.
+Follow [docs/development/getting-started.md](docs/development/getting-started.md): Docker for PostgreSQL, Redis and Mailpit, then the Django API on port 8000 and the two React apps on ports 5173 and 5174. Requirements: Python 3.12+, Node.js LTS, pnpm, Docker. The exact commands live in [backend/README.md](backend/README.md) and [frontend/README.md](frontend/README.md).
 
-What changed: [CHANGELOG.md](CHANGELOG.md) for documentation and repository-wide changes; `backend/CHANGELOG.md` and `frontend/CHANGELOG.md` for each deployable.
+What changed: [CHANGELOG.md](CHANGELOG.md) for documentation and repository-wide changes; [backend/CHANGELOG.md](backend/CHANGELOG.md) and [frontend/CHANGELOG.md](frontend/CHANGELOG.md) for each deployable.
 
 ## Contributing
 

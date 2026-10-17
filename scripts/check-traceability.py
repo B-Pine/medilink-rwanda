@@ -41,7 +41,8 @@ def main() -> int:
             continue
         listed[match.group(1)] += 1
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if cells[-1] not in STATUSES:
+        # A status may carry the sprint and version, e.g. 'Verified (S4, backend-v0.5.0)' (QA README §3).
+        if cells[-1].split(" (", 1)[0] not in STATUSES:
             bad_status.append((match.group(1), cells[-1]))
 
     missing = sorted(set(defined) - set(listed))

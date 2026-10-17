@@ -8,7 +8,7 @@ Sprints and requirements follow the [backend](../roadmap/backend.md) and [fronte
 
 | Sprint | Theme | Status |
 |---|---|---|
-| [S0](#s0--foundations) | Foundations | Contracted |
+| [S0](#s0--foundations) | Foundations | Implemented (backend-v0.1.0) |
 | [S1](#s1--platform-and-onboarding) | Platform and onboarding | Planned |
 | [S2](#s2--facility-setup-and-staff) | Facility setup and staff | Planned |
 | [S3](#s3--patients-and-identity) | Patients and identity | Planned |
@@ -32,32 +32,32 @@ Copied from the [Sprint 0 contract](../architecture/03-sprint-0-contract.md) §2
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `GET` | `/api/v1/health/` | Liveness and API version | Public | NFR-OPS-06 | `200 {"status":"ok","version":"0.1.0"}` | Contracted |
-| `GET` | `/api/v1/csrf/` | CSRF token for frontends on other hosts | Public | FR-SEC-01 | Sets the CSRF cookie ([ADR 0006](../decisions/0006-separate-frontend-and-backend-hosting.md)) | Contracted |
-| `POST` | `/api/v1/auth/password-reset/` | Request a reset email | Public | FR-PAT-02 | Always `202`; RL: auth; email via Mailpit in dev; Audit `auth.password_reset.requested` | Contracted |
-| `POST` | `/api/v1/auth/password-reset/confirm/` | Set a new password | Reset token (body) | FR-PAT-02 | `204`; revokes all sessions of the user; Audit `auth.password_reset.completed` | Contracted |
-| `GET` | `/api/v1/schema/` | OpenAPI 3 schema | Public (non-production) | NFR-OPS-06 | Staff-only in production | Contracted |
+| `GET` | `/api/v1/health/` | Liveness and API version | Public | NFR-OPS-06 | `200 {"status":"ok","version":"0.1.0"}` | Implemented (backend-v0.1.0) |
+| `GET` | `/api/v1/csrf/` | CSRF token for frontends on other hosts | Public | FR-SEC-01 | Sets the CSRF cookie ([ADR 0006](../decisions/0006-separate-frontend-and-backend-hosting.md)) | Implemented (backend-v0.1.0) |
+| `POST` | `/api/v1/auth/password-reset/` | Request a reset email | Public | FR-PAT-02 | Always `202`; RL: auth; email via Mailpit in dev; Audit `auth.password_reset.requested` | Implemented (backend-v0.1.0) |
+| `POST` | `/api/v1/auth/password-reset/confirm/` | Set a new password | Reset token (body) | FR-PAT-02 | `204`; revokes all sessions of the user; Audit `auth.password_reset.completed` | Implemented (backend-v0.1.0) |
+| `GET` | `/api/v1/schema/` | OpenAPI 3 schema | Public (non-production) | NFR-OPS-06 | Staff-only in production | Implemented (backend-v0.1.0) |
 
 ### Patient
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `POST` | `/api/v1/patient/auth/register/` | Sign up: user + self patient + link + consents | Public | FR-PAT-02, FR-SEC-04, FR-SEC-05, FR-AI-02 | `201 PatientMe` (logged in); password ≥ 15; Audit `patient.registered` | Contracted |
-| `POST` | `/api/v1/patient/auth/login/` | Log in | Public | FR-PAT-02 | Generic `401`; RL: auth; rotates session | Contracted |
-| `POST` | `/api/v1/patient/auth/logout/` | Log out | Patient session | FR-SEC-06 | `204`; deletes the patient session only | Contracted |
-| `GET` | `/api/v1/patient/auth/me/` | Current patient account and profiles | Patient session | FR-PAT-03 | `PatientMe` | Contracted |
+| `POST` | `/api/v1/patient/auth/register/` | Sign up: user + self patient + link + consents | Public | FR-PAT-02, FR-SEC-04, FR-SEC-05, FR-AI-02 | `201 PatientMe` (logged in); password ≥ 15; Audit `patient.registered` | Implemented (backend-v0.1.0) |
+| `POST` | `/api/v1/patient/auth/login/` | Log in | Public | FR-PAT-02 | Generic `401`; RL: auth; rotates session | Implemented (backend-v0.1.0) |
+| `POST` | `/api/v1/patient/auth/logout/` | Log out | Patient session | FR-SEC-06 | `204`; deletes the patient session only | Implemented (backend-v0.1.0) |
+| `GET` | `/api/v1/patient/auth/me/` | Current patient account and profiles | Patient session | FR-PAT-03 | `PatientMe` | Implemented (backend-v0.1.0) |
 
 ### Staff
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `POST` | `/api/v1/staff/auth/login/` | Staff login | Active membership or platform admin | FR-ACC-04 | `LoginResult`; generic `401`; RL: auth; rotates session; Audit `auth.login.*` | Contracted |
-| `POST` | `/api/v1/staff/auth/mfa/setup/` | Start TOTP enrolment | `mfa_setup_required` state | FR-ACC-04, FR-SEC-06 | Returns `otpauth_uri` and secret | Contracted |
-| `POST` | `/api/v1/staff/auth/mfa/confirm/` | Confirm TOTP; get 10 recovery codes | `mfa_setup_required` state | FR-ACC-04, FR-SEC-06 | Codes shown once, stored hashed; Audit `auth.mfa.enrolled` | Contracted |
-| `POST` | `/api/v1/staff/auth/mfa/verify/` | Second factor at login (code or recovery code) | `mfa_required` state | FR-ACC-04, FR-SEC-06 | RL: auth; rotates session; Audit `auth.mfa.*` | Contracted |
-| `POST` | `/api/v1/staff/auth/logout/` | Log out | Staff session | FR-SEC-06 | `204`; deletes the staff session only; Audit `auth.logout` | Contracted |
-| `GET` | `/api/v1/staff/auth/me/` | Current user, memberships, permissions for the active facility | Staff session | FR-ACC-01, FR-ACC-02, FR-ACC-03 | `StaffMe` | Contracted |
-| `POST` | `/api/v1/staff/auth/active-facility/` | Switch the active facility | Member of that facility | FR-ACC-02 | `404` if not a member; rotates session; Audit `staff.facility.switched` | Contracted |
+| `POST` | `/api/v1/staff/auth/login/` | Staff login | Active membership or platform admin | FR-ACC-04 | `LoginResult`; generic `401`; RL: auth; rotates session; Audit `auth.login.*` | Implemented (backend-v0.1.0) |
+| `POST` | `/api/v1/staff/auth/mfa/setup/` | Start TOTP enrolment | `mfa_setup_required` state | FR-ACC-04, FR-SEC-06 | Returns `otpauth_uri` and secret | Implemented (backend-v0.1.0) |
+| `POST` | `/api/v1/staff/auth/mfa/confirm/` | Confirm TOTP; get 10 recovery codes | `mfa_setup_required` state | FR-ACC-04, FR-SEC-06 | Codes shown once, stored hashed; Audit `auth.mfa.enrolled` | Implemented (backend-v0.1.0) |
+| `POST` | `/api/v1/staff/auth/mfa/verify/` | Second factor at login (code or recovery code) | `mfa_required` state | FR-ACC-04, FR-SEC-06 | RL: auth; rotates session; Audit `auth.mfa.*` | Implemented (backend-v0.1.0) |
+| `POST` | `/api/v1/staff/auth/logout/` | Log out | Staff session | FR-SEC-06 | `204`; deletes the staff session only; Audit `auth.logout` | Implemented (backend-v0.1.0) |
+| `GET` | `/api/v1/staff/auth/me/` | Current user, memberships, permissions for the active facility | Staff session | FR-ACC-01, FR-ACC-02, FR-ACC-03 | `StaffMe` | Implemented (backend-v0.1.0) |
+| `POST` | `/api/v1/staff/auth/active-facility/` | Switch the active facility | Member of that facility | FR-ACC-02 | `404` if not a member; rotates session; Audit `staff.facility.switched` | Implemented (backend-v0.1.0) |
 
 ### WebSockets
 

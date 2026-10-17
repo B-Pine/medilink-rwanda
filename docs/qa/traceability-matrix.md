@@ -33,29 +33,29 @@ Built from the requirement tables in `docs/analysis/` (titles shortened; the ana
 
 ## Summary
 
-| Prefix | Module | Total | P1 | P2 | P3 | P4 | In progress | Not started |
-|---|---|---|---|---|---|---|---|---|
-| `FR-ACC` | [Users, roles, access](../analysis/02-users-roles-and-permissions.md) | 10 | 9 | 1 | 0 | 0 | 9 | 1 |
-| `FR-ONB` | [Tenancy, onboarding, master data](../analysis/03-tenancy-onboarding-and-master-data.md) | 11 | 10 | 1 | 0 | 0 | 0 | 11 |
-| `FR-PAT` | [Patient identity and medical history](../analysis/04-patient-identity-and-medical-history.md) | 17 | 14 | 2 | 0 | 1 | 1 | 16 |
-| `FR-SCH` | [Discovery, calendars, scheduling, booking](../analysis/05-discovery-scheduling-and-booking.md) | 18 | 15 | 3 | 0 | 0 | 0 | 18 |
-| `FR-QUE` | [Visit lifecycle and live queue](../analysis/06-visit-lifecycle-and-queue.md) | 20 | 17 | 3 | 0 | 0 | 0 | 20 |
-| `FR-CLN` | [Clinical record](../analysis/07-clinical-documentation-and-pharmacy.md) | 10 | 9 | 1 | 0 | 0 | 0 | 10 |
-| `FR-PHA` | [Pharmacy](../analysis/07-clinical-documentation-and-pharmacy.md) | 7 | 5 | 2 | 0 | 0 | 0 | 7 |
-| `FR-DOC` | [Documents](../analysis/07-clinical-documentation-and-pharmacy.md) | 7 | 7 | 0 | 0 | 0 | 0 | 7 |
-| `FR-BIL` | [Billing, payments, insurance](../analysis/08-billing-payments-and-insurance.md) | 18 | 13 | 2 | 1 | 2 | 0 | 18 |
-| `FR-NOT` | [Notifications](../analysis/09-notifications-and-communication.md) | 14 | 12 | 0 | 1 | 1 | 0 | 14 |
-| `FR-DSP` | [Disputes, complaints, support](../analysis/10-disputes-complaints-and-support.md) | 14 | 11 | 3 | 0 | 0 | 0 | 14 |
-| `FR-AI` | [AI symptom checker](../analysis/11-ai-symptom-checker.md) | 13 | 2 | 5 | 3 | 3 | 1 | 12 |
-| `FR-SEC` | [Security, privacy, compliance](../analysis/12-security-privacy-and-compliance.md) | 17 | 16 | 1 | 0 | 0 | 6 | 11 |
-| `FR-RPT` | [Reporting and analytics](../analysis/13-reporting-and-analytics.md) | 8 | 5 | 2 | 0 | 1 | 0 | 8 |
-| `NFR-PERF` | [Performance and capacity](../analysis/14-non-functional-requirements.md) | 7 | 7 | 0 | 0 | 0 | 0 | 7 |
-| `NFR-REL` | [Availability and reliability](../analysis/14-non-functional-requirements.md) | 5 | 5 | 0 | 0 | 0 | 0 | 5 |
-| `NFR-NET` | [Low connectivity and devices](../analysis/14-non-functional-requirements.md) | 6 | 6 | 0 | 0 | 0 | 1 | 5 |
-| `NFR-UX` | [Usability, accessibility, languages](../analysis/14-non-functional-requirements.md) | 7 | 7 | 0 | 0 | 0 | 4 | 3 |
-| `NFR-OPS` | [Maintainability and operations](../analysis/14-non-functional-requirements.md) | 8 | 8 | 0 | 0 | 0 | 8 | 0 |
-| `NFR-INT` | [Interoperability](../analysis/14-non-functional-requirements.md) | 3 | 1 | 0 | 2 | 0 | 0 | 3 |
-| **All** | | **220** | **179** | **26** | **7** | **8** | **30** | **190** |
+| Prefix | Module | Total | P1 | P2 | P3 | P4 | Verified | In progress | Not started |
+|---|---|---|---|---|---|---|---|---|---|
+| `FR-ACC` | [Users, roles, access](../analysis/02-users-roles-and-permissions.md) | 10 | 9 | 1 | 0 | 0 | 5 | 3 | 2 |
+| `FR-ONB` | [Tenancy, onboarding, master data](../analysis/03-tenancy-onboarding-and-master-data.md) | 11 | 10 | 1 | 0 | 0 | 0 | 0 | 11 |
+| `FR-PAT` | [Patient identity and medical history](../analysis/04-patient-identity-and-medical-history.md) | 17 | 14 | 2 | 0 | 1 | 0 | 1 | 16 |
+| `FR-SCH` | [Discovery, calendars, scheduling, booking](../analysis/05-discovery-scheduling-and-booking.md) | 18 | 15 | 3 | 0 | 0 | 0 | 0 | 18 |
+| `FR-QUE` | [Visit lifecycle and live queue](../analysis/06-visit-lifecycle-and-queue.md) | 20 | 17 | 3 | 0 | 0 | 0 | 0 | 20 |
+| `FR-CLN` | [Clinical record](../analysis/07-clinical-documentation-and-pharmacy.md) | 10 | 9 | 1 | 0 | 0 | 0 | 0 | 10 |
+| `FR-PHA` | [Pharmacy](../analysis/07-clinical-documentation-and-pharmacy.md) | 7 | 5 | 2 | 0 | 0 | 0 | 0 | 7 |
+| `FR-DOC` | [Documents](../analysis/07-clinical-documentation-and-pharmacy.md) | 7 | 7 | 0 | 0 | 0 | 0 | 0 | 7 |
+| `FR-BIL` | [Billing, payments, insurance](../analysis/08-billing-payments-and-insurance.md) | 18 | 13 | 2 | 1 | 2 | 0 | 0 | 18 |
+| `FR-NOT` | [Notifications](../analysis/09-notifications-and-communication.md) | 14 | 12 | 0 | 1 | 1 | 0 | 0 | 14 |
+| `FR-DSP` | [Disputes, complaints, support](../analysis/10-disputes-complaints-and-support.md) | 14 | 11 | 3 | 0 | 0 | 0 | 0 | 14 |
+| `FR-AI` | [AI symptom checker](../analysis/11-ai-symptom-checker.md) | 13 | 2 | 5 | 3 | 3 | 1 | 0 | 12 |
+| `FR-SEC` | [Security, privacy, compliance](../analysis/12-security-privacy-and-compliance.md) | 17 | 16 | 1 | 0 | 0 | 5 | 1 | 11 |
+| `FR-RPT` | [Reporting and analytics](../analysis/13-reporting-and-analytics.md) | 8 | 5 | 2 | 0 | 1 | 0 | 0 | 8 |
+| `NFR-PERF` | [Performance and capacity](../analysis/14-non-functional-requirements.md) | 7 | 7 | 0 | 0 | 0 | 0 | 0 | 7 |
+| `NFR-REL` | [Availability and reliability](../analysis/14-non-functional-requirements.md) | 5 | 5 | 0 | 0 | 0 | 0 | 0 | 5 |
+| `NFR-NET` | [Low connectivity and devices](../analysis/14-non-functional-requirements.md) | 6 | 6 | 0 | 0 | 0 | 0 | 1 | 5 |
+| `NFR-UX` | [Usability, accessibility, languages](../analysis/14-non-functional-requirements.md) | 7 | 7 | 0 | 0 | 0 | 1 | 3 | 3 |
+| `NFR-OPS` | [Maintainability and operations](../analysis/14-non-functional-requirements.md) | 8 | 8 | 0 | 0 | 0 | 4 | 3 | 1 |
+| `NFR-INT` | [Interoperability](../analysis/14-non-functional-requirements.md) | 3 | 1 | 0 | 2 | 0 | 0 | 0 | 3 |
+| **All** | | **220** | **179** | **26** | **7** | **8** | **16** | **12** | **192** |
 
 `NFR-INT-03` is phased "P3–P4" in the analysis and is counted under P3.
 
@@ -65,14 +65,14 @@ Source: [02 · Users, roles, access](../analysis/02-users-roles-and-permissions.
 
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
-| FR-ACC-01 | Roles are permission sets; several roles per membership | P1 | S0 | Backend | AZ, API | In progress |
-| FR-ACC-02 | Several facility memberships; switch active facility | P1 | S0 | Both | API, E2E | In progress |
-| FR-ACC-03 | Six phase-1 roles with the matrix permissions | P1 | S0 | Both | AZ | In progress |
-| FR-ACC-04 | Staff two-factor login | P1 | S0 | Both | API, E2E | In progress |
+| FR-ACC-01 | Roles are permission sets; several roles per membership | P1 | S0 | Backend | AZ, API | Verified (S0, v0.1.0) |
+| FR-ACC-02 | Several facility memberships; switch active facility | P1 | S0 | Both | API, E2E | Verified (S0, v0.1.0) |
+| FR-ACC-03 | Six phase-1 roles with the matrix permissions | P1 | S0 | Both | AZ | Verified (S0, v0.1.0) |
+| FR-ACC-04 | Staff two-factor login | P1 | S0 | Both | API, E2E | Verified (S0, v0.1.0) |
 | FR-ACC-05 | Staff invitations by email, expiring, single use | P1 | S0, S2 | Both | API, E2E | In progress |
 | FR-ACC-06 | Deactivation removes access and ends sessions at once | P1 | S0, S2 | Both | API, E2E | In progress |
 | FR-ACC-07 | Clinician licence number; admin attests the check | P1 | S0, S2 | Both | API, CMP | In progress |
-| FR-ACC-08 | Server-side, logged permission checks on patient data | P1 | S0 | Backend | AZ, API | In progress |
+| FR-ACC-08 | Server-side, logged permission checks on patient data | P1 | S0 | Backend | AZ, API | Verified (S0, v0.1.0) |
 | FR-ACC-09 | Super admin emergency access with reason, logged, reviewable | P1 | S6 | Both | AZ, API | Not started |
 | FR-ACC-10 | New roles without changing existing roles | P2 | — | Backend | AZ, INS | Not started |
 
@@ -289,7 +289,7 @@ Source: [11 · AI symptom checker](../analysis/11-ai-symptom-checker.md)
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
 | FR-AI-01 | Structured symptom list (3 languages) for reason for visit | P1 | S5 | Both | API, INS | Not started |
-| FR-AI-02 | Research consent separate from care consent | P1 | S0* | Both | API, E2E | In progress |
+| FR-AI-02 | Research consent separate from care consent | P1 | S0* | Both | API, E2E | Verified (S0, v0.1.0) |
 | FR-AI-03 | De-identified export of intake + diagnosis pairs | P2 | — | Backend | INS | Not started |
 | FR-AI-04 | Red-flag rules engine with clinician sign-off | P2 | — | Backend | BR, INS | Not started |
 | FR-AI-05 | Symptom → service → level-of-care routing | P2 | — | Both | BR | Not started |
@@ -308,13 +308,13 @@ Source: [12 · Security, privacy, compliance](../analysis/12-security-privacy-an
 
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
-| FR-SEC-01 | Server-side RBAC and facility scoping on every request | P1 | S0 | Backend | AZ, RLS | In progress |
-| FR-SEC-02 | PostgreSQL row-level security for tenant isolation | P1 | S0 | Backend | RLS | In progress |
+| FR-SEC-01 | Server-side RBAC and facility scoping on every request | P1 | S0 | Backend | AZ, RLS | Verified (S0, v0.1.0) |
+| FR-SEC-02 | PostgreSQL row-level security for tenant isolation | P1 | S0 | Backend | RLS | Verified (S0, v0.1.0) |
 | FR-SEC-03 | Treatment-relationship rule for clinical data | P1 | S6 | Backend | AZ | Not started |
-| FR-SEC-04 | Versioned consent records | P1 | S0 | Both | API | In progress |
-| FR-SEC-05 | Separate optional research consent | P1 | S0 | Both | API, E2E | In progress |
+| FR-SEC-04 | Versioned consent records | P1 | S0 | Both | API | Verified (S0, v0.1.0) |
+| FR-SEC-05 | Separate optional research consent | P1 | S0 | Both | API, E2E | Verified (S0, v0.1.0) |
 | FR-SEC-06 | Staff 2FA; re-authentication to sign; idle lock with PIN | P1 | S0 (MFA), S1 (PIN lock, step-up) | Both | API, E2E, SEC | In progress |
-| FR-SEC-07 | Append-only, hash-chained audit log | P1 | S0 | Backend | API, SEC | In progress |
+| FR-SEC-07 | Append-only, hash-chained audit log | P1 | S0 | Backend | API, SEC | Verified (S0, v0.1.0) |
 | FR-SEC-08 | Patient access history in plain language | P1 | S3 | Both | API, E2E | Not started |
 | FR-SEC-09 | Break-glass with reason, time limit, review, patient visibility | P1 | S6 | Both | AZ, API | Not started |
 | FR-SEC-10 | Encryption in transit and at rest; field-level encryption | P1 | S3 | Backend | UT, INS | Not started |
@@ -386,9 +386,9 @@ Source: [14 · Usability, accessibility, languages](../analysis/14-non-functiona
 
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
-| NFR-UX-01 | Kinyarwanda first; no hard-coded text; language switch | P1 | S0 | Both | UT, INS | In progress |
+| NFR-UX-01 | Kinyarwanda first; no hard-coded text; language switch | P1 | S0 | Both | UT, INS | Verified (S0, v0.1.0) |
 | NFR-UX-02 | Elderly and low-literacy friendly; booking ≤ 5 steps | P1 | S5*, S11* | Frontend | USA | Not started |
-| NFR-UX-03 | WCAG 2.1 AA for patient and staff apps | P1 | S0*–S11 | Frontend | CMP, A11Y | In progress |
+| NFR-UX-03 | WCAG 2.2 AA for patient and staff apps | P1 | S0*–S11 | Frontend | CMP, A11Y | In progress |
 | NFR-UX-04 | Walk-in + ticket < 60 s; booked check-in < 15 s | P1 | S3*, S4* | Both | USA, E2E | Not started |
 | NFR-UX-05 | Keyboard shortcuts for reception and doctors | P1 | S4* | Frontend | CMP, E2E | Not started |
 | NFR-UX-06 | Local date and number formats; RWF without decimals | P1 | S0* | Frontend | UT | In progress |
@@ -401,13 +401,13 @@ Source: [14 · Maintainability and operations](../analysis/14-non-functional-req
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
 | NFR-OPS-01 | Automated tests for domain rules; e2e for core flows | P1 | S0 | Both | INS | In progress |
-| NFR-OPS-02 | CI: lint, types, tests, dependency and secret scanning | P1 | S0 | Both | INS | In progress |
+| NFR-OPS-02 | CI: lint, types, tests, dependency and secret scanning | P1 | S0 | Both | INS | Verified (S0, v0.1.0) |
 | NFR-OPS-03 | Container deployments; separate dev, staging, production | P1 | S0 | Ops | INS | In progress |
 | NFR-OPS-04 | Monitoring and alerts (scrubbed of personal data) | P1 | S0, S11* | Ops | INS, DRL | In progress |
-| NFR-OPS-05 | Structured logs without personal data | P1 | S0 | Backend | UT, INS | In progress |
-| NFR-OPS-06 | API documented (OpenAPI) and versioned | P1 | S0 | Backend | CON | In progress |
-| NFR-OPS-07 | Feature flags per facility | P1 | S0 | Both | API | In progress |
-| NFR-OPS-08 | Database migrations reviewed and reversible | P1 | S0 | Backend | INS | In progress |
+| NFR-OPS-05 | Structured logs without personal data | P1 | S0 | Backend | UT, INS | Verified (S0, v0.1.0) |
+| NFR-OPS-06 | API documented (OpenAPI) and versioned | P1 | S0 | Backend | CON | Verified (S0, v0.1.0) |
+| NFR-OPS-07 | Feature flags per facility | P1 | S1* | Both | API | Not started |
+| NFR-OPS-08 | Database migrations reviewed and reversible | P1 | S0 | Backend | INS | Verified (S0, v0.1.0) |
 
 ## NFR-INT · Interoperability
 

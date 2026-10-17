@@ -31,7 +31,8 @@ Status: v0.1 · Process and Definition of Done: [roadmap README](README.md) · C
   - master data (administrative locations, facility types, service catalogue, insurers, ICD-10 subset, drug catalogue import, holidays) with versioning and translations
   - super admin endpoints
 - **Also in S1:** staff idle lock with PIN unlock and step-up re-authentication endpoints (FR-SEC-06 remainder)
-- **Requirements:** FR-ONB-01..03, 08, 10; FR-DOC-03 (uploads); FR-SEC-06 (PIN lock, step-up)
+- **Also in S1:** feature flags per facility (NFR-OPS-07, moved from S0)
+- **Requirements:** FR-ONB-01..03, 08, 10; FR-DOC-03 (uploads); FR-SEC-06 (PIN lock, step-up); NFR-OPS-07
 - **Security:** upload pipeline ([security 06](../security/06-application-and-api-security.md) §4), platform step-up
 
 ### S2 · Facility setup and staff

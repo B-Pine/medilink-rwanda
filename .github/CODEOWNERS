@@ -1,0 +1,35 @@
+# Code owners are requested for review automatically; with branch protection,
+# their approval is required. The last matching pattern takes precedence.
+#
+# Security-sensitive paths follow docs/security/09-secure-development-lifecycle.md §2.
+# Replace @B-Pine on those paths with the security lead (or a team such as
+# @<org>/security) once that role is assigned.
+
+# Default owner
+*                               @B-Pine
+
+# Authorisation and permissions
+/backend/**/authz/              @B-Pine
+**/permissions*                 @B-Pine
+
+# Database migrations (RLS policies are created here)
+**/migrations/                  @B-Pine
+
+# Settings and security modules
+/backend/config/settings/       @B-Pine
+**/settings/                    @B-Pine
+**/security/                    @B-Pine
+/docs/security/                 @B-Pine
+/SECURITY.md                    @B-Pine
+
+# CI/CD, dependency automation and repository protection
+/.github/workflows/             @B-Pine
+/.github/dependabot.yml         @B-Pine
+/.github/CODEOWNERS             @B-Pine
+
+# Containers and infrastructure
+Dockerfile                      @B-Pine
+*.Dockerfile                    @B-Pine
+docker-compose*.yml             @B-Pine
+compose*.yml                    @B-Pine
+/infra/                         @B-Pine

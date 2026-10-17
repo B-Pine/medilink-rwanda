@@ -1,3 +1,6 @@
+import { rm } from "node:fs/promises";
+import { resolve } from "node:path";
+
 /**
  * Shared Vite helpers for the MediLink apps.
  *
@@ -79,6 +82,26 @@ export function medilinkCsp(options) {
           injectTo: "head-prepend",
         },
       ];
+    },
+  };
+}
+
+/**
+ * Vite plugin: leave the MSW worker (public/mockServiceWorker.js) out of non-mock builds, so a
+ * production deployment never ships mock code.
+ * @param {{ useMocks: boolean }} options
+ * @returns {import("vite").Plugin}
+ */
+export function medilinkMockWorker({ useMocks }) {
+  let outDir = "dist";
+  return {
+    name: "medilink-mock-worker",
+    apply: "build",
+    configResolved(config) {
+      outDir = resolve(config.root, config.build.outDir);
+    },
+    async closeBundle() {
+      if (!useMocks) await rm(resolve(outDir, "mockServiceWorker.js"), { force: true });
     },
   };
 }

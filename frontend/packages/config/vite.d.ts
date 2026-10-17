@@ -11,3 +11,4 @@ export declare function resolveAppEnv(mode: string, env: Record<string, string>)
 export declare function defineAppEnv(appEnv: AppEnv): Record<string, string>;
 export declare function contentSecurityPolicy(options: { apiBaseUrl: string }): string;
 export declare function medilinkCsp(options: { apiBaseUrl: string }): Plugin;
+export declare function medilinkMockWorker(options: { useMocks: boolean }): Plugin;

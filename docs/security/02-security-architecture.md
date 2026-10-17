@@ -29,13 +29,12 @@ No component in the data zone has a public IP address. The Django admin, Celery 
 
 | Origin | Purpose | Notes |
 |---|---|---|
-| `medilink.rw` | Public website, facility pages, verification page | No login cookies on this origin |
-| `app.medilink.rw` | Patient PWA | Session cookie scoped to this host |
-| `staff.medilink.rw` | Staff app | Separate session cookie; stricter CSP and timeouts |
-| `api.medilink.rw` | API + WebSockets | Or same-origin paths under each app (decided in design) |
+| `medilink.rw` | patient-web static build: public pages, verification page and patient app | Static only; **no auth cookies on frontend hosts** |
+| `staff.medilink.rw` | staff-web static build | Static only; stricter CSP |
+| `api.medilink.rw` | API + WebSockets | Holds the session cookies, **separate per audience** (`__Host-ml_staff`, `__Host-ml_patient`) with different timeouts; CORS allowlist; CSRF token via `/api/v1/csrf/` ([ADR 0006](../decisions/0006-separate-frontend-and-backend-hosting.md)) |
 | `files.medilink.rw` | Downloads through short-lived signed URLs | **Separate origin**, so a malicious file can't run script in the app's origin; `Content-Disposition: attachment`; sandbox CSP |
 
-Patient and staff apps on separate hosts limit the damage of an XSS bug in one, and allow different policies.
+Patient and staff apps on separate hosts limit the damage of an XSS bug in one, and allow different policies. Frontend and backend are hosted separately (ADR 0006).
 
 ## 4. Data residency decisions
 

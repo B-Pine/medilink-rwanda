@@ -6,7 +6,7 @@
 
 ## Commits
 Use [Conventional Commits](https://www.conventionalcommits.org/): `feat(api): add call-next endpoint`, `fix(staff-web): …`, `docs: …`.
-Scopes: `api`, `patient-web`, `staff-web`, `patient-mobile`, `ml`, `docs`, `ci`.
+Scopes: `backend`, `frontend`, `patient-web`, `staff-web`, `ui`, `patient-mobile`, `ml`, `docs`, `ci`, `brand`.
 
 ## Requirements
 Requirements have IDs such as `FR-QUE-05` (see [docs/requirements.md](docs/requirements.md)). Reference them in issues and pull requests. If a change alters a requirement, update its document in `docs/analysis/` in the same pull request.

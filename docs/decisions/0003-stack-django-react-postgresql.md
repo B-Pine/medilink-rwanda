@@ -7,7 +7,7 @@ The team chose Python/Django for the backend and React for the front end. Python
 
 ## Decision
 
-### Backend (`services/api`)
+### Backend (`backend/`)
 | Concern | Choice |
 |---|---|
 | Language / framework | Python 3.12+, **Django 5.2 LTS**. *Version note (2026-10-17, security review): Django 6.0+ has built-in Content Security Policy and a tasks framework. Recommended: start on the latest 6.x and move to 6.2 LTS (expected April 2027). Staying on 5.2 LTS is fine with `django-csp`. See [security 06](../security/06-application-and-api-security.md) §2.* |
@@ -25,15 +25,15 @@ The team chose Python/Django for the backend and React for the front end. Python
 ### Front end
 | App | Purpose |
 |---|---|
-| `apps/patient-web` | Patient PWA: public facility pages, booking, tracker, records |
-| `apps/staff-web` | Super admin, facility admin, reception, doctor, pharmacy workspaces and the waiting-room display |
+| `frontend/apps/patient-web` | Patient PWA: public facility pages, booking, tracker, records |
+| `frontend/apps/staff-web` | Super admin, facility admin, reception, doctor, pharmacy workspaces and the waiting-room display |
 
 Shared choices: **React 18 + TypeScript + Vite**, React Router, TanStack Query, react-hook-form + zod, i18next (Kinyarwanda first), vite-plugin-pwa (Workbox) for the patient app, a typed API client generated from the OpenAPI schema, Leaflet + OpenStreetMap for maps (no per-request cost), Vitest + Testing Library, Playwright for end-to-end tests. The UI component library and design system are chosen in the design phase.
 
 Two apps, not one, because patients and staff differ in security posture (public cacheable pages vs strict sessions and two-factor login), devices, and release pace. A shared UI package can be added if duplication grows.
 
 ### Later
-- `apps/patient-mobile`: React Native (Expo), P3, on the same API.
+- `frontend/apps/patient-mobile`: React Native (Expo), P3, on the same API.
 - `ml/symptom-checker`: Python training pipelines (pandas, scikit-learn, LightGBM, MLflow); models served from the Django API.
 
 ### Infrastructure

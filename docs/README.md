@@ -39,6 +39,16 @@ What the system must do and why. Read in order the first time.
 | [0003](decisions/0003-stack-django-react-postgresql.md) | Django + React + PostgreSQL | Accepted |
 | [0004](decisions/0004-visit-centric-domain-model.md) | The visit is the central domain entity | Proposed |
 | [0005](decisions/0005-symptom-checker-ml-with-safety-rules.md) | ML symptom checker inside clinician-signed safety rules | Proposed |
+| [0006](decisions/0006-separate-frontend-and-backend-hosting.md) | Frontend and backend developed, versioned and hosted separately | Accepted |
+| [0007](decisions/0007-frontend-toolchain.md) | Frontend toolchain (pnpm, React 19, Vite, Tailwind v4 tokens, Radix, MSW) | Accepted for Sprint 0 |
+
+## Architecture (v0.1)
+
+System architecture, API conventions and the Sprint 0 contract: [architecture/README.md](architecture/README.md).
+
+## Roadmap (v0.1)
+
+Contract-first sprints with separate [backend](roadmap/backend.md) and [frontend](roadmap/frontend.md) roadmaps: [roadmap/README.md](roadmap/README.md).
 
 ## Design research (v0.1)
 
@@ -48,6 +58,6 @@ UI/UX direction, emerald colour system, dashboards, login/sign-up, homepage, pat
 
 Threat model, security architecture, authentication, authorisation and tenant isolation, cryptography, application/API security, infrastructure, monitoring, secure development, incident response, compliance, AI security and the go-live checklist: [security/README.md](security/README.md).
 
-## Next: design
+## Next
 
-The design phase will produce the system architecture, detailed database design, API specification, UI/UX design (flows, wireframes, design system) and a test strategy, all based on these documents.
+Sprint 0 (Foundations) is in development. API catalogue, database design, development guides and changelogs are added alongside the code.

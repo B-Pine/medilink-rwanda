@@ -19,6 +19,8 @@ Status: Draft v0.2 · Replaces the earlier M1–M5 roadmap (which put WhatsApp/S
 
 ## Phase 1 build order (suggested)
 
+Detailed sprint plans: [backend roadmap](../roadmap/backend.md) · [frontend roadmap](../roadmap/frontend.md).
+
 Each step produces something demonstrable.
 
 1. **Foundations:** repository, CI, environments, authentication, roles, facility scoping, audit log, translations

@@ -14,7 +14,7 @@ Status: v0.1 · Framework: NIST SP 800-218 **SSDF** (Prepare the organisation ·
 |---|---|
 | GitHub accounts | 2FA required for everyone in the organisation; least-privilege repo roles |
 | Branch protection on `main` | PR required, 1+ approval (2 for security-sensitive paths), status checks required, no force pushes, linear history (squash) |
-| CODEOWNERS | Security lead must review: `services/api/**/authz/**`, `**/permissions*`, `**/migrations/**`, `**/settings/**`, `**/security/**`, CI workflows, Dockerfiles, infrastructure code |
+| CODEOWNERS | Security lead must review: `backend/**/authz/**`, `**/permissions*`, `**/migrations/**`, `**/settings/**`, `**/security/**`, CI workflows, Dockerfiles, infrastructure code |
 | Secret protection | GitHub secret scanning + push protection; gitleaks in CI and as a pre-commit hook |
 | CI permissions | GitHub Actions with minimal `permissions:`; third-party actions pinned by commit SHA; no production secrets in CI except the deploy job, which uses OIDC / short-lived credentials and an environment with required reviewers |
 | Signed releases | Container images signed (cosign) and verified at deploy; provenance attestation (SLSA-style) when feasible |

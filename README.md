@@ -12,7 +12,7 @@ Facilities onboard their own staff and run the whole visit electronically:
 - billing and receipts
 - disputes
 
-> Status: **system analysis complete (v0.2); design phase next.** Phase 1 is a web platform. The mobile app, SMS, WhatsApp and USSD follow later.
+> Status: **Sprint 0 (Foundations) in development.** Analysis, design research, security and architecture are documented. Phase 1 is a web platform; frontend and backend are hosted separately. The mobile app, SMS, WhatsApp and USSD follow later.
 
 ## Documentation
 
@@ -24,26 +24,24 @@ Patient (and caregivers for dependents) · Super admin · Facility admin · Rece
 
 ## Repository layout
 
+Frontend and backend are separate deployables ([ADR 0006](docs/decisions/0006-separate-frontend-and-backend-hosting.md)):
+
 ```
-apps/
-  patient-web/     Patient web app (PWA) — React          · Phase 1
-  staff-web/       Admin, reception, doctor, pharmacy, display — React · Phase 1
-  patient-mobile/  Android app — React Native             · Phase 3
-services/
-  api/             Backend API — Django, PostgreSQL, real-time and background jobs
-ml/
-  symptom-checker/ ML training pipelines for the triage model · Phase 2+
-docs/
-  analysis/        System analysis (what and why)
-  decisions/       Architecture decision records (ADRs)
-  requirements.md  Requirements index
-scripts/
-  github-setup.sh  Creates labels and milestones with the GitHub CLI
+backend/                 Django API → api.medilink.rw (REST, WebSockets, background jobs)
+frontend/                pnpm workspace → static hosting
+  apps/staff-web/        Admin, reception, doctor, pharmacy, display → staff.medilink.rw
+  apps/patient-web/      Public pages + patient PWA → medilink.rw
+  apps/patient-mobile/   Android app (phase 3)
+  packages/              Shared UI kit, API client, config
+ml/symptom-checker/      ML pipelines for the triage model (phase 2+)
+brand/                   Logos, icons, video sources
+docs/                    Analysis, design, security, architecture, roadmap, decisions
+scripts/                 Repository tooling
 ```
 
 ## Stack
 
-Django 5.2 + Django REST Framework · PostgreSQL 16 · Redis (Channels, Celery) · React 18 + TypeScript + Vite · hosting in Rwanda. See [ADR 0003](docs/decisions/0003-stack-django-react-postgresql.md).
+**Backend:** Django 6.x + Django REST Framework · PostgreSQL 17 (row-level security) · Redis (Channels, Celery). **Frontend:** React 19 + TypeScript + Vite · Tailwind v4 design tokens · Radix UI. Hosting in Rwanda. See [ADR 0003](docs/decisions/0003-stack-django-react-postgresql.md) and [ADR 0007](docs/decisions/0007-frontend-toolchain.md).
 
 ## Roadmap
 
@@ -54,7 +52,7 @@ Django 5.2 + Django REST Framework · PostgreSQL 16 · Redis (Channels, Celery) 
 | **M3 · Mobile and SMS** | Android app, SMS alerts and OTP, mobile money, ML triage in shadow mode |
 | **M4 · Reach and intelligence** | WhatsApp, USSD, insurer integrations, EMR integration, patient-facing ML triage |
 
-Details: [docs/analysis/16-roadmap-and-phasing.md](docs/analysis/16-roadmap-and-phasing.md).
+Details: [phasing](docs/analysis/16-roadmap-and-phasing.md) · sprint plans: [backend](docs/roadmap/backend.md) and [frontend](docs/roadmap/frontend.md).
 
 ## Getting started
 

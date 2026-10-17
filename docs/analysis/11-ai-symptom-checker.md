@@ -147,7 +147,7 @@ The stack is Python/Django ([ADR 0003](../decisions/0003-stack-django-react-post
 | Serving | Model loaded inside the Django API (a dedicated module); move to a separate service only if load requires it |
 | Knowledge base | Stored in PostgreSQL: symptoms, questions, conditions, red-flag rules, condition → service → level-of-care mapping; versioned with sign-off |
 | Symptom list | ~150 symptoms in Kinyarwanda, English and French, mapped to ICD codes |
-| Code location | `ml/symptom-checker/` for training notebooks and pipelines; `services/api` for serving |
+| Code location | `ml/symptom-checker/` for training notebooks and pipelines; `backend` (Django API) for serving |
 
 ## 8. Roadmap
 

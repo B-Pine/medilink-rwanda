@@ -10,7 +10,7 @@ The team chose Python/Django for the backend and React for the front end. Python
 ### Backend (`services/api`)
 | Concern | Choice |
 |---|---|
-| Language / framework | Python 3.12+, **Django 5.2 LTS** |
+| Language / framework | Python 3.12+, **Django 5.2 LTS**. *Version note (2026-10-17, security review): Django 6.0+ has built-in Content Security Policy and a tasks framework. Recommended: start on the latest 6.x and move to 6.2 LTS (expected April 2027). Staying on 5.2 LTS is fine with `django-csp`. See [security 06](../security/06-application-and-api-security.md) §2.* |
 | API | Django REST Framework; OpenAPI schema with drf-spectacular |
 | Database | **PostgreSQL 16+**, with row-level security for tenant isolation |
 | Real-time (queue boards, trackers, display) | Django Channels (WebSockets) with Redis as the channel layer; ASGI server (Uvicorn / Daphne) |

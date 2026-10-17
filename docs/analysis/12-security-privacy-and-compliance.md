@@ -1,6 +1,6 @@
 # 12 · Security, privacy and compliance
 
-Status: Draft v0.2 · Legal points must be confirmed by a lawyer before launch.
+Status: Draft v0.2 · Legal points must be confirmed by a lawyer before launch. **How** each requirement is implemented: [docs/security](../security/README.md).
 
 ## 1. Legal frame
 

@@ -19,7 +19,7 @@ From 2026 healthcare website roundups and booking products (Doctolib, Zocdoc, On
 | H1 | The **search box is the hero**: "What do you need?" (service) + "Where?" (location / use my location) + insurance chip | The core promise: find care that accepts *your* insurance |
 | H2 | Works fully **without an account** | Lowers the barrier; the account comes at booking |
 | H3 | Two audiences, two paths: **Patients** (main page) and **For facilities** (separate page with "Register your facility") | Different needs; don't mix them in one hero |
-| H4 | Loads fast on 3G: hero under ~200 KB, no autoplay video, system-friendly images (AVIF/WebP), fonts self-hosted and subset | Real network conditions in Rwanda |
+| H4 | Loads fast on 3G: hero image under ~200 KB (AVIF/WebP), fonts self-hosted and subset. **Hero video** (muted 8–12 s loop, under ~2 MB, WebM + MP4, deep forest overlay about 60% so headline contrast holds) plays **only on wide screens with a good connection**. Phones, data-saver (`Save-Data`) and `prefers-reduced-motion` get the poster image. A pause control is always present. | Real network conditions in Rwanda; WCAG 2.2.2 Pause, Stop, Hide |
 | H5 | **Kinyarwanda by default**, language switch at the top | First language of the users |
 | H6 | Honest claims only: measured numbers after the pilot, never invented statistics | Trust, and the pitch corrections in [01](../../analysis/01-vision-scope-and-metrics.md) |
 | H7 | Emergency notice always reachable: "Emergency? Go to the nearest emergency department or call [national number]" | Safety; the product isn't for emergencies |

@@ -44,6 +44,10 @@ What the system must do and why. Read in order the first time.
 
 UI/UX direction, emerald colour system, dashboards, login/sign-up, homepage, patient app, tables, documents and accessibility: [design/research/README.md](design/research/README.md).
 
+## Security (v0.1)
+
+Threat model, security architecture, authentication, authorisation and tenant isolation, cryptography, application/API security, infrastructure, monitoring, secure development, incident response, compliance, AI security and the go-live checklist: [security/README.md](security/README.md).
+
 ## Next: design
 
 The design phase will produce the system architecture, detailed database design, API specification, UI/UX design (flows, wireframes, design system) and a test strategy, all based on these documents.

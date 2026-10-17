@@ -23,3 +23,7 @@ media/
 mlruns/
 ml/**/data/
 *.sqlite3
+
+# Raw video exports (large) - keep outside git
+brand/video/source/*
+!brand/video/source/.gitkeep

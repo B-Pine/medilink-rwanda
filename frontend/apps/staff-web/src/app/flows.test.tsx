@@ -285,6 +285,37 @@ describe("shell: user menu, language, theme, logout", () => {
     ).toBeInTheDocument();
     await expect(services.api.staffAuth.me()).rejects.toMatchObject({ status: 401 });
   });
+
+  it("platform admin without a facility gets the shell with platform navigation only", async () => {
+    const { user } = renderApp("/login");
+    await logIn(user, "admin@medilink.test", MOCK_PASSWORD);
+    await user.type(await screen.findByLabelText("6-digit code"), MOCK_TOTP_CODE);
+    await user.click(screen.getByRole("button", { name: "Verify and log in" }));
+    expect(await screen.findByRole("heading", { level: 1, name: "Today" })).toBeInTheDocument();
+    expect(screen.getByText("You are signed in as a platform admin.")).toBeInTheDocument();
+    const nav = screen.getByRole("navigation", { name: "Main menu" });
+    expect(
+      within(nav)
+        .getAllByRole("link")
+        .map((link) => link.textContent),
+    ).toEqual(["Today", "Facility applications"]);
+  });
+
+  it("an API 401 mid-session sends the user to login with an explanation", async () => {
+    const { user, services } = renderApp("/login");
+    await logIn(user, "reception@medilink.test", MOCK_PASSWORD);
+    await user.type(await screen.findByLabelText("6-digit code"), MOCK_TOTP_CODE);
+    await user.click(screen.getByRole("button", { name: "Verify and log in" }));
+    await screen.findByRole("heading", { level: 1, name: "Today" });
+
+    // The server session ends (e.g. idle timeout), then the next API call answers 401.
+    mockApi.reset();
+    await services.api.staffAuth.setActiveFacility("any").catch(() => undefined);
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "Log in to MediLink" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Your session ended. Log in again to continue.")).toBeInTheDocument();
+  });
 });
 
 describe("other pages", () => {

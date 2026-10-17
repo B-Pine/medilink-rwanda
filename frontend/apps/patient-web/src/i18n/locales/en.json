@@ -1,0 +1,215 @@
+{
+  "app": {
+    "name": "MediLink",
+    "titleSuffix": "MediLink Rwanda"
+  },
+  "common": {
+    "back": "Back",
+    "continue": "Continue",
+    "retry": "Try again",
+    "logout": "Log out",
+    "loggingOut": "Logging out…",
+    "opensInNewTab": "(opens in a new tab)",
+    "comingSoon": "Coming soon"
+  },
+  "errors": {
+    "generic": "Something went wrong. Try again.",
+    "network": "We could not reach MediLink. Check your connection and try again.",
+    "rateLimited": "Too many attempts. Wait {{seconds}} seconds, then try again.",
+    "rateLimitedNoTime": "Too many attempts. Wait a minute, then try again.",
+    "sessionExpired": "You were logged out. Log in again to continue.",
+    "loadFailed": "We could not load your account."
+  },
+  "validation": {
+    "emailRequired": "Enter your email address",
+    "emailInvalid": "Enter an email address in the correct format, like name@example.rw",
+    "passwordRequired": "Enter your password",
+    "passwordLength": "Use at least 15 characters",
+    "nameRequired": "Enter your names",
+    "termsRequired": "Accept the terms of use to create an account",
+    "privacyRequired": "Accept the privacy notice to create an account"
+  },
+  "nav": {
+    "label": "Main",
+    "findCare": "Find care",
+    "howItWorks": "How it works",
+    "forFacilities": "For facilities",
+    "login": "Log in",
+    "home": "Home"
+  },
+  "landing": {
+    "title": "Find care in Rwanda",
+    "heroTitle": "Know before you go.",
+    "heroBody": "Find a health facility that accepts your insurance, book, and arrive when it is your turn.",
+    "search": {
+      "title": "Find care",
+      "service": "What do you need?",
+      "serviceAny": "Any service",
+      "location": "Where?",
+      "locationAny": "Anywhere in Rwanda",
+      "insurance": "Your insurance",
+      "insuranceAny": "Any insurance",
+      "submit": "Search",
+      "comingSoon": "Search opens soon. Until then, ask at your health facility.",
+      "popular": "Popular"
+    },
+    "services": {
+      "general": "General consultation",
+      "pediatrics": "Pediatrics",
+      "dental": "Dental care",
+      "antenatal": "Antenatal care",
+      "eye": "Eye care"
+    },
+    "districts": {
+      "gasabo": "Gasabo",
+      "kicukiro": "Kicukiro",
+      "nyarugenge": "Nyarugenge",
+      "musanze": "Musanze",
+      "huye": "Huye",
+      "rubavu": "Rubavu"
+    },
+    "insurers": {
+      "mutuelle": "Mutuelle de Santé (CBHI)",
+      "rama": "RAMA (RSSB)",
+      "mmi": "MMI",
+      "private": "Private insurance",
+      "none": "No insurance (I pay)"
+    },
+    "how": {
+      "title": "How it works",
+      "step1Title": "Find",
+      "step1Body": "Search by service, place and insurance. See which facilities accept your insurance.",
+      "step2Title": "Book or join the queue",
+      "step2Body": "Choose a time, or join today’s queue from your phone.",
+      "step3Title": "Arrive on time",
+      "step3Body": "Follow your place in the queue. We tell you when to leave home."
+    },
+    "trust": {
+      "title": "Your data stays in Rwanda",
+      "body": "Your information is encrypted, stored in Rwanda, and shared only with the facilities that care for you."
+    },
+    "facilities": {
+      "title": "For health facilities",
+      "body": "Run your queue, records and billing in one place, and let patients find you.",
+      "cta": "Register your facility"
+    }
+  },
+  "emergency": {
+    "title": "Emergency?",
+    "body": "Go to the nearest emergency department or call 912. MediLink is not for emergencies."
+  },
+  "footer": {
+    "label": "Site links",
+    "privacy": "Privacy notice",
+    "terms": "Terms of use",
+    "verify": "Verify a document",
+    "forFacilities": "For facilities",
+    "help": "Help",
+    "copyright": "© {{year}} MediLink Rwanda"
+  },
+  "login": {
+    "title": "Log in or create an account",
+    "intro": "Book care and skip the long wait.",
+    "email": "Email",
+    "continue": "Continue",
+    "passwordTitle": "Enter your password",
+    "loggingInAs": "Logging in as {{email}}",
+    "changeEmail": "Change email",
+    "password": "Password",
+    "forgot": "Forgot password?",
+    "submit": "Log in",
+    "newHere": "First time on MediLink?",
+    "createAccount": "Create an account with this email",
+    "invalidCredentials": "The email or password is not right. Check them and try again.",
+    "guest": "Find care without an account"
+  },
+  "signup": {
+    "title": "Create your account",
+    "intro": "It takes about a minute. You can add insurance and family members later.",
+    "step": "Step {{current}} of {{total}}",
+    "fullName": "Your names",
+    "fullNameHint": "As written on your ID.",
+    "email": "Email",
+    "password": "Password",
+    "passwordHint": "Use at least 15 characters. A short sentence is easy to remember and hard to guess.",
+    "passwordRule": "At least 15 characters",
+    "passwordRuleMet": "done",
+    "passwordRuleNotMet": "not yet",
+    "language": "Language for messages",
+    "languageHint": "We send reminders and messages in this language.",
+    "continue": "Continue",
+    "consentTitle": "Your privacy and consent",
+    "consentIntro": "Before we create your account, please read this:",
+    "consentPoint1": "Your health information is encrypted and stored in Rwanda.",
+    "consentPoint2": "Only the facilities that care for you can see your records.",
+    "consentPoint3": "You can download your data or delete your account at any time.",
+    "readPrivacy": "Read the full privacy notice",
+    "readTerms": "Read the terms of use",
+    "terms": "I accept the terms of use",
+    "privacy": "I have read the privacy notice and agree to how MediLink uses my information",
+    "research": "I agree that my anonymised data may be used for health research",
+    "researchHint": "Optional. Saying no changes nothing about your care. You can change this later.",
+    "submit": "Create account",
+    "haveAccount": "Already have an account?",
+    "login": "Log in"
+  },
+  "home": {
+    "title": "Home",
+    "greeting": "Hello, {{name}}",
+    "intro": "What would you like to do today?",
+    "findCare": "Find care",
+    "nextVisitTitle": "Your next visit",
+    "nextVisitEmpty": "No visits yet. When you book or join a queue, it will show here.",
+    "verifyEmailTitle": "Confirm your email",
+    "verifyEmailBody": "We sent a link to {{email}}. Confirm your email before you can see your health records.",
+    "settingsTitle": "Display",
+    "accountLabel": "Signed in as {{name}}"
+  },
+  "info": {
+    "back": "Back to the home page",
+    "verify": {
+      "title": "Verify a document",
+      "body": "Soon pharmacies and employers can check a prescription, receipt or sick note here with its code or QR."
+    },
+    "forFacilities": {
+      "title": "MediLink for health facilities",
+      "body": "Facility registration opens in the next release. You will be able to apply online and go live after verification."
+    },
+    "terms": {
+      "title": "Terms of use",
+      "body": "The full terms of use will be published here before launch, in Kinyarwanda, English and French."
+    },
+    "privacy": {
+      "title": "Privacy notice",
+      "body": "The full privacy notice will be published here before launch, in Kinyarwanda, English and French."
+    },
+    "help": {
+      "title": "Help",
+      "body": "Guides for patients and caregivers are coming. No smartphone? Ask at reception."
+    }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "Check the address, or go back to the home page.",
+    "home": "Go to the home page"
+  },
+  "forgot": {
+    "title": "Reset your password",
+    "intro": "Enter your email. If it belongs to an account, we will send a link to set a new password.",
+    "email": "Email",
+    "submit": "Send reset link",
+    "sentTitle": "Check your email",
+    "sentBody": "If an account exists for {{email}}, a reset link is on its way. The link works for 30 minutes.",
+    "back": "Back to log in"
+  },
+  "reset": {
+    "title": "Set a new password",
+    "newPassword": "New password",
+    "hint": "At least 15 characters. A short sentence is easy to remember and hard to guess.",
+    "submit": "Save new password",
+    "doneTitle": "Password changed",
+    "doneBody": "Your password was changed and you were logged out everywhere. Log in with your new password.",
+    "invalidLink": "This link is incomplete. Open the link from the email again, or ask for a new one.",
+    "toLogin": "Go to log in"
+  }
+}

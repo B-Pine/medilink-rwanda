@@ -1,0 +1,13 @@
+/*
+ * MediLink design system stylesheet. Apps import it right after Tailwind:
+ *
+ *   @import "tailwindcss";
+ *   @import "@medilink/ui/styles.css";
+ */
+@import "./fonts.css";
+@import "./tokens.css";
+@import "./theme.css";
+@import "./base.css";
+
+/* Let Tailwind find the class names used by the shared components. */
+@source "../";

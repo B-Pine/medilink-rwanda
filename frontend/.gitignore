@@ -1,0 +1,13 @@
+# Frontend-only ignores (the repository root .gitignore already covers node_modules, dist, .env*, coverage)
+node_modules/
+dist/
+dev-dist/
+coverage/
+*.tsbuildinfo
+.vite/
+.eslintcache
+*.local
+# Local env files (keep the committed .env.example files)
+.env
+.env.*
+!.env.example

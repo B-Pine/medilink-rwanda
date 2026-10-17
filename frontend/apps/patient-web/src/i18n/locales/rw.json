@@ -1,0 +1,215 @@
+{
+  "app": {
+    "name": "MediLink",
+    "titleSuffix": "MediLink Rwanda"
+  },
+  "common": {
+    "back": "Subira inyuma",
+    "continue": "Komeza",
+    "retry": "Ongera ugerageze",
+    "logout": "Sohoka",
+    "loggingOut": "Urasohoka…",
+    "opensInNewTab": "(bifungukira mu idirishya rishya)",
+    "comingSoon": "Biraza vuba"
+  },
+  "errors": {
+    "generic": "Hari ikitagenze neza. Ongera ugerageze.",
+    "network": "Ntitwashoboye kugera kuri MediLink. Reba niba murandasi ikora, wongere ugerageze.",
+    "rateLimited": "Wagerageje inshuro nyinshi. Tegereza amasegonda {{seconds}}, wongere ugerageze.",
+    "rateLimitedNoTime": "Wagerageje inshuro nyinshi. Tegereza umunota umwe, wongere ugerageze.",
+    "sessionExpired": "Wasohowe. Ongera winjire kugira ngo ukomeze.",
+    "loadFailed": "Ntitwashoboye gufungura konti yawe."
+  },
+  "validation": {
+    "emailRequired": "Andika imeyili yawe",
+    "emailInvalid": "Andika imeyili yanditse neza, urugero: izina@example.rw",
+    "passwordRequired": "Andika ijambo ry’ibanga",
+    "passwordLength": "Koresha nibura inyuguti 15",
+    "nameRequired": "Andika amazina yawe",
+    "termsRequired": "Emera amabwiriza yo gukoresha kugira ngo ufungure konti",
+    "privacyRequired": "Emera itangazo ry’ibanga kugira ngo ufungure konti"
+  },
+  "nav": {
+    "label": "Ibikubiyemo",
+    "findCare": "Shaka ubuvuzi",
+    "howItWorks": "Uko bikora",
+    "forFacilities": "Ku bigo by’ubuvuzi",
+    "login": "Injira",
+    "home": "Ahabanza"
+  },
+  "landing": {
+    "title": "Shaka ubuvuzi mu Rwanda",
+    "heroTitle": "Menya mbere yo kugenda.",
+    "heroBody": "Shaka ikigo cy’ubuvuzi cyemera ubwishingizi bwawe, ufate igihe, maze uhagere igihe cyawe kigeze.",
+    "search": {
+      "title": "Shaka ubuvuzi",
+      "service": "Ukeneye iki?",
+      "serviceAny": "Serivisi zose",
+      "location": "Hehe?",
+      "locationAny": "Ahantu hose mu Rwanda",
+      "insurance": "Ubwishingizi bwawe",
+      "insuranceAny": "Ubwishingizi bwose",
+      "submit": "Shakisha",
+      "comingSoon": "Gushakisha biraza vuba. Kugeza icyo gihe, baza ku kigo cy’ubuvuzi cyawe.",
+      "popular": "Bikunzwe"
+    },
+    "services": {
+      "general": "Kwisuzumisha muri rusange",
+      "pediatrics": "Ubuvuzi bw’abana",
+      "dental": "Ubuvuzi bw’amenyo",
+      "antenatal": "Kwipimisha utwite",
+      "eye": "Ubuvuzi bw’amaso"
+    },
+    "districts": {
+      "gasabo": "Gasabo",
+      "kicukiro": "Kicukiro",
+      "nyarugenge": "Nyarugenge",
+      "musanze": "Musanze",
+      "huye": "Huye",
+      "rubavu": "Rubavu"
+    },
+    "insurers": {
+      "mutuelle": "Mituweli (Mutuelle de Santé)",
+      "rama": "RAMA (RSSB)",
+      "mmi": "MMI",
+      "private": "Ubwishingizi bwigenga",
+      "none": "Nta bwishingizi (ndiyishyurira)"
+    },
+    "how": {
+      "title": "Uko bikora",
+      "step1Title": "Shaka",
+      "step1Body": "Shakisha ukurikije serivisi, aho uri n’ubwishingizi. Reba ibigo byemera ubwishingizi bwawe.",
+      "step2Title": "Fata igihe cyangwa ujye ku murongo",
+      "step2Body": "Hitamo isaha, cyangwa ujye ku murongo w’uyu munsi ukoresheje telefoni yawe.",
+      "step3Title": "Hagera ku gihe",
+      "step3Body": "Kurikirana umwanya wawe ku murongo. Tukubwira igihe cyo kuva mu rugo."
+    },
+    "trust": {
+      "title": "Amakuru yawe aguma mu Rwanda",
+      "body": "Amakuru yawe arinzwe, abikwa mu Rwanda, kandi asangizwa gusa ibigo bikuvura."
+    },
+    "facilities": {
+      "title": "Ku bigo by’ubuvuzi",
+      "body": "Cunga umurongo, amadosiye n’inyemezabwishyu ahantu hamwe, kandi abarwayi bakubone byoroshye.",
+      "cta": "Andikisha ikigo cyawe"
+    }
+  },
+  "emergency": {
+    "title": "Ubutabazi bwihuse?",
+    "body": "Jya ku ishami ry’ubutabazi bwihuse rikwegereye cyangwa uhamagare 912. MediLink si iy’ubutabazi bwihuse."
+  },
+  "footer": {
+    "label": "Amahuza y’urubuga",
+    "privacy": "Itangazo ry’ibanga",
+    "terms": "Amabwiriza yo gukoresha",
+    "verify": "Genzura inyandiko",
+    "forFacilities": "Ku bigo by’ubuvuzi",
+    "help": "Ubufasha",
+    "copyright": "© {{year}} MediLink Rwanda"
+  },
+  "login": {
+    "title": "Injira cyangwa ufungure konti",
+    "intro": "Fata igihe cyo kwivuza wirinde gutegereza igihe kirekire.",
+    "email": "Imeyili",
+    "continue": "Komeza",
+    "passwordTitle": "Andika ijambo ry’ibanga",
+    "loggingInAs": "Winjira nka {{email}}",
+    "changeEmail": "Hindura imeyili",
+    "password": "Ijambo ry’ibanga",
+    "forgot": "Wibagiwe ijambo ry’ibanga?",
+    "submit": "Injira",
+    "newHere": "Ni ubwa mbere ukoresha MediLink?",
+    "createAccount": "Fungura konti ukoresheje iyi meyili",
+    "invalidCredentials": "Imeyili cyangwa ijambo ry’ibanga si byo. Bisuzume wongere ugerageze.",
+    "guest": "Shaka ubuvuzi nta konti"
+  },
+  "signup": {
+    "title": "Fungura konti yawe",
+    "intro": "Bifata nk’umunota umwe. Ubwishingizi n’abagize umuryango wabyongeraho nyuma.",
+    "step": "Intambwe ya {{current}} kuri {{total}}",
+    "fullName": "Amazina yawe",
+    "fullNameHint": "Nk’uko yanditse ku ndangamuntu yawe.",
+    "email": "Imeyili",
+    "password": "Ijambo ry’ibanga",
+    "passwordHint": "Koresha nibura inyuguti 15. Interuro ngufi yoroshye kwibuka kandi igoye gukeka.",
+    "passwordRule": "Nibura inyuguti 15",
+    "passwordRuleMet": "byuzuye",
+    "passwordRuleNotMet": "ntibiruzura",
+    "language": "Ururimi rw’ubutumwa",
+    "languageHint": "Twohereza ubutumwa n’ibyibutsa muri uru rurimi.",
+    "continue": "Komeza",
+    "consentTitle": "Ibanga ryawe n’uburenganzira utanga",
+    "consentIntro": "Mbere yo gufungura konti yawe, soma ibi:",
+    "consentPoint1": "Amakuru y’ubuzima bwawe arinzwe kandi abikwa mu Rwanda.",
+    "consentPoint2": "Ibigo bikuvura gusa ni byo bishobora kubona amadosiye yawe.",
+    "consentPoint3": "Ushobora gukuramo amakuru yawe cyangwa gusiba konti yawe igihe icyo ari cyo cyose.",
+    "readPrivacy": "Soma itangazo ry’ibanga ryose",
+    "readTerms": "Soma amabwiriza yo gukoresha",
+    "terms": "Nemeye amabwiriza yo gukoresha",
+    "privacy": "Nasomye itangazo ry’ibanga kandi nemeye uko MediLink ikoresha amakuru yanjye",
+    "research": "Nemeye ko amakuru yanjye atagaragaza uwo ndi we yakoreshwa mu bushakashatsi ku buzima",
+    "researchHint": "Si ngombwa. Kwanga nta cyo bihindura ku buvuzi bwawe. Ushobora kubihindura nyuma.",
+    "submit": "Fungura konti",
+    "haveAccount": "Usanzwe ufite konti?",
+    "login": "Injira"
+  },
+  "home": {
+    "title": "Ahabanza",
+    "greeting": "Muraho, {{name}}",
+    "intro": "Urashaka gukora iki uyu munsi?",
+    "findCare": "Shaka ubuvuzi",
+    "nextVisitTitle": "Uruzinduko rwawe rukurikira",
+    "nextVisitEmpty": "Nta ruzinduko ruraba. Niwafata igihe cyangwa ukajya ku murongo, bizagaragara hano.",
+    "verifyEmailTitle": "Emeza imeyili yawe",
+    "verifyEmailBody": "Twohereje ihuriro kuri {{email}}. Emeza imeyili yawe mbere yo kubona amadosiye y’ubuzima bwawe.",
+    "settingsTitle": "Imigaragarire",
+    "accountLabel": "Winjiye nka {{name}}"
+  },
+  "info": {
+    "back": "Subira ahabanza",
+    "verify": {
+      "title": "Genzura inyandiko",
+      "body": "Vuba aha, farumasi n’abakoresha bazashobora kugenzura hano urupapuro rwa muganga, inyemezabwishyu cyangwa icyemezo cy’uburwayi bakoresheje kode cyangwa QR."
+    },
+    "forFacilities": {
+      "title": "MediLink ku bigo by’ubuvuzi",
+      "body": "Kwiyandikisha kw’ibigo kuzatangira mu gice gikurikira. Muzashobora gusaba kuri interineti mugatangira nyuma yo kugenzurwa."
+    },
+    "terms": {
+      "title": "Amabwiriza yo gukoresha",
+      "body": "Amabwiriza yose yo gukoresha azashyirwa hano mbere yo gutangira, mu Kinyarwanda, Icyongereza n’Igifaransa."
+    },
+    "privacy": {
+      "title": "Itangazo ry’ibanga",
+      "body": "Itangazo ry’ibanga ryose rizashyirwa hano mbere yo gutangira, mu Kinyarwanda, Icyongereza n’Igifaransa."
+    },
+    "help": {
+      "title": "Ubufasha",
+      "body": "Inyobora z’abarwayi n’ababitaho ziraza. Nta telefoni igezweho ufite? Baza ku kwakira abarwayi."
+    }
+  },
+  "notFound": {
+    "title": "Iyi paji ntibonetse",
+    "body": "Reba aderesi, cyangwa usubire ahabanza.",
+    "home": "Jya ahabanza"
+  },
+  "forgot": {
+    "title": "Hindura ijambo ry’ibanga",
+    "intro": "Andika imeyili yawe. Niba ifite konti, tuzakoherereza ihuriro ryo gushyiraho ijambo ry’ibanga rishya.",
+    "email": "Imeyili",
+    "submit": "Ohereza ihuriro",
+    "sentTitle": "Reba imeyili yawe",
+    "sentBody": "Niba hari konti ya {{email}}, ihuriro ryo guhindura riroherejwe. Rikora iminota 30.",
+    "back": "Subira ku kwinjira"
+  },
+  "reset": {
+    "title": "Shyiraho ijambo ry’ibanga rishya",
+    "newPassword": "Ijambo ry’ibanga rishya",
+    "hint": "Nibura inyuguti 15. Interuro ngufi yoroshye kwibuka kandi igoye gukeka.",
+    "submit": "Bika ijambo ry’ibanga rishya",
+    "doneTitle": "Ijambo ry’ibanga ryahinduwe",
+    "doneBody": "Ijambo ry’ibanga ryahinduwe kandi wasohowe ahantu hose. Injira ukoresheje ijambo ry’ibanga rishya.",
+    "invalidLink": "Iri huriro ntiryuzuye. Ongera ufungure ihuriro riri muri imeyili, cyangwa usabe irindi.",
+    "toLogin": "Jya ku kwinjira"
+  }
+}

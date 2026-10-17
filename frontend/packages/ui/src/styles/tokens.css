@@ -1,0 +1,211 @@
+/*
+ * MediLink design tokens.
+ *
+ * Colour values are exactly those of docs/design/research/02-color-system.md (every pair was
+ * measured there). Type, spacing and radius follow docs/design/research/03-typography-icons-layout.md.
+ * Components must use these tokens (through the Tailwind theme in theme.css), never raw hex values.
+ *
+ * Themes:
+ *  - light by default
+ *  - dark when the OS prefers dark, unless the user chose light: <html data-theme="light">
+ *  - dark when the user chose dark: <html data-theme="dark">
+ * The two dark blocks below must stay identical (a unit test checks this).
+ *
+ * Density:
+ *  - staff (default): body 15/22 px, controls 40 px
+ *  - patient: <html data-density="patient">, body 18/28 px, targets >= 48 px
+ */
+
+:root {
+  /* Brand ramp: emerald (design 02 §1) */
+  --ml-emerald-50: #ecfdf5;
+  --ml-emerald-100: #d1fae5;
+  --ml-emerald-200: #a7f3d0;
+  --ml-emerald-300: #6ee7b7;
+  --ml-emerald-400: #34d399;
+  --ml-emerald-500: #10b981;
+  --ml-emerald-600: #059669;
+  --ml-emerald-700: #047857;
+  --ml-emerald-800: #065f46;
+  --ml-emerald-900: #064e3b;
+  --ml-emerald-950: #022c22;
+
+  /* Neutrals (design 02 §2) */
+  --ml-bg-page: #f6f8f7;
+  --ml-bg-surface: #ffffff;
+  --ml-bg-raised: #ffffff;
+  --ml-bg-subtle: #f1f5f9;
+  --ml-text-primary: #0f172a;
+  --ml-text-secondary: #334155;
+  --ml-text-muted: #475569;
+  --ml-border-subtle: #e2e8f0;
+  --ml-border-input: #7c8a9d;
+
+  /* Semantic (design 02 §3) */
+  --ml-brand: #047857;
+  --ml-action-primary: #047857;
+  --ml-action-primary-hover: #065f46;
+  --ml-action-primary-text: #ffffff;
+  --ml-brand-subtle-bg: #ecfdf5;
+  --ml-brand-subtle-text: #065f46;
+  --ml-link: #047857;
+  --ml-focus-ring: #059669;
+  --ml-accent: #fbbf24;
+  --ml-accent-text: #0f172a;
+
+  /* Status (design 02 §3): always shown with an icon and a label */
+  --ml-success-text: #15803d;
+  --ml-success-bg: #f0fdf4;
+  --ml-warning-text: #b45309;
+  --ml-warning-bg: #fffbeb;
+  --ml-danger-text: #b91c1c;
+  --ml-danger-bg: #fef2f2;
+  --ml-info-text: #1d4ed8;
+  --ml-info-bg: #eff6ff;
+  /* Solid danger (destructive button, emergency badge): red-700 + white, 6.47:1 */
+  --ml-danger-solid: #b91c1c;
+  --ml-danger-solid-text: #ffffff;
+
+  /* Deep forest, combination B (design 02 §5): landing hero, login brand panel, display.
+     Same in both themes. White 15:1, emerald-200/300 9.9-13:1. */
+  --ml-forest: #022c22;
+  --ml-forest-raised: #064e3b;
+  --ml-on-forest: #ffffff;
+  --ml-on-forest-muted: #a7f3d0;
+  --ml-on-forest-accent: #6ee7b7;
+
+  /* QR codes stay dark-on-white in both themes so every scanner reads them
+     (white + text-primary from the neutral table). */
+  --ml-qr-bg: #ffffff;
+  --ml-qr-fg: #0f172a;
+
+  /* Elevation: mostly borders; shadows only for floating layers (design 03 §4) */
+  --ml-shadow-raised: 0 8px 24px rgb(15 23 42 / 0.12), 0 2px 6px rgb(15 23 42 / 0.08);
+
+  /* Typography (design 03 §1-2) */
+  --ml-font-heading: "Figtree Variable", "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --ml-font-body: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* Radius (design 03 §4) */
+  --ml-radius-sm: 6px;
+  --ml-radius-md: 10px;
+  --ml-radius-lg: 16px;
+
+  /* Staff density (default) */
+  --ml-font-size-display: 2rem; /* 32px */
+  --ml-line-height-display: 2.5rem; /* 40px */
+  --ml-font-size-h1: 1.5rem; /* 24px */
+  --ml-line-height-h1: 2rem; /* 32px */
+  --ml-font-size-h2: 1.25rem; /* 20px */
+  --ml-line-height-h2: 1.75rem; /* 28px */
+  --ml-font-size-h3: 1rem; /* 16px */
+  --ml-line-height-h3: 1.5rem; /* 24px */
+  --ml-font-size-body: 0.9375rem; /* 15px */
+  --ml-line-height-body: 1.375rem; /* 22px */
+  --ml-font-size-body-sm: 0.8125rem; /* 13px */
+  --ml-line-height-body-sm: 1.25rem; /* 20px */
+  --ml-font-size-caption: 0.75rem; /* 12px */
+  --ml-line-height-caption: 1rem; /* 16px */
+  --ml-control-height: 2.5rem; /* 40px */
+  --ml-control-height-primary: 2.5rem; /* 40px */
+  --ml-target-min: 2.5rem; /* 40px (staff >= 40px) */
+  --ml-radius-card: var(--ml-radius-md);
+  --ml-icon-size: 1.25rem; /* 20px */
+
+  color-scheme: light;
+}
+
+/* Patient density (design 03 §2, design 07 §1): body 18px, targets >= 48px, primary 56px */
+:root[data-density="patient"] {
+  --ml-font-size-display: 2.5rem; /* 40px */
+  --ml-line-height-display: 3rem; /* 48px */
+  --ml-font-size-h1: 1.875rem; /* 30px */
+  --ml-line-height-h1: 2.375rem; /* 38px */
+  --ml-font-size-h2: 1.5rem; /* 24px */
+  --ml-line-height-h2: 2rem; /* 32px */
+  --ml-font-size-h3: 1.25rem; /* 20px */
+  --ml-line-height-h3: 1.75rem; /* 28px */
+  --ml-font-size-body: 1.125rem; /* 18px */
+  --ml-line-height-body: 1.75rem; /* 28px */
+  --ml-font-size-body-sm: 1rem; /* 16px */
+  --ml-line-height-body-sm: 1.5rem; /* 24px */
+  --ml-font-size-caption: 0.875rem; /* 14px */
+  --ml-line-height-caption: 1.25rem; /* 20px */
+  --ml-control-height: 3rem; /* 48px */
+  --ml-control-height-primary: 3.5rem; /* 56px */
+  --ml-target-min: 3rem; /* 48px */
+  --ml-radius-card: var(--ml-radius-lg);
+  --ml-icon-size: 1.5rem; /* 24px */
+}
+
+/* ---- Dark theme: system preference (unless the user picked light) ---- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ml-bg-page: #0b1411;
+    --ml-bg-surface: #111c18;
+    --ml-bg-raised: #16231e;
+    --ml-bg-subtle: #16231e;
+    --ml-text-primary: #f1f5f9;
+    --ml-text-secondary: #cbd5e1;
+    --ml-text-muted: #94a3b8;
+    --ml-border-subtle: #24332d;
+    --ml-border-input: #5b6e66;
+    --ml-brand: #34d399;
+    --ml-action-primary: #34d399;
+    --ml-action-primary-hover: #6ee7b7;
+    --ml-action-primary-text: #022c22;
+    --ml-brand-subtle-bg: #0f2a22;
+    --ml-brand-subtle-text: #6ee7b7;
+    --ml-link: #34d399;
+    --ml-focus-ring: #34d399;
+    --ml-accent: #fbbf24;
+    --ml-accent-text: #0f172a;
+    --ml-success-text: #4ade80;
+    --ml-success-bg: color-mix(in srgb, #4ade80 14%, #111c18);
+    --ml-warning-text: #fbbf24;
+    --ml-warning-bg: color-mix(in srgb, #fbbf24 14%, #111c18);
+    --ml-danger-text: #f87171;
+    --ml-danger-bg: color-mix(in srgb, #f87171 14%, #111c18);
+    --ml-info-text: #60a5fa;
+    --ml-info-bg: color-mix(in srgb, #60a5fa 14%, #111c18);
+    --ml-danger-solid: #f87171;
+    --ml-danger-solid-text: #0f172a;
+    --ml-shadow-raised: 0 8px 24px rgb(0 0 0 / 0.5), 0 2px 6px rgb(0 0 0 / 0.4);
+    color-scheme: dark;
+  }
+}
+
+/* ---- Dark theme: explicit user choice ---- */
+:root[data-theme="dark"] {
+  --ml-bg-page: #0b1411;
+  --ml-bg-surface: #111c18;
+  --ml-bg-raised: #16231e;
+  --ml-bg-subtle: #16231e;
+  --ml-text-primary: #f1f5f9;
+  --ml-text-secondary: #cbd5e1;
+  --ml-text-muted: #94a3b8;
+  --ml-border-subtle: #24332d;
+  --ml-border-input: #5b6e66;
+  --ml-brand: #34d399;
+  --ml-action-primary: #34d399;
+  --ml-action-primary-hover: #6ee7b7;
+  --ml-action-primary-text: #022c22;
+  --ml-brand-subtle-bg: #0f2a22;
+  --ml-brand-subtle-text: #6ee7b7;
+  --ml-link: #34d399;
+  --ml-focus-ring: #34d399;
+  --ml-accent: #fbbf24;
+  --ml-accent-text: #0f172a;
+  --ml-success-text: #4ade80;
+  --ml-success-bg: color-mix(in srgb, #4ade80 14%, #111c18);
+  --ml-warning-text: #fbbf24;
+  --ml-warning-bg: color-mix(in srgb, #fbbf24 14%, #111c18);
+  --ml-danger-text: #f87171;
+  --ml-danger-bg: color-mix(in srgb, #f87171 14%, #111c18);
+  --ml-info-text: #60a5fa;
+  --ml-info-bg: color-mix(in srgb, #60a5fa 14%, #111c18);
+  --ml-danger-solid: #f87171;
+  --ml-danger-solid-text: #0f172a;
+  --ml-shadow-raised: 0 8px 24px rgb(0 0 0 / 0.5), 0 2px 6px rgb(0 0 0 / 0.4);
+  color-scheme: dark;
+}

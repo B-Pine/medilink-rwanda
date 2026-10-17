@@ -1,0 +1,215 @@
+{
+  "app": {
+    "name": "MediLink",
+    "titleSuffix": "MediLink Rwanda"
+  },
+  "common": {
+    "back": "Retour",
+    "continue": "Continuer",
+    "retry": "Réessayer",
+    "logout": "Se déconnecter",
+    "loggingOut": "Déconnexion…",
+    "opensInNewTab": "(s’ouvre dans un nouvel onglet)",
+    "comingSoon": "Bientôt disponible"
+  },
+  "errors": {
+    "generic": "Un problème est survenu. Réessayez.",
+    "network": "Impossible de joindre MediLink. Vérifiez votre connexion et réessayez.",
+    "rateLimited": "Trop de tentatives. Attendez {{seconds}} secondes, puis réessayez.",
+    "rateLimitedNoTime": "Trop de tentatives. Attendez une minute, puis réessayez.",
+    "sessionExpired": "Vous avez été déconnecté. Reconnectez-vous pour continuer.",
+    "loadFailed": "Impossible de charger votre compte."
+  },
+  "validation": {
+    "emailRequired": "Saisissez votre adresse e-mail",
+    "emailInvalid": "Saisissez une adresse e-mail au bon format, par exemple nom@example.rw",
+    "passwordRequired": "Saisissez votre mot de passe",
+    "passwordLength": "Utilisez au moins 15 caractères",
+    "nameRequired": "Saisissez vos noms",
+    "termsRequired": "Acceptez les conditions d’utilisation pour créer un compte",
+    "privacyRequired": "Acceptez l’avis de confidentialité pour créer un compte"
+  },
+  "nav": {
+    "label": "Principal",
+    "findCare": "Trouver des soins",
+    "howItWorks": "Comment ça marche",
+    "forFacilities": "Pour les établissements",
+    "login": "Se connecter",
+    "home": "Accueil"
+  },
+  "landing": {
+    "title": "Trouver des soins au Rwanda",
+    "heroTitle": "Sachez avant de partir.",
+    "heroBody": "Trouvez un établissement de santé qui accepte votre assurance, réservez et arrivez quand c’est votre tour.",
+    "search": {
+      "title": "Trouver des soins",
+      "service": "De quoi avez-vous besoin ?",
+      "serviceAny": "Tous les services",
+      "location": "Où ?",
+      "locationAny": "Partout au Rwanda",
+      "insurance": "Votre assurance",
+      "insuranceAny": "Toutes les assurances",
+      "submit": "Rechercher",
+      "comingSoon": "La recherche ouvre bientôt. En attendant, renseignez-vous auprès de votre établissement de santé.",
+      "popular": "Populaires"
+    },
+    "services": {
+      "general": "Consultation générale",
+      "pediatrics": "Pédiatrie",
+      "dental": "Soins dentaires",
+      "antenatal": "Consultation prénatale",
+      "eye": "Soins des yeux"
+    },
+    "districts": {
+      "gasabo": "Gasabo",
+      "kicukiro": "Kicukiro",
+      "nyarugenge": "Nyarugenge",
+      "musanze": "Musanze",
+      "huye": "Huye",
+      "rubavu": "Rubavu"
+    },
+    "insurers": {
+      "mutuelle": "Mutuelle de Santé (CBHI)",
+      "rama": "RAMA (RSSB)",
+      "mmi": "MMI",
+      "private": "Assurance privée",
+      "none": "Sans assurance (je paie)"
+    },
+    "how": {
+      "title": "Comment ça marche",
+      "step1Title": "Trouver",
+      "step1Body": "Cherchez par service, lieu et assurance. Voyez quels établissements acceptent votre assurance.",
+      "step2Title": "Réserver ou rejoindre la file",
+      "step2Body": "Choisissez une heure, ou rejoignez la file du jour depuis votre téléphone.",
+      "step3Title": "Arriver à l’heure",
+      "step3Body": "Suivez votre place dans la file. Nous vous disons quand partir de chez vous."
+    },
+    "trust": {
+      "title": "Vos données restent au Rwanda",
+      "body": "Vos informations sont chiffrées, conservées au Rwanda et partagées uniquement avec les établissements qui vous soignent."
+    },
+    "facilities": {
+      "title": "Pour les établissements de santé",
+      "body": "Gérez votre file d’attente, vos dossiers et votre facturation au même endroit, et laissez les patients vous trouver.",
+      "cta": "Inscrire votre établissement"
+    }
+  },
+  "emergency": {
+    "title": "Urgence ?",
+    "body": "Rendez-vous au service d’urgence le plus proche ou appelez le 912. MediLink n’est pas fait pour les urgences."
+  },
+  "footer": {
+    "label": "Liens du site",
+    "privacy": "Avis de confidentialité",
+    "terms": "Conditions d’utilisation",
+    "verify": "Vérifier un document",
+    "forFacilities": "Pour les établissements",
+    "help": "Aide",
+    "copyright": "© {{year}} MediLink Rwanda"
+  },
+  "login": {
+    "title": "Se connecter ou créer un compte",
+    "intro": "Réservez vos soins et évitez la longue attente.",
+    "email": "E-mail",
+    "continue": "Continuer",
+    "passwordTitle": "Saisissez votre mot de passe",
+    "loggingInAs": "Connexion en tant que {{email}}",
+    "changeEmail": "Changer d’e-mail",
+    "password": "Mot de passe",
+    "forgot": "Mot de passe oublié ?",
+    "submit": "Se connecter",
+    "newHere": "Première fois sur MediLink ?",
+    "createAccount": "Créer un compte avec cet e-mail",
+    "invalidCredentials": "L’e-mail ou le mot de passe n’est pas correct. Vérifiez-les et réessayez.",
+    "guest": "Trouver des soins sans compte"
+  },
+  "signup": {
+    "title": "Créer votre compte",
+    "intro": "Cela prend environ une minute. Vous pourrez ajouter votre assurance et votre famille plus tard.",
+    "step": "Étape {{current}} sur {{total}}",
+    "fullName": "Vos noms",
+    "fullNameHint": "Comme sur votre pièce d’identité.",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "passwordHint": "Utilisez au moins 15 caractères. Une courte phrase est facile à retenir et difficile à deviner.",
+    "passwordRule": "Au moins 15 caractères",
+    "passwordRuleMet": "fait",
+    "passwordRuleNotMet": "pas encore",
+    "language": "Langue des messages",
+    "languageHint": "Nous envoyons les rappels et messages dans cette langue.",
+    "continue": "Continuer",
+    "consentTitle": "Votre vie privée et votre consentement",
+    "consentIntro": "Avant de créer votre compte, lisez ceci :",
+    "consentPoint1": "Vos informations de santé sont chiffrées et conservées au Rwanda.",
+    "consentPoint2": "Seuls les établissements qui vous soignent peuvent voir votre dossier.",
+    "consentPoint3": "Vous pouvez télécharger vos données ou supprimer votre compte à tout moment.",
+    "readPrivacy": "Lire l’avis de confidentialité complet",
+    "readTerms": "Lire les conditions d’utilisation",
+    "terms": "J’accepte les conditions d’utilisation",
+    "privacy": "J’ai lu l’avis de confidentialité et j’accepte la façon dont MediLink utilise mes informations",
+    "research": "J’accepte que mes données anonymisées soient utilisées pour la recherche en santé",
+    "researchHint": "Facultatif. Refuser ne change rien à vos soins. Vous pourrez modifier ce choix plus tard.",
+    "submit": "Créer le compte",
+    "haveAccount": "Vous avez déjà un compte ?",
+    "login": "Se connecter"
+  },
+  "home": {
+    "title": "Accueil",
+    "greeting": "Bonjour, {{name}}",
+    "intro": "Que souhaitez-vous faire aujourd’hui ?",
+    "findCare": "Trouver des soins",
+    "nextVisitTitle": "Votre prochaine visite",
+    "nextVisitEmpty": "Pas encore de visite. Quand vous réservez ou rejoignez une file, elle s’affichera ici.",
+    "verifyEmailTitle": "Confirmez votre e-mail",
+    "verifyEmailBody": "Nous avons envoyé un lien à {{email}}. Confirmez votre e-mail avant de pouvoir consulter votre dossier de santé.",
+    "settingsTitle": "Affichage",
+    "accountLabel": "Connecté en tant que {{name}}"
+  },
+  "info": {
+    "back": "Retour à l’accueil",
+    "verify": {
+      "title": "Vérifier un document",
+      "body": "Bientôt, pharmacies et employeurs pourront vérifier ici une ordonnance, un reçu ou un certificat médical grâce à son code ou son QR."
+    },
+    "forFacilities": {
+      "title": "MediLink pour les établissements de santé",
+      "body": "L’inscription des établissements ouvre dans la prochaine version. Vous pourrez postuler en ligne et démarrer après vérification."
+    },
+    "terms": {
+      "title": "Conditions d’utilisation",
+      "body": "Les conditions d’utilisation complètes seront publiées ici avant le lancement, en kinyarwanda, en anglais et en français."
+    },
+    "privacy": {
+      "title": "Avis de confidentialité",
+      "body": "L’avis de confidentialité complet sera publié ici avant le lancement, en kinyarwanda, en anglais et en français."
+    },
+    "help": {
+      "title": "Aide",
+      "body": "Des guides pour les patients et les aidants arrivent. Pas de smartphone ? Demandez à l’accueil."
+    }
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "body": "Vérifiez l’adresse ou revenez à l’accueil.",
+    "home": "Aller à l’accueil"
+  },
+  "forgot": {
+    "title": "Réinitialiser votre mot de passe",
+    "intro": "Saisissez votre e-mail. S’il correspond à un compte, nous enverrons un lien pour choisir un nouveau mot de passe.",
+    "email": "E-mail",
+    "submit": "Envoyer le lien",
+    "sentTitle": "Consultez vos e-mails",
+    "sentBody": "Si un compte existe pour {{email}}, un lien de réinitialisation est en route. Le lien est valable 30 minutes.",
+    "back": "Retour à la connexion"
+  },
+  "reset": {
+    "title": "Choisir un nouveau mot de passe",
+    "newPassword": "Nouveau mot de passe",
+    "hint": "Au moins 15 caractères. Une courte phrase est facile à retenir et difficile à deviner.",
+    "submit": "Enregistrer le mot de passe",
+    "doneTitle": "Mot de passe modifié",
+    "doneBody": "Votre mot de passe a été modifié et vous avez été déconnecté partout. Connectez-vous avec le nouveau mot de passe.",
+    "invalidLink": "Ce lien est incomplet. Ouvrez à nouveau le lien de l’e-mail ou demandez-en un nouveau.",
+    "toLogin": "Aller à la connexion"
+  }
+}

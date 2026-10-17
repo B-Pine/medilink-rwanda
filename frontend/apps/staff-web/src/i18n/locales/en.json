@@ -1,0 +1,188 @@
+{
+  "app": {
+    "name": "MediLink Staff",
+    "titleSuffix": "MediLink Staff"
+  },
+  "common": {
+    "back": "Back",
+    "continue": "Continue",
+    "retry": "Try again",
+    "logout": "Log out",
+    "copy": "Copy",
+    "copied": "Copied"
+  },
+  "errors": {
+    "generic": "Something went wrong. Try again.",
+    "network": "We could not reach MediLink. Check your connection and try again.",
+    "rateLimited": "Too many attempts. Wait {{seconds}} seconds, then try again.",
+    "rateLimitedNoTime": "Too many attempts. Wait a minute, then try again.",
+    "sessionExpired": "Your session ended. Log in again to continue.",
+    "loadFailed": "We could not load your account."
+  },
+  "validation": {
+    "emailRequired": "Enter your email address",
+    "emailInvalid": "Enter an email address in the correct format, like name@example.rw",
+    "passwordRequired": "Enter your password",
+    "newPasswordLength": "Use at least 12 characters",
+    "codeRequired": "Enter the 6-digit code from your authenticator app",
+    "codeFormat": "The code must be 6 digits",
+    "recoveryCodeRequired": "Enter one of your recovery codes",
+    "recoveryCodesSaved": "Confirm that you saved your recovery codes"
+  },
+  "brand": {
+    "tagline": "Every visit, on time.",
+    "description": "Reception, consultations, pharmacy and billing for your facility, in one calm workspace.",
+    "trust": "Encrypted · Data stays in Rwanda"
+  },
+  "login": {
+    "title": "Log in to MediLink",
+    "intro": "For staff of verified health facilities.",
+    "email": "Email",
+    "password": "Password",
+    "forgot": "Forgot password?",
+    "submit": "Log in",
+    "invalidCredentials": "The email or password is not right. Check them and try again.",
+    "patientHint": "Looking for care? Patients use the MediLink app instead."
+  },
+  "mfaSetup": {
+    "title": "Set up two-step login",
+    "intro": "Staff accounts need a second step at login to protect patient data.",
+    "preparing": "Preparing your setup…",
+    "setupFailed": "We could not start the setup. Log in again.",
+    "step1Title": "1. Install an authenticator app",
+    "step1Body": "For example Google Authenticator, Microsoft Authenticator or another TOTP app, on a phone only you use.",
+    "step2Title": "2. Scan this QR code with the app",
+    "qrLabel": "QR code to add your MediLink account to an authenticator app",
+    "manualKeyLabel": "Can’t scan? Enter this key in the app",
+    "copyKey": "Copy key",
+    "step3Title": "3. Enter the 6-digit code the app shows",
+    "code": "6-digit code",
+    "codeHint": "The code changes every 30 seconds.",
+    "submit": "Confirm and continue",
+    "codesTitle": "Save your recovery codes",
+    "codesIntro": "If you lose your phone, each code lets you log in once. Keep them somewhere safe, away from your phone. We will not show them again.",
+    "codesListLabel": "Your 10 recovery codes",
+    "print": "Print codes",
+    "copyCodes": "Copy codes",
+    "codesCopied": "Recovery codes copied",
+    "savedConfirm": "I have saved my recovery codes in a safe place",
+    "finish": "Continue to MediLink",
+    "printTitle": "MediLink recovery codes for {{email}}"
+  },
+  "mfaVerify": {
+    "title": "Enter your login code",
+    "intro": "Open your authenticator app and enter the 6-digit code for MediLink.",
+    "code": "6-digit code",
+    "codeHint": "Paste or type the code. Spaces are fine.",
+    "submit": "Verify and log in",
+    "useRecovery": "Use a recovery code instead",
+    "useApp": "Use the code from my app",
+    "recoveryTitle": "Use a recovery code",
+    "recoveryIntro": "Enter one of the recovery codes you saved when you set up two-step login.",
+    "recoveryCode": "Recovery code",
+    "recoveryHint": "For example abcd-1234. Each code works once.",
+    "backToLogin": "Back to log in"
+  },
+  "facility": {
+    "title": "Choose your facility",
+    "intro": "You work at more than one facility. Choose where you are working now. You can switch at any time from the top bar.",
+    "choose": "Work at {{name}}",
+    "rolesLabel": "Your roles",
+    "switcherLabel": "Current facility: {{name}}. Switch facility",
+    "switchHeading": "Switch facility",
+    "current": "Current",
+    "switchFailed": "We could not switch facility. Try again.",
+    "noFacility": "No facility selected",
+    "types": {
+      "health_post": "Health post",
+      "health_center": "Health center",
+      "district_hospital": "District hospital",
+      "provincial_hospital": "Provincial hospital",
+      "referral_hospital": "Referral hospital",
+      "private_clinic": "Private clinic",
+      "polyclinic": "Polyclinic",
+      "private_hospital": "Private hospital",
+      "dental_clinic": "Dental clinic",
+      "eye_clinic": "Eye clinic",
+      "diagnostic_center": "Diagnostic center",
+      "other": "Health facility"
+    },
+    "roles": {
+      "facility_admin": "Facility admin",
+      "receptionist": "Receptionist",
+      "doctor": "Doctor",
+      "pharmacist": "Pharmacist"
+    }
+  },
+  "shell": {
+    "navLabel": "Main menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "platformAdmin": "Platform admin",
+    "nav": {
+      "today": "Today",
+      "queue": "Queue",
+      "calendar": "Calendar",
+      "patients": "Patients",
+      "pharmacy": "Pharmacy",
+      "payments": "Payments",
+      "approvals": "Approvals",
+      "reports": "Reports",
+      "staff": "Staff",
+      "settings": "Settings",
+      "audit": "Audit log",
+      "platformFacilities": "Facility applications"
+    },
+    "connection": {
+      "label": "Connection",
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "userMenu": {
+      "label": "Account menu",
+      "signedInAs": "Signed in as",
+      "theme": "Theme",
+      "language": "Language",
+      "logout": "Log out",
+      "loggingOut": "Logging out…"
+    }
+  },
+  "today": {
+    "title": "Today",
+    "greeting": "Hello, {{name}}",
+    "facility": "You are working at {{facility}}.",
+    "platform": "You are signed in as a platform admin.",
+    "rolesLabel": "Your roles here",
+    "placeholderTitle": "Your Today board is on its way",
+    "placeholderBody": "Expected patients, people on site and the live queue will appear here from Sprint 4. Your account, roles and facility are ready."
+  },
+  "placeholder": {
+    "title": "{{section}}",
+    "body": "This workspace is planned for a later sprint.",
+    "back": "Back to Today"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "Check the address, or go back to your Today page.",
+    "home": "Go to Today"
+  },
+  "forgot": {
+    "title": "Reset your password",
+    "intro": "Enter your work email. If it belongs to an account, we will send a link to set a new password.",
+    "email": "Email",
+    "submit": "Send reset link",
+    "sentTitle": "Check your email",
+    "sentBody": "If an account exists for {{email}}, a reset link is on its way. The link works for 30 minutes.",
+    "back": "Back to log in"
+  },
+  "reset": {
+    "title": "Set a new password",
+    "newPassword": "New password",
+    "hint": "At least 12 characters. A short phrase is easy to remember and hard to guess.",
+    "submit": "Save new password",
+    "doneTitle": "Password changed",
+    "doneBody": "Your password was changed and you were logged out everywhere. Log in with your new password.",
+    "invalidLink": "This link is incomplete. Open the link from the email again, or ask for a new one.",
+    "toLogin": "Go to log in"
+  }
+}

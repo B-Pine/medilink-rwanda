@@ -1,0 +1,100 @@
+/*
+ * Base styles: page colours and type from tokens, focus ring, reduced motion, logo theme swap.
+ * Focus (design 02 §3, design 10 §2): 3px emerald ring with a 2px offset, always visible on
+ * keyboard focus, in both themes.
+ */
+@layer base {
+  html {
+    font-family: var(--ml-font-body);
+    background-color: var(--ml-bg-page);
+    color: var(--ml-text-primary);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    font-size: var(--ml-font-size-body);
+    line-height: var(--ml-line-height-body);
+    background-color: var(--ml-bg-page);
+    color: var(--ml-text-primary);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--ml-font-heading);
+    font-weight: 700;
+    text-wrap: balance;
+  }
+
+  a {
+    color: var(--ml-link);
+    text-decoration-line: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--ml-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* The focus target of skip links and error summaries: programmatic focus, no ring on <main> */
+  main:focus {
+    outline: none;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font: inherit;
+    color: inherit;
+  }
+
+  ::placeholder {
+    color: var(--ml-text-muted);
+    opacity: 1;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+}
+
+/* Reduced motion (design 03 §5, design 10 §2): non-essential motion off, state shown instantly. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Logo: the colour version on light surfaces, the white version on dark ones. */
+.ml-logo-for-dark {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .ml-logo-for-light {
+    display: none;
+  }
+  :root:not([data-theme="light"]) .ml-logo-for-dark {
+    display: inline-block;
+  }
+}
+
+:root[data-theme="dark"] .ml-logo-for-light {
+  display: none;
+}
+
+:root[data-theme="dark"] .ml-logo-for-dark {
+  display: inline-block;
+}

@@ -1,0 +1,4 @@
+{
+  "extends": "@medilink/config/tsconfig.react.json",
+  "include": ["src", "vitest.config.ts"]
+}

@@ -1,0 +1,85 @@
+/*
+ * Tailwind CSS v4 theme mapped to the MediLink tokens (tokens.css).
+ * `inline` keeps the var() references in the generated utilities, so switching theme or density
+ * on <html> restyles everything without a rebuild.
+ * The default Tailwind palette is removed: only token colours exist (no ad-hoc colours).
+ */
+@theme inline {
+  --color-*: initial;
+
+  --color-page: var(--ml-bg-page);
+  --color-surface: var(--ml-bg-surface);
+  --color-raised: var(--ml-bg-raised);
+  --color-subtle: var(--ml-bg-subtle);
+
+  --color-fg: var(--ml-text-primary);
+  --color-fg-secondary: var(--ml-text-secondary);
+  --color-fg-muted: var(--ml-text-muted);
+
+  --color-border: var(--ml-border-subtle);
+  --color-border-input: var(--ml-border-input);
+
+  --color-brand: var(--ml-brand);
+  --color-primary: var(--ml-action-primary);
+  --color-primary-hover: var(--ml-action-primary-hover);
+  --color-on-primary: var(--ml-action-primary-text);
+  --color-brand-subtle: var(--ml-brand-subtle-bg);
+  --color-on-brand-subtle: var(--ml-brand-subtle-text);
+  --color-link: var(--ml-link);
+  --color-focus: var(--ml-focus-ring);
+  --color-accent: var(--ml-accent);
+  --color-on-accent: var(--ml-accent-text);
+
+  --color-success: var(--ml-success-text);
+  --color-success-bg: var(--ml-success-bg);
+  --color-warning: var(--ml-warning-text);
+  --color-warning-bg: var(--ml-warning-bg);
+  --color-danger: var(--ml-danger-text);
+  --color-danger-bg: var(--ml-danger-bg);
+  --color-info: var(--ml-info-text);
+  --color-info-bg: var(--ml-info-bg);
+  --color-danger-solid: var(--ml-danger-solid);
+  --color-on-danger-solid: var(--ml-danger-solid-text);
+
+  --color-qr-bg: var(--ml-qr-bg);
+  --color-qr-fg: var(--ml-qr-fg);
+
+  --color-forest: var(--ml-forest);
+  --color-forest-raised: var(--ml-forest-raised);
+  --color-on-forest: var(--ml-on-forest);
+  --color-on-forest-muted: var(--ml-on-forest-muted);
+  --color-on-forest-accent: var(--ml-on-forest-accent);
+
+  --font-sans: var(--ml-font-body);
+  --font-heading: var(--ml-font-heading);
+
+  --text-display: var(--ml-font-size-display);
+  --text-display--line-height: var(--ml-line-height-display);
+  --text-h1: var(--ml-font-size-h1);
+  --text-h1--line-height: var(--ml-line-height-h1);
+  --text-h2: var(--ml-font-size-h2);
+  --text-h2--line-height: var(--ml-line-height-h2);
+  --text-h3: var(--ml-font-size-h3);
+  --text-h3--line-height: var(--ml-line-height-h3);
+  --text-body: var(--ml-font-size-body);
+  --text-body--line-height: var(--ml-line-height-body);
+  --text-body-sm: var(--ml-font-size-body-sm);
+  --text-body-sm--line-height: var(--ml-line-height-body-sm);
+  --text-caption: var(--ml-font-size-caption);
+  --text-caption--line-height: var(--ml-line-height-caption);
+
+  --radius-sm: var(--ml-radius-sm);
+  --radius-md: var(--ml-radius-md);
+  --radius-lg: var(--ml-radius-lg);
+  --radius-card: var(--ml-radius-card);
+
+  --spacing-control: var(--ml-control-height);
+  --spacing-control-primary: var(--ml-control-height-primary);
+  --spacing-target: var(--ml-target-min);
+  --spacing-icon: var(--ml-icon-size);
+  --spacing-sidebar: 15.5rem; /* 248px, design 04 §2 / 03 §4 */
+
+  --shadow-raised: var(--ml-shadow-raised);
+
+  --breakpoint-xs: 22.5rem; /* 360px small Android */
+}

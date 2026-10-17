@@ -1,0 +1,188 @@
+{
+  "app": {
+    "name": "MediLink Abakozi",
+    "titleSuffix": "MediLink Abakozi"
+  },
+  "common": {
+    "back": "Subira inyuma",
+    "continue": "Komeza",
+    "retry": "Ongera ugerageze",
+    "logout": "Sohoka",
+    "copy": "Koporora",
+    "copied": "Byakoporowe"
+  },
+  "errors": {
+    "generic": "Hari ikitagenze neza. Ongera ugerageze.",
+    "network": "Ntitwashoboye kugera kuri MediLink. Reba niba murandasi ikora, wongere ugerageze.",
+    "rateLimited": "Wagerageje inshuro nyinshi. Tegereza amasegonda {{seconds}}, wongere ugerageze.",
+    "rateLimitedNoTime": "Wagerageje inshuro nyinshi. Tegereza umunota umwe, wongere ugerageze.",
+    "sessionExpired": "Igihe cyawe cyarangiye. Ongera winjire kugira ngo ukomeze.",
+    "loadFailed": "Ntitwashoboye gufungura konti yawe."
+  },
+  "validation": {
+    "emailRequired": "Andika imeyili yawe",
+    "emailInvalid": "Andika imeyili yanditse neza, urugero: izina@example.rw",
+    "passwordRequired": "Andika ijambo ry’ibanga",
+    "newPasswordLength": "Koresha nibura inyuguti 12",
+    "codeRequired": "Andika kode y’imibare 6 iri muri porogaramu yawe yo kwemeza",
+    "codeFormat": "Kode igomba kuba imibare 6",
+    "recoveryCodeRequired": "Andika imwe muri kode zawe zo kugarura konti",
+    "recoveryCodesSaved": "Emeza ko wabitse kode zawe zo kugarura konti"
+  },
+  "brand": {
+    "tagline": "Buri ruzinduko, ku gihe.",
+    "description": "Kwakira abarwayi, kwisuzumisha, farumasi no kwishyura mu kigo cyawe, ahantu hamwe hatuje.",
+    "trust": "Byarinzwe · Amakuru abikwa mu Rwanda"
+  },
+  "login": {
+    "title": "Injira muri MediLink",
+    "intro": "Ku bakozi b’ibigo by’ubuvuzi byemejwe.",
+    "email": "Imeyili",
+    "password": "Ijambo ry’ibanga",
+    "forgot": "Wibagiwe ijambo ry’ibanga?",
+    "submit": "Injira",
+    "invalidCredentials": "Imeyili cyangwa ijambo ry’ibanga si byo. Bisuzume wongere ugerageze.",
+    "patientHint": "Urashaka kwivuza? Abarwayi bakoresha porogaramu ya MediLink."
+  },
+  "mfaSetup": {
+    "title": "Shyiraho kwinjira mu ntambwe ebyiri",
+    "intro": "Konti z’abakozi zisaba intambwe ya kabiri mu kwinjira kugira ngo amakuru y’abarwayi arindwe.",
+    "preparing": "Turimo gutegura…",
+    "setupFailed": "Ntitwashoboye gutangira. Ongera winjire.",
+    "step1Title": "1. Shyira porogaramu yo kwemeza muri telefoni",
+    "step1Body": "Urugero Google Authenticator, Microsoft Authenticator cyangwa indi porogaramu ya TOTP, kuri telefoni ukoresha wenyine.",
+    "step2Title": "2. Sikana iyi QR kode ukoresheje iyo porogaramu",
+    "qrLabel": "QR kode yo kongera konti yawe ya MediLink muri porogaramu yo kwemeza",
+    "manualKeyLabel": "Ntushoboye gusikana? Andika uru rufunguzo muri porogaramu",
+    "copyKey": "Koporora urufunguzo",
+    "step3Title": "3. Andika kode y’imibare 6 porogaramu ikwereka",
+    "code": "Kode y’imibare 6",
+    "codeHint": "Kode ihinduka buri masegonda 30.",
+    "submit": "Emeza ukomeze",
+    "codesTitle": "Bika kode zawe zo kugarura konti",
+    "codesIntro": "Niwatakaza telefoni, buri kode igufasha kwinjira rimwe. Zibike ahantu hizewe, kure ya telefoni yawe. Ntituzongera kuzikwereka.",
+    "codesListLabel": "Kode zawe 10 zo kugarura konti",
+    "print": "Capa kode",
+    "copyCodes": "Koporora kode",
+    "codesCopied": "Kode zakoporowe",
+    "savedConfirm": "Nabitse kode zanjye zo kugarura konti ahantu hizewe",
+    "finish": "Komeza muri MediLink",
+    "printTitle": "Kode zo kugarura konti ya MediLink za {{email}}"
+  },
+  "mfaVerify": {
+    "title": "Andika kode yo kwinjira",
+    "intro": "Fungura porogaramu yawe yo kwemeza, wandike kode y’imibare 6 ya MediLink.",
+    "code": "Kode y’imibare 6",
+    "codeHint": "Shyiramo cyangwa wandike kode. Imyanya irimo nta kibazo.",
+    "submit": "Emeza winjire",
+    "useRecovery": "Koresha kode yo kugarura konti",
+    "useApp": "Koresha kode iri muri porogaramu yanjye",
+    "recoveryTitle": "Koresha kode yo kugarura konti",
+    "recoveryIntro": "Andika imwe muri kode zo kugarura konti wabitse igihe washyiragaho kwinjira mu ntambwe ebyiri.",
+    "recoveryCode": "Kode yo kugarura konti",
+    "recoveryHint": "Urugero abcd-1234. Buri kode ikora rimwe gusa.",
+    "backToLogin": "Subira ku kwinjira"
+  },
+  "facility": {
+    "title": "Hitamo ikigo cyawe",
+    "intro": "Ukora mu bigo birenze kimwe. Hitamo aho ukorera ubu. Ushobora guhindura igihe icyo ari cyo cyose uhereye hejuru.",
+    "choose": "Korera kuri {{name}}",
+    "rolesLabel": "Inshingano zawe",
+    "switcherLabel": "Ikigo urimo: {{name}}. Hindura ikigo",
+    "switchHeading": "Hindura ikigo",
+    "current": "Ubu",
+    "switchFailed": "Ntitwashoboye guhindura ikigo. Ongera ugerageze.",
+    "noFacility": "Nta kigo cyatoranyijwe",
+    "types": {
+      "health_post": "Ivuriro ry’ibanze",
+      "health_center": "Ikigo nderabuzima",
+      "district_hospital": "Ibitaro by’akarere",
+      "provincial_hospital": "Ibitaro by’intara",
+      "referral_hospital": "Ibitaro bikuru",
+      "private_clinic": "Ivuriro ryigenga",
+      "polyclinic": "Polikilinike",
+      "private_hospital": "Ibitaro byigenga",
+      "dental_clinic": "Ivuriro ry’amenyo",
+      "eye_clinic": "Ivuriro ry’amaso",
+      "diagnostic_center": "Ikigo cy’isuzuma",
+      "other": "Ikigo cy’ubuvuzi"
+    },
+    "roles": {
+      "facility_admin": "Umuyobozi w’ikigo",
+      "receptionist": "Ushinzwe kwakira abarwayi",
+      "doctor": "Muganga",
+      "pharmacist": "Umufarumasiye"
+    }
+  },
+  "shell": {
+    "navLabel": "Menu nyamukuru",
+    "openMenu": "Fungura menu",
+    "closeMenu": "Funga menu",
+    "platformAdmin": "Umuyobozi w’urubuga",
+    "nav": {
+      "today": "Uyu munsi",
+      "queue": "Umurongo",
+      "calendar": "Kalendari",
+      "patients": "Abarwayi",
+      "pharmacy": "Farumasi",
+      "payments": "Kwishyura",
+      "approvals": "Ibyemezo",
+      "reports": "Raporo",
+      "staff": "Abakozi",
+      "settings": "Igenamiterere",
+      "audit": "Igitabo cy’ibikorwa",
+      "platformFacilities": "Ubusabe bw’ibigo"
+    },
+    "connection": {
+      "label": "Murandasi",
+      "online": "Kuri murandasi",
+      "offline": "Nta murandasi"
+    },
+    "userMenu": {
+      "label": "Menu ya konti",
+      "signedInAs": "Winjiye nka",
+      "theme": "Imigaragarire",
+      "language": "Ururimi",
+      "logout": "Sohoka",
+      "loggingOut": "Urasohoka…"
+    }
+  },
+  "today": {
+    "title": "Uyu munsi",
+    "greeting": "Muraho, {{name}}",
+    "facility": "Ukorera kuri {{facility}}.",
+    "platform": "Winjiye nk’umuyobozi w’urubuga.",
+    "rolesLabel": "Inshingano zawe hano",
+    "placeholderTitle": "Ikibaho cy’uyu munsi kiri hafi",
+    "placeholderBody": "Abarwayi bategerejwe, abari aho n’umurongo bizagaragara hano guhera kuri Sprint 4. Konti yawe, inshingano n’ikigo byiteguye."
+  },
+  "placeholder": {
+    "title": "{{section}}",
+    "body": "Iki gice kizakorwa mu cyiciro gikurikira.",
+    "back": "Subira ku Uyu munsi"
+  },
+  "notFound": {
+    "title": "Iyi paji ntibonetse",
+    "body": "Reba aderesi, cyangwa usubire kuri paji y’Uyu munsi.",
+    "home": "Jya ku Uyu munsi"
+  },
+  "forgot": {
+    "title": "Hindura ijambo ry’ibanga",
+    "intro": "Andika imeyili y’akazi. Niba ifite konti, tuzakoherereza ihuriro ryo gushyiraho ijambo ry’ibanga rishya.",
+    "email": "Imeyili",
+    "submit": "Ohereza ihuriro",
+    "sentTitle": "Reba imeyili yawe",
+    "sentBody": "Niba hari konti ya {{email}}, ihuriro ryo guhindura riroherejwe. Rikora iminota 30.",
+    "back": "Subira ku kwinjira"
+  },
+  "reset": {
+    "title": "Shyiraho ijambo ry’ibanga rishya",
+    "newPassword": "Ijambo ry’ibanga rishya",
+    "hint": "Nibura inyuguti 12. Interuro ngufi yoroshye kwibuka kandi igoye gukeka.",
+    "submit": "Bika ijambo ry’ibanga rishya",
+    "doneTitle": "Ijambo ry’ibanga ryahinduwe",
+    "doneBody": "Ijambo ry’ibanga ryahinduwe kandi wasohowe ahantu hose. Injira ukoresheje ijambo ry’ibanga rishya.",
+    "invalidLink": "Iri huriro ntiryuzuye. Ongera ufungure ihuriro riri muri imeyili, cyangwa usabe irindi.",
+    "toLogin": "Jya ku kwinjira"
+  }
+}

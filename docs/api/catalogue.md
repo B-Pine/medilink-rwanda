@@ -553,7 +553,7 @@ Requirements: FR-NOT-01..12. Facility notification settings (reminder timings, "
 | `GET`, `POST` | `/api/v1/staff/announcements/` | Facility announcements (patients in a date range, display) | `facility.configure` | FR-NOT-11 | rw/en/fr | Planned |
 | `POST` | `/api/v1/staff/announcements/{id}/publish/` | Publish | `facility.configure` | FR-NOT-11 | | Planned |
 | `POST` | `/api/v1/staff/announcements/{id}/withdraw/` | Withdraw | `facility.configure` | FR-NOT-11 | | Planned |
-| `GET` | `/api/v1/staff/notification-deliveries/` | Delivery log for a patient or visit ("was the patient told?") | `disputes.handle` † | FR-NOT-10 | Read-only | Planned |
+| `GET` | `/api/v1/staff/notification-deliveries/` | Delivery log for a patient or visit ("was the patient told?") | `audit.view` (dispute handlers from S10) | FR-NOT-10 | Read-only | Planned |
 
 ### Platform
 

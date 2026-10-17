@@ -73,7 +73,7 @@ Source: [02 · Users, roles, access](../analysis/02-users-roles-and-permissions.
 | FR-ACC-06 | Deactivation removes access and ends sessions at once | P1 | S0, S2 | Both | API, E2E | In progress |
 | FR-ACC-07 | Clinician licence number; admin attests the check | P1 | S0, S2 | Both | API, CMP | In progress |
 | FR-ACC-08 | Server-side, logged permission checks on patient data | P1 | S0 | Backend | AZ, API | In progress |
-| FR-ACC-09 | Super admin emergency access with reason, logged, reviewable | P1 | S0, S6* | Both | AZ, API | In progress |
+| FR-ACC-09 | Super admin emergency access with reason, logged, reviewable | P1 | S6 | Both | AZ, API | Not started |
 | FR-ACC-10 | New roles without changing existing roles | P2 | — | Backend | AZ, INS | Not started |
 
 ## FR-ONB · Tenancy, onboarding, master data
@@ -150,12 +150,12 @@ Source: [06 · Visit lifecycle and live queue](../analysis/06-visit-lifecycle-an
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
 | FR-QUE-01 | Visit as the central record | P1 | S4 | Backend | UT, API | Not started |
-| FR-QUE-02 | Expected list separate from the live queue | P1 | S4 | Both | API, E2E | Not started |
-| FR-QUE-03 | Check-in and walk-in produce one ticket (idempotent) | P1 | S4 | Backend | BR | Not started |
+| FR-QUE-02 | Expected list separate from the live queue | P1 | S5 | Both | API, E2E | Not started |
+| FR-QUE-03 | Check-in and walk-in produce one ticket (idempotent) | P1 | S4 (walk-ins), S5 (booked) | Backend | BR | Not started |
 | FR-QUE-04 | Configurable stages incl. payment and pharmacy | P1 | S4 | Both | BR | Not started |
 | FR-QUE-05 | Ordering rules: emergency, return, priority, ratio, FIFO | P1 | S4 | Backend | BR | Not started |
-| FR-QUE-06 | Grace window; late arrivals become walk-ins | P1 | S4 | Backend | BR | Not started |
-| FR-QUE-07 | Remote joiners hold a place; pass-over rule | P1 | S4 | Backend | BR | Not started |
+| FR-QUE-06 | Grace window; late arrivals become walk-ins | P1 | S5 | Backend | BR | Not started |
+| FR-QUE-07 | Remote joiners hold a place; pass-over rule | P1 | S5 | Backend | BR | Not started |
 | FR-QUE-08 | Atomic Call next; versioned state changes | P1 | S4 | Backend | BR | Not started |
 | FR-QUE-09 | Ticket state machine with recorded transitions | P1 | S4 | Backend | BR | Not started |
 | FR-QUE-10 | Manual reorder only with reason; logged; reported | P1 | S4 | Both | BR, API | Not started |
@@ -313,7 +313,7 @@ Source: [12 · Security, privacy, compliance](../analysis/12-security-privacy-an
 | FR-SEC-03 | Treatment-relationship rule for clinical data | P1 | S6 | Backend | AZ | Not started |
 | FR-SEC-04 | Versioned consent records | P1 | S0 | Both | API | In progress |
 | FR-SEC-05 | Separate optional research consent | P1 | S0 | Both | API, E2E | In progress |
-| FR-SEC-06 | Staff 2FA; re-authentication to sign; idle lock with PIN | P1 | S0 | Both | API, E2E, SEC | In progress |
+| FR-SEC-06 | Staff 2FA; re-authentication to sign; idle lock with PIN | P1 | S0 (MFA), S1 (PIN lock, step-up) | Both | API, E2E, SEC | In progress |
 | FR-SEC-07 | Append-only, hash-chained audit log | P1 | S0 | Backend | API, SEC | In progress |
 | FR-SEC-08 | Patient access history in plain language | P1 | S3 | Both | API, E2E | Not started |
 | FR-SEC-09 | Break-glass with reason, time limit, review, patient visibility | P1 | S6 | Both | AZ, API | Not started |
@@ -428,8 +428,8 @@ These need a decision in the analysis or the roadmaps; the requirement meanings 
 | 1 | 220 requirement IDs, no duplicate IDs and no gaps in any numbering sequence. | All module documents |
 | 2 | Some IDs are planned in two sprints: FR-ACC-05..07 (S0 and S2), FR-PAT-02 (S0 contract and S3), FR-SCH-05..06 (S2 and S5), FR-BIL-02 and FR-BIL-05 (S2 and S8), FR-DOC-03 (S1 and S7), FR-ONB-09 (S2 and S11). The sprint contracts should state which part each sprint delivers. | [Backend roadmap](../roadmap/backend.md) |
 | 3 | P1 requirements not named in any sprint's requirement line (assigned here with `*`): FR-AI-02, FR-SEC-11, NFR-NET-01..06, NFR-UX-02..07, NFR-INT-01; NFR-PERF and NFR-REL are named only as groups in S11. | Roadmaps |
-| 4 | The S4 queue sprint includes check-in of booked patients and the Expected list (FR-QUE-02, 03, 06), but bookings arrive in S5. | [API catalogue](../api/catalogue.md#s4--visits-and-the-live-queue) |
-| 5 | FR-ACC-09 (super admin emergency access) is listed in S0, but break-glass (FR-SEC-09) is built in S6. FR-SEC-06 (S0) includes the idle lock with PIN unlock, which the Sprint 0 contract doesn't cover. | Backend roadmap, Sprint 0 contract |
-| 6 | The permission matrix (analysis 02 §3) gives merge requests to the facility admin and nothing to the receptionist; analysis 04 §3.2 and security 11 §6 say the receptionist requests and the facility admin approves. | Analysis 02, 04 |
-| 7 | The permission matrix gives the receptionist no right to raise a dispute; analysis 10 §3 and FR-DSP-09 let the receptionist raise one at the counter. | Analysis 02, 10 |
-| 8 | NFR-UX-03 says WCAG 2.1 AA; design research 10 and the security compliance mapping use WCAG 2.2 AA (which includes 2.1). | Analysis 14, design research 10 |
+| 4 | The S4 queue sprint includes check-in of booked patients and the Expected list (FR-QUE-02, 03, 06), but bookings arrive in S5. | [API catalogue](../api/catalogue.md#s4--visits-and-the-live-queue)  **Resolved** (roadmaps, permission matrix, NFR-UX-03 and security docs aligned). |
+| 5 | FR-ACC-09 (super admin emergency access) is listed in S0, but break-glass (FR-SEC-09) is built in S6. FR-SEC-06 (S0) includes the idle lock with PIN unlock, which the Sprint 0 contract doesn't cover. | Backend roadmap, Sprint 0 contract  **Resolved** (roadmaps, permission matrix, NFR-UX-03 and security docs aligned). |
+| 6 | The permission matrix (analysis 02 §3) gives merge requests to the facility admin and nothing to the receptionist; analysis 04 §3.2 and security 11 §6 say the receptionist requests and the facility admin approves. | Analysis 02, 04  **Resolved** (roadmaps, permission matrix, NFR-UX-03 and security docs aligned). |
+| 7 | The permission matrix gives the receptionist no right to raise a dispute; analysis 10 §3 and FR-DSP-09 let the receptionist raise one at the counter. | Analysis 02, 10  **Resolved** (roadmaps, permission matrix, NFR-UX-03 and security docs aligned). |
+| 8 | NFR-UX-03 says WCAG 2.1 AA; design research 10 and the security compliance mapping use WCAG 2.2 AA (which includes 2.1). | Analysis 14, design research 10  **Resolved** (roadmaps, permission matrix, NFR-UX-03 and security docs aligned). |

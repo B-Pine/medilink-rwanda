@@ -24,6 +24,8 @@ concurrency:
 
 defaults:
   run:
+    # Explicit bash = "bash --noprofile --norc -eo pipefail": a failing command in a pipe fails the step.
+    shell: bash
     working-directory: backend
 
 jobs:

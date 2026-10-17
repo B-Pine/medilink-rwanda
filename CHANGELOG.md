@@ -1,0 +1,91 @@
+# Changelog
+
+All notable changes to the MediLink Rwanda **documentation and repository** are recorded here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+This root changelog covers documentation and repository-wide changes (CI, tooling, policies). The two deployables keep their own changelogs and tags ([ADR 0006](docs/decisions/0006-separate-frontend-and-backend-hosting.md)): `backend/CHANGELOG.md` (`backend-vX.Y.Z`) and `frontend/CHANGELOG.md` (`frontend-vX.Y.Z`). Root versions are reference points for the documentation set and are not tagged. How to write entries: [git workflow and releases](docs/development/git-workflow-and-releases.md) §5.
+
+## [Unreleased]
+
+### Added
+
+- API catalogue v0.1 (`docs/api/`): planned phase-1 endpoints for every module, by sprint (S0–S11) and audience, with permissions, requirement IDs and notes; Sprint 0 endpoints marked Contracted. The generated OpenAPI schema stays the source of truth for implemented endpoints.
+- Database design v0.1 (`docs/architecture/04-database-design.md`): phase-1 tables per module with key columns, keys, indexes, row-level security, data classes C0–C4, mutability and retention classes, and ER diagrams.
+- Development guides (`docs/development/`): getting started, coding standards, testing strategy, git workflow and releases, translations, environments and deployment.
+- Quality assurance (`docs/qa/`): requirements traceability matrix covering all 220 `FR-*`/`NFR-*` IDs, the acceptance evidence process, and the Sprint 0 acceptance record.
+- Operations runbook index (`docs/operations/`) for alerts, incident playbooks and continuity.
+- Scripts `scripts/check-traceability.py` and `scripts/check-docs-links.py`.
+- Repository hygiene: `.github/CODEOWNERS`, Dependabot configuration (pip, npm, GitHub Actions, Docker; weekly, minor and patch grouped), `security.yml` workflow (gitleaks, Trivy filesystem and configuration scans), issue template configuration (no blank issues; vulnerabilities go to `SECURITY.md`), proprietary `LICENSE`.
+- This root changelog.
+
+### Changed
+
+- `docs/README.md`, `docs/architecture/README.md`, root `README.md` and `CONTRIBUTING.md` link the new documentation; CONTRIBUTING states the changelog rule; the pull request template asks for changelog, API catalogue and traceability updates.
+
+## [0.5.0] - 2026-10-17
+
+Architecture, contracts and roadmaps; backend and frontend separated ([#4](https://github.com/B-Pine/medilink-rwanda/pull/4)).
+
+### Added
+
+- Architecture v0.1: system architecture (components, repository layout, backend technology, local development, environments), API conventions, and the Sprint 0 contract with backend checks B1–B17 and frontend checks F1–F12.
+- Roadmaps v0.1: contract-first sprint process, Definition of Done, backend and frontend sprint plans S0–S11 for M1, and M2–M4 summaries.
+- ADR 0006: frontend and backend developed, versioned and hosted separately (audience-scoped session cookies, CORS allowlist, CSRF token endpoint, WebSocket origin checks).
+- ADR 0007: frontend toolchain (pnpm, React 19, Vite, Tailwind v4 tokens, Radix, TanStack Query, MSW, i18next, Vitest, Playwright).
+- `.gitattributes` normalising line endings to LF.
+
+### Changed
+
+- Repository layout: `services/api/` moved to `backend/`, `apps/` moved to `frontend/apps/`; README, ADR 0003, analysis 11 and 16, and security 02 and 09 updated for the new layout.
+- Commit scopes and GitHub labels: `api` replaced by `backend` and `frontend`; scopes `ui` and `brand` added.
+
+## [0.4.0] - 2026-10-17
+
+Brand assets ([#3](https://github.com/B-Pine/medilink-rwanda/pull/3)).
+
+### Added
+
+- `brand/` structure with naming rules, the generation prompts, and the first generated logo concepts and app icons (source PNGs).
+
+### Changed
+
+- `.gitignore`: raw brand video exports stay out of git.
+
+## [0.3.0] - 2026-10-17
+
+Security analysis and implementation guide v0.1 ([#2](https://github.com/B-Pine/medilink-rwanda/pull/2)).
+
+### Added
+
+- Security documentation v0.1 (`docs/security/`): threat model (STRIDE, LINDDUN, abuse cases), security architecture and data residency, identity and sessions (NIST 800-63B-4), authorisation and PostgreSQL row-level security, data protection and cryptography, application and API security (OWASP Top 10:2025, API Top 10:2023), infrastructure, logging and detection, secure development lifecycle, incident response with the 48-hour breach clock, people and process, compliance mapping, AI security, go-live checklist and sources.
+- Security section in the pull request template.
+
+### Changed
+
+- `SECURITY.md` and analysis 12 link the security documentation.
+- ADR 0003: version note recommending Django 6.x for built-in CSP.
+- Design research 06: hero video allowed on wide screens with a poster fallback.
+
+## [0.2.0] - 2026-10-17
+
+UI/UX design research v0.1 ([#1](https://github.com/B-Pine/medilink-rwanda/pull/1)).
+
+### Added
+
+- Design research v0.1 (`docs/design/research/`): design direction, emerald colour system with measured contrast, typography, icons and layout, dashboards, authentication, homepage and public pages, patient app pages, tables, documents, accessibility and localisation, sources.
+
+## [0.1.0] - 2026-10-17
+
+System analysis v0.2, stack and channel decisions.
+
+### Added
+
+- System analysis v0.2 (`docs/analysis/` 00–17 and glossary), replacing the 21 requirements of v0.1 with module documents and requirement IDs per phase; `docs/requirements.md` as the index.
+- ADRs 0001–0005: monorepo and stack, web first with paid channels later, Django + React + PostgreSQL, visit-centric domain model, ML symptom checker inside clinician-signed safety rules.
+- Repository basics: README, CONTRIBUTING, SECURITY, issue and pull request templates, `.editorconfig`, `.gitignore`, app and ML placeholders, and `scripts/github-setup.sh` (labels and milestones M1–M4).
+
+[Unreleased]: https://github.com/B-Pine/medilink-rwanda/compare/2e2b93c...main
+[0.5.0]: https://github.com/B-Pine/medilink-rwanda/commit/2e2b93c
+[0.4.0]: https://github.com/B-Pine/medilink-rwanda/commit/098e6d7
+[0.3.0]: https://github.com/B-Pine/medilink-rwanda/commit/4be2be1
+[0.2.0]: https://github.com/B-Pine/medilink-rwanda/commit/d7a859c
+[0.1.0]: https://github.com/B-Pine/medilink-rwanda/commit/201c34e

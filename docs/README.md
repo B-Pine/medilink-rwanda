@@ -44,11 +44,27 @@ What the system must do and why. Read in order the first time.
 
 ## Architecture (v0.1)
 
-System architecture, API conventions and the Sprint 0 contract: [architecture/README.md](architecture/README.md).
+System architecture, API conventions, the Sprint 0 contract and the phase-1 database design: [architecture/README.md](architecture/README.md).
+
+## API (v0.1)
+
+Planned phase-1 endpoints by sprint and audience, with permissions and requirement IDs. The OpenAPI schema generated from the code is the source of truth for implemented endpoints: [api/README.md](api/README.md).
 
 ## Roadmap (v0.1)
 
 Contract-first sprints with separate [backend](roadmap/backend.md) and [frontend](roadmap/frontend.md) roadmaps: [roadmap/README.md](roadmap/README.md).
+
+## Development (v0.1)
+
+Getting started, coding standards, testing strategy, git workflow and releases, translations, environments and deployment: [development/README.md](development/README.md).
+
+## Quality assurance (v0.1)
+
+The requirements traceability matrix (every `FR-*` and `NFR-*` ID with sprint, side, verification and status) and the sprint acceptance records: [qa/README.md](qa/README.md).
+
+## Operations (v0.1)
+
+Runbooks needed before go-live, for alerts, incidents and continuity: [operations/README.md](operations/README.md).
 
 ## Design research (v0.1)
 
@@ -60,4 +76,4 @@ Threat model, security architecture, authentication, authorisation and tenant is
 
 ## Next
 
-Sprint 0 (Foundations) is in development. API catalogue, database design, development guides and changelogs are added alongside the code.
+Sprint 0 (Foundations) is in development. Documentation changes are listed in the [root changelog](../CHANGELOG.md); the backend and frontend keep their own changelogs.

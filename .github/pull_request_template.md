@@ -8,6 +8,7 @@ Requirements: (e.g. FR-QUE-05)
 - [ ] Tested locally
 - [ ] No secrets or real patient data added (code, fixtures, logs, screenshots)
 - [ ] User-facing text added to translation files
+- [ ] CHANGELOG updated (root, `backend/` or `frontend/`); API catalogue and traceability matrix updated if affected
 
 ## Security (see docs/security/09-secure-development-lifecycle.md)
 - [ ] Touches patient data? → authorisation policy + tests (own / other facility / other patient), audit-logged

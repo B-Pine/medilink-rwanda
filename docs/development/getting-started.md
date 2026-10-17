@@ -2,16 +2,16 @@
 
 Status: v0.1 · Local setup from [architecture 01](../architecture/01-system-architecture.md) §4.
 
-> **The exact commands are finalised in `backend/README.md` and `frontend/README.md`**, which ship with the Sprint 0 code. If a command here differs from those files, follow those files and fix this guide.
+> Reconciled with the Sprint 0 code. Details and every command: [backend/README.md](../../backend/README.md) and [frontend/README.md](../../frontend/README.md). If they ever differ, those files win; fix this guide.
 
 ## 1. Prerequisites
 
 | Tool | Version | Notes |
 |---|---|---|
 | Git | Recent | Line endings are normalised to LF by `.gitattributes` |
-| Python | 3.12 or newer (3.14 supported) | For the backend |
-| Node.js | Current LTS | For the frontend |
-| pnpm | The version pinned in `frontend/package.json` (`packageManager`) | Install with Corepack (`corepack enable`) or `npm install -g pnpm` |
+| Python | **3.14** (3.12+ works; CI uses 3.14) | For the backend |
+| Node.js | **24** | For the frontend |
+| pnpm | **12.9** (pinned in `frontend/package.json` → `packageManager`) | Install with Corepack (`corepack enable`) |
 | Docker | Docker Desktop (Windows, macOS) or Docker Engine with Compose v2 (Linux) | Runs PostgreSQL, Redis and Mailpit |
 | An authenticator app | Any TOTP app | Staff login always asks for a second factor, also in development |
 
@@ -43,10 +43,9 @@ Stop with `docker compose down`. Add `-v` only if you want to delete the local d
 
 ```bash
 cd backend
-python -m venv .venv
-source .venv/bin/activate              # Windows PowerShell: .venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-pip install -r requirements/dev.txt
+python3.14 -m venv .venv               # Windows: py -3.14 -m venv .venv
+source .venv/bin/activate              # Windows PowerShell: .\.venv\Scripts\Activate.ps1
+pip install --require-hashes --no-deps -r requirements/dev.txt
 cp .env.example .env                   # Windows PowerShell: Copy-Item .env.example .env
 python manage.py migrate
 python manage.py seed_dev
@@ -54,16 +53,19 @@ python manage.py runserver             # http://localhost:8000
 ```
 
 - `seed_dev` creates a demo facility and one user per role, and prints their **development-only** passwords. It refuses to run when `DEBUG` is false.
-- Check that the API is up: open http://localhost:8000/api/v1/health/. The OpenAPI schema is at http://localhost:8000/api/v1/schema/.
+- `seed_dev` creates "Kigali Demo Clinic" plus a second facility (so the facility picker can be tried); demo emails end in `@demo.medilink.test`.
+- Check that the API is up: open http://localhost:8000/api/v1/health/. OpenAPI: http://localhost:8000/api/v1/schema/ · Swagger UI: http://localhost:8000/api/v1/schema/swagger/.
+- WebSockets need an ASGI server (runserver is WSGI): `uvicorn config.asgi:application --reload --port 8000`.
 - Background jobs (from the sprints that need them): run a Celery worker in a second terminal, e.g. `celery -A config worker -l info` (on Windows add `--pool=solo`).
-- Tests: `pytest`. Lint and types: `ruff check .`, `ruff format --check .`, `mypy .`.
+- Tests: `pytest --cov` (needs the compose PostgreSQL; tests run as the non-superuser `medilink_app` role). Lint and types: `ruff check .`, `ruff format --check .`, `mypy .`. Audit chain: `python manage.py verify_audit_chain`.
 
 ## 5. Run the frontends
 
 ```bash
 cd frontend
 pnpm install
-pnpm dev                                        # both apps
+pnpm dev:mock                                   # both apps on MSW mocks, no backend needed
+pnpm dev                                        # both apps against the real API
 # or one app at a time:
 pnpm --filter @medilink/staff-web dev           # http://localhost:5173
 pnpm --filter @medilink/patient-web dev         # http://localhost:5174
@@ -74,7 +76,7 @@ pnpm --filter @medilink/patient-web dev         # http://localhost:5174
 | `VITE_API_BASE_URL` | `http://localhost:8000` | Where the apps call the API (real CORS and cookies, like production) |
 | `VITE_USE_MOCKS` | `false` | `true` runs the apps against MSW mocks of the sprint contract, **without the backend** |
 
-Put local overrides in each app's `.env.local` (Vite convention; git-ignored). Checks: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`.
+Put local overrides in each app's `.env.local` (copy `.env.example`; git-ignored). Checks: `pnpm lint`, `pnpm format:check`, `pnpm typecheck`, `pnpm test`, `pnpm build`. Mock accounts (password, TOTP `123456`) are listed in [frontend/README.md](../../frontend/README.md).
 
 ## 6. First login
 
@@ -90,7 +92,7 @@ Use only synthetic data. Never enter real patient data, even locally ([SECURITY.
 |---|---|
 | Shell | PowerShell or Git Bash both work. In PowerShell, activate the virtual environment with `.venv\Scripts\Activate.ps1`. |
 | Script execution blocked | Run once: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` |
-| Several Python versions | Create the environment with the launcher: `py -3.12 -m venv .venv` |
+| Several Python versions | Create the environment with the launcher: `py -3.14 -m venv .venv` |
 | Docker | Install Docker Desktop with the WSL 2 backend and start it before `docker compose up -d` |
 | Line endings | `.gitattributes` keeps LF. If your editor converts to CRLF, set `git config core.autocrlf false` for this repository. |
 | Long paths | `node_modules` can exceed the Windows path limit: `git config --global core.longpaths true` |

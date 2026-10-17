@@ -27,3 +27,6 @@ ml/**/data/
 # Raw video exports (large) - keep outside git
 brand/video/source/*
 !brand/video/source/.gitkeep
+
+# Claude Code agent worktrees (local only)
+.claude/worktrees/

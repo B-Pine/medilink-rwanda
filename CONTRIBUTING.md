@@ -16,7 +16,7 @@ Setup, coding standards, testing, git workflow and releases, translations and de
 
 ## Changelog
 Every pull request updates the relevant CHANGELOG under `[Unreleased]` ([Keep a Changelog](https://keepachangelog.com/en/1.1.0/)):
-- `backend/CHANGELOG.md` for the API, `frontend/CHANGELOG.md` for the apps,
+- [backend/CHANGELOG.md](backend/CHANGELOG.md) for the API, [frontend/CHANGELOG.md](frontend/CHANGELOG.md) for the apps,
 - [CHANGELOG.md](CHANGELOG.md) at the root for documentation and repository-wide changes.
 
 Backend and frontend are versioned and tagged separately (`backend-vX.Y.Z`, `frontend-vX.Y.Z`). Details: [git workflow and releases](docs/development/git-workflow-and-releases.md).

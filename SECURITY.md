@@ -9,5 +9,8 @@ MediLink handles health data, which is sensitive personal data under Rwanda's La
 - Every access to patient records by staff must be permission-checked and audit-logged.
 - Store and process patient data in Rwanda unless a transfer has been authorised.
 
+## Full security documentation
+How MediLink is secured (threat model, authentication, tenant isolation, encryption, infrastructure, incident response, go-live checklist): [docs/security](docs/security/README.md).
+
 ## Reporting a vulnerability
 Do not open a public issue. Email the security contact: `security@<your-domain>` (replace before launch).

@@ -1,0 +1,82 @@
+[project]
+name = "medilink-api"
+version = "0.1.0"
+description = "MediLink Rwanda API (Django)"
+requires-python = ">=3.12"
+readme = "README.md"
+license = { text = "Proprietary" }
+
+# Dependencies are managed with pip-tools in requirements/*.in -> hash-pinned requirements/*.txt.
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+extend-exclude = ["**/migrations/0*.py"]
+
+[tool.ruff.lint]
+select = [
+  "E", "W", "F",   # pycodestyle, pyflakes
+  "I",             # isort
+  "B",             # bugbear
+  "S",             # bandit (security)
+  "UP",            # pyupgrade
+  "DJ",            # django
+  "SIM",           # simplify
+  "RUF",           # ruff-specific
+  "T20",           # no print()
+  "PT",            # pytest style
+  "C4",            # comprehensions
+]
+ignore = [
+  "RUF012",        # mutable class attributes are idiomatic in Django/DRF (Meta, permission_classes)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106", "S311", "PT018", "E501"]
+"config/settings/*.py" = ["F405", "F403"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["medilink", "config", "tests"]
+
+[tool.mypy]
+python_version = "3.12"
+plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+check_untyped_defs = true
+exclude = ["migrations/", "\\.venv/"]
+
+# factory-boy is untyped (factories look like their own classes to mypy); tests are not part of
+# the type gate in Sprint 0. Application code (medilink/, config/) must be clean.
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+ignore_errors = true
+
+[tool.django-stubs]
+django_settings_module = "config.settings.test"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.test"
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+  "acceptance(check): links a test to a Sprint 0 backend acceptance check (B1-B17)",
+]
+filterwarnings = [
+  "error::RuntimeWarning",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["medilink", "config"]
+omit = ["*/migrations/*", "*/tests/*"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+exclude_also = [
+  "if TYPE_CHECKING:",
+  "raise NotImplementedError",
+]

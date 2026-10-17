@@ -8,6 +8,7 @@ This root changelog covers documentation and repository-wide changes (CI, toolin
 
 ### Added
 
+- `.gitleaks.toml`: default rules plus two narrow allowlists for synthetic test values (backend log-redaction test, frontend mock passphrase).
 - API catalogue v0.1 (`docs/api/`): planned phase-1 endpoints for every module, by sprint (S0–S11) and audience, with permissions, requirement IDs and notes; Sprint 0 endpoints marked Contracted. The generated OpenAPI schema stays the source of truth for implemented endpoints.
 - Database design v0.1 (`docs/architecture/04-database-design.md`): phase-1 tables per module with key columns, keys, indexes, row-level security, data classes C0–C4, mutability and retention classes, and ER diagrams.
 - Development guides (`docs/development/`): getting started, coding standards, testing strategy, git workflow and releases, translations, environments and deployment.

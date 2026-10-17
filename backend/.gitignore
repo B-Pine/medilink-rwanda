@@ -1,0 +1,13 @@
+# Backend-specific ignores (the root .gitignore covers .venv, .env, caches, staticfiles).
+.env
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+*.sqlite3
+celerybeat-schedule*
+/staticfiles/
+/media/
+/.pytest_cache/
+/.mypy_cache/
+/.ruff_cache/

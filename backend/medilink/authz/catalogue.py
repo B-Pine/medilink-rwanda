@@ -107,3 +107,38 @@ ROLE_GRANTS: dict[str, frozenset[str]] = {
         {"prescription.view", "pharmacy.dispense", "disputes.comment", "reports.view_own"}
     ),
 }
+
+
+# ---- Sprint extensions ------------------------------------------------------------------------
+# Each sprint keeps its new permission codes and role grants in its own app, in
+# `medilink/<app>/permissions.py` exporting `PERMISSIONS: dict[str, str]` and
+# `ROLE_GRANTS: dict[str, frozenset[str]]`, seeds them with a data migration in that app, and
+# registers them here ONLY between its own markers, e.g.:
+#     from medilink.notifications import permissions as _s9   (mark the import noqa E402)
+#     extend(_s9.PERMISSIONS, _s9.ROLE_GRANTS)
+# Shared-file protocol: docs/architecture/contracts/README.md
+
+
+def extend(permissions: dict[str, str], role_grants: dict[str, frozenset[str]]) -> None:
+    """Add a sprint's permission codes and role grants to the catalogue."""
+    clash = set(permissions) & set(PERMISSIONS)
+    if clash:
+        raise ValueError(f"Permission codes already defined: {sorted(clash)}")
+    known = PERMISSIONS.keys() | permissions.keys()
+    for role, codes in role_grants.items():  # validate everything before changing anything
+        if role not in ROLES:
+            raise ValueError(f"Unknown role {role!r}")
+        unknown = codes - known
+        if unknown:
+            raise ValueError(f"Grants for unknown permissions: {sorted(unknown)}")
+    PERMISSIONS.update(permissions)
+    for role, codes in role_grants.items():
+        ROLE_GRANTS[role] = ROLE_GRANTS[role] | codes
+
+
+# [S1]
+# [/S1]
+# [S3]
+# [/S3]
+# [S9]
+# [/S9]

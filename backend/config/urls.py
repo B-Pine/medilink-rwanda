@@ -17,6 +17,13 @@ api_v1: list[URLPattern | URLResolver] = [
     path("staff/auth/", include(staff_auth_urlpatterns)),
     path("patient/auth/", include(patient_auth_urlpatterns)),
     path("auth/", include(account_urlpatterns)),
+    # ---- Wave 1 routes: each sprint adds include() lines ONLY between its own markers ------
+    # [S1]
+    # [/S1]
+    # [S3]
+    # [/S3]
+    # [S9]
+    # [/S9]
 ]
 
 if settings.SCHEMA_ENABLED:  # non-production only (architecture 02 §7)

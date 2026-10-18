@@ -8,6 +8,7 @@ This root changelog covers documentation and repository-wide changes (CI, toolin
 
 ### Added
 
+- Parallel delivery in waves: wave plan in the roadmap, sprint contracts index and the shared-file protocol (`docs/architecture/contracts/README.md`); integration anchors (marked blocks and feature registries) in backend settings, URLs and permission catalogue, and in the frontend router, navigation, translations, API client, mocks and UI kit.
 - Sprint 0 acceptance record filled in with evidence: backend B1–B17, frontend F1–F12, integration I1–I9 (real frontend against the real API in Chrome), repository R1–R3.
 - `.gitleaks.toml`: default rules plus two narrow allowlists for synthetic test values (backend log-redaction test, frontend mock passphrase).
 - API catalogue v0.1 (`docs/api/`): planned phase-1 endpoints for every module, by sprint (S0–S11) and audience, with permissions, requirement IDs and notes; Sprint 0 endpoints marked Contracted. The generated OpenAPI schema stays the source of truth for implemented endpoints.

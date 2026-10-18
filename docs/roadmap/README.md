@@ -23,6 +23,23 @@ flowchart LR
 4. **Integration:** mocks are switched off and the frontend runs against the real backend on staging. Contract drift is fixed.
 5. **Release:** squash-merged PRs, changelog entries, version tags (`backend-vX.Y.Z`, `frontend-vX.Y.Z`).
 
+## Waves: sprints built in parallel
+
+Sprints whose dependencies are done are built **at the same time**, one backend builder and one frontend builder per sprint, each in its own branch. Shared files use marked blocks so parallel work merges cleanly ([shared-file protocol](../architecture/contracts/README.md#shared-file-protocol-parallel-sprints)).
+
+| Wave | Sprints | Depends on |
+|---|---|---|
+| 0 | S0 Foundations | — (done) |
+| 1 | S1 platform and onboarding · S3 patients and identity · S9 notification engine | S0 |
+| 2 | S2 facility setup · S10 help center and support | S1 |
+| 3 | S4 visits and the live queue | S2, S3 |
+| 4 | S5 booking and calendars · S6 clinical record | S4 |
+| 5 | S7 pharmacy and documents · S8 billing | S6 (S8 also S2, S4) |
+| 6 | S10 disputes and reports · S9 event wiring across modules | most modules |
+| 7 | S11 hardening and pilot readiness | all |
+
+Per wave: contracts first (merged), then parallel builders, then the orchestrator verifies each sprint against its contract and merges them one at a time (rebase, regenerate the OpenAPI schema, full suites, green CI).
+
 ## Definition of Done (every sprint, both sides)
 
 - [ ] All acceptance checks of the sprint contract verified with evidence

@@ -15,7 +15,8 @@ import {
 } from "@phosphor-icons/react";
 import type { PermissionCode, StaffMe } from "@medilink/api-client";
 
-export type NavKey =
+/** Sections of the Sprint 0 shell (labels in `shell.nav.<key>`). Features use their own keys. */
+export type CoreNavKey =
   | "today"
   | "queue"
   | "calendar"
@@ -30,10 +31,13 @@ export type NavKey =
   | "platformFacilities";
 
 export interface NavItem {
-  key: NavKey;
+  /** Core section key, or a feature key (label from `labelKey`). */
+  key: CoreNavKey | (string & {});
   path: string;
   icon: Icon;
   group: "facility" | "platform";
+  /** Translation key of the label; default `shell.nav.<key>` (features use their namespace). */
+  labelKey?: string;
   /** Shown only when this returns true (no greyed-out items, design 04 §2). */
   visible: (me: StaffMe) => boolean;
 }
@@ -125,7 +129,18 @@ export const NAV_ITEMS: readonly NavItem[] = [
     group: "platform",
     visible: (me) => me.is_platform_admin,
   },
+  // Shared-file protocol: new entries ONLY between the sprint's markers.
+  // [S1]
+  // [/S1]
+  // [S3]
+  // [/S3]
+  // [S9]
+  // [/S9]
 ];
+
+/** Translation key of a nav item's label. */
+export const navLabelKey = (item: Pick<NavItem, "key" | "labelKey">) =>
+  item.labelKey ?? `shell.nav.${item.key}`;
 
 export function visibleNavItems(me: StaffMe): NavItem[] {
   return NAV_ITEMS.filter(

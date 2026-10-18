@@ -5,6 +5,11 @@ import { Navigate, type RouteObject } from "react-router";
 import { RequireStaff } from "../auth/RequireStaff";
 import { AppShell } from "../layout/AppShell";
 import { NAV_ITEMS } from "../layout/navigation";
+import { FEATURES } from "./features";
+
+const featurePublic = FEATURES.flatMap((feature) => feature.public ?? []);
+const featureShell = FEATURES.flatMap((feature) => feature.shell ?? []);
+const featurePaths = new Set(featureShell.map((route) => route.path));
 
 // Pages are code-split per route (roadmap principle 4: small bundles on weak networks).
 const page =
@@ -50,7 +55,11 @@ export const routes: RouteObject[] = [
             children: [
               { index: true, element: <Navigate to="/today" replace /> },
               { path: "/today", lazy: page(() => import("../pages/TodayPage"), "TodayPage") },
-              ...NAV_ITEMS.filter((item) => item.key !== "today").map((item): RouteObject => ({
+              ...featureShell,
+              // Placeholders for sections whose feature has not been built yet.
+              ...NAV_ITEMS.filter(
+                (item) => item.key !== "today" && !featurePaths.has(item.path),
+              ).map((item): RouteObject => ({
                 path: item.path,
                 lazy: async () => {
                   const { PlaceholderPage } = await import("../pages/PlaceholderPage");
@@ -61,6 +70,7 @@ export const routes: RouteObject[] = [
           },
         ],
       },
+      ...featurePublic,
       { path: "*", lazy: page(() => import("../pages/NotFoundPage"), "NotFoundPage") },
     ],
   },

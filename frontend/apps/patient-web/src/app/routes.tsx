@@ -4,6 +4,7 @@ import type { RouteObject } from "react-router";
 
 import { RequirePatient } from "../auth/RequirePatient";
 import type { InfoSection } from "../pages/InfoPage";
+import { FEATURES } from "./features";
 
 // Pages are code-split per route: the landing page stays small on 3G (design 06 H4).
 const page =
@@ -41,8 +42,12 @@ export const routes: RouteObject[] = [
       info("/help", "help"),
       {
         element: <RequirePatient />,
-        children: [{ path: "/home", lazy: page(() => import("../pages/HomePage"), "HomePage") }],
+        children: [
+          { path: "/home", lazy: page(() => import("../pages/HomePage"), "HomePage") },
+          ...FEATURES.flatMap((feature) => feature.patient ?? []),
+        ],
       },
+      ...FEATURES.flatMap((feature) => feature.public ?? []),
       { path: "*", lazy: page(() => import("../pages/NotFoundPage"), "NotFoundPage") },
     ],
   },

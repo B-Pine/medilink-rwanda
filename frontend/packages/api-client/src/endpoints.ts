@@ -88,6 +88,14 @@ export function createMediLinkApi(client: ApiClient) {
       confirm: (body: PasswordResetConfirmRequest) =>
         client.post<void>(paths.passwordResetConfirm, body, sessionChange),
     },
+
+    // ---- Feature APIs: `<feature>: create<Feature>Api(client),` ONLY between the markers ----
+    // [S1]
+    // [/S1]
+    // [S3]
+    // [/S3]
+    // [S9]
+    // [/S9]
   };
 }
 

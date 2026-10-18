@@ -49,3 +49,11 @@ export {
 } from "./theme/theme";
 export type { ThemePreference } from "./theme/theme";
 export { cx } from "./utils/cx";
+
+// ---- New components (own files): exports ONLY between the sprint's markers ----
+// [S1]
+// [/S1]
+// [S3]
+// [/S3]
+// [S9]
+// [/S9]

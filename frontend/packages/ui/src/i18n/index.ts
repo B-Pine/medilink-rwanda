@@ -73,6 +73,27 @@ export function createI18n(appResources: AppResources, options: CreateI18nOption
   return instance;
 }
 
+/**
+ * Add feature translation namespaces to an app's resources: each feature's strings live in
+ * `src/features/<feature>/locales/{rw,en,fr}.json` and are reachable as `t("<feature>.key")`
+ * (shared-file protocol: docs/architecture/contracts/README.md).
+ */
+export function withFeatureResources(
+  base: AppResources,
+  features: Record<string, AppResources>,
+): AppResources {
+  const merged: AppResources = { rw: { ...base.rw }, en: { ...base.en }, fr: { ...base.fr } };
+  for (const [feature, resources] of Object.entries(features)) {
+    for (const lng of SUPPORTED_LANGUAGES) {
+      if (feature in merged[lng]) {
+        throw new Error(`Translation key "${feature}" is already used by the app resources`);
+      }
+      merged[lng] = { ...merged[lng], [feature]: resources[lng] };
+    }
+  }
+  return merged;
+}
+
 /** Flatten a translation tree to dotted keys (used by tests and the i18n review script). */
 export function flattenKeys(tree: TranslationTree, prefix = ""): Record<string, string> {
   const result: Record<string, string> = {};

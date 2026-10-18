@@ -5,6 +5,7 @@
 | [01](01-system-architecture.md) | System architecture | Components, repository layout, backend technology, local development, environments |
 | [02](02-api-conventions.md) | API conventions | URLs and audiences, formats, pagination, errors, security conventions, WebSockets, versioning |
 | [03](03-sprint-0-contract.md) | Sprint 0 contract | Foundation models, endpoints, schemas, backend and frontend acceptance checks |
+| [contracts/](contracts/README.md) | Sprint contracts (Wave 1 onwards) | Contract template, list of contracts, **shared-file protocol** for parallel sprints |
 | [04](04-database-design.md) | Database design (P1) | Tables per module, keys, indexes, row-level security, data classes, retention |
 
 Planned endpoints for every sprint: [API catalogue](../api/README.md).

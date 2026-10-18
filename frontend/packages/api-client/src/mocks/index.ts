@@ -1,5 +1,6 @@
 export { createMockApi } from "./handlers";
-export type { MockApi, MockHandlerOptions } from "./handlers";
+export type { MockApi, MockContext, MockHandlerOptions } from "./handlers";
+export type { FeatureMock, FeatureMockFactory } from "./features";
 export { createCookieStore, createMemoryStore } from "./session-store";
 export type { MockSessionStore } from "./session-store";
 export {

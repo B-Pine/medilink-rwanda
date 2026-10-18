@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router";
 
 import { ConnectionIndicator } from "./ConnectionIndicator";
-import { visibleNavItems, type NavItem } from "./navigation";
+import { navLabelKey, visibleNavItems, type NavItem } from "./navigation";
 
 function NavList({
   items,
@@ -16,7 +16,7 @@ function NavList({
   const { t } = useTranslation();
   return (
     <ul className="m-0 flex list-none flex-col gap-0.5 p-0">
-      {items.map(({ key, path, icon: ItemIcon }) => (
+      {items.map(({ key, path, icon: ItemIcon, labelKey }) => (
         <li key={key}>
           <NavLink
             to={path}
@@ -37,7 +37,7 @@ function NavList({
                   weight={isActive ? "fill" : "regular"}
                   className="size-icon shrink-0"
                 />
-                <span>{t(`shell.nav.${key}`)}</span>
+                <span>{t(navLabelKey({ key, labelKey }))}</span>
               </>
             )}
           </NavLink>

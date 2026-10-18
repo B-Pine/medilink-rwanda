@@ -5,3 +5,11 @@ export type { ApiErrorInit } from "./errors";
 export { createMediLinkApi, paths } from "./endpoints";
 export type { MediLinkApi } from "./endpoints";
 export * from "./types";
+
+// ---- Feature modules (src/features/<feature>.ts): exports ONLY between the sprint's markers ----
+// [S1]
+// [/S1]
+// [S3]
+// [/S3]
+// [S9]
+// [/S9]

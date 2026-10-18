@@ -25,6 +25,7 @@ import {
   type MockPatientRecord,
   type MockStaffUser,
 } from "./data";
+import { FEATURE_MOCKS } from "./features";
 import { languageFrom, message, type MessageKey } from "./messages";
 import { createMemoryStore, type MockSessionStore } from "./session-store";
 
@@ -56,6 +57,27 @@ export interface MockHandlerOptions {
   store?: MockSessionStore;
   /** Artificial latency in ms (browser only; keep 0 in tests). */
   latencyMs?: number;
+}
+
+/**
+ * What feature mock handlers get from the core mock API, so every feature enforces the same
+ * contract rules (CSRF, sessions, error envelope, latency) as Sprint 0.
+ */
+export interface MockContext {
+  /** Prefix matching any API origin: `${context.api}/staff/patients/`. */
+  api: string;
+  settle: () => Promise<void>;
+  languageFrom: (request: Request) => LanguageCode;
+  message: typeof message;
+  errorResponse: typeof errorResponse;
+  readJson: typeof readJson;
+  /** 403 `csrf_failed` response when the X-CSRFToken header is missing or wrong, else null. */
+  csrfFailure: (request: Request, lang: LanguageCode) => Response | null;
+  validationError: (lang: LanguageCode, fields: Record<string, MessageKey | string[]>) => Response;
+  /** The fully authenticated staff user (with active facility), or a 401 response. */
+  authenticatedStaff: (lang: LanguageCode) => { me: StaffMe } | { error: Response };
+  /** The logged-in patient account, or a 401 response. */
+  authenticatedPatient: (lang: LanguageCode) => { me: PatientMe } | { error: Response };
 }
 
 export interface MockApi {
@@ -205,6 +227,28 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
       return { error: errorResponse(401, "not_authenticated", message("notAuthenticated", lang)) };
     return { session, me };
   }
+
+  const context: MockContext = {
+    api: API,
+    settle,
+    languageFrom,
+    message,
+    errorResponse,
+    readJson,
+    csrfFailure,
+    validationError,
+    authenticatedStaff: (lang) => {
+      const result = authenticatedStaff(lang);
+      return result.error ? { error: result.error } : { me: result.me };
+    },
+    authenticatedPatient: (lang) => {
+      const session = patientSession();
+      return session
+        ? { me: session.me }
+        : { error: errorResponse(401, "not_authenticated", message("notAuthenticated", lang)) };
+    },
+  };
+  const features = FEATURE_MOCKS.map((create) => create(context));
 
   const handlers: HttpHandler[] = [
     http.get(`${API}/health/`, async () => {
@@ -486,9 +530,12 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
     }),
   ];
 
+  handlers.push(...features.flatMap((feature) => feature.handlers));
+
   return {
     handlers,
     reset() {
+      for (const feature of features) feature.reset?.();
       csrfToken = null;
       failures.clear();
       enrolled.clear();

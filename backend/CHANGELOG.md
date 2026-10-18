@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+<!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
+
+### Sprint 1 · Platform and onboarding
+
+### Sprint 3 · Patients and identity
+
+### Sprint 9 · Notifications
+
 ### Added
 
 - `DEV_SKIP_STAFF_MFA` (development only): staff log in without the second factor for local

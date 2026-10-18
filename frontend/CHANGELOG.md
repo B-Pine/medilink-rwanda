@@ -7,6 +7,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 ## [Unreleased]
 
+<!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
+
+### Sprint 1 · Platform and onboarding
+
+### Sprint 3 · Patients and identity
+
+### Sprint 9 · Notifications
+
 ## [0.1.0] - 2026-10-17
 
 Sprint 0 (Foundations), built against MSW mocks of the

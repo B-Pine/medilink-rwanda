@@ -7,17 +7,35 @@
  *
  * A test (tests/i18n.test.ts) fails when a key is missing from the review file.
  */
-import { readFileSync, writeFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const frontend = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
-export const CATALOGS = [
+const STATIC_CATALOGS = [
   { name: "Shared components (namespace ui)", dir: "packages/ui/src/i18n/locales" },
   { name: "Staff app", dir: "apps/staff-web/src/i18n/locales" },
   { name: "Patient app", dir: "apps/patient-web/src/i18n/locales" },
 ];
+
+/** Feature namespaces: apps/<app>/src/features/<feature>/locales (shared-file protocol). */
+function featureCatalogs() {
+  const found = [];
+  for (const app of ["staff-web", "patient-web"]) {
+    const featuresDir = join(frontend, "apps", app, "src", "features");
+    if (!existsSync(featuresDir)) continue;
+    for (const feature of readdirSync(featuresDir).sort()) {
+      const dir = `apps/${app}/src/features/${feature}/locales`;
+      if (existsSync(join(frontend, dir, "en.json"))) {
+        found.push({ name: `${app} feature: ${feature} (namespace ${feature})`, dir });
+      }
+    }
+  }
+  return found;
+}
+
+export const CATALOGS = [...STATIC_CATALOGS, ...featureCatalogs()];
 
 export function flatten(tree, prefix = "") {
   const out = {};

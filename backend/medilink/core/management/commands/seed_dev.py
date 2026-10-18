@@ -13,6 +13,7 @@ from typing import Any
 from django.conf import settings
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError, CommandParser
 from django.db import transaction
 
@@ -68,6 +69,18 @@ STAFF = [
     ),
 ]
 PATIENT = ("patient@demo.medilink.test", "Mukamana Jeanne")
+
+
+# Sprint dev seeders, run after the core demo data (shared-file protocol: one command name per
+# sprint, ONLY between its markers). Each must refuse to run when DEBUG is false.
+DEV_SEED_COMMANDS: list[str] = [
+    # [S1]
+    # [/S1]
+    # [S3]
+    # [/S3]
+    # [S9]
+    # [/S9]
+]
 
 
 class Command(BaseCommand):
@@ -156,6 +169,8 @@ class Command(BaseCommand):
                     raise CommandError("The demo patient account exists without a patient profile.")
             credentials.append((email, "patient", password))
 
+        for command in DEV_SEED_COMMANDS:  # sprint seeders, e.g. "seed_patients_dev"
+            call_command(command, stdout=self.stdout)
         self.stdout.write(self.style.SUCCESS("Demo data ready (synthetic, development only)."))
         self.stdout.write("Staff sign in at staff-web and set up TOTP on first login.\n")
         width = max(len(email) for email, _, _ in credentials)

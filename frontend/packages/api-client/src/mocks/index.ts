@@ -13,6 +13,7 @@ export {
   MOCK_RETRY_AFTER_SECONDS,
   MOCK_TOTP_CODE,
   PATIENTS,
+  extendMockRoleGrants,
   ROLE_PERMISSIONS,
   STAFF_USERS,
 } from "./data";

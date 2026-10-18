@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router";
 
 import { useStaffMe } from "../auth/queries";
+import { FEATURE_HEADER_ITEMS, FEATURE_SHELL_OVERLAYS } from "../app/features";
 import { FacilitySwitcher } from "./FacilitySwitcher";
 import { Sidebar } from "./Sidebar";
 import { UserMenu } from "./UserMenu";
@@ -49,6 +50,9 @@ export function AppShell() {
         <header className="sticky top-0 z-30 flex min-h-16 items-center gap-3 border-b border-border bg-surface px-4 print:hidden lg:px-8">
           <FacilitySwitcher me={me} />
           <div className="ml-auto flex items-center gap-2">
+            {FEATURE_HEADER_ITEMS().map((Item, index) => (
+              <Item key={index} />
+            ))}
             <UserMenu me={me} />
           </div>
         </header>
@@ -60,6 +64,9 @@ export function AppShell() {
           <Outlet />
         </main>
       </div>
+      {FEATURE_SHELL_OVERLAYS().map((Overlay, index) => (
+        <Overlay key={index} />
+      ))}
     </div>
   );
 }

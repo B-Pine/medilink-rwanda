@@ -343,6 +343,13 @@ REST_FRAMEWORK = {
         "mfa": env("THROTTLE_RATE_MFA", default="30/min"),
         "register": env("THROTTLE_RATE_REGISTER", default="20/hour"),
         "password_reset": env("THROTTLE_RATE_PASSWORD_RESET", default="10/hour"),
+        # ---- Sprint throttle scopes: ONLY between the sprint's markers ----
+        # [S1]
+        # [/S1]
+        # [S3]
+        # [/S3]
+        # [S9]
+        # [/S9]
     },
     # Number of trusted reverse proxies in front of the app (X-Forwarded-For handling).
     "NUM_PROXIES": env.int("NUM_PROXIES", default=0),

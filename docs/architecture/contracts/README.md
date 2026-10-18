@@ -63,6 +63,16 @@ Several sprints are built at the same time in separate branches. To keep them me
 | `frontend/packages/api-client/src/endpoints.ts` (`createMediLinkApi`) | `<feature>: create<Feature>Api(client),` |
 | `frontend/packages/api-client/src/mocks/features.ts` | Import + factory of the feature's mock handlers. Factories receive a `MockContext` (CSRF check, staff/patient session, error envelope, latency) so feature mocks enforce the same rules as Sprint 0. |
 | `frontend/packages/ui/src/index.ts` | Export lines for new components |
+| `backend/medilink/audit/actions.py` | `from medilink.<app> import audit_actions as _sN` + `extend_actions(_sN.ACTIONS)` (`extend_actions()` refuses malformed or already-registered names; `record()` refuses unknown actions) |
+| `backend/config/settings/base.py` (`DEFAULT_THROTTLE_RATES`) | The sprint's throttle scopes (or keep rates on the sprint's own throttle classes) |
+| `backend/medilink/core/realtime.py` | Consumer imports in `[SN imports]`, WebSocket `path(...)` lines in `[SN]` |
+| `backend/medilink/core/management/commands/seed_dev.py` (`DEV_SEED_COMMANDS`) | The name of the sprint's own dev seed command (it must refuse to run without `DEBUG`) |
+| `backend/.env.example` | The sprint's environment variables, documented |
+| `backend/requirements/base.in` | New dependencies (justified in the PR); the `*.txt` lock files are **regenerated after rebasing**, never hand-merged |
+| Registry files (`features.ts`, `i18n/features.ts`, `mocks/features.ts`, `endpoints.ts`, `navigation.ts`) | Imports go between `// [SN imports]` markers at the top; entries go in the `[SN]` block inside the array or object |
+| `frontend/apps/patient-web/pwa.config.ts` (`importScripts`) | Extra service-worker scripts (e.g. web push) |
+| Shell slots | A feature module may also provide `headerItems` and `shellOverlays` (staff-web) or `headerItems` and `homeCards` (patient-web) in its `FeatureRoutes` entry, so no shell file is edited |
+| Permission codes (frontend) | Augment `PermissionCodes` by declaration merging in the feature's api-client module (`declare module "../types" { interface PermissionCodes { "patients.view": true } }`); add mock grants with `extendMockRoleGrants()` in the feature's mock file. Mock grants mirror the backend `ROLE_GRANTS`. |
 
 ### Never
 
@@ -70,6 +80,17 @@ Several sprints are built at the same time in separate branches. To keep them me
 - Edit Sprint 0 migrations, or the base locale files (`src/i18n/locales/*.json`): use the feature namespace.
 - Hand-merge `backend/openapi/openapi.yaml`: regenerate it after rebasing (`manage.py spectacular --validate --fail-on-warn --file openapi/openapi.yaml` with test settings).
 - Rename or move shared code without a separate, agreed pull request.
+
+### Wave 1 ownership of Sprint 0 files
+
+Some features hook into the Sprint 0 core and cannot stay inside blocks. In Wave 1 these files are **owned by S1** (lock screen, PIN, step-up, feature flags); S3 and S9 builders must not edit them:
+
+- backend: `accounts/models.py` (+ its migration), `accounts/sessions.py`, `accounts/principal.py`, `accounts/services.py`, `accounts/serializers.py`, `authz/permissions.py`, the session settings in `config/settings/base.py`, `tests/test_b04_audience_sessions.py`, `docker-compose.yml`
+- staff-web: `layout/AppShell.tsx` (outside the slots), `auth/RequireStaff.tsx`, `app/services.tsx`, `layout/UserMenu.tsx`
+- api-client: `types.ts` (S0 types), `mocks/handlers.ts`, `mocks/data.ts` (outside `extendMockRoleGrants`)
+- patient-web: `app/routes.tsx` (S1 removes the Sprint 0 `/for-facilities` placeholder so its feature route can take the path)
+
+Staff-web `/platform/...` routes are split by feature: S1 owns `/platform/applications`, `/platform/facilities`, `/platform/master-data`, `/platform/flags`; S3 owns `/platform/merge-requests`; S9 owns `/platform/announcements`. **No catch-all `/platform/*` route.**
 
 ### Wave 1 names (reserved)
 

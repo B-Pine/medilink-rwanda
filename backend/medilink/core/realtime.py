@@ -126,8 +126,23 @@ class StaffPingConsumer(AsyncJsonWebsocketConsumer):
         await self.close(code=CLOSE_UNAUTHENTICATED)
 
 
+# ---- Sprint consumer imports: ONLY between the sprint's markers (shared-file protocol) ----
+# [S1 imports]
+# [/S1 imports]
+# [S3 imports]
+# [/S3 imports]
+# [S9 imports]
+# [/S9 imports]
+
 websocket_urlpatterns = [
     path("ws/v1/staff/ping/", StaffPingConsumer.as_asgi()),
+    # ---- Sprint WebSocket routes: ONLY between the sprint's markers ----
+    # [S1]
+    # [/S1]
+    # [S3]
+    # [/S3]
+    # [S9]
+    # [/S9]
 ]
 
 

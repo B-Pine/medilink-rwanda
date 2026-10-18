@@ -15,7 +15,7 @@ import sys
 import unicodedata
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-SKIP_DIRS = {".git", "node_modules", "dist", "build", ".venv", "venv", "coverage", "__pycache__"}
+SKIP_DIRS = {".git", ".claude", "node_modules", "dist", "build", ".venv", "venv", "coverage", "__pycache__"}
 LINK = re.compile(r"!?\[(?:[^\]\[]|\[[^\]]*\])*\]\(\s*<?([^)\s>]+)>?(?:\s+\"[^\"]*\")?\s*\)")
 FENCE = re.compile(r"^\s*(```|~~~)")
 INLINE_CODE = re.compile(r"`[^`]*`")

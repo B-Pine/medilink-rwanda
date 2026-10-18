@@ -30,17 +30,46 @@ export type FacilityType =
 
 export type RoleCode = "facility_admin" | "receptionist" | "doctor" | "pharmacist";
 
-export type PermissionCode =
-  | "facility.configure"
-  | "staff.manage"
-  | "queue.operate"
-  | "clinical.write"
-  | "clinical.sign"
-  | "pharmacy.dispense"
-  | "billing.record_payment"
-  | "billing.approve"
-  | "reports.view"
-  | "audit.view";
+/**
+ * Known permission codes. Feature modules add theirs by declaration merging in their own file,
+ * without editing this one (shared-file protocol):
+ *   declare module "../types" { interface PermissionCodes { "patients.view": true } }
+ */
+export interface PermissionCodes {
+  "facility.configure": true;
+  "staff.manage": true;
+  "schedule.manage": true;
+  "schedule.view": true;
+  "leave.request": true;
+  "booking.manage": true;
+  "patient.register": true;
+  "queue.operate": true;
+  "queue.call": true;
+  "vitals.record": true;
+  "visit.reason.view": true;
+  "clinical.view": true;
+  "clinical.write": true;
+  "clinical.sign": true;
+  "clinical.amend_own": true;
+  "prescription.issue": true;
+  "prescription.view": true;
+  "pharmacy.dispense": true;
+  "billing.record_payment": true;
+  "billing.approve": true;
+  "documents.upload": true;
+  "records.import": true;
+  "records.import_clinical": true;
+  "patients.merge_request": true;
+  "disputes.raise": true;
+  "disputes.handle": true;
+  "disputes.comment": true;
+  "reports.view": true;
+  "reports.view_own": true;
+  "audit.view": true;
+  "subscription.view": true;
+}
+
+export type PermissionCode = keyof PermissionCodes;
 
 export interface FacilitySummary {
   id: Uuid;

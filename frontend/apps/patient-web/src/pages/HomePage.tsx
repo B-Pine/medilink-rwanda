@@ -13,6 +13,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 
+import { FEATURE_HEADER_ITEMS, FEATURE_HOME_CARDS } from "../app/features";
 import { useLogout, usePatientMe } from "../auth/queries";
 import { PageHeading } from "../components/PageHeading";
 import { EmergencyNotice } from "../layout/EmergencyNotice";
@@ -43,6 +44,9 @@ export function HomePage() {
           </Link>
           <div className="ml-auto flex flex-wrap items-center gap-2">
             <LanguageSwitcher compact />
+            {FEATURE_HEADER_ITEMS().map((Item, index) => (
+              <Item key={index} />
+            ))}
             <Button
               variant="ghost"
               onClick={onLogout}
@@ -77,6 +81,10 @@ export function HomePage() {
           <MagnifyingGlass aria-hidden="true" className="size-icon" />
           {t("home.findCare")}
         </Link>
+
+        {FEATURE_HOME_CARDS().map((HomeCard, index) => (
+          <HomeCard key={index} />
+        ))}
 
         <Card as="section" aria-labelledby="next-visit" className="flex items-start gap-4">
           <CalendarBlank aria-hidden="true" className="size-8 shrink-0 text-brand" />

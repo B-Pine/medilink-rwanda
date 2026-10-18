@@ -16,6 +16,14 @@ import type {
   Uuid,
 } from "./types";
 
+// ---- Feature imports: ONLY between the sprint's markers (shared-file protocol) ----
+// [S1 imports]
+// [/S1 imports]
+// [S3 imports]
+// [/S3 imports]
+// [S9 imports]
+// [/S9 imports]
+
 /** Every Sprint 0 endpoint (docs/architecture/03-sprint-0-contract.md §2), typed. */
 export const paths = {
   health: "/api/v1/health/",

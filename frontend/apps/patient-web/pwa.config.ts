@@ -42,6 +42,15 @@ export const pwaOptions: Partial<VitePWAOptions> = {
     navigateFallback: "/index.html",
     navigateFallbackDenylist: [/^\/api\//],
     cleanupOutdatedCaches: true,
+    // Extra service-worker scripts (e.g. web push handlers): ONLY between the sprint's markers.
+    importScripts: [
+      // [S1]
+      // [/S1]
+      // [S3]
+      // [/S3]
+      // [S9]
+      // [/S9]
+    ],
     runtimeCaching: [
       {
         urlPattern: ({ url }) => url.pathname.startsWith("/api/"),

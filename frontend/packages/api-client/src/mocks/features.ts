@@ -2,6 +2,14 @@ import type { HttpHandler } from "msw";
 
 import type { MockContext } from "./handlers";
 
+// ---- Feature imports: ONLY between the sprint's markers (shared-file protocol) ----
+// [S1 imports]
+// [/S1 imports]
+// [S3 imports]
+// [/S3 imports]
+// [S9 imports]
+// [/S9 imports]
+
 /** A feature's MSW handlers, plus how to reset its in-memory state between tests. */
 export interface FeatureMock {
   handlers: HttpHandler[];

@@ -26,20 +26,69 @@ export const MOCK_RATE_LIMITED_EMAIL = "ratelimited@medilink.test";
 export const MOCK_MAX_FAILURES = 5;
 export const MOCK_RETRY_AFTER_SECONDS = 60;
 
+/** Mirrors backend `authz.catalogue.ROLE_GRANTS` (Sprint 0 seed); features extend it below. */
 export const ROLE_PERMISSIONS: Record<RoleCode, PermissionCode[]> = {
   facility_admin: [
-    "facility.configure",
-    "staff.manage",
-    "queue.operate",
-    "billing.record_payment",
-    "billing.approve",
-    "reports.view",
     "audit.view",
+    "billing.approve",
+    "billing.record_payment",
+    "disputes.handle",
+    "disputes.raise",
+    "documents.upload",
+    "facility.configure",
+    "patient.register",
+    "patients.merge_request",
+    "queue.operate",
+    "records.import",
+    "reports.view",
+    "schedule.manage",
+    "schedule.view",
+    "staff.manage",
+    "subscription.view",
+    "visit.reason.view",
   ],
-  receptionist: ["queue.operate", "billing.record_payment"],
-  doctor: ["clinical.write", "clinical.sign"],
-  pharmacist: ["pharmacy.dispense"],
+  receptionist: [
+    "billing.record_payment",
+    "booking.manage",
+    "disputes.comment",
+    "documents.upload",
+    "patient.register",
+    "queue.operate",
+    "reports.view_own",
+    "schedule.view",
+    "visit.reason.view",
+    "vitals.record",
+  ],
+  doctor: [
+    "clinical.amend_own",
+    "clinical.sign",
+    "clinical.view",
+    "clinical.write",
+    "disputes.comment",
+    "documents.upload",
+    "leave.request",
+    "patient.register",
+    "prescription.issue",
+    "prescription.view",
+    "queue.call",
+    "records.import_clinical",
+    "reports.view_own",
+    "visit.reason.view",
+    "vitals.record",
+  ],
+  pharmacist: ["disputes.comment", "pharmacy.dispense", "prescription.view", "reports.view_own"],
 };
+
+/**
+ * Add a feature's role grants to the mocks (call it at module load in the feature's mock file).
+ * Mirrors backend `catalogue.extend()`; already-granted codes are ignored.
+ */
+export function extendMockRoleGrants(grants: Partial<Record<RoleCode, PermissionCode[]>>): void {
+  for (const [role, codes] of Object.entries(grants) as [RoleCode, PermissionCode[]][]) {
+    const current = ROLE_PERMISSIONS[role];
+    for (const code of codes) if (!current.includes(code)) current.push(code);
+  }
+}
 
 export const FACILITIES = {
   kigaliClinic: {

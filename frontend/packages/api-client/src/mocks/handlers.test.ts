@@ -11,6 +11,7 @@ import {
   MOCK_RECOVERY_CODE,
   MOCK_RESET_TOKEN,
   MOCK_TOTP_CODE,
+  ROLE_PERMISSIONS,
 } from "./data";
 import { createMockServer } from "./node";
 
@@ -85,7 +86,10 @@ describe("staff auth", () => {
     expect(confirmed.user.mfa_enabled).toBe(true);
     // One membership: the active facility is set automatically.
     expect(confirmed.user.active_facility_id).toBe(FACILITIES.kigaliClinic.id);
-    expect(confirmed.user.permissions).toEqual(["queue.operate", "billing.record_payment"]);
+    // Receptionist grants mirror the backend seed (authz.catalogue.ROLE_GRANTS).
+    expect([...confirmed.user.permissions].sort()).toEqual(
+      [...ROLE_PERMISSIONS.receptionist].sort(),
+    );
 
     const me = await api.staffAuth.me();
     expect(me.email).toBe("new.staff@medilink.test");

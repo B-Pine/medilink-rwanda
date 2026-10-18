@@ -15,6 +15,14 @@ import {
 } from "@phosphor-icons/react";
 import type { PermissionCode, StaffMe } from "@medilink/api-client";
 
+// ---- Feature imports: ONLY between the sprint's markers (shared-file protocol) ----
+// [S1 imports]
+// [/S1 imports]
+// [S3 imports]
+// [/S3 imports]
+// [S9 imports]
+// [/S9 imports]
+
 /** Sections of the Sprint 0 shell (labels in `shell.nav.<key>`). Features use their own keys. */
 export type CoreNavKey =
   | "today"

@@ -8,6 +8,7 @@ This root changelog covers documentation and repository-wide changes (CI, toolin
 
 ### Added
 
+- Second round of integration anchors: audit action registry (`extend_actions()`), throttle, env, dependency, WebSocket route and dev-seed blocks; import marker blocks in frontend registries; shell slots (`headerItems`, `shellOverlays`, `homeCards`); PWA `importScripts` block; extensible frontend permission codes with all 31 Sprint 0 codes; mock role grants mirroring the backend seed (`extendMockRoleGrants()`); Wave 1 ownership rules for Sprint 0 files and `/platform` routes.
 - Parallel delivery in waves: wave plan in the roadmap, sprint contracts index and the shared-file protocol (`docs/architecture/contracts/README.md`); integration anchors (marked blocks and feature registries) in backend settings, URLs and permission catalogue, and in the frontend router, navigation, translations, API client, mocks and UI kit.
 - Sprint 0 acceptance record filled in with evidence: backend B1–B17, frontend F1–F12, integration I1–I9 (real frontend against the real API in Chrome), repository R1–R3.
 - `.gitleaks.toml`: default rules plus two narrow allowlists for synthetic test values (backend log-redaction test, frontend mock passphrase).

@@ -16,3 +16,12 @@ argon2-cffi>=25.1
 django-otp>=1.6
 # Windows needs tzdata for zoneinfo; listed explicitly so one lock file works on Linux and Windows.
 tzdata
+
+# ---- Sprint dependencies: ONLY between the sprint's markers (justify each in the PR).
+# Lock files (*.txt) are regenerated after rebasing, never hand-merged.
+# [S1]
+# [/S1]
+# [S3]
+# [/S3]
+# [S9]
+# [/S9]

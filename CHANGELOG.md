@@ -8,6 +8,7 @@ This root changelog covers documentation and repository-wide changes (CI, toolin
 
 ### Added
 
+- Wave 1 sprint contracts: S1 platform and onboarding (65 endpoints, 40 acceptance checks), S3 patients and identity (58 endpoints, 47 checks, Part B after S1), S9 notification engine (37 endpoints + 2 WebSocket routes, 36 checks); reconciled with each other and with the merged anchors. API conventions gain `401 session_locked`; security 03 records the 15-minute lock with a 4-hour session idle limit. Traceability: 34 Wave 1 requirements In progress.
 - Second round of integration anchors: audit action registry (`extend_actions()`), throttle, env, dependency, WebSocket route and dev-seed blocks; import marker blocks in frontend registries; shell slots (`headerItems`, `shellOverlays`, `homeCards`); PWA `importScripts` block; extensible frontend permission codes with all 31 Sprint 0 codes; mock role grants mirroring the backend seed (`extendMockRoleGrants()`); Wave 1 ownership rules for Sprint 0 files and `/platform` routes.
 - Parallel delivery in waves: wave plan in the roadmap, sprint contracts index and the shared-file protocol (`docs/architecture/contracts/README.md`); integration anchors (marked blocks and feature registries) in backend settings, URLs and permission catalogue, and in the frontend router, navigation, translations, API client, mocks and UI kit.
 - Sprint 0 acceptance record filled in with evidence: backend B1–B17, frontend F1–F12, integration I1–I9 (real frontend against the real API in Chrome), repository R1–R3.

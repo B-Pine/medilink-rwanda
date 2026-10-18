@@ -9,9 +9,9 @@ A sprint contract is the agreement a sprint is built and verified against: scope
 | Sprint | Contract | Wave | Status |
 |---|---|---|---|
 | S0 · Foundations | [03 · Sprint 0 contract](../03-sprint-0-contract.md) | 0 | Verified (`backend-v0.1.0`, `frontend-v0.1.0`) |
-| S1 · Platform and onboarding | `sprint-01-platform-onboarding.md` | 1 | Contract in progress |
-| S3 · Patients and identity | `sprint-03-patients.md` | 1 | Contract in progress |
-| S9 · Notification engine | `sprint-09-notifications.md` | 1 | Contract in progress |
+| S1 · Platform and onboarding | [sprint-01-platform-onboarding.md](sprint-01-platform-onboarding.md) | 1 | Contracted |
+| S3 · Patients and identity | [sprint-03-patients.md](sprint-03-patients.md) | 1 | Contracted (Part B after S1 merges) |
+| S9 · Notification engine | [sprint-09-notifications.md](sprint-09-notifications.md) | 1 | Contracted |
 
 Acceptance checks are named per sprint: `S1-B1`, `S1-F1`, `S3-B1`, `S9-F4`, and so on (B = backend, F = frontend, I = integration).
 

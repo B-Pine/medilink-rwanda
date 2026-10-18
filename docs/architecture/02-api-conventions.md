@@ -61,6 +61,7 @@ Always this shape, with the matching HTTP status:
 | 400 | `bad_request` | Malformed request |
 | 401 | `not_authenticated` | No valid session for this audience |
 | 401 | `mfa_required` | Password OK, second factor pending |
+| 401 | `session_locked` | Staff session locked after idle time; unlock with PIN or password (S1) |
 | 403 | `permission_denied` | Authenticated but not allowed (only when the object's existence may be known; otherwise 404) |
 | 403 | `step_up_required` | Recent re-authentication needed |
 | 403 | `csrf_failed` | Missing or invalid CSRF token |

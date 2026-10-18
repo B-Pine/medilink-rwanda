@@ -67,7 +67,7 @@ Recent strong authentication (≤ 5 minutes) is required for:
 |---|---|---|
 | Mechanism | Django server-side session on the API host (`api.medilink.rw`); cookie `__Host-ml_staff`, selected for `/api/v1/staff/*` and `/api/v1/platform/*` | `__Host-ml_patient`, selected for `/api/v1/patient/*` ([ADR 0006](../decisions/0006-separate-frontend-and-backend-hosting.md)) |
 | Cookie flags | `Secure`, `HttpOnly`, `SameSite=Lax`, `Path=/`, no `Domain` (host-only) | same |
-| Idle timeout | 15 min (configurable 5–30) → lock screen with PIN unlock (same user only) | 30 days with "keep me signed in", else 12 h; sensitive views re-auth after 15 min idle |
+| Idle timeout | 15 min (configurable 5–30) → **lock screen** with PIN unlock (same user only); the session itself ends after 4 h idle (S1-D: a 15-min logout would make PIN unlock pointless) | 30 days with "keep me signed in", else 12 h; sensitive views re-auth after 15 min idle |
 | Absolute lifetime | 12 h (one shift) | 30 days |
 | Rotation | New session ID on login, privilege change and facility switch (prevents fixation) | On login |
 | Concurrent sessions | Visible list; "sign out other sessions" | same |

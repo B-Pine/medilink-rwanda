@@ -32,8 +32,21 @@ label "area:ussd"           fbca04 "USSD channel (phase 4)"
 label "priority:high"       b60205 "Do next"
 label "priority:low"        ededed "When time allows"
 label "patient-data"        000000 "Touches patient data, extra review needed"
+label "area:patients"       0e8a16 "Patient identity, dependents, health profile"
+label "area:security"       000000 "Authentication, authorisation, encryption, audit"
+label "area:ops"            5a5a5a "Infrastructure, deployment, monitoring, runbooks"
+label "area:i18n"           fbca04 "Translations and localisation"
+label "type:decision"       d876e3 "Decision or open question to settle"
+label "wave:1"              0052cc "Wave 1 (S1, S3, S9 in parallel)"
+for s in 1 2 3 4 5 6 7 8 9 10 11; do label "sprint:S$s" 1d76db "Sprint $s"; done
 
-ms() { gh api "repos/$REPO/milestones" -f title="$1" -f description="$2" >/dev/null && echo "milestone: $1"; }
+ms() {
+  if gh api "repos/$REPO/milestones?state=all" --jq '.[].title' | grep -Fxq "$1"; then
+    echo "milestone exists: $1"
+  else
+    gh api "repos/$REPO/milestones" -f title="$1" -f description="$2" >/dev/null && echo "milestone: $1"
+  fi
+}
 
 ms "M1 · Web MVP" "Onboarding, six roles, patient PWA, booking, live queue with walk-ins, clinical records, prescriptions, dispensing, documents, billing, notifications, disputes, audit"
 ms "M2 · Pilot and growth" "Pilot facilities with impact measurement, referrals, sharing, waitlist, ratings, claims, subscriptions, rules-based triage"

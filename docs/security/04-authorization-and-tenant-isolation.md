@@ -65,7 +65,7 @@ CREATE POLICY staff_facility_isolation ON clinical_consultation
 CREATE POLICY patient_own_records ON clinical_consultation FOR SELECT
   USING (patient_id IN (
     SELECT patient_id FROM patient_link
-    WHERE account_id = NULLIF(current_setting('app.account_id', true), '')::uuid
+    WHERE account_id = NULLIF(current_setting('app.user_id', true), '')::uuid
       AND revoked_at IS NULL));
 ```
 

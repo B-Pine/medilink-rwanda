@@ -76,4 +76,4 @@ Threat model, security architecture, authentication, authorisation and tenant is
 
 ## Next
 
-Sprint 0 (Foundations) is in development. Documentation changes are listed in the [root changelog](../CHANGELOG.md); the backend and frontend keep their own changelogs.
+Sprint 0 (Foundations) is done and verified (`backend-v0.1.0`, `frontend-v0.1.0`). Wave 1 (S1 platform and onboarding, S3 patients and identity, S9 notification engine) is contracted and is built next, in parallel ([sprint contracts](architecture/contracts/README.md)). Documentation changes are listed in the [root changelog](../CHANGELOG.md); the backend and frontend keep their own changelogs.

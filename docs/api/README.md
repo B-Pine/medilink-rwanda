@@ -51,33 +51,48 @@ Definition of Done (every sprint, [roadmap](../roadmap/README.md)): "CHANGELOG u
 
 ## 4. Permission catalogue
 
-Seeded in Sprint 0 from the permission matrix ([analysis 02](../analysis/02-users-roles-and-permissions.md) §3), as listed in the [Sprint 0 contract](../architecture/03-sprint-0-contract.md) §1. Proposed codes (†) are added by the sprint that first needs them, in a data migration, and the authorisation test matrix is extended in the same pull request.
+Sprint 0 seeded **31 codes** from the permission matrix ([analysis 02](../analysis/02-users-roles-and-permissions.md) §3) by data migration; the source is `backend/medilink/authz/catalogue.py`, and `backend/tests/test_roles_seed.py` checks that code and database agree. A sprint that needs a new code defines it in its own app (`medilink/<app>/permissions.py`), seeds it with a data migration, registers it with `extend()` in its `[SN]` block, and extends the authorisation test matrix in the same pull request ([contracts README](../architecture/contracts/README.md)). Codes marked † are contracted but not seeded yet.
 
 | Code | Facility admin | Receptionist | Doctor | Pharmacist | Status |
 |---|---|---|---|---|---|
 | `facility.configure` | ✓ | — | — | — | Seeded (S0) |
 | `staff.manage` | ✓ | — | — | — | Seeded (S0) |
+| `schedule.manage` | ✓ | — | — | — | Seeded (S0) |
+| `schedule.view` | ✓ | ✓ | — | — | Seeded (S0) |
+| `leave.request` (own leave) | — | — | ✓ | — | Seeded (S0) |
+| `booking.manage` (book for patients) | — | ✓ | — | — | Seeded (S0) |
+| `patient.register` (walk-in registration, demographics) | ✓ | ✓ | ✓ | — | Seeded (S0) |
 | `queue.operate` (check in, issue ticket, set priority, reorder with reason) | ✓ | ✓ | — | — | Seeded (S0) |
-| `clinical.write` (consultation draft, vitals, diagnoses, prescriptions) | — | — | ✓ | — | Seeded (S0) |
+| `queue.call` (call next, start, complete a stage) | — | — | ✓ | — | Seeded (S0) |
+| `vitals.record` | — | ✓ | ✓ | — | Seeded (S0) |
+| `visit.reason.view` | ✓ | ✓ | ✓ | — | Seeded (S0) |
+| `clinical.view` | — | — | ✓ | — | Seeded (S0) |
+| `clinical.write` (consultation draft, diagnoses, prescription drafts) | — | — | ✓ | — | Seeded (S0) |
 | `clinical.sign` | — | — | ✓ | — | Seeded (S0) |
+| `clinical.amend_own` | — | — | ✓ | — | Seeded (S0) |
+| `prescription.issue` | — | — | ✓ | — | Seeded (S0) |
+| `prescription.view` (prescription and allergies for dispensing) | — | — | ✓ | ✓ | Seeded (S0) |
 | `pharmacy.dispense` | — | — | — | ✓ | Seeded (S0) |
 | `billing.record_payment` (bills, payments, receipts) | ✓ | ✓ | — | — | Seeded (S0) |
 | `billing.approve` (voids, refunds, waivers) | ✓ | — | — | — | Seeded (S0) |
+| `documents.upload` | ✓ | ✓ (ID, insurance card) | ✓ (results) | — | Seeded (S0) |
+| `records.import` (legacy register import) | ✓ | — | — | — | Seeded (S0) |
+| `records.import_clinical` (structured back-entry) | — | — | ✓ | — | Seeded (S0) |
+| `patients.merge_request` | ✓ | ✓ (granted by S3) | — | — | Seeded (S0); receptionist grant contracted in S3 |
+| `patients.merge_approve` † | ✓ | — | — | — | Contracted (S3) |
+| `patients.view` † (search and view facility patient records) | ✓ | ✓ | ✓ | — | Contracted (S3) |
+| `patients.identifier_reveal` † | ✓ | ✓ | — | — | Contracted (S3) |
+| `patients.insurance_verify` † | ✓ | ✓ | — | — | Contracted (S3) |
+| `announcements.manage` † | ✓ | — | — | — | Contracted (S9) |
+| `disputes.raise` (facility against the platform) | ✓ | — | — | — | Seeded (S0) |
+| `disputes.handle` | ✓ | — | — | — | Seeded (S0) |
+| `disputes.comment` | — | ✓ | ✓ | ✓ | Seeded (S0) |
 | `reports.view` (facility reports) | ✓ | — | — | — | Seeded (S0) |
+| `reports.view_own` (own shift / own activity) | — | ✓ | ✓ | ✓ | Seeded (S0) |
 | `audit.view` (facility audit log) | ✓ | — | — | — | Seeded (S0) |
-| `schedule.manage` † | ✓ | view only | own leave requests | — | Proposed (S2) |
-| `patients.register` † (walk-in registration, demographics) | ✓ | ✓ | ✓ | — | Proposed (S3) |
-| `patients.merge_request` † | ✓ (per matrix) | ✓ (per analysis 04; see note) | — | — | Proposed (S3) |
-| `patients.merge_approve` † | ✓ | — | — | — | Proposed (S3) |
-| `queue.call` † (call next, start, complete a stage) | — | — | ✓ | — | Proposed (S4) |
-| `vitals.record` † | — | ✓ | ✓ | — | Proposed (S6) |
-| `documents.upload` † | ✓ | ✓ (ID, insurance card) | ✓ (results) | — | Proposed (S3) |
-| `legacy.import` † | ✓ | — | ltd (back-entry uses `clinical.write`) | — | Proposed (S6) |
-| `disputes.handle` † | ✓ | — | — | — | Proposed (S10) |
-| `disputes.comment` † | — | ✓ | ✓ | ✓ | Proposed (S10) |
-| `reports.view_own` † (own shift / own activity) | — | ✓ | ✓ | ✓ | Proposed (S10) |
+| `subscription.view` | ✓ | — | — | — | Seeded (S0) |
 
-Note on merges: the matrix in analysis 02 §3 gives "request" to the facility admin and nothing to the receptionist, while analysis 04 §3.2 and security 11 §6 say the receptionist requests and the facility admin approves. The S3 contract must settle this and update the analysis.
+Merges: resolved by the [S3 contract](../architecture/contracts/sprint-03-patients.md#10-decisions-and-deviations-from-the-docs) (D-2): the receptionist requests, the facility admin approves within the facility, and the super admin approves cross-facility merges, as in the corrected matrix.
 
 The super admin is the `is_platform_admin` flag, not a facility role. Platform endpoints check that flag, and sensitive platform actions also need step-up. Patient endpoints check that the account is linked to the patient (`self`, `guardian` or active `delegate`), and that restricted records are hidden from delegates ([security 04](../security/04-authorization-and-tenant-isolation.md) §3).
 
@@ -113,7 +128,7 @@ These come out of the catalogue and need agreement (in the sprint contract that 
 
 - **Platform access to facility-owned rows** (escalated disputes, break-glass, facility data export) and **public reads of facility configuration** (search, profiles, slots) need explicit row-level security contexts. Options are in [architecture 04](../architecture/04-database-design.md) §3.
 - **Cross-facility checks** (doctor schedule conflicts, booking cap of 3 per patient, no-show strikes) need narrow database functions that return only a yes/no or a count, so RLS stays intact ([architecture 04](../architecture/04-database-design.md) §3).
-- **Session management, PIN unlock, passkeys and password change** are required by the security documents but not yet placed in a sprint (see the catalogue's "Not yet scheduled" section).
+- **Session management, passkeys and password change** are required by the security documents but not yet placed in a sprint (see the catalogue's "Not yet scheduled" section). PIN unlock, step-up and feature flags are contracted in [S1](../architecture/contracts/sprint-01-platform-onboarding.md).
 
 ## 8. Documents
 

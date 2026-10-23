@@ -31,12 +31,14 @@ Sprints whose dependencies are done are built **at the same time**, one backend 
 |---|---|---|
 | 0 | S0 Foundations | — (done) |
 | 1 | S1 platform and onboarding · S3 patients and identity · S9 notification engine | S0 |
-| 2 | S2 facility setup · S10 help center and support | S1 |
+| 2 | S2 facility setup · S10 part 1: help center and support requests | S1 |
 | 3 | S4 visits and the live queue | S2, S3 |
 | 4 | S5 booking and calendars · S6 clinical record | S4 |
 | 5 | S7 pharmacy and documents · S8 billing | S6 (S8 also S2, S4) |
-| 6 | S10 disputes and reports · S9 event wiring across modules | most modules |
+| 6 | S10 part 2: disputes and reports · S9 event wiring across modules | most modules |
 | 7 | S11 hardening and pilot readiness | all |
+
+S10 is one sprint in the [backend](backend.md) and [frontend](frontend.md) roadmaps, delivered in two parts: part 1 (help center content and support requests, FR-DSP-11) needs only S1; part 2 (disputes, reports, exports, data subject rights, retention) needs most modules. Each part gets its own contract.
 
 Per wave: contracts first (merged), then parallel builders, then the orchestrator verifies each sprint against its contract and merges them one at a time (rebase, regenerate the OpenAPI schema, full suites, green CI).
 

@@ -32,4 +32,4 @@ Dockerfile                      @B-Pine
 *.Dockerfile                    @B-Pine
 docker-compose*.yml             @B-Pine
 compose*.yml                    @B-Pine
-/infra/                         @B-Pine
+/infra/                         @B-Pine   # infrastructure code, once it exists (security 07 §2)

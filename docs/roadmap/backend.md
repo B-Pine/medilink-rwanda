@@ -124,6 +124,7 @@ Status: v0.1 · Process and Definition of Done: [roadmap README](README.md) · C
 - **Requirements:** FR-NOT-01..12
 
 ### S10 · Disputes, help and reports
+- **Delivered in two parts** ([waves](README.md#waves-sprints-built-in-parallel)): part 1 (help center and support requests) in Wave 2; part 2 (everything else below) in Wave 6.
 - **Build:**
   - disputes (types, routing, lifecycle with deadlines and auto-escalation, evidence from the audit trail, outcome actions)
   - support requests; help center content API

@@ -1,5 +1,7 @@
 import "@testing-library/jest-dom/vitest";
 
+import { Blob as NodeBlob, File as NodeFile } from "node:buffer";
+
 import { createMockServer } from "@medilink/api-client/mocks/node";
 import { cleanup, configure } from "@testing-library/react";
 import { afterAll, afterEach, beforeAll, expect } from "vitest";
@@ -20,6 +22,22 @@ globalThis.ResizeObserver ??= ResizeObserverStub as unknown as typeof ResizeObse
 HTMLCanvasElement.prototype.getContext = (() =>
   null) as typeof HTMLCanvasElement.prototype.getContext;
 Element.prototype.scrollIntoView ??= function scrollIntoView() {};
+// Uploads in tests: jsdom's XHR, FormData and File can't travel through Node's fetch to MSW.
+// Use Node's own FormData/File/Blob and let uploads take their fetch path (browsers use XHR).
+(globalThis as { XMLHttpRequest?: unknown }).XMLHttpRequest = undefined;
+const nodeFormData = (
+  await new Response("a=1", {
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  }).formData()
+).constructor as typeof FormData;
+for (const [name, value] of Object.entries({
+  FormData: nodeFormData,
+  File: NodeFile,
+  Blob: NodeBlob,
+})) {
+  Object.defineProperty(globalThis, name, { value, writable: true, configurable: true });
+  Object.defineProperty(window, name, { value, writable: true, configurable: true });
+}
 Element.prototype.hasPointerCapture ??= () => false;
 Element.prototype.releasePointerCapture ??= () => {};
 

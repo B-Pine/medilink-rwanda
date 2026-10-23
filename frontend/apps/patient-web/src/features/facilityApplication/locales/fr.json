@@ -1,0 +1,247 @@
+{
+  "public": {
+    "title": "MediLink pour les établissements de santé",
+    "problem": "Les patients perdent des heures dans les files d'attente et transportent des dossiers papier d'un établissement à l'autre. MediLink offre à votre établissement la prise de rendez-vous en ligne, une file d'attente en direct, des dossiers numériques et la gestion des assurances dans un seul système, en kinyarwanda, en anglais et en français.",
+    "register": "Inscrire votre établissement",
+    "continue": "Reprendre une demande",
+    "sessionEnded": "Votre demande est enregistrée. Nous vous avons envoyé un lien pour la reprendre plus tard.",
+    "rolesTitle": "Ce que chaque équipe y gagne",
+    "roles": {
+      "admin": {
+        "title": "Administrateurs de l'établissement",
+        "body": "Configurez les services, les horaires et les comptes du personnel, et suivez l'activité de l'établissement."
+      },
+      "reception": {
+        "title": "Accueil",
+        "body": "Enregistrez les arrivées, gérez la file d'attente et saisissez les paiements et les assurances."
+      },
+      "doctor": {
+        "title": "Médecins et infirmiers",
+        "body": "Voyez les patients du jour et leur historique, rédigez les consultations et les ordonnances."
+      },
+      "pharmacy": {
+        "title": "Pharmacie",
+        "body": "Recevez les ordonnances électroniques et enregistrez ce qui a été délivré."
+      }
+    },
+    "howTitle": "Comment se passe l'inscription",
+    "phases": {
+      "apply": {
+        "title": "Demande",
+        "body": "Présentez l'établissement et envoyez sa licence et ses documents d'enregistrement."
+      },
+      "verify": {
+        "title": "Vérification",
+        "body": "Notre équipe vérifie les documents et peut demander des corrections."
+      },
+      "setup": {
+        "title": "Configuration",
+        "body": "Votre administrateur ajoute les services, les horaires et le personnel."
+      },
+      "live": {
+        "title": "En ligne",
+        "body": "Les patients vous trouvent et réservent en ligne."
+      }
+    },
+    "faqTitle": "Questions",
+    "faq": {
+      "cost": {
+        "q": "Combien cela coûte-t-il ?",
+        "a": "L'inscription est gratuite pendant le pilote. Tout abonnement sera convenu avec vous avant de s'appliquer."
+      },
+      "documents": {
+        "q": "De quels documents ai-je besoin ?",
+        "a": "La licence d'exploitation du ministère de la Santé. Les établissements privés ont aussi besoin de leur enregistrement RDB et de leur certificat TIN."
+      },
+      "time": {
+        "q": "Combien de temps dure la vérification ?",
+        "a": "En général quelques jours ouvrables après l'envoi d'une demande complète."
+      },
+      "data": {
+        "q": "Qui peut voir les données de nos patients ?",
+        "a": "Seulement votre personnel et les patients eux-mêmes. Les données restent au Rwanda et chaque accès est journalisé."
+      }
+    }
+  },
+  "start": {
+    "title": "Inscrire votre établissement",
+    "intro": "Commencez par quelques informations. Vous pouvez enregistrer et reprendre plus tard : nous vous envoyons un lien par e-mail.",
+    "emailHint": "Nous envoyons le lien pour reprendre votre demande à cette adresse.",
+    "submit": "Commencer la demande",
+    "honeypot": "Laissez ce champ vide"
+  },
+  "resume": {
+    "title": "Reprendre votre demande",
+    "opening": "Ouverture de votre demande…",
+    "invalid": "Ce lien est invalide ou a expiré. Demandez un nouveau lien ci-dessous.",
+    "linkTitle": "Reprendre une demande",
+    "linkBody": "Saisissez l'e-mail utilisé pour la demande. S'il y a une demande en cours, nous vous envoyons un lien pour la reprendre.",
+    "send": "Envoyez-moi un lien",
+    "linkSent": "S'il existe une demande en cours pour cette adresse, un lien vous a été envoyé. Vérifiez vos e-mails."
+  },
+  "submitted": {
+    "title": "Demande envoyée",
+    "status": "État : {{status}}",
+    "sessionOver": "Votre demande a été envoyée. Nous vous écrirons pour la suite.",
+    "next1": "Nous vérifions vos documents, en général en quelques jours ouvrables.",
+    "next2": "S'il manque quelque chose, nous vous envoyons un lien pour corriger.",
+    "next3": "Une fois approuvé, nous invitons l'administrateur de votre établissement à configurer MediLink.",
+    "home": "Retour à l'accueil"
+  },
+  "status": {
+    "draft": "Brouillon",
+    "submitted": "Envoyée",
+    "under_review": "En cours d'examen",
+    "changes_requested": "Corrections demandées",
+    "approved": "Approuvée",
+    "rejected": "Non approuvée"
+  },
+  "steps": {
+    "facility": "Établissement",
+    "location": "Localisation",
+    "documents": "Documents",
+    "admin": "Administrateur",
+    "review": "Vérifier et envoyer"
+  },
+  "wizard": {
+    "title": "Demande d'inscription",
+    "stepsLabel": "Étapes de la demande",
+    "completed": "terminée",
+    "needsAttention": "à corriger",
+    "back": "Retour",
+    "next": "Suivant",
+    "continueLater": "Continuer plus tard",
+    "changesRequested": "Notre équipe a demandé des corrections",
+    "sessionOver": "Votre session pour cette demande est terminée. Demandez un nouveau lien pour continuer."
+  },
+  "save": {
+    "saving": "Enregistrement…",
+    "saved": "Enregistré à {{time}}",
+    "retrying": "Non enregistré, nouvel essai…",
+    "conflict": "Cette demande a été modifiée ailleurs. Nous avons rechargé la dernière version ; vérifiez votre dernière modification."
+  },
+  "fields": {
+    "facilityName": "Nom de l'établissement",
+    "facilityType": "Type d'établissement",
+    "ownership": "Statut",
+    "organization": "Organisation (raison sociale)",
+    "facilityPhone": "Téléphone de l'établissement",
+    "facilityEmail": "E-mail de l'établissement",
+    "yourName": "Votre nom complet",
+    "email": "E-mail",
+    "phone": "Téléphone",
+    "position": "Votre fonction",
+    "choose": "Choisir…",
+    "optionalSuffix": "(facultatif)",
+    "yourPhone": "Votre téléphone"
+  },
+  "ownership": {
+    "public": "Public",
+    "private": "Privé",
+    "faith_based": "Confessionnel",
+    "ngo": "ONG"
+  },
+  "location": {
+    "province": "Province",
+    "district": "District",
+    "sector": "Secteur",
+    "cell": "Cellule",
+    "village": "Village",
+    "address": "Adresse",
+    "addressHint": "Par exemple : KG 11 Ave 5, à côté du marché.",
+    "useMine": "Utiliser ma position",
+    "coords": "Position enregistrée : {{lat}}, {{lng}}",
+    "saved": "Votre position est enregistrée.",
+    "outsideRwanda": "Cette position est hors du Rwanda. Réessayez depuis l'établissement, ou passez cette étape.",
+    "geoDenied": "Impossible d'obtenir votre position. Vous pouvez passer cette étape.",
+    "geoUnavailable": "Votre navigateur ne peut pas partager de position. Vous pouvez passer cette étape."
+  },
+  "documents": {
+    "intro": "Envoyez des photos nettes ou des PDF. Chaque fichier est analysé contre les virus avant que notre équipe puisse l'ouvrir.",
+    "chooseOwnership": "Choisissez le statut à l'étape Établissement pour voir les documents nécessaires.",
+    "kinds": {
+      "moh_licence": "Licence d'exploitation du MINISANTE",
+      "rdb_registration": "Enregistrement RDB",
+      "tin_certificate": "Certificat TIN",
+      "accreditation": "Accréditation",
+      "insurer_contract": "Contrat d'assurance",
+      "other": "Autre document"
+    },
+    "number": "Numéro de licence",
+    "expires": "Date d'expiration",
+    "numberRequired": "Ajoutez le numéro et la date d'expiration, puis renvoyez la licence.",
+    "insurers": "Assureurs avec lesquels vous travaillez",
+    "insurersHint": "Facultatif. Ajoutez le contrat de chaque assureur si vous l'avez.",
+    "insurerContract": "Contrat avec {{insurer}}"
+  },
+  "upload": {
+    "drop": "Glissez un fichier ici, ou",
+    "browse": "Choisir un fichier",
+    "camera": "Prendre une photo",
+    "hint": "PDF, JPEG, PNG ou HEIC, jusqu'à 10 Mo.",
+    "retry": "Réessayer",
+    "remove": "Retirer",
+    "tooLarge": "Ce fichier dépasse 10 Mo.",
+    "wrongType": "Envoyez un fichier PDF, JPEG, PNG ou HEIC.",
+    "status": {
+      "uploading": "Envoi en cours",
+      "pending": "Analyse antivirus",
+      "clean": "Prêt",
+      "infected": "Virus détecté : envoyez un autre fichier",
+      "rejected": "Refusé : envoyez un autre fichier",
+      "failed": "Analyse échouée : renvoyez le fichier",
+      "error": "Non envoyé"
+    }
+  },
+  "admin": {
+    "intro": "Qui gérera MediLink dans l'établissement ? Nous invitons cette personne une fois l'établissement approuvé.",
+    "name": "Nom complet de l'administrateur",
+    "email": "E-mail de l'administrateur",
+    "phone": "Téléphone de l'administrateur"
+  },
+  "review": {
+    "edit": "Modifier",
+    "agreements": "Engagements",
+    "terms": "J'accepte les conditions d'utilisation de MediLink pour les établissements.",
+    "dpa": "J'accepte l'accord de traitement des données au nom de l'établissement.",
+    "ncsa": "Je confirme que l'établissement est enregistré auprès de la NCSA comme responsable de traitement, ou le sera avant la mise en ligne.",
+    "termsRequired": "Acceptez les conditions d'utilisation.",
+    "dpaRequired": "Acceptez l'accord de traitement des données.",
+    "ncsaRequired": "Confirmez l'enregistrement auprès de la NCSA.",
+    "submit": "Envoyer la demande",
+    "problemsTitle": "Avant d'envoyer",
+    "stillMissing": "Il manque encore"
+  },
+  "missing": {
+    "facility": {
+      "name": "nom de l'établissement",
+      "facility_type": "type d'établissement",
+      "ownership": "statut",
+      "phone": "téléphone de l'établissement",
+      "email": "e-mail de l'établissement"
+    },
+    "location": {
+      "village_code": "village",
+      "address": "adresse"
+    },
+    "applicant": {
+      "name": "votre nom",
+      "email": "votre e-mail",
+      "phone": "votre téléphone"
+    },
+    "proposed_admin": {
+      "name": "nom de l'administrateur",
+      "email": "e-mail de l'administrateur",
+      "phone": "téléphone de l'administrateur"
+    },
+    "documents": {
+      "moh_licence": "licence du MINISANTE avec numéro et date d'expiration",
+      "rdb_registration": "enregistrement RDB",
+      "tin_certificate": "certificat TIN"
+    }
+  },
+  "validation": {
+    "required": "Ce champ est obligatoire.",
+    "email": "Saisissez une adresse e-mail comme nom@exemple.com."
+  }
+}

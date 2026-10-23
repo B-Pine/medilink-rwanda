@@ -1,0 +1,247 @@
+{
+  "public": {
+    "title": "MediLink for health facilities",
+    "problem": "Patients waste hours in queues and carry paper records between facilities. MediLink gives your facility online booking, a live queue, digital records and insurance claims in one system, in Kinyarwanda, English and French.",
+    "register": "Register your facility",
+    "continue": "Continue an application",
+    "sessionEnded": "Your application is saved. We emailed you a link to continue it later.",
+    "rolesTitle": "What each team gets",
+    "roles": {
+      "admin": {
+        "title": "Facility administrators",
+        "body": "Set up services, schedules and staff accounts, and follow the facility's performance."
+      },
+      "reception": {
+        "title": "Reception",
+        "body": "Check patients in, run the queue and record payments and insurance."
+      },
+      "doctor": {
+        "title": "Doctors and nurses",
+        "body": "See today's patients, their history and write consultations and prescriptions."
+      },
+      "pharmacy": {
+        "title": "Pharmacy",
+        "body": "Receive electronic prescriptions and record what was dispensed."
+      }
+    },
+    "howTitle": "How onboarding works",
+    "phases": {
+      "apply": {
+        "title": "Apply",
+        "body": "Tell us about the facility and upload its licence and registration documents."
+      },
+      "verify": {
+        "title": "Verification",
+        "body": "Our team checks the documents and may ask for changes."
+      },
+      "setup": {
+        "title": "Setup",
+        "body": "Your administrator adds services, schedules and staff."
+      },
+      "live": {
+        "title": "Live",
+        "body": "Patients can find you and book online."
+      }
+    },
+    "faqTitle": "Questions",
+    "faq": {
+      "cost": {
+        "q": "What does it cost?",
+        "a": "Onboarding is free during the pilot. We will agree any subscription with you before it applies."
+      },
+      "documents": {
+        "q": "Which documents do I need?",
+        "a": "Your Ministry of Health operating licence. Private facilities also need their RDB registration and TIN certificate."
+      },
+      "time": {
+        "q": "How long does verification take?",
+        "a": "Usually a few working days after you submit a complete application."
+      },
+      "data": {
+        "q": "Who can see our patients' data?",
+        "a": "Only your staff, and the patients themselves. Data stays in Rwanda and access is logged."
+      }
+    }
+  },
+  "start": {
+    "title": "Register your facility",
+    "intro": "Start with a few details. You can save and continue later: we email you a link.",
+    "emailHint": "We send the link to continue your application to this address.",
+    "submit": "Start the application",
+    "honeypot": "Leave this empty"
+  },
+  "resume": {
+    "title": "Continue your application",
+    "opening": "Opening your application…",
+    "invalid": "This link is invalid or has expired. Ask for a new link below.",
+    "linkTitle": "Continue an application",
+    "linkBody": "Enter the email you applied with. If there is an open application, we send you a link to continue it.",
+    "send": "Send me a link",
+    "linkSent": "If there is an open application for this address, a link is on its way. Check your email."
+  },
+  "submitted": {
+    "title": "Application submitted",
+    "status": "Status: {{status}}",
+    "sessionOver": "Your application was submitted. We will email you about the next steps.",
+    "next1": "We check your documents, usually within a few working days.",
+    "next2": "If something is missing, we email you a link to make changes.",
+    "next3": "Once approved, we invite your facility administrator to set up MediLink.",
+    "home": "Back to the home page"
+  },
+  "status": {
+    "draft": "Draft",
+    "submitted": "Submitted",
+    "under_review": "Under review",
+    "changes_requested": "Changes requested",
+    "approved": "Approved",
+    "rejected": "Not approved"
+  },
+  "steps": {
+    "facility": "Facility",
+    "location": "Location",
+    "documents": "Documents",
+    "admin": "Administrator",
+    "review": "Review and submit"
+  },
+  "wizard": {
+    "title": "Facility application",
+    "stepsLabel": "Application steps",
+    "completed": "completed",
+    "needsAttention": "needs attention",
+    "back": "Back",
+    "next": "Next",
+    "continueLater": "Continue later",
+    "changesRequested": "Our team asked for changes",
+    "sessionOver": "Your session for this application has ended. Ask for a new link to continue."
+  },
+  "save": {
+    "saving": "Saving…",
+    "saved": "Saved {{time}}",
+    "retrying": "Not saved, retrying…",
+    "conflict": "This application changed somewhere else. We reloaded the latest version; check your last change."
+  },
+  "fields": {
+    "facilityName": "Facility name",
+    "facilityType": "Type of facility",
+    "ownership": "Ownership",
+    "organization": "Organisation (legal name)",
+    "facilityPhone": "Facility phone",
+    "facilityEmail": "Facility email",
+    "yourName": "Your full name",
+    "email": "Email",
+    "phone": "Phone",
+    "position": "Your position",
+    "choose": "Choose…",
+    "optionalSuffix": "(optional)",
+    "yourPhone": "Your phone"
+  },
+  "ownership": {
+    "public": "Public",
+    "private": "Private",
+    "faith_based": "Faith-based",
+    "ngo": "NGO"
+  },
+  "location": {
+    "province": "Province",
+    "district": "District",
+    "sector": "Sector",
+    "cell": "Cell",
+    "village": "Village",
+    "address": "Street address",
+    "addressHint": "For example: KG 11 Ave 5, next to the market.",
+    "useMine": "Use my location",
+    "coords": "Location saved: {{lat}}, {{lng}}",
+    "saved": "Your location is saved.",
+    "outsideRwanda": "That location is outside Rwanda. Stand at the facility and try again, or skip this.",
+    "geoDenied": "We couldn't get your location. You can skip this.",
+    "geoUnavailable": "Your browser can't share a location. You can skip this."
+  },
+  "documents": {
+    "intro": "Upload clear photos or PDFs. Each file is checked for viruses before our team can open it.",
+    "chooseOwnership": "Choose the ownership on the Facility step to see which documents you need.",
+    "kinds": {
+      "moh_licence": "MoH operating licence",
+      "rdb_registration": "RDB registration",
+      "tin_certificate": "TIN certificate",
+      "accreditation": "Accreditation",
+      "insurer_contract": "Insurer contract",
+      "other": "Other document"
+    },
+    "number": "Licence number",
+    "expires": "Expiry date",
+    "numberRequired": "Add the licence number and expiry date, then upload the licence again.",
+    "insurers": "Insurers you work with",
+    "insurersHint": "Optional. Add a contract for each insurer if you have one.",
+    "insurerContract": "Contract with {{insurer}}"
+  },
+  "upload": {
+    "drop": "Drag a file here, or",
+    "browse": "Choose a file",
+    "camera": "Take a photo",
+    "hint": "PDF, JPEG, PNG or HEIC, up to 10 MB.",
+    "retry": "Try again",
+    "remove": "Remove",
+    "tooLarge": "This file is larger than 10 MB.",
+    "wrongType": "Upload a PDF, JPEG, PNG or HEIC file.",
+    "status": {
+      "uploading": "Uploading",
+      "pending": "Checking for viruses",
+      "clean": "Ready",
+      "infected": "Virus found: upload another file",
+      "rejected": "Refused: upload another file",
+      "failed": "Check failed: upload again",
+      "error": "Not uploaded"
+    }
+  },
+  "admin": {
+    "intro": "Who will manage MediLink at the facility? We invite this person once the facility is approved.",
+    "name": "Administrator's full name",
+    "email": "Administrator's email",
+    "phone": "Administrator's phone"
+  },
+  "review": {
+    "edit": "Edit",
+    "agreements": "Agreements",
+    "terms": "I accept the MediLink terms of use for facilities.",
+    "dpa": "I accept the data processing agreement on behalf of the facility.",
+    "ncsa": "I confirm the facility is registered with the National Cyber Security Authority as a data controller, or will be before going live.",
+    "termsRequired": "Accept the terms of use.",
+    "dpaRequired": "Accept the data processing agreement.",
+    "ncsaRequired": "Confirm the NCSA registration.",
+    "submit": "Submit the application",
+    "problemsTitle": "Before you submit",
+    "stillMissing": "Still missing"
+  },
+  "missing": {
+    "facility": {
+      "name": "facility name",
+      "facility_type": "type of facility",
+      "ownership": "ownership",
+      "phone": "facility phone",
+      "email": "facility email"
+    },
+    "location": {
+      "village_code": "village",
+      "address": "street address"
+    },
+    "applicant": {
+      "name": "your name",
+      "email": "your email",
+      "phone": "your phone"
+    },
+    "proposed_admin": {
+      "name": "administrator's name",
+      "email": "administrator's email",
+      "phone": "administrator's phone"
+    },
+    "documents": {
+      "moh_licence": "MoH operating licence with number and expiry",
+      "rdb_registration": "RDB registration",
+      "tin_certificate": "TIN certificate"
+    }
+  },
+  "validation": {
+    "required": "This is required.",
+    "email": "Enter an email address like name@example.com."
+  }
+}

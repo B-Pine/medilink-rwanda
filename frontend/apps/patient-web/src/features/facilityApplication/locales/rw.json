@@ -1,0 +1,247 @@
+{
+  "public": {
+    "title": "MediLink ku bigo by'ubuvuzi",
+    "problem": "Abarwayi bamara amasaha ku mirongo kandi bagatwara impapuro zabo bava ku kigo bajya ku kindi. MediLink iha ikigo cyawe gufata gahunda kuri interineti, umurongo ugaragara, amadosiye y'ikoranabuhanga n'ubwishingizi muri sisitemu imwe, mu Kinyarwanda, Icyongereza n'Igifaransa.",
+    "register": "Andikisha ikigo cyawe",
+    "continue": "Komeza ubusabe",
+    "sessionEnded": "Ubusabe bwawe bwabitswe. Twakoherereje link yo kubukomeza nyuma.",
+    "rolesTitle": "Icyo buri tsinda ryungukira",
+    "roles": {
+      "admin": {
+        "title": "Abayobozi b'ikigo",
+        "body": "Shyiraho serivisi, gahunda n'konti z'abakozi, ukurikirane imikorere y'ikigo."
+      },
+      "reception": {
+        "title": "Kwakira abarwayi",
+        "body": "Andika abaje, uyobore umurongo, wandike ubwishyu n'ubwishingizi."
+      },
+      "doctor": {
+        "title": "Abaganga n'abaforomo",
+        "body": "Reba abarwayi b'uyu munsi n'amateka yabo, wandike isuzuma n'imiti."
+      },
+      "pharmacy": {
+        "title": "Farumasi",
+        "body": "Akira impapuro z'imiti z'ikoranabuhanga, wandike imiti yatanzwe."
+      }
+    },
+    "howTitle": "Uko kwiyandikisha bigenda",
+    "phases": {
+      "apply": {
+        "title": "Gusaba",
+        "body": "Tubwire ibijyanye n'ikigo, wohereze uruhushya n'impapuro zo kwiyandikisha."
+      },
+      "verify": {
+        "title": "Kugenzura",
+        "body": "Itsinda ryacu rigenzura inyandiko kandi rishobora gusaba impinduka."
+      },
+      "setup": {
+        "title": "Gutegura",
+        "body": "Umuyobozi wawe ashyiraho serivisi, gahunda n'abakozi."
+      },
+      "live": {
+        "title": "Gutangira",
+        "body": "Abarwayi barakubona kandi bagafata gahunda kuri interineti."
+      }
+    },
+    "faqTitle": "Ibibazo",
+    "faq": {
+      "cost": {
+        "q": "Bisaba amafaranga angahe?",
+        "a": "Kwiyandikisha ni ubuntu mu gihe cy'igerageza. Ifatabuguzi ryose rizumvikanwaho nawe mbere y'uko ritangira."
+      },
+      "documents": {
+        "q": "Nkeneye izihe nyandiko?",
+        "a": "Uruhushya rwa Minisiteri y'Ubuzima. Ibigo byigenga bikenera kandi icyemezo cya RDB na TIN."
+      },
+      "time": {
+        "q": "Kugenzura bitwara igihe kingana iki?",
+        "a": "Akenshi iminsi mike y'akazi nyuma yo kohereza ubusabe bwuzuye."
+      },
+      "data": {
+        "q": "Ni nde ushobora kubona amakuru y'abarwayi bacu?",
+        "a": "Abakozi bawe gusa n'abarwayi ubwabo. Amakuru aguma mu Rwanda kandi buri gusura kurandikwa."
+      }
+    }
+  },
+  "start": {
+    "title": "Andikisha ikigo cyawe",
+    "intro": "Tangira n'amakuru make. Ushobora kubika ugakomeza nyuma: tukoherereza link kuri imeyili.",
+    "emailHint": "Link yo gukomeza ubusabe tuyohereza kuri iyi meyili.",
+    "submit": "Tangira ubusabe",
+    "honeypot": "Ntugire icyo wandika hano"
+  },
+  "resume": {
+    "title": "Komeza ubusabe bwawe",
+    "opening": "Turafungura ubusabe bwawe…",
+    "invalid": "Iyi link ntikora cyangwa yarashaje. Saba indi hasi.",
+    "linkTitle": "Komeza ubusabe",
+    "linkBody": "Andika imeyili wakoresheje usaba. Niba hari ubusabe butarangiye, tukoherereza link yo kubukomeza.",
+    "send": "Nyoherereza link",
+    "linkSent": "Niba hari ubusabe butarangiye kuri iyi meyili, link iri mu nzira. Reba imeyili yawe."
+  },
+  "submitted": {
+    "title": "Ubusabe bwoherejwe",
+    "status": "Aho bugeze: {{status}}",
+    "sessionOver": "Ubusabe bwawe bwoherejwe. Tuzakwandikira ku bikurikiraho.",
+    "next1": "Tugenzura inyandiko zawe, akenshi mu minsi mike y'akazi.",
+    "next2": "Niba hari ikibura, tukoherereza link yo gukosora.",
+    "next3": "Nibwemerwa, tuzatumira umuyobozi w'ikigo cyawe gutegura MediLink.",
+    "home": "Subira ahabanza"
+  },
+  "status": {
+    "draft": "Bitarangiye",
+    "submitted": "Byoherejwe",
+    "under_review": "Birimo gusuzumwa",
+    "changes_requested": "Hasabwe impinduka",
+    "approved": "Byemewe",
+    "rejected": "Ntibyemewe"
+  },
+  "steps": {
+    "facility": "Ikigo",
+    "location": "Aho giherereye",
+    "documents": "Inyandiko",
+    "admin": "Umuyobozi",
+    "review": "Genzura wohereze"
+  },
+  "wizard": {
+    "title": "Ubusabe bwo kwiyandikisha",
+    "stepsLabel": "Intambwe z'ubusabe",
+    "completed": "byarangiye",
+    "needsAttention": "bikeneye gukosorwa",
+    "back": "Subira inyuma",
+    "next": "Komeza",
+    "continueLater": "Komeza nyuma",
+    "changesRequested": "Itsinda ryacu ryasabye impinduka",
+    "sessionOver": "Igihe cyawe kuri ubu busabe cyarangiye. Saba link nshya kugira ngo ukomeze."
+  },
+  "save": {
+    "saving": "Birabikwa…",
+    "saved": "Byabitswe saa {{time}}",
+    "retrying": "Ntibyabitswe, turongera tugerageza…",
+    "conflict": "Ubu busabe bwahinduwe ahandi. Twafunguye verisiyo iheruka; reba impinduka yawe iheruka."
+  },
+  "fields": {
+    "facilityName": "Izina ry'ikigo",
+    "facilityType": "Ubwoko bw'ikigo",
+    "ownership": "Nyir'ikigo",
+    "organization": "Ikigo cyemewe n'amategeko",
+    "facilityPhone": "Telefoni y'ikigo",
+    "facilityEmail": "Imeyili y'ikigo",
+    "yourName": "Amazina yawe yose",
+    "email": "Imeyili",
+    "phone": "Telefoni",
+    "position": "Umwanya ukoraho",
+    "choose": "Hitamo…",
+    "optionalSuffix": "(si ngombwa)",
+    "yourPhone": "Telefoni yawe"
+  },
+  "ownership": {
+    "public": "Icya Leta",
+    "private": "Icyigenga",
+    "faith_based": "Icy'idini",
+    "ngo": "Umuryango utegamiye kuri Leta"
+  },
+  "location": {
+    "province": "Intara",
+    "district": "Akarere",
+    "sector": "Umurenge",
+    "cell": "Akagari",
+    "village": "Umudugudu",
+    "address": "Aderesi",
+    "addressHint": "Urugero: KG 11 Ave 5, iruhande rw'isoko.",
+    "useMine": "Koresha aho ndi",
+    "coords": "Aho uri habitswe: {{lat}}, {{lng}}",
+    "saved": "Aho uri habitswe.",
+    "outsideRwanda": "Aho hantu hari hanze y'u Rwanda. Ongera ugerageze uri ku kigo, cyangwa usimbuke iyi ntambwe.",
+    "geoDenied": "Ntitwashoboye kubona aho uri. Ushobora gusimbuka iyi ntambwe.",
+    "geoUnavailable": "Mushakisha yawe ntishobora gutanga aho uri. Ushobora gusimbuka iyi ntambwe."
+  },
+  "documents": {
+    "intro": "Ohereza amafoto agaragara neza cyangwa PDF. Buri dosiye igenzurwamo virusi mbere y'uko itsinda ryacu riyifungura.",
+    "chooseOwnership": "Hitamo nyir'ikigo ku ntambwe y'Ikigo kugira ngo ubone inyandiko zikenewe.",
+    "kinds": {
+      "moh_licence": "Uruhushya rwa MINISANTE",
+      "rdb_registration": "Icyemezo cya RDB",
+      "tin_certificate": "Icyemezo cya TIN",
+      "accreditation": "Icyemezo cy'ubuziranenge",
+      "insurer_contract": "Amasezerano n'ubwishingizi",
+      "other": "Indi nyandiko"
+    },
+    "number": "Nimero y'uruhushya",
+    "expires": "Itariki rurangiriraho",
+    "numberRequired": "Ongeraho nimero n'itariki rurangiriraho, hanyuma wongere wohereze uruhushya.",
+    "insurers": "Ibigo by'ubwishingizi mukorana",
+    "insurersHint": "Si ngombwa. Ongeraho amasezerano ya buri kigo niba uyafite.",
+    "insurerContract": "Amasezerano na {{insurer}}"
+  },
+  "upload": {
+    "drop": "Kurura dosiye hano, cyangwa",
+    "browse": "Hitamo dosiye",
+    "camera": "Fata ifoto",
+    "hint": "PDF, JPEG, PNG cyangwa HEIC, kugeza kuri MB 10.",
+    "retry": "Ongera ugerageze",
+    "remove": "Kuraho",
+    "tooLarge": "Iyi dosiye irenze MB 10.",
+    "wrongType": "Ohereza dosiye ya PDF, JPEG, PNG cyangwa HEIC.",
+    "status": {
+      "uploading": "Biroherezwa",
+      "pending": "Birimo kugenzurwa",
+      "clean": "Byiteguye",
+      "infected": "Habonetse virusi: ohereza indi dosiye",
+      "rejected": "Byanzwe: ohereza indi dosiye",
+      "failed": "Kugenzura byanze: ongera wohereze",
+      "error": "Ntibyoherejwe"
+    }
+  },
+  "admin": {
+    "intro": "Ni nde uzayobora MediLink ku kigo? Tuzamutumira ikigo nikimara kwemerwa.",
+    "name": "Amazina y'umuyobozi",
+    "email": "Imeyili y'umuyobozi",
+    "phone": "Telefoni y'umuyobozi"
+  },
+  "review": {
+    "edit": "Hindura",
+    "agreements": "Amasezerano",
+    "terms": "Nemera amabwiriza yo gukoresha MediLink ku bigo.",
+    "dpa": "Nemera amasezerano yo gutunganya amakuru mu izina ry'ikigo.",
+    "ncsa": "Nemeza ko ikigo cyiyandikishije muri NCSA nk'ugenzura amakuru, cyangwa kizabikora mbere yo gutangira.",
+    "termsRequired": "Emera amabwiriza yo gukoresha.",
+    "dpaRequired": "Emera amasezerano yo gutunganya amakuru.",
+    "ncsaRequired": "Emeza kwiyandikisha muri NCSA.",
+    "submit": "Ohereza ubusabe",
+    "problemsTitle": "Mbere yo kohereza",
+    "stillMissing": "Biracyabura"
+  },
+  "missing": {
+    "facility": {
+      "name": "izina ry'ikigo",
+      "facility_type": "ubwoko bw'ikigo",
+      "ownership": "nyir'ikigo",
+      "phone": "telefoni y'ikigo",
+      "email": "imeyili y'ikigo"
+    },
+    "location": {
+      "village_code": "umudugudu",
+      "address": "aderesi"
+    },
+    "applicant": {
+      "name": "amazina yawe",
+      "email": "imeyili yawe",
+      "phone": "telefoni yawe"
+    },
+    "proposed_admin": {
+      "name": "amazina y'umuyobozi",
+      "email": "imeyili y'umuyobozi",
+      "phone": "telefoni y'umuyobozi"
+    },
+    "documents": {
+      "moh_licence": "uruhushya rwa MINISANTE rufite nimero n'itariki",
+      "rdb_registration": "icyemezo cya RDB",
+      "tin_certificate": "icyemezo cya TIN"
+    }
+  },
+  "validation": {
+    "required": "Iki gice kigomba kuzuzwa.",
+    "email": "Andika imeyili nka izina@urugero.com."
+  }
+}

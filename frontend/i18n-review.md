@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 537.
+Keys: 844.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -414,6 +414,320 @@ File: `apps/staff-web/src/features/lock/locales/rw.json`
 | `security.pinRemoved` | PIN yawe yakuweho. | Your PIN is removed. | needs native-speaker review |
 | `security.lockTitle` | Gufunga ecran | Screen lock | needs native-speaker review |
 | `security.lockBody` | Ecran yawe irafunga nyuma y'iminota {{minutes}} udakoresha. Yifunge ubwawe igihe ugiye. | Your screen locks after {{minutes}} minutes without activity. Lock it yourself when you step away. | needs native-speaker review |
+
+## staff-web feature: platform (namespace platform)
+
+File: `apps/staff-web/src/features/platform/locales/rw.json`
+
+| Key | Kinyarwanda (draft) | English source | Status |
+|---|---|---|---|
+| `notFound` | Paji ntiyabonetse | Page not found | needs native-speaker review |
+| `nav.platformOverview` | Incamake ya sisitemu | Platform overview | needs native-speaker review |
+| `nav.platformApplications` | Gusuzuma ubusabe | Review applications | needs native-speaker review |
+| `nav.platformMasterData` | Amakuru shingiro | Master data | needs native-speaker review |
+| `nav.platformFeatureFlags` | Imikorere | Feature flags | needs native-speaker review |
+| `table.search` | Shakisha | Search | needs native-speaker review |
+| `table.clearAll` | Siba byose | Clear all | needs native-speaker review |
+| `table.removeFilter` | Kuraho akayunguruzo | Remove filter | needs native-speaker review |
+| `table.results_one` | Igisubizo {{count}} | {{count}} result | needs native-speaker review |
+| `table.results_other` | Ibisubizo {{count}} | {{count}} results | needs native-speaker review |
+| `table.rowsPerPage` | Imirongo kuri paji | Rows per page | needs native-speaker review |
+| `table.previous` | Ibibanza | Previous | needs native-speaker review |
+| `table.next` | Ibikurikira | Next | needs native-speaker review |
+| `table.page` | Paji {{page}} kuri {{pages}} | Page {{page}} of {{pages}} | needs native-speaker review |
+| `table.density` | Uburebure bw'imirongo | Row height | needs native-speaker review |
+| `table.compact` | Ngufi | Compact | needs native-speaker review |
+| `table.default` | Isanzwe | Default | needs native-speaker review |
+| `table.comfortable` | Ndende | Comfortable | needs native-speaker review |
+| `table.open` | Fungura | Open | needs native-speaker review |
+| `table.empty` | Nta {{noun}} biraboneka. | No {{noun}} yet. | needs native-speaker review |
+| `table.noResults` | Nta kibonetse. Kuraho akayunguruzo cyangwa uhindure ibyo ushakisha. | Nothing matches these filters. Remove a filter or change the search. | needs native-speaker review |
+| `table.error` | Ntibyashobotse gufunguka. Reba interineti wongere ugerageze. | We couldn't load this. Check your connection and try again. | needs native-speaker review |
+| `table.retry` | Ongera ugerageze | Try again | needs native-speaker review |
+| `status.application.draft` | Bitarangiye | Draft | needs native-speaker review |
+| `status.application.submitted` | Byoherejwe | Submitted | needs native-speaker review |
+| `status.application.under_review` | Birimo gusuzumwa | Under review | needs native-speaker review |
+| `status.application.changes_requested` | Hasabwe impinduka | Changes requested | needs native-speaker review |
+| `status.application.approved` | Byemewe | Approved | needs native-speaker review |
+| `status.application.rejected` | Byanzwe | Rejected | needs native-speaker review |
+| `status.facility.approved` | Cyemewe | Approved | needs native-speaker review |
+| `status.facility.setup` | Gitegurwa | Setup | needs native-speaker review |
+| `status.facility.live` | Kirakora | Live | needs native-speaker review |
+| `status.facility.suspended` | Cyahagaritswe | Suspended | needs native-speaker review |
+| `status.facility.deactivated` | Cyafunzwe | Deactivated | needs native-speaker review |
+| `status.licence.valid` | Rurakora | Valid | needs native-speaker review |
+| `status.licence.expiring` | Rugiye kurangira | Expiring | needs native-speaker review |
+| `status.licence.expired` | Rwarangiye | Expired | needs native-speaker review |
+| `status.licence.missing` | Ntiruhari | Missing | needs native-speaker review |
+| `ownership.public` | Icya Leta | Public | needs native-speaker review |
+| `ownership.private` | Icyigenga | Private | needs native-speaker review |
+| `ownership.faith_based` | Icy'idini | Faith-based | needs native-speaker review |
+| `ownership.ngo` | Umuryango utegamiye kuri Leta | NGO | needs native-speaker review |
+| `documentKind.moh_licence` | Uruhushya rwa MINISANTE | MoH operating licence | needs native-speaker review |
+| `documentKind.rdb_registration` | Icyemezo cya RDB | RDB registration | needs native-speaker review |
+| `documentKind.tin_certificate` | Icyemezo cya TIN | TIN certificate | needs native-speaker review |
+| `documentKind.accreditation` | Icyemezo cy'ubuziranenge | Accreditation | needs native-speaker review |
+| `documentKind.insurer_contract` | Amasezerano n'ubwishingizi | Insurer contract | needs native-speaker review |
+| `documentKind.other` | Indi nyandiko | Other document | needs native-speaker review |
+| `overview.title` | Incamake ya sisitemu | Platform overview | needs native-speaker review |
+| `overview.oldestTitle` | Ubutegereje igihe kirekire | Waiting longest | needs native-speaker review |
+| `overview.oldest` | Hari ubusabe butegereje kuva ku wa {{date}}. Bufungure. | An application has been waiting since {{date}}. Open it. | needs native-speaker review |
+| `overview.applications` | Ubusabe | Applications | needs native-speaker review |
+| `overview.licences` | Impushya | Licences | needs native-speaker review |
+| `overview.expiring60` | Zirangira mu minsi 60 | Expiring within 60 days | needs native-speaker review |
+| `overview.expiring30` | Zirangira mu minsi 30 | Expiring within 30 days | needs native-speaker review |
+| `overview.expired` | Zarangiye | Expired | needs native-speaker review |
+| `overview.facilities` | Ibigo | Facilities | needs native-speaker review |
+| `applications.title` | Ubusabe bw'ibigo | Facility applications | needs native-speaker review |
+| `applications.noun` | busabe | applications | needs native-speaker review |
+| `applications.all` | Byose | All | needs native-speaker review |
+| `applications.facility` | Ikigo | Facility | needs native-speaker review |
+| `applications.status` | Aho bigeze | Status | needs native-speaker review |
+| `applications.applicant` | Usaba | Applicant | needs native-speaker review |
+| `applications.applicantEmail` | Imeyili y'usaba | Applicant's email | needs native-speaker review |
+| `applications.submitted` | Byoherejwe | Submitted | needs native-speaker review |
+| `applications.lastActivity` | Igikorwa giheruka | Last activity | needs native-speaker review |
+| `applications.reviewer` | Usuzuma | Reviewer | needs native-speaker review |
+| `applications.review` | Suzuma | Review | needs native-speaker review |
+| `applications.back` | Subira ku busabe | Back to applications | needs native-speaker review |
+| `applications.byPlatform` | Byakozwe na sisitemu | Created by the platform | needs native-speaker review |
+| `applications.create` | Kora mu izina ry'ikigo | Create on behalf | needs native-speaker review |
+| `applications.createHint` | Ku bigo byasabye kuri telefoni cyangwa imbonankubone. Babwuzuza bakoresheje link iboherezwa kuri imeyili. | For facilities that applied by phone or in person. They complete it with the emailed link. | needs native-speaker review |
+| `applications.createSubmit` | Kora ubusabe | Create the application | needs native-speaker review |
+| `applications.createRequired` | Andika izina ry'ikigo, izina ry'usaba n'imeyili yemewe. | Enter the facility name, the applicant's name and a valid email. | needs native-speaker review |
+| `applications.sendLink` | Oherereza usaba link yo kubwuzuza | Email the applicant a link to complete it | needs native-speaker review |
+| `review.start` | Tangira gusuzuma | Start review | needs native-speaker review |
+| `review.requestChanges` | Saba impinduka | Request changes | needs native-speaker review |
+| `review.requestChangesHint` | Andika igitekerezo kimwe kuri buri kintu usaba kigomba gukosora. Akibona ku gice kireba. | Write one comment per item the applicant must fix. They see them on the matching fields. | needs native-speaker review |
+| `review.sendRequest` | Ohereza | Send the request | needs native-speaker review |
+| `review.approve` | Emeza | Approve | needs native-speaker review |
+| `review.reject` | Anga | Reject | needs native-speaker review |
+| `review.acceptAllFirst` | Emera buri nyandiko mbere yo kwemeza. | Accept every document before approving. | needs native-speaker review |
+| `review.details` | Ibisobanuro | Details | needs native-speaker review |
+| `review.type` | Ubwoko | Type | needs native-speaker review |
+| `review.ownership` | Nyir'ikigo | Ownership | needs native-speaker review |
+| `review.organization` | Ikigo cyemewe n'amategeko | Organisation | needs native-speaker review |
+| `review.contacts` | Aho babarizwa | Contacts | needs native-speaker review |
+| `review.location` | Aho giherereye | Location | needs native-speaker review |
+| `review.proposedAdmin` | Umuyobozi watanzwe | Proposed administrator | needs native-speaker review |
+| `review.insurers` | Ubwishingizi bavuze | Insurers claimed | needs native-speaker review |
+| `review.documents` | Inyandiko | Documents | needs native-speaker review |
+| `review.noDocuments` | Nta nyandiko ziraboneka. | No documents yet. | needs native-speaker review |
+| `review.expires` | rurangira ku wa {{date}} | expires {{date}} | needs native-speaker review |
+| `review.view` | Reba | View | needs native-speaker review |
+| `review.accept` | Emera | Accept | needs native-speaker review |
+| `review.needsChange` | Ikeneye gukosorwa | Needs change | needs native-speaker review |
+| `review.verdict.pending` | Ntiyasuzumwe | Not reviewed | needs native-speaker review |
+| `review.verdict.accepted` | Yemewe | Accepted | needs native-speaker review |
+| `review.verdict.needs_change` | Ikeneye gukosorwa | Needs change | needs native-speaker review |
+| `review.duplicatesTitle` | Bishobora kuba byisubiramo | Possible duplicates | needs native-speaker review |
+| `review.duplicate.same_licence_number` | Hari ubundi busabe cyangwa ikigo gifite nimero y'uruhushya imwe. | Another application or facility has the same licence number. | needs native-speaker review |
+| `review.duplicate.same_applicant_email` | Usaba afite ubundi busabe butarangiye. | The applicant has another open application. | needs native-speaker review |
+| `review.duplicate.same_name_in_district` | Hari ikigo gifite izina rimwe muri aka karere. | A facility with the same name exists in this district. | needs native-speaker review |
+| `review.openOther` | Bufungure | Open it | needs native-speaker review |
+| `review.notes` | Inyandiko z'imbere | Internal notes | needs native-speaker review |
+| `review.notesHint` | Telefoni, gusura n'igenzura. Ntibigaragarira usaba. | Calls, visits and checks. Never shown to the applicant. | needs native-speaker review |
+| `review.noNotes` | Nta nyandiko ziraboneka. | No notes yet. | needs native-speaker review |
+| `review.noteType` | Ubwoko | Type | needs native-speaker review |
+| `review.note` | Inyandiko | Note | needs native-speaker review |
+| `review.addNote` | Ongeraho | Add note | needs native-speaker review |
+| `review.noteKind.call` | Telefoni | Call | needs native-speaker review |
+| `review.noteKind.visit` | Gusura | Visit | needs native-speaker review |
+| `review.noteKind.document_check` | Kugenzura inyandiko | Document check | needs native-speaker review |
+| `review.noteKind.other` | Ibindi | Other | needs native-speaker review |
+| `review.history` | Amateka | History | needs native-speaker review |
+| `review.event.status_change` | Aho bigeze byahindutse | Status changed | needs native-speaker review |
+| `review.event.note` | Inyandiko | Note | needs native-speaker review |
+| `review.event.item_comments` | Ibitekerezo | Comments | needs native-speaker review |
+| `review.event.document_review` | Inyandiko yasuzumwe | Document reviewed | needs native-speaker review |
+| `review.event.link_sent` | Link yoherejwe | Resume link sent | needs native-speaker review |
+| `review.event.platform_edit` | Byahinduwe na sisitemu | Edited by the platform | needs native-speaker review |
+| `review.actor.applicant` | Usaba | Applicant | needs native-speaker review |
+| `review.actor.platform_admin` | Umuyobozi mukuru | Super admin | needs native-speaker review |
+| `review.actor.system` | Sisitemu | System | needs native-speaker review |
+| `review.generalComment` | Igitekerezo rusange | General comment | needs native-speaker review |
+| `review.item` | Ikintu {{n}} | Item {{n}} | needs native-speaker review |
+| `review.itemTarget` | Igikeneye guhinduka | What needs changing | needs native-speaker review |
+| `review.itemComment` | Igitekerezo | Comment | needs native-speaker review |
+| `review.addItem` | Ongeraho ikindi | Add another item | needs native-speaker review |
+| `review.itemRequired` | Ongeraho nibura igitekerezo kimwe. | Add at least one comment. | needs native-speaker review |
+| `review.target.facility.name` | Izina ry'ikigo | Facility name | needs native-speaker review |
+| `review.target.facility.facility_type` | Ubwoko bw'ikigo | Type of facility | needs native-speaker review |
+| `review.target.facility.ownership` | Nyir'ikigo | Ownership | needs native-speaker review |
+| `review.target.facility.phone` | Telefoni y'ikigo | Facility phone | needs native-speaker review |
+| `review.target.facility.email` | Imeyili y'ikigo | Facility email | needs native-speaker review |
+| `review.target.location.village_code` | Umudugudu | Village | needs native-speaker review |
+| `review.target.location.address` | Aderesi | Address | needs native-speaker review |
+| `review.target.proposed_admin.name` | Amazina y'umuyobozi | Administrator's name | needs native-speaker review |
+| `review.target.proposed_admin.email` | Imeyili y'umuyobozi | Administrator's email | needs native-speaker review |
+| `review.target.documents.moh_licence` | Uruhushya rwa MINISANTE | MoH operating licence | needs native-speaker review |
+| `review.target.documents.rdb_registration` | Icyemezo cya RDB | RDB registration | needs native-speaker review |
+| `review.target.documents.tin_certificate` | Icyemezo cya TIN | TIN certificate | needs native-speaker review |
+| `review.approveTitle` | Emeza iki kigo | Approve this facility | needs native-speaker review |
+| `review.approveConsequences` | Ibi birema ikigo (kiri ku rwego Cyemewe) bikandika uruhushya rwacyo. Umuyobozi w'ikigo azatumirwa kugitegura. | This creates the organisation and the facility (status Approved) and records its licence. The facility administrator is invited to set it up. | needs native-speaker review |
+| `review.approveRequired` | Andika aderesi, nimero y'uruhushya n'itariki rurangiriraho. | Enter the address, the licence number and its expiry date. | needs native-speaker review |
+| `review.slug` | Aderesi kuri interineti | Web address | needs native-speaker review |
+| `review.slugHint` | Inyuguti nto, imibare n'utuhuza, urugero clinique-ubuzima. | Lowercase letters, numbers and hyphens, e.g. clinique-ubuzima. | needs native-speaker review |
+| `review.licenceNumber` | Nimero y'uruhushya rwa MINISANTE | MoH licence number | needs native-speaker review |
+| `review.licenceExpiry` | Itariki uruhushya rurangiriraho | Licence expiry date | needs native-speaker review |
+| `review.rejectTitle` | Anga ubu busabe | Reject this application | needs native-speaker review |
+| `review.rejectConsequences` | Usaba amenyeshwa impamvu. Ntibisubirwaho; ashobora kongera gusaba. | The applicant is told the reason. This can't be undone; they can apply again. | needs native-speaker review |
+| `reason.code` | Impamvu | Reason | needs native-speaker review |
+| `reason.choose` | Hitamo impamvu… | Choose a reason… | needs native-speaker review |
+| `reason.text` | Ibisobanuro | Explanation | needs native-speaker review |
+| `reason.required` | Hitamo impamvu. | Choose a reason. | needs native-speaker review |
+| `reason.textRequired` | Sobanura impamvu. | Explain the reason. | needs native-speaker review |
+| `viewer.zoomIn` | Ongera ubunini | Zoom in | needs native-speaker review |
+| `viewer.zoomOut` | Gabanya ubunini | Zoom out | needs native-speaker review |
+| `viewer.rotate` | Hindukiza | Rotate | needs native-speaker review |
+| `viewer.previousPage` | Paji ibanza | Previous page | needs native-speaker review |
+| `viewer.nextPage` | Paji ikurikira | Next page | needs native-speaker review |
+| `viewer.page` | Paji {{page}} kuri {{pages}} | Page {{page}} of {{pages}} | needs native-speaker review |
+| `viewer.download` | Kuramo | Download | needs native-speaker review |
+| `viewer.loading` | Inyandiko irafunguka… | Opening the document… | needs native-speaker review |
+| `viewer.error` | Ntibyashobotse gufungura iyi nyandiko. | We couldn't open this document. | needs native-speaker review |
+| `facilities.title` | Ibigo | Facilities | needs native-speaker review |
+| `facilities.noun` | bigo | facilities | needs native-speaker review |
+| `facilities.name` | Izina | Name | needs native-speaker review |
+| `facilities.district` | Akarere | District | needs native-speaker review |
+| `facilities.licence` | Uruhushya | Licence | needs native-speaker review |
+| `facilities.nextExpiry` | Kurangira gukurikira | Next expiry | needs native-speaker review |
+| `facilities.back` | Subira ku bigo | Back to facilities | needs native-speaker review |
+| `facilities.address` | Aderesi kuri interineti | Web address | needs native-speaker review |
+| `facilities.application` | Ubusabe | Application | needs native-speaker review |
+| `facilities.confirmSlug` | Andika {{slug}} kugira ngo wemeze | Type {{slug}} to confirm | needs native-speaker review |
+| `facilities.tabs.overview` | Incamake | Overview | needs native-speaker review |
+| `facilities.tabs.licences` | Impushya | Licences | needs native-speaker review |
+| `facilities.tabs.history` | Amateka | History | needs native-speaker review |
+| `facilities.tabs.flags` | Imikorere | Feature flags | needs native-speaker review |
+| `facilities.actions.start-setup` | Tangira gutegura | Start setup | needs native-speaker review |
+| `facilities.actions.go-live` | Tangira gukora | Go live | needs native-speaker review |
+| `facilities.actions.suspend` | Hagarika | Suspend | needs native-speaker review |
+| `facilities.actions.reactivate` | Ongera ukoreshe | Reactivate | needs native-speaker review |
+| `facilities.actions.deactivate` | Funga burundu | Deactivate | needs native-speaker review |
+| `facilities.consequences.start-setup` | {{name}} kijya mu gutegurwa kugira ngo umuyobozi wacyo agitegure. | {{name}} moves to setup so its administrator can configure it. | needs native-speaker review |
+| `facilities.consequences.go-live` | {{name}} kigaragarira abarwayi kandi cyakira gahunda. Gikeneye uruhushya rwa MINISANTE rukora. | {{name}} becomes visible to patients and accepts bookings. It needs a valid MoH licence. | needs native-speaker review |
+| `facilities.consequences.suspend` | {{name}} kiva mu bushakashatsi kandi ntikigakira gahunda nshya. Akazi k'uyu munsi gakomeza. | {{name}} disappears from search and stops taking new bookings. Today's work continues. | needs native-speaker review |
+| `facilities.consequences.reactivate` | {{name}} kongera kugaragara kandi cyakira gahunda. | {{name}} is visible again and accepts bookings. | needs native-speaker review |
+| `facilities.consequences.deactivate` | {{name}} gisigara gisomwa gusa. Ni burundu. | {{name}} becomes read-only. This is final. | needs native-speaker review |
+| `licences.add` | Ongeraho uruhushya | Add licence | needs native-speaker review |
+| `licences.renew` | Vugurura | Renew | needs native-speaker review |
+| `licences.correct` | Kosora | Correct | needs native-speaker review |
+| `licences.save` | Bika | Save | needs native-speaker review |
+| `licences.superseded` | rwavuguruwe | renewed | needs native-speaker review |
+| `licences.kindLabel` | Ubwoko | Type | needs native-speaker review |
+| `licences.kind.moh_operating` | Uruhushya rwa MINISANTE | MoH operating licence | needs native-speaker review |
+| `licences.kind.pharmacy` | Uruhushya rwa farumasi | Pharmacy licence | needs native-speaker review |
+| `licences.kind.rdb_registration` | Icyemezo cya RDB | RDB registration | needs native-speaker review |
+| `licences.kind.accreditation` | Icyemezo cy'ubuziranenge | Accreditation | needs native-speaker review |
+| `licences.kind.other` | Ibindi | Other | needs native-speaker review |
+| `flags.title` | Imikorere | Feature flags | needs native-speaker review |
+| `flags.intro` | Agaciro gasanzwe gakora ku bigo byose keretse ikigo gifite icyo cyihariye. | Defaults apply to every facility unless a facility has its own setting. | needs native-speaker review |
+| `flags.names.security.pin_unlock` | Gufungura ukoresheje PIN | PIN unlock | needs native-speaker review |
+| `flags.on` | Irakora | On | needs native-speaker review |
+| `flags.off` | Ntikora | Off | needs native-speaker review |
+| `flags.onByDefault` | Ikora bisanzwe | On by default | needs native-speaker review |
+| `flags.offByDefault` | Ntikora bisanzwe | Off by default | needs native-speaker review |
+| `flags.usingDefault` | Ikoresha agaciro gasanzwe ka sisitemu. | Uses the platform default. | needs native-speaker review |
+| `flags.overridden` | Yashyiriweho iki kigo. | Set for this facility. | needs native-speaker review |
+| `flags.useDefault` | Koresha agaciro gasanzwe | Use the default | needs native-speaker review |
+| `flags.overrides_one` | Ikigo {{count}} gifite icyo cyihariye | {{count}} facility has its own setting | needs native-speaker review |
+| `flags.overrides_other` | Ibigo {{count}} bifite icyo byihariye | {{count}} facilities have their own setting | needs native-speaker review |
+| `masterData.title` | Amakuru shingiro | Master data | needs native-speaker review |
+| `masterData.back` | Subira ku makuru shingiro | Back to master data | needs native-speaker review |
+| `masterData.count_one` | Ikintu {{count}} | {{count}} item | needs native-speaker review |
+| `masterData.count_other` | Ibintu {{count}} | {{count}} items | needs native-speaker review |
+| `masterData.missingRw_one` | {{count}} kidafite Ikinyarwanda | {{count}} without Kinyarwanda | needs native-speaker review |
+| `masterData.missingRw_other` | {{count}} bidafite Ikinyarwanda | {{count}} without Kinyarwanda | needs native-speaker review |
+| `masterData.kinds.locations` | Ahantu | Locations | needs native-speaker review |
+| `masterData.kinds.facility-types` | Ubwoko bw'ibigo | Facility types | needs native-speaker review |
+| `masterData.kinds.service-catalogue-items` | Serivisi | Services | needs native-speaker review |
+| `masterData.kinds.insurers` | Ubwishingizi | Insurers | needs native-speaker review |
+| `masterData.kinds.drugs` | Imiti | Drugs | needs native-speaker review |
+| `masterData.kinds.diagnosis-codes` | Kode z'indwara (ICD-10) | Diagnosis codes (ICD-10) | needs native-speaker review |
+| `masterData.kinds.symptoms` | Ibimenyetso | Symptoms | needs native-speaker review |
+| `masterData.kinds.public-holidays` | Iminsi y'ikiruhuko | Public holidays | needs native-speaker review |
+| `masterData.kinds.reason-codes` | Kode z'impamvu | Reason codes | needs native-speaker review |
+| `masterData.code` | Kode | Code | needs native-speaker review |
+| `masterData.name` | Izina | Name | needs native-speaker review |
+| `masterData.active` | Kirakoreshwa | Active | needs native-speaker review |
+| `masterData.retired` | Cyakuweho | Retired | needs native-speaker review |
+| `masterData.translations` | Indimi | Translations | needs native-speaker review |
+| `masterData.missing` | Birabura: {{langs}} | Missing: {{langs}} | needs native-speaker review |
+| `masterData.missingLanguage` | Ururimi rubura | Missing translation | needs native-speaker review |
+| `masterData.add` | Ongeraho | Add | needs native-speaker review |
+| `masterData.edit` | Hindura | Edit | needs native-speaker review |
+| `masterData.retire` | Kuraho | Retire | needs native-speaker review |
+| `masterData.restore` | Garura | Restore | needs native-speaker review |
+| `masterData.immutable` | Ntibishobora guhindurwa nyuma yo kurema. | Can't be changed after creation. | needs native-speaker review |
+| `masterData.history` | Amateka y'impinduka | Change history | needs native-speaker review |
+| `masterData.action.create` | Byaremwe | Created | needs native-speaker review |
+| `masterData.action.update` | Byahinduwe | Updated | needs native-speaker review |
+| `masterData.action.retire` | Byakuweho | Retired | needs native-speaker review |
+| `masterData.action.restore` | Byagaruwe | Restored | needs native-speaker review |
+| `masterData.action.import` | Byinjijwe | Imported | needs native-speaker review |
+| `masterData.action.unchanged` | Ntibyahindutse | Unchanged | needs native-speaker review |
+| `masterData.fields.name_i18n` | Izina | Name | needs native-speaker review |
+| `masterData.fields.title_i18n` | Umutwe | Title | needs native-speaker review |
+| `masterData.fields.label_i18n` | Inyito | Label | needs native-speaker review |
+| `masterData.fields.plain_language_i18n` | Izina ryumvikana | Plain-language name | needs native-speaker review |
+| `masterData.fields.code` | Kode | Code | needs native-speaker review |
+| `masterData.fields.name` | Izina | Name | needs native-speaker review |
+| `masterData.fields.level` | Urwego | Level | needs native-speaker review |
+| `masterData.fields.parent_code` | Kode y'ababyeyi | Parent code | needs native-speaker review |
+| `masterData.fields.scheme` | Ubwoko bw'ubwishingizi | Scheme | needs native-speaker review |
+| `masterData.fields.follows_referral_pathway` | Ikurikiza inzira yo kohereza abarwayi | Follows the referral pathway | needs native-speaker review |
+| `masterData.fields.generic_name` | Izina rusange | Generic name | needs native-speaker review |
+| `masterData.fields.strength` | Ingano | Strength | needs native-speaker review |
+| `masterData.fields.form` | Ishusho | Form | needs native-speaker review |
+| `masterData.fields.default_route` | Inzira isanzwe | Default route | needs native-speaker review |
+| `masterData.fields.drug_class` | Icyiciro | Drug class | needs native-speaker review |
+| `masterData.fields.is_controlled` | Umuti ugenzurwa | Controlled drug | needs native-speaker review |
+| `masterData.fields.is_essential_list` | Uri ku rutonde rw'imiti y'ingenzi | On the essential medicines list | needs native-speaker review |
+| `masterData.fields.max_usual_quantity` | Ingano ntarengwa isanzwe | Usual maximum quantity | needs native-speaker review |
+| `masterData.fields.is_sensitive` | Indwara y'ibanga | Sensitive diagnosis | needs native-speaker review |
+| `masterData.fields.body_system` | Igice cy'umubiri | Body system | needs native-speaker review |
+| `masterData.fields.icd_code` | Kode ya ICD-10 | ICD-10 code | needs native-speaker review |
+| `masterData.fields.holiday_date` | Itariki | Date | needs native-speaker review |
+| `masterData.fields.is_provisional` | Itariki itaratangazwa | Date not yet announced | needs native-speaker review |
+| `masterData.fields.kind` | Icyiciro | Kind | needs native-speaker review |
+| `masterData.fields.requires_text` | Bisaba ibisobanuro | Needs an explanation | needs native-speaker review |
+| `masterData.fields.level_of_care` | Urwego rw'ubuvuzi | Level of care | needs native-speaker review |
+| `masterData.fields.min_age_months` | Imyaka ntoya (amezi) | Minimum age (months) | needs native-speaker review |
+| `masterData.fields.max_age_months` | Imyaka nini (amezi) | Maximum age (months) | needs native-speaker review |
+| `masterData.fields.sex_restriction` | Igitsina | Sex restriction | needs native-speaker review |
+| `masterData.fields.code_system` | Uburyo bwa kode | Code system | needs native-speaker review |
+| `masterData.import` | Injiza CSV | Import CSV | needs native-speaker review |
+| `masterData.importHint` | Ohereza CSV ya UTF-8. Ubona impinduka mbere y'uko zikorwa. | Upload a UTF-8 CSV. You see a preview of the changes before anything is applied. | needs native-speaker review |
+| `masterData.importTitle` | Igenzura ry'iyinjizwa | Import preview | needs native-speaker review |
+| `masterData.mode` | Icyo gukorera imirongo isanzwe | What to do with existing rows | needs native-speaker review |
+| `masterData.modes.upsert` | Ongeraho imirongo mishya, uvugurure isanzwe | Add new rows and update existing ones | needs native-speaker review |
+| `masterData.modes.upsert_and_retire_missing` | Kandi ukureho imirongo idari muri dosiye | Also retire active rows that aren't in the file | needs native-speaker review |
+| `masterData.csvFile` | Dosiye ya CSV | CSV file | needs native-speaker review |
+| `masterData.csvHint` | CSV ya UTF-8, kugeza kuri MB 5. | UTF-8 CSV, up to 5 MB. | needs native-speaker review |
+| `masterData.csvTooLarge` | Iyi dosiye irenze MB 5. | This file is larger than 5 MB. | needs native-speaker review |
+| `masterData.csvType` | Ohereza dosiye ya .csv. | Upload a .csv file. | needs native-speaker review |
+| `masterData.importStatus.validating` | Dosiye irimo kugenzurwa… | Checking the file… | needs native-speaker review |
+| `masterData.importStatus.previewed` | Byiteguye gukoreshwa | Ready to apply | needs native-speaker review |
+| `masterData.importStatus.invalid` | Dosiye ifite amakosa | The file has errors | needs native-speaker review |
+| `masterData.importStatus.applying` | Birimo gukorwa… | Applying… | needs native-speaker review |
+| `masterData.importStatus.applied` | Byakozwe | Applied | needs native-speaker review |
+| `masterData.importStatus.failed` | Byanze | Failed | needs native-speaker review |
+| `masterData.importStatus.expired` | Igenzura ryarashaje: ongera wohereze dosiye | Preview expired: upload the file again | needs native-speaker review |
+| `masterData.summary.rows` | Imirongo | Rows | needs native-speaker review |
+| `masterData.summary.create` | Mishya | New | needs native-speaker review |
+| `masterData.summary.update` | Yahinduwe | Updated | needs native-speaker review |
+| `masterData.summary.retire` | Yakuweho | Retired | needs native-speaker review |
+| `masterData.summary.unchanged` | Itahindutse | Unchanged | needs native-speaker review |
+| `masterData.summary.errors` | Amakosa | Errors | needs native-speaker review |
+| `masterData.errorsTitle` | Kosora iyi mirongo wongere wohereze dosiye | Fix these lines and upload the file again | needs native-speaker review |
+| `masterData.errorLine` | Umurongo {{line}} ({{field}}): {{message}} | Line {{line}} ({{field}}): {{message}} | needs native-speaker review |
+| `masterData.samples` | Ingero z'impinduka | Examples of changes | needs native-speaker review |
+| `masterData.confirm` | Kora impinduka | Apply the changes | needs native-speaker review |
+| `upload.drop` | Kurura dosiye hano, cyangwa | Drag a file here, or | needs native-speaker review |
+| `upload.browse` | Hitamo dosiye | Choose a file | needs native-speaker review |
+| `upload.remove` | Kuraho | Remove | needs native-speaker review |
+| `upload.uploading` | Biroherezwa… | Uploading… | needs native-speaker review |
 
 ## patient-web feature: facilityApplication (namespace facilityApplication)
 

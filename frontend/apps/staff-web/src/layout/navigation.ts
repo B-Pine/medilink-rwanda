@@ -17,6 +17,7 @@ import type { PermissionCode, StaffMe } from "@medilink/api-client";
 
 // ---- Feature imports: ONLY between the sprint's markers (shared-file protocol) ----
 // [S1 imports]
+import { ChartPieSlice, Database, FileText, ToggleRight } from "@phosphor-icons/react";
 // [/S1 imports]
 // [S3 imports]
 // [/S3 imports]
@@ -139,6 +140,38 @@ export const NAV_ITEMS: readonly NavItem[] = [
   },
   // Shared-file protocol: new entries ONLY between the sprint's markers.
   // [S1]
+  {
+    key: "platformOverview",
+    path: "/platform",
+    icon: ChartPieSlice,
+    group: "platform",
+    labelKey: "platform.nav.platformOverview",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
+  {
+    key: "platformApplications",
+    path: "/platform/applications",
+    icon: FileText,
+    group: "platform",
+    labelKey: "platform.nav.platformApplications",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
+  {
+    key: "platformMasterData",
+    path: "/platform/master-data",
+    icon: Database,
+    group: "platform",
+    labelKey: "platform.nav.platformMasterData",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
+  {
+    key: "platformFeatureFlags",
+    path: "/platform/feature-flags",
+    icon: ToggleRight,
+    group: "platform",
+    labelKey: "platform.nav.platformFeatureFlags",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
   // [/S1]
   // [S3]
   // [/S3]

@@ -298,7 +298,15 @@ describe("shell: user menu, language, theme, logout", () => {
       within(nav)
         .getAllByRole("link")
         .map((link) => link.textContent),
-    ).toEqual(["Today", "Facility applications"]);
+    ).toEqual([
+      "Today",
+      "Facility applications",
+      // S1 platform console
+      "Platform overview",
+      "Review applications",
+      "Master data",
+      "Feature flags",
+    ]);
   });
 
   it("an API 401 mid-session sends the user to login with an explanation", async () => {

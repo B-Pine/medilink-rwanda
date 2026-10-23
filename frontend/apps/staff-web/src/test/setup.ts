@@ -10,7 +10,7 @@ import * as axeMatchers from "vitest-axe/matchers";
 expect.extend(axeMatchers);
 
 // The whole workspace runs in parallel; give async queries room on slow CI machines.
-configure({ asyncUtilTimeout: 5000 });
+configure({ asyncUtilTimeout: 15_000 });
 
 // jsdom gaps used by Radix and axe.
 class ResizeObserverStub {

@@ -2,4 +2,4 @@
 -c base.txt
 -r base.in
 uvicorn>=0.35
-websockets>=15.0
+websockets>=17.3

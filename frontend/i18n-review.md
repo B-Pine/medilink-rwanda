@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 328.
+Keys: 370.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -365,4 +365,53 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `reset.doneBody` | Ijambo ry’ibanga ryahinduwe kandi wasohowe ahantu hose. Injira ukoresheje ijambo ry’ibanga rishya. | Your password was changed and you were logged out everywhere. Log in with your new password. | needs native-speaker review |
 | `reset.invalidLink` | Iri huriro ntiryuzuye. Ongera ufungure ihuriro riri muri imeyili, cyangwa usabe irindi. | This link is incomplete. Open the link from the email again, or ask for a new one. | needs native-speaker review |
 | `reset.toLogin` | Jya ku kwinjira | Go to log in | needs native-speaker review |
+
+## staff-web feature: lock (namespace lock)
+
+File: `apps/staff-web/src/features/lock/locales/rw.json`
+
+| Key | Kinyarwanda (draft) | English source | Status |
+|---|---|---|---|
+| `close` | Funga | Close | needs native-speaker review |
+| `cancel` | Reka | Cancel | needs native-speaker review |
+| `lockNow` | Funga ubu | Lock now | needs native-speaker review |
+| `menuLock` | Funga ecran | Lock screen | needs native-speaker review |
+| `menuSecurity` | Umutekano | Security | needs native-speaker review |
+| `warning.title` | Uracyahari? | Are you still there? | needs native-speaker review |
+| `warning.body` | Kubera ibanga ry'abarwayi, ecran yawe irafunga mu masegonda {{seconds}}. | For patients' privacy, your screen locks in {{seconds}} seconds. | needs native-speaker review |
+| `warning.stay` | Komeza winjiye | Stay signed in | needs native-speaker review |
+| `screen.title` | Ecran irafunze | Screen locked | needs native-speaker review |
+| `screen.who` | Winjiye nka {{name}} | Signed in as {{name}} | needs native-speaker review |
+| `screen.pin` | PIN | PIN | needs native-speaker review |
+| `screen.password` | Ijambo ry'ibanga | Password | needs native-speaker review |
+| `screen.unlock` | Fungura | Unlock | needs native-speaker review |
+| `screen.usePassword` | Koresha ijambo ry'ibanga | Use password instead | needs native-speaker review |
+| `screen.usePin` | Koresha PIN | Use PIN instead | needs native-speaker review |
+| `screen.switchUser` | Si wowe? Hindura ukoresha | Not you? Switch user | needs native-speaker review |
+| `screen.pinRequired` | Andika PIN yawe. | Enter your PIN. | needs native-speaker review |
+| `screen.passwordRequired` | Andika ijambo ry'ibanga. | Enter your password. | needs native-speaker review |
+| `screen.attempts_one` | Hasigaye igerageza {{count}} mbere y'uko usohoka. | {{count}} attempt left before you are signed out. | needs native-speaker review |
+| `screen.attempts_other` | Hasigaye amagerageza {{count}} mbere y'uko usohoka. | {{count}} attempts left before you are signed out. | needs native-speaker review |
+| `stepUp.title` | Emeza ko ari wowe | Confirm it's you | needs native-speaker review |
+| `stepUp.description` | Iki gikorwa gisaba ijambo ry'ibanga na kode iva muri porogaramu yawe y'umutekano. | This action needs your password and a code from your authenticator app. | needs native-speaker review |
+| `stepUp.password` | Ijambo ry'ibanga | Password | needs native-speaker review |
+| `stepUp.code` | Kode y'umutekano | Authenticator code | needs native-speaker review |
+| `stepUp.codeHint` | Imibare 6 iva muri porogaramu yawe y'umutekano | 6 digits from your authenticator app | needs native-speaker review |
+| `stepUp.confirm` | Emeza | Confirm | needs native-speaker review |
+| `stepUp.required` | Andika ijambo ry'ibanga na kode. | Enter your password and the code. | needs native-speaker review |
+| `security.title` | Umutekano | Security | needs native-speaker review |
+| `security.pinTitle` | PIN yo gufungura | Unlock PIN | needs native-speaker review |
+| `security.pinIsSet` | Ufite PIN. Yikoreshe ufungure ecran vuba. | You have a PIN. Use it to unlock your screen quickly. | needs native-speaker review |
+| `security.pinNotSet` | Shyiraho PIN y'imibare 4 kugeza kuri 6 kugira ngo ufungure ecran vuba. Ijambo ry'ibanga rihora rikora. | Set a 4 to 6 digit PIN to unlock your screen quickly. Your password always works too. | needs native-speaker review |
+| `security.pin` | PIN | PIN | needs native-speaker review |
+| `security.newPin` | PIN nshya | New PIN | needs native-speaker review |
+| `security.pinHint` | Imibare 4 kugeza kuri 6. Irinde imibare isubiramo cyangwa ikurikiranye nka 1234. | 4 to 6 digits. Avoid repeated digits and sequences such as 1234. | needs native-speaker review |
+| `security.setPin` | Shyiraho PIN | Set PIN | needs native-speaker review |
+| `security.changePin` | Hindura PIN | Change PIN | needs native-speaker review |
+| `security.removePin` | Kuraho PIN | Remove PIN | needs native-speaker review |
+| `security.pinFormat` | Koresha imibare 4 kugeza kuri 6. | Use 4 to 6 digits. | needs native-speaker review |
+| `security.pinSaved` | PIN yawe yabitswe. | Your PIN is saved. | needs native-speaker review |
+| `security.pinRemoved` | PIN yawe yakuweho. | Your PIN is removed. | needs native-speaker review |
+| `security.lockTitle` | Gufunga ecran | Screen lock | needs native-speaker review |
+| `security.lockBody` | Ecran yawe irafunga nyuma y'iminota {{minutes}} udakoresha. Yifunge ubwawe igihe ugiye. | Your screen locks after {{minutes}} minutes without activity. Lock it yourself when you step away. | needs native-speaker review |
 

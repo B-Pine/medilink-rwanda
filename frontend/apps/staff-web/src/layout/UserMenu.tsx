@@ -1,4 +1,4 @@
-import { CaretDown, SignOut } from "@phosphor-icons/react";
+import { CaretDown, LockKey, ShieldCheck, SignOut } from "@phosphor-icons/react";
 import type { StaffMe } from "@medilink/api-client";
 import {
   Menu,
@@ -17,6 +17,7 @@ import { SUPPORTED_LANGUAGES } from "@medilink/ui/i18n";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
+import { useApi, useServices } from "../app/services";
 import { useAuthFlow } from "../auth/auth-flow";
 import { useLogout } from "../auth/queries";
 
@@ -36,6 +37,8 @@ export function UserMenu({ me }: { me: StaffMe }) {
   const navigate = useNavigate();
   const logout = useLogout();
   const { setPending } = useAuthFlow();
+  const api = useApi();
+  const { lock } = useServices();
 
   const onLogout = () => {
     logout.mutate(undefined, {
@@ -89,6 +92,19 @@ export function UserMenu({ me }: { me: StaffMe }) {
           ))}
         </MenuRadioGroup>
         <MenuSeparator />
+        <MenuItem onSelect={() => void navigate("/account/security")}>
+          <ShieldCheck aria-hidden="true" className="size-icon" />
+          {t("lock.menuSecurity")}
+        </MenuItem>
+        <MenuItem
+          onSelect={() => {
+            lock.setLocked(true);
+            void api.security.lock().catch(() => undefined);
+          }}
+        >
+          <LockKey aria-hidden="true" className="size-icon" />
+          {t("lock.menuLock")}
+        </MenuItem>
         <MenuItem onSelect={onLogout} disabled={logout.isPending}>
           <SignOut aria-hidden="true" className="size-icon" />
           {logout.isPending ? t("shell.userMenu.loggingOut") : t("shell.userMenu.logout")}

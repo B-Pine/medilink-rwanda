@@ -1,0 +1,52 @@
+{
+  "close": "Close",
+  "cancel": "Cancel",
+  "lockNow": "Lock now",
+  "menuLock": "Lock screen",
+  "menuSecurity": "Security",
+  "warning": {
+    "title": "Are you still there?",
+    "body": "For patients' privacy, your screen locks in {{seconds}} seconds.",
+    "stay": "Stay signed in"
+  },
+  "screen": {
+    "title": "Screen locked",
+    "who": "Signed in as {{name}}",
+    "pin": "PIN",
+    "password": "Password",
+    "unlock": "Unlock",
+    "usePassword": "Use password instead",
+    "usePin": "Use PIN instead",
+    "switchUser": "Not you? Switch user",
+    "pinRequired": "Enter your PIN.",
+    "passwordRequired": "Enter your password.",
+    "attempts_one": "{{count}} attempt left before you are signed out.",
+    "attempts_other": "{{count}} attempts left before you are signed out."
+  },
+  "stepUp": {
+    "title": "Confirm it's you",
+    "description": "This action needs your password and a code from your authenticator app.",
+    "password": "Password",
+    "code": "Authenticator code",
+    "codeHint": "6 digits from your authenticator app",
+    "confirm": "Confirm",
+    "required": "Enter your password and the code."
+  },
+  "security": {
+    "title": "Security",
+    "pinTitle": "Unlock PIN",
+    "pinIsSet": "You have a PIN. Use it to unlock your screen quickly.",
+    "pinNotSet": "Set a 4 to 6 digit PIN to unlock your screen quickly. Your password always works too.",
+    "pin": "PIN",
+    "newPin": "New PIN",
+    "pinHint": "4 to 6 digits. Avoid repeated digits and sequences such as 1234.",
+    "setPin": "Set PIN",
+    "changePin": "Change PIN",
+    "removePin": "Remove PIN",
+    "pinFormat": "Use 4 to 6 digits.",
+    "pinSaved": "Your PIN is saved.",
+    "pinRemoved": "Your PIN is removed.",
+    "lockTitle": "Screen lock",
+    "lockBody": "Your screen locks after {{minutes}} minutes without activity. Lock it yourself when you step away."
+  }
+}

@@ -2,6 +2,9 @@ import type { AppResources } from "@medilink/ui/i18n";
 
 // ---- Feature imports: ONLY between the sprint's markers (shared-file protocol) ----
 // [S1 imports]
+import lockEn from "../features/lock/locales/en.json";
+import lockFr from "../features/lock/locales/fr.json";
+import lockRw from "../features/lock/locales/rw.json";
 // [/S1 imports]
 // [S3 imports]
 // [/S3 imports]
@@ -14,6 +17,7 @@ import type { AppResources } from "@medilink/ui/i18n";
  */
 export const FEATURE_LOCALES: Record<string, AppResources> = {
   // [S1]
+  lock: { rw: lockRw, en: lockEn, fr: lockFr },
   // [/S1]
   // [S3]
   // [/S3]

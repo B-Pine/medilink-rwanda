@@ -1,0 +1,52 @@
+{
+  "close": "Funga",
+  "cancel": "Reka",
+  "lockNow": "Funga ubu",
+  "menuLock": "Funga ecran",
+  "menuSecurity": "Umutekano",
+  "warning": {
+    "title": "Uracyahari?",
+    "body": "Kubera ibanga ry'abarwayi, ecran yawe irafunga mu masegonda {{seconds}}.",
+    "stay": "Komeza winjiye"
+  },
+  "screen": {
+    "title": "Ecran irafunze",
+    "who": "Winjiye nka {{name}}",
+    "pin": "PIN",
+    "password": "Ijambo ry'ibanga",
+    "unlock": "Fungura",
+    "usePassword": "Koresha ijambo ry'ibanga",
+    "usePin": "Koresha PIN",
+    "switchUser": "Si wowe? Hindura ukoresha",
+    "pinRequired": "Andika PIN yawe.",
+    "passwordRequired": "Andika ijambo ry'ibanga.",
+    "attempts_one": "Hasigaye igerageza {{count}} mbere y'uko usohoka.",
+    "attempts_other": "Hasigaye amagerageza {{count}} mbere y'uko usohoka."
+  },
+  "stepUp": {
+    "title": "Emeza ko ari wowe",
+    "description": "Iki gikorwa gisaba ijambo ry'ibanga na kode iva muri porogaramu yawe y'umutekano.",
+    "password": "Ijambo ry'ibanga",
+    "code": "Kode y'umutekano",
+    "codeHint": "Imibare 6 iva muri porogaramu yawe y'umutekano",
+    "confirm": "Emeza",
+    "required": "Andika ijambo ry'ibanga na kode."
+  },
+  "security": {
+    "title": "Umutekano",
+    "pinTitle": "PIN yo gufungura",
+    "pinIsSet": "Ufite PIN. Yikoreshe ufungure ecran vuba.",
+    "pinNotSet": "Shyiraho PIN y'imibare 4 kugeza kuri 6 kugira ngo ufungure ecran vuba. Ijambo ry'ibanga rihora rikora.",
+    "pin": "PIN",
+    "newPin": "PIN nshya",
+    "pinHint": "Imibare 4 kugeza kuri 6. Irinde imibare isubiramo cyangwa ikurikiranye nka 1234.",
+    "setPin": "Shyiraho PIN",
+    "changePin": "Hindura PIN",
+    "removePin": "Kuraho PIN",
+    "pinFormat": "Koresha imibare 4 kugeza kuri 6.",
+    "pinSaved": "PIN yawe yabitswe.",
+    "pinRemoved": "PIN yawe yakuweho.",
+    "lockTitle": "Gufunga ecran",
+    "lockBody": "Ecran yawe irafunga nyuma y'iminota {{minutes}} udakoresha. Yifunge ubwawe igihe ugiye."
+  }
+}

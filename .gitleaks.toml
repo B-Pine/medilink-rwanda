@@ -22,3 +22,9 @@ description = "Random object-storage key (a UUID) in the S3 storage test (S1-B9)
 condition = "AND"
 paths = ['''^backend/tests/uploads/test_processing\.py$''']
 regexes = ['''0b8f4c56-8f1e-4a55-9c55-4f0c5a6f1e01''']
+
+[[allowlists]]
+description = "Synthetic sign-up passphrase in the S3 patient API test; not a real credential"
+condition = "AND"
+paths = ['''^backend/tests/patients/test_patient_api\.py$''']
+regexes = ['''a-Long-and-unusual-passphrase-42''']

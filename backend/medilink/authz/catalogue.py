@@ -139,6 +139,9 @@ def extend(permissions: dict[str, str], role_grants: dict[str, frozenset[str]]) 
 # [S1]
 # [/S1]
 # [S3]
+from medilink.patients import permissions as _s3  # noqa: E402
+
+extend(_s3.PERMISSIONS, _s3.ROLE_GRANTS)
 # [/S3]
 # [S9]
 # [/S9]

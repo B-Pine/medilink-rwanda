@@ -9,6 +9,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from medilink.accounts.models import User
+from medilink.patients.identity import assign_medilink_number
 from medilink.patients.models import (
     ConsentChannel,
     ConsentKind,
@@ -41,8 +42,11 @@ def register_patient(
         email=email, password=password, full_name=full_name, preferred_language=preferred_language
     )
     patient = Patient.objects.create(full_name=full_name)
-    PatientLink.objects.create(account=user, patient=patient, relationship=Relationship.SELF)
+    assign_medilink_number(patient)
     now = timezone.now()
+    PatientLink.objects.create(
+        account=user, patient=patient, relationship=Relationship.SELF, granted_at=now
+    )
     ConsentRecord.objects.bulk_create(
         [
             ConsentRecord(

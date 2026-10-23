@@ -78,6 +78,7 @@ DEV_SEED_COMMANDS: list[str] = [
     "seed_masterdata_dev",
     # [/S1]
     # [S3]
+    "seed_patients_dev",
     # [/S3]
     # [S9]
     # [/S9]

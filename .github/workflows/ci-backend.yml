@@ -109,9 +109,9 @@ jobs:
       - name: Tests (PostgreSQL, RLS, run as the app role)
         run: pytest --cov --cov-report=term-missing:skip-covered --cov-report=xml
 
-      - name: Coverage gate (>= 90% for accounts, authz, tenancy, audit and the S1 apps)
+      - name: Coverage gate (>= 90% for accounts, authz, tenancy, audit, the S1 apps and patients)
         run: |
-          for app in accounts authz tenancy audit uploads masterdata onboarding; do
+          for app in accounts authz tenancy audit uploads masterdata onboarding patients; do
             echo "== medilink/$app"
             python -m coverage report --include="medilink/$app/*" --fail-under=90 | tail -1
           done
@@ -133,7 +133,11 @@ jobs:
           UPLOADS_STORAGE: s3
           UPLOADS_DOWNLOAD_BASE_URL: https://files.medilink.rw
           PLATFORM_ALLOWED_NETWORKS: 10.0.0.0/8
-        run: python manage.py check --deploy --fail-level WARNING
+        run: |
+          # Random 32-byte keys for this check only (S3 patient identifier encryption)
+          key() { python -c "import base64,os;print(base64.urlsafe_b64encode(os.urandom(32)).decode())"; }
+          export MEDILINK_FIELD_KEYS="1:$(key)" MEDILINK_BLIND_INDEX_KEYS="1:$(key)"
+          python manage.py check --deploy --fail-level WARNING
 
       - name: pip-audit (known vulnerabilities in locked dependencies)
         run: pip-audit --strict --require-hashes --disable-pip -r requirements/prod.txt -r requirements/dev.txt

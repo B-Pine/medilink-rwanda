@@ -33,6 +33,10 @@ api_v1: list[URLPattern | URLResolver] = [
     path("platform/feature-flags/", include("medilink.onboarding.urls.flags")),
     # [/S1]
     # [S3]
+    path("staff/patients/", include("medilink.patients.urls.staff")),
+    path("staff/merge-requests/", include("medilink.patients.urls.staff_merges")),
+    path("platform/merge-requests/", include("medilink.patients.urls.platform_merges")),
+    path("patient/", include("medilink.patients.urls.patient")),
     # [/S3]
     # [S9]
     # [/S9]

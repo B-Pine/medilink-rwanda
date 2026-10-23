@@ -78,6 +78,40 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Sprint 3 · Patients and identity
 
+- Patient identity (`medilink.patients`, contract §2): MediLink numbers (`ML-XXXX-XXXX`, Crockford
+  alphabet with a Luhn mod 32 check character; backfilled for existing patients, assigned at
+  sign-up); demographics, contacts and emergency contact; identifiers in `patients_identifier`
+  stored only as AES-256-GCM ciphertext (bound to table, column and row), an HMAC-SHA256 blind
+  index and the last four characters. Keys come from `MEDILINK_FIELD_KEYS` /
+  `MEDILINK_BLIND_INDEX_KEYS`, with key ids so they can rotate (`patients_rotate_keys --data |
+  --index`). Checks: `patients.W001` (derived development keys), `patients.E001` (deploy, keys
+  missing), `patients.E002` (invalid keys).
+- Facility records (`patients_facility_patient`, forced RLS) with file numbers. SECURITY DEFINER
+  helpers `patients_known_elsewhere()` and `patients_facilities_of()` count other facilities
+  without exposing them; `patients_audit_link` records which audit entries are about which
+  patient, and is append-only along with `patients_merge_event`.
+- Staff endpoints `/staff/patients/…`:
+  - search by name, phone, ID, file number or MediLink number, with criteria in the body;
+  - duplicate check (exact identifier, fuzzy name, date of birth and phone);
+  - walk-in registration with care consent, and adding a patient who is already on MediLink;
+  - record detail and edit, with versions;
+  - identifiers, and an audited reveal with a reason;
+  - insurance cards (S1 insurers; card photos through the S1 upload pipeline) and verification;
+  - health profile (allergies, conditions, medicines with provenance and review);
+  - desk consents and record-claim confirmation.
+- Merges (`/staff/merge-requests/`, `/platform/merge-requests/`):
+  - four-eyes approval with step-up; escalation for single-approver clinics;
+  - execution re-points every row and records it, and undo restores the rows still at their merged value;
+  - `merge.register_mover()` lets later sprints include their tables.
+- Patient endpoints `/patient/…`: profiles through account links with per-link rights,
+  dependents, delegation invites (one-time codes), identifiers, insurance, health items, record
+  claims (emailed code or a reception ID check), consents and access history.
+- Permissions `patients.view`, `patients.identifier_reveal`, `patients.insurance_verify`,
+  `patients.merge_approve`; receptionists gain `patients.merge_request`. Rate limits `search`
+  (60/min), `verification` (10/h), `reveal` (30/h). Jobs `expire_claims` (15 min) and
+  `expire_delegation_invites` (daily); dev seed `seed_patients_dev`.
+- Dependency: cryptography.
+
 ### Sprint 9 · Notifications
 
 ### Added

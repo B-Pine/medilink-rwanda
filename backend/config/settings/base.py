@@ -353,6 +353,9 @@ REST_FRAMEWORK = {
         # [S1]
         # [/S1]
         # [S3]
+        "IdentifierKindEnum": "medilink.patients.models.IdentifierKind",
+        "HealthItemKindEnum": "medilink.patients.serializers.HEALTH_KINDS",
+        "StaffConsentKindEnum": "medilink.patients.serializers.STAFF_CONSENT_KINDS",
         # [/S3]
         # [S9]
         # [/S9]
@@ -392,6 +395,9 @@ SPECTACULAR_SETTINGS = {
         "LicenceStateEnum": "medilink.onboarding.serializers.LICENCE_STATES",
         # [/S1]
         # [S3]
+        "IdentifierKindEnum": "medilink.patients.models.IdentifierKind",
+        "HealthItemKindEnum": "medilink.patients.serializers.HEALTH_KINDS",
+        "StaffConsentKindEnum": "medilink.patients.serializers.STAFF_CONSENT_KINDS",
         # [/S3]
         # [S9]
         # [/S9]

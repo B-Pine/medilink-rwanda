@@ -28,6 +28,9 @@ pypdf>=5.0
 boto3>=1.35
 # [/S1]
 # [S3]
+# Patient identifier encryption (contract §2.4): AES-256-GCM field encryption and HKDF for
+# development keys. pyca/cryptography is the maintained, audited reference implementation.
+cryptography>=44.0
 # [/S3]
 # [S9]
 # [/S9]

@@ -1,0 +1,76 @@
+"""S3 audit actions (contract §2.6), registered in the [S3] block of audit/actions.py.
+
+`ACCESS_HISTORY` lists the actions a patient sees in their access history (performed by others).
+"""
+
+ACTIONS: frozenset[str] = frozenset(
+    {
+        "patients.walk_in.registered",
+        "patients.existing.added",
+        "patients.search.performed",
+        "patients.duplicate_check.performed",
+        "patients.duplicates.dismissed",
+        "patients.record.viewed",
+        "patients.record.updated",
+        "patients.identifier.added",
+        "patients.identifier.superseded",
+        "patients.identifier.verified",
+        "patients.identifier.revealed",
+        "patients.phone.revealed",
+        "patients.profile.updated",
+        "patients.dependent.added",
+        "patients.delegation.created",
+        "patients.delegation.accepted",
+        "patients.delegation.revoked",
+        "patients.insurance.added",
+        "patients.insurance.updated",
+        "patients.insurance.verified",
+        "patients.insurance.rejected",
+        "patients.insurance.deactivated",
+        "patients.insurance.card_uploaded",
+        "patients.health_profile.viewed",
+        "patients.health_item.added",
+        "patients.health_item.reviewed",
+        "patients.consent.recorded",
+        "patients.claim.requested",
+        "patients.claim.code_failed",
+        "patients.claim.completed",
+        "patients.claim.expired",
+        "patients.merge.requested",
+        "patients.merge.cancelled",
+        "patients.merge.escalated",
+        "patients.merge.rejected",
+        "patients.merge.executed",
+        "patients.merge.undone",
+        "patients.keys.rotated",
+    }
+)
+
+ACCESS_HISTORY: frozenset[str] = frozenset(
+    {
+        "patients.walk_in.registered",
+        "patients.existing.added",
+        "patients.record.viewed",
+        "patients.record.updated",
+        "patients.identifier.added",
+        "patients.identifier.superseded",
+        "patients.identifier.verified",
+        "patients.identifier.revealed",
+        "patients.phone.revealed",
+        "patients.delegation.created",
+        "patients.delegation.accepted",
+        "patients.delegation.revoked",
+        "patients.insurance.added",
+        "patients.insurance.updated",
+        "patients.insurance.verified",
+        "patients.insurance.rejected",
+        "patients.insurance.deactivated",
+        "patients.health_profile.viewed",
+        "patients.health_item.added",
+        "patients.health_item.reviewed",
+        "patients.consent.recorded",
+        "patients.claim.completed",
+        "patients.merge.executed",
+        "patients.merge.undone",
+    }
+)

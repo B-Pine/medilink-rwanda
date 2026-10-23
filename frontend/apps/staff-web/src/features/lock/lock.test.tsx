@@ -131,7 +131,12 @@ describe("step-up", () => {
     return (
       <button
         type="button"
-        onClick={() => void withStepUp(action).then((r) => (document.title = r))}
+        onClick={() =>
+          void withStepUp(action).then(
+            (r) => (document.title = r),
+            () => (document.title = "cancelled"),
+          )
+        }
       >
         Approve
       </button>
@@ -182,5 +187,6 @@ describe("step-up", () => {
     await user.click(screen.getByRole("button", { name: "Cancel" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(action).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(document.title).toBe("cancelled"));
   });
 });

@@ -201,6 +201,695 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: rate_limited
+  /api/v1/patient/consents/:
+    get:
+      operationId: patient_consents_retrieve
+      summary: Current consents and their history
+      tags:
+      - patient-profiles
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsentState'
+          description: ''
+    post:
+      operationId: patient_consents_create
+      summary: Give or withdraw a consent (append-only)
+      tags:
+      - patient-profiles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConsentInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsentRecord'
+          description: ''
+  /api/v1/patient/delegations/:
+    get:
+      operationId: patient_delegations_list
+      summary: Access you granted, access you received, and pending invites
+      tags:
+      - patient-profiles
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Delegations'
+          description: ''
+    post:
+      operationId: patient_delegations_create
+      summary: Create a one-time code to share a profile (password required)
+      tags:
+      - patient-profiles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InviteCreateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invite'
+          description: ''
+  /api/v1/patient/delegations/{object_id}/revoke/:
+    post:
+      operationId: patient_delegations_revoke
+      summary: End a link or cancel a pending invite
+      parameters:
+      - in: path
+        name: object_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/patient/delegations/accept/:
+    post:
+      operationId: patient_delegations_accept
+      summary: Accept a code someone shared with you
+      tags:
+      - patient-profiles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CodeRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileSummary'
+          description: ''
+  /api/v1/patient/dependents/:
+    post:
+      operationId: patient_dependents_create
+      summary: Add a child (guardian) or an adult who agreed (delegate)
+      tags:
+      - patient-profiles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DependentRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileSummary'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: age or limit rules
+  /api/v1/patient/insurance-profiles/{profile_id}/:
+    patch:
+      operationId: patient_insurance_update
+      summary: Edit an insurance card
+      parameters:
+      - in: path
+        name: profile_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedInsuranceUpdateRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsuranceProfile'
+          description: ''
+  /api/v1/patient/insurance-profiles/{profile_id}/card-images/:
+    post:
+      operationId: patient_insurance_card_upload
+      summary: Add a photo of the card (S1 upload pipeline)
+      parameters:
+      - in: path
+        name: profile_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CardImageRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsuranceProfile'
+          description: ''
+  /api/v1/patient/insurance-profiles/{profile_id}/card-images/{side}/download-links/:
+    post:
+      operationId: patient_insurance_card_link
+      summary: A 5-minute link to a card photo
+      parameters:
+      - in: path
+        name: profile_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: side
+        schema:
+          type: string
+        required: true
+      tags:
+      - patient-profiles
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          description: '{url, expires_at}'
+  /api/v1/patient/insurance-profiles/{profile_id}/deactivate/:
+    post:
+      operationId: patient_insurance_deactivate
+      summary: Stop using a card (kept for history)
+      parameters:
+      - in: path
+        name: profile_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsuranceProfile'
+          description: ''
+  /api/v1/patient/profiles/:
+    get:
+      operationId: patient_profiles_list
+      summary: 'Profiles of this account: self first, then dependents and delegations'
+      tags:
+      - patient-profiles
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProfileSummary'
+          description: ''
+  /api/v1/patient/profiles/{patient_id}/:
+    get:
+      operationId: patient_profiles_retrieve
+      summary: A profile
+      parameters:
+      - in: path
+        name: patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientProfileDetail'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: not_found
+    patch:
+      operationId: patient_profiles_update
+      summary: 'Edit a profile (names, birth date and sex: self or guardian)'
+      parameters:
+      - in: path
+        name: patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProfileUpdateRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientProfileDetail'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: conflict
+  /api/v1/patient/profiles/{patient_id}/{kind}/:
+    post:
+      operationId: patient_health_item_create
+      summary: Add an allergy, condition or medicine (unverified until a clinician
+        checks)
+      parameters:
+      - in: path
+        name: kind
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AllergyInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthItem'
+          description: ''
+  /api/v1/patient/profiles/{patient_id}/{kind}/{item_id}/entered-in-error/:
+    post:
+      operationId: patient_health_item_entered_in_error
+      summary: Remove an item you added by mistake
+      parameters:
+      - in: path
+        name: item_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: kind
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthItem'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: verified by a clinician
+  /api/v1/patient/profiles/{patient_id}/access-history/:
+    get:
+      operationId: patient_access_history
+      summary: Who opened or changed this profile
+      parameters:
+      - in: path
+        name: patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccessHistoryItem'
+          description: ''
+  /api/v1/patient/profiles/{patient_id}/health-profile/:
+    get:
+      operationId: patient_health_profile
+      summary: Allergies, conditions and medicines
+      parameters:
+      - in: path
+        name: patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthProfile'
+          description: ''
+  /api/v1/patient/profiles/{patient_id}/identifiers/:
+    get:
+      operationId: patient_identifiers_list
+      summary: Identity documents (masked)
+      parameters:
+      - in: path
+        name: patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Identifier'
+          description: ''
+    post:
+      operationId: patient_identifiers_create
+      summary: Add an identity document (a verified one changes only at reception)
+      parameters:
+      - in: path
+        name: patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IdentifierInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Identifier'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: used by another patient
+  /api/v1/patient/profiles/{patient_id}/identifiers/{identifier_id}/reveal/:
+    post:
+      operationId: patient_identifiers_reveal
+      summary: Show the full number of your own document
+      parameters:
+      - in: path
+        name: identifier_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reveal'
+          description: ''
+  /api/v1/patient/profiles/{patient_id}/insurance-profiles/:
+    get:
+      operationId: patient_insurance_list
+      summary: Insurance cards, active first
+      parameters:
+      - in: path
+        name: patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InsuranceProfile'
+          description: ''
+    post:
+      operationId: patient_insurance_create
+      summary: Add an insurance card
+      parameters:
+      - in: path
+        name: patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InsuranceInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsuranceProfile'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: same card exists
+  /api/v1/patient/record-claims/:
+    post:
+      operationId: patient_record_claims_create
+      summary: Claim a record a facility created for you
+      tags:
+      - patient-profiles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClaimCreateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordClaim'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: no match (generic)
+  /api/v1/patient/record-claims/{claim_id}/:
+    get:
+      operationId: patient_record_claims_retrieve
+      summary: A claim (polled while reception checks)
+      parameters:
+      - in: path
+        name: claim_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordClaim'
+          description: ''
+  /api/v1/patient/record-claims/{claim_id}/verify/:
+    post:
+      operationId: patient_record_claims_verify
+      summary: Enter the emailed code
+      parameters:
+      - in: path
+        name: claim_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CodeRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClaimVerified'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: wrong code
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: failed
   /api/v1/patient/uploads/:
     post:
       operationId: patient_uploads_create
@@ -3682,6 +4371,157 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Not previewed, has errors or expired
+  /api/v1/platform/merge-requests/:
+    get:
+      operationId: platform_merge_requests_list
+      summary: Cross-facility, escalated and claim merges
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: scope
+        schema:
+          type: string
+          enum:
+          - claim
+          - cross_facility
+          - facility
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - cancelled
+          - executed
+          - rejected
+          - requested
+          - undone
+      tags:
+      - platform-merge-requests
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MergeRequest'
+          description: ''
+  /api/v1/platform/merge-requests/{merge_id}/:
+    get:
+      operationId: platform_merge_requests_retrieve
+      summary: A merge request with preview counts (no clinical data)
+      parameters:
+      - in: path
+        name: merge_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-merge-requests
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MergeRequest'
+          description: ''
+  /api/v1/platform/merge-requests/{merge_id}/approve/:
+    post:
+      operationId: platform_merge_requests_approve
+      summary: Approve and run a merge (step-up)
+      parameters:
+      - in: path
+        name: merge_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-merge-requests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecisionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MergeRequest'
+          description: ''
+  /api/v1/platform/merge-requests/{merge_id}/reject/:
+    post:
+      operationId: platform_merge_requests_reject
+      summary: Reject a merge request
+      parameters:
+      - in: path
+        name: merge_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-merge-requests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RejectRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MergeRequest'
+          description: ''
+  /api/v1/platform/merge-requests/{merge_id}/undo/:
+    post:
+      operationId: platform_merge_requests_undo
+      summary: Undo any merge, including claims (step-up)
+      parameters:
+      - in: path
+        name: merge_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-merge-requests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UndoRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UndoResult'
+          description: ''
   /api/v1/platform/overview/:
     get:
       operationId: platform_overview
@@ -4905,6 +5745,833 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedSymptomsItemList'
           description: ''
+  /api/v1/staff/merge-requests/:
+    get:
+      operationId: staff_merge_requests_list
+      summary: This facility's merge requests
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - cancelled
+          - executed
+          - rejected
+          - requested
+          - undone
+      tags:
+      - staff-merge-requests
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MergeRequest'
+          description: ''
+    post:
+      operationId: staff_merge_requests_create
+      summary: Request a merge of two records of this facility
+      tags:
+      - staff-merge-requests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MergeCreateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MergeRequest'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: open request
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: conflict
+  /api/v1/staff/merge-requests/{merge_id}/:
+    get:
+      operationId: staff_merge_requests_retrieve
+      summary: A merge request with its preview
+      parameters:
+      - in: path
+        name: merge_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-merge-requests
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MergeRequest'
+          description: ''
+  /api/v1/staff/merge-requests/{merge_id}/approve/:
+    post:
+      operationId: staff_merge_requests_approve
+      summary: Approve and run a facility merge (step-up)
+      parameters:
+      - in: path
+        name: merge_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-merge-requests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecisionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MergeRequest'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: not allowed here
+  /api/v1/staff/merge-requests/{merge_id}/cancel/:
+    post:
+      operationId: staff_merge_requests_cancel
+      summary: Cancel your own merge request
+      parameters:
+      - in: path
+        name: merge_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-merge-requests
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MergeRequest'
+          description: ''
+  /api/v1/staff/merge-requests/{merge_id}/escalate/:
+    post:
+      operationId: staff_merge_requests_escalate
+      summary: Send your request to the platform team (no other approver here)
+      parameters:
+      - in: path
+        name: merge_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-merge-requests
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MergeRequest'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: another approver exists
+  /api/v1/staff/merge-requests/{merge_id}/reject/:
+    post:
+      operationId: staff_merge_requests_reject
+      summary: Reject a merge request
+      parameters:
+      - in: path
+        name: merge_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-merge-requests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RejectRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MergeRequest'
+          description: ''
+  /api/v1/staff/merge-requests/{merge_id}/undo/:
+    post:
+      operationId: staff_merge_requests_undo
+      summary: Undo a facility merge (step-up)
+      parameters:
+      - in: path
+        name: merge_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-merge-requests
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UndoRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UndoResult'
+          description: ''
+  /api/v1/staff/patients/:
+    post:
+      operationId: staff_patients_create
+      summary: Register a walk-in patient
+      tags:
+      - staff-patients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityPatientDetail'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'conflict: identifier, file_number or possible duplicate'
+  /api/v1/staff/patients/{fp_id}/:
+    get:
+      operationId: staff_patients_retrieve
+      summary: A facility patient record (audited)
+      parameters:
+      - in: path
+        name: fp_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-patients
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityPatientDetail'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: not_found
+    patch:
+      operationId: staff_patients_update
+      summary: Edit demographics, contacts, file number or notes
+      parameters:
+      - in: path
+        name: fp_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-patients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffPatientUpdateRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityPatientDetail'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: conflict
+  /api/v1/staff/patients/{fp_id}/{kind}/:
+    post:
+      operationId: staff_patients_health_item_create
+      summary: Add a verified allergy, condition or medicine
+      parameters:
+      - in: path
+        name: fp_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: kind
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff-patients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AllergyInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthItem'
+          description: ''
+  /api/v1/staff/patients/{fp_id}/{kind}/{item_id}/review/:
+    post:
+      operationId: staff_patients_health_item_review
+      summary: Verify, refute or mark an item entered in error
+      parameters:
+      - in: path
+        name: fp_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: item_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: kind
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff-patients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HealthReviewRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthItem'
+          description: ''
+  /api/v1/staff/patients/{fp_id}/claim-confirmations/:
+    post:
+      operationId: staff_patients_claim_confirm
+      summary: Confirm a patient's record claim after an ID check
+      parameters:
+      - in: path
+        name: fp_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-patients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClaimConfirmationRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          description: RecordClaim
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: not open here
+  /api/v1/staff/patients/{fp_id}/consents/:
+    post:
+      operationId: staff_patients_consents_create
+      summary: Record a care or research consent at the desk
+      parameters:
+      - in: path
+        name: fp_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-patients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffConsentRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsentRecord'
+          description: ''
+  /api/v1/staff/patients/{fp_id}/health-profile/:
+    get:
+      operationId: staff_patients_health_profile
+      summary: 'Allergies, conditions and medicines (pharmacy: allergies only)'
+      parameters:
+      - in: path
+        name: fp_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-patients
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthProfile'
+          description: ''
+  /api/v1/staff/patients/{fp_id}/identifiers/:
+    post:
+      operationId: staff_patients_identifiers_create
+      summary: Add or replace an identity document
+      parameters:
+      - in: path
+        name: fp_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-patients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffIdentifierRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Identifier'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: used by another patient
+  /api/v1/staff/patients/{fp_id}/insurance-profiles/:
+    get:
+      operationId: staff_patients_insurance_list
+      summary: Insurance profiles of the patient
+      parameters:
+      - in: path
+        name: fp_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-patients
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InsuranceProfile'
+          description: ''
+    post:
+      operationId: staff_patients_insurance_create
+      summary: Add an insurance card
+      parameters:
+      - in: path
+        name: fp_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-patients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InsuranceInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsuranceProfile'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: same card exists
+  /api/v1/staff/patients/{fp_id}/insurance-profiles/{profile_id}/:
+    patch:
+      operationId: staff_patients_insurance_update
+      summary: Edit an insurance card (identity changes reset the status)
+      parameters:
+      - in: path
+        name: fp_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: profile_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-patients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedInsuranceUpdateRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsuranceProfile'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: conflict
+  /api/v1/staff/patients/{fp_id}/insurance-profiles/{profile_id}/card-images/:
+    post:
+      operationId: staff_patients_insurance_card_upload
+      summary: Capture a card photo (S1 upload pipeline)
+      parameters:
+      - in: path
+        name: fp_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: profile_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-patients
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CardImageRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsuranceProfile'
+          description: ''
+  /api/v1/staff/patients/{fp_id}/insurance-profiles/{profile_id}/card-images/{side}/download-links/:
+    post:
+      operationId: staff_patients_insurance_card_link
+      summary: A 5-minute link to a card photo
+      parameters:
+      - in: path
+        name: fp_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: profile_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: side
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff-patients
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          description: '{url, expires_at}'
+  /api/v1/staff/patients/{fp_id}/insurance-profiles/{profile_id}/verify/:
+    post:
+      operationId: staff_patients_insurance_verify
+      summary: Mark a card verified or rejected
+      parameters:
+      - in: path
+        name: fp_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: profile_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-patients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InsuranceVerifyRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsuranceProfile'
+          description: ''
+  /api/v1/staff/patients/{fp_id}/reveal/:
+    post:
+      operationId: staff_patients_reveal
+      summary: Show a full identifier or phone number, with a reason (audited)
+      parameters:
+      - in: path
+        name: fp_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-patients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffRevealRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reveal'
+          description: ''
+  /api/v1/staff/patients/add-existing/:
+    post:
+      operationId: staff_patients_add_existing
+      summary: Add a patient already on MediLink to this facility
+      tags:
+      - staff-patients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddExistingRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityPatientDetail'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityPatientDetail'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: proof doesn't match
+  /api/v1/staff/patients/duplicate-checks/:
+    post:
+      operationId: staff_patients_duplicate_check
+      summary: Check for duplicates before registering
+      tags:
+      - staff-patients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DuplicateCheckRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DuplicateCheckResult'
+          description: ''
+  /api/v1/staff/patients/search/:
+    post:
+      operationId: staff_patients_search
+      summary: Search this facility's patients (criteria in the body)
+      tags:
+      - staff-patients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResult'
+          description: ''
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: rate_limited
   /api/v1/staff/uploads/:
     post:
       operationId: staff_uploads_create
@@ -5013,6 +6680,33 @@ paths:
           description: The file isn't clean (yet)
 components:
   schemas:
+    AccessHistoryItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        action:
+          type: string
+        actor_kind:
+          type: string
+        actor_role:
+          type: string
+          nullable: true
+        facility:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      required:
+      - action
+      - actor_kind
+      - actor_role
+      - facility
+      - id
+      - occurred_at
     ActionEnum:
       enum:
       - create
@@ -5046,6 +6740,25 @@ components:
         * `applicant` - Applicant
         * `platform_admin` - Super admin
         * `system` - System
+    AddExistingRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        patient_ref:
+          type: string
+          format: uuid
+        proof:
+          $ref: '#/components/schemas/ProofRequest'
+        file_number:
+          type: string
+          nullable: true
+          maxLength: 40
+        care_consent:
+          $ref: '#/components/schemas/CareConsentInputRequest'
+      required:
+      - care_consent
+      - patient_ref
+      - proof
     AdminBlock:
       type: object
       properties:
@@ -5090,6 +6803,28 @@ components:
       - accepted_dpa_version
       - accepted_terms_version
       - ncsa_registration_confirmed
+    AllergyInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        substance_text:
+          type: string
+          minLength: 1
+          maxLength: 120
+        reaction:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 200
+        severity:
+          allOf:
+          - $ref: '#/components/schemas/SeverityEnum'
+          default: unknown
+      required:
+      - category
+      - substance_text
     ApplicantApplication:
       type: object
       properties:
@@ -5418,6 +7153,228 @@ components:
     BlankEnum:
       enum:
       - ''
+    ByEnum:
+      enum:
+      - auto
+      - name
+      - phone
+      - national_id
+      - identifier
+      - file_number
+      - medilink_number
+      type: string
+      description: |-
+        * `auto` - auto
+        * `name` - name
+        * `phone` - phone
+        * `national_id` - national_id
+        * `identifier` - identifier
+        * `file_number` - file_number
+        * `medilink_number` - medilink_number
+    CardImageRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        side:
+          $ref: '#/components/schemas/SideEnum'
+        file:
+          type: string
+          format: binary
+      required:
+      - file
+      - side
+    CareConsentInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: string
+          minLength: 1
+          maxLength: 32
+        granted:
+          type: boolean
+      required:
+      - granted
+      - version
+    CategoryEnum:
+      enum:
+      - drug
+      - food
+      - other
+      type: string
+      description: |-
+        * `drug` - Drug
+        * `food` - Food
+        * `other` - Other
+    ClaimConfirmationRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        claim_reference:
+          type: string
+          minLength: 1
+          maxLength: 12
+        document_kind:
+          $ref: '#/components/schemas/IdentifierKindEnum'
+        document_matches:
+          type: boolean
+      required:
+      - claim_reference
+      - document_kind
+      - document_matches
+    ClaimCreateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        lookup:
+          $ref: '#/components/schemas/ClaimLookupRequest'
+        date_of_birth:
+          type: string
+          format: date
+      required:
+      - date_of_birth
+      - lookup
+    ClaimLookupRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        identifier:
+          $ref: '#/components/schemas/IdentifierInputRequest'
+        medilink_number:
+          type: string
+          minLength: 1
+          maxLength: 20
+        phone_e164:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 20
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+    ClaimVerified:
+      type: object
+      properties:
+        claim:
+          $ref: '#/components/schemas/RecordClaim'
+        profile:
+          $ref: '#/components/schemas/ProfileSummary'
+      required:
+      - claim
+      - profile
+    CodeRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 20
+      required:
+      - code
+    Completion:
+      type: object
+      properties:
+        details:
+          type: boolean
+        identifier:
+          type: boolean
+        emergency_contact:
+          type: boolean
+        care_consent:
+          type: boolean
+        insurance:
+          type: boolean
+        allergies_reviewed:
+          type: boolean
+      required:
+      - allergies_reviewed
+      - care_consent
+      - details
+      - emergency_contact
+      - identifier
+      - insurance
+    ConsentInputKindEnum:
+      enum:
+      - terms
+      - privacy
+      - care
+      - research
+      type: string
+      description: |-
+        * `terms` - terms
+        * `privacy` - privacy
+        * `care` - care
+        * `research` - research
+    ConsentInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        kind:
+          $ref: '#/components/schemas/ConsentInputKindEnum'
+        version:
+          type: string
+          minLength: 1
+          maxLength: 32
+        granted:
+          type: boolean
+        patient_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - granted
+      - kind
+      - version
+    ConsentRecord:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        patient_id:
+          type: string
+          format: uuid
+          nullable: true
+        granted:
+          type: boolean
+        version:
+          type: string
+        granted_at:
+          type: string
+          format: date-time
+        channel:
+          type: string
+      required:
+      - channel
+      - granted
+      - granted_at
+      - id
+      - kind
+      - patient_id
+      - version
+    ConsentState:
+      type: object
+      properties:
+        current_versions:
+          type: object
+          additionalProperties:
+            type: string
+        consents:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConsentRecord'
+        history:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConsentRecord'
+      required:
+      - consents
+      - current_versions
+      - history
     CsrfToken:
       type: object
       properties:
@@ -5445,6 +7402,107 @@ components:
       - confirm_slug
       - reason_code
       - version
+    DecisionRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        decision_reason:
+          type: string
+          maxLength: 300
+      required:
+      - version
+    DelegationRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        profile_name:
+          type: string
+        holder_name:
+          type: string
+          nullable: true
+        relationship:
+          type: string
+        granted_at:
+          type: string
+          format: date-time
+          nullable: true
+        can_revoke:
+          type: boolean
+      required:
+      - can_revoke
+      - granted_at
+      - holder_name
+      - id
+      - patient_id
+      - profile_name
+      - relationship
+    Delegations:
+      type: object
+      properties:
+        granted:
+          type: array
+          items:
+            $ref: '#/components/schemas/DelegationRow'
+        received:
+          type: array
+          items:
+            $ref: '#/components/schemas/DelegationRow'
+        pending_invites:
+          type: array
+          items:
+            $ref: '#/components/schemas/PendingInvite'
+      required:
+      - granted
+      - pending_invites
+      - received
+    DependentRelationshipEnum:
+      enum:
+      - guardian
+      - delegate
+      type: string
+      description: |-
+        * `guardian` - guardian
+        * `delegate` - delegate
+    DependentRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        relationship:
+          $ref: '#/components/schemas/DependentRelationshipEnum'
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        sex:
+          $ref: '#/components/schemas/SexEnum'
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        estimated_age_years:
+          type: integer
+          maximum: 120
+          minimum: 0
+          nullable: true
+        consent_version:
+          type: string
+          minLength: 1
+          maxLength: 32
+        consent_attested:
+          type: boolean
+          default: false
+      required:
+      - consent_version
+      - full_name
+      - relationship
+      - sex
     Detail:
       type: object
       properties:
@@ -5850,6 +7908,61 @@ components:
       - form
       - generic_name
       - strength
+    DuplicateCheckRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        estimated_age_years:
+          type: integer
+          maximum: 120
+          minimum: 0
+          nullable: true
+        estimated_age_months:
+          type: integer
+          maximum: 23
+          minimum: 0
+          nullable: true
+        full_name:
+          type: string
+          maxLength: 200
+        sex:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/SexEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        phone_e164:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 20
+        identifier:
+          allOf:
+          - $ref: '#/components/schemas/IdentifierInputRequest'
+          nullable: true
+        medilink_number:
+          type: string
+          maxLength: 20
+    DuplicateCheckResult:
+      type: object
+      properties:
+        matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/DuplicateMatch'
+        external_match:
+          allOf:
+          - $ref: '#/components/schemas/ExternalMatch'
+          nullable: true
+        other_facility_possible_count:
+          type: integer
+      required:
+      - external_match
+      - matches
+      - other_facility_possible_count
     DuplicateHint:
       type: object
       properties:
@@ -5877,6 +7990,26 @@ components:
         * `same_licence_number` - same_licence_number
         * `same_applicant_email` - same_applicant_email
         * `same_name_in_district` - same_name_in_district
+    DuplicateMatch:
+      type: object
+      properties:
+        level:
+          $ref: '#/components/schemas/DuplicateMatchLevelEnum'
+        patient:
+          $ref: '#/components/schemas/PatientSummary'
+      required:
+      - level
+      - patient
+    DuplicateMatchLevelEnum:
+      enum:
+      - exact_identifier
+      - strong
+      - possible
+      type: string
+      description: |-
+        * `exact_identifier` - exact_identifier
+        * `strong` - strong
+        * `possible` - possible
     EmailInputRequest:
       type: object
       properties:
@@ -5887,6 +8020,43 @@ components:
           maxLength: 254
       required:
       - email
+    EmergencyContact:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        name:
+          type: string
+          maxLength: 200
+        phone_e164:
+          type: string
+          maxLength: 20
+        relationship:
+          type: string
+          maxLength: 40
+      required:
+      - name
+      - phone_e164
+      - relationship
+    EmergencyContactRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        phone_e164:
+          type: string
+          minLength: 1
+          maxLength: 20
+        relationship:
+          type: string
+          minLength: 1
+          maxLength: 40
+      required:
+      - name
+      - phone_e164
+      - relationship
     Error:
       type: object
       properties:
@@ -5919,6 +8089,32 @@ components:
       - fields
       - message
       - request_id
+    ExternalMatch:
+      type: object
+      properties:
+        patient_ref:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        birth_year:
+          type: integer
+          nullable: true
+        sex:
+          type: string
+          nullable: true
+        medilink_number:
+          type: string
+          nullable: true
+        matched_on:
+          type: string
+      required:
+      - birth_year
+      - full_name
+      - matched_on
+      - medilink_number
+      - patient_ref
+      - sex
     FacilityBlock:
       type: object
       properties:
@@ -6016,6 +8212,124 @@ components:
             maxLength: 254
           - type: string
             maxLength: 0
+    FacilityPatientDetail:
+      type: object
+      properties:
+        facility_patient_id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        medilink_number:
+          type: string
+          nullable: true
+        file_number:
+          type: string
+          nullable: true
+        full_name:
+          type: string
+        preferred_name:
+          type: string
+          nullable: true
+        sex:
+          type: string
+          nullable: true
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        is_birth_date_estimated:
+          type: boolean
+        age_years:
+          type: integer
+          nullable: true
+        phone_masked:
+          type: string
+          nullable: true
+        national_id_masked:
+          type: string
+          nullable: true
+        insurance:
+          type: array
+          items:
+            $ref: '#/components/schemas/InsuranceBadge'
+        has_account:
+          type: boolean
+        is_staff_member:
+          type: boolean
+        match:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        emergency_contact:
+          nullable: true
+        reception_notes:
+          type: string
+          nullable: true
+        identifiers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identifier'
+        has_care_consent:
+          type: boolean
+        open_claim_reference:
+          type: string
+          nullable: true
+        is_active:
+          type: boolean
+        merged_into_facility_patient_id:
+          type: string
+          format: uuid
+          nullable: true
+        version:
+          type: integer
+        patient_version:
+          type: integer
+      required:
+      - address
+      - age_years
+      - date_of_birth
+      - email
+      - emergency_contact
+      - facility_patient_id
+      - file_number
+      - full_name
+      - has_account
+      - has_care_consent
+      - identifiers
+      - insurance
+      - is_active
+      - is_birth_date_estimated
+      - is_staff_member
+      - match
+      - medilink_number
+      - merged_into_facility_patient_id
+      - national_id_masked
+      - open_claim_reference
+      - patient_id
+      - patient_version
+      - phone_masked
+      - preferred_name
+      - reception_notes
+      - sex
+      - version
+    FacilityRef:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+      required:
+      - id
+      - name
     FacilityStatusEnum:
       enum:
       - draft
@@ -6236,6 +8550,14 @@ components:
       - general_comment
       - items
       - rejection
+    FieldEnum:
+      enum:
+      - identifier
+      - phone
+      type: string
+      description: |-
+        * `identifier` - identifier
+        * `phone` - phone
     Health:
       type: object
       properties:
@@ -6246,6 +8568,178 @@ components:
       required:
       - status
       - version
+    HealthItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: '#/components/schemas/HealthItemKindEnum'
+        category:
+          type: string
+        substance_text:
+          type: string
+        reaction:
+          type: string
+          nullable: true
+        severity:
+          type: string
+        display:
+          type: string
+        status:
+          type: string
+        onset_date:
+          type: string
+          format: date
+          nullable: true
+        drug_display:
+          type: string
+        dose_text:
+          type: string
+          nullable: true
+        started_on:
+          type: string
+          format: date
+          nullable: true
+        stopped_on:
+          type: string
+          format: date
+          nullable: true
+        source:
+          type: string
+        verification_status:
+          type: string
+        recorded_at:
+          type: string
+          format: date-time
+        reviewed_at:
+          type: string
+          format: date-time
+          nullable: true
+        review_note:
+          type: string
+          nullable: true
+      required:
+      - id
+      - kind
+      - recorded_at
+      - review_note
+      - reviewed_at
+      - source
+      - verification_status
+    HealthItemKindEnum:
+      enum:
+      - allergy
+      - condition
+      - medication
+      type: string
+      description: |-
+        * `allergy` - allergy
+        * `condition` - condition
+        * `medication` - medication
+    HealthProfile:
+      type: object
+      properties:
+        no_known_allergies:
+          type: boolean
+          nullable: true
+        allergies:
+          type: array
+          items:
+            $ref: '#/components/schemas/HealthItem'
+          nullable: true
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/HealthItem'
+          nullable: true
+        medications:
+          type: array
+          items:
+            $ref: '#/components/schemas/HealthItem'
+          nullable: true
+      required:
+      - allergies
+      - conditions
+      - medications
+      - no_known_allergies
+    HealthReviewOutcomeEnum:
+      enum:
+      - verified
+      - refuted
+      - entered_in_error
+      type: string
+      description: |-
+        * `verified` - verified
+        * `refuted` - refuted
+        * `entered_in_error` - entered_in_error
+    HealthReviewRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        outcome:
+          $ref: '#/components/schemas/HealthReviewOutcomeEnum'
+        note:
+          type: string
+          maxLength: 200
+      required:
+      - outcome
+    Identifier:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: '#/components/schemas/IdentifierKindEnum'
+        issuing_country:
+          type: string
+        masked_value:
+          type: string
+          readOnly: true
+        is_verified:
+          type: boolean
+          readOnly: true
+        verified_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - id
+      - is_verified
+      - issuing_country
+      - kind
+      - masked_value
+      - verified_at
+    IdentifierInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        kind:
+          $ref: '#/components/schemas/IdentifierKindEnum'
+        issuing_country:
+          type: string
+          maxLength: 2
+        value:
+          type: string
+          minLength: 1
+          maxLength: 40
+      required:
+      - kind
+      - value
+    IdentifierKindEnum:
+      enum:
+      - national_id
+      - passport
+      - refugee_id
+      - birth_certificate
+      type: string
+      description: |-
+        * `national_id` - National ID
+        * `passport` - Passport
+        * `refugee_id` - Refugee ID
+        * `birth_certificate` - Birth certificate
     ImportCreateRequest:
       type: object
       properties:
@@ -6325,6 +8819,154 @@ components:
       - rows
       - unchanged
       - update
+    InsuranceBadge:
+      type: object
+      properties:
+        insurer_code:
+          type: string
+        status:
+          type: string
+        is_expired:
+          type: boolean
+      required:
+      - insurer_code
+      - is_expired
+      - status
+    InsuranceInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        insurer_code:
+          type: string
+          minLength: 1
+          maxLength: 40
+        member_number:
+          type: string
+          minLength: 1
+          maxLength: 40
+        is_principal:
+          type: boolean
+          default: true
+        principal_name:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 200
+        principal_member_number:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 40
+        relationship_to_principal:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/PrincipalRelationshipEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        valid_until:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - insurer_code
+      - member_number
+    InsuranceProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        insurer_code:
+          type: string
+        insurer_display:
+          type: string
+        member_number:
+          type: string
+        is_principal:
+          type: boolean
+        principal_name:
+          type: string
+          nullable: true
+        principal_member_number:
+          type: string
+          nullable: true
+        relationship_to_principal:
+          type: string
+          nullable: true
+        valid_until:
+          type: string
+          format: date
+          nullable: true
+        is_expired:
+          type: boolean
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/InsuranceProfileStatusEnum'
+        status_reason:
+          type: string
+          nullable: true
+        last_verified:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          readOnly: true
+        card_images:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        is_active:
+          type: boolean
+        version:
+          type: integer
+      required:
+      - card_images
+      - id
+      - insurer_code
+      - insurer_display
+      - is_active
+      - is_expired
+      - is_principal
+      - last_verified
+      - member_number
+      - principal_member_number
+      - principal_name
+      - relationship_to_principal
+      - status
+      - status_reason
+      - valid_until
+      - version
+    InsuranceProfileStatusEnum:
+      enum:
+      - unverified
+      - verified
+      - rejected
+      type: string
+      description: |-
+        * `unverified` - Unverified
+        * `verified` - Verified
+        * `rejected` - Rejected
+    InsuranceVerifyOutcomeEnum:
+      enum:
+      - verified
+      - rejected
+      type: string
+      description: |-
+        * `verified` - verified
+        * `rejected` - rejected
+    InsuranceVerifyRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        outcome:
+          $ref: '#/components/schemas/InsuranceVerifyOutcomeEnum'
+        valid_until:
+          type: string
+          format: date
+          nullable: true
+        reason:
+          type: string
+          maxLength: 200
+      required:
+      - outcome
     InsurersItem:
       type: object
       properties:
@@ -6434,6 +9076,44 @@ components:
       - code
       - name
       - scheme
+    Invite:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        relationship:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - code
+      - expires_at
+      - id
+      - relationship
+    InviteCreateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        patient_id:
+          type: string
+          format: uuid
+        current_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 200
+        consent_version:
+          type: string
+          minLength: 1
+          maxLength: 32
+      required:
+      - consent_version
+      - current_password
+      - patient_id
     ItemComment:
       type: object
       properties:
@@ -6470,20 +9150,6 @@ components:
         * `rw` - Kinyarwanda
         * `en` - English
         * `fr` - Français
-    LevelEnum:
-      enum:
-      - province
-      - district
-      - sector
-      - cell
-      - village
-      type: string
-      description: |-
-        * `province` - Province
-        * `district` - District
-        * `sector` - Sector
-        * `cell` - Cell
-        * `village` - Village
     Licence:
       type: object
       properties:
@@ -6693,7 +9359,7 @@ components:
           type: string
           maxLength: 20
         level:
-          $ref: '#/components/schemas/LevelEnum'
+          $ref: '#/components/schemas/LocationsPlatformItemLevelEnum'
         parent_code:
           type: string
           nullable: true
@@ -6732,6 +9398,20 @@ components:
       - name
       - updated_at
       - version
+    LocationsPlatformItemLevelEnum:
+      enum:
+      - province
+      - district
+      - sector
+      - cell
+      - village
+      type: string
+      description: |-
+        * `province` - Province
+        * `district` - District
+        * `sector` - Sector
+        * `cell` - Cell
+        * `village` - Village
     LocationsPlatformItemRequest:
       type: object
       properties:
@@ -6740,7 +9420,7 @@ components:
           minLength: 1
           maxLength: 20
         level:
-          $ref: '#/components/schemas/LevelEnum'
+          $ref: '#/components/schemas/LocationsPlatformItemLevelEnum'
         parent_code:
           type: string
           nullable: true
@@ -6902,6 +9582,161 @@ components:
       required:
       - facility
       - roles
+    MergeCreateRequest:
+      type: object
+      properties:
+        surviving_facility_patient_id:
+          type: string
+          format: uuid
+        merged_facility_patient_id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 300
+      required:
+      - merged_facility_patient_id
+      - reason
+      - surviving_facility_patient_id
+    MergePreview:
+      type: object
+      properties:
+        identifiers:
+          type: integer
+        insurance_profiles:
+          type: integer
+        health_items:
+          type: integer
+        account_links:
+          type: integer
+        facility_records_here:
+          type: integer
+        other_facilities:
+          type: integer
+        conflicts:
+          type: array
+          items:
+            type: string
+      required:
+      - account_links
+      - conflicts
+      - facility_records_here
+      - health_items
+      - identifiers
+      - insurance_profiles
+      - other_facilities
+    MergeRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        scope:
+          $ref: '#/components/schemas/ScopeEnum'
+        status:
+          $ref: '#/components/schemas/MergeStatusEnum'
+        is_escalated:
+          type: boolean
+        facility:
+          allOf:
+          - $ref: '#/components/schemas/FacilityRef'
+          nullable: true
+        surviving:
+          $ref: '#/components/schemas/MergeSide'
+        merged:
+          $ref: '#/components/schemas/MergeSide'
+        preview:
+          allOf:
+          - $ref: '#/components/schemas/MergePreview'
+          nullable: true
+        reason:
+          type: string
+        requested_by:
+          type: string
+        requested_at:
+          type: string
+          format: date-time
+        decided_by:
+          type: string
+          nullable: true
+        decided_at:
+          type: string
+          format: date-time
+          nullable: true
+        decision_reason:
+          type: string
+          nullable: true
+        executed_at:
+          type: string
+          format: date-time
+          nullable: true
+        undone_at:
+          type: string
+          format: date-time
+          nullable: true
+        version:
+          type: integer
+      required:
+      - decided_at
+      - decided_by
+      - decision_reason
+      - executed_at
+      - facility
+      - id
+      - is_escalated
+      - merged
+      - preview
+      - reason
+      - requested_at
+      - requested_by
+      - scope
+      - status
+      - surviving
+      - undone_at
+      - version
+    MergeSide:
+      type: object
+      properties:
+        patient_id:
+          type: string
+          format: uuid
+        medilink_number:
+          type: string
+          nullable: true
+        full_name:
+          type: string
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        sex:
+          type: string
+          nullable: true
+        file_number:
+          type: string
+          nullable: true
+      required:
+      - date_of_birth
+      - file_number
+      - full_name
+      - medilink_number
+      - patient_id
+      - sex
+    MergeStatusEnum:
+      enum:
+      - requested
+      - rejected
+      - cancelled
+      - executed
+      - undone
+      type: string
+      description: |-
+        * `requested` - Requested
+        * `rejected` - Rejected
+        * `cancelled` - Cancelled
+        * `executed` - Executed
+        * `undone` - Undone
     MethodEnum:
       enum:
       - password_totp
@@ -7721,6 +10556,43 @@ components:
           type: string
           minLength: 1
           maxLength: 300
+    PatchedInsuranceUpdateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        insurer_code:
+          type: string
+          minLength: 1
+          maxLength: 40
+        member_number:
+          type: string
+          minLength: 1
+          maxLength: 40
+        is_principal:
+          type: boolean
+          default: true
+        principal_name:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 200
+        principal_member_number:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 40
+        relationship_to_principal:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/PrincipalRelationshipEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        valid_until:
+          type: string
+          format: date
+          nullable: true
+        version:
+          type: integer
+          minimum: 1
     PatchedInsurersPlatformItemRequest:
       type: object
       properties:
@@ -7766,7 +10638,7 @@ components:
           minLength: 1
           maxLength: 20
         level:
-          $ref: '#/components/schemas/LevelEnum'
+          $ref: '#/components/schemas/LocationsPlatformItemLevelEnum'
         parent_code:
           type: string
           nullable: true
@@ -7782,6 +10654,55 @@ components:
           type: integer
           maximum: 2147483647
           minimum: -2147483648
+    PatchedProfileUpdateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        preferred_name:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 100
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        is_birth_date_estimated:
+          type: boolean
+        sex:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/SexEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        phone_e164:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 20
+        email:
+          type: string
+          format: email
+          nullable: true
+          minLength: 1
+        address:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 300
+        emergency_contact:
+          allOf:
+          - $ref: '#/components/schemas/EmergencyContactRequest'
+          nullable: true
+        no_known_allergies:
+          type: boolean
+          nullable: true
     PatchedPublicHolidaysPlatformItemRequest:
       type: object
       properties:
@@ -7867,6 +10788,65 @@ components:
           type: integer
           maximum: 2147483647
           minimum: -2147483648
+    PatchedStaffPatientUpdateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        patient_version:
+          type: integer
+          minimum: 1
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        preferred_name:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 100
+        sex:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/SexEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        is_birth_date_estimated:
+          type: boolean
+        phone_e164:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 20
+        email:
+          type: string
+          format: email
+          nullable: true
+          minLength: 1
+        address:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 300
+        emergency_contact:
+          allOf:
+          - $ref: '#/components/schemas/EmergencyContactRequest'
+          nullable: true
+        file_number:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 40
+        reception_notes:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 500
     PatchedSymptomsPlatformItemRequest:
       type: object
       properties:
@@ -7943,11 +10923,75 @@ components:
         display_name:
           type: string
         relationship:
-          $ref: '#/components/schemas/RelationshipEnum'
+          $ref: '#/components/schemas/PatientRelationshipEnum'
       required:
       - display_name
       - patient_id
       - relationship
+    PatientProfileDetail:
+      type: object
+      properties:
+        patient_id:
+          type: string
+          format: uuid
+        relationship:
+          $ref: '#/components/schemas/PatientRelationshipEnum'
+        medilink_number:
+          type: string
+          nullable: true
+        full_name:
+          type: string
+        preferred_name:
+          type: string
+          nullable: true
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        is_birth_date_estimated:
+          type: boolean
+        sex:
+          type: string
+          nullable: true
+        phone_e164:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        emergency_contact:
+          allOf:
+          - $ref: '#/components/schemas/EmergencyContact'
+          nullable: true
+        no_known_allergies:
+          type: boolean
+          nullable: true
+        has_care_consent:
+          type: boolean
+        completion:
+          $ref: '#/components/schemas/Completion'
+        version:
+          type: integer
+      required:
+      - address
+      - completion
+      - date_of_birth
+      - email
+      - emergency_contact
+      - full_name
+      - has_care_consent
+      - is_birth_date_estimated
+      - medilink_number
+      - no_known_allergies
+      - patient_id
+      - phone_e164
+      - preferred_name
+      - relationship
+      - sex
+      - version
     PatientRegisterRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -7986,6 +11030,104 @@ components:
       - password
       - preferred_language
       - research_consent
+    PatientRelationshipEnum:
+      enum:
+      - self
+      - guardian
+      - delegate
+      type: string
+      description: |-
+        * `self` - Self
+        * `guardian` - Guardian
+        * `delegate` - Delegate
+    PatientSummary:
+      type: object
+      properties:
+        facility_patient_id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        medilink_number:
+          type: string
+          nullable: true
+        file_number:
+          type: string
+          nullable: true
+        full_name:
+          type: string
+        preferred_name:
+          type: string
+          nullable: true
+        sex:
+          type: string
+          nullable: true
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        is_birth_date_estimated:
+          type: boolean
+        age_years:
+          type: integer
+          nullable: true
+        phone_masked:
+          type: string
+          nullable: true
+        national_id_masked:
+          type: string
+          nullable: true
+        insurance:
+          type: array
+          items:
+            $ref: '#/components/schemas/InsuranceBadge'
+        has_account:
+          type: boolean
+        is_staff_member:
+          type: boolean
+        match:
+          type: string
+          nullable: true
+      required:
+      - age_years
+      - date_of_birth
+      - facility_patient_id
+      - file_number
+      - full_name
+      - has_account
+      - insurance
+      - is_birth_date_estimated
+      - is_staff_member
+      - match
+      - medilink_number
+      - national_id_masked
+      - patient_id
+      - phone_masked
+      - preferred_name
+      - sex
+    PendingInvite:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        profile_name:
+          type: string
+        relationship:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - expires_at
+      - id
+      - patient_id
+      - profile_name
+      - relationship
     Person:
       type: object
       properties:
@@ -8218,6 +11360,54 @@ components:
       - slug
       - status
       - version
+    PrincipalRelationshipEnum:
+      enum:
+      - spouse
+      - child
+      - parent
+      - other
+      type: string
+      description: |-
+        * `spouse` - Spouse
+        * `child` - Child
+        * `parent` - Parent
+        * `other` - Other
+    ProfileSummary:
+      type: object
+      properties:
+        patient_id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+        relationship:
+          $ref: '#/components/schemas/PatientRelationshipEnum'
+        medilink_number:
+          type: string
+          nullable: true
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        completion_percent:
+          type: integer
+      required:
+      - completion_percent
+      - date_of_birth
+      - display_name
+      - medilink_number
+      - patient_id
+      - relationship
+    ProofRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        medilink_number:
+          type: string
+          minLength: 1
+          maxLength: 20
+        identifier:
+          $ref: '#/components/schemas/IdentifierInputRequest'
     PublicHolidaysItem:
       type: object
       properties:
@@ -8317,6 +11507,18 @@ components:
       required:
       - holiday_date
       - name_i18n
+    ReasonCodeEnum:
+      enum:
+      - identity_check
+      - insurance_claim
+      - patient_request
+      - other
+      type: string
+      description: |-
+        * `identity_check` - identity_check
+        * `insurance_claim` - insurance_claim
+        * `patient_request` - patient_request
+        * `other` - other
     ReasonCodesItem:
       type: object
       properties:
@@ -8446,6 +11648,95 @@ components:
       required:
       - reason_code
       - version
+    RecordClaim:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+        method:
+          type: string
+        contact_hint:
+          type: string
+          nullable: true
+        reference:
+          type: string
+          nullable: true
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - contact_hint
+      - expires_at
+      - id
+      - method
+      - reference
+      - status
+    RegisterRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        estimated_age_years:
+          type: integer
+          maximum: 120
+          minimum: 0
+          nullable: true
+        estimated_age_months:
+          type: integer
+          maximum: 23
+          minimum: 0
+          nullable: true
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        sex:
+          $ref: '#/components/schemas/SexEnum'
+        phone_e164:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 20
+        identifier:
+          allOf:
+          - $ref: '#/components/schemas/IdentifierInputRequest'
+          nullable: true
+        file_number:
+          type: string
+          nullable: true
+          maxLength: 40
+        insurance:
+          allOf:
+          - $ref: '#/components/schemas/InsuranceInputRequest'
+          nullable: true
+        care_consent:
+          $ref: '#/components/schemas/CareConsentInputRequest'
+        confirm_not_duplicate:
+          type: boolean
+          default: false
+      required:
+      - care_consent
+      - full_name
+      - sex
+    RejectRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        decision_reason:
+          type: string
+          minLength: 1
+          maxLength: 300
+      required:
+      - decision_reason
+      - version
     RejectionBlock:
       type: object
       properties:
@@ -8459,16 +11750,6 @@ components:
       - reason_code
       - reason_label
       - reason_text
-    RelationshipEnum:
-      enum:
-      - self
-      - guardian
-      - delegate
-      type: string
-      description: |-
-        * `self` - Self
-        * `guardian` - Guardian
-        * `delegate` - Delegate
     RequestChangesInputRequest:
       type: object
       properties:
@@ -8484,6 +11765,13 @@ components:
       required:
       - items
       - version
+    Reveal:
+      type: object
+      properties:
+        value:
+          type: string
+      required:
+      - value
     RoleCodeEnum:
       enum:
       - facility_admin
@@ -8508,6 +11796,49 @@ components:
         * `social` - Social
         * `military` - Military
         * `private` - Private
+    ScopeEnum:
+      enum:
+      - facility
+      - cross_facility
+      - claim
+      type: string
+      description: |-
+        * `facility` - Facility
+        * `cross_facility` - Cross-facility
+        * `claim` - Claim
+    SearchRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        query:
+          type: string
+          minLength: 1
+          maxLength: 200
+        by:
+          allOf:
+          - $ref: '#/components/schemas/ByEnum'
+          default: auto
+        kind:
+          $ref: '#/components/schemas/IdentifierKindEnum'
+        issuing_country:
+          type: string
+          maxLength: 2
+      required:
+      - query
+    SearchResult:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientSummary'
+        external_match:
+          allOf:
+          - $ref: '#/components/schemas/ExternalMatch'
+          nullable: true
+      required:
+      - external_match
+      - results
     ServiceCatalogueItemsItem:
       type: object
       properties:
@@ -8668,6 +11999,28 @@ components:
       required:
       - code
       - name_i18n
+    SeverityEnum:
+      enum:
+      - mild
+      - moderate
+      - severe
+      - unknown
+      type: string
+      description: |-
+        * `mild` - Mild
+        * `moderate` - Moderate
+        * `severe` - Severe
+        * `unknown` - Unknown
+    SexEnum:
+      enum:
+      - female
+      - male
+      - other
+      type: string
+      description: |-
+        * `female` - Female
+        * `male` - Male
+        * `other` - Other
     SexRestrictionEnum:
       enum:
       - female
@@ -8676,6 +12029,14 @@ components:
       description: |-
         * `female` - Female
         * `male` - Male
+    SideEnum:
+      enum:
+      - front
+      - back
+      type: string
+      description: |-
+        * `front` - front
+        * `back` - back
     SourceEnum:
       enum:
       - override
@@ -8684,6 +12045,52 @@ components:
       description: |-
         * `override` - override
         * `default` - default
+    StaffConsentKindEnum:
+      enum:
+      - care
+      - research
+      type: string
+      description: |-
+        * `care` - care
+        * `research` - research
+    StaffConsentRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        kind:
+          $ref: '#/components/schemas/StaffConsentKindEnum'
+        version:
+          type: string
+          minLength: 1
+          maxLength: 32
+        granted:
+          type: boolean
+        script_read:
+          type: boolean
+      required:
+      - granted
+      - kind
+      - script_read
+      - version
+    StaffIdentifierRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        kind:
+          $ref: '#/components/schemas/IdentifierKindEnum'
+        issuing_country:
+          type: string
+          maxLength: 2
+        value:
+          type: string
+          minLength: 1
+          maxLength: 40
+        seen_document:
+          type: boolean
+          default: false
+      required:
+      - kind
+      - value
     StaffLoginRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -8750,6 +12157,23 @@ components:
       - permissions
       - preferred_language
       - security
+    StaffRevealRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        field:
+          $ref: '#/components/schemas/FieldEnum'
+        identifier_id:
+          type: string
+          format: uuid
+        reason_code:
+          $ref: '#/components/schemas/ReasonCodeEnum'
+        reason_text:
+          type: string
+          maxLength: 200
+      required:
+      - field
+      - reason_code
     StaffSecurity:
       type: object
       properties:
@@ -8982,6 +12406,29 @@ components:
           maxLength: 200
       required:
       - token
+    UndoRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 300
+      required:
+      - reason
+      - version
+    UndoResult:
+      type: object
+      properties:
+        merge:
+          $ref: '#/components/schemas/MergeRequest'
+        skipped_rows:
+          type: integer
+      required:
+      - merge
+      - skipped_rows
     UnlockMethodsEnum:
       enum:
       - pin

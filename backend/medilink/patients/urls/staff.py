@@ -48,6 +48,11 @@ urlpatterns = [
     ),
     path("<uuid:fp_id>/consents/", v.ConsentCreateView.as_view(), name="staff-patients-consents"),
     path(
+        "<uuid:fp_id>/claim-confirmations/",
+        v.ClaimConfirmationView.as_view(),
+        name="staff-patients-claim-confirm",
+    ),
+    path(
         "<uuid:fp_id>/<str:kind>/<uuid:item_id>/review/",
         v.HealthItemReviewView.as_view(),
         name="staff-patients-health-review",

@@ -356,6 +356,9 @@ REST_FRAMEWORK = {
         "IdentifierKindEnum": "medilink.patients.models.IdentifierKind",
         "HealthItemKindEnum": "medilink.patients.serializers.HEALTH_KINDS",
         "StaffConsentKindEnum": "medilink.patients.serializers.STAFF_CONSENT_KINDS",
+        "PatientRelationshipEnum": "medilink.patients.models.Relationship",
+        "DependentRelationshipEnum": "medilink.patients.views_patient.DEPENDENT_RELATIONSHIPS",
+        "PrincipalRelationshipEnum": "medilink.patients.models.PrincipalRelationship",
         # [/S3]
         # [S9]
         # [/S9]
@@ -398,6 +401,9 @@ SPECTACULAR_SETTINGS = {
         "IdentifierKindEnum": "medilink.patients.models.IdentifierKind",
         "HealthItemKindEnum": "medilink.patients.serializers.HEALTH_KINDS",
         "StaffConsentKindEnum": "medilink.patients.serializers.STAFF_CONSENT_KINDS",
+        "PatientRelationshipEnum": "medilink.patients.models.Relationship",
+        "DependentRelationshipEnum": "medilink.patients.views_patient.DEPENDENT_RELATIONSHIPS",
+        "PrincipalRelationshipEnum": "medilink.patients.models.PrincipalRelationship",
         # [/S3]
         # [S9]
         # [/S9]

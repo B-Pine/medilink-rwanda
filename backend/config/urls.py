@@ -36,6 +36,7 @@ api_v1: list[URLPattern | URLResolver] = [
     path("staff/patients/", include("medilink.patients.urls.staff")),
     path("staff/merge-requests/", include("medilink.patients.urls.staff_merges")),
     path("platform/merge-requests/", include("medilink.patients.urls.platform_merges")),
+    path("patient/", include("medilink.patients.urls.patient")),
     # [/S3]
     # [S9]
     # [/S9]

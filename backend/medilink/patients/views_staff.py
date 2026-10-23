@@ -601,3 +601,31 @@ class ConsentCreateView(StaffView):
             ).data,
             status=status.HTTP_201_CREATED,
         )
+
+
+class ClaimConfirmationView(StaffView):
+    permission_classes = [Needs("patient.register")]
+
+    @extend_schema(
+        operation_id="staff_patients_claim_confirm",
+        tags=TAGS,
+        request=s.ClaimConfirmationSerializer,
+        responses={200: OpenApiResponse(description="RecordClaim"), 404: _err("not open here")},
+        summary="Confirm a patient's record claim after an ID check",
+    )
+    def post(self, request: Request, fp_id: Any) -> Response:
+        from medilink.patients import claims
+        from medilink.patients.views_patient import claim_data
+
+        fp = self.active_record(fp_id)
+        body = s.ClaimConfirmationSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        principal = self.principal()
+        claim = claims.confirm_at_reception(
+            reference=body.validated_data["claim_reference"],
+            patient=fp.patient,
+            actor=principal.user,
+            facility_id=principal.active_facility_id,
+            request=request,
+        )
+        return Response(claim_data(claim))

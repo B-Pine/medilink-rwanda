@@ -32,6 +32,10 @@ updates:
     groups:
       frontend-minor-and-patch:
         update-types: ["minor", "patch"]
+    ignore:
+      # typescript-eslint refuses TS >= 7 (typescript-eslint#10940); revisit with issue #43.
+      - dependency-name: typescript
+        versions: [">=7"]
 
   - package-ecosystem: github-actions
     directory: /

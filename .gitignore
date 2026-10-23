@@ -30,3 +30,6 @@ brand/video/source/*
 
 # Claude Code agent worktrees (local only)
 .claude/worktrees/
+
+# Local upload storage (backend UPLOADS_STORAGE=local)
+backend/var/

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import time
+from datetime import UTC, datetime
 from typing import Any, cast
 
 from django.contrib import auth
@@ -19,6 +20,7 @@ from medilink.accounts.sessions import (
     MFA_AT_KEY,
     MFA_METHOD_KEY,
     PENDING_KEY,
+    get_audience,
 )
 from medilink.core.realtime import close_sockets
 from medilink.patients.services import active_links
@@ -108,7 +110,9 @@ def revoke_all_sessions(user: User) -> int:
 # --- payloads --------------------------------------------------------------------------------
 
 
-def staff_me_data(principal: Principal) -> dict[str, Any]:
+def staff_me_data(principal: Principal, session: Any = None) -> dict[str, Any]:
+    from medilink.onboarding.flags import enabled_flags
+
     user = principal.user
     if user is None:
         raise ValueError("staff_me_data needs an authenticated principal")
@@ -134,7 +138,21 @@ def staff_me_data(principal: Principal) -> dict[str, Any]:
         ],
         "active_facility_id": principal.active_facility_id,
         "permissions": sorted(principal.permissions),
+        # S1 (contract §3.1): enabled feature flags and the lock / step-up state
+        "feature_flags": enabled_flags(principal.active_facility_id),
+        "security": {
+            "pin_set": bool(user.pin_hash),
+            "lock_after_seconds": get_audience("staff").lock_after,
+            "step_up_valid_until": _until(session),
+        },
     }
+
+
+def _until(session: Any) -> Any:
+    from medilink.authz.stepup import recent_auth_until
+
+    until = recent_auth_until(session) if session is not None else None
+    return datetime.fromtimestamp(until, tz=UTC) if until else None
 
 
 def patient_me_data(user: User) -> dict[str, Any]:

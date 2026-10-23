@@ -24,6 +24,8 @@ LAST_SEEN_KEY = "_ml_last_seen"  # last activity (idle timeout)
 MFA_AT_KEY = "_ml_mfa_at"  # when the second factor was verified (staff)
 MFA_METHOD_KEY = "_ml_mfa_method"
 ACTIVE_FACILITY_KEY = "_ml_facility"  # staff: active facility id
+LOCKED_AT_KEY = "_ml_locked_at"  # staff: idle lock (S1, contract §2.5); the session stays alive
+LOCK_TRIGGER_KEY = "_ml_lock_trigger"  # "idle" until the lock is audited by the principal
 # PENDING_KEY (re-exported): staff password verified, second factor pending {user_id, stage, at}
 
 LAST_SEEN_GRANULARITY = 60  # seconds; limits session writes to one per minute per session
@@ -36,6 +38,7 @@ class Audience:
     idle_timeout: int
     absolute_timeout: int
     path_prefixes: tuple[str, ...]
+    lock_after: int = 0  # 0 = never locks (patients)
 
 
 def get_audiences() -> list[Audience]:
@@ -46,6 +49,7 @@ def get_audiences() -> list[Audience]:
             idle_timeout=int(cfg["IDLE_TIMEOUT"]),
             absolute_timeout=int(cfg["ABSOLUTE_TIMEOUT"]),
             path_prefixes=tuple(cfg["PATH_PREFIXES"]),
+            lock_after=int(cfg.get("LOCK_AFTER", 0)),
         )
         for name, cfg in settings.SESSION_AUDIENCES.items()
     ]
@@ -108,6 +112,12 @@ def enforce_session_timeouts(
     ):
         session.flush()
         return False
+    if session.get(LOCKED_AT_KEY):
+        return True  # locked: requests don't count as activity (only unlock does)
+    if audience.lock_after and current - last_seen > audience.lock_after:
+        session[LOCKED_AT_KEY] = last_seen + audience.lock_after
+        session[LOCK_TRIGGER_KEY] = "idle"
+        return True
     if current - last_seen >= LAST_SEEN_GRANULARITY:
         session[LAST_SEEN_KEY] = current
     return True

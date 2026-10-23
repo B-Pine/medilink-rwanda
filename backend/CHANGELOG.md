@@ -10,6 +10,72 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Sprint 1 · Platform and onboarding
 
+- Upload pipeline v1 (`medilink.uploads`, contract §2.4, §3.6): `uploads_file` with forced RLS
+  (`facility_isolation` + `unowned_rows`); magic-byte sniffing (PDF, JPEG, PNG, HEIC/HEIF; CSV only
+  for CSV purposes); size limit; UUID keys in a quarantine bucket; `scan_file` task with the
+  `Scanner` interface (`ClamdScanner` over INSTREAM, `FakeScanner` for EICAR), 5 retries, then
+  `failed`; images re-encoded without EXIF/XMP/GPS (40 MP limit, 3,000 px side, animations refused,
+  HEIC to JPEG); PDFs refused when encrypted, scripted, with embedded files, launch actions, XFA or
+  rich media, or over 100 pages; `ObjectStorage` with local (dev/test, `/api/v1/files/{token}/`)
+  and S3-compatible (boto3, SSE, presigned) implementations; 5-minute signed download links with
+  `nosniff`, sandbox CSP, `no-store` and CORP headers; hourly `purge_files`.
+- Endpoints `POST /staff|patient/uploads/`, `GET …/{id}/`, `POST …/{id}/download-links/` with
+  `Idempotency-Key` and the `upload` rate limit (60/h, `THROTTLE_RATE_UPLOAD`).
+- Reusable interface for later sprints: `uploads.purposes.register(UploadPurpose(...))`,
+  `services.receive/attach/download_link/soft_delete`, signal `upload_scanned`.
+- Deploy checks `medilink.uploads.E001`–`E003` refuse the fake scanner, local storage and a
+  non-https files origin.
+- S1 audit actions registered through `extend_actions()` (`medilink.onboarding.audit_actions`).
+- Master data (`medilink.masterdata`, contract §2.2, §2.6, §3.5): locations, facility types,
+  service catalogue, insurers, drugs, ICD-10 codes, symptoms, public holidays and reason codes
+  with rw/en/fr translations, `version` and an append-only `masterdata_change` log. Only
+  `masterdata.services` writes them (pre-save guard); the runtime role has no `DELETE`/`TRUNCATE`
+  (retire instead) and no `UPDATE`/`DELETE` on the change log (`post_migrate` revokes). Trigram
+  indexes (`pg_trgm`) for drug and diagnosis search.
+- Endpoints `/public/master-data/{kind}/` (5 kinds, localised, `Cache-Control` + `ETag`),
+  `/staff/master-data/{kind}/` (9 kinds, search) and `/platform/master-data/{kind}/` (create,
+  update, retire/restore, change history, CSV imports with preview and confirm; step-up on writes).
+- `PlatformAdmin` permission (staff session, `is_platform_admin`, `PLATFORM_ALLOWED_NETWORKS`
+  allowlist, deploy warning `medilink.W100` when empty) and `RecentAuthRequired` /
+  `@requires_recent_auth()` (step-up or the login's MFA within 5 minutes, else
+  `403 step_up_required`).
+- Seeds: 5 provinces and 30 districts, 11 facility types, insurers, 26 services, an ICD-10 subset,
+  symptoms, public holidays 2026–2027 and reason codes for every kind. Commands
+  `import_locations`, `import_drugs`, `import_diagnosis_codes`, `import_symptoms` (dry run unless
+  `--apply`) and the dev-only `seed_masterdata_dev` (sample sectors, cells and villages, `DEV-`
+  codes).
+- Dependencies: pillow, pillow-heif, pypdf, boto3.
+
+- Staff idle lock (contract §2.5, S1-D13): sessions lock after `STAFF_SESSION_LOCK_AFTER`
+  (default 900 s, check `medilink.E101` keeps it within 300–1,800 s) and end after
+  `STAFF_SESSION_IDLE_TIMEOUT` (default now **4 h**, check `medilink.E102`) or 12 h. Locked
+  sessions answer `401 session_locked` everywhere except lock state, lock, unlock and logout;
+  their sockets are closed. `PrincipalState.LOCKED`.
+- `GET|POST /staff/auth/lock/`, `POST /staff/auth/unlock/` (PIN or password; 5 failures end the
+  session; 10 wrong PINs an hour disable PIN unlock and email the user; facility flag
+  `security.pin_unlock`), `PUT|DELETE /staff/auth/pin/` (4–6 digits, no repeats, sequences or
+  common PINs; Argon2id; setting needs step-up) and `POST /staff/auth/step-up/` (password + TOTP,
+  5-minute window, 5 failures end the session).
+- `StaffMe` gains `feature_flags` and `security` (`pin_set`, `lock_after_seconds`,
+  `step_up_valid_until`).
+- Feature flag catalogue and per-facility overrides (`onboarding_feature_flag`,
+  `onboarding_facility_feature_flag`), `RequiresFeatureFlag`; onboarding tables and the
+  notification email stub (`onboarding.notifications.dispatch`).
+
+- Facility onboarding (`medilink.onboarding`, contract §2.3, §3.2, §3.5): public application
+  wizard API with an emailed single-use resume link (7 days) exchanged for an HttpOnly applicant
+  cookie (8 h sliding), autosave with `version`, documents through the upload pipeline (≤ 20,
+  ≤ 100 MB), submit gate with dotted `fields`; super admin pipeline, review with per-document
+  verdicts and item comments, notes, history and duplicate hints; approve (creates organisation,
+  facility `approved`, licences, status event, signal `application_approved`) and reject, both
+  with step-up and `Idempotency-Key`.
+- Facility lifecycle `approved → setup → live → suspended / deactivated` with reasons, status
+  events, go-live check registry (`licence.moh_operating_valid`), `is_publicly_listed()` and
+  `accepts_new_bookings()`; licences with renewal (supersede) and corrections; daily 60/30-day and
+  expiry reminders; stale draft reminder (83 days) and purge (90 days); per-facility and default
+  feature flag administration; `GET /platform/overview/`.
+- Notification email stub for application, licence, facility and security events (until S9).
+
 ### Sprint 3 · Patients and identity
 
 ### Sprint 9 · Notifications

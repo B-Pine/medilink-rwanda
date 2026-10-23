@@ -20,6 +20,12 @@ tzdata
 # ---- Sprint dependencies: ONLY between the sprint's markers (justify each in the PR).
 # Lock files (*.txt) are regenerated after rebasing, never hand-merged.
 # [S1]
+# Upload pipeline (contract §2.4): image re-encoding without metadata, HEIC photos from phones,
+# PDF structure checks, S3-compatible object storage.
+pillow>=11.0
+pillow-heif>=1.0
+pypdf>=5.0
+boto3>=1.35
 # [/S1]
 # [S3]
 # [/S3]

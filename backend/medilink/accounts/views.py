@@ -179,7 +179,7 @@ class StaffLoginView(_AuthView):
             )
             return Response(
                 LoginResultSerializer(
-                    {"status": "authenticated", "user": staff_me_data(principal)}
+                    {"status": "authenticated", "user": staff_me_data(principal, request.session)}
                 ).data
             )
         stage = (
@@ -263,7 +263,7 @@ class StaffMfaConfirmView(_AuthView):
         )
         payload = {
             "status": "authenticated",
-            "user": staff_me_data(principal),
+            "user": staff_me_data(principal, request.session),
             "recovery_codes": codes,
         }
         return Response(MfaConfirmResultSerializer(payload).data)
@@ -327,7 +327,7 @@ class StaffMfaVerifyView(_AuthView):
         )
         return Response(
             LoginResultSerializer(
-                {"status": "authenticated", "user": staff_me_data(principal)}
+                {"status": "authenticated", "user": staff_me_data(principal, request.session)}
             ).data
         )
 
@@ -364,7 +364,7 @@ class StaffMeView(_AuthView):
         summary="Current staff user, memberships and permissions for the active facility",
     )
     def get(self, request: Request) -> Response:
-        return Response(StaffMeSerializer(staff_me_data(_principal(request))).data)
+        return Response(StaffMeSerializer(staff_me_data(_principal(request), request.session)).data)
 
 
 class StaffActiveFacilityView(_AuthView):
@@ -399,7 +399,7 @@ class StaffActiveFacilityView(_AuthView):
             object_id=facility_id,
             metadata={"from_facility_id": str(previous) if previous else None},
         )
-        return Response(StaffMeSerializer(staff_me_data(principal)).data)
+        return Response(StaffMeSerializer(staff_me_data(principal, request.session)).data)
 
 
 # --------------------------------------------------------------------------------------------

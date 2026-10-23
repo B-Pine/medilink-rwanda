@@ -66,6 +66,8 @@ def test_b2_staff_me_schema_matches_contract(schema: dict[str, Any]) -> None:
         "memberships",
         "active_facility_id",
         "permissions",
+        "feature_flags",  # S1 contract §3.1
+        "security",  # S1 contract §3.1
     }
     assert props["active_facility_id"].get("nullable") is True
     membership = _props(schema, "Membership")

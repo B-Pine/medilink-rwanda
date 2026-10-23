@@ -38,6 +38,11 @@ def prod_env(**overrides: str) -> dict[str, str]:
             "DATABASE_URL": "postgres://medilink_app:dummy@db.invalid:5432/medilink",
             "CORS_ALLOWED_ORIGINS": "https://staff.medilink.rw,https://medilink.rw",
             "EMAIL_URL": "smtp+tls://mailer:dummy@smtp.invalid:587",
+            # S1 upload pipeline: deployments use clamd and S3-compatible storage.
+            "UPLOADS_SCANNER": "clamd",
+            "UPLOADS_STORAGE": "s3",
+            "UPLOADS_DOWNLOAD_BASE_URL": "https://files.medilink.rw",
+            "PLATFORM_ALLOWED_NETWORKS": "10.0.0.0/8",  # S1: super admin console allowlist
             "PYTHONDONTWRITEBYTECODE": "1",
         }
     )

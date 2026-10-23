@@ -16,3 +16,9 @@ description = "Synthetic passphrase used by frontend tests against the MSW mocks
 condition = "AND"
 paths = ['''^frontend/.*\.test\.tsx?$''']
 regexes = ['''a-long-passphrase-2026''']
+
+[[allowlists]]
+description = "Random object-storage key (a UUID) in the S3 storage test (S1-B9); not a secret"
+condition = "AND"
+paths = ['''^backend/tests/uploads/test_processing\.py$''']
+regexes = ['''0b8f4c56-8f1e-4a55-9c55-4f0c5a6f1e01''']

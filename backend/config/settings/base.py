@@ -55,6 +55,10 @@ INSTALLED_APPS = [
     # ---- Wave 1 apps: each sprint adds lines ONLY between its own markers -----------------
     # (shared-file protocol: docs/architecture/contracts/README.md)
     # [S1] platform onboarding, master data, uploads
+    "django.contrib.postgres",  # trigram indexes and search (master data)
+    "medilink.uploads",
+    "medilink.masterdata",
+    "medilink.onboarding",
     # [/S1]
     # [S3] patients and identity (extends medilink.patients)
     # [/S3]
@@ -224,7 +228,9 @@ def session_audiences(cookie_prefix: str) -> dict[str, dict[str, Any]]:
     return {
         "staff": {
             "COOKIE_NAME": env("STAFF_SESSION_COOKIE_NAME", default=f"{cookie_prefix}ml_staff"),
-            "IDLE_TIMEOUT": env.int("STAFF_SESSION_IDLE_TIMEOUT", default=15 * 60),
+            # S1-D13: locked (not ended) after LOCK_AFTER idle seconds; ended after IDLE_TIMEOUT.
+            "LOCK_AFTER": env.int("STAFF_SESSION_LOCK_AFTER", default=15 * 60),
+            "IDLE_TIMEOUT": env.int("STAFF_SESSION_IDLE_TIMEOUT", default=4 * 3600),
             "ABSOLUTE_TIMEOUT": env.int("STAFF_SESSION_ABSOLUTE_TIMEOUT", default=12 * 3600),
             "PATH_PREFIXES": ["/api/v1/staff/", "/api/v1/platform/", "/ws/v1/staff/"],
         },
@@ -375,6 +381,20 @@ SPECTACULAR_SETTINGS = {
         "LanguageEnum": "medilink.accounts.models.Language",
         "LoginStatusEnum": "medilink.accounts.serializers.LOGIN_STATUS_CHOICES",
         "RoleCodeEnum": "medilink.tenancy.models.RoleCode",
+        # [S1]
+        "ApplicationStatusEnum": "medilink.onboarding.models.ApplicationStatus",
+        "FacilityStatusEnum": "medilink.tenancy.models.FacilityStatus",
+        "UploadStatusEnum": "medilink.uploads.models.ScanStatus",
+        "ImportStatusEnum": "medilink.masterdata.models.ImportStatus",
+        "DocumentKindEnum": "medilink.onboarding.models.DocumentKind",
+        "ApplicationEventKindEnum": "medilink.onboarding.models.EventKind",
+        "LicenceKindEnum": "medilink.onboarding.models.LicenceKind",
+        "LicenceStateEnum": "medilink.onboarding.serializers.LICENCE_STATES",
+        # [/S1]
+        # [S3]
+        # [/S3]
+        # [S9]
+        # [/S9]
     },
 }
 

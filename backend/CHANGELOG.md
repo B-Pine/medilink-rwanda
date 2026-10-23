@@ -26,6 +26,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Deploy checks `medilink.uploads.E001`–`E003` refuse the fake scanner, local storage and a
   non-https files origin.
 - S1 audit actions registered through `extend_actions()` (`medilink.onboarding.audit_actions`).
+- Master data (`medilink.masterdata`, contract §2.2, §2.6, §3.5): locations, facility types,
+  service catalogue, insurers, drugs, ICD-10 codes, symptoms, public holidays and reason codes
+  with rw/en/fr translations, `version` and an append-only `masterdata_change` log. Only
+  `masterdata.services` writes them (pre-save guard); the runtime role has no `DELETE`/`TRUNCATE`
+  (retire instead) and no `UPDATE`/`DELETE` on the change log (`post_migrate` revokes). Trigram
+  indexes (`pg_trgm`) for drug and diagnosis search.
+- Endpoints `/public/master-data/{kind}/` (5 kinds, localised, `Cache-Control` + `ETag`),
+  `/staff/master-data/{kind}/` (9 kinds, search) and `/platform/master-data/{kind}/` (create,
+  update, retire/restore, change history, CSV imports with preview and confirm; step-up on writes).
+- `PlatformAdmin` permission (staff session, `is_platform_admin`, `PLATFORM_ALLOWED_NETWORKS`
+  allowlist, deploy warning `medilink.W100` when empty) and `RecentAuthRequired` /
+  `@requires_recent_auth()` (step-up or the login's MFA within 5 minutes, else
+  `403 step_up_required`).
+- Seeds: 5 provinces and 30 districts, 11 facility types, insurers, 26 services, an ICD-10 subset,
+  symptoms, public holidays 2026–2027 and reason codes for every kind. Commands
+  `import_locations`, `import_drugs`, `import_diagnosis_codes`, `import_symptoms` (dry run unless
+  `--apply`) and the dev-only `seed_masterdata_dev` (sample sectors, cells and villages, `DEV-`
+  codes).
 - Dependencies: pillow, pillow-heif, pypdf, boto3.
 
 ### Sprint 3 · Patients and identity

@@ -75,6 +75,7 @@ PATIENT = ("patient@demo.medilink.test", "Mukamana Jeanne")
 # sprint, ONLY between its markers). Each must refuse to run when DEBUG is false.
 DEV_SEED_COMMANDS: list[str] = [
     # [S1]
+    "seed_masterdata_dev",
     # [/S1]
     # [S3]
     # [/S3]

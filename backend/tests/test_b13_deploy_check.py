@@ -42,6 +42,7 @@ def prod_env(**overrides: str) -> dict[str, str]:
             "UPLOADS_SCANNER": "clamd",
             "UPLOADS_STORAGE": "s3",
             "UPLOADS_DOWNLOAD_BASE_URL": "https://files.medilink.rw",
+            "PLATFORM_ALLOWED_NETWORKS": "10.0.0.0/8",  # S1: super admin console allowlist
             "PYTHONDONTWRITEBYTECODE": "1",
         }
     )

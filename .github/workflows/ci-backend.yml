@@ -111,7 +111,7 @@ jobs:
 
       - name: Coverage gate (>= 90% for accounts, authz, tenancy, audit and the S1 apps)
         run: |
-          for app in accounts authz tenancy audit uploads; do
+          for app in accounts authz tenancy audit uploads masterdata; do
             echo "== medilink/$app"
             python -m coverage report --include="medilink/$app/*" --fail-under=90 | tail -1
           done
@@ -132,6 +132,7 @@ jobs:
           UPLOADS_SCANNER: clamd
           UPLOADS_STORAGE: s3
           UPLOADS_DOWNLOAD_BASE_URL: https://files.medilink.rw
+          PLATFORM_ALLOWED_NETWORKS: 10.0.0.0/8
         run: python manage.py check --deploy --fail-level WARNING
 
       - name: pip-audit (known vulnerabilities in locked dependencies)

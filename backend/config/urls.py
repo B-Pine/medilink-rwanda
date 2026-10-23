@@ -22,6 +22,9 @@ api_v1: list[URLPattern | URLResolver] = [
     path("staff/uploads/", include("medilink.uploads.urls.staff")),
     path("patient/uploads/", include("medilink.uploads.urls.patient")),
     path("files/", include("medilink.uploads.urls.files")),
+    path("public/master-data/", include("medilink.masterdata.urls.public")),
+    path("staff/master-data/", include("medilink.masterdata.urls.staff")),
+    path("platform/master-data/", include("medilink.masterdata.urls.platform")),
     # [/S1]
     # [S3]
     # [/S3]

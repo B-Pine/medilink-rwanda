@@ -11,6 +11,8 @@ from datetime import timedelta
 from typing import Any
 
 from celery import shared_task
+from django.db import transaction
+from django.db.models import ProtectedError
 from django.utils import timezone
 
 from medilink.tenancy.context import rls_context
@@ -73,9 +75,13 @@ def _purge_in_context() -> int:
     storage = get_storage()
     count = 0
     for file in _purge_queryset(timezone.now()):
+        try:
+            with transaction.atomic():
+                UploadedFile.objects.filter(pk=file.pk).delete()
+        except ProtectedError:
+            continue  # still referenced by its owner's row (e.g. an import job): keep it
         storage.delete("quarantine", str(file.storage_key))
         storage.delete("documents", str(file.storage_key))
-        UploadedFile.objects.filter(pk=file.pk).delete()
         count += 1
     return count
 

@@ -18,6 +18,7 @@ import {
   MOCK_RECOVERY_CODE,
   MOCK_RESET_TOKEN,
   MOCK_RETRY_AFTER_SECONDS,
+  MOCK_STEP_UP_SECONDS,
   MOCK_TOTP_CODE,
   PATIENTS,
   STAFF_USERS,
@@ -45,7 +46,24 @@ interface StaffSession {
   email: string;
   stage: StaffStage;
   activeFacilityId: string | null;
+  // S1: idle lock and recent authentication (ms timestamps)
+  locked?: boolean;
+  mfaAt?: number;
+  stepUpAt?: number;
 }
+
+/** S1 feature flags in the mocks: defaults plus per-facility overrides. */
+export interface MockFeatureFlags {
+  defaults: Map<string, boolean>;
+  overrides: Map<string, Map<string, boolean>>;
+  enabledFor(facilityId: string | null): string[];
+}
+
+const SESSION_LOCKED = {
+  en: "Your session is locked. Unlock it to continue.",
+  fr: "Votre session est verrouillée. Déverrouillez-la pour continuer.",
+  rw: "Konti yawe irafunze. Yifungure ukomeze.",
+} as const;
 
 interface PatientSession {
   /** Copy of the patient so a session made by a mock sign-up survives a reload. */
@@ -78,6 +96,17 @@ export interface MockContext {
   authenticatedStaff: (lang: LanguageCode) => { me: StaffMe } | { error: Response };
   /** The logged-in patient account, or a 401 response. */
   authenticatedPatient: (lang: LanguageCode) => { me: PatientMe } | { error: Response };
+  // ---- S1: lock, PIN, step-up and feature flags
+  /** The signed-in staff session (locked or not), or null. */
+  staffSession: () => { email: string; locked: boolean; me: StaffMe } | null;
+  lockStaffSession: () => void;
+  unlockStaffSession: () => void;
+  endStaffSession: () => void;
+  /** Step-up or the login's second factor within MOCK_STEP_UP_SECONDS. */
+  hasRecentAuth: () => boolean;
+  markStepUp: () => void;
+  pins: Map<string, string>;
+  featureFlags: MockFeatureFlags;
 }
 
 export interface MockApi {
@@ -145,6 +174,19 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
   const enrolled = new Set<string>();
   const usedRecoveryCodes = new Set<string>();
   const registered: MockPatientRecord[] = [];
+  const pins = new Map<string, string>();
+  const featureFlags: MockFeatureFlags = {
+    defaults: new Map([["security.pin_unlock", true]]),
+    overrides: new Map(),
+    enabledFor(facilityId) {
+      const overrides =
+        (facilityId && this.overrides.get(facilityId)) || new Map<string, boolean>();
+      return [...this.defaults.entries()]
+        .filter(([code, on]) => overrides.get(code) ?? on)
+        .map(([code]) => code)
+        .sort();
+    },
+  };
 
   const staffSession = () => store.read<StaffSession>("staff");
   const setStaffSession = (s: StaffSession | null) => store.write("staff", s);
@@ -157,9 +199,21 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
   const mfaEnabled = (user: MockStaffUser) => user.mfa_enabled || enrolled.has(user.email);
   const isStaff = (user: MockStaffUser) => user.is_platform_admin || user.memberships.length > 0;
 
+  function recentAuthUntil(session: StaffSession): number | null {
+    const latest = Math.max(session.mfaAt ?? 0, session.stepUpAt ?? 0);
+    const until = latest + MOCK_STEP_UP_SECONDS * 1000;
+    return latest && until > Date.now() ? until : null;
+  }
+
   function staffMe(session: StaffSession): StaffMe | null {
     const user = findStaff(session.email);
-    return user ? toStaffMe(user, session.activeFacilityId, mfaEnabled(user)) : null;
+    if (!user) return null;
+    const until = recentAuthUntil(session);
+    return toStaffMe(user, session.activeFacilityId, mfaEnabled(user), {
+      feature_flags: featureFlags.enabledFor(session.activeFacilityId),
+      pin_set: pins.has(user.email),
+      step_up_valid_until: until ? new Date(until).toISOString() : null,
+    });
   }
 
   /** Session rotation: the CSRF secret changes, the client must fetch a new token. */
@@ -222,6 +276,9 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
     if (session.stage !== "authenticated") {
       return { error: errorResponse(401, "mfa_required", message("mfaRequired", lang)) };
     }
+    if (session.locked) {
+      return { error: errorResponse(401, "session_locked", SESSION_LOCKED[lang]) };
+    }
     const me = staffMe(session);
     if (!me)
       return { error: errorResponse(401, "not_authenticated", message("notAuthenticated", lang)) };
@@ -247,6 +304,34 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
         ? { me: session.me }
         : { error: errorResponse(401, "not_authenticated", message("notAuthenticated", lang)) };
     },
+    staffSession: () => {
+      const session = staffSession();
+      if (!session || session.stage !== "authenticated") return null;
+      const me = staffMe(session);
+      return me ? { email: session.email, locked: Boolean(session.locked), me } : null;
+    },
+    lockStaffSession: () => {
+      const session = staffSession();
+      if (session) setStaffSession({ ...session, locked: true });
+    },
+    unlockStaffSession: () => {
+      const session = staffSession();
+      if (session) setStaffSession({ ...session, locked: false });
+    },
+    endStaffSession: () => {
+      setStaffSession(null);
+      rotate();
+    },
+    hasRecentAuth: () => {
+      const session = staffSession();
+      return Boolean(session && recentAuthUntil(session));
+    },
+    markStepUp: () => {
+      const session = staffSession();
+      if (session) setStaffSession({ ...session, stepUpAt: Date.now() });
+    },
+    pins,
+    featureFlags,
   };
   const features = FEATURE_MOCKS.map((create) => create(context));
 
@@ -328,7 +413,7 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
 
       enrolled.add(session.email);
       rotate();
-      const next: StaffSession = { ...session, stage: "authenticated" };
+      const next: StaffSession = { ...session, stage: "authenticated", mfaAt: Date.now() };
       setStaffSession(next);
       const user = staffMe(next)!;
       const response: MfaConfirmResponse = {
@@ -368,7 +453,7 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
       if (recovery) usedRecoveryCodes.add(`${session.email}:${recovery}`);
       failures.delete(key);
       rotate();
-      const next: StaffSession = { ...session, stage: "authenticated" };
+      const next: StaffSession = { ...session, stage: "authenticated", mfaAt: Date.now() };
       setStaffSession(next);
       const result: StaffAuthenticatedResult = { status: "authenticated", user: staffMe(next)! };
       return HttpResponse.json(result);
@@ -541,6 +626,9 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
       enrolled.clear();
       usedRecoveryCodes.clear();
       registered.length = 0;
+      pins.clear();
+      featureFlags.overrides.clear();
+      featureFlags.defaults = new Map([["security.pin_unlock", true]]);
       setStaffSession(null);
       setPatientSession(null);
     },

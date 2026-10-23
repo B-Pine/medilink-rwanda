@@ -208,10 +208,23 @@ export function permissionsFor(user: MockStaffUser, facilityId: string | null): 
   return [...set];
 }
 
+/** S1: idle lock delay and step-up window of the mocks (seconds), like the API defaults. */
+export const MOCK_LOCK_AFTER_SECONDS = 900;
+export const MOCK_STEP_UP_SECONDS = 300;
+/** S1: the PIN used in docs and tests (any acceptable PIN can be set via PUT /staff/auth/pin/). */
+export const MOCK_PIN = "4826";
+
+export interface MockStaffExtras {
+  feature_flags?: string[];
+  pin_set?: boolean;
+  step_up_valid_until?: string | null;
+}
+
 export function toStaffMe(
   user: MockStaffUser,
   activeFacilityId: string | null,
   mfaEnabled: boolean,
+  extras: MockStaffExtras = {},
 ): StaffMe {
   return {
     id: user.id,
@@ -226,5 +239,11 @@ export function toStaffMe(
     })),
     active_facility_id: activeFacilityId,
     permissions: permissionsFor(user, activeFacilityId),
+    feature_flags: extras.feature_flags ?? ["security.pin_unlock"],
+    security: {
+      pin_set: extras.pin_set ?? false,
+      lock_after_seconds: MOCK_LOCK_AFTER_SECONDS,
+      step_up_valid_until: extras.step_up_valid_until ?? null,
+    },
   };
 }

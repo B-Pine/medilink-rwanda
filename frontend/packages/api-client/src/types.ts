@@ -94,6 +94,17 @@ export interface StaffMe {
   active_facility_id: Uuid | null;
   /** Permissions for the active facility. */
   permissions: PermissionCode[];
+  /** S1: feature flags enabled for the active facility (defaults without one). */
+  feature_flags: string[];
+  /** S1: idle lock and step-up state. */
+  security: StaffSecurity;
+}
+
+export interface StaffSecurity {
+  pin_set: boolean;
+  lock_after_seconds: number;
+  /** ISO time until which sensitive actions don't need a new step-up, or null. */
+  step_up_valid_until: string | null;
 }
 
 export interface PatientProfile {
@@ -178,6 +189,7 @@ export type ApiErrorCode =
   | "mfa_required"
   | "permission_denied"
   | "step_up_required"
+  | "session_locked"
   | "csrf_failed"
   | "not_found"
   | "conflict"

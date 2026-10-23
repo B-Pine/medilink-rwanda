@@ -28,6 +28,8 @@ export interface RequestOptions {
   skipUnauthorizedHook?: boolean;
   /** The server rotates the CSRF secret when the session changes (login, MFA, facility switch, logout). */
   rotatesSession?: boolean;
+  /** Extra request headers, e.g. `Idempotency-Key` (S1). */
+  headers?: Record<string, string>;
 }
 
 export interface ApiClient {
@@ -35,6 +37,8 @@ export interface ApiClient {
   request<T>(method: HttpMethod, path: string, options?: RequestOptions): Promise<T>;
   get<T>(path: string, options?: Omit<RequestOptions, "body">): Promise<T>;
   post<T>(path: string, body?: unknown, options?: Omit<RequestOptions, "body">): Promise<T>;
+  /** Accept-Language value for requests the client doesn't send itself (XHR uploads). */
+  language(): string;
   /** Fetch (once) the CSRF token from GET /api/v1/csrf/ and keep it in memory only. */
   ensureCsrfToken(): Promise<string>;
   /** Forget the cached CSRF token (the next unsafe request fetches a new one). */
@@ -107,7 +111,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     requestOptions: RequestOptions = {},
     isRetry = false,
   ): Promise<T> {
-    const headers = baseHeaders();
+    const headers = { ...baseHeaders(), ...requestOptions.headers };
     const init: RequestInit = { method, headers };
     if (requestOptions.signal) init.signal = requestOptions.signal;
     if (requestOptions.body !== undefined) {
@@ -144,6 +148,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     request,
     get: (path, opts) => request("GET", path, opts),
     post: (path, body, opts) => request("POST", path, { ...opts, body }),
+    language,
     ensureCsrfToken,
     resetCsrfToken,
   };

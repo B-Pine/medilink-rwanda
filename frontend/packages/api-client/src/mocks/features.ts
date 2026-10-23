@@ -4,6 +4,10 @@ import type { MockContext } from "./handlers";
 
 // ---- Feature imports: ONLY between the sprint's markers (shared-file protocol) ----
 // [S1 imports]
+import { masterDataMocks } from "./features/masterdata";
+import { onboardingMocks } from "./features/onboarding";
+import { securityMocks } from "./features/security";
+import { uploadsMocks } from "./features/uploads";
 // [/S1 imports]
 // [S3 imports]
 // [/S3 imports]
@@ -25,6 +29,10 @@ export type FeatureMockFactory = (context: MockContext) => FeatureMock;
  */
 export const FEATURE_MOCKS: FeatureMockFactory[] = [
   // [S1]
+  securityMocks,
+  uploadsMocks,
+  masterDataMocks,
+  onboardingMocks,
   // [/S1]
   // [S3]
   // [/S3]

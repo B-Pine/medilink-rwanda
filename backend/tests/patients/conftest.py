@@ -96,3 +96,11 @@ def walk_in(client: APIClient, **overrides: Any) -> dict[str, Any]:
     response = client.post("/api/v1/staff/patients/", body, format="json")
     assert response.status_code == 201, response.content
     return response.json()
+
+
+@pytest.fixture
+def platform_client(db: Any) -> APIClient:
+    user = make_staff(None, email="super.admin@example.test", is_platform_admin=True)
+    client = APIClient()
+    login_staff(client, user)
+    return client

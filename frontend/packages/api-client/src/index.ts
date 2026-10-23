@@ -8,6 +8,10 @@ export * from "./types";
 
 // ---- Feature modules (src/features/<feature>.ts): exports ONLY between the sprint's markers ----
 // [S1]
+export * from "./features/masterdata";
+export * from "./features/onboarding";
+export * from "./features/security";
+export * from "./features/uploads";
 // [/S1]
 // [S3]
 // [/S3]

@@ -12,8 +12,12 @@ export {
   MOCK_RESET_TOKEN,
   MOCK_RETRY_AFTER_SECONDS,
   MOCK_TOTP_CODE,
+  MOCK_PIN,
+  MOCK_STEP_UP_SECONDS,
   PATIENTS,
   extendMockRoleGrants,
   ROLE_PERMISSIONS,
   STAFF_USERS,
 } from "./data";
+export { MOCK_RESUME_TOKEN } from "./features/onboarding";
+export type { MockFeatureFlags } from "./handlers";

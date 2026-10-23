@@ -1,12 +1,14 @@
 /**
  * The only place in the frontend allowed to use localStorage (enforced by ESLint).
- * It stores two non-sensitive UI preferences: theme and language. Never tokens, never personal
+ * It stores non-sensitive UI preferences: theme, language and table density. Never tokens, never personal
  * or health data (docs/security/06-application-and-api-security.md §6).
  */
 
 const KEYS = {
   theme: "medilink.theme",
   language: "medilink.language",
+  // S1: DataTable row density (compact/default/comfortable), design 08 §3
+  tableDensity: "medilink.tableDensity",
 } as const;
 
 export type PreferenceKey = keyof typeof KEYS;

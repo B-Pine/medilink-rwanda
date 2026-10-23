@@ -18,6 +18,10 @@ import type {
 
 // ---- Feature imports: ONLY between the sprint's markers (shared-file protocol) ----
 // [S1 imports]
+import { createMasterDataApi } from "./features/masterdata";
+import { createOnboardingApi } from "./features/onboarding";
+import { createSecurityApi } from "./features/security";
+import { createUploadsApi } from "./features/uploads";
 // [/S1 imports]
 // [S3 imports]
 // [/S3 imports]
@@ -99,6 +103,13 @@ export function createMediLinkApi(client: ApiClient) {
 
     // ---- Feature APIs: `<feature>: create<Feature>Api(client),` ONLY between the markers ----
     // [S1]
+    masterData: createMasterDataApi(client),
+    onboarding: createOnboardingApi(client),
+    security: createSecurityApi(client),
+    uploads: {
+      staff: createUploadsApi(client, "staff"),
+      patient: createUploadsApi(client, "patient"),
+    },
     // [/S1]
     // [S3]
     // [/S3]

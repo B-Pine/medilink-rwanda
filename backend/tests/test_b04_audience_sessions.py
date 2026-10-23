@@ -106,7 +106,13 @@ def test_b4_production_cookie_names_use_host_prefix() -> None:
 def test_b4_audience_timeouts_follow_security_03() -> None:
     staff = audience_for_path("/api/v1/staff/")
     patient = audience_for_path("/api/v1/patient/")
-    assert (staff.idle_timeout, staff.absolute_timeout) == (15 * 60, 12 * 3600)
+    # S1-D13: staff sessions lock after 15 min idle and end after 4 h idle or 12 h.
+    assert (staff.lock_after, staff.idle_timeout, staff.absolute_timeout) == (
+        15 * 60,
+        4 * 3600,
+        12 * 3600,
+    )
+    assert patient.lock_after == 0
     assert (patient.idle_timeout, patient.absolute_timeout) == (12 * 3600, 30 * 86400)
 
 
@@ -122,7 +128,7 @@ def _age_session(key: str, *, auth_ago: int, seen_ago: int) -> None:
 
 def test_b4_staff_idle_timeout_ends_the_session(staff_client: APIClient) -> None:
     key = staff_client.cookies["ml_staff"].value
-    _age_session(key, auth_ago=20 * 60, seen_ago=16 * 60)
+    _age_session(key, auth_ago=5 * 3600, seen_ago=4 * 3600 + 60)
     response = staff_client.get("/api/v1/staff/auth/me/")
     assert response.status_code == 401
     assert not UserSession.objects.filter(session_key=key).exists()

@@ -19,6 +19,7 @@ api_v1: list[URLPattern | URLResolver] = [
     path("auth/", include(account_urlpatterns)),
     # ---- Wave 1 routes: each sprint adds include() lines ONLY between its own markers ------
     # [S1]
+    path("staff/auth/", include("medilink.accounts.security_urls")),
     path("staff/uploads/", include("medilink.uploads.urls.staff")),
     path("patient/uploads/", include("medilink.uploads.urls.patient")),
     path("files/", include("medilink.uploads.urls.files")),

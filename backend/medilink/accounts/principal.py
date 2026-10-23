@@ -20,6 +20,8 @@ from django.http import HttpRequest
 
 from medilink.accounts.sessions import (
     ACTIVE_FACILITY_KEY,
+    LOCK_TRIGGER_KEY,
+    LOCKED_AT_KEY,
     MFA_AT_KEY,
     PENDING_KEY,
 )
@@ -41,6 +43,7 @@ class PrincipalState(enum.StrEnum):
     MFA_REQUIRED = "mfa_required"
     MFA_SETUP_REQUIRED = "mfa_setup_required"
     AUTHENTICATED = "authenticated"
+    LOCKED = "locked"  # staff session idle-locked (S1): only lock, unlock and logout work
 
 
 @dataclass
@@ -57,6 +60,10 @@ class Principal:
     @property
     def is_authenticated(self) -> bool:
         return self.state == PrincipalState.AUTHENTICATED and self.user is not None
+
+    @property
+    def is_locked(self) -> bool:
+        return self.state == PrincipalState.LOCKED and self.user is not None
 
     @property
     def is_pending(self) -> bool:
@@ -133,10 +140,31 @@ def _resolve_staff(session: SessionBase) -> Principal:
         membership = active_membership(user, facility_id)
         if membership is None:
             session.pop(ACTIVE_FACILITY_KEY, None)  # membership ended: drop the facility context
+    if session.get(LOCKED_AT_KEY):
+        if session.get(LOCK_TRIGGER_KEY) == "idle" and not session.get(_SOCKETS_CLOSED_KEY):
+            _close_session_sockets(session)
+        set_db_context(user_id=user.pk)  # no facility context while locked
+        return Principal(
+            audience="staff", state=PrincipalState.LOCKED, user=user, membership=membership
+        )
     set_db_context(user_id=user.pk, facility_id=membership.facility_id if membership else None)
     return Principal(
         audience="staff", state=PrincipalState.AUTHENTICATED, user=user, membership=membership
     )
+
+
+_SOCKETS_CLOSED_KEY = "_ml_lock_sockets_closed"
+
+
+def _close_session_sockets(session: SessionBase) -> None:
+    """The middleware locked an idle session: close its sockets now. The audit entry is written
+    by the next lock-state, lock or unlock request (this request fails with session_locked and
+    rolls back its transaction)."""
+    from medilink.core.realtime import close_sockets
+
+    session[_SOCKETS_CLOSED_KEY] = True
+    if session.session_key:
+        close_sockets(session_key=session.session_key)
 
 
 def _resolve_patient(session: SessionBase) -> Principal:

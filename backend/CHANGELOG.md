@@ -46,6 +46,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   codes).
 - Dependencies: pillow, pillow-heif, pypdf, boto3.
 
+- Staff idle lock (contract §2.5, S1-D13): sessions lock after `STAFF_SESSION_LOCK_AFTER`
+  (default 900 s, check `medilink.E101` keeps it within 300–1,800 s) and end after
+  `STAFF_SESSION_IDLE_TIMEOUT` (default now **4 h**, check `medilink.E102`) or 12 h. Locked
+  sessions answer `401 session_locked` everywhere except lock state, lock, unlock and logout;
+  their sockets are closed. `PrincipalState.LOCKED`.
+- `GET|POST /staff/auth/lock/`, `POST /staff/auth/unlock/` (PIN or password; 5 failures end the
+  session; 10 wrong PINs an hour disable PIN unlock and email the user; facility flag
+  `security.pin_unlock`), `PUT|DELETE /staff/auth/pin/` (4–6 digits, no repeats, sequences or
+  common PINs; Argon2id; setting needs step-up) and `POST /staff/auth/step-up/` (password + TOTP,
+  5-minute window, 5 failures end the session).
+- `StaffMe` gains `feature_flags` and `security` (`pin_set`, `lock_after_seconds`,
+  `step_up_valid_until`).
+- Feature flag catalogue and per-facility overrides (`onboarding_feature_flag`,
+  `onboarding_facility_feature_flag`), `RequiresFeatureFlag`; onboarding tables and the
+  notification email stub (`onboarding.notifications.dispatch`).
+
 ### Sprint 3 · Patients and identity
 
 ### Sprint 9 · Notifications

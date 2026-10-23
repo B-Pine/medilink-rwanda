@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "django.contrib.postgres",  # trigram indexes and search (master data)
     "medilink.uploads",
     "medilink.masterdata",
+    "medilink.onboarding",
     # [/S1]
     # [S3] patients and identity (extends medilink.patients)
     # [/S3]
@@ -227,7 +228,9 @@ def session_audiences(cookie_prefix: str) -> dict[str, dict[str, Any]]:
     return {
         "staff": {
             "COOKIE_NAME": env("STAFF_SESSION_COOKIE_NAME", default=f"{cookie_prefix}ml_staff"),
-            "IDLE_TIMEOUT": env.int("STAFF_SESSION_IDLE_TIMEOUT", default=15 * 60),
+            # S1-D13: locked (not ended) after LOCK_AFTER idle seconds; ended after IDLE_TIMEOUT.
+            "LOCK_AFTER": env.int("STAFF_SESSION_LOCK_AFTER", default=15 * 60),
+            "IDLE_TIMEOUT": env.int("STAFF_SESSION_IDLE_TIMEOUT", default=4 * 3600),
             "ABSOLUTE_TIMEOUT": env.int("STAFF_SESSION_ABSOLUTE_TIMEOUT", default=12 * 3600),
             "PATH_PREFIXES": ["/api/v1/staff/", "/api/v1/platform/", "/ws/v1/staff/"],
         },

@@ -2666,6 +2666,43 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: 'not_found: not an active member of this facility'
+  /api/v1/staff/auth/lock/:
+    get:
+      operationId: staff_auth_lock_state
+      summary: Lock state of the current staff session
+      tags:
+      - staff-auth
+      security:
+      - staffSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LockState'
+          description: ''
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: not_authenticated
+    post:
+      operationId: staff_auth_lock
+      summary: Lock the session now
+      tags:
+      - staff-auth
+      security:
+      - staffSession: []
+      responses:
+        '204':
+          description: Locked
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: not_authenticated
   /api/v1/staff/auth/login/:
     post:
       operationId: staff_auth_login
@@ -2839,6 +2876,122 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: rate_limited, with Retry-After
+  /api/v1/staff/auth/pin/:
+    put:
+      operationId: staff_auth_pin_set
+      summary: Set or change the unlock PIN
+      tags:
+      - staff-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PinRequest'
+        required: true
+      security:
+      - staffSession: []
+      responses:
+        '204':
+          description: PIN set
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Format or too simple
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required
+    delete:
+      operationId: staff_auth_pin_remove
+      summary: Remove the unlock PIN
+      tags:
+      - staff-auth
+      security:
+      - staffSession: []
+      responses:
+        '204':
+          description: PIN removed
+  /api/v1/staff/auth/step-up/:
+    post:
+      operationId: staff_auth_step_up
+      summary: Confirm it's you (password and authenticator code) for sensitive actions
+      tags:
+      - staff-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StepUpRequest'
+        required: true
+      security:
+      - staffSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StepUpResult'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Generic failure
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: The 5th failure ended the session
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: rate_limited
+  /api/v1/staff/auth/unlock/:
+    post:
+      operationId: staff_auth_unlock
+      summary: Unlock an idle-locked session with a PIN or the password
+      tags:
+      - staff-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UnlockRequest'
+      security:
+      - staffSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffMe'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Wrong PIN or password (fields.pin / fields.password)
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'not_authenticated: the 5th failure ended the session'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: PIN not set, PIN unlock off or temporarily blocked
   /api/v1/staff/master-data/diagnosis-codes/:
     get:
       operationId: staff_master_data_diagnosis_codes_list
@@ -4182,6 +4335,29 @@ components:
       - code
       - level
       - name
+    LockState:
+      type: object
+      properties:
+        is_locked:
+          type: boolean
+        locked_at:
+          type: string
+          format: date-time
+          nullable: true
+        full_name:
+          type: string
+        unlock_methods:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnlockMethodsEnum'
+        attempts_remaining:
+          type: integer
+      required:
+      - attempts_remaining
+      - full_name
+      - is_locked
+      - locked_at
+      - unlock_methods
     LoginResult:
       type: object
       properties:
@@ -4319,6 +4495,11 @@ components:
       required:
       - facility
       - roles
+    MethodEnum:
+      enum:
+      - password_totp
+      type: string
+      description: '* `password_totp` - password_totp'
     MfaCodeRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -5199,6 +5380,15 @@ components:
       - password
       - preferred_language
       - research_consent
+    PinRequest:
+      type: object
+      properties:
+        pin:
+          type: string
+          minLength: 1
+          maxLength: 6
+      required:
+      - pin
     PublicHolidaysItem:
       type: object
       properties:
@@ -5661,9 +5851,17 @@ components:
           items:
             type: string
           description: Permission codes for the active facility.
+        feature_flags:
+          type: array
+          items:
+            type: string
+          description: Feature flags enabled for the active facility.
+        security:
+          $ref: '#/components/schemas/StaffSecurity'
       required:
       - active_facility_id
       - email
+      - feature_flags
       - full_name
       - id
       - is_platform_admin
@@ -5671,6 +5869,47 @@ components:
       - mfa_enabled
       - permissions
       - preferred_language
+      - security
+    StaffSecurity:
+      type: object
+      properties:
+        pin_set:
+          type: boolean
+        lock_after_seconds:
+          type: integer
+        step_up_valid_until:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - lock_after_seconds
+      - pin_set
+      - step_up_valid_until
+    StepUpRequest:
+      type: object
+      properties:
+        method:
+          $ref: '#/components/schemas/MethodEnum'
+        password:
+          type: string
+          minLength: 1
+          maxLength: 4096
+        code:
+          type: string
+          minLength: 1
+          maxLength: 10
+      required:
+      - code
+      - method
+      - password
+    StepUpResult:
+      type: object
+      properties:
+        step_up_valid_until:
+          type: string
+          format: date-time
+      required:
+      - step_up_valid_until
     SymptomsItem:
       type: object
       properties:
@@ -5785,6 +6024,25 @@ components:
       required:
       - code
       - name_i18n
+    UnlockMethodsEnum:
+      enum:
+      - pin
+      - password
+      type: string
+      description: |-
+        * `pin` - pin
+        * `password` - password
+    UnlockRequest:
+      type: object
+      properties:
+        pin:
+          type: string
+          minLength: 1
+          maxLength: 6
+        password:
+          type: string
+          minLength: 1
+          maxLength: 4096
     Upload:
       type: object
       properties:

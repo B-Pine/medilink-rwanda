@@ -22,9 +22,13 @@ def revoke_master_data_writes(sender: Any = None, using: str = "default", **kwar
 
 
 def revoke(
-    no_delete: tuple[str, ...], append_only: tuple[str, ...], using: str = "default"
+    no_delete: tuple[str, ...],
+    append_only: tuple[str, ...],
+    using: str = "default",
+    no_update: tuple[str, ...] = (),
 ) -> None:
-    """REVOKE DELETE/TRUNCATE on `no_delete` and UPDATE/DELETE/TRUNCATE on `append_only`."""
+    """REVOKE DELETE/TRUNCATE on `no_delete`, UPDATE/DELETE/TRUNCATE on `append_only` and
+    UPDATE/TRUNCATE on `no_update` (rows that are never changed but may be purged)."""
     connection = connections[using]
     if connection.vendor != "postgresql":
         return
@@ -41,3 +45,5 @@ def revoke(
             cursor.execute(f"REVOKE DELETE, TRUNCATE ON {table} FROM {quoted}")
         for table in append_only:
             cursor.execute(f"REVOKE UPDATE, DELETE, TRUNCATE ON {table} FROM {quoted}")
+        for table in no_update:
+            cursor.execute(f"REVOKE UPDATE, TRUNCATE ON {table} FROM {quoted}")

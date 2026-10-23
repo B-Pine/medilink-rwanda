@@ -70,6 +70,12 @@ class MembershipSerializer(serializers.Serializer):
     roles = serializers.ListField(child=serializers.ChoiceField(choices=RoleCode.choices))
 
 
+class StaffSecuritySerializer(serializers.Serializer):
+    pin_set = serializers.BooleanField()
+    lock_after_seconds = serializers.IntegerField()
+    step_up_valid_until = serializers.DateTimeField(allow_null=True)
+
+
 class StaffMeSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     email = serializers.EmailField()
@@ -82,6 +88,11 @@ class StaffMeSerializer(serializers.Serializer):
     permissions = serializers.ListField(
         child=serializers.CharField(), help_text="Permission codes for the active facility."
     )
+    # S1 (contract §3.1)
+    feature_flags = serializers.ListField(
+        child=serializers.CharField(), help_text="Feature flags enabled for the active facility."
+    )
+    security = StaffSecuritySerializer()
 
 
 class LoginResultSerializer(serializers.Serializer):

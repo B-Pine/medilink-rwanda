@@ -60,6 +60,9 @@ class User(AbstractBaseUser):
     is_platform_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     email_verified_at = models.DateTimeField(null=True, blank=True)
+    # S1 (contract §2.5): staff unlock PIN, Argon2id hash (C3); null = no PIN
+    pin_hash = models.CharField(max_length=256, null=True, blank=True)  # noqa: DJ001
+    pin_set_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

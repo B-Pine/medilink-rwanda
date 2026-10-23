@@ -11,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions
 from rest_framework.permissions import AllowAny, BasePermission
 
+from medilink.accounts.errors import SessionLocked
 from medilink.accounts.principal import Principal, PrincipalState
 from medilink.core.exceptions import MfaRequired
 
@@ -43,6 +44,8 @@ class _AudiencePermission(BasePermission):
             return False
         if principal.is_authenticated and request.user == principal.user:
             return True
+        if principal.is_locked:
+            raise SessionLocked()
         if principal.is_pending:
             raise MfaRequired()
         return False
@@ -77,6 +80,21 @@ class _PendingMfa(BasePermission):
             principal is not None
             and principal.audience == "staff"
             and principal.state == self.stage
+        ):
+            return True
+        raise exceptions.NotAuthenticated()
+
+
+class IsStaffSession(BasePermission):
+    """A signed-in staff session, locked or not (S1: lock state, lock, unlock)."""
+
+    def has_permission(self, request: Any, view: Any) -> bool:
+        principal = get_principal(request)
+        if (
+            principal is not None
+            and principal.audience == "staff"
+            and principal.user is not None
+            and (principal.is_authenticated or principal.is_locked)
         ):
             return True
         raise exceptions.NotAuthenticated()

@@ -111,7 +111,7 @@ jobs:
 
       - name: Coverage gate (>= 90% for accounts, authz, tenancy, audit and the S1 apps)
         run: |
-          for app in accounts authz tenancy audit uploads masterdata; do
+          for app in accounts authz tenancy audit uploads masterdata onboarding; do
             echo "== medilink/$app"
             python -m coverage report --include="medilink/$app/*" --fail-under=90 | tail -1
           done

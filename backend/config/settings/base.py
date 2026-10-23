@@ -381,6 +381,20 @@ SPECTACULAR_SETTINGS = {
         "LanguageEnum": "medilink.accounts.models.Language",
         "LoginStatusEnum": "medilink.accounts.serializers.LOGIN_STATUS_CHOICES",
         "RoleCodeEnum": "medilink.tenancy.models.RoleCode",
+        # [S1]
+        "ApplicationStatusEnum": "medilink.onboarding.models.ApplicationStatus",
+        "FacilityStatusEnum": "medilink.tenancy.models.FacilityStatus",
+        "UploadStatusEnum": "medilink.uploads.models.ScanStatus",
+        "ImportStatusEnum": "medilink.masterdata.models.ImportStatus",
+        "DocumentKindEnum": "medilink.onboarding.models.DocumentKind",
+        "ApplicationEventKindEnum": "medilink.onboarding.models.EventKind",
+        "LicenceKindEnum": "medilink.onboarding.models.LicenceKind",
+        "LicenceStateEnum": "medilink.onboarding.serializers.LICENCE_STATES",
+        # [/S1]
+        # [S3]
+        # [/S3]
+        # [S9]
+        # [/S9]
     },
 }
 

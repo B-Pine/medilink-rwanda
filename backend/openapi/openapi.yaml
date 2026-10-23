@@ -307,6 +307,1251 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: The file isn't clean (yet)
+  /api/v1/platform/facilities/:
+    get:
+      operationId: platform_facilities_list
+      parameters:
+      - in: query
+        name: district
+        schema:
+          type: string
+      - in: query
+        name: facility_type
+        schema:
+          type: string
+      - in: query
+        name: licence_state
+        schema:
+          type: string
+          enum:
+          - expired
+          - expiring
+          - missing
+          - valid
+      - in: query
+        name: ordering
+        schema:
+          type: string
+          enum:
+          - -created_at
+          - -name
+          - created_at
+          - name
+          - next_licence_expiry
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+      tags:
+      - platform
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPlatformFacilityList'
+          description: ''
+  /api/v1/platform/facilities/{facility_id}/:
+    get:
+      operationId: platform_facility_retrieve
+      parameters:
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformFacilityDetail'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
+  /api/v1/platform/facilities/{facility_id}/deactivate/:
+    post:
+      operationId: platform_facility_deactivate
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeactivateInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformFacility'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Reason or confirmation
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Status or failing go-live checks
+  /api/v1/platform/facilities/{facility_id}/feature-flags/:
+    get:
+      operationId: platform_facility_feature_flags
+      parameters:
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FacilityFeatureFlag'
+          description: ''
+  /api/v1/platform/facilities/{facility_id}/feature-flags/{code}/:
+    put:
+      operationId: platform_facility_feature_flag_set
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FacilityFlagInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityFeatureFlag'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown flag
+    delete:
+      operationId: platform_facility_feature_flag_clear
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '204':
+          description: Back to the default
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown flag
+  /api/v1/platform/facilities/{facility_id}/go-live/:
+    post:
+      operationId: platform_facility_go_live
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformFacility'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Reason or confirmation
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Status or failing go-live checks
+  /api/v1/platform/facilities/{facility_id}/licences/:
+    get:
+      operationId: platform_facility_licences_list
+      parameters:
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Licence'
+          description: ''
+    post:
+      operationId: platform_facility_licences_create
+      parameters:
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewLicenceInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Licence'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Validation error
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Renewing a superseded licence
+  /api/v1/platform/facilities/{facility_id}/licences/{licence_id}/:
+    patch:
+      operationId: platform_facility_licence_update
+      summary: Correct a licence (a renewal is a new licence)
+      parameters:
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: licence_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedLicencePatchInputRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Licence'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Superseded
+  /api/v1/platform/facilities/{facility_id}/reactivate/:
+    post:
+      operationId: platform_facility_reactivate
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformFacility'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Reason or confirmation
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Status or failing go-live checks
+  /api/v1/platform/facilities/{facility_id}/start-setup/:
+    post:
+      operationId: platform_facility_start_setup
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformFacility'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Reason or confirmation
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Status or failing go-live checks
+  /api/v1/platform/facilities/{facility_id}/status-events/:
+    get:
+      operationId: platform_facility_status_events
+      parameters:
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StatusEvent'
+          description: ''
+  /api/v1/platform/facilities/{facility_id}/suspend/:
+    post:
+      operationId: platform_facility_suspend
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformFacility'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Reason or confirmation
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Status or failing go-live checks
+  /api/v1/platform/facility-applications/:
+    get:
+      operationId: platform_facility_applications_list
+      parameters:
+      - in: query
+        name: created_by_platform
+        schema:
+          type: boolean
+      - in: query
+        name: district
+        schema:
+          type: string
+      - in: query
+        name: facility_type
+        schema:
+          type: string
+      - in: query
+        name: ordering
+        schema:
+          type: string
+          enum:
+          - -last_activity_at
+          - -submitted_at
+          - last_activity_at
+          - submitted_at
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - approved
+            - changes_requested
+            - draft
+            - rejected
+            - submitted
+            - under_review
+      tags:
+      - platform
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedApplicationSummaryList'
+          description: ''
+    post:
+      operationId: platform_facility_applications_create
+      summary: Create an application on the facility's behalf
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformCreateInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformApplication'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Validation error
+  /api/v1/platform/facility-applications/{application_id}/:
+    get:
+      operationId: platform_facility_application_retrieve
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformApplication'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
+    patch:
+      operationId: platform_facility_application_update
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedApplicationPatchInputRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformApplication'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Validation error
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Version conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not editable
+  /api/v1/platform/facility-applications/{application_id}/approve/:
+    post:
+      operationId: platform_facility_application_approve
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApproveInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApproveResult'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: fields.slug taken
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Approval gate
+  /api/v1/platform/facility-applications/{application_id}/documents/:
+    post:
+      operationId: platform_facility_application_document_create
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DocumentInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationDocument'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Type, size or kind
+  /api/v1/platform/facility-applications/{application_id}/documents/{document_id}/download-links/:
+    post:
+      operationId: platform_facility_application_document_download_link
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DownloadLinkRequestRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadLink'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not clean
+  /api/v1/platform/facility-applications/{application_id}/documents/{document_id}/review/:
+    post:
+      operationId: platform_facility_application_document_review
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentReviewInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationDocument'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not under review
+  /api/v1/platform/facility-applications/{application_id}/events/:
+    get:
+      operationId: platform_facility_application_events
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApplicationEvent'
+          description: ''
+  /api/v1/platform/facility-applications/{application_id}/notes/:
+    get:
+      operationId: platform_facility_application_notes_list
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApplicationEvent'
+          description: ''
+    post:
+      operationId: platform_facility_application_notes_create
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationEvent'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Validation error
+  /api/v1/platform/facility-applications/{application_id}/reject/:
+    post:
+      operationId: platform_facility_application_reject
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformApplication'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Reason
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Status
+  /api/v1/platform/facility-applications/{application_id}/request-changes/:
+    post:
+      operationId: platform_facility_application_request_changes
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestChangesInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformApplication'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Status
+  /api/v1/platform/facility-applications/{application_id}/send-resume-link/:
+    post:
+      operationId: platform_facility_application_send_resume_link
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '202':
+          description: Sent
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not draft or changes requested
+  /api/v1/platform/facility-applications/{application_id}/start-review/:
+    post:
+      operationId: platform_facility_application_start_review
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformApplication'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Status
+  /api/v1/platform/feature-flags/:
+    get:
+      operationId: platform_feature_flags_list
+      tags:
+      - platform
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FeatureFlag'
+          description: ''
+  /api/v1/platform/feature-flags/{code}/:
+    patch:
+      operationId: platform_feature_flag_update
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFlagPatchInputRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeatureFlag'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown flag
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Conflict
   /api/v1/platform/master-data/diagnosis-codes/:
     get:
       operationId: platform_master_data_diagnosis_codes_list
@@ -2437,6 +3682,320 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Not previewed, has errors or expired
+  /api/v1/platform/overview/:
+    get:
+      operationId: platform_overview
+      tags:
+      - platform
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Overview'
+          description: ''
+  /api/v1/public/facility-applications/:
+    post:
+      operationId: public_facility_application_start
+      summary: Start a facility application (sets the applicant cookie, emails a resume
+        link)
+      tags:
+      - facility-applications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartApplicationInputRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicantApplication'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Validation error
+  /api/v1/public/facility-applications/{application_id}/:
+    get:
+      operationId: public_facility_application_retrieve
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - facility-applications
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicantApplication'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
+    patch:
+      operationId: public_facility_application_update
+      summary: Autosave
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - facility-applications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedApplicationPatchInputRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicantApplication'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Validation error
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Version conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not editable
+  /api/v1/public/facility-applications/{application_id}/documents/:
+    post:
+      operationId: public_facility_application_document_create
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - facility-applications
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DocumentInputRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationDocument'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Type, size or kind
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not editable or limits reached
+  /api/v1/public/facility-applications/{application_id}/documents/{document_id}/:
+    patch:
+      operationId: public_facility_application_document_update
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - facility-applications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDocumentPatchInputRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationDocument'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not editable
+    delete:
+      operationId: public_facility_application_document_delete
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - facility-applications
+      responses:
+        '204':
+          description: Deleted
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not editable
+  /api/v1/public/facility-applications/{application_id}/end-session/:
+    post:
+      operationId: public_facility_application_end_session
+      summary: Continue later (shared computers)
+      parameters:
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - facility-applications
+      responses:
+        '204':
+          description: Applicant session ended
+  /api/v1/public/facility-applications/{application_id}/submit/:
+    post:
+      operationId: public_facility_application_submit
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+      - in: path
+        name: application_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - facility-applications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitInputRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicantApplication'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Missing items as dotted fields
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Version conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Uploads not yet clean
+  /api/v1/public/facility-applications/resume/:
+    post:
+      operationId: public_facility_application_resume
+      summary: Exchange a resume token for an applicant session
+      tags:
+      - facility-applications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenInputRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicantApplication'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid or expired link
+  /api/v1/public/facility-applications/resume-links/:
+    post:
+      operationId: public_facility_application_resume_links
+      summary: Email a resume link for each open application of this address
+      tags:
+      - facility-applications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailInputRequest'
+        required: true
+      responses:
+        '202':
+          description: Always accepted (no enumeration)
   /api/v1/public/master-data/facility-types/:
     get:
       operationId: public_master_data_facility_types_list
@@ -3477,6 +5036,385 @@ components:
           format: uuid
       required:
       - facility_id
+    ActorKindEnum:
+      enum:
+      - applicant
+      - platform_admin
+      - system
+      type: string
+      description: |-
+        * `applicant` - Applicant
+        * `platform_admin` - Super admin
+        * `system` - System
+    AdminBlock:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+      required:
+      - email
+      - name
+      - phone
+    AdminInputRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 150
+        email:
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+        phone:
+          type: string
+          maxLength: 20
+    AgreementsBlock:
+      type: object
+      properties:
+        accepted_terms_version:
+          type: string
+          nullable: true
+        accepted_dpa_version:
+          type: string
+          nullable: true
+        ncsa_registration_confirmed:
+          type: boolean
+      required:
+      - accepted_dpa_version
+      - accepted_terms_version
+      - ncsa_registration_confirmed
+    ApplicantApplication:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/ApplicationStatusEnum'
+        version:
+          type: integer
+        facility:
+          $ref: '#/components/schemas/FacilityBlock'
+        location:
+          $ref: '#/components/schemas/LocationBlock'
+        applicant:
+          $ref: '#/components/schemas/ApplicantBlock'
+        proposed_admin:
+          $ref: '#/components/schemas/AdminBlock'
+        claimed_insurer_codes:
+          type: array
+          items:
+            type: string
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationDocument'
+        agreements:
+          $ref: '#/components/schemas/AgreementsBlock'
+        feedback:
+          $ref: '#/components/schemas/FeedbackBlock'
+        missing_for_submit:
+          type: array
+          items:
+            type: string
+        preferred_language:
+          type: string
+        submitted_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - agreements
+      - applicant
+      - claimed_insurer_codes
+      - documents
+      - facility
+      - feedback
+      - id
+      - location
+      - missing_for_submit
+      - preferred_language
+      - proposed_admin
+      - status
+      - submitted_at
+      - updated_at
+      - version
+    ApplicantBlock:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        position:
+          type: string
+      required:
+      - email
+      - name
+      - phone
+      - position
+    ApplicantInputRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        phone:
+          type: string
+          maxLength: 20
+        position:
+          type: string
+          maxLength: 120
+      required:
+      - email
+      - name
+    ApplicantPatchInputRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        phone:
+          type: string
+          maxLength: 20
+        position:
+          type: string
+          maxLength: 120
+    ApplicationDocument:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: '#/components/schemas/DocumentKindEnum'
+        insurer_code:
+          type: string
+          nullable: true
+        number:
+          type: string
+        issued_on:
+          type: string
+          format: date
+          nullable: true
+        expires_on:
+          type: string
+          format: date
+          nullable: true
+        review_status:
+          $ref: '#/components/schemas/ApplicationDocumentReviewStatusEnum'
+        review_comment:
+          type: string
+        upload:
+          $ref: '#/components/schemas/Upload'
+      required:
+      - expires_on
+      - id
+      - insurer_code
+      - issued_on
+      - kind
+      - number
+      - review_comment
+      - review_status
+      - upload
+    ApplicationDocumentReviewStatusEnum:
+      enum:
+      - pending
+      - accepted
+      - needs_change
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `accepted` - Accepted
+        * `needs_change` - Needs change
+    ApplicationEvent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: '#/components/schemas/ApplicationEventKindEnum'
+        from_status:
+          type: string
+        to_status:
+          type: string
+        actor_kind:
+          $ref: '#/components/schemas/ActorKindEnum'
+        actor:
+          allOf:
+          - $ref: '#/components/schemas/Person'
+          nullable: true
+        note_kind:
+          type: string
+        note:
+          type: string
+        reason_code:
+          type: string
+        item_comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemComment'
+        metadata:
+          type: object
+          additionalProperties: {}
+        occurred_at:
+          type: string
+          format: date-time
+        occurred_on:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - actor
+      - actor_kind
+      - from_status
+      - id
+      - item_comments
+      - kind
+      - metadata
+      - note
+      - note_kind
+      - occurred_at
+      - occurred_on
+      - reason_code
+      - to_status
+    ApplicationEventKindEnum:
+      enum:
+      - status_change
+      - note
+      - item_comments
+      - document_review
+      - link_sent
+      - platform_edit
+      type: string
+      description: |-
+        * `status_change` - Status change
+        * `note` - Note
+        * `item_comments` - Item comments
+        * `document_review` - Document review
+        * `link_sent` - Resume link sent
+        * `platform_edit` - Edited by the platform
+    ApplicationStatusEnum:
+      enum:
+      - draft
+      - submitted
+      - under_review
+      - changes_requested
+      - approved
+      - rejected
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `submitted` - Submitted
+        * `under_review` - Under review
+        * `changes_requested` - Changes requested
+        * `approved` - Approved
+        * `rejected` - Rejected
+    ApplicationSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/ApplicationStatusEnum'
+        facility_name:
+          type: string
+        facility_type:
+          type: string
+        district_code:
+          type: string
+        applicant_name:
+          type: string
+        created_by_platform:
+          type: boolean
+        submitted_at:
+          type: string
+          format: date-time
+          nullable: true
+        last_activity_at:
+          type: string
+          format: date-time
+          nullable: true
+        reviewer:
+          allOf:
+          - $ref: '#/components/schemas/Person'
+          nullable: true
+      required:
+      - applicant_name
+      - created_by_platform
+      - district_code
+      - facility_name
+      - facility_type
+      - id
+      - last_activity_at
+      - reviewer
+      - status
+      - submitted_at
+    ApproveInputRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 120
+          pattern: ^[-a-zA-Z0-9_]+$
+        organization_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        facility_type:
+          $ref: '#/components/schemas/FacilityTypeEnum'
+        ownership:
+          $ref: '#/components/schemas/OwnershipEnum'
+        licences:
+          type: array
+          items:
+            $ref: '#/components/schemas/LicenceInputRequest'
+      required:
+      - facility_type
+      - licences
+      - organization_name
+      - ownership
+      - slug
+      - version
+    ApproveResult:
+      type: object
+      properties:
+        application:
+          $ref: '#/components/schemas/PlatformApplication'
+        facility:
+          $ref: '#/components/schemas/PlatformFacility'
+      required:
+      - application
+      - facility
     BlankEnum:
       enum:
       - ''
@@ -3487,6 +5425,26 @@ components:
           type: string
       required:
       - csrf_token
+    DeactivateInputRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+        reason_code:
+          type: string
+          minLength: 1
+          maxLength: 40
+        reason_text:
+          type: string
+          maxLength: 2000
+        confirm_slug:
+          type: string
+          minLength: 1
+          maxLength: 120
+      required:
+      - confirm_slug
+      - reason_code
+      - version
     Detail:
       type: object
       properties:
@@ -3630,6 +5588,75 @@ components:
       description: |-
         * `inline` - inline
         * `attachment` - attachment
+    District:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+      required:
+      - code
+      - name
+    DocumentInputRequest:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+        kind:
+          $ref: '#/components/schemas/DocumentKindEnum'
+        insurer_code:
+          type: string
+          maxLength: 40
+        number:
+          type: string
+          maxLength: 80
+        issued_on:
+          type: string
+          format: date
+          nullable: true
+        expires_on:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - file
+      - kind
+    DocumentKindEnum:
+      enum:
+      - moh_licence
+      - rdb_registration
+      - tin_certificate
+      - accreditation
+      - insurer_contract
+      - other
+      type: string
+      description: |-
+        * `moh_licence` - MoH operating licence
+        * `rdb_registration` - RDB registration
+        * `tin_certificate` - TIN certificate
+        * `accreditation` - Accreditation
+        * `insurer_contract` - Insurer contract
+        * `other` - Other
+    DocumentReviewInputRequest:
+      type: object
+      properties:
+        review_status:
+          $ref: '#/components/schemas/DocumentReviewInputReviewStatusEnum'
+        comment:
+          type: string
+          maxLength: 2000
+      required:
+      - review_status
+    DocumentReviewInputReviewStatusEnum:
+      enum:
+      - accepted
+      - needs_change
+      type: string
+      description: |-
+        * `accepted` - accepted
+        * `needs_change` - needs_change
     DownloadLink:
       type: object
       properties:
@@ -3823,6 +5850,43 @@ components:
       - form
       - generic_name
       - strength
+    DuplicateHint:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/DuplicateHintKindEnum'
+        application_id:
+          type: string
+          format: uuid
+          nullable: true
+        facility_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - application_id
+      - facility_id
+      - kind
+    DuplicateHintKindEnum:
+      enum:
+      - same_licence_number
+      - same_applicant_email
+      - same_name_in_district
+      type: string
+      description: |-
+        * `same_licence_number` - same_licence_number
+        * `same_applicant_email` - same_applicant_email
+        * `same_name_in_district` - same_name_in_district
+    EmailInputRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+      required:
+      - email
     Error:
       type: object
       properties:
@@ -3855,6 +5919,127 @@ components:
       - fields
       - message
       - request_id
+    FacilityBlock:
+      type: object
+      properties:
+        name:
+          type: string
+        facility_type:
+          type: string
+        level_of_care:
+          type: string
+        ownership:
+          type: string
+        organization_name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+      required:
+      - email
+      - facility_type
+      - level_of_care
+      - name
+      - organization_name
+      - ownership
+      - phone
+    FacilityFeatureFlag:
+      type: object
+      properties:
+        code:
+          type: string
+        is_enabled:
+          type: boolean
+        source:
+          $ref: '#/components/schemas/SourceEnum'
+        note:
+          type: string
+        set_by:
+          allOf:
+          - $ref: '#/components/schemas/Person'
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - code
+      - is_enabled
+      - note
+      - set_by
+      - source
+      - updated_at
+    FacilityFlagInputRequest:
+      type: object
+      properties:
+        is_enabled:
+          type: boolean
+        note:
+          type: string
+          maxLength: 300
+      required:
+      - is_enabled
+    FacilityInputLevelOfCareEnum:
+      enum:
+      - primary
+      - secondary
+      - tertiary
+      type: string
+      description: |-
+        * `primary` - primary
+        * `secondary` - secondary
+        * `tertiary` - tertiary
+    FacilityInputRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        facility_type:
+          $ref: '#/components/schemas/FacilityTypeEnum'
+        level_of_care:
+          $ref: '#/components/schemas/FacilityInputLevelOfCareEnum'
+        ownership:
+          $ref: '#/components/schemas/OwnershipEnum'
+        organization_name:
+          type: string
+          maxLength: 200
+        phone:
+          type: string
+          maxLength: 20
+        email:
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+    FacilityStatusEnum:
+      enum:
+      - draft
+      - submitted
+      - under_review
+      - changes_requested
+      - approved
+      - setup
+      - live
+      - suspended
+      - deactivated
+      - rejected
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `submitted` - Submitted
+        * `under_review` - Under review
+        * `changes_requested` - Changes requested
+        * `approved` - Approved
+        * `setup` - Setup
+        * `live` - Live
+        * `suspended` - Suspended
+        * `deactivated` - Deactivated
+        * `rejected` - Rejected
     FacilitySummary:
       type: object
       properties:
@@ -3946,7 +6131,7 @@ components:
             type: string
             maxLength: 500
         level_of_care:
-          $ref: '#/components/schemas/LevelOfCareEnum'
+          $ref: '#/components/schemas/FacilityTypesPlatformItemLevelOfCareEnum'
         is_active:
           type: boolean
         sort_order:
@@ -3978,6 +6163,16 @@ components:
       - name_i18n
       - updated_at
       - version
+    FacilityTypesPlatformItemLevelOfCareEnum:
+      enum:
+      - primary
+      - secondary
+      - tertiary
+      type: string
+      description: |-
+        * `primary` - Primary
+        * `secondary` - Secondary
+        * `tertiary` - Tertiary
     FacilityTypesPlatformItemRequest:
       type: object
       properties:
@@ -3991,7 +6186,7 @@ components:
             type: string
             maxLength: 500
         level_of_care:
-          $ref: '#/components/schemas/LevelOfCareEnum'
+          $ref: '#/components/schemas/FacilityTypesPlatformItemLevelOfCareEnum'
         is_active:
           type: boolean
         sort_order:
@@ -4002,6 +6197,45 @@ components:
       - code
       - level_of_care
       - name_i18n
+    FeatureFlag:
+      type: object
+      properties:
+        code:
+          type: string
+        description:
+          type: string
+        default_enabled:
+          type: boolean
+        is_active:
+          type: boolean
+        override_count:
+          type: integer
+        version:
+          type: integer
+      required:
+      - code
+      - default_enabled
+      - description
+      - is_active
+      - override_count
+      - version
+    FeedbackBlock:
+      type: object
+      properties:
+        general_comment:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemComment'
+        rejection:
+          allOf:
+          - $ref: '#/components/schemas/RejectionBlock'
+          nullable: true
+      required:
+      - general_comment
+      - items
+      - rejection
     Health:
       type: object
       properties:
@@ -4051,6 +6285,24 @@ components:
       - action
       - changes
       - code
+    ImportStatusEnum:
+      enum:
+      - validating
+      - previewed
+      - invalid
+      - applying
+      - applied
+      - failed
+      - expired
+      type: string
+      description: |-
+        * `validating` - Validating
+        * `previewed` - Previewed
+        * `invalid` - Invalid
+        * `applying` - Applying
+        * `applied` - Applied
+        * `failed` - Failed
+        * `expired` - Expired
     ImportSummary:
       type: object
       properties:
@@ -4182,6 +6434,32 @@ components:
       - code
       - name
       - scheme
+    ItemComment:
+      type: object
+      properties:
+        target:
+          type: string
+          maxLength: 120
+        comment:
+          type: string
+          maxLength: 2000
+      required:
+      - comment
+      - target
+    ItemCommentRequest:
+      type: object
+      properties:
+        target:
+          type: string
+          minLength: 1
+          maxLength: 120
+        comment:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - comment
+      - target
     LanguageEnum:
       enum:
       - rw
@@ -4206,16 +6484,163 @@ components:
         * `sector` - Sector
         * `cell` - Cell
         * `village` - Village
-    LevelOfCareEnum:
+    Licence:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: '#/components/schemas/LicenceKindEnum'
+        number:
+          type: string
+        issued_on:
+          type: string
+          format: date
+          nullable: true
+        expires_on:
+          type: string
+          format: date
+        state:
+          $ref: '#/components/schemas/LicenceStateEnum'
+        upload_id:
+          type: string
+          format: uuid
+          nullable: true
+        verified_by:
+          allOf:
+          - $ref: '#/components/schemas/Person'
+          nullable: true
+        verified_at:
+          type: string
+          format: date-time
+          nullable: true
+        superseded_at:
+          type: string
+          format: date-time
+          nullable: true
+        version:
+          type: integer
+      required:
+      - expires_on
+      - id
+      - issued_on
+      - kind
+      - number
+      - state
+      - superseded_at
+      - upload_id
+      - verified_at
+      - verified_by
+      - version
+    LicenceInputRequest:
+      type: object
+      properties:
+        document_id:
+          type: string
+          format: uuid
+          nullable: true
+        kind:
+          $ref: '#/components/schemas/LicenceKindEnum'
+        number:
+          type: string
+          minLength: 1
+          maxLength: 80
+        issued_on:
+          type: string
+          format: date
+          nullable: true
+        expires_on:
+          type: string
+          format: date
+      required:
+      - expires_on
+      - kind
+      - number
+    LicenceKindEnum:
       enum:
-      - primary
-      - secondary
-      - tertiary
+      - moh_operating
+      - pharmacy
+      - rdb_registration
+      - accreditation
+      - other
       type: string
       description: |-
-        * `primary` - Primary
-        * `secondary` - Secondary
-        * `tertiary` - Tertiary
+        * `moh_operating` - MoH operating licence
+        * `pharmacy` - Pharmacy licence
+        * `rdb_registration` - RDB registration
+        * `accreditation` - Accreditation
+        * `other` - Other
+    LicenceStateEnum:
+      enum:
+      - valid
+      - expiring
+      - expired
+      - missing
+      type: string
+      description: |-
+        * `valid` - valid
+        * `expiring` - expiring
+        * `expired` - expired
+        * `missing` - missing
+    LocationBlock:
+      type: object
+      properties:
+        village_code:
+          type: string
+          nullable: true
+        address:
+          type: string
+        latitude:
+          type: number
+          format: double
+          nullable: true
+        longitude:
+          type: number
+          format: double
+          nullable: true
+        path:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationPathItem'
+      required:
+      - address
+      - latitude
+      - longitude
+      - path
+      - village_code
+    LocationInputRequest:
+      type: object
+      properties:
+        village_code:
+          type: string
+          maxLength: 20
+        address:
+          type: string
+          maxLength: 300
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+    LocationPathItem:
+      type: object
+      properties:
+        level:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+      required:
+      - code
+      - level
+      - name
     LocationsItem:
       type: object
       properties:
@@ -4426,7 +6851,7 @@ components:
         mode:
           $ref: '#/components/schemas/ModeEnum'
         status:
-          $ref: '#/components/schemas/MasterDataImportStatusEnum'
+          $ref: '#/components/schemas/ImportStatusEnum'
         upload:
           allOf:
           - $ref: '#/components/schemas/Upload'
@@ -4465,24 +6890,6 @@ components:
       - sample_changes
       - summary
       - upload
-    MasterDataImportStatusEnum:
-      enum:
-      - validating
-      - previewed
-      - invalid
-      - applying
-      - applied
-      - failed
-      - expired
-      type: string
-      description: |-
-        * `validating` - Validating
-        * `previewed` - Previewed
-        * `invalid` - Invalid
-        * `applying` - Applying
-        * `applied` - Applied
-        * `failed` - Failed
-        * `expired` - Expired
     Membership:
       type: object
       properties:
@@ -4569,9 +6976,124 @@ components:
       description: |-
         * `upsert` - Create and update
         * `upsert_and_retire_missing` - Create, update and retire missing rows
+    NewLicenceInputRequest:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/LicenceKindEnum'
+        number:
+          type: string
+          minLength: 1
+          maxLength: 80
+        issued_on:
+          type: string
+          format: date
+          nullable: true
+        expires_on:
+          type: string
+          format: date
+        upload_id:
+          type: string
+          format: uuid
+          nullable: true
+        renews_licence_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - expires_on
+      - kind
+      - number
+    NoteInputRequest:
+      type: object
+      properties:
+        note_kind:
+          $ref: '#/components/schemas/NoteKindEnum'
+        text:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        occurred_on:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - note_kind
+      - text
+    NoteKindEnum:
+      enum:
+      - call
+      - visit
+      - document_check
+      - other
+      type: string
+      description: |-
+        * `call` - Call
+        * `visit` - Visit
+        * `document_check` - Document check
+        * `other` - Other
     NullEnum:
       enum:
       - null
+    Overview:
+      type: object
+      properties:
+        applications:
+          type: object
+          additionalProperties:
+            type: integer
+        licences:
+          type: object
+          additionalProperties:
+            type: integer
+        facilities:
+          type: object
+          additionalProperties:
+            type: integer
+        oldest_waiting_application:
+          type: object
+          additionalProperties: {}
+          nullable: true
+      required:
+      - applications
+      - facilities
+      - licences
+      - oldest_waiting_application
+    OwnershipEnum:
+      enum:
+      - public
+      - private
+      - faith_based
+      - ngo
+      type: string
+      description: |-
+        * `public` - Public
+        * `private` - Private
+        * `faith_based` - Faith-based
+        * `ngo` - NGO
+    PaginatedApplicationSummaryList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationSummary'
     PaginatedDiagnosisCodesItemList:
       type: object
       required:
@@ -4825,6 +7347,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MasterDataChange'
+    PaginatedPlatformFacilityList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformFacility'
     PaginatedPublicHolidaysItemList:
       type: object
       required:
@@ -5041,6 +7586,26 @@ components:
           maxLength: 254
       required:
       - email
+    PatchedApplicationPatchInputRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+        facility:
+          $ref: '#/components/schemas/FacilityInputRequest'
+        location:
+          $ref: '#/components/schemas/LocationInputRequest'
+        applicant:
+          $ref: '#/components/schemas/ApplicantPatchInputRequest'
+        proposed_admin:
+          $ref: '#/components/schemas/AdminInputRequest'
+        claimed_insurer_codes:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 40
+          maxItems: 20
     PatchedDiagnosisCodesPlatformItemRequest:
       type: object
       properties:
@@ -5071,6 +7636,20 @@ components:
           type: integer
           maximum: 2147483647
           minimum: -2147483648
+    PatchedDocumentPatchInputRequest:
+      type: object
+      properties:
+        number:
+          type: string
+          maxLength: 80
+        issued_on:
+          type: string
+          format: date
+          nullable: true
+        expires_on:
+          type: string
+          format: date
+          nullable: true
     PatchedDrugsPlatformItemRequest:
       type: object
       properties:
@@ -5124,13 +7703,24 @@ components:
             type: string
             maxLength: 500
         level_of_care:
-          $ref: '#/components/schemas/LevelOfCareEnum'
+          $ref: '#/components/schemas/FacilityTypesPlatformItemLevelOfCareEnum'
         is_active:
           type: boolean
         sort_order:
           type: integer
           maximum: 2147483647
           minimum: -2147483648
+    PatchedFlagPatchInputRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+        default_enabled:
+          type: boolean
+        description:
+          type: string
+          minLength: 1
+          maxLength: 300
     PatchedInsurersPlatformItemRequest:
       type: object
       properties:
@@ -5152,6 +7742,22 @@ components:
           type: integer
           maximum: 2147483647
           minimum: -2147483648
+    PatchedLicencePatchInputRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+        number:
+          type: string
+          minLength: 1
+          maxLength: 80
+        issued_on:
+          type: string
+          format: date
+          nullable: true
+        expires_on:
+          type: string
+          format: date
     PatchedLocationsPlatformItemRequest:
       type: object
       properties:
@@ -5380,6 +7986,17 @@ components:
       - password
       - preferred_language
       - research_consent
+    Person:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+      required:
+      - full_name
+      - id
     PinRequest:
       type: object
       properties:
@@ -5389,6 +8006,218 @@ components:
           maxLength: 6
       required:
       - pin
+    PlatformApplication:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/ApplicationStatusEnum'
+        version:
+          type: integer
+        facility:
+          $ref: '#/components/schemas/FacilityBlock'
+        location:
+          $ref: '#/components/schemas/LocationBlock'
+        applicant:
+          $ref: '#/components/schemas/ApplicantBlock'
+        proposed_admin:
+          $ref: '#/components/schemas/AdminBlock'
+        claimed_insurer_codes:
+          type: array
+          items:
+            type: string
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApplicationDocument'
+        agreements:
+          $ref: '#/components/schemas/AgreementsBlock'
+        feedback:
+          $ref: '#/components/schemas/FeedbackBlock'
+        missing_for_submit:
+          type: array
+          items:
+            type: string
+        preferred_language:
+          type: string
+        submitted_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+        created_by_platform:
+          type: boolean
+        reviewer:
+          allOf:
+          - $ref: '#/components/schemas/Person'
+          nullable: true
+        facility_id:
+          type: string
+          format: uuid
+          nullable: true
+        suggested_slug:
+          type: string
+        last_activity_at:
+          type: string
+          format: date-time
+          nullable: true
+        duplicate_hints:
+          type: array
+          items:
+            $ref: '#/components/schemas/DuplicateHint'
+      required:
+      - agreements
+      - applicant
+      - claimed_insurer_codes
+      - created_by_platform
+      - documents
+      - duplicate_hints
+      - facility
+      - facility_id
+      - feedback
+      - id
+      - last_activity_at
+      - location
+      - missing_for_submit
+      - preferred_language
+      - proposed_admin
+      - reviewer
+      - status
+      - submitted_at
+      - suggested_slug
+      - updated_at
+      - version
+    PlatformCreateInputRequest:
+      type: object
+      properties:
+        applicant:
+          $ref: '#/components/schemas/ApplicantInputRequest'
+        facility:
+          $ref: '#/components/schemas/FacilityInputRequest'
+        location:
+          $ref: '#/components/schemas/LocationInputRequest'
+        send_link:
+          type: boolean
+          default: false
+      required:
+      - applicant
+      - facility
+    PlatformFacility:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        slug:
+          type: string
+        facility_type:
+          type: string
+        level_of_care:
+          type: string
+        ownership:
+          type: string
+        status:
+          $ref: '#/components/schemas/FacilityStatusEnum'
+        district:
+          allOf:
+          - $ref: '#/components/schemas/District'
+          nullable: true
+        application_id:
+          type: string
+          format: uuid
+          nullable: true
+        licence_state:
+          $ref: '#/components/schemas/LicenceStateEnum'
+        next_licence_expiry:
+          type: string
+          format: date
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+      required:
+      - application_id
+      - created_at
+      - district
+      - facility_type
+      - id
+      - level_of_care
+      - licence_state
+      - name
+      - next_licence_expiry
+      - ownership
+      - slug
+      - status
+      - version
+    PlatformFacilityDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        slug:
+          type: string
+        facility_type:
+          type: string
+        level_of_care:
+          type: string
+        ownership:
+          type: string
+        status:
+          $ref: '#/components/schemas/FacilityStatusEnum'
+        district:
+          allOf:
+          - $ref: '#/components/schemas/District'
+          nullable: true
+        application_id:
+          type: string
+          format: uuid
+          nullable: true
+        licence_state:
+          $ref: '#/components/schemas/LicenceStateEnum'
+        next_licence_expiry:
+          type: string
+          format: date
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+        application:
+          allOf:
+          - $ref: '#/components/schemas/ApplicationSummary'
+          nullable: true
+        licences:
+          type: array
+          items:
+            $ref: '#/components/schemas/Licence'
+      required:
+      - application
+      - application_id
+      - created_at
+      - district
+      - facility_type
+      - id
+      - level_of_care
+      - licence_state
+      - licences
+      - name
+      - next_licence_expiry
+      - ownership
+      - slug
+      - status
+      - version
     PublicHolidaysItem:
       type: object
       properties:
@@ -5602,6 +8431,34 @@ components:
       - code
       - kind
       - label_i18n
+    ReasonInputRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+        reason_code:
+          type: string
+          minLength: 1
+          maxLength: 40
+        reason_text:
+          type: string
+          maxLength: 2000
+      required:
+      - reason_code
+      - version
+    RejectionBlock:
+      type: object
+      properties:
+        reason_code:
+          type: string
+        reason_label:
+          type: string
+        reason_text:
+          type: string
+      required:
+      - reason_code
+      - reason_label
+      - reason_text
     RelationshipEnum:
       enum:
       - self
@@ -5612,6 +8469,21 @@ components:
         * `self` - Self
         * `guardian` - Guardian
         * `delegate` - Delegate
+    RequestChangesInputRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+        general_comment:
+          type: string
+          maxLength: 4000
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ItemCommentRequest'
+      required:
+      - items
+      - version
     RoleCodeEnum:
       enum:
       - facility_admin
@@ -5804,6 +8676,14 @@ components:
       description: |-
         * `female` - Female
         * `male` - Male
+    SourceEnum:
+      enum:
+      - override
+      - default
+      type: string
+      description: |-
+        * `override` - override
+        * `default` - default
     StaffLoginRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -5885,6 +8765,57 @@ components:
       - lock_after_seconds
       - pin_set
       - step_up_valid_until
+    StartApplicationInputRequest:
+      type: object
+      properties:
+        applicant:
+          $ref: '#/components/schemas/ApplicantInputRequest'
+        facility_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        preferred_language:
+          allOf:
+          - $ref: '#/components/schemas/LanguageEnum'
+          default: rw
+        website:
+          type: string
+          description: Leave empty
+      required:
+      - applicant
+      - facility_name
+    StatusEvent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        from_status:
+          type: string
+        to_status:
+          type: string
+        reason_code:
+          type: string
+        reason_label:
+          type: string
+        reason_text:
+          type: string
+        actor:
+          allOf:
+          - $ref: '#/components/schemas/Person'
+          nullable: true
+        occurred_at:
+          type: string
+          format: date-time
+      required:
+      - actor
+      - from_status
+      - id
+      - occurred_at
+      - reason_code
+      - reason_label
+      - reason_text
+      - to_status
     StepUpRequest:
       type: object
       properties:
@@ -5910,6 +8841,24 @@ components:
           format: date-time
       required:
       - step_up_valid_until
+    SubmitInputRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+        accepted_terms_version:
+          type: string
+          maxLength: 32
+        accepted_dpa_version:
+          type: string
+          maxLength: 32
+        ncsa_registration_confirmed:
+          type: boolean
+      required:
+      - accepted_dpa_version
+      - accepted_terms_version
+      - ncsa_registration_confirmed
+      - version
     SymptomsItem:
       type: object
       properties:
@@ -6024,6 +8973,15 @@ components:
       required:
       - code
       - name_i18n
+    TokenInputRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+      - token
     UnlockMethodsEnum:
       enum:
       - pin
@@ -6121,6 +9079,13 @@ components:
         * `infected` - Infected
         * `rejected` - Rejected
         * `failed` - Failed
+    VersionInputRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+      required:
+      - version
   securitySchemes:
     patientSession:
       type: apiKey

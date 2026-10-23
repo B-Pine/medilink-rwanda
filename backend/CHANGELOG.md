@@ -62,6 +62,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   `onboarding_facility_feature_flag`), `RequiresFeatureFlag`; onboarding tables and the
   notification email stub (`onboarding.notifications.dispatch`).
 
+- Facility onboarding (`medilink.onboarding`, contract §2.3, §3.2, §3.5): public application
+  wizard API with an emailed single-use resume link (7 days) exchanged for an HttpOnly applicant
+  cookie (8 h sliding), autosave with `version`, documents through the upload pipeline (≤ 20,
+  ≤ 100 MB), submit gate with dotted `fields`; super admin pipeline, review with per-document
+  verdicts and item comments, notes, history and duplicate hints; approve (creates organisation,
+  facility `approved`, licences, status event, signal `application_approved`) and reject, both
+  with step-up and `Idempotency-Key`.
+- Facility lifecycle `approved → setup → live → suspended / deactivated` with reasons, status
+  events, go-live check registry (`licence.moh_operating_valid`), `is_publicly_listed()` and
+  `accepts_new_bookings()`; licences with renewal (supersede) and corrections; daily 60/30-day and
+  expiry reminders; stale draft reminder (83 days) and purge (90 days); per-facility and default
+  feature flag administration; `GET /platform/overview/`.
+- Notification email stub for application, licence, facility and security events (until S9).
+
 ### Sprint 3 · Patients and identity
 
 ### Sprint 9 · Notifications

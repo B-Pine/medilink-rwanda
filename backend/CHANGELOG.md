@@ -10,6 +10,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Sprint 1 · Platform and onboarding
 
+- Upload pipeline v1 (`medilink.uploads`, contract §2.4, §3.6): `uploads_file` with forced RLS
+  (`facility_isolation` + `unowned_rows`); magic-byte sniffing (PDF, JPEG, PNG, HEIC/HEIF; CSV only
+  for CSV purposes); size limit; UUID keys in a quarantine bucket; `scan_file` task with the
+  `Scanner` interface (`ClamdScanner` over INSTREAM, `FakeScanner` for EICAR), 5 retries, then
+  `failed`; images re-encoded without EXIF/XMP/GPS (40 MP limit, 3,000 px side, animations refused,
+  HEIC to JPEG); PDFs refused when encrypted, scripted, with embedded files, launch actions, XFA or
+  rich media, or over 100 pages; `ObjectStorage` with local (dev/test, `/api/v1/files/{token}/`)
+  and S3-compatible (boto3, SSE, presigned) implementations; 5-minute signed download links with
+  `nosniff`, sandbox CSP, `no-store` and CORP headers; hourly `purge_files`.
+- Endpoints `POST /staff|patient/uploads/`, `GET …/{id}/`, `POST …/{id}/download-links/` with
+  `Idempotency-Key` and the `upload` rate limit (60/h, `THROTTLE_RATE_UPLOAD`).
+- Reusable interface for later sprints: `uploads.purposes.register(UploadPurpose(...))`,
+  `services.receive/attach/download_link/soft_delete`, signal `upload_scanned`.
+- Deploy checks `medilink.uploads.E001`–`E003` refuse the fake scanner, local storage and a
+  non-https files origin.
+- S1 audit actions registered through `extend_actions()` (`medilink.onboarding.audit_actions`).
+- Dependencies: pillow, pillow-heif, pypdf, boto3.
+
 ### Sprint 3 · Patients and identity
 
 ### Sprint 9 · Notifications

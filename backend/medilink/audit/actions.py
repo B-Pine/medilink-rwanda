@@ -51,6 +51,9 @@ def extend_actions(names: frozenset[str] | set[str]) -> None:
 # e.g.  from medilink.patients import audit_actions as _s3   (mark the import noqa E402)
 #       extend_actions(_s3.ACTIONS)
 # [S1]
+from medilink.onboarding import audit_actions as _s1  # noqa: E402
+
+extend_actions(_s1.ACTIONS)
 # [/S1]
 # [S3]
 # [/S3]

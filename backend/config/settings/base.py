@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     # ---- Wave 1 apps: each sprint adds lines ONLY between its own markers -----------------
     # (shared-file protocol: docs/architecture/contracts/README.md)
     # [S1] platform onboarding, master data, uploads
+    "medilink.uploads",
     # [/S1]
     # [S3] patients and identity (extends medilink.patients)
     # [/S3]

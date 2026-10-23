@@ -201,6 +201,112 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: rate_limited
+  /api/v1/patient/uploads/:
+    post:
+      operationId: patient_uploads_create
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+        description: Repeating an upload with the same key returns the original upload.
+      tags:
+      - uploads
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadCreateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Upload'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown purpose, wrong audience, file type or size
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not allowed to upload for this purpose
+  /api/v1/patient/uploads/{upload_id}/:
+    get:
+      operationId: patient_uploads_retrieve
+      parameters:
+      - in: path
+        name: upload_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - uploads
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Upload'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
+  /api/v1/patient/uploads/{upload_id}/download-links/:
+    post:
+      operationId: patient_uploads_download_links_create
+      parameters:
+      - in: path
+        name: upload_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - uploads
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DownloadLinkRequestRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadLink'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: The file isn't clean (yet)
   /api/v1/staff/auth/active-facility/:
     post:
       operationId: staff_auth_active_facility
@@ -413,6 +519,112 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: rate_limited, with Retry-After
+  /api/v1/staff/uploads/:
+    post:
+      operationId: staff_uploads_create
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+        description: Repeating an upload with the same key returns the original upload.
+      tags:
+      - uploads
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UploadCreateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Upload'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown purpose, wrong audience, file type or size
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not allowed to upload for this purpose
+  /api/v1/staff/uploads/{upload_id}/:
+    get:
+      operationId: staff_uploads_retrieve
+      parameters:
+      - in: path
+        name: upload_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - uploads
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Upload'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
+  /api/v1/staff/uploads/{upload_id}/download-links/:
+    post:
+      operationId: staff_uploads_download_links_create
+      parameters:
+      - in: path
+        name: upload_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - uploads
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DownloadLinkRequestRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadLink'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: The file isn't clean (yet)
 components:
   schemas:
     ActiveFacilityRequest:
@@ -438,6 +650,36 @@ components:
           type: string
       required:
       - detail
+    DispositionEnum:
+      enum:
+      - inline
+      - attachment
+      type: string
+      description: |-
+        * `inline` - inline
+        * `attachment` - attachment
+    DownloadLink:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+        expires_at:
+          type: string
+          format: date-time
+        disposition:
+          $ref: '#/components/schemas/DispositionEnum'
+      required:
+      - disposition
+      - expires_at
+      - url
+    DownloadLinkRequestRequest:
+      type: object
+      properties:
+        disposition:
+          allOf:
+          - $ref: '#/components/schemas/DispositionEnum'
+          default: inline
     Error:
       type: object
       properties:
@@ -825,6 +1067,84 @@ components:
       - mfa_enabled
       - permissions
       - preferred_language
+    Upload:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        purpose:
+          type: string
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/UploadStatusEnum'
+        rejection_reason:
+          type: string
+          nullable: true
+          readOnly: true
+        content_type:
+          type: string
+          readOnly: true
+        size_bytes:
+          type: integer
+          readOnly: true
+        original_filename:
+          type: string
+          readOnly: true
+        sha256:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        scanned_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        is_attached:
+          type: boolean
+      required:
+      - content_type
+      - created_at
+      - id
+      - is_attached
+      - original_filename
+      - purpose
+      - rejection_reason
+      - scanned_at
+      - sha256
+      - size_bytes
+      - status
+    UploadCreateRequest:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+        purpose:
+          type: string
+          minLength: 1
+          maxLength: 64
+      required:
+      - file
+      - purpose
+    UploadStatusEnum:
+      enum:
+      - pending
+      - clean
+      - infected
+      - rejected
+      - failed
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `clean` - Clean
+        * `infected` - Infected
+        * `rejected` - Rejected
+        * `failed` - Failed
   securitySchemes:
     patientSession:
       type: apiKey

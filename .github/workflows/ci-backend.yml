@@ -109,9 +109,9 @@ jobs:
       - name: Tests (PostgreSQL, RLS, run as the app role)
         run: pytest --cov --cov-report=term-missing:skip-covered --cov-report=xml
 
-      - name: Coverage gate (>= 90% for accounts, authz, tenancy, audit)
+      - name: Coverage gate (>= 90% for accounts, authz, tenancy, audit and the S1 apps)
         run: |
-          for app in accounts authz tenancy audit; do
+          for app in accounts authz tenancy audit uploads; do
             echo "== medilink/$app"
             python -m coverage report --include="medilink/$app/*" --fail-under=90 | tail -1
           done
@@ -129,6 +129,9 @@ jobs:
           DATABASE_URL: postgres://medilink_app:dummy@db.invalid:5432/medilink
           CORS_ALLOWED_ORIGINS: https://staff.medilink.rw,https://medilink.rw
           EMAIL_URL: smtp+tls://mailer:dummy@smtp.invalid:587
+          UPLOADS_SCANNER: clamd
+          UPLOADS_STORAGE: s3
+          UPLOADS_DOWNLOAD_BASE_URL: https://files.medilink.rw
         run: python manage.py check --deploy --fail-level WARNING
 
       - name: pip-audit (known vulnerabilities in locked dependencies)

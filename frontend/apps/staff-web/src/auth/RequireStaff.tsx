@@ -5,7 +5,8 @@ import { useTranslation } from "react-i18next";
 import { Navigate, Outlet, useLocation } from "react-router";
 
 import { useServices } from "../app/services";
-import { useSetActiveFacility, useStaffMe } from "./queries";
+import { LockScreen } from "../features/lock";
+import { useSetActiveFacility, useStaffMe, staffMeKey } from "./queries";
 
 /**
  * Route guard by session (GET /api/v1/staff/auth/me/):
@@ -14,7 +15,7 @@ import { useSetActiveFacility, useStaffMe } from "./queries";
  */
 export function RequireStaff({ requireFacility = true }: { requireFacility?: boolean }) {
   const { t } = useTranslation();
-  const { session } = useServices();
+  const { session, queryClient } = useServices();
   const location = useLocation();
   const me = useStaffMe();
   const setActiveFacility = useSetActiveFacility();
@@ -32,6 +33,15 @@ export function RequireStaff({ requireFacility = true }: { requireFacility?: boo
   if (me.isPending) return <LoadingState className="min-h-dvh" />;
 
   if (me.isError) {
+    // S1: a reload while locked shows only the lock screen (contract §6.1).
+    if (isApiError(me.error) && me.error.code === "session_locked") {
+      return (
+        <LockScreen
+          onUnlocked={(unlocked) => queryClient.setQueryData(staffMeKey, unlocked)}
+          onSignedOut={() => void queryClient.resetQueries({ queryKey: staffMeKey })}
+        />
+      );
+    }
     if (isApiError(me.error) && me.error.status === 401) {
       const reason = session.isExpired() ? "expired" : undefined;
       return <Navigate to="/login" replace state={{ from: location.pathname, reason }} />;

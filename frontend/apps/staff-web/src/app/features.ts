@@ -3,6 +3,8 @@ import type { RouteObject } from "react-router";
 
 // ---- Feature imports: ONLY between the sprint's markers (shared-file protocol) ----
 // [S1 imports]
+import { lockFeature } from "../features/lock";
+import { platformFeature } from "../features/platform";
 // [/S1 imports]
 // [S3 imports]
 // [/S3 imports]
@@ -32,6 +34,8 @@ export const FEATURE_SHELL_OVERLAYS = (): ComponentType[] =>
  */
 export const FEATURES: FeatureRoutes[] = [
   // [S1]
+  lockFeature,
+  platformFeature,
   // [/S1]
   // [S3]
   // [/S3]

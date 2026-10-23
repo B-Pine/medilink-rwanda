@@ -9,5 +9,7 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],
     include: ["src/**/*.test.{ts,tsx}"],
+    // The whole workspace runs in parallel; component + axe tests need room on slow machines.
+    testTimeout: 20_000,
   },
 });

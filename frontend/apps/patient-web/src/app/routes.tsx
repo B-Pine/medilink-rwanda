@@ -36,7 +36,6 @@ export const routes: RouteObject[] = [
         lazy: page(() => import("../pages/ResetPasswordPage"), "ResetPasswordPage"),
       },
       info("/verify", "verify"),
-      info("/for-facilities", "forFacilities"),
       info("/terms", "terms"),
       info("/privacy", "privacy"),
       info("/help", "help"),

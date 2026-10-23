@@ -15,6 +15,7 @@ import { env } from "../env";
 import { createStaffI18n } from "../i18n";
 import { AuthFlowProvider } from "../auth/auth-flow";
 import { staffMeKey } from "../auth/queries";
+import { createLockStore, StepUpProvider, type LockStore } from "../features/lock";
 
 export interface AppServices {
   api: MediLinkApi;
@@ -22,6 +23,8 @@ export interface AppServices {
   i18n: I18n;
   /** Remembers that an API call answered 401 mid-session, so the login page can explain why. */
   session: SessionNotice;
+  /** S1: idle lock state (401 `session_locked` shows the lock screen, not the login page). */
+  lock: LockStore;
 }
 
 export interface SessionNotice {
@@ -70,18 +73,23 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
     },
   });
   const session = createSessionNotice();
+  const lock = createLockStore();
   const api = createMediLinkApi(
     createApiClient({
       baseUrl: options.apiBaseUrl ?? env.apiBaseUrl,
       getLanguage: () => i18n.resolvedLanguage ?? i18n.language,
       // Session expired during work: drop the cached user so the route guard sends them to login.
-      onUnauthorized: () => {
+      onUnauthorized: (error) => {
+        if (error.code === "session_locked") {
+          lock.setLocked(true, { broadcast: false });
+          return;
+        }
         session.markExpired();
         void queryClient.resetQueries({ queryKey: staffMeKey });
       },
     }),
   );
-  return { api, queryClient, i18n, session };
+  return { api, queryClient, i18n, session, lock };
 }
 
 export function AppProviders({
@@ -96,7 +104,9 @@ export function AppProviders({
       <I18nextProvider i18n={services.i18n}>
         <QueryClientProvider client={services.queryClient}>
           <ThemeProvider>
-            <AuthFlowProvider>{children}</AuthFlowProvider>
+            <AuthFlowProvider>
+              <StepUpProvider>{children}</StepUpProvider>
+            </AuthFlowProvider>
           </ThemeProvider>
         </QueryClientProvider>
       </I18nextProvider>

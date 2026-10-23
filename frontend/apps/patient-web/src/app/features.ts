@@ -3,6 +3,7 @@ import type { RouteObject } from "react-router";
 
 // ---- Feature imports: ONLY between the sprint's markers (shared-file protocol) ----
 // [S1 imports]
+import { facilityApplicationFeature } from "../features/facilityApplication";
 // [/S1 imports]
 // [S3 imports]
 // [/S3 imports]
@@ -32,6 +33,7 @@ export const FEATURE_HOME_CARDS = (): ComponentType[] =>
  */
 export const FEATURES: FeatureRoutes[] = [
   // [S1]
+  facilityApplicationFeature,
   // [/S1]
   // [S3]
   // [/S3]

@@ -1,0 +1,52 @@
+{
+  "close": "Fermer",
+  "cancel": "Annuler",
+  "lockNow": "Verrouiller maintenant",
+  "menuLock": "Verrouiller l'écran",
+  "menuSecurity": "Sécurité",
+  "warning": {
+    "title": "Êtes-vous toujours là ?",
+    "body": "Pour la confidentialité des patients, votre écran se verrouille dans {{seconds}} secondes.",
+    "stay": "Rester connecté"
+  },
+  "screen": {
+    "title": "Écran verrouillé",
+    "who": "Connecté en tant que {{name}}",
+    "pin": "Code PIN",
+    "password": "Mot de passe",
+    "unlock": "Déverrouiller",
+    "usePassword": "Utiliser le mot de passe",
+    "usePin": "Utiliser le code PIN",
+    "switchUser": "Ce n'est pas vous ? Changer d'utilisateur",
+    "pinRequired": "Saisissez votre code PIN.",
+    "passwordRequired": "Saisissez votre mot de passe.",
+    "attempts_one": "Encore {{count}} essai avant la déconnexion.",
+    "attempts_other": "Encore {{count}} essais avant la déconnexion."
+  },
+  "stepUp": {
+    "title": "Confirmez votre identité",
+    "description": "Cette action demande votre mot de passe et un code de votre application d'authentification.",
+    "password": "Mot de passe",
+    "code": "Code d'authentification",
+    "codeHint": "6 chiffres de votre application d'authentification",
+    "confirm": "Confirmer",
+    "required": "Saisissez votre mot de passe et le code."
+  },
+  "security": {
+    "title": "Sécurité",
+    "pinTitle": "Code PIN de déverrouillage",
+    "pinIsSet": "Vous avez un code PIN. Utilisez-le pour déverrouiller rapidement votre écran.",
+    "pinNotSet": "Définissez un code PIN de 4 à 6 chiffres pour déverrouiller rapidement votre écran. Votre mot de passe fonctionne toujours.",
+    "pin": "Code PIN",
+    "newPin": "Nouveau code PIN",
+    "pinHint": "4 à 6 chiffres. Évitez les chiffres répétés et les suites comme 1234.",
+    "setPin": "Définir le code PIN",
+    "changePin": "Changer le code PIN",
+    "removePin": "Supprimer le code PIN",
+    "pinFormat": "Utilisez 4 à 6 chiffres.",
+    "pinSaved": "Votre code PIN est enregistré.",
+    "pinRemoved": "Votre code PIN est supprimé.",
+    "lockTitle": "Verrouillage de l'écran",
+    "lockBody": "Votre écran se verrouille après {{minutes}} minutes sans activité. Verrouillez-le vous-même quand vous vous absentez."
+  }
+}

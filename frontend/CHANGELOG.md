@@ -11,6 +11,25 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 ### Sprint 1 · Platform and onboarding
 
+- api-client: `masterData`, `onboarding`, `security` and `uploads` modules (XHR uploads with
+  progress, fetch fallback); `StaffMe.feature_flags` and `security`; `session_locked` error code;
+  a `headers` request option for `Idempotency-Key`. MSW mocks for every S1 endpoint (uploads clean
+  after two polls, `eicar` infected, 10 MB limit, mock PIN `4826`, `mock-resume-token`).
+- ui: DataTable (server sorting and pagination, `aria-sort`, filter chips, densities remembered,
+  states, card list under 640 px), SidePanel, Dialog and ConfirmDialog, Tabs, SwitchField,
+  TextareaField, Stepper, FileUpload, DocumentViewer (images and lazily loaded pdf.js) and Timeline.
+- staff-web `lock`: idle lock after `lock_after_seconds` with a 60 s warning, lock screen (PIN or
+  password, attempts left, switch user, cross-tab sync, shown alone on reload), step-up dialog
+  that retries the action once, `/account/security` (PIN), Lock and Security in the user menu.
+- patient-web `facilityApplication`: `/for-facilities`, start form, five-step wizard with
+  autosave, location cascade, document uploads with scan status, reviewer feedback, "continue
+  later", resume links and the submitted page.
+- staff-web `platform`: overview, applications pipeline and review (documents, verdicts, notes,
+  history, request changes, approve, reject), facilities (status actions with reasons, licences,
+  history, feature flags), master data (tables, rw/en/fr editor, retire and restore, history, CSV
+  import preview and confirm) and feature flags. Navigation entries for platform admins only.
+- Dependencies: Radix dialog, tabs and switch; `@tanstack/react-table` 8; `pdfjs-dist` 6.
+
 ### Sprint 3 · Patients and identity
 
 ### Sprint 9 · Notifications

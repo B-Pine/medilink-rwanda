@@ -94,6 +94,7 @@ Status: v0.1 · Process and Definition of Done: [roadmap README](README.md) · T
 - **staff-web:** sounds for queue events (optional), announcements composer (facility), platform announcements (super admin)
 
 ### S10 · Disputes, help and reports
+- **Delivered in two parts** ([waves](README.md#waves-sprints-built-in-parallel)): part 1 (help center and support requests) in Wave 2; part 2 (everything else below) in Wave 6.
 - **patient-web:** "Report a problem" wizard from any item, dispute timeline, help center, ratings (P2-ready)
 - **staff-web:**
   - dispute handling (thread, internal notes, evidence view of the audit trail, outcome actions)

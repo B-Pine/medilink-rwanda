@@ -97,12 +97,14 @@ RLS is the second wall behind the policy layer ([security 04](../security/04-aut
 
 ### 3.2 Request contexts
 
-Security 04 defines the staff context (`app.facility_id`) and the patient policy (`app.account_id`). Patients, the public site, display screens, platform admins and background jobs also touch facility-owned tables, so this design adds an **audience** setting. All values are set with `set_config(…, true)` (transaction-local) at the start of the request or task. A missing value means no rows (fail closed).
+Security 04 defines the staff context (`app.facility_id`) and the patient policy (`app.user_id`). Patients, the public site, display screens, platform admins and background jobs also touch facility-owned tables, so this design adds an **audience** setting. All values are set with `set_config(…, true)` (transaction-local) at the start of the request or task. A missing value means no rows (fail closed).
+
+> **Implemented so far (Sprint 0):** `app.user_id` and `app.facility_id`, set by `TenantContextMiddleware` and `rls_context()` (`backend/medilink/tenancy/rls.py`). The `app.audience` setting below is still a proposal (open decision D2, §7) and must be agreed before the first patient-written facility table (S5).
 
 | Context | Settings | Rows visible |
 |---|---|---|
-| Staff request | `app.audience = 'staff'`, `app.facility_id` (active facility), `app.account_id` | Rows of the active facility |
-| Patient request | `app.audience = 'patient'`, `app.account_id`; for a write to a facility table, also `app.facility_id` of the target facility | Own and dependents' rows (policy through `patients_patient_link`) |
+| Staff request | `app.audience = 'staff'`, `app.facility_id` (active facility), `app.user_id` | Rows of the active facility |
+| Patient request | `app.audience = 'patient'`, `app.user_id`; for a write to a facility table, also `app.facility_id` of the target facility | Own and dependents' rows (policy through `patients_patient_link`) |
 | Public request | `app.audience = 'public'`; `app.facility_id` of a **live** facility resolved from its slug | The public read model, plus C0 configuration of that one facility through public serializers |
 | Display device | `app.audience = 'display'`, `app.facility_id` from the display link | Ticket numbers and rooms of that facility |
 | Platform request | `app.audience = 'platform'`, `app.facility_id` of the object being handled, set **after** the platform policy check | One facility at a time |
@@ -122,13 +124,13 @@ CREATE POLICY facility_isolation ON visits_ticket
 CREATE POLICY patient_own_rows ON visits_ticket FOR SELECT
   USING (current_setting('app.audience', true) = 'patient'
          AND patient_id IN (SELECT patient_id FROM patients_patient_link
-                            WHERE account_id = NULLIF(current_setting('app.account_id', true), '')::uuid
+                            WHERE account_id = NULLIF(current_setting('app.user_id', true), '')::uuid
                               AND revoked_at IS NULL));
 ```
 
 - Tables that patients write (bookings, slot holds, reason-for-visit symptoms, dispute messages and evidence, patient uploads) get `FOR INSERT` / `FOR UPDATE` policies that check both `facility_id` and the patient link.
 - C0 configuration tables (departments, services, service points, opening hours, calendar events, public tariff items, insurer rules, slots, duty status for queue load) get a `FOR SELECT` policy for `app.audience IN ('public', 'display')`.
-- `tenancy_facility_membership` also has an `account_own_memberships` policy (`user_id = app.account_id`), so login can list a user's facilities before a facility is chosen.
+- `tenancy_facility_membership` also has an `account_own_memberships` policy (`user_id = app.user_id`), so login can list a user's facilities before a facility is chosen.
 - Views use `security_invoker = true`.
 
 ### 3.4 Cross-facility checks without breaking isolation
@@ -179,9 +181,9 @@ Legend for the summary tables: **RLS** ✓ = facility-owned with forced RLS · *
 
 | Table | Purpose | RLS | Class | Mutability | Retention | Sprint |
 |---|---|---|---|---|---|---|
-| `core_idempotency_key` | Results of `Idempotency-Key` requests | — | C1 | Append-only | R-TMP (24 h) | S0 |
+| `core_idempotency_key` | Results of `Idempotency-Key` requests (not built in S0; S1 and S3 store keys on the created row, [S1-D6](contracts/sprint-01-platform-onboarding.md#28-decisions-and-deviations)) | — | C1 | Append-only | R-TMP (24 h) | S4 |
 | `core_outbox_event` | Domain events written in the same transaction (transactional outbox) for notifications, sockets, reports | — | C1 | Append-only | R-TMP (7 days after publishing) | S4 |
-| `core_feature_flag` | Feature flags per facility (NFR-OPS-07) | — | C1 | Mutable | R-OPS | S0 |
+| `core_feature_flag` | Feature flags per facility (NFR-OPS-07). **Replaced** by `onboarding_feature_flag` + `onboarding_facility_feature_flag` ([S1-D4](contracts/sprint-01-platform-onboarding.md#28-decisions-and-deviations)) | — | C1 | Mutable | R-OPS | S1 |
 
 | Table | Key columns |
 |---|---|
@@ -218,7 +220,7 @@ erDiagram
 | `accounts_clinician_profile` | Licence council and number | — | C2 | Mutable | R-ACCT, kept while authored records exist | S2 |
 | `tenancy_organization` | Legal owner of facilities | — | C1 | Mutable | R-OPS | S0 |
 | `tenancy_facility` | The tenant | — (it is the tenant) | C1 (public fields C0) | State machine | R-OPS | S0 |
-| `tenancy_facility_status_event` | Facility status history | — | C1 | Append-only | R-AUD | S1 |
+| `tenancy_facility_status_event` | Facility status history. Built as `onboarding_facility_status_event` ([S1-D2](contracts/sprint-01-platform-onboarding.md#28-decisions-and-deviations)) | — | C1 | Append-only | R-AUD | S1 |
 | `tenancy_facility_warning` | Warnings from dispute decisions | — | C1 | Append-only | R-DSP | S10 |
 | `tenancy_role` | Facility roles (seeded) | — | C1 | Versioned (seeded) | R-MD | S0 |
 | `tenancy_permission` | Permission codes (seeded) | — | C1 | Versioned (seeded) | R-MD | S0 |
@@ -309,7 +311,7 @@ erDiagram
 
 | Table | Purpose | RLS | Class | Mutability | Retention | Sprint |
 |---|---|---|---|---|---|---|
-| `facilities_application` | Facility application (before a tenant exists) | — | C2 | State machine | R-APP | S1 |
+| `facilities_application` | Facility application (before a tenant exists). **S1 builds the application tables as `onboarding_application`, `onboarding_application_document`, `onboarding_application_event`, and licences as `onboarding_facility_licence` without RLS** ([S1-D1, S1-D3](contracts/sprint-01-platform-onboarding.md#28-decisions-and-deviations)); the S1 contract §2.2 has the columns | — | C2 | State machine | R-APP | S1 |
 | `facilities_application_document` | Documents attached to an application | — | C2 | Mutable until submitted | R-APP | S1 |
 | `facilities_application_event` | Status changes, verification notes, item comments | — | C2 | Append-only | R-APP | S1 |
 | `facilities_licence` | Operating licences with expiry | ✓ | C1 | Versioned | R-OPS | S1 |
@@ -577,7 +579,7 @@ erDiagram
 
 | Table | Purpose | RLS | Class | Mutability | Retention | Sprint |
 |---|---|---|---|---|---|---|
-| `documents_file` | Every stored file (object storage metadata) | ✓ for facility rows; `owner_kind` policies for the rest | C3 | Append-only (+ scan status) | Follows the referencing document | S1 |
+| `documents_file` | Every stored file (object storage metadata). **Built in S1 as `uploads_file`** with `purpose`, generic `owner_kind`/`owner_id` and `data_class` ([S1-D5](contracts/sprint-01-platform-onboarding.md#28-decisions-and-deviations)) | ✓ for facility rows; `owner_kind` policies for the rest | C3 | Append-only (+ scan status) | Follows the referencing document | S1 |
 | `documents_document` | Generated and uploaded documents | ✓ for facility rows + patient policy | C3 | Versioned | R-CLIN (clinical), R-FIN (receipts), R-ACCT (patient non-clinical uploads, owner may delete), R-APP (applications) | S7 (S1 for application files) |
 | `documents_document_version` | Versions; superseded kept | ✓ for facility rows | C3 | Append-only | As the document | S7 |
 | `documents_verification_record` | Public verification projection | — | C1 (C3 in `details_enc`) | Mutable (status) | As the document | S7 |
@@ -757,7 +759,7 @@ Designed when their phase is planned, following the same conventions: cross-faci
 
 | # | Question | Decide in |
 |---|---|---|
-| D1 | **Master data writes:** security 04 makes master data read-only for the app role, but super admins edit it through the platform API. Options: a separate database role used only by platform endpoints, or `SECURITY DEFINER` write functions. | S1 contract |
+| D1 | **Decided in the [S1 contract](contracts/sprint-01-platform-onboarding.md#26-row-level-security-data-classes-and-master-data-writes) §2.6:** the app role keeps `INSERT`/`UPDATE` on master data, only `medilink.masterdata.services` writes it, `DELETE` is revoked. Original question: **Master data writes:** security 04 makes master data read-only for the app role, but super admins edit it through the platform API. Options: a separate database role used only by platform endpoints, or `SECURITY DEFINER` write functions. | S1 contract |
 | D2 | **Audience setting for RLS** (§3.2) extends security 04 §4. Agree it and update security 04 before the first patient-written facility table (S5). | S3 / S5 |
 | D3 | **Public reads:** search uses the `facilities_public_listing` read model; per-facility pages read C0 tables with the facility's context. Confirm, or move all public reads to read models. | S5 contract |
 | D4 | **Platform access to facility rows** (escalated disputes, break-glass, exports) sets the object's facility context after the platform check. Confirm, including how platform lists across facilities are built (projection tables or one query per facility). | S6 / S10 |

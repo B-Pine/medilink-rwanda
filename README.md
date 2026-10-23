@@ -12,7 +12,7 @@ Facilities onboard their own staff and run the whole visit electronically:
 - billing and receipts
 - disputes
 
-> Status: **Sprint 0 (Foundations) done** (`backend-v0.1.0`, `frontend-v0.1.0`); Sprint 1 next. Analysis, design research, security and architecture are documented. Phase 1 is a web platform; frontend and backend are hosted separately. The mobile app, SMS, WhatsApp and USSD follow later.
+> Status: **Sprint 0 (Foundations) done** (`backend-v0.1.0`, `frontend-v0.1.0`); Wave 1 next: S1 (platform and onboarding), S3 (patients and identity) and S9 (notification engine), built in parallel from their [sprint contracts](docs/architecture/contracts/README.md). Analysis, design research, security and architecture are documented. Phase 1 is a web platform; frontend and backend are hosted separately. The mobile app, SMS, WhatsApp and USSD follow later.
 
 ## Documentation
 

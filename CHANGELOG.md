@@ -32,6 +32,14 @@ This root changelog covers documentation and repository-wide changes (CI, toolin
 
 ### Fixed
 
+- Documentation brought in line with the Sprint 0 code and the Wave 1 contracts:
+  - API README §4 lists the 31 permission codes Sprint 0 actually seeded, plus the codes contracted by S3 and S9; the catalogue uses the seeded names (`patient.register`, `records.import`) and drops † from seeded codes
+  - API catalogue: S1, S3 and S9 marked Contracted; PIN unlock and feature flags moved out of "Not yet scheduled"
+  - row-level security setting named `app.user_id` (as in the code) in the database design and security 04; `app.audience` marked as the open proposal D2
+  - database design notes the S1 table names (`onboarding_*`, `uploads_file`), `core_idempotency_key` moved to S4, `core_feature_flag` replaced, D1 decided
+  - status lines in `README.md` and `docs/README.md` say Sprint 0 is done and Wave 1 is next
+  - S10 explained as two parts (Wave 2 and Wave 6) in the roadmaps
+  - bug report template lists phase-1 channels; CODEOWNERS notes that `/infra/` is for future infrastructure code
 - Documentation inconsistencies found during review:
   - permission matrix: the receptionist requests merges and raises counter disputes, and the facility admin approves merges
   - NFR-UX-03 now says WCAG 2.2 AA

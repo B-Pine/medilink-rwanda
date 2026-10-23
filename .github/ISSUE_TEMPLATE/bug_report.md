@@ -11,7 +11,7 @@ labels: type:bug
 **Steps to reproduce**
 1.
 
-**Where**: patient app / staff dashboard / WhatsApp / USSD / API
+**Where**: patient app / staff app / waiting-room display / email / API
 **Device and network** (if relevant):
 
 > Do not paste real patient data or screenshots containing it.

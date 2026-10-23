@@ -9,15 +9,15 @@ Sprints and requirements follow the [backend](../roadmap/backend.md) and [fronte
 | Sprint | Theme | Status |
 |---|---|---|
 | [S0](#s0--foundations) | Foundations | Implemented (backend-v0.1.0) |
-| [S1](#s1--platform-and-onboarding) | Platform and onboarding | Planned |
+| [S1](#s1--platform-and-onboarding) | Platform and onboarding | Contracted ([contract](../architecture/contracts/README.md)); rows below are the plan, the contract wins |
 | [S2](#s2--facility-setup-and-staff) | Facility setup and staff | Planned |
-| [S3](#s3--patients-and-identity) | Patients and identity | Planned |
+| [S3](#s3--patients-and-identity) | Patients and identity | Contracted ([contract](../architecture/contracts/README.md)); rows below are the plan, the contract wins |
 | [S4](#s4--visits-and-the-live-queue) | Visits and the live queue | Planned |
 | [S5](#s5--booking-remote-join-and-calendars) | Booking, remote join and calendars | Planned |
 | [S6](#s6--clinical-record-and-history) | Clinical record and history | Planned |
 | [S7](#s7--pharmacy-and-documents) | Pharmacy and documents | Planned |
 | [S8](#s8--billing-and-payments) | Billing and payments | Planned |
-| [S9](#s9--notifications) | Notifications | Planned |
+| [S9](#s9--notifications) | Notifications | Contracted ([contract](../architecture/contracts/README.md)); rows below are the plan, the contract wins |
 | [S10](#s10--disputes-help-and-reports) | Disputes, help and reports | Planned |
 | [S11](#s11--hardening-and-pilot-readiness) | Hardening and pilot readiness | Planned |
 | [—](#not-yet-scheduled) | Not yet scheduled | Planned |
@@ -154,11 +154,11 @@ Requirements: FR-ONB-04..07, 09; FR-SCH-05..06; FR-BIL-02, 05; FR-ACC-05..07.
 | `GET`, `PATCH` | `/api/v1/staff/service-points/{id}/` | Edit or retire a service point | `facility.configure` | FR-ONB-04 | Ver | Planned |
 | `GET`, `POST` | `/api/v1/staff/calendar-events/` | Closures, holiday overrides, Umuganda behaviour, special days | `facility.configure` | FR-SCH-05 | Closures that hit bookings start the disruption flow (S5) | Planned |
 | `PATCH`, `DELETE` | `/api/v1/staff/calendar-events/{id}/` | Edit or remove a future event | `facility.configure` | FR-SCH-05 | Soft delete; past events kept | Planned |
-| `GET`, `POST` | `/api/v1/staff/schedule-templates/` | Doctor or service weekly blocks: service, service point, slot length, capacity, bookable share | `schedule.manage` † (receptionist: read) | FR-SCH-06, FR-ONB-06 | Response lists cross-facility conflicts as time ranges only, never the other facility | Planned |
-| `GET`, `PATCH`, `DELETE` | `/api/v1/staff/schedule-templates/{id}/` | Edit or end a block | `schedule.manage` † | FR-SCH-06 | Ver; affects future unbooked slots only | Planned |
-| `GET`, `POST` | `/api/v1/staff/schedule-exceptions/` | Leave, training, extra sessions | `schedule.manage` †; doctors: own leave requests | FR-SCH-06 | Doctor requests start as `requested` | Planned |
-| `PATCH` | `/api/v1/staff/schedule-exceptions/{id}/` | Edit an exception | `schedule.manage` † | FR-SCH-06 | Ver | Planned |
-| `POST` | `/api/v1/staff/schedule-exceptions/{id}/approve/` | Approve a leave request | `schedule.manage` † | FR-SCH-06 | Approved leave in the future feeds the disruption flow | Planned |
+| `GET`, `POST` | `/api/v1/staff/schedule-templates/` | Doctor or service weekly blocks: service, service point, slot length, capacity, bookable share | `schedule.manage` (receptionist: read) | FR-SCH-06, FR-ONB-06 | Response lists cross-facility conflicts as time ranges only, never the other facility | Planned |
+| `GET`, `PATCH`, `DELETE` | `/api/v1/staff/schedule-templates/{id}/` | Edit or end a block | `schedule.manage` | FR-SCH-06 | Ver; affects future unbooked slots only | Planned |
+| `GET`, `POST` | `/api/v1/staff/schedule-exceptions/` | Leave, training, extra sessions | `schedule.manage`; doctors: own leave requests | FR-SCH-06 | Doctor requests start as `requested` | Planned |
+| `PATCH` | `/api/v1/staff/schedule-exceptions/{id}/` | Edit an exception | `schedule.manage` | FR-SCH-06 | Ver | Planned |
+| `POST` | `/api/v1/staff/schedule-exceptions/{id}/approve/` | Approve a leave request | `schedule.manage` | FR-SCH-06 | Approved leave in the future feeds the disruption flow | Planned |
 | `GET`, `POST` | `/api/v1/staff/tariff-items/` | Price list: services, procedures, medicines, other charges | `facility.configure` | FR-BIL-05 | Step-up; amounts as `*_rwf` | Planned |
 | `GET`, `PATCH` | `/api/v1/staff/tariff-items/{id}/` | Change a price from a date | `facility.configure` | FR-BIL-05 | Step-up; new version with `valid_from`; existing bills never change | Planned |
 | `GET`, `POST` | `/api/v1/staff/insurer-rules/` | Accepted insurers: services, patient share, referral required, exclusions, ceiling | `facility.configure` | FR-BIL-02 | Step-up | Planned |
@@ -221,20 +221,20 @@ Requirements: FR-PAT-01..09, 13, 14; FR-BIL-01; FR-SEC-08, 10. Security: field-l
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `POST` | `/api/v1/staff/patients/search/` | Find a patient by name, phone, national ID, file number, MediLink number | `patients.register` † | FR-PAT-09, FR-PAT-04 | Criteria in the body; national ID matched by blind index; RL: search; Audit | Planned |
-| `POST` | `/api/v1/staff/patients/duplicate-checks/` | Suggest likely matches before registering | `patients.register` † | FR-PAT-05 | Same national ID, or similar name + date of birth + phone | Planned |
-| `POST` | `/api/v1/staff/patients/` | Register a walk-in with minimum fields and spoken consent | `patients.register` † | FR-PAT-04, FR-PAT-01, FR-SEC-04 | Idem; creates patient + facility patient record | Planned |
-| `GET`, `PATCH` | `/api/v1/staff/patients/{id}/` | Facility patient record (file number, contacts, reception notes) | `patients.register` † | FR-PAT-01, FR-PAT-07 | Role-specific serializer; Ver | Planned |
-| `POST` | `/api/v1/staff/patients/{id}/reveal-identifier/` | Unmask the national ID | `patients.register` † | FR-SEC-10 | Reason required; Audit | Planned |
+| `POST` | `/api/v1/staff/patients/search/` | Find a patient by name, phone, national ID, file number, MediLink number | `patient.register` | FR-PAT-09, FR-PAT-04 | Criteria in the body; national ID matched by blind index; RL: search; Audit | Planned |
+| `POST` | `/api/v1/staff/patients/duplicate-checks/` | Suggest likely matches before registering | `patient.register` | FR-PAT-05 | Same national ID, or similar name + date of birth + phone | Planned |
+| `POST` | `/api/v1/staff/patients/` | Register a walk-in with minimum fields and spoken consent | `patient.register` | FR-PAT-04, FR-PAT-01, FR-SEC-04 | Idem; creates patient + facility patient record | Planned |
+| `GET`, `PATCH` | `/api/v1/staff/patients/{id}/` | Facility patient record (file number, contacts, reception notes) | `patient.register` | FR-PAT-01, FR-PAT-07 | Role-specific serializer; Ver | Planned |
+| `POST` | `/api/v1/staff/patients/{id}/reveal-identifier/` | Unmask the national ID | `patient.register` | FR-SEC-10 | Reason required; Audit | Planned |
 | `GET`, `POST` | `/api/v1/staff/patients/{id}/insurance-profiles/` | Insurance cards captured at the desk | `queue.operate` | FR-BIL-01 | Card photo upload as in patient API | Planned |
-| `POST` | `/api/v1/staff/patients/{id}/documents/` | Upload ID or insurance card photo | `documents.upload` † | FR-DOC-03 | `multipart` | Planned |
+| `POST` | `/api/v1/staff/patients/{id}/documents/` | Upload ID or insurance card photo | `documents.upload` | FR-DOC-03 | `multipart` | Planned |
 | `GET`, `POST` | `/api/v1/staff/patients/{id}/allergies/` | Allergies seen and recorded by staff | Read: clinical roles and pharmacist · Write: `clinical.write` | FR-PAT-08 | | Planned |
 | `POST` | `/api/v1/staff/patients/{id}/allergies/{allergy_id}/verify/` | Confirm or refute a patient-reported allergy | `clinical.write` | FR-PAT-08 | | Planned |
 | `GET`, `POST` | `/api/v1/staff/patients/{id}/conditions/` | Chronic conditions | `clinical.write` | FR-PAT-08 | | Planned |
 | `POST` | `/api/v1/staff/patients/{id}/conditions/{condition_id}/verify/` | Confirm or refute a condition | `clinical.write` | FR-PAT-08 | | Planned |
-| `POST` | `/api/v1/staff/patients/{id}/consents/` | Record consent given at the desk | `patients.register` † | FR-SEC-04 | Channel `reception_spoken`; recorded by | Planned |
-| `POST` | `/api/v1/staff/patients/{id}/claim-confirmations/` | Confirm a record claim after an in-person ID check | `patients.register` † | FR-PAT-06 | Audit | Planned |
-| `GET`, `POST` | `/api/v1/staff/merge-requests/` | Request a merge of duplicates in this facility | `patients.merge_request` † | FR-PAT-05 | | Planned |
+| `POST` | `/api/v1/staff/patients/{id}/consents/` | Record consent given at the desk | `patient.register` | FR-SEC-04 | Channel `reception_spoken`; recorded by | Planned |
+| `POST` | `/api/v1/staff/patients/{id}/claim-confirmations/` | Confirm a record claim after an in-person ID check | `patient.register` | FR-PAT-06 | Audit | Planned |
+| `GET`, `POST` | `/api/v1/staff/merge-requests/` | Request a merge of duplicates in this facility | `patients.merge_request` | FR-PAT-05 | | Planned |
 | `POST` | `/api/v1/staff/merge-requests/{id}/approve/` | Approve and run the merge | `patients.merge_approve` † | FR-PAT-05 | Step-up; requester ≠ approver; Audit | Planned |
 | `POST` | `/api/v1/staff/merge-requests/{id}/reject/` | Reject a merge request | `patients.merge_approve` † | FR-PAT-05 | Reason required | Planned |
 | `POST` | `/api/v1/staff/merge-requests/{id}/undo/` | Reverse a merge | `patients.merge_approve` † | FR-PAT-05 | Step-up; Audit | Planned |
@@ -262,19 +262,19 @@ Dependency: the roadmap puts check-in of booked patients and the Expected list (
 | `GET` | `/api/v1/staff/visits/` | Today board: on-site visits by service and stage, with flags | `queue.operate`; doctors read | FR-QUE-01, FR-QUE-02 | Filters `date`, `service`, `stage`, `status`; Expected list comes from bookings (S5) | Planned |
 | `POST` | `/api/v1/staff/visits/` | Walk-in: create the visit and check in → first ticket | `queue.operate` | FR-QUE-01, FR-QUE-03 | Idem; one ticket even if pressed twice | Planned |
 | `GET` | `/api/v1/staff/visits/{id}/` | Visit with stages, tickets and timeline | Role-specific | FR-QUE-01 | Receptionist view excludes clinical fields | Planned |
-| `POST` | `/api/v1/staff/visits/{id}/complete/` | End the visit | `queue.call` † or `queue.operate` | FR-QUE-01, FR-CLN-05 | `422` if the consultation is unsigned (from S6) | Planned |
-| `GET` | `/api/v1/staff/tickets/` | Queue of a service and stage in calling order | `queue.operate`, `queue.call` † | FR-QUE-05 | Filters `service`, `stage`, `state`, `assigned_to=me` | Planned |
-| `GET` | `/api/v1/staff/tickets/{id}/` | One ticket | `queue.operate`, `queue.call` † | FR-QUE-09 | | Planned |
-| `GET` | `/api/v1/staff/tickets/{id}/events/` | Ticket state history (who, when, reason, device) | `queue.operate`, `queue.call` † | FR-QUE-09 | Append-only; evidence for disputes | Planned |
-| `POST` | `/api/v1/staff/services/{id}/call-next/` | Call the next patient by the ordering rules | `queue.call` † | FR-QUE-05, FR-QUE-06, FR-QUE-07, FR-QUE-08 | Atomic (`SELECT … FOR UPDATE SKIP LOCKED`); Idem; body: stage, service point | Planned |
-| `POST` | `/api/v1/staff/tickets/{id}/call/` | Call a specific ticket | `queue.call` † | FR-QUE-08 | Ver | Planned |
-| `POST` | `/api/v1/staff/tickets/{id}/recall/` | Call again | `queue.call` † | FR-QUE-09 | Ver | Planned |
-| `POST` | `/api/v1/staff/tickets/{id}/no-response/` | Mark no response; re-insert N places back (max 2), then left | `queue.call` †, `queue.operate` | FR-QUE-09 | Ver | Planned |
-| `POST` | `/api/v1/staff/tickets/{id}/start/` | Start service (creates the consultation draft from S6) | `queue.call` † | FR-QUE-09 | Ver; Idem | Planned |
-| `POST` | `/api/v1/staff/tickets/{id}/hold/` | On hold, awaiting results | `queue.call` † | FR-QUE-09 | Ver | Planned |
-| `POST` | `/api/v1/staff/tickets/{id}/return/` | Back from results with return priority | `queue.operate`, `queue.call` † | FR-QUE-05 | Ver | Planned |
-| `POST` | `/api/v1/staff/tickets/{id}/next-stage/` | Done here; ticket for the next stage (payment, pharmacy) | `queue.call` †, `queue.operate` | FR-QUE-04 | Ver; Idem | Planned |
-| `POST` | `/api/v1/staff/tickets/{id}/transfer/` | Move to another service, keeping the arrival time | `queue.operate`, `queue.call` † | FR-QUE-17 | Ver; reason | Planned |
+| `POST` | `/api/v1/staff/visits/{id}/complete/` | End the visit | `queue.call` or `queue.operate` | FR-QUE-01, FR-CLN-05 | `422` if the consultation is unsigned (from S6) | Planned |
+| `GET` | `/api/v1/staff/tickets/` | Queue of a service and stage in calling order | `queue.operate`, `queue.call` | FR-QUE-05 | Filters `service`, `stage`, `state`, `assigned_to=me` | Planned |
+| `GET` | `/api/v1/staff/tickets/{id}/` | One ticket | `queue.operate`, `queue.call` | FR-QUE-09 | | Planned |
+| `GET` | `/api/v1/staff/tickets/{id}/events/` | Ticket state history (who, when, reason, device) | `queue.operate`, `queue.call` | FR-QUE-09 | Append-only; evidence for disputes | Planned |
+| `POST` | `/api/v1/staff/services/{id}/call-next/` | Call the next patient by the ordering rules | `queue.call` | FR-QUE-05, FR-QUE-06, FR-QUE-07, FR-QUE-08 | Atomic (`SELECT … FOR UPDATE SKIP LOCKED`); Idem; body: stage, service point | Planned |
+| `POST` | `/api/v1/staff/tickets/{id}/call/` | Call a specific ticket | `queue.call` | FR-QUE-08 | Ver | Planned |
+| `POST` | `/api/v1/staff/tickets/{id}/recall/` | Call again | `queue.call` | FR-QUE-09 | Ver | Planned |
+| `POST` | `/api/v1/staff/tickets/{id}/no-response/` | Mark no response; re-insert N places back (max 2), then left | `queue.call`, `queue.operate` | FR-QUE-09 | Ver | Planned |
+| `POST` | `/api/v1/staff/tickets/{id}/start/` | Start service (creates the consultation draft from S6) | `queue.call` | FR-QUE-09 | Ver; Idem | Planned |
+| `POST` | `/api/v1/staff/tickets/{id}/hold/` | On hold, awaiting results | `queue.call` | FR-QUE-09 | Ver | Planned |
+| `POST` | `/api/v1/staff/tickets/{id}/return/` | Back from results with return priority | `queue.operate`, `queue.call` | FR-QUE-05 | Ver | Planned |
+| `POST` | `/api/v1/staff/tickets/{id}/next-stage/` | Done here; ticket for the next stage (payment, pharmacy) | `queue.call`, `queue.operate` | FR-QUE-04 | Ver; Idem | Planned |
+| `POST` | `/api/v1/staff/tickets/{id}/transfer/` | Move to another service, keeping the arrival time | `queue.operate`, `queue.call` | FR-QUE-17 | Ver; reason | Planned |
 | `POST` | `/api/v1/staff/tickets/{id}/set-priority/` | Priority or emergency flag with a reason | `queue.operate`; doctors for emergency | FR-QUE-05 | Ver; reason code required; Audit | Planned |
 | `POST` | `/api/v1/staff/tickets/{id}/reorder/` | Move in the queue with a reason | `queue.operate` | FR-QUE-10 | Ver; reason code + note; counted per staff member; Audit | Planned |
 | `POST` | `/api/v1/staff/tickets/{id}/step-out/` | Patient steps out (up to 30 min) | `queue.operate` | FR-QUE-09 | Ver | Planned |
@@ -366,7 +366,7 @@ Requirements: FR-SCH-01..15; FR-BIL-03; FR-AI-01.
 | `POST` | `/api/v1/staff/bookings/{id}/reschedule/` | Move to a held slot | `queue.operate` | FR-SCH-08 | Ver; Idem | Planned |
 | `POST` | `/api/v1/staff/bookings/{id}/reverse-no-show/` | Reverse an automatic no-show | `queue.operate` | FR-SCH-13 | Reason required; recalculates strikes; Audit | Planned |
 | `POST` | `/api/v1/staff/tickets/{id}/check-in/` | Check in a remote joiner who arrived | `queue.operate` | FR-QUE-07 | Idem | Planned |
-| `GET` | `/api/v1/staff/calendar-entries/` | Doctor calendar: schedule, leave, booked load | Doctor (own) or `schedule.manage` † | FR-SCH-12 | Own schedule only at the active facility; cross-facility view is an open point | Planned |
+| `GET` | `/api/v1/staff/calendar-entries/` | Doctor calendar: schedule, leave, booked load | Doctor (own) or `schedule.manage` | FR-SCH-12 | Own schedule only at the active facility; cross-facility view is an open point | Planned |
 | `GET`, `POST` | `/api/v1/staff/disruptions/` | Declare a disruption → affected bookings and remote tickets | `queue.operate`, `facility.configure` | FR-SCH-14 | | Planned |
 | `GET` | `/api/v1/staff/disruptions/{id}/` | Disruption with affected items and patient responses | `queue.operate`, `facility.configure` | FR-SCH-14 | | Planned |
 | `POST` | `/api/v1/staff/disruptions/{id}/resolve/` | Bulk actions: another doctor, next slot, cancel | `queue.operate`, `facility.configure` | FR-SCH-14 | Idem; patients notified at once | Planned |
@@ -388,7 +388,7 @@ Requirements: FR-CLN-01..09; FR-PAT-10..12; FR-SEC-03, 09. Prescription drafting
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `POST` | `/api/v1/staff/visits/{id}/vitals/` | Record vitals | `vitals.record` † | FR-CLN-01 | Append-only; corrections are new entries | Planned |
+| `POST` | `/api/v1/staff/visits/{id}/vitals/` | Record vitals | `vitals.record` | FR-CLN-01 | Append-only; corrections are new entries | Planned |
 | `POST` | `/api/v1/staff/visits/{id}/consultations/` | Start a consultation (also done by ticket `start`) | `clinical.write` | FR-CLN-01 | Idem | Planned |
 | `GET` | `/api/v1/staff/consultations/{id}/` | Consultation with addenda | `clinical.write`; treatment relationship | FR-CLN-01, FR-SEC-03 | `403 access_reason_required` outside the relationship; Audit | Planned |
 | `PATCH` | `/api/v1/staff/consultations/{id}/` | Autosave the draft | `clinical.write` (author) | FR-CLN-02 | Ver; draft only | Planned |
@@ -406,13 +406,13 @@ Requirements: FR-CLN-01..09; FR-PAT-10..12; FR-SEC-03, 09. Prescription drafting
 | `GET` | `/api/v1/staff/patients/{id}/history/` | History timeline with filters (type, diagnosis, dates) | `clinical.write`; treatment relationship | FR-PAT-09, FR-SEC-03 | < 2 s for 200 visits (NFR-PERF-05); Audit | Planned |
 | `GET` | `/api/v1/staff/patients/{id}/problem-summary/` | Active diagnoses, conditions, allergies, current medicines | `clinical.write`; pharmacist: allergies only | FR-PAT-09 | | Planned |
 | `POST` | `/api/v1/staff/patients/{id}/history-entries/` | Structured back-entry from paper, labelled historical | `clinical.write` | FR-PAT-12 | Shows "entered from paper by … on …" | Planned |
-| `POST` | `/api/v1/staff/patients/{id}/legacy-scans/` | Attach scanned paper records with document date and type | `documents.upload` † | FR-PAT-11 | `multipart`; upload pipeline | Planned |
+| `POST` | `/api/v1/staff/patients/{id}/legacy-scans/` | Attach scanned paper records with document date and type | `documents.upload` | FR-PAT-11 | `multipart`; upload pipeline | Planned |
 | `GET` | `/api/v1/staff/result-reviews/` | Results inbox | `clinical.write` | FR-CLN-09 | Filter `status=pending` | Planned |
 | `POST` | `/api/v1/staff/result-reviews/{id}/sign-off/` | Review and sign off an uploaded result | `clinical.sign` | FR-CLN-09 | Comment optional | Planned |
-| `GET`, `POST` | `/api/v1/staff/import-batches/` | Upload a patient register (CSV/Excel) → preview | `legacy.import` † | FR-PAT-10 | Step-up; `multipart`; Async | Planned |
-| `GET`, `PATCH` | `/api/v1/staff/import-batches/{id}/` | Preview: column mapping, validation errors, likely duplicates | `legacy.import` † | FR-PAT-10 | Ver | Planned |
-| `POST` | `/api/v1/staff/import-batches/{id}/confirm/` | Import the previewed rows | `legacy.import` † | FR-PAT-10 | Idem; Audit | Planned |
-| `POST` | `/api/v1/staff/import-batches/{id}/rollback/` | Roll back within 7 days if no visits are attached | `legacy.import` † | FR-PAT-10 | Step-up; Audit | Planned |
+| `GET`, `POST` | `/api/v1/staff/import-batches/` | Upload a patient register (CSV/Excel) → preview | `records.import` | FR-PAT-10 | Step-up; `multipart`; Async | Planned |
+| `GET`, `PATCH` | `/api/v1/staff/import-batches/{id}/` | Preview: column mapping, validation errors, likely duplicates | `records.import` | FR-PAT-10 | Ver | Planned |
+| `POST` | `/api/v1/staff/import-batches/{id}/confirm/` | Import the previewed rows | `records.import` | FR-PAT-10 | Idem; Audit | Planned |
+| `POST` | `/api/v1/staff/import-batches/{id}/rollback/` | Roll back within 7 days if no visits are attached | `records.import` | FR-PAT-10 | Step-up; Audit | Planned |
 
 ### Patient
 
@@ -451,7 +451,7 @@ Requirements: FR-PHA-01..05; FR-DOC-01..07. Visit summaries, prescriptions, sick
 | `GET` | `/api/v1/staff/drug-availabilities/` | Availability of catalogue drugs here | `pharmacy.dispense`, `clinical.write` | FR-PHA-04 | | Planned |
 | `PUT` | `/api/v1/staff/drug-availabilities/{drug_id}/` | Mark available or not available | `pharmacy.dispense` | FR-PHA-04 | | Planned |
 | `GET` | `/api/v1/staff/documents/` | Documents of a patient or visit | Role-specific | FR-DOC-01, FR-DOC-03 | Filters `patient`, `visit`, `kind`; restricted by role | Planned |
-| `POST` | `/api/v1/staff/documents/` | Upload a document (result, referral letter brought by the patient, scan) | `documents.upload` † | FR-DOC-03 | `multipart`; results go to the results inbox | Planned |
+| `POST` | `/api/v1/staff/documents/` | Upload a document (result, referral letter brought by the patient, scan) | `documents.upload` | FR-DOC-03 | `multipart`; results go to the results inbox | Planned |
 | `GET` | `/api/v1/staff/documents/{id}/` | Document metadata and versions | Role-specific | FR-DOC-02 | Superseded versions marked | Planned |
 | `POST` | `/api/v1/staff/documents/{id}/download-links/` | Short-lived signed link | Role-specific | FR-DOC-05 | 5 minutes on `files.medilink.rw`; Audit | Planned |
 | `POST` | `/api/v1/staff/documents/{id}/release/` | Mark released to the patient (printable by reception) | `clinical.sign` | FR-DOC-07 | | Planned |
@@ -609,17 +609,17 @@ Rectification of personal details uses `PATCH /api/v1/patient/profiles/{patient_
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `GET` | `/api/v1/staff/disputes/` | Facility disputes by status, type, deadline | `disputes.handle` †; others: assigned for comment | FR-DSP-02, FR-DSP-03 | Filter `overdue=true` | Planned |
+| `GET` | `/api/v1/staff/disputes/` | Facility disputes by status, type, deadline | `disputes.handle`; others: assigned for comment | FR-DSP-02, FR-DSP-03 | Filter `overdue=true` | Planned |
 | `POST` | `/api/v1/staff/disputes/` | Raise a dispute at the counter for a patient | `queue.operate` | FR-DSP-09 | Marked "raised at the counter"; see note below | Planned |
-| `GET` | `/api/v1/staff/disputes/{id}/` | Dispute with thread and internal notes | `disputes.handle` † | FR-DSP-04 | | Planned |
-| `GET` | `/api/v1/staff/disputes/{id}/evidence/` | Audit trail of the disputed item, in order | `disputes.handle` † | FR-DSP-05 | Frozen copy with hash | Planned |
-| `POST` | `/api/v1/staff/disputes/{id}/acknowledge/` | Acknowledge (starts the decision deadline) | `disputes.handle` † | FR-DSP-03 | | Planned |
-| `POST` | `/api/v1/staff/disputes/{id}/messages/` | Reply to the patient | `disputes.handle` † | FR-DSP-04 | | Planned |
-| `POST` | `/api/v1/staff/disputes/{id}/internal-notes/` | Note visible to handlers only | `disputes.handle` † | FR-DSP-04 | | Planned |
-| `POST` | `/api/v1/staff/disputes/{id}/comment-requests/` | Ask involved staff for comments | `disputes.handle` † | FR-DSP-04 | | Planned |
-| `POST` | `/api/v1/staff/disputes/{id}/comments/` | Involved staff member responds | `disputes.comment` † | FR-DSP-04, FR-DSP-08 | Involved staff can comment, never decide | Planned |
-| `POST` | `/api/v1/staff/disputes/{id}/request-info/` | Ask the patient for more information | `disputes.handle` † | FR-DSP-03 | | Planned |
-| `POST` | `/api/v1/staff/disputes/{id}/resolve/` | Decide and create linked actions (refund, bill correction, addendum request, strike removal, rebooking, disagreement statement) | `disputes.handle` † | FR-DSP-06, FR-DSP-07, FR-DSP-08 | Step-up; conflict-of-interest check; Audit | Planned |
+| `GET` | `/api/v1/staff/disputes/{id}/` | Dispute with thread and internal notes | `disputes.handle` | FR-DSP-04 | | Planned |
+| `GET` | `/api/v1/staff/disputes/{id}/evidence/` | Audit trail of the disputed item, in order | `disputes.handle` | FR-DSP-05 | Frozen copy with hash | Planned |
+| `POST` | `/api/v1/staff/disputes/{id}/acknowledge/` | Acknowledge (starts the decision deadline) | `disputes.handle` | FR-DSP-03 | | Planned |
+| `POST` | `/api/v1/staff/disputes/{id}/messages/` | Reply to the patient | `disputes.handle` | FR-DSP-04 | | Planned |
+| `POST` | `/api/v1/staff/disputes/{id}/internal-notes/` | Note visible to handlers only | `disputes.handle` | FR-DSP-04 | | Planned |
+| `POST` | `/api/v1/staff/disputes/{id}/comment-requests/` | Ask involved staff for comments | `disputes.handle` | FR-DSP-04 | | Planned |
+| `POST` | `/api/v1/staff/disputes/{id}/comments/` | Involved staff member responds | `disputes.comment` | FR-DSP-04, FR-DSP-08 | Involved staff can comment, never decide | Planned |
+| `POST` | `/api/v1/staff/disputes/{id}/request-info/` | Ask the patient for more information | `disputes.handle` | FR-DSP-03 | | Planned |
+| `POST` | `/api/v1/staff/disputes/{id}/resolve/` | Decide and create linked actions (refund, bill correction, addendum request, strike removal, rebooking, disagreement statement) | `disputes.handle` | FR-DSP-06, FR-DSP-07, FR-DSP-08 | Step-up; conflict-of-interest check; Audit | Planned |
 | `POST` | `/api/v1/staff/platform-disputes/` | Facility raises a dispute against the platform | `facility.configure` | FR-DSP-02 | Verification, suspension, subscription | Planned |
 | `GET` | `/api/v1/staff/reports/operations-today/` | Live operations board | `reports.view` | FR-RPT-02 | Polled or pushed via the queue socket | Planned |
 | `GET` | `/api/v1/staff/reports/daily-summary/` | Visits by source and service, waits (median, p90), no-shows, left without service | `reports.view` | FR-RPT-01, FR-RPT-03 | Filters date range, service, doctor | Planned |
@@ -629,7 +629,7 @@ Rectification of personal details uses `PATCH /api/v1/patient/profiles/{patient_
 | `GET` | `/api/v1/staff/reports/finance/` | Billed, collected, insurer share, waivers, voids, refunds, shift differences | `reports.view` | FR-RPT-03 | | Planned |
 | `GET` | `/api/v1/staff/reports/staff-accountability/` | Reorders, voids, overrides, waivers per staff member | `reports.view` | FR-RPT-03 | | Planned |
 | `GET` | `/api/v1/staff/reports/disputes/` | Open, overdue, by type, outcomes | `reports.view` | FR-RPT-03 | | Planned |
-| `GET` | `/api/v1/staff/reports/my-activity/` | Own shift or own activity | `reports.view_own` † | FR-RPT-03 | | Planned |
+| `GET` | `/api/v1/staff/reports/my-activity/` | Own shift or own activity | `reports.view_own` | FR-RPT-03 | | Planned |
 | `POST` | `/api/v1/staff/report-exports/` | Export a report to Excel or PDF | `reports.view` | FR-RPT-04 | Step-up; watermark; CSV-injection safe; Async; Audit | Planned |
 | `GET` | `/api/v1/staff/report-exports/{id}/` | Export status and link | `reports.view` (requester) | FR-RPT-04 | Link valid 15 minutes | Planned |
 | `GET` | `/api/v1/staff/audit-entries/` | Facility audit log | `audit.view` | FR-SEC-07 | Filters actor, object, action, dates | Planned |
@@ -690,11 +690,11 @@ Required by the analysis or the security documents, but not yet in a sprint plan
 | `POST` | `/api/v1/staff/auth/sessions/{id}/revoke/` | End one session | Staff session | FR-SEC-06 | Planned |
 | `GET` | `/api/v1/patient/auth/sessions/` | Own active sessions | Patient session | FR-SEC-06 | Planned |
 | `POST` | `/api/v1/patient/auth/sessions/{id}/revoke/` | End one session | Patient session | FR-SEC-06 | Planned |
-| `PUT` | `/api/v1/staff/auth/pin/` | Set the unlock PIN | Staff session + step-up | FR-SEC-06; security 03 §5 | Planned |
-| `POST` | `/api/v1/staff/auth/unlock/` | Unlock an idle-locked session with the PIN | Staff session (locked) | FR-SEC-06 | Planned |
+| `PUT` | `/api/v1/staff/auth/pin/` | Set the unlock PIN | Staff session + step-up | FR-SEC-06; security 03 §5 | Contracted in S1 |
+| `POST` | `/api/v1/staff/auth/unlock/` | Unlock an idle-locked session with the PIN | Staff session (locked) | FR-SEC-06 | Contracted in S1 |
 | `POST` | `/api/v1/staff/auth/password-change/` | Change own password | Staff session + step-up | security 03 §4 | Planned |
 | `POST` | `/api/v1/patient/auth/password-change/` | Change own password | Patient session + step-up | security 03 §4 | Planned |
 | `POST` | `/api/v1/staff/auth/passkeys/` | Register a passkey (mandatory for super admins before go-live) | Staff session + step-up | security 03 §1, security 14 | Planned |
 | `GET`, `POST` | `/api/v1/staff/devices/` | Register reception PCs as shared devices (no "trust this device") | `facility.configure` | security 03 §3, security 11 §3 | Planned |
 | `GET`, `POST` | `/api/v1/staff/staff-access-reviews/` | Quarterly confirmation of the staff list and roles | `staff.manage` | security 03 §7 | Planned |
-| `GET`, `PATCH` | `/api/v1/platform/feature-flags/` | Feature flags per facility | Platform admin | NFR-OPS-07 | Planned |
+| `GET`, `PATCH` | `/api/v1/platform/feature-flags/` | Feature flags per facility | Platform admin | NFR-OPS-07 | Contracted in S1 (`/platform/feature-flags/{code}/`, `/platform/facilities/{id}/feature-flags/{code}/`) |

@@ -20,8 +20,13 @@
     "@fontsource-variable/figtree": "catalog:",
     "@fontsource-variable/inter": "catalog:",
     "@phosphor-icons/react": "catalog:",
+    "@radix-ui/react-dialog": "catalog:",
     "@radix-ui/react-dropdown-menu": "catalog:",
-    "@radix-ui/react-slot": "catalog:"
+    "@radix-ui/react-slot": "catalog:",
+    "@radix-ui/react-switch": "catalog:",
+    "@radix-ui/react-tabs": "catalog:",
+    "@tanstack/react-table": "catalog:",
+    "pdfjs-dist": "catalog:"
   },
   "peerDependencies": {
     "i18next": "^26.0.0",

@@ -154,7 +154,7 @@ describe("facility onboarding", () => {
       preferred_language: "rw",
     });
     expect(app.missing_for_submit).toContain("documents.moh_licence");
-    let current = await api.onboarding.applicant.update(app.id, {
+    await api.onboarding.applicant.update(app.id, {
       version: app.version,
       facility: {
         facility_type: "private_clinic",
@@ -174,8 +174,8 @@ describe("facility onboarding", () => {
       number: "MOH/1",
       expires_on: "2030-01-01",
     });
-    current = await api.onboarding.applicant.get(app.id);
-    current = await api.onboarding.applicant.get(app.id); // second poll: scanned
+    await api.onboarding.applicant.get(app.id);
+    const current = await api.onboarding.applicant.get(app.id); // second poll: scanned
     const submitted = await api.onboarding.applicant.submit(app.id, current.version, "sub-1");
     expect(submitted.status).toBe("submitted");
 

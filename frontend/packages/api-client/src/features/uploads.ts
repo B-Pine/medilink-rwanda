@@ -87,7 +87,7 @@ export async function uploadFile<T>(client: ApiClient, options: UploadOptions): 
       if (event.lengthComputable) options.onProgress?.(event.loaded / event.total);
     };
     xhr.onload = () => {
-      let body: unknown = undefined;
+      let body: unknown;
       try {
         body = xhr.responseText ? JSON.parse(xhr.responseText) : undefined;
       } catch {

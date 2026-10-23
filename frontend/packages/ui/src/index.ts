@@ -52,6 +52,37 @@ export { cx } from "./utils/cx";
 
 // ---- New components (own files): exports ONLY between the sprint's markers ----
 // [S1]
+export { DataTable, PAGE_SIZES } from "./components/DataTable";
+export type {
+  ColumnDef,
+  DataTableLabels,
+  DataTableProps,
+  Density,
+  FilterChip,
+  SortingState,
+} from "./components/DataTable";
+export { ConfirmDialog, Dialog } from "./components/Dialog";
+export type { ConfirmDialogProps, DialogProps } from "./components/Dialog";
+export { DocumentViewer } from "./components/DocumentViewer";
+export type { DocumentViewerLabels, DocumentViewerProps } from "./components/DocumentViewer";
+export { FileUpload } from "./components/FileUpload";
+export type {
+  FileUploadItem,
+  FileUploadLabels,
+  FileUploadProps,
+  FileUploadStatus,
+} from "./components/FileUpload";
+export { SidePanel } from "./components/SidePanel";
+export type { SidePanelProps } from "./components/SidePanel";
+export { Stepper } from "./components/Stepper";
+export type { StepperProps, StepperStep, StepState } from "./components/Stepper";
+export { SwitchField } from "./components/Switch";
+export type { SwitchFieldProps } from "./components/Switch";
+export { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/Tabs";
+export { TextareaField } from "./components/TextareaField";
+export type { TextareaFieldProps } from "./components/TextareaField";
+export { formatKigaliTime, Timeline } from "./components/Timeline";
+export type { TimelineEvent, TimelineProps } from "./components/Timeline";
 // [/S1]
 // [S3]
 // [/S3]

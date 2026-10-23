@@ -90,7 +90,7 @@ function normaliseFields(fields: unknown): Record<string, string[]> {
 
 /** Build an ApiError from a non-2xx response, whatever its body looks like. */
 export async function parseErrorResponse(response: Response): Promise<ApiError> {
-  let body: unknown = null;
+  let body: unknown;
   try {
     const text = await response.text();
     body = text ? (JSON.parse(text) as unknown) : null;

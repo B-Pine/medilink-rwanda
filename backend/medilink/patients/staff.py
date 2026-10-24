@@ -186,6 +186,24 @@ def _registration_key(key: str | None) -> uuid.UUID | None:
         return uuid.uuid5(uuid.NAMESPACE_URL, f"medilink:registration:{key}")
 
 
+def is_staff_here(patient: Patient, facility_id: Any) -> bool:
+    """Contract §2.2: an account linked to the patient is an active member of the facility."""
+    from medilink.patients.models import PatientLink
+    from medilink.tenancy.models import FacilityMembership
+
+    accounts = PatientLink.objects.active().filter(patient=patient).values("account_id")
+    return FacilityMembership.objects.filter(
+        facility_id=facility_id, is_active=True, user_id__in=accounts
+    ).exists()
+
+
+def refresh_staff_flag(fp: FacilityPatient) -> None:
+    flag = is_staff_here(fp.patient, fp.facility_id)
+    if fp.is_staff_member != flag:
+        fp.is_staff_member = flag
+        FacilityPatient.objects.filter(pk=fp.pk).update(is_staff_member=flag)
+
+
 def _create_record(
     *, facility_id: Any, patient: Patient, file_number: str | None, actor: Any, key: Any = None
 ) -> FacilityPatient:
@@ -198,6 +216,7 @@ def _create_record(
                 first_visit_on=timezone.localdate(),
                 registered_by=actor,
                 registration_key=key,
+                is_staff_member=is_staff_here(patient, facility_id),
             )
     except IntegrityError:
         raise FieldConflict("file_number", FILE_NUMBER_TAKEN) from None

@@ -51,6 +51,9 @@ def _grant_functions(sender: Any = None, using: str = "default", **kwargs: Any) 
         current_user, exists = cursor.fetchone()
         if not exists or current_user == role:
             return
+        cursor.execute("SELECT to_regprocedure('patients_known_elsewhere(uuid, uuid)')")
+        if cursor.fetchone()[0] is None:  # migrated back below 0003
+            return
         quoted = connection.ops.quote_name(role)
         cursor.execute(
             f"GRANT EXECUTE ON FUNCTION patients_known_elsewhere(uuid, uuid) TO {quoted}"

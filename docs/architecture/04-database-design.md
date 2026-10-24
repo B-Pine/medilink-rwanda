@@ -104,7 +104,7 @@ Security 04 defines the staff context (`app.facility_id`) and the patient policy
 | Context | Settings | Rows visible |
 |---|---|---|
 | Staff request | `app.audience = 'staff'`, `app.facility_id` (active facility), `app.user_id` | Rows of the active facility |
-| Patient request | `app.audience = 'patient'`, `app.user_id`; for a write to a facility table, also `app.facility_id` of the target facility | Own and dependents' rows (policy through `patients_patient_link`) |
+| Patient request | `app.audience = 'patient'`, `app.user_id`; for a write to a facility table, also `app.facility_id` of the target facility | Own and dependents' rows (policy through `patients_patientlink`) |
 | Public request | `app.audience = 'public'`; `app.facility_id` of a **live** facility resolved from its slug | The public read model, plus C0 configuration of that one facility through public serializers |
 | Display device | `app.audience = 'display'`, `app.facility_id` from the display link | Ticket numbers and rooms of that facility |
 | Platform request | `app.audience = 'platform'`, `app.facility_id` of the object being handled, set **after** the platform policy check | One facility at a time |
@@ -123,7 +123,7 @@ CREATE POLICY facility_isolation ON visits_ticket
 -- Patients: own and dependents' rows, read only (writes get a narrower INSERT/UPDATE policy per table)
 CREATE POLICY patient_own_rows ON visits_ticket FOR SELECT
   USING (current_setting('app.audience', true) = 'patient'
-         AND patient_id IN (SELECT patient_id FROM patients_patient_link
+         AND patient_id IN (SELECT patient_id FROM patients_patientlink
                             WHERE account_id = NULLIF(current_setting('app.user_id', true), '')::uuid
                               AND revoked_at IS NULL));
 ```
@@ -158,8 +158,8 @@ Platform-wide tables (accounts, master data, patients and their health profile, 
 | FACILITY_APPLICATION_EVENT | `facilities_application_event` (with `facilities_application`) |
 | DEPARTMENT, SERVICE, SERVICE_POINT, CALENDAR_EVENT | `facilities_department`, `facilities_service`, `facilities_service_point`, `facilities_calendar_event` |
 | SERVICE_CATALOGUE_ITEM, INSURER, DRUG | `masterdata_service_catalogue_item`, `masterdata_insurer`, `masterdata_drug` |
-| PATIENT, PATIENT_LINK, PATIENT_IDENTIFIER, FACILITY_PATIENT | `patients_patient`, `patients_patient_link`, `patients_identifier`, `patients_facility_patient` |
-| ALLERGY, CONDITION, INSURANCE_PROFILE, CONSENT | `patients_allergy`, `patients_condition`, `patients_insurance_profile`, `patients_consent_record` |
+| PATIENT, PATIENT_LINK, PATIENT_IDENTIFIER, FACILITY_PATIENT | `patients_patient`, `patients_patientlink`, `patients_identifier`, `patients_facility_patient` |
+| ALLERGY, CONDITION, INSURANCE_PROFILE, CONSENT | `patients_allergy`, `patients_condition`, `patients_insurance_profile`, `patients_consentrecord` |
 | IMPORT_BATCH, PATIENT_MERGE | `patients_import_batch`, `patients_merge` |
 | SCHEDULE_TEMPLATE, SCHEDULE_EXCEPTION, SLOT, BOOKING, NO_SHOW_STRIKE, DISRUPTION | `scheduling_*` |
 | VISIT, TICKET, TICKET_EVENT, STRUCTURED_SYMPTOM | `visits_visit`, `visits_ticket`, `visits_ticket_event`, `visits_reason_symptom` |
@@ -347,58 +347,76 @@ erDiagram
 
 ### 5.5 Patients
 
+Built in S3 ([contract](contracts/sprint-03-patients.md) §2.1; migrations `patients.0002`–`0004` are the source of truth). S0 tables keep their Django names (`patients_patientlink`, `patients_consentrecord`); new tables use the names below.
+
 ```mermaid
 erDiagram
-    accounts_user ||--o{ patients_patient_link : "manages"
-    patients_patient_link }o--|| patients_patient : "self, guardian, delegate"
+    accounts_user ||--o{ patients_patientlink : "manages"
+    patients_patientlink }o--|| patients_patient : "self, guardian, delegate"
     patients_patient ||--o{ patients_identifier : "has"
     patients_patient ||--o{ patients_insurance_profile : "has"
     patients_patient ||--o{ patients_allergy : "has"
     patients_patient ||--o{ patients_condition : "has"
     patients_patient ||--o{ patients_medication : "takes"
-    patients_patient ||--o{ patients_health_attribute : "has"
+    patients_patient ||--o{ patients_health_attribute : "has (S6)"
     patients_patient ||--o{ patients_facility_patient : "known at"
     patients_facility_patient }o--|| tenancy_facility : "at"
-    patients_patient ||--o{ patients_consent_record : "gives"
+    patients_patient ||--o{ patients_consentrecord : "gives"
+    patients_patient ||--o{ patients_delegation_invite : "shared by code"
     patients_patient ||--o{ patients_merge : "merged in or out"
+    patients_merge ||--o{ patients_merge_event : "history"
+    patients_patient ||--o{ patients_record_claim : "claimed by"
+    patients_patient ||--o{ patients_audit_link : "audited"
     patients_import_batch ||--o{ patients_import_row : "contains"
     patients_import_batch ||--o{ patients_facility_patient : "created"
-    patients_patient ||--o{ patients_record_claim : "claimed by"
 ```
 
 | Table | Purpose | RLS | Class | Mutability | Retention | Sprint |
 |---|---|---|---|---|---|---|
-| `patients_patient` | Platform-wide person | — (patient policy) | C2 | Mutable | R-CLIN if clinical records exist, else R-ACCT | S0 (minimal), S3 |
-| `patients_identifier` | National ID, passport, refugee ID | — | C3 | Versioned | As the patient | S3 |
-| `patients_patient_link` | Account ↔ patient (self, guardian, delegate) | — | C2 | Versioned (revoke, never delete) | R-AUD | S0 |
-| `patients_consent_record` | Consents by kind and version | — | C2 | Append-only | R-AUD | S0 |
-| `patients_facility_patient` | The patient as known at one facility | ✓ | C2 | Mutable | R-CLIN | S3 |
+| `patients_patient` | Platform-wide person | — (reached through a facility record or an account link) | C2 | Mutable (`version`) | R-CLIN if clinical records exist, else R-ACCT | S0 (minimal), S3 |
+| `patients_identifier` | National ID, passport, refugee ID, birth certificate | — | C3 | Versioned (superseded, never deleted) | As the patient | S3 |
+| `patients_patientlink` | Account ↔ patient (self, guardian, delegate) | — | C2 | Versioned (revoke, never delete) | R-AUD | S0, S3 |
+| `patients_consentrecord` | Consents by kind and version | — | C2 | Append-only | R-AUD | S0, S3 |
+| `patients_facility_patient` | The patient as known at one facility | ✓ (forced) | C2 | Mutable (`version`) | R-CLIN | S3 |
+| `patients_delegation_invite` | One-time codes that share a profile | — | C2 | Single use | R-AUD | S3 |
 | `patients_allergy` | Allergies | — (patient-level safety data) | C3 | Versioned | R-CLIN | S3 |
-| `patients_condition` | Chronic conditions | — | C3 (C4 when restricted) | Versioned | R-CLIN | S3 |
+| `patients_condition` | Chronic conditions | — | C3 | Versioned | R-CLIN | S3 |
 | `patients_medication` | Long-term medicines | — | C3 | Versioned | R-CLIN | S3 |
-| `patients_health_attribute` | Blood group, pregnancy status | — | C3 | Append-only | R-CLIN | S3 |
-| `patients_insurance_profile` | Insurance cards | — | C3 | Mutable | R-ACCT (snapshots on bills follow R-FIN) | S3 |
-| `patients_merge` | Merge requests, execution and undo | ✓ (facility scope) | C2 | State machine | R-AUD | S3 |
+| `patients_health_attribute` | Blood group, pregnancy status | — | C3 | Append-only | R-CLIN | S6 (moved, contract D-13) |
+| `patients_insurance_profile` | Insurance cards | — | C3 | Mutable (`version`) | R-ACCT (snapshots on bills follow R-FIN) | S3 |
+| `patients_merge` | Merge requests, execution and undo | — (policy layer, contract D-6) | C2 | State machine | R-AUD | S3 |
+| `patients_merge_event` | Merge transitions | — | C2 | Append-only (trigger) | R-AUD | S3 |
 | `patients_record_claim` | Claims of walk-in records | — | C2 | State machine (light) | R-AUD | S3 |
+| `patients_audit_link` | Which audit entries are about which patient (access history) | — | C2 | Append-only (trigger) | R-AUD | S3 |
 | `patients_import_batch` | Legacy register imports | ✓ | C2 | State machine | R-AUD | S6 |
 | `patients_import_row` | Rows of an import | ✓ | C3 | Mutable until confirmed | Raw data purged after the rollback window; metadata R-AUD | S6 |
 
 | Table | Key columns |
 |---|---|
-| `patients_patient` | `medilink_number varchar(12)` **unique** (generated, never reused), `full_name varchar(200)` (one "Names" field), `preferred_name NULL`, `date_of_birth date NULL`, `is_birth_date_estimated boolean`, `sex varchar(8) NULL`, `phone_e164 varchar(16) NULL` (not unique), `email citext NULL`, `village_id NULL`, `address text NULL`, `emergency_contact jsonb NULL`, `created_via` (`self_signup`, `dependent`, `walk_in`, `import`, `phone_booking`), `merged_into_id NULL`. Indexes: GIN trigram on `full_name`; (`date_of_birth`); (`phone_e164`). |
-| `patients_identifier` | `patient_id`, `kind` (`national_id`, `passport`, `refugee_id`, `birth_certificate`), `issuing_country char(2)`, `value_enc bytea`, `value_bidx bytea`, `value_last4 varchar(4)` (masked display), `verified_at NULL`, `verified_by_id NULL`. **Unique** (`kind`, `issuing_country`, `value_bidx`). Insurance numbers and file numbers live in their own tables. |
-| `patients_patient_link` | `account_id` → `accounts_user`, `patient_id`, `relationship` (`self`, `guardian`, `delegate`), `consent_record_id NULL`, `granted_at`, `revoked_at NULL`. **Unique** (`account_id`, `patient_id`) where not revoked; **unique** (`account_id`) where `relationship = 'self'` and not revoked. Index (`account_id`) where not revoked (used by every patient policy). |
-| `patients_consent_record` | `user_id NULL`, `patient_id NULL`, `kind` (`terms`, `privacy`, `care`, `research`, `notifications`, `location`, `sharing`, `guardian`), `version varchar(20)`, `granted boolean`, `granted_at`, `channel` (`web`, `reception_spoken`, `email`), `recorded_by_id NULL`, `facility_id NULL`. CHECK `user_id` or `patient_id` set. Index (`user_id`, `kind`, `granted_at` desc). |
-| `patients_facility_patient` | `patient_id`, `file_number varchar(40) NULL`, `first_visit_on date`, `reception_notes text NULL`, `is_staff_member boolean` (staff-as-patient flag, [security 04](../security/04-authorization-and-tenant-isolation.md) §3), `import_batch_id NULL`. **Unique** (`facility_id`, `patient_id`); **unique** (`facility_id`, `file_number`) where not null. |
-| `patients_allergy` | `patient_id`, `category` (`drug`, `food`, `other`), `drug_id NULL`, `drug_class NULL`, `substance_text`, `reaction text`, `severity`, `source` (`patient`, `clinician`, `legacy`), `verification_status` (`unverified`, `verified`, `refuted`), `verified_by_membership_id NULL`, `verified_at NULL`, `recorded_facility_id NULL`, `entered_in_error_at NULL`. Index (`patient_id`) where not entered in error. |
-| `patients_condition` | `patient_id`, `code_system`, `code`, `display` (snapshot), `status` (`active`, `resolved`), `onset_date NULL`, `source`, `verification_status`, `is_restricted boolean`, `restricted_details_enc bytea NULL`, `entered_in_error_at NULL`. |
-| `patients_medication` | `patient_id`, `drug_id NULL`, `drug_display` (snapshot), `dose_text`, `source`, `verification_status`, `started_on NULL`, `stopped_on NULL`. |
-| `patients_health_attribute` | `patient_id`, `kind` (`blood_group`, `pregnancy`), `value varchar(20)`, `due_date NULL`, `expires_at NULL` (pregnancy expires after the due date), `source`, `recorded_by_membership_id NULL`, `recorded_at`. Latest row per kind wins. |
-| `patients_insurance_profile` | `patient_id`, `insurer_id`, `member_number varchar(40)`, `is_principal boolean`, `principal_name NULL`, `principal_member_number NULL`, `valid_until date NULL`, `status` (`unverified`, `verified`, `rejected`), `last_verified_facility_id NULL`, `last_verified_at NULL`, `card_front_file_id NULL`, `card_back_file_id NULL`, `is_active`. Index (`insurer_id`, `member_number`) to spot one number used by many patients. |
-| `patients_merge` | `scope` (`facility`, `cross_facility`), `facility_id NULL`, `surviving_patient_id`, `merged_patient_id`, `status` (`requested`, `approved`, `rejected`, `executed`, `undone`), `requested_by_id`, `approved_by_id NULL`, `reason`, `moved_links jsonb` (for undo), `executed_at`, `undone_at`. CHECK `approved_by_id <> requested_by_id`. |
-| `patients_record_claim` | `account_id`, `patient_id`, `method` (`contact_code`, `reception_check`), `code_hash bytea NULL`, `expires_at`, `attempts smallint`, `status`, `confirmed_by_membership_id NULL`, `facility_id NULL`. |
-| `patients_import_batch` | `file_id`, `status` (`uploaded`, `previewed`, `confirmed`, `rolled_back`, `failed`), `column_mapping jsonb`, `row_count`, `valid_count`, `error_count`, `duplicate_count`, `created_count`, `created_by_id`, `confirmed_at NULL`, `rollback_until`, `rolled_back_at NULL`. |
-| `patients_import_row` | `batch_id`, `row_number`, `raw_enc bytea` (may contain national IDs), `normalized jsonb` (no national ID; blind index only), `status`, `errors jsonb`, `matched_patient_id NULL`, `created_patient_id NULL`. |
+| `patients_patient` | `version`, `medilink_number varchar(12)` **unique** (`ML-XXXX-XXXX`, Crockford alphabet + Luhn mod 32 check character, never reused), `full_name varchar(200)` (one "Names" field), `name_normalized` (accents stripped, tokens sorted), `preferred_name NULL`, `date_of_birth NULL`, `is_birth_date_estimated`, `sex NULL`, `phone_e164 NULL` (not unique), `email NULL`, `address NULL` (free text in S3), `emergency_contact jsonb NULL`, `created_via` (`self_signup`, `dependent`, `walk_in`), `no_known_allergies NULL`, `merged_into_id NULL`, `merged_at NULL`. Indexes: GIN trigram on `name_normalized`; (`date_of_birth`); (`phone_e164`). |
+| `patients_identifier` | `patient_id`, `kind` (`national_id`, `passport`, `refugee_id`, `birth_certificate`), `issuing_country char(2)`, `value_enc bytea` (AES-256-GCM, format byte + key id, bound to table, column and row), `value_bidx bytea` (HMAC-SHA256), `bidx_key_id`, `value_last4`, `verified_at NULL`, `verified_by_id NULL`, `verified_facility_id NULL`, `superseded_at NULL`, `created_by_id NULL`. **Unique** (`kind`, `issuing_country`, `bidx_key_id`, `value_bidx`) and (`patient_id`, `kind`, `issuing_country`), both where not superseded. |
+| `patients_patientlink` | `account_id` → `accounts_user`, `patient_id`, `relationship` (`self`, `guardian`, `delegate`), `granted_at`, `granted_by_id NULL`, `consent_record_id NULL`, `revoked_at NULL`, `revoked_by_id NULL`, `revoke_reason` (`revoked_by_grantor`, `left_by_holder`, `merged`, `claimed`). **Unique** (`account_id`, `patient_id`) where not revoked; **unique** (`account_id`) where `relationship = 'self'` and not revoked. |
+| `patients_consentrecord` | `user_id NULL`, `patient_id NULL`, `kind` (`terms`, `privacy`, `care`, `research`, `notifications`, `location`, `sharing`, `guardian`, `delegation`), `version`, `granted`, `granted_at`, `channel` (`web`, `mobile`, `staff_assisted`, contract D-8), `recorded_by_id NULL`, `facility_id NULL`. CHECK `user_id` or `patient_id` set. Indexes (`user_id`, `kind`, `granted_at` desc), (`patient_id`, `kind`, `granted_at` desc). |
+| `patients_facility_patient` | `version`, `patient_id`, `file_number NULL`, `first_visit_on`, `reception_notes NULL`, `is_staff_member` (an account linked to the patient is a member here, [security 04](../security/04-authorization-and-tenant-isolation.md) §3), `is_active`, `merged_into_id NULL` (the surviving record at this facility), `registered_by_id`, `registration_key uuid NULL` (walk-in idempotency, contract D-11). **Unique** (`facility_id`, `patient_id`); (`facility_id`, `file_number`) where not null; (`facility_id`, `registration_key`) where not null. |
+| `patients_delegation_invite` | `patient_id`, `relationship` (`delegate`, `guardian`), `created_by_id`, `code_hash bytea` **unique** (SHA-256), `expires_at` (7 days), `accepted_at NULL`, `accepted_by_id NULL`, `link_id NULL`, `revoked_at NULL`, `consent_record_id`. |
+| `patients_allergy` | `patient_id`, `category` (`drug`, `food`, `other`), `substance_text`, `reaction NULL`, `severity` (`mild`, `moderate`, `severe`, `unknown`), plus the shared provenance columns below. Drug links come in S6 (D-13). Index (`patient_id`) where not entered in error. |
+| `patients_condition` | `patient_id`, `display`, `status` (`active`, `resolved`), `onset_date NULL`, provenance columns. ICD-10 codes and restricted details come in S6. |
+| `patients_medication` | `patient_id`, `drug_display`, `dose_text NULL`, `started_on NULL`, `stopped_on NULL`, provenance columns. |
+| (provenance, all three) | `source` (`patient`, `clinician`), `verification_status` (`unverified`, `verified`, `refuted`), `recorded_by_id`, `recorded_facility_id NULL`, `reviewed_by_membership_id NULL`, `reviewed_at NULL`, `review_note NULL`, `entered_in_error_at NULL`, `entered_in_error_by_id NULL`. |
+| `patients_health_attribute` | S6: `patient_id`, `kind` (`blood_group`, `pregnancy`), `value varchar(20)`, `due_date NULL`, `expires_at NULL`, `source`, `recorded_by_membership_id NULL`, `recorded_at`. Latest row per kind wins. |
+| `patients_insurance_profile` | `version`, `patient_id`, `insurer_id NULL` → `masterdata_insurer`, `insurer_code`, `insurer_display`, `member_number`, `is_principal`, `principal_name NULL`, `principal_member_number NULL`, `relationship_to_principal NULL`, `valid_until NULL`, `status` (`unverified`, `verified`, `rejected`), `status_reason NULL`, `last_verified_facility_id NULL`, `last_verified_at NULL`, `last_verified_by_id NULL`, `card_front_file_id NULL`, `card_back_file_id NULL` → `uploads_file`, `is_active`, `created_by_id`. **Unique** (`patient_id`, `insurer_code`, `member_number`) where active; index (`insurer_code`, `member_number`). |
+| `patients_merge` | `version`, `scope` (`facility`, `cross_facility`, `claim`), `facility_id NULL`, `surviving_patient_id`, `merged_patient_id`, `surviving_facility_patient_id NULL`, `merged_facility_patient_id NULL`, `status` (`requested`, `rejected`, `cancelled`, `executed`, `undone`; approval executes at once, D-9), `is_escalated`, `requested_by_id`, `reason`, `decided_by_id NULL`, `decided_at NULL`, `decision_reason NULL`, `moved_rows jsonb` (`{table, id, column, from, to}` for undo), `executed_at NULL`, `undone_by_id NULL`, `undone_at NULL`, `undo_reason NULL`, `idempotency_key`. CHECK surviving ≠ merged; CHECK `decided_by_id <> requested_by_id`; **unique** open request per surviving and per merged patient. |
+| `patients_merge_event` | `merge_id`, `from_status NULL`, `to_status`, `actor_id NULL`, `occurred_at`, `reason NULL`. |
+| `patients_record_claim` | `account_id`, `patient_id`, `method` (`contact_code`, `reception_check`), `code_hash bytea NULL`, `reference varchar(8)` **unique**, `expires_at`, `attempts`, `status` (`code_sent`, `awaiting_reception`, `completed`, `failed`, `expired`, `cancelled`), `confirmed_by_id NULL`, `facility_id NULL`, `merge_id NULL`, `completed_at NULL`. |
+| `patients_audit_link` | `audit_entry_id` **unique**, `patient_id`, `occurred_at`, `actor_kind` (`staff`, `self`, `linked_account`, `platform`, `system`). Index (`patient_id`, `occurred_at` desc). Replaces the planned `audit_entry.patient_id` (D-3). |
+| `patients_import_batch` | S6: `file_id`, `status` (`uploaded`, `previewed`, `confirmed`, `rolled_back`, `failed`), `column_mapping jsonb`, `row_count`, `valid_count`, `error_count`, `duplicate_count`, `created_count`, `created_by_id`, `confirmed_at NULL`, `rollback_until`, `rolled_back_at NULL`. |
+| `patients_import_row` | S6: `batch_id`, `row_number`, `raw_enc bytea` (may contain national IDs), `normalized jsonb` (no national ID; blind index only), `status`, `errors jsonb`, `matched_patient_id NULL`, `created_patient_id NULL`. |
+
+Database functions and policies (S3):
+
+- `patients_known_elsewhere(patient, facility) → integer` and `patients_facilities_of(patient) → setof uuid`. SECURITY DEFINER, `EXECUTE` granted only to the runtime role. They count or list a patient's active facility records without exposing them.
+- The policy `patients_fp_owner_read` is a SELECT policy for the owner role only (migration `patients.0004`). The functions run as the owner, and FORCE RLS applies to the owner too, so without it they would see only the current facility. It is skipped when migrations run as the runtime role.
+- Append-only triggers `patients_reject_mutation` on `patients_audit_link` and `patients_merge_event`. The runtime role also has `UPDATE`/`DELETE`/`TRUNCATE` revoked on both (`post_migrate`).
 
 ### 5.6 Scheduling and booking
 

@@ -85,6 +85,21 @@ export { formatKigaliTime, Timeline } from "./components/Timeline";
 export type { TimelineEvent, TimelineProps } from "./components/Timeline";
 // [/S1]
 // [S3]
+export { CameraCapture } from "./components/CameraCapture";
+export type { CameraCaptureLabels, CameraCaptureProps } from "./components/CameraCapture";
+export { MaskedValue } from "./components/MaskedValue";
+export type { MaskedValueLabels, MaskedValueProps } from "./components/MaskedValue";
+export { detectSearchType, PersonSearch } from "./components/PersonSearch";
+export type {
+  PersonSearchItem,
+  PersonSearchLabels,
+  PersonSearchProps,
+  SearchType,
+} from "./components/PersonSearch";
+export { formatPhone, PhoneField, toE164 } from "./components/PhoneField";
+export type { PhoneFieldProps } from "./components/PhoneField";
+export { ProfileSwitcher } from "./components/ProfileSwitcher";
+export type { ProfileSwitcherProps, SwitcherProfile } from "./components/ProfileSwitcher";
 // [/S3]
 // [S9]
 // [/S9]

@@ -1,7 +1,7 @@
 # Sprint 3 acceptance record: Patients and identity
 
 Contract: [sprint-03-patients.md](../architecture/contracts/sprint-03-patients.md) §9 · Pull requests: backend [#57](https://github.com/B-Pine/medilink-rwanda/pull/57) (merged, Part A and Part B) · Releases: none yet
-Status: **Open**. The backend is implemented; the frontend is not started; there is no staging yet ([#17](https://github.com/B-Pine/medilink-rwanda/issues/17)) · How to fill it in: [QA README](README.md) §4
+Status: **Open**. Backend (#57) and frontend ([#59](https://github.com/B-Pine/medilink-rwanda/pull/59)) are implemented; there is no staging yet ([#17](https://github.com/B-Pine/medilink-rwanda/issues/17)) · How to fill it in: [QA README](README.md) §4
 
 Evidence below was collected by the author. Per QA README §4, a verifier who did not write the code fills **Verified by**, **Date** and **Result**. Tests live in `backend/tests/patients/`. On `main` after #57: 433 backend tests pass, `medilink/patients` coverage is 91 %, ruff and mypy are clean, and `spectacular --validate --fail-on-warn` is clean (CI green).
 
@@ -34,7 +34,7 @@ Evidence below was collected by the author. Per QA README §4, a verifier who di
 
 ## Frontend checks
 
-Not started: S3-F1 to S3-F16 are all **Pending**.
+Built in #59 (evidence: `frontend/packages/api-client/src/mocks/s3.test.ts`, `packages/ui/src/components/s3-components.test.tsx`, `apps/staff-web/src/features/patients/patients.test.tsx`, `apps/patient-web/src/features/profile/profile.test.tsx`, vitest-axe on new pages and components). S3-F1 to S3-F16 are **Pending** independent verification; F16 camera capture was tested only through its file fallback.
 
 ## Integration checks
 

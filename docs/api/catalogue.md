@@ -11,7 +11,7 @@ Sprints and requirements follow the [backend](../roadmap/backend.md) and [fronte
 | [S0](#s0--foundations) | Foundations | Implemented (backend-v0.1.0) |
 | [S1](#s1--platform-and-onboarding) | Platform and onboarding | Implemented (#47); frontend #49, #55 |
 | [S2](#s2--facility-setup-and-staff) | Facility setup and staff | Planned |
-| [S3](#s3--patients-and-identity) | Patients and identity | Backend implemented (#57); frontend not started |
+| [S3](#s3--patients-and-identity) | Patients and identity | Implemented: backend #57, frontend #59 |
 | [S4](#s4--visits-and-the-live-queue) | Visits and the live queue | Planned |
 | [S5](#s5--booking-remote-join-and-calendars) | Booking, remote join and calendars | Planned |
 | [S6](#s6--clinical-record-and-history) | Clinical record and history | Planned |

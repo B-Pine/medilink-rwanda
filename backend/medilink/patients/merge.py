@@ -285,6 +285,16 @@ def execute(merge: Merge, *, actor: Any) -> None:
                         for obj in model.objects.filter(**{column: fp}):  # type: ignore[attr-defined]
                             rec.change(obj, column, mine_here.pk, facility=facility_id)
 
+    # account links moved, so "is a staff member here" may change (contract §2.2)
+    from medilink.patients.staff import refresh_staff_flag
+
+    for facility_id in identity.facilities_of(survivor.pk):
+        with _facility(facility_id):
+            for fp in FacilityPatient.objects.filter(
+                facility_id=facility_id, patient=survivor, is_active=True
+            ).select_related("patient"):
+                refresh_staff_flag(fp)
+
     # survivor's empty demographics are filled from the merged patient
     for name in DEMOGRAPHICS:
         if getattr(survivor, name) in (None, "") and getattr(merged, name) not in (None, ""):
@@ -331,6 +341,15 @@ def undo(merge: Merge, *, actor: Any, reason: str) -> int:
                 skipped += 1
                 continue
             manager.filter(pk=obj.pk).update(**{row["column"]: row["from"]})
+    from medilink.patients.staff import refresh_staff_flag
+
+    for patient_id in (merge.surviving_patient_id, merge.merged_patient_id):
+        for facility_id in identity.facilities_of(patient_id):
+            with _facility(facility_id):
+                for fp in FacilityPatient.objects.filter(
+                    facility_id=facility_id, patient_id=patient_id, is_active=True
+                ).select_related("patient"):
+                    refresh_staff_flag(fp)
     previous = merge.status
     merge.status = MergeStatus.UNDONE
     merge.undone_by = actor

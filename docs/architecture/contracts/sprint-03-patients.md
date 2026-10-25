@@ -1,6 +1,6 @@
 # Sprint 3 contract: Patients and identity
 
-Status: v0.1 · 2026-10-18 · Wave 1 (built in parallel with S1 and S9) · Template and shared-file protocol: [contracts README](README.md) · Conventions: [API conventions](../02-api-conventions.md) · Model: [Sprint 0 contract](../03-sprint-0-contract.md)
+Status: v0.1 · 2026-10-18 · **Backend implemented (#57), frontend not started** · Wave 1 (built in parallel with S1 and S9) · Template and shared-file protocol: [contracts README](README.md) · Conventions: [API conventions](../02-api-conventions.md) · Model: [Sprint 0 contract](../03-sprint-0-contract.md)
 
 **Sprint goal:** every person who receives care has one platform-wide patient record with safe identifiers. Reception can find or register a walk-in in under a minute without creating duplicates. Patients manage their own profile, family, insurance, health profile and privacy, and can see who accessed their record.
 
@@ -549,3 +549,8 @@ All routes are `patient` routes inside an S3 `ProfileLayout` whose header carrie
 | D-13 | `patients_health_attribute`, drug and ICD-10 links on health items planned for S3 | Moved to S6 with the clinical record; S3 stores text with provenance |
 | D-14 | Staff insurance endpoints under `queue.operate`; staff ID photo upload under `documents.upload` | `patient.register` + new `patients.insurance_verify`; ID photos move to S7, card photos are Part B |
 | D-15 | `patients_delegation_invite` and the platform functions are not in the design | Added (§2.1); database design updated in the builder pull request |
+| D-16 | §2.3 relies on the SECURITY DEFINER functions seeing other facilities, but FORCE RLS also applies to their owner | Migration `patients.0004` adds a SELECT-only policy for the owner (migrating) role on `patients_facility_patient`; skipped when migrations run as the runtime role ([database design](../04-database-design.md) §5.5) |
+| D-17 | §8 split Part A and Part B | S1 was merged before S3 was built, so Part B (insurer FK, card photos, step-up) was built directly in #57 |
+| D-18 | §3.1 `card_images: {front: null, back: null, can_upload}` | `front`/`back` are `{upload_id, scan_status}` or `null`; `can_upload` is true for active cards |
+| D-19 | Consent current versions are not defined anywhere | `medilink.patients.consents.DEFAULT_VERSIONS` (all `2026-10`), overridable with the `PATIENT_CONSENT_VERSIONS` setting |
+| D-20 | Rate-limit classes in `throttling.py` | Scopes `patients_search`, `patients_verification`, `patients_reveal`; env overrides `THROTTLE_RATE_PATIENTS_SEARCH`, `…_VERIFICATION`, `…_REVEAL` |

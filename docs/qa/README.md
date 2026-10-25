@@ -8,6 +8,8 @@ Status: v0.1 · How we prove that what is built matches what is documented. Proc
 |---|---|
 | [traceability-matrix.md](traceability-matrix.md) | Every `FR-*` and `NFR-*` requirement with its sprint, side, verification method and status |
 | [sprint-0-acceptance.md](sprint-0-acceptance.md) | Acceptance record of Sprint 0: checks B1–B17 and F1–F12 with evidence |
+| [sprint-1-acceptance.md](sprint-1-acceptance.md) | Sprint 1 (platform and onboarding): 40 checks with evidence; open for independent verification |
+| [sprint-3-acceptance.md](sprint-3-acceptance.md) | Sprint 3 (patients and identity): backend evidence and known gaps; frontend not started |
 | `sprint-N-acceptance.md` | One record per sprint, created from the template in §5 when the sprint contract is agreed |
 
 ## 2. The chain from requirement to evidence

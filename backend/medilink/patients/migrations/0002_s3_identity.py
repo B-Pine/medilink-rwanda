@@ -7,6 +7,14 @@ from django.conf import settings
 from django.db import migrations, models
 
 
+def drop_s3_only_consents(apps, schema_editor):
+    """Reverse only: consents recorded for a profile (no account) do not fit the S0 schema,
+    where the account is required. Rolling S3 back removes them with the other S3 data."""
+    apps.get_model('patients', 'ConsentRecord').objects.filter(user__isnull=True).delete()
+    if schema_editor.connection.vendor == 'postgresql':
+        schema_editor.execute('SET CONSTRAINTS ALL IMMEDIATE')
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -678,4 +686,6 @@ class Migration(migrations.Migration):
             model_name='merge',
             constraint=models.UniqueConstraint(condition=models.Q(('status', 'requested')), fields=('merged_patient',), name='patients_merge_open_merged'),
         ),
+        # Reverse runs first: makes the consent table fit the S0 schema again.
+        migrations.RunPython(migrations.RunPython.noop, drop_s3_only_consents),
     ]

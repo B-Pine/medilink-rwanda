@@ -8,6 +8,8 @@ This root changelog covers documentation and repository-wide changes (CI, toolin
 
 ### Added
 
+- Acceptance records for Sprint 1 (`docs/qa/sprint-1-acceptance.md`, 40 checks) and Sprint 3 (`docs/qa/sprint-3-acceptance.md`, backend evidence and gaps).
+
 - `scripts/github-setup.sh`: labels `area:patients`, `area:security`, `area:ops`, `area:i18n`, `type:decision`, `wave:1` and `sprint:S1`..`sprint:S11`; milestones are skipped when they already exist, so the script can be re-run.
 - Wave 1 sprint contracts: S1 platform and onboarding (65 endpoints, 40 acceptance checks), S3 patients and identity (58 endpoints, 47 checks, Part B after S1), S9 notification engine (37 endpoints + 2 WebSocket routes, 36 checks); reconciled with each other and with the merged anchors. API conventions gain `401 session_locked`; security 03 records the 15-minute lock with a 4-hour session idle limit. Traceability: 34 Wave 1 requirements In progress.
 - Second round of integration anchors: audit action registry (`extend_actions()`), throttle, env, dependency, WebSocket route and dev-seed blocks; import marker blocks in frontend registries; shell slots (`headerItems`, `shellOverlays`, `homeCards`); PWA `importScripts` block; extensible frontend permission codes with all 31 Sprint 0 codes; mock role grants mirroring the backend seed (`extendMockRoleGrants()`); Wave 1 ownership rules for Sprint 0 files and `/platform` routes.
@@ -25,6 +27,7 @@ This root changelog covers documentation and repository-wide changes (CI, toolin
 
 ### Changed
 
+- Docs aligned with what is merged: the API catalogue S1 and S3 rows are rewritten from the contracts and marked Implemented (#47, #57); S1-built facility status actions are marked in S2; the contract index, the S1 and S3 contract headers and the docs README show the real status; the database design §5.5 describes the S3 schema as built (table names, functions, owner read policy, append-only triggers); S3 contract §10 records deviations D-16 to D-20; the backend README covers the S1/S3 apps, patient keys and sprint seeders.
 - Getting started reconciled with the shipped code (Python 3.14, hash-pinned install, `pnpm dev:mock`, Swagger UI, uvicorn for WebSockets); links to the backend and frontend READMEs and changelogs.
 - Traceability matrix: 16 Sprint 0 requirements Verified, summary gains a Verified column; NFR-UX-03 title says WCAG 2.2; NFR-OPS-07 (feature flags) moved to S1.
 - API catalogue: the 16 Sprint 0 endpoints are Implemented (`backend-v0.1.0`).

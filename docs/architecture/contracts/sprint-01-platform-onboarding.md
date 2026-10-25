@@ -1,6 +1,6 @@
 # Sprint 1 contract: Platform and onboarding
 
-Status: v0.1 (2026-10-18) · Wave 1, built in parallel with S3 and S9 · Template and shared-file protocol: [contracts README](README.md) · Format model: [Sprint 0 contract](../03-sprint-0-contract.md) · Conventions: [API conventions](../02-api-conventions.md) · Tables: [database design](../04-database-design.md) · Plan rows: [API catalogue](../../api/catalogue.md) S1 · Roadmaps: [backend](../../roadmap/backend.md), [frontend](../../roadmap/frontend.md)
+Status: v0.1 (2026-10-18) · **Implemented** (backend #47, frontend #49 + #55, integration #56; I4 waits for staging) · Wave 1, built in parallel with S3 and S9 · Template and shared-file protocol: [contracts README](README.md) · Format model: [Sprint 0 contract](../03-sprint-0-contract.md) · Conventions: [API conventions](../02-api-conventions.md) · Tables: [database design](../04-database-design.md) · Plan rows: [API catalogue](../../api/catalogue.md) S1 · Roadmaps: [backend](../../roadmap/backend.md), [frontend](../../roadmap/frontend.md)
 
 **Sprint goal:** facilities apply online and super admins verify, approve and run them through their lifecycle; the platform has versioned, translated master data; every file enters through one safe upload pipeline that later sprints reuse; idle staff sessions lock and unlock with a PIN; sensitive actions need recent re-authentication; features can be switched per facility.
 

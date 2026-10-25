@@ -60,8 +60,10 @@ python manage.py runserver      # http://localhost:8000 (HTTP only)
 `seed_dev` refuses to run unless `DEBUG` is on. It creates "Kigali Demo Clinic" (plus a second
 facility so the facility picker can be tried), a platform admin, a facility admin, a receptionist,
 a doctor (member of both facilities), a pharmacist and a patient, all `@demo.medilink.test`.
-Passwords are random and printed; use `--password "<15+ chars>"` for a fixed one. Staff set up
-TOTP at their first sign-in (any authenticator app).
+Passwords are random and printed (new ones on every run); use `--password "<15+ chars>"` for a
+fixed one. Staff set up TOTP at their first sign-in (any authenticator app). It also runs the sprint
+seeders: `seed_masterdata_dev` (sample sectors, cells and villages) and `seed_patients_dev` (six
+synthetic patients at Kigali Demo Clinic, some with a national ID).
 
 WebSockets need an ASGI server: `uvicorn config.asgi:application --reload --port 8000` serves
 HTTP and `/ws/v1/...`.
@@ -140,6 +142,7 @@ Key variables:
 | `EMAIL_URL` | `smtp://`, `smtp+tls://`, `smtp+ssl://`, `console://` (Django 6.1 `MAILERS`) |
 | `STAFF_SESSION_*`, `PATIENT_SESSION_*` | Cookie names and idle/absolute timeouts |
 | `THROTTLE_RATE_*`, `NUM_PROXIES` | Rate limits and trusted proxy count |
+| `MEDILINK_FIELD_KEYS`, `MEDILINK_BLIND_INDEX_KEYS` (+ `_ACTIVE_KEY_ID`) | Patient identifier encryption and blind-index keys, `"<id>:<base64url 32 bytes>"`. Empty in development (derived from `SECRET_KEY`, check `patients.W001`); required in production (`patients.E001`). Rotate with `manage.py patients_rotate_keys --data` / `--index` |
 | `ADMIN_ENABLED`, `ADMIN_URL`, `SCHEMA_ENABLED` | Dev tools (off by default in production) |
 
 ## Frontend integration
@@ -195,7 +198,9 @@ unless `code` is `validation_error`. Codes: see API conventions §4. `429` respo
   `ENABLE` + `FORCE ROW LEVEL SECURITY` and a `facility_isolation` policy with `USING` and
   `WITH CHECK` on `NULLIF(current_setting('app.facility_id', true), '')::uuid`.
   Sprint 0 applies it to `FacilityMembership` (plus a self-read policy on `app.user_id`) and the
-  demo table `FacilityNote`.
+  demo table `FacilityNote`; S1 to uploads; S3 to `patients_facility_patient`. Two SECURITY
+  DEFINER helpers (`patients_known_elsewhere`, `patients_facilities_of`) count a patient's other
+  facilities through an owner-only read policy ([database design](../docs/architecture/04-database-design.md) §5.5).
 - `TenantContextMiddleware` opens the request transaction and sets `app.user_id` /
   `app.facility_id` with `set_config(..., true)` from the verified session. No session or no
   active membership → empty context → no rows (fails closed).
@@ -235,8 +240,12 @@ medilink/accounts/ users, audience sessions, login, MFA, password reset
 medilink/tenancy/  organisations, facilities, roles, permissions, memberships, RLS helpers + context
 medilink/authz/    permission catalogue, DRF permission classes, policy layer (deny by default)
 medilink/audit/    append-only hash-chained audit log, verify_audit_chain
-medilink/patients/ patients, patient links, consents (minimal in Sprint 0)
+medilink/uploads/  upload pipeline (S1): sniffing, scanning, storage, signed links
+medilink/masterdata/ master data (S1): locations, insurers, drugs, ICD-10, imports
+medilink/onboarding/ facility applications, verification, facility status, licences, flags (S1)
+medilink/patients/ patients and identity (S3): identifiers (encrypted), facility records, merges,
+                   claims, delegations, insurance, health profile, access history
 docker/postgres/   database role init script (docker compose and CI)
 openapi/           committed OpenAPI schema (frontend types are generated from it)
-tests/             pytest (test_bN_* map to the Sprint 0 acceptance checks)
+tests/             pytest (test_bN_* map to the Sprint 0 acceptance checks; sprint folders)
 ```

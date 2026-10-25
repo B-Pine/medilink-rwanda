@@ -7,6 +7,9 @@ import facilityApplicationFr from "../features/facilityApplication/locales/fr.js
 import facilityApplicationRw from "../features/facilityApplication/locales/rw.json";
 // [/S1 imports]
 // [S3 imports]
+import profileEn from "../features/profile/locales/en.json";
+import profileFr from "../features/profile/locales/fr.json";
+import profileRw from "../features/profile/locales/rw.json";
 // [/S3 imports]
 // [S9 imports]
 // [/S9 imports]
@@ -24,6 +27,7 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   },
   // [/S1]
   // [S3]
+  profile: { rw: profileRw, en: profileEn, fr: profileFr },
   // [/S3]
   // [S9]
   // [/S9]

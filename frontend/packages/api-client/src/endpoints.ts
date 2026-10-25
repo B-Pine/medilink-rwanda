@@ -24,6 +24,8 @@ import { createSecurityApi } from "./features/security";
 import { createUploadsApi } from "./features/uploads";
 // [/S1 imports]
 // [S3 imports]
+import { createPatientsApi } from "./features/patients";
+import { createProfileApi } from "./features/profile";
 // [/S3 imports]
 // [S9 imports]
 // [/S9 imports]
@@ -112,6 +114,8 @@ export function createMediLinkApi(client: ApiClient) {
     },
     // [/S1]
     // [S3]
+    patients: createPatientsApi(client),
+    profile: createProfileApi(client),
     // [/S3]
     // [S9]
     // [/S9]

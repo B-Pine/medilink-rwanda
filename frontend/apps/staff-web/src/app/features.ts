@@ -7,6 +7,7 @@ import { lockFeature } from "../features/lock";
 import { platformFeature } from "../features/platform";
 // [/S1 imports]
 // [S3 imports]
+import { patientsFeature } from "../features/patients";
 // [/S3 imports]
 // [S9 imports]
 // [/S9 imports]
@@ -38,6 +39,7 @@ export const FEATURES: FeatureRoutes[] = [
   platformFeature,
   // [/S1]
   // [S3]
+  patientsFeature,
   // [/S3]
   // [S9]
   // [/S9]

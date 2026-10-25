@@ -1,0 +1,246 @@
+{
+  "notFound": "Page not found",
+  "nav": {
+    "merges": "Merge requests",
+    "platformMerges": "Patient merges"
+  },
+  "close": "Close",
+  "cancel": "Cancel",
+  "save": "Save",
+  "required": "This is required.",
+  "age_one": "{{count}} year",
+  "age_other": "{{count}} years",
+  "ageEstimated_one": "about {{count}} year",
+  "ageEstimated_other": "about {{count}} years",
+  "sex": { "female": "Female", "male": "Male", "other": "Other" },
+  "identifierKinds": {
+    "national_id": "National ID",
+    "passport": "Passport",
+    "refugee_id": "Refugee ID",
+    "birth_certificate": "Birth certificate"
+  },
+  "insurers": {
+    "mutuelle": "Mutuelle de Santé",
+    "rssb": "RSSB (RAMA)",
+    "mmi": "MMI",
+    "radiant": "Radiant"
+  },
+  "fields": {
+    "name": "Names",
+    "age": "Age",
+    "sex": "Sex",
+    "dateOfBirth": "Date of birth",
+    "phone": "Phone",
+    "newPhone": "New phone number",
+    "email": "Email",
+    "address": "Address",
+    "nationalId": "National ID",
+    "fileNumber": "File no.",
+    "medilinkNumber": "MediLink number",
+    "insurance": "Insurance",
+    "insurer": "Insurer",
+    "memberNumber": "Member number",
+    "document": "Identity document",
+    "documentNumber": "Document number",
+    "country": "Issuing country",
+    "preferredName": "Preferred name",
+    "emergencyContact": "Emergency contact",
+    "notes": "Reception notes"
+  },
+  "search": {
+    "title": "Patients",
+    "label": "Find a patient",
+    "placeholder": "Name, phone, national ID, file or MediLink number",
+    "types": {
+      "medilink_number": "MediLink no.",
+      "national_id": "National ID",
+      "phone": "Phone",
+      "file_number": "File no.",
+      "name": "Name"
+    },
+    "resultCount_one": "{{count}} patient found",
+    "resultCount_other": "{{count}} patients found",
+    "results": "Search results",
+    "noResults": "No patient at this facility matches. Check the spelling, or search by phone or ID.",
+    "register": "Register walk-in",
+    "shortcuts": "Press / to search and N for a new walk-in.",
+    "button": "Search"
+  },
+  "external": {
+    "title": "Already on MediLink",
+    "hint": "This person is registered at another facility. Ask for their MediLink number to add them here.",
+    "add": "Add to this facility",
+    "dialogTitle": "Add {{name}} to this facility",
+    "proofHint": "Confirm the MediLink number from the patient's card or phone."
+  },
+  "register": {
+    "title": "Register a walk-in",
+    "nameHint": "All names, as the patient says them.",
+    "ageMode": "Birth date or age",
+    "ageModes": { "dob": "Date of birth", "years": "Age in years", "months": "Age in months" },
+    "phoneInvalid": "Enter a Rwandan mobile number like 0788 123 456.",
+    "noInsurance": "No insurance",
+    "more": "More details (ID, file number)",
+    "less": "Fewer details",
+    "countryHint": "Two letters, e.g. UG",
+    "consentScript": "Read aloud: \"MediLink keeps your health records so the facilities you visit can care for you. Only staff caring for you can see them, and you can see who opened them.\"",
+    "consent": "The patient agreed to care consent",
+    "possibleDuplicate": "This patient may already be registered here.",
+    "confirmNotDuplicate": "I checked the matches: this is a different person",
+    "findThem": "Find them in search",
+    "submit": "Register",
+    "suggestions": "Possible matches",
+    "suggestionsHint": "Matches appear here once names and an age, or a phone number, are filled in.",
+    "noMatches": "No similar patients here.",
+    "levels": {
+      "exact_identifier": "Same document",
+      "strong": "Very likely the same person",
+      "possible": "Possibly the same person"
+    },
+    "elsewhere_one": "{{count}} similar patient at another facility. Ask for an ID or MediLink number.",
+    "elsewhere_other": "{{count}} similar patients at other facilities. Ask for an ID or MediLink number.",
+    "strongHint": "Open the match to check before registering again.",
+    "done": "{{name}} is registered",
+    "number": "MediLink number:",
+    "openRecord": "Open record",
+    "another": "Register another"
+  },
+  "record": {
+    "merged": "Merged",
+    "staffMember": "Staff member",
+    "hasAccount": "Has a MediLink account",
+    "openSurvivor": "This record was merged. Open the remaining record.",
+    "sections": "Patient record sections",
+    "tabs": {
+      "details": "Details",
+      "identifiers": "Identifiers",
+      "insurance": "Insurance",
+      "health": "Health profile",
+      "consents": "Consents"
+    },
+    "edit": "Edit details",
+    "reportDuplicate": "Report duplicate"
+  },
+  "reveal": {
+    "show": "Show",
+    "hide": "Hide",
+    "showing": "Showing…",
+    "description": "The full value is recorded in the patient's access history with your reason.",
+    "reason": "Reason",
+    "reasonText": "Explain the reason",
+    "reasons": {
+      "identity_check": "Identity check",
+      "insurance_claim": "Insurance claim",
+      "patient_request": "The patient asked",
+      "other": "Other"
+    },
+    "titlePhone": "Show phone number",
+    "titleIdentifier": "Show identity document"
+  },
+  "identifiers": {
+    "none": "No identity document yet.",
+    "checked": "Checked",
+    "add": "Add a document",
+    "seen": "I saw the document"
+  },
+  "insurance": {
+    "status": { "unverified": "Not checked", "verified": "Verified", "rejected": "Rejected" },
+    "expired": "Expired",
+    "inactive": "Not in use",
+    "none": "No insurance card.",
+    "lastVerified": "Checked at {{facility}} on {{date}}",
+    "verify": "Mark verified",
+    "reject": "Reject",
+    "rejectTitle": "Reject this card",
+    "rejectConsequences": "The card will show as rejected until someone checks it again.",
+    "reason": "Reason",
+    "add": "Add a card"
+  },
+  "health": {
+    "noKnownAllergies": "No known allergies",
+    "allergies": "Allergies",
+    "conditions": "Conditions",
+    "medications": "Medicines",
+    "none": "None recorded.",
+    "status": { "unverified": "Unverified", "verified": "Verified", "refuted": "Refuted" },
+    "confirm": "Confirm",
+    "add": {
+      "allergies": "Add an allergy",
+      "conditions": "Add a condition",
+      "medications": "Add a medicine"
+    },
+    "addButton": "Add"
+  },
+  "consents": {
+    "hasCare": "Care consent recorded.",
+    "noCare": "No care consent yet.",
+    "scriptRead": "I read the consent text and the patient agreed",
+    "record": "Record consent"
+  },
+  "claims": {
+    "title": "Record claim",
+    "hint": "The patient wants to link this record to their MediLink account. Check an identity document first.",
+    "reference": "Claim reference",
+    "documentMatches": "The identity document matches this record",
+    "confirm": "Confirm claim",
+    "done": "The record is now linked to the patient's account."
+  },
+  "merges": {
+    "filter": "Filter by status",
+    "all": "All",
+    "none": "No merge requests.",
+    "status": {
+      "requested": "Waiting",
+      "executed": "Merged",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled",
+      "undone": "Undone"
+    },
+    "scope": {
+      "facility": "This facility",
+      "cross_facility": "Several facilities",
+      "claim": "Claim"
+    },
+    "escalated": "sent to the platform team",
+    "panelTitle": "Merge request",
+    "surviving": "Keep",
+    "merged": "Merge into it",
+    "preview": {
+      "identifiers": "Identity documents",
+      "insurance_profiles": "Insurance cards",
+      "health_items": "Health items",
+      "account_links": "Account links",
+      "other_facilities": "Other facilities"
+    },
+    "conflicts": "Different documents of the same kind: {{kinds}}. These records can't be merged.",
+    "reason": "Reason",
+    "approve": "Approve and merge",
+    "reject": "Reject",
+    "cancel": "Cancel request",
+    "escalate": "Send to platform team",
+    "undo": "Undo merge",
+    "request": "Request merge",
+    "requestHint": "Choose the other record of {{name}}. Another approver decides.",
+    "findOther": "Find the other record",
+    "duplicateRecord": "Duplicate record",
+    "confirm": {
+      "approve": {
+        "title": "Merge these records?",
+        "consequences": "Documents, insurance, health items and the file number move to the kept record. You can undo it later."
+      },
+      "reject": { "title": "Reject this request?", "consequences": "The records stay separate." },
+      "cancel": {
+        "title": "Cancel your request?",
+        "consequences": "The request is closed without a decision."
+      },
+      "escalate": {
+        "title": "Send to the platform team?",
+        "consequences": "No one else here can approve it, so the platform team will decide."
+      },
+      "undo": {
+        "title": "Undo this merge?",
+        "consequences": "Moved items go back to the original records, unless they changed since."
+      }
+    }
+  }
+}

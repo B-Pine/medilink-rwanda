@@ -32,6 +32,32 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 ### Sprint 3 · Patients and identity
 
+- api-client: `createPatientsApi` (staff ST1–ST27, platform PL1–PL5) and `createProfileApi`
+  (patient PA1–PA26) with the contract types, `hasPermission()`, and the S3 permission codes added
+  to `PermissionCodes`. MSW mocks share a synthetic store: 26+ patients, the duplicate pair, a
+  staff member as patient, an open reception claim, and a mock account with a child and a
+  delegated parent.
+- ui: `PersonSearch` (type detection, listbox keyboard navigation, `/` shortcut), `MaskedValue`
+  (re-masks after 30 s and on unmount), `ProfileSwitcher`, `CameraCapture` (file fallback),
+  `PhoneField` with `toE164()` and `formatPhone()`.
+- staff-web `patients`:
+  - `/patients`: search, results, and the external match with add-existing.
+  - `/patients/register`: walk-in form with live duplicate suggestions and the MediLink number on
+    success. The form is exported for S4.
+  - `/patients/:fpId`: details, identifiers with reveal-with-reason, insurance verify/reject, the
+    health profile by role, consents and claim confirmation, report duplicate.
+  - `/patients/merge-requests` and `/platform/merge-requests`: comparison panel, step-up on
+    approve and undo.
+- patient-web `profile`:
+  - `/profile` hub: completion checklist and next step.
+  - Profile pages: details, identity documents, insurance, health, access history.
+  - `/family`: dependents, one-time sharing codes, accept, revoke.
+  - `/privacy/settings`: consents.
+  - `/claim`: claim wizard.
+  - `ProfileSwitcher` in the header; "My profile" and "Family" links on home.
+- Translations: `patients` and `profile` namespaces in rw/en/fr (Kinyarwanda flagged for native
+  review).
+
 ### Sprint 9 · Notifications
 
 ## [0.1.0] - 2026-10-17

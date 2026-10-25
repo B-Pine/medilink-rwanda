@@ -10,6 +10,9 @@ import platformFr from "../features/platform/locales/fr.json";
 import platformRw from "../features/platform/locales/rw.json";
 // [/S1 imports]
 // [S3 imports]
+import patientsEn from "../features/patients/locales/en.json";
+import patientsFr from "../features/patients/locales/fr.json";
+import patientsRw from "../features/patients/locales/rw.json";
 // [/S3 imports]
 // [S9 imports]
 // [/S9 imports]
@@ -24,6 +27,7 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   platform: { rw: platformRw, en: platformEn, fr: platformFr },
   // [/S1]
   // [S3]
+  patients: { rw: patientsRw, en: patientsEn, fr: patientsFr },
   // [/S3]
   // [S9]
   // [/S9]

@@ -6,6 +6,7 @@ import type { RouteObject } from "react-router";
 import { facilityApplicationFeature } from "../features/facilityApplication";
 // [/S1 imports]
 // [S3 imports]
+import { profileFeature } from "../features/profile";
 // [/S3 imports]
 // [S9 imports]
 // [/S9 imports]
@@ -36,6 +37,7 @@ export const FEATURES: FeatureRoutes[] = [
   facilityApplicationFeature,
   // [/S1]
   // [S3]
+  profileFeature,
   // [/S3]
   // [S9]
   // [/S9]

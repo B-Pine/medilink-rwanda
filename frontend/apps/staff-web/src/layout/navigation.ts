@@ -20,6 +20,7 @@ import type { PermissionCode, StaffMe } from "@medilink/api-client";
 import { ChartPieSlice, Database, FileText, ToggleRight } from "@phosphor-icons/react";
 // [/S1 imports]
 // [S3 imports]
+import { GitMerge } from "@phosphor-icons/react";
 // [/S3 imports]
 // [S9 imports]
 // [/S9 imports]
@@ -174,6 +175,22 @@ export const NAV_ITEMS: readonly NavItem[] = [
   },
   // [/S1]
   // [S3]
+  {
+    key: "patientMerges",
+    path: "/patients/merge-requests",
+    icon: GitMerge,
+    group: "facility",
+    labelKey: "patients.nav.merges",
+    visible: hasAny("patients.merge_request", "patients.merge_approve"),
+  },
+  {
+    key: "platformMerges",
+    path: "/platform/merge-requests",
+    icon: GitMerge,
+    group: "platform",
+    labelKey: "patients.nav.platformMerges",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
   // [/S3]
   // [S9]
   // [/S9]

@@ -92,7 +92,7 @@ export function MaskedValue({
           </Button>
         ))}
       {failed && (
-        <span role="alert" className="text-small text-danger">
+        <span role="alert" className="text-body-sm text-danger">
           {labels.failed}
         </span>
       )}

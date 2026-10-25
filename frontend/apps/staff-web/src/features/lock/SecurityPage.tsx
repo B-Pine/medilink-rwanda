@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 import { useApi, useServices } from "../../app/services";
 import { staffMeKey, useStaffMe } from "../../auth/queries";
-import { PageHeading } from "../../components/PageHeading";
+import { PageHeader } from "../../components/PageHeader";
 import { isStepUpCancelled, useStepUp } from "./StepUp";
 
 /** /account/security: set, change or remove the unlock PIN (setting needs step-up); lock now. */
@@ -58,7 +58,7 @@ export function SecurityPage() {
 
   return (
     <div className="flex max-w-2xl flex-col gap-6">
-      <PageHeading title={t("lock.security.title")}>{t("lock.security.title")}</PageHeading>
+      <PageHeader title={t("lock.security.title")} />
       {notice && (
         <Alert tone="success" role="status">
           {notice}

@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 
 import type { FeatureRoutes } from "../../app/features";
+import { patientCommands } from "./commands";
 
 const lazy =
   <K extends string>(load: () => Promise<Record<K, ComponentType>>, name: K) =>
@@ -21,6 +22,7 @@ export const patientsFeature: FeatureRoutes = {
       lazy: lazy(() => import("./MergesPage"), "PlatformMergesPage"),
     },
   ],
+  commands: [patientCommands],
 };
 
 export { WalkInForm } from "./WalkInForm";

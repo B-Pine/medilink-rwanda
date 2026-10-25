@@ -145,7 +145,22 @@
       "language": "Langue",
       "logout": "Se déconnecter",
       "loggingOut": "Déconnexion…"
-    }
+    },
+    "palette": {
+      "title": "Rechercher ou aller à",
+      "open": "Rechercher ou aller à…",
+      "placeholder": "Tapez une page, une action ou un patient",
+      "empty": "Aucun résultat. Essayez un autre mot.",
+      "hints": "↑ ↓ pour se déplacer · Entrée pour ouvrir · Échap pour fermer",
+      "search": "Recherche",
+      "actions": "Actions",
+      "pages": "Aller à",
+      "noResults": "Aucun patient correspondant dans cet établissement",
+      "searchFailed": "La recherche a échoué. Réessayez.",
+      "shortcut": "Ctrl K"
+    },
+    "collapse": "Réduire le menu",
+    "expand": "Développer le menu"
   },
   "today": {
     "title": "Aujourd’hui",

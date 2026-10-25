@@ -21,7 +21,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 
 import { useApi } from "../../app/services";
-import { PageHeading } from "../../components/PageHeading";
+import { PageHeader } from "../../components/PageHeader";
 import { actionError, CONSENT_VERSION, Gate, InsuranceBadge, useAge, useCan } from "./shared";
 
 /** /patients: find a patient of this facility, or add one already on MediLink (ST1, ST4). */
@@ -70,15 +70,18 @@ function Search() {
 
   return (
     <div className="flex max-w-5xl flex-col gap-5">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <PageHeading title={t("patients.search.title")}>{t("patients.search.title")}</PageHeading>
-        {canRegister && (
-          <Button onClick={() => void navigate("/patients/register")}>
-            <Plus aria-hidden="true" />
-            {t("patients.search.register")}
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        title={t("patients.search.title")}
+        description={t("patients.search.shortcuts")}
+        actions={
+          canRegister && (
+            <Button onClick={() => void navigate("/patients/register")}>
+              <Plus aria-hidden="true" />
+              {t("patients.search.register")}
+            </Button>
+          )
+        }
+      />
       <PersonSearch
         value={query}
         onChange={setQuery}
@@ -97,7 +100,6 @@ function Search() {
           resultCount: (count) => t("patients.search.resultCount", { count }),
         }}
       />
-      <p className="m-0 text-small text-fg-muted">{t("patients.search.shortcuts")}</p>
       {search.isError && (
         <Alert tone="danger" role="alert">
           {actionError(search.error, t("errors.generic"))}
@@ -141,7 +143,7 @@ function Results({
           <table className="hidden w-full border-collapse text-left sm:table">
             <caption className="sr-only">{t("patients.search.results")}</caption>
             <thead>
-              <tr className="border-b border-border text-small text-fg-muted">
+              <tr className="border-b border-border text-body-sm text-fg-muted">
                 <th scope="col" className="p-2">
                   {t("patients.fields.name")}
                 </th>
@@ -169,7 +171,7 @@ function Results({
                     <Link to={`/patients/${row.facility_patient_id}`} className="font-medium">
                       {row.full_name}
                     </Link>
-                    <div className="text-small text-fg-muted">{row.medilink_number}</div>
+                    <div className="text-body-sm text-fg-muted">{row.medilink_number}</div>
                   </td>
                   <td className="p-2">{age(row.age_years, row.is_birth_date_estimated)}</td>
                   <td className="p-2 font-mono">{row.phone_masked ?? "—"}</td>
@@ -194,7 +196,7 @@ function Results({
                   <Link to={`/patients/${row.facility_patient_id}`} className="font-medium">
                     {row.full_name}
                   </Link>
-                  <div className="text-small text-fg-muted">
+                  <div className="text-body-sm text-fg-muted">
                     {age(row.age_years, row.is_birth_date_estimated)} · {row.phone_masked ?? "—"} ·{" "}
                     {row.file_number ?? "—"}
                   </div>
@@ -211,7 +213,7 @@ function Results({
             {external.full_name} · {external.birth_year ?? "—"} ·{" "}
             {external.sex ? t(`patients.sex.${external.sex}`) : "—"} · {external.medilink_number}
           </p>
-          <p className="m-0 text-small text-fg-muted">{t("patients.external.hint")}</p>
+          <p className="m-0 text-body-sm text-fg-muted">{t("patients.external.hint")}</p>
           {canRegister && (
             <div>
               <Button variant="secondary" onClick={() => onAdd(external)}>

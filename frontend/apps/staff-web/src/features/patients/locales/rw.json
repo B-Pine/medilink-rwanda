@@ -12,14 +12,23 @@
   "age_other": "Imyaka {{count}}",
   "ageEstimated_one": "Hafi umwaka {{count}}",
   "ageEstimated_other": "Hafi imyaka {{count}}",
-  "sex": { "female": "Gore", "male": "Gabo", "other": "Ikindi" },
+  "sex": {
+    "female": "Gore",
+    "male": "Gabo",
+    "other": "Ikindi"
+  },
   "identifierKinds": {
     "national_id": "Indangamuntu",
     "passport": "Pasiporo",
     "refugee_id": "Ikarita y'impunzi",
     "birth_certificate": "Icyemezo cy'amavuko"
   },
-  "insurers": { "mutuelle": "Mituweli", "rssb": "RSSB (RAMA)", "mmi": "MMI", "radiant": "Radiant" },
+  "insurers": {
+    "mutuelle": "Mituweli",
+    "rssb": "RSSB (RAMA)",
+    "mmi": "MMI",
+    "radiant": "Radiant"
+  },
   "fields": {
     "name": "Amazina",
     "age": "Imyaka",
@@ -72,7 +81,11 @@
     "title": "Andika umurwayi utabanje gufata gahunda",
     "nameHint": "Amazina yose, nk'uko umurwayi ayavuga.",
     "ageMode": "Itariki y'amavuko cyangwa imyaka",
-    "ageModes": { "dob": "Itariki y'amavuko", "years": "Imyaka", "months": "Amezi" },
+    "ageModes": {
+      "dob": "Itariki y'amavuko",
+      "years": "Imyaka",
+      "months": "Amezi"
+    },
     "phoneInvalid": "Andika nimero ya telefoni yo mu Rwanda nka 0788 123 456.",
     "noInsurance": "Nta bwishingizi",
     "more": "Ibindi bisobanuro (indangamuntu, dosiye)",
@@ -139,7 +152,11 @@
     "seen": "Nabonye icyangombwa"
   },
   "insurance": {
-    "status": { "unverified": "Ntiragenzurwa", "verified": "Yagenzuwe", "rejected": "Yanzwe" },
+    "status": {
+      "unverified": "Ntiragenzurwa",
+      "verified": "Yagenzuwe",
+      "rejected": "Yanzwe"
+    },
     "expired": "Yarangiye",
     "inactive": "Ntikoreshwa",
     "none": "Nta karita y'ubwishingizi.",
@@ -157,7 +174,11 @@
     "conditions": "Indwara",
     "medications": "Imiti",
     "none": "Nta na kimwe cyanditswe.",
-    "status": { "unverified": "Ntiragenzurwa", "verified": "Yagenzuwe", "refuted": "Yahakanywe" },
+    "status": {
+      "unverified": "Ntiragenzurwa",
+      "verified": "Yagenzuwe",
+      "refuted": "Yahakanywe"
+    },
     "confirm": "Emeza",
     "add": {
       "allergies": "Ongeraho allergie",
@@ -223,7 +244,10 @@
         "title": "Guhuza izi dosiye?",
         "consequences": "Ibyangombwa, ubwishingizi, amakuru y'ubuzima na nomero ya dosiye bijya kuri dosiye isigaye. Ushobora kubisubiza inyuma nyuma."
       },
-      "reject": { "title": "Kwanga ubu busabe?", "consequences": "Dosiye zikomeza gutandukana." },
+      "reject": {
+        "title": "Kwanga ubu busabe?",
+        "consequences": "Dosiye zikomeza gutandukana."
+      },
       "cancel": {
         "title": "Guhagarika ubusabe bwawe?",
         "consequences": "Ubusabe burafungwa nta cyemezo gifashwe."
@@ -237,5 +261,10 @@
         "consequences": "Ibyimuwe bisubira muri dosiye za mbere, keretse niba byarahindutse."
       }
     }
+  },
+  "palette": {
+    "searchFor": "Shakisha abarwayi “{{query}}”",
+    "results": "Abarwayi",
+    "file": "Dosiye {{number}}"
   }
 }

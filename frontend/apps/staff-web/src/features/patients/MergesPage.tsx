@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { useApi } from "../../app/services";
 import { useStaffMe } from "../../auth/queries";
 import { PageHeading } from "../../components/PageHeading";
+import { PageHeader } from "../../components/PageHeader";
 import { useStepUp } from "../lock";
 import { actionError, formatDate, Gate, useCan, useLocale } from "./shared";
 
@@ -68,7 +69,7 @@ function Merges({ platform }: { platform: boolean }) {
   const title = platform ? t("patients.nav.platformMerges") : t("patients.nav.merges");
   return (
     <div className="flex max-w-5xl flex-col gap-5">
-      <PageHeading title={title}>{title}</PageHeading>
+      <PageHeader title={title} />
       <div role="group" aria-label={t("patients.merges.filter")} className="flex flex-wrap gap-2">
         {STATUSES.map((s) => (
           <Button
@@ -99,7 +100,7 @@ function Merges({ platform }: { platform: boolean }) {
               <span className="font-medium">
                 {merge.surviving.full_name} ← {merge.merged.full_name}
               </span>
-              <span className="text-small text-fg-muted">
+              <span className="text-body-sm text-fg-muted">
                 {t(`patients.merges.scope.${merge.scope}`)}
                 {merge.is_escalated ? ` · ${t("patients.merges.escalated")}` : ""} ·{" "}
                 {formatDate(merge.requested_at, locale)}
@@ -118,13 +119,13 @@ function Side({ title, side }: { title: string; side: MergeSide }) {
   const locale = useLocale();
   return (
     <div className="flex-1 rounded-md border border-border p-3">
-      <h3 className="m-0 mb-1 text-small text-fg-muted">{title}</h3>
+      <h3 className="m-0 mb-1 text-body-sm text-fg-muted">{title}</h3>
       <p className="m-0 font-medium">{side.full_name}</p>
-      <p className="m-0 text-small">
+      <p className="m-0 text-body-sm">
         {formatDate(side.date_of_birth, locale)} · {side.sex ? t(`patients.sex.${side.sex}`) : "—"}
       </p>
-      <p className="m-0 font-mono text-small">{side.medilink_number}</p>
-      <p className="m-0 text-small">
+      <p className="m-0 font-mono text-body-sm">{side.medilink_number}</p>
+      <p className="m-0 text-body-sm">
         {t("patients.fields.fileNumber")} {side.file_number ?? "—"}
       </p>
     </div>
@@ -209,7 +210,7 @@ function MergePanel({
             <Side title={t("patients.merges.merged")} side={m.merged} />
           </div>
           {m.preview && (
-            <dl className="m-0 grid grid-cols-2 gap-1 text-small">
+            <dl className="m-0 grid grid-cols-2 gap-1 text-body-sm">
               {(
                 [
                   "identifiers",
@@ -232,10 +233,10 @@ function MergePanel({
             </Alert>
           )}
           <p className="m-0">
-            <span className="text-small text-fg-muted">{t("patients.merges.reason")}: </span>
+            <span className="text-body-sm text-fg-muted">{t("patients.merges.reason")}: </span>
             {m.reason} · {m.requested_by}
           </p>
-          {m.decision_reason && <p className="m-0 text-small">{m.decision_reason}</p>}
+          {m.decision_reason && <p className="m-0 text-body-sm">{m.decision_reason}</p>}
           <div className="flex flex-wrap gap-2">
             {open && canApprove && !isRequester && (
               <>

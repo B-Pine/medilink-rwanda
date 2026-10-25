@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
-import { PageHeading } from "../../components/PageHeading";
+import { PageHeader } from "../../components/PageHeader";
 import { Gate } from "./shared";
 import { WalkInForm } from "./WalkInForm";
 
@@ -16,9 +16,10 @@ export function RegisterPage() {
   return (
     <Gate codes={["patient.register"]}>
       <div className="flex max-w-6xl flex-col gap-5">
-        <PageHeading title={t("patients.register.title")}>
-          {t("patients.register.title")}
-        </PageHeading>
+        <PageHeader
+          title={t("patients.register.title")}
+          back={{ to: "/patients", label: t("patients.search.title") }}
+        />
         {done ? (
           <Alert
             tone="success"

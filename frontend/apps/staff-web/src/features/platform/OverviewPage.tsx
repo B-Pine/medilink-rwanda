@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { useApi } from "../../app/services";
-import { PageHeading } from "../../components/PageHeading";
+import { PageHeader } from "../../components/PageHeader";
 import { formatDate, PlatformOnly, useLocale } from "./shared";
 
 function Tile({ label, value, to }: { label: string; value: number; to: string }) {
@@ -38,7 +38,7 @@ function Overview() {
   const data = overview.data;
   return (
     <div className="flex flex-col gap-6">
-      <PageHeading title={t("platform.overview.title")}>{t("platform.overview.title")}</PageHeading>
+      <PageHeader title={t("platform.overview.title")} />
       {overview.isPending && <LoadingState />}
       {overview.isError && <Alert tone="danger">{t("platform.table.error")}</Alert>}
       {data && (

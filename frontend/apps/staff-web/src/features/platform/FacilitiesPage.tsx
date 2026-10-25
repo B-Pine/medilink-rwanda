@@ -31,7 +31,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useParams, useSearchParams } from "react-router";
 
 import { useApi } from "../../app/services";
-import { PageHeading } from "../../components/PageHeading";
+import { PageHeader } from "../../components/PageHeader";
 import { useStepUp } from "../lock";
 import { ReasonSelect, useReasons } from "./ApplicationReviewPage";
 import {
@@ -137,9 +137,7 @@ function Facilities() {
   ];
   return (
     <div className="flex flex-col gap-5">
-      <PageHeading title={t("platform.facilities.title")}>
-        {t("platform.facilities.title")}
-      </PageHeading>
+      <PageHeader title={t("platform.facilities.title")} />
       <DataTable<PlatformFacility>
         caption={t("platform.facilities.title")}
         columns={columns}
@@ -223,13 +221,11 @@ function FacilityDetail() {
   const data = facility.data;
   return (
     <div className="flex flex-col gap-5">
-      <Link to="/platform/facilities" className="text-link">
-        {t("platform.facilities.back")}
-      </Link>
-      <div className="flex flex-wrap items-center gap-3">
-        <PageHeading title={data.name}>{data.name}</PageHeading>
-        <StatusBadge kind="facility" value={data.status} />
-      </div>
+      <PageHeader
+        title={data.name}
+        back={{ to: "/platform/facilities", label: t("platform.facilities.back") }}
+        badges={<StatusBadge kind="facility" value={data.status} />}
+      />
       <Tabs defaultValue="overview">
         <TabsList aria-label={data.name}>
           <TabsTrigger value="overview">{t("platform.facilities.tabs.overview")}</TabsTrigger>

@@ -12,7 +12,11 @@
   "age_other": "{{count}} ans",
   "ageEstimated_one": "environ {{count}} an",
   "ageEstimated_other": "environ {{count}} ans",
-  "sex": { "female": "Femme", "male": "Homme", "other": "Autre" },
+  "sex": {
+    "female": "Femme",
+    "male": "Homme",
+    "other": "Autre"
+  },
   "identifierKinds": {
     "national_id": "Carte d'identité nationale",
     "passport": "Passeport",
@@ -77,7 +81,11 @@
     "title": "Enregistrer un patient sans rendez-vous",
     "nameHint": "Tous les noms, tels que le patient les dit.",
     "ageMode": "Date de naissance ou âge",
-    "ageModes": { "dob": "Date de naissance", "years": "Âge en années", "months": "Âge en mois" },
+    "ageModes": {
+      "dob": "Date de naissance",
+      "years": "Âge en années",
+      "months": "Âge en mois"
+    },
     "phoneInvalid": "Saisissez un numéro mobile rwandais, par ex. 0788 123 456.",
     "noInsurance": "Sans assurance",
     "more": "Plus de détails (identité, dossier)",
@@ -144,7 +152,11 @@
     "seen": "J'ai vu le document"
   },
   "insurance": {
-    "status": { "unverified": "Non vérifiée", "verified": "Vérifiée", "rejected": "Refusée" },
+    "status": {
+      "unverified": "Non vérifiée",
+      "verified": "Vérifiée",
+      "rejected": "Refusée"
+    },
     "expired": "Expirée",
     "inactive": "Inutilisée",
     "none": "Aucune carte d'assurance.",
@@ -162,7 +174,11 @@
     "conditions": "Maladies",
     "medications": "Médicaments",
     "none": "Rien d'enregistré.",
-    "status": { "unverified": "Non vérifié", "verified": "Vérifié", "refuted": "Réfuté" },
+    "status": {
+      "unverified": "Non vérifié",
+      "verified": "Vérifié",
+      "refuted": "Réfuté"
+    },
     "confirm": "Confirmer",
     "add": {
       "allergies": "Ajouter une allergie",
@@ -245,5 +261,10 @@
         "consequences": "Les éléments déplacés reviennent aux dossiers d'origine, sauf s'ils ont changé depuis."
       }
     }
+  },
+  "palette": {
+    "searchFor": "Rechercher les patients « {{query}} »",
+    "results": "Patients",
+    "file": "Dossier {{number}}"
   }
 }

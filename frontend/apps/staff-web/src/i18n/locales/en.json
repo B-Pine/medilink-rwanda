@@ -145,7 +145,22 @@
       "language": "Language",
       "logout": "Log out",
       "loggingOut": "Logging out…"
-    }
+    },
+    "palette": {
+      "title": "Search or jump to",
+      "open": "Search or jump to…",
+      "placeholder": "Type a page, an action or a patient",
+      "empty": "Nothing matches. Try another word.",
+      "hints": "↑ ↓ to move · Enter to open · Esc to close",
+      "search": "Search",
+      "actions": "Actions",
+      "pages": "Go to",
+      "noResults": "No match at this facility",
+      "searchFailed": "The search did not work. Try again.",
+      "shortcut": "Ctrl K"
+    },
+    "collapse": "Collapse menu",
+    "expand": "Expand menu"
   },
   "today": {
     "title": "Today",

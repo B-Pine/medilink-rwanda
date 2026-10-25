@@ -61,6 +61,13 @@ export type {
   FilterChip,
   SortingState,
 } from "./components/DataTable";
+export { CommandPalette } from "./components/CommandPalette";
+export type {
+  CommandGroup,
+  CommandPaletteLabels,
+  CommandPaletteProps,
+  CommandRow,
+} from "./components/CommandPalette";
 export { ConfirmDialog, Dialog } from "./components/Dialog";
 export type { ConfirmDialogProps, DialogProps } from "./components/Dialog";
 export { DocumentViewer } from "./components/DocumentViewer";
@@ -107,3 +114,5 @@ export type { ProfileSwitcherProps, SwitcherProfile } from "./components/Profile
 // [/S2]
 // [S10]
 // [/S10]
+export { readPreference, writePreference } from "./preferences/storage";
+export type { PreferenceKey } from "./preferences/storage";

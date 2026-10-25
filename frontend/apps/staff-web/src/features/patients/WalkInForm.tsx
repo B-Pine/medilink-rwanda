@@ -167,7 +167,7 @@ export function WalkInForm({ onRegistered }: WalkInFormProps) {
           required
         />
         <fieldset className="m-0 flex flex-col gap-2 border-0 p-0">
-          <legend className="mb-1 text-small font-medium">{t("patients.fields.sex")}</legend>
+          <legend className="mb-1 text-body-sm font-medium">{t("patients.fields.sex")}</legend>
           <div className="flex flex-wrap gap-2" role="radiogroup">
             {SEXES.map((sex) => (
               <label
@@ -185,7 +185,7 @@ export function WalkInForm({ onRegistered }: WalkInFormProps) {
               </label>
             ))}
           </div>
-          {errors.sex && <p className="m-0 text-small text-danger">{errors.sex}</p>}
+          {errors.sex && <p className="m-0 text-body-sm text-danger">{errors.sex}</p>}
         </fieldset>
         <div className="flex flex-wrap items-end gap-3">
           <SelectField
@@ -344,10 +344,10 @@ export function WalkInForm({ onRegistered }: WalkInFormProps) {
       <aside aria-label={t("patients.register.suggestions")} aria-live="polite">
         <h2 className="m-0 mb-2 text-h3">{t("patients.register.suggestions")}</h2>
         {!duplicates && (
-          <p className="m-0 text-small text-fg-muted">{t("patients.register.suggestionsHint")}</p>
+          <p className="m-0 text-body-sm text-fg-muted">{t("patients.register.suggestionsHint")}</p>
         )}
         {duplicates && duplicates.matches.length === 0 && !duplicates.external_match && (
-          <p className="m-0 text-small">{t("patients.register.noMatches")}</p>
+          <p className="m-0 text-body-sm">{t("patients.register.noMatches")}</p>
         )}
         <ul className="m-0 flex list-none flex-col gap-2 p-0">
           {duplicates?.matches.map((m) => (
@@ -361,7 +361,7 @@ export function WalkInForm({ onRegistered }: WalkInFormProps) {
                     {m.patient.full_name}
                   </Link>
                 </div>
-                <div className="text-small text-fg-muted">
+                <div className="text-body-sm text-fg-muted">
                   {age(m.patient.age_years, m.patient.is_birth_date_estimated)} ·{" "}
                   {m.patient.phone_masked ?? "—"} · {m.patient.file_number ?? "—"}
                 </div>
@@ -372,18 +372,18 @@ export function WalkInForm({ onRegistered }: WalkInFormProps) {
         {duplicates?.external_match && (
           <Card padding="md" className="mt-2">
             <p className="m-0 font-medium">{t("patients.external.title")}</p>
-            <p className="m-0 text-small">
+            <p className="m-0 text-body-sm">
               {duplicates.external_match.full_name} · {duplicates.external_match.birth_year}
             </p>
           </Card>
         )}
         {(duplicates?.other_facility_possible_count ?? 0) > 0 && (
-          <p className="text-small text-fg-muted">
+          <p className="text-body-sm text-fg-muted">
             {t("patients.register.elsewhere", { count: duplicates?.other_facility_possible_count })}
           </p>
         )}
         {strongMatches.length > 0 && (
-          <p className="text-small text-fg-muted">{t("patients.register.strongHint")}</p>
+          <p className="text-body-sm text-fg-muted">{t("patients.register.strongHint")}</p>
         )}
       </aside>
     </div>

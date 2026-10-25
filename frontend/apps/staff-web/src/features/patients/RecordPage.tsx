@@ -32,6 +32,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
 
 import { useApi } from "../../app/services";
+import { PageHeader } from "../../components/PageHeader";
 import { PageHeading } from "../../components/PageHeading";
 import {
   actionError,
@@ -76,29 +77,35 @@ function Record() {
   const p = record.data;
   return (
     <div className="flex max-w-5xl flex-col gap-5">
-      <header className="flex flex-col gap-2">
-        <PageHeading title={p.full_name}>{p.full_name}</PageHeading>
-        <p className="m-0 text-fg-secondary">
-          {age(p.age_years, p.is_birth_date_estimated)} · {p.sex ? t(`patients.sex.${p.sex}`) : "—"}{" "}
-          · <span className="font-mono">{p.medilink_number}</span> ·{" "}
-          {t("patients.fields.fileNumber")} {p.file_number ?? "—"}
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {!p.is_active && <Badge tone="warning">{t("patients.record.merged")}</Badge>}
-          {p.is_staff_member && <Badge tone="info">{t("patients.record.staffMember")}</Badge>}
-          {p.has_account && <Badge tone="brand">{t("patients.record.hasAccount")}</Badge>}
-          {p.insurance.map((ins) => (
-            <InsuranceBadge key={ins.insurer_code} status={ins.status} expired={ins.is_expired} />
-          ))}
-        </div>
-        {!p.is_active && p.merged_into_facility_patient_id && (
-          <Alert tone="info" role="status">
-            <Link to={`/patients/${p.merged_into_facility_patient_id}`}>
-              {t("patients.record.openSurvivor")}
-            </Link>
-          </Alert>
-        )}
-      </header>
+      <PageHeader
+        title={p.full_name}
+        back={{ to: "/patients", label: t("patients.search.title") }}
+        description={
+          <p className="m-0">
+            {age(p.age_years, p.is_birth_date_estimated)} ·{" "}
+            {p.sex ? t(`patients.sex.${p.sex}`) : "—"} ·{" "}
+            <span className="font-mono">{p.medilink_number}</span> ·{" "}
+            {t("patients.fields.fileNumber")} {p.file_number ?? "—"}
+          </p>
+        }
+        badges={
+          <>
+            {!p.is_active && <Badge tone="warning">{t("patients.record.merged")}</Badge>}
+            {p.is_staff_member && <Badge tone="info">{t("patients.record.staffMember")}</Badge>}
+            {p.has_account && <Badge tone="brand">{t("patients.record.hasAccount")}</Badge>}
+            {p.insurance.map((ins) => (
+              <InsuranceBadge key={ins.insurer_code} status={ins.status} expired={ins.is_expired} />
+            ))}
+          </>
+        }
+      />
+      {!p.is_active && p.merged_into_facility_patient_id && (
+        <Alert tone="info" role="status">
+          <Link to={`/patients/${p.merged_into_facility_patient_id}`}>
+            {t("patients.record.openSurvivor")}
+          </Link>
+        </Alert>
+      )}
       <Tabs defaultValue="details">
         <TabsList aria-label={t("patients.record.sections")}>
           <TabsTrigger value="details">{t("patients.record.tabs.details")}</TabsTrigger>
@@ -278,7 +285,7 @@ function Row({
 }) {
   return (
     <div>
-      <dt className="text-small text-fg-muted">{label}</dt>
+      <dt className="text-body-sm text-fg-muted">{label}</dt>
       <dd className="m-0">{children ?? (value || "—")}</dd>
     </div>
   );
@@ -605,14 +612,14 @@ function Insurance({ record }: { record: FacilityPatientDetail }) {
             {!profile.is_active && <Badge tone="neutral">{t("patients.insurance.inactive")}</Badge>}
           </div>
           {profile.last_verified && (
-            <p className="m-0 text-small text-fg-muted">
+            <p className="m-0 text-body-sm text-fg-muted">
               {t("patients.insurance.lastVerified", {
                 facility: profile.last_verified.facility_name ?? "—",
                 date: formatDate(profile.last_verified.at, locale),
               })}
             </p>
           )}
-          {profile.status_reason && <p className="m-0 text-small">{profile.status_reason}</p>}
+          {profile.status_reason && <p className="m-0 text-body-sm">{profile.status_reason}</p>}
           {canVerify && profile.is_active && (
             <div className="flex flex-wrap gap-2">
               <Button
@@ -750,7 +757,7 @@ function Health({ record }: { record: FacilityPatientDetail }) {
           <Card key={kind} padding="md" className="flex flex-col gap-2">
             <h2 className="m-0 text-h3">{t(`patients.health.${kind}`)}</h2>
             {items.length === 0 && (
-              <p className="m-0 text-small text-fg-muted">{t("patients.health.none")}</p>
+              <p className="m-0 text-body-sm text-fg-muted">{t("patients.health.none")}</p>
             )}
             <ul className="m-0 flex list-none flex-col gap-1 p-0">
               {items.map((item) => (
@@ -834,7 +841,7 @@ function Consents({ record }: { record: FacilityPatientDetail }) {
         </p>
         {canRegister && !record.has_care_consent && (
           <>
-            <p className="m-0 text-small">{t("patients.register.consentScript")}</p>
+            <p className="m-0 text-body-sm">{t("patients.register.consentScript")}</p>
             <CheckboxField
               label={t("patients.consents.scriptRead")}
               checked={script}
@@ -851,7 +858,7 @@ function Consents({ record }: { record: FacilityPatientDetail }) {
       {canRegister && record.open_claim_reference && (
         <Card padding="md" className="flex flex-col gap-2">
           <h2 className="m-0 text-h3">{t("patients.claims.title")}</h2>
-          <p className="m-0 text-small">{t("patients.claims.hint")}</p>
+          <p className="m-0 text-body-sm">{t("patients.claims.hint")}</p>
           <TextField
             label={t("patients.claims.reference")}
             value={reference}
@@ -953,7 +960,7 @@ function ReportDuplicate({
         </form>
         {candidates.length > 0 && (
           <fieldset className="m-0 flex flex-col gap-1 border-0 p-0">
-            <legend className="text-small font-medium">
+            <legend className="text-body-sm font-medium">
               {t("patients.merges.duplicateRecord")}
             </legend>
             {candidates.map((c) => (

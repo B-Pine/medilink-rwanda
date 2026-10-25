@@ -1,0 +1,249 @@
+{
+  "notFound": "Page introuvable",
+  "nav": {
+    "merges": "Demandes de fusion",
+    "platformMerges": "Fusions de patients"
+  },
+  "close": "Fermer",
+  "cancel": "Annuler",
+  "save": "Enregistrer",
+  "required": "Ce champ est obligatoire.",
+  "age_one": "{{count}} an",
+  "age_other": "{{count}} ans",
+  "ageEstimated_one": "environ {{count}} an",
+  "ageEstimated_other": "environ {{count}} ans",
+  "sex": { "female": "Femme", "male": "Homme", "other": "Autre" },
+  "identifierKinds": {
+    "national_id": "Carte d'identité nationale",
+    "passport": "Passeport",
+    "refugee_id": "Carte de réfugié",
+    "birth_certificate": "Acte de naissance"
+  },
+  "insurers": {
+    "mutuelle": "Mutuelle de Santé",
+    "rssb": "RSSB (RAMA)",
+    "mmi": "MMI",
+    "radiant": "Radiant"
+  },
+  "fields": {
+    "name": "Noms",
+    "age": "Âge",
+    "sex": "Sexe",
+    "dateOfBirth": "Date de naissance",
+    "phone": "Téléphone",
+    "newPhone": "Nouveau numéro de téléphone",
+    "email": "E-mail",
+    "address": "Adresse",
+    "nationalId": "Identité nationale",
+    "fileNumber": "N° de dossier",
+    "medilinkNumber": "Numéro MediLink",
+    "insurance": "Assurance",
+    "insurer": "Assureur",
+    "memberNumber": "Numéro d'affilié",
+    "document": "Pièce d'identité",
+    "documentNumber": "Numéro du document",
+    "country": "Pays de délivrance",
+    "preferredName": "Nom d'usage",
+    "emergencyContact": "Contact d'urgence",
+    "notes": "Notes de l'accueil"
+  },
+  "search": {
+    "title": "Patients",
+    "label": "Rechercher un patient",
+    "placeholder": "Nom, téléphone, identité, dossier ou numéro MediLink",
+    "types": {
+      "medilink_number": "N° MediLink",
+      "national_id": "Identité",
+      "phone": "Téléphone",
+      "file_number": "N° de dossier",
+      "name": "Nom"
+    },
+    "resultCount_one": "{{count}} patient trouvé",
+    "resultCount_other": "{{count}} patients trouvés",
+    "results": "Résultats de la recherche",
+    "noResults": "Aucun patient de cet établissement ne correspond. Vérifiez l'orthographe ou cherchez par téléphone ou identité.",
+    "register": "Enregistrer un patient",
+    "shortcuts": "Appuyez sur / pour chercher et N pour un nouveau patient.",
+    "button": "Rechercher"
+  },
+  "external": {
+    "title": "Déjà sur MediLink",
+    "hint": "Cette personne est enregistrée dans un autre établissement. Demandez son numéro MediLink pour l'ajouter ici.",
+    "add": "Ajouter à cet établissement",
+    "dialogTitle": "Ajouter {{name}} à cet établissement",
+    "proofHint": "Confirmez le numéro MediLink figurant sur la carte ou le téléphone du patient."
+  },
+  "register": {
+    "title": "Enregistrer un patient sans rendez-vous",
+    "nameHint": "Tous les noms, tels que le patient les dit.",
+    "ageMode": "Date de naissance ou âge",
+    "ageModes": { "dob": "Date de naissance", "years": "Âge en années", "months": "Âge en mois" },
+    "phoneInvalid": "Saisissez un numéro mobile rwandais, par ex. 0788 123 456.",
+    "noInsurance": "Sans assurance",
+    "more": "Plus de détails (identité, dossier)",
+    "less": "Moins de détails",
+    "countryHint": "Deux lettres, par ex. UG",
+    "consentScript": "À lire à voix haute : « MediLink conserve votre dossier médical pour que les établissements que vous consultez puissent vous soigner. Seul le personnel qui vous soigne peut le voir, et vous pouvez voir qui l'a ouvert. »",
+    "consent": "Le patient a donné son consentement aux soins",
+    "possibleDuplicate": "Ce patient est peut-être déjà enregistré ici.",
+    "confirmNotDuplicate": "J'ai vérifié les correspondances : c'est une autre personne",
+    "findThem": "Le retrouver dans la recherche",
+    "submit": "Enregistrer",
+    "suggestions": "Correspondances possibles",
+    "suggestionsHint": "Les correspondances s'affichent dès que les noms et un âge, ou un téléphone, sont saisis.",
+    "noMatches": "Aucun patient similaire ici.",
+    "levels": {
+      "exact_identifier": "Même document",
+      "strong": "Très probablement la même personne",
+      "possible": "Peut-être la même personne"
+    },
+    "elsewhere_one": "{{count}} patient similaire dans un autre établissement. Demandez une pièce d'identité ou le numéro MediLink.",
+    "elsewhere_other": "{{count}} patients similaires dans d'autres établissements. Demandez une pièce d'identité ou le numéro MediLink.",
+    "strongHint": "Ouvrez la correspondance pour vérifier avant de réenregistrer.",
+    "done": "{{name}} est enregistré",
+    "number": "Numéro MediLink :",
+    "openRecord": "Ouvrir le dossier",
+    "another": "Enregistrer un autre patient"
+  },
+  "record": {
+    "merged": "Fusionné",
+    "staffMember": "Membre du personnel",
+    "hasAccount": "A un compte MediLink",
+    "openSurvivor": "Ce dossier a été fusionné. Ouvrir le dossier conservé.",
+    "sections": "Sections du dossier patient",
+    "tabs": {
+      "details": "Détails",
+      "identifiers": "Pièces d'identité",
+      "insurance": "Assurance",
+      "health": "Profil de santé",
+      "consents": "Consentements"
+    },
+    "edit": "Modifier les détails",
+    "reportDuplicate": "Signaler un doublon"
+  },
+  "reveal": {
+    "show": "Afficher",
+    "hide": "Masquer",
+    "showing": "Affichage…",
+    "description": "La valeur complète est enregistrée dans l'historique d'accès du patient avec votre motif.",
+    "reason": "Motif",
+    "reasonText": "Précisez le motif",
+    "reasons": {
+      "identity_check": "Vérification d'identité",
+      "insurance_claim": "Demande d'assurance",
+      "patient_request": "À la demande du patient",
+      "other": "Autre"
+    },
+    "titlePhone": "Afficher le numéro de téléphone",
+    "titleIdentifier": "Afficher la pièce d'identité"
+  },
+  "identifiers": {
+    "none": "Aucune pièce d'identité.",
+    "checked": "Vérifiée",
+    "add": "Ajouter une pièce",
+    "seen": "J'ai vu le document"
+  },
+  "insurance": {
+    "status": { "unverified": "Non vérifiée", "verified": "Vérifiée", "rejected": "Refusée" },
+    "expired": "Expirée",
+    "inactive": "Inutilisée",
+    "none": "Aucune carte d'assurance.",
+    "lastVerified": "Vérifiée à {{facility}} le {{date}}",
+    "verify": "Marquer vérifiée",
+    "reject": "Refuser",
+    "rejectTitle": "Refuser cette carte",
+    "rejectConsequences": "La carte restera refusée jusqu'à une nouvelle vérification.",
+    "reason": "Motif",
+    "add": "Ajouter une carte"
+  },
+  "health": {
+    "noKnownAllergies": "Aucune allergie connue",
+    "allergies": "Allergies",
+    "conditions": "Maladies",
+    "medications": "Médicaments",
+    "none": "Rien d'enregistré.",
+    "status": { "unverified": "Non vérifié", "verified": "Vérifié", "refuted": "Réfuté" },
+    "confirm": "Confirmer",
+    "add": {
+      "allergies": "Ajouter une allergie",
+      "conditions": "Ajouter une maladie",
+      "medications": "Ajouter un médicament"
+    },
+    "addButton": "Ajouter"
+  },
+  "consents": {
+    "hasCare": "Consentement aux soins enregistré.",
+    "noCare": "Pas encore de consentement aux soins.",
+    "scriptRead": "J'ai lu le texte de consentement et le patient a accepté",
+    "record": "Enregistrer le consentement"
+  },
+  "claims": {
+    "title": "Réclamation de dossier",
+    "hint": "Le patient veut lier ce dossier à son compte MediLink. Vérifiez d'abord une pièce d'identité.",
+    "reference": "Référence de la demande",
+    "documentMatches": "La pièce d'identité correspond à ce dossier",
+    "confirm": "Confirmer la réclamation",
+    "done": "Le dossier est maintenant lié au compte du patient."
+  },
+  "merges": {
+    "filter": "Filtrer par état",
+    "all": "Toutes",
+    "none": "Aucune demande de fusion.",
+    "status": {
+      "requested": "En attente",
+      "executed": "Fusionnée",
+      "rejected": "Refusée",
+      "cancelled": "Annulée",
+      "undone": "Annulée après fusion"
+    },
+    "scope": {
+      "facility": "Cet établissement",
+      "cross_facility": "Plusieurs établissements",
+      "claim": "Réclamation"
+    },
+    "escalated": "transmise à l'équipe plateforme",
+    "panelTitle": "Demande de fusion",
+    "surviving": "Conserver",
+    "merged": "Fusionner dedans",
+    "preview": {
+      "identifiers": "Pièces d'identité",
+      "insurance_profiles": "Cartes d'assurance",
+      "health_items": "Éléments de santé",
+      "account_links": "Liens de compte",
+      "other_facilities": "Autres établissements"
+    },
+    "conflicts": "Documents différents du même type : {{kinds}}. Ces dossiers ne peuvent pas être fusionnés.",
+    "reason": "Motif",
+    "approve": "Approuver et fusionner",
+    "reject": "Refuser",
+    "cancel": "Annuler la demande",
+    "escalate": "Transmettre à l'équipe plateforme",
+    "undo": "Annuler la fusion",
+    "request": "Demander la fusion",
+    "requestHint": "Choisissez l'autre dossier de {{name}}. Un autre approbateur décidera.",
+    "findOther": "Trouver l'autre dossier",
+    "duplicateRecord": "Dossier en double",
+    "confirm": {
+      "approve": {
+        "title": "Fusionner ces dossiers ?",
+        "consequences": "Les documents, l'assurance, les éléments de santé et le numéro de dossier passent au dossier conservé. Vous pourrez annuler plus tard."
+      },
+      "reject": {
+        "title": "Refuser cette demande ?",
+        "consequences": "Les dossiers restent séparés."
+      },
+      "cancel": {
+        "title": "Annuler votre demande ?",
+        "consequences": "La demande est close sans décision."
+      },
+      "escalate": {
+        "title": "Transmettre à l'équipe plateforme ?",
+        "consequences": "Personne d'autre ici ne peut l'approuver ; l'équipe plateforme décidera."
+      },
+      "undo": {
+        "title": "Annuler cette fusion ?",
+        "consequences": "Les éléments déplacés reviennent aux dossiers d'origine, sauf s'ils ont changé depuis."
+      }
+    }
+  }
+}

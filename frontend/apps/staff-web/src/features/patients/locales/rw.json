@@ -1,0 +1,241 @@
+{
+  "notFound": "Iyi paji ntibonetse",
+  "nav": {
+    "merges": "Ubusabe bwo guhuza",
+    "platformMerges": "Guhuza abarwayi"
+  },
+  "close": "Funga",
+  "cancel": "Reka",
+  "save": "Bika",
+  "required": "Ibi birakenewe.",
+  "age_one": "Umwaka {{count}}",
+  "age_other": "Imyaka {{count}}",
+  "ageEstimated_one": "Hafi umwaka {{count}}",
+  "ageEstimated_other": "Hafi imyaka {{count}}",
+  "sex": { "female": "Gore", "male": "Gabo", "other": "Ikindi" },
+  "identifierKinds": {
+    "national_id": "Indangamuntu",
+    "passport": "Pasiporo",
+    "refugee_id": "Ikarita y'impunzi",
+    "birth_certificate": "Icyemezo cy'amavuko"
+  },
+  "insurers": { "mutuelle": "Mituweli", "rssb": "RSSB (RAMA)", "mmi": "MMI", "radiant": "Radiant" },
+  "fields": {
+    "name": "Amazina",
+    "age": "Imyaka",
+    "sex": "Igitsina",
+    "dateOfBirth": "Itariki y'amavuko",
+    "phone": "Telefoni",
+    "newPhone": "Nimero nshya ya telefoni",
+    "email": "Imeyili",
+    "address": "Aderesi",
+    "nationalId": "Indangamuntu",
+    "fileNumber": "Nomero ya dosiye",
+    "medilinkNumber": "Nomero ya MediLink",
+    "insurance": "Ubwishingizi",
+    "insurer": "Umwishingizi",
+    "memberNumber": "Nomero y'umunyamuryango",
+    "document": "Icyangombwa",
+    "documentNumber": "Nomero y'icyangombwa",
+    "country": "Igihugu cyagitanze",
+    "preferredName": "Izina akunda",
+    "emergencyContact": "Uwo guhamagara mu byihutirwa",
+    "notes": "Ibisobanuro by'iyakira"
+  },
+  "search": {
+    "title": "Abarwayi",
+    "label": "Shakisha umurwayi",
+    "placeholder": "Izina, telefoni, indangamuntu, dosiye cyangwa nomero ya MediLink",
+    "types": {
+      "medilink_number": "Nomero ya MediLink",
+      "national_id": "Indangamuntu",
+      "phone": "Telefoni",
+      "file_number": "Nomero ya dosiye",
+      "name": "Izina"
+    },
+    "resultCount_one": "Umurwayi {{count}} wabonetse",
+    "resultCount_other": "Abarwayi {{count}} babonetse",
+    "results": "Ibyavuye mu ishakisha",
+    "noResults": "Nta murwayi wo muri iki kigo uhuye n'ibi. Reba uko wanditse, cyangwa ushakishe ukoresheje telefoni cyangwa indangamuntu.",
+    "register": "Andika umurwayi mushya",
+    "shortcuts": "Kanda / ushakishe, na N wandike umurwayi mushya.",
+    "button": "Shakisha"
+  },
+  "external": {
+    "title": "Asanzwe kuri MediLink",
+    "hint": "Uyu muntu yanditswe mu kindi kigo. Musabe nomero ye ya MediLink kugira ngo umwongere hano.",
+    "add": "Mwongere kuri iki kigo",
+    "dialogTitle": "Ongera {{name}} kuri iki kigo",
+    "proofHint": "Emeza nomero ya MediLink iri ku ikarita cyangwa kuri telefoni y'umurwayi."
+  },
+  "register": {
+    "title": "Andika umurwayi utabanje gufata gahunda",
+    "nameHint": "Amazina yose, nk'uko umurwayi ayavuga.",
+    "ageMode": "Itariki y'amavuko cyangwa imyaka",
+    "ageModes": { "dob": "Itariki y'amavuko", "years": "Imyaka", "months": "Amezi" },
+    "phoneInvalid": "Andika nimero ya telefoni yo mu Rwanda nka 0788 123 456.",
+    "noInsurance": "Nta bwishingizi",
+    "more": "Ibindi bisobanuro (indangamuntu, dosiye)",
+    "less": "Ibisobanuro bike",
+    "countryHint": "Inyuguti ebyiri, urugero UG",
+    "consentScript": "Soma mu ijwi riranguruye: \"MediLink ibika amakuru y'ubuzima bwawe kugira ngo ibigo ujyamo bigufashe. Abakozi bakuvura ni bo bonyine bayabona, kandi ushobora kureba uwayafunguye.\"",
+    "consent": "Umurwayi yemeye kuvurwa",
+    "possibleDuplicate": "Uyu murwayi ashobora kuba asanzwe yanditswe hano.",
+    "confirmNotDuplicate": "Nagenzuye abasa na we: ni undi muntu",
+    "findThem": "Mushakire mu ishakisha",
+    "submit": "Andika",
+    "suggestions": "Abashobora kuba ari we",
+    "suggestionsHint": "Abasa na we bagaragara hano iyo amazina n'imyaka, cyangwa telefoni, byujujwe.",
+    "noMatches": "Nta murwayi usa na we uri hano.",
+    "levels": {
+      "exact_identifier": "Icyangombwa kimwe",
+      "strong": "Birashoboka cyane ko ari we",
+      "possible": "Ashobora kuba ari we"
+    },
+    "elsewhere_one": "Umurwayi {{count}} usa na we ari mu kindi kigo. Saba indangamuntu cyangwa nomero ya MediLink.",
+    "elsewhere_other": "Abarwayi {{count}} basa na we bari mu bindi bigo. Saba indangamuntu cyangwa nomero ya MediLink.",
+    "strongHint": "Fungura uwo usa na we ugenzure mbere yo kongera kwandika.",
+    "done": "{{name}} yanditswe",
+    "number": "Nomero ya MediLink:",
+    "openRecord": "Fungura dosiye",
+    "another": "Andika undi"
+  },
+  "record": {
+    "merged": "Yahujwe",
+    "staffMember": "Umukozi",
+    "hasAccount": "Afite konti ya MediLink",
+    "openSurvivor": "Iyi dosiye yahujwe. Fungura dosiye isigaye.",
+    "sections": "Ibice bya dosiye y'umurwayi",
+    "tabs": {
+      "details": "Amakuru",
+      "identifiers": "Ibyangombwa",
+      "insurance": "Ubwishingizi",
+      "health": "Ubuzima",
+      "consents": "Uruhushya"
+    },
+    "edit": "Hindura amakuru",
+    "reportDuplicate": "Menyesha dosiye ebyiri"
+  },
+  "reveal": {
+    "show": "Erekana",
+    "hide": "Hisha",
+    "showing": "Birerekanwa…",
+    "description": "Agaciro kose kandikwa mu mateka y'abafunguye dosiye y'umurwayi hamwe n'impamvu yawe.",
+    "reason": "Impamvu",
+    "reasonText": "Sobanura impamvu",
+    "reasons": {
+      "identity_check": "Kugenzura umwirondoro",
+      "insurance_claim": "Ubwishingizi",
+      "patient_request": "Umurwayi yabisabye",
+      "other": "Ikindi"
+    },
+    "titlePhone": "Erekana nimero ya telefoni",
+    "titleIdentifier": "Erekana icyangombwa"
+  },
+  "identifiers": {
+    "none": "Nta cyangombwa kirandikwa.",
+    "checked": "Cyagenzuwe",
+    "add": "Ongeraho icyangombwa",
+    "seen": "Nabonye icyangombwa"
+  },
+  "insurance": {
+    "status": { "unverified": "Ntiragenzurwa", "verified": "Yagenzuwe", "rejected": "Yanzwe" },
+    "expired": "Yarangiye",
+    "inactive": "Ntikoreshwa",
+    "none": "Nta karita y'ubwishingizi.",
+    "lastVerified": "Yagenzuwe kuri {{facility}} ku wa {{date}}",
+    "verify": "Emeza ko yagenzuwe",
+    "reject": "Yanga",
+    "rejectTitle": "Yanga iyi karita",
+    "rejectConsequences": "Ikarita izagaragara nk'iyanzwe kugeza yongeye kugenzurwa.",
+    "reason": "Impamvu",
+    "add": "Ongeraho ikarita"
+  },
+  "health": {
+    "noKnownAllergies": "Nta allergie izwi",
+    "allergies": "Allergie",
+    "conditions": "Indwara",
+    "medications": "Imiti",
+    "none": "Nta na kimwe cyanditswe.",
+    "status": { "unverified": "Ntiragenzurwa", "verified": "Yagenzuwe", "refuted": "Yahakanywe" },
+    "confirm": "Emeza",
+    "add": {
+      "allergies": "Ongeraho allergie",
+      "conditions": "Ongeraho indwara",
+      "medications": "Ongeraho umuti"
+    },
+    "addButton": "Ongeraho"
+  },
+  "consents": {
+    "hasCare": "Uruhushya rwo kuvurwa rwanditswe.",
+    "noCare": "Nta ruhushya rwo kuvurwa ruranditswe.",
+    "scriptRead": "Nasomye inyandiko y'uruhushya kandi umurwayi yarwemeye",
+    "record": "Andika uruhushya"
+  },
+  "claims": {
+    "title": "Gusaba dosiye",
+    "hint": "Umurwayi arashaka guhuza iyi dosiye na konti ye ya MediLink. Banza ugenzure icyangombwa.",
+    "reference": "Nomero y'ubusabe",
+    "documentMatches": "Icyangombwa gihuye n'iyi dosiye",
+    "confirm": "Emeza ubusabe",
+    "done": "Dosiye ubu ihujwe na konti y'umurwayi."
+  },
+  "merges": {
+    "filter": "Shungura ukurikije uko bihagaze",
+    "all": "Byose",
+    "none": "Nta busabe bwo guhuza.",
+    "status": {
+      "requested": "Birategereje",
+      "executed": "Byahujwe",
+      "rejected": "Byanzwe",
+      "cancelled": "Byahagaritswe",
+      "undone": "Byasubijwe inyuma"
+    },
+    "scope": {
+      "facility": "Iki kigo",
+      "cross_facility": "Ibigo byinshi",
+      "claim": "Gusaba dosiye"
+    },
+    "escalated": "byoherejwe ku itsinda rya platform",
+    "panelTitle": "Ubusabe bwo guhuza",
+    "surviving": "Igumaho",
+    "merged": "Ihuzwa nayo",
+    "preview": {
+      "identifiers": "Ibyangombwa",
+      "insurance_profiles": "Amakarita y'ubwishingizi",
+      "health_items": "Amakuru y'ubuzima",
+      "account_links": "Konti zihujwe",
+      "other_facilities": "Ibindi bigo"
+    },
+    "conflicts": "Ibyangombwa bitandukanye by'ubwoko bumwe: {{kinds}}. Izi dosiye ntizishobora guhuzwa.",
+    "reason": "Impamvu",
+    "approve": "Emeza uhuze",
+    "reject": "Yanga",
+    "cancel": "Hagarika ubusabe",
+    "escalate": "Ohereza ku itsinda rya platform",
+    "undo": "Subiza inyuma",
+    "request": "Saba guhuza",
+    "requestHint": "Hitamo indi dosiye ya {{name}}. Undi muntu ni we uzafata icyemezo.",
+    "findOther": "Shakisha indi dosiye",
+    "duplicateRecord": "Dosiye yikubye",
+    "confirm": {
+      "approve": {
+        "title": "Guhuza izi dosiye?",
+        "consequences": "Ibyangombwa, ubwishingizi, amakuru y'ubuzima na nomero ya dosiye bijya kuri dosiye isigaye. Ushobora kubisubiza inyuma nyuma."
+      },
+      "reject": { "title": "Kwanga ubu busabe?", "consequences": "Dosiye zikomeza gutandukana." },
+      "cancel": {
+        "title": "Guhagarika ubusabe bwawe?",
+        "consequences": "Ubusabe burafungwa nta cyemezo gifashwe."
+      },
+      "escalate": {
+        "title": "Kohereza ku itsinda rya platform?",
+        "consequences": "Nta wundi hano ushobora kubwemeza, itsinda rya platform ni ryo rizafata icyemezo."
+      },
+      "undo": {
+        "title": "Gusubiza inyuma uku guhuza?",
+        "consequences": "Ibyimuwe bisubira muri dosiye za mbere, keretse niba byarahindutse."
+      }
+    }
+  }
+}

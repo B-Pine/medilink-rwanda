@@ -103,3 +103,7 @@ export type { ProfileSwitcherProps, SwitcherProfile } from "./components/Profile
 // [/S3]
 // [S9]
 // [/S9]
+// [S2]
+// [/S2]
+// [S10]
+// [/S10]

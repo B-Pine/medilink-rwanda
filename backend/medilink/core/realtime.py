@@ -133,6 +133,10 @@ class StaffPingConsumer(AsyncJsonWebsocketConsumer):
 # [/S3 imports]
 # [S9 imports]
 # [/S9 imports]
+# [S2 imports]
+# [/S2 imports]
+# [S10 imports]
+# [/S10 imports]
 
 websocket_urlpatterns = [
     path("ws/v1/staff/ping/", StaffPingConsumer.as_asgi()),
@@ -143,6 +147,10 @@ websocket_urlpatterns = [
     # [/S3]
     # [S9]
     # [/S9]
+    # [S2]
+    # [/S2]
+    # [S10]
+    # [/S10]
 ]
 
 

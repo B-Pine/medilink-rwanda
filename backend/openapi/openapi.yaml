@@ -4371,6 +4371,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Not previewed, has errors or expired
+  /api/v1/platform/memberships/{membership_id}/mfa-reset/:
+    post:
+      operationId: platform_memberships_mfa_reset
+      parameters:
+      - in: path
+        name: membership_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-staff
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '204':
+          description: No response body
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: not a facility admin
   /api/v1/platform/merge-requests/:
     get:
       operationId: platform_merge_requests_list
@@ -5065,6 +5089,64 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: 'not_found: not an active member of this facility'
+  /api/v1/staff/auth/invitations/accept/:
+    post:
+      operationId: staff_auth_invitation_accept
+      tags:
+      - staff-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcceptNewRequest'
+        required: true
+      security:
+      - staffSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResult'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: invalid token or password
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: other account signed in
+  /api/v1/staff/auth/invitations/lookup/:
+    post:
+      operationId: staff_auth_invitation_lookup
+      tags:
+      - staff-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+        required: true
+      security:
+      - staffSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvitationLookup'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: invalid or expired (generic)
   /api/v1/staff/auth/lock/:
     get:
       operationId: staff_auth_lock_state
@@ -5391,6 +5473,647 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: PIN not set, PIN unlock off or temporarily blocked
+  /api/v1/staff/clinician-profile/:
+    get:
+      operationId: staff_clinician_profile_retrieve
+      tags:
+      - staff-team
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClinicianProfile'
+          description: ''
+    patch:
+      operationId: staff_clinician_profile_update
+      tags:
+      - staff-team
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedClinicianProfileRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClinicianProfile'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: licence already registered
+  /api/v1/staff/departments/:
+    get:
+      operationId: staff_departments_list
+      tags:
+      - staff-facility-catalogue
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Department'
+          description: ''
+    post:
+      operationId: staff_departments_create
+      tags:
+      - staff-facility-catalogue
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+          description: ''
+  /api/v1/staff/departments/{department_id}/:
+    patch:
+      operationId: staff_departments_update
+      parameters:
+      - in: path
+        name: department_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-facility-catalogue
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDepartmentUpdateRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+          description: ''
+  /api/v1/staff/facility/:
+    get:
+      operationId: staff_facility_retrieve
+      tags:
+      - staff-facility
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityProfile'
+          description: ''
+    patch:
+      operationId: staff_facility_update
+      tags:
+      - staff-facility
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFacilityProfileUpdateRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityProfile'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: conflict
+  /api/v1/staff/facility/branding/:
+    get:
+      operationId: staff_facility_branding_retrieve
+      tags:
+      - staff-facility
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrandingResponse'
+          description: ''
+    put:
+      operationId: staff_facility_branding_replace
+      tags:
+      - staff-facility
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BrandingRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrandingResponse'
+          description: ''
+  /api/v1/staff/facility/calendar/:
+    get:
+      operationId: staff_facility_calendar
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+      - in: query
+        name: service_id
+        schema:
+          type: string
+      - in: query
+        name: to
+        schema:
+          type: string
+      tags:
+      - staff-facility
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Calendar'
+          description: ''
+  /api/v1/staff/facility/calendar-events/:
+    get:
+      operationId: staff_facility_calendar_events_list
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+      - in: query
+        name: to
+        schema:
+          type: string
+      tags:
+      - staff-facility
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CalendarEvent'
+          description: ''
+    post:
+      operationId: staff_facility_calendar_events_create
+      tags:
+      - staff-facility
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalendarEventRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarEvent'
+          description: ''
+  /api/v1/staff/facility/calendar-events/{event_id}/:
+    patch:
+      operationId: staff_facility_calendar_events_update
+      parameters:
+      - in: path
+        name: event_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-facility
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCalendarEventRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalendarEvent'
+          description: ''
+    delete:
+      operationId: staff_facility_calendar_events_delete
+      parameters:
+      - in: path
+        name: event_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-facility
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/facility/config-changes/:
+    get:
+      operationId: staff_facility_config_changes
+      parameters:
+      - in: query
+        name: entity
+        schema:
+          type: string
+      - in: query
+        name: page
+        schema:
+          type: integer
+      tags:
+      - staff-facility
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConfigChange'
+          description: ''
+  /api/v1/staff/facility/go-live/:
+    post:
+      operationId: staff_facility_go_live
+      tags:
+      - staff-facility
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoLiveRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityProfile'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: failing checks in fields
+  /api/v1/staff/facility/opening-hours/:
+    get:
+      operationId: staff_facility_hours_retrieve
+      parameters:
+      - in: query
+        name: service_id
+        schema:
+          type: string
+      tags:
+      - staff-facility
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HoursResponse'
+          description: ''
+    put:
+      operationId: staff_facility_hours_replace
+      tags:
+      - staff-facility
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HoursRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HoursResponse'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: conflict
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: outside facility hours
+  /api/v1/staff/facility/photos/:
+    post:
+      operationId: staff_facility_photos_create
+      tags:
+      - staff-facility
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PhotoRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityProfile'
+          description: ''
+  /api/v1/staff/facility/photos/{upload_id}/:
+    delete:
+      operationId: staff_facility_photos_delete
+      parameters:
+      - in: path
+        name: upload_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-facility
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/facility/settings/:
+    get:
+      operationId: staff_facility_settings_retrieve
+      tags:
+      - staff-facility
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settings'
+          description: ''
+    patch:
+      operationId: staff_facility_settings_update
+      tags:
+      - staff-facility
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedSettingsUpdateRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Settings'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required (billing)
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: conflict
+  /api/v1/staff/facility/setup-checklist/:
+    get:
+      operationId: staff_facility_setup_checklist
+      tags:
+      - staff-facility
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Checklist'
+          description: ''
+  /api/v1/staff/insurer-rules/:
+    get:
+      operationId: staff_insurer_rules_list
+      parameters:
+      - in: query
+        name: 'on'
+        schema:
+          type: string
+      tags:
+      - staff-billing-setup
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InsurerRule'
+          description: ''
+    post:
+      operationId: staff_insurer_rules_create
+      tags:
+      - staff-billing-setup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InsurerRuleRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsurerRule'
+          description: ''
+  /api/v1/staff/insurer-rules/{rule_id}/:
+    patch:
+      operationId: staff_insurer_rules_change
+      parameters:
+      - in: path
+        name: rule_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-billing-setup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedInsurerRuleChangeRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsurerRuleChangeResponse'
+          description: ''
+  /api/v1/staff/invitations/:
+    get:
+      operationId: staff_invitations_list
+      tags:
+      - staff-team
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invitation'
+          description: ''
+    post:
+      operationId: staff_invitations_create
+      tags:
+      - staff-team
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvitationCreateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitation'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: pending invitation or already a member
+  /api/v1/staff/invitations/{invitation_id}/{action}/:
+    post:
+      operationId: staff_invitations_action
+      parameters:
+      - in: path
+        name: action
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: invitation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-team
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invitation'
+          description: ''
   /api/v1/staff/master-data/diagnosis-codes/:
     get:
       operationId: staff_master_data_diagnosis_codes_list
@@ -5745,6 +6468,129 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedSymptomsItemList'
           description: ''
+  /api/v1/staff/memberships/:
+    get:
+      operationId: staff_memberships_list
+      parameters:
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: query
+        name: role
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+      tags:
+      - staff-team
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StaffMembership'
+          description: ''
+  /api/v1/staff/memberships/{membership_id}/:
+    get:
+      operationId: staff_memberships_retrieve
+      parameters:
+      - in: path
+        name: membership_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-team
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffMembership'
+          description: ''
+    patch:
+      operationId: staff_memberships_update
+      parameters:
+      - in: path
+        name: membership_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-team
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMembershipUpdateRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffMembership'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: last facility admin
+  /api/v1/staff/memberships/{membership_id}/{action}/:
+    post:
+      operationId: staff_memberships_action
+      parameters:
+      - in: path
+        name: action
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: membership_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-team
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffMembership'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: rule
   /api/v1/staff/merge-requests/:
     get:
       operationId: staff_merge_requests_list
@@ -6572,6 +7418,449 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: rate_limited
+  /api/v1/staff/roles/:
+    get:
+      operationId: staff_roles_list
+      tags:
+      - staff-team
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Role'
+          description: ''
+  /api/v1/staff/schedule-exceptions/:
+    get:
+      operationId: staff_schedule_exceptions_list
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+      - in: query
+        name: membership_id
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+      - in: query
+        name: to
+        schema:
+          type: string
+      tags:
+      - staff-schedules
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Exception'
+          description: ''
+    post:
+      operationId: staff_schedule_exceptions_create
+      tags:
+      - staff-schedules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExceptionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionResponse'
+          description: ''
+  /api/v1/staff/schedule-exceptions/{exception_id}/{action}/:
+    post:
+      operationId: staff_schedule_exceptions_action
+      parameters:
+      - in: path
+        name: action
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: exception_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-schedules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExceptionDecisionRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Exception'
+          description: ''
+  /api/v1/staff/schedule-overview/:
+    get:
+      operationId: staff_schedule_overview
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+      - in: query
+        name: to
+        schema:
+          type: string
+      tags:
+      - staff-schedules
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleOverview'
+          description: ''
+  /api/v1/staff/schedule-templates/:
+    get:
+      operationId: staff_schedule_templates_list
+      parameters:
+      - in: query
+        name: membership_id
+        schema:
+          type: string
+      - in: query
+        name: service_id
+        schema:
+          type: string
+      tags:
+      - staff-schedules
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Template'
+          description: ''
+    post:
+      operationId: staff_schedule_templates_create
+      tags:
+      - staff-schedules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+          description: ''
+  /api/v1/staff/schedule-templates/{template_id}/:
+    patch:
+      operationId: staff_schedule_templates_update
+      parameters:
+      - in: path
+        name: template_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-schedules
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTemplateUpdateRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+          description: ''
+    delete:
+      operationId: staff_schedule_templates_end
+      parameters:
+      - in: path
+        name: template_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-schedules
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/service-points/:
+    get:
+      operationId: staff_service_points_list
+      tags:
+      - staff-facility-catalogue
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ServicePoint'
+          description: ''
+    post:
+      operationId: staff_service_points_create
+      tags:
+      - staff-facility-catalogue
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServicePointRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServicePoint'
+          description: ''
+  /api/v1/staff/service-points/{point_id}/:
+    patch:
+      operationId: staff_service_points_update
+      parameters:
+      - in: path
+        name: point_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-facility-catalogue
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedServicePointUpdateRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServicePoint'
+          description: ''
+  /api/v1/staff/services/:
+    get:
+      operationId: staff_services_list
+      tags:
+      - staff-facility-catalogue
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Service'
+          description: ''
+    post:
+      operationId: staff_services_create
+      tags:
+      - staff-facility-catalogue
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServiceRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ticket prefix taken
+  /api/v1/staff/services/{service_id}/:
+    patch:
+      operationId: staff_services_update
+      parameters:
+      - in: path
+        name: service_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-facility-catalogue
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedServiceUpdateRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceResponse'
+          description: ''
+  /api/v1/staff/tariff-items/:
+    get:
+      operationId: staff_tariff_items_list
+      parameters:
+      - in: query
+        name: 'on'
+        schema:
+          type: string
+      tags:
+      - staff-billing-setup
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tariff'
+          description: ''
+    post:
+      operationId: staff_tariff_items_create
+      tags:
+      - staff-billing-setup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TariffRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tariff'
+          description: ''
+  /api/v1/staff/tariff-items/{code}/history/:
+    get:
+      operationId: staff_tariff_items_history
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      tags:
+      - staff-billing-setup
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tariff'
+          description: ''
+  /api/v1/staff/tariff-items/{item_id}/:
+    patch:
+      operationId: staff_tariff_items_change
+      parameters:
+      - in: path
+        name: item_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-billing-setup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTariffChangeRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TariffChangeResponse'
+          description: ''
   /api/v1/staff/uploads/:
     post:
       operationId: staff_uploads_create
@@ -6680,6 +7969,25 @@ paths:
           description: The file isn't clean (yet)
 components:
   schemas:
+    AcceptNewRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        token:
+          type: string
+          minLength: 1
+          maxLength: 200
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 128
+      required:
+      - token
     AccessHistoryItem:
       type: object
       properties:
@@ -7153,6 +8461,95 @@ components:
     BlankEnum:
       enum:
       - ''
+    Block:
+      type: object
+      properties:
+        membership_id:
+          type: string
+          format: uuid
+        template_id:
+          type: string
+          format: uuid
+          nullable: true
+        service_id:
+          type: string
+          format: uuid
+        service_point_id:
+          type: string
+          format: uuid
+          nullable: true
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+        slot_minutes:
+          type: integer
+          nullable: true
+        capacity:
+          type: integer
+        bookable_share_pct:
+          type: integer
+      required:
+      - bookable_share_pct
+      - capacity
+      - ends_at
+      - membership_id
+      - service_id
+      - service_point_id
+      - slot_minutes
+      - starts_at
+      - template_id
+    BrandingRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        letterhead_upload_id:
+          type: string
+          format: uuid
+          nullable: true
+        logo_upload_id:
+          type: string
+          format: uuid
+          nullable: true
+        stamp_upload_id:
+          type: string
+          format: uuid
+          nullable: true
+        footer_text:
+          type: string
+          maxLength: 300
+      required:
+      - version
+    BrandingResponse:
+      type: object
+      properties:
+        letterhead_upload_id:
+          type: string
+          format: uuid
+          nullable: true
+        logo_upload_id:
+          type: string
+          format: uuid
+          nullable: true
+        stamp_upload_id:
+          type: string
+          format: uuid
+          nullable: true
+        footer_text:
+          type: string
+        version:
+          type: integer
+      required:
+      - footer_text
+      - letterhead_upload_id
+      - logo_upload_id
+      - stamp_upload_id
+      - version
     ByEnum:
       enum:
       - auto
@@ -7171,6 +8568,132 @@ components:
         * `identifier` - identifier
         * `file_number` - file_number
         * `medilink_number` - medilink_number
+    Calendar:
+      type: object
+      properties:
+        days:
+          type: array
+          items:
+            $ref: '#/components/schemas/CalendarDay'
+      required:
+      - days
+    CalendarDay:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        open:
+          type: array
+          items:
+            $ref: '#/components/schemas/CalendarRange'
+        closed_reason:
+          type: string
+          nullable: true
+        holiday_name:
+          type: string
+          nullable: true
+        umuganda:
+          type: boolean
+      required:
+      - closed_reason
+      - date
+      - holiday_name
+      - open
+      - umuganda
+    CalendarEvent:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        kind:
+          $ref: '#/components/schemas/CalendarEventKindEnum'
+        service_id:
+          type: string
+          format: uuid
+          nullable: true
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+        is_open:
+          type: boolean
+          default: false
+        opens_at:
+          type: string
+          format: time
+          nullable: true
+        closes_at:
+          type: string
+          format: time
+          nullable: true
+        reason:
+          type: string
+          maxLength: 200
+      required:
+      - ends_at
+      - id
+      - kind
+      - starts_at
+    CalendarEventKindEnum:
+      enum:
+      - closure
+      - holiday_override
+      - special_day
+      type: string
+      description: |-
+        * `closure` - Closure
+        * `holiday_override` - Open on a public holiday
+        * `special_day` - Special hours
+    CalendarEventRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        kind:
+          $ref: '#/components/schemas/CalendarEventKindEnum'
+        service_id:
+          type: string
+          format: uuid
+          nullable: true
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+        is_open:
+          type: boolean
+          default: false
+        opens_at:
+          type: string
+          format: time
+          nullable: true
+        closes_at:
+          type: string
+          format: time
+          nullable: true
+        reason:
+          type: string
+          maxLength: 200
+      required:
+      - ends_at
+      - kind
+      - starts_at
+    CalendarRange:
+      type: object
+      properties:
+        starts:
+          type: string
+        ends:
+          type: string
+      required:
+      - ends
+      - starts
     CardImageRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -7206,6 +8729,37 @@ components:
         * `drug` - Drug
         * `food` - Food
         * `other` - Other
+    Checklist:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChecklistItem'
+        complete:
+          type: boolean
+        status:
+          type: string
+      required:
+      - complete
+      - items
+      - status
+    ChecklistItem:
+      type: object
+      properties:
+        code:
+          type: string
+        done:
+          type: boolean
+        count:
+          type: integer
+        link:
+          type: string
+      required:
+      - code
+      - count
+      - done
+      - link
     ClaimConfirmationRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -7263,6 +8817,40 @@ components:
       required:
       - claim
       - profile
+    Clinician:
+      type: object
+      properties:
+        council:
+          type: string
+        licence_number:
+          type: string
+        specialty:
+          type: string
+        attested_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - attested_at
+      - council
+      - licence_number
+      - specialty
+    ClinicianProfile:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        council:
+          $ref: '#/components/schemas/CouncilEnum'
+        licence_number:
+          type: string
+          pattern: ^[A-Za-z0-9/._-]{2,40}$
+        specialty:
+          type: string
+          default: ''
+          maxLength: 100
+      required:
+      - council
+      - licence_number
     CodeRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -7295,6 +8883,37 @@ components:
       - emergency_contact
       - identifier
       - insurance
+    ConfigChange:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        entity:
+          type: string
+        entity_id:
+          type: string
+        field:
+          type: string
+        old_value:
+          nullable: true
+        new_value:
+          nullable: true
+        actor_name:
+          type: string
+          nullable: true
+        changed_at:
+          type: string
+          format: date-time
+      required:
+      - actor_name
+      - changed_at
+      - entity
+      - entity_id
+      - field
+      - id
+      - new_value
+      - old_value
     ConsentInputKindEnum:
       enum:
       - terms
@@ -7375,6 +8994,18 @@ components:
       - consents
       - current_versions
       - history
+    CouncilEnum:
+      enum:
+      - rmdc
+      - ncnm
+      - npc
+      - other
+      type: string
+      description: |-
+        * `rmdc` - Rwanda Medical and Dental Council
+        * `ncnm` - National Council of Nurses and Midwives
+        * `npc` - National Pharmacy Council
+        * `other` - Other council
     CsrfToken:
       type: object
       properties:
@@ -7382,6 +9013,58 @@ components:
           type: string
       required:
       - csrf_token
+    Day:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        weekday:
+          type: integer
+          maximum: 6
+          minimum: 0
+        opens_at:
+          type: string
+          format: time
+        closes_at:
+          type: string
+          format: time
+        break_starts_at:
+          type: string
+          format: time
+          nullable: true
+        break_ends_at:
+          type: string
+          format: time
+          nullable: true
+      required:
+      - closes_at
+      - opens_at
+      - weekday
+    DayRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        weekday:
+          type: integer
+          maximum: 6
+          minimum: 0
+        opens_at:
+          type: string
+          format: time
+        closes_at:
+          type: string
+          format: time
+        break_starts_at:
+          type: string
+          format: time
+          nullable: true
+        break_ends_at:
+          type: string
+          format: time
+          nullable: true
+      required:
+      - closes_at
+      - opens_at
+      - weekday
     DeactivateInputRequest:
       type: object
       properties:
@@ -7462,6 +9145,39 @@ components:
       - granted
       - pending_invites
       - received
+    Department:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name_i18n: {}
+        sort_order:
+          type: integer
+          minimum: 0
+          default: 0
+        is_active:
+          type: boolean
+          default: true
+      required:
+      - id
+      - name_i18n
+    DepartmentRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        name_i18n: {}
+        sort_order:
+          type: integer
+          minimum: 0
+          default: 0
+        is_active:
+          type: boolean
+          default: true
+      required:
+      - name_i18n
     DependentRelationshipEnum:
       enum:
       - guardian
@@ -8089,6 +9805,97 @@ components:
       - fields
       - message
       - request_id
+    Exception:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        membership_id:
+          type: string
+          format: uuid
+        kind:
+          $ref: '#/components/schemas/ScheduleExceptionKindEnum'
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+        service_id:
+          type: string
+          format: uuid
+          nullable: true
+        reason:
+          type: string
+          maxLength: 200
+        status:
+          type: string
+          readOnly: true
+        decision_note:
+          type: string
+          readOnly: true
+        member_name:
+          type: string
+          readOnly: true
+      required:
+      - decision_note
+      - ends_at
+      - id
+      - kind
+      - member_name
+      - membership_id
+      - starts_at
+      - status
+    ExceptionDecisionRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        decision_note:
+          type: string
+          default: ''
+          maxLength: 200
+    ExceptionRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        membership_id:
+          type: string
+          format: uuid
+        kind:
+          $ref: '#/components/schemas/ScheduleExceptionKindEnum'
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+        service_id:
+          type: string
+          format: uuid
+          nullable: true
+        reason:
+          type: string
+          maxLength: 200
+      required:
+      - ends_at
+      - kind
+      - membership_id
+      - starts_at
+    ExceptionResponse:
+      type: object
+      properties:
+        exception:
+          $ref: '#/components/schemas/Exception'
+        warnings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Warning'
+      required:
+      - exception
+      - warnings
     ExternalMatch:
       type: object
       properties:
@@ -8319,6 +10126,67 @@ components:
       - reception_notes
       - sex
       - version
+    FacilityProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        slug:
+          type: string
+        status:
+          type: string
+        facility_type:
+          type: string
+        description_i18n: {}
+        phone:
+          type: string
+        email:
+          type: string
+        website:
+          type: string
+        address:
+          type: string
+        village_code:
+          type: string
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        photos:
+          type: array
+          items:
+            type: string
+            format: uuid
+        level_of_care:
+          type: string
+        version:
+          type: integer
+      required:
+      - address
+      - description_i18n
+      - email
+      - facility_type
+      - id
+      - latitude
+      - level_of_care
+      - longitude
+      - name
+      - phone
+      - photos
+      - slug
+      - status
+      - version
+      - village_code
+      - website
     FacilityRef:
       type: object
       properties:
@@ -8558,6 +10426,15 @@ components:
       description: |-
         * `identifier` - identifier
         * `phone` - phone
+    GoLiveRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 0
+      required:
+      - version
     Health:
       type: object
       properties:
@@ -8685,6 +10562,41 @@ components:
           maxLength: 200
       required:
       - outcome
+    HoursRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        service_id:
+          type: string
+          format: uuid
+          nullable: true
+        version:
+          type: integer
+          minimum: 1
+        days:
+          type: array
+          items:
+            $ref: '#/components/schemas/DayRequest'
+      required:
+      - days
+      - version
+    HoursResponse:
+      type: object
+      properties:
+        service_id:
+          type: string
+          format: uuid
+          nullable: true
+        days:
+          type: array
+          items:
+            $ref: '#/components/schemas/Day'
+        version:
+          type: integer
+      required:
+      - days
+      - service_id
+      - version
     Identifier:
       type: object
       properties:
@@ -8967,6 +10879,107 @@ components:
           maxLength: 200
       required:
       - outcome
+    InsurerRule:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        version:
+          type: integer
+          readOnly: true
+        insurer_code:
+          type: string
+          maxLength: 40
+        applies_to_all_services:
+          type: boolean
+          default: true
+        service_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        patient_share_bp:
+          type: integer
+          maximum: 10000
+          minimum: 0
+        requires_referral:
+          type: boolean
+          default: false
+        excluded_tariff_codes:
+          type: array
+          items:
+            type: string
+            maxLength: 40
+        ceiling_per_visit_rwf:
+          type: integer
+          minimum: 0
+          nullable: true
+        valid_from:
+          type: string
+          format: date
+        valid_to:
+          type: string
+          format: date
+          readOnly: true
+          nullable: true
+      required:
+      - id
+      - insurer_code
+      - patient_share_bp
+      - valid_to
+      - version
+    InsurerRuleChangeResponse:
+      type: object
+      properties:
+        previous:
+          $ref: '#/components/schemas/InsurerRule'
+        current:
+          $ref: '#/components/schemas/InsurerRule'
+      required:
+      - current
+      - previous
+    InsurerRuleRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        insurer_code:
+          type: string
+          minLength: 1
+          maxLength: 40
+        applies_to_all_services:
+          type: boolean
+          default: true
+        service_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        patient_share_bp:
+          type: integer
+          maximum: 10000
+          minimum: 0
+        requires_referral:
+          type: boolean
+          default: false
+        excluded_tariff_codes:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 40
+        ceiling_per_visit_rwf:
+          type: integer
+          minimum: 0
+          nullable: true
+        valid_from:
+          type: string
+          format: date
+      required:
+      - insurer_code
+      - patient_share_bp
     InsurersItem:
       type: object
       properties:
@@ -9076,6 +11089,105 @@ components:
       - code
       - name
       - scheme
+    Invitation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        role_codes:
+          type: array
+          items:
+            type: string
+        service_point_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        status:
+          $ref: '#/components/schemas/InvitationStatusEnum'
+        expires_at:
+          type: string
+          format: date-time
+        invited_by:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - created_at
+      - email
+      - expires_at
+      - id
+      - invited_by
+      - role_codes
+      - service_point_ids
+      - status
+    InvitationCreateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+        role_codes:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 32
+          minItems: 1
+        service_point_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+      - email
+      - role_codes
+    InvitationLookup:
+      type: object
+      properties:
+        facility_name:
+          type: string
+        invited_by:
+          type: string
+          nullable: true
+        role_codes:
+          type: array
+          items:
+            type: string
+        email_masked:
+          type: string
+        account_exists:
+          type: boolean
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - account_exists
+      - email_masked
+      - expires_at
+      - facility_name
+      - invited_by
+      - role_codes
+    InvitationStatusEnum:
+      enum:
+      - pending
+      - accepted
+      - revoked
+      - expired
+      type: string
+      description: |-
+        * `pending` - pending
+        * `accepted` - accepted
+        * `revoked` - revoked
+        * `expired` - expired
     Invite:
       type: object
       properties:
@@ -10441,6 +12553,60 @@ components:
             minLength: 1
             maxLength: 40
           maxItems: 20
+    PatchedCalendarEventRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        kind:
+          $ref: '#/components/schemas/CalendarEventKindEnum'
+        service_id:
+          type: string
+          format: uuid
+          nullable: true
+        starts_at:
+          type: string
+          format: date-time
+        ends_at:
+          type: string
+          format: date-time
+        is_open:
+          type: boolean
+          default: false
+        opens_at:
+          type: string
+          format: time
+          nullable: true
+        closes_at:
+          type: string
+          format: time
+          nullable: true
+        reason:
+          type: string
+          maxLength: 200
+    PatchedClinicianProfileRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        council:
+          $ref: '#/components/schemas/CouncilEnum'
+        licence_number:
+          type: string
+          minLength: 1
+          pattern: ^[A-Za-z0-9/._-]{2,40}$
+        specialty:
+          type: string
+          default: ''
+          maxLength: 100
+    PatchedDepartmentUpdateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        name_i18n: {}
+        sort_order:
+          type: integer
+          minimum: 0
+        is_active:
+          type: boolean
     PatchedDiagnosisCodesPlatformItemRequest:
       type: object
       properties:
@@ -10525,6 +12691,48 @@ components:
           type: integer
           maximum: 2147483647
           minimum: -2147483648
+    PatchedFacilityProfileUpdateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        description_i18n: {}
+        phone:
+          type: string
+          maxLength: 20
+        email:
+          oneOf:
+          - type: string
+            format: email
+          - type: string
+            maxLength: 0
+        website:
+          oneOf:
+          - type: string
+            format: uri
+          - type: string
+            maxLength: 0
+        address:
+          type: string
+          maxLength: 300
+        village_code:
+          type: string
+          maxLength: 40
+        latitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        longitude:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,6})?$
+          nullable: true
+        level_of_care:
+          type: string
+          maxLength: 40
     PatchedFacilityTypesPlatformItemRequest:
       type: object
       properties:
@@ -10593,6 +12801,39 @@ components:
         version:
           type: integer
           minimum: 1
+    PatchedInsurerRuleChangeRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        applies_to_all_services:
+          type: boolean
+        service_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        patient_share_bp:
+          type: integer
+          maximum: 10000
+          minimum: 0
+        requires_referral:
+          type: boolean
+        excluded_tariff_codes:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 40
+        ceiling_per_visit_rwf:
+          type: integer
+          minimum: 0
+          nullable: true
+        valid_from:
+          type: string
+          format: date
     PatchedInsurersPlatformItemRequest:
       type: object
       properties:
@@ -10654,6 +12895,24 @@ components:
           type: integer
           maximum: 2147483647
           minimum: -2147483648
+    PatchedMembershipUpdateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        role_codes:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 32
+        service_point_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
     PatchedProfileUpdateRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -10779,7 +13038,7 @@ components:
         sex_restriction:
           nullable: true
           oneOf:
-          - $ref: '#/components/schemas/SexRestrictionEnum'
+          - $ref: '#/components/schemas/ServiceSexRestrictionEnum'
           - $ref: '#/components/schemas/BlankEnum'
           - $ref: '#/components/schemas/NullEnum'
         is_active:
@@ -10788,6 +13047,79 @@ components:
           type: integer
           maximum: 2147483647
           minimum: -2147483648
+    PatchedServicePointUpdateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 80
+        kind:
+          $ref: '#/components/schemas/ServicePointKindEnum'
+        service_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        is_active:
+          type: boolean
+    PatchedServiceUpdateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        department_id:
+          type: string
+          format: uuid
+        catalogue_item_code:
+          type: string
+          maxLength: 40
+        name_i18n: {}
+        duration_minutes:
+          type: integer
+          maximum: 240
+          minimum: 5
+        is_bookable:
+          type: boolean
+        allows_walk_in:
+          type: boolean
+        allows_remote_join:
+          type: boolean
+        ticket_prefix:
+          type: string
+          minLength: 1
+          maxLength: 3
+          pattern: ^[A-Za-z]{1,3}$
+        min_age_months:
+          type: integer
+          minimum: 0
+          nullable: true
+        max_age_months:
+          type: integer
+          minimum: 0
+          nullable: true
+        sex_restriction:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/ServiceSexRestrictionEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        is_active:
+          type: boolean
+    PatchedSettingsUpdateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        section:
+          $ref: '#/components/schemas/SectionEnum'
+        values:
+          type: object
+          additionalProperties: {}
     PatchedStaffPatientUpdateRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -10871,6 +13203,57 @@ components:
           type: integer
           maximum: 2147483647
           minimum: -2147483648
+    PatchedTariffChangeRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        amount_rwf:
+          type: integer
+          maximum: 100000000
+          minimum: 0
+        name_i18n: {}
+        valid_from:
+          type: string
+          format: date
+    PatchedTemplateUpdateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        service_id:
+          type: string
+          format: uuid
+        service_point_id:
+          type: string
+          format: uuid
+          nullable: true
+        weekday:
+          type: integer
+          maximum: 6
+          minimum: 0
+        starts_at:
+          type: string
+          format: time
+        ends_at:
+          type: string
+          format: time
+        slot_minutes:
+          type: integer
+          maximum: 240
+          minimum: 5
+        capacity:
+          type: integer
+          maximum: 50
+          minimum: 1
+        bookable_share_pct:
+          type: integer
+          maximum: 100
+          minimum: 0
     PatientLoginRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -11139,6 +13522,15 @@ components:
       required:
       - full_name
       - id
+    PhotoRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        file:
+          type: string
+          format: binary
+      required:
+      - file
     PinRequest:
       type: object
       properties:
@@ -11648,6 +14040,16 @@ components:
       required:
       - reason_code
       - version
+    ReasonRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 300
+      required:
+      - reason
     RecordClaim:
       type: object
       properties:
@@ -11772,6 +14174,21 @@ components:
           type: string
       required:
       - value
+    Role:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        permissions:
+          type: array
+          items:
+            type: string
+      required:
+      - code
+      - name
+      - permissions
     RoleCodeEnum:
       enum:
       - facility_admin
@@ -11784,6 +14201,46 @@ components:
         * `receptionist` - Receptionist
         * `doctor` - Doctor / clinician
         * `pharmacist` - Pharmacist
+    ScheduleExceptionKindEnum:
+      enum:
+      - leave
+      - training
+      - extra_session
+      type: string
+      description: |-
+        * `leave` - Leave
+        * `training` - Training
+        * `extra_session` - Extra session
+    ScheduleOverview:
+      type: object
+      properties:
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleOverviewMember'
+      required:
+      - members
+    ScheduleOverviewMember:
+      type: object
+      properties:
+        membership_id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        blocks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Block'
+        exceptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Exception'
+      required:
+      - blocks
+      - exceptions
+      - full_name
+      - membership_id
     SchemeEnum:
       enum:
       - community
@@ -11839,6 +14296,82 @@ components:
       required:
       - external_match
       - results
+    SectionEnum:
+      enum:
+      - queue
+      - booking
+      - billing
+      - documents
+      - notifications
+      - umuganda
+      type: string
+      description: |-
+        * `queue` - queue
+        * `booking` - booking
+        * `billing` - billing
+        * `documents` - documents
+        * `notifications` - notifications
+        * `umuganda` - umuganda
+    Service:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        version:
+          type: integer
+          readOnly: true
+        department_id:
+          type: string
+          format: uuid
+        catalogue_item_code:
+          type: string
+          default: ''
+          maxLength: 40
+        name_i18n: {}
+        duration_minutes:
+          type: integer
+          maximum: 240
+          minimum: 5
+          default: 15
+        is_bookable:
+          type: boolean
+          default: true
+        allows_walk_in:
+          type: boolean
+          default: true
+        allows_remote_join:
+          type: boolean
+          default: false
+        ticket_prefix:
+          type: string
+          maxLength: 3
+          pattern: ^[A-Za-z]{1,3}$
+        min_age_months:
+          type: integer
+          minimum: 0
+          nullable: true
+        max_age_months:
+          type: integer
+          minimum: 0
+          nullable: true
+        sex_restriction:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/ServiceSexRestrictionEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        is_active:
+          type: boolean
+          readOnly: true
+      required:
+      - department_id
+      - id
+      - is_active
+      - name_i18n
+      - ticket_prefix
+      - version
     ServiceCatalogueItemsItem:
       type: object
       properties:
@@ -11921,7 +14454,7 @@ components:
         sex_restriction:
           nullable: true
           oneOf:
-          - $ref: '#/components/schemas/SexRestrictionEnum'
+          - $ref: '#/components/schemas/ServiceSexRestrictionEnum'
           - $ref: '#/components/schemas/BlankEnum'
           - $ref: '#/components/schemas/NullEnum'
         is_active:
@@ -11987,7 +14520,7 @@ components:
         sex_restriction:
           nullable: true
           oneOf:
-          - $ref: '#/components/schemas/SexRestrictionEnum'
+          - $ref: '#/components/schemas/ServiceSexRestrictionEnum'
           - $ref: '#/components/schemas/BlankEnum'
           - $ref: '#/components/schemas/NullEnum'
         is_active:
@@ -11999,6 +14532,169 @@ components:
       required:
       - code
       - name_i18n
+    ServicePoint:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 80
+        kind:
+          $ref: '#/components/schemas/ServicePointKindEnum'
+        service_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        is_active:
+          type: boolean
+          default: true
+      required:
+      - id
+      - kind
+      - name
+    ServicePointKindEnum:
+      enum:
+      - room
+      - desk
+      - window
+      - lab
+      - other
+      type: string
+      description: |-
+        * `room` - Room
+        * `desk` - Desk
+        * `window` - Window
+        * `lab` - Laboratory
+        * `other` - Other
+    ServicePointRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 80
+        kind:
+          $ref: '#/components/schemas/ServicePointKindEnum'
+        service_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        is_active:
+          type: boolean
+          default: true
+      required:
+      - kind
+      - name
+    ServiceRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        department_id:
+          type: string
+          format: uuid
+        catalogue_item_code:
+          type: string
+          default: ''
+          maxLength: 40
+        name_i18n: {}
+        duration_minutes:
+          type: integer
+          maximum: 240
+          minimum: 5
+          default: 15
+        is_bookable:
+          type: boolean
+          default: true
+        allows_walk_in:
+          type: boolean
+          default: true
+        allows_remote_join:
+          type: boolean
+          default: false
+        ticket_prefix:
+          type: string
+          minLength: 1
+          maxLength: 3
+          pattern: ^[A-Za-z]{1,3}$
+        min_age_months:
+          type: integer
+          minimum: 0
+          nullable: true
+        max_age_months:
+          type: integer
+          minimum: 0
+          nullable: true
+        sex_restriction:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/ServiceSexRestrictionEnum'
+          - $ref: '#/components/schemas/NullEnum'
+      required:
+      - department_id
+      - name_i18n
+      - ticket_prefix
+    ServiceResponse:
+      type: object
+      properties:
+        service:
+          $ref: '#/components/schemas/Service'
+        warnings:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - service
+      - warnings
+    ServiceSexRestrictionEnum:
+      enum:
+      - female
+      - male
+      type: string
+      description: |-
+        * `female` - Female
+        * `male` - Male
+    Settings:
+      type: object
+      properties:
+        queue:
+          type: object
+          additionalProperties: {}
+        booking:
+          type: object
+          additionalProperties: {}
+        billing:
+          type: object
+          additionalProperties: {}
+        documents:
+          type: object
+          additionalProperties: {}
+        notifications:
+          type: object
+          additionalProperties: {}
+        umuganda:
+          type: string
+        version:
+          type: integer
+        schema:
+          type: object
+          additionalProperties: {}
+      required:
+      - billing
+      - booking
+      - documents
+      - notifications
+      - queue
+      - schema
+      - umuganda
+      - version
     SeverityEnum:
       enum:
       - mild
@@ -12021,14 +14717,6 @@ components:
         * `female` - Female
         * `male` - Male
         * `other` - Other
-    SexRestrictionEnum:
-      enum:
-      - female
-      - male
-      type: string
-      description: |-
-        * `female` - Female
-        * `male` - Male
     SideEnum:
       enum:
       - front
@@ -12157,6 +14845,57 @@ components:
       - permissions
       - preferred_language
       - security
+    StaffMembership:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        email:
+          type: string
+          format: email
+        roles:
+          type: array
+          items:
+            type: string
+        service_points:
+          type: array
+          items:
+            type: string
+            format: uuid
+        is_active:
+          type: boolean
+        mfa_enabled:
+          type: boolean
+        clinician:
+          allOf:
+          - $ref: '#/components/schemas/Clinician'
+          nullable: true
+        joined_at:
+          type: string
+          format: date-time
+        deactivation_reason:
+          type: string
+        version:
+          type: integer
+      required:
+      - clinician
+      - deactivation_reason
+      - email
+      - full_name
+      - id
+      - is_active
+      - joined_at
+      - mfa_enabled
+      - roles
+      - service_points
+      - user_id
+      - version
     StaffRevealRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -12397,8 +15136,231 @@ components:
       required:
       - code
       - name_i18n
+    Tariff:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        version:
+          type: integer
+          readOnly: true
+        code:
+          type: string
+          pattern: ^[A-Za-z0-9._-]{1,40}$
+        name_i18n: {}
+        kind:
+          $ref: '#/components/schemas/TariffKindEnum'
+        service_id:
+          type: string
+          format: uuid
+          nullable: true
+        amount_rwf:
+          type: integer
+          maximum: 100000000
+          minimum: 0
+        valid_from:
+          type: string
+          format: date
+        valid_to:
+          type: string
+          format: date
+          readOnly: true
+          nullable: true
+      required:
+      - amount_rwf
+      - code
+      - id
+      - kind
+      - name_i18n
+      - valid_to
+      - version
+    TariffChangeResponse:
+      type: object
+      properties:
+        previous:
+          $ref: '#/components/schemas/Tariff'
+        current:
+          $ref: '#/components/schemas/Tariff'
+      required:
+      - current
+      - previous
+    TariffKindEnum:
+      enum:
+      - service
+      - procedure
+      - medicine
+      - other
+      type: string
+      description: |-
+        * `service` - Service
+        * `procedure` - Procedure
+        * `medicine` - Medicine
+        * `other` - Other
+    TariffRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        code:
+          type: string
+          minLength: 1
+          pattern: ^[A-Za-z0-9._-]{1,40}$
+        name_i18n: {}
+        kind:
+          $ref: '#/components/schemas/TariffKindEnum'
+        service_id:
+          type: string
+          format: uuid
+          nullable: true
+        amount_rwf:
+          type: integer
+          maximum: 100000000
+          minimum: 0
+        valid_from:
+          type: string
+          format: date
+      required:
+      - amount_rwf
+      - code
+      - kind
+      - name_i18n
+    Template:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        version:
+          type: integer
+          readOnly: true
+        membership_id:
+          type: string
+          format: uuid
+        service_id:
+          type: string
+          format: uuid
+        service_point_id:
+          type: string
+          format: uuid
+          nullable: true
+        weekday:
+          type: integer
+          maximum: 6
+          minimum: 0
+        starts_at:
+          type: string
+          format: time
+        ends_at:
+          type: string
+          format: time
+        slot_minutes:
+          type: integer
+          maximum: 240
+          minimum: 5
+        capacity:
+          type: integer
+          maximum: 50
+          minimum: 1
+          default: 1
+        bookable_share_pct:
+          type: integer
+          maximum: 100
+          minimum: 0
+          default: 100
+        valid_from:
+          type: string
+          format: date
+        valid_to:
+          type: string
+          format: date
+          readOnly: true
+          nullable: true
+      required:
+      - ends_at
+      - id
+      - membership_id
+      - service_id
+      - slot_minutes
+      - starts_at
+      - valid_to
+      - version
+      - weekday
+    TemplateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        membership_id:
+          type: string
+          format: uuid
+        service_id:
+          type: string
+          format: uuid
+        service_point_id:
+          type: string
+          format: uuid
+          nullable: true
+        weekday:
+          type: integer
+          maximum: 6
+          minimum: 0
+        starts_at:
+          type: string
+          format: time
+        ends_at:
+          type: string
+          format: time
+        slot_minutes:
+          type: integer
+          maximum: 240
+          minimum: 5
+        capacity:
+          type: integer
+          maximum: 50
+          minimum: 1
+          default: 1
+        bookable_share_pct:
+          type: integer
+          maximum: 100
+          minimum: 0
+          default: 100
+        valid_from:
+          type: string
+          format: date
+      required:
+      - ends_at
+      - membership_id
+      - service_id
+      - slot_minutes
+      - starts_at
+      - weekday
+    TemplateResponse:
+      type: object
+      properties:
+        template:
+          $ref: '#/components/schemas/Template'
+        warnings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Warning'
+      required:
+      - template
+      - warnings
     TokenInputRequest:
       type: object
+      properties:
+        token:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+      - token
+    TokenRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
       properties:
         token:
           type: string
@@ -12533,6 +15495,21 @@ components:
           type: integer
       required:
       - version
+    Warning:
+      type: object
+      properties:
+        kind:
+          type: string
+        weekday:
+          type: integer
+        starts_at:
+          type: string
+        ends_at:
+          type: string
+        count:
+          type: integer
+      required:
+      - kind
   securitySchemes:
     patientSession:
       type: apiKey

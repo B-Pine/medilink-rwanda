@@ -62,3 +62,10 @@ extend_actions(_s3.ACTIONS)
 # [/S3]
 # [S9]
 # [/S9]
+# [S2]
+from medilink.facilities import audit_actions as _s2  # noqa: E402
+
+extend_actions(_s2.ACTIONS)
+# [/S2]
+# [S10]
+# [/S10]

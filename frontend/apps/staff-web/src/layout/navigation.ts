@@ -24,6 +24,10 @@ import { GitMerge } from "@phosphor-icons/react";
 // [/S3 imports]
 // [S9 imports]
 // [/S9 imports]
+// [S2 imports]
+// [/S2 imports]
+// [S10 imports]
+// [/S10 imports]
 
 /** Sections of the Sprint 0 shell (labels in `shell.nav.<key>`). Features use their own keys. */
 export type CoreNavKey =
@@ -194,6 +198,10 @@ export const NAV_ITEMS: readonly NavItem[] = [
   // [/S3]
   // [S9]
   // [/S9]
+  // [S2]
+  // [/S2]
+  // [S10]
+  // [/S10]
 ];
 
 /** Translation key of a nav item's label. */

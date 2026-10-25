@@ -60,6 +60,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 ### Sprint 9 · Notifications
 
+### Sprint 2 · Facility setup and staff
+
+### Sprint 10 · Help center and support (part 1)
+
 ## [0.1.0] - 2026-10-17
 
 Sprint 0 (Foundations), built against MSW mocks of the

@@ -29,6 +29,10 @@ import { createProfileApi } from "./features/profile";
 // [/S3 imports]
 // [S9 imports]
 // [/S9 imports]
+// [S2 imports]
+// [/S2 imports]
+// [S10 imports]
+// [/S10 imports]
 
 /** Every Sprint 0 endpoint (docs/architecture/03-sprint-0-contract.md §2), typed. */
 export const paths = {
@@ -119,6 +123,10 @@ export function createMediLinkApi(client: ApiClient) {
     // [/S3]
     // [S9]
     // [/S9]
+    // [S2]
+    // [/S2]
+    // [S10]
+    // [/S10]
   };
 }
 

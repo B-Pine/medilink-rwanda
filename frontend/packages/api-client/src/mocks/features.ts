@@ -15,6 +15,10 @@ import { profileMocks } from "./features/profile";
 // [/S3 imports]
 // [S9 imports]
 // [/S9 imports]
+// [S2 imports]
+// [/S2 imports]
+// [S10 imports]
+// [/S10 imports]
 
 /** A feature's MSW handlers, plus how to reset its in-memory state between tests. */
 export interface FeatureMock {
@@ -42,4 +46,8 @@ export const FEATURE_MOCKS: FeatureMockFactory[] = [
   // [/S3]
   // [S9]
   // [/S9]
+  // [S2]
+  // [/S2]
+  // [S10]
+  // [/S10]
 ];

@@ -40,6 +40,14 @@ api_v1: list[URLPattern | URLResolver] = [
     # [/S3]
     # [S9]
     # [/S9]
+    # [S2]
+    path("staff/facility/", include("medilink.facilities.urls.facility")),
+    path("staff/auth/invitations/", include("medilink.facilities.urls.invitations")),
+    path("staff/", include("medilink.facilities.urls.staff")),
+    path("platform/memberships/", include("medilink.facilities.urls.platform")),
+    # [/S2]
+    # [S10]
+    # [/S10]
 ]
 
 if settings.SCHEMA_ENABLED:  # non-production only (architecture 02 §7)

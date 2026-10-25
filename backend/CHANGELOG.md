@@ -114,6 +114,42 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Sprint 9 · Notifications
 
+### Sprint 2 · Facility setup and staff
+
+- New apps `medilink.facilities`, `medilink.scheduling`, `medilink.billing`, all with forced
+  facility RLS:
+  - `facilities`: profile, departments, services, service points, opening hours, calendar events,
+    settings sections, branding, and an append-only configuration change log.
+  - `scheduling`: doctor schedule templates and exceptions.
+  - `billing`: tariff items and insurer rules with effective dates (`btree_gist` exclusion
+    constraints).
+- Staff:
+  - `tenancy_invitation` (hashed single-use tokens, 7 days) and membership service points.
+  - Licence attestation and deactivation details on memberships; `accounts_clinician_profile`.
+- Endpoints under `/staff/facility/` (profile, photos, hours, calendar events, effective calendar,
+  settings, branding, change log, setup checklist, go-live) and under `/staff/`:
+  - catalogue: departments, services, service points;
+  - schedules: templates, exceptions, overview;
+  - billing setup: tariff items, insurer rules;
+  - team: roles, memberships, invitations, clinician profile.
+- Invitation acceptance: `/staff/auth/invitations/lookup/` and `accept/`. New accounts set a
+  password and then MFA; existing accounts confirm with their password.
+- Platform: `/platform/memberships/{id}/mfa-reset/`.
+- Database functions:
+  - `scheduling_busy_ranges()` returns the times a doctor works at other facilities, never which
+    facility (FR-ONB-06).
+  - `tenancy_find_invitation()` looks up an invitation before login.
+- S1 hooks:
+  - `application_approved` invites the proposed facility admin and moves the facility to setup.
+  - `setup.checklist_complete` is registered as a go-live check.
+- Settings-section registry `register_settings_fields()`, plus interfaces for S5 and S8:
+  - `effective_calendar()` and `blocks()` (S5);
+  - `price()` and `insurer_rule()` (S8).
+- Signal `scheduling.exception_approved`.
+- Jobs and commands: `expire_invitations` (daily) and dev seed `seed_setup_dev`.
+
+### Sprint 10 · Help center and support (part 1)
+
 ### Added
 
 - `DEV_SKIP_STAFF_MFA` (development only): staff log in without the second factor for local

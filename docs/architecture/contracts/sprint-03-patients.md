@@ -1,6 +1,6 @@
 # Sprint 3 contract: Patients and identity
 
-Status: v0.1 · 2026-10-18 · **Backend implemented (#57), frontend not started** · Wave 1 (built in parallel with S1 and S9) · Template and shared-file protocol: [contracts README](README.md) · Conventions: [API conventions](../02-api-conventions.md) · Model: [Sprint 0 contract](../03-sprint-0-contract.md)
+Status: v0.1 · 2026-10-18 · **Implemented: backend #57, frontend #59** · Wave 1 (built in parallel with S1 and S9) · Template and shared-file protocol: [contracts README](README.md) · Conventions: [API conventions](../02-api-conventions.md) · Model: [Sprint 0 contract](../03-sprint-0-contract.md)
 
 **Sprint goal:** every person who receives care has one platform-wide patient record with safe identifiers. Reception can find or register a walk-in in under a minute without creating duplicates. Patients manage their own profile, family, insurance, health profile and privacy, and can see who accessed their record.
 
@@ -554,3 +554,4 @@ All routes are `patient` routes inside an S3 `ProfileLayout` whose header carrie
 | D-18 | §3.1 `card_images: {front: null, back: null, can_upload}` | `front`/`back` are `{upload_id, scan_status}` or `null`; `can_upload` is true for active cards |
 | D-19 | Consent current versions are not defined anywhere | `medilink.patients.consents.DEFAULT_VERSIONS` (all `2026-10`), overridable with the `PATIENT_CONSENT_VERSIONS` setting |
 | D-20 | Rate-limit classes in `throttling.py` | Scopes `patients_search`, `patients_verification`, `patients_reveal`; env overrides `THROTTLE_RATE_PATIENTS_SEARCH`, `…_VERIFICATION`, `…_REVEAL` |
+| D-21 | §6.2 puts consent settings at `/privacy` | `/privacy` is already the public privacy notice (S0 info page), so consent settings live at `/privacy/settings` |

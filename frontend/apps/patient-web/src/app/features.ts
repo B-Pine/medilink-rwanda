@@ -10,6 +10,10 @@ import { profileFeature } from "../features/profile";
 // [/S3 imports]
 // [S9 imports]
 // [/S9 imports]
+// [S2 imports]
+// [/S2 imports]
+// [S10 imports]
+// [/S10 imports]
 
 /** What a feature module contributes (each feature lives in `src/features/<feature>/`). */
 export interface FeatureRoutes {
@@ -41,4 +45,8 @@ export const FEATURES: FeatureRoutes[] = [
   // [/S3]
   // [S9]
   // [/S9]
+  // [S2]
+  // [/S2]
+  // [S10]
+  // [/S10]
 ];

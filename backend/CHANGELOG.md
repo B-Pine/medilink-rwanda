@@ -114,6 +114,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Sprint 9 · Notifications
 
+### Sprint 2 · Facility setup and staff
+
+### Sprint 10 · Help center and support (part 1)
+
 ### Added
 
 - `DEV_SKIP_STAFF_MFA` (development only): staff log in without the second factor for local

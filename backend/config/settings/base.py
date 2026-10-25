@@ -64,6 +64,10 @@ INSTALLED_APPS = [
     # [/S3]
     # [S9] notifications
     # [/S9]
+    # [S2]
+    # [/S2]
+    # [S10]
+    # [/S10]
 ]
 
 MIDDLEWARE = [
@@ -362,6 +366,10 @@ REST_FRAMEWORK = {
         # [/S3]
         # [S9]
         # [/S9]
+        # [S2]
+        # [/S2]
+        # [S10]
+        # [/S10]
     },
     # Number of trusted reverse proxies in front of the app (X-Forwarded-For handling).
     "NUM_PROXIES": env.int("NUM_PROXIES", default=0),
@@ -407,6 +415,10 @@ SPECTACULAR_SETTINGS = {
         # [/S3]
         # [S9]
         # [/S9]
+        # [S2]
+        # [/S2]
+        # [S10]
+        # [/S10]
     },
 }
 

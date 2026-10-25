@@ -145,3 +145,7 @@ extend(_s3.PERMISSIONS, _s3.ROLE_GRANTS)
 # [/S3]
 # [S9]
 # [/S9]
+# [S2]
+# [/S2]
+# [S10]
+# [/S10]

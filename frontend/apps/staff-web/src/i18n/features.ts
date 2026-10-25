@@ -16,6 +16,10 @@ import patientsRw from "../features/patients/locales/rw.json";
 // [/S3 imports]
 // [S9 imports]
 // [/S9 imports]
+// [S2 imports]
+// [/S2 imports]
+// [S10 imports]
+// [/S10 imports]
 
 /**
  * Feature translation namespaces: `<feature>` -> `src/features/<feature>/locales/{rw,en,fr}.json`.
@@ -31,4 +35,8 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   // [/S3]
   // [S9]
   // [/S9]
+  // [S2]
+  // [/S2]
+  // [S10]
+  // [/S10]
 };

@@ -82,6 +82,10 @@ DEV_SEED_COMMANDS: list[str] = [
     # [/S3]
     # [S9]
     # [/S9]
+    # [S2]
+    # [/S2]
+    # [S10]
+    # [/S10]
 ]
 
 

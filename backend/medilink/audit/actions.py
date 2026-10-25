@@ -62,3 +62,7 @@ extend_actions(_s3.ACTIONS)
 # [/S3]
 # [S9]
 # [/S9]
+# [S2]
+# [/S2]
+# [S10]
+# [/S10]

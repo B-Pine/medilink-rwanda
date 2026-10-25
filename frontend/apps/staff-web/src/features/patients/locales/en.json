@@ -68,7 +68,8 @@
     "noResults": "No patient at this facility matches. Check the spelling, or search by phone or ID.",
     "register": "Register walk-in",
     "shortcuts": "Press / to search and N for a new walk-in.",
-    "button": "Search"
+    "button": "Search",
+    "noResultsTitle": "No patient found"
   },
   "external": {
     "title": "Already on MediLink",
@@ -111,7 +112,11 @@
     "done": "{{name}} is registered",
     "number": "MediLink number:",
     "openRecord": "Open record",
-    "another": "Register another"
+    "another": "Register another",
+    "sections": {
+      "person": "Person",
+      "contact": "Contact and insurance"
+    }
   },
   "record": {
     "merged": "Merged",

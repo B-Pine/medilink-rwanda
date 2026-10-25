@@ -12,7 +12,11 @@
   "cancel": "Reka",
   "close": "Funga",
   "error": "Habaye ikibazo. Reba internet yawe wongere ugerageze.",
-  "relationship": { "self": "Wowe", "guardian": "Umwana wawe", "delegate": "Wasangijwe" },
+  "relationship": {
+    "self": "Wowe",
+    "guardian": "Umwana wawe",
+    "delegate": "Wasangijwe"
+  },
   "medilinkNumber": "Nomero yawe ya MediLink",
   "sectionsLabel": "Ibice by'umwirondoro",
   "sections": {
@@ -32,7 +36,8 @@
     "allergies_reviewed": "Allergie zagenzuwe",
     "done": "byakozwe",
     "todo": "bigikenewe",
-    "next": "Igikurikira: {{step}}"
+    "next": "Igikurikira: {{step}}",
+    "progress": "{{done}} kuri {{total}} byakozwe"
   },
   "fields": {
     "fullName": "Amazina",
@@ -46,7 +51,11 @@
     "ecPhone": "Telefoni ye",
     "ecRelationship": "Icyo mupfana"
   },
-  "sex": { "female": "Gore", "male": "Gabo", "other": "Ikindi" },
+  "sex": {
+    "female": "Gore",
+    "male": "Gabo",
+    "other": "Ikindi"
+  },
   "details": {
     "delegateNote": "Nyir'umwirondoro cyangwa umurera ni bo bonyine bahindura amazina, itariki y'amavuko n'igitsina."
   },
@@ -65,12 +74,25 @@
     "country": "Igihugu cyagitanze (inyuguti ebyiri)",
     "claim": "Saba iyi dosiye"
   },
-  "reveal": { "show": "Erekana", "hide": "Hisha", "showing": "Birerekanwa…" },
-  "insurers": { "mutuelle": "Mituweli", "rssb": "RSSB (RAMA)", "mmi": "MMI", "radiant": "Radiant" },
+  "reveal": {
+    "show": "Erekana",
+    "hide": "Hisha",
+    "showing": "Birerekanwa…"
+  },
+  "insurers": {
+    "mutuelle": "Mituweli",
+    "rssb": "RSSB (RAMA)",
+    "mmi": "MMI",
+    "radiant": "Radiant"
+  },
   "insurance": {
     "none": "Nta karita y'ubwishingizi irashyirwamo.",
     "expired": "Yarangiye",
-    "status": { "unverified": "Ntiragenzurwa", "verified": "Yagenzuwe", "rejected": "Yanzwe" },
+    "status": {
+      "unverified": "Ntiragenzurwa",
+      "verified": "Yagenzuwe",
+      "rejected": "Yanzwe"
+    },
     "inactive": "Ntikoreshwa",
     "lastVerified": "Yakoreshejwe kuri {{facility}} ku wa {{date}}, iragenzurwa",
     "deactivate": "Reka gukoresha iyi karita",
@@ -199,5 +221,13 @@
     "reference": "Nomero y'ubusabe",
     "done": "Dosiye yawe ubu ihujwe na konti yawe.",
     "open": "Fungura umwirondoro wanjye"
+  },
+  "numberHint": "Erekana iyi nimero ku kigo icyo ari cyo cyose kugira ngo babone dosiye yawe vuba.",
+  "sectionHints": {
+    "details": "Amazina, itariki y’amavuko, telefoni, uwo guhamagara mu byihutirwa",
+    "identifiers": "Indangamuntu, pasiporo cyangwa ikarita y’impunzi",
+    "insurance": "Amakarita yawe y’ubwishingizi",
+    "health": "Allergie, indwara, imiti y’igihe kirekire",
+    "history": "Igihe cyose abakozi bafunguye dosiye yawe"
   }
 }

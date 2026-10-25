@@ -107,8 +107,9 @@ export function CommandPalette({
           : [{ id: `none:${provider.id}`, label: t("shell.palette.noResults") }],
     });
   }
+  // Matching pages and actions come before the search row: Enter opens "Payments" for "pay",
+  // and a patient name (which matches no page) puts the search row first.
   groups.push(
-    { id: "search", heading: t("shell.palette.search"), rows: searchRows },
     {
       id: "actions",
       heading: t("shell.palette.actions"),
@@ -119,6 +120,7 @@ export function CommandPalette({
       heading: t("shell.palette.pages"),
       rows: pages.filter((item) => matches(item.label, query)).map(toRow),
     },
+    { id: "search", heading: t("shell.palette.search"), rows: searchRows },
   );
 
   const runSearch = (providerId: string) => {

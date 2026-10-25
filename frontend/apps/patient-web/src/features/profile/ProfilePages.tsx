@@ -7,13 +7,24 @@ import {
   type ProfileCompletion,
   type Sex,
 } from "@medilink/api-client";
-import { CheckCircle, Circle } from "@phosphor-icons/react";
+import {
+  CaretRight,
+  CheckCircle,
+  Circle,
+  Eye,
+  Heartbeat,
+  IdentificationCard,
+  ShieldCheck,
+  UserCircle,
+  type Icon,
+} from "@phosphor-icons/react";
 import {
   Alert,
   Badge,
   Button,
   buttonClassName,
   Card,
+  ImigongoPattern,
   LoadingState,
   MaskedValue,
   PhoneField,
@@ -79,60 +90,106 @@ export function ProfileHubPage() {
 function Hub({ profile }: { profile: PatientProfileDetail }) {
   const { t } = useTranslation();
   const next = COMPLETION_STEPS.find((step) => !profile.completion[step.key]);
+  const done = COMPLETION_STEPS.filter((step) => profile.completion[step.key]).length;
   const href = (to: string) => (to.startsWith("/") ? to : `/profile/${profile.patient_id}/${to}`);
-  const sections = [
-    { to: "details", label: t("profile.sections.details") },
-    { to: "identifiers", label: t("profile.sections.identifiers") },
-    { to: "insurance", label: t("profile.sections.insurance") },
-    { to: "health", label: t("profile.sections.health") },
-    ...(can.history(profile.relationship)
-      ? [{ to: "access-history", label: t("profile.sections.history") }]
-      : []),
+  const sections: { to: string; icon: Icon }[] = [
+    { to: "details", icon: UserCircle },
+    { to: "identifiers", icon: IdentificationCard },
+    { to: "insurance", icon: ShieldCheck },
+    { to: "health", icon: Heartbeat },
+    ...(can.history(profile.relationship) ? [{ to: "access-history", icon: Eye }] : []),
   ];
+  const sectionKey = (to: string) => (to === "access-history" ? "history" : to);
   return (
     <>
-      <Card padding="md">
-        <p className="m-0 text-fg-muted">{t("profile.medilinkNumber")}</p>
-        <p className="m-0 font-mono text-h2">{profile.medilink_number ?? "—"}</p>
-      </Card>
-      <Card as="section" aria-labelledby="completion" padding="md" className="flex flex-col gap-3">
-        <h2 id="completion" className="m-0 text-h3">
-          {t("profile.completion.title")}
-        </h2>
-        <ul className="m-0 flex list-none flex-col gap-2 p-0">
-          {COMPLETION_STEPS.map((step) => {
-            const done = profile.completion[step.key];
-            return (
-              <li key={step.key} className="flex items-center gap-2">
-                {done ? (
-                  <CheckCircle aria-hidden="true" className="size-6 text-success" weight="fill" />
-                ) : (
-                  <Circle aria-hidden="true" className="size-6 text-fg-muted" />
-                )}
-                <span>{t(`profile.completion.${step.key}`)}</span>
-                <span className="sr-only">
-                  {done ? t("profile.completion.done") : t("profile.completion.todo")}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-        {next && (
+      <section
+        aria-label={t("profile.medilinkNumber")}
+        className="relative overflow-hidden rounded-lg bg-forest p-5 text-on-forest shadow-raised"
+      >
+        <ImigongoPattern opacity={0.08} />
+        <div className="relative flex flex-col gap-1">
+          <p className="m-0 text-body-sm text-on-forest-muted">{t("profile.medilinkNumber")}</p>
+          <p className="m-0 font-mono text-h1 tracking-wider">{profile.medilink_number ?? "—"}</p>
+          <p className="m-0 mt-2 text-body-sm text-on-forest-muted">{t("profile.numberHint")}</p>
+        </div>
+      </section>
+      {next && (
+        <Card
+          as="section"
+          aria-labelledby="completion"
+          padding="md"
+          className="flex flex-col gap-4"
+        >
+          <div className="flex flex-col gap-2">
+            <div className="flex items-baseline justify-between gap-3">
+              <h2 id="completion" className="m-0 text-h3">
+                {t("profile.completion.title")}
+              </h2>
+              <span className="text-body-sm font-semibold text-fg-secondary">
+                {t("profile.completion.progress", { done, total: COMPLETION_STEPS.length })}
+              </span>
+            </div>
+            <div
+              role="progressbar"
+              aria-labelledby="completion"
+              aria-valuemin={0}
+              aria-valuemax={COMPLETION_STEPS.length}
+              aria-valuenow={done}
+              className="h-2 overflow-hidden rounded-full bg-subtle"
+            >
+              <div
+                className="h-full rounded-full bg-primary"
+                style={{ width: `${(done / COMPLETION_STEPS.length) * 100}%` }}
+              />
+            </div>
+          </div>
+          <ul className="m-0 flex list-none flex-col gap-2 p-0">
+            {COMPLETION_STEPS.map((step) => {
+              const stepDone = profile.completion[step.key];
+              return (
+                <li key={step.key} className="flex items-center gap-3">
+                  {stepDone ? (
+                    <CheckCircle aria-hidden="true" className="size-6 text-success" weight="fill" />
+                  ) : (
+                    <Circle aria-hidden="true" className="size-6 text-fg-muted" />
+                  )}
+                  <span className={stepDone ? "text-fg-secondary" : undefined}>
+                    {t(`profile.completion.${step.key}`)}
+                  </span>
+                  <span className="sr-only">
+                    {stepDone ? t("profile.completion.done") : t("profile.completion.todo")}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
           <Link to={href(next.to)} className={buttonClassName({ size: "lg", fullWidth: true })}>
             {t("profile.completion.next", { step: t(`profile.completion.${next.key}`) })}
           </Link>
-        )}
-      </Card>
-      <nav aria-label={t("profile.sectionsLabel")} className="flex flex-col gap-2">
-        {sections.map((s) => (
-          <Link
-            key={s.to}
-            to={href(s.to)}
-            className={buttonClassName({ variant: "secondary", size: "lg", fullWidth: true })}
-          >
-            {s.label}
-          </Link>
-        ))}
+        </Card>
+      )}
+      <nav aria-label={t("profile.sectionsLabel")}>
+        <ul className="m-0 flex list-none flex-col overflow-hidden rounded-lg border border-border bg-surface p-0">
+          {sections.map(({ to, icon: SectionIcon }) => (
+            <li key={to} className="border-b border-border last:border-0">
+              <Link
+                to={href(to)}
+                className="flex min-h-16 items-center gap-4 px-4 py-3 text-fg no-underline hover:bg-subtle"
+              >
+                <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-md bg-brand-subtle text-on-brand-subtle">
+                  <SectionIcon aria-hidden="true" weight="duotone" className="size-icon" />
+                </span>
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <span className="font-semibold">{t(`profile.sections.${sectionKey(to)}`)}</span>
+                  <span className="text-body-sm text-fg-secondary">
+                    {t(`profile.sectionHints.${sectionKey(to)}`)}
+                  </span>
+                </span>
+                <CaretRight aria-hidden="true" className="size-5 shrink-0 text-fg-muted" />
+              </Link>
+            </li>
+          ))}
+        </ul>
       </nav>
     </>
   );

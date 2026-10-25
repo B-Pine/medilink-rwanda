@@ -1,9 +1,10 @@
-import { Card } from "@medilink/ui";
+import { EmptyState } from "@medilink/ui";
+import { Hammer } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { useStaffMe } from "../auth/queries";
-import { PageHeading } from "../components/PageHeading";
+import { PageHeader } from "../components/PageHeader";
 import { NAV_ITEMS, navLabelKey } from "../layout/navigation";
 import { NotFoundContent } from "./NotFoundPage";
 
@@ -18,13 +19,17 @@ export function PlaceholderPage({ section }: { section: string }) {
   const title = t(navLabelKey(item));
   return (
     <div className="flex flex-col gap-6">
-      <PageHeading title={title}>{title}</PageHeading>
-      <Card className="flex flex-col items-start gap-3 border-dashed">
-        <p className="m-0 text-fg-secondary">{t("placeholder.body")}</p>
-        <Link to="/today" className="font-semibold">
-          {t("placeholder.back")}
-        </Link>
-      </Card>
+      <PageHeader title={title} />
+      <EmptyState
+        icon={Hammer}
+        title={t("placeholder.heading", { section: title })}
+        description={t("placeholder.body")}
+        action={
+          <Link to="/today" className="font-semibold">
+            {t("placeholder.back")}
+          </Link>
+        }
+      />
     </div>
   );
 }

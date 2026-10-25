@@ -68,7 +68,8 @@
     "noResults": "Aucun patient de cet établissement ne correspond. Vérifiez l'orthographe ou cherchez par téléphone ou identité.",
     "register": "Enregistrer un patient",
     "shortcuts": "Appuyez sur / pour chercher et N pour un nouveau patient.",
-    "button": "Rechercher"
+    "button": "Rechercher",
+    "noResultsTitle": "Aucun patient trouvé"
   },
   "external": {
     "title": "Déjà sur MediLink",
@@ -111,7 +112,11 @@
     "done": "{{name}} est enregistré",
     "number": "Numéro MediLink :",
     "openRecord": "Ouvrir le dossier",
-    "another": "Enregistrer un autre patient"
+    "another": "Enregistrer un autre patient",
+    "sections": {
+      "person": "Personne",
+      "contact": "Contact et assurance"
+    }
   },
   "record": {
     "merged": "Fusionné",

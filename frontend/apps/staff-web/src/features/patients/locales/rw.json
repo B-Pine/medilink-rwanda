@@ -68,7 +68,8 @@
     "noResults": "Nta murwayi wo muri iki kigo uhuye n'ibi. Reba uko wanditse, cyangwa ushakishe ukoresheje telefoni cyangwa indangamuntu.",
     "register": "Andika umurwayi mushya",
     "shortcuts": "Kanda / ushakishe, na N wandike umurwayi mushya.",
-    "button": "Shakisha"
+    "button": "Shakisha",
+    "noResultsTitle": "Nta murwayi wabonetse"
   },
   "external": {
     "title": "Asanzwe kuri MediLink",
@@ -111,7 +112,11 @@
     "done": "{{name}} yanditswe",
     "number": "Nomero ya MediLink:",
     "openRecord": "Fungura dosiye",
-    "another": "Andika undi"
+    "another": "Andika undi",
+    "sections": {
+      "person": "Umuntu",
+      "contact": "Aho abarizwa n'ubwishingizi"
+    }
   },
   "record": {
     "merged": "Yahujwe",

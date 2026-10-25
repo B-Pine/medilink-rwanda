@@ -174,7 +174,8 @@
   "placeholder": {
     "title": "{{section}}",
     "body": "Cet espace de travail est prévu pour un prochain sprint.",
-    "back": "Retour à Aujourd’hui"
+    "back": "Retour à Aujourd’hui",
+    "heading": "{{section}} arrive bientôt"
   },
   "notFound": {
     "title": "Page introuvable",

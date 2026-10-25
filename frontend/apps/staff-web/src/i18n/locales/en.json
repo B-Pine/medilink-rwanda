@@ -174,7 +174,8 @@
   "placeholder": {
     "title": "{{section}}",
     "body": "This workspace is planned for a later sprint.",
-    "back": "Back to Today"
+    "back": "Back to Today",
+    "heading": "{{section}} is on its way"
   },
   "notFound": {
     "title": "Page not found",

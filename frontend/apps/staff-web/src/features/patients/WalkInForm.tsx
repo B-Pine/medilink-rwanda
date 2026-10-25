@@ -13,13 +13,15 @@ import {
   Button,
   Card,
   CheckboxField,
+  cx,
   PhoneField,
   SelectField,
   TextField,
   toE164,
 } from "@medilink/ui";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { CaretRight } from "@phosphor-icons/react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
@@ -154,159 +156,172 @@ export function WalkInForm({ onRegistered }: WalkInFormProps) {
       <form
         onSubmit={submit}
         noValidate
-        className="flex flex-col gap-4"
+        className="flex flex-col gap-6 rounded-lg border border-border bg-surface p-5 sm:p-6"
         aria-label={t("patients.register.title")}
       >
-        <TextField
-          label={t("patients.fields.name")}
-          hint={t("patients.register.nameHint")}
-          value={form.full_name}
-          onChange={(e) => set("full_name", e.target.value)}
-          error={errors.full_name}
-          autoComplete="off"
-          required
-        />
-        <fieldset className="m-0 flex flex-col gap-2 border-0 p-0">
-          <legend className="mb-1 text-body-sm font-medium">{t("patients.fields.sex")}</legend>
-          <div className="flex flex-wrap gap-2" role="radiogroup">
-            {SEXES.map((sex) => (
-              <label
-                key={sex}
-                className="inline-flex min-h-target cursor-pointer items-center gap-2 rounded-md border border-border px-3"
-              >
-                <input
-                  type="radio"
-                  name="sex"
-                  value={sex}
-                  checked={form.sex === sex}
-                  onChange={() => set("sex", sex)}
-                />
-                {t(`patients.sex.${sex}`)}
-              </label>
-            ))}
-          </div>
-          {errors.sex && <p className="m-0 text-body-sm text-danger">{errors.sex}</p>}
-        </fieldset>
-        <div className="flex flex-wrap items-end gap-3">
-          <SelectField
-            label={t("patients.register.ageMode")}
-            value={form.ageMode}
-            onChange={(e) => set("ageMode", e.target.value as FormState["ageMode"])}
-            className="w-48"
-          >
-            <option value="dob">{t("patients.register.ageModes.dob")}</option>
-            <option value="years">{t("patients.register.ageModes.years")}</option>
-            <option value="months">{t("patients.register.ageModes.months")}</option>
-          </SelectField>
-          {form.ageMode === "dob" ? (
-            <TextField
-              type="date"
-              label={t("patients.fields.dateOfBirth")}
-              value={form.date_of_birth}
-              onChange={(e) => set("date_of_birth", e.target.value)}
-              error={errors.date_of_birth}
-              className="w-56"
-            />
-          ) : (
-            <TextField
-              type="number"
-              inputMode="numeric"
-              min={0}
-              max={form.ageMode === "years" ? 120 : 23}
-              label={t(`patients.register.ageModes.${form.ageMode}`)}
-              value={form.age}
-              onChange={(e) => set("age", e.target.value)}
-              error={
-                errors.estimated_age_years ?? errors.estimated_age_months ?? errors.date_of_birth
-              }
-              className="w-40"
-            />
-          )}
-        </div>
-        <PhoneField
-          label={t("patients.fields.phone")}
-          optional
-          value={form.phone}
-          onChange={(e) => set("phone", e.target.value)}
-          error={phone === "" ? t("patients.register.phoneInvalid") : errors.phone_e164}
-        />
-        <div className="flex flex-wrap gap-3">
-          <SelectField
-            label={t("patients.fields.insurer")}
-            optional
-            value={form.insurer_code}
-            onChange={(e) => set("insurer_code", e.target.value)}
-            className="w-56"
-          >
-            <option value="">{t("patients.register.noInsurance")}</option>
-            {INSURERS.map((code) => (
-              <option key={code} value={code}>
-                {t(`patients.insurers.${code}`)}
-              </option>
-            ))}
-          </SelectField>
-          {form.insurer_code && (
-            <TextField
-              label={t("patients.fields.memberNumber")}
-              value={form.member_number}
-              onChange={(e) => set("member_number", e.target.value)}
-              error={errors["insurance.member_number"]}
-            />
-          )}
-        </div>
-        <Button
-          type="button"
-          variant="ghost"
-          aria-expanded={more}
-          onClick={() => setMore((v) => !v)}
-          className="self-start"
-        >
-          {more ? t("patients.register.less") : t("patients.register.more")}
-        </Button>
-        {more && (
-          <div className="flex flex-col gap-3 rounded-md border border-border p-3">
-            <div className="flex flex-wrap gap-3">
-              <SelectField
-                label={t("patients.fields.document")}
-                optional
-                value={form.idKind}
-                onChange={(e) => set("idKind", e.target.value as FormState["idKind"])}
-                className="w-56"
-              >
-                <option value="">—</option>
-                <option value="national_id">{t("patients.identifierKinds.national_id")}</option>
-                <option value="passport">{t("patients.identifierKinds.passport")}</option>
-                <option value="refugee_id">{t("patients.identifierKinds.refugee_id")}</option>
-              </SelectField>
-              {form.idKind && (
-                <TextField
-                  label={t("patients.fields.documentNumber")}
-                  value={form.idValue}
-                  onChange={(e) => set("idValue", e.target.value)}
-                  error={errors["identifier.value"] ?? errors.identifier}
-                  autoComplete="off"
-                />
-              )}
-              {form.idKind && form.idKind !== "national_id" && (
-                <TextField
-                  label={t("patients.fields.country")}
-                  hint={t("patients.register.countryHint")}
-                  value={form.idCountry}
-                  maxLength={2}
-                  onChange={(e) => set("idCountry", e.target.value.toUpperCase())}
-                  className="w-32"
-                />
-              )}
+        <FormSection title={t("patients.register.sections.person")}>
+          <TextField
+            label={t("patients.fields.name")}
+            hint={t("patients.register.nameHint")}
+            value={form.full_name}
+            onChange={(e) => set("full_name", e.target.value)}
+            error={errors.full_name}
+            autoComplete="off"
+            required
+            className="max-w-xl"
+          />
+          <fieldset className="m-0 flex flex-col gap-2 border-0 p-0">
+            <legend className="mb-1 text-body-sm font-medium">{t("patients.fields.sex")}</legend>
+            <div className="flex flex-wrap gap-2" role="radiogroup">
+              {SEXES.map((sex) => (
+                <label
+                  key={sex}
+                  className="inline-flex min-h-target cursor-pointer items-center gap-2 rounded-md border border-border px-3"
+                >
+                  <input
+                    type="radio"
+                    name="sex"
+                    value={sex}
+                    checked={form.sex === sex}
+                    onChange={() => set("sex", sex)}
+                  />
+                  {t(`patients.sex.${sex}`)}
+                </label>
+              ))}
             </div>
-            <TextField
-              label={t("patients.fields.fileNumber")}
-              optional
-              value={form.file_number}
-              onChange={(e) => set("file_number", e.target.value)}
-              error={errors.file_number}
-            />
+            {errors.sex && <p className="m-0 text-body-sm text-danger">{errors.sex}</p>}
+          </fieldset>
+          <div className="flex flex-wrap items-end gap-3">
+            <SelectField
+              label={t("patients.register.ageMode")}
+              value={form.ageMode}
+              onChange={(e) => set("ageMode", e.target.value as FormState["ageMode"])}
+              className="w-48"
+            >
+              <option value="dob">{t("patients.register.ageModes.dob")}</option>
+              <option value="years">{t("patients.register.ageModes.years")}</option>
+              <option value="months">{t("patients.register.ageModes.months")}</option>
+            </SelectField>
+            {form.ageMode === "dob" ? (
+              <TextField
+                type="date"
+                label={t("patients.fields.dateOfBirth")}
+                value={form.date_of_birth}
+                onChange={(e) => set("date_of_birth", e.target.value)}
+                error={errors.date_of_birth}
+                className="w-56"
+              />
+            ) : (
+              <TextField
+                type="number"
+                inputMode="numeric"
+                min={0}
+                max={form.ageMode === "years" ? 120 : 23}
+                label={t(`patients.register.ageModes.${form.ageMode}`)}
+                value={form.age}
+                onChange={(e) => set("age", e.target.value)}
+                error={
+                  errors.estimated_age_years ?? errors.estimated_age_months ?? errors.date_of_birth
+                }
+                className="w-40"
+              />
+            )}
           </div>
-        )}
+        </FormSection>
+        <FormSection title={t("patients.register.sections.contact")}>
+          <PhoneField
+            label={t("patients.fields.phone")}
+            optional
+            value={form.phone}
+            onChange={(e) => set("phone", e.target.value)}
+            error={phone === "" ? t("patients.register.phoneInvalid") : errors.phone_e164}
+            className="max-w-xs"
+          />
+          <div className="flex flex-wrap gap-3">
+            <SelectField
+              label={t("patients.fields.insurer")}
+              optional
+              value={form.insurer_code}
+              onChange={(e) => set("insurer_code", e.target.value)}
+              className="w-56"
+            >
+              <option value="">{t("patients.register.noInsurance")}</option>
+              {INSURERS.map((code) => (
+                <option key={code} value={code}>
+                  {t(`patients.insurers.${code}`)}
+                </option>
+              ))}
+            </SelectField>
+            {form.insurer_code && (
+              <TextField
+                label={t("patients.fields.memberNumber")}
+                value={form.member_number}
+                onChange={(e) => set("member_number", e.target.value)}
+                error={errors["insurance.member_number"]}
+                className="w-64"
+              />
+            )}
+          </div>
+          <button
+            type="button"
+            aria-expanded={more}
+            onClick={() => setMore((v) => !v)}
+            className="inline-flex min-h-target cursor-pointer items-center gap-1.5 self-start font-semibold text-link"
+          >
+            <CaretRight
+              aria-hidden="true"
+              weight="bold"
+              className={cx("size-4 transition-transform", more && "rotate-90")}
+            />
+            {more ? t("patients.register.less") : t("patients.register.more")}
+          </button>
+          {more && (
+            <div className="flex flex-col gap-3 rounded-md border border-border p-3">
+              <div className="flex flex-wrap gap-3">
+                <SelectField
+                  label={t("patients.fields.document")}
+                  optional
+                  value={form.idKind}
+                  onChange={(e) => set("idKind", e.target.value as FormState["idKind"])}
+                  className="w-56"
+                >
+                  <option value="">—</option>
+                  <option value="national_id">{t("patients.identifierKinds.national_id")}</option>
+                  <option value="passport">{t("patients.identifierKinds.passport")}</option>
+                  <option value="refugee_id">{t("patients.identifierKinds.refugee_id")}</option>
+                </SelectField>
+                {form.idKind && (
+                  <TextField
+                    label={t("patients.fields.documentNumber")}
+                    value={form.idValue}
+                    onChange={(e) => set("idValue", e.target.value)}
+                    error={errors["identifier.value"] ?? errors.identifier}
+                    autoComplete="off"
+                    className="w-64"
+                  />
+                )}
+                {form.idKind && form.idKind !== "national_id" && (
+                  <TextField
+                    label={t("patients.fields.country")}
+                    hint={t("patients.register.countryHint")}
+                    value={form.idCountry}
+                    maxLength={2}
+                    onChange={(e) => set("idCountry", e.target.value.toUpperCase())}
+                    className="w-32"
+                  />
+                )}
+              </div>
+              <TextField
+                label={t("patients.fields.fileNumber")}
+                optional
+                value={form.file_number}
+                onChange={(e) => set("file_number", e.target.value)}
+                error={errors.file_number}
+                className="max-w-xs"
+              />
+            </div>
+          )}
+        </FormSection>
         <Card padding="md" className="flex flex-col gap-2 bg-subtle">
           <p className="m-0">{t("patients.register.consentScript")}</p>
           <CheckboxField
@@ -335,14 +350,18 @@ export function WalkInForm({ onRegistered }: WalkInFormProps) {
             {actionError(register.error, t("errors.generic"))}
           </Alert>
         )}
-        <div>
+        <div className="border-t border-border pt-5">
           <Button type="submit" size="lg" disabled={register.isPending}>
             {t("patients.register.submit")}
           </Button>
         </div>
       </form>
-      <aside aria-label={t("patients.register.suggestions")} aria-live="polite">
-        <h2 className="m-0 mb-2 text-h3">{t("patients.register.suggestions")}</h2>
+      <aside
+        aria-label={t("patients.register.suggestions")}
+        aria-live="polite"
+        className="flex flex-col gap-3 self-start rounded-lg border border-border bg-raised p-4 lg:sticky lg:top-24"
+      >
+        <h2 className="m-0 font-heading text-h3">{t("patients.register.suggestions")}</h2>
         {!duplicates && (
           <p className="m-0 text-body-sm text-fg-muted">{t("patients.register.suggestionsHint")}</p>
         )}
@@ -387,5 +406,15 @@ export function WalkInForm({ onRegistered }: WalkInFormProps) {
         )}
       </aside>
     </div>
+  );
+}
+
+/** A titled group of fields inside the walk-in form. */
+function FormSection({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="flex flex-col gap-4 border-b border-border pb-6 last-of-type:border-0">
+      <h2 className="m-0 font-heading text-h3 text-fg">{title}</h2>
+      {children}
+    </section>
   );
 }

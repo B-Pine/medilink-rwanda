@@ -71,6 +71,8 @@ export type {
 export { ConfirmDialog, Dialog } from "./components/Dialog";
 export type { ConfirmDialogProps, DialogProps } from "./components/Dialog";
 export { DocumentViewer } from "./components/DocumentViewer";
+export { EmptyState } from "./components/EmptyState";
+export type { EmptyStateProps } from "./components/EmptyState";
 export type { DocumentViewerLabels, DocumentViewerProps } from "./components/DocumentViewer";
 export { FileUpload } from "./components/FileUpload";
 export type {

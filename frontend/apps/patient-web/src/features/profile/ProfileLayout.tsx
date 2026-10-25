@@ -71,14 +71,14 @@ export function ProfileLayout({
   };
 
   return (
-    <div className="flex min-h-dvh flex-col bg-page text-[1.125rem]">
+    <div className="flex min-h-dvh flex-col bg-page text-body">
       <SkipLink />
       <header className="border-b border-border bg-surface">
-        <div className="mx-auto flex max-w-[40rem] flex-wrap items-center gap-3 px-4 py-2 sm:px-6">
+        <div className="mx-auto flex max-w-[40rem] flex-wrap items-center gap-3 px-4 py-2 sm:flex-nowrap sm:px-6">
           <Link to="/home" className="inline-flex min-h-12 items-center rounded-sm no-underline">
             <Logo className="h-10" />
           </Link>
-          <div className="ml-auto flex flex-wrap items-center gap-2">
+          <div className="ml-auto flex min-w-0 flex-wrap items-center justify-end gap-2 sm:flex-nowrap">
             {list.length > 0 && (
               <ProfileSwitcher
                 label={t("profile.switch")}

@@ -1,4 +1,4 @@
-import { Alert, Card, LoadingState } from "@medilink/ui";
+import { Alert, cx, LoadingState } from "@medilink/ui";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
@@ -7,14 +7,48 @@ import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
 import { formatDate, PlatformOnly, useLocale } from "./shared";
 
-function Tile({ label, value, to }: { label: string; value: number; to: string }) {
+/** KPI tile (design 04 §3): the whole tile opens the filtered list; counts that need action
+ * get a coloured edge. */
+function Tile({
+  label,
+  value,
+  to,
+  attention,
+}: {
+  label: string;
+  value: number;
+  to: string;
+  /** Tone when the count is above zero. */
+  attention?: "warning" | "danger";
+}) {
+  const flagged = attention !== undefined && value > 0;
   return (
-    <Card as="li" padding="md" className="flex flex-col gap-1">
-      <Link to={to} className="font-semibold text-link underline-offset-2 hover:underline">
-        {label}
+    <li className="flex">
+      <Link
+        to={to}
+        className={cx(
+          "group flex flex-1 flex-col gap-2 rounded-lg border border-border bg-surface p-4 no-underline",
+          "border-l-4 hover:border-border-input hover:bg-raised",
+          flagged
+            ? attention === "danger"
+              ? "border-l-danger"
+              : "border-l-warning"
+            : "border-l-border",
+        )}
+      >
+        <span className="text-body-sm font-semibold text-fg-secondary group-hover:text-fg">
+          {label}
+        </span>
+        <span
+          className={cx(
+            "font-heading text-display leading-none font-semibold tabular-nums",
+            value === 0 ? "text-fg-muted" : "text-fg",
+          )}
+        >
+          {value}
+        </span>
       </Link>
-      <span className="font-heading text-h1 leading-none">{value}</span>
-    </Card>
+    </li>
   );
 }
 
@@ -63,6 +97,7 @@ function Overview() {
                   label={t(`platform.status.application.${s}`)}
                   value={data.applications[s]}
                   to={`/platform/applications?status=${s}`}
+                  {...(s === "submitted" ? { attention: "warning" as const } : {})}
                 />
               ))}
             </ul>
@@ -80,11 +115,13 @@ function Overview() {
               <Tile
                 label={t("platform.overview.expiring30")}
                 value={data.licences.expiring_30}
+                attention="warning"
                 to="/platform/facilities?licence_state=expiring"
               />
               <Tile
                 label={t("platform.overview.expired")}
                 value={data.licences.expired}
+                attention="danger"
                 to="/platform/facilities?licence_state=expired"
               />
             </ul>

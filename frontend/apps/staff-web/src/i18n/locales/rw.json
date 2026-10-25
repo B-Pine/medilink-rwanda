@@ -174,7 +174,8 @@
   "placeholder": {
     "title": "{{section}}",
     "body": "Iki gice kizakorwa mu cyiciro gikurikira.",
-    "back": "Subira ku Uyu munsi"
+    "back": "Subira ku Uyu munsi",
+    "heading": "{{section}} biraje vuba"
   },
   "notFound": {
     "title": "Iyi paji ntibonetse",

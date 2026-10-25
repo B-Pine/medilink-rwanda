@@ -23,7 +23,7 @@ describe("platform console", () => {
     ).toBeInTheDocument();
     const apps = await screen.findByRole("heading", { name: "Applications" });
     expect(
-      within(apps.parentElement!).getByRole("link", { name: "Submitted" }),
+      within(apps.parentElement!).getByRole("link", { name: /^Submitted/ }),
     ).toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });

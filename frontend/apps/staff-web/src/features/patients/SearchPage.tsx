@@ -10,11 +10,12 @@ import {
   Card,
   CheckboxField,
   Dialog,
+  EmptyState,
   PersonSearch,
   TextField,
   type SearchType,
 } from "@medilink/ui";
-import { Plus } from "@phosphor-icons/react";
+import { MagnifyingGlass, Plus } from "@phosphor-icons/react";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -134,9 +135,18 @@ function Results({
   return (
     <section aria-label={t("patients.search.results")} className="flex flex-col gap-3">
       {results.length === 0 && !external && (
-        <Card padding="md">
-          <p className="m-0">{t("patients.search.noResults")}</p>
-        </Card>
+        <EmptyState
+          icon={MagnifyingGlass}
+          title={t("patients.search.noResultsTitle")}
+          description={t("patients.search.noResults")}
+          action={
+            canRegister && (
+              <Link to="/patients/register" className="font-semibold">
+                {t("patients.search.register")}
+              </Link>
+            )
+          }
+        />
       )}
       {results.length > 0 && (
         <div className="overflow-x-auto">

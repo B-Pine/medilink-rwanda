@@ -14,6 +14,8 @@ export * from "./features/security";
 export * from "./features/uploads";
 // [/S1]
 // [S3]
+export * from "./features/patients";
+export * from "./features/profile";
 // [/S3]
 // [S9]
 // [/S9]

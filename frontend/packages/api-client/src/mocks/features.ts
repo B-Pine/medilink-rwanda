@@ -10,6 +10,8 @@ import { securityMocks } from "./features/security";
 import { uploadsMocks } from "./features/uploads";
 // [/S1 imports]
 // [S3 imports]
+import { patientsMocks } from "./features/patients";
+import { profileMocks } from "./features/profile";
 // [/S3 imports]
 // [S9 imports]
 // [/S9 imports]
@@ -35,6 +37,8 @@ export const FEATURE_MOCKS: FeatureMockFactory[] = [
   onboardingMocks,
   // [/S1]
   // [S3]
+  patientsMocks,
+  profileMocks,
   // [/S3]
   // [S9]
   // [/S9]

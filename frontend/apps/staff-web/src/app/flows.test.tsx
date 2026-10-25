@@ -306,6 +306,8 @@ describe("shell: user menu, language, theme, logout", () => {
       "Review applications",
       "Master data",
       "Feature flags",
+      // S3 patients
+      "Patient merges",
     ]);
   });
 

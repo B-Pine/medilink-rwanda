@@ -1,0 +1,212 @@
+{
+  "title": "Mon profil",
+  "myProfile": "Mon profil",
+  "homeLinks": "Profil et famille",
+  "notFound": "Nous n'avons pas trouvé ce profil.",
+  "switch": "Changer de profil",
+  "breadcrumb": "Où vous êtes",
+  "home": "Accueil",
+  "backToProfile": "Retour au profil",
+  "save": "Enregistrer",
+  "saved": "Enregistré.",
+  "cancel": "Annuler",
+  "close": "Fermer",
+  "error": "Une erreur s'est produite. Vérifiez votre connexion et réessayez.",
+  "relationship": { "self": "Vous", "guardian": "Votre enfant", "delegate": "Partagé avec vous" },
+  "medilinkNumber": "Votre numéro MediLink",
+  "sectionsLabel": "Sections du profil",
+  "sections": {
+    "details": "Mes informations",
+    "identifiers": "Pièces d'identité",
+    "insurance": "Assurance",
+    "health": "Allergies et santé",
+    "history": "Qui a ouvert mon dossier"
+  },
+  "completion": {
+    "title": "Complétez votre profil",
+    "details": "Nom, date de naissance et sexe",
+    "identifier": "Une pièce d'identité",
+    "emergency_contact": "Une personne à appeler en cas d'urgence",
+    "care_consent": "Consentement aux soins",
+    "insurance": "Carte d'assurance",
+    "allergies_reviewed": "Allergies vérifiées",
+    "done": "fait",
+    "todo": "à faire",
+    "next": "Étape suivante : {{step}}"
+  },
+  "fields": {
+    "fullName": "Noms",
+    "dateOfBirth": "Date de naissance",
+    "sex": "Sexe",
+    "phone": "Téléphone",
+    "email": "E-mail",
+    "address": "Adresse",
+    "emergencyContact": "Contact d'urgence",
+    "ecName": "Ses noms",
+    "ecPhone": "Son téléphone",
+    "ecRelationship": "Votre lien"
+  },
+  "sex": { "female": "Femme", "male": "Homme", "other": "Autre" },
+  "details": {
+    "delegateNote": "Seule la personne ou son tuteur peut modifier les noms, la date de naissance et le sexe."
+  },
+  "identifierKinds": {
+    "national_id": "Carte d'identité nationale",
+    "passport": "Passeport",
+    "refugee_id": "Carte de réfugié",
+    "birth_certificate": "Acte de naissance"
+  },
+  "identifiers": {
+    "none": "Aucune pièce d'identité.",
+    "checked": "Vérifiée dans un établissement",
+    "add": "Ajouter une pièce d'identité",
+    "kind": "Document",
+    "number": "Numéro du document",
+    "country": "Pays de délivrance (deux lettres)",
+    "claim": "Réclamer ce dossier"
+  },
+  "reveal": { "show": "Afficher", "hide": "Masquer", "showing": "Affichage…" },
+  "insurers": {
+    "mutuelle": "Mutuelle de Santé",
+    "rssb": "RSSB (RAMA)",
+    "mmi": "MMI",
+    "radiant": "Radiant"
+  },
+  "insurance": {
+    "none": "Aucune carte d'assurance.",
+    "expired": "Expirée",
+    "status": {
+      "unverified": "Pas encore vérifiée",
+      "verified": "Vérifiée",
+      "rejected": "Refusée"
+    },
+    "inactive": "Inutilisée",
+    "lastVerified": "Utilisée à {{facility}} le {{date}}, vérifiée",
+    "deactivate": "Ne plus utiliser cette carte",
+    "add": "Ajouter une carte d'assurance",
+    "insurer": "Assureur",
+    "memberNumber": "Numéro d'affilié"
+  },
+  "health": {
+    "askAllergies": "Avez-vous des allergies ?",
+    "noKnownAllergies": "Je n'ai pas d'allergie connue",
+    "noKnownAllergiesSet": "Aucune allergie connue",
+    "allergies": "Allergies",
+    "conditions": "Maladies de longue durée",
+    "medications": "Médicaments que je prends",
+    "none": "Rien d'ajouté.",
+    "unverified": "Non vérifié",
+    "remove": "Retirer",
+    "add": {
+      "allergies": "Ajouter une allergie",
+      "conditions": "Ajouter une maladie",
+      "medications": "Ajouter un médicament"
+    },
+    "addButton": "Ajouter"
+  },
+  "history": {
+    "intro": "Chaque fois que quelqu'un ouvre ou modifie votre dossier, cela apparaît ici.",
+    "none": "Personne n'a encore ouvert votre dossier.",
+    "roles": {
+      "receptionist": "Réceptionniste",
+      "doctor": "Médecin",
+      "facility_admin": "Administrateur de l'établissement",
+      "pharmacist": "Pharmacien"
+    },
+    "actors": {
+      "staff": "Personnel",
+      "self": "Vous",
+      "linked_account": "Une personne avec qui vous partagez",
+      "platform": "Équipe MediLink",
+      "system": "MediLink"
+    },
+    "actions": {
+      "patients.walk_in.registered": "vous a enregistré",
+      "patients.existing.added": "vous a ajouté à son établissement",
+      "patients.record.viewed": "a consulté vos informations",
+      "patients.record.updated": "a modifié vos informations",
+      "patients.identifier.added": "a ajouté une pièce d'identité",
+      "patients.identifier.superseded": "a remplacé une pièce d'identité",
+      "patients.identifier.verified": "a vérifié votre pièce d'identité",
+      "patients.identifier.revealed": "a consulté votre numéro d'identité complet",
+      "patients.phone.revealed": "a consulté votre numéro de téléphone",
+      "patients.delegation.created": "a créé un code de partage",
+      "patients.delegation.accepted": "a accepté l'accès à votre profil",
+      "patients.delegation.revoked": "a mis fin à l'accès à votre profil",
+      "patients.insurance.added": "a ajouté une carte d'assurance",
+      "patients.insurance.updated": "a modifié une carte d'assurance",
+      "patients.insurance.verified": "a vérifié votre carte d'assurance",
+      "patients.insurance.rejected": "a refusé votre carte d'assurance",
+      "patients.insurance.deactivated": "a désactivé une carte d'assurance",
+      "patients.health_profile.viewed": "a consulté vos allergies et votre santé",
+      "patients.health_item.added": "a ajouté un élément de santé",
+      "patients.health_item.reviewed": "a vérifié un élément de santé",
+      "patients.consent.recorded": "a enregistré un consentement",
+      "patients.claim.completed": "a lié un dossier à votre compte",
+      "patients.merge.executed": "a réuni deux de vos dossiers",
+      "patients.merge.undone": "a séparé deux dossiers",
+      "other": "a utilisé votre dossier"
+    }
+  },
+  "family": {
+    "title": "Famille et partage",
+    "profiles": "Profils que vous gérez",
+    "access": "Qui voit quoi",
+    "noAccess": "Vous n'avez partagé aucun profil.",
+    "grantedRow": "{{holder}} peut voir {{profile}}",
+    "receivedRow": "Vous pouvez voir {{profile}}",
+    "pendingRow": "Code pour {{profile}}, valable jusqu'au {{date}}",
+    "revoke": "Mettre fin à l'accès",
+    "leave": "Quitter",
+    "cancelInvite": "Annuler le code",
+    "revokeTitle": "Mettre fin à cet accès ?",
+    "revokeConsequences": "{{name}} ne verra plus ce profil.",
+    "add": "Ajouter un membre de la famille",
+    "who": "Qui ajoutez-vous ?",
+    "child": "Mon enfant (moins de 18 ans)",
+    "adult": "Un adulte qui a donné son accord",
+    "attest": "Cet adulte a accepté que je gère son profil",
+    "inviteTitle": "Partager un profil",
+    "inviteHint": "Créez un code à usage unique pour un proche. Il le saisit dans son compte MediLink.",
+    "profileToShare": "Profil à partager",
+    "password": "Votre mot de passe",
+    "createCode": "Créer un code",
+    "codeOnce": "Donnez ce code à la personne. Il fonctionne une fois, pendant 7 jours, et ne sera plus affiché.",
+    "code": "Code de partage",
+    "copy": "Copier",
+    "copied": "Copié",
+    "done": "Terminé",
+    "acceptTitle": "Saisir un code reçu",
+    "accept": "Accepter",
+    "accepted": "Vous pouvez maintenant voir le profil de {{name}}."
+  },
+  "privacy": {
+    "title": "Confidentialité et consentement",
+    "research": "Utiliser mes données pour la recherche en santé",
+    "researchHint": "Uniquement des données anonymisées, pour des études approuvées. Vous pouvez changer d'avis à tout moment.",
+    "on": "Activé",
+    "off": "Désactivé",
+    "care": "Consentement aux soins",
+    "careHint": "Les établissements en ont besoin pour conserver votre dossier médical.",
+    "history": "Voir qui a ouvert mon dossier",
+    "later": "Le téléchargement et la suppression de vos données seront disponibles plus tard."
+  },
+  "claim": {
+    "title": "Réclamer mon dossier",
+    "intro": "Si un établissement vous a enregistré avant que vous ayez un compte, liez ce dossier à votre compte.",
+    "way": "Comment le retrouver ?",
+    "ways": {
+      "medilink_number": "Numéro MediLink",
+      "national_id": "Identité nationale",
+      "phone": "Téléphone et noms"
+    },
+    "start": "Trouver mon dossier",
+    "codeSent": "Nous avons envoyé un code à 6 chiffres à {{hint}}.",
+    "code": "Code",
+    "confirm": "Confirmer",
+    "receptionHint": "Présentez cette référence et une pièce d'identité à l'accueil. Elle est valable 7 jours.",
+    "reference": "Référence de la demande",
+    "done": "Votre dossier est maintenant lié à votre compte.",
+    "open": "Ouvrir mon profil"
+  }
+}

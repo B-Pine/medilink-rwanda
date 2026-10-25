@@ -543,8 +543,8 @@ export const profileMocks: FeatureMockFactory = (context) => {
           id: crypto.randomUUID(),
           account_email: a.me.email,
           patient_id: target.id,
-          status: (byCode ? "code_sent" : "awaiting_reception"),
-          method: (byCode ? "contact_code" : "reception_check"),
+          status: byCode ? "code_sent" : "awaiting_reception",
+          method: byCode ? "contact_code" : "reception_check",
           contact_hint: byCode ? `${target.email![0]}•••@e•••.test` : null,
           reference: byCode
             ? null

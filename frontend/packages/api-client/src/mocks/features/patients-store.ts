@@ -98,7 +98,9 @@ function luhn32(chars: string): string {
 }
 
 export function medilinkNumber(seed: number): string {
-  const body = Array.from({ length: 7 }, (_, i) => CROCKFORD.charAt((seed * 7 + i * 13) % 32)).join("");
+  const body = Array.from({ length: 7 }, (_, i) => CROCKFORD.charAt((seed * 7 + i * 13) % 32)).join(
+    "",
+  );
   const raw = body + luhn32(body);
   return `ML-${raw.slice(0, 4)}-${raw.slice(4)}`;
 }
@@ -325,14 +327,7 @@ export function createPatientsStore(): PatientsStore {
 
   // the mock patient account: self, a child (guardian) and a delegated parent
   const email = ACCOUNT.email;
-  const self = blankPatient(
-    SELF_PATIENT_ID,
-    90,
-    ACCOUNT.full_name,
-    "female",
-    "1990-05-01",
-    false,
-  );
+  const self = blankPatient(SELF_PATIENT_ID, 90, ACCOUNT.full_name, "female", "1990-05-01", false);
   self.emergency_contact = {
     name: "Habimana Eric",
     phone_e164: "+250788000111",

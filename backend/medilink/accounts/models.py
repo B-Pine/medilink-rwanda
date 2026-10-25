@@ -144,3 +144,34 @@ class UserSession(AbstractBaseSession):
         from medilink.accounts.session_store import SessionStore
 
         return SessionStore
+
+
+class Council(models.TextChoices):
+    RMDC = "rmdc", "Rwanda Medical and Dental Council"
+    NCNM = "ncnm", "National Council of Nurses and Midwives"
+    NPC = "npc", "National Pharmacy Council"
+    OTHER = "other", "Other council"
+
+
+class ClinicianProfile(models.Model):
+    """S2: a clinician's professional licence (FR-ACC-07). Platform-wide; a facility sees it only
+    for its members."""
+
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, primary_key=True, related_name="clinician_profile"
+    )
+    council = models.CharField(max_length=8, choices=Council.choices)
+    licence_number = models.CharField(max_length=40)
+    specialty = models.CharField(max_length=100, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "accounts_clinician_profile"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["council", "licence_number"], name="accounts_clinician_licence_unique"
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f"clinician profile {self.pk}"

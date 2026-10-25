@@ -64,7 +64,10 @@ INSTALLED_APPS = [
     # [/S3]
     # [S9] notifications
     # [/S9]
-    # [S2]
+    # [S2] facility setup and staff
+    "medilink.facilities",
+    "medilink.scheduling",
+    "medilink.billing",
     # [/S2]
     # [S10]
     # [/S10]
@@ -416,6 +419,12 @@ SPECTACULAR_SETTINGS = {
         # [S9]
         # [/S9]
         # [S2]
+        "CalendarEventKindEnum": "medilink.facilities.models.CalendarEventKind",
+        "ServicePointKindEnum": "medilink.facilities.models.ServicePointKind",
+        "ScheduleExceptionKindEnum": "medilink.scheduling.models.ExceptionKind",
+        "TariffKindEnum": "medilink.billing.models.TariffKind",
+        "CouncilEnum": "medilink.accounts.models.Council",
+        "ServiceSexRestrictionEnum": "medilink.facilities.models.SexRestriction",
         # [/S2]
         # [S10]
         # [/S10]

@@ -392,10 +392,15 @@ def test_approve_creates_the_tenant(
         body = approved.json()
         assert body["application"]["status"] == "approved"
         facility = Facility.objects.get(pk=body["facility"]["id"])
-        assert facility.status == "approved" and facility.organization.name == "Ubuzima Ltd"
+        # S2's approval hook then invites the proposed admin and moves the facility to setup
+        assert facility.status == "setup" and facility.organization.name == "Ubuzima Ltd"
         assert body["application"]["facility_id"] == str(facility.pk)
         assert FacilityLicence.objects.filter(facility=facility, kind="moh_operating").count() == 1
-        assert FacilityStatusEvent.objects.get(facility=facility).to_status == "approved"
+        assert list(
+            FacilityStatusEvent.objects.filter(facility=facility)
+            .order_by("occurred_at")
+            .values_list("to_status", flat=True)
+        ) == ["approved", "setup"]
         assert received == [
             {
                 "signal": application_approved,

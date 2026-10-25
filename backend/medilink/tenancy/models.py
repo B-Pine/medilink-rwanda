@@ -6,6 +6,7 @@ from typing import Any
 from uuid import UUID
 
 from django.conf import settings
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 from medilink.core.models import TimeStampedModel, UUIDModel
@@ -139,6 +140,16 @@ class FacilityMembership(TimeStampedModel):
     roles = models.ManyToManyField(Role, related_name="memberships", blank=True)
     is_active = models.BooleanField(default=True)
     deactivated_at = models.DateTimeField(null=True, blank=True)
+    # S2: licence attestation (FR-ACC-07) and deactivation details (FR-ACC-06)
+    licence_attested_at = models.DateTimeField(null=True, blank=True)
+    licence_attested_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    deactivated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    deactivation_reason = models.CharField(max_length=300, blank=True)
+    version = models.PositiveIntegerField(default=1)
 
     objects = FacilityMembershipQuerySet.as_manager()
 
@@ -167,3 +178,62 @@ class FacilityNote(TimeStampedModel):
 
     def __str__(self) -> str:
         return self.title
+
+
+class MembershipServicePoint(TimeStampedModel):
+    """S2: service points a member works at (RLS through the facility)."""
+
+    facility = models.ForeignKey(Facility, on_delete=models.PROTECT, related_name="+")
+    membership = models.ForeignKey(
+        FacilityMembership, on_delete=models.CASCADE, related_name="service_points"
+    )
+    service_point = models.ForeignKey(
+        "facilities.ServicePoint", on_delete=models.CASCADE, related_name="+"
+    )
+
+    class Meta:
+        db_table = "tenancy_membership_service_point"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["membership", "service_point"], name="tenancy_msp_unique"
+            )
+        ]
+
+
+class InvitationSource(models.TextChoices):
+    STAFF = "staff", "Invited by staff"
+    APPLICATION_APPROVAL = "application_approval", "Facility approval"
+
+
+class Invitation(TimeStampedModel):
+    """S2: staff invitation (FR-ACC-05). The token is stored as a SHA-256 hash and looked up
+    before login through `tenancy_find_invitation()`."""
+
+    facility = models.ForeignKey(Facility, on_delete=models.PROTECT, related_name="+")
+    email = models.EmailField()
+    invited_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, related_name="+"
+    )
+    role_codes = ArrayField(models.CharField(max_length=32))
+    service_point_ids = ArrayField(models.UUIDField(), default=list, blank=True)
+    token_hash = models.BinaryField(unique=True)
+    expires_at = models.DateTimeField()
+    accepted_at = models.DateTimeField(null=True, blank=True)
+    accepted_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    revoked_at = models.DateTimeField(null=True, blank=True)
+    source = models.CharField(
+        max_length=24, choices=InvitationSource.choices, default=InvitationSource.STAFF
+    )
+    source_ref = models.CharField(max_length=64, blank=True)
+
+    class Meta:
+        db_table = "tenancy_invitation"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["facility", "email"],
+                condition=models.Q(accepted_at__isnull=True, revoked_at__isnull=True),
+                name="tenancy_invitation_pending_unique",
+            )
+        ]

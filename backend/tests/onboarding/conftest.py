@@ -177,3 +177,15 @@ def approve_body(app: dict[str, Any], slug: str = "clinique-ubuzima") -> dict[st
             }
         ],
     }
+
+
+@pytest.fixture(autouse=True)
+def _s1_checks_only() -> Iterator[None]:
+    """S1 tests exercise their own go-live checks; S2 registers `setup.checklist_complete` too
+    (tested in tests/s2/). Take it out for these tests."""
+    from medilink.facilities.checklist import checklist_complete
+    from medilink.onboarding import golive
+
+    golive.unregister("setup.checklist_complete")
+    yield
+    golive.register("setup.checklist_complete", checklist_complete)

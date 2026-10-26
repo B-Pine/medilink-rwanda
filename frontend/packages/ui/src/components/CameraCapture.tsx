@@ -93,7 +93,7 @@ export function CameraCapture({ labels, onCapture, disabled }: CameraCaptureProp
       <video
         ref={video}
         hidden={state !== "live"}
-        className="w-full max-w-md rounded-md bg-black"
+        className="w-full max-w-md rounded-md bg-fg"
         playsInline
         muted
       />
@@ -101,7 +101,7 @@ export function CameraCapture({ labels, onCapture, disabled }: CameraCaptureProp
         <img src={photo.url} alt="" className="w-full max-w-md rounded-md" />
       )}
       {state === "fallback" && (
-        <p role="status" className="text-small text-fg-muted">
+        <p role="status" className="text-body-sm text-fg-muted">
           {labels.unavailable}
         </p>
       )}

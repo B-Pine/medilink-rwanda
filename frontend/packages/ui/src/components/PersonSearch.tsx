@@ -107,7 +107,7 @@ export function PersonSearch({
 
   return (
     <div className="relative w-full">
-      <label htmlFor={id} className="mb-1 block text-small font-medium text-fg">
+      <label htmlFor={id} className="mb-1 block text-body-sm font-medium text-fg">
         {labels.label}
       </label>
       <div className="relative flex items-center">
@@ -133,7 +133,7 @@ export function PersonSearch({
         />
         {value.trim() && (
           <span
-            className="absolute right-2 rounded-sm bg-subtle px-2 py-0.5 text-small text-fg-muted"
+            className="absolute right-2 rounded-sm bg-subtle px-2 py-0.5 text-body-sm text-fg-muted"
             data-testid="search-type"
           >
             {labels.types[type]}
@@ -167,7 +167,7 @@ export function PersonSearch({
             >
               <span className="text-body text-fg">{item.label}</span>
               {item.description && (
-                <span className="text-small text-fg-muted">{item.description}</span>
+                <span className="text-body-sm text-fg-muted">{item.description}</span>
               )}
             </div>
           ))}

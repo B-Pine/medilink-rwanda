@@ -145,7 +145,22 @@
       "language": "Ururimi",
       "logout": "Sohoka",
       "loggingOut": "Urasohoka…"
-    }
+    },
+    "palette": {
+      "title": "Shakisha cyangwa ujye kuri",
+      "open": "Shakisha cyangwa ujye kuri…",
+      "placeholder": "Andika urupapuro, igikorwa cyangwa umurwayi",
+      "empty": "Nta kibonetse. Gerageza irindi jambo.",
+      "hints": "↑ ↓ kwimuka · Enter gufungura · Esc gufunga",
+      "search": "Gushakisha",
+      "actions": "Ibikorwa",
+      "pages": "Jya kuri",
+      "noResults": "Nta murwayi uhuye na byo kuri iki kigo",
+      "searchFailed": "Gushakisha ntibyakunze. Ongera ugerageze.",
+      "shortcut": "Ctrl K"
+    },
+    "collapse": "Gabanya menyu",
+    "expand": "Agura menyu"
   },
   "today": {
     "title": "Uyu munsi",
@@ -159,7 +174,8 @@
   "placeholder": {
     "title": "{{section}}",
     "body": "Iki gice kizakorwa mu cyiciro gikurikira.",
-    "back": "Subira ku Uyu munsi"
+    "back": "Subira ku Uyu munsi",
+    "heading": "{{section}} biraje vuba"
   },
   "notFound": {
     "title": "Iyi paji ntibonetse",

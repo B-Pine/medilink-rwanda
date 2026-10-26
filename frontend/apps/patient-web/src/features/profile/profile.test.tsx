@@ -49,7 +49,7 @@ describe("patient profile", () => {
   it("health: add an unverified allergy, then remove it", async () => {
     const { user, router } = await signIn("/profile");
     await waitFor(() => expect(router.state.location.pathname).toMatch(/^\/profile\/.+/));
-    await user.click(await screen.findByRole("link", { name: "Allergies and health" }));
+    await user.click(await screen.findByRole("link", { name: /^Allergies and health/ }));
     await user.type(await screen.findByLabelText("Add an allergy"), "Peanuts");
     const allergies = screen.getByRole("region", { name: "Allergies" });
     await user.click(within(allergies).getByRole("button", { name: "Add" }));
@@ -79,7 +79,7 @@ describe("patient profile", () => {
 
   it("access history uses plain language", async () => {
     const { user } = await signIn(`/profile/${SELF}`);
-    await user.click(await screen.findByRole("link", { name: "Who opened my record" }));
+    await user.click(await screen.findByRole("link", { name: /^Who opened my record/ }));
     expect(await screen.findByText(/Receptionist.*viewed your details/)).toBeInTheDocument();
   });
 

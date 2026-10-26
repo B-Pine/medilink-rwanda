@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useApi } from "../../app/services";
-import { PageHeading } from "../../components/PageHeading";
+import { PageHeader } from "../../components/PageHeader";
 import { useStepUp } from "../lock";
 import { actionError, PlatformOnly } from "./shared";
 
@@ -41,8 +41,7 @@ function Flags() {
   });
   return (
     <div className="flex max-w-3xl flex-col gap-5">
-      <PageHeading title={t("platform.flags.title")}>{t("platform.flags.title")}</PageHeading>
-      <p className="m-0 text-fg-secondary">{t("platform.flags.intro")}</p>
+      <PageHeader title={t("platform.flags.title")} description={t("platform.flags.intro")} />
       {flags.isPending && <LoadingState />}
       {error && (
         <Alert tone="danger" role="alert">

@@ -20,7 +20,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router";
 
 import { useApi } from "../../app/services";
-import { PageHeading } from "../../components/PageHeading";
+import { PageHeader } from "../../components/PageHeader";
 import { useStepUp } from "../lock";
 import {
   actionError,
@@ -101,13 +101,11 @@ function Review() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Link to="/platform/applications" className="text-link">
-        {t("platform.applications.back")}
-      </Link>
-      <div className="flex flex-wrap items-center gap-3">
-        <PageHeading title={data.facility.name}>{data.facility.name}</PageHeading>
-        <StatusBadge kind="application" value={data.status} />
-      </div>
+      <PageHeader
+        title={data.facility.name}
+        back={{ to: "/platform/applications", label: t("platform.applications.back") }}
+        badges={<StatusBadge kind="application" value={data.status} />}
+      />
       {error && (
         <Alert tone="danger" role="alert">
           {error}

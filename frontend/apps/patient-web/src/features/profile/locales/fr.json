@@ -12,7 +12,11 @@
   "cancel": "Annuler",
   "close": "Fermer",
   "error": "Une erreur s'est produite. Vérifiez votre connexion et réessayez.",
-  "relationship": { "self": "Vous", "guardian": "Votre enfant", "delegate": "Partagé avec vous" },
+  "relationship": {
+    "self": "Vous",
+    "guardian": "Votre enfant",
+    "delegate": "Partagé avec vous"
+  },
   "medilinkNumber": "Votre numéro MediLink",
   "sectionsLabel": "Sections du profil",
   "sections": {
@@ -32,7 +36,8 @@
     "allergies_reviewed": "Allergies vérifiées",
     "done": "fait",
     "todo": "à faire",
-    "next": "Étape suivante : {{step}}"
+    "next": "Étape suivante : {{step}}",
+    "progress": "{{done}} sur {{total}} faits"
   },
   "fields": {
     "fullName": "Noms",
@@ -46,7 +51,11 @@
     "ecPhone": "Son téléphone",
     "ecRelationship": "Votre lien"
   },
-  "sex": { "female": "Femme", "male": "Homme", "other": "Autre" },
+  "sex": {
+    "female": "Femme",
+    "male": "Homme",
+    "other": "Autre"
+  },
   "details": {
     "delegateNote": "Seule la personne ou son tuteur peut modifier les noms, la date de naissance et le sexe."
   },
@@ -65,7 +74,11 @@
     "country": "Pays de délivrance (deux lettres)",
     "claim": "Réclamer ce dossier"
   },
-  "reveal": { "show": "Afficher", "hide": "Masquer", "showing": "Affichage…" },
+  "reveal": {
+    "show": "Afficher",
+    "hide": "Masquer",
+    "showing": "Affichage…"
+  },
   "insurers": {
     "mutuelle": "Mutuelle de Santé",
     "rssb": "RSSB (RAMA)",
@@ -208,5 +221,13 @@
     "reference": "Référence de la demande",
     "done": "Votre dossier est maintenant lié à votre compte.",
     "open": "Ouvrir mon profil"
+  },
+  "numberHint": "Montrez ce numéro dans tout établissement pour retrouver vite votre dossier.",
+  "sectionHints": {
+    "details": "Nom, date de naissance, téléphone, contact d’urgence",
+    "identifiers": "Carte d’identité, passeport ou carte de réfugié",
+    "insurance": "Vos cartes d’assurance",
+    "health": "Allergies, maladies, traitements au long cours",
+    "history": "Chaque ouverture de votre dossier par le personnel"
   }
 }

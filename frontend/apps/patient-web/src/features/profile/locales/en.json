@@ -12,7 +12,11 @@
   "cancel": "Cancel",
   "close": "Close",
   "error": "Something went wrong. Check your connection and try again.",
-  "relationship": { "self": "You", "guardian": "Your child", "delegate": "Shared with you" },
+  "relationship": {
+    "self": "You",
+    "guardian": "Your child",
+    "delegate": "Shared with you"
+  },
   "medilinkNumber": "Your MediLink number",
   "sectionsLabel": "Profile sections",
   "sections": {
@@ -32,7 +36,8 @@
     "allergies_reviewed": "Allergies checked",
     "done": "done",
     "todo": "to do",
-    "next": "Next: {{step}}"
+    "next": "Next: {{step}}",
+    "progress": "{{done}} of {{total}} done"
   },
   "fields": {
     "fullName": "Names",
@@ -46,7 +51,11 @@
     "ecPhone": "Their phone",
     "ecRelationship": "How you know them"
   },
-  "sex": { "female": "Female", "male": "Male", "other": "Other" },
+  "sex": {
+    "female": "Female",
+    "male": "Male",
+    "other": "Other"
+  },
   "details": {
     "delegateNote": "Only the person or their guardian can change names, birth date and sex."
   },
@@ -65,7 +74,11 @@
     "country": "Issuing country (two letters)",
     "claim": "Claim this record"
   },
-  "reveal": { "show": "Show", "hide": "Hide", "showing": "Showing…" },
+  "reveal": {
+    "show": "Show",
+    "hide": "Hide",
+    "showing": "Showing…"
+  },
   "insurers": {
     "mutuelle": "Mutuelle de Santé",
     "rssb": "RSSB (RAMA)",
@@ -75,7 +88,11 @@
   "insurance": {
     "none": "No insurance card yet.",
     "expired": "Expired",
-    "status": { "unverified": "Not checked yet", "verified": "Verified", "rejected": "Rejected" },
+    "status": {
+      "unverified": "Not checked yet",
+      "verified": "Verified",
+      "rejected": "Rejected"
+    },
     "inactive": "Not in use",
     "lastVerified": "Used at {{facility}} on {{date}}, verified",
     "deactivate": "Stop using this card",
@@ -204,5 +221,13 @@
     "reference": "Claim reference",
     "done": "Your record is now linked to your account.",
     "open": "Open my profile"
+  },
+  "numberHint": "Show this number at any facility so staff find your record quickly.",
+  "sectionHints": {
+    "details": "Name, birth date, phone, emergency contact",
+    "identifiers": "National ID, passport or refugee ID",
+    "insurance": "Your insurance cards",
+    "health": "Allergies, conditions, long-term medicines",
+    "history": "Every time staff opened your record"
   }
 }

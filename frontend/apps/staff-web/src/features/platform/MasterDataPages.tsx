@@ -29,7 +29,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 
 import { useApi } from "../../app/services";
-import { PageHeading } from "../../components/PageHeading";
+import { PageHeader } from "../../components/PageHeader";
 import { useStepUp } from "../lock";
 import { actionError, PlatformOnly, useIdempotencyKey, useLocale, useTableLabels } from "./shared";
 
@@ -104,9 +104,7 @@ export function MasterDataPage() {
   return (
     <PlatformOnly>
       <div className="flex flex-col gap-5">
-        <PageHeading title={t("platform.masterData.title")}>
-          {t("platform.masterData.title")}
-        </PageHeading>
+        <PageHeader title={t("platform.masterData.title")} />
         <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2 lg:grid-cols-3">
           {MASTER_DATA_KINDS.map((kind) => (
             <KindCard key={kind} kind={kind} />
@@ -205,22 +203,20 @@ function KindTable() {
   );
   return (
     <div className="flex flex-col gap-5">
-      <Link to="/platform/master-data" className="text-link">
-        {t("platform.masterData.back")}
-      </Link>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <PageHeading title={t(`platform.masterData.kinds.${kind}`)}>
-          {t(`platform.masterData.kinds.${kind}`)}
-        </PageHeading>
-        <div className="flex flex-wrap gap-2">
-          {IMPORTABLE_KINDS.includes(kind) && (
-            <Button variant="secondary" onClick={() => setImporting(true)}>
-              {t("platform.masterData.import")}
-            </Button>
-          )}
-          <Button onClick={() => setEditing("new")}>{t("platform.masterData.add")}</Button>
-        </div>
-      </div>
+      <PageHeader
+        title={t(`platform.masterData.kinds.${kind}`)}
+        back={{ to: "/platform/master-data", label: t("platform.masterData.back") }}
+        actions={
+          <>
+            {IMPORTABLE_KINDS.includes(kind) && (
+              <Button variant="secondary" onClick={() => setImporting(true)}>
+                {t("platform.masterData.import")}
+              </Button>
+            )}
+            <Button onClick={() => setEditing("new")}>{t("platform.masterData.add")}</Button>
+          </>
+        }
+      />
       <DataTable<PlatformItem>
         caption={t(`platform.masterData.kinds.${kind}`)}
         columns={columns}
@@ -573,12 +569,13 @@ function ImportPreview() {
   const data = job.data;
   return (
     <div className="flex flex-col gap-5">
-      <Link to={`/platform/master-data/${kind}`} className="text-link">
-        {t(`platform.masterData.kinds.${kind}`)}
-      </Link>
-      <PageHeading title={t("platform.masterData.importTitle")}>
-        {t("platform.masterData.importTitle")}
-      </PageHeading>
+      <PageHeader
+        title={t("platform.masterData.importTitle")}
+        back={{
+          to: `/platform/master-data/${kind}`,
+          label: t(`platform.masterData.kinds.${kind}`),
+        }}
+      />
       {!data && <LoadingState />}
       {data && (
         <>

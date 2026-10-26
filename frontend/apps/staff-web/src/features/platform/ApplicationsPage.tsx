@@ -20,7 +20,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useSearchParams } from "react-router";
 
 import { useApi } from "../../app/services";
-import { PageHeading } from "../../components/PageHeading";
+import { PageHeader } from "../../components/PageHeader";
 import {
   actionError,
   formatDate,
@@ -124,12 +124,12 @@ function Applications() {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <PageHeading title={t("platform.applications.title")}>
-          {t("platform.applications.title")}
-        </PageHeading>
-        <Button onClick={() => setCreating(true)}>{t("platform.applications.create")}</Button>
-      </div>
+      <PageHeader
+        title={t("platform.applications.title")}
+        actions={
+          <Button onClick={() => setCreating(true)}>{t("platform.applications.create")}</Button>
+        }
+      />
       <Tabs value={status} onValueChange={(value) => update({ status: value })}>
         <TabsList aria-label={t("platform.applications.status")}>
           {TABS.map((tab) => (

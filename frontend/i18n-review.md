@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 1219.
+Keys: 1246.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -171,6 +171,19 @@ File: `apps/staff-web/src/i18n/locales/rw.json`
 | `shell.userMenu.language` | Ururimi | Language | needs native-speaker review |
 | `shell.userMenu.logout` | Sohoka | Log out | needs native-speaker review |
 | `shell.userMenu.loggingOut` | Urasohoka… | Logging out… | needs native-speaker review |
+| `shell.palette.title` | Shakisha cyangwa ujye kuri | Search or jump to | needs native-speaker review |
+| `shell.palette.open` | Shakisha cyangwa ujye kuri… | Search or jump to… | needs native-speaker review |
+| `shell.palette.placeholder` | Andika urupapuro, igikorwa cyangwa umurwayi | Type a page, an action or a patient | needs native-speaker review |
+| `shell.palette.empty` | Nta kibonetse. Gerageza irindi jambo. | Nothing matches. Try another word. | needs native-speaker review |
+| `shell.palette.hints` | ↑ ↓ kwimuka · Enter gufungura · Esc gufunga | ↑ ↓ to move · Enter to open · Esc to close | needs native-speaker review |
+| `shell.palette.search` | Gushakisha | Search | needs native-speaker review |
+| `shell.palette.actions` | Ibikorwa | Actions | needs native-speaker review |
+| `shell.palette.pages` | Jya kuri | Go to | needs native-speaker review |
+| `shell.palette.noResults` | Nta murwayi uhuye na byo kuri iki kigo | No match at this facility | needs native-speaker review |
+| `shell.palette.searchFailed` | Gushakisha ntibyakunze. Ongera ugerageze. | The search did not work. Try again. | needs native-speaker review |
+| `shell.palette.shortcut` | Ctrl K | Ctrl K | needs native-speaker review |
+| `shell.collapse` | Gabanya menyu | Collapse menu | needs native-speaker review |
+| `shell.expand` | Agura menyu | Expand menu | needs native-speaker review |
 | `today.title` | Uyu munsi | Today | needs native-speaker review |
 | `today.greeting` | Muraho, {{name}} | Hello, {{name}} | needs native-speaker review |
 | `today.facility` | Ukorera kuri {{facility}}. | You are working at {{facility}}. | needs native-speaker review |
@@ -181,6 +194,7 @@ File: `apps/staff-web/src/i18n/locales/rw.json`
 | `placeholder.title` | {{section}} | {{section}} | needs native-speaker review |
 | `placeholder.body` | Iki gice kizakorwa mu cyiciro gikurikira. | This workspace is planned for a later sprint. | needs native-speaker review |
 | `placeholder.back` | Subira ku Uyu munsi | Back to Today | needs native-speaker review |
+| `placeholder.heading` | {{section}} biraje vuba | {{section}} is on its way | needs native-speaker review |
 | `notFound.title` | Iyi paji ntibonetse | Page not found | needs native-speaker review |
 | `notFound.body` | Reba aderesi, cyangwa usubire kuri paji y’Uyu munsi. | Check the address, or go back to your Today page. | needs native-speaker review |
 | `notFound.home` | Jya ku Uyu munsi | Go to Today | needs native-speaker review |
@@ -478,6 +492,7 @@ File: `apps/staff-web/src/features/patients/locales/rw.json`
 | `search.register` | Andika umurwayi mushya | Register walk-in | needs native-speaker review |
 | `search.shortcuts` | Kanda / ushakishe, na N wandike umurwayi mushya. | Press / to search and N for a new walk-in. | needs native-speaker review |
 | `search.button` | Shakisha | Search | needs native-speaker review |
+| `search.noResultsTitle` | Nta murwayi wabonetse | No patient found | needs native-speaker review |
 | `external.title` | Asanzwe kuri MediLink | Already on MediLink | needs native-speaker review |
 | `external.hint` | Uyu muntu yanditswe mu kindi kigo. Musabe nomero ye ya MediLink kugira ngo umwongere hano. | This person is registered at another facility. Ask for their MediLink number to add them here. | needs native-speaker review |
 | `external.add` | Mwongere kuri iki kigo | Add to this facility | needs native-speaker review |
@@ -513,6 +528,8 @@ File: `apps/staff-web/src/features/patients/locales/rw.json`
 | `register.number` | Nomero ya MediLink: | MediLink number: | needs native-speaker review |
 | `register.openRecord` | Fungura dosiye | Open record | needs native-speaker review |
 | `register.another` | Andika undi | Register another | needs native-speaker review |
+| `register.sections.person` | Umuntu | Person | needs native-speaker review |
+| `register.sections.contact` | Aho abarizwa n'ubwishingizi | Contact and insurance | needs native-speaker review |
 | `record.merged` | Yahujwe | Merged | needs native-speaker review |
 | `record.staffMember` | Umukozi | Staff member | needs native-speaker review |
 | `record.hasAccount` | Afite konti ya MediLink | Has a MediLink account | needs native-speaker review |
@@ -618,6 +635,9 @@ File: `apps/staff-web/src/features/patients/locales/rw.json`
 | `merges.confirm.escalate.consequences` | Nta wundi hano ushobora kubwemeza, itsinda rya platform ni ryo rizafata icyemezo. | No one else here can approve it, so the platform team will decide. | needs native-speaker review |
 | `merges.confirm.undo.title` | Gusubiza inyuma uku guhuza? | Undo this merge? | needs native-speaker review |
 | `merges.confirm.undo.consequences` | Ibyimuwe bisubira muri dosiye za mbere, keretse niba byarahindutse. | Moved items go back to the original records, unless they changed since. | needs native-speaker review |
+| `palette.searchFor` | Shakisha abarwayi “{{query}}” | Search patients for “{{query}}” | needs native-speaker review |
+| `palette.results` | Abarwayi | Patients | needs native-speaker review |
+| `palette.file` | Dosiye {{number}} | File {{number}} | needs native-speaker review |
 
 ## staff-web feature: platform (namespace platform)
 
@@ -1146,6 +1166,7 @@ File: `apps/patient-web/src/features/profile/locales/rw.json`
 | `completion.done` | byakozwe | done | needs native-speaker review |
 | `completion.todo` | bigikenewe | to do | needs native-speaker review |
 | `completion.next` | Igikurikira: {{step}} | Next: {{step}} | needs native-speaker review |
+| `completion.progress` | {{done}} kuri {{total}} byakozwe | {{done}} of {{total}} done | needs native-speaker review |
 | `fields.fullName` | Amazina | Names | needs native-speaker review |
 | `fields.dateOfBirth` | Itariki y'amavuko | Date of birth | needs native-speaker review |
 | `fields.sex` | Igitsina | Sex | needs native-speaker review |
@@ -1291,4 +1312,10 @@ File: `apps/patient-web/src/features/profile/locales/rw.json`
 | `claim.reference` | Nomero y'ubusabe | Claim reference | needs native-speaker review |
 | `claim.done` | Dosiye yawe ubu ihujwe na konti yawe. | Your record is now linked to your account. | needs native-speaker review |
 | `claim.open` | Fungura umwirondoro wanjye | Open my profile | needs native-speaker review |
+| `numberHint` | Erekana iyi nimero ku kigo icyo ari cyo cyose kugira ngo babone dosiye yawe vuba. | Show this number at any facility so staff find your record quickly. | needs native-speaker review |
+| `sectionHints.details` | Amazina, itariki y’amavuko, telefoni, uwo guhamagara mu byihutirwa | Name, birth date, phone, emergency contact | needs native-speaker review |
+| `sectionHints.identifiers` | Indangamuntu, pasiporo cyangwa ikarita y’impunzi | National ID, passport or refugee ID | needs native-speaker review |
+| `sectionHints.insurance` | Amakarita yawe y’ubwishingizi | Your insurance cards | needs native-speaker review |
+| `sectionHints.health` | Allergie, indwara, imiti y’igihe kirekire | Allergies, conditions, long-term medicines | needs native-speaker review |
+| `sectionHints.history` | Igihe cyose abakozi bafunguye dosiye yawe | Every time staff opened your record | needs native-speaker review |
 

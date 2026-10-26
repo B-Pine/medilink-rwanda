@@ -34,7 +34,7 @@ export function ForFacilitiesPage() {
           <PageHeading title={t("facilityApplication.public.title")}>
             {t("facilityApplication.public.title")}
           </PageHeading>
-          <p className="m-0 max-w-3xl text-body-lg text-fg-secondary">
+          <p className="m-0 max-w-3xl text-h3 font-normal text-fg-secondary">
             {t("facilityApplication.public.problem")}
           </p>
           <div className="flex flex-wrap gap-3">

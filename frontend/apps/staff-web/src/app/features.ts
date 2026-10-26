@@ -1,6 +1,8 @@
 import type { ComponentType } from "react";
 import type { RouteObject } from "react-router";
 
+import type { CommandProvider } from "../layout/commands";
+
 // ---- Feature imports: ONLY between the sprint's markers (shared-file protocol) ----
 // [S1 imports]
 import { lockFeature } from "../features/lock";
@@ -26,10 +28,14 @@ export interface FeatureRoutes {
   headerItems?: ComponentType[];
   /** Components mounted once inside the authenticated shell (e.g. the idle lock overlay). */
   shellOverlays?: ComponentType[];
+  /** Actions and searches in the command palette (Ctrl+K). */
+  commands?: CommandProvider[];
 }
 
 export const FEATURE_HEADER_ITEMS = (): ComponentType[] =>
   FEATURES.flatMap((feature) => feature.headerItems ?? []);
+export const FEATURE_COMMANDS = (): CommandProvider[] =>
+  FEATURES.flatMap((feature) => feature.commands ?? []);
 export const FEATURE_SHELL_OVERLAYS = (): ComponentType[] =>
   FEATURES.flatMap((feature) => feature.shellOverlays ?? []);
 

@@ -52,7 +52,12 @@ describe("front-end security rules (F6)", () => {
     }
     const storage = read(resolve(frontend, "packages/ui/src/preferences/storage.ts"));
     const keys = [...storage.matchAll(/"(medilink\.[\w.]+)"/g)].map((m) => m[1]);
-    expect(keys.sort()).toEqual(["medilink.language", "medilink.tableDensity", "medilink.theme"]);
+    expect(keys.sort()).toEqual([
+      "medilink.language",
+      "medilink.sidebarCollapsed",
+      "medilink.tableDensity",
+      "medilink.theme",
+    ]);
   });
 
   it("loads no third-party scripts, fonts or CDNs", () => {

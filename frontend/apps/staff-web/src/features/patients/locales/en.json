@@ -12,7 +12,11 @@
   "age_other": "{{count}} years",
   "ageEstimated_one": "about {{count}} year",
   "ageEstimated_other": "about {{count}} years",
-  "sex": { "female": "Female", "male": "Male", "other": "Other" },
+  "sex": {
+    "female": "Female",
+    "male": "Male",
+    "other": "Other"
+  },
   "identifierKinds": {
     "national_id": "National ID",
     "passport": "Passport",
@@ -64,7 +68,8 @@
     "noResults": "No patient at this facility matches. Check the spelling, or search by phone or ID.",
     "register": "Register walk-in",
     "shortcuts": "Press / to search and N for a new walk-in.",
-    "button": "Search"
+    "button": "Search",
+    "noResultsTitle": "No patient found"
   },
   "external": {
     "title": "Already on MediLink",
@@ -77,7 +82,11 @@
     "title": "Register a walk-in",
     "nameHint": "All names, as the patient says them.",
     "ageMode": "Birth date or age",
-    "ageModes": { "dob": "Date of birth", "years": "Age in years", "months": "Age in months" },
+    "ageModes": {
+      "dob": "Date of birth",
+      "years": "Age in years",
+      "months": "Age in months"
+    },
     "phoneInvalid": "Enter a Rwandan mobile number like 0788 123 456.",
     "noInsurance": "No insurance",
     "more": "More details (ID, file number)",
@@ -103,7 +112,11 @@
     "done": "{{name}} is registered",
     "number": "MediLink number:",
     "openRecord": "Open record",
-    "another": "Register another"
+    "another": "Register another",
+    "sections": {
+      "person": "Person",
+      "contact": "Contact and insurance"
+    }
   },
   "record": {
     "merged": "Merged",
@@ -144,7 +157,11 @@
     "seen": "I saw the document"
   },
   "insurance": {
-    "status": { "unverified": "Not checked", "verified": "Verified", "rejected": "Rejected" },
+    "status": {
+      "unverified": "Not checked",
+      "verified": "Verified",
+      "rejected": "Rejected"
+    },
     "expired": "Expired",
     "inactive": "Not in use",
     "none": "No insurance card.",
@@ -162,7 +179,11 @@
     "conditions": "Conditions",
     "medications": "Medicines",
     "none": "None recorded.",
-    "status": { "unverified": "Unverified", "verified": "Verified", "refuted": "Refuted" },
+    "status": {
+      "unverified": "Unverified",
+      "verified": "Verified",
+      "refuted": "Refuted"
+    },
     "confirm": "Confirm",
     "add": {
       "allergies": "Add an allergy",
@@ -228,7 +249,10 @@
         "title": "Merge these records?",
         "consequences": "Documents, insurance, health items and the file number move to the kept record. You can undo it later."
       },
-      "reject": { "title": "Reject this request?", "consequences": "The records stay separate." },
+      "reject": {
+        "title": "Reject this request?",
+        "consequences": "The records stay separate."
+      },
       "cancel": {
         "title": "Cancel your request?",
         "consequences": "The request is closed without a decision."
@@ -242,5 +266,10 @@
         "consequences": "Moved items go back to the original records, unless they changed since."
       }
     }
+  },
+  "palette": {
+    "searchFor": "Search patients for “{{query}}”",
+    "results": "Patients",
+    "file": "File {{number}}"
   }
 }

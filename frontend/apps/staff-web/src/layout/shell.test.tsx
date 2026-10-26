@@ -12,7 +12,7 @@ async function signIn(path = "/today") {
   await logIn(app.user, "reception@medilink.test", MOCK_PASSWORD);
   await app.user.type(await screen.findByLabelText("6-digit code"), MOCK_TOTP_CODE);
   await app.user.click(screen.getByRole("button", { name: "Verify and log in" }));
-  await screen.findByRole("heading", { level: 1, name: "Today" });
+  await screen.findByRole("heading", { level: 1, name: /^Good (morning|afternoon|evening)/ });
   return app;
 }
 

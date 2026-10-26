@@ -16,7 +16,7 @@ async function signInAsReception() {
   await logIn(app.user, "reception@medilink.test", MOCK_PASSWORD);
   await app.user.type(await screen.findByLabelText("6-digit code"), MOCK_TOTP_CODE);
   await app.user.click(screen.getByRole("button", { name: "Verify and log in" }));
-  await screen.findByRole("heading", { level: 1, name: "Today" });
+  await screen.findByRole("heading", { level: 1, name: /^Good (morning|afternoon|evening)/ });
   return app;
 }
 
@@ -46,7 +46,9 @@ describe("idle lock", () => {
       expect(screen.queryByRole("dialog", { name: "Screen locked" })).not.toBeInTheDocument(),
     );
     expect(container.querySelector("[inert]")).toBeNull();
-    expect(screen.getByRole("heading", { level: 1, name: "Today" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { level: 1, name: /^Good (morning|afternoon|evening)/ }),
+    ).toBeInTheDocument();
   });
 
   it("sets a PIN on the security page and unlocks with it", async () => {
@@ -98,10 +100,14 @@ describe("idle lock", () => {
     await services.api.security.lock();
     const app = renderApp("/today");
     expect(await screen.findByRole("dialog", { name: "Screen locked" })).toBeInTheDocument();
-    expect(screen.queryByRole("heading", { level: 1, name: "Today" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { level: 1, name: /^Good (morning|afternoon|evening)/ }),
+    ).not.toBeInTheDocument();
     await app.user.type(screen.getByLabelText("Password"), MOCK_PASSWORD);
     await app.user.click(screen.getByRole("button", { name: "Unlock" }));
-    expect(await screen.findByRole("heading", { level: 1, name: "Today" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { level: 1, name: /^Good (morning|afternoon|evening)/ }),
+    ).toBeInTheDocument();
   });
 
   it("warns 60 seconds before locking and 'Stay signed in' resets the timer", async () => {

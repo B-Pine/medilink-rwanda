@@ -107,6 +107,8 @@ export interface MockContext {
   markStepUp: () => void;
   pins: Map<string, string>;
   featureFlags: MockFeatureFlags;
+  // ---- S2: an accepted invitation for a new account continues at MFA setup
+  beginStaffMfaSetup: (email: string, facilityId: string) => void;
 }
 
 export interface MockApi {
@@ -304,6 +306,8 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
         ? { me: session.me }
         : { error: errorResponse(401, "not_authenticated", message("notAuthenticated", lang)) };
     },
+    beginStaffMfaSetup: (email, facilityId) =>
+      setStaffSession({ email, stage: "mfa_setup", activeFacilityId: facilityId }),
     staffSession: () => {
       const session = staffSession();
       if (!session || session.stage !== "authenticated") return null;

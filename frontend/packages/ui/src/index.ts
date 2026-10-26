@@ -113,6 +113,10 @@ export type { ProfileSwitcherProps, SwitcherProfile } from "./components/Profile
 // [S9]
 // [/S9]
 // [S2]
+export { formatRwf, MoneyField, TimeRangeField, timeBefore } from "./components/SetupFields";
+export type { MoneyFieldProps, TimeRangeFieldProps } from "./components/SetupFields";
+export { WeekGrid } from "./components/WeekGrid";
+export type { WeekGridBlock, WeekGridLabels, WeekGridProps } from "./components/WeekGrid";
 // [/S2]
 // [S10]
 // [/S10]

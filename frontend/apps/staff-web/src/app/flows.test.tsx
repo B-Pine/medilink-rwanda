@@ -36,7 +36,9 @@ describe("staff login → MFA verify → facility picker → shell", () => {
     await user.click(screen.getByRole("button", { name: "Work at Remera Health Center" }));
 
     // Shell: Today with the facility, roles, and a sidebar filtered by permissions.
-    expect(await screen.findByRole("heading", { level: 1, name: "Today" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { level: 1, name: /^Good (morning|afternoon|evening)/ }),
+    ).toBeInTheDocument();
     expect(router.state.location.pathname).toBe("/today");
     expect(screen.getByText("You are working at Remera Health Center.")).toBeInTheDocument();
     const nav = screen.getByRole("navigation", { name: "Main menu" });
@@ -66,7 +68,7 @@ describe("staff login → MFA verify → facility picker → shell", () => {
     await user.type(await screen.findByLabelText("6-digit code"), MOCK_TOTP_CODE);
     await user.click(screen.getByRole("button", { name: "Verify and log in" }));
     await user.click(await screen.findByRole("button", { name: "Work at Remera Health Center" }));
-    await screen.findByRole("heading", { level: 1, name: "Today" });
+    await screen.findByRole("heading", { level: 1, name: /^Good (morning|afternoon|evening)/ });
 
     const switcher = screen.getByRole("button", { name: /Current facility: Remera Health Center/ });
     switcher.focus();
@@ -91,7 +93,9 @@ describe("staff login → MFA verify → facility picker → shell", () => {
     await user.type(recovery, MOCK_RECOVERY_CODE);
     await user.click(screen.getByRole("button", { name: "Verify and log in" }));
 
-    expect(await screen.findByRole("heading", { level: 1, name: "Today" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { level: 1, name: /^Good (morning|afternoon|evening)/ }),
+    ).toBeInTheDocument();
     expect(screen.getByText("You are working at Kigali Clinic.")).toBeInTheDocument();
     const nav = screen.getByRole("navigation", { name: "Main menu" });
     expect(within(nav).getByRole("link", { name: "Payments" })).toBeInTheDocument();
@@ -105,7 +109,7 @@ describe("staff login → MFA verify → facility picker → shell", () => {
     await logIn(user, "reception@medilink.test", MOCK_PASSWORD);
     await user.type(await screen.findByLabelText("6-digit code"), MOCK_TOTP_CODE);
     await user.click(screen.getByRole("button", { name: "Verify and log in" }));
-    await screen.findByRole("heading", { level: 1, name: "Today" });
+    await screen.findByRole("heading", { level: 1, name: /^Good (morning|afternoon|evening)/ });
 
     await router.navigate("/pharmacy");
     expect(
@@ -160,7 +164,9 @@ describe("staff first login → MFA setup", () => {
     await user.click(screen.getByLabelText("I have saved my recovery codes in a safe place"));
     await user.click(screen.getByRole("button", { name: "Continue to MediLink" }));
 
-    expect(await screen.findByRole("heading", { level: 1, name: "Today" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { level: 1, name: /^Good (morning|afternoon|evening)/ }),
+    ).toBeInTheDocument();
     expect(router.state.location.pathname).toBe("/today");
     print.mockRestore();
   });
@@ -248,7 +254,7 @@ describe("shell: user menu, language, theme, logout", () => {
     await logIn(app.user, "pharmacist@medilink.test", MOCK_PASSWORD);
     await app.user.type(await screen.findByLabelText("6-digit code"), MOCK_TOTP_CODE);
     await app.user.click(screen.getByRole("button", { name: "Verify and log in" }));
-    await screen.findByRole("heading", { level: 1, name: "Today" });
+    await screen.findByRole("heading", { level: 1, name: /^Good (morning|afternoon|evening)/ });
     return app;
   }
 
@@ -268,7 +274,7 @@ describe("shell: user menu, language, theme, logout", () => {
     await user.click(within(menu).getByRole("menuitemradio", { name: "Français" }));
     expect(document.documentElement.lang).toBe("fr");
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Aujourd’hui" }),
+      await screen.findByRole("heading", { level: 1, name: /^(Bonjour|Bon après-midi|Bonsoir)/ }),
     ).toBeInTheDocument();
 
     menu = await openUserMenu(user, /Menu du compte/);
@@ -291,7 +297,9 @@ describe("shell: user menu, language, theme, logout", () => {
     await logIn(user, "admin@medilink.test", MOCK_PASSWORD);
     await user.type(await screen.findByLabelText("6-digit code"), MOCK_TOTP_CODE);
     await user.click(screen.getByRole("button", { name: "Verify and log in" }));
-    expect(await screen.findByRole("heading", { level: 1, name: "Today" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { level: 1, name: /^Good (morning|afternoon|evening)/ }),
+    ).toBeInTheDocument();
     expect(screen.getByText("You are signed in as a platform admin.")).toBeInTheDocument();
     const nav = screen.getByRole("navigation", { name: "Main menu" });
     expect(
@@ -316,7 +324,7 @@ describe("shell: user menu, language, theme, logout", () => {
     await logIn(user, "reception@medilink.test", MOCK_PASSWORD);
     await user.type(await screen.findByLabelText("6-digit code"), MOCK_TOTP_CODE);
     await user.click(screen.getByRole("button", { name: "Verify and log in" }));
-    await screen.findByRole("heading", { level: 1, name: "Today" });
+    await screen.findByRole("heading", { level: 1, name: /^Good (morning|afternoon|evening)/ });
 
     // The server session ends (e.g. idle timeout), then the next API call answers 401.
     mockApi.reset();

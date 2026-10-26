@@ -20,6 +20,7 @@ export * from "./features/profile";
 // [S9]
 // [/S9]
 // [S2]
+export * from "./features/setup";
 // [/S2]
 // [S10]
 // [/S10]

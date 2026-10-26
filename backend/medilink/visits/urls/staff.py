@@ -22,6 +22,7 @@ urlpatterns = [
         name="staff-ticket-action",
     ),
     path("duty-status/", v.DutyView.as_view(), name="staff-duty-status"),
+    path("reports/operations/", v.OperationsView.as_view(), name="staff-reports-operations"),
     path("display-links/", v.DisplayLinksView.as_view(), name="staff-display-links"),
     path(
         "display-links/<uuid:link_id>/revoke/",

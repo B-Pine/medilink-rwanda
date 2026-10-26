@@ -211,3 +211,49 @@ class PatientVisitSerializer(serializers.Serializer):
 
 class TravelTimeSerializer(StrictSerializer):
     minutes = serializers.IntegerField(min_value=0, max_value=600)
+
+
+class DayFiguresSerializer(serializers.Serializer):
+    date = serializers.DateField()
+    patients = serializers.IntegerField()
+    completed = serializers.IntegerField()
+    median_wait_min = serializers.IntegerField(allow_null=True)
+    p90_wait_min = serializers.IntegerField(allow_null=True)
+    avg_consult_min = serializers.IntegerField(allow_null=True)
+    left_rate_pct = serializers.IntegerField(allow_null=True)
+    walk_ins = serializers.IntegerField()
+    emergencies = serializers.IntegerField()
+
+
+class ServiceLoadSerializer(serializers.Serializer):
+    service_id = serializers.UUIDField()
+    name_i18n = serializers.DictField()
+    waiting = serializers.IntegerField()
+    in_service = serializers.IntegerField()
+    longest_wait_min = serializers.IntegerField()
+    doctors_on_duty = serializers.IntegerField()
+    load = serializers.ChoiceField(choices=["low", "medium", "high"])
+
+
+class OperationsNowSerializer(serializers.Serializer):
+    waiting = serializers.IntegerField()
+    in_service = serializers.IntegerField()
+    doctors_on_duty = serializers.IntegerField()
+    doctors_on_break = serializers.IntegerField()
+
+
+class HeatCellSerializer(serializers.Serializer):
+    weekday = serializers.IntegerField()
+    hour = serializers.IntegerField()
+    count = serializers.IntegerField()
+
+
+class OperationsSerializer(serializers.Serializer):
+    today = DayFiguresSerializer()
+    same_day_last_week = DayFiguresSerializer()
+    trend = DayFiguresSerializer(many=True)
+    now = OperationsNowSerializer()
+    services = ServiceLoadSerializer(many=True)
+    arrivals_heatmap = HeatCellSerializer(many=True)
+    attention = serializers.DictField(child=serializers.IntegerField())
+    updated_at = serializers.DateTimeField()

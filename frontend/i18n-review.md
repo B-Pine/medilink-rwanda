@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 1692.
+Keys: 1729.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -292,9 +292,46 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `landing.how.step3Body` | Kurikirana umwanya wawe ku murongo. Tukubwira igihe cyo kuva mu rugo. | Follow your place in the queue. We tell you when to leave home. | needs native-speaker review |
 | `landing.trust.title` | Amakuru yawe aguma mu Rwanda | Your data stays in Rwanda | needs native-speaker review |
 | `landing.trust.body` | Amakuru yawe arinzwe, abikwa mu Rwanda, kandi asangizwa gusa ibigo bikuvura. | Your information is encrypted, stored in Rwanda, and shared only with the facilities that care for you. | needs native-speaker review |
+| `landing.trust.points.rwanda.title` | Bibikwa mu Rwanda | Stored in Rwanda | needs native-speaker review |
+| `landing.trust.points.rwanda.body` | Amakuru yawe ntasohoka mu gihugu. | Your information never leaves the country. | needs native-speaker review |
+| `landing.trust.points.encrypted.title` | Birinzwe | Encrypted | needs native-speaker review |
+| `landing.trust.points.encrypted.body` | Abakuvura gusa ni bo bafungura dosiye yawe, kandi ubona uwayifunguye. | Only the staff caring for you can open your record, and you see who did. | needs native-speaker review |
+| `landing.trust.points.verified.title` | Ibigo byagenzuwe gusa | Verified facilities only | needs native-speaker review |
+| `landing.trust.points.verified.body` | Buri kigo kigenzurwa hakurikijwe uruhushya rwa Minisiteri y’Ubuzima. | Every facility is checked against its Ministry of Health licence. | needs native-speaker review |
 | `landing.facilities.title` | Ku bigo by’ubuvuzi | For health facilities | needs native-speaker review |
 | `landing.facilities.body` | Cunga umurongo, amadosiye n’inyemezabwishyu ahantu hamwe, kandi abarwayi bakubone byoroshye. | Run your queue, records and billing in one place, and let patients find you. | needs native-speaker review |
 | `landing.facilities.cta` | Andikisha ikigo cyawe | Register your facility | needs native-speaker review |
+| `landing.tracker.title` | Tegerereza mu rugo, si mu nzira | Wait at home, not in the corridor | needs native-speaker review |
+| `landing.tracker.body` | Nyuma yo gufata igihe cyangwa kujya ku murongo, telefoni yawe ikwereka umwanya wawe n’igihe cyo kuva mu rugo. Ikora no kuri interineti nke. | After you book or join the queue, your phone shows your place and when to leave. It keeps working on a weak network. | needs native-speaker review |
+| `landing.tracker.points.ahead` | Umubare w’abakuri imbere, uhinduka ako kanya | How many people are ahead of you, updated live | needs native-speaker review |
+| `landing.tracker.points.leave` | Igihe cyo kuva mu rugo, ukurikije urugendo rwawe | When to leave home, from your travel time | needs native-speaker review |
+| `landing.tracker.points.called` | Ubutumwa busobanutse n’ijwi iyo ari wowe | A clear alert with sound when it is your turn | needs native-speaker review |
+| `landing.tracker.mockFacility` | Kigali Clinic · Rusange | Kigali Clinic · General | needs native-speaker review |
+| `landing.tracker.mockTicket` | Nimero ya tike yawe | Your ticket number | needs native-speaker review |
+| `landing.tracker.mockAhead` | Abantu 4 bakuri imbere | 4 people ahead | needs native-speaker review |
+| `landing.tracker.mockWait` | Hafi iminota 25–35 | About 25–35 min | needs native-speaker review |
+| `landing.tracker.mockLeave` | Va mu rugo saa 09:20 | Leave home by 09:20 | needs native-speaker review |
+| `landing.tracker.mockCheckIn` | Nahageze – kwiyandikisha | I’m here – check in | needs native-speaker review |
+| `landing.tracker.caption` | Urugero rwo gukurikirana umurongo kuri telefoni: tike G-023, abantu 4 imbere, hafi iminota 25 kugeza 35. | Example of the queue tracker on a phone: ticket G-023, 4 people ahead, about 25 to 35 minutes. | needs native-speaker review |
+| `landing.records.title` | Amadosiye yawe ahantu hamwe | Your records in one place | needs native-speaker review |
+| `landing.records.body` | Ibyavuye mu kwivuza kwawe byose bigumana nawe, kuri wowe n’abo mu muryango witaho. | Everything from your visits stays with you, for you and the family members you care for. | needs native-speaker review |
+| `landing.records.items.prescriptions.title` | Impapuro z’imiti | Prescriptions | needs native-speaker review |
+| `landing.records.items.prescriptions.body` | Zerekane kuri farumasi iyo ari yo yose, n’ize ku rupapuro. | Show them at any pharmacy, even on paper. | needs native-speaker review |
+| `landing.records.items.receipts.title` | Inyemezabwishyu | Receipts | needs native-speaker review |
+| `landing.records.items.receipts.body` | Ibyo wishyuye n’ibyo ubwishingizi bwishyuye. | What you paid and what insurance covered. | needs native-speaker review |
+| `landing.records.items.notes.title` | Ibyemezo n’ibisubizo | Sick notes and results | needs native-speaker review |
+| `landing.records.items.notes.body` | Byiteguye gusangizwa umukoresha cyangwa ishuri. | Ready to share with your employer or school. | needs native-speaker review |
+| `landing.records.items.qr.title` | Bigenzurwa na QR | Checkable by QR | needs native-speaker review |
+| `landing.records.items.qr.body` | Umuntu wese yagenzura ko inyandiko ari iy’ukuri atabonye amakuru y’ubuzima bwawe. | Anyone can check a document is real, without seeing your health data. | needs native-speaker review |
+| `landing.faq.title` | Ibibazo | Questions | needs native-speaker review |
+| `landing.faq.items.insurance.q` | Bikorana na Mutuelle de Santé? | Does it work with Mutuelle de Santé? | needs native-speaker review |
+| `landing.faq.items.insurance.a` | Yego. Shakisha ukoresheje ubwishingizi bwawe urebe ibigo bubwemera n’ibyo uzishyura. | Yes. Search by your insurance to see which facilities accept it and what you will pay. | needs native-speaker review |
+| `landing.faq.items.cost.q` | MediLink hari icyo yishyuza abarwayi? | Does MediLink cost anything for patients? | needs native-speaker review |
+| `landing.faq.items.cost.a` | Oya. Gufata igihe, gukurikirana umurongo n’amadosiye yawe ni ubuntu ku barwayi. | No. Booking, the queue tracker and your records are free for patients. | needs native-speaker review |
+| `landing.faq.items.privacy.q` | Ni nde ubona amakuru y’ubuzima bwanjye? | Who can see my health information? | needs native-speaker review |
+| `landing.faq.items.privacy.a` | Abakuvura gusa. Ubona igihe cyose dosiye yawe yafunguwe. | Only the staff caring for you. You can see every time your record was opened. | needs native-speaker review |
+| `landing.faq.items.smartphone.q` | Nta smartphone mfite. Nshobora kubikoresha? | I don’t have a smartphone. Can I still use it? | needs native-speaker review |
+| `landing.faq.items.smartphone.a` | Yego. Baza ku kwakira: bakwandika bakaguha tike, kandi ugumana nimero yawe ya MediLink. | Yes. Ask at reception: they can register you and give you a ticket, and you keep your MediLink number. | needs native-speaker review |
 | `emergency.title` | Ubutabazi bwihuse? | Emergency? | needs native-speaker review |
 | `emergency.body` | Jya ku ishami ry’ubutabazi bwihuse rikwegereye cyangwa uhamagare 912. MediLink si iy’ubutabazi bwihuse. | Go to the nearest emergency department or call 912. MediLink is not for emergencies. | needs native-speaker review |
 | `footer.label` | Amahuza y’urubuga | Site links | needs native-speaker review |

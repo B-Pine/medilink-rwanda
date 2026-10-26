@@ -86,12 +86,85 @@
     },
     "trust": {
       "title": "Vos données restent au Rwanda",
-      "body": "Vos informations sont chiffrées, conservées au Rwanda et partagées uniquement avec les établissements qui vous soignent."
+      "body": "Vos informations sont chiffrées, conservées au Rwanda et partagées uniquement avec les établissements qui vous soignent.",
+      "points": {
+        "rwanda": {
+          "title": "Stockées au Rwanda",
+          "body": "Vos informations ne quittent jamais le pays."
+        },
+        "encrypted": {
+          "title": "Chiffrées",
+          "body": "Seul le personnel qui vous soigne peut ouvrir votre dossier, et vous voyez qui l’a fait."
+        },
+        "verified": {
+          "title": "Établissements vérifiés",
+          "body": "Chaque établissement est vérifié avec sa licence du ministère de la Santé."
+        }
+      }
     },
     "facilities": {
       "title": "Pour les établissements de santé",
       "body": "Gérez votre file d’attente, vos dossiers et votre facturation au même endroit, et laissez les patients vous trouver.",
       "cta": "Inscrire votre établissement"
+    },
+    "tracker": {
+      "title": "Attendez chez vous, pas dans le couloir",
+      "body": "Après une réservation ou l’entrée dans la file, votre téléphone montre votre place et l’heure de départ. Il fonctionne même avec un réseau faible.",
+      "points": {
+        "ahead": "Le nombre de personnes devant vous, en direct",
+        "leave": "L’heure de départ, selon votre temps de trajet",
+        "called": "Une alerte claire avec son quand c’est votre tour"
+      },
+      "mockFacility": "Kigali Clinic · Général",
+      "mockTicket": "Votre numéro de ticket",
+      "mockAhead": "4 personnes devant vous",
+      "mockWait": "Environ 25–35 min",
+      "mockLeave": "Partez vers 09:20",
+      "mockCheckIn": "Je suis arrivé – m’enregistrer",
+      "caption": "Exemple du suivi de file sur un téléphone : ticket G-023, 4 personnes devant, environ 25 à 35 minutes."
+    },
+    "records": {
+      "title": "Vos documents au même endroit",
+      "body": "Tout ce qui vient de vos visites reste avec vous, pour vous et les proches dont vous vous occupez.",
+      "items": {
+        "prescriptions": {
+          "title": "Ordonnances",
+          "body": "À montrer dans n’importe quelle pharmacie, même sur papier."
+        },
+        "receipts": {
+          "title": "Reçus",
+          "body": "Ce que vous avez payé et ce que l’assurance a couvert."
+        },
+        "notes": {
+          "title": "Certificats et résultats",
+          "body": "Prêts à partager avec votre employeur ou l’école."
+        },
+        "qr": {
+          "title": "Vérifiables par QR",
+          "body": "Chacun peut vérifier qu’un document est authentique, sans voir vos données de santé."
+        }
+      }
+    },
+    "faq": {
+      "title": "Questions",
+      "items": {
+        "insurance": {
+          "q": "Est-ce compatible avec la Mutuelle de Santé ?",
+          "a": "Oui. Recherchez par assurance pour voir les établissements qui l’acceptent et ce que vous paierez."
+        },
+        "cost": {
+          "q": "MediLink est-il payant pour les patients ?",
+          "a": "Non. La réservation, le suivi de file et vos documents sont gratuits pour les patients."
+        },
+        "privacy": {
+          "q": "Qui peut voir mes informations de santé ?",
+          "a": "Seul le personnel qui vous soigne. Vous voyez chaque ouverture de votre dossier."
+        },
+        "smartphone": {
+          "q": "Je n’ai pas de smartphone. Puis-je l’utiliser ?",
+          "a": "Oui. Demandez à l’accueil : on vous enregistre et vous donne un ticket, et vous gardez votre numéro MediLink."
+        }
+      }
     }
   },
   "emergency": {

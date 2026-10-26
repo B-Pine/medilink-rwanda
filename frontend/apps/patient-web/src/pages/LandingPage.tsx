@@ -4,7 +4,6 @@ import {
   CalendarCheck,
   Clock,
   MagnifyingGlass,
-  ShieldCheck,
   type Icon,
 } from "@phosphor-icons/react";
 import { Button, buttonClassName, Card, ImigongoPattern, SelectField } from "@medilink/ui";
@@ -14,6 +13,7 @@ import { Link } from "react-router";
 
 import { PageHeading } from "../components/PageHeading";
 import { PublicLayout } from "../layout/PublicLayout";
+import { FaqSection, RecordsSection, TrackerShowcase, TrustSection } from "./LandingSections";
 
 const SERVICES = ["general", "pediatrics", "dental", "antenatal", "eye"] as const;
 const DISTRICTS = ["gasabo", "kicukiro", "nyarugenge", "musanze", "huye", "rubavu"] as const;
@@ -159,17 +159,11 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section aria-labelledby="trust-title" className="border-y border-border bg-surface">
-        <div className="mx-auto flex max-w-[70rem] items-start gap-4 px-4 py-10 sm:px-6">
-          <ShieldCheck aria-hidden="true" weight="bold" className="size-10 shrink-0 text-brand" />
-          <div className="flex flex-col gap-2">
-            <h2 id="trust-title" className="m-0 text-h2">
-              {t("landing.trust.title")}
-            </h2>
-            <p className="m-0 max-w-2xl text-fg-secondary">{t("landing.trust.body")}</p>
-          </div>
-        </div>
-      </section>
+      <TrackerShowcase />
+
+      <RecordsSection />
+
+      <TrustSection />
 
       <section aria-labelledby="facilities-title" className="bg-brand-subtle">
         <div className="mx-auto flex max-w-[70rem] flex-col items-start gap-4 px-4 py-12 sm:px-6 md:flex-row md:items-center md:justify-between">
@@ -195,6 +189,8 @@ export function LandingPage() {
           </Link>
         </div>
       </section>
+
+      <FaqSection />
     </PublicLayout>
   );
 }

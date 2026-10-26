@@ -132,7 +132,7 @@ function Checklist() {
       <QueryState query={checklist}>
         {(data) => (
           <>
-            <ChecklistSummary data={data} />
+            {data.status !== "live" && <ChecklistSummary data={data} />}
             {data.status === "live" ? (
               <Alert tone="success" role="status" title={t("setup.checklist.liveTitle")}>
                 {t("setup.checklist.liveBody")}

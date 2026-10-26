@@ -86,12 +86,85 @@
     },
     "trust": {
       "title": "Amakuru yawe aguma mu Rwanda",
-      "body": "Amakuru yawe arinzwe, abikwa mu Rwanda, kandi asangizwa gusa ibigo bikuvura."
+      "body": "Amakuru yawe arinzwe, abikwa mu Rwanda, kandi asangizwa gusa ibigo bikuvura.",
+      "points": {
+        "rwanda": {
+          "title": "Bibikwa mu Rwanda",
+          "body": "Amakuru yawe ntasohoka mu gihugu."
+        },
+        "encrypted": {
+          "title": "Birinzwe",
+          "body": "Abakuvura gusa ni bo bafungura dosiye yawe, kandi ubona uwayifunguye."
+        },
+        "verified": {
+          "title": "Ibigo byagenzuwe gusa",
+          "body": "Buri kigo kigenzurwa hakurikijwe uruhushya rwa Minisiteri y’Ubuzima."
+        }
+      }
     },
     "facilities": {
       "title": "Ku bigo by’ubuvuzi",
       "body": "Cunga umurongo, amadosiye n’inyemezabwishyu ahantu hamwe, kandi abarwayi bakubone byoroshye.",
       "cta": "Andikisha ikigo cyawe"
+    },
+    "tracker": {
+      "title": "Tegerereza mu rugo, si mu nzira",
+      "body": "Nyuma yo gufata igihe cyangwa kujya ku murongo, telefoni yawe ikwereka umwanya wawe n’igihe cyo kuva mu rugo. Ikora no kuri interineti nke.",
+      "points": {
+        "ahead": "Umubare w’abakuri imbere, uhinduka ako kanya",
+        "leave": "Igihe cyo kuva mu rugo, ukurikije urugendo rwawe",
+        "called": "Ubutumwa busobanutse n’ijwi iyo ari wowe"
+      },
+      "mockFacility": "Kigali Clinic · Rusange",
+      "mockTicket": "Nimero ya tike yawe",
+      "mockAhead": "Abantu 4 bakuri imbere",
+      "mockWait": "Hafi iminota 25–35",
+      "mockLeave": "Va mu rugo saa 09:20",
+      "mockCheckIn": "Nahageze – kwiyandikisha",
+      "caption": "Urugero rwo gukurikirana umurongo kuri telefoni: tike G-023, abantu 4 imbere, hafi iminota 25 kugeza 35."
+    },
+    "records": {
+      "title": "Amadosiye yawe ahantu hamwe",
+      "body": "Ibyavuye mu kwivuza kwawe byose bigumana nawe, kuri wowe n’abo mu muryango witaho.",
+      "items": {
+        "prescriptions": {
+          "title": "Impapuro z’imiti",
+          "body": "Zerekane kuri farumasi iyo ari yo yose, n’ize ku rupapuro."
+        },
+        "receipts": {
+          "title": "Inyemezabwishyu",
+          "body": "Ibyo wishyuye n’ibyo ubwishingizi bwishyuye."
+        },
+        "notes": {
+          "title": "Ibyemezo n’ibisubizo",
+          "body": "Byiteguye gusangizwa umukoresha cyangwa ishuri."
+        },
+        "qr": {
+          "title": "Bigenzurwa na QR",
+          "body": "Umuntu wese yagenzura ko inyandiko ari iy’ukuri atabonye amakuru y’ubuzima bwawe."
+        }
+      }
+    },
+    "faq": {
+      "title": "Ibibazo",
+      "items": {
+        "insurance": {
+          "q": "Bikorana na Mutuelle de Santé?",
+          "a": "Yego. Shakisha ukoresheje ubwishingizi bwawe urebe ibigo bubwemera n’ibyo uzishyura."
+        },
+        "cost": {
+          "q": "MediLink hari icyo yishyuza abarwayi?",
+          "a": "Oya. Gufata igihe, gukurikirana umurongo n’amadosiye yawe ni ubuntu ku barwayi."
+        },
+        "privacy": {
+          "q": "Ni nde ubona amakuru y’ubuzima bwanjye?",
+          "a": "Abakuvura gusa. Ubona igihe cyose dosiye yawe yafunguwe."
+        },
+        "smartphone": {
+          "q": "Nta smartphone mfite. Nshobora kubikoresha?",
+          "a": "Yego. Baza ku kwakira: bakwandika bakaguha tike, kandi ugumana nimero yawe ya MediLink."
+        }
+      }
     }
   },
   "emergency": {

@@ -339,4 +339,6 @@ Replaces the S0 nav placeholders `staff` and `settings`.
 | D-7 | Database design `facilities_service.catalogue_item_id` FK | `catalogue_item_code` (S1 master data uses codes as stable keys, like S3 insurers) |
 | D-8 | `scheduling_schedule_template` belongs to S5 in the roadmap tables | S2 builds templates and exceptions (FR-SCH-06 is S2); S5 adds slots |
 | D-9 | FR-ACC-04 MFA reset not in the S2 requirements line | Added (catalogue lists it under S2; needed when a member loses their phone) |
-| D-10 | Facility setup card on `/today` | staff-web has no `homeCards` slot; S2 uses a `shellOverlays` banner until the facility is live |
+| D-10 | Facility setup card on `/today` | Superseded by D-11 |
+| D-11 | Setup banner as a `shellOverlays` item (D-10) | The design pass (#64) added `FeatureRoutes.todayCards`; S2 adds a setup-progress card and a pending-leave card to the Today dashboard (design 04 §3.4 "setup checklist card", "needs your attention") |
+| D-12 | Mock facility in `setup` is Kigali Clinic (§6.2) | Mocks use a separate "Gasabo Family Clinic" with admin `facility.admin@medilink.test`: a second Kigali Clinic admin would change S3's merge-approver rules in the S3 mocks |

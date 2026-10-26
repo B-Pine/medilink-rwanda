@@ -71,7 +71,13 @@ filterwarnings = [
 [tool.coverage.run]
 branch = true
 source = ["medilink", "config"]
-omit = ["*/migrations/*", "*/tests/*"]
+omit = [
+  "*/migrations/*",
+  "*/tests/*",
+  # Threads with their own connections and committed rows: run against the dev database, not
+  # inside the test transaction (contract sprint-04 D-9).
+  "medilink/visits/management/commands/queue_concurrency_check.py",
+]
 
 [tool.coverage.report]
 show_missing = true

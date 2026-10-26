@@ -83,6 +83,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/CsrfToken'
           description: ''
+  /api/v1/display/{token}/:
+    get:
+      operationId: display_board
+      parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+      tags:
+      - queue
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Display'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown or revoked display link
   /api/v1/health/:
     get:
       operationId: health
@@ -890,6 +914,55 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: failed
+  /api/v1/patient/travel-times/{facility_id}/:
+    get:
+      operationId: patient_travel_time
+      parameters:
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - queue
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelTime'
+          description: ''
+    put:
+      operationId: patient_travel_time_update
+      parameters:
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - queue
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TravelTimeRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TravelTime'
+          description: ''
   /api/v1/patient/uploads/:
     post:
       operationId: patient_uploads_create
@@ -996,6 +1069,51 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: The file isn't clean (yet)
+  /api/v1/patient/visits/{visit_id}/cancel/:
+    post:
+      operationId: patient_visit_cancel
+      parameters:
+      - in: path
+        name: visit_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - queue
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientVisit'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Only a waiting ticket can be cancelled
+  /api/v1/patient/visits/active/:
+    get:
+      operationId: patient_visits_active
+      tags:
+      - queue
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PatientVisit'
+          description: ''
   /api/v1/platform/facilities/:
     get:
       operationId: platform_facilities_list
@@ -5577,6 +5695,100 @@ paths:
               schema:
                 $ref: '#/components/schemas/Department'
           description: ''
+  /api/v1/staff/display-links/:
+    get:
+      operationId: staff_display_links
+      tags:
+      - queue
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DisplayLink'
+          description: ''
+    post:
+      operationId: staff_display_links_create
+      tags:
+      - queue
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisplayLinkCreateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisplayLinkCreated'
+          description: ''
+  /api/v1/staff/display-links/{link_id}/revoke/:
+    post:
+      operationId: staff_display_link_revoke
+      parameters:
+      - in: path
+        name: link_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - queue
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisplayLink'
+          description: ''
+  /api/v1/staff/duty-status/:
+    get:
+      operationId: staff_duty_status
+      tags:
+      - queue
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DutyRow'
+          description: ''
+    put:
+      operationId: staff_duty_status_update
+      tags:
+      - queue
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DutyUpdateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DutyRow'
+          description: ''
   /api/v1/staff/facility/:
     get:
       operationId: staff_facility_retrieve
@@ -7418,6 +7630,131 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: rate_limited
+  /api/v1/staff/queue/board/:
+    get:
+      operationId: staff_queue_board
+      parameters:
+      - in: query
+        name: service_id
+        schema:
+          type: string
+      - in: query
+        name: stage
+        schema:
+          type: string
+      tags:
+      - queue
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Board'
+          description: ''
+  /api/v1/staff/queue/call-next/:
+    post:
+      operationId: staff_queue_call_next
+      tags:
+      - queue
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CallNextRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketRow'
+          description: ''
+        '204':
+          description: Nobody is waiting
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Already serving a patient
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not on duty
+  /api/v1/staff/queue/mine/:
+    get:
+      operationId: staff_queue_mine
+      tags:
+      - queue
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mine'
+          description: ''
+  /api/v1/staff/queue/reorders/:
+    get:
+      operationId: staff_queue_reorders
+      parameters:
+      - in: query
+        name: reviewed
+        schema:
+          type: boolean
+      tags:
+      - queue
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReorderRow'
+          description: ''
+  /api/v1/staff/queue/reorders/{event_id}/review/:
+    post:
+      operationId: staff_queue_reorder_review
+      parameters:
+      - in: path
+        name: event_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - queue
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          description: Reviewed
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Already reviewed
   /api/v1/staff/roles/:
     get:
       operationId: staff_roles_list
@@ -7861,6 +8198,51 @@ paths:
               schema:
                 $ref: '#/components/schemas/TariffChangeResponse'
           description: ''
+  /api/v1/staff/tickets/{ticket_id}/{action}/:
+    post:
+      operationId: staff_ticket_action
+      parameters:
+      - in: path
+        name: action
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: ticket_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - queue
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketActionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TicketRow'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not allowed in this state
   /api/v1/staff/uploads/:
     post:
       operationId: staff_uploads_create
@@ -7967,6 +8349,61 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: The file isn't clean (yet)
+  /api/v1/staff/visits/{visit_id}/:
+    get:
+      operationId: staff_visit_detail
+      parameters:
+      - in: path
+        name: visit_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - queue
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VisitDetail'
+          description: ''
+  /api/v1/staff/visits/check-in/:
+    post:
+      operationId: staff_visits_check_in
+      tags:
+      - queue
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckInRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckInResponse'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckInResponse'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Inactive record, service closed or missing reason
 components:
   schemas:
     AcceptNewRequest:
@@ -8501,6 +8938,24 @@ components:
       - slot_minutes
       - starts_at
       - template_id
+    Board:
+      type: object
+      properties:
+        queues:
+          type: array
+          items:
+            $ref: '#/components/schemas/QueueGroup'
+        duty:
+          type: array
+          items:
+            $ref: '#/components/schemas/DutyRow'
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - duty
+      - queues
+      - updated_at
     BrandingRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -8694,6 +9149,23 @@ components:
       required:
       - ends
       - starts
+    CallNextRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        service_id:
+          type: string
+          format: uuid
+        stage:
+          allOf:
+          - $ref: '#/components/schemas/StageEnum'
+          default: consultation
+        service_point_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - service_id
     CardImageRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -8729,6 +9201,62 @@ components:
         * `drug` - Drug
         * `food` - Food
         * `other` - Other
+    CheckInRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        facility_patient_id:
+          type: string
+          format: uuid
+        service_id:
+          type: string
+          format: uuid
+        source:
+          allOf:
+          - $ref: '#/components/schemas/CheckInSourceEnum'
+          default: walk_in
+        priority_class:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/PriorityClassEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        priority_reason_code:
+          type: string
+          nullable: true
+          maxLength: 40
+        reason_text:
+          type: string
+          nullable: true
+          maxLength: 1000
+        insurance_profile_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - facility_patient_id
+      - service_id
+    CheckInResponse:
+      type: object
+      properties:
+        visit_id:
+          type: string
+          format: uuid
+        created:
+          type: boolean
+        ticket:
+          $ref: '#/components/schemas/TicketRow'
+      required:
+      - created
+      - ticket
+      - visit_id
+    CheckInSourceEnum:
+      enum:
+      - walk_in
+      - emergency
+      type: string
+      description: |-
+        * `walk_in` - walk_in
+        * `emergency` - emergency
     Checklist:
       type: object
       properties:
@@ -9354,6 +9882,104 @@ components:
       required:
       - code
       - title_i18n
+    Display:
+      type: object
+      properties:
+        facility_name:
+          type: string
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/DisplayService'
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - facility_name
+      - services
+      - updated_at
+    DisplayLink:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        label:
+          type: string
+        service_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+        last_seen_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - created_at
+      - id
+      - label
+      - last_seen_at
+      - revoked_at
+      - service_ids
+    DisplayLinkCreateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 80
+        service_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 8
+          minItems: 1
+      required:
+      - label
+      - service_ids
+    DisplayLinkCreated:
+      type: object
+      properties:
+        link:
+          $ref: '#/components/schemas/DisplayLink'
+        token:
+          type: string
+      required:
+      - link
+      - token
+    DisplayService:
+      type: object
+      properties:
+        service_id:
+          type: string
+          format: uuid
+        name_i18n:
+          type: object
+          additionalProperties: {}
+        now_serving:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        next:
+          type: array
+          items:
+            type: string
+      required:
+      - name_i18n
+      - next
+      - now_serving
+      - service_id
     DispositionEnum:
       enum:
       - inline
@@ -9726,6 +10352,62 @@ components:
         * `exact_identifier` - exact_identifier
         * `strong` - strong
         * `possible` - possible
+    DutyRow:
+      type: object
+      properties:
+        membership_id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        state:
+          $ref: '#/components/schemas/DutyStateEnum'
+        service_point_id:
+          type: string
+          format: uuid
+          nullable: true
+        service_point:
+          type: string
+          nullable: true
+        until_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - full_name
+      - membership_id
+      - service_point
+      - service_point_id
+      - state
+      - until_at
+    DutyStateEnum:
+      enum:
+      - on_duty
+      - break
+      - emergency
+      - 'off'
+      type: string
+      description: |-
+        * `on_duty` - On duty
+        * `break` - Break
+        * `emergency` - Emergency
+        * `off` - Off
+    DutyUpdateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        state:
+          $ref: '#/components/schemas/DutyStateEnum'
+        service_point_id:
+          type: string
+          format: uuid
+          nullable: true
+        until_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - state
     EmailInputRequest:
       type: object
       properties:
@@ -9805,6 +10487,27 @@ components:
       - fields
       - message
       - request_id
+    Estimate:
+      type: object
+      properties:
+        min:
+          type: integer
+          nullable: true
+        max:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          nullable: true
+        until:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - max
+      - min
+      - status
+      - until
     Exception:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -9955,7 +10658,7 @@ components:
         is_enabled:
           type: boolean
         source:
-          $ref: '#/components/schemas/SourceEnum'
+          $ref: '#/components/schemas/FacilityFeatureFlagSourceEnum'
         note:
           type: string
         set_by:
@@ -9973,6 +10676,14 @@ components:
       - set_by
       - source
       - updated_at
+    FacilityFeatureFlagSourceEnum:
+      enum:
+      - override
+      - default
+      type: string
+      description: |-
+        * `override` - override
+        * `default` - default
     FacilityFlagInputRequest:
       type: object
       properties:
@@ -11905,6 +12616,31 @@ components:
           type: string
           minLength: 1
           maxLength: 32
+    Mine:
+      type: object
+      properties:
+        current:
+          allOf:
+          - $ref: '#/components/schemas/TicketRow'
+          nullable: true
+        waiting:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketRow'
+        duty:
+          allOf:
+          - $ref: '#/components/schemas/DutyRow'
+          nullable: true
+        service_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+      - current
+      - duty
+      - service_ids
+      - waiting
     MissingLanguagesEnum:
       enum:
       - rw
@@ -13489,6 +14225,67 @@ components:
       - phone_masked
       - preferred_name
       - sex
+    PatientVisit:
+      type: object
+      properties:
+        visit_id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        patient_display_name:
+          type: string
+        facility_id:
+          type: string
+          format: uuid
+        facility_name:
+          type: string
+        service_name_i18n:
+          type: object
+          additionalProperties: {}
+        ticket_number:
+          type: string
+        state:
+          $ref: '#/components/schemas/TicketStateEnum'
+        stage:
+          $ref: '#/components/schemas/StageEnum'
+        service_point:
+          type: string
+          nullable: true
+        ahead:
+          type: integer
+        estimate:
+          $ref: '#/components/schemas/Estimate'
+        leave_by:
+          type: string
+          format: date-time
+          nullable: true
+        travel_minutes:
+          type: integer
+          nullable: true
+        version:
+          type: integer
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - ahead
+      - estimate
+      - facility_id
+      - facility_name
+      - leave_by
+      - patient_display_name
+      - patient_id
+      - service_name_i18n
+      - service_point
+      - stage
+      - state
+      - ticket_number
+      - travel_minutes
+      - updated_at
+      - version
+      - visit_id
     PendingInvite:
       type: object
       properties:
@@ -13764,6 +14561,18 @@ components:
         * `child` - Child
         * `parent` - Parent
         * `other` - Other
+    PriorityClassEnum:
+      enum:
+      - elderly
+      - pregnant
+      - disability
+      - very_sick
+      type: string
+      description: |-
+        * `elderly` - Elderly
+        * `pregnant` - Pregnant
+        * `disability` - Disability
+        * `very_sick` - Very sick
     ProfileSummary:
       type: object
       properties:
@@ -13899,6 +14708,39 @@ components:
       required:
       - holiday_date
       - name_i18n
+    QueueGroup:
+      type: object
+      properties:
+        service_id:
+          type: string
+          format: uuid
+        stage:
+          $ref: '#/components/schemas/StageEnum'
+        waiting:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketRow'
+        called:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketRow'
+        in_service:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketRow'
+        average_minutes:
+          type: number
+          format: double
+        estimate_next:
+          $ref: '#/components/schemas/Estimate'
+      required:
+      - average_minutes
+      - called
+      - estimate_next
+      - in_service
+      - service_id
+      - stage
+      - waiting
     ReasonCodeEnum:
       enum:
       - identity_check
@@ -14152,6 +14994,42 @@ components:
       - reason_code
       - reason_label
       - reason_text
+    ReorderRow:
+      type: object
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        ticket_number:
+          type: string
+        actor_name:
+          type: string
+          nullable: true
+        reason_code:
+          type: string
+        reason_text:
+          type: string
+        old_position:
+          type: string
+          nullable: true
+        new_position:
+          type: string
+          nullable: true
+        occurred_at:
+          type: string
+          format: date-time
+        reviewed:
+          type: boolean
+      required:
+      - actor_name
+      - event_id
+      - new_position
+      - occurred_at
+      - old_position
+      - reason_code
+      - reason_text
+      - reviewed
+      - ticket_number
     RequestChangesInputRequest:
       type: object
       properties:
@@ -14174,6 +15052,14 @@ components:
           type: string
       required:
       - value
+    ReviewRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        comment:
+          type: string
+          default: ''
+          maxLength: 300
     Role:
       type: object
       properties:
@@ -14725,14 +15611,6 @@ components:
       description: |-
         * `front` - front
         * `back` - back
-    SourceEnum:
-      enum:
-      - override
-      - default
-      type: string
-      description: |-
-        * `override` - override
-        * `default` - default
     StaffConsentKindEnum:
       enum:
       - care
@@ -14928,6 +15806,18 @@ components:
       - lock_after_seconds
       - pin_set
       - step_up_valid_until
+    StageEnum:
+      enum:
+      - reception
+      - payment
+      - consultation
+      - pharmacy
+      type: string
+      description: |-
+        * `reception` - Reception
+        * `payment` - Payment
+        * `consultation` - Consultation
+        * `pharmacy` - Pharmacy
     StartApplicationInputRequest:
       type: object
       properties:
@@ -15349,6 +16239,170 @@ components:
       required:
       - template
       - warnings
+    TicketActionRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        stage:
+          $ref: '#/components/schemas/StageEnum'
+        service_id:
+          type: string
+          format: uuid
+        reason_code:
+          type: string
+          maxLength: 40
+        reason_text:
+          type: string
+          maxLength: 300
+        minutes:
+          type: integer
+          maximum: 240
+          minimum: 1
+        priority_class:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/PriorityClassEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        before_ticket_id:
+          type: string
+          format: uuid
+        client_occurred_at:
+          type: string
+          format: date-time
+      required:
+      - version
+    TicketEvent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        action:
+          type: string
+        from_state:
+          type: string
+        to_state:
+          type: string
+        actor_name:
+          type: string
+          nullable: true
+        reason_code:
+          type: string
+        occurred_at:
+          type: string
+          format: date-time
+        ticket_number:
+          type: string
+      required:
+      - action
+      - actor_name
+      - from_state
+      - id
+      - occurred_at
+      - reason_code
+      - ticket_number
+      - to_state
+    TicketRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        visit_id:
+          type: string
+          format: uuid
+        number:
+          type: string
+        state:
+          $ref: '#/components/schemas/TicketStateEnum'
+        stage:
+          $ref: '#/components/schemas/StageEnum'
+        service_id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+        age_years:
+          type: integer
+          nullable: true
+        sex:
+          type: string
+          nullable: true
+        flags:
+          type: array
+          items:
+            type: string
+        priority_rank:
+          type: integer
+        arrival_at:
+          type: string
+          format: date-time
+        called_at:
+          type: string
+          format: date-time
+          nullable: true
+        assigned_membership_id:
+          type: string
+          format: uuid
+          nullable: true
+        service_point:
+          type: string
+          nullable: true
+        step_out_until:
+          type: string
+          format: date-time
+          nullable: true
+        position:
+          type: integer
+          nullable: true
+        version:
+          type: integer
+      required:
+      - age_years
+      - arrival_at
+      - assigned_membership_id
+      - called_at
+      - display_name
+      - flags
+      - id
+      - number
+      - position
+      - priority_rank
+      - service_id
+      - service_point
+      - sex
+      - stage
+      - state
+      - step_out_until
+      - version
+      - visit_id
+    TicketStateEnum:
+      enum:
+      - waiting
+      - called
+      - in_service
+      - no_response
+      - on_hold
+      - moved_to_next_stage
+      - transferred
+      - cancelled
+      - left_without_service
+      - completed
+      type: string
+      description: |-
+        * `waiting` - Waiting
+        * `called` - Called
+        * `in_service` - In service
+        * `no_response` - No response
+        * `on_hold` - On hold
+        * `moved_to_next_stage` - Moved to next stage
+        * `transferred` - Transferred
+        * `cancelled` - Cancelled
+        * `left_without_service` - Left without service
+        * `completed` - Completed
     TokenInputRequest:
       type: object
       properties:
@@ -15368,6 +16422,26 @@ components:
           maxLength: 200
       required:
       - token
+    TravelTime:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        minutes:
+          type: integer
+          maximum: 600
+          minimum: 0
+      required:
+      - minutes
+    TravelTimeRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        minutes:
+          type: integer
+          maximum: 600
+          minimum: 0
+      required:
+      - minutes
     UndoRequest:
       type: object
       properties:
@@ -15495,6 +16569,67 @@ components:
           type: integer
       required:
       - version
+    VisitDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        facility_patient_id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+        source:
+          $ref: '#/components/schemas/VisitSourceEnum'
+        status:
+          type: string
+        is_emergency:
+          type: boolean
+        priority_class:
+          type: string
+          nullable: true
+        checked_in_at:
+          type: string
+          format: date-time
+          nullable: true
+        tickets:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketRow'
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/TicketEvent'
+      required:
+      - checked_in_at
+      - display_name
+      - events
+      - facility_patient_id
+      - id
+      - is_emergency
+      - priority_class
+      - source
+      - status
+      - tickets
+    VisitSourceEnum:
+      enum:
+      - online_booking
+      - phone_booking
+      - follow_up
+      - remote_join
+      - walk_in
+      - referral
+      - emergency
+      type: string
+      description: |-
+        * `online_booking` - Online booking
+        * `phone_booking` - Phone booking
+        * `follow_up` - Follow-up
+        * `remote_join` - Remote join
+        * `walk_in` - Walk-in
+        * `referral` - Referral
+        * `emergency` - Emergency
     Warning:
       type: object
       properties:

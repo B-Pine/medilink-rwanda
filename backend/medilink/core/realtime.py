@@ -137,6 +137,10 @@ class StaffPingConsumer(AsyncJsonWebsocketConsumer):
 # [/S2 imports]
 # [S10 imports]
 # [/S10 imports]
+# [S4 imports]
+from medilink.visits import consumers as _s4_consumers  # noqa: E402
+
+# [/S4 imports]
 
 websocket_urlpatterns = [
     path("ws/v1/staff/ping/", StaffPingConsumer.as_asgi()),
@@ -151,6 +155,11 @@ websocket_urlpatterns = [
     # [/S2]
     # [S10]
     # [/S10]
+    # [S4]
+    path("ws/v1/staff/queue/", _s4_consumers.StaffQueueConsumer.as_asgi()),
+    path("ws/v1/patient/visits/", _s4_consumers.PatientVisitsConsumer.as_asgi()),
+    path("ws/v1/display/<str:token>/", _s4_consumers.DisplayConsumer.as_asgi()),
+    # [/S4]
 ]
 
 

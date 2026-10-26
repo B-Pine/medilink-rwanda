@@ -26,6 +26,7 @@ import {
   ClockCounterClockwise,
   Clock,
   FirstAidKit,
+  Monitor,
   Crosshair,
   Receipt,
   ShieldCheck,
@@ -62,6 +63,7 @@ const SECTIONS: { to: string; key: string; icon: Icon }[] = [
   { to: "/settings/tariffs", key: "tariffs", icon: Receipt },
   { to: "/settings/insurers", key: "insurers", icon: ShieldCheck },
   { to: "/settings/rules", key: "rules", icon: SlidersHorizontal },
+  { to: "/settings/displays", key: "displays", icon: Monitor },
   { to: "/settings/history", key: "history", icon: ClockCounterClockwise },
 ];
 

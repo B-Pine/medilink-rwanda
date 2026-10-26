@@ -18,7 +18,11 @@
   "loadFailed": "This page could not load.",
   "conflictTitle": "Someone else changed this",
   "conflictBody": "Load the latest version, then make your change again.",
-  "languages": { "rw": "Kinyarwanda", "en": "English", "fr": "French" },
+  "languages": {
+    "rw": "Kinyarwanda",
+    "en": "English",
+    "fr": "French"
+  },
   "status": {
     "setup": "Setting up",
     "live": "Live",
@@ -120,7 +124,10 @@
         "title": "Doctor schedules",
         "description": "Each doctor's weekly sessions and leave."
       },
-      "tariffs": { "title": "Prices", "description": "The price list, with changes from a date." },
+      "tariffs": {
+        "title": "Prices",
+        "description": "The price list, with changes from a date."
+      },
       "insurers": {
         "title": "Insurers",
         "description": "What each insurer covers and the patient's share."
@@ -132,6 +139,10 @@
       "history": {
         "title": "Change history",
         "description": "Who changed which setting, and when."
+      },
+      "displays": {
+        "title": "Waiting-room screens",
+        "description": "Links for the TV that shows ticket numbers."
       }
     }
   },
@@ -288,7 +299,11 @@
     "exceptions": "Leave and extra sessions",
     "noExceptionsTitle": "No leave requests",
     "noExceptions": "Requests from doctors appear here for your decision.",
-    "kinds": { "leave": "Leave", "training": "Training", "extra_session": "Extra session" },
+    "kinds": {
+      "leave": "Leave",
+      "training": "Training",
+      "extra_session": "Extra session"
+    },
     "status": {
       "requested": "Waiting",
       "approved": "Approved",
@@ -380,7 +395,10 @@
     },
     "range": "From {{min}} to {{max}}",
     "billingStepUp": "Billing changes ask you to confirm it is you.",
-    "choices": { "daily": "Every day", "never": "Never" },
+    "choices": {
+      "daily": "Every day",
+      "never": "Never"
+    },
     "fields": {
       "queue": {
         "ticket_reset": "Restart ticket numbers",

@@ -17,6 +17,11 @@ import profileRw from "../features/profile/locales/rw.json";
 // [/S2 imports]
 // [S10 imports]
 // [/S10 imports]
+// [S4 imports]
+import trackerEn from "../features/tracker/locales/en.json";
+import trackerFr from "../features/tracker/locales/fr.json";
+import trackerRw from "../features/tracker/locales/rw.json";
+// [/S4 imports]
 
 /**
  * Feature translation namespaces: `<feature>` -> `src/features/<feature>/locales/{rw,en,fr}.json`.
@@ -39,4 +44,7 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   // [/S2]
   // [S10]
   // [/S10]
+  // [S4]
+  tracker: { rw: trackerRw, en: trackerEn, fr: trackerFr },
+  // [/S4]
 };

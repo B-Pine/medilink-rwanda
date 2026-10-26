@@ -122,3 +122,7 @@ export type { WeekGridBlock, WeekGridLabels, WeekGridProps } from "./components/
 // [/S10]
 export { readPreference, writePreference } from "./preferences/storage";
 export type { PreferenceKey } from "./preferences/storage";
+// [S4]
+export { ProgressDots, QueueFlagChip, QueueStateBadge, TicketNumber } from "./components/Queue";
+export type { QueueFlag, QueueState } from "./components/Queue";
+// [/S4]

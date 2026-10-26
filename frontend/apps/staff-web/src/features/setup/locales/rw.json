@@ -18,7 +18,11 @@
   "loadFailed": "Uru rupapuro ntirwafungutse.",
   "conflictTitle": "Undi muntu yabihinduye",
   "conflictBody": "Fungura verisiyo nshya, hanyuma wongere uhindure.",
-  "languages": { "rw": "Ikinyarwanda", "en": "Icyongereza", "fr": "Igifaransa" },
+  "languages": {
+    "rw": "Ikinyarwanda",
+    "en": "Icyongereza",
+    "fr": "Igifaransa"
+  },
   "status": {
     "setup": "Kiri gutegurwa",
     "live": "Kirakora",
@@ -135,6 +139,10 @@
       "history": {
         "title": "Amateka y'impinduka",
         "description": "Uwahinduye igenamiterere, n'igihe."
+      },
+      "displays": {
+        "title": "Televiziyo z’aho bategerereza",
+        "description": "Link za televiziyo yerekana nimero za tike."
       }
     }
   },
@@ -387,7 +395,10 @@
     },
     "range": "Kuva kuri {{min}} kugeza {{max}}",
     "billingStepUp": "Impinduka zo kwishyuza zigusaba kwemeza ko ari wowe.",
-    "choices": { "daily": "Buri munsi", "never": "Nta na rimwe" },
+    "choices": {
+      "daily": "Buri munsi",
+      "never": "Nta na rimwe"
+    },
     "fields": {
       "queue": {
         "ticket_reset": "Gutangira nimero za tike bundi bushya",

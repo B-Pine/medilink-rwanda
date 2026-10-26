@@ -23,6 +23,11 @@ import setupRw from "../features/setup/locales/rw.json";
 // [/S2 imports]
 // [S10 imports]
 // [/S10 imports]
+// [S4 imports]
+import queueEn from "../features/queue/locales/en.json";
+import queueFr from "../features/queue/locales/fr.json";
+import queueRw from "../features/queue/locales/rw.json";
+// [/S4 imports]
 
 /**
  * Feature translation namespaces: `<feature>` -> `src/features/<feature>/locales/{rw,en,fr}.json`.
@@ -43,4 +48,7 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   // [/S2]
   // [S10]
   // [/S10]
+  // [S4]
+  queue: { rw: queueRw, en: queueEn, fr: queueFr },
+  // [/S4]
 };

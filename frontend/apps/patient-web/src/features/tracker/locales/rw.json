@@ -1,0 +1,46 @@
+{
+  "title": "Umwanya wawe ku murongo",
+  "backHome": "Ahabanza",
+  "loading": "Tike yawe irafunguka…",
+  "offline": "Nta interineti ufite",
+  "lastUpdated": "Byavuguruwe saa {{time}}",
+  "noVisitTitle": "Nta tike ufite uyu munsi",
+  "noVisit": "Uru ruzinduko rwarangiye cyangwa rwahagaritswe.",
+  "yourTicket": "Nimero ya tike yawe",
+  "ahead_one": "Umuntu {{count}} akuri imbere",
+  "ahead_other": "Abantu {{count}} bakuri imbere",
+  "calledTo": "Jya muri {{room}} ubu",
+  "inService": "Uri kwa muganga",
+  "stagesTitle": "Uruzinduko rwawe",
+  "stages": {
+    "consultation": "Muganga",
+    "payment": "Kwishyura",
+    "pharmacy": "Farumasi"
+  },
+  "wait": "Hafi iminota {{min}}–{{max}}",
+  "leaveBy": "Va mu rugo saa {{time}}",
+  "status": {
+    "break": "Muganga ari mu kiruhuko kugeza saa {{time}}",
+    "emergency": "Muganga ari mu byihutirwa. Bishobora gutinda.",
+    "none_on_duty": "Nta muganga uratangira."
+  },
+  "travelLabel": "Iminota kuva mu rugo ugera hano",
+  "travelHint": "Tuzakubwira igihe cyo kuva mu rugo.",
+  "travelSave": "Bika",
+  "cancel": "Reka umwanya wanjye",
+  "cancelTitle": "Urareka umwanya wawe?",
+  "cancelBody": "Tike {{ticket}} izakurwa ku murongo.",
+  "cancelConfirm": "Yego, reka",
+  "keep": "Guma ku murongo",
+  "close": "Funga",
+  "failed": "Ntibyakunze. Ongera ugerageze.",
+  "called": "Ni wowe ugezweho",
+  "goTo": "Jya muri {{room}}",
+  "coming": "Ndaje",
+  "homeTitle": "Uruzinduko rw'uyu munsi",
+  "open": "Fungura",
+  "states": {
+    "in_service": "Uri kwa muganga",
+    "on_hold": "Utegereje ibisubizo"
+  }
+}

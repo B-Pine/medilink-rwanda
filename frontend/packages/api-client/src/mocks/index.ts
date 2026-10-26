@@ -25,4 +25,5 @@ export {
   MOCK_INVITATION_EXISTING_TOKEN,
   MOCK_INVITATION_TOKEN,
 } from "./features/setup";
+export { MOCK_DISPLAY_TOKEN } from "./features/queue";
 export type { MockFeatureFlags } from "./handlers";

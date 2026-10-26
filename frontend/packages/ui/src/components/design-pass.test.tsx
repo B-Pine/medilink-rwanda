@@ -8,6 +8,7 @@ import { renderWithProviders } from "../test/render";
 import { CommandPalette } from "./CommandPalette";
 import { EmptyState } from "./EmptyState";
 import { formatRwf, MoneyField, TimeRangeField } from "./SetupFields";
+import { ProgressDots, QueueFlagChip, QueueStateBadge, TicketNumber } from "./Queue";
 import { WeekGrid } from "./WeekGrid";
 
 const labels = {
@@ -144,6 +145,25 @@ describe("S2 components", () => {
     await user.type(screen.getByLabelText("Price"), "a");
     expect(onMoney).toHaveBeenLastCalledWith(12500);
     expect(formatRwf(5000)).toBe("5,000 RWF");
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+describe("S4 queue components", () => {
+  it("state badges and flags carry an icon and a word; dots describe the count", async () => {
+    const { container } = renderWithProviders(
+      <>
+        <QueueStateBadge state="called">Called</QueueStateBadge>
+        <QueueFlagChip flag="emergency">Emergency</QueueFlagChip>
+        <TicketNumber number="G-023" size="display" />
+        <ProgressDots ahead={3} label="3 people ahead" />
+      </>,
+    );
+    expect(screen.getByText("Called")).toBeInTheDocument();
+    expect(screen.getByText("Emergency")).toBeInTheDocument();
+    expect(screen.getByText("G-023")).toHaveClass("tabular-nums");
+    expect(screen.getByRole("img", { name: "3 people ahead" })).toBeInTheDocument();
+    expect(container.querySelectorAll("svg").length).toBeGreaterThanOrEqual(2);
     expect(await axe(container)).toHaveNoViolations();
   });
 });

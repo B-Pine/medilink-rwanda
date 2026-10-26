@@ -1,0 +1,46 @@
+{
+  "title": "Your place in the queue",
+  "backHome": "Home",
+  "loading": "Loading your ticket…",
+  "offline": "You are offline",
+  "lastUpdated": "Last updated {{time}}",
+  "noVisitTitle": "No ticket today",
+  "noVisit": "This visit has ended or was cancelled.",
+  "yourTicket": "Your ticket number",
+  "ahead_one": "{{count}} person ahead of you",
+  "ahead_other": "{{count}} people ahead of you",
+  "calledTo": "Go to {{room}} now",
+  "inService": "You are with the doctor",
+  "stagesTitle": "Your visit",
+  "stages": {
+    "consultation": "Doctor",
+    "payment": "Payment",
+    "pharmacy": "Pharmacy"
+  },
+  "wait": "About {{min}}–{{max}} min",
+  "leaveBy": "Leave home by {{time}}",
+  "status": {
+    "break": "The doctor is on a break until {{time}}",
+    "emergency": "The doctor is with an emergency. Delays are possible.",
+    "none_on_duty": "No doctor has started yet."
+  },
+  "travelLabel": "Minutes from home to here",
+  "travelHint": "We tell you when to leave.",
+  "travelSave": "Save",
+  "cancel": "Cancel my place",
+  "cancelTitle": "Cancel your place?",
+  "cancelBody": "Ticket {{ticket}} will be removed from the queue.",
+  "cancelConfirm": "Yes, cancel",
+  "keep": "Keep my place",
+  "close": "Close",
+  "failed": "That did not work. Try again.",
+  "called": "It's your turn",
+  "goTo": "Go to {{room}}",
+  "coming": "I'm coming",
+  "homeTitle": "Today's visit",
+  "open": "Open",
+  "states": {
+    "in_service": "With the doctor",
+    "on_hold": "Waiting for results"
+  }
+}

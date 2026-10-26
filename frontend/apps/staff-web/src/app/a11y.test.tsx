@@ -56,7 +56,7 @@ describe("accessibility (axe)", () => {
     expect(await axe(container)).toHaveNoViolations();
 
     await user.click(screen.getByRole("button", { name: "Work at Kigali Clinic" }));
-    await screen.findByRole("heading", { level: 1, name: "Today" });
+    await screen.findByRole("heading", { level: 1, name: /^Good (morning|afternoon|evening)/ });
     expect(await axe(container)).toHaveNoViolations();
   });
 

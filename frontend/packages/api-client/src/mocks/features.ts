@@ -16,6 +16,7 @@ import { profileMocks } from "./features/profile";
 // [S9 imports]
 // [/S9 imports]
 // [S2 imports]
+import { setupMocks } from "./features/setup";
 // [/S2 imports]
 // [S10 imports]
 // [/S10 imports]
@@ -47,6 +48,7 @@ export const FEATURE_MOCKS: FeatureMockFactory[] = [
   // [S9]
   // [/S9]
   // [S2]
+  setupMocks,
   // [/S2]
   // [S10]
   // [/S10]

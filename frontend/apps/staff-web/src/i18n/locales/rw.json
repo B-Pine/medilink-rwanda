@@ -169,7 +169,13 @@
     "platform": "Winjiye nk’umuyobozi w’urubuga.",
     "rolesLabel": "Inshingano zawe hano",
     "placeholderTitle": "Ikibaho cy’uyu munsi kiri hafi",
-    "placeholderBody": "Abarwayi bategerejwe, abari aho n’umurongo bizagaragara hano guhera kuri Sprint 4. Konti yawe, inshingano n’ikigo byiteguye."
+    "placeholderBody": "Abarwayi bategerejwe, abari aho n’umurongo bizagaragara hano guhera kuri Sprint 4. Konti yawe, inshingano n’ikigo byiteguye.",
+    "greeting_morning": "Mwaramutse, {{name}}",
+    "greeting_afternoon": "Mwiriwe, {{name}}",
+    "greeting_evening": "Muraho, {{name}}",
+    "quickActions": "Ibikorwa byihuse",
+    "boardTitle": "Ikibaho cy'ako kanya",
+    "boardSoon": "Kizaza muri Sprint 4"
   },
   "placeholder": {
     "title": "{{section}}",

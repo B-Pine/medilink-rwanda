@@ -169,7 +169,13 @@
     "platform": "You are signed in as a platform admin.",
     "rolesLabel": "Your roles here",
     "placeholderTitle": "Your Today board is on its way",
-    "placeholderBody": "Expected patients, people on site and the live queue will appear here from Sprint 4. Your account, roles and facility are ready."
+    "placeholderBody": "Expected patients, people on site and the live queue will appear here from Sprint 4. Your account, roles and facility are ready.",
+    "greeting_morning": "Good morning, {{name}}",
+    "greeting_afternoon": "Good afternoon, {{name}}",
+    "greeting_evening": "Good evening, {{name}}",
+    "quickActions": "Quick actions",
+    "boardTitle": "Live board",
+    "boardSoon": "Arrives in Sprint 4"
   },
   "placeholder": {
     "title": "{{section}}",

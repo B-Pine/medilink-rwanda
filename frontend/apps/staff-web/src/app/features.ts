@@ -14,6 +14,7 @@ import { patientsFeature } from "../features/patients";
 // [S9 imports]
 // [/S9 imports]
 // [S2 imports]
+import { setupFeature } from "../features/setup";
 // [/S2 imports]
 // [S10 imports]
 // [/S10 imports]
@@ -30,10 +31,14 @@ export interface FeatureRoutes {
   shellOverlays?: ComponentType[];
   /** Actions and searches in the command palette (Ctrl+K). */
   commands?: CommandProvider[];
+  /** Cards on the Today dashboard (design 04 §3); each renders nothing when it does not apply. */
+  todayCards?: ComponentType[];
 }
 
 export const FEATURE_HEADER_ITEMS = (): ComponentType[] =>
   FEATURES.flatMap((feature) => feature.headerItems ?? []);
+export const FEATURE_TODAY_CARDS = (): ComponentType[] =>
+  FEATURES.flatMap((feature) => feature.todayCards ?? []);
 export const FEATURE_COMMANDS = (): CommandProvider[] =>
   FEATURES.flatMap((feature) => feature.commands ?? []);
 export const FEATURE_SHELL_OVERLAYS = (): ComponentType[] =>
@@ -54,6 +59,7 @@ export const FEATURES: FeatureRoutes[] = [
   // [S9]
   // [/S9]
   // [S2]
+  setupFeature,
   // [/S2]
   // [S10]
   // [/S10]

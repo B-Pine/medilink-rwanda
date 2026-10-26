@@ -86,12 +86,85 @@
     },
     "trust": {
       "title": "Your data stays in Rwanda",
-      "body": "Your information is encrypted, stored in Rwanda, and shared only with the facilities that care for you."
+      "body": "Your information is encrypted, stored in Rwanda, and shared only with the facilities that care for you.",
+      "points": {
+        "rwanda": {
+          "title": "Stored in Rwanda",
+          "body": "Your information never leaves the country."
+        },
+        "encrypted": {
+          "title": "Encrypted",
+          "body": "Only the staff caring for you can open your record, and you see who did."
+        },
+        "verified": {
+          "title": "Verified facilities only",
+          "body": "Every facility is checked against its Ministry of Health licence."
+        }
+      }
     },
     "facilities": {
       "title": "For health facilities",
       "body": "Run your queue, records and billing in one place, and let patients find you.",
       "cta": "Register your facility"
+    },
+    "tracker": {
+      "title": "Wait at home, not in the corridor",
+      "body": "After you book or join the queue, your phone shows your place and when to leave. It keeps working on a weak network.",
+      "points": {
+        "ahead": "How many people are ahead of you, updated live",
+        "leave": "When to leave home, from your travel time",
+        "called": "A clear alert with sound when it is your turn"
+      },
+      "mockFacility": "Kigali Clinic · General",
+      "mockTicket": "Your ticket number",
+      "mockAhead": "4 people ahead",
+      "mockWait": "About 25–35 min",
+      "mockLeave": "Leave home by 09:20",
+      "mockCheckIn": "I’m here – check in",
+      "caption": "Example of the queue tracker on a phone: ticket G-023, 4 people ahead, about 25 to 35 minutes."
+    },
+    "records": {
+      "title": "Your records in one place",
+      "body": "Everything from your visits stays with you, for you and the family members you care for.",
+      "items": {
+        "prescriptions": {
+          "title": "Prescriptions",
+          "body": "Show them at any pharmacy, even on paper."
+        },
+        "receipts": {
+          "title": "Receipts",
+          "body": "What you paid and what insurance covered."
+        },
+        "notes": {
+          "title": "Sick notes and results",
+          "body": "Ready to share with your employer or school."
+        },
+        "qr": {
+          "title": "Checkable by QR",
+          "body": "Anyone can check a document is real, without seeing your health data."
+        }
+      }
+    },
+    "faq": {
+      "title": "Questions",
+      "items": {
+        "insurance": {
+          "q": "Does it work with Mutuelle de Santé?",
+          "a": "Yes. Search by your insurance to see which facilities accept it and what you will pay."
+        },
+        "cost": {
+          "q": "Does MediLink cost anything for patients?",
+          "a": "No. Booking, the queue tracker and your records are free for patients."
+        },
+        "privacy": {
+          "q": "Who can see my health information?",
+          "a": "Only the staff caring for you. You can see every time your record was opened."
+        },
+        "smartphone": {
+          "q": "I don’t have a smartphone. Can I still use it?",
+          "a": "Yes. Ask at reception: they can register you and give you a ticket, and you keep your MediLink number."
+        }
+      }
     }
   },
   "emergency": {

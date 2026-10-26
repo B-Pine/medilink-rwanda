@@ -169,7 +169,13 @@
     "platform": "Vous êtes connecté en tant qu’administrateur de la plateforme.",
     "rolesLabel": "Vos rôles ici",
     "placeholderTitle": "Votre tableau du jour arrive bientôt",
-    "placeholderBody": "Les patients attendus, les personnes sur place et la file en direct apparaîtront ici à partir du Sprint 4. Votre compte, vos rôles et votre établissement sont prêts."
+    "placeholderBody": "Les patients attendus, les personnes sur place et la file en direct apparaîtront ici à partir du Sprint 4. Votre compte, vos rôles et votre établissement sont prêts.",
+    "greeting_morning": "Bonjour, {{name}}",
+    "greeting_afternoon": "Bon après-midi, {{name}}",
+    "greeting_evening": "Bonsoir, {{name}}",
+    "quickActions": "Actions rapides",
+    "boardTitle": "Tableau en direct",
+    "boardSoon": "Arrive au sprint 4"
   },
   "placeholder": {
     "title": "{{section}}",

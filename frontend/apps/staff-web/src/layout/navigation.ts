@@ -25,6 +25,7 @@ import { GitMerge } from "@phosphor-icons/react";
 // [S9 imports]
 // [/S9 imports]
 // [S2 imports]
+import { CalendarDots, ClipboardText } from "@phosphor-icons/react";
 // [/S2 imports]
 // [S10 imports]
 // [/S10 imports]
@@ -199,6 +200,31 @@ export const NAV_ITEMS: readonly NavItem[] = [
   // [S9]
   // [/S9]
   // [S2]
+  {
+    key: "setup",
+    path: "/setup",
+    icon: ClipboardText,
+    group: "facility",
+    labelKey: "setup.nav.setup",
+    visible: hasAny("facility.configure"),
+  },
+  {
+    key: "doctorSchedules",
+    path: "/settings/schedules",
+    icon: CalendarDots,
+    group: "facility",
+    labelKey: "setup.nav.schedules",
+    visible: (me: StaffMe) =>
+      me.permissions.includes("schedule.view") && !me.permissions.includes("facility.configure"),
+  },
+  {
+    key: "mySchedule",
+    path: "/schedule/mine",
+    icon: CalendarDots,
+    group: "facility",
+    labelKey: "setup.nav.mySchedule",
+    visible: hasAny("leave.request"),
+  },
   // [/S2]
   // [S10]
   // [/S10]

@@ -17,6 +17,9 @@ import patientsRw from "../features/patients/locales/rw.json";
 // [S9 imports]
 // [/S9 imports]
 // [S2 imports]
+import setupEn from "../features/setup/locales/en.json";
+import setupFr from "../features/setup/locales/fr.json";
+import setupRw from "../features/setup/locales/rw.json";
 // [/S2 imports]
 // [S10 imports]
 // [/S10 imports]
@@ -36,6 +39,7 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   // [S9]
   // [/S9]
   // [S2]
+  setup: { rw: setupRw, en: setupEn, fr: setupFr },
   // [/S2]
   // [S10]
   // [/S10]

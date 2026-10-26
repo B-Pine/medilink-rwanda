@@ -1,6 +1,6 @@
 # Sprint 2 contract: Facility setup and staff
 
-Status: v0.1 · 2026-10-25 · Wave 2 (in parallel with S10 part 1) · Template and shared-file protocol: [contracts README](README.md) · Conventions: [API conventions](../02-api-conventions.md) · Model: [S3 contract](sprint-03-patients.md)
+Status: v0.1 · 2026-10-25 · **Implemented: backend #63, frontend #69** · Wave 2 (in parallel with S10 part 1) · Template and shared-file protocol: [contracts README](README.md) · Conventions: [API conventions](../02-api-conventions.md) · Model: [S3 contract](sprint-03-patients.md)
 
 **Sprint goal:** after approval (S1), a facility admin turns an empty facility into one that can go live. They describe the facility; set up departments, services and service points; set opening hours, closures and doctors' weekly schedules; set prices and the insurers they accept; choose queue, booking and billing rules; invite their staff. A checklist shows what is missing, and going live is refused until it is complete. Every configuration change is logged.
 

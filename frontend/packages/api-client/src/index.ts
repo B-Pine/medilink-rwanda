@@ -24,3 +24,7 @@ export * from "./features/setup";
 // [/S2]
 // [S10]
 // [/S10]
+// [S4]
+export * from "./features/queue";
+export * from "./realtime";
+// [/S4]

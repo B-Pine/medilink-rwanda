@@ -1,0 +1,230 @@
+{
+  "nav": {
+    "reorders": "Igenzura ry’umurongo"
+  },
+  "loading": "Umurongo urafunguka…",
+  "loadFailed": "Umurongo ntiwafungutse. Burongera kugerageza.",
+  "failed": "Ntibyakunze. Reba interineti wongere ugerageze.",
+  "close": "Funga",
+  "cancel": "Reka",
+  "confirm": "Emeza",
+  "reason": "Impamvu",
+  "reasonText": "Sobanura",
+  "unknownService": "Serivisi",
+  "age_one": "Umwaka {{count}}",
+  "age_other": "Imyaka {{count}}",
+  "minutes_one": "Iminota {{count}}",
+  "minutes_other": "Iminota {{count}}",
+  "minutesAgo_one": "Hashize iminota {{count}}",
+  "minutesAgo_other": "Hashize iminota {{count}}",
+  "sex": {
+    "female": "Gore",
+    "male": "Gabo",
+    "other": "Ikindi"
+  },
+  "states": {
+    "waiting": "Arategereje",
+    "called": "Yahamagawe",
+    "in_service": "Ari kwa muganga",
+    "no_response": "Ntiyitabye",
+    "on_hold": "Ategereje ibisubizo",
+    "moved_to_next_stage": "Yakomeje",
+    "transferred": "Yimuriwe",
+    "cancelled": "Byahagaritswe",
+    "left_without_service": "Yagiye",
+    "completed": "Byarangiye"
+  },
+  "stages": {
+    "reception": "Kwakira",
+    "payment": "Kwishyura",
+    "consultation": "Kwa muganga",
+    "pharmacy": "Farumasi"
+  },
+  "flags": {
+    "emergency": "Byihutirwa",
+    "priority": "Yihutishwa",
+    "return": "Avuye mu bizamini",
+    "stepped_out": "Yasohotse gato",
+    "no_response": "Ntiyitabye"
+  },
+  "priority": {
+    "elderly": "Umusaza/Umukecuru",
+    "pregnant": "Atwite",
+    "disability": "Ufite ubumuga",
+    "very_sick": "Arembye"
+  },
+  "duty": {
+    "on_duty": "Ari mu kazi",
+    "break": "Ari mu kiruhuko",
+    "emergency": "Ari mu byihutirwa",
+    "off": "Ntari mu kazi"
+  },
+  "status": {
+    "break": "Muganga ari mu kiruhuko",
+    "emergency": "Muganga ari mu byihutirwa",
+    "none_on_duty": "Nta muganga uri mu kazi"
+  },
+  "reasons": {
+    "clinical_urgency": "Bikeneye kwihutishwa",
+    "staff_error": "Gukosora ikosa",
+    "patient_request": "Umurwayi yabisabye",
+    "patient_left": "Umurwayi yagiye",
+    "duplicate": "Tike ebyiri",
+    "other": "Ibindi"
+  },
+  "actions": {
+    "check_in": "Yanditswe",
+    "call": "Yahamagawe",
+    "recall": "Yongeye guhamagarwa",
+    "start": "Yatangiye kwa muganga",
+    "no_response": "Ntiyitabye",
+    "hold": "Ategereje ibisubizo",
+    "return": "Yagarutse ku murongo",
+    "complete": "Byarangiye",
+    "next_stage": "Yakomeje ku ntambwe ikurikira",
+    "opened": "Tike nshya",
+    "transfer": "Yimuriwe",
+    "cancel": "Byahagaritswe",
+    "left": "Yagiye",
+    "step_out": "Yasohotse gato",
+    "step_out_expired": "Yagarutse",
+    "priority": "Kwihutishwa byahinduwe",
+    "reorder": "Yimuwe ku murongo",
+    "end_of_day": "Byafunzwe umunsi urangiye"
+  },
+  "columns": {
+    "ticket": "Tike",
+    "patient": "Umurwayi",
+    "flags": "Ibimenyetso",
+    "waiting": "Ategereje"
+  },
+  "live": {
+    "live": "Ako kanya · hashize amasegonda {{seconds}}",
+    "reconnecting": "Birongera guhuzwa",
+    "offline_one": "Nta interineti · igikorwa {{count}} gitegereje",
+    "offline_other": "Nta interineti · ibikorwa {{count}} bitegereje"
+  },
+  "board": {
+    "title": "Umurongo",
+    "intro": "Abari hano bose, uko bazahamagarwa. Hitamo tike ngo ukore igikorwa.",
+    "checkIn": "Andika umurwayi",
+    "services": "Serivisi",
+    "allServices": "Serivisi zose",
+    "nowServing": "Abari kwakirwa",
+    "expected": "Abategerejwe",
+    "expectedEmptyTitle": "Nta gahunda zirahari",
+    "expectedEmpty": "Abafashe gahunda bazagaragara hano mbere yo kugera, gufata gahunda kuri interineti nibitangira.",
+    "onSite": "Bari hano",
+    "emptyTitle": "Nta wutegereje",
+    "empty": "Andika umurwayi wa mbere w’uyu munsi.",
+    "nobodyWaiting": "Nta wutegereje hano.",
+    "waitingCount_one": "{{count}} arategereje",
+    "waitingCount_other": "{{count}} barategereje",
+    "newArrivalWait": "Ugeze ubu ategereza iminota {{min}}–{{max}}"
+  },
+  "panel": {
+    "service": "Serivisi",
+    "stage": "Intambwe",
+    "position": "Umwanya",
+    "arrived": "Yageze",
+    "ahead_one": "Umuntu {{count}} amuri imbere",
+    "ahead_other": "Abantu {{count}} bamuri imbere",
+    "priority": "Kwihutisha",
+    "priorityClass": "Impamvu yo kwihutisha",
+    "reorder": "Kumwimura imbere",
+    "reorderHint": "Buri kwimura kwandikwa ku izina ryawe kandi kugenzurwa n’umuyobozi.",
+    "moveBefore": "Mushyire imbere ya",
+    "transfer": "Kwimurira",
+    "transferHint": "Umurwayi agumana isaha yageriyeho ku murongo mushya.",
+    "stepOut": "Yasohotse iminota 15",
+    "left": "Yagiye",
+    "timeline": "Ibyabaye"
+  },
+  "checkIn": {
+    "title": "Andika umurwayi",
+    "find": "Shakisha umurwayi",
+    "new": "Umurwayi mushya",
+    "noMatch": "Nta murwayi wabonetse. Mwandike nk’umurwayi mushya.",
+    "choose": "Hitamo",
+    "back": "Subira inyuma",
+    "submit": "Andika",
+    "emergency": "Byihutirwa",
+    "emergencyHint": "Ajya imbere ku murongo. Tanga impamvu.",
+    "noPriority": "Nta kwihutishwa",
+    "done": "Yanditswe",
+    "ticketFor": "Tike ya {{name}}",
+    "already": "{{name}} yamaze kwandikwa uyu munsi",
+    "close": "Byarangiye"
+  },
+  "mine": {
+    "title": "Umurongo wanjye",
+    "duty": "Uko meze",
+    "room": "Icyumba",
+    "breakUntil": "Agaruka saa {{time}}",
+    "current": "Umurwayi uriho",
+    "callNext": "Hamagara ukurikira",
+    "spaceHint": "Cyangwa ukande Space.",
+    "setOnDuty": "Shyira ko uri mu kazi kugira ngo uhamagare abarwayi.",
+    "nobodyTitle": "Nta wutegereje",
+    "nobody": "Nta murwayi ukugutegereje ubu.",
+    "start": "Tangira kumuvura",
+    "recall": "Ongera umuhamagare",
+    "noResponse": "Ntiyitabye",
+    "complete": "Soza",
+    "toPharmacy": "Mwohereze kuri farumasi",
+    "toPayment": "Mwohereze kwishyura",
+    "hold": "Ategereze ibisubizo",
+    "waiting": "Abategereje"
+  },
+  "reorders": {
+    "title": "Igenzura ry’umurongo",
+    "intro": "Igihe cyose umurwayi yimuwe imbere ku murongo, n’impamvu. Bigenzure kugira ngo umurongo ube uw’ukuri.",
+    "onlyOpen": "Erekana gusa ibitaragenzurwa",
+    "columns": {
+      "when": "Ryari",
+      "ticket": "Tike",
+      "who": "Uwamwimuye",
+      "reason": "Impamvu",
+      "move": "Umwanya",
+      "review": "Igenzura"
+    },
+    "positions": "{{from}} → {{to}}",
+    "reviewed": "Byagenzuwe",
+    "markReviewed": "Emeza ko byagenzuwe",
+    "emptyTitle": "Nta cyo kugenzura",
+    "empty": "Kwimura kutubahirije uko bakurikirana kugaragara hano."
+  },
+  "displays": {
+    "title": "Televiziyo z’aho bategerereza",
+    "intro": "Fungura link kuri televiziyo y’aho bategerereza. Yerekana nimero n’ibyumba gusa, nta mazina.",
+    "add": "Ongeraho televiziyo",
+    "label": "Izina rya televiziyo",
+    "services": "Serivisi zigaragara",
+    "create": "Kora link",
+    "created": "Link iriteguye",
+    "onceHint": "Yikoporore ubu: iyi link igaragara rimwe gusa. Yikureho niyo yamenyekana.",
+    "copy": "Koporora link",
+    "copied": "Byakoporowe",
+    "done": "Byarangiye",
+    "active": "Irakora",
+    "revoked": "Yakuweho",
+    "revoke": "Kuraho link",
+    "lastSeen": "Yaherukaga kuboneka {{time}}",
+    "neverSeen": "Ntirafungurwa",
+    "emptyTitle": "Nta televiziyo zirahari",
+    "empty": "Ongeraho link kuri buri televiziyo."
+  },
+  "display": {
+    "nowServing": "Ubu turi kwakira · Now serving",
+    "next": "Abakurikira · Next",
+    "enableSound": "Fungura ijwi",
+    "invalid": "Iyi link ya televiziyo ntikora. Saba ikigo indi nshya.",
+    "footer": "Tega amatwi nimero yawe. Fata gahunda kuri interineti: medilink.rw"
+  },
+  "today": {
+    "title": "Bari hano ubu",
+    "summary": "{{waiting}} barategereje · {{serving}} bari kwa muganga",
+    "open": "Fungura umurongo",
+    "waiting": "barategereje"
+  }
+}

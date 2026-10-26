@@ -1,4 +1,4 @@
-import { delay, http, HttpResponse, type HttpHandler } from "msw";
+import { delay, http, HttpResponse, type HttpHandler, type WebSocketHandler } from "msw";
 
 import type {
   ApiErrorBody,
@@ -112,7 +112,7 @@ export interface MockContext {
 }
 
 export interface MockApi {
-  handlers: HttpHandler[];
+  handlers: (HttpHandler | WebSocketHandler)[];
   /** Reset counters, registered patients, enrolments and sessions (between tests). */
   reset(): void;
 }
@@ -339,7 +339,7 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
   };
   const features = FEATURE_MOCKS.map((create) => create(context));
 
-  const handlers: HttpHandler[] = [
+  const handlers: (HttpHandler | WebSocketHandler)[] = [
     http.get(`${API}/health/`, async () => {
       await settle();
       return HttpResponse.json({ status: "ok", version: "0.1.0" });

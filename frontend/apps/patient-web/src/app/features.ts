@@ -14,6 +14,9 @@ import { profileFeature } from "../features/profile";
 // [/S2 imports]
 // [S10 imports]
 // [/S10 imports]
+// [S4 imports]
+import { trackerFeature } from "../features/tracker";
+// [/S4 imports]
 
 /** What a feature module contributes (each feature lives in `src/features/<feature>/`). */
 export interface FeatureRoutes {
@@ -49,4 +52,7 @@ export const FEATURES: FeatureRoutes[] = [
   // [/S2]
   // [S10]
   // [/S10]
+  // [S4]
+  trackerFeature,
+  // [/S4]
 ];

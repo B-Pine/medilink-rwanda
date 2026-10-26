@@ -1,0 +1,46 @@
+{
+  "title": "Votre place dans la file",
+  "backHome": "Accueil",
+  "loading": "Chargement de votre ticket…",
+  "offline": "Vous êtes hors ligne",
+  "lastUpdated": "Mis à jour à {{time}}",
+  "noVisitTitle": "Pas de ticket aujourd’hui",
+  "noVisit": "Cette visite est terminée ou a été annulée.",
+  "yourTicket": "Votre numéro de ticket",
+  "ahead_one": "{{count}} personne devant vous",
+  "ahead_other": "{{count}} personnes devant vous",
+  "calledTo": "Allez en {{room}} maintenant",
+  "inService": "Vous êtes avec le médecin",
+  "stagesTitle": "Votre visite",
+  "stages": {
+    "consultation": "Médecin",
+    "payment": "Paiement",
+    "pharmacy": "Pharmacie"
+  },
+  "wait": "Environ {{min}}–{{max}} min",
+  "leaveBy": "Partez de chez vous vers {{time}}",
+  "status": {
+    "break": "Le médecin est en pause jusqu’à {{time}}",
+    "emergency": "Le médecin traite une urgence. Des retards sont possibles.",
+    "none_on_duty": "Aucun médecin n’a encore commencé."
+  },
+  "travelLabel": "Minutes de chez vous à ici",
+  "travelHint": "Nous vous dirons quand partir.",
+  "travelSave": "Enregistrer",
+  "cancel": "Annuler ma place",
+  "cancelTitle": "Annuler votre place ?",
+  "cancelBody": "Le ticket {{ticket}} sera retiré de la file.",
+  "cancelConfirm": "Oui, annuler",
+  "keep": "Garder ma place",
+  "close": "Fermer",
+  "failed": "Cela n’a pas marché. Réessayez.",
+  "called": "C’est votre tour",
+  "goTo": "Allez en {{room}}",
+  "coming": "J’arrive",
+  "homeTitle": "Visite du jour",
+  "open": "Ouvrir",
+  "states": {
+    "in_service": "Avec le médecin",
+    "on_hold": "En attente des résultats"
+  }
+}

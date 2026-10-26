@@ -29,6 +29,9 @@ import { CalendarDots, ClipboardText } from "@phosphor-icons/react";
 // [/S2 imports]
 // [S10 imports]
 // [/S10 imports]
+// [S4 imports]
+import { ArrowsDownUp } from "@phosphor-icons/react";
+// [/S4 imports]
 
 /** Sections of the Sprint 0 shell (labels in `shell.nav.<key>`). Features use their own keys. */
 export type CoreNavKey =
@@ -228,6 +231,16 @@ export const NAV_ITEMS: readonly NavItem[] = [
   // [/S2]
   // [S10]
   // [/S10]
+  // [S4]
+  {
+    key: "queueReorders",
+    path: "/queue/reorders",
+    icon: ArrowsDownUp,
+    group: "facility",
+    labelKey: "queue.nav.reorders",
+    visible: hasAny("facility.configure"),
+  },
+  // [/S4]
 ];
 
 /** Translation key of a nav item's label. */

@@ -1,4 +1,4 @@
-import type { HttpHandler } from "msw";
+import type { HttpHandler, WebSocketHandler } from "msw";
 
 import type { MockContext } from "./handlers";
 
@@ -20,10 +20,13 @@ import { setupMocks } from "./features/setup";
 // [/S2 imports]
 // [S10 imports]
 // [/S10 imports]
+// [S4 imports]
+import { queueMocks } from "./features/queue";
+// [/S4 imports]
 
 /** A feature's MSW handlers, plus how to reset its in-memory state between tests. */
 export interface FeatureMock {
-  handlers: HttpHandler[];
+  handlers: (HttpHandler | WebSocketHandler)[];
   reset?: () => void;
 }
 
@@ -52,4 +55,7 @@ export const FEATURE_MOCKS: FeatureMockFactory[] = [
   // [/S2]
   // [S10]
   // [/S10]
+  // [S4]
+  queueMocks,
+  // [/S4]
 ];

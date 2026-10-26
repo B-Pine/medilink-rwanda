@@ -18,7 +18,11 @@
   "loadFailed": "Cette page n’a pas pu se charger.",
   "conflictTitle": "Quelqu’un d’autre a modifié ceci",
   "conflictBody": "Chargez la dernière version, puis refaites votre modification.",
-  "languages": { "rw": "Kinyarwanda", "en": "Anglais", "fr": "Français" },
+  "languages": {
+    "rw": "Kinyarwanda",
+    "en": "Anglais",
+    "fr": "Français"
+  },
   "status": {
     "setup": "En préparation",
     "live": "En service",
@@ -135,6 +139,10 @@
       "history": {
         "title": "Historique des changements",
         "description": "Qui a changé quel paramètre, et quand."
+      },
+      "displays": {
+        "title": "Écrans de la salle d’attente",
+        "description": "Liens pour la télévision qui affiche les numéros."
       }
     }
   },
@@ -387,7 +395,10 @@
     },
     "range": "De {{min}} à {{max}}",
     "billingStepUp": "Les changements de facturation demandent de confirmer votre identité.",
-    "choices": { "daily": "Chaque jour", "never": "Jamais" },
+    "choices": {
+      "daily": "Chaque jour",
+      "never": "Jamais"
+    },
     "fields": {
       "queue": {
         "ticket_reset": "Recommencer les numéros de ticket",

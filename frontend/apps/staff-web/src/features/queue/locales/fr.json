@@ -1,0 +1,230 @@
+{
+  "nav": {
+    "reorders": "Contrôle de la file"
+  },
+  "loading": "Chargement de la file…",
+  "loadFailed": "La file n’a pas pu se charger. Nouvel essai automatique.",
+  "failed": "Cela n’a pas marché. Vérifiez la connexion et réessayez.",
+  "close": "Fermer",
+  "cancel": "Annuler",
+  "confirm": "Confirmer",
+  "reason": "Motif",
+  "reasonText": "Précisez",
+  "unknownService": "Service",
+  "age_one": "{{count}} an",
+  "age_other": "{{count}} ans",
+  "minutes_one": "{{count}} min",
+  "minutes_other": "{{count}} min",
+  "minutesAgo_one": "il y a {{count}} min",
+  "minutesAgo_other": "il y a {{count}} min",
+  "sex": {
+    "female": "Femme",
+    "male": "Homme",
+    "other": "Autre"
+  },
+  "states": {
+    "waiting": "En attente",
+    "called": "Appelé",
+    "in_service": "En consultation",
+    "no_response": "Absent à l’appel",
+    "on_hold": "En pause",
+    "moved_to_next_stage": "Étape suivante",
+    "transferred": "Transféré",
+    "cancelled": "Annulé",
+    "left_without_service": "Parti",
+    "completed": "Terminé"
+  },
+  "stages": {
+    "reception": "Accueil",
+    "payment": "Paiement",
+    "consultation": "Consultation",
+    "pharmacy": "Pharmacie"
+  },
+  "flags": {
+    "emergency": "Urgence",
+    "priority": "Prioritaire",
+    "return": "Retour d’examens",
+    "stepped_out": "Sorti un moment",
+    "no_response": "Appel manqué"
+  },
+  "priority": {
+    "elderly": "Personne âgée",
+    "pregnant": "Enceinte",
+    "disability": "Handicap",
+    "very_sick": "Très malade"
+  },
+  "duty": {
+    "on_duty": "En service",
+    "break": "En pause",
+    "emergency": "En urgence",
+    "off": "Hors service"
+  },
+  "status": {
+    "break": "Médecin en pause",
+    "emergency": "Médecin en urgence",
+    "none_on_duty": "Aucun médecin en service"
+  },
+  "reasons": {
+    "clinical_urgency": "Urgence clinique",
+    "staff_error": "Correction d’une erreur",
+    "patient_request": "Demande du patient",
+    "patient_left": "Patient parti",
+    "duplicate": "Ticket en double",
+    "other": "Autre"
+  },
+  "actions": {
+    "check_in": "Enregistré",
+    "call": "Appelé",
+    "recall": "Rappelé",
+    "start": "Consultation commencée",
+    "no_response": "Absent à l’appel",
+    "hold": "En pause",
+    "return": "De retour dans la file",
+    "complete": "Terminé",
+    "next_stage": "Étape suivante",
+    "opened": "Nouveau ticket",
+    "transfer": "Transféré",
+    "cancel": "Annulé",
+    "left": "Parti",
+    "step_out": "Sorti un moment",
+    "step_out_expired": "Revenu",
+    "priority": "Priorité modifiée",
+    "reorder": "Déplacé dans la file",
+    "end_of_day": "Clôturé en fin de journée"
+  },
+  "columns": {
+    "ticket": "Ticket",
+    "patient": "Patient",
+    "flags": "Signalements",
+    "waiting": "Attente"
+  },
+  "live": {
+    "live": "En direct · il y a {{seconds}} s",
+    "reconnecting": "Reconnexion",
+    "offline_one": "Hors ligne · {{count}} action en attente",
+    "offline_other": "Hors ligne · {{count}} actions en attente"
+  },
+  "board": {
+    "title": "File d’attente",
+    "intro": "Toutes les personnes présentes, dans l’ordre d’appel. Choisissez un ticket pour agir.",
+    "checkIn": "Enregistrer un patient",
+    "services": "Services",
+    "allServices": "Tous les services",
+    "nowServing": "En cours",
+    "expected": "Attendus",
+    "expectedEmptyTitle": "Pas encore de rendez-vous",
+    "expectedEmpty": "Les patients avec rendez-vous apparaîtront ici avant leur arrivée quand la réservation en ligne ouvrira.",
+    "onSite": "Sur place",
+    "emptyTitle": "Personne n’attend",
+    "empty": "Enregistrez le premier patient de la journée.",
+    "nobodyWaiting": "Personne n’attend ici.",
+    "waitingCount_one": "{{count}} en attente",
+    "waitingCount_other": "{{count}} en attente",
+    "newArrivalWait": "Un nouvel arrivant attend {{min}}–{{max}} min"
+  },
+  "panel": {
+    "service": "Service",
+    "stage": "Étape",
+    "position": "Place",
+    "arrived": "Arrivé",
+    "ahead_one": "{{count}} personne devant",
+    "ahead_other": "{{count}} personnes devant",
+    "priority": "Rendre prioritaire",
+    "priorityClass": "Priorité",
+    "reorder": "Avancer",
+    "reorderHint": "Chaque déplacement est enregistré à votre nom et contrôlé par l’administrateur.",
+    "moveBefore": "Placer devant",
+    "transfer": "Transférer",
+    "transferHint": "Le patient garde son heure d’arrivée dans la nouvelle file.",
+    "stepOut": "Sorti 15 min",
+    "left": "Marquer comme parti",
+    "timeline": "Historique"
+  },
+  "checkIn": {
+    "title": "Enregistrer un patient",
+    "find": "Rechercher",
+    "new": "Nouveau patient",
+    "noMatch": "Aucun patient trouvé. Enregistrez-le comme nouveau patient.",
+    "choose": "Choisir",
+    "back": "Retour",
+    "submit": "Enregistrer",
+    "emergency": "Urgence",
+    "emergencyHint": "Passe en tête de file. Donnez un motif.",
+    "noPriority": "Sans priorité",
+    "done": "Enregistré",
+    "ticketFor": "Ticket pour {{name}}",
+    "already": "{{name}} est déjà enregistré aujourd’hui",
+    "close": "Terminé"
+  },
+  "mine": {
+    "title": "Ma file",
+    "duty": "Mon statut",
+    "room": "Salle",
+    "breakUntil": "Retour à {{time}}",
+    "current": "Patient en cours",
+    "callNext": "Appeler le suivant",
+    "spaceHint": "Ou appuyez sur Espace.",
+    "setOnDuty": "Passez en service pour appeler des patients.",
+    "nobodyTitle": "Personne n’attend",
+    "nobody": "Personne ne vous attend pour le moment.",
+    "start": "Commencer la consultation",
+    "recall": "Rappeler",
+    "noResponse": "Absent",
+    "complete": "Terminer la visite",
+    "toPharmacy": "Envoyer à la pharmacie",
+    "toPayment": "Envoyer au paiement",
+    "hold": "Attendre les résultats",
+    "waiting": "En attente"
+  },
+  "reorders": {
+    "title": "Contrôle de la file",
+    "intro": "Chaque fois qu’un patient a été avancé dans la file, avec le motif. Contrôlez-les pour garder une file juste.",
+    "onlyOpen": "Afficher seulement les déplacements non contrôlés",
+    "columns": {
+      "when": "Quand",
+      "ticket": "Ticket",
+      "who": "Déplacé par",
+      "reason": "Motif",
+      "move": "Place",
+      "review": "Contrôle"
+    },
+    "positions": "{{from}} → {{to}}",
+    "reviewed": "Contrôlé",
+    "markReviewed": "Marquer contrôlé",
+    "emptyTitle": "Rien à contrôler",
+    "empty": "Les déplacements hors de l’ordre normal apparaissent ici."
+  },
+  "displays": {
+    "title": "Écrans de la salle d’attente",
+    "intro": "Ouvrez un lien sur la télévision de la salle d’attente. Elle affiche les numéros et les salles, jamais les noms.",
+    "add": "Ajouter un écran",
+    "label": "Nom de l’écran",
+    "services": "Services affichés",
+    "create": "Créer le lien",
+    "created": "Lien prêt",
+    "onceHint": "Copiez-le maintenant : ce lien n’est affiché qu’une fois. Révoquez-le s’il est divulgué.",
+    "copy": "Copier le lien",
+    "copied": "Copié",
+    "done": "Terminé",
+    "active": "Actif",
+    "revoked": "Révoqué",
+    "revoke": "Révoquer le lien",
+    "lastSeen": "Vu le {{time}}",
+    "neverSeen": "Jamais ouvert",
+    "emptyTitle": "Aucun écran",
+    "empty": "Ajoutez un lien par télévision."
+  },
+  "display": {
+    "nowServing": "En cours · Ubu turi kwakira",
+    "next": "Suivants · Abakurikira",
+    "enableSound": "Activer le son",
+    "invalid": "Ce lien d’écran n’est pas valide. Demandez-en un nouveau.",
+    "footer": "Écoutez votre numéro. Réservez en ligne : medilink.rw"
+  },
+  "today": {
+    "title": "Sur place maintenant",
+    "summary": "{{waiting}} en attente · {{serving}} avec un médecin",
+    "open": "Ouvrir la file",
+    "waiting": "en attente"
+  }
+}

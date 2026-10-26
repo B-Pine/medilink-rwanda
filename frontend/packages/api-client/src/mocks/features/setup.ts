@@ -115,7 +115,7 @@ const addDays = (d: Date, n: number) => new Date(d.getTime() + n * 86_400_000);
 /** Monday-based weekday (0 = Monday), as the API. */
 const weekdayOf = (d: Date) => (d.getUTCDay() + 6) % 7;
 
-const IDS = {
+export const SETUP_IDS = {
   dOpd: "5d000000-0000-4000-8000-000000000001",
   dPed: "5d000000-0000-4000-8000-000000000002",
   sGen: "5e000000-0000-4000-8000-000000000001",
@@ -130,10 +130,10 @@ const IDS = {
 };
 
 /** Membership of a signed-in mock user at Kigali Clinic. */
-const MEMBERSHIP_BY_EMAIL: Record<string, string> = {
-  [MOCK_FACILITY_ADMIN_EMAIL]: IDS.mAdmin,
-  "reception@medilink.test": IDS.mReception,
-  "doctor@medilink.test": IDS.mKeza,
+export const MEMBERSHIP_BY_EMAIL: Record<string, string> = {
+  [MOCK_FACILITY_ADMIN_EMAIL]: SETUP_IDS.mAdmin,
+  "reception@medilink.test": SETUP_IDS.mReception,
+  "doctor@medilink.test": SETUP_IDS.mKeza,
 };
 
 function seed() {
@@ -159,13 +159,13 @@ function seed() {
   };
   const departments: Department[] = [
     {
-      id: IDS.dOpd,
+      id: SETUP_IDS.dOpd,
       name_i18n: i18n("General OPD", "Ubuvuzi rusange", "Consultations générales"),
       sort_order: 0,
       is_active: true,
     },
     {
-      id: IDS.dPed,
+      id: SETUP_IDS.dPed,
       name_i18n: i18n("Pediatrics", "Ubuvuzi bw'abana", "Pédiatrie"),
       sort_order: 1,
       is_active: true,
@@ -173,9 +173,9 @@ function seed() {
   ];
   const services: Service[] = [
     {
-      id: IDS.sGen,
+      id: SETUP_IDS.sGen,
       version: 1,
-      department_id: IDS.dOpd,
+      department_id: SETUP_IDS.dOpd,
       name_i18n: i18n("General consultation", "Kwisuzumisha rusange", "Consultation générale"),
       duration_minutes: 15,
       is_bookable: true,
@@ -185,9 +185,9 @@ function seed() {
       is_active: true,
     },
     {
-      id: IDS.sPed,
+      id: SETUP_IDS.sPed,
       version: 1,
-      department_id: IDS.dPed,
+      department_id: SETUP_IDS.dPed,
       name_i18n: i18n("Child consultation", "Kuvura abana", "Consultation enfant"),
       duration_minutes: 20,
       is_bookable: true,
@@ -199,9 +199,21 @@ function seed() {
     },
   ];
   const points: ServicePoint[] = [
-    { id: IDS.pRoom1, name: "Room 1", kind: "room", service_ids: [IDS.sGen], is_active: true },
-    { id: IDS.pRoom2, name: "Room 2", kind: "room", service_ids: [IDS.sPed], is_active: true },
-    { id: IDS.pDesk, name: "Reception desk", kind: "desk", service_ids: [], is_active: true },
+    {
+      id: SETUP_IDS.pRoom1,
+      name: "Room 1",
+      kind: "room",
+      service_ids: [SETUP_IDS.sGen],
+      is_active: true,
+    },
+    {
+      id: SETUP_IDS.pRoom2,
+      name: "Room 2",
+      kind: "room",
+      service_ids: [SETUP_IDS.sPed],
+      is_active: true,
+    },
+    { id: SETUP_IDS.pDesk, name: "Reception desk", kind: "desk", service_ids: [], is_active: true },
   ];
   const weekday = (w: number): OpeningDay => ({
     weekday: w,
@@ -239,15 +251,15 @@ function seed() {
     version: 1,
   });
   const memberships: StaffMembership[] = [
-    member(IDS.mAdmin, "Mutesi Diane", MOCK_FACILITY_ADMIN_EMAIL, ["facility_admin"]),
-    member(IDS.mReception, "Habimana Eric", "reception@medilink.test", ["receptionist"]),
-    member(IDS.mKeza, "Uwimana Keza", "doctor@medilink.test", ["doctor"], {
+    member(SETUP_IDS.mAdmin, "Mutesi Diane", MOCK_FACILITY_ADMIN_EMAIL, ["facility_admin"]),
+    member(SETUP_IDS.mReception, "Habimana Eric", "reception@medilink.test", ["receptionist"]),
+    member(SETUP_IDS.mKeza, "Uwimana Keza", "doctor@medilink.test", ["doctor"], {
       council: "rmdc",
       licence_number: "RMDC/1234",
       specialty: "General practice",
       attested_at: "2026-09-02T09:00:00Z",
     }),
-    member(IDS.mPaul, "Niyonsenga Paul", "paul.niyonsenga@example.test", ["doctor"], {
+    member(SETUP_IDS.mPaul, "Niyonsenga Paul", "paul.niyonsenga@example.test", ["doctor"], {
       council: "rmdc",
       licence_number: "RMDC/5678",
       specialty: "Pediatrics",
@@ -257,9 +269,9 @@ function seed() {
   const template = (weekday: number, starts_at: string, ends_at: string): ScheduleTemplate => ({
     id: id(),
     version: 1,
-    membership_id: IDS.mKeza,
-    service_id: IDS.sGen,
-    service_point_id: IDS.pRoom1,
+    membership_id: SETUP_IDS.mKeza,
+    service_id: SETUP_IDS.sGen,
+    service_point_id: SETUP_IDS.pRoom1,
     weekday,
     starts_at,
     ends_at,
@@ -278,7 +290,7 @@ function seed() {
   const exceptions: ScheduleException[] = [
     {
       id: id(),
-      membership_id: IDS.mKeza,
+      membership_id: SETUP_IDS.mKeza,
       kind: "leave",
       status: "requested",
       reason: "Family event",
@@ -296,7 +308,7 @@ function seed() {
       code: "CONS-GEN",
       name_i18n: i18n("General consultation", "Kwisuzumisha rusange", "Consultation générale"),
       kind: "service",
-      service_id: IDS.sGen,
+      service_id: SETUP_IDS.sGen,
       amount_rwf: 5000,
       valid_from: "2026-09-01",
       valid_to: null,
@@ -307,7 +319,7 @@ function seed() {
       code: "CONS-PED",
       name_i18n: i18n("Child consultation", "Kuvura abana", "Consultation enfant"),
       kind: "service",
-      service_id: IDS.sPed,
+      service_id: SETUP_IDS.sPed,
       amount_rwf: 6000,
       valid_from: "2026-09-01",
       valid_to: null,
@@ -344,7 +356,7 @@ function seed() {
       id: id(),
       email: "nurse.mukamana@example.test",
       role_codes: ["receptionist"],
-      service_point_ids: [IDS.pDesk],
+      service_point_ids: [SETUP_IDS.pDesk],
       status: "pending",
       expires_at: addDays(today, 6).toISOString(),
       invited_by: "Mutesi Diane",
@@ -1026,7 +1038,7 @@ export const setupMocks: FeatureMockFactory = (context) => {
         db.templates.push(row);
         // Keza also works at Remera on Thursday mornings: the warning other facilities produce.
         const warnings =
-          data.membership_id === IDS.mKeza && data.weekday === 3
+          data.membership_id === SETUP_IDS.mKeza && data.weekday === 3
             ? [{ kind: "busy_elsewhere", weekday: 3, starts_at: "08:00", ends_at: "12:00" }]
             : [];
         return HttpResponse.json({ template: row, warnings }, { status: 201 });

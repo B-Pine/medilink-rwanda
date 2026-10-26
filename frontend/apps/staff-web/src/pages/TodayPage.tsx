@@ -1,5 +1,5 @@
-import { Badge, EmptyState, ImigongoPattern } from "@medilink/ui";
-import { CaretRight, ListNumbers } from "@phosphor-icons/react";
+import { ImigongoPattern } from "@medilink/ui";
+import { CaretRight } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
@@ -27,7 +27,7 @@ function partOfDay(): "morning" | "afternoon" | "evening" {
 
 /**
  * Today (design 04 §3): who and where you are, the actions you take most, then the cards that
- * need a decision. The receptionist's live board (expected · on site) arrives with Sprint 4.
+ * need a decision (queue, setup, leave) from the feature Today cards.
  */
 export function TodayPage() {
   const { t, i18n } = useTranslation();
@@ -42,8 +42,6 @@ export function TodayPage() {
     .filter((item) => item.key !== "today")
     .slice(0, Math.max(0, 6 - actions.length));
   const cards = FEATURE_TODAY_CARDS();
-  const queueRole =
-    me.permissions.includes("queue.operate") || me.permissions.includes("clinical.write");
 
   return (
     <div className="flex flex-col gap-6">
@@ -135,22 +133,6 @@ export function TodayPage() {
             <Card key={index} />
           ))}
         </div>
-      )}
-
-      {membership && queueRole && (
-        <section aria-labelledby="today-board" className="flex flex-col gap-3">
-          <div className="flex items-center justify-between gap-3">
-            <h2 id="today-board" className="m-0 font-heading text-h3">
-              {t("today.boardTitle")}
-            </h2>
-            <Badge tone="neutral">{t("today.boardSoon")}</Badge>
-          </div>
-          <EmptyState
-            icon={ListNumbers}
-            title={t("today.placeholderTitle")}
-            description={t("today.placeholderBody")}
-          />
-        </section>
       )}
     </div>
   );

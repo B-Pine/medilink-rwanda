@@ -109,9 +109,9 @@ jobs:
       - name: Tests (PostgreSQL, RLS, run as the app role)
         run: pytest --cov --cov-report=term-missing:skip-covered --cov-report=xml
 
-      - name: Coverage gate (>= 90% for accounts, authz, tenancy, audit and the S1, S2, S3 apps)
+      - name: Coverage gate (>= 90% for accounts, authz, tenancy, audit and the S1, S2, S3, S4 apps)
         run: |
-          for app in accounts authz tenancy audit uploads masterdata onboarding patients facilities scheduling billing; do
+          for app in accounts authz tenancy audit uploads masterdata onboarding patients facilities scheduling billing visits; do
             echo "== medilink/$app"
             python -m coverage report --include="medilink/$app/*" --fail-under=90 | tail -1
           done

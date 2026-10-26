@@ -71,6 +71,9 @@ INSTALLED_APPS = [
     # [/S2]
     # [S10]
     # [/S10]
+    # [S4] visits and the live queue
+    "medilink.visits",
+    # [/S4]
 ]
 
 MIDDLEWARE = [
@@ -428,6 +431,14 @@ SPECTACULAR_SETTINGS = {
         # [/S2]
         # [S10]
         # [/S10]
+        # [S4]
+        "TicketStateEnum": "medilink.visits.models.TicketState",
+        "StageEnum": "medilink.visits.models.Stage",
+        "DutyStateEnum": "medilink.visits.models.DutyState",
+        "VisitSourceEnum": "medilink.visits.models.VisitSource",
+        "VisitStatusEnum": "medilink.visits.models.VisitStatus",
+        "PriorityClassEnum": "medilink.visits.models.PriorityClass",
+        # [/S4]
     },
 }
 

@@ -10051,6 +10051,22 @@ components:
       required:
       - code
       - name
+    DistrictCount:
+      type: object
+      properties:
+        district_code:
+          type: string
+        district:
+          type: string
+        province:
+          type: string
+        facilities:
+          type: integer
+      required:
+      - district
+      - district_code
+      - facilities
+      - province
     DocumentInputRequest:
       type: object
       properties:
@@ -12866,9 +12882,14 @@ components:
           type: object
           additionalProperties: {}
           nullable: true
+        facilities_by_district:
+          type: array
+          items:
+            $ref: '#/components/schemas/DistrictCount'
       required:
       - applications
       - facilities
+      - facilities_by_district
       - licences
       - oldest_waiting_application
     OwnershipEnum:

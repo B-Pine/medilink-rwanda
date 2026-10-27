@@ -72,7 +72,11 @@
     "expiring60": "Expirent dans 60 jours",
     "expiring30": "Expirent dans 30 jours",
     "expired": "Expirées",
-    "facilities": "Établissements"
+    "facilities": "Établissements",
+    "network": "Établissements par district",
+    "networkEmpty": "Aucun établissement pour l’instant. Les districts s’affichent ici à mesure que les demandes sont approuvées.",
+    "facilityCount_one": "{{count}} établissement",
+    "facilityCount_other": "{{count}} établissements"
   },
   "applications": {
     "title": "Demandes d'inscription",

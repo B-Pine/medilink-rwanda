@@ -578,6 +578,7 @@ export const onboardingMocks: FeatureMockFactory = (context: MockContext) => {
           submitted: count("submitted"),
           under_review: count("under_review"),
           changes_requested: count("changes_requested"),
+          approved: count("approved"),
         },
         licences: {
           expiring_60: facs.filter((f) => f.licence_state === "expiring").length,
@@ -594,6 +595,17 @@ export const onboardingMocks: FeatureMockFactory = (context: MockContext) => {
         oldest_waiting_application: waiting
           ? { id: waiting.id, submitted_at: waiting.submitted_at }
           : null,
+        // Synthetic network (the mock facilities carry no location)
+        facilities_by_district: [
+          { district_code: "11", district: "Nyarugenge", province: "Kigali City", facilities: 3 },
+          { district_code: "12", district: "Gasabo", province: "Kigali City", facilities: 2 },
+          {
+            district_code: "43",
+            district: "Musanze",
+            province: "Northern Province",
+            facilities: 1,
+          },
+        ],
       });
     }),
 

@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 2066.
+Keys: 2070.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -803,6 +803,10 @@ File: `apps/staff-web/src/features/platform/locales/rw.json`
 | `overview.expiring30` | Zirangira mu minsi 30 | Expiring within 30 days | needs native-speaker review |
 | `overview.expired` | Zarangiye | Expired | needs native-speaker review |
 | `overview.facilities` | Ibigo | Facilities | needs native-speaker review |
+| `overview.network` | Ibigo by’ubuvuzi ku karere | Facilities by district | needs native-speaker review |
+| `overview.networkEmpty` | Nta kigo kirabaho. Uturere tuzagaragara hano uko ubusabe bwemezwa. | No facilities yet. Districts appear here as applications are approved. | needs native-speaker review |
+| `overview.facilityCount_one` | Ikigo {{count}} | {{count}} facility | needs native-speaker review |
+| `overview.facilityCount_other` | Ibigo {{count}} | {{count}} facilities | needs native-speaker review |
 | `applications.title` | Ubusabe bw'ibigo | Facility applications | needs native-speaker review |
 | `applications.noun` | busabe | applications | needs native-speaker review |
 | `applications.all` | Byose | All | needs native-speaker review |

@@ -25,6 +25,12 @@ describe("platform console", () => {
     expect(
       within(apps.parentElement!).getByRole("link", { name: /^Submitted/ }),
     ).toBeInTheDocument();
+    expect(
+      within(apps.parentElement!).getByRole("link", { name: /^Approved/ }),
+    ).toBeInTheDocument();
+    const network = screen.getByRole("region", { name: "Facilities by district" });
+    expect(within(network).getByText("Nyarugenge")).toBeInTheDocument();
+    expect(within(network).getByText("3 facilities")).toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });
 

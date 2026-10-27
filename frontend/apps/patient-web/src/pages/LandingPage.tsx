@@ -13,6 +13,7 @@ import { Link } from "react-router";
 
 import { PageHeading } from "../components/PageHeading";
 import { PublicLayout } from "../layout/PublicLayout";
+import { HeroIllustration } from "./HeroIllustration";
 import { FaqSection, RecordsSection, TrackerShowcase, TrustSection } from "./LandingSections";
 
 const SERVICES = ["general", "pediatrics", "dental", "antenatal", "eye"] as const;
@@ -50,15 +51,20 @@ export function LandingPage() {
       >
         <ImigongoPattern opacity={0.06} />
         <div className="relative mx-auto flex max-w-[70rem] flex-col gap-8 px-4 py-12 sm:px-6 lg:py-20">
-          <div className="flex max-w-2xl flex-col gap-4">
-            <PageHeading
-              title={t("landing.title")}
-              id="hero-title"
-              className="text-display text-on-forest"
-            >
-              {t("landing.heroTitle")}
-            </PageHeading>
-            <p className="m-0 text-h3 font-normal text-on-forest-muted">{t("landing.heroBody")}</p>
+          <div className="flex items-end justify-between gap-8">
+            <div className="flex max-w-2xl flex-col gap-4">
+              <PageHeading
+                title={t("landing.title")}
+                id="hero-title"
+                className="text-display text-on-forest"
+              >
+                {t("landing.heroTitle")}
+              </PageHeading>
+              <p className="m-0 text-h3 font-normal text-on-forest-muted">
+                {t("landing.heroBody")}
+              </p>
+            </div>
+            <HeroIllustration className="hidden w-[22rem] shrink-0 drop-shadow-xl lg:block" />
           </div>
 
           <Card as="div" className="text-fg shadow-raised">

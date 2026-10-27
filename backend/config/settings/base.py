@@ -443,6 +443,7 @@ SPECTACULAR_SETTINGS = {
         "BookingStatusEnum": "medilink.scheduling.models.BookingStatus",
         "BookingSourceEnum": "medilink.scheduling.models.BookingSource",
         "LevelOfCareEnum": "medilink.masterdata.models.LevelOfCare",
+        "QueueLoadEnum": [("low", "low"), ("medium", "medium"), ("high", "high")],
         # [/S5]
     },
 }

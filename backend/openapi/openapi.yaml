@@ -12218,20 +12218,6 @@ components:
           maxLength: 200
       required:
       - outcome
-<<<<<<< HEAD
-    Hold:
-      type: object
-      properties:
-        hold_id:
-          type: string
-          format: uuid
-        expires_at:
-          type: string
-          format: date-time
-      required:
-      - expires_at
-      - hold_id
-=======
     HeatCell:
       type: object
       properties:
@@ -12245,7 +12231,18 @@ components:
       - count
       - hour
       - weekday
->>>>>>> origin/feat/design-v2
+    Hold:
+      type: object
+      properties:
+        hold_id:
+          type: string
+          format: uuid
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - expires_at
+      - hold_id
     HoursRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -13055,16 +13052,6 @@ components:
         * `expiring` - expiring
         * `expired` - expired
         * `missing` - missing
-    LoadEnum:
-      enum:
-      - low
-      - medium
-      - high
-      type: string
-      description: |-
-        * `low` - low
-        * `medium` - medium
-        * `high` - high
     LocationBlock:
       type: object
       properties:
@@ -16747,7 +16734,7 @@ components:
         doctors_on_duty:
           type: integer
         load:
-          $ref: '#/components/schemas/LoadEnum'
+          $ref: '#/components/schemas/QueueLoadEnum'
       required:
       - doctors_on_duty
       - in_service

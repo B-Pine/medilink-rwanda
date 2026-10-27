@@ -1,110 +1,136 @@
-import { CalendarBlank, MagnifyingGlass, SignOut } from "@phosphor-icons/react";
 import {
-  Alert,
-  Button,
-  buttonClassName,
-  Card,
-  LanguageSwitcher,
-  Logo,
-  MAIN_CONTENT_ID,
-  SkipLink,
-  ThemeToggle,
-} from "@medilink/ui";
+  CalendarBlank,
+  CaretRight,
+  ChatCircleText,
+  Gear,
+  IdentificationCard,
+  MagnifyingGlass,
+  ShieldCheck,
+  UsersThree,
+  type Icon,
+} from "@phosphor-icons/react";
+import { Alert, buttonClassName, Card, EmptyState, ImigongoPattern } from "@medilink/ui";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 
-import { FEATURE_HEADER_ITEMS, FEATURE_HOME_CARDS } from "../app/features";
-import { useLogout, usePatientMe } from "../auth/queries";
+import { FEATURE_HOME_CARDS, FEATURE_HOME_TOP } from "../app/features";
+import { usePatientMe } from "../auth/queries";
 import { PageHeading } from "../components/PageHeading";
 import { EmergencyNotice } from "../layout/EmergencyNotice";
 
-/** Patient home placeholder (design 07 §3.1): greeting, Find care, next visit, display settings. */
-export function HomePage() {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { data: me } = usePatientMe();
-  const logout = useLogout();
-  if (!me) return null;
+/** Morning before 12:00, afternoon before 18:00, evening after, in Kigali time. */
+function partOfDay(now: Date): "morning" | "afternoon" | "evening" {
+  const hour = Number(
+    new Intl.DateTimeFormat("en-GB", { hour: "numeric", timeZone: "Africa/Kigali" }).format(now),
+  );
+  return hour < 12 ? "morning" : hour < 18 ? "afternoon" : "evening";
+}
 
-  const onLogout = () => {
-    logout.mutate(undefined, { onSettled: () => void navigate("/login", { replace: true }) });
-  };
-
-  const title = t("home.title");
+function QuickLink({ to, label, icon: LinkIcon }: { to: string; label: string; icon: Icon }) {
   return (
-    <div className="flex min-h-dvh flex-col bg-page">
-      <SkipLink />
-      <header className="border-b border-border bg-surface">
-        <div className="mx-auto flex max-w-[40rem] flex-wrap items-center gap-3 px-4 py-2 sm:px-6">
-          <Link
-            to="/home"
-            className="inline-flex min-h-target items-center rounded-sm no-underline"
+    <Link
+      to={to}
+      className="group flex min-h-target items-center gap-3 rounded-lg border border-border bg-surface p-4 font-semibold text-fg no-underline hover:border-brand hover:bg-brand-subtle"
+    >
+      <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-subtle text-on-brand-subtle group-hover:bg-surface">
+        <LinkIcon aria-hidden="true" weight="duotone" className="size-6" />
+      </span>
+      <span className="flex-1">{label}</span>
+      <CaretRight aria-hidden="true" className="size-5 text-fg-muted" />
+    </Link>
+  );
+}
+
+/**
+ * Patient home (design 07 §3.1): an active visit's tracker fills the top; otherwise Find care
+ * leads, then the next visit, family and shortcuts. The emergency notice is always on the page.
+ */
+export function HomePage() {
+  const { t, i18n } = useTranslation();
+  const { data: me } = usePatientMe();
+  if (!me) return null;
+  const now = new Date();
+  const today = new Intl.DateTimeFormat(i18n.resolvedLanguage ?? "rw", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    timeZone: "Africa/Kigali",
+  }).format(now);
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-1">
+        <p className="m-0 text-body-sm font-semibold text-fg-muted first-letter:uppercase">
+          {today}
+        </p>
+        <PageHeading title={t("home.title")}>
+          {t(`home.greeting_${partOfDay(now)}`, { name: me.full_name })}
+        </PageHeading>
+      </div>
+
+      {!me.email_verified && (
+        <Alert tone="info" title={t("home.verifyEmailTitle")}>
+          {t("home.verifyEmailBody", { email: me.email })}
+        </Alert>
+      )}
+
+      {FEATURE_HOME_TOP().map((Top, index) => (
+        <Top key={index} />
+      ))}
+
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+        <div className="flex flex-col gap-6">
+          <section
+            aria-labelledby="find-care"
+            className="relative isolate overflow-hidden rounded-lg bg-forest p-6 text-on-forest shadow-raised sm:p-8"
           >
-            <Logo className="h-10" />
-          </Link>
-          <div className="ml-auto flex flex-wrap items-center gap-2">
-            <LanguageSwitcher compact />
-            {FEATURE_HEADER_ITEMS().map((Item, index) => (
-              <Item key={index} />
-            ))}
-            <Button
-              variant="ghost"
-              onClick={onLogout}
-              loading={logout.isPending}
-              iconStart={<SignOut aria-hidden="true" className="size-icon" />}
-            >
-              {logout.isPending ? t("common.loggingOut") : t("common.logout")}
-            </Button>
-          </div>
-        </div>
-      </header>
-      <main
-        id={MAIN_CONTENT_ID}
-        tabIndex={-1}
-        className="mx-auto flex w-full max-w-[40rem] flex-1 flex-col gap-6 px-4 py-8 sm:px-6"
-      >
-        <div className="flex flex-col gap-1">
-          <p className="m-0 text-body-sm text-fg-muted">
-            {t("home.accountLabel", { name: me.full_name })}
-          </p>
-          <PageHeading title={title}>{t("home.greeting", { name: me.full_name })}</PageHeading>
-          <p className="m-0 text-fg-secondary">{t("home.intro")}</p>
-        </div>
+            <ImigongoPattern opacity={0.08} className="-z-10 text-on-forest" />
+            <h2 id="find-care" className="m-0 font-heading text-h2 text-on-forest">
+              {t("home.findCareTitle")}
+            </h2>
+            <p className="m-0 mt-2 max-w-[28rem] text-on-forest-muted">{t("home.findCareBody")}</p>
+            <div className="mt-5 flex flex-wrap items-center gap-3">
+              <Link to="/find-care" className={buttonClassName({ size: "lg" })}>
+                <MagnifyingGlass aria-hidden="true" className="size-icon" />
+                {t("home.findCare")}
+              </Link>
+              <Link
+                to="/find-care#symptoms"
+                className="inline-flex min-h-target items-center gap-2 rounded-sm font-semibold text-on-forest-accent underline-offset-4 hover:underline"
+              >
+                <ChatCircleText aria-hidden="true" className="size-icon" />
+                {t("home.notSure")}
+              </Link>
+            </div>
+          </section>
 
-        {!me.email_verified && (
-          <Alert tone="info" title={t("home.verifyEmailTitle")}>
-            {t("home.verifyEmailBody", { email: me.email })}
-          </Alert>
-        )}
-
-        <Link to="/" className={buttonClassName({ size: "lg", fullWidth: true })}>
-          <MagnifyingGlass aria-hidden="true" className="size-icon" />
-          {t("home.findCare")}
-        </Link>
-
-        {FEATURE_HOME_CARDS().map((HomeCard, index) => (
-          <HomeCard key={index} />
-        ))}
-
-        <Card as="section" aria-labelledby="next-visit" className="flex items-start gap-4">
-          <CalendarBlank aria-hidden="true" className="size-8 shrink-0 text-brand" />
-          <div className="flex flex-col gap-1">
+          <Card as="section" aria-labelledby="next-visit" className="flex flex-col gap-2">
             <h2 id="next-visit" className="m-0 text-h3">
               {t("home.nextVisitTitle")}
             </h2>
-            <p className="m-0 text-fg-secondary">{t("home.nextVisitEmpty")}</p>
-          </div>
-        </Card>
+            <EmptyState
+              size="inline"
+              icon={CalendarBlank}
+              title={t("home.nextVisitEmptyTitle")}
+              description={t("home.nextVisitEmpty")}
+            />
+          </Card>
+        </div>
 
-        <Card as="section" aria-labelledby="display-settings" className="flex flex-col gap-3">
-          <h2 id="display-settings" className="m-0 text-h3">
-            {t("home.settingsTitle")}
-          </h2>
-          <ThemeToggle />
-        </Card>
+        <div className="flex flex-col gap-6">
+          {FEATURE_HOME_CARDS().map((HomeCard, index) => (
+            <HomeCard key={index} />
+          ))}
+          <nav aria-label={t("home.shortcuts")} className="flex flex-col gap-2">
+            <QuickLink to="/profile" label={t("home.links.profile")} icon={IdentificationCard} />
+            <QuickLink to="/family" label={t("home.links.family")} icon={UsersThree} />
+            <QuickLink to="/privacy/settings" label={t("home.links.privacy")} icon={ShieldCheck} />
+            <QuickLink to="/settings" label={t("home.links.settings")} icon={Gear} />
+          </nav>
+        </div>
+      </div>
 
-        <EmergencyNotice />
-      </main>
+      <EmergencyNotice />
     </div>
   );
 }

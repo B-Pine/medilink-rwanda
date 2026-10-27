@@ -3,6 +3,7 @@ import type { ComponentType } from "react";
 import type { RouteObject } from "react-router";
 
 import { RequirePatient } from "../auth/RequirePatient";
+import { PatientShell } from "../layout/PatientShell";
 import type { InfoSection } from "../pages/InfoPage";
 import { FEATURES } from "./features";
 
@@ -42,8 +43,23 @@ export const routes: RouteObject[] = [
       {
         element: <RequirePatient />,
         children: [
-          { path: "/home", lazy: page(() => import("../pages/HomePage"), "HomePage") },
-          ...FEATURES.flatMap((feature) => feature.patient ?? []),
+          {
+            // Header, the four destinations and the offline banner (design 07 §2)
+            element: <PatientShell />,
+            children: [
+              { path: "/home", lazy: page(() => import("../pages/HomePage"), "HomePage") },
+              {
+                path: "/find-care",
+                lazy: page(() => import("../pages/FindCarePage"), "FindCarePage"),
+              },
+              { path: "/support", lazy: page(() => import("../pages/SupportPage"), "SupportPage") },
+              {
+                path: "/settings",
+                lazy: page(() => import("../pages/SettingsPage"), "SettingsPage"),
+              },
+              ...FEATURES.flatMap((feature) => feature.patient ?? []),
+            ],
+          },
         ],
       },
       ...FEATURES.flatMap((feature) => feature.public ?? []),

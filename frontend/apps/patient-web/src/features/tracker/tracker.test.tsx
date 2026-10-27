@@ -15,7 +15,10 @@ async function signIn() {
   await waitFor(() => expect(password).toHaveFocus());
   await app.user.paste(MOCK_PASSWORD);
   await app.user.click(screen.getByRole("button", { name: "Log in" }));
-  await screen.findByRole("heading", { level: 1, name: "Hello, Mukamana Jeanne" });
+  await screen.findByRole("heading", {
+    level: 1,
+    name: /^Good (morning|afternoon|evening), Mukamana Jeanne$/,
+  });
   return app;
 }
 
@@ -44,7 +47,10 @@ describe("live tracker", () => {
     await user.click(screen.getByRole("button", { name: "Cancel my place" }));
     const dialog = await screen.findByRole("dialog", { name: "Cancel your place?" });
     await user.click(within(dialog).getByRole("button", { name: "Yes, cancel" }));
-    await screen.findByRole("heading", { level: 1, name: "Hello, Mukamana Jeanne" });
+    await screen.findByRole("heading", {
+      level: 1,
+      name: /^Good (morning|afternoon|evening), Mukamana Jeanne$/,
+    });
     expect(screen.queryByRole("link", { name: /G-020/ })).not.toBeInTheDocument();
   });
 });

@@ -26,12 +26,16 @@ export interface FeatureRoutes {
   patient?: RouteObject[];
   /** Items in the logged-in header, before the log-out button (e.g. the notification bell). */
   headerItems?: ComponentType[];
-  /** Cards on the patient home page, after "Find care" (e.g. "My profile", "Family"). */
+  /** The top of the patient home page, above everything else (design 07 §3.1: the live tracker). */
+  homeTop?: ComponentType[];
+  /** Cards on the patient home page, after "Find care" (e.g. "Family"). */
   homeCards?: ComponentType[];
 }
 
 export const FEATURE_HEADER_ITEMS = (): ComponentType[] =>
   FEATURES.flatMap((feature) => feature.headerItems ?? []);
+export const FEATURE_HOME_TOP = (): ComponentType[] =>
+  FEATURES.flatMap((feature) => feature.homeTop ?? []);
 export const FEATURE_HOME_CARDS = (): ComponentType[] =>
   FEATURES.flatMap((feature) => feature.homeCards ?? []);
 

@@ -228,15 +228,25 @@
   },
   "home": {
     "title": "Home",
-    "greeting": "Hello, {{name}}",
-    "intro": "What would you like to do today?",
     "findCare": "Find care",
     "nextVisitTitle": "Your next visit",
     "nextVisitEmpty": "No visits yet. When you book or join a queue, it will show here.",
     "verifyEmailTitle": "Confirm your email",
     "verifyEmailBody": "We sent a link to {{email}}. Confirm your email before you can see your health records.",
-    "settingsTitle": "Display",
-    "accountLabel": "Signed in as {{name}}"
+    "greeting_morning": "Good morning, {{name}}",
+    "greeting_afternoon": "Good afternoon, {{name}}",
+    "greeting_evening": "Good evening, {{name}}",
+    "findCareTitle": "Need to see a doctor?",
+    "findCareBody": "Join today's queue at a MediLink facility and follow your turn from here, so you wait less in the waiting room.",
+    "notSure": "Not sure? Describe your symptoms",
+    "nextVisitEmptyTitle": "No upcoming visits",
+    "shortcuts": "Shortcuts",
+    "links": {
+      "profile": "My profile and insurance",
+      "family": "Family members",
+      "privacy": "Privacy and who saw my records",
+      "settings": "Text size, language and theme"
+    }
   },
   "info": {
     "back": "Back to the home page",
@@ -284,5 +294,85 @@
     "doneBody": "Your password was changed and you were logged out everywhere. Log in with your new password.",
     "invalidLink": "This link is incomplete. Open the link from the email again, or ask for a new one.",
     "toLogin": "Go to log in"
+  },
+  "shell": {
+    "nav": "Main menu",
+    "items": {
+      "home": "Home",
+      "findCare": "Find care",
+      "visits": "My visits",
+      "help": "Help"
+    },
+    "offline": "You're offline. You're seeing what was last saved on this phone.",
+    "account": {
+      "label": "Account menu for {{name}}",
+      "signedIn": "Signed in as {{name}}",
+      "profile": "My profile",
+      "family": "Family",
+      "privacy": "Privacy",
+      "settings": "Settings"
+    }
+  },
+  "findCare": {
+    "title": "Find care",
+    "intro": "How you can see a doctor with MediLink today.",
+    "walkIn": {
+      "title": "Visit today",
+      "body": "Go to a MediLink facility during opening hours. You don't need an appointment.",
+      "steps": {
+        "reception": "Tell reception your name or MediLink number.",
+        "ticket": "You get a ticket number, for example G-023.",
+        "track": "Follow your turn on My visits. We tell you when you're next."
+      },
+      "note": "Your ticket also shows on the screen in the waiting room."
+    },
+    "book": {
+      "title": "Book a time",
+      "body": "Soon you can choose a facility, a day and a time from here, and see your share of the cost before you book."
+    },
+    "symptoms": {
+      "title": "Not sure what you need?",
+      "body": "Soon you can describe your symptoms and we'll suggest the right service. This will never replace a doctor."
+    }
+  },
+  "support": {
+    "title": "Help",
+    "faqTitle": "Common questions",
+    "faq": {
+      "ticket": {
+        "q": "How do I follow my turn?",
+        "a": "After reception checks you in, open My visits. Your ticket number, how many people are ahead and the expected wait are there. We tell you when you're next."
+      },
+      "family": {
+        "q": "Can I manage my child's visits?",
+        "a": "Yes. Add your child under Family. You can then switch to their profile from the top of the screen."
+      },
+      "language": {
+        "q": "How do I change the language or make the text bigger?",
+        "a": "Open Settings from the account menu. You can choose Kinyarwanda, English or French and a larger text size."
+      },
+      "data": {
+        "q": "Who can see my health records?",
+        "a": "Only staff at a facility where you are being cared for. Every time someone opens your record it is logged, and you can see the list under Privacy."
+      }
+    },
+    "deskTitle": "Ask at reception",
+    "deskBody": "No smartphone, or stuck? Reception staff at any MediLink facility can check you in and answer questions.",
+    "reportTitle": "Report a problem",
+    "reportBody": "Soon you can report a problem with a visit, a payment or a document here and follow what happens.",
+    "more": "More help",
+    "guides": "Guides for patients and caregivers",
+    "privacy": "Privacy notice",
+    "terms": "Terms of use"
+  },
+  "settings": {
+    "title": "Settings",
+    "intro": "These choices apply right away and are kept on this device.",
+    "display": "Display",
+    "textSizeHint": "Larger text makes every screen easier to read. Buttons grow with it.",
+    "travelTitle": "Travel time",
+    "travelBody": "When you have a ticket, tell us how long it takes you to reach the facility. We use it to tell you when to leave home.",
+    "alertsTitle": "Alerts",
+    "alertsBody": "Soon you can choose how we reach you: on this phone, by SMS or by email."
   }
 }

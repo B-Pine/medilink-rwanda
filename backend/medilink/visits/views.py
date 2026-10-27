@@ -834,3 +834,17 @@ class TravelTimeView(PatientsAPIView):
             defaults={"minutes": body.validated_data["minutes"]},
         )
         return Response({"minutes": body.validated_data["minutes"]})
+
+
+class OperationsView(QueueView):
+    """Facility operations dashboard figures (analysis 13 §1-2, design 04 §3.4)."""
+
+    permission_classes = [Needs("reports.view", CONFIGURE)]
+
+    @extend_schema(
+        operation_id="staff_reports_operations", tags=TAGS, responses={200: s.OperationsSerializer}
+    )
+    def get(self, request: Request) -> Response:
+        from medilink.visits.stats import operations
+
+        return Response(s.OperationsSerializer(operations(self.facility_id())).data)

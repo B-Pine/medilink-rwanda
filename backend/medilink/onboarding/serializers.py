@@ -11,7 +11,7 @@ from rest_framework import serializers
 
 from medilink.accounts.models import Language
 from medilink.masterdata.kinds import localise
-from medilink.masterdata.models import Location, ReasonCode
+from medilink.masterdata.models import Location, LocationLevel, ReasonCode
 from medilink.onboarding import services
 from medilink.onboarding.models import (
     ActorKind,
@@ -442,11 +442,19 @@ class ApproveResultSerializer(serializers.Serializer):
     facility = PlatformFacilitySerializer()
 
 
+class DistrictCountSerializer(serializers.Serializer):
+    district_code = serializers.CharField()
+    district = serializers.CharField()
+    province = serializers.CharField()
+    facilities = serializers.IntegerField()
+
+
 class OverviewSerializer(serializers.Serializer):
     applications = serializers.DictField(child=serializers.IntegerField())
     licences = serializers.DictField(child=serializers.IntegerField())
     facilities = serializers.DictField(child=serializers.IntegerField())
     oldest_waiting_application = serializers.DictField(allow_null=True)
+    facilities_by_district = DistrictCountSerializer(many=True)
 
 
 # ---- data builders ------------------------------------------------------------------------------
@@ -743,6 +751,29 @@ def overview_data() -> dict[str, Any]:
         .values("id", "submitted_at")
         .first()
     )
+    # Network by district (design 04 §3.5): where facilities that are not deactivated sit, from
+    # the location on their approved application (village -> cell -> sector -> district).
+    districts: dict[str, dict[str, Any]] = {}
+    for application in (
+        Application.objects.filter(facility__isnull=False)
+        .exclude(facility__status=FacilityStatus.DEACTIVATED)
+        .select_related("village__parent__parent__parent__parent")
+    ):
+        node = application.village
+        while node is not None and node.level != LocationLevel.DISTRICT:
+            node = node.parent
+        if node is None:
+            continue
+        row = districts.setdefault(
+            node.code,
+            {
+                "district_code": node.code,
+                "district": node.name,
+                "province": node.parent.name if node.parent else "",
+                "facilities": 0,
+            },
+        )
+        row["facilities"] += 1
     return {
         "applications": {
             s: statuses.get(s, 0)
@@ -750,6 +781,7 @@ def overview_data() -> dict[str, Any]:
                 ApplicationStatus.SUBMITTED,
                 ApplicationStatus.UNDER_REVIEW,
                 ApplicationStatus.CHANGES_REQUESTED,
+                ApplicationStatus.APPROVED,
             )
         },
         "licences": counts,
@@ -765,5 +797,8 @@ def overview_data() -> dict[str, Any]:
         },
         "oldest_waiting_application": (
             {"id": str(oldest["id"]), "submitted_at": oldest["submitted_at"]} if oldest else None
+        ),
+        "facilities_by_district": sorted(
+            districts.values(), key=lambda r: (-r["facilities"], r["district"])
         ),
     }

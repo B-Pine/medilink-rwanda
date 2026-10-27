@@ -79,6 +79,21 @@
   --ml-qr-bg: #ffffff;
   --ml-qr-fg: #0f172a;
 
+  /* Chart palette (design 02 §6, validated for colour-blind separation). Fixed series order;
+     sequential emerald for magnitude (heat maps). Red is never a series colour. */
+  --ml-chart-1: #059669;
+  --ml-chart-2: #2a78d6;
+  --ml-chart-3: #eb6834;
+  --ml-chart-4: #6250d6;
+  --ml-chart-5: #eda100;
+  --ml-chart-6: #e87ba4;
+  --ml-seq-1: #d1fae5;
+  --ml-seq-2: #6ee7b7;
+  --ml-seq-3: #10b981;
+  --ml-seq-4: #059669;
+  --ml-seq-5: #047857;
+  --ml-chart-grid: #e2e8f0;
+
   /* Elevation: mostly borders; shadows only for floating layers (design 03 §4) */
   --ml-shadow-raised: 0 8px 24px rgb(15 23 42 / 0.12), 0 2px 6px rgb(15 23 42 / 0.08);
 
@@ -141,6 +156,18 @@
 /* ---- Dark theme: system preference (unless the user picked light) ---- */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
+    --ml-chart-1: #059669;
+    --ml-chart-2: #3987e5;
+    --ml-chart-3: #d95926;
+    --ml-chart-4: #9085e9;
+    --ml-chart-5: #c98500;
+    --ml-chart-6: #d55181;
+    --ml-seq-1: #0f2a22;
+    --ml-seq-2: #065f46;
+    --ml-seq-3: #047857;
+    --ml-seq-4: #10b981;
+    --ml-seq-5: #34d399;
+    --ml-chart-grid: #24332d;
     --ml-bg-page: #0b1411;
     --ml-bg-surface: #111c18;
     --ml-bg-raised: #16231e;
@@ -177,6 +204,18 @@
 
 /* ---- Dark theme: explicit user choice ---- */
 :root[data-theme="dark"] {
+  --ml-chart-1: #059669;
+  --ml-chart-2: #3987e5;
+  --ml-chart-3: #d95926;
+  --ml-chart-4: #9085e9;
+  --ml-chart-5: #c98500;
+  --ml-chart-6: #d55181;
+  --ml-seq-1: #0f2a22;
+  --ml-seq-2: #065f46;
+  --ml-seq-3: #047857;
+  --ml-seq-4: #10b981;
+  --ml-seq-5: #34d399;
+  --ml-chart-grid: #24332d;
   --ml-bg-page: #0b1411;
   --ml-bg-surface: #111c18;
   --ml-bg-raised: #16231e;

@@ -229,6 +229,101 @@ export const queueMocks: FeatureMockFactory = (context) => {
       // Live sockets (contract §3.3): accepted and kept quiet; the mocks change data on request
       // only, so screens poll instead of waiting for notifications.
       ws.link("*/ws/v1/*").addEventListener("connection", () => undefined),
+      http.get(`${api}/staff/reports/operations/`, async ({ request }) => {
+        await context.settle();
+        const ok = staff(request, ["reports.view", "facility.configure"]);
+        if ("error" in ok) return ok.error;
+        // Deterministic synthetic history (no randomness, so tests are stable)
+        const day = (back: number) => {
+          const date = new Date(Date.now() - back * 86_400_000).toISOString().slice(0, 10);
+          const weekday = new Date(date).getUTCDay();
+          const patients = weekday === 0 ? 0 : weekday === 6 ? 9 : 18 + ((back * 7) % 9);
+          return {
+            date,
+            patients,
+            completed: Math.max(0, patients - 2),
+            median_wait_min: patients ? 34 + ((back * 5) % 21) : null,
+            p90_wait_min: patients ? 70 + ((back * 3) % 25) : null,
+            avg_consult_min: patients ? 13 + (back % 4) : null,
+            left_rate_pct: patients ? back % 5 : null,
+            walk_ins: patients,
+            emergencies: back % 3 === 0 ? 1 : 0,
+          };
+        };
+        const trend = Array.from({ length: 14 }, (_, i) => day(13 - i));
+        const waitingNow = db.tickets.filter((t) => t.state === "waiting");
+        const today = {
+          ...trend[13]!,
+          patients: db.tickets.length,
+          completed: db.tickets.filter((t) => t.state === "completed").length,
+        };
+        const heat = [];
+        for (let w = 0; w < 6; w++)
+          for (const h of [7, 8, 9, 10, 11, 12, 13, 14, 15, 16])
+            heat.push({
+              weekday: w,
+              hour: h,
+              count: Math.max(0, (w < 5 ? 9 : 4) - Math.abs(h - 8) * (w < 5 ? 1.4 : 1)) | 0,
+            });
+        const services = [SETUP_IDS.sGen, SETUP_IDS.sPed].map((service_id) => {
+          const wait = waitingNow.filter((t) => t.service_id === service_id);
+          const doctors =
+            service_id === SETUP_IDS.sGen ? db.duty.filter((d) => d.state === "on_duty").length : 0;
+          return {
+            service_id,
+            name_i18n:
+              service_id === SETUP_IDS.sGen
+                ? {
+                    en: "General consultation",
+                    rw: "Kwisuzumisha rusange",
+                    fr: "Consultation générale",
+                  }
+                : { en: "Child consultation", rw: "Kuvura abana", fr: "Consultation enfant" },
+            waiting: wait.length,
+            in_service: db.tickets.filter(
+              (t) =>
+                t.service_id === service_id && (t.state === "called" || t.state === "in_service"),
+            ).length,
+            longest_wait_min: Math.max(
+              0,
+              ...wait.map((t) =>
+                Math.round((Date.now() - new Date(t.arrival_at).getTime()) / 60_000),
+              ),
+            ),
+            doctors_on_duty: doctors,
+            load:
+              wait.length === 0
+                ? "low"
+                : doctors === 0
+                  ? "high"
+                  : wait.length / doctors < 4
+                    ? "low"
+                    : wait.length / doctors < 8
+                      ? "medium"
+                      : "high",
+          };
+        });
+        return HttpResponse.json({
+          today,
+          same_day_last_week: day(7),
+          trend: [...trend.slice(0, 13), today],
+          now: {
+            waiting: waitingNow.length,
+            in_service: db.tickets.filter((t) => t.state === "called" || t.state === "in_service")
+              .length,
+            doctors_on_duty: db.duty.filter((d) => d.state === "on_duty").length,
+            doctors_on_break: db.duty.filter((d) => d.state === "break").length,
+          },
+          services,
+          arrivals_heatmap: heat,
+          attention: {
+            unreviewed_reorders: db.events.filter(
+              (e) => e.action === "reorder" && !db.reviews.has(e.id),
+            ).length,
+          },
+          updated_at: now(),
+        });
+      }),
       http.get(`${api}/staff/queue/board/`, async ({ request }) => {
         await context.settle();
         const ok = staff(request, ["queue.operate", "queue.call", "pharmacy.dispense"]);

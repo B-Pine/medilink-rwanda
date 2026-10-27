@@ -72,7 +72,11 @@
     "expiring60": "Expiring within 60 days",
     "expiring30": "Expiring within 30 days",
     "expired": "Expired",
-    "facilities": "Facilities"
+    "facilities": "Facilities",
+    "network": "Facilities by district",
+    "networkEmpty": "No facilities yet. Districts appear here as applications are approved.",
+    "facilityCount_one": "{{count}} facility",
+    "facilityCount_other": "{{count}} facilities"
   },
   "applications": {
     "title": "Facility applications",

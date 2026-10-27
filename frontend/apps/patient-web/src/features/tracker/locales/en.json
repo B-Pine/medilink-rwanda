@@ -42,5 +42,16 @@
   "states": {
     "in_service": "With the doctor",
     "on_hold": "Waiting for results"
+  },
+  "visits": {
+    "title": "My visits",
+    "today": "Today",
+    "loadFailed": "We couldn't load today's visits.",
+    "noneToday": "No visit today",
+    "noneTodayBody": "When reception checks you in, your ticket and your place in the queue show here.",
+    "findCare": "Find care",
+    "history": "Earlier visits",
+    "historyEmpty": "Your visit history starts here",
+    "historyEmptyBody": "After each visit you'll find the summary, your medicines, documents and the receipt here."
   }
 }

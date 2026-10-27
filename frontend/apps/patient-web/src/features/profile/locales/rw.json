@@ -1,7 +1,5 @@
 {
   "title": "Umwirondoro wanjye",
-  "myProfile": "Umwirondoro wanjye",
-  "homeLinks": "Umwirondoro n'umuryango",
   "notFound": "Ntitwabonye uyu mwirondoro.",
   "switch": "Hindura umwirondoro",
   "breadcrumb": "Aho uri",
@@ -229,5 +227,11 @@
     "insurance": "Amakarita yawe y’ubwishingizi",
     "health": "Allergie, indwara, imiti y’igihe kirekire",
     "history": "Igihe cyose abakozi bafunguye dosiye yawe"
+  },
+  "homeFamily": {
+    "title": "Umuryango",
+    "manage": "Gucunga",
+    "empty": "Ongeraho umwana cyangwa uwo witaho, kugira ngo ukurikirane gahunda ze.",
+    "add": "Ongeraho uwo mu muryango"
   }
 }

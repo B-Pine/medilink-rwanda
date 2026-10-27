@@ -42,5 +42,16 @@
   "states": {
     "in_service": "Uri kwa muganga",
     "on_hold": "Utegereje ibisubizo"
+  },
+  "visits": {
+    "title": "Gahunda zanjye",
+    "today": "Uyu munsi",
+    "loadFailed": "Ntitwashoboye kuzana gahunda z’uyu munsi.",
+    "noneToday": "Nta gahunda y’uyu munsi",
+    "noneTodayBody": "Abakira abarwayi bamaze kukwandika, tike yawe n’umwanya wawe ku murongo bigaragara hano.",
+    "findCare": "Shaka ubuvuzi",
+    "history": "Gahunda zabanje",
+    "historyEmpty": "Amateka y’isura zawe atangirira hano",
+    "historyEmptyBody": "Nyuma ya buri sura, uzahasanga incamake, imiti yawe, inyandiko n’inyemezabwishyu."
   }
 }

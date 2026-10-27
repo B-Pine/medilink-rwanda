@@ -126,3 +126,15 @@ export type { PreferenceKey } from "./preferences/storage";
 export { ProgressDots, QueueFlagChip, QueueStateBadge, TicketNumber } from "./components/Queue";
 export type { QueueFlag, QueueState } from "./components/Queue";
 // [/S4]
+// [design-v2]
+export { HeatMap, LoadMeter, Sparkline, StatTile, TrendChart } from "./components/Charts";
+export {
+  applyTextSize,
+  initTextSize,
+  storedTextSize,
+  TEXT_SIZES,
+  TextSizeToggle,
+} from "./components/TextSizeToggle";
+export type { TextSize } from "./components/TextSizeToggle";
+export type { Load, StatTileProps, TrendSeries } from "./components/Charts";
+// [/design-v2]

@@ -17,7 +17,10 @@ async function signIn(path = "/home") {
   await waitFor(() => expect(password).toHaveFocus());
   await app.user.paste(MOCK_PASSWORD);
   await app.user.click(screen.getByRole("button", { name: "Log in" }));
-  await screen.findByRole("heading", { level: 1, name: "Hello, Mukamana Jeanne" });
+  await screen.findByRole("heading", {
+    level: 1,
+    name: /^Good (morning|afternoon|evening), Mukamana Jeanne$/,
+  });
   if (path !== "/home") await app.router.navigate(path);
   return app;
 }
@@ -25,7 +28,7 @@ async function signIn(path = "/home") {
 describe("patient profile", () => {
   it("home links to the profile; hub shows completion and the next step", async () => {
     const { user, router, container } = await signIn();
-    await user.click(screen.getByRole("link", { name: "My profile" }));
+    await user.click(screen.getByRole("link", { name: "My profile and insurance" }));
     await waitFor(() => expect(router.state.location.pathname).toMatch(/^\/profile\/.+/));
     expect(await screen.findByText("Complete your profile")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /^Next:/ })).toBeInTheDocument();

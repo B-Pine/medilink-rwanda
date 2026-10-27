@@ -4,6 +4,7 @@ import type { ComponentType } from "react";
 
 import type { FeatureRoutes } from "../../app/features";
 import { QueueHeaderLive } from "./LiveIndicator";
+import { OperationsTodayCard } from "./Operations";
 import { OnSiteTodayCard } from "./TodayCard";
 
 const lazy =
@@ -19,10 +20,11 @@ export const queueFeature: FeatureRoutes = {
     { path: "/queue", lazy: lazy(() => import("./QueuePage"), "QueuePage") },
     { path: "/queue/mine", lazy: lazy(() => import("./MyQueuePage"), "MyQueuePage") },
     { path: "/queue/reorders", lazy: lazy(admin, "ReordersPage") },
+    { path: "/reports", lazy: lazy(() => import("./Operations"), "ReportsPage") },
     { path: "/settings/displays", lazy: lazy(admin, "DisplaysPage") },
   ],
   headerItems: [QueueHeaderLive],
-  todayCards: [OnSiteTodayCard],
+  todayCards: [OperationsTodayCard, OnSiteTodayCard],
   commands: [
     {
       actions: (me, t) =>

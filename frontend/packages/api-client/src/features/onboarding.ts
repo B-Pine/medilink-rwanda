@@ -194,10 +194,22 @@ export interface FacilityFeatureFlag {
 }
 
 export interface PlatformOverview {
-  applications: { submitted: number; under_review: number; changes_requested: number };
+  applications: {
+    submitted: number;
+    under_review: number;
+    changes_requested: number;
+    approved: number;
+  };
   licences: { expiring_60: number; expiring_30: number; expired: number };
   facilities: Record<FacilityStatus, number>;
   oldest_waiting_application: { id: Uuid; submitted_at: string } | null;
+  /** Facilities that are not deactivated, by district (design 04 §3.5), most first. */
+  facilities_by_district: {
+    district_code: string;
+    district: string;
+    province: string;
+    facilities: number;
+  }[];
 }
 
 export interface ApplicationPatch {

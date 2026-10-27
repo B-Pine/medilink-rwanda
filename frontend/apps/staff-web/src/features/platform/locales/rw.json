@@ -72,7 +72,11 @@
     "expiring60": "Zirangira mu minsi 60",
     "expiring30": "Zirangira mu minsi 30",
     "expired": "Zarangiye",
-    "facilities": "Ibigo"
+    "facilities": "Ibigo",
+    "network": "Ibigo by’ubuvuzi ku karere",
+    "networkEmpty": "Nta kigo kirabaho. Uturere tuzagaragara hano uko ubusabe bwemezwa.",
+    "facilityCount_one": "Ikigo {{count}}",
+    "facilityCount_other": "Ibigo {{count}}"
   },
   "applications": {
     "title": "Ubusabe bw'ibigo",

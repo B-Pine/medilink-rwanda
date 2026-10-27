@@ -56,6 +56,7 @@ describe("front-end security rules (F6)", () => {
       "medilink.language",
       "medilink.sidebarCollapsed",
       "medilink.tableDensity",
+      "medilink.textSize",
       "medilink.theme",
     ]);
   });

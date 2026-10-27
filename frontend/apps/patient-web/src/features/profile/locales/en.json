@@ -1,7 +1,5 @@
 {
   "title": "My profile",
-  "myProfile": "My profile",
-  "homeLinks": "Profile and family",
   "notFound": "We couldn't find this profile.",
   "switch": "Switch profile",
   "breadcrumb": "Where you are",
@@ -229,5 +227,11 @@
     "insurance": "Your insurance cards",
     "health": "Allergies, conditions, long-term medicines",
     "history": "Every time staff opened your record"
+  },
+  "homeFamily": {
+    "title": "Family",
+    "manage": "Manage",
+    "empty": "Add a child or someone you care for, to follow their visits too.",
+    "add": "Add a family member"
   }
 }

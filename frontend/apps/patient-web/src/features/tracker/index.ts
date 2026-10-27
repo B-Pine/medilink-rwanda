@@ -9,6 +9,10 @@ const lazy =
 
 /** S4 `tracker`: the live queue tracker and its home card (contract §6.2). */
 export const trackerFeature: FeatureRoutes = {
-  patient: [{ path: "/visits/:visitId", lazy: lazy(() => import("./TrackerPage"), "TrackerPage") }],
-  homeCards: [ActiveVisitCard],
+  patient: [
+    { path: "/visits", lazy: lazy(() => import("./VisitsPage"), "VisitsPage") },
+    { path: "/visits/:visitId", lazy: lazy(() => import("./TrackerPage"), "TrackerPage") },
+  ],
+  // design 07 §3.1: an active visit fills the top of the home page
+  homeTop: [ActiveVisitCard],
 };

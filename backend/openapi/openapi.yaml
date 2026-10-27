@@ -8248,6 +8248,23 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Already reviewed
+  /api/v1/staff/reports/operations/:
+    get:
+      operationId: staff_reports_operations
+      description: Facility operations dashboard figures (analysis 13 §1-2, design
+        04 §3.4).
+      tags:
+      - queue
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Operations'
+          description: ''
   /api/v1/staff/roles/:
     get:
       operationId: staff_roles_list
@@ -10325,6 +10342,42 @@ components:
       - closes_at
       - opens_at
       - weekday
+    DayFigures:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        patients:
+          type: integer
+        completed:
+          type: integer
+        median_wait_min:
+          type: integer
+          nullable: true
+        p90_wait_min:
+          type: integer
+          nullable: true
+        avg_consult_min:
+          type: integer
+          nullable: true
+        left_rate_pct:
+          type: integer
+          nullable: true
+        walk_ins:
+          type: integer
+        emergencies:
+          type: integer
+      required:
+      - avg_consult_min
+      - completed
+      - date
+      - emergencies
+      - left_rate_pct
+      - median_wait_min
+      - p90_wait_min
+      - patients
+      - walk_ins
     DayRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -10756,6 +10809,22 @@ components:
       required:
       - code
       - name
+    DistrictCount:
+      type: object
+      properties:
+        district_code:
+          type: string
+        district:
+          type: string
+        province:
+          type: string
+        facilities:
+          type: integer
+      required:
+      - district
+      - district_code
+      - facilities
+      - province
     DocumentInputRequest:
       type: object
       properties:
@@ -12149,6 +12218,7 @@ components:
           maxLength: 200
       required:
       - outcome
+<<<<<<< HEAD
     Hold:
       type: object
       properties:
@@ -12161,6 +12231,21 @@ components:
       required:
       - expires_at
       - hold_id
+=======
+    HeatCell:
+      type: object
+      properties:
+        weekday:
+          type: integer
+        hour:
+          type: integer
+        count:
+          type: integer
+      required:
+      - count
+      - hour
+      - weekday
+>>>>>>> origin/feat/design-v2
     HoursRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -12970,6 +13055,16 @@ components:
         * `expiring` - expiring
         * `expired` - expired
         * `missing` - missing
+    LoadEnum:
+      enum:
+      - low
+      - medium
+      - high
+      type: string
+      description: |-
+        * `low` - low
+        * `medium` - medium
+        * `high` - high
     LocationBlock:
       type: object
       properties:
@@ -13632,6 +13727,59 @@ components:
     NullEnum:
       enum:
       - null
+    Operations:
+      type: object
+      properties:
+        today:
+          $ref: '#/components/schemas/DayFigures'
+        same_day_last_week:
+          $ref: '#/components/schemas/DayFigures'
+        trend:
+          type: array
+          items:
+            $ref: '#/components/schemas/DayFigures'
+        now:
+          $ref: '#/components/schemas/OperationsNow'
+        services:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceLoad'
+        arrivals_heatmap:
+          type: array
+          items:
+            $ref: '#/components/schemas/HeatCell'
+        attention:
+          type: object
+          additionalProperties:
+            type: integer
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - arrivals_heatmap
+      - attention
+      - now
+      - same_day_last_week
+      - services
+      - today
+      - trend
+      - updated_at
+    OperationsNow:
+      type: object
+      properties:
+        waiting:
+          type: integer
+        in_service:
+          type: integer
+        doctors_on_duty:
+          type: integer
+        doctors_on_break:
+          type: integer
+      required:
+      - doctors_on_break
+      - doctors_on_duty
+      - in_service
+      - waiting
     Overview:
       type: object
       properties:
@@ -13651,9 +13799,14 @@ components:
           type: object
           additionalProperties: {}
           nullable: true
+        facilities_by_district:
+          type: array
+          items:
+            $ref: '#/components/schemas/DistrictCount'
       required:
       - applications
       - facilities
+      - facilities_by_district
       - licences
       - oldest_waiting_application
     OwnershipEnum:
@@ -16576,6 +16729,33 @@ components:
       required:
       - code
       - name_i18n
+    ServiceLoad:
+      type: object
+      properties:
+        service_id:
+          type: string
+          format: uuid
+        name_i18n:
+          type: object
+          additionalProperties: {}
+        waiting:
+          type: integer
+        in_service:
+          type: integer
+        longest_wait_min:
+          type: integer
+        doctors_on_duty:
+          type: integer
+        load:
+          $ref: '#/components/schemas/LoadEnum'
+      required:
+      - doctors_on_duty
+      - in_service
+      - load
+      - longest_wait_min
+      - name_i18n
+      - service_id
+      - waiting
     ServicePoint:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.

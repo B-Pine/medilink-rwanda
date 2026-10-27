@@ -37,5 +37,11 @@
     "success": "Success:",
     "warning": "Warning:",
     "danger": "Error:"
+  },
+  "textSize": {
+    "label": "Text size",
+    "normal": "Normal",
+    "large": "Large",
+    "xlarge": "Extra large"
   }
 }

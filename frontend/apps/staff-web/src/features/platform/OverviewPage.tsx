@@ -1,3 +1,5 @@
+import type { PlatformOverview } from "@medilink/api-client";
+import { CaretRight, MapPin } from "@phosphor-icons/react";
 import { Alert, cx, LoadingState } from "@medilink/ui";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -52,6 +54,119 @@ function Tile({
   );
 }
 
+const PIPELINE = ["submitted", "under_review", "changes_requested", "approved"] as const;
+const PIPELINE_TONE: Record<(typeof PIPELINE)[number], string> = {
+  submitted: "var(--ml-chart-5)",
+  under_review: "var(--ml-chart-2)",
+  changes_requested: "var(--ml-chart-3)",
+  approved: "var(--ml-chart-1)",
+};
+
+/** Applications pipeline (design 04 §3.5): the stages in order, each opening its list. */
+function Pipeline({ counts }: { counts: PlatformOverview["applications"] }) {
+  const { t } = useTranslation();
+  const total = PIPELINE.reduce((sum, s) => sum + counts[s], 0);
+  return (
+    <section
+      aria-labelledby="ov-apps"
+      className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5"
+    >
+      <h2 id="ov-apps" className="m-0 font-heading text-h3">
+        {t("platform.overview.applications")}
+      </h2>
+      <div aria-hidden="true" className="flex h-3 overflow-hidden rounded-full bg-subtle">
+        {total > 0 &&
+          PIPELINE.map((s) =>
+            counts[s] > 0 ? (
+              <span
+                key={s}
+                style={{ width: `${(100 * counts[s]) / total}%`, background: PIPELINE_TONE[s] }}
+              />
+            ) : null,
+          )}
+      </div>
+      <ol className="m-0 grid list-none gap-2 p-0 sm:grid-cols-4">
+        {PIPELINE.map((s, index) => (
+          <li key={s} className="flex">
+            <Link
+              to={`/platform/applications?status=${s}`}
+              className="group flex flex-1 flex-col gap-1 rounded-md p-3 no-underline hover:bg-subtle"
+            >
+              <span className="flex items-center gap-2 text-body-sm font-semibold text-fg-secondary group-hover:text-fg">
+                <span
+                  aria-hidden="true"
+                  className="size-2.5 shrink-0 rounded-full"
+                  style={{ background: PIPELINE_TONE[s] }}
+                />
+                {t(`platform.status.application.${s}`)}
+                {index < PIPELINE.length - 1 && (
+                  <CaretRight
+                    aria-hidden="true"
+                    className="ml-auto hidden size-4 text-fg-muted sm:block"
+                  />
+                )}
+              </span>
+              <span
+                className={cx(
+                  "mt-auto pt-1 font-heading text-display leading-none font-semibold tabular-nums",
+                  counts[s] === 0 ? "text-fg-muted" : "text-fg",
+                )}
+              >
+                {counts[s]}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+/** Network by district (design 04 §3.5): facilities that are not deactivated, as a bar list. */
+function Network({ rows }: { rows: PlatformOverview["facilities_by_district"] }) {
+  const { t } = useTranslation();
+  const max = Math.max(1, ...rows.map((r) => r.facilities));
+  return (
+    <section
+      aria-labelledby="ov-network"
+      className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5"
+    >
+      <h2 id="ov-network" className="m-0 flex items-center gap-2 font-heading text-h3">
+        <MapPin aria-hidden="true" weight="duotone" className="size-6 text-brand" />
+        {t("platform.overview.network")}
+      </h2>
+      {rows.length === 0 ? (
+        <p className="m-0 text-fg-secondary">{t("platform.overview.networkEmpty")}</p>
+      ) : (
+        <ul className="m-0 flex list-none flex-col gap-3 p-0">
+          {rows.map((r) => (
+            <li key={r.district_code} className="flex flex-col gap-1">
+              <span className="flex items-baseline justify-between gap-2">
+                <span className="font-semibold">
+                  {r.district}{" "}
+                  <span className="text-body-sm font-normal text-fg-muted">{r.province}</span>
+                </span>
+                <span className="font-semibold tabular-nums">
+                  {t("platform.overview.facilityCount", { count: r.facilities })}
+                </span>
+              </span>
+              <span aria-hidden="true" className="h-2 overflow-hidden rounded-full bg-subtle">
+                <span
+                  className="block h-full rounded-full"
+                  style={{
+                    width: `${(100 * r.facilities) / max}%`,
+                    background: "var(--ml-chart-1)",
+                  }}
+                />
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
 /** /platform: what needs the super admin's attention (design 04 §3.5). */
 export function OverviewPage() {
   return (
@@ -86,22 +201,10 @@ function Overview() {
               </Link>
             </Alert>
           )}
-          <section aria-labelledby="ov-apps" className="flex flex-col gap-3">
-            <h2 id="ov-apps" className="m-0 font-heading text-h3">
-              {t("platform.overview.applications")}
-            </h2>
-            <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-3">
-              {(["submitted", "under_review", "changes_requested"] as const).map((s) => (
-                <Tile
-                  key={s}
-                  label={t(`platform.status.application.${s}`)}
-                  value={data.applications[s]}
-                  to={`/platform/applications?status=${s}`}
-                  {...(s === "submitted" ? { attention: "warning" as const } : {})}
-                />
-              ))}
-            </ul>
-          </section>
+          <div className="grid gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+            <Pipeline counts={data.applications} />
+            <Network rows={data.facilities_by_district} />
+          </div>
           <section aria-labelledby="ov-licences" className="flex flex-col gap-3">
             <h2 id="ov-licences" className="m-0 font-heading text-h3">
               {t("platform.overview.licences")}

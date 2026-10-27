@@ -226,5 +226,53 @@
     "summary": "{{waiting}} en attente · {{serving}} avec un médecin",
     "open": "Ouvrir la file",
     "waiting": "en attente"
+  },
+  "ops": {
+    "title": "Activité du jour",
+    "allReports": "Tous les rapports",
+    "vsLast": "par rapport à {{day}} dernier",
+    "patientsToday": "Patients aujourd’hui",
+    "medianWait": "Attente médiane avant consultation",
+    "min": "min",
+    "noShows": "Taux d’absence",
+    "noShowsLater": "Mesuré dès l’ouverture de la réservation en ligne.",
+    "revenue": "Encaissé aujourd’hui",
+    "revenueLater": "Mesuré dès la mise en service de la facturation.",
+    "liveTitle": "Charge de la file par service",
+    "quiet": "Personne dans la file pour le moment.",
+    "doctors_one": "{{count}} médecin en service",
+    "doctors_other": "{{count}} médecins en service",
+    "load": {
+      "low": "Fluide",
+      "medium": "Chargé",
+      "high": "Saturé"
+    },
+    "longest": "plus longue {{min}} min",
+    "waiting": "en attente",
+    "attention": "À traiter",
+    "allClear": "Tout va bien. Rien n’attend votre décision.",
+    "reordersToReview_one": "{{count}} déplacement à contrôler",
+    "reordersToReview_other": "{{count}} déplacements à contrôler",
+    "noDoctor_one": "{{count}} patient attend sans médecin en service",
+    "noDoctor_other": "{{count}} patients attendent sans médecin en service",
+    "liveSummary_one": "{{waiting}} en attente · {{count}} médecin en service",
+    "liveSummary_other": "{{waiting}} en attente · {{count}} médecins en service"
+  },
+  "reports": {
+    "title": "Rapports",
+    "intro": "L’activité de votre établissement : patients, attentes et heures d’arrivée, selon les définitions MediLink.",
+    "period": "14 derniers jours",
+    "patientsPerDay": "Patients par jour",
+    "patients": "Patients",
+    "waitToBeSeen": "Attente avant consultation (minutes)",
+    "median": "Médiane",
+    "p90": "9 sur 10 vus en moins de",
+    "arrivals": "Heures d’arrivée (4 dernières semaines)",
+    "less": "Moins",
+    "more": "Plus",
+    "patients14": "Patients, 14 jours",
+    "avgConsult": "Consultation moyenne aujourd’hui",
+    "leftRate": "Partis sans consultation aujourd’hui",
+    "emergencies": "Urgences, 14 jours"
   }
 }

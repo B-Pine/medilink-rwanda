@@ -1,5 +1,7 @@
 {
-  "nav": { "reorders": "Queue reviews" },
+  "nav": {
+    "reorders": "Queue reviews"
+  },
   "loading": "Loading the queue…",
   "loadFailed": "The queue could not load. It retries by itself.",
   "failed": "That did not work. Check your connection and try again.",
@@ -15,7 +17,11 @@
   "minutes_other": "{{count}} min",
   "minutesAgo_one": "{{count}} min ago",
   "minutesAgo_other": "{{count}} min ago",
-  "sex": { "female": "Female", "male": "Male", "other": "Other" },
+  "sex": {
+    "female": "Female",
+    "male": "Male",
+    "other": "Other"
+  },
   "states": {
     "waiting": "Waiting",
     "called": "Called",
@@ -86,7 +92,12 @@
     "reorder": "Moved in the queue",
     "end_of_day": "Closed at end of day"
   },
-  "columns": { "ticket": "Ticket", "patient": "Patient", "flags": "Flags", "waiting": "Waiting" },
+  "columns": {
+    "ticket": "Ticket",
+    "patient": "Patient",
+    "flags": "Flags",
+    "waiting": "Waiting"
+  },
   "live": {
     "live": "Live · {{seconds}} s ago",
     "reconnecting": "Reconnecting",
@@ -215,5 +226,53 @@
     "summary": "{{waiting}} waiting · {{serving}} with a doctor",
     "open": "Open queue",
     "waiting": "waiting"
+  },
+  "ops": {
+    "title": "Operations today",
+    "allReports": "All reports",
+    "vsLast": "vs last {{day}}",
+    "patientsToday": "Patients today",
+    "medianWait": "Median wait to be seen",
+    "min": "min",
+    "noShows": "No-show rate",
+    "noShowsLater": "Measured once online booking opens.",
+    "revenue": "Collected today",
+    "revenueLater": "Measured once billing is live.",
+    "liveTitle": "Queue load by service",
+    "quiet": "No one is in the queue right now.",
+    "doctors_one": "{{count}} doctor on duty",
+    "doctors_other": "{{count}} doctors on duty",
+    "load": {
+      "low": "Flowing",
+      "medium": "Busy",
+      "high": "Overloaded"
+    },
+    "longest": "longest {{min}} min",
+    "waiting": "waiting",
+    "attention": "Needs your attention",
+    "allClear": "All clear. Nothing waits for your decision.",
+    "reordersToReview_one": "{{count}} queue move to review",
+    "reordersToReview_other": "{{count}} queue moves to review",
+    "noDoctor_one": "{{count}} patient waiting with no doctor on duty",
+    "noDoctor_other": "{{count}} patients waiting with no doctor on duty",
+    "liveSummary_one": "{{waiting}} waiting · {{count}} doctor on duty",
+    "liveSummary_other": "{{waiting}} waiting · {{count}} doctors on duty"
+  },
+  "reports": {
+    "title": "Reports",
+    "intro": "How your facility is doing: patients, waits and when people arrive. Figures follow the MediLink metric definitions.",
+    "period": "Last 14 days",
+    "patientsPerDay": "Patients per day",
+    "patients": "Patients",
+    "waitToBeSeen": "Wait to be seen (minutes)",
+    "median": "Median",
+    "p90": "9 in 10 seen within",
+    "arrivals": "When patients arrive (last 4 weeks)",
+    "less": "Fewer",
+    "more": "More",
+    "patients14": "Patients, 14 days",
+    "avgConsult": "Average consultation today",
+    "leftRate": "Left without being seen today",
+    "emergencies": "Emergencies, 14 days"
   }
 }

@@ -13,7 +13,9 @@ export function OnSiteTodayCard() {
   const { t } = useTranslation();
   const api = useApi();
   const serviceName = useServiceNames();
-  const allowed = useCan("queue.operate", "queue.call");
+  // Facility admins get the full operations dashboard instead (Operations.tsx)
+  const admin = useCan("reports.view");
+  const allowed = useCan("queue.operate", "queue.call") && !admin;
   const refetchInterval = usePollInterval();
   const board = useQuery({
     queryKey: queueKeys.board,

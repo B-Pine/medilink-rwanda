@@ -37,5 +37,11 @@
     "success": "Byagenze neza:",
     "warning": "Icyitonderwa:",
     "danger": "Ikosa:"
+  },
+  "textSize": {
+    "label": "Ingano y’inyandiko",
+    "normal": "Isanzwe",
+    "large": "Nini",
+    "xlarge": "Nini cyane"
   }
 }

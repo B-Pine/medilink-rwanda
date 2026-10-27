@@ -199,6 +199,38 @@ export interface PatientVisit {
   updated_at: string;
 }
 
+export interface DayFigures {
+  date: string;
+  patients: number;
+  completed: number;
+  median_wait_min: number | null;
+  p90_wait_min: number | null;
+  avg_consult_min: number | null;
+  left_rate_pct: number | null;
+  walk_ins: number;
+  emergencies: number;
+}
+
+/** Facility operations figures (analysis 13 §1-2, design 04 §3.4). Aggregates only. */
+export interface Operations {
+  today: DayFigures;
+  same_day_last_week: DayFigures;
+  trend: DayFigures[];
+  now: { waiting: number; in_service: number; doctors_on_duty: number; doctors_on_break: number };
+  services: {
+    service_id: Uuid;
+    name_i18n: Partial<Record<"rw" | "en" | "fr", string>>;
+    waiting: number;
+    in_service: number;
+    longest_wait_min: number;
+    doctors_on_duty: number;
+    load: "low" | "medium" | "high";
+  }[];
+  arrivals_heatmap: { weekday: number; hour: number; count: number }[];
+  attention: Record<string, number>;
+  updated_at: string;
+}
+
 const S = "/api/v1/staff";
 export const queuePaths = {
   checkIn: `${S}/visits/check-in/`,
@@ -210,6 +242,7 @@ export const queuePaths = {
   review: (id: Uuid) => `${S}/queue/reorders/${id}/review/`,
   ticket: (id: Uuid, action: TicketAction) => `${S}/tickets/${id}/${action}/`,
   duty: `${S}/duty-status/`,
+  operations: `${S}/reports/operations/`,
   displayLinks: `${S}/display-links/`,
   revokeDisplay: (id: Uuid) => `${S}/display-links/${id}/revoke/`,
   display: (token: string) => `/api/v1/display/${encodeURIComponent(token)}/`,
@@ -242,6 +275,7 @@ export function createQueueApi(client: ApiClient) {
     act: (id: Uuid, action: TicketAction, body: TicketActionInput) =>
       client.post<TicketRow>(queuePaths.ticket(id, action), body),
     duty: () => client.get<DutyRow>(queuePaths.duty),
+    operations: () => client.get<Operations>(queuePaths.operations),
     setDuty: (body: {
       state: DutyState;
       service_point_id?: Uuid | null;

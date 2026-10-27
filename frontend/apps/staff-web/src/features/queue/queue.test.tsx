@@ -136,3 +136,37 @@ describe("admin pages and display (S4-F1, F5)", () => {
     ).toBeInTheDocument();
   });
 });
+
+describe("operations dashboard and reports (design 04 §3.4, analysis 13 §1)", () => {
+  it("shows the facility admin today's figures, queue load and what needs attention", async () => {
+    const { container } = await signIn(MOCK_FACILITY_ADMIN_EMAIL, "/today");
+    const ops = await screen.findByRole("region", { name: /^Operations today/ });
+    expect(await within(ops).findByText("Patients today")).toBeInTheDocument();
+    expect(within(ops).getByText("Median wait to be seen")).toBeInTheDocument();
+    expect(within(ops).getAllByText(/vs last/).length).toBeGreaterThan(0);
+    expect(within(ops).getByText("Measured once online booking opens.")).toBeInTheDocument();
+    expect(within(ops).getByRole("region", { name: "Queue load by service" })).toBeInTheDocument();
+    expect(within(ops).getByRole("region", { name: "Needs your attention" })).toBeInTheDocument();
+    // the plain on-site card is replaced, not shown twice
+    expect(screen.queryByText("On site now")).not.toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("the reports page charts the last 14 days with readable tables behind the charts", async () => {
+    const { container } = await signIn(MOCK_FACILITY_ADMIN_EMAIL, "/reports");
+    expect(await screen.findByRole("heading", { level: 1, name: "Reports" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Patients per day" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Wait to be seen (minutes)" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "When patients arrive (last 4 weeks)" }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole("table").length).toBeGreaterThanOrEqual(3);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("receptionists don't see the operations dashboard", async () => {
+    await signIn("reception@medilink.test", "/today");
+    await screen.findByRole("heading", { level: 1 });
+    expect(screen.queryByRole("region", { name: /^Operations today/ })).not.toBeInTheDocument();
+  });
+});

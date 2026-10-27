@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 1951.
+Keys: 1997.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -46,6 +46,10 @@ File: `packages/ui/src/i18n/locales/rw.json`
 | `alert.success` | Byagenze neza: | Success: | needs native-speaker review |
 | `alert.warning` | Icyitonderwa: | Warning: | needs native-speaker review |
 | `alert.danger` | Ikosa: | Error: | needs native-speaker review |
+| `textSize.label` | Ingano y’inyandiko | Text size | needs native-speaker review |
+| `textSize.normal` | Isanzwe | Normal | needs native-speaker review |
+| `textSize.large` | Nini | Large | needs native-speaker review |
+| `textSize.xlarge` | Nini cyane | Extra large | needs native-speaker review |
 
 ## Staff app
 
@@ -1184,6 +1188,48 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `today.summary` | {{waiting}} barategereje · {{serving}} bari kwa muganga | {{waiting}} waiting · {{serving}} with a doctor | needs native-speaker review |
 | `today.open` | Fungura umurongo | Open queue | needs native-speaker review |
 | `today.waiting` | barategereje | waiting | needs native-speaker review |
+| `ops.title` | Ibikorwa by’uyu munsi | Operations today | needs native-speaker review |
+| `ops.allReports` | Raporo zose | All reports | needs native-speaker review |
+| `ops.vsLast` | ugereranyije na {{day}} ishize | vs last {{day}} | needs native-speaker review |
+| `ops.patientsToday` | Abarwayi uyu munsi | Patients today | needs native-speaker review |
+| `ops.medianWait` | Igihe cyo gutegereza muganga (hagati) | Median wait to be seen | needs native-speaker review |
+| `ops.min` | min | min | needs native-speaker review |
+| `ops.noShows` | Abatitabiriye gahunda | No-show rate | needs native-speaker review |
+| `ops.noShowsLater` | Bizapimwa gufata gahunda kuri interineti nibitangira. | Measured once online booking opens. | needs native-speaker review |
+| `ops.revenue` | Ayishyuwe uyu munsi | Collected today | needs native-speaker review |
+| `ops.revenueLater` | Bizapimwa kwishyuza nibitangira. | Measured once billing is live. | needs native-speaker review |
+| `ops.liveTitle` | Umutwaro w’umurongo kuri buri serivisi | Queue load by service | needs native-speaker review |
+| `ops.quiet` | Nta muntu uri ku murongo ubu. | No one is in the queue right now. | needs native-speaker review |
+| `ops.doctors_one` | Umuganga {{count}} uri mu kazi | {{count}} doctor on duty | needs native-speaker review |
+| `ops.doctors_other` | Abaganga {{count}} bari mu kazi | {{count}} doctors on duty | needs native-speaker review |
+| `ops.load.low` | Bigenda neza | Flowing | needs native-speaker review |
+| `ops.load.medium` | Hari benshi | Busy | needs native-speaker review |
+| `ops.load.high` | Huzuye cyane | Overloaded | needs native-speaker review |
+| `ops.longest` | uwatinze cyane iminota {{min}} | longest {{min}} min | needs native-speaker review |
+| `ops.waiting` | barategereje | waiting | needs native-speaker review |
+| `ops.attention` | Bikeneye ko ubireba | Needs your attention | needs native-speaker review |
+| `ops.allClear` | Byose ni byiza. Nta gitegereje icyemezo cyawe. | All clear. Nothing waits for your decision. | needs native-speaker review |
+| `ops.reordersToReview_one` | Kwimura {{count}} gukeneye kugenzurwa | {{count}} queue move to review | needs native-speaker review |
+| `ops.reordersToReview_other` | Kwimura {{count}} gukeneye kugenzurwa | {{count}} queue moves to review | needs native-speaker review |
+| `ops.noDoctor_one` | Umurwayi {{count}} ategereje nta muganga uri mu kazi | {{count}} patient waiting with no doctor on duty | needs native-speaker review |
+| `ops.noDoctor_other` | Abarwayi {{count}} bategereje nta muganga uri mu kazi | {{count}} patients waiting with no doctor on duty | needs native-speaker review |
+| `ops.liveSummary_one` | {{waiting}} barategereje · umuganga {{count}} uri mu kazi | {{waiting}} waiting · {{count}} doctor on duty | needs native-speaker review |
+| `ops.liveSummary_other` | {{waiting}} barategereje · abaganga {{count}} bari mu kazi | {{waiting}} waiting · {{count}} doctors on duty | needs native-speaker review |
+| `reports.title` | Raporo | Reports | needs native-speaker review |
+| `reports.intro` | Uko ikigo cyawe gihagaze: abarwayi, igihe cyo gutegereza n’igihe baza. Hakurikijwe ibisobanuro bya MediLink. | How your facility is doing: patients, waits and when people arrive. Figures follow the MediLink metric definitions. | needs native-speaker review |
+| `reports.period` | Iminsi 14 ishize | Last 14 days | needs native-speaker review |
+| `reports.patientsPerDay` | Abarwayi ku munsi | Patients per day | needs native-speaker review |
+| `reports.patients` | Abarwayi | Patients | needs native-speaker review |
+| `reports.waitToBeSeen` | Igihe cyo gutegereza muganga (iminota) | Wait to be seen (minutes) | needs native-speaker review |
+| `reports.median` | Hagati | Median | needs native-speaker review |
+| `reports.p90` | 9 kuri 10 babonye muganga mbere ya | 9 in 10 seen within | needs native-speaker review |
+| `reports.arrivals` | Igihe abarwayi baza (ibyumweru 4 bishize) | When patients arrive (last 4 weeks) | needs native-speaker review |
+| `reports.less` | Bake | Fewer | needs native-speaker review |
+| `reports.more` | Benshi | More | needs native-speaker review |
+| `reports.patients14` | Abarwayi, iminsi 14 | Patients, 14 days | needs native-speaker review |
+| `reports.avgConsult` | Igihe cyo kuvurwa uyu munsi (hagati) | Average consultation today | needs native-speaker review |
+| `reports.leftRate` | Abagiye batavuwe uyu munsi | Left without being seen today | needs native-speaker review |
+| `reports.emergencies` | Ibyihutirwa, iminsi 14 | Emergencies, 14 days | needs native-speaker review |
 
 ## staff-web feature: setup (namespace setup)
 

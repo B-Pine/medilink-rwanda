@@ -1,6 +1,6 @@
 import "./styles.css";
 
-import { initTheme } from "@medilink/ui";
+import { initTextSize, initTheme } from "@medilink/ui";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter } from "react-router";
@@ -25,6 +25,7 @@ async function registerPwa() {
 
 async function bootstrap() {
   initTheme();
+  initTextSize();
   await enableMocks();
   const services = createServices();
   const router = createBrowserRouter(routes);

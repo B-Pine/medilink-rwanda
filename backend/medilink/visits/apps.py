@@ -22,7 +22,12 @@ FUNCTIONS = (
     "visits_patient_active(uuid)",
     "visits_find_display_link(bytea)",
 )
-APPEND_ONLY = ("visits_ticket_event", "visits_duty_status_event", "visits_reorder_review")
+APPEND_ONLY = (
+    "visits_ticket_event",
+    "visits_duty_status_event",
+    "visits_reorder_review",
+    "visits_reason_symptom",  # S5
+)
 
 
 class VisitsConfig(AppConfig):

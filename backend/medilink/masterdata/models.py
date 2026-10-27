@@ -158,6 +158,8 @@ class Symptom(CodedModel):
     name_i18n = models.JSONField(default=dict)
     body_system = models.CharField(max_length=40, blank=True)
     icd_code = models.CharField(max_length=10, blank=True)
+    # S5: picking it shows the emergency notice in the booking flow (design 06 H7)
+    is_red_flag = models.BooleanField(default=False)
 
     class Meta:
         db_table = "masterdata_symptom"

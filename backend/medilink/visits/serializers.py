@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from rest_framework import serializers
 
 from medilink.accounts.serializers import StrictSerializer
@@ -9,8 +11,10 @@ from medilink.visits.models import DutyState, PriorityClass, Stage, TicketState,
 
 
 class CheckInSerializer(StrictSerializer):
-    facility_patient_id = serializers.UUIDField()
-    service_id = serializers.UUIDField()
+    # S5: a booking brings its own patient and service (contract sprint-05 §3.3 R6)
+    booking_id = serializers.UUIDField(required=False, allow_null=True)
+    facility_patient_id = serializers.UUIDField(required=False)
+    service_id = serializers.UUIDField(required=False)
     source = serializers.ChoiceField(  # type: ignore[assignment]  # API field name
         choices=[VisitSource.WALK_IN, VisitSource.EMERGENCY], default=VisitSource.WALK_IN
     )
@@ -24,6 +28,15 @@ class CheckInSerializer(StrictSerializer):
         max_length=1000, required=False, allow_blank=True, allow_null=True
     )
     insurance_profile_id = serializers.UUIDField(required=False, allow_null=True)
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        if not attrs.get("booking_id") and not (
+            attrs.get("facility_patient_id") and attrs.get("service_id")
+        ):
+            raise serializers.ValidationError(
+                {"facility_patient_id": ["Choose a patient and a service, or a booking."]}
+            )
+        return attrs
 
 
 class TicketRowSerializer(serializers.Serializer):

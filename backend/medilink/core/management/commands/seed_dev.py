@@ -90,6 +90,9 @@ DEV_SEED_COMMANDS: list[str] = [
     # [S4]
     "seed_queue_dev",
     # [/S4]
+    # [S5]
+    "seed_booking_dev",
+    # [/S5]
 ]
 
 

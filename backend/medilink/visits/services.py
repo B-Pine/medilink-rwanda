@@ -182,13 +182,17 @@ def check_in(
     reason_text: str | None = None,
     insurance_profile_id: Any = None,
     key: Any = None,
+    booking: Any = None,
 ) -> tuple[Visit, Ticket, bool]:
-    """Walk-in or emergency check-in (FR-QUE-03). Idempotent: an open visit of the same patient
-    today, or the same key, returns the existing visit and ticket (`created = False`)."""
+    """Walk-in, emergency or booked check-in (FR-QUE-03; S5 adds `booking`). Idempotent: an open
+    visit of the same patient today, or the same key, returns the existing visit and ticket
+    (`created = False`)."""
     if not facility_patient.is_active:
         raise FieldRule("facility_patient_id", INACTIVE_RECORD)
     emergency = source == VisitSource.EMERGENCY
-    if not service.is_active or (not emergency and not service.allows_walk_in):
+    if booking is not None:
+        _check_booking(booking, facility_patient, service)
+    elif not service.is_active or (not emergency and not service.allows_walk_in):
         raise FieldRule("service_id", SERVICE_CLOSED)
     if emergency and not (priority_reason_code or reason_text):
         raise FieldRule("priority_reason_code", NEED_REASON)
@@ -198,11 +202,28 @@ def check_in(
 
     existing = _existing_visit(facility_id, facility_patient.patient_id, day, key)
     if existing:
+        if booking is not None:
+            _attach_booking(existing, booking, actor)
+        current = active_ticket(existing)
+        if existing.status == VisitStatus.REMOTE_PENDING and current is not None:
+            # A remote joiner checked in at reception counts as "I'm here" (S5)
+            from medilink.visits.remote import arrived
+
+            arrived(current, actor=actor)
+            existing.refresh_from_db()
         return existing, active_ticket(existing) or existing.tickets.latest("created_at"), False
 
     now = timezone.now()
     rank = RANK_EMERGENCY if emergency else RANK_PRIORITY if priority_class else RANK_NORMAL
-    stage = queue_settings(facility_id)["start_stage"]
+    settings_ = queue_settings(facility_id)
+    stage = settings_["start_stage"]
+    late = booking is not None and now > booking.starts_at + dt.timedelta(
+        minutes=settings_["grace_after_minutes"]
+    )
+    if booking is not None:
+        visit_source = BOOKING_SOURCE.get(booking.source, VisitSource.ONLINE_BOOKING)
+    else:
+        visit_source = VisitSource.EMERGENCY if emergency else VisitSource.WALK_IN
     try:
         with transaction.atomic():
             visit = Visit.objects.create(
@@ -210,7 +231,8 @@ def check_in(
                 facility_patient=facility_patient,
                 patient_id=facility_patient.patient_id,
                 service_date=day,
-                source=VisitSource.EMERGENCY if emergency else VisitSource.WALK_IN,
+                source=visit_source,
+                booking_id=booking.pk if booking is not None else None,
                 status=VisitStatus.ON_SITE,
                 first_service=service,
                 checked_in_at=now,
@@ -218,7 +240,8 @@ def check_in(
                 is_emergency=emergency,
                 priority_class=priority_class or None,
                 priority_reason_code=priority_reason_code or None,
-                insurance_profile_id=insurance_profile_id,
+                insurance_profile_id=insurance_profile_id
+                or (booking.insurance_profile_id if booking is not None else None),
                 check_in_key=key,
             )
             if reason_text:
@@ -230,6 +253,12 @@ def check_in(
                 )
                 visit.save(update_fields=["reason_encrypted"])
             ticket = _new_ticket(visit, service, stage, rank=rank, arrival_at=now)
+            if booking is not None:
+                # Late beyond the window: counts as a walk-in (contract sprint-05 §2.2)
+                ticket.slot_starts_at = None if late else booking.starts_at
+                ticket.assigned_membership_id = booking.membership_id
+                ticket.save(update_fields=["slot_starts_at", "assigned_membership", "updated_at"])
+                _copy_booking(visit, booking, actor)
     except IntegrityError:
         # A parallel check-in won the race: return its visit (S4-B4)
         existing = _existing_visit(facility_id, facility_patient.patient_id, day, key)
@@ -237,18 +266,95 @@ def check_in(
             raise
         return existing, active_ticket(existing) or existing.tickets.latest("created_at"), False
 
-    _event(ticket, "check_in", "", actor, reason_code=priority_reason_code or "")
+    booked = {"booking_id": booking.pk, "late": late} if booking is not None else {}
+    _event(ticket, "check_in", "", actor, reason_code=priority_reason_code or "", **booked)
     record(
         "visits.check_in",
         request=actor.request,
         facility_id=facility_id,
         object_type="visits.visit",
         object_id=visit.pk,
-        metadata={"source": visit.source, "service_id": str(service.pk), "rank": rank},
+        metadata={
+            "source": visit.source,
+            "service_id": str(service.pk),
+            "rank": rank,
+            **{k: str(v) for k, v in booked.items()},
+        },
     )
     _queue_changed(ticket)
     _visit_changed(visit)
     return visit, ticket, True
+
+
+BOOKING_SOURCE = {
+    "online": VisitSource.ONLINE_BOOKING,
+    "phone": VisitSource.PHONE_BOOKING,
+    "follow_up": VisitSource.FOLLOW_UP,
+    "referral": VisitSource.REFERRAL,
+    "rebooking": VisitSource.ONLINE_BOOKING,
+}
+NOT_TODAY = _("This booking is not for today.")
+BOOKING_CLOSED = _("This booking was cancelled or already used.")
+
+
+def _check_booking(booking: Any, facility_patient: FacilityPatient, service: Service) -> None:
+    from medilink.scheduling.models import BookingStatus
+
+    if booking.status not in (BookingStatus.CONFIRMED, BookingStatus.CHECKED_IN):
+        raise FieldRule("booking_id", BOOKING_CLOSED)
+    if booking.service_date != today():
+        raise FieldRule("booking_id", NOT_TODAY)
+    if booking.patient_id != facility_patient.patient_id or booking.service_id != service.pk:
+        raise FieldRule("booking_id", BOOKING_CLOSED)
+
+
+def _copy_booking(visit: Visit, booking: Any, actor: Actor) -> None:
+    """Symptoms and reason go with the patient into the visit; the booking becomes checked in."""
+    from medilink.patients.crypto.fields import decrypt
+    from medilink.scheduling.booking import Who, mark_checked_in
+    from medilink.visits.models import ReasonSymptom
+
+    ReasonSymptom.objects.bulk_create(
+        [
+            ReasonSymptom(
+                facility_id=visit.facility_id,
+                booking_id=booking.pk,
+                visit=visit,
+                patient_id=visit.patient_id,
+                symptom_id=row.symptom_id,
+                symptom_code=row.symptom_code,
+                symptom_label=row.symptom_label,
+                duration_days=row.duration_days,
+                severity=row.severity,
+                captured_at_stage=row.captured_at_stage,
+            )
+            for row in ReasonSymptom.objects.filter(booking_id=booking.pk, visit__isnull=True)
+        ]
+    )
+    if booking.reason_encrypted and not visit.reason_encrypted:
+        text = decrypt(
+            bytes(booking.reason_encrypted),
+            table="scheduling_booking",
+            column="reason_encrypted",
+            row_id=booking.pk,
+        )
+        visit.reason_encrypted = encrypt(
+            text, table="visits_visit", column="reason_encrypted", row_id=visit.pk
+        )
+        visit.save(update_fields=["reason_encrypted"])
+    if booking.status != "checked_in":
+        mark_checked_in(booking, visit.pk, Who(user=actor.user, membership=actor.membership))
+
+
+def _attach_booking(visit: Visit, booking: Any, actor: Actor) -> None:
+    """The patient is already here today (walked in first): that visit uses the booking."""
+    if booking.status == "checked_in" or visit.booking_id not in (None, booking.pk):
+        return
+    with transaction.atomic():
+        if visit.booking_id is None:
+            visit.booking_id = booking.pk
+            visit.save(update_fields=["booking_id", "updated_at"])
+        _copy_booking(visit, booking, actor)
 
 
 def _existing_visit(facility_id: Any, patient_id: Any, day: dt.date, key: Any) -> Visit | None:
@@ -293,29 +399,126 @@ def waiting(
     return qs.order_by("priority_rank", "arrival_at", "sequence")
 
 
+def _ratio(value: str) -> tuple[int, int]:
+    booked, walk_in = (int(x) for x in value.split(":"))
+    return max(booked, 1), max(walk_in, 1)
+
+
+def _interleave_state(
+    facility_id: Any, service_id: Any, stage: str, day: dt.date, ratio: str
+) -> tuple[bool, int]:
+    """Booked/walk-in interleave (S5, contract sprint-05 §2.2 Ordering, D-7): from today's last
+    calls of normal-rank tickets at this queue, so no state is stored. Returns (next is booked,
+    how many of that kind were already called in the current run)."""
+    booked_run, walk_in_run = _ratio(ratio)
+    recent = list(
+        Ticket.objects.filter(
+            facility_id=facility_id,
+            service_id=service_id,
+            stage=stage,
+            service_date=day,
+            called_at__isnull=False,
+            priority_rank=RANK_NORMAL,
+        )
+        .order_by("-called_at")
+        .values_list("slot_starts_at", flat=True)[: booked_run + walk_in_run]
+    )
+    if not recent:
+        return True, 0
+    last_booked = recent[0] is not None
+    run = 0
+    for slot_time in recent:
+        if (slot_time is not None) != last_booked:
+            break
+        run += 1
+    limit = booked_run if last_booked else walk_in_run
+    if run < limit:
+        return last_booked, run
+    return not last_booked, 0
+
+
+def is_eligible(ticket: Ticket, settings_: dict[str, Any], now: dt.datetime) -> bool:
+    """Call next may pick it: remote joiners must have arrived; booked patients wait until their
+    grace window opens (contract sprint-05 §2.2)."""
+    if ticket.is_remote and ticket.remote_checked_in_at is None:
+        return False
+    if ticket.slot_starts_at is not None:
+        opens = ticket.slot_starts_at - dt.timedelta(minutes=settings_["grace_before_minutes"])
+        return now >= opens
+    return True
+
+
+def calling_order(
+    facility_id: Any,
+    service_id: Any,
+    stage: str,
+    *,
+    membership_id: Any = None,
+    day: dt.date | None = None,
+) -> list[Ticket]:
+    """Waiting tickets in the order Call next takes them (S4 §2.2 extended by S5): emergency,
+    return and priority first (S4 rules); then booked patients by slot time interleaved with
+    walk-ins and remote joiners by arrival, at the facility's ratio. Booked patients early for
+    their window go after the others until it opens."""
+    day = day or today()
+    settings_ = queue_settings(facility_id)
+    now = timezone.now()
+    tickets = list(
+        waiting(
+            facility_id, service_id, stage, membership_id=membership_id, day=day
+        ).select_related("visit__patient", "service")
+    )
+
+    def own(t: Ticket) -> int:
+        return 0 if membership_id and t.assigned_membership_id == membership_id else 1
+
+    front = sorted(
+        (t for t in tickets if t.priority_rank < RANK_NORMAL),
+        key=lambda t: (t.priority_rank, own(t), t.arrival_at, t.sequence),
+    )
+    normal = [t for t in tickets if t.priority_rank >= RANK_NORMAL]
+    booked = sorted(
+        (t for t in normal if t.slot_starts_at is not None and is_eligible(t, settings_, now)),
+        key=lambda t: (own(t), t.slot_starts_at, t.sequence),
+    )
+    early = sorted(
+        (t for t in normal if t.slot_starts_at is not None and not is_eligible(t, settings_, now)),
+        key=lambda t: (t.slot_starts_at, t.sequence),
+    )
+    others = sorted(
+        (t for t in normal if t.slot_starts_at is None),
+        key=lambda t: (own(t), t.arrival_at, t.sequence),
+    )
+    booked_run, walk_in_run = _ratio(settings_["booked_ratio"])
+    take_booked, run = _interleave_state(
+        facility_id, service_id, stage, day, settings_["booked_ratio"]
+    )
+    mixed: list[Ticket] = []
+    while booked or others:
+        if (take_booked and booked) or not others:
+            mixed.append(booked.pop(0))
+            if take_booked:
+                run += 1
+                if run >= booked_run:
+                    take_booked, run = False, 0
+        else:
+            mixed.append(others.pop(0))
+            if not take_booked:
+                run += 1
+                if run >= walk_in_run:
+                    take_booked, run = True, 0
+    return front + mixed + early
+
+
 def position(ticket: Ticket) -> int:
     """People ahead of a waiting ticket in its queue (0 = next)."""
     if ticket.state != TicketState.WAITING:
         return 0
-    return (
-        Ticket.objects.filter(
-            facility_id=ticket.facility_id,
-            service_id=ticket.service_id,
-            stage=ticket.stage,
-            state=TicketState.WAITING,
-            service_date=ticket.service_date,
-        )
-        .filter(
-            Q(priority_rank__lt=ticket.priority_rank)
-            | Q(priority_rank=ticket.priority_rank, arrival_at__lt=ticket.arrival_at)
-            | Q(
-                priority_rank=ticket.priority_rank,
-                arrival_at=ticket.arrival_at,
-                sequence__lt=ticket.sequence,
-            )
-        )
-        .count()
+    order = calling_order(
+        ticket.facility_id, ticket.service_id, ticket.stage, day=ticket.service_date
     )
+    ids = [t.pk for t in order]
+    return ids.index(ticket.pk) if ticket.pk in ids else len(ids)
 
 
 # ---- call next and ticket actions --------------------------------------------------------------
@@ -355,11 +558,20 @@ def call_next(
         current = _serving(facility_id, membership_id)
         if current is not None:
             raise Conflict(ALREADY_SERVING)
-        ticket = (
-            waiting(facility_id, service_id, stage, membership_id=membership_id)
-            .select_for_update(skip_locked=True, of=("self",))
-            .first()
-        )
+        settings_ = queue_settings(facility_id)
+        now = timezone.now()
+        ticket = None
+        for candidate in calling_order(facility_id, service_id, stage, membership_id=membership_id):
+            if not is_eligible(candidate, settings_, now):
+                continue
+            ticket = (
+                Ticket.objects.select_for_update(skip_locked=True, of=("self",))
+                .filter(pk=candidate.pk, state=TicketState.WAITING)
+                .select_related("visit")
+                .first()
+            )
+            if ticket is not None:
+                break
         if ticket is None:
             return None
         ticket.state = TicketState.CALLED

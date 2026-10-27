@@ -28,3 +28,6 @@ export * from "./features/setup";
 export * from "./features/queue";
 export * from "./realtime";
 // [/S4]
+// [S5]
+export * from "./features/booking";
+// [/S5]

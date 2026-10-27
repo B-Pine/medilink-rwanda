@@ -14,6 +14,7 @@ import type { LanguageCode } from "../../types";
 import { FACILITIES } from "../data";
 import type { FeatureMockFactory } from "../features";
 import { fieldError, id, now, rule, s1, str } from "./s1-common";
+import { checkInMockBooking } from "./booking";
 import { MEMBERSHIP_BY_EMAIL, SETUP_IDS } from "./setup";
 
 /**
@@ -556,7 +557,11 @@ export const queueMocks: FeatureMockFactory = (context) => {
         const ok = staff(request, ["queue.operate"]);
         if ("error" in ok) return ok.error;
         const body = (await context.readJson(request)) ?? {};
-        const service = str(body.service_id);
+        const booked = body.booking_id ? checkInMockBooking(str(body.booking_id)) : null;
+        if (body.booking_id && !booked)
+          return context.errorResponse(404, "not_found", "Not found.");
+        if (booked) body.facility_patient_id = `booking-${str(body.booking_id)}`;
+        const service = booked ? booked.service_id : str(body.service_id);
         const emergency = body.source === "emergency";
         if ((emergency || body.priority_class) && !str(body.priority_reason_code))
           return context.errorResponse(422, "business_rule_violation", "Give a reason.", {
@@ -579,12 +584,14 @@ export const queueMocks: FeatureMockFactory = (context) => {
           id: id(),
           visit_id: `fp-${str(body.facility_patient_id)}`,
           patient_id: id(),
-          full_name: "Walk-in patient",
+          full_name: booked ? booked.name : "Walk-in patient",
           number: `${prefix}-${String(db.seq[service]).padStart(3, "0")}`,
           state: "waiting",
           stage: "consultation",
           service_id: service,
-          display_name: "New patient",
+          display_name: booked
+            ? `${booked.name.split(" ")[0]} ${booked.name.split(" ").at(-1)?.[0] ?? ""}.`
+            : "New patient",
           age_years: null,
           sex: null,
           flags: emergency

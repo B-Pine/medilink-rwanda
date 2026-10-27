@@ -29,6 +29,9 @@ import { createQueueApi } from "./features/queue";
 import { createSetupApi } from "./features/setup";
 import { createProfileApi } from "./features/profile";
 // [/S3 imports]
+// [S5 imports]
+import { createBookingApi } from "./features/booking";
+// [/S5 imports]
 // [S9 imports]
 // [/S9 imports]
 // [S2 imports]
@@ -133,6 +136,9 @@ export function createMediLinkApi(client: ApiClient) {
     // [S4]
     queue: createQueueApi(client),
     // [/S4]
+    // [S5]
+    booking: createBookingApi(client),
+    // [/S5]
   };
 }
 

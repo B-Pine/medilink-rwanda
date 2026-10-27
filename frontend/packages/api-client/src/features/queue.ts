@@ -96,8 +96,10 @@ export interface MyQueue {
 }
 
 export interface CheckInInput {
-  facility_patient_id: Uuid;
-  service_id: Uuid;
+  facility_patient_id?: Uuid;
+  service_id?: Uuid;
+  /** S5: check in a booking (its patient and service come with it). */
+  booking_id?: Uuid;
   source?: "walk_in" | "emergency";
   priority_class?: PriorityClass | null;
   priority_reason_code?: string | null;

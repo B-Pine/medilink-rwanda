@@ -83,7 +83,7 @@ flowchart TB
     OUT --> DOC[6 · Summary attached to the visit for the doctor]
 ```
 
-1. **Red-flag rules.** Written and signed off by clinicians, based on recognised guidance:
+1. **Red-flag rules.** Written and signed off by clinicians, based on recognised guidance (*deviation in P1:* S5a ships a provisional list of three red flags that only show the emergency notice, without clinical sign-off yet; S5 contract D-12, [#93](https://github.com/B-Pine/medilink-rwanda/issues/93)):
    - WHO IMCI danger signs for children (unable to drink or breastfeed, vomits everything, convulsions, lethargic or unconscious)
    - danger signs in pregnancy
    - adult emergency signs (chest pain with breathlessness, heavy bleeding, sudden weakness on one side, unconsciousness…)

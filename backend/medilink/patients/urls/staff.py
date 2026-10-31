@@ -17,6 +17,11 @@ urlpatterns = [
     ),
     path("<uuid:fp_id>/reveal/", v.RevealView.as_view(), name="staff-patients-reveal"),
     path(
+        "<uuid:fp_id>/access-reasons/",
+        v.AccessReasonView.as_view(),
+        name="staff-patients-access-reasons",
+    ),
+    path(
         "<uuid:fp_id>/insurance-profiles/",
         v.InsuranceListView.as_view(),
         name="staff-patients-insurance",

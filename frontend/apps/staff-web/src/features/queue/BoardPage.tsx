@@ -1,10 +1,4 @@
-import type {
-  FacilityPatientDetail,
-  PatientSummary,
-  PriorityClass,
-  QueueGroup,
-  TicketRow,
-} from "@medilink/api-client";
+import type { PriorityClass, QueueGroup, TicketRow } from "@medilink/api-client";
 import { newIdempotencyKey } from "@medilink/api-client";
 import {
   Alert,
@@ -12,7 +6,6 @@ import {
   cx,
   Dialog,
   EmptyState,
-  PersonSearch,
   QueueStateBadge,
   SelectField,
   SidePanel,
@@ -25,6 +18,7 @@ import {
   CalendarCheck,
   ClockCountdown,
   MegaphoneSimple,
+  Phone,
   Plus,
   Star,
   UsersThree,
@@ -32,16 +26,20 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router";
 
 import { useApi } from "../../app/services";
+import { PhoneBookingPanel, type PhoneBookingMode } from "../bookings";
 import { PageHeader } from "../../components/PageHeader";
-import { WalkInForm } from "../patients";
+import { PatientPicker } from "../patients";
 import { queueKeys, usePollInterval, useQueueSocket } from "./live";
+import { ExpectedList, MissedList } from "./ExpectedList";
 import { LiveBadge } from "./LiveIndicator";
 import {
   actionError,
   Flags,
   minutesSince,
+  ReasonDialog,
   useCan,
   useServiceNames,
   useTicketAction,
@@ -68,6 +66,19 @@ export function BoardPage() {
   const [filter, setFilter] = useState<string | null>(null);
   const [open, setOpen] = useState<TicketRow | null>(null);
   const [checkingIn, setCheckingIn] = useState(false);
+  const canBook = useCan("queue.operate");
+  const [params, setParams] = useSearchParams();
+  const [booking, setBooking] = useState<PhoneBookingMode | null>(null);
+  const bookingMode: PhoneBookingMode | null =
+    booking ?? (canBook && params.get("book") === "new" ? { kind: "new" } : null);
+  const closeBooking = () => {
+    setBooking(null);
+    if (params.has("book")) {
+      const next = new URLSearchParams(params);
+      next.delete("book");
+      setParams(next, { replace: true });
+    }
+  };
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -98,13 +109,21 @@ export function BoardPage() {
         description={t("queue.board.intro")}
         badges={<LiveBadge />}
         actions={
-          <Button onClick={() => setCheckingIn(true)} aria-keyshortcuts="N">
-            <Plus aria-hidden="true" weight="bold" />
-            {t("queue.board.checkIn")}
-            <kbd className="ml-1 rounded-sm border border-on-primary/40 px-1 font-sans text-caption">
-              {SHORTCUT_NEW}
-            </kbd>
-          </Button>
+          <>
+            {canBook && (
+              <Button variant="secondary" onClick={() => setBooking({ kind: "new" })}>
+                <Phone aria-hidden="true" weight="bold" />
+                {t("bookings.phone.open")}
+              </Button>
+            )}
+            <Button onClick={() => setCheckingIn(true)} aria-keyshortcuts="N">
+              <Plus aria-hidden="true" weight="bold" />
+              {t("queue.board.checkIn")}
+              <kbd className="ml-1 rounded-sm border border-on-primary/40 px-1 font-sans text-caption">
+                {SHORTCUT_NEW}
+              </kbd>
+            </Button>
+          </>
         }
       />
 
@@ -180,13 +199,11 @@ export function BoardPage() {
             <CalendarCheck aria-hidden="true" className="size-5 text-fg-muted" />
             {t("queue.board.expected")}
           </h2>
-          <EmptyState
-            size="inline"
-            icon={CalendarCheck}
-            title={t("queue.board.expectedEmptyTitle")}
-            description={t("queue.board.expectedEmpty")}
-            className="rounded-lg border border-dashed border-border"
+          <ExpectedList
+            serviceId={filter}
+            onNewTime={(b) => setBooking({ kind: "reschedule", booking: b })}
           />
+          <MissedList serviceId={filter} />
         </section>
 
         <section aria-labelledby="on-site" className="flex min-w-0 flex-col gap-4">
@@ -231,6 +248,7 @@ export function BoardPage() {
           services={board.data ? [...byService.keys()] : []}
         />
       )}
+      {bookingMode && <PhoneBookingPanel mode={bookingMode} onClose={closeBooking} />}
     </div>
   );
 }
@@ -531,105 +549,6 @@ function TicketPanel({
   );
 }
 
-function ReasonDialog({
-  title,
-  description,
-  onClose,
-  busy,
-  choice,
-  reasons,
-  onSubmit,
-  freeReason,
-  danger,
-}: {
-  title: string;
-  description?: string;
-  onClose: () => void;
-  busy: boolean;
-  choice: { label: string; options: [string, string][] } | null;
-  reasons: string[] | null;
-  onSubmit: (choice: string, reason: string, text: string) => void;
-  freeReason?: boolean;
-  danger?: boolean;
-}) {
-  const { t } = useTranslation();
-  const [picked, setPicked] = useState(choice?.options[0]?.[0] ?? "");
-  const [reason, setReason] = useState(reasons ? "" : "");
-  const [text, setText] = useState("");
-  const needsReason = Boolean(reasons) || freeReason;
-  const ready =
-    (!choice || picked) && (!needsReason || reason.trim()) && !(reason === "other" && !text.trim());
-  return (
-    <Dialog
-      open
-      onOpenChange={(o) => !o && onClose()}
-      title={title}
-      description={description}
-      closeLabel={t("queue.close")}
-      footer={
-        <>
-          <Button variant="secondary" onClick={onClose}>
-            {t("queue.cancel")}
-          </Button>
-          <Button
-            variant={danger ? "danger" : "primary"}
-            disabled={!ready || busy}
-            onClick={() => onSubmit(picked, reason, text)}
-          >
-            {t("queue.confirm")}
-          </Button>
-        </>
-      }
-    >
-      <div className="flex flex-col gap-4">
-        {choice && (
-          <SelectField
-            label={choice.label}
-            value={picked}
-            onChange={(e) => setPicked(e.target.value)}
-          >
-            {choice.options.map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </SelectField>
-        )}
-        {reasons && (
-          <SelectField
-            label={t("queue.reason")}
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-          >
-            <option value="">—</option>
-            {reasons.map((r) => (
-              <option key={r} value={r}>
-                {t(`queue.reasons.${r}`)}
-              </option>
-            ))}
-          </SelectField>
-        )}
-        {freeReason && (
-          <TextField
-            label={t("queue.reason")}
-            value={reason}
-            maxLength={40}
-            onChange={(e) => setReason(e.target.value)}
-          />
-        )}
-        {reason === "other" && (
-          <TextField
-            label={t("queue.reasonText")}
-            value={text}
-            maxLength={300}
-            onChange={(e) => setText(e.target.value)}
-          />
-        )}
-      </div>
-    </Dialog>
-  );
-}
-
 function CheckInDialog({ onClose, services }: { onClose: () => void; services: string[] }) {
   const { t } = useTranslation();
   const api = useApi();
@@ -641,19 +560,12 @@ function CheckInDialog({ onClose, services }: { onClose: () => void; services: s
   });
   const options = (catalogue.data?.results ?? []).filter((s) => s.is_active).map((s) => s.id);
   const serviceIds = options.length ? options : services;
-  const [mode, setMode] = useState<"find" | "new">("find");
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState<PatientSummary[] | null>(null);
   const [patient, setPatient] = useState<{ id: string; name: string } | null>(null);
   const [service, setService] = useState("");
   const [emergency, setEmergency] = useState(false);
   const [priority, setPriority] = useState("");
   const [reason, setReason] = useState("");
   const key = useRef(newIdempotencyKey());
-  const search = useMutation({
-    mutationFn: (value: string) => api.patients.search({ query: value }),
-    onSuccess: (data) => setResults(data.results),
-  });
   const checkIn = useMutation({
     mutationFn: () =>
       api.queue.checkIn(
@@ -668,8 +580,6 @@ function CheckInDialog({ onClose, services }: { onClose: () => void; services: s
       ),
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: queueKeys.all }),
   });
-  const chosen = (p: FacilityPatientDetail | PatientSummary) =>
-    setPatient({ id: p.facility_patient_id, name: p.full_name });
 
   if (checkIn.data) {
     return (
@@ -723,79 +633,7 @@ function CheckInDialog({ onClose, services }: { onClose: () => void; services: s
       }
     >
       {!patient ? (
-        <div className="flex flex-col gap-4">
-          <div className="flex gap-2" role="group" aria-label={t("queue.checkIn.title")}>
-            <Button
-              variant={mode === "find" ? "primary" : "secondary"}
-              aria-pressed={mode === "find"}
-              onClick={() => setMode("find")}
-            >
-              {t("queue.checkIn.find")}
-            </Button>
-            <Button
-              variant={mode === "new" ? "primary" : "secondary"}
-              aria-pressed={mode === "new"}
-              onClick={() => setMode("new")}
-            >
-              {t("queue.checkIn.new")}
-            </Button>
-          </div>
-          {mode === "find" ? (
-            <>
-              <PersonSearch
-                value={query}
-                onChange={setQuery}
-                onSearch={(value) => search.mutate(value)}
-                busy={search.isPending}
-                labels={{
-                  label: t("patients.search.label"),
-                  placeholder: t("patients.search.placeholder"),
-                  types: {
-                    medilink_number: t("patients.search.types.medilink_number"),
-                    national_id: t("patients.search.types.national_id"),
-                    phone: t("patients.search.types.phone"),
-                    file_number: t("patients.search.types.file_number"),
-                    name: t("patients.search.types.name"),
-                  },
-                  resultCount: (count) => t("patients.search.resultCount", { count }),
-                }}
-              />
-              {results && results.length === 0 && (
-                <p className="m-0 text-fg-secondary">{t("queue.checkIn.noMatch")}</p>
-              )}
-              {results && results.length > 0 && (
-                <ul className="m-0 flex list-none flex-col gap-1 p-0">
-                  {results.map((r) => (
-                    <li key={r.facility_patient_id}>
-                      <button
-                        type="button"
-                        onClick={() => chosen(r)}
-                        className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-md border border-border px-3 py-2 text-left hover:border-primary hover:bg-brand-subtle"
-                      >
-                        <span className="flex flex-col">
-                          <span className="font-semibold">{r.full_name}</span>
-                          <span className="text-body-sm text-fg-secondary">
-                            {[
-                              r.medilink_number,
-                              r.age_years !== null ? t("queue.age", { count: r.age_years }) : null,
-                            ]
-                              .filter(Boolean)
-                              .join(" · ")}
-                          </span>
-                        </span>
-                        <span className="text-body-sm font-semibold text-link">
-                          {t("queue.checkIn.choose")}
-                        </span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </>
-          ) : (
-            <WalkInForm onRegistered={chosen} />
-          )}
-        </div>
+        <PatientPicker onPicked={setPatient} />
       ) : (
         <div className="flex flex-col gap-4">
           <p className="m-0 text-h3 font-semibold">{patient.name}</p>

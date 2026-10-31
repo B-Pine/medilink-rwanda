@@ -271,5 +271,12 @@
     "searchFor": "Rechercher les patients « {{query}} »",
     "results": "Patients",
     "file": "Dossier {{number}}"
+  },
+  "picker": {
+    "mode": "Rechercher ou enregistrer le patient",
+    "find": "Rechercher",
+    "new": "Nouveau patient",
+    "noMatch": "Aucun patient trouvé. Enregistrez-le comme nouveau patient.",
+    "choose": "Choisir"
   }
 }

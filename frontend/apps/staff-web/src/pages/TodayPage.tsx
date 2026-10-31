@@ -1,4 +1,5 @@
 import { ImigongoPattern } from "@medilink/ui";
+import { dateFormat } from "@medilink/ui/i18n";
 import { CaretRight } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
@@ -12,9 +13,7 @@ import { navLabelKey, visibleNavItems } from "../layout/navigation";
 function kigali(language: string, options: Intl.DateTimeFormatOptions): string {
   const date = new Date();
   try {
-    return new Intl.DateTimeFormat(language, { ...options, timeZone: "Africa/Kigali" }).format(
-      date,
-    );
+    return dateFormat(language, { ...options, timeZone: "Africa/Kigali" }).format(date);
   } catch {
     return new Intl.DateTimeFormat("en", { ...options, timeZone: "Africa/Kigali" }).format(date);
   }

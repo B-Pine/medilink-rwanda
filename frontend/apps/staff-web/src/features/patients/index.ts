@@ -25,4 +25,5 @@ export const patientsFeature: FeatureRoutes = {
   commands: [patientCommands],
 };
 
+export { PatientPicker, type PickedPatient } from "./PatientPicker";
 export { WalkInForm } from "./WalkInForm";

@@ -1,0 +1,91 @@
+{
+  "phone": {
+    "open": "Fata gahunda kuri telefone",
+    "title": "Fata gahunda kuri telefone",
+    "rescheduleTitle": "Igihe gishya cya {{name}}",
+    "close": "Funga"
+  },
+  "steps": {
+    "progress": "Intambwe ya {{step}} kuri {{total}}",
+    "patient": "Umurwayi",
+    "slot": "Igihe",
+    "reason": "Impamvu",
+    "review": "Genzura wemeze"
+  },
+  "slot": {
+    "service": "Serivisi",
+    "doctor": "Muganga",
+    "anyDoctor": "Muganga uwo ari we wese",
+    "days": "Umunsi",
+    "times": "Igihe kiboneka",
+    "morning": "Mu gitondo",
+    "afternoon": "Nyuma ya saa sita",
+    "noTimes": "Nta gihe kiboneka uyu munsi. Hitamo undi munsi.",
+    "earlier": "Iminsi ibanza",
+    "later": "Iminsi ikurikira",
+    "taken": "Undi muntu amaze gufata iki gihe. Hitamo ikindi.",
+    "alternatives": "Ibihe biboneka hafi",
+    "loadError": "Ntibyashobotse kubona ibihe biboneka.",
+    "retry": "Ongera ugerageze",
+    "places_one": "Umwanya {{count}}",
+    "places_other": "Imyanya {{count}}",
+    "holdFailed": "Ntibyashobotse kubika iki gihe. Ongera ugerageze.",
+    "noServices": "Nta serivisi irakira gahunda. Umuyobozi w’ivuriro ashobora kubifungura muri Igenamiterere, Serivisi."
+  },
+  "hold": {
+    "holding": "Iki gihe kibitswe mu gihe cya {{time}}",
+    "expired": "Igihe cyarekuwe. Ongera uhitemo igihe.",
+    "holdingMinutes_one": "Iki gihe kibitswe mu gihe cy’umunota {{count}}.",
+    "holdingMinutes_other": "Iki gihe kibitswe mu minota {{count}}."
+  },
+  "reason": {
+    "symptoms": "Ikibazo ni ikihe?",
+    "symptomsHint": "Hitamo kugeza kuri 5. Bifasha muganga kwitegura.",
+    "redFlag": "Byihutirwa",
+    "redFlagAlert": "Bishobora kuba ibyihutirwa. Bwira umurwayi aze ubu cyangwa ahamagare 912.",
+    "text": "Ibisobanuro kuri muganga",
+    "phone": "Telefone yo kuvugana",
+    "phoneHint": "Yo kwibutsa no guhindura. Siga ubusa ukoreshe nimero iri mu idosiye.",
+    "phoneInvalid": "Andika nimero ya telefone yo mu Rwanda, urugero 0788 123 456."
+  },
+  "review": {
+    "patient": "Umurwayi",
+    "service": "Serivisi",
+    "when": "Ryari",
+    "doctor": "Muganga",
+    "symptoms": "Ibimenyetso",
+    "phone": "Telefone yo kuvugana",
+    "confirm": "Emeza gahunda",
+    "confirmReschedule": "Imura gahunda",
+    "failed": "Ntibyashobotse kubika gahunda.",
+    "stale": "Iyi gahunda yahinduwe n’undi muntu. Funga iki gice wongere ugifungure."
+  },
+  "done": {
+    "title": "Gahunda yemejwe",
+    "moved": "Gahunda yimuwe",
+    "code": "Kode ya gahunda",
+    "tell": "Soma kode ubwire umurwayi. Ayerekana iyo ageze.",
+    "another": "Fatira undi murwayi gahunda",
+    "finish": "Byarangiye"
+  },
+  "nav": {
+    "back": "Subira inyuma",
+    "next": "Komeza",
+    "change": "Hindura umurwayi"
+  },
+  "body": {
+    "general": "Rusange",
+    "respiratory": "Guhumeka",
+    "digestive": "Inda",
+    "nervous": "Umutwe",
+    "circulatory": "Umutima n’igituza",
+    "skin": "Uruhu",
+    "musculoskeletal": "Ingingo n’umugongo",
+    "dental": "Amenyo",
+    "eye": "Amaso",
+    "urinary": "Inkari"
+  },
+  "expected": {
+    "newTime": "Igihe gishya"
+  }
+}

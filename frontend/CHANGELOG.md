@@ -62,6 +62,65 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 ### Sprint 2 · Facility setup and staff
 
+- api-client `setup` ([#69](https://github.com/B-Pine/medilink-rwanda/pull/69)): profile,
+  catalogue, schedules, billing setup, team and invitation endpoints with MSW mocks.
+- ui: `WeekGrid` (sessions to scale, leave hatched, list view alternative), `TimeRangeField`,
+  `MoneyField` and `formatRwf`.
+- staff-web `setup`: `/setup` checklist with go-live behind step-up; `/settings` (profile,
+  services and rooms, hours with closures and a 4-week preview, rules generated from the section
+  schema, change history); doctor schedules with licence and cross-facility warnings, leave
+  approval and `/schedule/mine`; tariffs and insurer rules; staff invitations, roles, licence
+  attestation, MFA reset and deactivation; `/profile/clinician`; `/invite/:token`.
+- Today dashboard (design 04 §3) with feature cards (`FeatureRoutes.todayCards`); landing
+  sections (tracker showcase, records, trust points, FAQ).
+
+### Sprint 4 · Visits and the live queue
+
+- staff-web `queue` ([#74](https://github.com/B-Pine/medilink-rwanda/pull/74)): reception board
+  `/queue` (service chips, Now serving, On site in calling order with flags, side panel actions
+  with reasons, `N` check-in with the S3 walk-in form); doctor's My queue (duty status, Call next
+  on Space, current patient actions); queue reviews; display links with a QR code; waiting-room
+  display `/display/:token` (numbers and rooms, never names; highlight and chime; reduced
+  motion); one socket per tab with notify-then-fetch, live badge and an offline action queue
+  (FR-QUE-16); Today "On site now" card.
+- patient-web `tracker`: `/visits/:id` live tracker (ticket, progress dots, wait range, leave-by
+  time, stages, full-screen call with sound and vibration, wake lock, last known state offline)
+  and a home card.
+- ui: `TicketNumber`, `QueueStateBadge`, `QueueFlagChip`, `ProgressDots`.
+
+### Sprint 5a · Booking
+
+- patient-web `booking` ([#80](https://github.com/B-Pine/medilink-rwanda/pull/80)): facility
+  search with filters and the patient share by insurer, facility pages, the one-decision-per-screen
+  booking flow (who, what, when with hold timer and alternatives, reason, review) or joining
+  today's queue, upcoming visits with cancel and `.ics`; the landing search opens the results.
+- staff-web: the board's Expected list shows today's bookings with symptoms, booked check-in,
+  Late badges and a New time action; Missed today lists no-shows with a reasoned undo; phone
+  booking (`bookings` feature: side panel from the board, `/bookings/new` and the command
+  palette; find or register the patient, 7-day slot grid with doctor filter, hold countdown,
+  symptoms, contact phone, booking code).
+- ui: shared `SymptomPicker` (red-flag chips named for screen readers); `PatientPicker` shared by
+  check-in and phone booking.
+- api-client: booking module and mocks; `staff.reschedule()`, `NO_SHOW_REVERSAL_REASONS`; mocks
+  honour the slots `date` and enforce the reversal rules.
+
+### Design v2
+
+- patient-web app shell (design 07 §2): one header with profile switcher, language and account
+  menu; Home / Find care / My visits / Help as a bottom bar on phones; offline banner; Home,
+  Find care, My visits, Help and Settings (text size Normal / Large / Extra large, theme).
+- Chart kit in ui (`Sparkline`, `StatTile`, `TrendChart`, `HeatMap`, `LoadMeter`, each with a
+  screen-reader table); "Operations today" on Today and a `/reports` page for facility admins.
+- Platform overview with the applications pipeline and facilities by district; hero
+  illustration on the public home.
+
+### Fixed
+
+- Kinyarwanda day and month names in every browser: Chrome has no Kinyarwanda calendar data and
+  showed English names; all UI dates now go through `dateFormat()` in `@medilink/ui/i18n`.
+- Tests: React 19 builds `new FormData(form)` on submit; the test setup's Node FormData now
+  accepts a form (removes an unhandled error that failed the suite).
+
 ### Sprint 10 · Help center and support (part 1)
 
 ## [0.1.0] - 2026-10-17

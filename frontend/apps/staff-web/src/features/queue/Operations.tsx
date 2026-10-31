@@ -9,6 +9,7 @@ import {
   StatTile,
   TrendChart,
 } from "@medilink/ui";
+import { dateFormat } from "@medilink/ui/i18n";
 import {
   ArrowsDownUp,
   CaretRight,
@@ -54,7 +55,7 @@ function useDayLabel() {
   return (iso: string, style: "short" | "weekday" = "short") => {
     const date = new Date(`${iso}T00:00:00Z`);
     try {
-      return new Intl.DateTimeFormat(
+      return dateFormat(
         lang,
         style === "weekday"
           ? { weekday: "long", timeZone: "UTC" }
@@ -266,7 +267,7 @@ export function OperationsTodayCard() {
 
 /** /reports (analysis 13 §2): trends, waits and arrivals; aggregates only. */
 export function ReportsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const allowed = useCan("reports.view");
   const ops = useOperations(allowed);
   const label = useDayLabel();
@@ -274,7 +275,7 @@ export function ReportsPage() {
   const data = ops.data;
   const days = data?.trend ?? [];
   const weekdays = Array.from({ length: 6 }, (_, i) =>
-    new Intl.DateTimeFormat(undefined, { weekday: "short", timeZone: "UTC" }).format(
+    dateFormat(i18n.resolvedLanguage ?? "rw", { weekday: "short", timeZone: "UTC" }).format(
       new Date(Date.UTC(2026, 0, 5 + i)),
     ),
   );

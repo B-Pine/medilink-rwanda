@@ -12,7 +12,7 @@ Facilities onboard their own staff and run the whole visit electronically:
 - billing and receipts
 - disputes
 
-> Status: **Sprint 0 (Foundations) done** (`backend-v0.1.0`, `frontend-v0.1.0`); Wave 1 next: S1 (platform and onboarding), S3 (patients and identity) and S9 (notification engine), built in parallel from their [sprint contracts](docs/architecture/contracts/README.md). Analysis, design research, security and architecture are documented. Phase 1 is a web platform; frontend and backend are hosted separately. The mobile app, SMS, WhatsApp and USSD follow later.
+> Status: **S0 verified; S1–S4 and S5a (booking core) implemented**, not yet on staging ([#17](https://github.com/B-Pine/medilink-rwanda/issues/17)). Next: S5b, S9 (notifications) and S10 part 1 (help), following the [M1 completion plan](docs/superpowers/plans/2026-10-31-m1-completion-master-plan.md) and the [sprint contracts](docs/architecture/contracts/README.md). Analysis, design research, security and architecture are documented. Phase 1 is a web platform; frontend and backend are hosted separately. The mobile app, SMS, WhatsApp and USSD follow later.
 
 ## Documentation
 

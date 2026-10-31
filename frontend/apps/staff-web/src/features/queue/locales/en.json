@@ -70,6 +70,8 @@
     "patient_request": "Patient's request",
     "patient_left": "Patient left",
     "duplicate": "Duplicate ticket",
+    "patient_was_present": "The patient was here",
+    "facility_delay": "Delay at the facility",
     "other": "Other"
   },
   "actions": {
@@ -113,14 +115,25 @@
     "nowServing": "Now serving",
     "expected": "Expected",
     "expectedEmptyTitle": "No bookings yet",
-    "expectedEmpty": "Booked patients appear here before they arrive once online booking opens.",
+    "expectedEmpty": "Patients booked for today appear here until they arrive.",
     "onSite": "On site",
     "emptyTitle": "Nobody is waiting",
     "empty": "Check in the first patient of the day.",
     "nobodyWaiting": "Nobody waiting here.",
     "waitingCount_one": "{{count}} waiting",
     "waitingCount_other": "{{count}} waiting",
-    "newArrivalWait": "New arrival waits {{min}}–{{max}} min"
+    "newArrivalWait": "New arrival waits {{min}}–{{max}} min",
+    "expectedCheckIn": "Check in",
+    "expectedLate": "Late",
+    "expectedAnyDoctor": "Any doctor",
+    "expectedError": "Could not load today's bookings.",
+    "expectedCheckInError": "Could not check in this booking.",
+    "expectedRetry": "Try again",
+    "missed": "Missed today",
+    "missedHint": "Marked as no-shows. Undo if the patient was here or the delay was ours; the strike is removed.",
+    "undoNoShow": "Undo no-show",
+    "undoNoShowHelp": "The booking is closed and the patient's strike is removed.",
+    "undoNoShowError": "Could not undo this no-show."
   },
   "panel": {
     "service": "Service",
@@ -142,10 +155,6 @@
   },
   "checkIn": {
     "title": "Check in a patient",
-    "find": "Find a patient",
-    "new": "New patient",
-    "noMatch": "No patient found. Register them as a new patient.",
-    "choose": "Choose",
     "back": "Back",
     "submit": "Check in",
     "emergency": "Emergency",

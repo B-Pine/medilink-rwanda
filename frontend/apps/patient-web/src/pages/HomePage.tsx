@@ -9,6 +9,7 @@ import {
   type Icon,
 } from "@phosphor-icons/react";
 import { Alert, buttonClassName, ImigongoPattern } from "@medilink/ui";
+import { dateFormat } from "@medilink/ui/i18n";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
@@ -49,7 +50,7 @@ export function HomePage() {
   const { data: me } = usePatientMe();
   if (!me) return null;
   const now = new Date();
-  const today = new Intl.DateTimeFormat(i18n.resolvedLanguage ?? "rw", {
+  const today = dateFormat(i18n.resolvedLanguage ?? "rw", {
     weekday: "long",
     day: "numeric",
     month: "long",

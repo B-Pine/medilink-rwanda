@@ -375,6 +375,8 @@ function seed() {
     taken: taken?.id ?? null,
     holds: new Map<string, { slot: string; expires: number; staff: boolean }>(),
     bookings: [] as MockBooking[],
+    /** `Idempotency-Key` to booking id (B3, R3: a repeated request returns the same booking). */
+    keys: new Map<string, string>(),
   };
 }
 
@@ -656,6 +658,23 @@ export const bookingMocks: FeatureMockFactory = (context) => {
   };
 
   const strip = ({ account_patient: _a, ...b }: MockBooking): Booking => b;
+  const replay = (request: Request) => {
+    const key = request.headers.get("Idempotency-Key");
+    const done = key ? db.bookings.find((b) => b.id === db.keys.get(key)) : undefined;
+    return { key, done };
+  };
+  /**
+   * Reschedule checks in the backend's order (`scheduling/booking.py` reschedule): version (409),
+   * then the booking must still be confirmed and, for patients, inside the change window (422
+   * `cancel_closed`); only then is the hold used.
+   */
+  const rescheduleRule = (old: MockBooking, version: unknown, staff: boolean) => {
+    if (old.version !== version)
+      return context.errorResponse(409, "stale", "Someone else changed this booking.");
+    if (old.status !== "confirmed" || (!staff && Date.now() > Date.parse(old.change_until)))
+      return ruleError("cancel_closed", "This booking can't be changed any more.");
+    return null;
+  };
 
   checkInMockBooking = (bookingId) => {
     const b = db.bookings.find((x) => x.id === bookingId);
@@ -665,6 +684,19 @@ export const bookingMocks: FeatureMockFactory = (context) => {
       b.version += 1;
     }
     return { name: b.patient_display_name, service_id: b.service_id, slot_starts_at: b.starts_at };
+  };
+  remoteJoinMockService = (slug, serviceId) => {
+    const f = facility(slug);
+    const s = f?.services.find((x) => x.id === serviceId);
+    if (!f || !s) return null;
+    const known = Object.values(FACILITIES).find((x) => x.slug === f.slug);
+    return {
+      facility_id: known?.id ?? `facility-${f.slug}`,
+      facility_name: f.name,
+      service_id: s.id,
+      service_name_i18n: s.name_i18n,
+      remote_join: s.remote_join,
+    };
   };
 
   return {
@@ -843,6 +875,8 @@ export const bookingMocks: FeatureMockFactory = (context) => {
         await context.settle();
         const ok = patientOnly(request);
         if ("error" in ok) return ok.error;
+        const { key, done } = replay(request);
+        if (done) return HttpResponse.json(strip(done), { status: 201 });
         const body = (await context.readJson(request)) ?? {};
         const profile = ok.me.profiles.find((p) => p.patient_id === str(body.patient_id));
         if (!profile) return context.errorResponse(404, "not_found", "Not found.");
@@ -857,6 +891,7 @@ export const bookingMocks: FeatureMockFactory = (context) => {
         );
         if (made instanceof Response) return made;
         made.account_patient = true;
+        if (key) db.keys.set(key, made.id);
         return HttpResponse.json(strip(made), { status: 201 });
       }),
       http.get(`${api}/patient/bookings/:id/`, async ({ request, params }) => {
@@ -867,6 +902,19 @@ export const bookingMocks: FeatureMockFactory = (context) => {
         return b
           ? HttpResponse.json(strip(b))
           : context.errorResponse(404, "not_found", "Not found.");
+      }),
+      http.get(`${api}/patient/bookings/:id/calendar.ics`, async ({ request, params }) => {
+        await context.settle();
+        const ok = patientOnly(request);
+        if ("error" in ok) return ok.error;
+        const b = db.bookings.find((x) => x.id === params.id && x.account_patient);
+        if (!b) return context.errorResponse(404, "not_found", "Not found.");
+        return new HttpResponse(ics(b), {
+          headers: {
+            "Content-Type": "text/calendar; charset=utf-8",
+            "Content-Disposition": `attachment; filename="${b.booking_code}.ics"`,
+          },
+        });
       }),
       http.post(`${api}/patient/bookings/:id/cancel/`, async ({ request, params }) => {
         await context.settle();
@@ -891,8 +939,8 @@ export const bookingMocks: FeatureMockFactory = (context) => {
         const body = (await context.readJson(request)) ?? {};
         const old = db.bookings.find((x) => x.id === params.id && x.account_patient);
         if (!old) return context.errorResponse(404, "not_found", "Not found.");
-        if (old.version !== body.version)
-          return context.errorResponse(409, "stale", "Someone else changed this booking.");
+        const refused = rescheduleRule(old, body.version, false);
+        if (refused) return refused;
         const symptoms = old.symptoms.map((s) => ({ code: s.code }));
         old.status = "superseded";
         const made = confirm(
@@ -972,6 +1020,8 @@ export const bookingMocks: FeatureMockFactory = (context) => {
         await context.settle();
         const ok = staffOnly(request, ["queue.operate"]);
         if ("error" in ok) return ok.error;
+        const { key, done } = replay(request);
+        if (done) return HttpResponse.json(staffRow(done), { status: 201 });
         const body = (await context.readJson(request)) ?? {};
         const store = patientsStore();
         const record = store.records.find((r) => r.id === str(body.facility_patient_id));
@@ -985,6 +1035,7 @@ export const bookingMocks: FeatureMockFactory = (context) => {
           "phone",
         );
         if (made instanceof Response) return made;
+        if (key) db.keys.set(key, made.id);
         return HttpResponse.json(staffRow(made), { status: 201 });
       }),
       http.post(`${api}/staff/bookings/:id/reschedule/`, async ({ request, params }) => {
@@ -994,8 +1045,8 @@ export const bookingMocks: FeatureMockFactory = (context) => {
         const body = (await context.readJson(request)) ?? {};
         const old = db.bookings.find((x) => x.id === params.id);
         if (!old) return context.errorResponse(404, "not_found", "Not found.");
-        if (old.version !== body.version)
-          return context.errorResponse(409, "stale", "Someone else changed this booking.");
+        const refused = rescheduleRule(old, body.version, true);
+        if (refused) return refused;
         const symptoms = old.symptoms.map((x) => ({ code: x.code }));
         old.status = "superseded";
         const made = confirm(
@@ -1071,3 +1122,36 @@ export const bookingMocks: FeatureMockFactory = (context) => {
 export let checkInMockBooking: (
   bookingId: string,
 ) => { name: string; service_id: string; slot_starts_at: string } | null = () => null;
+
+/** Remote join (B8) for the S4 queue mock: the facility and service, or null when unknown. */
+export let remoteJoinMockService: (
+  slug: string,
+  serviceId: string,
+) => {
+  facility_id: string;
+  facility_name: string;
+  service_id: string;
+  service_name_i18n: Partial<Record<"rw" | "en" | "fr", string>>;
+  remote_join: boolean;
+} | null = () => null;
+
+const icsTime = (iso: string) => iso.replace(/[-:]/g, "").replace(/\.\d{3}/, "");
+
+/** B5 `calendar.ics`: one VEVENT in UTC; no patient data beyond the booking itself. */
+function ics(b: Booking): string {
+  return [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//MediLink Rwanda//Booking//EN",
+    "BEGIN:VEVENT",
+    `UID:${b.id}@medilink.rw`,
+    `DTSTAMP:${icsTime(new Date().toISOString())}`,
+    `DTSTART:${icsTime(b.starts_at)}`,
+    ...(b.ends_at ? [`DTEND:${icsTime(b.ends_at)}`] : []),
+    `SUMMARY:${b.service_name_i18n.en ?? "Visit"} - ${b.facility_name}`,
+    `DESCRIPTION:Booking code ${b.booking_code}`,
+    "END:VEVENT",
+    "END:VCALENDAR",
+    "",
+  ].join("\r\n");
+}

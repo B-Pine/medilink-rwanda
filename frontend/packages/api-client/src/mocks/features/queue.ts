@@ -14,13 +14,17 @@ import type { LanguageCode } from "../../types";
 import { FACILITIES } from "../data";
 import type { FeatureMockFactory } from "../features";
 import { fieldError, id, now, rule, s1, str } from "./s1-common";
-import { checkInMockBooking } from "./booking";
+import { checkInMockBooking, remoteJoinMockService } from "./booking";
 import { MEMBERSHIP_BY_EMAIL, SETUP_IDS } from "./setup";
 
 /**
  * S4 mocks (sprint-04 §6.3): today's queue at Kigali Clinic. General (G) and Pediatrics (P), six
  * waiting incl. one priority and one emergency, one called, one in service; Dr Keza on duty in
  * Room 1; display token `MOCK_DISPLAY_TOKEN`; patient Mukamana with an active ticket.
+ *
+ * S5 additions (sprint-05 §2.2): two remote joiners in General (one tapped "I'm here", one has
+ * not), remote join and "I'm here" for patients, reception's confirm arrival, and booked check-in
+ * with the grace window (later than slot + 15 min: `late`, queued as a walk-in).
  */
 export const MOCK_DISPLAY_TOKEN = "mock-display-token";
 const MOCK_PATIENT_ID = "9b2f1c3d-1111-4000-8000-000000000001";
@@ -29,7 +33,22 @@ interface MockTicket extends TicketRow {
   patient_id: string;
   full_name: string;
   started_at: string | null;
+  /** Kigali Clinic unless the patient joined another facility's queue from the phone. */
+  facility_id: string;
+  facility_name: string;
+  service_name_i18n: Partial<Record<LanguageCode, string>>;
+  /** Idempotency-Key of the remote join that created the ticket. */
+  join_key: string | null;
 }
+
+const KIGALI_GENERAL_I18N = {
+  en: "General consultation",
+  rw: "Kwisuzumisha rusange",
+  fr: "Consultation générale",
+};
+/** `queue.grace_after_minutes` (sprint-05 §2.2). */
+const GRACE_AFTER_MS = 15 * 60_000;
+const ACTIVE: TicketState[] = ["waiting", "called", "in_service", "on_hold"];
 
 const minutesAgo = (m: number) => new Date(Date.now() - m * 60_000).toISOString();
 
@@ -65,8 +84,17 @@ function seed() {
       service_point: null,
       step_out_until: null,
       position: null,
+      slot_starts_at: null,
+      late: false,
+      is_remote: false,
+      remote_arrival_claimed_at: null,
+      remote_arrival_confirmed_at: null,
       version: 1,
       started_at: null,
+      facility_id: FACILITIES.kigaliClinic.id,
+      facility_name: FACILITIES.kigaliClinic.name,
+      service_name_i18n: KIGALI_GENERAL_I18N,
+      join_key: null,
       ...extra,
     };
   };
@@ -95,6 +123,12 @@ function seed() {
       service_point: "Room 2",
     }),
     make(SETUP_IDS.sPed, "Mugisha Ivan", 3, "male", 20),
+    // S5 remote joiners: one tapped "I'm here" (reception has not confirmed), one not arrived
+    make(SETUP_IDS.sGen, "Uwera Diane", 29, "female", 6, {
+      is_remote: true,
+      remote_arrival_claimed_at: minutesAgo(2),
+    }),
+    make(SETUP_IDS.sGen, "Mugabo Jean", 52, "male", 4, { is_remote: true }),
   ];
   const duty: DutyRow[] = [
     {
@@ -178,8 +212,23 @@ export const queueMocks: FeatureMockFactory = (context) => {
         ).length
       : 0;
   const row = (t: MockTicket): TicketRow => {
-    const { patient_id: _p, full_name: _n, started_at: _s, ...rest } = t;
+    const {
+      patient_id: _p,
+      full_name: _n,
+      started_at: _s,
+      facility_id: _f,
+      facility_name: _fn,
+      service_name_i18n: _sn,
+      join_key: _k,
+      ...rest
+    } = t;
     return { ...rest, position: position(t) };
+  };
+  const atKigali = (t: MockTicket) => t.facility_id === FACILITIES.kigaliClinic.id;
+  const patientSession = (request: Request) => {
+    const lang = context.languageFrom(request);
+    const result = context.authenticatedPatient(lang);
+    return "error" in result ? { error: result.error } : { lang, me: result.me };
   };
   const estimate = (t: MockTicket | undefined): Estimate => {
     const onDuty = db.duty.filter((d) => d.state === "on_duty").length;
@@ -194,6 +243,35 @@ export const queueMocks: FeatureMockFactory = (context) => {
       max: Math.max(Math.ceil((minutes * 1.25) / 5) * 5, 5),
       status: db.duty.some((d) => d.state === "emergency") ? "emergency" : null,
       until: null,
+    };
+  };
+  /** PT1 row of the patient tracker. */
+  const tracker = (t: MockTicket): PatientVisit => {
+    const est = estimate(t);
+    const travel = db.travel.get(t.facility_id) ?? null;
+    return {
+      visit_id: t.visit_id,
+      patient_id: t.patient_id,
+      patient_display_name: t.full_name,
+      facility_id: t.facility_id,
+      facility_name: t.facility_name,
+      service_name_i18n: t.service_name_i18n,
+      ticket_number: t.number,
+      state: t.state,
+      stage: t.stage,
+      service_point: t.service_point,
+      ahead: position(t),
+      estimate: est,
+      leave_by:
+        travel !== null && est.min !== null && t.state === "waiting"
+          ? new Date(Date.now() + (est.min - travel - 10) * 60_000).toISOString()
+          : null,
+      travel_minutes: travel,
+      is_remote: t.is_remote,
+      remote_arrival_claimed_at: t.remote_arrival_claimed_at,
+      remote_arrival_confirmed_at: t.remote_arrival_confirmed_at,
+      version: t.version,
+      updated_at: now(),
     };
   };
   const event = (
@@ -332,7 +410,7 @@ export const queueMocks: FeatureMockFactory = (context) => {
         const keys = [
           ...new Set(
             db.tickets
-              .filter((t) => ["waiting", "called", "in_service", "on_hold"].includes(t.state))
+              .filter((t) => atKigali(t) && ACTIVE.includes(t.state))
               .map((t) => `${t.service_id}|${t.stage}`),
           ),
         ];
@@ -568,16 +646,18 @@ export const queueMocks: FeatureMockFactory = (context) => {
             fields: { priority_reason_code: ["Give a reason."] },
           });
         const existing = db.tickets.find(
-          (t) =>
-            t.visit_id === `fp-${str(body.facility_patient_id)}` &&
-            ["waiting", "called", "in_service", "on_hold"].includes(t.state),
+          (t) => t.visit_id === `fp-${str(body.facility_patient_id)}` && ACTIVE.includes(t.state),
         );
         if (existing)
           return HttpResponse.json({
             visit_id: existing.visit_id,
             created: false,
+            late: existing.late,
             ticket: row(existing),
           });
+        // Booked check-in (R6): inside slot + grace keeps the slot time; later is a walk-in.
+        const late =
+          booked !== null && Date.now() > Date.parse(booked.slot_starts_at) + GRACE_AFTER_MS;
         db.seq[service] = (db.seq[service] ?? 0) + 1;
         const prefix = service === SETUP_IDS.sPed ? "P" : "G";
         const ticket: MockTicket = {
@@ -606,13 +686,22 @@ export const queueMocks: FeatureMockFactory = (context) => {
           service_point: null,
           step_out_until: null,
           position: null,
+          slot_starts_at: booked && !late ? booked.slot_starts_at : null,
+          late,
+          is_remote: false,
+          remote_arrival_claimed_at: null,
+          remote_arrival_confirmed_at: null,
           version: 1,
           started_at: null,
+          facility_id: FACILITIES.kigaliClinic.id,
+          facility_name: FACILITIES.kigaliClinic.name,
+          service_name_i18n: KIGALI_GENERAL_I18N,
+          join_key: null,
         };
         db.tickets.push(ticket);
         event(ticket, "check_in", "", ok.me.full_name);
         return HttpResponse.json(
-          { visit_id: ticket.visit_id, created: true, ticket: row(ticket) },
+          { visit_id: ticket.visit_id, created: true, late, ticket: row(ticket) },
           { status: 201 },
         );
       }),
@@ -640,6 +729,23 @@ export const queueMocks: FeatureMockFactory = (context) => {
               ticket_number: tickets.find((t) => t.id === e.ticket_id)!.number,
             })),
         });
+      }),
+      // S5: reception confirms a remote patient is on site ("I'm here" is only the patient's claim)
+      http.post(`${api}/staff/visits/:visitId/confirm-arrival/`, async ({ request, params }) => {
+        await context.settle();
+        const ok = staff(request, ["queue.operate"]);
+        if ("error" in ok) return ok.error;
+        const t = db.tickets.find(
+          (x) => x.visit_id === params.visitId && atKigali(x) && ACTIVE.includes(x.state),
+        );
+        if (!t) return notFound(ok.lang);
+        if (!t.is_remote) return rule(context, ok.lang);
+        if (!t.remote_arrival_confirmed_at) {
+          t.remote_arrival_confirmed_at = now();
+          t.version += 1;
+          event(t, "remote_arrival_confirmed", t.state, ok.me.full_name);
+        }
+        return HttpResponse.json(row(t));
       }),
       http.get(`${api}/staff/duty-status/`, async ({ request }) => {
         await context.settle();
@@ -792,53 +898,105 @@ export const queueMocks: FeatureMockFactory = (context) => {
       }),
       http.get(`${api}/patient/visits/active/`, async ({ request }) => {
         await context.settle();
-        const lang = context.languageFrom(request);
-        const result = context.authenticatedPatient(lang);
-        if ("error" in result) return result.error;
-        const mine = db.tickets.filter(
-          (t) =>
-            t.patient_id === MOCK_PATIENT_ID &&
-            ["waiting", "called", "in_service", "on_hold"].includes(t.state),
-        );
-        const out: PatientVisit[] = mine.map((t) => {
-          const est = estimate(t);
-          const travel = db.travel.get(FACILITIES.kigaliClinic.id) ?? null;
-          return {
-            visit_id: t.visit_id,
-            patient_id: t.patient_id,
-            patient_display_name: t.full_name,
-            facility_id: FACILITIES.kigaliClinic.id,
-            facility_name: FACILITIES.kigaliClinic.name,
-            service_name_i18n: {
-              en: "General consultation",
-              rw: "Kwisuzumisha rusange",
-              fr: "Consultation générale",
-            },
-            ticket_number: t.number,
-            state: t.state,
-            stage: t.stage,
-            service_point: t.service_point,
-            ahead: position(t),
-            estimate: est,
-            leave_by:
-              travel !== null && est.min !== null && t.state === "waiting"
-                ? new Date(Date.now() + (est.min - travel - 10) * 60_000).toISOString()
-                : null,
-            travel_minutes: travel,
-            version: t.version,
-            updated_at: now(),
-          };
-        });
+        const ok = patientSession(request);
+        if ("error" in ok) return ok.error;
+        const mine = new Set(ok.me.profiles.map((p) => p.patient_id));
+        const out = db.tickets
+          .filter((t) => mine.has(t.patient_id) && ACTIVE.includes(t.state))
+          .map(tracker);
         return HttpResponse.json({ results: out });
+      }),
+      // B8 remote join (contract sprint-05 §3.2). The 11:00 cutoff is not simulated, so the mocks
+      // behave the same at any time of day; a service without remote join answers 422.
+      http.post(`${api}/patient/visits/remote-join/`, async ({ request }) => {
+        await context.settle();
+        const ok = patientSession(request);
+        if ("error" in ok) return ok.error;
+        const key = request.headers.get("Idempotency-Key");
+        const replayed = key ? db.tickets.find((t) => t.join_key === key) : undefined;
+        if (replayed) return HttpResponse.json(tracker(replayed));
+        const body = (await context.readJson(request)) ?? {};
+        const profile = ok.me.profiles.find((p) => p.patient_id === str(body.patient_id));
+        const service = remoteJoinMockService(str(body.facility_slug), str(body.service_id));
+        if (!profile || !service) return notFound(ok.lang);
+        if (!service.remote_join)
+          return context.errorResponse(
+            422,
+            "remote_closed",
+            "Joining from home is closed for this service today.",
+          );
+        const active = db.tickets.find(
+          (t) =>
+            t.patient_id === profile.patient_id &&
+            t.facility_id === service.facility_id &&
+            ACTIVE.includes(t.state),
+        );
+        if (active) return HttpResponse.json(tracker(active));
+        db.seq[service.service_id] = (db.seq[service.service_id] ?? 0) + 1;
+        const ticket: MockTicket = {
+          id: id(),
+          visit_id: id(),
+          patient_id: profile.patient_id,
+          full_name: profile.display_name,
+          number: `${service.service_id === SETUP_IDS.sPed ? "P" : "G"}-${String(db.seq[service.service_id]).padStart(3, "0")}`,
+          state: "waiting",
+          stage: "consultation",
+          service_id: service.service_id,
+          display_name: profile.display_name,
+          age_years: null,
+          sex: null,
+          flags: [],
+          priority_rank: 3,
+          arrival_at: now(),
+          called_at: null,
+          assigned_membership_id: null,
+          service_point: null,
+          step_out_until: null,
+          position: null,
+          slot_starts_at: null,
+          late: false,
+          is_remote: true,
+          remote_arrival_claimed_at: null,
+          remote_arrival_confirmed_at: null,
+          version: 1,
+          started_at: null,
+          facility_id: service.facility_id,
+          facility_name: service.facility_name,
+          service_name_i18n: service.service_name_i18n,
+          join_key: key,
+        };
+        db.tickets.push(ticket);
+        event(ticket, "remote_join", "", null);
+        return HttpResponse.json(tracker(ticket), { status: 201 });
+      }),
+      // B9 "I'm here": records the claim only; the ticket stays remote until reception confirms
+      http.post(`${api}/patient/visits/:visitId/arrived/`, async ({ request, params }) => {
+        await context.settle();
+        const ok = patientSession(request);
+        if ("error" in ok) return ok.error;
+        const mine = new Set(ok.me.profiles.map((p) => p.patient_id));
+        const t = db.tickets.find(
+          (x) =>
+            x.visit_id === params.visitId && mine.has(x.patient_id) && ACTIVE.includes(x.state),
+        );
+        if (!t) return notFound(ok.lang);
+        const body = (await context.readJson(request)) ?? {};
+        if (Number(body.version) !== t.version) return stale(ok.lang);
+        if (!t.is_remote || t.remote_arrival_confirmed_at) return rule(context, ok.lang);
+        if (!t.remote_arrival_claimed_at) {
+          t.remote_arrival_claimed_at = now();
+          t.version += 1;
+          event(t, "remote_arrival_claimed", t.state, null);
+        }
+        return HttpResponse.json(tracker(t));
       }),
       http.post(`${api}/patient/visits/:visitId/cancel/`, async ({ request, params }) => {
         await context.settle();
         const lang = context.languageFrom(request);
         const result = context.authenticatedPatient(lang);
         if ("error" in result) return result.error;
-        const t = db.tickets.find(
-          (x) => x.visit_id === params.visitId && x.patient_id === MOCK_PATIENT_ID,
-        );
+        const mine = new Set(result.me.profiles.map((p) => p.patient_id));
+        const t = db.tickets.find((x) => x.visit_id === params.visitId && mine.has(x.patient_id));
         if (!t) return notFound(lang);
         if (t.state !== "waiting") return rule(context, lang);
         t.state = "cancelled";

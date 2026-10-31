@@ -53,6 +53,16 @@ export interface TicketRow {
   service_point: string | null;
   step_out_until: string | null;
   position: number | null;
+  /** S5: slot time of a booked ticket in its grace window; null for walk-ins and late arrivals. */
+  slot_starts_at: string | null;
+  /** S5: a booked patient who arrived after the grace window; queued as a walk-in. */
+  late: boolean;
+  /** S5: joined today's queue from the phone (FR-SCH-09). */
+  is_remote: boolean;
+  /** S5: the patient tapped "I'm here" (intent only, reception confirms). */
+  remote_arrival_claimed_at: string | null;
+  /** S5: reception confirmed the remote patient is on site. */
+  remote_arrival_confirmed_at: string | null;
   version: number;
 }
 
@@ -110,6 +120,8 @@ export interface CheckInInput {
 export interface CheckInResult {
   visit_id: Uuid;
   created: boolean;
+  /** S5: a booking checked in after the grace window: queued as a walk-in ("offer a new time"). */
+  late: boolean;
   ticket: TicketRow;
 }
 
@@ -197,6 +209,10 @@ export interface PatientVisit {
   estimate: Estimate;
   leave_by: string | null;
   travel_minutes: number | null;
+  /** S5: joined from the phone; "I'm here" applies until reception confirms the arrival. */
+  is_remote: boolean;
+  remote_arrival_claimed_at: string | null;
+  remote_arrival_confirmed_at: string | null;
   version: number;
   updated_at: string;
 }
@@ -237,6 +253,8 @@ const S = "/api/v1/staff";
 export const queuePaths = {
   checkIn: `${S}/visits/check-in/`,
   visit: (id: Uuid) => `${S}/visits/${id}/`,
+  /** S5: reception confirms a remote patient is on site (after "I'm here" or at the desk). */
+  confirmArrival: (visitId: Uuid) => `${S}/visits/${visitId}/confirm-arrival/`,
   board: `${S}/queue/board/`,
   mine: `${S}/queue/mine/`,
   callNext: `${S}/queue/call-next/`,
@@ -267,6 +285,8 @@ export function createQueueApi(client: ApiClient) {
     checkIn: (body: CheckInInput, idempotencyKey?: string) =>
       client.post<CheckInResult>(queuePaths.checkIn, body, idem(idempotencyKey)),
     visit: (id: Uuid) => client.get<VisitDetail>(queuePaths.visit(id)),
+    confirmArrival: (visitId: Uuid) =>
+      client.post<TicketRow>(queuePaths.confirmArrival(visitId), {}),
     board: () => client.get<QueueBoard>(queuePaths.board),
     mine: () => client.get<MyQueue>(queuePaths.mine),
     /** `null` when nobody is waiting (204). */

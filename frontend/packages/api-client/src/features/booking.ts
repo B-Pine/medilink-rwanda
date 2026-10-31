@@ -269,7 +269,8 @@ export function createBookingApi(client: ApiClient) {
     bookings: (when: "upcoming" | "past" = "upcoming") =>
       client.get<{ results: Booking[] }>(`${bookingPaths.bookings}?when=${when}`),
     booking: (id: Uuid) => client.get<Booking>(bookingPaths.booking(id)),
-    icsUrl: (id: Uuid) => bookingPaths.ics(id),
+    /** Absolute URL of the `.ics` file (served by the API host, with the session cookie). */
+    icsUrl: (id: Uuid) => `${client.baseUrl}${bookingPaths.ics(id)}`,
     cancel: (id: Uuid, version: number) =>
       client.post<Booking>(bookingPaths.cancel(id), { version }),
     reschedule: (id: Uuid, version: number, holdId: Uuid) =>
@@ -278,8 +279,11 @@ export function createBookingApi(client: ApiClient) {
       body: { facility_slug: string; service_id: Uuid; patient_id: Uuid },
       idempotencyKey?: string,
     ) => client.post<PatientVisit>(bookingPaths.remoteJoin, body, idem(idempotencyKey)),
-    arrived: (visitId: Uuid) => client.post<PatientVisit>(bookingPaths.arrived(visitId), {}),
+    /** "I'm here" (B9): records the patient's claim; reception confirms the arrival. */
+    arrived: (visitId: Uuid, version: number) =>
+      client.post<PatientVisit>(bookingPaths.arrived(visitId), { version }),
     staff: {
+      /** R1. The Expected list is `{ date: today, status: "confirmed" }`; `no_show` lists no-shows. */
       bookings: (p: { date?: string; service_id?: Uuid; status?: string } = {}) =>
         client.get<{ count: number; results: StaffBooking[] }>(
           bookingPaths.staffBookings + query(p),

@@ -33,6 +33,9 @@ boto3>=1.35
 cryptography>=44.0
 # [/S3]
 # [S9]
+# Web push (contract sprint-09 §3.2): RFC 8291 payload encryption and RFC 8292 VAPID; brings
+# py-vapid and http-ece. The maintained reference library for Python.
+pywebpush>=2.0
 # [/S9]
 # [S2]
 # [/S2]

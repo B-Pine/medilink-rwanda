@@ -61,6 +61,9 @@ from medilink.patients import audit_actions as _s3  # noqa: E402
 extend_actions(_s3.ACTIONS)
 # [/S3]
 # [S9]
+from medilink.notifications import audit_actions as _s9  # noqa: E402
+
+extend_actions(_s9.ACTIONS)
 # [/S9]
 # [S2]
 from medilink.facilities import audit_actions as _s2  # noqa: E402

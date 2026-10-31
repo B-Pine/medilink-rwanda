@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     # [S3] patients and identity (extends medilink.patients)
     # [/S3]
     # [S9] notifications
+    "medilink.notifications",
     # [/S9]
     # [S2] facility setup and staff
     "medilink.facilities",

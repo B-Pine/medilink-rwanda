@@ -114,6 +114,36 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Sprint 9 · Notifications
 
+- New app `medilink.notifications` (contract sprint-09): notifications, delivery attempts,
+  preferences, push subscriptions, versioned templates, announcements (facility RLS plus a
+  platform-rows policy) and known devices. Permission `announcements.manage` (facility admins).
+- `notify(event, recipients, context, …)` for every later sprint: event registry autodiscovered
+  from `<app>/notification_events.py`; recipients (users, a patient's self/guardian/delegate
+  accounts with the `dependent` template variant, facility staff by permission or role, platform
+  admins); dedupe key, rate limit, channel preferences, quiet hours 21:00–06:00 (critical,
+  mandatory and important-for-today bypass them); rows written in the caller's transaction,
+  sockets and sends on commit; `NotifyError` for programming errors.
+- Content policy: clinical denylist (rw/en/fr, accent-insensitive) and no URLs in announcements,
+  checked at template sync, revision, announcement save/publish and every render.
+- Adapters: in-app (socket `notification.created`), web push (pywebpush: aes128gcm, VAPID,
+  allowlisted hosts re-checked before every send, no redirects, 404/410 revokes) and email
+  (plain text + autoescaped HTML in the recipient's language, no attachments or tracking).
+- Jobs: `send_attempt` (`SKIP LOCKED`), `dispatch_due` (quiet-hours release, retries, lost
+  tasks, expiry), `unread_fallback`, `cleanup` (2 years, 30 days, 180 days); retries with
+  backoff (critical 10/30/90 s, others 1/5/15 min, 4 attempts) then the critical fallback.
+- Security notices: new-device login (in-app + email; not the first device), MFA enrolled,
+  password changed (also revokes push subscriptions); patient logout revokes that session's
+  subscriptions; MFA reset and role changed are registered for S2 to call.
+- Endpoints: public web-push key; patient and staff inboxes (list, detail, unread count with
+  other facilities, read, read-all), preferences, push subscriptions; facility and platform
+  announcements (draft, edit, publish with fan-out by language, withdraw, 10 a day); platform
+  templates (revise, activate) and delivery log and stats; staff delivery log (`audit.view`).
+- WebSockets `/ws/v1/patient/notifications/` and `/ws/v1/staff/notifications/` (IDs only,
+  4401, 4429 above 30 client messages a minute).
+- Commands `generate_vapid_keys`, `send_test_notification`, `notifications_tick`; system checks
+  `notifications.E001`–`E004`, `W001`, `E010` (deploy). Dependency: pywebpush.
+- Fix: an invalid `?since=` on the delivery log answers 400 (not 500).
+
 ### Sprint 2 · Facility setup and staff
 
 - New apps `medilink.facilities`, `medilink.scheduling`, `medilink.billing`, all with forced

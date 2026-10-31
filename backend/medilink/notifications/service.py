@@ -154,12 +154,12 @@ def notify(
 
     from medilink.accounts.models import User
 
-    users = {u.pk: u for u in User.objects.filter(pk__in={r.user_id for r in resolved})}
+    users = {str(u.pk): u for u in User.objects.filter(pk__in={str(r.user_id) for r in resolved})}
     result = NotifyResult()
     now = timezone.now()
     created: list[tuple[Notification, list[DeliveryAttempt]]] = []
     for recipient in resolved:
-        user = users.get(recipient.user_id)
+        user = users.get(str(recipient.user_id))
         if user is None or not user.is_active:
             continue
         key = _dedupe_key(definition, dedupe_key, data)

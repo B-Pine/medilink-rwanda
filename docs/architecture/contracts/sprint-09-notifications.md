@@ -493,3 +493,17 @@ Wave 1 rule: S1 and S3 don't import `medilink.notifications`, and S9 imports nei
 | S9-I3 | After S1 merges: the platform composer picks facilities from S1's list and only their staff receive the announcement | FR-NOT-11 |
 | S9-I4 | Mailpit shows the new-device email in rw, en and fr, without clinical words, with a working link | FR-NOT-04, FR-NOT-09 |
 | S9-I5 | Only S9 modules and `[S9]` blocks changed; OpenAPI and lock files regenerated after rebasing on S1/S3; full suites green; catalogue S9 section and database design §5.12 updated | contracts README |
+
+## 10. Decisions and deviations (recorded during the build)
+
+| # | Decision | Contract text it changes | Why |
+|---|---|---|---|
+| S9-D1 | `notifications_notification.placeholder_values jsonb` stores the formatted placeholder values (C0–C2, the same data as `title`/`body`) | §2.1 notification columns | Each channel renders at send time, so retries, quiet-hours releases and template revisions use the stored values; `data` still holds IDs only |
+| S9-D2 | `notifications_preference.quiet_hours_enabled boolean` | §2.1 preference columns | "Off" is distinct from "no row yet" (defaults 21:00–06:00) |
+| S9-D3 | `notifications_notification.is_withdrawn boolean` | §2.2 withdraw ("inbox items flagged") | The flag the contract describes needs a column |
+| S9-D4 | Event types need at least two segments (`system.test`), not three | §3.1 naming | `system.test` is named in the contract itself |
+| S9-D5 | `Recipients.explicit(*recipients)` | §3.1 Recipients | Announcement fan-out groups already-resolved recipients by language so each gets the text in their own language |
+| S9-D6 | Generic words such as "results" and "prescription" are not on the denylist | §3.1 content policy | S6/S7 notices ("your results are ready", "your medicines are ready") are allowed; the list names conditions and specific findings |
+| S9-D7 | Settings are read from Django settings first, then the environment (`conf.py`); `.env.example` documents them | §3.2 configuration | `base.py` has no top-level `[S9]` block; tests override through settings |
+| S9-D8 | Push subscribe returns `422 business_rule_violation` while push is disabled (no VAPID keys) | §3.3 POST push-subscriptions | The client hides opt-in when `is_enabled` is false; the server refuses instead of storing an unusable row |
+| S9-D9 | Platform announcements reach active members of `live` and `setup` facilities | §3.1 "all active members" | Facilities in setup already have staff who need platform notices |

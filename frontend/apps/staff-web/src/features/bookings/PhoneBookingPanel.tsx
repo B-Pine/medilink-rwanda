@@ -8,6 +8,7 @@ import {
 } from "@medilink/api-client";
 import {
   Alert,
+  BODY_SYSTEM_ORDER,
   Button,
   PhoneField,
   SelectField,
@@ -22,34 +23,18 @@ import { useTranslation } from "react-i18next";
 
 import { useApi } from "../../app/services";
 import { PatientPicker, type PickedPatient } from "../patients";
+import { useLocalName } from "../setup/shared";
 import { SlotStep } from "./SlotStep";
 import { countdown, kigaliDate, slotDay, slotTime } from "./time";
 
 /** Query keys refreshed after a booking change (the board's Expected list lives under it). */
 export const bookingChangeKeys = [["queue", "expected"], ["bookings"]] as const;
 
-const BODY_ORDER = [
-  "general",
-  "respiratory",
-  "digestive",
-  "nervous",
-  "circulatory",
-  "skin",
-  "musculoskeletal",
-  "dental",
-  "eye",
-  "urinary",
-];
 const MAX_SYMPTOMS = 5;
 
 type Step = "patient" | "slot" | "reason" | "review" | "done";
 
 export type PhoneBookingMode = { kind: "new" } | { kind: "reschedule"; booking: StaffBooking };
-
-function pick(value: Record<string, string> | undefined, language: string): string {
-  if (!value) return "";
-  return value[language] ?? value.en ?? Object.values(value)[0] ?? "";
-}
 
 /** Seconds left on a hold, updated every second (design 07 §3.2: the hold is visible). */
 function useSecondsLeft(expiresAt: string | null): number | null {
@@ -79,6 +64,7 @@ export function PhoneBookingPanel({
   const api = useApi();
   const queryClient = useQueryClient();
   const language = i18n.resolvedLanguage ?? "en";
+  const localName = useLocalName();
   const moving = mode.kind === "reschedule" ? mode.booking : null;
 
   const steps: Step[] = moving ? ["slot", "review"] : ["patient", "slot", "reason", "review"];
@@ -107,7 +93,7 @@ export function PhoneBookingPanel({
   const chosenService = serviceId || bookable[0]?.id || "";
   const serviceLabel = (id: Uuid) => {
     const found = (services.data?.results ?? []).find((s) => s.id === id);
-    return found ? pick(found.name_i18n, language) : "";
+    return found ? localName(found.name_i18n) : "";
   };
 
   const catalogue = useQuery({
@@ -144,11 +130,11 @@ export function PhoneBookingPanel({
       refresh();
     },
     onError: (error) => {
-      if (isApiError(error) && (error.code === "hold_expired" || error.status === 409)) {
+      if (isApiError(error) && error.code === "hold_expired") {
         setHeld(null);
         setExpiredNote(true);
         setStep("slot");
-      }
+      } else if (isApiError(error) && error.status === 409) refresh(); // stale booking version
     },
   });
 
@@ -287,7 +273,10 @@ export function PhoneBookingPanel({
         {view === "slot" && (
           <>
             {(expiredNote || expired) && <Alert tone="warning">{t("bookings.hold.expired")}</Alert>}
-            {!moving && (
+            {!moving && services.isSuccess && bookable.length === 0 && (
+              <Alert tone="info">{t("bookings.slot.noServices")}</Alert>
+            )}
+            {!moving && bookable.length > 0 && (
               <SelectField
                 label={t("bookings.slot.service")}
                 value={chosenService}
@@ -298,7 +287,7 @@ export function PhoneBookingPanel({
               >
                 {bookable.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {pick(s.name_i18n, language)}
+                    {localName(s.name_i18n)}
                   </option>
                 ))}
               </SelectField>
@@ -328,11 +317,11 @@ export function PhoneBookingPanel({
               redFlagLabel={t("bookings.reason.redFlag")}
               items={symptomList.map((s) => ({
                 code: s.code,
-                label: pick(s.name_i18n, language),
+                label: localName(s.name_i18n),
                 group: s.body_system,
                 redFlag: s.is_red_flag,
               }))}
-              groups={BODY_ORDER.map((key) => ({
+              groups={BODY_SYSTEM_ORDER.map((key) => ({
                 key,
                 label: t(`bookings.body.${key}`, { defaultValue: key }),
               }))}
@@ -396,7 +385,7 @@ export function PhoneBookingPanel({
                 <>
                   <dt className="text-fg-muted">{t("bookings.review.symptoms")}</dt>
                   <dd className="m-0">
-                    {chosenSymptoms.map((s) => pick(s.name_i18n, language)).join(", ")}
+                    {chosenSymptoms.map((s) => localName(s.name_i18n)).join(", ")}
                   </dd>
                 </>
               )}
@@ -407,9 +396,13 @@ export function PhoneBookingPanel({
                 </>
               )}
             </dl>
-            {save.isError && !(isApiError(save.error) && save.error.status === 409) && (
+            {save.isError && (
               <Alert tone="danger" role="alert">
-                {isApiError(save.error) ? save.error.message : t("bookings.review.failed")}
+                {isApiError(save.error) && save.error.status === 409
+                  ? t("bookings.review.stale")
+                  : isApiError(save.error)
+                    ? save.error.message
+                    : t("bookings.review.failed")}
               </Alert>
             )}
           </>

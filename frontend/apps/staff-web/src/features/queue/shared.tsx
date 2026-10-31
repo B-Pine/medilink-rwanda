@@ -7,6 +7,7 @@ import {
   type TicketRow,
 } from "@medilink/api-client";
 import {
+  Alert,
   Button,
   Dialog,
   QueueFlagChip,
@@ -149,6 +150,7 @@ export function ReasonDialog({
   onSubmit,
   freeReason,
   danger,
+  error,
 }: {
   title: string;
   description?: string;
@@ -159,6 +161,8 @@ export function ReasonDialog({
   onSubmit: (choice: string, reason: string, text: string) => void;
   freeReason?: boolean;
   danger?: boolean;
+  /** Shown inside the dialog, so a failed submit is visible while it stays open. */
+  error?: string | null;
 }) {
   const { t } = useTranslation();
   const [picked, setPicked] = useState(choice?.options[0]?.[0] ?? "");
@@ -190,6 +194,11 @@ export function ReasonDialog({
       }
     >
       <div className="flex flex-col gap-4">
+        {error && (
+          <Alert tone="danger" role="alert">
+            {error}
+          </Alert>
+        )}
         {choice && (
           <SelectField
             label={choice.label}

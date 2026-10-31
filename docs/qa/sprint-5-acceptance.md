@@ -66,3 +66,4 @@ Evidence collected on 2026-10-31 (backend 514 passed on PostgreSQL; frontend 296
 3. A full endpoint × role authorisation table test (B2).
 4. Migration reversibility in CI (B16).
 5. S5b: disruptions, follow-ups, calendar feed, reception and doctor calendars.
+6. Reception cannot release a hold: the contract has `DELETE /patient/holds/{id}/` (B2) but no staff equivalent, so a hold taken during a phone call that is abandoned blocks the place until it expires (5 minutes). Add a staff release endpoint (contract change) and call it when the panel closes or the service changes.

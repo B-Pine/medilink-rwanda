@@ -28,7 +28,9 @@
     "loadError": "Ntibyashobotse kubona ibihe biboneka.",
     "retry": "Ongera ugerageze",
     "places_one": "Umwanya {{count}}",
-    "places_other": "Imyanya {{count}}"
+    "places_other": "Imyanya {{count}}",
+    "holdFailed": "Ntibyashobotse kubika iki gihe. Ongera ugerageze.",
+    "noServices": "Nta serivisi irakira gahunda. Umuyobozi w’ivuriro ashobora kubifungura muri Igenamiterere, Serivisi."
   },
   "hold": {
     "holding": "Iki gihe kibitswe mu gihe cya {{time}}",
@@ -55,7 +57,8 @@
     "phone": "Telefone yo kuvugana",
     "confirm": "Emeza gahunda",
     "confirmReschedule": "Imura gahunda",
-    "failed": "Ntibyashobotse kubika gahunda."
+    "failed": "Ntibyashobotse kubika gahunda.",
+    "stale": "Iyi gahunda yahinduwe n’undi muntu. Funga iki gice wongere ugifungure."
   },
   "done": {
     "title": "Gahunda yemejwe",

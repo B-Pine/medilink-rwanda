@@ -2,6 +2,20 @@ import { CheckCircle, Warning } from "@phosphor-icons/react";
 
 import { cx } from "../utils/cx";
 
+/** Display order of body systems (master data `Symptom.body_system`), shared by both apps. */
+export const BODY_SYSTEM_ORDER = [
+  "general",
+  "respiratory",
+  "digestive",
+  "nervous",
+  "circulatory",
+  "skin",
+  "musculoskeletal",
+  "dental",
+  "eye",
+  "urinary",
+] as const;
+
 export interface SymptomPickerItem {
   code: string;
   /** Label in the UI language. */

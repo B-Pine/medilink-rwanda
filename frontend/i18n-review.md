@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 2281.
+Keys: 2284.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -512,6 +512,8 @@ File: `apps/staff-web/src/features/bookings/locales/rw.json`
 | `slot.retry` | Ongera ugerageze | Try again | needs native-speaker review |
 | `slot.places_one` | Umwanya {{count}} | {{count}} place | needs native-speaker review |
 | `slot.places_other` | Imyanya {{count}} | {{count}} places | needs native-speaker review |
+| `slot.holdFailed` | Ntibyashobotse kubika iki gihe. Ongera ugerageze. | Could not hold this time. Try again. | needs native-speaker review |
+| `slot.noServices` | Nta serivisi irakira gahunda. Umuyobozi w’ivuriro ashobora kubifungura muri Igenamiterere, Serivisi. | No service takes bookings yet. A facility admin can turn on booking in Settings, Services. | needs native-speaker review |
 | `hold.holding` | Iki gihe kibitswe mu gihe cya {{time}} | Holding this time for {{time}} | needs native-speaker review |
 | `hold.expired` | Igihe cyarekuwe. Ongera uhitemo igihe. | The time was released. Choose a time again. | needs native-speaker review |
 | `hold.holdingMinutes_one` | Iki gihe kibitswe mu gihe cy’umunota {{count}}. | Holding this time for about {{count}} minute. | needs native-speaker review |
@@ -533,6 +535,7 @@ File: `apps/staff-web/src/features/bookings/locales/rw.json`
 | `review.confirm` | Emeza gahunda | Confirm booking | needs native-speaker review |
 | `review.confirmReschedule` | Imura gahunda | Move booking | needs native-speaker review |
 | `review.failed` | Ntibyashobotse kubika gahunda. | Could not save the booking. | needs native-speaker review |
+| `review.stale` | Iyi gahunda yahinduwe n’undi muntu. Funga iki gice wongere ugifungure. | This booking was changed by someone else. Close this panel and open it again. | needs native-speaker review |
 | `done.title` | Gahunda yemejwe | Booking confirmed | needs native-speaker review |
 | `done.moved` | Gahunda yimuwe | Booking moved | needs native-speaker review |
 | `done.code` | Kode ya gahunda | Booking code | needs native-speaker review |

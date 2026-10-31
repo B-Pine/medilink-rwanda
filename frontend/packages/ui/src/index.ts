@@ -139,6 +139,6 @@ export type { TextSize } from "./components/TextSizeToggle";
 export type { Load, StatTileProps, TrendSeries } from "./components/Charts";
 // [/design-v2]
 // [S5]
-export { SymptomPicker } from "./components/SymptomPicker";
+export { BODY_SYSTEM_ORDER, SymptomPicker } from "./components/SymptomPicker";
 export type { SymptomPickerItem, SymptomPickerProps } from "./components/SymptomPicker";
 // [/S5]

@@ -28,7 +28,9 @@
     "loadError": "Impossible de charger les horaires libres.",
     "retry": "Réessayer",
     "places_one": "{{count}} place",
-    "places_other": "{{count}} places"
+    "places_other": "{{count}} places",
+    "holdFailed": "Impossible de réserver cet horaire. Réessayez.",
+    "noServices": "Aucun service ne prend encore de réservations. Un administrateur peut l’activer dans Paramètres, Services."
   },
   "hold": {
     "holding": "Horaire réservé pendant {{time}}",
@@ -55,7 +57,8 @@
     "phone": "Téléphone de contact",
     "confirm": "Confirmer la réservation",
     "confirmReschedule": "Déplacer la réservation",
-    "failed": "Impossible d’enregistrer la réservation."
+    "failed": "Impossible d’enregistrer la réservation.",
+    "stale": "Cette réservation a été modifiée par quelqu’un d’autre. Fermez ce panneau et ouvrez-le à nouveau."
   },
   "done": {
     "title": "Réservation confirmée",

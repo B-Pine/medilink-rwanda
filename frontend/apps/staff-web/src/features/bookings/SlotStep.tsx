@@ -177,6 +177,11 @@ export function SlotStep({
         </Button>
       </div>
 
+      {hold.isError && !(isApiError(hold.error) && hold.error.status === 409) && (
+        <Alert tone="danger" role="alert">
+          {isApiError(hold.error) ? hold.error.message : t("bookings.slot.holdFailed")}
+        </Alert>
+      )}
       {taken && (
         <Alert tone="warning">
           <span className="flex flex-col gap-2">

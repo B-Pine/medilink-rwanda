@@ -13,6 +13,19 @@ import { actionError, ReasonDialog, useCan, useServiceNames } from "./shared";
 
 export const expectedKey = ["queue", "expected"] as const;
 
+/** Today's confirmed and no-show bookings in one request, shared by Expected and Missed today. */
+function useTodayBookings(enabled = true) {
+  const api = useApi();
+  const refetchInterval = usePollInterval();
+  const today = kigaliToday();
+  return useQuery({
+    queryKey: [...expectedKey, today],
+    queryFn: () => api.booking.staff.bookings({ date: today, status: "confirmed,no_show" }),
+    refetchInterval,
+    enabled,
+  });
+}
+
 /**
  * Expected (design 04 §3.1, contract S5 R1): today's confirmed bookings by slot time, until the
  * patient is checked in (R6). `serviceId` follows the board's service filter.
@@ -30,15 +43,8 @@ export function ExpectedList({
   const queryClient = useQueryClient();
   const serviceName = useServiceNames();
   const canCheckIn = useCan("queue.operate");
-  const refetchInterval = usePollInterval();
   const language = i18n.resolvedLanguage ?? "en";
-  const today = kigaliToday();
-
-  const bookings = useQuery({
-    queryKey: [...expectedKey, today],
-    queryFn: () => api.booking.staff.bookings({ date: today, status: "confirmed" }),
-    refetchInterval,
-  });
+  const bookings = useTodayBookings();
 
   const checkIn = useMutation({
     mutationFn: (booking: StaffBooking) =>
@@ -63,7 +69,7 @@ export function ExpectedList({
   }
 
   const rows = (bookings.data?.results ?? []).filter(
-    (booking) => !serviceId || booking.service_id === serviceId,
+    (booking) => booking.status === "confirmed" && (!serviceId || booking.service_id === serviceId),
   );
 
   if (bookings.isSuccess && rows.length === 0) {
@@ -155,17 +161,9 @@ export function MissedList({ serviceId }: { serviceId: string | null }) {
   const queryClient = useQueryClient();
   const serviceName = useServiceNames();
   const canUndo = useCan("queue.operate");
-  const refetchInterval = usePollInterval();
   const language = i18n.resolvedLanguage ?? "en";
-  const today = kigaliToday();
   const [undoing, setUndoing] = useState<StaffBooking | null>(null);
-
-  const missed = useQuery({
-    queryKey: [...expectedKey, "no_show", today],
-    queryFn: () => api.booking.staff.bookings({ date: today, status: "no_show" }),
-    refetchInterval,
-    enabled: canUndo,
-  });
+  const missed = useTodayBookings(canUndo);
 
   const undo = useMutation({
     mutationFn: (input: { booking: StaffBooking; reason: NoShowReversalReason; text: string }) =>
@@ -180,7 +178,7 @@ export function MissedList({ serviceId }: { serviceId: string | null }) {
   });
 
   const rows = (missed.data?.results ?? []).filter(
-    (booking) => !serviceId || booking.service_id === serviceId,
+    (booking) => booking.status === "no_show" && (!serviceId || booking.service_id === serviceId),
   );
   if (!canUndo || rows.length === 0) return null;
 
@@ -190,9 +188,6 @@ export function MissedList({ serviceId }: { serviceId: string | null }) {
         {t("queue.board.missed")}
       </h3>
       <p className="m-0 text-body-sm text-fg-muted">{t("queue.board.missedHint")}</p>
-      {undo.isError && (
-        <Alert tone="danger">{actionError(undo.error, t("queue.board.undoNoShowError"))}</Alert>
-      )}
       <ul
         aria-labelledby="missed-today"
         className="m-0 flex list-none flex-col divide-y divide-border rounded-lg border border-dashed border-border p-0"
@@ -223,8 +218,12 @@ export function MissedList({ serviceId }: { serviceId: string | null }) {
         <ReasonDialog
           title={t("queue.board.undoNoShow")}
           description={t("queue.board.undoNoShowHelp")}
-          onClose={() => setUndoing(null)}
+          onClose={() => {
+            setUndoing(null);
+            undo.reset();
+          }}
           busy={undo.isPending}
+          error={undo.isError ? actionError(undo.error, t("queue.board.undoNoShowError")) : null}
           choice={null}
           reasons={[...NO_SHOW_REVERSAL_REASONS]}
           onSubmit={(_choice, reason, text) =>

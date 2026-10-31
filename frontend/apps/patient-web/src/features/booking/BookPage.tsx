@@ -20,6 +20,7 @@ import {
 } from "@phosphor-icons/react";
 import {
   Alert,
+  BODY_SYSTEM_ORDER,
   Button,
   buttonClassName,
   Card,
@@ -44,19 +45,6 @@ import { useProfiles, useRelationshipLabel } from "../profile/ProfileLayout";
 import { day, isMorning, pick, rwf, time } from "./discovery";
 
 type Step = "who" | "what" | "when" | "reason" | "review";
-const BODY_ORDER = [
-  "general",
-  "respiratory",
-  "digestive",
-  "nervous",
-  "circulatory",
-  "skin",
-  "musculoskeletal",
-  "dental",
-  "eye",
-  "urinary",
-];
-
 export const bookingsKey = ["booking", "mine"] as const;
 
 function useCountdown(until: string | null): number {
@@ -395,7 +383,7 @@ function SymptomPicker({
         group: s.body_system,
         redFlag: s.is_red_flag,
       }))}
-      groups={BODY_ORDER.map((key) => ({
+      groups={BODY_SYSTEM_ORDER.map((key) => ({
         key,
         label: t(`booking.body.${key}`, { defaultValue: key }),
       }))}

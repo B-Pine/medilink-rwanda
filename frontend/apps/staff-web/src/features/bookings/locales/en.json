@@ -28,7 +28,9 @@
     "loadError": "Could not load free times.",
     "retry": "Try again",
     "places_one": "{{count}} place",
-    "places_other": "{{count}} places"
+    "places_other": "{{count}} places",
+    "holdFailed": "Could not hold this time. Try again.",
+    "noServices": "No service takes bookings yet. A facility admin can turn on booking in Settings, Services."
   },
   "hold": {
     "holding": "Holding this time for {{time}}",
@@ -55,7 +57,8 @@
     "phone": "Contact phone",
     "confirm": "Confirm booking",
     "confirmReschedule": "Move booking",
-    "failed": "Could not save the booking."
+    "failed": "Could not save the booking.",
+    "stale": "This booking was changed by someone else. Close this panel and open it again."
   },
   "done": {
     "title": "Booking confirmed",

@@ -263,8 +263,15 @@ export function PhoneBookingPanel({
         )}
 
         {held && secondsLeft !== null && view !== "slot" && view !== "done" && (
-          <p className="m-0 text-body-sm text-fg-secondary" aria-live="off">
-            {t("bookings.hold.holding", { time: countdown(secondsLeft) })}
+          <p className="m-0 text-body-sm text-fg-secondary">
+            <span aria-hidden="true" className="tabular-nums">
+              {t("bookings.hold.holding", { time: countdown(secondsLeft) })}
+            </span>
+            <span className="sr-only" role="status">
+              {t("bookings.hold.holdingMinutes", {
+                count: Math.max(1, Math.ceil(secondsLeft / 60)),
+              })}
+            </span>
           </p>
         )}
 

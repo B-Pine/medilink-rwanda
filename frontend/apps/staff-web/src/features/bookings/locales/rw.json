@@ -32,7 +32,9 @@
   },
   "hold": {
     "holding": "Iki gihe kibitswe mu gihe cya {{time}}",
-    "expired": "Igihe cyarekuwe. Ongera uhitemo igihe."
+    "expired": "Igihe cyarekuwe. Ongera uhitemo igihe.",
+    "holdingMinutes_one": "Iki gihe kibitswe mu gihe cy’umunota {{count}}.",
+    "holdingMinutes_other": "Iki gihe kibitswe mu minota {{count}}."
   },
   "reason": {
     "symptoms": "Ikibazo ni ikihe?",

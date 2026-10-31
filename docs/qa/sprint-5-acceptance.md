@@ -31,11 +31,11 @@ Evidence collected on 2026-10-31 (backend 514 passed on PostgreSQL; frontend 296
 
 | # | Check | Evidence | Verified by | Date | Result |
 |---|---|---|---|---|---|
-| S5-F1 | All §6 screens on mocks; role gating; `409`/`422` messages | Reception: `bookings.test.tsx` (four flows), `queue.test.tsx` (Expected, booked check-in, no-show reversal). Patient screens have no tests yet (Gaps) | | | Pending |
-| S5-F2 | Search: filters as chips, list and map, empty and error states, location consent | `patient-web/src/features/booking/SearchPage.tsx`; no test. The map (Leaflet) is not built (Gaps) | | | Gap |
-| S5-F3 | Booking flow: one decision per screen, steps, back keeps answers, hold timer, alternatives | `BookPage.tsx`; no patient test (Gaps). The same rules are tested on the reception side: "finds the patient, holds a time, records the reason and confirms" | | | Gap |
+| S5-F1 | All §6 screens on mocks; role gating; `409`/`422` messages | Reception: `bookings.test.tsx` (four flows), `queue.test.tsx` (Expected, booked check-in, no-show reversal). Patient: `patient-web/src/features/booking/booking.test.tsx` (search, booking flow, upcoming) | | | Pending |
+| S5-F2 | Search: filters as chips, list and map, empty and error states, location consent | "lists live facilities with the patient share, and filters with chips" (axe). Empty/error states and location consent untested; the map (Leaflet) is not built (Gaps) | | | Pending |
+| S5-F3 | Booking flow: one decision per screen, steps, back keeps answers, hold timer, alternatives | "one decision per screen: who, what, when, reason, review; then the booking code" (step indicator, hold countdown, review items of design 07 §3.2, axe), "back keeps the answers". "Just taken" alternatives and login return untested (Gaps) | | | Pending |
 | S5-F4 | Symptom picker: keyboard, screen reader, red flag | `SymptomPicker` in `packages/ui`: "groups chips in the given order and toggles them with aria-pressed" (red-flag name, axe) | | | Pending |
-| S5-F5 | My visits upcoming: cancel, reschedule, `.ics` | `Upcoming.tsx`; no test (Gaps) | | | Gap |
+| S5-F5 | My visits upcoming: cancel, reschedule, `.ics` | "lists the upcoming booking and cancels it after a confirmation"; `.ics` link checked on the booking success screen. Reschedule from My visits untested (Gaps) | | | Pending |
 | S5-F6 | Reception Expected list, booked check-in, late and no-show actions, phone booking | "lists who is on site in calling order…" (Expected rows), "checks in a booked patient from the Expected list", "undoes a no-show only with a reason", "finds the patient, holds a time, records the reason and confirms", "needs a valid Rwandan number…", "opens from /bookings/new", "moves an expected booking to a new time" | | | Pending |
 | S5-F7 | Text in rw, en, fr; axe on new screens; map code only on the map view | Locale parity (`tests/i18n.test.ts`); axe in the phone booking test and the SymptomPicker test. No map yet | | | Pending |
 
@@ -61,7 +61,7 @@ Evidence collected on 2026-10-31 (backend 514 passed on PostgreSQL; frontend 296
 
 ## Gaps and follow-ups
 
-1. Patient-web booking screens need tests: search (F2), booking flow including hold expiry and "just taken" alternatives (F3), upcoming visits with cancel, reschedule and `.ics` (F5).
+1. Patient-web booking tests still to add: search empty/error states and location consent (F2), hold expiry, "just taken" alternatives and login return (F3), reschedule from My visits (F5).
 2. Search map (Leaflet, loaded only on the map view) is not built (F2, F7).
 3. A full endpoint × role authorisation table test (B2).
 4. Migration reversibility in CI (B16).

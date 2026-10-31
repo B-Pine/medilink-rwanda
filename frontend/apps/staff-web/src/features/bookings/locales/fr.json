@@ -32,7 +32,9 @@
   },
   "hold": {
     "holding": "Horaire réservé pendant {{time}}",
-    "expired": "L’horaire a été libéré. Choisissez à nouveau."
+    "expired": "L’horaire a été libéré. Choisissez à nouveau.",
+    "holdingMinutes_one": "Horaire réservé encore environ {{count}} minute.",
+    "holdingMinutes_other": "Horaire réservé encore {{count}} minutes."
   },
   "reason": {
     "symptoms": "Quel est le problème ?",

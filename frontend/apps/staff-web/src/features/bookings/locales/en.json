@@ -32,7 +32,9 @@
   },
   "hold": {
     "holding": "Holding this time for {{time}}",
-    "expired": "The time was released. Choose a time again."
+    "expired": "The time was released. Choose a time again.",
+    "holdingMinutes_one": "Holding this time for about {{count}} minute.",
+    "holdingMinutes_other": "Holding this time for {{count}} minutes."
   },
   "reason": {
     "symptoms": "What is the problem?",

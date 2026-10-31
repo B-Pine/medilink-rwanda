@@ -40,7 +40,8 @@ describe("phone booking (S5-F6)", () => {
     await pickFirstTime(panel, user);
 
     expect(await within(panel).findByText("Step 3 of 4")).toBeInTheDocument();
-    expect(within(panel).getByText(/Holding this time for/)).toBeInTheDocument();
+    expect(within(panel).getByText(/^Holding this time for \d+:\d\d$/)).toBeInTheDocument();
+    expect(within(panel).getByRole("status")).toHaveTextContent(/minutes?\.$/);
     const next = within(panel).getByRole("button", { name: "Continue" });
     expect(next).toBeDisabled();
     await user.click(within(panel).getByRole("button", { name: "Fever" }));

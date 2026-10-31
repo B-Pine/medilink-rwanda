@@ -104,7 +104,7 @@ Use only synthetic data. Never enter real patient data, even locally ([SECURITY.
 | Symptom | Likely cause and fix |
 |---|---|
 | `migrate` can't connect | Docker isn't running or PostgreSQL isn't ready yet: `docker compose ps`, then retry |
-| Port 5433, 6379, 8000, 5173 or 5174 already in use | Stop the other process, or change the port in your local `.env` / `.env.local` |
+| Port 5433, 6379, 8000, 5173 or 5174 already in use | Stop the other process, or change the port in your local `.env` / `.env.local`. For PostgreSQL, copy `docker-compose.override.example.yml` to `docker-compose.override.yml` (git-ignored) and use port 5434 in `DATABASE_URL` |
 | CORS error in the browser | Use `http://localhost:…` everywhere (not `127.0.0.1`), so the origin matches the backend's CORS allowlist |
 | `403 csrf_failed` | The app must call `GET /api/v1/csrf/` first and send `X-CSRFToken`; check `CSRF_TRUSTED_ORIGINS` in `backend/.env` |
 | Logged out right after login | On plain http the `__Host-` cookie prefix can't be used; development settings drop it ([Sprint 0 contract](../architecture/03-sprint-0-contract.md) check B4) |

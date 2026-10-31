@@ -9,7 +9,7 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from medilink.authz.permissions import IsPlatformAdmin
+from medilink.authz.platform import PlatformAdmin
 from medilink.authz.stepup import RecentAuthRequired
 from medilink.core.pagination import DefaultPagination
 from medilink.patients import merge_requests as mr
@@ -216,7 +216,7 @@ def _platform_queryset() -> Any:
 
 
 class _PlatformMerge(PatientsAPIView):
-    permission_classes = [IsPlatformAdmin]
+    permission_classes = [PlatformAdmin]
 
     def merge(self, merge_id: Any) -> Merge:
         merge = _platform_queryset().filter(pk=merge_id).first()
@@ -257,7 +257,7 @@ class PlatformMergeDetailView(_PlatformMerge):
 
 
 class PlatformMergeApproveView(_PlatformMerge):
-    permission_classes = [IsPlatformAdmin, RecentAuthRequired()]
+    permission_classes = [PlatformAdmin, RecentAuthRequired()]
 
     @extend_schema(
         operation_id="platform_merge_requests_approve",
@@ -302,7 +302,7 @@ class PlatformMergeRejectView(_PlatformMerge):
 
 
 class PlatformMergeUndoView(_PlatformMerge):
-    permission_classes = [IsPlatformAdmin, RecentAuthRequired()]
+    permission_classes = [PlatformAdmin, RecentAuthRequired()]
 
     @extend_schema(
         operation_id="platform_merge_requests_undo",

@@ -13,7 +13,12 @@ OWNER_COMMANDS = frozenset(
 
 
 def main() -> None:
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.dev")
+    try:  # importing `config` already needs the settings module (config.celery)
+        from config.environment import require_settings_module
+
+        require_settings_module()
+    except RuntimeError as exc:
+        sys.exit(str(exc))
     if len(sys.argv) > 1 and sys.argv[1] in OWNER_COMMANDS:
         os.environ.setdefault("MEDILINK_DB_ROLE", "owner")
     try:

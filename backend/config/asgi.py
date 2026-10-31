@@ -6,11 +6,11 @@ the CORS allowlist) and are authenticated with the audience session cookie (secu
 Run:  uvicorn config.asgi:application --port 8000
 """
 
-import os
-
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.dev")
+from config.environment import require_settings_module
+
+require_settings_module()
 
 django_asgi_app = get_asgi_application()
 

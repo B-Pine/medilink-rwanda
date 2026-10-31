@@ -66,8 +66,8 @@ Always this shape, with the matching HTTP status:
 | 403 | `step_up_required` | Recent re-authentication needed |
 | 403 | `csrf_failed` | Missing or invalid CSRF token |
 | 404 | `not_found` | Missing **or not visible** (no existence leaks across facilities) |
-| 409 | `conflict` | Version mismatch, slot taken, duplicate action |
-| 422 | `business_rule_violation` | Valid input but not allowed by a rule (e.g. void own receipt) |
+| 409 | `conflict` | Version mismatch, slot taken, a unique value already taken, or the same action repeated (e.g. publish an announcement twice, call next while already serving) |
+| 422 | `business_rule_violation` | Valid input, but the resource's current state or a rule does not allow it (e.g. an illegal ticket transition, editing an announcement that is not a draft, void own receipt) |
 | 429 | `rate_limited` | With `Retry-After` |
 | 500 | `server_error` | Generic message only; details in logs |
 
@@ -76,15 +76,15 @@ Always this shape, with the matching HTTP status:
 - **Auth:** audience session cookie + `X-CSRFToken` header for POST/PUT/PATCH/DELETE. Clients send `credentials: "include"`.
 - **Deny by default:** every view declares a policy ([security 04](../security/04-authorization-and-tenant-isolation.md)).
 - **Request ID:** every response has `X-Request-ID` (echoed if the client sent a valid one).
-- **Idempotency:** POST actions with side effects (check-in, call next, record payment, dispense) accept `Idempotency-Key` (UUID). A repeat within 24 h returns the original result.
+- **Idempotency:** POST actions that create something (check-in, booking, registration, uploads, applications; later record payment and dispense) accept `Idempotency-Key` (UUID). The key is stored on the row the action creates (for example `visits_visit.check_in_key`), so a repeat returns the original result with no time limit. The generic `core_idempotency_key` store in the [database design](04-database-design.md) is not built (S1-D6, S3 D-11, S4 D-5). Actions that change state are protected by `version` and by the state machine instead: **call next** takes no key; it is atomic, and repeating it while the doctor already serves a patient returns `409` (S4 Q4).
 - **Optimistic concurrency:** mutable resources expose `version` (integer). Updates send it back; a mismatch returns `409 conflict` with the current resource.
 - **No sensitive data in URLs** (no national IDs, names or tokens in query strings, except one-time tokens in emailed links).
 - **Rate limits** per account and endpoint class (auth, search, verification) ([security 03](../security/03-identity-authentication-sessions.md) §6).
 
 ## 6. WebSockets
 
-- URL: `/ws/v1/staff/facilities/{facility_id}/queue/`, `/ws/v1/patient/tickets/{ticket_id}/`, `/ws/v1/display/{token}/`.
-- Envelope: `{ "type": "ticket.updated", "data": { "id": "…", "version": 7 }, "sent_at": "…" }`.
+- URL: `/ws/v1/staff/queue/` (the active facility comes from the session), `/ws/v1/patient/visits/` (the account's own and guarded profiles), `/ws/v1/display/{token}/` ([S4 contract](contracts/sprint-04-queue.md) §3); S9 adds `/ws/v1/staff/notifications/` and `/ws/v1/patient/notifications/`. No facility or patient ID is ever taken from the URL.
+- Envelope: a flat JSON object, `{ "type": "queue.changed", "service_id": "…", "stage": "…" }`: `type` plus IDs at the top level, no `data` wrapper (as built in S4; S4 D-10).
 - **Notify-then-fetch:** messages carry IDs and versions. Clients fetch details through REST, which applies authorisation.
 - The server closes the socket on logout, deactivation or loss of permission.
 

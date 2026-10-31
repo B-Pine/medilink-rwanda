@@ -29,7 +29,7 @@ request ─► authenticate ─► resolve active facility membership ─► pol
 | **Function-level** | Staff endpoints under `/api/v1/staff/...` require a staff membership; patient endpoints under `/api/v1/patient/...`; admin endpoints under `/api/v1/platform/...` require super admin + step-up. Routes are not shared across audiences. |
 | **IDs** | UUIDs (v7) as public identifiers, so they can't be enumerated. **Never relied on for security**; checks still apply. |
 | **Facility context** | The active facility comes from the session (set at facility switch), not from a request parameter the client can change silently |
-| **WebSocket subscriptions** | Joining a channel group (e.g. `facility:{id}:queue`) requires the same policy check as the REST equivalent. Group names never come from client input unchecked. |
+| **WebSocket subscriptions** | Joining a channel group (e.g. `queue.f{facility_id}`) requires the same policy check as the REST equivalent. Group names never come from client input unchecked. |
 | **Background tasks** | Celery tasks receive IDs plus the facility context, and run the same scoped queries |
 | **Display devices** | Token grants read-only access to "now serving" data for one facility / service. Cannot call any other endpoint. |
 

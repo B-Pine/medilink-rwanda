@@ -10,10 +10,10 @@ Sprints and requirements follow the [backend](../roadmap/backend.md) and [fronte
 |---|---|---|
 | [S0](#s0--foundations) | Foundations | Implemented (backend-v0.1.0) |
 | [S1](#s1--platform-and-onboarding) | Platform and onboarding | Implemented (#47); frontend #49, #55 |
-| [S2](#s2--facility-setup-and-staff) | Facility setup and staff | Planned |
+| [S2](#s2--facility-setup-and-staff) | Facility setup and staff | Implemented: backend #63, frontend #69. The [contract](../architecture/contracts/sprint-02-facility-setup.md) and the OpenAPI schema win over the rows below |
 | [S3](#s3--patients-and-identity) | Patients and identity | Implemented: backend #57, frontend #59 |
-| [S4](#s4--visits-and-the-live-queue) | Visits and the live queue | Planned |
-| [S5](#s5--booking-remote-join-and-calendars) | Booking, remote join and calendars | Planned |
+| [S4](#s4--visits-and-the-live-queue) | Visits and the live queue | Implemented: backend #73, frontend #74. The [contract](../architecture/contracts/sprint-04-queue.md) and the OpenAPI schema win over the rows below |
+| [S5](#s5--booking-remote-join-and-calendars) | Booking, remote join and calendars | S5a implemented (#80 and the Phase 1 PR); S5b planned. The [contract](../architecture/contracts/sprint-05-booking.md) and the OpenAPI schema win over the rows below |
 | [S6](#s6--clinical-record-and-history) | Clinical record and history | Planned |
 | [S7](#s7--pharmacy-and-documents) | Pharmacy and documents | Planned |
 | [S8](#s8--billing-and-payments) | Billing and payments | Planned |

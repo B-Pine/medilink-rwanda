@@ -99,11 +99,13 @@ def test_contract_errors_and_rollback(event: Any, django_capture_on_commit_callb
     user = UserFactory()
     spec = Recipients.users(user.pk, audience="patient")
     outside = mock.Mock(in_atomic_block=False)  # tests always run inside a transaction
-    with mock.patch(
-        "medilink.notifications.service.transaction.get_connection", return_value=outside
+    with (
+        mock.patch(
+            "medilink.notifications.service.transaction.get_connection", return_value=outside
+        ),
+        pytest.raises(NotifyError),
     ):
-        with pytest.raises(NotifyError):
-            notify(event.type, spec, _ctx())
+        notify(event.type, spec, _ctx())
     with transaction.atomic():
         with pytest.raises(NotifyError):
             notify("no.such.event", spec, _ctx())

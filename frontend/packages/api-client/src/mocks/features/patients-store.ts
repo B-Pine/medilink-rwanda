@@ -160,6 +160,11 @@ export function maskPhone(e164: string | null): string | null {
 
 export const mask = (last4: string) => `••••${last4}`;
 
+/** Like `consents.has_care_consent()`: the latest care record decides (consents are newest first). */
+export function hasCareConsent(patient: MockPatient): boolean {
+  return patient.consents.find((c) => c.kind === "care")?.granted ?? false;
+}
+
 export function ageYears(born: string | null): number | null {
   if (!born) return null;
   const birth = new Date(born);
@@ -203,6 +208,22 @@ const NAMES: [string, Sex, string, boolean][] = [
 
 const now = () => new Date().toISOString();
 
+/**
+ * `claims.complete()`: the claim merge moves the account's `self` link to the claimed record.
+ * Returns the new link, or null when the account has no active `self` link.
+ */
+export function completeClaim(store: PatientsStore, claim: MockClaim): MockLink | null {
+  const own = store.links.find(
+    (l) => l.account_email === claim.account_email && l.relationship === "self" && !l.revoked,
+  );
+  if (!own) return null;
+  claim.status = "completed";
+  own.revoked = true;
+  const link: MockLink = { ...own, id: crypto.randomUUID(), patient_id: claim.patient_id };
+  store.links.push(link);
+  return link;
+}
+
 export interface PatientsStore {
   patients: Map<string, MockPatient>;
   records: MockFacilityRecord[];
@@ -210,6 +231,8 @@ export interface PatientsStore {
   invites: MockInvite[];
   claims: MockClaim[];
   merges: (MergeRequest & { requested_by_email: string; facility_id: string | null })[];
+  /** PA7 `Idempotency-Key` replays: `${account email}:${key}` → link id. */
+  dependentKeys: Map<string, string>;
   /** Tests: approve and undo answer `step_up_required` while true. */
   requireStepUp: boolean;
   nextSeed: number;
@@ -257,6 +280,7 @@ export function createPatientsStore(): PatientsStore {
     invites: [],
     claims: [],
     merges: [],
+    dependentKeys: new Map(),
     requireStepUp: false,
     nextSeed: 100,
   };
@@ -341,6 +365,16 @@ export function createPatientsStore(): PatientsStore {
     actor_role: "receptionist",
     facility: { id: kigali, name: FACILITIES.kigaliClinic.name },
   });
+  // older entries, so access history spans more than one page (PA24 pages hold 25)
+  for (let day = 1; day <= 28; day++)
+    self.history.push({
+      id: `9b2f1c3d-4444-4000-8000-${String(day).padStart(12, "0")}`,
+      occurred_at: new Date(Date.now() - day * 86400_000).toISOString(),
+      action: "patients.health_profile.viewed",
+      actor_kind: "staff",
+      actor_role: "doctor",
+      facility: { id: kigali, name: FACILITIES.kigaliClinic.name },
+    });
   const child = blankPatient(CHILD_PATIENT_ID, 91, "Keza Uwase", "female", "2019-04-02", false);
   child.phone_e164 = null;
   const parent = blankPatient(

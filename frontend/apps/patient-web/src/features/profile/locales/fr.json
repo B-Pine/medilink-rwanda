@@ -157,7 +157,8 @@
       "patients.merge.executed": "a réuni deux de vos dossiers",
       "patients.merge.undone": "a séparé deux dossiers",
       "other": "a utilisé votre dossier"
-    }
+    },
+    "more": "Afficher les entrées plus anciennes"
   },
   "family": {
     "title": "Famille et partage",
@@ -218,7 +219,10 @@
     "receptionHint": "Présentez cette référence et une pièce d'identité à l'accueil. Elle est valable 7 jours.",
     "reference": "Référence de la demande",
     "done": "Votre dossier est maintenant lié à votre compte.",
-    "open": "Ouvrir mon profil"
+    "open": "Ouvrir mon profil",
+    "waiting": "En attente de la vérification de votre document à l'accueil. Cette page se met à jour toute seule.",
+    "ended": "Cette demande n'est plus ouverte. Recommencez pour réclamer votre dossier.",
+    "again": "Recommencer"
   },
   "numberHint": "Montrez ce numéro dans tout établissement pour retrouver vite votre dossier.",
   "sectionHints": {

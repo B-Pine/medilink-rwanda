@@ -32,7 +32,7 @@ import {
   TextField,
   toE164,
 } from "@medilink/ui";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, Navigate, useParams } from "react-router";
@@ -685,16 +685,19 @@ export function HealthPage() {
   );
 }
 
-/** /profile/:patientId/access-history: plain-language sentences from action codes. */
+/** /profile/:patientId/access-history: plain-language sentences from action codes, paged (PA24). */
 export function AccessHistoryPage() {
   const { t } = useTranslation();
   const api = useApi();
   const locale = useLocale();
   const { patientId = "" } = useParams();
-  const history = useQuery({
+  const history = useInfiniteQuery({
     queryKey: ["profile", "history", patientId],
-    queryFn: () => api.profile.accessHistory(patientId),
+    queryFn: ({ pageParam }) => api.profile.accessHistory(patientId, pageParam),
+    initialPageParam: 1,
+    getNextPageParam: (last, _all, page) => (last.next ? page + 1 : undefined),
   });
+  const items = history.data?.pages.flatMap((page) => page.results) ?? [];
   return (
     <ProfileLayout title={t("profile.sections.history")} back={useBack()}>
       <p className="m-0 text-fg-secondary">{t("profile.history.intro")}</p>
@@ -702,11 +705,9 @@ export function AccessHistoryPage() {
       {history.isError && (
         <Alert tone="danger">{errorText(history.error, t("profile.error"))}</Alert>
       )}
-      {history.data && history.data.results.length === 0 && (
-        <p className="m-0">{t("profile.history.none")}</p>
-      )}
+      {history.data && items.length === 0 && <p className="m-0">{t("profile.history.none")}</p>}
       <ol className="m-0 flex list-none flex-col gap-2 p-0">
-        {history.data?.results.map((item) => (
+        {items.map((item) => (
           <li key={item.id}>
             <Card padding="md">
               <p className="m-0">
@@ -729,6 +730,16 @@ export function AccessHistoryPage() {
           </li>
         ))}
       </ol>
+      {history.hasNextPage && (
+        <Button
+          variant="secondary"
+          className="self-start"
+          disabled={history.isFetchingNextPage}
+          onClick={() => void history.fetchNextPage()}
+        >
+          {t("profile.history.more")}
+        </Button>
+      )}
     </ProfileLayout>
   );
 }

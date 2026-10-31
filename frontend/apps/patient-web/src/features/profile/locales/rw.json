@@ -157,7 +157,8 @@
       "patients.merge.executed": "yahuje dosiye zawe ebyiri",
       "patients.merge.undone": "yatandukanyije dosiye ebyiri",
       "other": "yakoresheje dosiye yawe"
-    }
+    },
+    "more": "Erekana ibya mbere"
   },
   "family": {
     "title": "Umuryango no gusangiza",
@@ -218,7 +219,10 @@
     "receptionHint": "Erekana iyi nomero n'icyangombwa ku iyakira. Ikora iminsi 7.",
     "reference": "Nomero y'ubusabe",
     "done": "Dosiye yawe ubu ihujwe na konti yawe.",
-    "open": "Fungura umwirondoro wanjye"
+    "open": "Fungura umwirondoro wanjye",
+    "waiting": "Dutegereje ko iyakira igenzura inyandiko yawe. Uru rupapuro rwivugurura ubwarwo.",
+    "ended": "Iki cyifuzo ntikigikora. Ongera utangire usabe dosiye yawe.",
+    "again": "Ongera utangire"
   },
   "numberHint": "Erekana iyi nimero ku kigo icyo ari cyo cyose kugira ngo babone dosiye yawe vuba.",
   "sectionHints": {

@@ -11,6 +11,7 @@ import {
   PARENT_PATIENT_ID,
   SELF_PATIENT_ID,
 } from "./features/patients-store";
+import { patientsStore } from "./features/patients";
 import { createMockServer } from "./node";
 
 /** S3-F1: the S3 mocks follow the contract (sprint-03 §3), exercised through the client. */
@@ -250,5 +251,161 @@ describe("patient profile", () => {
     const done = await api.profile.verifyClaim(started.id, MOCK_CLAIM_CODE);
     expect(done.claim.status).toBe("completed");
     expect(done.profile.patient_id).toBe(aline!.patient_id);
+  });
+
+  it("R2: PATCH is strict and needs a version", async () => {
+    const self = await api.profile.get(SELF_PATIENT_ID);
+    const unknown = await failure(
+      api.profile.update(SELF_PATIENT_ID, {
+        version: self.version,
+        medilink_number: "ML-X",
+      } as unknown as Parameters<MediLinkApi["profile"]["update"]>[1]),
+    );
+    expect(unknown.status).toBe(400);
+    expect(unknown.fieldError("medilink_number")).toBe("Unknown field.");
+    const missing = await failure(
+      api.profile.update(SELF_PATIENT_ID, {
+        address: "Kigali",
+      } as unknown as Parameters<MediLinkApi["profile"]["update"]>[1]),
+    );
+    expect(missing.fieldError("version")).toBeTruthy();
+  });
+
+  it("R2: consents follow PA22/PA23", async () => {
+    const old = await failure(
+      api.profile.giveConsent({ kind: "terms", version: "2020-01", granted: true }),
+    );
+    expect(old.status).toBe(422);
+    const scoped = await failure(
+      api.profile.giveConsent({
+        kind: "privacy",
+        version: "2026-10",
+        granted: true,
+        patient_id: SELF_PATIENT_ID,
+      }),
+    );
+    expect(scoped.fieldError("patient_id")).toBeTruthy();
+    expect(
+      (
+        await failure(
+          api.profile.giveConsent({ kind: "marketing", version: "2026-10", granted: true }),
+        )
+      ).fieldError("kind"),
+    ).toBeTruthy();
+    const delegated = await failure(
+      api.profile.giveConsent({
+        kind: "care",
+        version: "2026-10",
+        granted: true,
+        patient_id: PARENT_PATIENT_ID,
+      }),
+    );
+    expect(delegated.status).toBe(403);
+    // care without patient_id is the account's own profile
+    const care = await api.profile.giveConsent({ kind: "care", version: "2026-10", granted: true });
+    expect(care.patient_id).toBe(SELF_PATIENT_ID);
+    await api.profile.giveConsent({ kind: "research", version: "2026-10", granted: true });
+    await api.profile.giveConsent({ kind: "care", version: "2026-10", granted: false });
+    const state = await api.profile.consents();
+    expect(state.current_versions).toMatchObject({ terms: "2026-10", care: "2026-10" });
+    expect(state.consents.find((c) => c.kind === "research")?.patient_id).toBeNull();
+    expect(
+      state.consents.find((c) => c.kind === "care" && c.patient_id === SELF_PATIENT_ID)?.granted,
+    ).toBe(false);
+    expect(state.history.every((c) => c.patient_id !== PARENT_PATIENT_ID)).toBe(true);
+    expect((await api.profile.get(SELF_PATIENT_ID)).has_care_consent).toBe(false);
+  });
+
+  it("R2: delegations show short holder names and real revoke rights", async () => {
+    const s = patientsStore();
+    s.links.push(
+      {
+        id: "11111111-1111-4000-8000-0000000000a1",
+        account_email: "eric@example.test",
+        holder_name: "Habimana Eric",
+        patient_id: SELF_PATIENT_ID,
+        relationship: "delegate",
+        granted_by: "patient@medilink.test",
+        granted_at: new Date().toISOString(),
+        revoked: false,
+      },
+      {
+        id: "11111111-1111-4000-8000-0000000000a2",
+        account_email: "aline@example.test",
+        holder_name: "Uwase Aline",
+        patient_id: CHILD_PATIENT_ID,
+        relationship: "guardian",
+        granted_by: "someone@example.test",
+        granted_at: new Date().toISOString(),
+        revoked: false,
+      },
+    );
+    const { granted, received } = await api.profile.delegations();
+    const eric = granted.find((g) => g.patient_id === SELF_PATIENT_ID)!;
+    expect(eric).toMatchObject({ holder_name: "Habimana E.", can_revoke: true });
+    const coGuardian = granted.find((g) => g.patient_id === CHILD_PATIENT_ID)!;
+    expect(coGuardian).toMatchObject({ holder_name: "Uwase A.", can_revoke: false });
+    const parent = received.find((r) => r.patient_id === PARENT_PATIENT_ID)!;
+    expect(parent.holder_name).toBe("Mukarugwiza A.");
+  });
+
+  it("R2: dependents replay on Idempotency-Key, check age and the 10-profile limit", async () => {
+    const child = {
+      relationship: "guardian" as const,
+      full_name: "Mugisha Ian",
+      sex: "male" as const,
+      date_of_birth: "2020-03-03",
+      consent_version: "2026-10",
+    };
+    const first = await api.profile.addDependent(child, "key-1");
+    const again = await api.profile.addDependent(child, "key-1");
+    expect(again.patient_id).toBe(first.patient_id);
+    expect((await api.profile.profiles()).results).toHaveLength(4);
+    const adult = await failure(
+      api.profile.addDependent({
+        ...child,
+        relationship: "delegate",
+        date_of_birth: "1960-01-01",
+        consent_attested: false,
+      }),
+    );
+    expect(adult.message).toMatch(/only with their agreement/);
+    const noBirth = await failure(api.profile.addDependent({ ...child, date_of_birth: null }));
+    expect(noBirth.fieldError("date_of_birth")).toMatch(/date of birth or an age/);
+    for (let i = 0; i < 6; i++)
+      await api.profile.addDependent({ ...child, full_name: `Child ${i}` }, `limit-${i}`);
+    const full = await failure(api.profile.addDependent({ ...child, full_name: "One more" }));
+    expect(full.status).toBe(422);
+    expect(full.message).toMatch(/up to 10 profiles/);
+  });
+
+  it("R2: the 5th wrong claim code fails the claim with its own message", async () => {
+    const started = await api.profile.requestClaim({
+      lookup: {
+        identifier: { kind: "national_id", issuing_country: "RW", value: "1198470012345678" },
+      },
+      date_of_birth: "1984-01-01",
+    });
+    expect(started.method).toBe("reception_check");
+    const s = patientsStore();
+    const claim = s.claims.find((c) => c.id === started.id)!;
+    Object.assign(claim, { status: "code_sent", method: "contact_code", code: MOCK_CLAIM_CODE });
+    for (let i = 0; i < 4; i++)
+      expect((await failure(api.profile.verifyClaim(started.id, "000000"))).status).toBe(400);
+    const fifth = await failure(api.profile.verifyClaim(started.id, "000000"));
+    expect(fifth.status).toBe(422);
+    expect(fifth.message).toMatch(/Too many wrong codes/);
+    expect((await api.profile.claim(started.id)).status).toBe("failed");
+  });
+
+  it("R2: access history is paginated, newest first", async () => {
+    const first = await api.profile.accessHistory(SELF_PATIENT_ID);
+    expect(first.count).toBe(29);
+    expect(first.results).toHaveLength(25);
+    expect(first.results[0]?.action).toBe("patients.record.viewed");
+    expect(first.next).not.toBeNull();
+    const second = await api.profile.accessHistory(SELF_PATIENT_ID, 2);
+    expect(second.results).toHaveLength(4);
+    expect(second.next).toBeNull();
   });
 });

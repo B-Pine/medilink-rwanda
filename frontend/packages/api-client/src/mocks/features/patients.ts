@@ -17,7 +17,9 @@ import type { FeatureMockFactory } from "../features";
 import type { MockContext } from "../handlers";
 import {
   ageYears,
+  completeClaim,
   createPatientsStore,
+  hasCareConsent,
   mask,
   maskPhone,
   medilinkNumber,
@@ -173,7 +175,7 @@ function detail(store: PatientsStore, record: MockFacilityRecord): FacilityPatie
     emergency_contact: contact ? { ...contact, phone_e164: maskPhone(contact.phone_e164)! } : null,
     reception_notes: record.reception_notes,
     identifiers: patient.identifiers.map(({ value: _value, ...rest }) => rest),
-    has_care_consent: patient.consents.some((c) => c.kind === "care" && c.granted),
+    has_care_consent: hasCareConsent(patient),
     open_claim_reference:
       store.claims.find((c) => c.patient_id === patient.id && c.status === "awaiting_reception")
         ?.reference ?? null,
@@ -486,8 +488,9 @@ export const patientsMocks: FeatureMockFactory = (context) => {
         if (found.matches.some((m) => m.level !== "possible") && !body.confirm_not_duplicate)
           return fieldConflict(context, lang, "non_field_errors", "duplicate");
         const seed = s.nextSeed++;
+        const patientId = crypto.randomUUID();
         const patient: MockPatient = {
-          id: crypto.randomUUID(),
+          id: patientId,
           medilink_number: medilinkNumber(seed),
           full_name: str(body.full_name).trim(),
           preferred_name: null,
@@ -510,7 +513,7 @@ export const patientsMocks: FeatureMockFactory = (context) => {
             {
               id: crypto.randomUUID(),
               kind: "care",
-              patient_id: null,
+              patient_id: patientId,
               granted: true,
               version: str(consent?.version),
               granted_at: new Date().toISOString(),
@@ -860,7 +863,8 @@ export const patientsMocks: FeatureMockFactory = (context) => {
             c.status === "awaiting_reception",
         );
         if (!claim) return notFound(auth.lang);
-        claim.status = "completed";
+        // the seeded claim's account has no mock profile; still mark it done for the staff flow
+        if (!completeClaim(store(), claim)) claim.status = "completed";
         const { account_email: _a, patient_id: _p, code: _c, attempts: _t, ...shown } = claim;
         return HttpResponse.json(shown);
       }),

@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 2201.
+Keys: 2207.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -1153,7 +1153,7 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `board.nowServing` | Abari kwakirwa | Now serving | needs native-speaker review |
 | `board.expected` | Abategerejwe | Expected | needs native-speaker review |
 | `board.expectedEmptyTitle` | Nta gahunda zirahari | No bookings yet | needs native-speaker review |
-| `board.expectedEmpty` | Abafashe gahunda bazagaragara hano mbere yo kugera, gufata gahunda kuri interineti nibitangira. | Booked patients appear here before they arrive once online booking opens. | needs native-speaker review |
+| `board.expectedEmpty` | Abafashe gahunda y’uyu munsi bagaragara hano kugeza bageze. | Patients booked for today appear here until they arrive. | needs native-speaker review |
 | `board.onSite` | Bari hano | On site | needs native-speaker review |
 | `board.emptyTitle` | Nta wutegereje | Nobody is waiting | needs native-speaker review |
 | `board.empty` | Andika umurwayi wa mbere w’uyu munsi. | Check in the first patient of the day. | needs native-speaker review |
@@ -1161,6 +1161,12 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `board.waitingCount_one` | {{count}} arategereje | {{count}} waiting | needs native-speaker review |
 | `board.waitingCount_other` | {{count}} barategereje | {{count}} waiting | needs native-speaker review |
 | `board.newArrivalWait` | Ugeze ubu ategereza iminota {{min}}–{{max}} | New arrival waits {{min}}–{{max}} min | needs native-speaker review |
+| `board.expectedCheckIn` | Andika ko yageze | Check in | needs native-speaker review |
+| `board.expectedLate` | Yakererewe | Late | needs native-speaker review |
+| `board.expectedAnyDoctor` | Muganga uwo ari we wese | Any doctor | needs native-speaker review |
+| `board.expectedError` | Ntibyashobotse kubona gahunda z’uyu munsi. | Could not load today's bookings. | needs native-speaker review |
+| `board.expectedCheckInError` | Ntibyashobotse kwandika ko uyu murwayi yageze. | Could not check in this booking. | needs native-speaker review |
+| `board.expectedRetry` | Ongera ugerageze | Try again | needs native-speaker review |
 | `panel.service` | Serivisi | Service | needs native-speaker review |
 | `panel.stage` | Intambwe | Stage | needs native-speaker review |
 | `panel.position` | Umwanya | Place | needs native-speaker review |

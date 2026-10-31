@@ -113,14 +113,20 @@
     "nowServing": "Abari kwakirwa",
     "expected": "Abategerejwe",
     "expectedEmptyTitle": "Nta gahunda zirahari",
-    "expectedEmpty": "Abafashe gahunda bazagaragara hano mbere yo kugera, gufata gahunda kuri interineti nibitangira.",
+    "expectedEmpty": "Abafashe gahunda y’uyu munsi bagaragara hano kugeza bageze.",
     "onSite": "Bari hano",
     "emptyTitle": "Nta wutegereje",
     "empty": "Andika umurwayi wa mbere w’uyu munsi.",
     "nobodyWaiting": "Nta wutegereje hano.",
     "waitingCount_one": "{{count}} arategereje",
     "waitingCount_other": "{{count}} barategereje",
-    "newArrivalWait": "Ugeze ubu ategereza iminota {{min}}–{{max}}"
+    "newArrivalWait": "Ugeze ubu ategereza iminota {{min}}–{{max}}",
+    "expectedCheckIn": "Andika ko yageze",
+    "expectedLate": "Yakererewe",
+    "expectedAnyDoctor": "Muganga uwo ari we wese",
+    "expectedError": "Ntibyashobotse kubona gahunda z’uyu munsi.",
+    "expectedCheckInError": "Ntibyashobotse kwandika ko uyu murwayi yageze.",
+    "expectedRetry": "Ongera ugerageze"
   },
   "panel": {
     "service": "Serivisi",

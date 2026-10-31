@@ -37,6 +37,7 @@ import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
 import { WalkInForm } from "../patients";
 import { queueKeys, usePollInterval, useQueueSocket } from "./live";
+import { ExpectedList } from "./ExpectedList";
 import { LiveBadge } from "./LiveIndicator";
 import {
   actionError,
@@ -180,13 +181,7 @@ export function BoardPage() {
             <CalendarCheck aria-hidden="true" className="size-5 text-fg-muted" />
             {t("queue.board.expected")}
           </h2>
-          <EmptyState
-            size="inline"
-            icon={CalendarCheck}
-            title={t("queue.board.expectedEmptyTitle")}
-            description={t("queue.board.expectedEmpty")}
-            className="rounded-lg border border-dashed border-border"
-          />
+          <ExpectedList serviceId={filter} />
         </section>
 
         <section aria-labelledby="on-site" className="flex min-w-0 flex-col gap-4">

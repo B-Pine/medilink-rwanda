@@ -113,14 +113,20 @@
     "nowServing": "Now serving",
     "expected": "Expected",
     "expectedEmptyTitle": "No bookings yet",
-    "expectedEmpty": "Booked patients appear here before they arrive once online booking opens.",
+    "expectedEmpty": "Patients booked for today appear here until they arrive.",
     "onSite": "On site",
     "emptyTitle": "Nobody is waiting",
     "empty": "Check in the first patient of the day.",
     "nobodyWaiting": "Nobody waiting here.",
     "waitingCount_one": "{{count}} waiting",
     "waitingCount_other": "{{count}} waiting",
-    "newArrivalWait": "New arrival waits {{min}}–{{max}} min"
+    "newArrivalWait": "New arrival waits {{min}}–{{max}} min",
+    "expectedCheckIn": "Check in",
+    "expectedLate": "Late",
+    "expectedAnyDoctor": "Any doctor",
+    "expectedError": "Could not load today's bookings.",
+    "expectedCheckInError": "Could not check in this booking.",
+    "expectedRetry": "Try again"
   },
   "panel": {
     "service": "Service",

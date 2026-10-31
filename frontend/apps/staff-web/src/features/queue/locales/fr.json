@@ -113,14 +113,20 @@
     "nowServing": "En cours",
     "expected": "Attendus",
     "expectedEmptyTitle": "Pas encore de rendez-vous",
-    "expectedEmpty": "Les patients avec rendez-vous apparaîtront ici avant leur arrivée quand la réservation en ligne ouvrira.",
+    "expectedEmpty": "Les patients ayant réservé pour aujourd’hui s’affichent ici jusqu’à leur arrivée.",
     "onSite": "Sur place",
     "emptyTitle": "Personne n’attend",
     "empty": "Enregistrez le premier patient de la journée.",
     "nobodyWaiting": "Personne n’attend ici.",
     "waitingCount_one": "{{count}} en attente",
     "waitingCount_other": "{{count}} en attente",
-    "newArrivalWait": "Un nouvel arrivant attend {{min}}–{{max}} min"
+    "newArrivalWait": "Un nouvel arrivant attend {{min}}–{{max}} min",
+    "expectedCheckIn": "Enregistrer l’arrivée",
+    "expectedLate": "En retard",
+    "expectedAnyDoctor": "N’importe quel médecin",
+    "expectedError": "Impossible de charger les réservations du jour.",
+    "expectedCheckInError": "Impossible d’enregistrer l’arrivée pour cette réservation.",
+    "expectedRetry": "Réessayer"
   },
   "panel": {
     "service": "Service",

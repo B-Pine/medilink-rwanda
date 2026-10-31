@@ -36,8 +36,21 @@ describe("reception board (S4-F2, F3)", () => {
     expect(within(rows[1]!).getByText("Elderly")).toBeInTheDocument();
     expect(within(rows[2]!).getByText("Habimana E.")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Now serving" })).toBeInTheDocument();
-    expect(screen.getByText("No bookings yet")).toBeInTheDocument();
+    const expected = await screen.findByRole("list", { name: "Expected" });
+    const booked = within(expected).getAllByRole("listitem");
+    expect(within(booked[0]!).getByText("Niyonzima P.")).toBeInTheDocument();
+    expect(within(booked[1]!).getByText("Mutesi A.")).toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("checks in a booked patient from the Expected list (S5a R1, R6)", async () => {
+    const { user } = await signIn("reception@medilink.test", "/queue");
+    const expected = await screen.findByRole("list", { name: "Expected" });
+    const row = (await within(expected).findByText("Mutesi A.")).closest("li") as HTMLElement;
+    await user.click(within(row).getByRole("button", { name: "Check in" }));
+    await waitFor(() => expect(within(expected).queryByText("Mutesi A.")).not.toBeInTheDocument());
+    const table = await screen.findByRole("table", { name: /General consultation · Consultation/ });
+    expect(await within(table).findByText("Mutesi A.")).toBeInTheDocument();
   });
 
   it("moves a ticket up only with a reason, and records it in the timeline", async () => {

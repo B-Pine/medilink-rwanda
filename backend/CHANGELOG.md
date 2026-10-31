@@ -148,6 +148,59 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Signal `scheduling.exception_approved`.
 - Jobs and commands: `expire_invitations` (daily) and dev seed `seed_setup_dev`.
 
+### Sprint 4 · Visits and the live queue
+
+- New app `medilink.visits` (contract §2.1, [#73](https://github.com/B-Pine/medilink-rwanda/pull/73)):
+  visits, tickets, ticket events, daily ticket counters, duty status, reorder reviews, display
+  links, travel times and the transactional outbox (`core_outbox_event`, created by `visits`
+  until `core` has migrations, D-8). Forced RLS on every facility table; the database rejects
+  updates and deletes on the event tables.
+- Rules (§2.2): idempotent check-in (also for two racing requests); emergency needs a reason and
+  priority a reason code; ordering emergency → return → priority → arrival, own assigned tickets
+  first only at equal rank, stepped-out patients skipped; atomic call next with
+  `SELECT … FOR UPDATE SKIP LOCKED`; versioned ticket actions (`409` stale, `422` illegal);
+  no-response re-insertion with a limit; transfer keeps the arrival time; reorder needs a reason
+  and is listed for review; wait estimate as a range with status messages; end-of-day job and
+  step-out expiry.
+- Endpoints Q1–Q9 (staff board, My queue, call next, ticket actions, visit timeline, duty
+  status, reorders, display links), D1 (public display: hashed token, `no-store`, never names)
+  and PT1–PT3 (patient tracker, cancel, travel time).
+- WebSockets for the staff queue, patient visits and the display: notify-then-fetch with IDs
+  only, published after commit from the outbox.
+- The patient tracker reads through a SECURITY DEFINER lookup scoped to the account's own and
+  guarded profiles (D-7).
+- Commands `seed_queue_dev` and `queue_concurrency_check` (DEBUG only; concurrency is proven on
+  the dev database because the test suite runs in one transaction, D-9).
+- Operations figures for facility admins: `GET /staff/reports/operations/` (today against the
+  same day last week, 14-day trend, live load per service, 28-day arrivals heat map, attention
+  counts; aggregates only, analysis 13 §1–2). `seed_queue_dev` backfills 13 days of synthetic
+  visits.
+- `GET /platform/overview/` adds `applications.approved` and `facilities_by_district`.
+
+### Sprint 5a · Booking core
+
+- Discovery (contract §3.1): `POST /public/facilities/search/` over the public read model
+  `facilities_public_listing` (live facilities only, location never in URLs), facility profiles,
+  a week of slots and symptoms with red flags; services carry `insurer_shares` for the patient
+  share.
+- Slots generated from the S2 templates minus closures, holidays, Umuganda and leave;
+  5-minute holds under a row lock; `409 slot_taken` with nearby alternatives.
+- Bookings: confirm rules with error codes, cost estimate, idempotent confirm, cancel and late
+  cancel, reschedule, `.ics` without the reason; the reason is encrypted and symptoms are
+  append-only.
+- Queue: booked check-in with the grace window, booked/walk-in ratio in call next, remote join
+  with cutoff, "I'm here" and pass-over.
+- Reception (§3.3): staff bookings list, slots, phone booking, cancel, reschedule and no-show
+  reversal with a reason (`patient_was_present`, `facility_delay`, `other`).
+- No-show job with strikes; jobs and the dev seed; `booking_concurrency_check` (DEBUG only).
+- `TIME_ZONE` is `Africa/Kigali` (was UTC; contract D-8).
+
+### Tests
+
+- `tests/test_rls_coverage.py`: every table with `facility_id` has forced RLS with the
+  `facility_isolation` policy, or is listed in `RLS_EXCEPTIONS` with the document that allows it;
+  an exception that is no longer needed fails too (database design §1).
+
 ### Sprint 10 · Help center and support (part 1)
 
 ### Added

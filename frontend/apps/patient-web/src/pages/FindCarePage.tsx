@@ -1,13 +1,15 @@
 import {
   CalendarPlus,
   ChatCircleText,
+  MagnifyingGlass,
   PersonSimpleWalk,
   Ticket,
   type Icon,
 } from "@phosphor-icons/react";
-import { Badge, cx } from "@medilink/ui";
+import { Badge, buttonClassName, cx } from "@medilink/ui";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
 
 import { PageHeading } from "../components/PageHeading";
 import { EmergencyNotice } from "../layout/EmergencyNotice";
@@ -91,12 +93,12 @@ export function FindCarePage() {
         </p>
       </Option>
 
-      <Option
-        icon={CalendarPlus}
-        title={t("findCare.book.title")}
-        badge={<Badge tone="neutral">{t("common.comingSoon")}</Badge>}
-      >
+      <Option icon={CalendarPlus} title={t("findCare.book.title")}>
         <p className="m-0 text-fg-secondary">{t("findCare.book.body")}</p>
+        <Link to="/search" className={buttonClassName({ size: "lg" })}>
+          <MagnifyingGlass aria-hidden="true" className="size-icon" />
+          {t("findCare.book.action")}
+        </Link>
       </Option>
 
       <Option

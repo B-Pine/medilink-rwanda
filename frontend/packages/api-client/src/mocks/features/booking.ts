@@ -64,6 +64,7 @@ const svc = (
   name_i18n: { en, rw, fr },
   fee_rwf: fee,
   insurers: [],
+  insurer_shares: {},
   bookable: true,
   remote_join: false,
   walk_in: true,
@@ -758,6 +759,7 @@ export const bookingMocks: FeatureMockFactory = (context) => {
             }) => ({
               ...s,
               insurers: Object.keys(f.insurers),
+              insurer_shares: f.insurers,
               queue_load: f.load,
               next_slot_at: nextSlot(f.slug, s.id),
             }),

@@ -328,7 +328,8 @@
     },
     "book": {
       "title": "Book a time",
-      "body": "Soon you can choose a facility, a day and a time from here, and see your share of the cost before you book."
+      "body": "Choose a facility, a day and a time, and see your share of the cost before you book.",
+      "action": "Find a facility"
     },
     "symptoms": {
       "title": "Not sure what you need?",

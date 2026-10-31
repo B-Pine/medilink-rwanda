@@ -1,0 +1,7 @@
+[mcp_servers.todo-mcp]
+command = "node"
+args = [
+    'c:\Users\nseng\.vscode\extensions\hurtis.todo-mcp-2.0.0\bin\todo-mcp.js',
+    "--workspace",
+    'c:\Users\nseng\Documents\Medilink-rwanda',
+]

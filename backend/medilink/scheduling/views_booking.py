@@ -327,6 +327,9 @@ class FacilityProfileView(PublicView):
                         "insurers": sorted((rows[sv.pk].insurers or {}).keys())
                         if sv.pk in rows
                         else [],
+                        "insurer_shares": dict(rows[sv.pk].insurers or {})
+                        if sv.pk in rows
+                        else {},
                         "bookable": sv.is_bookable,
                         "remote_join": sv.allows_remote_join,
                         "walk_in": sv.allows_walk_in,

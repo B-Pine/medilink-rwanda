@@ -328,7 +328,8 @@
     },
     "book": {
       "title": "Fata gahunda",
-      "body": "Vuba uzashobora guhitamo ikigo, umunsi n’isaha uri hano, ukabona n’uruhare rwawe ku kiguzi mbere yo gufata gahunda."
+      "body": "Hitamo ikigo, umunsi n’isaha, urebe n’uruhare rwawe ku kiguzi mbere yo gufata gahunda.",
+      "action": "Shaka ikigo"
     },
     "symptoms": {
       "title": "Ntuzi icyo ukeneye?",

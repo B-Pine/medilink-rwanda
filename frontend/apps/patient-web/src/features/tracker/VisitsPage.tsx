@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { PageHeading } from "../../components/PageHeading";
+import { UpcomingSection } from "../booking/Upcoming";
 import { ActiveVisitCard, useActiveVisits } from "./TrackerPage";
 
 /**
@@ -46,6 +47,8 @@ export function VisitsPage() {
           />
         )}
       </section>
+
+      <UpcomingSection />
 
       <Card as="section" aria-labelledby="visits-history" className="flex flex-col gap-2">
         <h2 id="visits-history" className="m-0 text-h3">

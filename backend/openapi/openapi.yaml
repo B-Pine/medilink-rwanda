@@ -15791,6 +15791,10 @@ components:
           type: array
           items:
             type: string
+        insurer_shares:
+          type: object
+          additionalProperties:
+            type: integer
         bookable:
           type: boolean
         remote_join:
@@ -15815,6 +15819,7 @@ components:
       - code
       - fee_rwf
       - id
+      - insurer_shares
       - insurers
       - max_age_months
       - min_age_months

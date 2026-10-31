@@ -1,5 +1,4 @@
 import {
-  CalendarBlank,
   CaretRight,
   ChatCircleText,
   Gear,
@@ -9,11 +8,11 @@ import {
   UsersThree,
   type Icon,
 } from "@phosphor-icons/react";
-import { Alert, buttonClassName, Card, EmptyState, ImigongoPattern } from "@medilink/ui";
+import { Alert, buttonClassName, ImigongoPattern } from "@medilink/ui";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
-import { FEATURE_HOME_CARDS, FEATURE_HOME_TOP } from "../app/features";
+import { FEATURE_HOME_CARDS, FEATURE_HOME_MAIN, FEATURE_HOME_TOP } from "../app/features";
 import { usePatientMe } from "../auth/queries";
 import { PageHeading } from "../components/PageHeading";
 import { EmergencyNotice } from "../layout/EmergencyNotice";
@@ -104,17 +103,9 @@ export function HomePage() {
             </div>
           </section>
 
-          <Card as="section" aria-labelledby="next-visit" className="flex flex-col gap-2">
-            <h2 id="next-visit" className="m-0 text-h3">
-              {t("home.nextVisitTitle")}
-            </h2>
-            <EmptyState
-              size="inline"
-              icon={CalendarBlank}
-              title={t("home.nextVisitEmptyTitle")}
-              description={t("home.nextVisitEmpty")}
-            />
-          </Card>
+          {FEATURE_HOME_MAIN().map((Main, index) => (
+            <Main key={index} />
+          ))}
         </div>
 
         <div className="flex flex-col gap-6">

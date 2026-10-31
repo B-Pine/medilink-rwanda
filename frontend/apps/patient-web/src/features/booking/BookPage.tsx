@@ -1,0 +1,832 @@
+import {
+  isApiError,
+  type Booking,
+  type Hold,
+  type PublicFacility,
+  type PublicService,
+  type PublicSlot,
+  type Symptom,
+} from "@medilink/api-client";
+import {
+  ArrowLeft,
+  CalendarCheck,
+  CalendarPlus,
+  CheckCircle,
+  Clock,
+  NavigationArrow,
+  PersonSimpleWalk,
+  Siren,
+  Timer,
+  UserCircle,
+} from "@phosphor-icons/react";
+import {
+  Alert,
+  Button,
+  buttonClassName,
+  Card,
+  cx,
+  EmptyState,
+  LoadingState,
+  SelectField,
+  Skeleton,
+  TextareaField,
+} from "@medilink/ui";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router";
+
+import { useApi } from "../../app/services";
+import { PageHeading } from "../../components/PageHeading";
+import { EmergencyNotice } from "../../layout/EmergencyNotice";
+import { useProfiles, useRelationshipLabel } from "../profile/ProfileLayout";
+import { day, isMorning, pick, rwf, time } from "./discovery";
+
+type Step = "who" | "what" | "when" | "reason" | "review";
+const BODY_ORDER = [
+  "general",
+  "respiratory",
+  "digestive",
+  "nervous",
+  "circulatory",
+  "skin",
+  "musculoskeletal",
+  "dental",
+  "eye",
+  "urinary",
+];
+
+export const bookingsKey = ["booking", "mine"] as const;
+
+function useCountdown(until: string | null): number {
+  const [left, setLeft] = useState(() => (until ? Date.parse(until) - Date.now() : 0));
+  useEffect(() => {
+    if (!until) return;
+    const tick = () => setLeft(Date.parse(until) - Date.now());
+    tick();
+    const timer = window.setInterval(tick, 1000);
+    return () => window.clearInterval(timer);
+  }, [until]);
+  return Math.max(0, left);
+}
+
+/** "We're holding this time for 4:32" (design 07 §3.2). The live region speaks once a minute. */
+function HoldTimer({ hold, onExpired }: { hold: Hold; onExpired: () => void }) {
+  const { t } = useTranslation();
+  const left = useCountdown(hold.expires_at);
+  const minutes = Math.floor(left / 60_000);
+  const seconds = Math.floor((left % 60_000) / 1000);
+  const expired = left <= 0;
+  useEffect(() => {
+    if (expired) onExpired();
+  }, [expired, onExpired]);
+  return (
+    <p
+      className={cx(
+        "m-0 flex items-center gap-2 rounded-md px-3 py-2 font-semibold",
+        minutes < 1 ? "bg-warning-bg text-fg" : "bg-brand-subtle text-on-brand-subtle",
+      )}
+    >
+      <Timer aria-hidden="true" weight="bold" className="size-5 shrink-0" />
+      <span aria-hidden="true" className="tabular-nums">
+        {t("booking.flow.holding", { time: `${minutes}:${String(seconds).padStart(2, "0")}` })}
+      </span>
+      <span className="sr-only" role="status">
+        {t("booking.flow.holdingMinutes", { count: Math.max(minutes, 1) })}
+      </span>
+    </p>
+  );
+}
+
+function StepFrame({
+  step,
+  total,
+  title,
+  onBack,
+  children,
+}: {
+  step: number;
+  total: number;
+  title: string;
+  onBack?: () => void;
+  children: React.ReactNode;
+}) {
+  const { t } = useTranslation();
+  const heading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    heading.current?.focus();
+  }, [title]);
+  return (
+    <section aria-labelledby="book-step" className="flex flex-col gap-5">
+      <div className="flex items-center justify-between gap-3">
+        {onBack ? (
+          <Button
+            variant="ghost"
+            onClick={onBack}
+            iconStart={<ArrowLeft aria-hidden="true" className="size-icon" />}
+          >
+            {t("common.back")}
+          </Button>
+        ) : (
+          <span />
+        )}
+        <span className="text-body-sm font-semibold text-fg-muted">
+          {t("booking.flow.step", { step, total })}
+        </span>
+      </div>
+      <div aria-hidden="true" className="flex gap-1.5">
+        {Array.from({ length: total }, (_, i) => (
+          <span
+            key={i}
+            className={cx("h-1.5 flex-1 rounded-full", i < step ? "bg-brand" : "bg-subtle")}
+          />
+        ))}
+      </div>
+      <h2 id="book-step" ref={heading} tabIndex={-1} className="m-0 text-h2 outline-none">
+        {title}
+      </h2>
+      {children}
+    </section>
+  );
+}
+
+function ChoiceCard({
+  selected,
+  onClick,
+  children,
+}: {
+  selected: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={selected}
+      onClick={onClick}
+      className={cx(
+        "flex min-h-16 w-full cursor-pointer items-center gap-4 rounded-lg border-2 bg-surface p-4 text-left text-fg",
+        selected ? "border-brand bg-brand-subtle" : "border-border hover:border-border-input",
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+function WhenStep({
+  facility,
+  service,
+  onHeld,
+  onJoinToday,
+  joining,
+}: {
+  facility: PublicFacility;
+  service: PublicService;
+  onHeld: (slot: PublicSlot, hold: Hold) => void;
+  onJoinToday: () => void;
+  joining: boolean;
+}) {
+  const { t, i18n } = useTranslation();
+  const lang = i18n.resolvedLanguage ?? "rw";
+  const api = useApi();
+  const [start, setStart] = useState(0);
+  const [now] = useState(() => Date.now());
+  const date = new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Kigali" }).format(
+    new Date(now + start * 86_400_000),
+  );
+  const week = useQuery({
+    queryKey: ["discovery", "slots", facility.slug, service.id, date],
+    queryFn: () => api.booking.slots(facility.slug, { service_id: service.id, date }),
+  });
+  const days = week.data?.days ?? [];
+  const [chosenDay, setChosenDay] = useState<string | null>(null);
+  const activeDay =
+    days.find((d) => d.date === chosenDay) ?? days.find((d) => d.slots.length) ?? days[0];
+  const [taken, setTaken] = useState<PublicSlot[] | null>(null);
+  const hold = useMutation({
+    mutationFn: (slot: PublicSlot) => api.booking.hold(slot.id).then((h) => ({ slot, h })),
+    onSuccess: ({ slot, h }) => onHeld(slot, h),
+    onError: (error) => {
+      if (isApiError(error) && error.status === 409) {
+        setTaken((error.extra.alternatives as PublicSlot[] | undefined) ?? []);
+        void week.refetch();
+      }
+    },
+  });
+
+  const groups = activeDay
+    ? [
+        { key: "morning", slots: activeDay.slots.filter((s) => isMorning(s.starts_at)) },
+        { key: "afternoon", slots: activeDay.slots.filter((s) => !isMorning(s.starts_at)) },
+      ].filter((g) => g.slots.length)
+    : [];
+
+  const doctors = [...new Set((activeDay?.slots ?? []).map((s) => s.doctor).filter(Boolean))];
+  const chip = (slot: PublicSlot) => (
+    <li key={slot.id}>
+      <button
+        type="button"
+        onClick={() => hold.mutate(slot)}
+        disabled={hold.isPending}
+        className="flex min-h-target min-w-24 cursor-pointer flex-col items-center justify-center rounded-md border border-border-input bg-surface px-3 py-1.5 font-semibold tabular-nums text-fg hover:border-brand hover:bg-brand-subtle disabled:cursor-wait disabled:opacity-60"
+      >
+        {time(slot.starts_at, lang)}
+        {slot.doctor && doctors.length > 1 && (
+          <span className="max-w-28 truncate text-caption font-normal text-fg-muted">
+            {slot.doctor}
+          </span>
+        )}
+      </button>
+    </li>
+  );
+
+  return (
+    <div className="flex flex-col gap-5">
+      {service.remote_join && (
+        <Card className="flex flex-col gap-3 border-2 border-brand sm:flex-row sm:items-center">
+          <PersonSimpleWalk
+            aria-hidden="true"
+            weight="duotone"
+            className="size-10 shrink-0 text-brand"
+          />
+          <div className="flex flex-1 flex-col gap-1">
+            <h3 className="m-0 text-h3">{t("booking.flow.joinTitle")}</h3>
+            <p className="m-0 text-fg-secondary">{t("booking.flow.joinBody")}</p>
+          </div>
+          <Button onClick={onJoinToday} loading={joining}>
+            {t("booking.facility.join")}
+          </Button>
+        </Card>
+      )}
+      {taken && (
+        <Alert tone="warning" role="alert" title={t("booking.flow.takenTitle")}>
+          {taken.length > 0 ? (
+            <div className="mt-2 flex flex-col gap-2">
+              <span>{t("booking.flow.takenBody")}</span>
+              <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
+                {taken.map((s) => (
+                  <li key={s.id}>
+                    <Button variant="secondary" size="md" onClick={() => hold.mutate(s)}>
+                      {day(s.starts_at, lang, "short")} · {time(s.starts_at, lang)}
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            t("booking.flow.takenNone")
+          )}
+        </Alert>
+      )}
+      <div className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="md"
+          disabled={start === 0}
+          onClick={() => setStart(Math.max(0, start - 7))}
+          aria-label={t("booking.flow.earlier")}
+          iconStart={<ArrowLeft aria-hidden="true" className="size-icon" />}
+        />
+        <ul
+          aria-label={t("booking.flow.days")}
+          className="m-0 grid flex-1 list-none grid-cols-7 gap-1 p-0"
+        >
+          {week.isPending
+            ? Array.from({ length: 7 }, (_, i) => (
+                <li key={i}>
+                  <Skeleton height="4.5rem" className="rounded-md" />
+                </li>
+              ))
+            : days.map((d) => {
+                const active = d.date === activeDay?.date;
+                const empty = d.slots.length === 0;
+                return (
+                  <li key={d.date}>
+                    <button
+                      type="button"
+                      aria-pressed={active}
+                      disabled={empty}
+                      onClick={() => setChosenDay(d.date)}
+                      className={cx(
+                        "flex min-h-[4.5rem] w-full cursor-pointer flex-col items-center justify-center gap-0.5 rounded-md border text-center",
+                        active
+                          ? "border-brand bg-brand text-on-primary"
+                          : "border-border bg-surface text-fg hover:border-brand",
+                        empty && "cursor-not-allowed border-dashed opacity-50",
+                      )}
+                    >
+                      <span className="text-caption font-semibold uppercase">
+                        {new Intl.DateTimeFormat(lang, {
+                          weekday: "short",
+                          timeZone: "Africa/Kigali",
+                        }).format(new Date(`${d.date}T12:00:00+02:00`))}
+                      </span>
+                      <span className="font-heading text-h3 tabular-nums">
+                        {Number(d.date.slice(8))}
+                      </span>
+                      <span
+                        className={cx("text-caption", active ? "text-on-primary" : "text-fg-muted")}
+                      >
+                        {empty ? "–" : t("booking.flow.free", { count: d.slots.length })}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+        </ul>
+        <Button
+          variant="ghost"
+          size="md"
+          disabled={start >= 21}
+          onClick={() => setStart(start + 7)}
+          aria-label={t("booking.flow.later")}
+          iconStart={<ArrowLeft aria-hidden="true" className="size-icon rotate-180" />}
+        />
+      </div>
+      {activeDay && (
+        <div className="flex flex-col gap-4">
+          <p className="m-0 font-semibold first-letter:uppercase">
+            {day(activeDay.date, lang)}
+            {doctors.length === 1 && (
+              <span className="font-normal text-fg-secondary">
+                {" · "}
+                {t("booking.flow.with", { doctor: doctors[0] })}
+              </span>
+            )}
+          </p>
+          {groups.length === 0 ? (
+            <p className="m-0 text-fg-secondary">{t("booking.flow.noTimes")}</p>
+          ) : (
+            groups.map((g) => (
+              <div key={g.key} className="flex flex-col gap-2">
+                <h3 className="m-0 text-body font-semibold text-fg-secondary">
+                  {t(`booking.flow.${g.key}`)}
+                </h3>
+                <ul className="m-0 flex list-none flex-wrap gap-2 p-0">{g.slots.map(chip)}</ul>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SymptomPicker({
+  symptoms,
+  chosen,
+  onToggle,
+}: {
+  symptoms: Symptom[];
+  chosen: Set<string>;
+  onToggle: (code: string) => void;
+}) {
+  const { t, i18n } = useTranslation();
+  const lang = i18n.resolvedLanguage ?? "rw";
+  const groups = useMemo(() => {
+    const by = new Map<string, Symptom[]>();
+    for (const s of symptoms) by.set(s.body_system, [...(by.get(s.body_system) ?? []), s]);
+    return [...by.entries()].sort(([a], [b]) => BODY_ORDER.indexOf(a) - BODY_ORDER.indexOf(b));
+  }, [symptoms]);
+  return (
+    <fieldset className="m-0 flex min-w-0 flex-col gap-4 border-0 p-0">
+      <legend className="sr-only">{t("booking.flow.symptoms")}</legend>
+      {groups.map(([system, items]) => (
+        <div key={system} className="flex flex-col gap-2">
+          <span className="text-body-sm font-semibold text-fg-muted">
+            {t(`booking.body.${system}`, { defaultValue: system })}
+          </span>
+          <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
+            {items.map((s) => {
+              const on = chosen.has(s.code);
+              return (
+                <li key={s.code}>
+                  <button
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => onToggle(s.code)}
+                    className={cx(
+                      "inline-flex min-h-target cursor-pointer items-center gap-2 rounded-full border px-4 font-semibold",
+                      on
+                        ? s.is_red_flag
+                          ? "border-danger bg-danger-bg text-danger"
+                          : "border-brand bg-brand text-on-primary"
+                        : "border-border-input bg-surface text-fg hover:bg-subtle",
+                    )}
+                  >
+                    {on && <CheckCircle aria-hidden="true" weight="fill" className="size-5" />}
+                    {pick(s.name_i18n, lang)}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
+    </fieldset>
+  );
+}
+
+function Success({ booking }: { booking: Booking }) {
+  const { t, i18n } = useTranslation();
+  const lang = i18n.resolvedLanguage ?? "rw";
+  const api = useApi();
+  return (
+    <div className="flex flex-col items-center gap-5 text-center">
+      <span className="inline-flex size-20 items-center justify-center rounded-full bg-brand-subtle text-brand">
+        <CalendarCheck aria-hidden="true" weight="duotone" className="size-11" />
+      </span>
+      <PageHeading title={t("booking.flow.doneTitle")}>{t("booking.flow.doneTitle")}</PageHeading>
+      <p className="m-0 max-w-[30rem] text-fg-secondary">
+        {t("booking.flow.doneBody", {
+          facility: booking.facility_name,
+          day: day(booking.starts_at, lang),
+          time: time(booking.starts_at, lang),
+        })}
+      </p>
+      <div className="flex flex-col items-center gap-1 rounded-lg border-2 border-dashed border-brand px-8 py-4">
+        <span className="text-body-sm font-semibold text-fg-muted">{t("booking.flow.code")}</span>
+        <span className="font-mono text-display font-bold tracking-[0.2em] tabular-nums">
+          {booking.booking_code}
+        </span>
+      </div>
+      <div className="flex w-full max-w-[30rem] flex-col gap-3">
+        <a
+          href={api.booking.icsUrl(booking.id)}
+          download
+          className={buttonClassName({ variant: "secondary", size: "lg", fullWidth: true })}
+        >
+          <CalendarPlus aria-hidden="true" className="size-icon" />
+          {t("booking.flow.addToCalendar")}
+        </a>
+        <Link
+          to={`/facilities/${booking.facility_slug}`}
+          className={buttonClassName({ variant: "ghost", fullWidth: true })}
+        >
+          <NavigationArrow aria-hidden="true" className="size-icon" />
+          {t("booking.flow.directions")}
+        </Link>
+        <Link to="/visits" className={buttonClassName({ size: "lg", fullWidth: true })}>
+          {t("booking.flow.toVisits")}
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Booking flow (design 07 §3.2): one decision per screen. Who → What (when the facility has more
+ * than one service) → When (day strip and time chips, or join today's queue) → Reason (symptom
+ * chips; a red flag shows the emergency notice) → Review (insurance, your share, cancellation
+ * rule) → Success. Answers stay in memory when going back; the chosen time is held for 5 minutes.
+ */
+export function BookPage() {
+  const { t, i18n } = useTranslation();
+  const lang = i18n.resolvedLanguage ?? "rw";
+  const api = useApi();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const { slug = "" } = useParams();
+  const [params] = useSearchParams();
+  const facility = useQuery({
+    queryKey: ["discovery", "facility", slug],
+    queryFn: () => api.booking.facility(slug),
+  });
+  const symptoms = useQuery({
+    queryKey: ["discovery", "symptoms"],
+    queryFn: () => api.booking.symptoms(),
+  });
+  const profiles = useProfiles();
+  const relationship = useRelationshipLabel();
+  const own = (profiles.data?.results ?? []).filter((p) => p.relationship !== "delegate");
+  const [step, setStep] = useState<Step>("who");
+  const [chosenPatient, setPatientId] = useState<string | null>(null);
+  // one profile: chosen for you (no extra tap)
+  const patientId = chosenPatient ?? (own.length === 1 ? own[0]!.patient_id : null);
+  const [serviceId, setServiceId] = useState<string | null>(params.get("service"));
+  const [slot, setSlot] = useState<PublicSlot | null>(null);
+  const [hold, setHold] = useState<Hold | null>(null);
+  const [expired, setExpired] = useState(false);
+  const [chosen, setChosen] = useState<Set<string>>(new Set());
+  const [reason, setReason] = useState("");
+  const [insurance, setInsurance] = useState("");
+  const [done, setDone] = useState<Booking | null>(null);
+  const key = useRef(crypto.randomUUID());
+
+  const insurances = useQuery({
+    queryKey: ["profile", "insurance", patientId],
+    queryFn: () => api.profile.insurance(patientId!),
+    enabled: Boolean(patientId),
+  });
+
+  const book = useMutation({
+    mutationFn: () =>
+      api.booking.book(
+        {
+          hold_id: hold!.hold_id,
+          patient_id: patientId!,
+          insurance_profile_id: insurance || null,
+          symptoms: [...chosen].map((code) => ({ code })),
+          reason_text: reason.trim(),
+        },
+        key.current,
+      ),
+    onSuccess: (booking) => {
+      setDone(booking);
+      void queryClient.invalidateQueries({ queryKey: bookingsKey });
+    },
+  });
+  const join = useMutation({
+    mutationFn: () =>
+      api.booking.remoteJoin(
+        { facility_slug: slug, service_id: serviceId!, patient_id: patientId! },
+        key.current,
+      ),
+    onSuccess: (visit) => void navigate(`/visits/${visit.visit_id}`),
+  });
+
+  if (facility.isPending || profiles.isPending) return <LoadingState className="min-h-[50vh]" />;
+  if (facility.isError || !facility.data)
+    return (
+      <EmptyState
+        icon={Clock}
+        title={t("booking.facility.notFound")}
+        action={
+          <Link to="/search" className={buttonClassName({})}>
+            {t("booking.facility.backToSearch")}
+          </Link>
+        }
+      />
+    );
+  if (done)
+    return (
+      <div className="mx-auto w-full max-w-[40rem] py-4">
+        <Success booking={done} />
+      </div>
+    );
+
+  const f = facility.data;
+  const bookable = f.services.filter((s) => s.bookable || s.remote_join);
+  const service =
+    bookable.find((s) => s.id === serviceId) ?? (bookable.length === 1 ? bookable[0] : undefined);
+  const steps: Step[] = [
+    "who",
+    ...(bookable.length > 1 && !params.get("service") ? (["what"] as const) : []),
+    "when",
+    "reason",
+    "review",
+  ];
+  const index = steps.indexOf(step) + 1;
+  const back = index > 1 ? () => setStep(steps[index - 2]!) : undefined;
+  const patient = own.find((p) => p.patient_id === patientId);
+  const redFlag = (symptoms.data ?? []).some((s) => s.is_red_flag && chosen.has(s.code));
+  const fee = service?.fee_rwf ?? null;
+  const card = (insurances.data?.results ?? []).find((c) => c.id === insurance);
+  const accepted = card ? service?.insurers.includes(card.insurer_code) : null;
+  const shareBp = card && accepted ? service?.insurer_shares[card.insurer_code] : undefined;
+  const yourShare =
+    fee === null ? null : shareBp === undefined ? fee : Math.round((fee * shareBp) / 10_000);
+
+  const header = (
+    <div className="flex flex-col gap-1">
+      <p className="m-0 text-body-sm font-semibold text-fg-muted">{f.name}</p>
+      <PageHeading title={t("booking.flow.title")}>{t("booking.flow.title")}</PageHeading>
+    </div>
+  );
+
+  return (
+    <div className="mx-auto flex w-full max-w-[40rem] flex-col gap-6">
+      {header}
+      {hold && step !== "when" && !expired && (
+        <HoldTimer hold={hold} onExpired={() => setExpired(true)} />
+      )}
+      {expired && (
+        <Alert tone="warning" role="alert" title={t("booking.flow.expiredTitle")}>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setExpired(false);
+              setHold(null);
+              setSlot(null);
+              setStep("when");
+            }}
+          >
+            {t("booking.flow.chooseAgain")}
+          </Button>
+        </Alert>
+      )}
+
+      {step === "who" && (
+        <StepFrame step={index} total={steps.length} title={t("booking.flow.who")}>
+          <ul className="m-0 flex list-none flex-col gap-3 p-0">
+            {own.map((p) => (
+              <li key={p.patient_id}>
+                <ChoiceCard
+                  selected={patientId === p.patient_id}
+                  onClick={() => setPatientId(p.patient_id)}
+                >
+                  <UserCircle
+                    aria-hidden="true"
+                    weight="duotone"
+                    className="size-10 shrink-0 text-brand"
+                  />
+                  <span className="flex flex-col">
+                    <span className="font-semibold">{p.display_name}</span>
+                    <span className="text-body-sm text-fg-muted">
+                      {relationship(p.relationship)}
+                    </span>
+                  </span>
+                </ChoiceCard>
+              </li>
+            ))}
+          </ul>
+          <Link to="/family" className="font-semibold">
+            {t("booking.flow.addPerson")}
+          </Link>
+          <Button size="lg" fullWidth disabled={!patientId} onClick={() => setStep(steps[index]!)}>
+            {t("common.continue")}
+          </Button>
+        </StepFrame>
+      )}
+
+      {step === "what" && (
+        <StepFrame step={index} total={steps.length} title={t("booking.flow.what")} onBack={back}>
+          <ul className="m-0 flex list-none flex-col gap-3 p-0">
+            {bookable.map((s) => (
+              <li key={s.id}>
+                <ChoiceCard selected={serviceId === s.id} onClick={() => setServiceId(s.id)}>
+                  <span className="flex flex-1 flex-col">
+                    <span className="font-semibold">{pick(s.name_i18n, lang)}</span>
+                    {s.fee_rwf !== null && (
+                      <span className="text-body-sm text-fg-muted tabular-nums">
+                        {rwf(s.fee_rwf, lang)}
+                      </span>
+                    )}
+                  </span>
+                </ChoiceCard>
+              </li>
+            ))}
+          </ul>
+          <Button size="lg" fullWidth disabled={!service} onClick={() => setStep("when")}>
+            {t("common.continue")}
+          </Button>
+        </StepFrame>
+      )}
+
+      {step === "when" && service && (
+        <StepFrame step={index} total={steps.length} title={t("booking.flow.when")} onBack={back}>
+          <WhenStep
+            facility={f}
+            service={service}
+            joining={join.isPending}
+            onJoinToday={() => join.mutate()}
+            onHeld={(s, h) => {
+              if (hold && hold.hold_id !== h.hold_id)
+                void api.booking.release(hold.hold_id).catch(() => undefined);
+              setSlot(s);
+              setHold(h);
+              setExpired(false);
+              setStep("reason");
+            }}
+          />
+          {join.isError && (
+            <Alert tone="danger" role="alert">
+              {isApiError(join.error) ? join.error.message : t("booking.flow.failed")}
+            </Alert>
+          )}
+        </StepFrame>
+      )}
+
+      {step === "reason" && (
+        <StepFrame step={index} total={steps.length} title={t("booking.flow.reason")} onBack={back}>
+          <p className="m-0 text-fg-secondary">{t("booking.flow.reasonHint")}</p>
+          {symptoms.data ? (
+            <SymptomPicker
+              symptoms={symptoms.data}
+              chosen={chosen}
+              onToggle={(code) =>
+                setChosen((current) => {
+                  const next = new Set(current);
+                  if (next.has(code)) next.delete(code);
+                  else if (next.size < 5) next.add(code);
+                  return next;
+                })
+              }
+            />
+          ) : (
+            <Skeleton height="10rem" className="rounded-lg" />
+          )}
+          {redFlag && (
+            <div
+              role="alert"
+              className="flex items-start gap-3 rounded-md border-l-4 border-danger bg-danger-bg p-4"
+            >
+              <Siren
+                aria-hidden="true"
+                weight="bold"
+                className="mt-0.5 size-6 shrink-0 text-danger"
+              />
+              <p className="m-0">
+                <strong className="text-danger">{t("booking.flow.redFlagTitle")}</strong>{" "}
+                {t("booking.flow.redFlagBody")}
+              </p>
+            </div>
+          )}
+          <TextareaField
+            label={t("booking.flow.more")}
+            hint={t("booking.flow.moreHint")}
+            maxLength={500}
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+          />
+          <Button
+            size="lg"
+            fullWidth
+            disabled={chosen.size === 0}
+            onClick={() => setStep("review")}
+          >
+            {t("common.continue")}
+          </Button>
+        </StepFrame>
+      )}
+
+      {step === "review" && slot && service && (
+        <StepFrame step={index} total={steps.length} title={t("booking.flow.review")} onBack={back}>
+          <Card className="flex flex-col gap-0 divide-y divide-border p-0">
+            {[
+              [t("booking.flow.forWho"), patient?.display_name ?? ""],
+              [t("booking.flow.where"), f.name],
+              [t("booking.flow.service"), pick(service.name_i18n, lang)],
+              [
+                t("booking.flow.whenLabel"),
+                `${day(slot.starts_at, lang)} · ${time(slot.starts_at, lang)}`,
+              ],
+              ...(slot.doctor ? [[t("booking.flow.doctor"), slot.doctor]] : []),
+            ].map(([label, value]) => (
+              <div key={label} className="flex flex-wrap justify-between gap-2 px-5 py-3">
+                <span className="text-fg-secondary">{label}</span>
+                <span className="font-semibold first-letter:uppercase">{value}</span>
+              </div>
+            ))}
+          </Card>
+          <SelectField
+            label={t("booking.flow.insurance")}
+            value={insurance}
+            onChange={(e) => setInsurance(e.target.value)}
+          >
+            <option value="">{t("booking.flow.noInsurance")}</option>
+            {(insurances.data?.results ?? [])
+              .filter((c) => c.is_active)
+              .map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.insurer_display}
+                </option>
+              ))}
+          </SelectField>
+          {card && accepted === false && (
+            <Alert tone="warning">
+              {t("booking.flow.notAccepted", { insurer: card.insurer_display })}
+            </Alert>
+          )}
+          {fee !== null && (
+            <div className="flex items-end justify-between gap-3 rounded-lg bg-forest p-5 text-on-forest">
+              <div className="flex flex-col">
+                <span className="text-on-forest-muted">{t("booking.flow.estimate")}</span>
+                <span className="text-body-sm text-on-forest-muted">
+                  {t("booking.flow.estimateHint")}
+                </span>
+              </div>
+              <span className="flex flex-col items-end">
+                <span className="font-heading text-display tabular-nums">
+                  {rwf(yourShare, lang)}
+                </span>
+                {yourShare !== fee && (
+                  <span className="text-body-sm text-on-forest-muted line-through tabular-nums">
+                    {rwf(fee, lang)}
+                  </span>
+                )}
+              </span>
+            </div>
+          )}
+          <p className="m-0 text-body-sm text-fg-secondary">{t("booking.flow.cancelRule")}</p>
+          {book.isError && (
+            <Alert tone="danger" role="alert" title={t("booking.flow.failed")}>
+              {isApiError(book.error) ? book.error.message : null}
+            </Alert>
+          )}
+          <Button
+            size="lg"
+            fullWidth
+            loading={book.isPending}
+            disabled={expired}
+            onClick={() => book.mutate()}
+          >
+            {t("booking.flow.confirm")}
+          </Button>
+          <EmergencyNotice />
+        </StepFrame>
+      )}
+    </div>
+  );
+}

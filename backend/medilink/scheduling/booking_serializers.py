@@ -72,6 +72,8 @@ class PublicFacilityServiceSerializer(serializers.Serializer):
     name_i18n = I18nField()
     fee_rwf = serializers.IntegerField(allow_null=True)
     insurers = serializers.ListField(child=serializers.CharField())
+    # patient share per insurer, in basis points of the fee (FR-BIL-03)
+    insurer_shares = serializers.DictField(child=serializers.IntegerField())
     bookable = serializers.BooleanField()
     remote_join = serializers.BooleanField()
     walk_in = serializers.BooleanField()

@@ -22,6 +22,11 @@ import trackerEn from "../features/tracker/locales/en.json";
 import trackerFr from "../features/tracker/locales/fr.json";
 import trackerRw from "../features/tracker/locales/rw.json";
 // [/S4 imports]
+// [S5 imports]
+import bookingEn from "../features/booking/locales/en.json";
+import bookingFr from "../features/booking/locales/fr.json";
+import bookingRw from "../features/booking/locales/rw.json";
+// [/S5 imports]
 
 /**
  * Feature translation namespaces: `<feature>` -> `src/features/<feature>/locales/{rw,en,fr}.json`.
@@ -47,4 +52,7 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   // [S4]
   tracker: { rw: trackerRw, en: trackerEn, fr: trackerFr },
   // [/S4]
+  // [S5]
+  booking: { rw: bookingRw, en: bookingEn, fr: bookingFr },
+  // [/S5]
 };

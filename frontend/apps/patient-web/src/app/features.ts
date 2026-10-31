@@ -17,6 +17,9 @@ import { profileFeature } from "../features/profile";
 // [S4 imports]
 import { trackerFeature } from "../features/tracker";
 // [/S4 imports]
+// [S5 imports]
+import { bookingFeature } from "../features/booking";
+// [/S5 imports]
 
 /** What a feature module contributes (each feature lives in `src/features/<feature>/`). */
 export interface FeatureRoutes {
@@ -28,6 +31,8 @@ export interface FeatureRoutes {
   headerItems?: ComponentType[];
   /** The top of the patient home page, above everything else (design 07 §3.1: the live tracker). */
   homeTop?: ComponentType[];
+  /** Main column of the patient home page, after "Find care" (S5: the next visit). */
+  homeMain?: ComponentType[];
   /** Cards on the patient home page, after "Find care" (e.g. "Family"). */
   homeCards?: ComponentType[];
 }
@@ -36,6 +41,8 @@ export const FEATURE_HEADER_ITEMS = (): ComponentType[] =>
   FEATURES.flatMap((feature) => feature.headerItems ?? []);
 export const FEATURE_HOME_TOP = (): ComponentType[] =>
   FEATURES.flatMap((feature) => feature.homeTop ?? []);
+export const FEATURE_HOME_MAIN = (): ComponentType[] =>
+  FEATURES.flatMap((feature) => feature.homeMain ?? []);
 export const FEATURE_HOME_CARDS = (): ComponentType[] =>
   FEATURES.flatMap((feature) => feature.homeCards ?? []);
 
@@ -59,4 +66,7 @@ export const FEATURES: FeatureRoutes[] = [
   // [S4]
   trackerFeature,
   // [/S4]
+  // [S5]
+  bookingFeature,
+  // [/S5]
 ];

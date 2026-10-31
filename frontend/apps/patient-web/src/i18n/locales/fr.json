@@ -328,7 +328,8 @@
     },
     "book": {
       "title": "Réserver un créneau",
-      "body": "Bientôt, vous pourrez choisir un établissement, un jour et une heure ici, et voir votre part du coût avant de réserver."
+      "body": "Choisissez un établissement, un jour et une heure, et voyez votre part du coût avant de réserver.",
+      "action": "Trouver un établissement"
     },
     "symptoms": {
       "title": "Vous ne savez pas de quoi vous avez besoin ?",

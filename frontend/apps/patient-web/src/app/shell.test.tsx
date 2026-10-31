@@ -54,7 +54,7 @@ describe("patient shell (design 07 §2)", () => {
 
   it("the account menu reaches settings, where text size applies at once", async () => {
     const { user, container } = await signIn();
-    await user.click(screen.getByRole("button", { name: /^Account menu for/ }));
+     await user.click(screen.getByRole("button", { name: /^Account menu for/ }));
     await user.click(await screen.findByRole("menuitem", { name: "Settings" }));
     expect(await screen.findByRole("heading", { level: 1, name: "Settings" })).toBeInTheDocument();
     await user.click(screen.getByRole("radio", { name: /Extra large/ }));
@@ -69,7 +69,7 @@ describe("patient shell (design 07 §2)", () => {
     expect(await screen.findByRole("heading", { level: 1, name: "Find care" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Visit today" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Book a time" })).toBeInTheDocument();
-    expect(screen.getAllByText("Coming soon")).toHaveLength(2);
+    expect(screen.getAllByText("Coming soon")).toHaveLength(1); // symptom help (P2)
     expect(await axe(container)).toHaveNoViolations();
   });
 

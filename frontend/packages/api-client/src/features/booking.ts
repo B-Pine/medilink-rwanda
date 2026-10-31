@@ -71,6 +71,8 @@ export interface PublicService {
   name_i18n: I18n;
   fee_rwf: number | null;
   insurers: string[];
+  /** Patient share per insurer, in basis points of the fee. */
+  insurer_shares: Record<string, number>;
   bookable: boolean;
   remote_join: boolean;
   walk_in: boolean;

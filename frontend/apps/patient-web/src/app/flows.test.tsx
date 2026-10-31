@@ -7,7 +7,7 @@ import { renderApp } from "../test/render";
 /** Patient flows against the contract mocks: landing, email-first login, sign-up with consent. */
 
 describe("landing page", () => {
-  it("has one h1, the search placeholder, how it works, facilities band, emergency notice, footer", async () => {
+  it("has one h1, the search form, how it works, facilities band, emergency notice, footer", async () => {
     const { user } = renderApp("/");
     expect(
       await screen.findByRole("heading", { level: 1, name: "Know before you go." }),
@@ -18,12 +18,6 @@ describe("landing page", () => {
     expect(within(search).getByLabelText("What do you need?")).toBeInTheDocument();
     expect(within(search).getByLabelText("Where?")).toBeInTheDocument();
     expect(within(search).getByLabelText("Your insurance")).toBeInTheDocument();
-
-    // Popular chip fills the service; search is a placeholder for now.
-    await user.click(screen.getByRole("button", { name: "Pediatrics" }));
-    expect(within(search).getByLabelText("What do you need?")).toHaveValue("pediatrics");
-    await user.click(within(search).getByRole("button", { name: "Search" }));
-    expect(await screen.findByText(/Search opens soon/)).toBeInTheDocument();
 
     expect(screen.getByRole("heading", { level: 2, name: "How it works" })).toBeInTheDocument();
     expect(
@@ -36,6 +30,14 @@ describe("landing page", () => {
       "/verify",
     );
     expect(screen.getByRole("link", { name: "Log in" })).toHaveAttribute("href", "/login");
+
+    // A popular chip fills the service; Search opens the results page (S5a).
+    await user.click(screen.getByRole("button", { name: "Pediatrics" }));
+    expect(within(search).getByLabelText("What do you need?")).toHaveValue("pediatrics");
+    await user.click(within(search).getByRole("button", { name: "Search" }));
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "Find a facility" }),
+    ).toBeInTheDocument();
   });
 
   it("is in Kinyarwanda by default and the language switch updates <html lang>", async () => {

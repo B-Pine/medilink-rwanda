@@ -30,8 +30,20 @@ const nodeFormData = (
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
   }).formData()
 ).constructor as typeof FormData;
+// React builds `new FormData(form, submitter)` on every form submit; Node's FormData takes no
+// form, so copy the form's text fields through jsdom's FormData first.
+const JsdomFormData = window.FormData;
+class TestFormData extends nodeFormData {
+  constructor(form?: HTMLFormElement, submitter?: HTMLElement | null) {
+    super();
+    if (!form) return;
+    for (const [name, value] of new JsdomFormData(form, submitter ?? undefined)) {
+      if (typeof value === "string") this.append(name, value);
+    }
+  }
+}
 for (const [name, value] of Object.entries({
-  FormData: nodeFormData,
+  FormData: TestFormData,
   File: NodeFile,
   Blob: NodeBlob,
 })) {

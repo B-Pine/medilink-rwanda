@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 2207.
+Keys: 2214.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -1118,6 +1118,8 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `reasons.patient_request` | Umurwayi yabisabye | Patient's request | needs native-speaker review |
 | `reasons.patient_left` | Umurwayi yagiye | Patient left | needs native-speaker review |
 | `reasons.duplicate` | Tike ebyiri | Duplicate ticket | needs native-speaker review |
+| `reasons.patient_was_present` | Umurwayi yari ahari | The patient was here | needs native-speaker review |
+| `reasons.facility_delay` | Gutinda kw’ivuriro | Delay at the facility | needs native-speaker review |
 | `reasons.other` | Ibindi | Other | needs native-speaker review |
 | `actions.check_in` | Yanditswe | Checked in | needs native-speaker review |
 | `actions.call` | Yahamagawe | Called | needs native-speaker review |
@@ -1167,6 +1169,11 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `board.expectedError` | Ntibyashobotse kubona gahunda z’uyu munsi. | Could not load today's bookings. | needs native-speaker review |
 | `board.expectedCheckInError` | Ntibyashobotse kwandika ko uyu murwayi yageze. | Could not check in this booking. | needs native-speaker review |
 | `board.expectedRetry` | Ongera ugerageze | Try again | needs native-speaker review |
+| `board.missed` | Abatitabiriye uyu munsi | Missed today | needs native-speaker review |
+| `board.missedHint` | Banditswe ko batitabiriye. Kuraho niba umurwayi yari ahari cyangwa gutinda kwaturutse kuri twe; igihano kivanwaho. | Marked as no-shows. Undo if the patient was here or the delay was ours; the strike is removed. | needs native-speaker review |
+| `board.undoNoShow` | Kuraho ko atitabiriye | Undo no-show | needs native-speaker review |
+| `board.undoNoShowHelp` | Gahunda irafungwa kandi igihano cy’umurwayi kikavanwaho. | The booking is closed and the patient's strike is removed. | needs native-speaker review |
+| `board.undoNoShowError` | Ntibyashobotse gukuraho ko atitabiriye. | Could not undo this no-show. | needs native-speaker review |
 | `panel.service` | Serivisi | Service | needs native-speaker review |
 | `panel.stage` | Intambwe | Stage | needs native-speaker review |
 | `panel.position` | Umwanya | Place | needs native-speaker review |

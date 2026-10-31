@@ -43,6 +43,23 @@ describe("reception board (S4-F2, F3)", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
+  it("undoes a no-show only with a reason (S5a R5)", async () => {
+    const { user } = await signIn("reception@medilink.test", "/queue");
+    const missed = await screen.findByRole("list", { name: "Missed today" });
+    const row = (await within(missed).findByText("Uwase A.")).closest("li") as HTMLElement;
+    await user.click(within(row).getByRole("button", { name: "Undo no-show" }));
+    const dialog = await screen.findByRole("dialog", { name: "Undo no-show" });
+    const confirm = within(dialog).getByRole("button", { name: "Confirm" });
+    expect(confirm).toBeDisabled();
+    await user.selectOptions(within(dialog).getByLabelText("Reason"), "other");
+    expect(confirm).toBeDisabled();
+    await user.type(within(dialog).getByLabelText("Explain"), "Arrived, desk was closed");
+    await user.click(confirm);
+    await waitFor(() =>
+      expect(screen.queryByRole("list", { name: "Missed today" })).not.toBeInTheDocument(),
+    );
+  });
+
   it("checks in a booked patient from the Expected list (S5a R1, R6)", async () => {
     const { user } = await signIn("reception@medilink.test", "/queue");
     const expected = await screen.findByRole("list", { name: "Expected" });

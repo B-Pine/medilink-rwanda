@@ -10,6 +10,7 @@ import type {
   StaffBooking,
   Symptom,
 } from "../../features/booking";
+import { NO_SHOW_REVERSAL_REASONS } from "../../features/booking";
 import { FACILITIES } from "../data";
 import type { FeatureMockFactory } from "../features";
 import { id, str } from "./s1-common";
@@ -493,6 +494,33 @@ export const bookingMocks: FeatureMockFactory = (context) => {
         makeBooking(slot, patientId, name, "confirmed", [{ code: "headache" }], null, "phone"),
       );
     }
+    // …and one that was marked a no-show this morning (reversal, contract R5)
+    {
+      const slot: MockSlot = {
+        id: id(),
+        slug: FACILITIES.kigaliClinic.slug,
+        service_id: SETUP_IDS.sGen,
+        starts_at: today(7, 30),
+        ends_at: today(8, 0),
+        doctor: "Dr Keza Umutoni",
+        membership_id: SETUP_IDS.mKeza,
+        open_places: 0,
+        capacity: 1,
+        held: 0,
+        booked: 1,
+      };
+      db.bookings.push(
+        makeBooking(
+          slot,
+          "f9e00000-0000-4000-8000-000000000003",
+          "Uwase Aline",
+          "no_show",
+          [{ code: "fever" }],
+          null,
+          "online",
+        ),
+      );
+    }
   };
   seedBookings();
 
@@ -951,6 +979,19 @@ export const bookingMocks: FeatureMockFactory = (context) => {
         if ("error" in ok) return ok.error;
         const b = db.bookings.find((x) => x.id === params.id);
         if (!b) return context.errorResponse(404, "not_found", "Not found.");
+        const body = (await context.readJson(request)) ?? {};
+        const code = str(body.reason_code);
+        if (
+          !(NO_SHOW_REVERSAL_REASONS as readonly string[]).includes(code) ||
+          (code === "other" && !str(body.reason_text).trim())
+        )
+          return context.errorResponse(422, "business_rule_violation", "Give a reason.", {
+            fields: { reason_code: ["Give a reason."] },
+          });
+        if (b.status !== "no_show")
+          return context.errorResponse(422, "business_rule_violation", "Not allowed.", {
+            fields: { booking: ["not_allowed"] },
+          });
         b.status = "cancelled";
         b.version += 1;
         return HttpResponse.json(staffRow(b));
@@ -961,6 +1002,19 @@ export const bookingMocks: FeatureMockFactory = (context) => {
         if ("error" in ok) return ok.error;
         const b = db.bookings.find((x) => x.id === params.id);
         if (!b) return context.errorResponse(404, "not_found", "Not found.");
+        const body = (await context.readJson(request)) ?? {};
+        const code = str(body.reason_code);
+        if (
+          !(NO_SHOW_REVERSAL_REASONS as readonly string[]).includes(code) ||
+          (code === "other" && !str(body.reason_text).trim())
+        )
+          return context.errorResponse(422, "business_rule_violation", "Give a reason.", {
+            fields: { reason_code: ["Give a reason."] },
+          });
+        if (b.status !== "no_show")
+          return context.errorResponse(422, "business_rule_violation", "Not allowed.", {
+            fields: { booking: ["not_allowed"] },
+          });
         b.status = "cancelled";
         b.version += 1;
         return HttpResponse.json(staffRow(b));

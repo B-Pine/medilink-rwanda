@@ -70,6 +70,8 @@
     "patient_request": "Umurwayi yabisabye",
     "patient_left": "Umurwayi yagiye",
     "duplicate": "Tike ebyiri",
+    "patient_was_present": "Umurwayi yari ahari",
+    "facility_delay": "Gutinda kw’ivuriro",
     "other": "Ibindi"
   },
   "actions": {
@@ -126,7 +128,12 @@
     "expectedAnyDoctor": "Muganga uwo ari we wese",
     "expectedError": "Ntibyashobotse kubona gahunda z’uyu munsi.",
     "expectedCheckInError": "Ntibyashobotse kwandika ko uyu murwayi yageze.",
-    "expectedRetry": "Ongera ugerageze"
+    "expectedRetry": "Ongera ugerageze",
+    "missed": "Abatitabiriye uyu munsi",
+    "missedHint": "Banditswe ko batitabiriye. Kuraho niba umurwayi yari ahari cyangwa gutinda kwaturutse kuri twe; igihano kivanwaho.",
+    "undoNoShow": "Kuraho ko atitabiriye",
+    "undoNoShowHelp": "Gahunda irafungwa kandi igihano cy’umurwayi kikavanwaho.",
+    "undoNoShowError": "Ntibyashobotse gukuraho ko atitabiriye."
   },
   "panel": {
     "service": "Serivisi",

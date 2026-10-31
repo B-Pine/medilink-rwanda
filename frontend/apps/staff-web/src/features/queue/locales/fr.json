@@ -70,6 +70,8 @@
     "patient_request": "Demande du patient",
     "patient_left": "Patient parti",
     "duplicate": "Ticket en double",
+    "patient_was_present": "Le patient était présent",
+    "facility_delay": "Retard de l’établissement",
     "other": "Autre"
   },
   "actions": {
@@ -126,7 +128,12 @@
     "expectedAnyDoctor": "N’importe quel médecin",
     "expectedError": "Impossible de charger les réservations du jour.",
     "expectedCheckInError": "Impossible d’enregistrer l’arrivée pour cette réservation.",
-    "expectedRetry": "Réessayer"
+    "expectedRetry": "Réessayer",
+    "missed": "Absences du jour",
+    "missedHint": "Marqués absents. Annulez si le patient était là ou si le retard venait de nous ; la pénalité est retirée.",
+    "undoNoShow": "Annuler l’absence",
+    "undoNoShowHelp": "La réservation est clôturée et la pénalité du patient est retirée.",
+    "undoNoShowError": "Impossible d’annuler cette absence."
   },
   "panel": {
     "service": "Service",

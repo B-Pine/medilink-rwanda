@@ -1,13 +1,14 @@
-import type { StaffBooking } from "@medilink/api-client";
-import { newIdempotencyKey } from "@medilink/api-client";
+import type { NoShowReversalReason, StaffBooking } from "@medilink/api-client";
+import { newIdempotencyKey, NO_SHOW_REVERSAL_REASONS } from "@medilink/api-client";
 import { Alert, Badge, Button, EmptyState } from "@medilink/ui";
 import { CalendarCheck } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useApi } from "../../app/services";
 import { queueKeys, usePollInterval } from "./live";
-import { actionError, useCan, useServiceNames } from "./shared";
+import { actionError, ReasonDialog, useCan, useServiceNames } from "./shared";
 
 export const expectedKey = ["queue", "expected"] as const;
 
@@ -133,6 +134,98 @@ export function ExpectedList({ serviceId }: { serviceId: string | null }) {
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+/**
+ * Missed today (contract S5 R5, FR-SCH-13): bookings the no-show job closed today. Reception can
+ * undo one with a reason (`patient_was_present`, `facility_delay`, `other` with text), which
+ * removes the patient's strike. Hidden when there is none.
+ */
+export function MissedList({ serviceId }: { serviceId: string | null }) {
+  const { t, i18n } = useTranslation();
+  const api = useApi();
+  const queryClient = useQueryClient();
+  const serviceName = useServiceNames();
+  const canUndo = useCan("queue.operate");
+  const refetchInterval = usePollInterval();
+  const language = i18n.resolvedLanguage ?? "en";
+  const today = kigaliToday();
+  const [undoing, setUndoing] = useState<StaffBooking | null>(null);
+
+  const missed = useQuery({
+    queryKey: [...expectedKey, "no_show", today],
+    queryFn: () => api.booking.staff.bookings({ date: today, status: "no_show" }),
+    refetchInterval,
+    enabled: canUndo,
+  });
+
+  const undo = useMutation({
+    mutationFn: (input: { booking: StaffBooking; reason: NoShowReversalReason; text: string }) =>
+      api.booking.staff.reverseNoShow(
+        input.booking.id,
+        input.booking.version,
+        input.reason,
+        input.text,
+      ),
+    onSuccess: () => setUndoing(null),
+    onSettled: () => void queryClient.invalidateQueries({ queryKey: expectedKey }),
+  });
+
+  const rows = (missed.data?.results ?? []).filter(
+    (booking) => !serviceId || booking.service_id === serviceId,
+  );
+  if (!canUndo || rows.length === 0) return null;
+
+  return (
+    <div className="flex flex-col gap-2">
+      <h3 id="missed-today" className="m-0 font-heading text-body font-semibold">
+        {t("queue.board.missed")}
+      </h3>
+      <p className="m-0 text-body-sm text-fg-muted">{t("queue.board.missedHint")}</p>
+      {undo.isError && (
+        <Alert tone="danger">{actionError(undo.error, t("queue.board.undoNoShowError"))}</Alert>
+      )}
+      <ul
+        aria-labelledby="missed-today"
+        className="m-0 flex list-none flex-col divide-y divide-border rounded-lg border border-dashed border-border p-0"
+      >
+        {rows.map((booking) => (
+          <li key={booking.id} className="flex flex-col gap-2 px-3 py-3">
+            <div className="flex items-start gap-3">
+              <time
+                dateTime={booking.starts_at}
+                className="shrink-0 tabular-nums leading-6 text-fg-muted"
+              >
+                {slotTime(booking.starts_at, language)}
+              </time>
+              <span className="flex min-w-0 flex-1 flex-col">
+                <span className="font-semibold leading-6 break-words">{booking.display_name}</span>
+                <span className="text-body-sm text-fg-muted break-words">
+                  {serviceName(booking.service_id)}
+                </span>
+              </span>
+            </div>
+            <Button variant="ghost" className="self-start" onClick={() => setUndoing(booking)}>
+              {t("queue.board.undoNoShow")}
+            </Button>
+          </li>
+        ))}
+      </ul>
+      {undoing && (
+        <ReasonDialog
+          title={t("queue.board.undoNoShow")}
+          description={t("queue.board.undoNoShowHelp")}
+          onClose={() => setUndoing(null)}
+          busy={undo.isPending}
+          choice={null}
+          reasons={[...NO_SHOW_REVERSAL_REASONS]}
+          onSubmit={(_choice, reason, text) =>
+            undo.mutate({ booking: undoing, reason: reason as NoShowReversalReason, text })
+          }
+        />
+      )}
     </div>
   );
 }

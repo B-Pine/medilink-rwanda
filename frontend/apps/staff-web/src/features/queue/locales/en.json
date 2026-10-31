@@ -70,6 +70,8 @@
     "patient_request": "Patient's request",
     "patient_left": "Patient left",
     "duplicate": "Duplicate ticket",
+    "patient_was_present": "The patient was here",
+    "facility_delay": "Delay at the facility",
     "other": "Other"
   },
   "actions": {
@@ -126,7 +128,12 @@
     "expectedAnyDoctor": "Any doctor",
     "expectedError": "Could not load today's bookings.",
     "expectedCheckInError": "Could not check in this booking.",
-    "expectedRetry": "Try again"
+    "expectedRetry": "Try again",
+    "missed": "Missed today",
+    "missedHint": "Marked as no-shows. Undo if the patient was here or the delay was ours; the strike is removed.",
+    "undoNoShow": "Undo no-show",
+    "undoNoShowHelp": "The booking is closed and the patient's strike is removed.",
+    "undoNoShowError": "Could not undo this no-show."
   },
   "panel": {
     "service": "Service",

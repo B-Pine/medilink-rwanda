@@ -37,12 +37,13 @@ import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
 import { WalkInForm } from "../patients";
 import { queueKeys, usePollInterval, useQueueSocket } from "./live";
-import { ExpectedList } from "./ExpectedList";
+import { ExpectedList, MissedList } from "./ExpectedList";
 import { LiveBadge } from "./LiveIndicator";
 import {
   actionError,
   Flags,
   minutesSince,
+  ReasonDialog,
   useCan,
   useServiceNames,
   useTicketAction,
@@ -182,6 +183,7 @@ export function BoardPage() {
             {t("queue.board.expected")}
           </h2>
           <ExpectedList serviceId={filter} />
+          <MissedList serviceId={filter} />
         </section>
 
         <section aria-labelledby="on-site" className="flex min-w-0 flex-col gap-4">
@@ -523,105 +525,6 @@ function TicketPanel({
         />
       )}
     </SidePanel>
-  );
-}
-
-function ReasonDialog({
-  title,
-  description,
-  onClose,
-  busy,
-  choice,
-  reasons,
-  onSubmit,
-  freeReason,
-  danger,
-}: {
-  title: string;
-  description?: string;
-  onClose: () => void;
-  busy: boolean;
-  choice: { label: string; options: [string, string][] } | null;
-  reasons: string[] | null;
-  onSubmit: (choice: string, reason: string, text: string) => void;
-  freeReason?: boolean;
-  danger?: boolean;
-}) {
-  const { t } = useTranslation();
-  const [picked, setPicked] = useState(choice?.options[0]?.[0] ?? "");
-  const [reason, setReason] = useState(reasons ? "" : "");
-  const [text, setText] = useState("");
-  const needsReason = Boolean(reasons) || freeReason;
-  const ready =
-    (!choice || picked) && (!needsReason || reason.trim()) && !(reason === "other" && !text.trim());
-  return (
-    <Dialog
-      open
-      onOpenChange={(o) => !o && onClose()}
-      title={title}
-      description={description}
-      closeLabel={t("queue.close")}
-      footer={
-        <>
-          <Button variant="secondary" onClick={onClose}>
-            {t("queue.cancel")}
-          </Button>
-          <Button
-            variant={danger ? "danger" : "primary"}
-            disabled={!ready || busy}
-            onClick={() => onSubmit(picked, reason, text)}
-          >
-            {t("queue.confirm")}
-          </Button>
-        </>
-      }
-    >
-      <div className="flex flex-col gap-4">
-        {choice && (
-          <SelectField
-            label={choice.label}
-            value={picked}
-            onChange={(e) => setPicked(e.target.value)}
-          >
-            {choice.options.map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </SelectField>
-        )}
-        {reasons && (
-          <SelectField
-            label={t("queue.reason")}
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-          >
-            <option value="">—</option>
-            {reasons.map((r) => (
-              <option key={r} value={r}>
-                {t(`queue.reasons.${r}`)}
-              </option>
-            ))}
-          </SelectField>
-        )}
-        {freeReason && (
-          <TextField
-            label={t("queue.reason")}
-            value={reason}
-            maxLength={40}
-            onChange={(e) => setReason(e.target.value)}
-          />
-        )}
-        {reason === "other" && (
-          <TextField
-            label={t("queue.reasonText")}
-            value={text}
-            maxLength={300}
-            onChange={(e) => setText(e.target.value)}
-          />
-        )}
-      </div>
-    </Dialog>
   );
 }
 

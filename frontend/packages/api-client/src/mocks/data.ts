@@ -20,6 +20,8 @@ export const MOCK_TOTP_CODE = "123456";
 export const MOCK_RECOVERY_CODE = "k7q2-m9xd";
 /** Token accepted by the mocked password-reset confirm endpoint (uid can be anything). */
 export const MOCK_RESET_TOKEN = "mock-reset-token";
+/** Confirms the most recent pending mock sign-up (the real token comes by email). */
+export const MOCK_VERIFY_TOKEN = "mock-verify-token";
 /** Any login with this email answers 429 rate_limited (to see the lockout message). */
 export const MOCK_RATE_LIMITED_EMAIL = "ratelimited@medilink.test";
 /** Failed attempts before the mocks answer 429. */

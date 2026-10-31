@@ -1,4 +1,4 @@
-import { MOCK_PASSWORD } from "@medilink/api-client/mocks";
+import { MOCK_PASSWORD, MOCK_VERIFY_TOKEN } from "@medilink/api-client/mocks";
 import { screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
@@ -165,16 +165,15 @@ describe("sign-up with consent", () => {
     await user.click(screen.getByLabelText(/I have read the privacy notice/));
     await user.click(screen.getByRole("button", { name: "Create account" }));
 
+    // Always "check your email" (no account enumeration); the emailed link signs in.
     expect(
-      await screen.findByRole("heading", {
-        level: 1,
-        name: /^Good (morning|afternoon|evening), Uwera Diane$/,
-      }),
+      await screen.findByRole("heading", { level: 1, name: "Check your email" }),
     ).toBeInTheDocument();
-    expect(router.state.location.pathname).toBe("/home");
+    expect(screen.getByRole("status")).toHaveTextContent("We sent a message to");
+    expect(router.state.location.pathname).toBe("/signup");
   });
 
-  it("server errors on step-1 fields send the user back to step 1 with values kept", async () => {
+  it("an email that already has an account gets the same check-your-email screen", async () => {
     const { user } = renderApp("/signup");
     await user.type(await screen.findByLabelText("Your names"), "Mukamana Jeanne");
     await user.type(screen.getByLabelText("Email"), "patient@medilink.test"); // already registered
@@ -185,14 +184,38 @@ describe("sign-up with consent", () => {
     await user.click(screen.getByRole("button", { name: "Create account" }));
 
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Create your account" }),
+      await screen.findByRole("heading", { level: 1, name: "Check your email" }),
     ).toBeInTheDocument();
-    const email = screen.getByLabelText("Email");
-    expect(email).toHaveValue("patient@medilink.test");
-    expect(email).toHaveAttribute("aria-invalid", "true");
-    expect(screen.getByRole("alert")).toHaveTextContent(
-      "Check this email address or log in instead.",
-    );
+    expect(screen.getByRole("status")).toHaveTextContent("patient@medilink.test");
+  });
+
+  it("the emailed link confirms the email and signs in", async () => {
+    const { user, router } = renderApp("/signup");
+    await user.type(await screen.findByLabelText("Your names"), "Uwera Diane");
+    await user.type(screen.getByLabelText("Email"), "diane@example.rw");
+    await user.type(screen.getByLabelText("Password"), "a-long-passphrase-2026");
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+    await user.click(await screen.findByLabelText("I accept the terms of use"));
+    await user.click(screen.getByLabelText(/I have read the privacy notice/));
+    await user.click(screen.getByRole("button", { name: "Create account" }));
+    await screen.findByRole("heading", { level: 1, name: "Check your email" });
+
+    await router.navigate(`/verify-email?token=${MOCK_VERIFY_TOKEN}`);
+    expect(
+      await screen.findByRole("heading", {
+        level: 1,
+        name: /^Good (morning|afternoon|evening), Uwera Diane$/,
+      }),
+    ).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe("/home");
+  });
+
+  it("a bad verification link offers to sign up again", async () => {
+    renderApp("/verify-email?token=wrong");
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "We couldn't confirm your email" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Sign up again" })).toHaveAttribute("href", "/signup");
   });
 });
 

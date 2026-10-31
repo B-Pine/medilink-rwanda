@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 2214.
+Keys: 2215.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -739,6 +739,11 @@ File: `apps/staff-web/src/features/patients/locales/rw.json`
 | `palette.searchFor` | Shakisha abarwayi “{{query}}” | Search patients for “{{query}}” | needs native-speaker review |
 | `palette.results` | Abarwayi | Patients | needs native-speaker review |
 | `palette.file` | Dosiye {{number}} | File {{number}} | needs native-speaker review |
+| `picker.mode` | Shakisha cyangwa wandike umurwayi | Find or register the patient | needs native-speaker review |
+| `picker.find` | Shakisha umurwayi | Find a patient | needs native-speaker review |
+| `picker.new` | Umurwayi mushya | New patient | needs native-speaker review |
+| `picker.noMatch` | Nta murwayi wabonetse. Mwandike nk’umurwayi mushya. | No patient found. Register them as a new patient. | needs native-speaker review |
+| `picker.choose` | Hitamo | Choose | needs native-speaker review |
 
 ## staff-web feature: platform (namespace platform)
 
@@ -1191,10 +1196,6 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `panel.left` | Yagiye | Mark as left | needs native-speaker review |
 | `panel.timeline` | Ibyabaye | What happened | needs native-speaker review |
 | `checkIn.title` | Andika umurwayi | Check in a patient | needs native-speaker review |
-| `checkIn.find` | Shakisha umurwayi | Find a patient | needs native-speaker review |
-| `checkIn.new` | Umurwayi mushya | New patient | needs native-speaker review |
-| `checkIn.noMatch` | Nta murwayi wabonetse. Mwandike nk’umurwayi mushya. | No patient found. Register them as a new patient. | needs native-speaker review |
-| `checkIn.choose` | Hitamo | Choose | needs native-speaker review |
 | `checkIn.back` | Subira inyuma | Back | needs native-speaker review |
 | `checkIn.submit` | Andika | Check in | needs native-speaker review |
 | `checkIn.emergency` | Byihutirwa | Emergency | needs native-speaker review |

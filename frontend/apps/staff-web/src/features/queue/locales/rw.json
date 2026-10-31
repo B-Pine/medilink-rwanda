@@ -155,10 +155,6 @@
   },
   "checkIn": {
     "title": "Andika umurwayi",
-    "find": "Shakisha umurwayi",
-    "new": "Umurwayi mushya",
-    "noMatch": "Nta murwayi wabonetse. Mwandike nk’umurwayi mushya.",
-    "choose": "Hitamo",
     "back": "Subira inyuma",
     "submit": "Andika",
     "emergency": "Byihutirwa",

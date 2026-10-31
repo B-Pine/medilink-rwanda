@@ -155,10 +155,6 @@
   },
   "checkIn": {
     "title": "Check in a patient",
-    "find": "Find a patient",
-    "new": "New patient",
-    "noMatch": "No patient found. Register them as a new patient.",
-    "choose": "Choose",
     "back": "Back",
     "submit": "Check in",
     "emergency": "Emergency",

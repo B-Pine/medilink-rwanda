@@ -155,10 +155,6 @@
   },
   "checkIn": {
     "title": "Enregistrer un patient",
-    "find": "Rechercher",
-    "new": "Nouveau patient",
-    "noMatch": "Aucun patient trouvé. Enregistrez-le comme nouveau patient.",
-    "choose": "Choisir",
     "back": "Retour",
     "submit": "Enregistrer",
     "emergency": "Urgence",

@@ -271,5 +271,12 @@
     "searchFor": "Search patients for “{{query}}”",
     "results": "Patients",
     "file": "File {{number}}"
+  },
+  "picker": {
+    "mode": "Find or register the patient",
+    "find": "Find a patient",
+    "new": "New patient",
+    "noMatch": "No patient found. Register them as a new patient.",
+    "choose": "Choose"
   }
 }

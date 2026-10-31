@@ -36,3 +36,13 @@ backend/var/
 
 # Local design-tool cache
 .impeccable/
+
+# Personal compose overrides (copy docker-compose.override.example.yml if you need one)
+docker-compose.override.yml
+
+# Per-user AI agent and MCP configs (machine-specific paths)
+.cursor/
+.gemini/
+.codex/
+.agents/
+.todo

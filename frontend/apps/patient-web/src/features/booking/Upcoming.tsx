@@ -17,6 +17,7 @@ import {
   EmptyState,
   Skeleton,
 } from "@medilink/ui";
+import { dateFormat } from "@medilink/ui/i18n";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -39,7 +40,7 @@ function DateTile({ iso }: { iso: string }) {
   const lang = i18n.resolvedLanguage ?? "rw";
   const date = new Date(iso);
   const part = (o: Intl.DateTimeFormatOptions) =>
-    new Intl.DateTimeFormat(lang, { ...o, timeZone: "Africa/Kigali" }).format(date);
+    dateFormat(lang, { ...o, timeZone: "Africa/Kigali" }).format(date);
   return (
     <span
       aria-hidden="true"

@@ -31,6 +31,7 @@ import {
   SymptomPicker as SharedSymptomPicker,
   TextareaField,
 } from "@medilink/ui";
+import { dateFormat } from "@medilink/ui/i18n";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -317,7 +318,7 @@ function WhenStep({
                       )}
                     >
                       <span className="text-caption font-semibold uppercase">
-                        {new Intl.DateTimeFormat(lang, {
+                        {dateFormat(lang, {
                           weekday: "short",
                           timeZone: "Africa/Kigali",
                         }).format(new Date(`${d.date}T12:00:00+02:00`))}

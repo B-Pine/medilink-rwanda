@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { Badge, type BadgeTone } from "./Badge";
+import { dateFormat } from "../i18n/dates";
 
 export interface TimelineEvent {
   id: string;
@@ -26,7 +27,7 @@ export function formatKigaliTime(iso: string, locale: string): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return iso;
   try {
-    return new Intl.DateTimeFormat(locale, {
+    return dateFormat(locale, {
       dateStyle: "medium",
       timeStyle: "short",
       timeZone: KIGALI,

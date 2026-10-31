@@ -1,4 +1,5 @@
 import type { I18n } from "@medilink/api-client";
+import { dateFormat } from "@medilink/ui/i18n";
 
 /**
  * Discovery choices shared by the landing hero, Find care and search (design 06 §2 H1). Service
@@ -57,7 +58,7 @@ export function rwf(amount: number | null | undefined, language: string): string
 const KIGALI = "Africa/Kigali";
 
 export function time(iso: string, language: string): string {
-  return new Intl.DateTimeFormat(language, {
+  return dateFormat(language, {
     hour: "2-digit",
     minute: "2-digit",
     timeZone: KIGALI,
@@ -65,7 +66,7 @@ export function time(iso: string, language: string): string {
 }
 
 export function day(iso: string, language: string, style: "short" | "long" = "long"): string {
-  return new Intl.DateTimeFormat(language, {
+  return dateFormat(language, {
     weekday: style,
     day: "numeric",
     month: style === "long" ? "long" : "short",

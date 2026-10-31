@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from rest_framework import serializers
 
 from medilink.accounts.serializers import StrictSerializer
@@ -9,8 +11,10 @@ from medilink.visits.models import DutyState, PriorityClass, Stage, TicketState,
 
 
 class CheckInSerializer(StrictSerializer):
-    facility_patient_id = serializers.UUIDField()
-    service_id = serializers.UUIDField()
+    # S5: a booking brings its own patient and service (contract sprint-05 §3.3 R6)
+    booking_id = serializers.UUIDField(required=False, allow_null=True)
+    facility_patient_id = serializers.UUIDField(required=False)
+    service_id = serializers.UUIDField(required=False)
     source = serializers.ChoiceField(  # type: ignore[assignment]  # API field name
         choices=[VisitSource.WALK_IN, VisitSource.EMERGENCY], default=VisitSource.WALK_IN
     )
@@ -24,6 +28,15 @@ class CheckInSerializer(StrictSerializer):
         max_length=1000, required=False, allow_blank=True, allow_null=True
     )
     insurance_profile_id = serializers.UUIDField(required=False, allow_null=True)
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        if not attrs.get("booking_id") and not (
+            attrs.get("facility_patient_id") and attrs.get("service_id")
+        ):
+            raise serializers.ValidationError(
+                {"facility_patient_id": ["Choose a patient and a service, or a booking."]}
+            )
+        return attrs
 
 
 class TicketRowSerializer(serializers.Serializer):
@@ -211,3 +224,49 @@ class PatientVisitSerializer(serializers.Serializer):
 
 class TravelTimeSerializer(StrictSerializer):
     minutes = serializers.IntegerField(min_value=0, max_value=600)
+
+
+class DayFiguresSerializer(serializers.Serializer):
+    date = serializers.DateField()
+    patients = serializers.IntegerField()
+    completed = serializers.IntegerField()
+    median_wait_min = serializers.IntegerField(allow_null=True)
+    p90_wait_min = serializers.IntegerField(allow_null=True)
+    avg_consult_min = serializers.IntegerField(allow_null=True)
+    left_rate_pct = serializers.IntegerField(allow_null=True)
+    walk_ins = serializers.IntegerField()
+    emergencies = serializers.IntegerField()
+
+
+class ServiceLoadSerializer(serializers.Serializer):
+    service_id = serializers.UUIDField()
+    name_i18n = serializers.DictField()
+    waiting = serializers.IntegerField()
+    in_service = serializers.IntegerField()
+    longest_wait_min = serializers.IntegerField()
+    doctors_on_duty = serializers.IntegerField()
+    load = serializers.ChoiceField(choices=["low", "medium", "high"])
+
+
+class OperationsNowSerializer(serializers.Serializer):
+    waiting = serializers.IntegerField()
+    in_service = serializers.IntegerField()
+    doctors_on_duty = serializers.IntegerField()
+    doctors_on_break = serializers.IntegerField()
+
+
+class HeatCellSerializer(serializers.Serializer):
+    weekday = serializers.IntegerField()
+    hour = serializers.IntegerField()
+    count = serializers.IntegerField()
+
+
+class OperationsSerializer(serializers.Serializer):
+    today = DayFiguresSerializer()
+    same_day_last_week = DayFiguresSerializer()
+    trend = DayFiguresSerializer(many=True)
+    now = OperationsNowSerializer()
+    services = ServiceLoadSerializer(many=True)
+    arrivals_heatmap = HeatCellSerializer(many=True)
+    attention = serializers.DictField(child=serializers.IntegerField())
+    updated_at = serializers.DateTimeField()

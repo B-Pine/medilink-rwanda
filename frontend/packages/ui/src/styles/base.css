@@ -12,6 +12,15 @@
     text-size-adjust: 100%;
   }
 
+  /* Text size setting (design 07 §3.5, TextSizeToggle): all type and spacing are in rem */
+  html[data-text-size="large"] {
+    font-size: 112.5%;
+  }
+
+  html[data-text-size="xlarge"] {
+    font-size: 125%;
+  }
+
   body {
     margin: 0;
     min-height: 100dvh;

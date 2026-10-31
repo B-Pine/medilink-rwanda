@@ -250,3 +250,54 @@ class ConfigChange(UUIDModel):
         indexes: ClassVar[list[Any]] = [
             models.Index(fields=["facility", "-changed_at"], name="facilities_change_idx")
         ]
+
+
+# ---- S5: public read model for discovery (contract sprint-05 §2.3) -----------------------------
+
+
+class PublicListing(UUIDModel):
+    """One row per live facility and active service, C0 data only. No RLS: search reads only this
+    table and never a facility table. Rebuilt per facility on change and every 10 minutes."""
+
+    facility_id = models.UUIDField()
+    facility_slug = models.SlugField(max_length=120)
+    facility_name = models.CharField(max_length=200)
+    facility_type = models.CharField(max_length=32)
+    ownership = models.CharField(max_length=16)
+    level_of_care = models.CharField(max_length=40, blank=True)
+    district_code = models.CharField(max_length=20, blank=True)
+    district = models.CharField(max_length=120, blank=True)
+    sector_code = models.CharField(max_length=20, blank=True)
+    sector = models.CharField(max_length=120, blank=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    service_id = models.UUIDField()
+    service_code = models.CharField(max_length=40, blank=True)
+    service_name_i18n = models.JSONField(default=dict)
+    is_bookable = models.BooleanField(default=False)
+    allows_remote_join = models.BooleanField(default=False)
+    allows_walk_in = models.BooleanField(default=True)
+    fee_rwf = models.PositiveIntegerField(null=True, blank=True)
+    # {insurer_code: patient_share_bp}
+    insurers = models.JSONField(default=dict)
+    # [[weekday, "08:00", "17:00"], ...] for the next 7 days, from the effective calendar
+    hours = models.JSONField(default=list)
+    next_slot_at = models.DateTimeField(null=True, blank=True)
+    queue_load = models.CharField(max_length=8, blank=True)
+    updated_at = models.DateTimeField()
+
+    class Meta:
+        db_table = "facilities_public_listing"
+        indexes: ClassVar[list[Any]] = [
+            models.Index(fields=["service_code"], name="facilities_listing_service"),
+            models.Index(fields=["district_code"], name="facilities_listing_district"),
+            models.Index(fields=["facility_slug"], name="facilities_listing_slug"),
+        ]
+        constraints: ClassVar[list[Any]] = [
+            models.UniqueConstraint(
+                fields=["facility_id", "service_id"], name="facilities_listing_once"
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.facility_slug} {self.service_code}"

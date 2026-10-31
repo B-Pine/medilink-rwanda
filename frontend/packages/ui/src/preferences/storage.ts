@@ -1,6 +1,6 @@
 /**
  * The only place in the frontend allowed to use localStorage (enforced by ESLint).
- * It stores non-sensitive UI preferences: theme, language, table density and the collapsed sidebar. Never tokens, never personal
+ * It stores non-sensitive UI preferences: theme, language, table density, the collapsed sidebar and the text size. Never tokens, never personal
  * or health data (docs/security/06-application-and-api-security.md §6).
  */
 
@@ -11,6 +11,8 @@ const KEYS = {
   tableDensity: "medilink.tableDensity",
   // design pass: staff sidebar collapsed to icons ("1") or full ("0"), design 04 §2
   sidebarCollapsed: "medilink.sidebarCollapsed",
+  // design-v2: patient text size (normal/large/xlarge), design 07 §3.5 Settings
+  textSize: "medilink.textSize",
 } as const;
 
 export type PreferenceKey = keyof typeof KEYS;

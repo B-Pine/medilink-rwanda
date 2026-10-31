@@ -1,18 +1,10 @@
-import type { LinkRelationship, ProfileSummary } from "@medilink/api-client";
+import type { LinkRelationship } from "@medilink/api-client";
 import { House } from "@phosphor-icons/react";
-import {
-  buttonClassName,
-  LanguageSwitcher,
-  LoadingState,
-  Logo,
-  MAIN_CONTENT_ID,
-  ProfileSwitcher,
-  SkipLink,
-} from "@medilink/ui";
+import { buttonClassName, LoadingState } from "@medilink/ui";
 import { useQuery } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation, useNavigate, useParams } from "react-router";
+import { Link, useParams } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PageHeading } from "../../components/PageHeading";
@@ -43,8 +35,8 @@ export const can = {
 };
 
 /**
- * Shell of every S3 patient page: header with the ProfileSwitcher, 18 px body, one task per
- * screen (design 07). Switching keeps the current section for the new profile.
+ * Frame of every S3 patient page inside the PatientShell (which owns the header, the profile
+ * switcher and <main>): a way back, the page title and one task per screen (design 07).
  */
 export function ProfileLayout({
   title,
@@ -56,64 +48,25 @@ export function ProfileLayout({
   back?: { to: string; label: string };
 }) {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const location = useLocation();
   const { patientId } = useParams();
   const profiles = useProfiles();
-  const label = useRelationshipLabel();
-  const list: ProfileSummary[] = profiles.data?.results ?? [];
   if (patientId) rememberProfile(patientId);
 
-  const switchTo = (id: string) => {
-    rememberProfile(id);
-    if (patientId) void navigate(location.pathname.replace(patientId, id));
-    else void navigate(`/profile/${id}`);
-  };
-
   return (
-    <div className="flex min-h-dvh flex-col bg-page text-body">
-      <SkipLink />
-      <header className="border-b border-border bg-surface">
-        <div className="mx-auto flex max-w-[40rem] flex-wrap items-center gap-3 px-4 py-2 sm:flex-nowrap sm:px-6">
-          <Link to="/home" className="inline-flex min-h-12 items-center rounded-sm no-underline">
-            <Logo className="h-10" />
+    <div className="mx-auto flex w-full max-w-[40rem] flex-col gap-5">
+      <nav aria-label={t("profile.breadcrumb")} className="flex flex-wrap gap-2">
+        <Link to="/home" className={buttonClassName({ variant: "ghost" })}>
+          <House aria-hidden="true" className="size-icon" />
+          {t("profile.home")}
+        </Link>
+        {back && (
+          <Link to={back.to} className={buttonClassName({ variant: "ghost" })}>
+            {back.label}
           </Link>
-          <div className="ml-auto flex min-w-0 flex-wrap items-center justify-end gap-2 sm:flex-nowrap">
-            {list.length > 0 && (
-              <ProfileSwitcher
-                label={t("profile.switch")}
-                currentId={patientId ?? null}
-                onSelect={switchTo}
-                profiles={list.map((p) => ({
-                  id: p.patient_id,
-                  name: p.display_name,
-                  relationship: label(p.relationship),
-                }))}
-              />
-            )}
-            <LanguageSwitcher compact />
-          </div>
-        </div>
-      </header>
-      <main
-        id={MAIN_CONTENT_ID}
-        tabIndex={-1}
-        className="mx-auto flex w-full max-w-[40rem] flex-1 flex-col gap-5 px-4 py-6 sm:px-6"
-      >
-        <nav aria-label={t("profile.breadcrumb")} className="flex flex-wrap gap-2">
-          <Link to="/home" className={buttonClassName({ variant: "ghost" })}>
-            <House aria-hidden="true" className="size-icon" />
-            {t("profile.home")}
-          </Link>
-          {back && (
-            <Link to={back.to} className={buttonClassName({ variant: "ghost" })}>
-              {back.label}
-            </Link>
-          )}
-        </nav>
-        <PageHeading title={title}>{title}</PageHeading>
-        {profiles.isPending ? <LoadingState /> : children}
-      </main>
+        )}
+      </nav>
+      <PageHeading title={title}>{title}</PageHeading>
+      {profiles.isPending ? <LoadingState /> : children}
     </div>
   );
 }

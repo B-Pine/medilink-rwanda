@@ -9,15 +9,23 @@ import {
 import { Button, buttonClassName, Card, ImigongoPattern, SelectField } from "@medilink/ui";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 import { PageHeading } from "../components/PageHeading";
 import { PublicLayout } from "../layout/PublicLayout";
+import {
+  DISTRICT_KEYS,
+  INSURER_KEYS,
+  field,
+  searchUrl,
+  SERVICE_KEYS,
+} from "../features/booking/discovery";
+import { HeroIllustration } from "./HeroIllustration";
 import { FaqSection, RecordsSection, TrackerShowcase, TrustSection } from "./LandingSections";
 
-const SERVICES = ["general", "pediatrics", "dental", "antenatal", "eye"] as const;
-const DISTRICTS = ["gasabo", "kicukiro", "nyarugenge", "musanze", "huye", "rubavu"] as const;
-const INSURERS = ["mutuelle", "rama", "mmi", "private", "none"] as const;
+const SERVICES = SERVICE_KEYS;
+const DISTRICTS = DISTRICT_KEYS;
+const INSURERS = INSURER_KEYS;
 
 const STEPS: { key: 1 | 2 | 3; icon: Icon }[] = [
   { key: 1, icon: MagnifyingGlass },
@@ -32,12 +40,19 @@ const STEPS: { key: 1 | 2 | 3; icon: Icon }[] = [
  */
 export function LandingPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [service, setService] = useState("");
-  const [searched, setSearched] = useState(false);
 
   const onSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSearched(true);
+    const form = event.currentTarget;
+    void navigate(
+      searchUrl({
+        service,
+        district: field(form, "district"),
+        insurer: field(form, "insurer"),
+      }),
+    );
   };
 
   return (
@@ -50,15 +65,20 @@ export function LandingPage() {
       >
         <ImigongoPattern opacity={0.06} />
         <div className="relative mx-auto flex max-w-[70rem] flex-col gap-8 px-4 py-12 sm:px-6 lg:py-20">
-          <div className="flex max-w-2xl flex-col gap-4">
-            <PageHeading
-              title={t("landing.title")}
-              id="hero-title"
-              className="text-display text-on-forest"
-            >
-              {t("landing.heroTitle")}
-            </PageHeading>
-            <p className="m-0 text-h3 font-normal text-on-forest-muted">{t("landing.heroBody")}</p>
+          <div className="flex items-end justify-between gap-8">
+            <div className="flex max-w-2xl flex-col gap-4">
+              <PageHeading
+                title={t("landing.title")}
+                id="hero-title"
+                className="text-display text-on-forest"
+              >
+                {t("landing.heroTitle")}
+              </PageHeading>
+              <p className="m-0 text-h3 font-normal text-on-forest-muted">
+                {t("landing.heroBody")}
+              </p>
+            </div>
+            <HeroIllustration className="hidden w-[22rem] shrink-0 drop-shadow-xl lg:block" />
           </div>
 
           <Card as="div" className="text-fg shadow-raised">
@@ -82,6 +102,7 @@ export function LandingPage() {
               </SelectField>
               <SelectField
                 id="search-location"
+                name="district"
                 label={t("landing.search.location")}
                 defaultValue=""
               >
@@ -94,6 +115,7 @@ export function LandingPage() {
               </SelectField>
               <SelectField
                 id="search-insurance"
+                name="insurer"
                 label={t("landing.search.insurance")}
                 defaultValue=""
               >
@@ -112,9 +134,6 @@ export function LandingPage() {
                 {t("landing.search.submit")}
               </Button>
             </form>
-            <p role="status" className="m-0 mt-3 text-fg-secondary empty:hidden">
-              {searched ? t("landing.search.comingSoon") : ""}
-            </p>
             <div className="mt-4 flex flex-wrap items-center gap-2">
               <span className="text-body-sm font-semibold text-fg-muted">
                 {t("landing.search.popular")}

@@ -395,6 +395,10 @@ def test_approve_creates_the_tenant(
         # S2's approval hook then invites the proposed admin and moves the facility to setup
         assert facility.status == "setup" and facility.organization.name == "Ubuzima Ltd"
         assert body["application"]["facility_id"] == str(facility.pk)
+        overview = platform_client.get("/api/v1/platform/overview/").json()
+        assert overview["applications"]["approved"] == 1
+        [district] = overview["facilities_by_district"]
+        assert district["facilities"] == 1 and district["district"] and district["province"]
         assert FacilityLicence.objects.filter(facility=facility, kind="moh_operating").count() == 1
         assert list(
             FacilityStatusEvent.objects.filter(facility=facility)
@@ -639,6 +643,8 @@ def test_overview(
     assert overview["applications"]["submitted"] == 1
     assert overview["oldest_waiting_application"]["id"]
     assert set(overview["facilities"]) == {"approved", "setup", "live", "suspended", "deactivated"}
+    assert overview["applications"]["approved"] == 0
+    assert overview["facilities_by_district"] == []
 
 
 @pytest.mark.acceptance("S1-B18")

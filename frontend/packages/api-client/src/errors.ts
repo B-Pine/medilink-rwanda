@@ -7,6 +7,8 @@ export interface ApiErrorInit {
   fields?: Record<string, string[]>;
   requestId?: string | null;
   retryAfter?: number | null;
+  /** Other top-level keys of the error body, e.g. S5 `alternatives` on `409 slot_taken`. */
+  extra?: Record<string, unknown>;
 }
 
 /**
@@ -20,6 +22,7 @@ export class ApiError extends Error {
   readonly requestId: string | null;
   /** Seconds from the `Retry-After` header (429). */
   readonly retryAfter: number | null;
+  readonly extra: Record<string, unknown>;
 
   constructor(init: ApiErrorInit) {
     super(init.message);
@@ -29,6 +32,7 @@ export class ApiError extends Error {
     this.fields = init.fields ?? {};
     this.requestId = init.requestId ?? null;
     this.retryAfter = init.retryAfter ?? null;
+    this.extra = init.extra ?? {};
   }
 
   get isValidationError(): boolean {
@@ -108,6 +112,7 @@ export async function parseErrorResponse(response: Response): Promise<ApiError> 
       fields: normaliseFields(body.error.fields),
       requestId: body.error.request_id ?? headerRequestId,
       retryAfter,
+      extra: Object.fromEntries(Object.entries(body).filter(([key]) => key !== "error")),
     });
   }
   return new ApiError({

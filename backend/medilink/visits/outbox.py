@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 QUEUE_CHANGED = "queue.changed"
 DUTY_CHANGED = "duty.changed"
 VISIT_CHANGED = "visit.changed"
+BOOKING_CHANGED = "booking.changed"  # S5: staff boards only (the Expected list), never displays
 
 
 def queue_group(facility_id: Any) -> str:
@@ -52,6 +53,8 @@ def _messages(event: OutboxEvent) -> list[tuple[str, dict[str, Any]]]:
     if event.topic in (QUEUE_CHANGED, DUTY_CHANGED) and event.facility_id:
         out.append((queue_group(event.facility_id), data))
         out.append((display_group(event.facility_id), data))
+    if event.topic == BOOKING_CHANGED and event.facility_id:
+        out.append((queue_group(event.facility_id), data))
     if event.topic == VISIT_CHANGED and event.payload.get("patient_id"):
         out.append(
             (

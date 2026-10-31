@@ -228,15 +228,25 @@
   },
   "home": {
     "title": "Accueil",
-    "greeting": "Bonjour, {{name}}",
-    "intro": "Que souhaitez-vous faire aujourd’hui ?",
     "findCare": "Trouver des soins",
     "nextVisitTitle": "Votre prochaine visite",
     "nextVisitEmpty": "Pas encore de visite. Quand vous réservez ou rejoignez une file, elle s’affichera ici.",
     "verifyEmailTitle": "Confirmez votre e-mail",
     "verifyEmailBody": "Nous avons envoyé un lien à {{email}}. Confirmez votre e-mail avant de pouvoir consulter votre dossier de santé.",
-    "settingsTitle": "Affichage",
-    "accountLabel": "Connecté en tant que {{name}}"
+    "greeting_morning": "Bonjour, {{name}}",
+    "greeting_afternoon": "Bon après-midi, {{name}}",
+    "greeting_evening": "Bonsoir, {{name}}",
+    "findCareTitle": "Besoin de voir un médecin ?",
+    "findCareBody": "Rejoignez la file du jour dans un établissement MediLink et suivez votre tour d’ici, pour attendre moins en salle d’attente.",
+    "notSure": "Pas sûr ? Décrivez vos symptômes",
+    "nextVisitEmptyTitle": "Aucune visite à venir",
+    "shortcuts": "Raccourcis",
+    "links": {
+      "profile": "Mon profil et mon assurance",
+      "family": "Membres de la famille",
+      "privacy": "Confidentialité et accès à mon dossier",
+      "settings": "Taille du texte, langue et thème"
+    }
   },
   "info": {
     "back": "Retour à l’accueil",
@@ -284,5 +294,86 @@
     "doneBody": "Votre mot de passe a été modifié et vous avez été déconnecté partout. Connectez-vous avec le nouveau mot de passe.",
     "invalidLink": "Ce lien est incomplet. Ouvrez à nouveau le lien de l’e-mail ou demandez-en un nouveau.",
     "toLogin": "Aller à la connexion"
+  },
+  "shell": {
+    "nav": "Menu principal",
+    "items": {
+      "home": "Accueil",
+      "findCare": "Trouver des soins",
+      "visits": "Mes visites",
+      "help": "Aide"
+    },
+    "offline": "Vous êtes hors ligne. Vous voyez les dernières informations enregistrées sur ce téléphone.",
+    "account": {
+      "label": "Menu du compte de {{name}}",
+      "signedIn": "Connecté en tant que {{name}}",
+      "profile": "Mon profil",
+      "family": "Famille",
+      "privacy": "Confidentialité",
+      "settings": "Paramètres"
+    }
+  },
+  "findCare": {
+    "title": "Trouver des soins",
+    "intro": "Comment voir un médecin avec MediLink aujourd’hui.",
+    "walkIn": {
+      "title": "Venir aujourd’hui",
+      "body": "Rendez-vous dans un établissement MediLink pendant les heures d’ouverture. Pas besoin de rendez-vous.",
+      "steps": {
+        "reception": "Donnez votre nom ou votre numéro MediLink à l’accueil.",
+        "ticket": "Vous recevez un numéro de ticket, par exemple G-023.",
+        "track": "Suivez votre tour dans Mes visites. Nous vous prévenons quand c’est bientôt à vous."
+      },
+      "note": "Votre ticket s’affiche aussi sur l’écran de la salle d’attente."
+    },
+    "book": {
+      "title": "Réserver un créneau",
+      "body": "Choisissez un établissement, un jour et une heure, et voyez votre part du coût avant de réserver.",
+      "action": "Trouver un établissement"
+    },
+    "symptoms": {
+      "title": "Vous ne savez pas de quoi vous avez besoin ?",
+      "body": "Bientôt, vous pourrez décrire vos symptômes et nous vous proposerons le bon service. Cela ne remplacera jamais un médecin."
+    }
+  },
+  "support": {
+    "title": "Aide",
+    "faqTitle": "Questions fréquentes",
+    "faq": {
+      "ticket": {
+        "q": "Comment suivre mon tour ?",
+        "a": "Après votre enregistrement à l’accueil, ouvrez Mes visites. Vous y voyez votre numéro, le nombre de personnes avant vous et l’attente prévue. Nous vous prévenons quand c’est bientôt à vous."
+      },
+      "family": {
+        "q": "Puis-je gérer les visites de mon enfant ?",
+        "a": "Oui. Ajoutez votre enfant dans Famille. Vous pourrez ensuite passer à son profil depuis le haut de l’écran."
+      },
+      "language": {
+        "q": "Comment changer la langue ou agrandir le texte ?",
+        "a": "Ouvrez Paramètres depuis le menu du compte. Vous pouvez choisir le kinyarwanda, l’anglais ou le français et une taille de texte plus grande."
+      },
+      "data": {
+        "q": "Qui peut voir mon dossier médical ?",
+        "a": "Seul le personnel d’un établissement qui vous soigne. Chaque ouverture de votre dossier est enregistrée, et vous voyez la liste dans Confidentialité."
+      }
+    },
+    "deskTitle": "Demandez à l’accueil",
+    "deskBody": "Pas de smartphone ou bloqué ? L’accueil de tout établissement MediLink peut vous enregistrer et répondre à vos questions.",
+    "reportTitle": "Signaler un problème",
+    "reportBody": "Bientôt, vous pourrez signaler ici un problème avec une visite, un paiement ou un document et suivre son traitement.",
+    "more": "Plus d’aide",
+    "guides": "Guides pour les patients et les aidants",
+    "privacy": "Avis de confidentialité",
+    "terms": "Conditions d’utilisation"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "intro": "Ces choix s’appliquent tout de suite et sont gardés sur cet appareil.",
+    "display": "Affichage",
+    "textSizeHint": "Un texte plus grand rend chaque écran plus facile à lire. Les boutons grandissent aussi.",
+    "travelTitle": "Temps de trajet",
+    "travelBody": "Quand vous avez un ticket, indiquez le temps qu’il vous faut pour rejoindre l’établissement. Nous l’utilisons pour vous dire quand partir.",
+    "alertsTitle": "Alertes",
+    "alertsBody": "Bientôt, vous pourrez choisir comment nous vous joignons : sur ce téléphone, par SMS ou par e-mail."
   }
 }

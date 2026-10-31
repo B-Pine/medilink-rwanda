@@ -1,7 +1,5 @@
 {
   "title": "Mon profil",
-  "myProfile": "Mon profil",
-  "homeLinks": "Profil et famille",
   "notFound": "Nous n'avons pas trouvé ce profil.",
   "switch": "Changer de profil",
   "breadcrumb": "Où vous êtes",
@@ -229,5 +227,11 @@
     "insurance": "Vos cartes d’assurance",
     "health": "Allergies, maladies, traitements au long cours",
     "history": "Chaque ouverture de votre dossier par le personnel"
+  },
+  "homeFamily": {
+    "title": "Famille",
+    "manage": "Gérer",
+    "empty": "Ajoutez un enfant ou une personne dont vous prenez soin pour suivre aussi ses visites.",
+    "add": "Ajouter un membre"
   }
 }

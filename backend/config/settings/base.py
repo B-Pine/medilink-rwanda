@@ -181,7 +181,7 @@ CELERY_TASK_ALWAYS_EAGER = env.bool("CELERY_TASK_ALWAYS_EAGER", default=False)
 CELERY_TASK_EAGER_PROPAGATES = True
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_WORKER_HIJACK_ROOT_LOGGER = False
-CELERY_TIMEZONE = "UTC"
+CELERY_TIMEZONE = "Africa/Kigali"  # beat crontabs (e.g. slots at 01:00) in Kigali time
 
 # --------------------------------------------------------------------------------------------
 # Authentication, passwords, MFA
@@ -439,6 +439,12 @@ SPECTACULAR_SETTINGS = {
         "VisitStatusEnum": "medilink.visits.models.VisitStatus",
         "PriorityClassEnum": "medilink.visits.models.PriorityClass",
         # [/S4]
+        # [S5]
+        "BookingStatusEnum": "medilink.scheduling.models.BookingStatus",
+        "BookingSourceEnum": "medilink.scheduling.models.BookingSource",
+        "LevelOfCareEnum": "medilink.masterdata.models.LevelOfCare",
+        "QueueLoadEnum": [("low", "low"), ("medium", "medium"), ("high", "high")],
+        # [/S5]
     },
 }
 
@@ -450,7 +456,8 @@ LANGUAGES = [("rw", "Kinyarwanda"), ("en", "English"), ("fr", "Français")]
 LOCALE_PATHS = [BASE_DIR / "locale"]
 USE_I18N = True
 USE_TZ = True
-TIME_ZONE = "UTC"
+# Africa/Kigali everywhere (analysis 05 §2): local dates and times are Kigali; storage stays UTC
+TIME_ZONE = "Africa/Kigali"
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"

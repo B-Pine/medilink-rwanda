@@ -226,5 +226,53 @@
     "summary": "{{waiting}} barategereje · {{serving}} bari kwa muganga",
     "open": "Fungura umurongo",
     "waiting": "barategereje"
+  },
+  "ops": {
+    "title": "Ibikorwa by’uyu munsi",
+    "allReports": "Raporo zose",
+    "vsLast": "ugereranyije na {{day}} ishize",
+    "patientsToday": "Abarwayi uyu munsi",
+    "medianWait": "Igihe cyo gutegereza muganga (hagati)",
+    "min": "min",
+    "noShows": "Abatitabiriye gahunda",
+    "noShowsLater": "Bizapimwa gufata gahunda kuri interineti nibitangira.",
+    "revenue": "Ayishyuwe uyu munsi",
+    "revenueLater": "Bizapimwa kwishyuza nibitangira.",
+    "liveTitle": "Umutwaro w’umurongo kuri buri serivisi",
+    "quiet": "Nta muntu uri ku murongo ubu.",
+    "doctors_one": "Umuganga {{count}} uri mu kazi",
+    "doctors_other": "Abaganga {{count}} bari mu kazi",
+    "load": {
+      "low": "Bigenda neza",
+      "medium": "Hari benshi",
+      "high": "Huzuye cyane"
+    },
+    "longest": "uwatinze cyane iminota {{min}}",
+    "waiting": "barategereje",
+    "attention": "Bikeneye ko ubireba",
+    "allClear": "Byose ni byiza. Nta gitegereje icyemezo cyawe.",
+    "reordersToReview_one": "Kwimura {{count}} gukeneye kugenzurwa",
+    "reordersToReview_other": "Kwimura {{count}} gukeneye kugenzurwa",
+    "noDoctor_one": "Umurwayi {{count}} ategereje nta muganga uri mu kazi",
+    "noDoctor_other": "Abarwayi {{count}} bategereje nta muganga uri mu kazi",
+    "liveSummary_one": "{{waiting}} barategereje · umuganga {{count}} uri mu kazi",
+    "liveSummary_other": "{{waiting}} barategereje · abaganga {{count}} bari mu kazi"
+  },
+  "reports": {
+    "title": "Raporo",
+    "intro": "Uko ikigo cyawe gihagaze: abarwayi, igihe cyo gutegereza n’igihe baza. Hakurikijwe ibisobanuro bya MediLink.",
+    "period": "Iminsi 14 ishize",
+    "patientsPerDay": "Abarwayi ku munsi",
+    "patients": "Abarwayi",
+    "waitToBeSeen": "Igihe cyo gutegereza muganga (iminota)",
+    "median": "Hagati",
+    "p90": "9 kuri 10 babonye muganga mbere ya",
+    "arrivals": "Igihe abarwayi baza (ibyumweru 4 bishize)",
+    "less": "Bake",
+    "more": "Benshi",
+    "patients14": "Abarwayi, iminsi 14",
+    "avgConsult": "Igihe cyo kuvurwa uyu munsi (hagati)",
+    "leftRate": "Abagiye batavuwe uyu munsi",
+    "emergencies": "Ibyihutirwa, iminsi 14"
   }
 }

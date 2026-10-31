@@ -57,7 +57,10 @@ describe("accessibility (axe)", () => {
     await user.click(screen.getByRole("button", { name: "Continue" }));
     await user.type(await screen.findByLabelText("Password"), "MediLink-demo-2026");
     await user.click(screen.getByRole("button", { name: "Log in" }));
-    await screen.findByRole("heading", { level: 1, name: "Hello, Mukamana Jeanne" });
+    await screen.findByRole("heading", {
+      level: 1,
+      name: /^Good (morning|afternoon|evening), Mukamana Jeanne$/,
+    });
     expect(await axe(container)).toHaveNoViolations();
   });
 });

@@ -361,3 +361,43 @@ class OutboxEvent(UUIDModel):
 
     def __str__(self) -> str:
         return self.topic
+
+
+class SymptomStage(models.TextChoices):
+    BOOKING = "booking", "Booking"
+    CHECK_IN = "check_in", "Check-in"
+
+
+class ReasonSymptom(UUIDModel):
+    """Structured reason for visit (S5, FR-AI-01 stage 0): a snapshot of the master-data symptom,
+    append-only. Set on a booking, copied to the visit at check-in."""
+
+    facility = models.ForeignKey("tenancy.Facility", on_delete=models.PROTECT, related_name="+")
+    booking_id = models.UUIDField(null=True, blank=True)
+    visit = models.ForeignKey(
+        Visit, on_delete=models.PROTECT, null=True, blank=True, related_name="symptoms"
+    )
+    patient = models.ForeignKey("patients.Patient", on_delete=models.PROTECT, related_name="+")
+    symptom = models.ForeignKey("masterdata.Symptom", on_delete=models.PROTECT, related_name="+")
+    symptom_code = models.CharField(max_length=40)
+    symptom_label = models.CharField(max_length=200)
+    duration_days = models.PositiveSmallIntegerField(null=True, blank=True)
+    severity = models.CharField(max_length=10, blank=True)
+    captured_at_stage = models.CharField(max_length=10, choices=SymptomStage.choices)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "visits_reason_symptom"
+        indexes: ClassVar[list[Any]] = [
+            models.Index(fields=["booking_id"], name="visits_symptom_booking"),
+            models.Index(fields=["visit"], name="visits_symptom_visit"),
+        ]
+        constraints: ClassVar[list[Any]] = [
+            models.CheckConstraint(
+                condition=Q(booking_id__isnull=False) | Q(visit__isnull=False),
+                name="visits_symptom_owner",
+            )
+        ]
+
+    def __str__(self) -> str:
+        return self.symptom_code

@@ -135,7 +135,7 @@ KINDS: dict[str, Kind] = {
         Kind(
             slug="symptoms",
             model=m.Symptom,
-            fields=("code", "name_i18n", "body_system", "icd_code"),
+            fields=("code", "name_i18n", "body_system", "icd_code", "is_red_flag"),
             i18n_fields=("name_i18n",),
             all_languages=True,
             importable=True,

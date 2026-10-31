@@ -178,10 +178,22 @@ class CheckInView(QueueView):
         body.is_valid(raise_exception=True)
         data = body.validated_data
         facility_id = self.facility_id()
-        record = FacilityPatient.objects.filter(
-            pk=data["facility_patient_id"], facility_id=facility_id
-        ).first()
-        service = Service.objects.filter(pk=data["service_id"], facility_id=facility_id).first()
+        booking = None
+        record: FacilityPatient | None
+        if data.get("booking_id"):
+            from medilink.scheduling.models import Booking
+            from medilink.scheduling.views_booking import booked_record
+
+            booking = Booking.objects.filter(pk=data["booking_id"], facility_id=facility_id).first()
+            if booking is None:
+                raise exceptions.NotFound()
+            record = booked_record(booking, request.user)
+            service = Service.objects.filter(pk=booking.service_id).first()
+        else:
+            record = FacilityPatient.objects.filter(
+                pk=data["facility_patient_id"], facility_id=facility_id
+            ).first()
+            service = Service.objects.filter(pk=data["service_id"], facility_id=facility_id).first()
         if record is None or service is None:
             raise exceptions.NotFound()
         visit, ticket, created = services.check_in(
@@ -195,6 +207,7 @@ class CheckInView(QueueView):
             reason_text=data.get("reason_text"),
             insurance_profile_id=data.get("insurance_profile_id"),
             key=idempotency_key(request),
+            booking=booking,
         )
         ticket = Ticket.objects.select_related("visit__patient", "service").get(pk=ticket.pk)
         return Response(
@@ -821,3 +834,17 @@ class TravelTimeView(PatientsAPIView):
             defaults={"minutes": body.validated_data["minutes"]},
         )
         return Response({"minutes": body.validated_data["minutes"]})
+
+
+class OperationsView(QueueView):
+    """Facility operations dashboard figures (analysis 13 §1-2, design 04 §3.4)."""
+
+    permission_classes = [Needs("reports.view", CONFIGURE)]
+
+    @extend_schema(
+        operation_id="staff_reports_operations", tags=TAGS, responses={200: s.OperationsSerializer}
+    )
+    def get(self, request: Request) -> Response:
+        from medilink.visits.stats import operations
+
+        return Response(s.OperationsSerializer(operations(self.facility_id())).data)

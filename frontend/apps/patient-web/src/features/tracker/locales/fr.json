@@ -42,5 +42,16 @@
   "states": {
     "in_service": "Avec le médecin",
     "on_hold": "En attente des résultats"
+  },
+  "visits": {
+    "title": "Mes visites",
+    "today": "Aujourd’hui",
+    "loadFailed": "Impossible de charger les visites du jour.",
+    "noneToday": "Aucune visite aujourd’hui",
+    "noneTodayBody": "Après votre enregistrement à l’accueil, votre ticket et votre place dans la file s’affichent ici.",
+    "findCare": "Trouver des soins",
+    "history": "Visites précédentes",
+    "historyEmpty": "Votre historique commence ici",
+    "historyEmptyBody": "Après chaque visite, vous trouverez ici le résumé, vos médicaments, vos documents et le reçu."
   }
 }

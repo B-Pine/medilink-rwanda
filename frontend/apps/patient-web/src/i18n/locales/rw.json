@@ -228,15 +228,25 @@
   },
   "home": {
     "title": "Ahabanza",
-    "greeting": "Muraho, {{name}}",
-    "intro": "Urashaka gukora iki uyu munsi?",
     "findCare": "Shaka ubuvuzi",
     "nextVisitTitle": "Uruzinduko rwawe rukurikira",
     "nextVisitEmpty": "Nta ruzinduko ruraba. Niwafata igihe cyangwa ukajya ku murongo, bizagaragara hano.",
     "verifyEmailTitle": "Emeza imeyili yawe",
     "verifyEmailBody": "Twohereje ihuriro kuri {{email}}. Emeza imeyili yawe mbere yo kubona amadosiye y’ubuzima bwawe.",
-    "settingsTitle": "Imigaragarire",
-    "accountLabel": "Winjiye nka {{name}}"
+    "greeting_morning": "Mwaramutse, {{name}}",
+    "greeting_afternoon": "Mwiriwe, {{name}}",
+    "greeting_evening": "Mwiriwe, {{name}}",
+    "findCareTitle": "Ukeneye kubonana na muganga?",
+    "findCareBody": "Jya ku murongo w’uyu munsi ku kigo gikoresha MediLink ukurikirane igihe cyawe uri hano, utegereze igihe gito mu cyumba cyo gutegereza.",
+    "notSure": "Ntubizi neza? Sobanura uko wiyumva",
+    "nextVisitEmptyTitle": "Nta gahunda iri imbere",
+    "shortcuts": "Inzira z’ihuse",
+    "links": {
+      "profile": "Umwirondoro n’ubwishingizi",
+      "family": "Abagize umuryango",
+      "privacy": "Ibanga n’abarebye dosiye yanjye",
+      "settings": "Ingano y’inyandiko, ururimi n’ibara"
+    }
   },
   "info": {
     "back": "Subira ahabanza",
@@ -284,5 +294,86 @@
     "doneBody": "Ijambo ry’ibanga ryahinduwe kandi wasohowe ahantu hose. Injira ukoresheje ijambo ry’ibanga rishya.",
     "invalidLink": "Iri huriro ntiryuzuye. Ongera ufungure ihuriro riri muri imeyili, cyangwa usabe irindi.",
     "toLogin": "Jya ku kwinjira"
+  },
+  "shell": {
+    "nav": "Menyu nyamukuru",
+    "items": {
+      "home": "Ahabanza",
+      "findCare": "Shaka ubuvuzi",
+      "visits": "Gahunda zanjye",
+      "help": "Ubufasha"
+    },
+    "offline": "Nta murandasi ufite. Urabona ibyabitswe bwa nyuma kuri iyi telefoni.",
+    "account": {
+      "label": "Menyu ya konti ya {{name}}",
+      "signedIn": "Winjiye nka {{name}}",
+      "profile": "Umwirondoro wanjye",
+      "family": "Umuryango",
+      "privacy": "Ibanga",
+      "settings": "Igenamiterere"
+    }
+  },
+  "findCare": {
+    "title": "Shaka ubuvuzi",
+    "intro": "Uko wabonana na muganga ukoresheje MediLink uyu munsi.",
+    "walkIn": {
+      "title": "Ngwino uyu munsi",
+      "body": "Jya ku kigo gikoresha MediLink mu masaha y’akazi. Ntukeneye gufata gahunda mbere.",
+      "steps": {
+        "reception": "Bwira abakira abarwayi izina ryawe cyangwa nimero ya MediLink.",
+        "ticket": "Uhabwa nimero ya tike, urugero G-023.",
+        "track": "Kurikirana igihe cyawe muri Gahunda zanjye. Tukumenyesha igihe ugiye kugerwaho."
+      },
+      "note": "Tike yawe igaragara no kuri ecran yo mu cyumba cyo gutegereza."
+    },
+    "book": {
+      "title": "Fata gahunda",
+      "body": "Hitamo ikigo, umunsi n’isaha, urebe n’uruhare rwawe ku kiguzi mbere yo gufata gahunda.",
+      "action": "Shaka ikigo"
+    },
+    "symptoms": {
+      "title": "Ntuzi icyo ukeneye?",
+      "body": "Vuba uzashobora gusobanura uko wiyumva tukakwereka serivisi ikwiye. Ibi ntibizasimbura muganga."
+    }
+  },
+  "support": {
+    "title": "Ubufasha",
+    "faqTitle": "Ibibazo bikunze kubazwa",
+    "faq": {
+      "ticket": {
+        "q": "Nakurikirana nte igihe cyanjye?",
+        "a": "Abakira abarwayi bamaze kukwandika, fungura Gahunda zanjye. Uhabona nimero ya tike, umubare w’abakuri imbere n’igihe uzategereza. Tukumenyesha igihe ugiye kugerwaho."
+      },
+      "family": {
+        "q": "Nshobora gucunga gahunda z’umwana wanjye?",
+        "a": "Yego. Ongeraho umwana wawe muri Umuryango. Uzajya uhinduranya ujya ku mwirondoro we hejuru kuri ecran."
+      },
+      "language": {
+        "q": "Nahindura nte ururimi cyangwa nkongera ingano y’inyandiko?",
+        "a": "Fungura Igenamiterere muri menyu ya konti. Ushobora guhitamo Ikinyarwanda, Icyongereza cyangwa Igifaransa n’inyandiko nini."
+      },
+      "data": {
+        "q": "Ni nde ushobora kubona dosiye yanjye y’ubuzima?",
+        "a": "Abakozi b’ikigo kikuvura gusa. Buri gihe umuntu afunguye dosiye yawe birandikwa, kandi ushobora kubona urutonde muri Ibanga."
+      }
+    },
+    "deskTitle": "Baza abakira abarwayi",
+    "deskBody": "Nta telefoni igezweho ufite cyangwa wagize ikibazo? Abakira abarwayi ku kigo cyose gikoresha MediLink bashobora kukwandika no gusubiza ibibazo byawe.",
+    "reportTitle": "Tanga ikibazo",
+    "reportBody": "Vuba uzashobora gutangira hano ikibazo ku isura kwa muganga, ku kwishyura cyangwa ku nyandiko ukakurikirana.",
+    "more": "Ubundi bufasha",
+    "guides": "Amabwiriza y’abarwayi n’ababitaho",
+    "privacy": "Itangazo ry’ibanga",
+    "terms": "Amabwiriza yo gukoresha"
+  },
+  "settings": {
+    "title": "Igenamiterere",
+    "intro": "Ibyo uhisemo bihita bikora kandi bibikwa kuri iki gikoresho.",
+    "display": "Imigaragarire",
+    "textSizeHint": "Inyandiko nini zituma buri ecran isomeka byoroshye. Utubuto natwo turakura.",
+    "travelTitle": "Igihe cy’urugendo",
+    "travelBody": "Iyo ufite tike, tubwire igihe bigutwara kugera ku kigo. Tukifashisha tukubwira igihe cyo kuva mu rugo.",
+    "alertsTitle": "Imenyesha",
+    "alertsBody": "Vuba uzashobora guhitamo uko tukugeraho: kuri iyi telefoni, kuri SMS cyangwa kuri imeri."
   }
 }

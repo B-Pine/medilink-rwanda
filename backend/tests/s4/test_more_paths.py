@@ -193,8 +193,36 @@ def test_seed_queue_dev_checks_in_the_demo_queue(clinic: Any, catalogue: dict[st
     UserFactory(email="receptionist@demo.medilink.test")
     call_command("seed_queue_dev")
     with rls_context(facility_id=clinic.pk):
-        assert Visit.objects.count() == 5
+        assert Visit.objects.filter(service_date=services.today()).count() == 5
         assert Ticket.objects.filter(priority_rank=2).count() == 1
     call_command("seed_queue_dev")  # idempotent for the day
     with rls_context(facility_id=clinic.pk):
-        assert Visit.objects.count() == 5
+        assert Visit.objects.filter(service_date=services.today()).count() == 5
+
+
+def test_operations_dashboard_figures(
+    clinic: Any,
+    catalogue: dict[str, Any],
+    desk: tuple[APIClient, Any],
+    doctor: tuple[APIClient, Any],
+    admin: tuple[APIClient, Any],
+) -> None:
+    service_id = catalogue["service"]["id"]
+    for name in ("Ana One", "Ben Two", "Cy Three"):
+        check_in(desk[0], register(clinic, desk[1], name), service_id)
+    on_duty(doctor[0], catalogue["point"]["id"])
+    ticket = call_next(doctor[0], service_id).json()
+    act(doctor[0], act(doctor[0], ticket, "start").json(), "complete")
+    data = admin[0].get(f"{S}reports/operations/").json()
+    assert data["today"]["patients"] == 3 and data["today"]["completed"] == 1
+    assert data["today"]["median_wait_min"] == 0
+    assert data["now"] == {
+        "waiting": 2,
+        "in_service": 0,
+        "doctors_on_duty": 1,
+        "doctors_on_break": 0,
+    }
+    assert data["services"][0]["waiting"] == 2 and data["services"][0]["load"] == "low"
+    assert len(data["trend"]) == 14 and sum(c["count"] for c in data["arrivals_heatmap"]) == 3
+    assert "Ana" not in str(data)
+    assert desk[0].get(f"{S}reports/operations/").status_code == 403

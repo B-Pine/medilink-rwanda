@@ -84,4 +84,74 @@ class Command(BaseCommand):
                     priority_class=priority,
                     priority_reason_code="age" if priority else None,
                 )
-        self.stdout.write(f"Queue: {len(PEOPLE)} walk-ins checked in at {facility.name}.")
+            history = backfill(facility, service, point, doctor_membership, desk)
+        self.stdout.write(
+            f"Queue: {len(PEOPLE)} walk-ins checked in at {facility.name}; "
+            f"{history} past visits for the dashboard."
+        )
+
+
+FIRST = ["Uwase", "Habimana", "Mukamana", "Niyonzima", "Ingabire", "Mugisha", "Uwimana", "Kamanzi"]
+LAST = ["Aline", "Eric", "Jeanne", "Paul", "Divine", "Ivan", "Claudine", "Olivier"]
+
+
+def backfill(facility: Any, service: Any, point: Any, doctor: Any, desk: Any) -> int:
+    """13 past days of completed synthetic visits, so trends and the heat map have data."""
+    import random
+
+    from django.utils import timezone
+
+    from medilink.visits.models import Ticket, TicketState, VisitStatus
+
+    rng = random.Random(42)  # noqa: S311  (synthetic demo data, not security)
+    tz = timezone.get_current_timezone()
+    created = 0
+    for back in range(1, 14):
+        day = services.today() - dt.timedelta(days=back)
+        if day.weekday() == 6:
+            continue
+        count = rng.randint(14, 26) if day.weekday() < 5 else rng.randint(6, 10)
+        for seq in range(1, count + 1):
+            hour = rng.choice([7, 7, 8, 8, 8, 9, 9, 10, 11, 13, 14, 15])
+            arrived = timezone.make_aware(
+                dt.datetime.combine(day, dt.time(hour, rng.randint(0, 59))), tz
+            )
+            wait = dt.timedelta(minutes=rng.randint(10, 95))
+            consult = dt.timedelta(minutes=rng.randint(8, 22))
+            patient = Patient.objects.create(
+                full_name=f"{rng.choice(FIRST)} {rng.choice(LAST)}",
+                date_of_birth=dt.date(rng.randint(1950, 2020), rng.randint(1, 12), 1),
+            )
+            record = FacilityPatient.objects.create(
+                facility=facility, patient=patient, first_visit_on=day, registered_by=desk
+            )
+            visit = Visit.objects.create(
+                facility=facility,
+                facility_patient=record,
+                patient=patient,
+                service_date=day,
+                source="walk_in",
+                status=VisitStatus.COMPLETED,
+                first_service=service,
+                checked_in_at=arrived,
+                completed_at=arrived + wait + consult,
+                checked_in_by=desk,
+            )
+            Ticket.objects.create(
+                facility=facility,
+                visit=visit,
+                service=service,
+                stage="consultation",
+                service_date=day,
+                number=f"{service.ticket_prefix}-{seq:03d}",
+                sequence=seq,
+                state=TicketState.COMPLETED,
+                arrival_at=arrived,
+                called_at=arrived + wait,
+                started_at=arrived + wait,
+                ended_at=arrived + wait + consult,
+                assigned_membership=doctor,
+                service_point=point,
+            )
+            created += 1
+    return created

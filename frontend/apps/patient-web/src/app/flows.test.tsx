@@ -71,12 +71,16 @@ describe("email-first login", () => {
     await user.click(screen.getByRole("button", { name: "Log in" }));
 
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Hello, Mukamana Jeanne" }),
+      await screen.findByRole("heading", {
+        level: 1,
+        name: /^Good (morning|afternoon|evening), Mukamana Jeanne$/,
+      }),
     ).toBeInTheDocument();
     expect(router.state.location.pathname).toBe("/home");
     expect(screen.getByText("Confirm your email")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Log out" }));
+    await user.click(screen.getByRole("button", { name: /^Account menu for/ }));
+    await user.click(await screen.findByRole("menuitem", { name: "Log out" }));
     expect(
       await screen.findByRole("heading", { level: 1, name: "Log in or create an account" }),
     ).toBeInTheDocument();
@@ -162,7 +166,10 @@ describe("sign-up with consent", () => {
     await user.click(screen.getByRole("button", { name: "Create account" }));
 
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Hello, Uwera Diane" }),
+      await screen.findByRole("heading", {
+        level: 1,
+        name: /^Good (morning|afternoon|evening), Uwera Diane$/,
+      }),
     ).toBeInTheDocument();
     expect(router.state.location.pathname).toBe("/home");
   });
@@ -219,7 +226,10 @@ describe("other pages", () => {
     await user.click(screen.getByRole("button", { name: "Continue" }));
     await user.type(await screen.findByLabelText("Password"), MOCK_PASSWORD);
     await user.click(screen.getByRole("button", { name: "Log in" }));
-    await screen.findByRole("heading", { level: 1, name: "Hello, Mukamana Jeanne" });
+    await screen.findByRole("heading", {
+      level: 1,
+      name: /^Good (morning|afternoon|evening), Mukamana Jeanne$/,
+    });
     const keys = Object.keys(window.localStorage);
     expect(keys.every((key) => ["medilink.theme", "medilink.language"].includes(key))).toBe(true);
     expect(window.sessionStorage.length).toBe(0);

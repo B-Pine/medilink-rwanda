@@ -211,6 +211,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Optional offline breached-password list: SHA-1 hashes, one per line (HIBP "HASH:count" format ok).
 PASSWORD_BREACHED_HASHES_FILE = env("PASSWORD_BREACHED_HASHES_FILE", default="")
 PASSWORD_RESET_TIMEOUT = 30 * 60  # 30 minutes, single use (security 03 §6)
+EMAIL_VERIFICATION_TIMEOUT = 3 * 24 * 3600  # sign-up link: 3 days, single use (security 03 §6)
 
 OTP_TOTP_ISSUER = env("MFA_TOTP_ISSUER", default="MediLink Rwanda")
 MFA_PENDING_TIMEOUT = 10 * 60  # password OK -> second factor must follow within 10 minutes

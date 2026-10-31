@@ -1,6 +1,6 @@
 # ADR 0005 — ML symptom checker inside clinician-signed safety rules
 
-Status: Proposed (2026-10-17) · Detail: [11 · AI symptom checker](../analysis/11-ai-symptom-checker.md)
+Status: Accepted (2026-10-31; proposed 2026-10-17) · Detail: [11 · AI symptom checker](../analysis/11-ai-symptom-checker.md)
 
 ## Context
 The team wants a symptom checker built with machine learning. Public datasets exist, but they are synthetic, Western, or toy-sized: DDXPlus, SymCat, Kaggle sets. None reflect Rwanda's disease burden. Diagnostic software shown to patients is likely regulated as a medical device, and wrong advice can cause harm.

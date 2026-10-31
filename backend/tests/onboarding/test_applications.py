@@ -142,7 +142,10 @@ def test_honeypot_and_unknown_fields() -> None:
         },
         format="json",
     )
-    assert trap.status_code == 400
+    assert trap.status_code == 201  # honeypot: success-shaped, nothing stored or sent
+    assert trap.json()["status"] == "draft" and trap.json()["facility"]["name"] == "X"
+    assert not Application.objects.filter(pk=trap.json()["id"]).exists()
+    assert client.get(f"{PUBLIC}{trap.json()['id']}/").status_code == 404
     app = start(client)
     unknown = client.patch(
         f"{PUBLIC}{app['id']}/", {"version": 1, "status": "approved"}, format="json"

@@ -266,10 +266,9 @@ def test_full_setup_then_go_live(admin: Any, setup_facility: Any) -> None:
     )
     checklist = admin_client.get(f"{F}setup-checklist/").json()
     assert checklist["complete"] is True, checklist
-    from medilink.onboarding.services import facility_version
-
+    # What the staff app sends: the version the API exposes (not the internal helper).
     live = admin_client.post(
-        f"{F}go-live/", {"version": facility_version(setup_facility)}, format="json"
+        f"{F}go-live/", {"version": admin_client.get(F).json()["version"]}, format="json"
     )
     assert live.status_code == 200, live.content
     assert live.json()["status"] == "live"

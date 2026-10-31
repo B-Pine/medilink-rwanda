@@ -294,6 +294,9 @@ export function createBookingApi(client: ApiClient) {
           version,
           reason_code: reasonCode,
         }),
+      /** R4: move a booking to a held slot (a new booking replaces it). */
+      reschedule: (id: Uuid, version: number, holdId: Uuid) =>
+        client.post<StaffBooking>(bookingPaths.staffReschedule(id), { version, hold_id: holdId }),
       reverseNoShow: (
         id: Uuid,
         version: number,

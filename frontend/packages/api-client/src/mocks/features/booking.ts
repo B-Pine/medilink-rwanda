@@ -12,6 +12,7 @@ import type {
 } from "../../features/booking";
 import { NO_SHOW_REVERSAL_REASONS } from "../../features/booking";
 import { FACILITIES } from "../data";
+import { patientsStore } from "./patients";
 import type { FeatureMockFactory } from "../features";
 import { id, str } from "./s1-common";
 import { SETUP_IDS } from "./setup";
@@ -934,8 +935,18 @@ export const bookingMocks: FeatureMockFactory = (context) => {
         if ("error" in ok) return ok.error;
         const url = new URL(request.url);
         const service = url.searchParams.get("service_id") ?? "";
+        const from = url.searchParams.get("date");
+        const offset = from
+          ? Math.max(
+              0,
+              Math.round(
+                (new Date(`${from}T00:00:00+02:00`).getTime() - kigaliDay(0).getTime()) /
+                  86_400_000,
+              ),
+            )
+          : 0;
         const days = Array.from({ length: 7 }, (_, i) => {
-          const date = isoDate(kigaliDay(i));
+          const date = isoDate(kigaliDay(offset + i));
           return {
             date,
             slots: db.slots
@@ -962,16 +973,46 @@ export const bookingMocks: FeatureMockFactory = (context) => {
         const ok = staffOnly(request, ["queue.operate"]);
         if ("error" in ok) return ok.error;
         const body = (await context.readJson(request)) ?? {};
+        const store = patientsStore();
+        const record = store.records.find((r) => r.id === str(body.facility_patient_id));
+        const patient = record ? store.patients.get(record.patient_id) : undefined;
         const made = confirm(
           str(body.hold_id),
-          str(body.facility_patient_id),
-          "Phone patient",
+          patient?.id ?? str(body.facility_patient_id),
+          patient?.full_name ?? "Phone patient",
           (body.symptoms as { code: string }[] | undefined) ?? [],
           null,
           "phone",
         );
         if (made instanceof Response) return made;
         return HttpResponse.json(staffRow(made), { status: 201 });
+      }),
+      http.post(`${api}/staff/bookings/:id/reschedule/`, async ({ request, params }) => {
+        await context.settle();
+        const ok = staffOnly(request, ["queue.operate"]);
+        if ("error" in ok) return ok.error;
+        const body = (await context.readJson(request)) ?? {};
+        const old = db.bookings.find((x) => x.id === params.id);
+        if (!old) return context.errorResponse(404, "not_found", "Not found.");
+        if (old.version !== body.version)
+          return context.errorResponse(409, "stale", "Someone else changed this booking.");
+        const symptoms = old.symptoms.map((x) => ({ code: x.code }));
+        old.status = "superseded";
+        const made = confirm(
+          str(body.hold_id),
+          old.patient_id,
+          old.patient_display_name,
+          symptoms,
+          old.cost.insurer_code,
+          old.source,
+        );
+        if (made instanceof Response) {
+          old.status = "confirmed";
+          return made;
+        }
+        old.rescheduled_to_id = made.id;
+        old.version += 1;
+        return HttpResponse.json(staffRow(made));
       }),
       http.post(`${api}/staff/bookings/:id/cancel/`, async ({ request, params }) => {
         await context.settle();

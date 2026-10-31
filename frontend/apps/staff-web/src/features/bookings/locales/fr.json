@@ -1,0 +1,86 @@
+{
+  "phone": {
+    "open": "Réserver par téléphone",
+    "title": "Réserver par téléphone",
+    "rescheduleTitle": "Nouvel horaire pour {{name}}",
+    "close": "Fermer"
+  },
+  "steps": {
+    "progress": "Étape {{step}} sur {{total}}",
+    "patient": "Patient",
+    "slot": "Horaire",
+    "reason": "Motif",
+    "review": "Vérifier et confirmer"
+  },
+  "slot": {
+    "service": "Service",
+    "doctor": "Médecin",
+    "anyDoctor": "N’importe quel médecin",
+    "days": "Jour",
+    "times": "Horaires libres",
+    "morning": "Matin",
+    "afternoon": "Après-midi",
+    "noTimes": "Aucun horaire libre ce jour-là. Choisissez un autre jour.",
+    "earlier": "Jours précédents",
+    "later": "Jours suivants",
+    "taken": "Quelqu’un vient de prendre cet horaire. Choisissez-en un autre.",
+    "alternatives": "Horaires libres proches",
+    "loadError": "Impossible de charger les horaires libres.",
+    "retry": "Réessayer",
+    "places_one": "{{count}} place",
+    "places_other": "{{count}} places"
+  },
+  "hold": {
+    "holding": "Horaire réservé pendant {{time}}",
+    "expired": "L’horaire a été libéré. Choisissez à nouveau."
+  },
+  "reason": {
+    "symptoms": "Quel est le problème ?",
+    "symptomsHint": "Jusqu’à 5. Ils aident le médecin à se préparer.",
+    "redFlag": "Urgent",
+    "redFlagAlert": "Il peut s’agir d’une urgence. Dites au patient de venir maintenant ou d’appeler le 912.",
+    "text": "Notes pour le médecin",
+    "phone": "Téléphone de contact",
+    "phoneHint": "Pour les rappels et changements. Laissez vide pour utiliser le numéro du dossier.",
+    "phoneInvalid": "Saisissez un numéro mobile rwandais, par exemple 0788 123 456."
+  },
+  "review": {
+    "patient": "Patient",
+    "service": "Service",
+    "when": "Quand",
+    "doctor": "Médecin",
+    "symptoms": "Symptômes",
+    "phone": "Téléphone de contact",
+    "confirm": "Confirmer la réservation",
+    "confirmReschedule": "Déplacer la réservation",
+    "failed": "Impossible d’enregistrer la réservation."
+  },
+  "done": {
+    "title": "Réservation confirmée",
+    "moved": "Réservation déplacée",
+    "code": "Code de réservation",
+    "tell": "Lisez le code au patient. Il le présente à son arrivée.",
+    "another": "Réserver pour un autre patient",
+    "finish": "Terminé"
+  },
+  "nav": {
+    "back": "Retour",
+    "next": "Continuer",
+    "change": "Changer de patient"
+  },
+  "body": {
+    "general": "Général",
+    "respiratory": "Respiration",
+    "digestive": "Ventre",
+    "nervous": "Tête",
+    "circulatory": "Cœur et poitrine",
+    "skin": "Peau",
+    "musculoskeletal": "Articulations et dos",
+    "dental": "Dents",
+    "eye": "Yeux",
+    "urinary": "Urines"
+  },
+  "expected": {
+    "newTime": "Nouvel horaire"
+  }
+}

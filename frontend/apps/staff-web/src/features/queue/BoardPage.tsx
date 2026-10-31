@@ -18,6 +18,7 @@ import {
   CalendarCheck,
   ClockCountdown,
   MegaphoneSimple,
+  Phone,
   Plus,
   Star,
   UsersThree,
@@ -25,8 +26,10 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router";
 
 import { useApi } from "../../app/services";
+import { PhoneBookingPanel, type PhoneBookingMode } from "../bookings";
 import { PageHeader } from "../../components/PageHeader";
 import { PatientPicker } from "../patients";
 import { queueKeys, usePollInterval, useQueueSocket } from "./live";
@@ -63,6 +66,19 @@ export function BoardPage() {
   const [filter, setFilter] = useState<string | null>(null);
   const [open, setOpen] = useState<TicketRow | null>(null);
   const [checkingIn, setCheckingIn] = useState(false);
+  const canBook = useCan("queue.operate");
+  const [params, setParams] = useSearchParams();
+  const [booking, setBooking] = useState<PhoneBookingMode | null>(null);
+  const bookingMode: PhoneBookingMode | null =
+    booking ?? (canBook && params.get("book") === "new" ? { kind: "new" } : null);
+  const closeBooking = () => {
+    setBooking(null);
+    if (params.has("book")) {
+      const next = new URLSearchParams(params);
+      next.delete("book");
+      setParams(next, { replace: true });
+    }
+  };
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -93,13 +109,21 @@ export function BoardPage() {
         description={t("queue.board.intro")}
         badges={<LiveBadge />}
         actions={
-          <Button onClick={() => setCheckingIn(true)} aria-keyshortcuts="N">
-            <Plus aria-hidden="true" weight="bold" />
-            {t("queue.board.checkIn")}
-            <kbd className="ml-1 rounded-sm border border-on-primary/40 px-1 font-sans text-caption">
-              {SHORTCUT_NEW}
-            </kbd>
-          </Button>
+          <>
+            {canBook && (
+              <Button variant="secondary" onClick={() => setBooking({ kind: "new" })}>
+                <Phone aria-hidden="true" weight="bold" />
+                {t("bookings.phone.open")}
+              </Button>
+            )}
+            <Button onClick={() => setCheckingIn(true)} aria-keyshortcuts="N">
+              <Plus aria-hidden="true" weight="bold" />
+              {t("queue.board.checkIn")}
+              <kbd className="ml-1 rounded-sm border border-on-primary/40 px-1 font-sans text-caption">
+                {SHORTCUT_NEW}
+              </kbd>
+            </Button>
+          </>
         }
       />
 
@@ -175,7 +199,10 @@ export function BoardPage() {
             <CalendarCheck aria-hidden="true" className="size-5 text-fg-muted" />
             {t("queue.board.expected")}
           </h2>
-          <ExpectedList serviceId={filter} />
+          <ExpectedList
+            serviceId={filter}
+            onNewTime={(b) => setBooking({ kind: "reschedule", booking: b })}
+          />
           <MissedList serviceId={filter} />
         </section>
 
@@ -221,6 +248,7 @@ export function BoardPage() {
           services={board.data ? [...byService.keys()] : []}
         />
       )}
+      {bookingMode && <PhoneBookingPanel mode={bookingMode} onClose={closeBooking} />}
     </div>
   );
 }

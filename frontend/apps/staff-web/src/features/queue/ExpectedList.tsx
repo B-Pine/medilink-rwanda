@@ -7,30 +7,24 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useApi } from "../../app/services";
+import { kigaliDate as kigaliToday, slotTime } from "../bookings/time";
 import { queueKeys, usePollInterval } from "./live";
 import { actionError, ReasonDialog, useCan, useServiceNames } from "./shared";
 
 export const expectedKey = ["queue", "expected"] as const;
 
-/** Today's date in Kigali as YYYY-MM-DD, the `date` filter of `GET /staff/bookings/`. */
-export function kigaliToday(now: Date = new Date()): string {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Kigali" }).format(now);
-}
-
-function slotTime(iso: string, language: string): string {
-  return new Intl.DateTimeFormat(language, {
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-    timeZone: "Africa/Kigali",
-  }).format(new Date(iso));
-}
-
 /**
  * Expected (design 04 §3.1, contract S5 R1): today's confirmed bookings by slot time, until the
  * patient is checked in (R6). `serviceId` follows the board's service filter.
  */
-export function ExpectedList({ serviceId }: { serviceId: string | null }) {
+export function ExpectedList({
+  serviceId,
+  onNewTime,
+}: {
+  serviceId: string | null;
+  /** Offer another time (contract S5 §6.2 "Late: offer a new time", R4). */
+  onNewTime?: (booking: StaffBooking) => void;
+}) {
   const { t, i18n } = useTranslation();
   const api = useApi();
   const queryClient = useQueryClient();
@@ -113,6 +107,11 @@ export function ExpectedList({ serviceId }: { serviceId: string | null }) {
                 <span className="text-body-sm text-fg-muted break-words">
                   {booking.doctor ?? t("queue.board.expectedAnyDoctor")}
                 </span>
+                {booking.symptoms.length > 0 && (
+                  <span className="text-body-sm text-fg-secondary break-words">
+                    {booking.symptoms.map((symptom) => symptom.label).join(", ")}
+                  </span>
+                )}
               </span>
               {booking.late && (
                 <Badge tone="warning" className="shrink-0">
@@ -121,15 +120,22 @@ export function ExpectedList({ serviceId }: { serviceId: string | null }) {
               )}
             </div>
             {canCheckIn && (
-              <Button
-                variant="secondary"
-                fullWidth
-                loading={checkIn.isPending && checkIn.variables?.id === booking.id}
-                disabled={checkIn.isPending}
-                onClick={() => checkIn.mutate(booking)}
-              >
-                {t("queue.board.expectedCheckIn")}
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="secondary"
+                  className="flex-1"
+                  loading={checkIn.isPending && checkIn.variables?.id === booking.id}
+                  disabled={checkIn.isPending}
+                  onClick={() => checkIn.mutate(booking)}
+                >
+                  {t("queue.board.expectedCheckIn")}
+                </Button>
+                {onNewTime && (
+                  <Button variant="ghost" onClick={() => onNewTime(booking)}>
+                    {t("bookings.expected.newTime")}
+                  </Button>
+                )}
+              </div>
             )}
           </li>
         ))}

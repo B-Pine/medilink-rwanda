@@ -10023,10 +10023,14 @@ components:
           type: boolean
         status:
           type: string
+        status_version:
+          type: integer
+          description: Send it back with go-live (F13).
       required:
       - complete
       - items
       - status
+      - status_version
     ChecklistItem:
       type: object
       properties:
@@ -11708,6 +11712,10 @@ components:
           type: string
         version:
           type: integer
+          description: 'Profile version: send it back with PATCH.'
+        status_version:
+          type: integer
+          description: 'Status version: send it back with go-live (F13).'
       required:
       - address
       - description_i18n
@@ -11722,6 +11730,7 @@ components:
       - photos
       - slug
       - status
+      - status_version
       - version
       - village_code
       - website
@@ -12089,6 +12098,8 @@ components:
         version:
           type: integer
           minimum: 0
+          description: The facility's `status_version` (F1, F12), not the profile
+            version.
       required:
       - version
     Health:

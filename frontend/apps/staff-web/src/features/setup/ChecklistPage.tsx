@@ -111,12 +111,11 @@ function Checklist() {
   const queryClient = useQueryClient();
   const { withStepUp } = useStepUp();
   const checklist = useChecklist();
-  const facility = useQuery({ queryKey: setupKeys.facility, queryFn: () => api.setup.facility() });
   const key = useRef(newIdempotencyKey());
   const [refused, setRefused] = useState<string[]>([]);
 
   const goLive = useMutation({
-    mutationFn: () => withStepUp(() => api.setup.goLive(facility.data?.version ?? 0, key.current)),
+    mutationFn: () => withStepUp(() => api.setup.goLive(checklist.data?.status_version ?? 0, key.current)),
     onSuccess: () => {
       setRefused([]);
       void queryClient.invalidateQueries({ queryKey: ["setup"] });

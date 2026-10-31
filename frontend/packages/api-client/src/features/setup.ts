@@ -32,7 +32,10 @@ export interface FacilityProfile {
   longitude: string | null;
   photos: Uuid[];
   level_of_care: string;
+  /** Profile version: send it back with profile updates. */
   version: number;
+  /** Status version: send it back with go-live (F13). */
+  status_version: number;
 }
 
 export type FacilityProfileUpdate = Partial<
@@ -148,6 +151,8 @@ export interface SetupChecklist {
   items: ChecklistItem[];
   complete: boolean;
   status: string;
+  /** Send it back with go-live (F13). */
+  status_version: number;
 }
 
 // ---- catalogue ---------------------------------------------------------------------------------
@@ -453,6 +458,7 @@ export function createSetupApi(client: ApiClient) {
     changes: (params: { entity?: string; page?: number } = {}) =>
       client.get<SetupPage<ConfigChange>>(`${setupPaths.changes}${query(params)}`),
     checklist: () => client.get<SetupChecklist>(setupPaths.checklist),
+    /** `version` is the facility's `status_version` (checklist or profile), not the profile version. */
     goLive: (version: number, idempotencyKey?: string) =>
       client.post<FacilityProfile>(setupPaths.goLive, { version }, idem(idempotencyKey)),
     // C1–C6

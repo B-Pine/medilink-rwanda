@@ -266,10 +266,13 @@ def test_full_setup_then_go_live(admin: Any, setup_facility: Any) -> None:
     )
     checklist = admin_client.get(f"{F}setup-checklist/").json()
     assert checklist["complete"] is True, checklist
-    # What the staff app sends: the version the API exposes (not the internal helper).
-    live = admin_client.post(
-        f"{F}go-live/", {"version": admin_client.get(F).json()["version"]}, format="json"
-    )
+    # What the staff app sends: the status version the API exposes (not the internal helper).
+    profile = admin_client.get(F).json()
+    assert profile["status_version"] == checklist["status_version"]
+    assert profile["status_version"] != profile["version"]  # the profile version would 409
+    stale = admin_client.post(f"{F}go-live/", {"version": profile["version"]}, format="json")
+    assert stale.status_code == 409
+    live = admin_client.post(f"{F}go-live/", {"version": profile["status_version"]}, format="json")
     assert live.status_code == 200, live.content
     assert live.json()["status"] == "live"
 

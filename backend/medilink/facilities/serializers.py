@@ -56,7 +56,10 @@ class FacilityProfileSerializer(serializers.Serializer):
     longitude = serializers.DecimalField(max_digits=9, decimal_places=6, allow_null=True)
     photos = serializers.ListField(child=serializers.UUIDField())
     level_of_care = serializers.CharField()
-    version = serializers.IntegerField()
+    version = serializers.IntegerField(help_text="Profile version: send it back with PATCH.")
+    status_version = serializers.IntegerField(
+        help_text="Status version: send it back with go-live (F13)."
+    )
 
 
 class FacilityProfileUpdateSerializer(StrictSerializer):
@@ -206,10 +209,13 @@ class ChecklistSerializer(serializers.Serializer):
     items = ChecklistItemSerializer(many=True)
     complete = serializers.BooleanField()
     status = serializers.CharField()
+    status_version = serializers.IntegerField(help_text="Send it back with go-live (F13).")
 
 
 class GoLiveSerializer(StrictSerializer):
-    version = serializers.IntegerField(min_value=0)
+    version = serializers.IntegerField(
+        min_value=0, help_text="The facility's `status_version` (F1, F12), not the profile version."
+    )
 
 
 # ---- catalogue -----------------------------------------------------------------------------------

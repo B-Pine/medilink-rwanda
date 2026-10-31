@@ -17,6 +17,7 @@ import type {
   ServicePoint,
   SettingFieldSpec,
   SettingsSection,
+  SetupChecklist,
   StaffMembership,
   Tariff,
 } from "../../features/setup";
@@ -156,6 +157,7 @@ function seed() {
     photos: [],
     level_of_care: "primary",
     version: 3,
+    status_version: 2,
   };
   const departments: Department[] = [
     {
@@ -456,7 +458,7 @@ export const setupMocks: FeatureMockFactory = (context) => {
   const versionCheck = (current: number, sent: unknown, lang: LanguageCode) =>
     Number(sent) !== current ? conflict(context, lang) : null;
 
-  const checklist = (): { items: ChecklistItem[]; complete: boolean; status: string } => {
+  const checklist = (): SetupChecklist => {
     const active = db.services.filter((s) => s.is_active);
     const attested = db.memberships.filter(
       (m) => m.is_active && m.roles.includes("doctor") && m.clinician?.attested_at,
@@ -516,7 +518,12 @@ export const setupMocks: FeatureMockFactory = (context) => {
       },
       { code: "licence", done: true, count: 0, link: "/settings/profile" },
     ];
-    return { items, complete: items.every((i) => i.done), status: db.facility.status };
+    return {
+      items,
+      complete: items.every((i) => i.done),
+      status: db.facility.status,
+      status_version: db.facility.status_version,
+    };
   };
 
   const calendar = (from: string, to: string): CalendarDay[] => {
@@ -822,6 +829,9 @@ export const setupMocks: FeatureMockFactory = (context) => {
         if (ok instanceof Response) return ok;
         const step = stepUpFailure(context, ok.lang);
         if (step) return step;
+        const sent = ((await request.json()) as { version?: unknown }).version;
+        const stale = versionCheck(db.facility.status_version, sent, ok.lang);
+        if (stale) return stale;
         const result = checklist();
         if (!result.complete) {
           const fields = Object.fromEntries(
@@ -836,7 +846,11 @@ export const setupMocks: FeatureMockFactory = (context) => {
             { fields },
           );
         }
-        db.facility = { ...db.facility, status: "live", version: db.facility.version + 1 };
+        db.facility = {
+          ...db.facility,
+          status: "live",
+          status_version: db.facility.status_version + 1,
+        };
         return HttpResponse.json(db.facility);
       }),
 

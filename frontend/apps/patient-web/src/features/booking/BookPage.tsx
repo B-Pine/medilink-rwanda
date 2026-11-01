@@ -11,7 +11,6 @@ import {
   ArrowLeft,
   CalendarCheck,
   CalendarPlus,
-  CheckCircle,
   Clock,
   NavigationArrow,
   PersonSimpleWalk,
@@ -21,6 +20,7 @@ import {
 } from "@phosphor-icons/react";
 import {
   Alert,
+  BODY_SYSTEM_ORDER,
   Button,
   buttonClassName,
   Card,
@@ -29,10 +29,12 @@ import {
   LoadingState,
   SelectField,
   Skeleton,
+  SymptomPicker as SharedSymptomPicker,
   TextareaField,
 } from "@medilink/ui";
+import { dateFormat } from "@medilink/ui/i18n";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 
@@ -43,19 +45,6 @@ import { useProfiles, useRelationshipLabel } from "../profile/ProfileLayout";
 import { day, isMorning, pick, rwf, time } from "./discovery";
 
 type Step = "who" | "what" | "when" | "reason" | "review";
-const BODY_ORDER = [
-  "general",
-  "respiratory",
-  "digestive",
-  "nervous",
-  "circulatory",
-  "skin",
-  "musculoskeletal",
-  "dental",
-  "eye",
-  "urinary",
-];
-
 export const bookingsKey = ["booking", "mine"] as const;
 
 function useCountdown(until: string | null): number {
@@ -317,7 +306,7 @@ function WhenStep({
                       )}
                     >
                       <span className="text-caption font-semibold uppercase">
-                        {new Intl.DateTimeFormat(lang, {
+                        {dateFormat(lang, {
                           weekday: "short",
                           timeZone: "Africa/Kigali",
                         }).format(new Date(`${d.date}T12:00:00+02:00`))}
@@ -384,47 +373,23 @@ function SymptomPicker({
 }) {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage ?? "rw";
-  const groups = useMemo(() => {
-    const by = new Map<string, Symptom[]>();
-    for (const s of symptoms) by.set(s.body_system, [...(by.get(s.body_system) ?? []), s]);
-    return [...by.entries()].sort(([a], [b]) => BODY_ORDER.indexOf(a) - BODY_ORDER.indexOf(b));
-  }, [symptoms]);
   return (
-    <fieldset className="m-0 flex min-w-0 flex-col gap-4 border-0 p-0">
-      <legend className="sr-only">{t("booking.flow.symptoms")}</legend>
-      {groups.map(([system, items]) => (
-        <div key={system} className="flex flex-col gap-2">
-          <span className="text-body-sm font-semibold text-fg-muted">
-            {t(`booking.body.${system}`, { defaultValue: system })}
-          </span>
-          <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
-            {items.map((s) => {
-              const on = chosen.has(s.code);
-              return (
-                <li key={s.code}>
-                  <button
-                    type="button"
-                    aria-pressed={on}
-                    onClick={() => onToggle(s.code)}
-                    className={cx(
-                      "inline-flex min-h-target cursor-pointer items-center gap-2 rounded-full border px-4 font-semibold",
-                      on
-                        ? s.is_red_flag
-                          ? "border-danger bg-danger-bg text-danger"
-                          : "border-brand bg-brand text-on-primary"
-                        : "border-border-input bg-surface text-fg hover:bg-subtle",
-                    )}
-                  >
-                    {on && <CheckCircle aria-hidden="true" weight="fill" className="size-5" />}
-                    {pick(s.name_i18n, lang)}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      ))}
-    </fieldset>
+    <SharedSymptomPicker
+      size="lg"
+      legend={t("booking.flow.symptoms")}
+      items={symptoms.map((s) => ({
+        code: s.code,
+        label: pick(s.name_i18n, lang),
+        group: s.body_system,
+        redFlag: s.is_red_flag,
+      }))}
+      groups={BODY_SYSTEM_ORDER.map((key) => ({
+        key,
+        label: t(`booking.body.${key}`, { defaultValue: key }),
+      }))}
+      chosen={chosen}
+      onToggle={onToggle}
+    />
   );
 }
 

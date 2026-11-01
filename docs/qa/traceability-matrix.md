@@ -1,6 +1,6 @@
 # Requirements traceability matrix
 
-Status: v0.1 · 2026-10-17 · Every `FR-*` and `NFR-*` requirement in the [system analysis](../README.md), with its planned sprint, the side that implements it, how it is verified, and its status. How to keep it up to date: [QA README](README.md).
+Status: v0.1 · updated 2026-11-01 (S2, S4, S5a, S6a, S9 in progress until staging; S6b not started) · Every `FR-*` and `NFR-*` requirement in the [system analysis](../README.md), with its planned sprint, the side that implements it, how it is verified, and its status. How to keep it up to date: [QA README](README.md).
 
 Built from the requirement tables in `docs/analysis/` (titles shortened; the analysis documents are authoritative) and the sprint plans in the [backend](../roadmap/backend.md) and [frontend](../roadmap/frontend.md) roadmaps.
 
@@ -40,14 +40,14 @@ Built from the requirement tables in `docs/analysis/` (titles shortened; the ana
 | `FR-PAT` | [Patient identity and medical history](../analysis/04-patient-identity-and-medical-history.md) | 17 | 14 | 2 | 0 | 1 | 0 | 11 | 6 |
 | `FR-SCH` | [Discovery, calendars, scheduling, booking](../analysis/05-discovery-scheduling-and-booking.md) | 18 | 15 | 3 | 0 | 0 | 0 | 0 | 18 |
 | `FR-QUE` | [Visit lifecycle and live queue](../analysis/06-visit-lifecycle-and-queue.md) | 20 | 17 | 3 | 0 | 0 | 0 | 0 | 20 |
-| `FR-CLN` | [Clinical record](../analysis/07-clinical-documentation-and-pharmacy.md) | 10 | 9 | 1 | 0 | 0 | 0 | 0 | 10 |
+| `FR-CLN` | [Clinical record](../analysis/07-clinical-documentation-and-pharmacy.md) | 10 | 9 | 1 | 0 | 0 | 0 | 8 | 2 |
 | `FR-PHA` | [Pharmacy](../analysis/07-clinical-documentation-and-pharmacy.md) | 7 | 5 | 2 | 0 | 0 | 0 | 0 | 7 |
 | `FR-DOC` | [Documents](../analysis/07-clinical-documentation-and-pharmacy.md) | 7 | 7 | 0 | 0 | 0 | 0 | 1 | 6 |
 | `FR-BIL` | [Billing, payments, insurance](../analysis/08-billing-payments-and-insurance.md) | 18 | 13 | 2 | 1 | 2 | 0 | 1 | 17 |
 | `FR-NOT` | [Notifications](../analysis/09-notifications-and-communication.md) | 14 | 12 | 0 | 1 | 1 | 0 | 12 | 2 |
 | `FR-DSP` | [Disputes, complaints, support](../analysis/10-disputes-complaints-and-support.md) | 14 | 11 | 3 | 0 | 0 | 0 | 0 | 14 |
 | `FR-AI` | [AI symptom checker](../analysis/11-ai-symptom-checker.md) | 13 | 2 | 5 | 3 | 3 | 1 | 0 | 12 |
-| `FR-SEC` | [Security, privacy, compliance](../analysis/12-security-privacy-and-compliance.md) | 17 | 16 | 1 | 0 | 0 | 5 | 3 | 9 |
+| `FR-SEC` | [Security, privacy, compliance](../analysis/12-security-privacy-and-compliance.md) | 17 | 16 | 1 | 0 | 0 | 5 | 4 | 8 |
 | `FR-RPT` | [Reporting and analytics](../analysis/13-reporting-and-analytics.md) | 8 | 5 | 2 | 0 | 1 | 0 | 0 | 8 |
 | `NFR-PERF` | [Performance and capacity](../analysis/14-non-functional-requirements.md) | 7 | 7 | 0 | 0 | 0 | 0 | 0 | 7 |
 | `NFR-REL` | [Availability and reliability](../analysis/14-non-functional-requirements.md) | 5 | 5 | 0 | 0 | 0 | 0 | 1 | 4 |
@@ -69,11 +69,11 @@ Source: [02 · Users, roles, access](../analysis/02-users-roles-and-permissions.
 | FR-ACC-02 | Several facility memberships; switch active facility | P1 | S0 | Both | API, E2E | Verified (S0, v0.1.0) |
 | FR-ACC-03 | Six phase-1 roles with the matrix permissions | P1 | S0 | Both | AZ | Verified (S0, v0.1.0) |
 | FR-ACC-04 | Staff two-factor login | P1 | S0 | Both | API, E2E | Verified (S0, v0.1.0) |
-| FR-ACC-05 | Staff invitations by email, expiring, single use | P1 | S0, S2 | Both | API, E2E | In progress |
+| FR-ACC-05 | Staff invitations by email, expiring, single use | P1 | S0, S2 (R3 #85) | Both | API, E2E | In progress |
 | FR-ACC-06 | Deactivation removes access and ends sessions at once | P1 | S0, S2 | Both | API, E2E | In progress |
 | FR-ACC-07 | Clinician licence number; admin attests the check | P1 | S0, S2 | Both | API, CMP | In progress |
 | FR-ACC-08 | Server-side, logged permission checks on patient data | P1 | S0 | Backend | AZ, API | Verified (S0, v0.1.0) |
-| FR-ACC-09 | Super admin emergency access with reason, logged, reviewable | P1 | S6 | Both | AZ, API | Not started |
+| FR-ACC-09 | Super admin emergency access with reason, logged, reviewable | P1 | S6b | Both | AZ, API | Not started |
 | FR-ACC-10 | New roles without changing existing roles | P2 | — | Backend | AZ, INS | Not started |
 
 ## FR-ONB · Tenancy, onboarding, master data
@@ -84,13 +84,13 @@ Source: [03 · Tenancy, onboarding, master data](../analysis/03-tenancy-onboardi
 |---|---|---|---|---|---|---|
 | FR-ONB-01 | Self-registration with documents; super admin-created applications | P1 | S1 | Both | API, E2E | In progress |
 | FR-ONB-02 | Verification: approve, request changes, reject, with history | P1 | S1 | Both | API, BR, E2E | In progress |
-| FR-ONB-03 | Setup checklist; searchable only when Live | P1 | S1, S2* | Both | API, BR, E2E | In progress |
-| FR-ONB-04 | Facility configuration with change log | P1 | S2 | Both | API, E2E | Not started |
-| FR-ONB-05 | Invitation adds a membership to an existing account | P1 | S2 | Backend | API | Not started |
-| FR-ONB-06 | Cross-facility schedule conflict warning without details | P1 | S2 | Both | API, RLS | Not started |
-| FR-ONB-07 | Suspension hides facility, keeps today running | P1 | S2 | Backend | BR, API | Not started |
+| FR-ONB-03 | Setup checklist; searchable only when Live | P1 | S1, S2* (R3 #85) | Both | API, BR, E2E | In progress |
+| FR-ONB-04 | Facility configuration with change log | P1 | S2 | Both | API, E2E | In progress |
+| FR-ONB-05 | Invitation adds a membership to an existing account | P1 | S2 | Backend | API | In progress |
+| FR-ONB-06 | Cross-facility schedule conflict warning without details | P1 | S2 | Both | API, RLS | In progress |
+| FR-ONB-07 | Suspension hides facility, keeps today running | P1 | S2 | Backend | BR, API | In progress |
 | FR-ONB-08 | Licence expiry tracking and reminders | P1 | S1 | Backend | UT, API | In progress |
-| FR-ONB-09 | Full facility data export | P1 | S2, S11 | Both | API, INS | Not started |
+| FR-ONB-09 | Full facility data export | P1 | S2, S11 | Both | API, INS | In progress |
 | FR-ONB-10 | Master data with versioning and translations | P1 | S1 | Both | API, E2E | In progress |
 | FR-ONB-11 | Organisation with several facilities | P2 | — | Both | API, E2E | Not started |
 
@@ -101,7 +101,7 @@ Source: [04 · Patient identity and medical history](../analysis/04-patient-iden
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
 | FR-PAT-01 | Account, patient and facility patient record are separate | P1 | S3 | Backend | UT, API | In progress |
-| FR-PAT-02 | Patient self sign-up (email/password; phone OTP in P3) | P1 | S0, S3 | Both | API, E2E | In progress |
+| FR-PAT-02 | Patient self sign-up (email/password; phone OTP in P3) | P1 | S0, S3, R1 #83 (verify-email, no enumeration) | Both | API, E2E | In progress |
 | FR-PAT-03 | Dependents, delegated access, profile switching | P1 | S3 | Both | AZ, E2E | In progress |
 | FR-PAT-04 | Walk-in registration in under one minute | P1 | S3 | Both | API, USA | In progress |
 | FR-PAT-05 | Duplicate detection; reversible merge with approval | P1 | S3 | Both | BR, API | In progress |
@@ -109,9 +109,9 @@ Source: [04 · Patient identity and medical history](../analysis/04-patient-iden
 | FR-PAT-07 | Identifiers: national ID, passport, insurance, file no., MediLink no. | P1 | S3 | Backend | UT, API | In progress |
 | FR-PAT-08 | Health profile with verified / unverified status | P1 | S3 | Both | API, CMP | In progress |
 | FR-PAT-09 | History timeline, filters, problem summary, search | P1 | S3, S6* | Both | API, PERF, E2E | In progress |
-| FR-PAT-10 | Legacy register import: preview, validation, duplicates, rollback | P1 | S6 | Both | BR, API, E2E | Not started |
-| FR-PAT-11 | Scanned legacy records attached to patients | P1 | S6 | Both | API | Not started |
-| FR-PAT-12 | Structured back-entry labelled as historical | P1 | S6 | Both | API, CMP | Not started |
+| FR-PAT-10 | Legacy register import: preview, validation, duplicates, rollback | P1 | S6b | Both | BR, API, E2E | Not started |
+| FR-PAT-11 | Scanned legacy records attached to patients | P1 | S6b | Both | API | Not started |
+| FR-PAT-12 | Structured back-entry labelled as historical | P1 | S6b | Both | API, CMP | Not started |
 | FR-PAT-13 | Patient sees own and dependents' records except private notes | P1 | S3, S6* | Both | AZ, E2E | In progress |
 | FR-PAT-14 | Patient access history | P1 | S3 | Both | API, E2E | In progress |
 | FR-PAT-15 | Cross-facility sharing, emergency access, revocation | P2 | — | Both | AZ, E2E | Not started |
@@ -124,21 +124,21 @@ Source: [05 · Discovery, calendars, scheduling, booking](../analysis/05-discove
 
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
-| FR-SCH-01 | Facility search with filters; list and map | P1 | S5 | Both | API, E2E | Not started |
-| FR-SCH-02 | Facility profile: services, fees, share, insurers, hours, doctors, load | P1 | S5 | Both | API, E2E | Not started |
-| FR-SCH-03 | Public facility pages indexable by search engines | P1 | S5 | Frontend | INS | Not started |
-| FR-SCH-04 | Referral pathway hint for Mutuelle patients | P1 | S5 | Both | BR, CMP | Not started |
-| FR-SCH-05 | Facility calendar: hours, closures, holidays, Umuganda | P1 | S2, S5 | Both | UT, API | Not started |
-| FR-SCH-06 | Doctor weekly templates and exceptions | P1 | S2, S5 | Both | API, CMP | Not started |
-| FR-SCH-07 | Slot generation: capacity, bookable share, walk-in reserve | P1 | S5 | Backend | BR | Not started |
-| FR-SCH-08 | Book, reschedule, cancel with atomic slot hold | P1 | S5 | Both | BR, E2E | Not started |
-| FR-SCH-09 | Remote queue join for today, with cut-off | P1 | S5 | Both | BR, E2E | Not started |
-| FR-SCH-10 | Reason for visit with the structured symptom picker | P1 | S5 | Both | API, CMP | Not started |
-| FR-SCH-11 | Patient calendar with dependents; .ics export and feed | P1 | S5 | Both | API, E2E | Not started |
-| FR-SCH-12 | Reception and doctor calendars (day, week) | P1 | S5 | Both | CMP, E2E | Not started |
-| FR-SCH-13 | No-show detection, reversal with reason, strikes | P1 | S5 | Both | BR | Not started |
-| FR-SCH-14 | Disruption flow: bulk rebooking and notification | P1 | S5 | Both | BR, E2E | Not started |
-| FR-SCH-15 | Follow-up booking from the consultation | P1 | S5 | Both | API | Not started |
+| FR-SCH-01 | Facility search with filters; list and map | P1 | S5 | Both | API, E2E | In progress |
+| FR-SCH-02 | Facility profile: services, fees, share, insurers, hours, doctors, load | P1 | S5 | Both | API, E2E | In progress |
+| FR-SCH-03 | Public facility pages indexable by search engines | P1 | S5 | Frontend | INS | In progress |
+| FR-SCH-04 | Referral pathway hint for Mutuelle patients | P1 | S5 | Both | BR, CMP | In progress |
+| FR-SCH-05 | Facility calendar: hours, closures, holidays, Umuganda | P1 | S2, S5 | Both | UT, API | In progress |
+| FR-SCH-06 | Doctor weekly templates and exceptions | P1 | S2, S5 | Both | API, CMP | In progress |
+| FR-SCH-07 | Slot generation: capacity, bookable share, walk-in reserve | P1 | S5 | Backend | BR | In progress |
+| FR-SCH-08 | Book, reschedule, cancel with atomic slot hold | P1 | S5 | Both | BR, E2E | In progress |
+| FR-SCH-09 | Remote queue join for today, with cut-off | P1 | S5 | Both | BR, E2E | In progress |
+| FR-SCH-10 | Reason for visit with the structured symptom picker | P1 | S5 | Both | API, CMP | In progress |
+| FR-SCH-11 | Patient calendar with dependents; .ics export and feed | P1 | S5 | Both | API, E2E | In progress |
+| FR-SCH-12 | Reception and doctor calendars (day, week) | P1 | S5 | Both | CMP, E2E | In progress |
+| FR-SCH-13 | No-show detection, reversal with reason, strikes | P1 | S5 | Both | BR | In progress (R4 #86) |
+| FR-SCH-14 | Disruption flow: bulk rebooking and notification | P1 | S5 | Both | BR, E2E | In progress |
+| FR-SCH-15 | Follow-up booking from the consultation | P1 | S5 | Both | API | In progress |
 | FR-SCH-16 | Recurring care plans | P2 | — | Both | BR | Not started |
 | FR-SCH-17 | Waitlist with timed offers | P2 | — | Both | BR | Not started |
 | FR-SCH-18 | Medicine schedule in the patient calendar | P2 | — | Both | CMP | Not started |
@@ -149,23 +149,23 @@ Source: [06 · Visit lifecycle and live queue](../analysis/06-visit-lifecycle-an
 
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
-| FR-QUE-01 | Visit as the central record | P1 | S4 | Backend | UT, API | Not started |
-| FR-QUE-02 | Expected list separate from the live queue | P1 | S5 | Both | API, E2E | Not started |
-| FR-QUE-03 | Check-in and walk-in produce one ticket (idempotent) | P1 | S4 (walk-ins), S5 (booked) | Backend | BR | Not started |
-| FR-QUE-04 | Configurable stages incl. payment and pharmacy | P1 | S4 | Both | BR | Not started |
-| FR-QUE-05 | Ordering rules: emergency, return, priority, ratio, FIFO | P1 | S4 | Backend | BR | Not started |
-| FR-QUE-06 | Grace window; late arrivals become walk-ins | P1 | S5 | Backend | BR | Not started |
-| FR-QUE-07 | Remote joiners hold a place; pass-over rule | P1 | S5 | Backend | BR | Not started |
-| FR-QUE-08 | Atomic Call next; versioned state changes | P1 | S4 | Backend | BR | Not started |
-| FR-QUE-09 | Ticket state machine with recorded transitions | P1 | S4 | Backend | BR | Not started |
-| FR-QUE-10 | Manual reorder only with reason; logged; reported | P1 | S4 | Both | BR, API | Not started |
-| FR-QUE-11 | Wait estimate as a range; status messages; time to leave | P1 | S4 | Both | UT, CMP | Not started |
-| FR-QUE-12 | Real-time updates to boards, trackers, display (< 2 s) | P1 | S4 | Both | PERF, E2E | Not started |
-| FR-QUE-13 | Waiting-room display: ticket numbers only, chime | P1 | S4 | Both | E2E, INS | Not started |
-| FR-QUE-14 | Doctor status: on duty, break, emergency, off | P1 | S4 | Both | API | Not started |
-| FR-QUE-15 | End-of-day auto-close rules | P1 | S4 | Backend | BR | Not started |
-| FR-QUE-16 | Offline banner, action retry, paper fallback | P1 | S4 | Both | E2E, DRL | Not started |
-| FR-QUE-17 | Transfer keeps the original arrival time | P1 | S4 | Backend | BR | Not started |
+| FR-QUE-01 | Visit as the central record | P1 | S4 | Backend | UT, API | In progress |
+| FR-QUE-02 | Expected list separate from the live queue | P1 | S5 | Both | API, E2E | In progress |
+| FR-QUE-03 | Check-in and walk-in produce one ticket (idempotent) | P1 | S4 (walk-ins), S5 (booked) | Backend | BR | In progress |
+| FR-QUE-04 | Configurable stages incl. payment and pharmacy | P1 | S4 | Both | BR | In progress |
+| FR-QUE-05 | Ordering rules: emergency, return, priority, ratio, FIFO | P1 | S4 | Backend | BR | In progress |
+| FR-QUE-06 | Grace window; late arrivals become walk-ins | P1 | S5 | Backend | BR | In progress (R4 #86) |
+| FR-QUE-07 | Remote joiners hold a place; pass-over rule | P1 | S5 | Backend | BR | In progress (R4 #86) |
+| FR-QUE-08 | Atomic Call next; versioned state changes | P1 | S4 | Backend | BR | In progress |
+| FR-QUE-09 | Ticket state machine with recorded transitions | P1 | S4 | Backend | BR | In progress |
+| FR-QUE-10 | Manual reorder only with reason; logged; reported | P1 | S4 | Both | BR, API | In progress |
+| FR-QUE-11 | Wait estimate as a range; status messages; time to leave | P1 | S4 | Both | UT, CMP | In progress |
+| FR-QUE-12 | Real-time updates to boards, trackers, display (< 2 s) | P1 | S4 | Both | PERF, E2E | In progress |
+| FR-QUE-13 | Waiting-room display: ticket numbers only, chime | P1 | S4 | Both | E2E, INS | In progress |
+| FR-QUE-14 | Doctor status: on duty, break, emergency, off | P1 | S4 | Both | API | In progress |
+| FR-QUE-15 | End-of-day auto-close rules | P1 | S4 | Backend | BR | In progress |
+| FR-QUE-16 | Offline banner, action retry, paper fallback | P1 | S4 | Both | E2E, DRL | In progress |
+| FR-QUE-17 | Transfer keeps the original arrival time | P1 | S4 | Backend | BR | In progress |
 | FR-QUE-18 | Self check-in by QR at the facility | P2 | — | Both | E2E | Not started |
 | FR-QUE-19 | Travel time from location for time to leave | P2 | — | Both | UT | Not started |
 | FR-QUE-20 | Family grouping of tickets | P2 | — | Both | BR | Not started |
@@ -176,15 +176,15 @@ Source: [07 · Clinical record](../analysis/07-clinical-documentation-and-pharma
 
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
-| FR-CLN-01 | Consultation record; private notes never shown to patients | P1 | S6 | Both | AZ, API | Not started |
-| FR-CLN-02 | Autosave; sign with re-authentication; lock; content hash | P1 | S6 | Both | BR, E2E | Not started |
-| FR-CLN-03 | Addenda with reason; originals never edited | P1 | S6 | Both | BR | Not started |
-| FR-CLN-04 | Entered in error; no deletion | P1 | S6 | Both | BR | Not started |
-| FR-CLN-05 | No completion without signature; Unsigned records list | P1 | S6 | Both | BR | Not started |
-| FR-CLN-06 | ICD-10 diagnoses, provisional or confirmed | P1 | S6 | Both | API, CMP | Not started |
-| FR-CLN-07 | Allergy, duplicate, dose alerts; override with reason | P1 | S6 | Both | BR, CMP | Not started |
-| FR-CLN-08 | Restricted (sensitive) records | P1 | S6 | Both | AZ | Not started |
-| FR-CLN-09 | Results inbox with review sign-off | P1 | S6 | Both | API, E2E | Not started |
+| FR-CLN-01 | Consultation record; private notes never shown to patients | P1 | S6 | Both | AZ, API | In progress |
+| FR-CLN-02 | Autosave; sign with re-authentication; lock; content hash | P1 | S6 | Both | BR, E2E | In progress |
+| FR-CLN-03 | Addenda with reason; originals never edited | P1 | S6 | Both | BR | In progress |
+| FR-CLN-04 | Entered in error; no deletion | P1 | S6 | Both | BR | In progress |
+| FR-CLN-05 | No completion without signature; Unsigned records list | P1 | S6 | Both | BR | In progress |
+| FR-CLN-06 | ICD-10 diagnoses, provisional or confirmed | P1 | S6 | Both | API, CMP | In progress |
+| FR-CLN-07 | Allergy, duplicate, dose alerts; override with reason | P1 | S6 | Both | BR, CMP | In progress |
+| FR-CLN-08 | Restricted (sensitive) records | P1 | S6 | Both | AZ | In progress |
+| FR-CLN-09 | Results inbox with review sign-off | P1 | S6b | Both | API, E2E | Not started |
 | FR-CLN-10 | Consultation templates per service | P2 | — | Both | CMP | Not started |
 
 ## FR-PHA · Pharmacy
@@ -222,10 +222,10 @@ Source: [08 · Billing, payments, insurance](../analysis/08-billing-payments-and
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
 | FR-BIL-01 | Insurance profiles with card photos, validity, status | P1 | S3 | Both | API | In progress |
-| FR-BIL-02 | Facility insurer acceptance rules | P1 | S2, S8 | Both | BR | Not started |
-| FR-BIL-03 | Estimated patient share in discovery and booking | P1 | S5 | Both | BR | Not started |
+| FR-BIL-02 | Facility insurer acceptance rules | P1 | S2, S8 | Both | BR | In progress |
+| FR-BIL-03 | Estimated patient share in discovery and booking | P1 | S5 | Both | BR | In progress |
 | FR-BIL-04 | Manual insurance verification per visit; rejection reason | P1 | S8 | Both | API | Not started |
-| FR-BIL-05 | Facility tariff with effective dates | P1 | S2, S8 | Both | BR | Not started |
+| FR-BIL-05 | Facility tariff with effective dates | P1 | S2, S8 | Both | BR | In progress |
 | FR-BIL-06 | One bill per visit with insurer / patient split | P1 | S8 | Both | BR | Not started |
 | FR-BIL-07 | Payment recording with references; partial payments | P1 | S8 | Both | BR, API | Not started |
 | FR-BIL-08 | Gapless receipts; to app, email and print | P1 | S8 | Both | BR | Not started |
@@ -288,7 +288,7 @@ Source: [11 · AI symptom checker](../analysis/11-ai-symptom-checker.md)
 
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
-| FR-AI-01 | Structured symptom list (3 languages) for reason for visit | P1 | S5 | Both | API, INS | Not started |
+| FR-AI-01 | Structured symptom list (3 languages) for reason for visit | P1 | S5 | Both | API, INS | In progress |
 | FR-AI-02 | Research consent separate from care consent | P1 | S0* | Both | API, E2E | Verified (S0, v0.1.0) |
 | FR-AI-03 | De-identified export of intake + diagnosis pairs | P2 | — | Backend | INS | Not started |
 | FR-AI-04 | Red-flag rules engine with clinician sign-off | P2 | — | Backend | BR, INS | Not started |
@@ -310,14 +310,14 @@ Source: [12 · Security, privacy, compliance](../analysis/12-security-privacy-an
 |---|---|---|---|---|---|---|
 | FR-SEC-01 | Server-side RBAC and facility scoping on every request | P1 | S0 | Backend | AZ, RLS | Verified (S0, v0.1.0) |
 | FR-SEC-02 | PostgreSQL row-level security for tenant isolation | P1 | S0 | Backend | RLS | Verified (S0, v0.1.0) |
-| FR-SEC-03 | Treatment-relationship rule for clinical data | P1 | S6 | Backend | AZ | Not started |
+| FR-SEC-03 | Treatment-relationship rule for clinical data | P1 | S3 (R2 #84), S6 | Backend | AZ | In progress |
 | FR-SEC-04 | Versioned consent records | P1 | S0 | Both | API | Verified (S0, v0.1.0) |
 | FR-SEC-05 | Separate optional research consent | P1 | S0 | Both | API, E2E | Verified (S0, v0.1.0) |
 | FR-SEC-06 | Staff 2FA; re-authentication to sign; idle lock with PIN | P1 | S0 (MFA), S1 (PIN lock, step-up) | Both | API, E2E, SEC | In progress |
 | FR-SEC-07 | Append-only, hash-chained audit log | P1 | S0 | Backend | API, SEC | Verified (S0, v0.1.0) |
 | FR-SEC-08 | Patient access history in plain language | P1 | S3 | Both | API, E2E | In progress |
-| FR-SEC-09 | Break-glass with reason, time limit, review, patient visibility | P1 | S6 | Both | AZ, API | Not started |
-| FR-SEC-10 | Encryption in transit and at rest; field-level encryption | P1 | S3 | Backend | UT, INS | In progress |
+| FR-SEC-09 | Break-glass with reason, time limit, review, patient visibility | P1 | S6b | Both | AZ, API | Not started |
+| FR-SEC-10 | Encryption in transit and at rest; field-level encryption | P1 | S3, R1 #83 (TOTP secrets, Transit keystore) | Backend | UT, INS | In progress |
 | FR-SEC-11 | Patient data processed and stored in Rwanda | P1 | S11* | Ops | INS | Not started |
 | FR-SEC-12 | Data subject rights: access, download, rectification, erasure, portability | P1 | S10 | Both | API, E2E | Not started |
 | FR-SEC-13 | Retention rules per data type | P1 | S10 | Backend | UT, INS | Not started |
@@ -347,10 +347,10 @@ Source: [14 · Performance and capacity](../analysis/14-non-functional-requireme
 
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
-| NFR-PERF-01 | 06:00–10:00 peak: 50 check-ins/15 min, 20 staff per facility | P1 | S4, S11 | Backend | PERF | Not started |
+| NFR-PERF-01 | 06:00–10:00 peak: 50 check-ins/15 min, 20 staff per facility | P1 | S4, S11 | Backend | PERF | In progress |
 | NFR-PERF-02 | Launch capacity: 50 facilities, 5,000 visits/day; scale ×10 | P1 | S11 | Backend | PERF | Not started |
-| NFR-PERF-03 | Staff actions < 500 ms p95 on the server | P1 | S4*, S11 | Backend | PERF | Not started |
-| NFR-PERF-04 | Queue changes reach all screens in < 2 s | P1 | S4, S11 | Both | PERF, E2E | Not started |
+| NFR-PERF-03 | Staff actions < 500 ms p95 on the server | P1 | S4*, S11 | Backend | PERF | In progress |
+| NFR-PERF-04 | Queue changes reach all screens in < 2 s | P1 | S4, S11 | Both | PERF, E2E | In progress |
 | NFR-PERF-05 | Patient history < 2 s for 200 visits | P1 | S6*, S11 | Backend | PERF | Not started |
 | NFR-PERF-06 | Patient app first load < 3 s on 3G | P1 | S11 | Frontend | PERF | Not started |
 | NFR-PERF-07 | PDF generated in < 5 s | P1 | S7*, S11 | Backend | PERF | Not started |
@@ -363,8 +363,8 @@ Source: [14 · Availability and reliability](../analysis/14-non-functional-requi
 |---|---|---|---|---|---|---|
 | NFR-REL-01 | 99.5 % availability during facility hours | P1 | S11 | Ops | INS | Not started |
 | NFR-REL-02 | RPO ≤ 15 min, RTO ≤ 4 h | P1 | S11 | Ops | DRL | Not started |
-| NFR-REL-03 | No lost actions during brief network loss | P1 | S4*, S11 | Both | E2E | Not started |
-| NFR-REL-04 | Idempotent check-in, payment and dispensing | P1 | S4*, S7*, S8*, S11 | Backend | BR | Not started |
+| NFR-REL-03 | No lost actions during brief network loss | P1 | S4*, S11 | Both | E2E | In progress |
+| NFR-REL-04 | Idempotent check-in, payment and dispensing | P1 | S4*, S7*, S8*, S11 | Backend | BR | In progress |
 | NFR-REL-05 | Background jobs retried and monitored | P1 | S9*, S11 | Backend | API, INS | In progress |
 
 ## NFR-NET · Low connectivity and devices
@@ -377,7 +377,7 @@ Source: [14 · Low connectivity and devices](../analysis/14-non-functional-requi
 | NFR-NET-02 | Small pages and payloads; data-saver mode | P1 | S11* | Both | PERF, INS | Not started |
 | NFR-NET-03 | Staff app on low-end PCs and 10" tablets | P1 | S11* | Frontend | USA, INS | Not started |
 | NFR-NET-04 | Patient app on Android 8+ and iOS 16.4+ | P1 | S11* | Frontend | INS | Not started |
-| NFR-NET-05 | Display on a TV with a cheap stick or mini PC | P1 | S4* | Frontend | INS | Not started |
+| NFR-NET-05 | Display on a TV with a cheap stick or mini PC | P1 | S4* | Frontend | INS | In progress |
 | NFR-NET-06 | Thermal receipt and ticket printing (58/80 mm) | P1 | S7* | Frontend | INS | Not started |
 
 ## NFR-UX · Usability, accessibility, languages
@@ -387,10 +387,10 @@ Source: [14 · Usability, accessibility, languages](../analysis/14-non-functiona
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
 | NFR-UX-01 | Kinyarwanda first; no hard-coded text; language switch | P1 | S0 | Both | UT, INS | Verified (S0, v0.1.0) |
-| NFR-UX-02 | Elderly and low-literacy friendly; booking ≤ 5 steps | P1 | S5*, S11* | Frontend | USA | Not started |
+| NFR-UX-02 | Elderly and low-literacy friendly; booking ≤ 5 steps | P1 | S5*, S11* | Frontend | USA | In progress |
 | NFR-UX-03 | WCAG 2.2 AA for patient and staff apps | P1 | S0*–S11 | Frontend | CMP, A11Y | In progress |
 | NFR-UX-04 | Walk-in + ticket < 60 s; booked check-in < 15 s | P1 | S3*, S4* | Both | USA, E2E | In progress |
-| NFR-UX-05 | Keyboard shortcuts for reception and doctors | P1 | S4* | Frontend | CMP, E2E | Not started |
+| NFR-UX-05 | Keyboard shortcuts for reception and doctors | P1 | S4* | Frontend | CMP, E2E | In progress |
 | NFR-UX-06 | Local date and number formats; RWF without decimals | P1 | S0* | Frontend | UT | In progress |
 | NFR-UX-07 | Plain-language errors with what to do next | P1 | S0* | Both | CMP, INS | In progress |
 
@@ -401,13 +401,13 @@ Source: [14 · Maintainability and operations](../analysis/14-non-functional-req
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
 | NFR-OPS-01 | Automated tests for domain rules; e2e for core flows | P1 | S0 | Both | INS | In progress |
-| NFR-OPS-02 | CI: lint, types, tests, dependency and secret scanning | P1 | S0 | Both | INS | Verified (S0, v0.1.0) |
+| NFR-OPS-02 | CI: lint, types, tests, dependency and secret scanning | P1 | S0 | Both | INS | Verified (S0, v0.1.0); blocking mypy, Semgrep, osv-scanner, hadolint, image scan, SBOM and PR title gates added in #90 |
 | NFR-OPS-03 | Container deployments; separate dev, staging, production | P1 | S0 | Ops | INS | In progress |
 | NFR-OPS-04 | Monitoring and alerts (scrubbed of personal data) | P1 | S0, S11* | Ops | INS, DRL | In progress |
 | NFR-OPS-05 | Structured logs without personal data | P1 | S0 | Backend | UT, INS | Verified (S0, v0.1.0) |
 | NFR-OPS-06 | API documented (OpenAPI) and versioned | P1 | S0 | Backend | CON | Verified (S0, v0.1.0) |
 | NFR-OPS-07 | Feature flags per facility | P1 | S1* | Both | API | In progress |
-| NFR-OPS-08 | Database migrations reviewed and reversible | P1 | S0 | Backend | INS | Verified (S0, v0.1.0) |
+| NFR-OPS-08 | Database migrations reviewed and reversible | P1 | S0 | Backend | INS | Verified (S0, v0.1.0); CI reverses and re-applies each app's latest migration (#90) |
 
 ## NFR-INT · Interoperability
 

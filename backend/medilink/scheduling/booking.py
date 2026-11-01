@@ -9,6 +9,8 @@ import secrets
 from dataclasses import dataclass
 from typing import Any
 
+import environ
+from django.conf import settings
 from django.db import IntegrityError, connection, transaction
 from django.dispatch import Signal
 from django.utils import timezone
@@ -41,8 +43,8 @@ booking_changed_by_facility = Signal()
 no_show_recorded = Signal()
 
 CODE_ALPHABET = "23456789ABCDEFGHJKMNPQRSTUVWXYZ"
-STRIKE_WINDOW = dt.timedelta(days=90)
 MAX_SYMPTOMS = 5
+_env = environ.Env()
 CANCEL_CODES = ("patient_request", "facility_request", "duplicate", "other")
 REVERSE_CODES = ("patient_was_present", "facility_delay", "other")
 
@@ -82,21 +84,32 @@ class Cost:
     insurer_accepted: bool | None
 
 
+def cover(fee: int | None, rule: Any, tariff_code: str | None = None) -> tuple[int | None, bool]:
+    """Patient share of `fee` under an insurer rule (FR-BIL-03), and whether the insurer covers
+    it: no rule (not accepted, or not for this service) or an excluded tariff code → the full
+    fee, not covered. Otherwise `patient_share_bp` of the fee, and the insurer pays at most
+    `ceiling_per_visit_rwf`. The one rule for listing, profile and booking (R4)."""
+    if rule is None or (tariff_code and tariff_code in (rule.excluded_tariff_codes or [])):
+        return fee, False
+    if fee is None:
+        return None, True
+    share = round(fee * rule.patient_share_bp / 10_000)
+    if rule.ceiling_per_visit_rwf is not None:
+        share = max(share, fee - rule.ceiling_per_visit_rwf)
+    return share, True
+
+
 def estimate(
     facility_id: Any, service_id: Any, on: dt.date, insurer_code: str | None = None
 ) -> Cost:
-    """Fee from the tariff on the slot date; patient share from the insurer rule (FR-BIL-03)."""
+    """Fee from the tariff on the slot date; patient share from the insurer rule (`cover`)."""
     item = price(facility_id, service_id=service_id, on=on)
     fee = item.amount_rwf if item else None
     if not insurer_code:
         return Cost(fee, fee, None, None)
     rule = insurer_rule(facility_id, insurer_code, service_id=service_id, on=on)
-    if rule is None:
-        return Cost(fee, fee, insurer_code, False)
-    share = None if fee is None else round(fee * rule.patient_share_bp / 10_000)
-    if share is not None and rule.ceiling_per_visit_rwf is not None:
-        share = max(share, fee - rule.ceiling_per_visit_rwf) if fee is not None else share
-    return Cost(fee, share, insurer_code, True)
+    share, accepted = cover(fee, rule, item.code if item else None)
+    return Cost(fee, share, insurer_code, accepted)
 
 
 def _count(sql: str, params: list[Any]) -> int:
@@ -107,15 +120,62 @@ def _count(sql: str, params: list[Any]) -> int:
         return int(cursor.fetchone()[0])
 
 
+@dataclass(frozen=True)
+class StrikePolicy:
+    """Platform-wide no-show policy (analysis 05 §4, FR-SCH-13): `warning` strikes within
+    `window_days` warn at booking; `limit` strikes within the window limit the patient to one
+    active booking for `limit_days` from the strike that reached it."""
+
+    warning: int
+    limit: int
+    window_days: int
+    limit_days: int
+
+
+def _platform_int(name: str, default: int) -> int:
+    value = getattr(settings, name, None)
+    return int(value) if value is not None else _env.int(name, default=default)
+
+
+def strike_policy() -> StrikePolicy:
+    return StrikePolicy(
+        warning=_platform_int("NO_SHOW_STRIKE_WARNING", 3),
+        limit=_platform_int("NO_SHOW_STRIKE_LIMIT", 4),
+        window_days=_platform_int("NO_SHOW_STRIKE_WINDOW_DAYS", 90),
+        limit_days=_platform_int("NO_SHOW_LIMIT_DAYS", 30),
+    )
+
+
 def active_count(patient_id: Any) -> int:
     """Future confirmed bookings across all facilities (SECURITY DEFINER, a number only)."""
     return _count("SELECT scheduling_active_booking_count(%s)", [patient_id])
 
 
-def strike_count(patient_id: Any) -> int:
-    return _count(
-        "SELECT scheduling_strike_count(%s, %s)", [patient_id, timezone.now() - STRIKE_WINDOW]
-    )
+def strike_times(patient_id: Any, since: dt.datetime) -> list[dt.datetime]:
+    """Times of the patient's strikes (not reversed) across facilities (SECURITY DEFINER)."""
+    if connection.vendor != "postgresql":
+        return []
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT scheduling_strike_times(%s, %s)", [patient_id, since])
+        return [row[0] for row in cursor.fetchall()]
+
+
+def strike_status(patient_id: Any, now: dt.datetime | None = None) -> dict[str, Any]:
+    """Strikes in the window, and whether the patient is limited (and until when)."""
+    now = now or timezone.now()
+    policy = strike_policy()
+    window = dt.timedelta(days=policy.window_days)
+    period = dt.timedelta(days=policy.limit_days)
+    times = strike_times(patient_id, now - window - period)
+    limited_until = None
+    for i, at in enumerate(times):
+        # `at` reaches the limit when `limit` strikes fall in the window ending at it
+        if i + 1 >= policy.limit and at - times[i + 1 - policy.limit] <= window:
+            limited_until = at + period
+    if limited_until is not None and limited_until <= now:
+        limited_until = None
+    strikes = sum(1 for at in times if at >= now - window)
+    return {"strikes": strikes, "limited_until": limited_until, "policy": policy}
 
 
 def _age_months(born: dt.date | None, on: dt.date) -> int | None:
@@ -140,14 +200,15 @@ def _check_patient(patient: Patient, slot: Slot) -> None:
 def limits(facility_id: Any, patient_id: Any) -> dict[str, Any]:
     """Booking limits for this patient now (shown before booking and enforced at confirm)."""
     settings_ = booking_settings(facility_id)
-    strikes = strike_count(patient_id)
-    limited = strikes > settings_["no_show_strikes"]
+    status = strike_status(patient_id)
+    limited = status["limited_until"] is not None
     return {
         "max_active": 1 if limited else settings_["max_active"],
         "active": active_count(patient_id),
-        "strikes": strikes,
-        "warning": strikes >= settings_["no_show_strikes"],
+        "strikes": status["strikes"],
+        "warning": status["strikes"] >= status["policy"].warning,
         "limited": limited,
+        "limited_until": status["limited_until"],
     }
 
 
@@ -353,6 +414,13 @@ def _close(booking: Booking, status: str, who: Who | None, *, reason_code: str =
     _event(booking, before, who, reason_code=reason_code)
 
 
+def _settle(booking: Booking, response: str, who: Any, new: Booking | None = None) -> bool:
+    """Close any open disruption item of the booking (S5b), whichever screen changed it."""
+    from medilink.scheduling.disruptions import settle_booking
+
+    return settle_booking(booking, response, who, new)
+
+
 def locked(booking_id: Any, version: Any) -> Booking:
     booking = Booking.objects.select_for_update().get(pk=booking_id)
     if version is not None and version != booking.version:
@@ -376,8 +444,10 @@ def cancel(booking_id: Any, *, version: Any, who: Who, reason_code: str = "") ->
             status = BookingStatus.CANCELLED
         else:
             reason_code = "patient_request"
-            late = timezone.now() > cancel_deadline(booking)
+            # Declining a disruption offer is never a late cancellation (contract §2.2)
+            late = timezone.now() > cancel_deadline(booking) and not booking.pending_change
             status = BookingStatus.LATE_CANCELLED if late else BookingStatus.CANCELLED
+        _settle(booking, "cancelled", who)
         _close(booking, status, who, reason_code=reason_code)
     record(
         "scheduling.booking.cancel",
@@ -404,7 +474,11 @@ def reschedule(
         old = locked(booking_id, version)
         if old.status != BookingStatus.CONFIRMED:
             raise BookingRule(CANCEL_CLOSED, "cancel_closed")
-        if not who.is_staff and timezone.now() > cancel_deadline(old):
+        if (
+            not who.is_staff
+            and timezone.now() > cancel_deadline(old)
+            and not old.pending_change  # a disruption offer can always be moved
+        ):
             raise BookingRule(CANCEL_CLOSED, "cancel_closed")
         symptoms = [
             {"code": s.symptom_code, "duration_days": s.duration_days, "severity": s.severity}
@@ -441,20 +515,35 @@ def reschedule(
                 text, table="scheduling_booking", column="reason_encrypted", row_id=new.pk
             )
             new.save(update_fields=["reason_encrypted"])
+        _settle(old, "rebooked_other", who, new)
     return new
 
 
 # ---- no-shows ------------------------------------------------------------------------------------
 
 
+def closing_time(facility_id: Any, day: dt.date) -> dt.datetime:
+    """When the facility closes on `day` (the latest opening range of its effective calendar);
+    end of that day when it does not open."""
+    from medilink.facilities.calendar import KIGALI, effective_calendar
+
+    calendar = effective_calendar(facility_id, day, day)
+    ranges = calendar[0].open if calendar else []
+    if not ranges:
+        return dt.datetime.combine(day + dt.timedelta(days=1), dt.time.min, KIGALI)
+    return dt.datetime.combine(day, max(end for _start, end in ranges), KIGALI)
+
+
 def mark_no_shows(facility_id: Any, now: dt.datetime | None = None) -> int:
-    """Confirmed bookings past `slot + grace_after` without check-in become no-shows with a
-    strike (FR-SCH-13)."""
+    """Confirmed bookings whose patient never arrived become no-shows with a strike (FR-SCH-13).
+    A patient later than `slot + grace_after` still checks in as a walk-in (R4 decision), so a
+    booking is only a no-show once the facility has closed on the booking day."""
     from medilink.visits.services import queue_settings
 
     now = now or timezone.now()
     grace = dt.timedelta(minutes=queue_settings(facility_id)["grace_after_minutes"])
     marked = 0
+    closes: dict[dt.date, dt.datetime] = {}
     with transaction.atomic():
         late = list(
             Booking.objects.select_for_update().filter(
@@ -464,13 +553,21 @@ def mark_no_shows(facility_id: Any, now: dt.datetime | None = None) -> int:
             )
         )
         for booking in late:
+            day = booking.service_date
+            if day not in closes:
+                closes[day] = closing_time(facility_id, day)
+            if now < closes[day]:
+                continue  # the patient can still arrive today
+            # An unanswered disruption offer: the facility moved it, so no strike (contract §2.2)
+            offered = _settle(booking, "declined", None)
             _close(booking, BookingStatus.NO_SHOW, None, reason_code="no_show")
-            NoShowStrike.objects.create(
-                facility_id=facility_id,
-                patient_id=booking.patient_id,
-                booking=booking,
-                occurred_at=now,
-            )
+            if not offered:
+                NoShowStrike.objects.create(
+                    facility_id=facility_id,
+                    patient_id=booking.patient_id,
+                    booking=booking,
+                    occurred_at=now,
+                )
             booking_id, fid = booking.pk, facility_id
             transaction.on_commit(
                 lambda b=booking_id, f=fid: no_show_recorded.send(  # type: ignore[misc]
@@ -520,6 +617,7 @@ def reverse_no_show(
 
 def mark_checked_in(booking: Booking, visit_id: Any, who: Who) -> None:
     """Called by the S4 check-in inside its transaction (contract §2.2 Check-in (booked))."""
+    _settle(booking, "accepted", who)
     before = booking.status
     booking.status = BookingStatus.CHECKED_IN
     booking.visit_id = visit_id

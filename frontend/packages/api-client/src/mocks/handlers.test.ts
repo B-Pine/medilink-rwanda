@@ -10,6 +10,7 @@ import {
   MOCK_RATE_LIMITED_EMAIL,
   MOCK_RECOVERY_CODE,
   MOCK_RESET_TOKEN,
+  MOCK_VERIFY_TOKEN,
   MOCK_TOTP_CODE,
   ROLE_PERMISSIONS,
 } from "./data";
@@ -211,15 +212,29 @@ describe("patient auth", () => {
     research_consent: false,
   };
 
-  it("register → 201 PatientMe (logged in) → logout → login", async () => {
-    const me = await api.patientAuth.register(registration);
+  it("register → 202 check your email (not signed in) → verify email → logout → login", async () => {
+    const accepted = await api.patientAuth.register(registration);
+    expect(accepted.detail).toBeTruthy();
+    expect((await failure(api.patientAuth.me())).status).toBe(401);
+    expect(
+      (
+        await failure(
+          api.patientAuth.login({ email: registration.email, password: registration.password }),
+        )
+      ).status,
+    ).toBe(401); // not until the email is confirmed
+
+    const me = await api.patientAuth.verifyEmail({ token: MOCK_VERIFY_TOKEN });
     expect(me).toMatchObject({
       email: "diane@example.rw",
       full_name: "Uwera Diane",
-      email_verified: false,
+      email_verified: true,
     });
     expect(me.profiles[0]).toMatchObject({ relationship: "self", display_name: "Uwera Diane" });
     await expect(api.patientAuth.me()).resolves.toMatchObject({ id: me.id });
+    expect((await failure(api.patientAuth.verifyEmail({ token: MOCK_VERIFY_TOKEN }))).status).toBe(
+      400,
+    ); // single use
 
     await api.patientAuth.logout();
     expect((await failure(api.patientAuth.me())).status).toBe(401);
@@ -227,6 +242,15 @@ describe("patient auth", () => {
     await expect(
       api.patientAuth.login({ email: registration.email, password: registration.password }),
     ).resolves.toMatchObject({ id: me.id });
+  });
+
+  it("register with an existing email answers exactly like a new one", async () => {
+    const existing = await api.patientAuth.register({
+      ...registration,
+      email: "patient@medilink.test",
+    });
+    const fresh = await api.patientAuth.register({ ...registration, email: "new@example.rw" });
+    expect(existing).toEqual(fresh);
   });
 
   it("register validation: password >= 15, consents required", async () => {

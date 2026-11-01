@@ -2,6 +2,7 @@ import type { ApiClient } from "./client";
 import type {
   Credentials,
   CsrfResponse,
+  DetailResponse,
   HealthResponse,
   MfaConfirmResponse,
   MfaSetupResponse,
@@ -14,6 +15,7 @@ import type {
   StaffLoginResult,
   StaffMe,
   Uuid,
+  VerifyEmailRequest,
 } from "./types";
 
 // ---- Feature imports: ONLY between the sprint's markers (shared-file protocol) ----
@@ -32,7 +34,11 @@ import { createProfileApi } from "./features/profile";
 // [S5 imports]
 import { createBookingApi } from "./features/booking";
 // [/S5 imports]
+// [S6 imports]
+import { createClinicalApi } from "./features/clinical";
+// [/S6 imports]
 // [S9 imports]
+import { createNotificationsApi } from "./features/notifications";
 // [/S9 imports]
 // [S2 imports]
 // [/S2 imports]
@@ -51,6 +57,7 @@ export const paths = {
   staffMe: "/api/v1/staff/auth/me/",
   staffActiveFacility: "/api/v1/staff/auth/active-facility/",
   patientRegister: "/api/v1/patient/auth/register/",
+  patientVerifyEmail: "/api/v1/patient/auth/verify-email/",
   patientLogin: "/api/v1/patient/auth/login/",
   patientLogout: "/api/v1/patient/auth/logout/",
   patientMe: "/api/v1/patient/auth/me/",
@@ -95,8 +102,15 @@ export function createMediLinkApi(client: ApiClient) {
     },
 
     patientAuth: {
+      /**
+       * Always 202 "check your email", whether or not the email has an account (no enumeration).
+       * The new account signs in only through `verifyEmail` with the emailed link's token.
+       */
       register: (body: PatientRegisterRequest) =>
-        client.post<PatientMe>(paths.patientRegister, body, sessionChange),
+        client.post<DetailResponse>(paths.patientRegister, body, authCall),
+      /** Confirms the sign-up email (single-use token) and signs the patient in. */
+      verifyEmail: (body: VerifyEmailRequest) =>
+        client.post<PatientMe>(paths.patientVerifyEmail, body, sessionChange),
       login: (body: Credentials) => client.post<PatientMe>(paths.patientLogin, body, sessionChange),
       logout: () => client.post<void>(paths.patientLogout, undefined, sessionChange),
       /** 401 when not logged in (handled by the caller, not the global hook). */
@@ -127,6 +141,7 @@ export function createMediLinkApi(client: ApiClient) {
     profile: createProfileApi(client),
     // [/S3]
     // [S9]
+    notifications: createNotificationsApi(client),
     // [/S9]
     // [S2]
     setup: createSetupApi(client),
@@ -139,6 +154,9 @@ export function createMediLinkApi(client: ApiClient) {
     // [S5]
     booking: createBookingApi(client),
     // [/S5]
+    // [S6]
+    clinical: createClinicalApi(client),
+    // [/S6]
   };
 }
 

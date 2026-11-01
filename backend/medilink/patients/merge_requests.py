@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
+from medilink.accounts.serializers import StrictSerializer
 from medilink.core.exceptions import Conflict
 from medilink.patients import merge as engine
 from medilink.patients.audit import record_patient_event
@@ -70,13 +71,13 @@ class MergeRequestSerializer(serializers.Serializer):
     version = serializers.IntegerField()
 
 
-class MergeCreateSerializer(serializers.Serializer):
+class MergeCreateSerializer(StrictSerializer):
     surviving_facility_patient_id = serializers.UUIDField()
     merged_facility_patient_id = serializers.UUIDField()
     reason = serializers.CharField(max_length=300)
 
 
-class DecisionSerializer(serializers.Serializer):
+class DecisionSerializer(StrictSerializer):
     version = serializers.IntegerField(min_value=1)
     decision_reason = serializers.CharField(max_length=300, required=False, allow_blank=True)
 
@@ -85,7 +86,7 @@ class RejectSerializer(DecisionSerializer):
     decision_reason = serializers.CharField(max_length=300)
 
 
-class UndoSerializer(serializers.Serializer):
+class UndoSerializer(StrictSerializer):
     version = serializers.IntegerField(min_value=1)
     reason = serializers.CharField(max_length=300)
 
@@ -315,7 +316,10 @@ def undo(
     merge = _lock(merge, version)
     if merge.status != MergeStatus.EXECUTED:
         raise rule(NOT_OPEN)
-    if not platform and merge.scope != MergeScope.FACILITY:
+    # Contract §2.5: the same approver rule as approval.
+    if merge.requested_by_id == actor.pk:
+        raise rule(REQUESTER)
+    if not platform and (merge.scope != MergeScope.FACILITY or merge.is_escalated):
         raise rule(FACILITY_ONLY)
     skipped = engine.undo(merge, actor=actor, reason=reason.strip())
     _audit("patients.merge.undone", merge, request=request, reason=reason, skipped_rows=skipped)

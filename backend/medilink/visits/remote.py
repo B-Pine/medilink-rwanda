@@ -1,5 +1,5 @@
-"""Remote queue join for today, "I'm here" and pass-over (contract sprint-05 §2.2, FR-SCH-09,
-FR-QUE-07). Callers run inside the facility's RLS context."""
+"""Remote queue join for today, "I'm here" with reception confirmation, and pass-over (contract
+sprint-05 §2.2, FR-SCH-09, FR-QUE-07). Callers run inside the facility's RLS context."""
 
 from __future__ import annotations
 
@@ -35,12 +35,16 @@ from medilink.visits.services import (
     _save,
     _visit_changed,
     active_ticket,
+    add_symptoms,
     calling_order,
+    mark_on_site,
+    place_in_order,
     queue_settings,
     today,
 )
 
-# S9 warns the patient before each pass-over step. kwargs: ticket_id, visit_id, facility_id
+# S9 warns the patient `queue.pass_over_warning_minutes` before each pass-over step.
+# kwargs: ticket_id, visit_id, facility_id, final (True: the next step loses the ticket)
 ticket_pass_over_warning = Signal()
 
 REMOTE_CLOSED = _("Joining from home is closed for today at this service. Go to reception.")
@@ -72,10 +76,17 @@ def _open_now(facility_id: Any, service: Service, now: dt.datetime) -> bool:
 
 
 def join(
-    *, facility_id: Any, service: Service, patient_id: Any, actor: Actor, key: Any = None
+    *,
+    facility_id: Any,
+    service: Service,
+    patient_id: Any,
+    actor: Actor,
+    key: Any = None,
+    symptoms: list[dict[str, Any]] | None = None,
+    language: str = "en",
 ) -> tuple[Visit, Ticket, bool]:
-    """A place in today's walk-in queue from home: the ticket waits but is not called until the
-    patient says "I'm here" or reception checks them in."""
+    """A place in today's walk-in queue from home: the ticket waits but is not called until
+    reception confirms the patient is on site (FR-QUE-07; self check-in FR-QUE-18 is P2)."""
     now = timezone.now()
     cutoff = dt.time.fromisoformat(booking_settings(facility_id)["remote_join_cutoff"])
     if (
@@ -109,6 +120,7 @@ def join(
             )
             ticket.is_remote = True
             ticket.save(update_fields=["is_remote", "updated_at"])
+            add_symptoms(visit, symptoms, language)
     except IntegrityError:
         existing = _existing_visit(facility_id, patient_id, day, key)
         if not existing:
@@ -128,32 +140,60 @@ def join(
     return visit, ticket, True
 
 
-def arrived(ticket: Ticket, *, actor: Actor) -> Ticket:
-    """ "I'm here" from the tracker, or check-in at reception of a remote ticket."""
+def claim_arrival(ticket: Ticket, *, actor: Actor) -> Ticket:
+    """The patient's "I'm here" from the tracker (contract sprint-05 B9) records the claim only.
+    The ticket is not called, and pass-over still applies, until reception confirms it."""
     with transaction.atomic():
         locked = Ticket.objects.select_for_update().select_related("visit").get(pk=ticket.pk)
-        if not locked.is_remote or locked.remote_checked_in_at is not None:
+        if (
+            not locked.is_remote
+            or locked.remote_arrival_claimed_at is not None
+            or locked.remote_arrival_confirmed_at is not None
+        ):
             return locked
-        now = timezone.now()
-        locked.remote_checked_in_at = now
-        _save(locked, "remote_checked_in_at")
-        visit = locked.visit
-        visit.status = VisitStatus.ON_SITE
-        visit.checked_in_at = now
-        visit.checked_in_by = actor.user
-        visit.save(update_fields=["status", "checked_in_at", "checked_in_by", "updated_at"])
-        _event(locked, "arrived", locked.state, actor)
+        locked.remote_arrival_claimed_at = timezone.now()
+        _save(locked, "remote_arrival_claimed_at")
+        _event(locked, "arrival_claimed", locked.state, actor)
         _queue_changed(locked)
-        _visit_changed(visit)
+        _visit_changed(locked.visit)
     return locked
 
 
+def confirm_arrival(ticket: Ticket, *, actor: Actor) -> Ticket:
+    """Reception sees the remote joiner on site (R10, or a check-in of the same patient): the
+    visit becomes `on_site` and the ticket can be called."""
+    with transaction.atomic():
+        locked = Ticket.objects.select_for_update().select_related("visit").get(pk=ticket.pk)
+        if not locked.is_remote or locked.remote_arrival_confirmed_at is not None:
+            return locked
+        mark_on_site(locked, actor, timezone.now())
+        _event(locked, "confirm_arrival", locked.state, actor)
+        _queue_changed(locked)
+        _visit_changed(locked.visit)
+    return locked
+
+
+def _warn(ticket: Ticket, facility_id: Any, *, final: bool) -> None:
+    ticket.pass_over_warned_at = timezone.now()
+    _save(ticket, "pass_over_warned_at")
+    _event(ticket, "pass_over_warning", ticket.state, None, final=final)
+    ids = (ticket.pk, ticket.visit_id, facility_id)
+    transaction.on_commit(
+        lambda i=ids: ticket_pass_over_warning.send(  # type: ignore[misc]
+            sender=Ticket, ticket_id=i[0], visit_id=i[1], facility_id=i[2], final=final
+        )
+    )
+
+
 def pass_over(facility_id: Any) -> int:
-    """Remote tickets that reach `pass_over_places` from the front without arriving move back by
-    that many places; after `pass_over_limit` moves they lose the ticket (FR-QUE-07)."""
+    """Remote tickets not confirmed on site that come within `pass_over_places` of the front are
+    warned first; `pass_over_warning_minutes` later they move back by that many places, and after
+    `pass_over_limit` moves they lose the ticket (FR-QUE-07). Returns tickets warned, moved or
+    closed."""
     settings_ = queue_settings(facility_id)
     places, limit = settings_["pass_over_places"], settings_["pass_over_limit"]
-    moved = 0
+    notice = dt.timedelta(minutes=settings_["pass_over_warning_minutes"])
+    changed = 0
     day = today()
     queues = (
         Ticket.objects.filter(
@@ -161,7 +201,7 @@ def pass_over(facility_id: Any) -> int:
             service_date=day,
             state=TicketState.WAITING,
             is_remote=True,
-            remote_checked_in_at__isnull=True,
+            remote_arrival_confirmed_at__isnull=True,
         )
         .values_list("service_id", "stage")
         .distinct()
@@ -170,37 +210,39 @@ def pass_over(facility_id: Any) -> int:
         with transaction.atomic():
             order = calling_order(facility_id, service_id, stage, day=day)
             for index, candidate in enumerate(order[:places]):
-                if not candidate.is_remote or candidate.remote_checked_in_at is not None:
+                if not candidate.is_remote or candidate.remote_arrival_confirmed_at is not None:
                     continue
                 ticket = (
                     Ticket.objects.select_for_update().select_related("visit").get(pk=candidate.pk)
                 )
-                if ticket.state != TicketState.WAITING or ticket.remote_checked_in_at is not None:
+                if (
+                    ticket.state != TicketState.WAITING
+                    or ticket.remote_arrival_confirmed_at is not None
+                ):
                     continue
-                before = ticket.state
-                if ticket.pass_over_count >= limit:
+                final = ticket.pass_over_count >= limit
+                now = timezone.now()
+                if ticket.pass_over_warned_at is None:
+                    _warn(ticket, facility_id, final=final)
+                elif now < ticket.pass_over_warned_at + notice:
+                    continue
+                elif final:
+                    before = ticket.state
                     ticket.state = TicketState.LEFT_WITHOUT_SERVICE
-                    ticket.ended_at = timezone.now()
+                    ticket.ended_at = now
                     _save(ticket, "state", "ended_at")
                     _event(ticket, "pass_over_expired", before, None)
                     _close_visit_if_done(ticket.visit, VisitStatus.LEFT_WITHOUT_SERVICE)
                 else:
-                    behind = [t for t in order[index + 1 :] if t.slot_starts_at is None]
-                    anchor = behind[min(places, len(behind)) - 1] if behind else None
-                    if anchor is None:
+                    others = [t for t in order if t.pk != ticket.pk]
+                    if not place_in_order(ticket, others, index + places):
                         continue
-                    ticket.arrival_at = anchor.arrival_at + dt.timedelta(microseconds=1)
                     ticket.pass_over_count += 1
-                    _save(ticket, "arrival_at", "pass_over_count")
-                    _event(ticket, "pass_over", before, None, count=ticket.pass_over_count)
-                    ids = (ticket.pk, ticket.visit_id, facility_id)
-                    transaction.on_commit(
-                        lambda i=ids: ticket_pass_over_warning.send(  # type: ignore[misc]
-                            sender=Ticket, ticket_id=i[0], visit_id=i[1], facility_id=i[2]
-                        )
-                    )
+                    ticket.pass_over_warned_at = None
+                    _save(ticket, "order_at", "pass_over_count", "pass_over_warned_at")
+                    _event(ticket, "pass_over", ticket.state, None, count=ticket.pass_over_count)
                 _queue_changed(ticket)
                 _visit_changed(ticket.visit)
-                moved += 1
+                changed += 1
                 break  # one step per queue per run: positions change after a move
-    return moved
+    return changed

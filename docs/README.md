@@ -37,10 +37,11 @@ What the system must do and why. Read in order the first time.
 | [0001](decisions/0001-monorepo-and-stack.md) | Monorepo and stack (TypeScript everywhere) | Superseded by 0003 (stack); monorepo kept |
 | [0002](decisions/0002-web-first-paid-channels-later.md) | Web first; SMS, WhatsApp, USSD later | Accepted |
 | [0003](decisions/0003-stack-django-react-postgresql.md) | Django + React + PostgreSQL | Accepted |
-| [0004](decisions/0004-visit-centric-domain-model.md) | The visit is the central domain entity | Proposed |
-| [0005](decisions/0005-symptom-checker-ml-with-safety-rules.md) | ML symptom checker inside clinician-signed safety rules | Proposed |
+| [0004](decisions/0004-visit-centric-domain-model.md) | The visit is the central domain entity | Accepted |
+| [0005](decisions/0005-symptom-checker-ml-with-safety-rules.md) | ML symptom checker inside clinician-signed safety rules | Accepted |
 | [0006](decisions/0006-separate-frontend-and-backend-hosting.md) | Frontend and backend developed, versioned and hosted separately | Accepted |
 | [0007](decisions/0007-frontend-toolchain.md) | Frontend toolchain (pnpm, React 19, Vite, Tailwind v4 tokens, Radix, MSW) | Accepted for Sprint 0 |
+| [0008](decisions/0008-prerender-public-pages.md) | Pre-render public patient-web pages at build time (Vite plugin) | Accepted |
 
 ## Architecture (v0.1)
 
@@ -76,4 +77,4 @@ Threat model, security architecture, authentication, authorisation and tenant is
 
 ## Next
 
-Sprint 0 (Foundations) is done and verified (`backend-v0.1.0`, `frontend-v0.1.0`). Wave 1 status ([sprint contracts](architecture/contracts/README.md)): S1 platform and onboarding is implemented (backend, frontend and integration checks I1–I3; I4 needs staging); S3 patients and identity is implemented (backend and frontend; staging checks wait for #17); S9 notification engine is not started. Wave 2 (S2 facility setup, S10 part 1) can start now that S1 is merged; S2 needs its contract first. Documentation changes are listed in the [root changelog](../CHANGELOG.md); the backend and frontend keep their own changelogs.
+Sprint 0 (Foundations) is done and verified (`backend-v0.1.0`, `frontend-v0.1.0`). Implemented and waiting for staging (#17) before they count as verified ([sprint contracts](architecture/contracts/README.md)): S1 platform and onboarding, S2 facility setup, S3 patients and identity, S4 visits and the live queue, and S5a booking core (patient and reception sides). Not started: S5b, S6–S8, S9 notification engine (contracted), S10 and S11. The order of the remaining work, with the skills and tools for each step, is in the [M1 completion plan](superpowers/plans/2026-10-31-m1-completion-master-plan.md). Documentation changes are listed in the [root changelog](../CHANGELOG.md); the backend and frontend keep their own changelogs.

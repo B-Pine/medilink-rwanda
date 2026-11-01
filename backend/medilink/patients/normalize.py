@@ -113,6 +113,20 @@ def mask_phone(e164: str | None) -> str | None:
     return f"+250 {local[0]}•• ••• {local[-3:]}"
 
 
+# ---- facility file and insurance member numbers -------------------------------------------------
+
+
+def normalize_file_number(value: str | None) -> str | None:
+    """Contract §2.1: file numbers are trimmed and uppercased; empty means none."""
+    cleaned = (value or "").strip().upper()
+    return cleaned or None
+
+
+def normalize_member_number(value: str) -> str:
+    """Contract §2.1: insurance member numbers are uppercased with all spaces removed."""
+    return re.sub(r"\s+", "", value or "").upper()
+
+
 # ---- names --------------------------------------------------------------------------------------
 
 

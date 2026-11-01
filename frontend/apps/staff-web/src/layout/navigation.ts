@@ -23,6 +23,7 @@ import { ChartPieSlice, Database, FileText, ToggleRight } from "@phosphor-icons/
 import { GitMerge } from "@phosphor-icons/react";
 // [/S3 imports]
 // [S9 imports]
+import { Megaphone, MegaphoneSimple } from "@phosphor-icons/react";
 // [/S9 imports]
 // [S2 imports]
 import { CalendarDots, ClipboardText } from "@phosphor-icons/react";
@@ -32,6 +33,12 @@ import { CalendarDots, ClipboardText } from "@phosphor-icons/react";
 // [S4 imports]
 import { ArrowsDownUp } from "@phosphor-icons/react";
 // [/S4 imports]
+// [S5 imports]
+import { CalendarX } from "@phosphor-icons/react";
+// [/S5 imports]
+// [S6 imports]
+import { Notepad, Signature } from "@phosphor-icons/react";
+// [/S6 imports]
 
 /** Sections of the Sprint 0 shell (labels in `shell.nav.<key>`). Features use their own keys. */
 export type CoreNavKey =
@@ -201,6 +208,22 @@ export const NAV_ITEMS: readonly NavItem[] = [
   },
   // [/S3]
   // [S9]
+  {
+    key: "announcements",
+    path: "/announcements",
+    icon: Megaphone,
+    group: "facility",
+    labelKey: "notifications.nav.announcements",
+    visible: hasAny("announcements.manage"),
+  },
+  {
+    key: "platformAnnouncements",
+    path: "/platform/announcements",
+    icon: MegaphoneSimple,
+    group: "platform",
+    labelKey: "notifications.nav.platformAnnouncements",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
   // [/S9]
   // [S2]
   {
@@ -241,6 +264,34 @@ export const NAV_ITEMS: readonly NavItem[] = [
     visible: hasAny("facility.configure"),
   },
   // [/S4]
+  // [S5]
+  {
+    key: "disruptions",
+    path: "/disruptions",
+    icon: CalendarX,
+    group: "facility",
+    labelKey: "bookings.nav.disruptions",
+    visible: hasAny("schedule.manage"),
+  },
+  // [/S5]
+  // [S6]
+  {
+    key: "clinicalConsultation",
+    path: "/clinical/consultation",
+    icon: Notepad,
+    group: "facility",
+    labelKey: "clinical.nav.consultation",
+    visible: hasAny("clinical.write"),
+  },
+  {
+    key: "clinicalUnsigned",
+    path: "/clinical/unsigned",
+    icon: Signature,
+    group: "facility",
+    labelKey: "clinical.nav.unsigned",
+    visible: hasAny("clinical.unsigned_list"),
+  },
+  // [/S6]
 ];
 
 /** Translation key of a nav item's label. */

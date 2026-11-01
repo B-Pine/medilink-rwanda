@@ -1,0 +1,6 @@
+# Optional local override. Copy to docker-compose.override.yml (gitignored) when port 5433 is
+# already taken on your machine, and set DATABASE_URL in backend/.env to the same port.
+services:
+  postgres:
+    ports: !override
+      - "127.0.0.1:5434:5432"

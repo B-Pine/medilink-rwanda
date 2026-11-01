@@ -1,0 +1,31 @@
+{
+  "title": "Mes dossiers de santé",
+  "homeTitle": "Dossiers de santé",
+  "seeAll": "Tout voir",
+  "intro": "Ce que votre médecin a écrit après chaque visite, en langage simple. Les dossiers des personnes dont vous vous occupez sont ici aussi.",
+  "whose": "Dossiers de",
+  "everyone": "Tout le monde",
+  "loadFailed": "Nous n'avons pas pu charger vos dossiers.",
+  "empty": "Pas encore de dossier",
+  "emptyBody": "Après une visite, le dossier signé par le médecin apparaît ici.",
+  "doctor": "Dr {{name}}",
+  "provisional": "à confirmer",
+  "back": "Tous les dossiers",
+  "notFound": "Dossier introuvable",
+  "visitOn": "Visite du {{date}}",
+  "lateEntry": "écrit plus tard",
+  "diagnosis": "Ce que le médecin a trouvé",
+  "instructions": "Ce qu'il faut faire",
+  "plan": "Plan de traitement",
+  "history": "Ce que vous avez dit au médecin",
+  "vitals": "Mesures",
+  "vitalsFields": {
+    "temperature": "Température",
+    "bloodPressure": "Tension artérielle",
+    "pulse": "Pouls",
+    "spo2": "Oxygène (SpO₂)",
+    "weight": "Poids",
+    "height": "Taille"
+  },
+  "addenda": "Ajouté plus tard par le médecin"
+}

@@ -1,0 +1,211 @@
+{
+  "nav": {
+    "consultation": "Consultation",
+    "unsigned": "Dossiers non signés"
+  },
+  "title": "Consultation",
+  "headerTitle": "Consultation · {{name}}",
+  "loading": "Chargement du dossier…",
+  "empty": "Rien d'écrit.",
+  "reason": "Motif",
+  "reasonRequired": "Indiquez un motif.",
+  "cancel": "Annuler",
+  "close": "Fermer",
+  "previous": "Précédent",
+  "next": "Suivant",
+  "lateEntry": "Saisie tardive",
+  "age_one": "{{count}} an",
+  "age_other": "{{count}} ans",
+  "sex": {
+    "female": "Femme",
+    "male": "Homme",
+    "other": "Autre"
+  },
+  "status": {
+    "draft": "Brouillon",
+    "signed": "Signé",
+    "entered_in_error": "Saisi par erreur"
+  },
+  "start": {
+    "title": "Consultation",
+    "description": "Le patient que vous voyez maintenant, depuis Ma file.",
+    "open": "Ouvrir la consultation",
+    "none": "Aucun patient avec vous en ce moment",
+    "noneBody": "Appelez le patient suivant depuis Ma file, puis ouvrez la consultation ici.",
+    "toQueue": "Aller à Ma file",
+    "state": {
+      "called": "Appelé",
+      "in_service": "En consultation"
+    }
+  },
+  "allergy": {
+    "title": "Allergies",
+    "none": "Aucune allergie connue",
+    "unknown": "Allergies non enregistrées. Demandez au patient.",
+    "unverified": "déclarée par le patient, non vérifiée",
+    "severity": {
+      "mild": "Légère",
+      "moderate": "Modérée",
+      "severe": "Sévère",
+      "unknown": "Gravité inconnue"
+    }
+  },
+  "autosave": {
+    "idle": "Brouillon",
+    "dirty": "Brouillon · modifications pas encore enregistrées",
+    "saving": "Enregistrement…",
+    "saved": "Brouillon · enregistré à {{time}}",
+    "error": "Non enregistré",
+    "conflict": "Quelqu'un d'autre a modifié ce dossier. Il a été rechargé avec ses modifications ; vérifiez-le avant de continuer."
+  },
+  "sections": {
+    "nav": "Sections de la consultation",
+    "vitals": "Constantes",
+    "history": "Anamnèse",
+    "examination": "Examen",
+    "diagnosis": "Diagnostic",
+    "plan": "Plan",
+    "instructions": "Consignes au patient",
+    "instructionsHint": "Montrées au patient en langage simple : quoi faire et quand revenir.",
+    "private-notes": "Notes privées",
+    "addenda": "Addenda"
+  },
+  "privateNotes": {
+    "never": "Jamais montrées au patient"
+  },
+  "diagnosis": {
+    "search": "Chercher un diagnostic CIM-10",
+    "placeholder": "Tapez un nom ou un code, p. ex. paludisme",
+    "results": "Diagnostics trouvés",
+    "searching": "Recherche…",
+    "noResults": "Aucun diagnostic trouvé. Essayez un autre mot.",
+    "chosen": "Diagnostics choisis",
+    "rank": "Rang",
+    "primary": "Principal",
+    "secondary": "Secondaire",
+    "certainty": "Certitude",
+    "provisional": "Provisoire",
+    "confirmed": "Confirmé",
+    "sensitive": "Sensible",
+    "remove": "Retirer {{code}}"
+  },
+  "restricted": {
+    "label": "Dossier restreint",
+    "hint": "Caché aux aidants du patient et jamais partagé avec d'autres établissements.",
+    "suggest": "Un diagnostic est sensible. Envisagez de restreindre ce dossier.",
+    "on": "Activé",
+    "off": "Désactivé",
+    "badge": "Restreint"
+  },
+  "sign": {
+    "action": "Signer et verrouiller",
+    "needPrimary": "Ajoutez un diagnostic principal pour signer.",
+    "signedBy": "Signé par {{name}} le {{time}}",
+    "fingerprint": "Empreinte {{hash}}…"
+  },
+  "integrity": {
+    "mismatch": "Ce dossier ne correspond plus à son empreinte. Signalez-le à l'administrateur de l'établissement."
+  },
+  "addendum": {
+    "none": "Aucun addendum.",
+    "add": "Ajouter un addendum",
+    "reason": "Motif de l'addendum",
+    "body": "Addendum",
+    "bodyRequired": "Écrivez l'addendum.",
+    "by": "{{name}} · {{time}}",
+    "notAuthor": "par un autre clinicien"
+  },
+  "enteredInError": {
+    "action": "Marquer saisi par erreur",
+    "title": "Marquer ce dossier saisi par erreur ?",
+    "consequences": "À utiliser pour un dossier sur le mauvais patient. Il est caché de l'historique et du patient, et conservé pour l'audit. Il n'est jamais supprimé.",
+    "banner": "Saisi par erreur",
+    "detail": "{{reason}} · {{name}} · {{time}}"
+  },
+  "vitals": {
+    "recorded": "Constantes enregistrées",
+    "none": "Aucune constante pour cette visite.",
+    "form": "Enregistrer des constantes",
+    "save": "Enregistrer les constantes",
+    "by": "{{name}} · {{time}}",
+    "range": "{{low}}–{{high}}",
+    "outOfRange": "Entrez une valeur entre {{low}} et {{high}}.",
+    "enterOne": "Entrez au moins une valeur.",
+    "markWrong": "Marquer saisi par erreur",
+    "markWrongTitle": "Marquer ces constantes saisies par erreur ?",
+    "fields": {
+      "temperature_c": "Température (°C)",
+      "systolic_mmhg": "Systolique (mmHg)",
+      "diastolic_mmhg": "Diastolique (mmHg)",
+      "pulse_bpm": "Pouls (/min)",
+      "respiratory_rate": "Respiration (/min)",
+      "spo2_pct": "SpO₂ (%)",
+      "weight_kg": "Poids (kg)",
+      "height_cm": "Taille (cm)",
+      "muac_mm": "PB (mm)"
+    },
+    "short": {
+      "temperature": "T {{value}}",
+      "bp": "TA {{sys}}/{{dia}}",
+      "pulse": "P {{value}}",
+      "respiratory": "FR {{value}}",
+      "spo2": "SpO₂ {{value}}",
+      "weight": "{{value}} kg",
+      "height": "{{value}} cm",
+      "muac": "PB {{value}}"
+    }
+  },
+  "history": {
+    "title": "Historique du patient",
+    "drawerTitle": "Historique · {{name}}",
+    "open": "Historique",
+    "backToRecord": "Dossier du patient",
+    "filters": "Filtrer l'historique",
+    "type": "Afficher",
+    "all": "Tout",
+    "consultations": "Consultations",
+    "vitals": "Constantes",
+    "code": "Code diagnostic",
+    "codeHint": "Début d'un code CIM-10, p. ex. B5",
+    "from": "Du",
+    "to": "Au",
+    "items": "Historique, du plus récent",
+    "empty": "Rien dans l'historique pour ces filtres.",
+    "noDiagnosis": "Aucun diagnostic",
+    "addenda_one": "{{count}} addendum",
+    "addenda_other": "{{count}} addenda"
+  },
+  "summary": {
+    "title": "Résumé des problèmes",
+    "allergies": "Allergies",
+    "conditions": "Maladies chroniques",
+    "medications": "Médicaments en cours",
+    "recentDiagnoses": "Diagnostics récents",
+    "none": "Rien d'enregistré",
+    "staffMember": "Ce patient travaille ici. Chaque accès est enregistré et revu."
+  },
+  "access": {
+    "title": "Pourquoi ouvrez-vous ce dossier ?",
+    "description": "Ce patient n'est pas suivi par vous aujourd'hui, ou travaille ici. Votre motif est enregistré dans son historique d'accès.",
+    "reason": "Motif",
+    "reasons": {
+      "care_continuity": "Continuité des soins",
+      "results_review": "Lecture de résultats",
+      "admin_request": "Demande administrative",
+      "other": "Autre"
+    },
+    "reasonText": "Expliquez le motif",
+    "textRequired": "Expliquez pourquoi vous avez besoin de ce dossier.",
+    "open": "Ouvrir le dossier"
+  },
+  "unsigned": {
+    "title": "Dossiers non signés",
+    "description": "Brouillons en attente de signature. Videz la liste chaque jour : une visite ne peut pas se terminer tant que son brouillon est ouvert.",
+    "mineOnly": "Seulement mes brouillons",
+    "started": "{{name}} · commencé le {{time}}",
+    "overdue": "Plus de 24 heures",
+    "open": "Ouvrir le brouillon de {{name}}",
+    "empty": "Aucun dossier non signé",
+    "emptyBody": "Toutes les consultations sont signées."
+  }
+}

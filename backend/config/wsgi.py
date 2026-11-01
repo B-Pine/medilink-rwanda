@@ -1,9 +1,9 @@
 """WSGI entry point (HTTP only). Production uses ASGI (config.asgi) for WebSockets."""
 
-import os
-
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.dev")
+from config.environment import require_settings_module
+
+require_settings_module()
 
 application = get_wsgi_application()

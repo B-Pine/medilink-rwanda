@@ -74,6 +74,8 @@ class PublicFacilityServiceSerializer(serializers.Serializer):
     insurers = serializers.ListField(child=serializers.CharField())
     # patient share per insurer, in basis points of the fee (FR-BIL-03)
     insurer_shares = serializers.DictField(child=serializers.IntegerField())
+    # R4: patient share per insurer in RWF (ceiling and exclusions applied, as at booking)
+    insurer_share_rwf = serializers.DictField(child=serializers.IntegerField(allow_null=True))
     bookable = serializers.BooleanField()
     remote_join = serializers.BooleanField()
     walk_in = serializers.BooleanField()
@@ -203,6 +205,10 @@ class RemoteJoinSerializer(serializers.Serializer):
     facility_slug = serializers.SlugField(max_length=120)
     service_id = serializers.UUIDField()
     patient_id = serializers.UUIDField()
+    # R4: optional symptoms (`captured_at_stage = check_in`)
+    symptoms = serializers.ListField(
+        child=SymptomInputSerializer(), required=False, max_length=5, default=list
+    )
 
 
 class CostSerializer(serializers.Serializer):
@@ -275,6 +281,7 @@ class StaffBookingSerializer(serializers.Serializer):
     starts_at = serializers.DateTimeField()
     symptoms = BookedSymptomSerializer(many=True)
     late = serializers.BooleanField()
+    has_pending_change = serializers.BooleanField()  # S5b: a disruption offer is unanswered
     visit_id = serializers.UUIDField(allow_null=True)
     version = serializers.IntegerField()
 

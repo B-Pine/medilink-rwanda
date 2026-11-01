@@ -45,5 +45,5 @@ Status: Draft v0.2 · Review at every milestone.
 | Q10 | Access to HMIS (DHIS2) aggregate data for AI priors | Ministry / RBC | P2 |
 | Q11 | Hosting provider in Rwanda; cost; backups in-country | Team | P1 design |
 | Q12 | Subscription prices and plans | Team | P2 |
-| Q13 | Clinical lead to sign off templates, red flags and AI content | Team | P2 |
+| Q13 | Clinical lead to sign off templates, red flags and AI content (the P1 red-flag list needs sign-off before the pilot, [#93](https://github.com/B-Pine/medilink-rwanda/issues/93)) | Team | P1 |
 | Q14 | Emergency number(s) and emergency guidance text to show (confirm 912 for SAMU) | Ministry / clinical lead | P1 |

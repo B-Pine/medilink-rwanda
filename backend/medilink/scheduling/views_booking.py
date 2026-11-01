@@ -41,7 +41,7 @@ from medilink.tenancy.context import rls_context
 from medilink.tenancy.models import Facility, FacilityMembership, FacilityStatus
 from medilink.uploads.views import idempotency_key
 from medilink.visits.models import ReasonSymptom
-from medilink.visits.remote import arrived, facility_record, join
+from medilink.visits.remote import claim_arrival, facility_record, join
 from medilink.visits.services import Actor, active_ticket
 from medilink.visits.views import patient_active, short_name, tracker_data
 
@@ -206,6 +206,7 @@ def staff_rows(bookings: list[Booking]) -> list[dict[str, Any]]:
                 "starts_at": b.starts_at,
                 "symptoms": symptoms.get(b.pk, []),
                 "late": b.status == BookingStatus.CONFIRMED and now > b.starts_at + grace,
+                "has_pending_change": b.pending_change is not None,
                 "visit_id": b.visit_id,
                 "version": b.version,
             }
@@ -283,6 +284,8 @@ class FacilityProfileView(PublicView):
             )
         doctors: dict[Any, dict[str, Any]] = {}
         for t in templates:
+            if t.membership is None:
+                continue  # service schedule: no doctor to show
             row = doctors.setdefault(
                 t.membership_id,
                 {
@@ -327,7 +330,8 @@ class FacilityProfileView(PublicView):
                         "insurers": sorted((rows[sv.pk].insurers or {}).keys())
                         if sv.pk in rows
                         else [],
-                        "insurer_shares": dict(rows[sv.pk].insurers or {})
+                        "insurer_shares": listing.insurer_bp(rows[sv.pk]) if sv.pk in rows else {},
+                        "insurer_share_rwf": listing.insurer_share_rwf(rows[sv.pk])
                         if sv.pk in rows
                         else {},
                         "bookable": sv.is_bookable,
@@ -451,6 +455,7 @@ class PatientHoldView(PatientView):
         facility_id = _scalar("SELECT scheduling_slot_facility(%s)", [slot_id])
         if facility_id is None:
             raise exceptions.NotFound()
+        slots.release_other_holds(self.user(), facility_id)
         try:
             with rls_context(facility_id=facility_id, user_id=self.user().pk):
                 h = slots.hold(slot_id, account=self.user())
@@ -679,6 +684,8 @@ class RemoteJoinView(PatientView):
                 patient_id=link.patient_id,
                 actor=Actor(user=self.user(), membership=None, request=request),
                 key=_uuid(idempotency_key(request)),
+                symptoms=data.get("symptoms") or None,
+                language=_lang(request),
             )
             data_out = tracker_data(visit, self.user())
         return Response(data_out, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
@@ -690,6 +697,11 @@ class ArrivedView(PatientView):
         tags=TAGS,
         request=None,
         responses={200: OpenApiResponse(description="Tracker row (PT1)")},
+        description=(
+            "\"I'm here\" for a remote ticket: records the patient's claim "
+            "(`remote_arrival_claimed_at`) only. Reception confirms the arrival; until then the "
+            "ticket is not called and pass-over still applies (FR-QUE-07; self check-in is P2)."
+        ),
     )
     def post(self, request: Request, visit_id: Any) -> Response:
         match = [f for v, f in patient_active(self.user().pk) if str(v) == str(visit_id)]
@@ -702,7 +714,7 @@ class ArrivedView(PatientView):
             ticket = active_ticket(visit)
             if ticket is None:
                 raise exceptions.NotFound()
-            arrived(ticket, actor=Actor(user=self.user(), membership=None, request=request))
+            claim_arrival(ticket, actor=Actor(user=self.user(), membership=None, request=request))
             visit.refresh_from_db()
             return Response(tracker_data(visit, self.user()))
 

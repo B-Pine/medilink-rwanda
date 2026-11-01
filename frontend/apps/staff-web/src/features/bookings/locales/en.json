@@ -1,0 +1,225 @@
+{
+  "phone": {
+    "open": "Book by phone",
+    "title": "Book by phone",
+    "rescheduleTitle": "New time for {{name}}",
+    "close": "Close"
+  },
+  "steps": {
+    "progress": "Step {{step}} of {{total}}",
+    "patient": "Patient",
+    "slot": "Time",
+    "reason": "Reason",
+    "review": "Check and confirm"
+  },
+  "slot": {
+    "service": "Service",
+    "doctor": "Doctor",
+    "anyDoctor": "Any doctor",
+    "days": "Day",
+    "times": "Free times",
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "noTimes": "No free time on this day. Pick another day.",
+    "earlier": "Earlier days",
+    "later": "Later days",
+    "taken": "Someone just took this time. Choose another one.",
+    "alternatives": "Nearby free times",
+    "loadError": "Could not load free times.",
+    "retry": "Try again",
+    "places_one": "{{count}} place",
+    "places_other": "{{count}} places",
+    "holdFailed": "Could not hold this time. Try again.",
+    "noServices": "No service takes bookings yet. A facility admin can turn on booking in Settings, Services."
+  },
+  "hold": {
+    "holding": "Holding this time for {{time}}",
+    "expired": "The time was released. Choose a time again.",
+    "holdingMinutes_one": "Holding this time for about {{count}} minute.",
+    "holdingMinutes_other": "Holding this time for {{count}} minutes."
+  },
+  "reason": {
+    "symptoms": "What is the problem?",
+    "symptomsHint": "Choose up to 5. They help the doctor prepare.",
+    "redFlag": "Urgent",
+    "redFlagAlert": "This may be an emergency. Tell the patient to come now or call 912.",
+    "text": "Notes for the doctor",
+    "phone": "Contact phone",
+    "phoneHint": "For reminders and changes. Leave empty to use the number on file.",
+    "phoneInvalid": "Enter a Rwandan mobile number, for example 0788 123 456."
+  },
+  "review": {
+    "patient": "Patient",
+    "service": "Service",
+    "when": "When",
+    "doctor": "Doctor",
+    "symptoms": "Symptoms",
+    "phone": "Contact phone",
+    "confirm": "Confirm booking",
+    "confirmReschedule": "Move booking",
+    "failed": "Could not save the booking.",
+    "stale": "This booking was changed by someone else. Close this panel and open it again."
+  },
+  "done": {
+    "title": "Booking confirmed",
+    "moved": "Booking moved",
+    "code": "Booking code",
+    "tell": "Read the code to the patient. They show it when they arrive.",
+    "another": "Book another patient",
+    "finish": "Done"
+  },
+  "nav": {
+    "back": "Back",
+    "next": "Continue",
+    "change": "Change patient",
+    "disruptions": "Disruptions"
+  },
+  "body": {
+    "general": "General",
+    "respiratory": "Breathing",
+    "digestive": "Stomach",
+    "nervous": "Head",
+    "circulatory": "Heart and chest",
+    "skin": "Skin",
+    "musculoskeletal": "Joints and back",
+    "dental": "Teeth",
+    "eye": "Eyes",
+    "urinary": "Urine"
+  },
+  "expected": {
+    "newTime": "New time"
+  },
+  "status": {
+    "confirmed": "Booked",
+    "checked_in": "Checked in",
+    "no_show": "No-show",
+    "cancelled": "Cancelled",
+    "late_cancelled": "Late cancel",
+    "superseded": "Moved"
+  },
+  "calendar": {
+    "title": "Calendar",
+    "mineTitle": "My calendar",
+    "description": "Sessions and bookings per service and doctor.",
+    "view": "View",
+    "dayView": "Day",
+    "weekView": "Week",
+    "previous": "Previous",
+    "next": "Next",
+    "today": "Today",
+    "weekOf": "Week of {{date}}",
+    "allServices": "All services",
+    "booked": "{{booked}} of {{capacity}} booked",
+    "serviceSchedule": "Service schedule",
+    "noBookings": "No bookings yet.",
+    "noSessions": "No sessions on this day.",
+    "outside": "Booked outside a session",
+    "awaitingAnswer": "Waiting for the patient",
+    "disrupted": "A disruption is open",
+    "disruptedBody_one": "{{count}} disruption still waits for actions or answers.",
+    "disruptedBody_other": "{{count}} disruptions still wait for actions or answers.",
+    "failed": "Could not load the calendar.",
+    "emptyTitle": "Nothing scheduled",
+    "empty": "No sessions or bookings in this period.",
+    "ownOnly": "You see your own sessions and bookings.",
+    "gridView": "Grid",
+    "tableView": "Table",
+    "day": "Day",
+    "time": "Time",
+    "session": "Session",
+    "actions": "Actions",
+    "openDay": "Open the day"
+  },
+  "disruptions": {
+    "title": "Disruptions",
+    "description": "When a doctor is away or the facility closes, move the affected bookings in one go.",
+    "new": "New disruption",
+    "wizardTitle": "Disruption",
+    "back": "All disruptions",
+    "progress": "Disruption steps",
+    "steps": {
+      "what": "Who and when",
+      "affected": "Affected bookings",
+      "answers": "Patient answers"
+    },
+    "failed": "Could not load or save the disruption.",
+    "noneTitle": "No disruptions",
+    "none": "Nothing is disrupted. Create one when a doctor is away or the facility closes.",
+    "summary": "{{total}} affected, {{pending}} waiting",
+    "kindLabel": "What happened",
+    "kind": {
+      "doctor_absent": "Doctor absent",
+      "closure": "Closure",
+      "schedule_change": "Schedule change"
+    },
+    "status": {
+      "open": "Open",
+      "resolved": "Resolved"
+    },
+    "anyDoctor": "No specific doctor",
+    "from": "From",
+    "to": "To",
+    "reason": "Reason (for staff)",
+    "reasonHint": "Patients never see this note.",
+    "findAffected": "Find affected bookings",
+    "affectedCount_one": "{{count}} booking or ticket is affected.",
+    "affectedCount_other": "{{count}} bookings or tickets are affected.",
+    "forAll": "Action for everyone not done yet",
+    "applyAll": "Apply to all",
+    "choose": "Choose an action",
+    "actionFor": "Action for {{name}}",
+    "action": {
+      "move_doctor": "Move to another doctor",
+      "next_slot": "Move to the next free time",
+      "cancel": "Cancel"
+    },
+    "apply": "Apply chosen actions",
+    "someLeft_one": "{{count}} item could not be changed. Choose another action.",
+    "someLeft_other": "{{count}} items could not be changed. Choose another action.",
+    "problem": {
+      "no_slot": "No free time: choose another action.",
+      "same_day_service": "The patient already has this service that day.",
+      "not_for_ticket": "Not possible for today's queue tickets.",
+      "booking_closed": "This booking was already closed.",
+      "ticket_closed": "This ticket is no longer waiting.",
+      "already_applied": "Already done.",
+      "not_found": "Not found."
+    },
+    "remoteTicket": "Remote ticket {{number}}",
+    "nothingTitle": "Nothing to move",
+    "nothing": "No confirmed booking or remote ticket falls in this period.",
+    "resolved": "All patients have answered. This disruption is resolved.",
+    "waiting_one": "{{count}} patient has not answered yet.",
+    "waiting_other": "{{count}} patients have not answered yet.",
+    "noAction": "No action",
+    "was": "was {{when}}",
+    "response": {
+      "pending": "Waiting",
+      "accepted": "Accepted",
+      "declined": "No answer",
+      "rebooked_other": "Chose another time",
+      "cancelled": "Cancelled"
+    },
+    "call": "Call the patient",
+    "callAt": "Call {{phone}}"
+  },
+  "followUp": {
+    "open": "Follow-up",
+    "title": "Follow-up for {{name}}",
+    "in": "Come back in",
+    "unit": "Unit",
+    "days": "Days",
+    "weeks": "Weeks",
+    "how": "How",
+    "mode": {
+      "booking": "Book the first free time",
+      "reminder": "Only remind the patient"
+    },
+    "save": "Save follow-up",
+    "cancel": "Cancel",
+    "booked": "Follow-up booked",
+    "bookedBody": "{{day}} at {{time}} with {{doctor}}. Booking code {{code}}.",
+    "reminder": "The patient will be reminded to come back on {{day}}.",
+    "noSlot": "No free time from {{day}}. Reception will call the patient to book."
+  }
+}

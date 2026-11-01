@@ -88,11 +88,13 @@ When a doctor presses **Call next**, the system picks the next ticket from the d
 |---|---|
 | Early | Waits until the window opens, then is ordered by slot time |
 | Within the window | Ordered by slot time |
-| Late beyond the window | Becomes a walk-in (ordered by check-in time), or reception offers a new slot |
+| Late beyond the window | Checked in as a walk-in (ordered by check-in time), or reception offers a new slot. It is **not** a no-show |
+| Never arrives | At the facility's closing time the booking becomes a **no-show** and a strike counts ([05](05-discovery-scheduling-and-booking.md) §4) |
 
 **Remote joiners:**
 - They hold their place while not on site.
-- When they come within **K places** of the front (default 5) and have not checked in, they are **passed over**: moved back K places, up to 2 times, then they lose the ticket.
+- They tap **"I'm here"** in the tracker when they arrive. This only tells reception; it does **not** count as arrival. A receptionist confirms the arrival (check-in) after seeing the patient. Self check-in at the facility (QR) is P2 (FR-QUE-18). *(Decision 2026-10-31.)*
+- When they come within **K places** of the front (default 5) and reception has not confirmed their arrival, they are **passed over**: moved back K places, up to 2 times, then they lose the ticket.
 - They get warnings before each step (see [09](09-notifications-and-communication.md)).
 
 **Manual reorder** by the receptionist or facility admin is allowed for real-life situations, with these controls:
@@ -137,8 +139,8 @@ leave home at ≈ estimated call time − travel time − buffer (10 min)
 
 | Viewer | Sees |
 |---|---|
-| **Patient (tracker)** | Ticket number, current stage, people ahead, estimated wait range, time-to-leave, status messages, check-in button (P2: by QR at the facility), "I'm running late" / "Cancel" |
-| **Receptionist (today board)** | Expected list (booked, not arrived, with slot time) · On-site list per service and stage · Remote joiners not yet arrived · Flags: priority, emergency, unpaid, insurance unverified · Actions |
+| **Patient (tracker)** | Ticket number, current stage, people ahead, estimated wait range, time-to-leave, status messages, "I'm here" for remote joiners (tells reception; reception confirms), "I'm running late" / "Cancel". Self check-in by QR at the facility is P2 |
+| **Receptionist (today board)** | Expected list (booked, not arrived, with slot time; late arrivals marked) · On-site list per service and stage · Remote joiners not yet arrived, with "says they are here" and a Confirm arrival action · Flags: priority, emergency, unpaid, insurance unverified · Actions |
 | **Doctor (my queue)** | Waiting patients for their service (own + shared pool) in calling order, reason for visit, priority flags, age and sex; Call next / Recall / No response / Start / Transfer / Complete |
 | **Pharmacist** | Prescriptions ready for dispensing (paid if required) |
 | **Facility admin (operations board)** | All queues: length, longest wait, doctors on duty and their state, bottleneck stage, reorder count |
@@ -185,7 +187,7 @@ leave home at ≈ estimated call time − travel time − buffer (10 min)
 | FR-QUE-04 | Configurable stages including payment before or after consultation and pharmacy | P1 |
 | FR-QUE-05 | Ordering rules: emergency, return, priority, booked/walk-in interleave ratio, FIFO | P1 |
 | FR-QUE-06 | Grace window for booked patients; late arrivals become walk-ins | P1 |
-| FR-QUE-07 | Remote joiners hold a place; pass-over rule when not checked in | P1 |
+| FR-QUE-07 | Remote joiners hold a place; "I'm here" is a notice and reception confirms arrival; pass-over rule until arrival is confirmed | P1 |
 | FR-QUE-08 | Atomic Call next; versioned state changes; no double-calling | P1 |
 | FR-QUE-09 | Ticket state machine with every transition recorded (who, when, reason) | P1 |
 | FR-QUE-10 | Manual reorder only with reason; logged; reported per staff member | P1 |

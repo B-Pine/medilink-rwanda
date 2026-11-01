@@ -1,0 +1,225 @@
+{
+  "phone": {
+    "open": "Réserver par téléphone",
+    "title": "Réserver par téléphone",
+    "rescheduleTitle": "Nouvel horaire pour {{name}}",
+    "close": "Fermer"
+  },
+  "steps": {
+    "progress": "Étape {{step}} sur {{total}}",
+    "patient": "Patient",
+    "slot": "Horaire",
+    "reason": "Motif",
+    "review": "Vérifier et confirmer"
+  },
+  "slot": {
+    "service": "Service",
+    "doctor": "Médecin",
+    "anyDoctor": "N’importe quel médecin",
+    "days": "Jour",
+    "times": "Horaires libres",
+    "morning": "Matin",
+    "afternoon": "Après-midi",
+    "noTimes": "Aucun horaire libre ce jour-là. Choisissez un autre jour.",
+    "earlier": "Jours précédents",
+    "later": "Jours suivants",
+    "taken": "Quelqu’un vient de prendre cet horaire. Choisissez-en un autre.",
+    "alternatives": "Horaires libres proches",
+    "loadError": "Impossible de charger les horaires libres.",
+    "retry": "Réessayer",
+    "places_one": "{{count}} place",
+    "places_other": "{{count}} places",
+    "holdFailed": "Impossible de réserver cet horaire. Réessayez.",
+    "noServices": "Aucun service ne prend encore de réservations. Un administrateur peut l’activer dans Paramètres, Services."
+  },
+  "hold": {
+    "holding": "Horaire réservé pendant {{time}}",
+    "expired": "L’horaire a été libéré. Choisissez à nouveau.",
+    "holdingMinutes_one": "Horaire réservé encore environ {{count}} minute.",
+    "holdingMinutes_other": "Horaire réservé encore {{count}} minutes."
+  },
+  "reason": {
+    "symptoms": "Quel est le problème ?",
+    "symptomsHint": "Jusqu’à 5. Ils aident le médecin à se préparer.",
+    "redFlag": "Urgent",
+    "redFlagAlert": "Il peut s’agir d’une urgence. Dites au patient de venir maintenant ou d’appeler le 912.",
+    "text": "Notes pour le médecin",
+    "phone": "Téléphone de contact",
+    "phoneHint": "Pour les rappels et changements. Laissez vide pour utiliser le numéro du dossier.",
+    "phoneInvalid": "Saisissez un numéro mobile rwandais, par exemple 0788 123 456."
+  },
+  "review": {
+    "patient": "Patient",
+    "service": "Service",
+    "when": "Quand",
+    "doctor": "Médecin",
+    "symptoms": "Symptômes",
+    "phone": "Téléphone de contact",
+    "confirm": "Confirmer la réservation",
+    "confirmReschedule": "Déplacer la réservation",
+    "failed": "Impossible d’enregistrer la réservation.",
+    "stale": "Cette réservation a été modifiée par quelqu’un d’autre. Fermez ce panneau et ouvrez-le à nouveau."
+  },
+  "done": {
+    "title": "Réservation confirmée",
+    "moved": "Réservation déplacée",
+    "code": "Code de réservation",
+    "tell": "Lisez le code au patient. Il le présente à son arrivée.",
+    "another": "Réserver pour un autre patient",
+    "finish": "Terminé"
+  },
+  "nav": {
+    "back": "Retour",
+    "next": "Continuer",
+    "change": "Changer de patient",
+    "disruptions": "Perturbations"
+  },
+  "body": {
+    "general": "Général",
+    "respiratory": "Respiration",
+    "digestive": "Ventre",
+    "nervous": "Tête",
+    "circulatory": "Cœur et poitrine",
+    "skin": "Peau",
+    "musculoskeletal": "Articulations et dos",
+    "dental": "Dents",
+    "eye": "Yeux",
+    "urinary": "Urines"
+  },
+  "expected": {
+    "newTime": "Nouvel horaire"
+  },
+  "status": {
+    "confirmed": "Réservé",
+    "checked_in": "Arrivé",
+    "no_show": "Absent",
+    "cancelled": "Annulé",
+    "late_cancelled": "Annulé tard",
+    "superseded": "Déplacé"
+  },
+  "calendar": {
+    "title": "Calendrier",
+    "mineTitle": "Mon calendrier",
+    "description": "Séances et réservations par service et par médecin.",
+    "view": "Affichage",
+    "dayView": "Jour",
+    "weekView": "Semaine",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "today": "Aujourd'hui",
+    "weekOf": "Semaine du {{date}}",
+    "allServices": "Tous les services",
+    "booked": "{{booked}} sur {{capacity}} réservés",
+    "serviceSchedule": "Horaire du service",
+    "noBookings": "Pas encore de réservation.",
+    "noSessions": "Aucune séance ce jour-là.",
+    "outside": "Réservé hors séance",
+    "awaitingAnswer": "En attente du patient",
+    "disrupted": "Une perturbation est ouverte",
+    "disruptedBody_one": "{{count}} perturbation attend encore des actions ou des réponses.",
+    "disruptedBody_other": "{{count}} perturbations attendent encore des actions ou des réponses.",
+    "failed": "Impossible de charger le calendrier.",
+    "emptyTitle": "Rien de prévu",
+    "empty": "Aucune séance ni réservation sur cette période.",
+    "ownOnly": "Vous voyez vos propres séances et réservations.",
+    "gridView": "Grille",
+    "tableView": "Tableau",
+    "day": "Jour",
+    "time": "Heure",
+    "session": "Séance",
+    "actions": "Actions",
+    "openDay": "Ouvrir la journée"
+  },
+  "disruptions": {
+    "title": "Perturbations",
+    "description": "Quand un médecin est absent ou l'établissement fermé, déplacez les réservations concernées en une fois.",
+    "new": "Nouvelle perturbation",
+    "wizardTitle": "Perturbation",
+    "back": "Toutes les perturbations",
+    "progress": "Étapes de la perturbation",
+    "steps": {
+      "what": "Qui et quand",
+      "affected": "Réservations concernées",
+      "answers": "Réponses des patients"
+    },
+    "failed": "Impossible de charger ou d'enregistrer la perturbation.",
+    "noneTitle": "Aucune perturbation",
+    "none": "Rien n'est perturbé. Créez-en une quand un médecin est absent ou l'établissement fermé.",
+    "summary": "{{total}} concernés, {{pending}} en attente",
+    "kindLabel": "Ce qui se passe",
+    "kind": {
+      "doctor_absent": "Médecin absent",
+      "closure": "Fermeture",
+      "schedule_change": "Changement d'horaire"
+    },
+    "status": {
+      "open": "Ouverte",
+      "resolved": "Résolue"
+    },
+    "anyDoctor": "Aucun médecin en particulier",
+    "from": "Du",
+    "to": "Au",
+    "reason": "Motif (pour le personnel)",
+    "reasonHint": "Les patients ne voient jamais cette note.",
+    "findAffected": "Trouver les réservations concernées",
+    "affectedCount_one": "{{count}} réservation ou ticket est concerné.",
+    "affectedCount_other": "{{count}} réservations ou tickets sont concernés.",
+    "forAll": "Action pour tous ceux qui restent",
+    "applyAll": "Appliquer à tous",
+    "choose": "Choisir une action",
+    "actionFor": "Action pour {{name}}",
+    "action": {
+      "move_doctor": "Passer à un autre médecin",
+      "next_slot": "Passer au prochain créneau libre",
+      "cancel": "Annuler"
+    },
+    "apply": "Appliquer les actions choisies",
+    "someLeft_one": "{{count}} élément n'a pas pu être modifié. Choisissez une autre action.",
+    "someLeft_other": "{{count}} éléments n'ont pas pu être modifiés. Choisissez une autre action.",
+    "problem": {
+      "no_slot": "Aucun créneau libre : choisissez une autre action.",
+      "same_day_service": "Le patient a déjà ce service ce jour-là.",
+      "not_for_ticket": "Impossible pour les tickets de la file du jour.",
+      "booking_closed": "Cette réservation est déjà clôturée.",
+      "ticket_closed": "Ce ticket n'attend plus.",
+      "already_applied": "Déjà fait.",
+      "not_found": "Introuvable."
+    },
+    "remoteTicket": "Ticket à distance {{number}}",
+    "nothingTitle": "Rien à déplacer",
+    "nothing": "Aucune réservation confirmée ni ticket à distance sur cette période.",
+    "resolved": "Tous les patients ont répondu. Cette perturbation est résolue.",
+    "waiting_one": "{{count}} patient n'a pas encore répondu.",
+    "waiting_other": "{{count}} patients n'ont pas encore répondu.",
+    "noAction": "Aucune action",
+    "was": "était {{when}}",
+    "response": {
+      "pending": "En attente",
+      "accepted": "Accepté",
+      "declined": "Sans réponse",
+      "rebooked_other": "Autre heure choisie",
+      "cancelled": "Annulé"
+    },
+    "call": "Appeler le patient",
+    "callAt": "Appeler le {{phone}}"
+  },
+  "followUp": {
+    "open": "Suivi",
+    "title": "Suivi pour {{name}}",
+    "in": "Revenir dans",
+    "unit": "Unité",
+    "days": "Jours",
+    "weeks": "Semaines",
+    "how": "Comment",
+    "mode": {
+      "booking": "Réserver le premier créneau libre",
+      "reminder": "Seulement rappeler le patient"
+    },
+    "save": "Enregistrer le suivi",
+    "cancel": "Annuler",
+    "booked": "Suivi réservé",
+    "bookedBody": "{{day}} à {{time}} avec {{doctor}}. Code de réservation {{code}}.",
+    "reminder": "Le patient recevra un rappel pour revenir le {{day}}.",
+    "noSlot": "Aucun créneau libre à partir du {{day}}. L'accueil appellera le patient pour réserver."
+  }
+}

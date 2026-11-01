@@ -12,6 +12,7 @@ import { platformFeature } from "../features/platform";
 import { patientsFeature } from "../features/patients";
 // [/S3 imports]
 // [S9 imports]
+import { notificationsFeature } from "../features/notifications";
 // [/S9 imports]
 // [S2 imports]
 import { setupFeature } from "../features/setup";
@@ -21,6 +22,12 @@ import { setupFeature } from "../features/setup";
 // [S4 imports]
 import { queueFeature } from "../features/queue";
 // [/S4 imports]
+// [S5 imports]
+import { bookingsFeature } from "../features/bookings";
+// [/S5 imports]
+// [S6 imports]
+import { clinicalFeature } from "../features/clinical";
+// [/S6 imports]
 
 /** What a feature module contributes (each feature lives in `src/features/<feature>/`). */
 export interface FeatureRoutes {
@@ -60,6 +67,7 @@ export const FEATURES: FeatureRoutes[] = [
   patientsFeature,
   // [/S3]
   // [S9]
+  notificationsFeature,
   // [/S9]
   // [S2]
   setupFeature,
@@ -69,4 +77,10 @@ export const FEATURES: FeatureRoutes[] = [
   // [S4]
   queueFeature,
   // [/S4]
+  // [S5]
+  bookingsFeature,
+  // [/S5]
+  // [S6]
+  clinicalFeature,
+  // [/S6]
 ];

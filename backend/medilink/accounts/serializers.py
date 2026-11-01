@@ -179,12 +179,6 @@ class PatientRegisterSerializer(StrictSerializer):
     accepted_privacy_version = serializers.CharField(max_length=32)
     research_consent = serializers.BooleanField()
 
-    default_error_messages = {
-        "email_taken": _(
-            "An account may already exist for this email. Sign in or reset your password."
-        )
-    }
-
     def validate_full_name(self, value: str) -> str:
         value = " ".join(value.split())
         if not value:
@@ -192,10 +186,9 @@ class PatientRegisterSerializer(StrictSerializer):
         return value
 
     def validate_email(self, value: str) -> str:
-        email = normalize_email(value)
-        if User.objects.filter(email=email).exists():
-            raise serializers.ValidationError(self.error_messages["email_taken"])
-        return email
+        # Never says whether the email has an account (security 03 §6): the view answers 202
+        # either way and emails the owner instead.
+        return normalize_email(value)
 
     def _validate_version(self, value: str) -> str:
         value = value.strip()
@@ -217,6 +210,10 @@ class PatientRegisterSerializer(StrictSerializer):
         except serializers.ValidationError as exc:
             raise serializers.ValidationError({"password": exc.detail}) from exc
         return attrs
+
+
+class VerifyEmailSerializer(StrictSerializer):
+    token = serializers.CharField(max_length=512)
 
 
 # --- audience-neutral ------------------------------------------------------------------------

@@ -93,11 +93,13 @@ A facility becomes **Live**, and searchable by patients, only when every require
 
 Sensible defaults let a small clinic finish setup in under an hour.
 
+**P1 go-live checks as built (S2, [contract](../architecture/contracts/sprint-02-facility-setup.md) §2.2, recorded 2026-10-31).** The checklist that blocks go-live is narrower than the table above: profile (phone, address, map position), departments, services, staff (at least one clinician with an attested licence), schedules for bookable services, tariff and insurers (or "none / cash only"). The licence is shown but does not block. Items 1 (description and photos), 6 (receptionist role), 8 (queue rules: defaults apply), 9 (document branding, needed when documents ship in S7) and 12 (subscription, P2 with FR-BIL-15) are not go-live checks in P1.
+
 ### 2.4 Suspension and deactivation
 
 | Situation | Effect |
 |---|---|
-| **Suspended** (licence expired, serious disputes, unpaid subscription past grace) | The facility is hidden from search and new bookings are blocked. **Existing bookings for today and the active queue keep working.** The facility can still see and export its data. Affected patients with future bookings are notified. |
+| **Suspended** (licence expired, serious disputes, unpaid subscription: after the 60-day review in [08](08-billing-payments-and-insurance.md) §8, not when the 14-day grace ends, which only hides the listing; P2) | The facility is hidden from search and new bookings are blocked. **Existing bookings for today and the active queue keep working.** The facility can still see and export its data. Affected patients with future bookings are notified. |
 | **Deactivated** (facility leaves or closes) | The facility receives a full **data export**. Clinical records are retained according to law and the agreement (see [12](12-security-privacy-and-compliance.md)). Patients keep access to their own records and documents. |
 
 ## 3. Facility configuration reference

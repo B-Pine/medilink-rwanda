@@ -9,6 +9,7 @@ import { facilityApplicationFeature } from "../features/facilityApplication";
 import { profileFeature } from "../features/profile";
 // [/S3 imports]
 // [S9 imports]
+import { notificationsFeature } from "../features/notifications";
 // [/S9 imports]
 // [S2 imports]
 // [/S2 imports]
@@ -20,6 +21,9 @@ import { trackerFeature } from "../features/tracker";
 // [S5 imports]
 import { bookingFeature } from "../features/booking";
 // [/S5 imports]
+// [S6 imports]
+import { recordsFeature } from "../features/records";
+// [/S6 imports]
 
 /** What a feature module contributes (each feature lives in `src/features/<feature>/`). */
 export interface FeatureRoutes {
@@ -58,6 +62,7 @@ export const FEATURES: FeatureRoutes[] = [
   profileFeature,
   // [/S3]
   // [S9]
+  notificationsFeature,
   // [/S9]
   // [S2]
   // [/S2]
@@ -69,4 +74,7 @@ export const FEATURES: FeatureRoutes[] = [
   // [S5]
   bookingFeature,
   // [/S5]
+  // [S6]
+  recordsFeature,
+  // [/S6]
 ];

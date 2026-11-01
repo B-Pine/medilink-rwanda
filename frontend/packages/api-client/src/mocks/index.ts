@@ -10,6 +10,7 @@ export {
   MOCK_RATE_LIMITED_EMAIL,
   MOCK_RECOVERY_CODE,
   MOCK_RESET_TOKEN,
+  MOCK_VERIFY_TOKEN,
   MOCK_RETRY_AFTER_SECONDS,
   MOCK_TOTP_CODE,
   MOCK_PIN,
@@ -26,4 +27,25 @@ export {
   MOCK_INVITATION_TOKEN,
 } from "./features/setup";
 export { MOCK_DISPLAY_TOKEN } from "./features/queue";
+// [S6]
+export {
+  MOCK_CLINICAL_FP,
+  MOCK_CLINICAL_VISIT_ID,
+  MOCK_NO_CARE_FP,
+  MOCK_PRIVATE_NOTE,
+  MOCK_STAFF_PATIENT_FP,
+} from "./features/clinical";
+// [/S6]
 export type { MockFeatureFlags } from "./handlers";
+// [S9]
+export {
+  allowedPushHost,
+  emitMockNotification,
+  MOCK_PUSH_ENDPOINT_BASE,
+  MOCK_VAPID_PUBLIC_KEY,
+  mockSocketLog,
+  setMockCriticalLocked,
+  setMockPushEnabled,
+} from "./features/notifications";
+export type { EmitMockNotificationInput } from "./features/notifications";
+// [/S9]

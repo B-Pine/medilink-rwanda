@@ -50,7 +50,6 @@
       "insurance": "Your insurance",
       "insuranceAny": "Any insurance",
       "submit": "Search",
-      "comingSoon": "Search opens soon. Until then, ask at your health facility.",
       "popular": "Popular"
     },
     "services": {
@@ -224,7 +223,17 @@
     "researchHint": "Optional. Saying no changes nothing about your care. You can change this later.",
     "submit": "Create account",
     "haveAccount": "Already have an account?",
-    "login": "Log in"
+    "login": "Log in",
+    "checkEmailTitle": "Check your email",
+    "checkEmailBody": "We sent a message to {{email}}. Open the link in it to finish creating your account. The link works for 3 days.",
+    "checkEmailHint": "No email after a few minutes? Check your spam folder, or sign up again to get a new link."
+  },
+  "verifyEmail": {
+    "title": "Confirm your email",
+    "working": "Confirming your email…",
+    "failedTitle": "We couldn't confirm your email",
+    "invalidLink": "This link is incomplete. Open the link from the email again.",
+    "signUpAgain": "Sign up again"
   },
   "home": {
     "title": "Home",

@@ -79,6 +79,10 @@ INSTALLED_APPS = [
     # [S6] clinical record and history
     "medilink.clinical",
     # [/S6]
+    # [S7] pharmacy and documents
+    "medilink.documents",
+    "medilink.pharmacy",
+    # [/S7]
 ]
 
 MIDDLEWARE = [
@@ -481,6 +485,18 @@ SPECTACULAR_SETTINGS = {
         "CertaintyEnum": "medilink.clinical.models.Certainty",
         # AccessReasonCodeEnum and ReasonCodeEnum: named in the [S3] block (same codes)
         # [/S6]
+        # [S7]
+        "PrescriptionStatusEnum": "medilink.pharmacy.models.PrescriptionStatus",
+        "PrescriptionItemStatusEnum": "medilink.pharmacy.models.ItemStatus",
+        "FrequencyCodeEnum": "medilink.pharmacy.models.Frequency",
+        "RouteEnum": "medilink.pharmacy.models.Route",
+        "IdentityCheckMethodEnum": "medilink.pharmacy.models.IdentityMethod",
+        "DispenseOutcomeEnum": "medilink.pharmacy.models.DispenseOutcome",
+        # query statuses (open, answered, closed) share SupportRequestStatusEnum ([S10])
+        # S6 alert enums, named explicitly now that S7 reuses them in prescription alerts
+        "AlertKindEnum": [("allergy", "allergy"), ("duplicate", "duplicate"), ("dose", "dose")],
+        "AlertSeverityEnum": [("high", "high"), ("medium", "medium")],
+        # [/S7]
     },
 }
 

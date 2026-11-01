@@ -269,6 +269,11 @@ def sign(consultation_id: Any, *, version: Any, membership: Any, request: Any) -
         consultation.status = ConsultationStatus.SIGNED
         consultation.version += 1
         consultation.save()
+        # [S7] prescription issue (contract sprint-07 D-1)
+        from medilink.clinical.signals import consultation_signed
+
+        consultation_signed.send(sender=Consultation, consultation=consultation, request=request)
+        # [/S7]
         _audit(
             "clinical.consultation.signed",
             request,

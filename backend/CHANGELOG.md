@@ -399,6 +399,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   `facility_isolation` policy, or is listed in `RLS_EXCEPTIONS` with the document that allows it;
   an exception that is no longer needed fails too (database design §1).
 
+### Sprint 7a · Prescriptions and pharmacy
+
+- New apps `medilink.pharmacy` and `medilink.documents` ([contract](../docs/architecture/contracts/sprint-07-pharmacy-documents.md)):
+  prescriptions and items (catalogue drug or flagged free text, default quantity, encrypted
+  instructions), issued in S6's signing transaction through the new `consultation_signed` signal
+  (number `RX-{year}-{000001}` from a gapless per-facility counter, expiry from
+  `documents.prescription_valid_days`, `awaiting_payment` with `billing.pay_before_dispensing`).
+  Signing is refused (`422 alert_override_required`) while an allergy alert has no override.
+- After issue: cancel an item or the whole prescription with a reason; change = cancel + new item
+  (step-up). Pharmacy queue, identity check, dispensing per item (full, partial, generic
+  substitution with the same ingredient and strength, not available), controlled-medicine
+  confirmation, signed immutable dispense records, dosing labels in rw/en/fr (Kinyarwanda by
+  default), queries answered by an S6 addendum, per-facility availability toggle
+  (`pharmacy.availability`) and drug search with "not in stock here".
+- Patient My medicines (`/patient/prescriptions/`): own and dependants' prescriptions; delegates
+  don't see restricted consultations; no alert overrides or consultation text.
+- Seven `pharmacy_*` tables and `documents_number_counter` with forced facility RLS; events,
+  dispense records and lines append-only; triggers lock issued prescriptions and items; SECURITY
+  DEFINER `pharmacy_patient_prescriptions(uuid)` and `pharmacy_expiry_facilities()`; hourly
+  `pharmacy.expire_prescriptions` job. `pharmacy` and `documents` join the CI coverage gate.
+
 ### Sprint 10 · Help center and support (part 1)
 
 - New app `medilink.support` (contract sprint-10): help articles for patients and staff (rw/en/fr

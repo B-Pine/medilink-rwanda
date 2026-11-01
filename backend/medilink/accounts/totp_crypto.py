@@ -53,10 +53,10 @@ def _parse(raw: str) -> dict[int, bytes]:
             keys[int(key_id)] = base64.urlsafe_b64decode(encoded + "=" * (-len(encoded) % 4))
         except (ValueError, binascii.Error) as exc:
             raise ImproperlyConfigured(f"MFA_SECRET_KEYS: malformed entry {key_id!r}") from exc
-    for key_id, key in keys.items():
-        if not 0 < key_id < 65536 or len(key) != 32:
+    for number, key in keys.items():
+        if not 0 < number < 65536 or len(key) != 32:
             raise ImproperlyConfigured(
-                f"MFA_SECRET_KEYS: key {key_id} must be 32 bytes, id 1-65535"
+                f"MFA_SECRET_KEYS: key {number} must be 32 bytes, id 1-65535"
             )
     return keys
 
@@ -149,5 +149,5 @@ def install() -> None:
     from django.db.models.signals import pre_save
     from django_otp.plugins.otp_totp.models import TOTPDevice
 
-    TOTPDevice.bin_key = property(_bin_key)  # type: ignore[assignment,method-assign]
+    TOTPDevice.bin_key = property(_bin_key)
     pre_save.connect(_encrypt_before_save, sender=TOTPDevice, dispatch_uid="medilink-totp-encrypt")

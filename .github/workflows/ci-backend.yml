@@ -114,7 +114,7 @@ jobs:
           # authz: security 09 §3 and testing strategy §3.1. Every app is checked even after a
           # failure, so the log shows all of them.
           failed=0
-          for app in authz:95 core:90 accounts:90 tenancy:90 audit:90 uploads:90 masterdata:90 onboarding:90 patients:90 facilities:90 scheduling:90 billing:90 visits:90; do
+          for app in authz:95 core:90 accounts:90 tenancy:90 audit:90 uploads:90 masterdata:90 onboarding:90 patients:90 facilities:90 scheduling:90 billing:90 visits:90 notifications:90; do
             name="${app%%:*}" floor="${app##*:}"
             echo "== medilink/$name (>= $floor%)"
             python -m coverage report --include="medilink/$name/*" --fail-under="$floor" | tail -1 || failed=1
@@ -139,6 +139,9 @@ jobs:
           UPLOADS_DOWNLOAD_BASE_URL: https://files.medilink.rw
           UPLOADS_S3_REGION: ci-dummy-region
           PLATFORM_ALLOWED_NETWORKS: 10.0.0.0/8
+          # S9: dummy VAPID keys (check --deploy refuses push without keys, notifications.E010)
+          WEB_PUSH_VAPID_PUBLIC_KEY: BDummyPublicKeyForTheDeployCheckOnly
+          WEB_PUSH_VAPID_PRIVATE_KEY: dummy-private-key-for-the-deploy-check-only
         run: |
           # Random 32-byte keys for this check only (S3 patient identifier encryption)
           key() { python -c "import base64,os;print(base64.urlsafe_b64encode(os.urandom(32)).decode())"; }

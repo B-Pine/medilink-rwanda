@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     # [S3] patients and identity (extends medilink.patients)
     # [/S3]
     # [S9] notifications
+    "medilink.notifications",
     # [/S9]
     # [S2] facility setup and staff
     "medilink.facilities",
@@ -420,6 +421,13 @@ SPECTACULAR_SETTINGS = {
         "AccessReasonCodeEnum": "medilink.patients.serializers.ACCESS_REASON_CODES",
         # [/S3]
         # [S9]
+        "NotificationPriorityEnum": "medilink.notifications.models.Priority",
+        "AnnouncementPriorityEnum": "medilink.notifications.serializers.ANNOUNCEMENT_PRIORITIES",
+        "AnnouncementAudienceEnum": "medilink.notifications.models.AnnouncementAudience",
+        "AnnouncementStatusEnum": "medilink.notifications.models.AnnouncementStatus",
+        "DeliveryAttemptStatusEnum": "medilink.notifications.models.AttemptStatus",
+        "TemplateVariantEnum": "medilink.notifications.models.Variant",
+        "TemplateSourceEnum": "medilink.notifications.models.TemplateSource",
         # [/S9]
         # [S2]
         "CalendarEventKindEnum": "medilink.facilities.models.CalendarEventKind",

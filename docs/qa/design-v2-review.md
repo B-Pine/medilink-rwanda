@@ -1,6 +1,8 @@
 # Design v2 · review record
 
-Issue #75 · PR #76 · branch `feat/design-v2`
+Issue #75 · PR #76 · branch `feat/design-v2` · recorded 2026-10-27
+
+> **Correction (2026-10-31):** this record describes the state when design v2 merged. S5a has since shipped search, facility profiles and booking ([S5 acceptance](sprint-5-acceptance.md)): Find care now links to search instead of "Coming soon" (symptom help is still Coming soon), My visits shows upcoming bookings, and the booking flow, search results and profiles under "Not in this change" are built (nearby facilities on the public home is not yet). "Report a problem" is still Coming soon (S10 part 1).
 
 This record lists what design v2 changed, which document asked for it, and how each part was checked. Anything the documents plan but that waits for a later sprint is listed under "Not in this change". Nothing on these screens shows numbers or features that don't exist yet.
 

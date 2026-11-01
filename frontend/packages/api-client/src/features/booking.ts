@@ -200,6 +200,10 @@ export interface StaffBooking {
   version: number;
 }
 
+/** No-show reversal reasons (contract sprint-05 §2.2 No-show); `other` needs `reason_text`. */
+export const NO_SHOW_REVERSAL_REASONS = ["patient_was_present", "facility_delay", "other"] as const;
+export type NoShowReversalReason = (typeof NO_SHOW_REVERSAL_REASONS)[number];
+
 export interface StaffBookInput {
   hold_id: Uuid;
   facility_patient_id: Uuid;
@@ -290,7 +294,15 @@ export function createBookingApi(client: ApiClient) {
           version,
           reason_code: reasonCode,
         }),
-      reverseNoShow: (id: Uuid, version: number, reasonCode: string, reasonText = "") =>
+      /** R4: move a booking to a held slot (a new booking replaces it). */
+      reschedule: (id: Uuid, version: number, holdId: Uuid) =>
+        client.post<StaffBooking>(bookingPaths.staffReschedule(id), { version, hold_id: holdId }),
+      reverseNoShow: (
+        id: Uuid,
+        version: number,
+        reasonCode: NoShowReversalReason,
+        reasonText = "",
+      ) =>
         client.post<StaffBooking>(bookingPaths.reverseNoShow(id), {
           version,
           reason_code: reasonCode,

@@ -1,0 +1,91 @@
+{
+  "phone": {
+    "open": "Book by phone",
+    "title": "Book by phone",
+    "rescheduleTitle": "New time for {{name}}",
+    "close": "Close"
+  },
+  "steps": {
+    "progress": "Step {{step}} of {{total}}",
+    "patient": "Patient",
+    "slot": "Time",
+    "reason": "Reason",
+    "review": "Check and confirm"
+  },
+  "slot": {
+    "service": "Service",
+    "doctor": "Doctor",
+    "anyDoctor": "Any doctor",
+    "days": "Day",
+    "times": "Free times",
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "noTimes": "No free time on this day. Pick another day.",
+    "earlier": "Earlier days",
+    "later": "Later days",
+    "taken": "Someone just took this time. Choose another one.",
+    "alternatives": "Nearby free times",
+    "loadError": "Could not load free times.",
+    "retry": "Try again",
+    "places_one": "{{count}} place",
+    "places_other": "{{count}} places",
+    "holdFailed": "Could not hold this time. Try again.",
+    "noServices": "No service takes bookings yet. A facility admin can turn on booking in Settings, Services."
+  },
+  "hold": {
+    "holding": "Holding this time for {{time}}",
+    "expired": "The time was released. Choose a time again.",
+    "holdingMinutes_one": "Holding this time for about {{count}} minute.",
+    "holdingMinutes_other": "Holding this time for {{count}} minutes."
+  },
+  "reason": {
+    "symptoms": "What is the problem?",
+    "symptomsHint": "Choose up to 5. They help the doctor prepare.",
+    "redFlag": "Urgent",
+    "redFlagAlert": "This may be an emergency. Tell the patient to come now or call 912.",
+    "text": "Notes for the doctor",
+    "phone": "Contact phone",
+    "phoneHint": "For reminders and changes. Leave empty to use the number on file.",
+    "phoneInvalid": "Enter a Rwandan mobile number, for example 0788 123 456."
+  },
+  "review": {
+    "patient": "Patient",
+    "service": "Service",
+    "when": "When",
+    "doctor": "Doctor",
+    "symptoms": "Symptoms",
+    "phone": "Contact phone",
+    "confirm": "Confirm booking",
+    "confirmReschedule": "Move booking",
+    "failed": "Could not save the booking.",
+    "stale": "This booking was changed by someone else. Close this panel and open it again."
+  },
+  "done": {
+    "title": "Booking confirmed",
+    "moved": "Booking moved",
+    "code": "Booking code",
+    "tell": "Read the code to the patient. They show it when they arrive.",
+    "another": "Book another patient",
+    "finish": "Done"
+  },
+  "nav": {
+    "back": "Back",
+    "next": "Continue",
+    "change": "Change patient"
+  },
+  "body": {
+    "general": "General",
+    "respiratory": "Breathing",
+    "digestive": "Stomach",
+    "nervous": "Head",
+    "circulatory": "Heart and chest",
+    "skin": "Skin",
+    "musculoskeletal": "Joints and back",
+    "dental": "Teeth",
+    "eye": "Eyes",
+    "urinary": "Urine"
+  },
+  "expected": {
+    "newTime": "New time"
+  }
+}

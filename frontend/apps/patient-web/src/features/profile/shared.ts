@@ -1,4 +1,5 @@
 import { isApiError } from "@medilink/api-client";
+import { dateFormat } from "@medilink/ui/i18n";
 import { useTranslation } from "react-i18next";
 
 export const CONSENT_VERSION = "2026-10";
@@ -27,7 +28,7 @@ export function formatDateTime(value: string, locale: string, withTime = true): 
     : { dateStyle: "medium", timeZone: "Africa/Kigali" };
   const date = new Date(value.length === 10 ? `${value}T00:00:00Z` : value);
   try {
-    return new Intl.DateTimeFormat(locale, options).format(date);
+    return dateFormat(locale, options).format(date);
   } catch {
     return new Intl.DateTimeFormat("en", options).format(date);
   }

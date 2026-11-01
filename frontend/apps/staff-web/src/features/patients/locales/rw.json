@@ -272,6 +272,13 @@
     "results": "Abarwayi",
     "file": "Dosiye {{number}}"
   },
+  "picker": {
+    "mode": "Shakisha cyangwa wandike umurwayi",
+    "find": "Shakisha umurwayi",
+    "new": "Umurwayi mushya",
+    "noMatch": "Nta murwayi wabonetse. Mwandike nk’umurwayi mushya.",
+    "choose": "Hitamo"
+  },
   "accessReason": {
     "heading": "Dosiye y'umurwayi",
     "title": "Kuki ufunguye iyi dosiye?",

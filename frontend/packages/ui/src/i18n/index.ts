@@ -104,3 +104,6 @@ export function flattenKeys(tree: TranslationTree, prefix = ""): Record<string, 
   }
   return result;
 }
+
+export { dateFormat, hasKinyarwandaDates, setKinyarwandaDatesSupport } from "./dates";
+export type { DateFormat } from "./dates";

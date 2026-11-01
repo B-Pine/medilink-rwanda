@@ -684,6 +684,169 @@ paths:
               schema:
                 $ref: '#/components/schemas/InsuranceProfile'
           description: ''
+  /api/v1/patient/notification-preferences/:
+    get:
+      operationId: patient_notification_preferences_retrieve
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientPreferences'
+          description: ''
+    patch:
+      operationId: patient_notification_preferences_partial_update
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPatientPreferencesPatchRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientPreferences'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Critical is locked while a ticket is active
+  /api/v1/patient/notifications/:
+    get:
+      operationId: patient_notifications_list
+      parameters:
+      - in: query
+        name: is_read
+        schema:
+          type: boolean
+      - in: query
+        name: patient_id
+        schema:
+          type: string
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+          description: ''
+  /api/v1/patient/notifications/{notification_id}/:
+    get:
+      operationId: patient_notifications_retrieve
+      parameters:
+      - in: path
+        name: notification_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not yours
+  /api/v1/patient/notifications/{notification_id}/read/:
+    post:
+      operationId: patient_notifications_read_create
+      parameters:
+      - in: path
+        name: notification_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not yours
+  /api/v1/patient/notifications/read-all/:
+    post:
+      operationId: patient_notifications_read_all_create
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReadAllRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Marked'
+          description: ''
+  /api/v1/patient/notifications/unread-count/:
+    get:
+      operationId: patient_notifications_unread_count_retrieve
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnreadCount'
+          description: ''
   /api/v1/patient/profiles/:
     get:
       operationId: patient_profiles_list
@@ -1022,6 +1185,79 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: same card exists
+  /api/v1/patient/push-subscriptions/:
+    get:
+      operationId: patient_push_subscriptions_list
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PushSubscription'
+          description: ''
+    post:
+      operationId: patient_push_subscriptions_create
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PushSubscriptionRequestRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushSubscription'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushSubscription'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Endpoint not allowed or invalid keys
+  /api/v1/patient/push-subscriptions/{subscription_id}/:
+    delete:
+      operationId: patient_push_subscriptions_destroy
+      parameters:
+      - in: path
+        name: subscription_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '204':
+          description: No response body
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not yours
   /api/v1/patient/record-claims/:
     post:
       operationId: patient_record_claims_create
@@ -1384,6 +1620,182 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Closed
+  /api/v1/platform/announcements/:
+    get:
+      operationId: platform_announcements_list
+      parameters:
+      - in: query
+        name: status
+        schema:
+          type: string
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Announcement'
+          description: ''
+    post:
+      operationId: platform_announcements_create
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnnouncementWriteRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid
+  /api/v1/platform/announcements/{announcement_id}/:
+    get:
+      operationId: platform_announcements_retrieve
+      parameters:
+      - in: path
+        name: announcement_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
+    patch:
+      operationId: platform_announcements_partial_update
+      parameters:
+      - in: path
+        name: announcement_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAnnouncementPatchRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not a draft
+  /api/v1/platform/announcements/{announcement_id}/publish/:
+    post:
+      operationId: platform_announcements_publish_create
+      parameters:
+      - in: path
+        name: announcement_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not a draft
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Daily limit
+  /api/v1/platform/announcements/{announcement_id}/withdraw/:
+    post:
+      operationId: platform_announcements_withdraw_create
+      parameters:
+      - in: path
+        name: announcement_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not published
   /api/v1/platform/facilities/:
     get:
       operationId: platform_facilities_list
@@ -4958,6 +5370,200 @@ paths:
               schema:
                 $ref: '#/components/schemas/UndoResult'
           description: ''
+  /api/v1/platform/notification-deliveries/:
+    get:
+      operationId: platform_notification_deliveries_list
+      parameters:
+      - in: query
+        name: channel
+        schema:
+          type: string
+      - in: query
+        name: event_type
+        schema:
+          type: string
+      - in: query
+        name: recipient_user_id
+        schema:
+          type: string
+      - in: query
+        name: since
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeliveryLogEntry'
+          description: ''
+  /api/v1/platform/notification-deliveries/stats/:
+    get:
+      operationId: platform_notification_deliveries_stats_retrieve
+      parameters:
+      - in: query
+        name: since
+        schema:
+          type: string
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveryStats'
+          description: ''
+  /api/v1/platform/notification-templates/:
+    get:
+      operationId: platform_notification_templates_list
+      parameters:
+      - in: query
+        name: channel
+        schema:
+          type: string
+      - in: query
+        name: code
+        schema:
+          type: string
+      - in: query
+        name: is_active
+        schema:
+          type: string
+      - in: query
+        name: language
+        schema:
+          type: string
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotificationTemplate'
+          description: ''
+  /api/v1/platform/notification-templates/{template_id}/:
+    get:
+      operationId: platform_notification_templates_retrieve
+      parameters:
+      - in: path
+        name: template_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationTemplate'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
+  /api/v1/platform/notification-templates/{template_id}/activate/:
+    post:
+      operationId: platform_notification_templates_activate_create
+      parameters:
+      - in: path
+        name: template_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationTemplate'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Already active
+  /api/v1/platform/notification-templates/{template_id}/revise/:
+    post:
+      operationId: platform_notification_templates_revise_create
+      parameters:
+      - in: path
+        name: template_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateReviseRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationTemplate'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid text
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not the latest version
   /api/v1/platform/overview/:
     get:
       operationId: platform_overview
@@ -5560,6 +6166,194 @@ paths:
                 items:
                   $ref: '#/components/schemas/Symptom'
           description: ''
+  /api/v1/public/web-push-key/:
+    get:
+      operationId: public_web_push_key_retrieve
+      tags:
+      - notifications
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebPushKey'
+          description: ''
+  /api/v1/staff/announcements/:
+    get:
+      operationId: staff_announcements_list
+      parameters:
+      - in: query
+        name: status
+        schema:
+          type: string
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Announcement'
+          description: ''
+    post:
+      operationId: staff_announcements_create
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnnouncementWriteRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid
+  /api/v1/staff/announcements/{announcement_id}/:
+    get:
+      operationId: staff_announcements_retrieve
+      parameters:
+      - in: path
+        name: announcement_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
+    patch:
+      operationId: staff_announcements_partial_update
+      parameters:
+      - in: path
+        name: announcement_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAnnouncementPatchRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not a draft
+  /api/v1/staff/announcements/{announcement_id}/publish/:
+    post:
+      operationId: staff_announcements_publish_create
+      parameters:
+      - in: path
+        name: announcement_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not a draft
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Daily limit
+  /api/v1/staff/announcements/{announcement_id}/withdraw/:
+    post:
+      operationId: staff_announcements_withdraw_create
+      parameters:
+      - in: path
+        name: announcement_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not published
   /api/v1/staff/auth/active-facility/:
     post:
       operationId: staff_auth_active_facility
@@ -7605,6 +8399,201 @@ paths:
               schema:
                 $ref: '#/components/schemas/UndoResult'
           description: ''
+  /api/v1/staff/notification-deliveries/:
+    get:
+      operationId: staff_notification_deliveries_list
+      parameters:
+      - in: query
+        name: announcement_id
+        schema:
+          type: string
+      - in: query
+        name: event_type
+        schema:
+          type: string
+      - in: query
+        name: patient_id
+        schema:
+          type: string
+      - in: query
+        name: since
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeliveryLogEntry'
+          description: ''
+  /api/v1/staff/notification-preferences/:
+    get:
+      operationId: staff_notification_preferences_retrieve
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffPreferences'
+          description: ''
+    patch:
+      operationId: staff_notification_preferences_partial_update
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffPreferencesPatchRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffPreferences'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+  /api/v1/staff/notifications/:
+    get:
+      operationId: staff_notifications_list
+      parameters:
+      - in: query
+        name: is_read
+        schema:
+          type: boolean
+      - in: query
+        name: patient_id
+        schema:
+          type: string
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+          description: ''
+  /api/v1/staff/notifications/{notification_id}/:
+    get:
+      operationId: staff_notifications_retrieve
+      parameters:
+      - in: path
+        name: notification_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not yours
+  /api/v1/staff/notifications/{notification_id}/read/:
+    post:
+      operationId: staff_notifications_read_create
+      parameters:
+      - in: path
+        name: notification_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not yours
+  /api/v1/staff/notifications/read-all/:
+    post:
+      operationId: staff_notifications_read_all_create
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReadAllRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Marked'
+          description: ''
+  /api/v1/staff/notifications/unread-count/:
+    get:
+      operationId: staff_notifications_unread_count_retrieve
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnreadCount'
+          description: ''
   /api/v1/staff/patients/:
     post:
       operationId: staff_patients_create
@@ -9299,6 +10288,151 @@ components:
         * `moderate` - Moderate
         * `severe` - Severe
         * `unknown` - Unknown
+    Announcement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        facility_id:
+          type: string
+          format: uuid
+          nullable: true
+          readOnly: true
+        audience:
+          $ref: '#/components/schemas/AnnouncementAudienceEnum'
+        target_facility_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          nullable: true
+        range_starts_on:
+          type: string
+          format: date
+          nullable: true
+        range_ends_on:
+          type: string
+          format: date
+          nullable: true
+        priority:
+          $ref: '#/components/schemas/NotificationPriorityEnum'
+        title_i18n: {}
+        body_i18n: {}
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          $ref: '#/components/schemas/AnnouncementStatusEnum'
+        recipient_count:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        created_by:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        withdrawn_at:
+          type: string
+          format: date-time
+          nullable: true
+        version:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - audience
+      - created_at
+      - created_by
+      - facility_id
+      - id
+    AnnouncementAudienceEnum:
+      enum:
+      - patients_in_range
+      - display
+      - all_facilities
+      - selected_facilities
+      type: string
+      description: |-
+        * `patients_in_range` - Patients with visits in a date range
+        * `display` - Waiting-room display
+        * `all_facilities` - All facilities
+        * `selected_facilities` - Selected facilities
+    AnnouncementPriorityEnum:
+      enum:
+      - routine
+      - important
+      type: string
+      description: |-
+        * `routine` - Routine
+        * `important` - Important
+    AnnouncementStatusEnum:
+      enum:
+      - draft
+      - published
+      - withdrawn
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `published` - Published
+        * `withdrawn` - Withdrawn
+    AnnouncementWriteRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+        audience:
+          $ref: '#/components/schemas/AnnouncementAudienceEnum'
+        target_facility_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          nullable: true
+          maxItems: 200
+        range_starts_on:
+          type: string
+          format: date
+          nullable: true
+        range_ends_on:
+          type: string
+          format: date
+          nullable: true
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/AnnouncementPriorityEnum'
+          default: routine
+        title_i18n:
+          $ref: '#/components/schemas/I18nTextRequest'
+        body_i18n:
+          $ref: '#/components/schemas/I18nTextRequest'
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - audience
+      - body_i18n
+      - title_i18n
     ApplicantApplication:
       type: object
       properties:
@@ -9585,6 +10719,14 @@ components:
       - reviewer
       - status
       - submitted_at
+    ApprovalsDigestEnum:
+      enum:
+      - immediate
+      - daily
+      type: string
+      description: |-
+        * `immediate` - immediate
+        * `daily` - daily
     ApproveInputRequest:
       type: object
       properties:
@@ -9624,6 +10766,35 @@ components:
       required:
       - application
       - facility
+    AttemptLog:
+      type: object
+      properties:
+        channel:
+          type: string
+        attempt_no:
+          type: integer
+        is_fallback:
+          type: boolean
+        status:
+          $ref: '#/components/schemas/DeliveryAttemptStatusEnum'
+        failure_reason:
+          type: string
+          nullable: true
+        queued_at:
+          type: string
+          format: date-time
+        sent_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - attempt_no
+      - channel
+      - failure_reason
+      - is_fallback
+      - queued_at
+      - sent_at
+      - status
     BlankEnum:
       enum:
       - ''
@@ -10096,6 +11267,69 @@ components:
         * `drug` - Drug
         * `food` - Food
         * `other` - Other
+    ChannelStat:
+      type: object
+      properties:
+        channel:
+          type: string
+        sent:
+          type: integer
+        failed:
+          type: integer
+        skipped:
+          type: integer
+        held:
+          type: integer
+        cancelled:
+          type: integer
+      required:
+      - cancelled
+      - channel
+      - failed
+      - held
+      - sent
+      - skipped
+    Channels:
+      type: object
+      properties:
+        critical:
+          type: array
+          items:
+            type: string
+        important:
+          type: array
+          items:
+            type: string
+        routine:
+          type: array
+          items:
+            type: string
+      required:
+      - critical
+      - important
+      - routine
+    ChannelsRequest:
+      type: object
+      properties:
+        critical:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        important:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        routine:
+          type: array
+          items:
+            type: string
+            minLength: 1
+      required:
+      - critical
+      - important
+      - routine
     CheckInRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -10642,6 +11876,90 @@ components:
       - granted
       - pending_invites
       - received
+    DeliveryAttemptStatusEnum:
+      enum:
+      - queued
+      - held
+      - skipped
+      - sent
+      - delivered
+      - read
+      - failed
+      - cancelled
+      type: string
+      description: |-
+        * `queued` - Queued
+        * `held` - Held (quiet hours)
+        * `skipped` - Skipped
+        * `sent` - Sent
+        * `delivered` - Delivered
+        * `read` - Read
+        * `failed` - Failed
+        * `cancelled` - Cancelled
+    DeliveryLogEntry:
+      type: object
+      properties:
+        notification_id:
+          type: string
+          format: uuid
+        event_type:
+          type: string
+        priority:
+          type: string
+        recipient_user_id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+          nullable: true
+        template:
+          $ref: '#/components/schemas/TemplateRef'
+        title:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        read_at:
+          type: string
+          format: date-time
+          nullable: true
+        attempts:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttemptLog'
+      required:
+      - attempts
+      - created_at
+      - event_type
+      - notification_id
+      - patient_id
+      - priority
+      - read_at
+      - recipient_user_id
+      - template
+      - title
+    DeliveryStats:
+      type: object
+      properties:
+        since:
+          type: string
+          format: date-time
+        by_channel:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChannelStat'
+        failure_reasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReasonCount'
+        push_opt_in:
+          $ref: '#/components/schemas/PushOptIn'
+      required:
+      - by_channel
+      - failure_reasons
+      - push_opt_in
+      - since
     Department:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -10675,6 +11993,36 @@ components:
           default: true
       required:
       - name_i18n
+    DependentAlert:
+      type: object
+      properties:
+        patient_id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+          readOnly: true
+        relationship:
+          type: string
+          readOnly: true
+        receive_alerts:
+          type: boolean
+      required:
+      - display_name
+      - patient_id
+      - receive_alerts
+      - relationship
+    DependentAlertRequest:
+      type: object
+      properties:
+        patient_id:
+          type: string
+          format: uuid
+        receive_alerts:
+          type: boolean
+      required:
+      - patient_id
+      - receive_alerts
     DependentRelationshipEnum:
       enum:
       - guardian
@@ -12459,6 +13807,15 @@ components:
       - days
       - service_id
       - version
+    I18nTextRequest:
+      type: object
+      properties:
+        rw:
+          type: string
+        en:
+          type: string
+        fr:
+          type: string
     Identifier:
       type: object
       properties:
@@ -13511,6 +14868,13 @@ components:
         * `authenticated` - authenticated
         * `mfa_required` - mfa_required
         * `mfa_setup_required` - mfa_setup_required
+    Marked:
+      type: object
+      properties:
+        marked:
+          type: integer
+      required:
+      - marked
     MasterDataChange:
       type: object
       properties:
@@ -13935,6 +15299,145 @@ components:
         * `visit` - Visit
         * `document_check` - Document check
         * `other` - Other
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        event_type:
+          type: string
+          maxLength: 60
+        priority:
+          $ref: '#/components/schemas/NotificationPriorityEnum'
+        language:
+          type: string
+          maxLength: 2
+        title:
+          type: string
+          maxLength: 120
+        body:
+          type: string
+          maxLength: 1000
+        action_path:
+          type: string
+          nullable: true
+          maxLength: 200
+        patient_id:
+          type: string
+          format: uuid
+          nullable: true
+        facility:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          readOnly: true
+        data: {}
+        is_read:
+          type: boolean
+          readOnly: true
+        read_at:
+          type: string
+          format: date-time
+          nullable: true
+        is_withdrawn:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - body
+      - created_at
+      - event_type
+      - facility
+      - id
+      - is_read
+      - language
+      - priority
+      - title
+    NotificationPriorityEnum:
+      enum:
+      - critical
+      - important
+      - routine
+      type: string
+      description: |-
+        * `critical` - Critical
+        * `important` - Important
+        * `routine` - Routine
+    NotificationTemplate:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        code:
+          type: string
+          maxLength: 60
+        channel:
+          type: string
+          maxLength: 16
+        language:
+          type: string
+          maxLength: 2
+        variant:
+          allOf:
+          - $ref: '#/components/schemas/TemplateVariantEnum'
+          default: self
+        template_version:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        subject:
+          type: string
+          maxLength: 120
+        body:
+          type: string
+        placeholders:
+          type: array
+          items:
+            type: string
+            maxLength: 40
+        allowed_placeholders:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        limits:
+          type: object
+          additionalProperties:
+            type: integer
+          readOnly: true
+        is_active:
+          type: boolean
+          default: true
+        source:
+          $ref: '#/components/schemas/TemplateSourceEnum'
+        created_by:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - allowed_placeholders
+      - body
+      - channel
+      - code
+      - created_at
+      - created_by
+      - id
+      - language
+      - limits
+      - source
+      - subject
+      - template_version
     NullEnum:
       enum:
       - null
@@ -13991,6 +15494,17 @@ components:
       - doctors_on_duty
       - in_service
       - waiting
+    OtherFacilityCount:
+      type: object
+      properties:
+        facility_id:
+          type: string
+          format: uuid
+        unread:
+          type: integer
+      required:
+      - facility_id
+      - unread
     Overview:
       type: object
       properties:
@@ -14613,6 +16127,44 @@ components:
           maxLength: 254
       required:
       - email
+    PatchedAnnouncementPatchRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+        audience:
+          $ref: '#/components/schemas/AnnouncementAudienceEnum'
+        target_facility_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          nullable: true
+          maxItems: 200
+        range_starts_on:
+          type: string
+          format: date
+          nullable: true
+        range_ends_on:
+          type: string
+          format: date
+          nullable: true
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/AnnouncementPriorityEnum'
+          default: routine
+        title_i18n:
+          $ref: '#/components/schemas/I18nTextRequest'
+        body_i18n:
+          $ref: '#/components/schemas/I18nTextRequest'
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
     PatchedApplicationPatchInputRequest:
       type: object
       properties:
@@ -14993,6 +16545,29 @@ components:
           items:
             type: string
             format: uuid
+    PatchedPatientPreferencesPatchRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 0
+        language:
+          $ref: '#/components/schemas/LanguageEnum'
+        channels:
+          $ref: '#/components/schemas/ChannelsRequest'
+        quiet_hours:
+          $ref: '#/components/schemas/QuietHoursRequest'
+        reminder_offsets_minutes:
+          type: array
+          items:
+            type: integer
+            maximum: 10080
+            minimum: 5
+          maxItems: 5
+        dependents:
+          type: array
+          items:
+            $ref: '#/components/schemas/DependentAlertRequest'
     PatchedProfileUpdateRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -15259,6 +16834,18 @@ components:
           nullable: true
           minLength: 1
           maxLength: 500
+    PatchedStaffPreferencesPatchRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 0
+        language:
+          $ref: '#/components/schemas/LanguageEnum'
+        sound_enabled:
+          type: boolean
+        approvals_digest:
+          $ref: '#/components/schemas/ApprovalsDigestEnum'
     PatchedSymptomsPlatformItemRequest:
       type: object
       properties:
@@ -15379,6 +16966,45 @@ components:
       - id
       - preferred_language
       - profiles
+    PatientPreferences:
+      type: object
+      properties:
+        language:
+          $ref: '#/components/schemas/LanguageEnum'
+        available_channels:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        channels:
+          $ref: '#/components/schemas/Channels'
+        quiet_hours:
+          $ref: '#/components/schemas/QuietHours'
+        reminder_offsets_minutes:
+          type: array
+          items:
+            type: integer
+            maximum: 10080
+            minimum: 5
+          maxItems: 5
+        dependents:
+          type: array
+          items:
+            $ref: '#/components/schemas/DependentAlert'
+        is_critical_locked:
+          type: boolean
+          readOnly: true
+        version:
+          type: integer
+      required:
+      - available_channels
+      - channels
+      - dependents
+      - is_critical_locked
+      - language
+      - quiet_hours
+      - reminder_offsets_minutes
+      - version
     PatientProfile:
       type: object
       properties:
@@ -16273,6 +17899,70 @@ components:
       - membership_id
       - open_places
       - starts_at
+    PushKeysRequest:
+      type: object
+      properties:
+        p256dh:
+          type: string
+          minLength: 1
+          maxLength: 100
+        auth:
+          type: string
+          minLength: 1
+          maxLength: 40
+      required:
+      - auth
+      - p256dh
+    PushOptIn:
+      type: object
+      properties:
+        patient_accounts:
+          type: integer
+        with_active_subscription:
+          type: integer
+      required:
+      - patient_accounts
+      - with_active_subscription
+    PushSubscription:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        label:
+          type: string
+          maxLength: 60
+        endpoint_host:
+          type: string
+          maxLength: 255
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        last_success_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - created_at
+      - endpoint_host
+      - id
+    PushSubscriptionRequestRequest:
+      type: object
+      properties:
+        endpoint:
+          type: string
+          minLength: 1
+          maxLength: 2048
+        expiration_time:
+          type: integer
+          nullable: true
+        keys:
+          $ref: '#/components/schemas/PushKeysRequest'
+      required:
+      - endpoint
+      - keys
     QueueGroup:
       type: object
       properties:
@@ -16316,6 +18006,42 @@ components:
         * `low` - low
         * `medium` - medium
         * `high` - high
+    QuietHours:
+      type: object
+      properties:
+        is_enabled:
+          type: boolean
+        start:
+          type: string
+          format: time
+        end:
+          type: string
+          format: time
+      required:
+      - end
+      - is_enabled
+      - start
+    QuietHoursRequest:
+      type: object
+      properties:
+        is_enabled:
+          type: boolean
+        start:
+          type: string
+          format: time
+        end:
+          type: string
+          format: time
+      required:
+      - end
+      - is_enabled
+      - start
+    ReadAllRequest:
+      type: object
+      properties:
+        before:
+          type: string
+          format: date-time
     ReasonCodeEnum:
       enum:
       - identity_check
@@ -16442,6 +18168,16 @@ components:
       - code
       - kind
       - label_i18n
+    ReasonCount:
+      type: object
+      properties:
+        reason:
+          type: string
+        count:
+          type: integer
+      required:
+      - count
+      - reason
     ReasonInputRequest:
       type: object
       properties:
@@ -17629,6 +19365,22 @@ components:
       - next
       - previous
       - results
+    StaffPreferences:
+      type: object
+      properties:
+        language:
+          $ref: '#/components/schemas/LanguageEnum'
+        sound_enabled:
+          type: boolean
+        approvals_digest:
+          $ref: '#/components/schemas/ApprovalsDigestEnum'
+        version:
+          type: integer
+      required:
+      - approvals_digest
+      - language
+      - sound_enabled
+      - version
     StaffRevealRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -18088,6 +19840,19 @@ components:
       - valid_to
       - version
       - weekday
+    TemplateRef:
+      type: object
+      properties:
+        code:
+          type: string
+        version:
+          type: integer
+        language:
+          type: string
+      required:
+      - code
+      - language
+      - version
     TemplateRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -18149,6 +19914,40 @@ components:
       required:
       - template
       - warnings
+    TemplateReviseRequest:
+      type: object
+      properties:
+        subject:
+          type: string
+          minLength: 1
+          maxLength: 120
+        body:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        based_on_version:
+          type: integer
+          minimum: 1
+      required:
+      - based_on_version
+      - body
+      - subject
+    TemplateSourceEnum:
+      enum:
+      - seed
+      - platform
+      type: string
+      description: |-
+        * `seed` - Seed
+        * `platform` - Platform
+    TemplateVariantEnum:
+      enum:
+      - self
+      - dependent
+      type: string
+      description: |-
+        * `self` - Self
+        * `dependent` - Dependent
     TicketActionRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -18416,6 +20215,17 @@ components:
           type: string
           minLength: 1
           maxLength: 4096
+    UnreadCount:
+      type: object
+      properties:
+        unread:
+          type: integer
+        other_facilities:
+          type: array
+          items:
+            $ref: '#/components/schemas/OtherFacilityCount'
+      required:
+      - unread
     Upload:
       type: object
       properties:
@@ -18595,6 +20405,17 @@ components:
           type: integer
       required:
       - kind
+    WebPushKey:
+      type: object
+      properties:
+        public_key:
+          type: string
+          nullable: true
+        is_enabled:
+          type: boolean
+      required:
+      - is_enabled
+      - public_key
   securitySchemes:
     patientSession:
       type: apiKey

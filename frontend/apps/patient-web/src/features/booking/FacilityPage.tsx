@@ -20,6 +20,7 @@ import {
   ImigongoPattern,
   LoadingState,
 } from "@medilink/ui";
+import { dateFormat } from "@medilink/ui/i18n";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -35,7 +36,7 @@ const WEEKDAYS = [0, 1, 2, 3, 4, 5, 6];
 
 function weekdayName(index: number, language: string): string {
   // 2024-01-01 was a Monday
-  return new Intl.DateTimeFormat(language, { weekday: "short", timeZone: "UTC" }).format(
+  return dateFormat(language, { weekday: "short", timeZone: "UTC" }).format(
     new Date(Date.UTC(2024, 0, 1 + index)),
   );
 }

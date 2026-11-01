@@ -20,9 +20,10 @@ This document decides tables, key columns, keys, indexes, row-level security (RL
 |---|---|
 | Database | PostgreSQL 17, one database, schema `public`. Extensions: `citext`, `pg_trgm`, `btree_gist`, `pgcrypto` (only for `gen_random_bytes` in tests; encryption happens in the application). |
 | Table names | `<app>_<entity>` in snake case, set with `db_table` (e.g. `visits_ticket`, `clinical_consultation`). Apps are the backend modules: `core`, `accounts`, `authz`, `tenancy`, `masterdata`, `facilities`, `patients`, `scheduling`, `visits`, `clinical`, `pharmacy`, `documents`, `billing`, `notifications`, `disputes`, `audit`, `reports`. |
-| Primary keys | `id uuid` (UUIDv7, generated in the application, time-ordered). Never relied on for security ([security 04](../security/04-authorization-and-tenant-isolation.md) §2). Exceptions: Django's session key, and `audit_entry.seq` as the chain order. |
+| Primary keys | `id uuid` (UUIDv7, generated in the application, time-ordered). Never relied on for security ([security 04](../security/04-authorization-and-tenant-isolation.md) §2). Exceptions: Django's session key, and `audit_auditentry.sequence` as the chain order. |
 | Foreign keys | `<entity>_id uuid`, `ON DELETE PROTECT` by default (nothing clinical, financial or audited cascades). `SET NULL` only for optional links to transient rows (e.g. a booking's slot). |
 | Facility ownership | Every facility-owned table has `facility_id uuid NOT NULL` → `tenancy_facility`, RLS enabled and forced, and composite indexes that **start with `facility_id`**. Child tables repeat `facility_id` (no RLS by join). |
+| RLS exceptions | Tables with `facility_id` but without facility RLS are listed in `backend/tests/test_rls_coverage.py` (`RLS_EXCEPTIONS`) with their reason; the test fails for any other facility table without forced RLS, and for an exception that is no longer needed. Besides those named in the sprint contracts: `core_outbox_event` (system table, IDs only, never served by an API view), `onboarding_facility_feature_flag` and `onboarding_facility_status_event` (platform-managed, read by platform admins across facilities). `audit_auditentry` (built as `audit_auditentry`) gets facility RLS for `SELECT` (its row in §5) before the S10 audit viewer ships |
 | Timestamps | `timestamptz`, stored in UTC. `created_at` on every table; `updated_at` on mutable tables. "Today" for queues and reports is a `date` column computed in Africa/Kigali (`service_date`). |
 | Money | `bigint`, integer RWF, suffix `_rwf`, `CHECK (… >= 0)` unless a difference (cash-up). Percentages as basis points `integer` (`patient_share_bp`, 0–10000). Totals and splits are computed by the server. |
 | Enums | `varchar` + `CHECK` constraint generated from Django `TextChoices`; values are lowercase snake case, as in the API. |
@@ -90,7 +91,7 @@ RLS is the second wall behind the policy layer ([security 04](../security/04-aut
 
 | Role | Rights |
 |---|---|
-| `medilink_app` | DML on application tables; `INSERT` only on append-only tables (incl. `audit_entry`); `SELECT` only on master data; no `BYPASSRLS`, not owner |
+| `medilink_app` | DML on application tables; `INSERT` only on append-only tables (incl. `audit_auditentry`); `SELECT` only on master data; no `BYPASSRLS`, not owner |
 | `medilink_migrator` | Owner of all tables; runs migrations in CI/CD only |
 | `medilink_reporting` | Read-only on de-identified views (`security_invoker = true`) |
 | `medilink_maint` | `BYPASSRLS` for audited maintenance through the VPN, with a ticket reference |
@@ -130,7 +131,7 @@ CREATE POLICY patient_own_rows ON visits_ticket FOR SELECT
 
 - Tables that patients write (bookings, slot holds, reason-for-visit symptoms, dispute messages and evidence, patient uploads) get `FOR INSERT` / `FOR UPDATE` policies that check both `facility_id` and the patient link.
 - C0 configuration tables (departments, services, service points, opening hours, calendar events, public tariff items, insurer rules, slots, duty status for queue load) get a `FOR SELECT` policy for `app.audience IN ('public', 'display')`.
-- `tenancy_facility_membership` also has an `account_own_memberships` policy (`user_id = app.user_id`), so login can list a user's facilities before a facility is chosen.
+- `tenancy_facilitymembership` also has an `account_own_memberships` policy (`user_id = app.user_id`), so login can list a user's facilities before a facility is chosen.
 - Views use `security_invoker = true`.
 
 ### 3.4 Cross-facility checks without breaking isolation
@@ -153,8 +154,8 @@ Platform-wide tables (accounts, master data, patients and their health profile, 
 
 | Conceptual entity ([analysis 15](../analysis/15-conceptual-data-model.md)) | Table |
 |---|---|
-| USER_ACCOUNT, SESSION, CLINICIAN_PROFILE | `accounts_user`, `accounts_session`, `accounts_clinician_profile` |
-| ORGANIZATION, FACILITY, FACILITY_MEMBERSHIP, ROLE, PERMISSION | `tenancy_organization`, `tenancy_facility`, `tenancy_facility_membership`, `tenancy_role`, `tenancy_permission` |
+| USER_ACCOUNT, SESSION, CLINICIAN_PROFILE | `accounts_user`, `accounts_user_session`, `accounts_clinician_profile` |
+| ORGANIZATION, FACILITY, FACILITY_MEMBERSHIP, ROLE, PERMISSION | `tenancy_organization`, `tenancy_facility`, `tenancy_facilitymembership`, `tenancy_role`, `tenancy_permission` |
 | FACILITY_APPLICATION_EVENT | `facilities_application_event` (with `facilities_application`) |
 | DEPARTMENT, SERVICE, SERVICE_POINT, CALENDAR_EVENT | `facilities_department`, `facilities_service`, `facilities_service_point`, `facilities_calendar_event` |
 | SERVICE_CATALOGUE_ITEM, INSURER, DRUG | `masterdata_service_catalogue_item`, `masterdata_insurer`, `masterdata_drug` |
@@ -170,7 +171,7 @@ Platform-wide tables (accounts, master data, patients and their health profile, 
 | DOMAIN_EVENT | `core_outbox_event` |
 | NOTIFICATION, DELIVERY_ATTEMPT, NOTIFICATION_PREFERENCE | `notifications_*` |
 | DISPUTE, DISPUTE_MESSAGE, DISPUTE_EVIDENCE, DISPUTE_ACTION | `disputes_*` |
-| AUDIT_ENTRY | `audit_entry` |
+| AUDIT_ENTRY | `audit_auditentry` |
 | SHARE_GRANT, SUBSCRIPTION, SUBSCRIPTION_INVOICE, RATING, TRIAGE_SESSION, TRIAGE_ANSWER, MODEL_VERSION | Later phases (§6) |
 
 ## 5. Tables by module
@@ -181,7 +182,7 @@ Legend for the summary tables: **RLS** ✓ = facility-owned with forced RLS · *
 
 | Table | Purpose | RLS | Class | Mutability | Retention | Sprint |
 |---|---|---|---|---|---|---|
-| `core_idempotency_key` | Results of `Idempotency-Key` requests (not built in S0; S1 and S3 store keys on the created row, [S1-D6](contracts/sprint-01-platform-onboarding.md#28-decisions-and-deviations)) | — | C1 | Append-only | R-TMP (24 h) | S4 |
+| `core_idempotency_key` | Results of `Idempotency-Key` requests (not built in S0; S1 and S3 store keys on the created row, [S1-D6](contracts/sprint-01-platform-onboarding.md#28-decisions-and-deviations)) | — | C1 | Append-only | R-TMP (24 h) | Not built (S4 D-5: keys are stored on the created row; [API conventions](02-api-conventions.md) §5) |
 | `core_outbox_event` | Domain events written in the same transaction (transactional outbox) for notifications, sockets, reports | — | C1 | Append-only | R-TMP (7 days after publishing) | S4 |
 | `core_feature_flag` | Feature flags per facility (NFR-OPS-07). **Replaced** by `onboarding_feature_flag` + `onboarding_facility_feature_flag` ([S1-D4](contracts/sprint-01-platform-onboarding.md#28-decisions-and-deviations)) | — | C1 | Mutable | R-OPS | S1 |
 
@@ -214,7 +215,7 @@ erDiagram
 | Table | Purpose | RLS | Class | Mutability | Retention | Sprint |
 |---|---|---|---|---|---|---|
 | `accounts_user` | Login identity (staff and patients) | — | C2 | Mutable | R-ACCT; staff kept while they authored records | S0 |
-| `accounts_session` | Server-side sessions per audience | — | C2 | Mutable | R-TMP (until expiry or logout) | S0 |
+| `accounts_user_session` | Server-side sessions per audience | — | C2 | Mutable | R-TMP (until expiry or logout) | S0 |
 | `accounts_recovery_code` | MFA recovery codes (hashed) | — | C3 | Append-only (+ `used_at`) | R-ACCT | S0 |
 | `otp_totp_totpdevice` | TOTP devices (django-otp) | — | C3 | Mutable | R-ACCT | S0 |
 | `accounts_clinician_profile` | Licence council and number | — | C2 | Mutable | R-ACCT, kept while authored records exist | S2 |
@@ -224,9 +225,9 @@ erDiagram
 | `tenancy_facility_warning` | Warnings from dispute decisions | — | C1 | Append-only | R-DSP | S10 |
 | `tenancy_role` | Facility roles (seeded) | — | C1 | Versioned (seeded) | R-MD | S0 |
 | `tenancy_permission` | Permission codes (seeded) | — | C1 | Versioned (seeded) | R-MD | S0 |
-| `tenancy_role_permission` | Role → permission grants | — | C1 | Versioned (seeded) | R-MD | S0 |
-| `tenancy_facility_membership` | User at a facility | ✓ | C2 | Mutable | R-AUD (kept for attribution) | S0 |
-| `tenancy_membership_role` | Roles of a membership | ✓ | C1 | Mutable | R-AUD | S0 |
+| `tenancy_role_permissions` | Role → permission grants | — | C1 | Versioned (seeded) | R-MD | S0 |
+| `tenancy_facilitymembership` | User at a facility | ✓ | C2 | Mutable | R-AUD (kept for attribution) | S0 |
+| `tenancy_facilitymembership_roles` | Roles of a membership | ✓ | C1 | Mutable | R-AUD | S0 |
 | `tenancy_membership_service_point` | Service points of a membership | ✓ | C1 | Mutable | R-OPS | S2 |
 | `tenancy_invitation` | Staff invitations | ✓ | C2 | State machine (light) | R-TMP (90 days after expiry or acceptance) | S2 |
 | `authz_access_reason` | Reasons given for opening a record outside the treatment relationship | ✓ | C2 | Append-only | R-AUD | S6 |
@@ -235,19 +236,19 @@ erDiagram
 | Table | Key columns |
 |---|---|
 | `accounts_user` | `email citext` **unique** (case-insensitive), `full_name varchar(200)`, `preferred_language varchar(2)` CHECK in (`rw`, `en`, `fr`) default `rw`, `password varchar(255)` (Argon2id), `is_platform_admin boolean`, `is_active boolean`, `email_verified_at`, `last_login`, `pin_hash varchar(255) NULL` (staff PIN unlock), `phone_e164 varchar(16) NULL` (P3), `closed_at NULL`. A closed patient account keeps a tombstone row; personal fields are erased after 30 days. |
-| `accounts_session` | Django `session_key varchar(40)` PK, `session_data`, `expire_date`, plus `audience varchar(8)` (`staff`/`patient`), `user_id`, `active_facility_id NULL`, `ip inet`, `user_agent varchar(300)`, `is_shared_device boolean`, `last_seen_at`. Index (`user_id`, `audience`), (`expire_date`). Separate cookies per audience ([ADR 0006](../decisions/0006-separate-frontend-and-backend-hosting.md)). |
+| `accounts_user_session` | Django `session_key varchar(40)` PK, `session_data`, `expire_date`, plus `audience varchar(8)` (`staff`/`patient`), `user_id`, `active_facility_id NULL`, `ip inet`, `user_agent varchar(300)`, `is_shared_device boolean`, `last_seen_at`. Index (`user_id`, `audience`), (`expire_date`). Separate cookies per audience ([ADR 0006](../decisions/0006-separate-frontend-and-backend-hosting.md)). |
 | `accounts_recovery_code` | `user_id`, `code_hash varchar(255)`, `used_at NULL`. Index (`user_id`). |
 | `otp_totp_totpdevice` | django-otp columns. The TOTP `key` must be encrypted at rest with the application key ([security 03](../security/03-identity-authentication-sessions.md) §3); django-otp stores it in plain hex by default, so wrap or replace the field. |
-| `accounts_clinician_profile` | `user_id` PK and FK (1:1), `council varchar(8)` (`rmdc`, `ncnm`, `npc`), `licence_number varchar(40)`, `specialty varchar(100) NULL`. **Unique** (`council`, `licence_number`). |
+| `accounts_clinician_profile` | `user_id` PK and FK (1:1), `council varchar(8)` (`rmdc`, `ncnm`, `npc`, `other` for allied health councils), `licence_number varchar(40)`, `specialty varchar(100) NULL`. **Unique** (`council`, `licence_number`). |
 | `tenancy_organization` | `name varchar(200)`. |
-| `tenancy_facility` | `organization_id`, `name varchar(200)`, `slug varchar(80)` **unique**, `facility_type varchar(40)` (code snapshot), `level_of_care varchar(12)`, `ownership varchar(16)`, `status varchar(20)` CHECK (`draft`, `submitted`, `under_review`, `changes_requested`, `approved`, `setup`, `live`, `suspended`, `deactivated`, `rejected`), `village_id` → `masterdata_location`, `address text`, `latitude numeric(9,6)`, `longitude numeric(9,6)`, `phone`, `email`, `description_i18n jsonb`. Index (`status`), (`latitude`, `longitude`). |
+| `tenancy_facility` | `organization_id`, `name varchar(200)`, `slug varchar(80)` **unique**, `facility_type varchar(40)` (code snapshot), `level_of_care varchar(12)`, `ownership varchar(16)`, `status varchar(20)` CHECK (`draft`, `submitted`, `under_review`, `changes_requested`, `approved`, `setup`, `live`, `suspended`, `deactivated`, `rejected`), `phone`, `email`. Index (`status`). **As built (S2):** the location and public profile (`address`, `village_code` NULL, `latitude`, `longitude`, description, level of care, photos) live in `facilities_profile` (one row per facility, [S2 contract](contracts/sprint-02-facility-setup.md) §2.1), not on this table. The approved `onboarding_facility_application` keeps its own `village_id`, address and coordinates; the public listing reads the profile first and falls back to the application. |
 | `tenancy_facility_status_event` | `facility_id`, `from_status`, `to_status`, `actor_id`, `reason text`, `occurred_at`. |
 | `tenancy_facility_warning` | `facility_id`, `dispute_id NULL`, `text`, `issued_by_id`. |
 | `tenancy_role` | `code varchar(40)` **unique** (`facility_admin`, `receptionist`, `doctor`, `pharmacist`), `name_i18n jsonb`, `is_system boolean`. |
 | `tenancy_permission` | `code varchar(60)` **unique**, `description text`. |
-| `tenancy_role_permission` | `role_id`, `permission_id`. **Unique** pair. |
-| `tenancy_facility_membership` | `user_id`, `is_active boolean`, `deactivated_at NULL`, `deactivated_by_id NULL`, `licence_attested_at NULL`, `licence_attested_by_id NULL`, `signature_file_id NULL`. **Unique** (`facility_id`, `user_id`). Index (`user_id`) for the account policy. |
-| `tenancy_membership_role` | `membership_id`, `role_id`. **Unique** pair. |
+| `tenancy_role_permissions` | `role_id`, `permission_id`. **Unique** pair. |
+| `tenancy_facilitymembership` | `user_id`, `is_active boolean`, `deactivated_at NULL`, `deactivated_by_id NULL`, `licence_attested_at NULL`, `licence_attested_by_id NULL`, `signature_file_id NULL`. **Unique** (`facility_id`, `user_id`). Index (`user_id`) for the account policy. |
+| `tenancy_facilitymembership_roles` | `membership_id`, `role_id`. **Unique** pair. |
 | `tenancy_membership_service_point` | `membership_id`, `service_point_id`. **Unique** pair. |
 | `tenancy_invitation` | `email citext`, `invited_by_id`, `role_codes text[]`, `service_point_ids uuid[]`, `token_hash bytea` **unique**, `expires_at`, `accepted_at NULL`, `accepted_user_id NULL`, `revoked_at NULL`. Index (`facility_id`, `email`) where pending. Looked up before login through `tenancy_find_invitation`. |
 | `authz_access_reason` | `membership_id`, `patient_id`, `reason_code`, `reason_text`, `granted_until`. Index (`facility_id`, `patient_id`, `granted_until`). |
@@ -255,7 +256,7 @@ erDiagram
 
 ### 5.3 Master data
 
-Platform-wide, read-only for the app role, versioned, never deleted. Every change also writes `masterdata_change`. See §7 for how platform admins write it.
+Platform-wide, versioned, never deleted. Only `/api/v1/platform/` endpoints (platform admins) write them; the runtime role keeps `INSERT`/`UPDATE` and loses `DELETE`/`TRUNCATE` (decision D1, S1-D7), so the write rule is enforced by the API policy layer, not by a read-only grant. Every change also writes `masterdata_change`. See §7 for how platform admins write it.
 
 | Table | Purpose | RLS | Class | Mutability | Retention | Sprint |
 |---|---|---|---|---|---|---|
@@ -314,7 +315,7 @@ erDiagram
 | `facilities_application` | Facility application (before a tenant exists). **S1 builds the application tables as `onboarding_application`, `onboarding_application_document`, `onboarding_application_event`, and licences as `onboarding_facility_licence` without RLS** ([S1-D1, S1-D3](contracts/sprint-01-platform-onboarding.md#28-decisions-and-deviations)); the S1 contract §2.2 has the columns | — | C2 | State machine | R-APP | S1 |
 | `facilities_application_document` | Documents attached to an application | — | C2 | Mutable until submitted | R-APP | S1 |
 | `facilities_application_event` | Status changes, verification notes, item comments | — | C2 | Append-only | R-APP | S1 |
-| `facilities_licence` | Operating licences with expiry | ✓ | C1 | Versioned | R-OPS | S1 |
+| `onboarding_facility_licence` | Operating licences with expiry | ✓ | C1 | Versioned | R-OPS | S1 |
 | `facilities_department` | Departments | ✓ | C0 | Mutable | R-OPS | S2 |
 | `facilities_service` | Services offered | ✓ | C0 | Mutable | R-OPS | S2 |
 | `facilities_service_point` | Rooms, desks, windows | ✓ | C0 | Mutable | R-OPS | S2 |
@@ -332,10 +333,10 @@ erDiagram
 | `facilities_application` | `status` CHECK (`draft`, `submitted`, `under_review`, `changes_requested`, `approved`, `rejected`), `facility_name`, `facility_type`, `ownership`, `organization_name`, `village_id`, `address`, `latitude`, `longitude`, `phone`, `email`, `applicant_name`, `applicant_email citext`, `applicant_position`, `proposed_admin_name`, `proposed_admin_email citext`, `proposed_admin_phone`, `claimed_insurer_codes text[]`, `accepted_terms_version`, `accepted_dpa_version`, `ncsa_registration_confirmed boolean`, `resume_token_hash bytea` **unique** NULL, `created_by_platform_admin_id NULL`, `facility_id NULL` **unique** (set at approval), `submitted_at`, `decided_at`. Index (`status`, `submitted_at`). |
 | `facilities_application_document` | `application_id`, `file_id`, `kind` (`moh_licence`, `rdb_registration`, `tin_certificate`, `accreditation`, `insurer_contract`, `other`), `expires_on date NULL`, `review_status`, `review_comment`. |
 | `facilities_application_event` | `application_id`, `kind` (`status_change`, `note`, `item_comment`), `from_status`, `to_status`, `actor_id NULL` (null = applicant), `note text`, `item_comments jsonb`, `occurred_at`. |
-| `facilities_licence` | `kind`, `number`, `issued_on`, `expires_on`, `file_id NULL`, `last_reminder_days smallint NULL`. Index (`expires_on`). |
+| `onboarding_facility_licence` | `kind`, `number`, `issued_on`, `expires_on`, `file_id NULL`, `last_reminder_days smallint NULL`. Index (`expires_on`). |
 | `facilities_department` | `name_i18n jsonb`, `is_active`. |
-| `facilities_service` | `department_id`, `catalogue_item_id`, `name_i18n`, `duration_minutes smallint`, `is_bookable`, `allows_walk_in`, `allows_remote_join`, `ticket_prefix varchar(3)`, `level_of_care`, `min_age_months NULL`, `max_age_months NULL`, `sex_restriction NULL`, `is_active`. **Unique** (`facility_id`, `ticket_prefix`) where active. The fee lives in `billing_tariff_item`. |
-| `facilities_service_point` | `name`, `kind` (`room`, `desk`, `pharmacy_window`, `cashier`), `is_active`. |
+| `facilities_service` | `department_id`, `catalogue_item_code` (as built), `name_i18n`, `duration_minutes smallint`, `is_bookable`, `allows_walk_in`, `allows_remote_join`, `ticket_prefix varchar(3)`, `min_age_months NULL`, `max_age_months NULL`, `sex_restriction NULL`, `is_active`. **Unique** (`facility_id`, `ticket_prefix`) where active. The fee lives in `billing_tariff_item`. |
+| `facilities_service_point` | `name`, `kind` (`room`, `desk`, `window`, `lab`, `other`), `is_active`. |
 | `facilities_service_point_service` | `service_point_id`, `service_id`. **Unique** pair. |
 | `facilities_opening_hours` | `service_id NULL` (null = whole facility), `weekday smallint` CHECK 0–6, `opens_at time`, `closes_at time`, `break_starts_at NULL`, `break_ends_at NULL`. **Unique** (`facility_id`, `service_id`, `weekday`) `NULLS NOT DISTINCT`. |
 | `facilities_calendar_event` | `kind` (`closure`, `holiday_override`, `umuganda`, `special_day`), `service_id NULL`, `starts_at`, `ends_at`, `is_open boolean`, `reason text`, `deleted_at NULL`. Index (`facility_id`, `starts_at`). |
@@ -454,8 +455,8 @@ erDiagram
 
 | Table | Key columns |
 |---|---|
-| `scheduling_schedule_template` | `membership_id NULL` (null = service schedule), `service_id`, `service_point_id NULL`, `weekday smallint`, `starts_at time`, `ends_at time`, `slot_minutes smallint`, `capacity_per_slot smallint`, `bookable_share_pct smallint` CHECK 0–100, `valid_from date`, `valid_to date NULL`, `is_active`. CHECK `starts_at < ends_at`. Index (`facility_id`, `membership_id`, `weekday`). |
-| `scheduling_schedule_exception` | `membership_id NULL`, `service_id NULL`, `kind` (`leave`, `training`, `extra_session`, `closure`), `starts_at`, `ends_at`, `status` (`requested`, `approved`, `rejected`, `cancelled`), `reason text NULL`, `requested_by_id`, `approved_by_id NULL`. Index (`facility_id`, `starts_at`). |
+| `scheduling_schedule_template` | `version`, `membership_id` (required as built; a service schedule with `membership_id NULL` is remediation R4, #86), `service_id`, `service_point_id NULL`, `weekday smallint`, `starts_at time`, `ends_at time`, `slot_minutes smallint`, `capacity smallint`, `bookable_share_pct smallint` CHECK 0–100, `valid_from date`, `valid_to date NULL`, `ended_at NULL` (instead of `is_active`, S2 contract §2.1). CHECK `starts_at < ends_at`. Index (`facility_id`, `membership_id`, `weekday`). |
+| `scheduling_schedule_exception` | `membership_id NULL`, `service_id NULL`, `kind` (`leave`, `training`, `extra_session`; facility closures are S2 calendar events), `starts_at`, `ends_at`, `status` (`requested`, `approved`, `rejected`, `cancelled`), `reason text NULL`, `requested_by_id`, `decided_by_id NULL`, `decision_note NULL`. Index (`facility_id`, `starts_at`). |
 | `scheduling_slot` | `service_id`, `membership_id NULL`, `service_point_id NULL`, `starts_at`, `ends_at`, `capacity smallint`, `bookable_capacity smallint`, `booked_count smallint`, `held_count smallint`, `status` (`open`, `closed`, `cancelled`), `source_template_id NULL`. **Unique** (`facility_id`, `service_id`, `membership_id`, `starts_at`) `NULLS NOT DISTINCT`. CHECK `booked_count + held_count <= bookable_capacity`. Index (`facility_id`, `service_id`, `starts_at`) where open. Holds and bookings update the counters under `SELECT … FOR UPDATE`. |
 | `scheduling_slot_hold` | `slot_id`, `account_id NULL`, `membership_id NULL`, `expires_at`, `released_at NULL`, `booking_id NULL`. Index (`slot_id`) where not released; (`expires_at`). |
 | `scheduling_booking` | `patient_id`, `facility_patient_id NULL`, `account_id NULL` (booked by), `booked_by_membership_id NULL`, `source` (`online`, `phone`, `follow_up`, `referral`, `rebooking`), `slot_id NULL` (SET NULL), `service_id`, `membership_id NULL` (doctor), `starts_at` (snapshot), `service_date date`, `status` (`confirmed`, `cancelled`, `late_cancelled`, `no_show`, `checked_in`, `superseded`), `booking_code varchar(10)`, `contact_phone_e164 NULL`, `insurance_profile_id NULL`, `insurer_code NULL` (snapshot), `estimated_fee_rwf`, `estimated_patient_share_rwf`, `reason_text text NULL`, `pending_change jsonb NULL` (disruption offer), `cancelled_at NULL`, `cancel_reason_code NULL`, `visit_id NULL`. **Unique** (`facility_id`, `booking_code`); **unique** (`patient_id`, `service_id`, `service_date`) where `status = 'confirmed'`. Index (`facility_id`, `service_date`, `status`); (`patient_id`, `starts_at`) where confirmed. |
@@ -657,8 +658,8 @@ erDiagram
 
 | Table | Key columns |
 |---|---|
-| `billing_tariff_item` | `kind` (`service`, `procedure`, `medicine`, `other`), `code varchar(40)`, `name_i18n`, `service_id NULL`, `drug_id NULL`, `unit_price_rwf bigint` CHECK ≥ 0, `valid_from date`, `valid_to date NULL`, `is_public boolean`, `created_by_id`. `EXCLUDE USING gist (facility_id WITH =, code WITH =, daterange(valid_from, valid_to) WITH &&)`. |
-| `billing_insurer_rule` | `insurer_id`, `applies_to_all_services boolean`, `service_ids uuid[]`, `patient_share_bp integer` CHECK 0–10000, `requires_referral boolean`, `excluded_tariff_codes text[]`, `ceiling_per_visit_rwf bigint NULL`, `valid_from`, `valid_to NULL`. Exclusion constraint on overlapping validity per (`facility_id`, `insurer_id`). |
+| `billing_tariff_item` | `kind` (`service`, `procedure`, `medicine`, `other`), `code varchar(40)`, `name_i18n`, `service_id NULL`, `amount_rwf` integer ≥ 0, `valid_from date`, `valid_to date NULL`, `created_by_id` (as built in S2; `drug_id` and `is_public` come with S7/S8). `EXCLUDE USING gist (facility_id WITH =, code WITH =, daterange(valid_from, valid_to) WITH &&)`. |
+| `billing_insurer_rule` | `insurer_code` (as built, S2 contract §2.1), `applies_to_all_services boolean`, `service_ids uuid[]`, `patient_share_bp integer` CHECK 0–10000, `requires_referral boolean`, `excluded_tariff_codes text[]`, `ceiling_per_visit_rwf bigint NULL`, `valid_from`, `valid_to NULL`. Exclusion constraint on overlapping validity per (`facility_id`, `insurer_id`). |
 | `billing_bill` | `visit_id` **unique**, `patient_id`, `insurance_profile_id NULL`, `insurer_id NULL`, `insurer_code NULL` + `patient_share_bp` (snapshots), `status` (`open`, `partly_paid`, `paid`, `voided`, `credited`), `total_rwf`, `insurer_share_rwf`, `patient_share_rwf`, `exempted_rwf`, `paid_rwf`, `balance_rwf` (all CHECK ≥ 0, server-computed). Index (`facility_id`, `status`) where `balance_rwf > 0`; (`patient_id`). |
 | `billing_bill_line` | `bill_id`, `tariff_item_id`, `code` + `name` (snapshots), `unit_price_rwf`, `quantity integer` CHECK > 0, `total_rwf`, `insurer_share_rwf`, `patient_share_rwf`, `prescription_item_id NULL`, `related_membership_id NULL`, `removed_at NULL`, `removed_by_id NULL`, `removed_reason NULL`. |
 | `billing_bill_event` | `bill_id`, `from_status`, `to_status`, `actor_id`, `reason`, `occurred_at`. |
@@ -755,7 +756,7 @@ erDiagram
 
 | Table | Purpose | RLS | Class | Mutability | Retention | Sprint |
 |---|---|---|---|---|---|---|
-| `audit_entry` | Hash-chained audit log | ✓ for `SELECT` (facility rows; patient access history through a view); `INSERT` always allowed | C3 | Append-only (`REVOKE UPDATE, DELETE`) | R-AUD | S0 |
+| `audit_auditentry` | Hash-chained audit log | ✓ for `SELECT` (facility rows; patient access history through a view); `INSERT` always allowed | C3 | Append-only (`REVOKE UPDATE, DELETE`) | R-AUD | S0 |
 | `audit_chain_anchor` | Daily chain head exported off-site | — | C1 | Append-only | R-AUD | S0 |
 | `reports_daily_facility_stat` | Daily aggregates per facility and service | ✓ | C1 | Rebuilt | R-AGG | S10 |
 | `reports_access_review` | Weekly unusual-access report and sign-off | ✓ | C2 | Mutable (sign-off) | R-AUD | S10 |
@@ -763,7 +764,7 @@ erDiagram
 
 | Table | Key columns |
 |---|---|
-| `audit_entry` | As in the [Sprint 0 contract](03-sprint-0-contract.md) §1: `id`, `seq bigint GENERATED ALWAYS AS IDENTITY` **unique** (chain order), `occurred_at`, `actor_id NULL` (null = system), `actor_role`, `facility_id NULL`, `action varchar(60)`, `object_type varchar(60)`, `object_id uuid NULL`, `reason varchar(300) NULL`, `ip inet NULL`, `user_agent varchar(300) NULL`, `request_id varchar(40)`, `metadata jsonb` (no personal data), `prev_hash bytea`, `hash bytea`. Proposed for S3: `patient_id uuid NULL`, so a patient's access history (FR-PAT-14) is one indexed query. Index (`facility_id`, `occurred_at`); (`object_type`, `object_id`); (`actor_id`, `occurred_at`); (`patient_id`, `occurred_at`). |
+| `audit_auditentry` | As in the [Sprint 0 contract](03-sprint-0-contract.md) §1: `id`, `sequence bigint` **unique** (chain order), `occurred_at`, `actor_id NULL` (null = system), `actor_role`, `facility_id NULL`, `action varchar(60)`, `object_type varchar(60)`, `object_id uuid NULL`, `reason varchar(300) NULL`, `ip inet NULL`, `user_agent varchar(300) NULL`, `request_id varchar(40)`, `metadata jsonb` (no personal data), `prev_hash bytea`, `hash bytea`. No `patient_id` column: a patient's access history (FR-PAT-14) uses `patients_audit_link` (§5.5, S3 D-3). Index (`facility_id`, `occurred_at`); (`object_type`, `object_id`); (`actor_id`, `occurred_at`). |
 | `audit_chain_anchor` | `anchor_date date` **unique**, `last_seq bigint`, `head_hash bytea`, `exported_at`, `export_target varchar(60)`. |
 | `reports_daily_facility_stat` | `stat_date date`, `service_id NULL`, `metrics jsonb` (visits by source, wait median and p90, no-shows, left without service, throughput, estimate accuracy, revenue), `computed_at`. **Unique** (`facility_id`, `stat_date`, `service_id`) `NULLS NOT DISTINCT`. Metric definitions: [analysis 13](../analysis/13-reporting-and-analytics.md) §1. |
 | `reports_access_review` | `week_starts_on date`, `findings jsonb` (rule codes and audit entry IDs), `signed_off_by_id NULL`, `signed_off_at NULL`. **Unique** (`facility_id`, `week_starts_on`). |
@@ -781,6 +782,6 @@ Designed when their phase is planned, following the same conventions: cross-faci
 | D2 | **Audience setting for RLS** (§3.2) extends security 04 §4. Agree it and update security 04 before the first patient-written facility table (S5). | S3 / S5 |
 | D3 | **Public reads:** search uses the `facilities_public_listing` read model; per-facility pages read C0 tables with the facility's context. Confirm, or move all public reads to read models. | S5 contract |
 | D4 | **Platform access to facility rows** (escalated disputes, break-glass, exports) sets the object's facility context after the platform check. Confirm, including how platform lists across facilities are built (projection tables or one query per facility). | S6 / S10 |
-| D5 | **Session storage** per audience: one `accounts_session` table with an `audience` column, or two session engines. | S0 implementation |
+| D5 | **Session storage** per audience: one `accounts_user_session` table with an `audience` column, or two session engines. | S0 implementation |
 | D6 | Retention periods R-CLIN, R-FIN and R-DSP depend on open question Q2 (legal retention). | Before go-live |
 | D7 | Distance search: plain latitude/longitude with a bounding box is enough for launch (50 facilities); PostGIS only if needed. | S5 |

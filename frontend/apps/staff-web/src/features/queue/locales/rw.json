@@ -70,6 +70,8 @@
     "patient_request": "Umurwayi yabisabye",
     "patient_left": "Umurwayi yagiye",
     "duplicate": "Tike ebyiri",
+    "patient_was_present": "Umurwayi yari ahari",
+    "facility_delay": "Gutinda kw’ivuriro",
     "other": "Ibindi"
   },
   "actions": {
@@ -113,14 +115,25 @@
     "nowServing": "Abari kwakirwa",
     "expected": "Abategerejwe",
     "expectedEmptyTitle": "Nta gahunda zirahari",
-    "expectedEmpty": "Abafashe gahunda bazagaragara hano mbere yo kugera, gufata gahunda kuri interineti nibitangira.",
+    "expectedEmpty": "Abafashe gahunda y’uyu munsi bagaragara hano kugeza bageze.",
     "onSite": "Bari hano",
     "emptyTitle": "Nta wutegereje",
     "empty": "Andika umurwayi wa mbere w’uyu munsi.",
     "nobodyWaiting": "Nta wutegereje hano.",
     "waitingCount_one": "{{count}} arategereje",
     "waitingCount_other": "{{count}} barategereje",
-    "newArrivalWait": "Ugeze ubu ategereza iminota {{min}}–{{max}}"
+    "newArrivalWait": "Ugeze ubu ategereza iminota {{min}}–{{max}}",
+    "expectedCheckIn": "Andika ko yageze",
+    "expectedLate": "Yakererewe",
+    "expectedAnyDoctor": "Muganga uwo ari we wese",
+    "expectedError": "Ntibyashobotse kubona gahunda z’uyu munsi.",
+    "expectedCheckInError": "Ntibyashobotse kwandika ko uyu murwayi yageze.",
+    "expectedRetry": "Ongera ugerageze",
+    "missed": "Abatitabiriye uyu munsi",
+    "missedHint": "Banditswe ko batitabiriye. Kuraho niba umurwayi yari ahari cyangwa gutinda kwaturutse kuri twe; igihano kivanwaho.",
+    "undoNoShow": "Kuraho ko atitabiriye",
+    "undoNoShowHelp": "Gahunda irafungwa kandi igihano cy’umurwayi kikavanwaho.",
+    "undoNoShowError": "Ntibyashobotse gukuraho ko atitabiriye."
   },
   "panel": {
     "service": "Serivisi",
@@ -142,10 +155,6 @@
   },
   "checkIn": {
     "title": "Andika umurwayi",
-    "find": "Shakisha umurwayi",
-    "new": "Umurwayi mushya",
-    "noMatch": "Nta murwayi wabonetse. Mwandike nk’umurwayi mushya.",
-    "choose": "Hitamo",
     "back": "Subira inyuma",
     "submit": "Andika",
     "emergency": "Byihutirwa",

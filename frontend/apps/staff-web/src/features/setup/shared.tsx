@@ -1,5 +1,6 @@
 import { hasPermission, isApiError, type SetupI18n } from "@medilink/api-client";
 import { Alert, Button, LoadingState } from "@medilink/ui";
+import { dateFormat } from "@medilink/ui/i18n";
 import { ArrowClockwise } from "@phosphor-icons/react";
 import type { UseQueryResult } from "@tanstack/react-query";
 import type { ReactNode } from "react";
@@ -58,7 +59,7 @@ export function useDayNames(): { long: string[]; short: string[] } {
   const names = (weekday: "long" | "short") =>
     Array.from({ length: 7 }, (_, i) => {
       try {
-        return new Intl.DateTimeFormat(locale, { weekday, timeZone: "UTC" }).format(
+        return dateFormat(locale, { weekday, timeZone: "UTC" }).format(
           new Date(monday + i * 86_400_000),
         );
       } catch {
@@ -77,7 +78,7 @@ export function formatDate(value: string | null | undefined, locale: string, wit
     ? { dateStyle: "medium", timeStyle: "short", timeZone: "Africa/Kigali" }
     : { dateStyle: "medium", timeZone: value.length === 10 ? "UTC" : "Africa/Kigali" };
   try {
-    return new Intl.DateTimeFormat(locale, options).format(date);
+    return dateFormat(locale, options).format(date);
   } catch {
     return new Intl.DateTimeFormat("en", options).format(date);
   }

@@ -1,5 +1,6 @@
 import { isApiError, newIdempotencyKey } from "@medilink/api-client";
 import { Badge, LoadingState, type BadgeTone, type DataTableLabels } from "@medilink/ui";
+import { dateFormat } from "@medilink/ui/i18n";
 import { useRef, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -93,7 +94,7 @@ export function formatDate(value: string | null | undefined, locale: string): st
   if (!value) return "—";
   const date = new Date(value.length === 10 ? `${value}T00:00:00Z` : value);
   try {
-    return new Intl.DateTimeFormat(locale, {
+    return dateFormat(locale, {
       dateStyle: "medium",
       timeZone: "Africa/Kigali",
     }).format(date);

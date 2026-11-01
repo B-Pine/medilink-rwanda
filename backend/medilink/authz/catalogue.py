@@ -144,6 +144,9 @@ from medilink.patients import permissions as _s3  # noqa: E402
 extend(_s3.PERMISSIONS, _s3.ROLE_GRANTS)
 # [/S3]
 # [S9]
+from medilink.notifications import permissions as _s9  # noqa: E402
+
+extend(_s9.PERMISSIONS, _s9.ROLE_GRANTS)
 # [/S9]
 # [S2]
 # [/S2]

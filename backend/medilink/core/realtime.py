@@ -132,6 +132,8 @@ class StaffPingConsumer(AsyncJsonWebsocketConsumer):
 # [S3 imports]
 # [/S3 imports]
 # [S9 imports]
+from medilink.notifications import consumers as _s9_consumers  # noqa: E402
+
 # [/S9 imports]
 # [S2 imports]
 # [/S2 imports]
@@ -150,6 +152,8 @@ websocket_urlpatterns = [
     # [S3]
     # [/S3]
     # [S9]
+    path("ws/v1/patient/notifications/", _s9_consumers.PatientNotificationsConsumer.as_asgi()),
+    path("ws/v1/staff/notifications/", _s9_consumers.StaffNotificationsConsumer.as_asgi()),
     # [/S9]
     # [S2]
     # [/S2]

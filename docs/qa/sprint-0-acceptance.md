@@ -7,7 +7,7 @@ Verification was independent of the authors: the orchestrator re-ran every check
 
 ## Backend checks
 
-Tests are named `test_bN_*` in `backend/tests/`. Independent run: `pytest --cov`: **215 passed, 95 % coverage**; ruff and format clean; `makemigrations --check` clean; pip-audit: no known vulnerabilities; CI on GitHub green.
+Tests are named `test_bN_*` in `backend/tests/` (files are zero-padded: the B1 tests are `test_b1_*` functions in `test_b01_seed_dev.py`; correction 2026-10-31). Independent run: `pytest --cov`: **215 passed, 95 % coverage**; ruff and format clean; `makemigrations --check` clean; pip-audit: no known vulnerabilities; CI on GitHub green.
 
 | # | Check (short; full text in the contract §3) | Requirements | Evidence | Verified by | Date | Result |
 |---|---|---|---|---|---|---|

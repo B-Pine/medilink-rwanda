@@ -40,9 +40,20 @@ def grant_app_role_privileges(sender: Any = None, using: str = "default", **kwar
             f"GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO {quoted}",
             f"GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO {quoted}",
         ]
-        for table in READ_ONLY_TABLES:
+        for table in existing_tables(cursor, READ_ONLY_TABLES):
             statements.append(f"REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON {table} FROM {quoted}")
-        for table in APPEND_ONLY_TABLES:
+        for table in existing_tables(cursor, APPEND_ONLY_TABLES):
             statements.append(f"REVOKE UPDATE, DELETE, TRUNCATE ON {table} FROM {quoted}")
         for statement in statements:
             cursor.execute(statement)
+
+
+def existing_tables(cursor: Any, tables: tuple[str, ...]) -> list[str]:
+    """The tables that exist. post_migrate also runs after migrating backwards (CI reverses the
+    latest migrations, testing strategy §3.5), when some tables are gone."""
+    found = []
+    for table in tables:
+        cursor.execute("SELECT to_regclass(%s)", [table])
+        if cursor.fetchone()[0] is not None:
+            found.append(table)
+    return found

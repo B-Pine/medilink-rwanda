@@ -18,6 +18,7 @@ RLS_EXCEPTIONS: dict[str, str] = {
     "patients_merge": "sprint-03 §2.3: cross-facility requests listed by the platform",
     "scheduling_travel_time": "sprint-04 §2.1: patient setting, account scope",
     "facilities_public_listing": "sprint-05 §2.1: public read model, live facilities only",
+    "notifications_notification": "sprint-09 §2.3: recipient-owned, platform-wide; scoped querysets",
     # Recorded in database design §1 "RLS exceptions" (M1 completion plan, decision D3).
     "core_outbox_event": "database design §1: system table, IDs only, no API reader",
     "onboarding_facility_feature_flag": "database design §1: platform-managed configuration",

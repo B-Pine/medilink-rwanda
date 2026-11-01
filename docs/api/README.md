@@ -42,7 +42,7 @@ Definition of Done (every sprint, [roadmap](../roadmap/README.md)): "CHANGELOG u
 
 | Short form | Meaning (from the API conventions) |
 |---|---|
-| Idem | Accepts an `Idempotency-Key` header (UUID). A repeat within 24 h returns the original result. |
+| Idem | Accepts an `Idempotency-Key` header (UUID). A repeat returns the original result; the key is stored on the row the action created ([API conventions](../architecture/02-api-conventions.md) §5). |
 | Ver | Optimistic concurrency: the request sends `version`; a mismatch returns `409 conflict` with the current resource. |
 | Step-up | Needs recent re-authentication (≤ 5 minutes), otherwise `403 step_up_required` ([security 03](../security/03-identity-authentication-sessions.md) §4). |
 | RL: class | Rate-limit class: `auth`, `search`, `verification`, `upload`, `export` ([security 03](../security/03-identity-authentication-sessions.md) §6). |

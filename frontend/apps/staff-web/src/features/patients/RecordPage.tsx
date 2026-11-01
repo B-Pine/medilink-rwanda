@@ -33,6 +33,7 @@ import { Link, useNavigate, useParams } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
+import { AccessReasonPrompt, isAccessReasonRequired } from "./AccessReason";
 import { PageHeading } from "../../components/PageHeading";
 import {
   actionError,
@@ -72,6 +73,16 @@ function Record() {
   const age = useAge();
   const canHealth = useCan("clinical.view", "prescription.view");
   if (record.isPending) return <LoadingState />;
+  if (isAccessReasonRequired(record.error))
+    return (
+      <div className="flex max-w-5xl flex-col gap-5">
+        <PageHeader
+          title={t("patients.accessReason.heading")}
+          back={{ to: "/patients", label: t("patients.search.title") }}
+        />
+        <AccessReasonPrompt fpId={fpId} />
+      </div>
+    );
   if (record.isError || !record.data)
     return <PageHeading title={t("patients.notFound")}>{t("patients.notFound")}</PageHeading>;
   const p = record.data;
@@ -745,6 +756,8 @@ function Health({ record }: { record: FacilityPatientDetail }) {
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: key }),
   });
   if (profile.isPending) return <LoadingState />;
+  if (isAccessReasonRequired(profile.error))
+    return <AccessReasonPrompt fpId={record.facility_patient_id} />;
   return (
     <div className="flex flex-col gap-4">
       {profile.data?.no_known_allergies && (

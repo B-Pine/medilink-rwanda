@@ -49,7 +49,14 @@ export function contentSecurityPolicy({ apiBaseUrl }) {
   return [
     "default-src 'self'",
     "script-src 'self'",
-    // React sets style attributes through the CSSOM (allowed); Radix may add a <style> element.
+    // Scripts never run inline. Styles still need 'unsafe-inline' (reviewed in R1, #83):
+    // - Radix Dialog / DropdownMenu lock page scroll through react-remove-scroll-bar, which injects
+    //   a <style> element with computed values at runtime;
+    // - pdf.js (DocumentViewer) inserts <style> rules for its text and annotation layers.
+    // A meta-tag CSP on a static host can't carry a per-response nonce and the content is dynamic,
+    // so neither a nonce nor a hash works. Inline styles can't run script; the risk left is CSS
+    // injection, which React's escaping and the strict script-src keep low. Revisit if the apps
+    // move behind a server that can send a nonce header.
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data:",
     "font-src 'self'",

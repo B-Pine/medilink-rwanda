@@ -40,6 +40,8 @@ FUNCTIONS = (
     "scheduling_booking_facilities()",
     "scheduling_slot_facility(uuid)",
     "scheduling_hold_facility(uuid, uuid)",
+    "scheduling_strike_times(uuid, timestamptz)",
+    "scheduling_account_holds(uuid)",
     "scheduling_find_feed(bytea)",
     "scheduling_feed_bookings(uuid)",
     "scheduling_disruption_facilities()",

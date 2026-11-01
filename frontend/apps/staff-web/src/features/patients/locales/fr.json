@@ -278,5 +278,19 @@
     "new": "Nouveau patient",
     "noMatch": "Aucun patient trouvé. Enregistrez-le comme nouveau patient.",
     "choose": "Choisir"
+  },
+  "accessReason": {
+    "heading": "Dossier patient",
+    "title": "Pourquoi ouvrez-vous ce dossier ?",
+    "description": "Ce patient n'a pas de visite récente ici, ou travaille ici. Votre raison est inscrite dans son historique d'accès.",
+    "reason": "Raison",
+    "reasons": {
+      "care_continuity": "Suite de ses soins",
+      "results_review": "Lecture de résultats",
+      "admin_request": "Demande administrative",
+      "other": "Autre"
+    },
+    "reasonText": "Précisez la raison",
+    "open": "Ouvrir le dossier"
   }
 }

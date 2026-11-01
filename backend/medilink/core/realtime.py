@@ -90,6 +90,12 @@ class AudienceSessionAuthMiddleware(BaseMiddleware):
         return await super().__call__(scope, receive, send)
 
 
+def pong() -> dict[str, Any]:
+    """The one reply to `{"type": "ping"}` on every socket: a flat message (API conventions §6,
+    S4 D-10), `type` and the server time in UTC."""
+    return {"type": "pong", "sent_at": timezone.now().isoformat().replace("+00:00", "Z")}
+
+
 class StaffPingConsumer(AsyncJsonWebsocketConsumer):
     """Placeholder authenticated staff socket: proves origin checks, session auth and revocation."""
 
@@ -114,13 +120,7 @@ class StaffPingConsumer(AsyncJsonWebsocketConsumer):
 
     async def receive_json(self, content: Any, **kwargs: Any) -> None:
         if isinstance(content, dict) and content.get("type") == "ping":
-            await self.send_json(
-                {
-                    "type": "pong",
-                    "data": {},
-                    "sent_at": timezone.now().isoformat().replace("+00:00", "Z"),
-                }
-            )
+            await self.send_json(pong())
 
     async def session_revoked(self, event: dict[str, Any]) -> None:
         await self.close(code=CLOSE_UNAUTHENTICATED)
@@ -132,6 +132,8 @@ class StaffPingConsumer(AsyncJsonWebsocketConsumer):
 # [S3 imports]
 # [/S3 imports]
 # [S9 imports]
+from medilink.notifications import consumers as _s9_consumers  # noqa: E402
+
 # [/S9 imports]
 # [S2 imports]
 # [/S2 imports]
@@ -150,6 +152,8 @@ websocket_urlpatterns = [
     # [S3]
     # [/S3]
     # [S9]
+    path("ws/v1/patient/notifications/", _s9_consumers.PatientNotificationsConsumer.as_asgi()),
+    path("ws/v1/staff/notifications/", _s9_consumers.StaffNotificationsConsumer.as_asgi()),
     # [/S9]
     # [S2]
     # [/S2]

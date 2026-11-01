@@ -52,7 +52,15 @@ STAGE_PERMISSION: dict[str, tuple[str, ...]] = {
     Stage.PAYMENT: (OPERATE,),
     Stage.PHARMACY: (DISPENSE,),
 }
-OPERATE_ACTIONS = ("transfer", "cancel", "left", "step-out", "priority", "reorder")
+OPERATE_ACTIONS = (
+    "transfer",
+    "cancel",
+    "left",
+    "step-out",
+    "priority",
+    "reorder",
+    "confirm-arrival",
+)
 SERVE_ACTIONS = ("recall", "no-response", "start", "hold", "return", "complete", "next-stage")
 
 
@@ -78,7 +86,14 @@ class QueueView(FacilityView):
         return self.principal().active_facility_id
 
 
-def ticket_rows(tickets: list[Ticket], *, with_position: bool = False) -> list[dict[str, Any]]:
+def ticket_rows(
+    tickets: list[Ticket],
+    *,
+    with_position: bool = False,
+    positions: dict[Any, int] | None = None,
+) -> list[dict[str, Any]]:
+    """Staff ticket rows. `positions` (ticket id to people ahead) comes from one calling order
+    per queue; `with_position` computes it per ticket, for single rows only."""
     today = services.today()
     points = {
         p.pk: p.name
@@ -101,6 +116,14 @@ def ticket_rows(tickets: list[Ticket], *, with_position: bool = False) -> list[d
             flags.append("stepped_out")
         if t.no_response_count:
             flags.append("no_response")
+        if visit.is_late_arrival:
+            flags.append("late")
+        if t.is_remote and t.remote_arrival_confirmed_at is None:
+            flags.append("remote_claimed" if t.remote_arrival_claimed_at else "remote")
+        if positions is not None:
+            place = positions.get(t.pk)
+        else:
+            place = services.position(t) if with_position else None
         rows.append(
             {
                 "id": t.pk,
@@ -119,7 +142,12 @@ def ticket_rows(tickets: list[Ticket], *, with_position: bool = False) -> list[d
                 "assigned_membership_id": t.assigned_membership_id,
                 "service_point": points.get(t.service_point_id) if t.service_point_id else None,
                 "step_out_until": t.step_out_until,
-                "position": services.position(t) if with_position else None,
+                "position": place,
+                "slot_starts_at": t.slot_starts_at,
+                "late": visit.is_late_arrival,
+                "is_remote": t.is_remote,
+                "remote_arrival_claimed_at": t.remote_arrival_claimed_at,
+                "remote_arrival_confirmed_at": t.remote_arrival_confirmed_at,
                 "version": t.version,
             }
         )
@@ -208,12 +236,15 @@ class CheckInView(QueueView):
             insurance_profile_id=data.get("insurance_profile_id"),
             key=idempotency_key(request),
             booking=booking,
+            symptoms=data.get("symptoms") or None,
+            language=getattr(request, "LANGUAGE_CODE", "rw") or "rw",
         )
         ticket = Ticket.objects.select_related("visit__patient", "service").get(pk=ticket.pk)
         return Response(
             {
                 "visit_id": visit.pk,
                 "created": created,
+                "late": ticket.visit.is_late_arrival,
                 "ticket": ticket_rows([ticket], with_position=True)[0],
             },
             status=status.HTTP_201_CREATED if created else status.HTTP_200_OK,
@@ -246,13 +277,19 @@ class BoardView(QueueView):
         for (service_id, stage), rows in sorted(
             groups.items(), key=lambda g: (str(g[0][0]), g[0][1])
         ):
-            waiting = [t for t in rows if t.state == TicketState.WAITING]
+            # One calling order per queue (S5 ordering); stepped-out tickets follow it
+            order = services.calling_order(facility_id, service_id, stage, day=day)
+            positions = {t.pk: i for i, t in enumerate(order)}
+            ordered = {t.pk for t in order}
+            waiting = order + [
+                t for t in rows if t.state == TicketState.WAITING and t.pk not in ordered
+            ]
             first = waiting[-1] if waiting else rows[0]
             queues.append(
                 {
                     "service_id": service_id,
                     "stage": stage,
-                    "waiting": ticket_rows(waiting, with_position=True),
+                    "waiting": ticket_rows(waiting, positions=positions),
                     "called": ticket_rows([t for t in rows if t.state == TicketState.CALLED]),
                     "in_service": ticket_rows(
                         [
@@ -300,14 +337,12 @@ class MineView(QueueView):
         current = services._serving(facility_id, membership.pk if membership else None)
         waiting: list[Ticket] = []
         for service_id in service_ids:
+            # The order Call next takes (S5 interleave and grace window), queue by queue
             waiting.extend(
-                services.waiting(
+                services.calling_order(
                     facility_id, service_id, Stage.CONSULTATION, membership_id=membership.pk
-                ).select_related("visit__patient", "service")
+                )
             )
-        waiting.sort(
-            key=lambda t: (t.priority_rank, t.assigned_membership_id != membership.pk, t.arrival_at)
-        )
         duty = [d for d in duty_rows(facility_id) if d["membership_id"] == membership.pk]
         current_row = None
         if current is not None:
@@ -657,9 +692,10 @@ def display_payload(link: DisplayLink) -> dict[str, Any]:
             service_date=day,
             state__in=(TicketState.CALLED, TicketState.IN_SERVICE),
         ).order_by("-called_at")[:4]
-        nxt = services.waiting(link.facility_id, service.pk, Stage.CONSULTATION).values_list(
-            "number", flat=True
-        )[:5]
+        nxt = [
+            t.number
+            for t in services.calling_order(link.facility_id, service.pk, Stage.CONSULTATION)[:5]
+        ]
         out.append(
             {
                 "service_id": service.pk,
@@ -748,6 +784,9 @@ def tracker_data(visit: Visit, account: Any) -> dict[str, Any] | None:
         "estimate": estimate_data(value),
         "leave_by": leave_by,
         "travel_minutes": travel.minutes if travel else None,
+        "is_remote": ticket.is_remote,
+        "remote_arrival_claimed_at": ticket.remote_arrival_claimed_at,
+        "remote_arrival_confirmed_at": ticket.remote_arrival_confirmed_at,
         "version": ticket.version,
         "updated_at": timezone.now(),
     }

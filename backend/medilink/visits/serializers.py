@@ -7,6 +7,7 @@ from typing import Any
 from rest_framework import serializers
 
 from medilink.accounts.serializers import StrictSerializer
+from medilink.scheduling.booking_serializers import SymptomInputSerializer
 from medilink.visits.models import DutyState, PriorityClass, Stage, TicketState, VisitSource
 
 
@@ -28,6 +29,10 @@ class CheckInSerializer(StrictSerializer):
         max_length=1000, required=False, allow_blank=True, allow_null=True
     )
     insurance_profile_id = serializers.UUIDField(required=False, allow_null=True)
+    # R4: optional symptoms told at the desk (`captured_at_stage = check_in`)
+    symptoms = serializers.ListField(
+        child=SymptomInputSerializer(), required=False, max_length=5, default=list
+    )
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         if not attrs.get("booking_id") and not (
@@ -57,12 +62,20 @@ class TicketRowSerializer(serializers.Serializer):
     service_point = serializers.CharField(allow_null=True)
     step_out_until = serializers.DateTimeField(allow_null=True)
     position = serializers.IntegerField(allow_null=True)
+    # S5 / R4: booked slot (null for walk-ins and late arrivals), late arrival, remote join
+    slot_starts_at = serializers.DateTimeField(allow_null=True)
+    late = serializers.BooleanField()
+    is_remote = serializers.BooleanField()
+    remote_arrival_claimed_at = serializers.DateTimeField(allow_null=True)
+    remote_arrival_confirmed_at = serializers.DateTimeField(allow_null=True)
     version = serializers.IntegerField()
 
 
 class CheckInResponseSerializer(serializers.Serializer):
     visit_id = serializers.UUIDField()
     created = serializers.BooleanField()
+    # R4: a booked patient after `slot + grace_after` waits as a walk-in
+    late = serializers.BooleanField()
     ticket = TicketRowSerializer()
 
 
@@ -218,6 +231,10 @@ class PatientVisitSerializer(serializers.Serializer):
     estimate = EstimateSerializer()
     leave_by = serializers.DateTimeField(allow_null=True)
     travel_minutes = serializers.IntegerField(allow_null=True)
+    # R4: remote join; "I'm here" is a claim until reception confirms it
+    is_remote = serializers.BooleanField()
+    remote_arrival_claimed_at = serializers.DateTimeField(allow_null=True)
+    remote_arrival_confirmed_at = serializers.DateTimeField(allow_null=True)
     version = serializers.IntegerField()
     updated_at = serializers.DateTimeField()
 

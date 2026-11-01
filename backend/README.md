@@ -99,7 +99,7 @@ pytest                                     # all tests
 pytest --cov --cov-report=term-missing     # with coverage
 pytest -m "acceptance"                     # tests linked to the Sprint 0 checks (names: test_b5_..., marker acceptance("B5"))
 ruff check . && ruff format --check .      # lint (incl. bandit security rules) and format
-mypy .                                     # type check (non-blocking in Sprint 0)
+mypy .                                     # type check (blocking in CI)
 python manage.py makemigrations --check --dry-run
 python manage.py spectacular --validate --fail-on-warn --file openapi/openapi.yaml   # refresh the committed schema (test settings)
 pip-audit --strict --require-hashes --disable-pip -r requirements/prod.txt -r requirements/dev.txt

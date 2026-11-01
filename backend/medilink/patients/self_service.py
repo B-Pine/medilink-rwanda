@@ -4,10 +4,11 @@ delegation invites, consents and access history."""
 from __future__ import annotations
 
 import hashlib
+import uuid
 from datetime import timedelta
 from typing import Any
 
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.db.models import Q
 from django.http import Http404
 from django.utils import timezone
@@ -16,8 +17,9 @@ from rest_framework import exceptions
 
 from medilink.patients import consents, identity
 from medilink.patients.audit import record_patient_event
-from medilink.patients.audit_actions import ACCESS_HISTORY
+from medilink.patients.audit_actions import ACCESS_HISTORY_ACTORS
 from medilink.patients.errors import NOT_ALLOWED, rule
+from medilink.patients.limits import dependent_max_age
 from medilink.patients.models import (
     AuditLink,
     ConsentChannel,
@@ -51,7 +53,7 @@ INVALID_CODE = _("This code isn't valid. Ask for a new one.")
 OWN_PROFILE = _("This is your own profile.")
 ALREADY_LINKED = _("You already have access to this profile.")
 TOO_MANY = _("You can manage up to 10 profiles.")
-GUARDIAN_AGE = _("A dependent you are guardian of must be under 18.")
+GUARDIAN_AGE = _("A dependent you are guardian of must be under %(age)s.")
 DELEGATE_AGE = _("Add an adult as a delegate only with their agreement.")
 CANT_LEAVE_SELF = _("You can't remove your own profile.")
 
@@ -183,49 +185,118 @@ def _check_room(account: Any) -> None:
         raise rule(TOO_MANY)
 
 
+def _creation_key(key: str | None) -> uuid.UUID | None:
+    if not key:
+        return None
+    try:
+        return uuid.UUID(key)
+    except ValueError:
+        return uuid.uuid5(uuid.NAMESPACE_URL, f"medilink:dependent:{key}")
+
+
 def add_dependent(
-    *, account: Any, data: dict[str, Any], birth: tuple[Any, bool], request: Any
+    *,
+    account: Any,
+    data: dict[str, Any],
+    birth: tuple[Any, bool],
+    request: Any,
+    idempotency_key: str | None = None,
 ) -> PatientLink:
+    """PA7. A repeated Idempotency-Key returns the link the first request created."""
+    key = _creation_key(idempotency_key)
+    if key is not None:
+        existing = (
+            PatientLink.objects.for_account(account)
+            .filter(creation_key=key)
+            .select_related("patient")
+            .first()
+        )
+        if existing is not None:
+            return existing
     _check_room(account)
     born, estimated = birth
     age = age_years(born, timezone.localdate())
     relationship = data["relationship"]
-    if relationship == GUARDIAN and (age is None or age >= 18):
-        raise rule(GUARDIAN_AGE)
-    if relationship == DELEGATE and (age is None or age < 18 or not data.get("consent_attested")):
+    adult = dependent_max_age()
+    if relationship == GUARDIAN and (age is None or age >= adult):
+        raise rule(GUARDIAN_AGE % {"age": adult})
+    if relationship == DELEGATE and (
+        age is None or age < adult or not data.get("consent_attested")
+    ):
         raise rule(DELEGATE_AGE)
+    consent_kind = ConsentKind.GUARDIAN if relationship == GUARDIAN else ConsentKind.DELEGATION
+    consents.check_version(consent_kind, data["consent_version"], field="consent_version")
     now = timezone.now()
-    with transaction.atomic():
-        patient = Patient.objects.create(
-            full_name=data["full_name"].strip(),
-            sex=data["sex"],
-            date_of_birth=born,
-            is_birth_date_estimated=estimated,
-            created_via=CreatedVia.DEPENDENT,
+    try:
+        with transaction.atomic():
+            link = _create_dependent(
+                account=account,
+                data=data,
+                born=born,
+                estimated=estimated,
+                consent_kind=consent_kind,
+                key=key,
+                now=now,
+                request=request,
+            )
+    except IntegrityError as exc:
+        from medilink.patients.staff import constraint_name
+
+        if key is None or constraint_name(exc) != "patients_link_creation_key_uniq":
+            raise
+        # A concurrent request with the same key won the race: return its link.
+        return (
+            PatientLink.objects.for_account(account)
+            .filter(creation_key=key)
+            .select_related("patient")
+            .get()
         )
-        identity.assign_medilink_number(patient)
-        consent = consents.record_consent(
-            kind=ConsentKind.GUARDIAN if relationship == GUARDIAN else ConsentKind.DELEGATION,
-            version=data["consent_version"],
-            granted=True,
-            channel=ConsentChannel.WEB,
-            patient=patient,
-            user=account,
-        )
-        link = PatientLink.objects.create(
-            account=account,
-            patient=patient,
-            relationship=relationship,
-            granted_at=now,
-            granted_by=account,
-            consent_record=consent,
-        )
-        record_patient_event(
-            "patients.dependent.added",
-            request=request,
-            patient=patient,
-            metadata={"relationship": relationship},
-        )
+    return link
+
+
+def _create_dependent(
+    *,
+    account: Any,
+    data: dict[str, Any],
+    born: Any,
+    estimated: bool,
+    consent_kind: str,
+    key: uuid.UUID | None,
+    now: Any,
+    request: Any,
+) -> PatientLink:
+    relationship = data["relationship"]
+    patient = Patient.objects.create(
+        full_name=data["full_name"].strip(),
+        sex=data["sex"],
+        date_of_birth=born,
+        is_birth_date_estimated=estimated,
+        created_via=CreatedVia.DEPENDENT,
+    )
+    identity.assign_medilink_number(patient)
+    consent = consents.record_consent(
+        kind=consent_kind,
+        version=data["consent_version"],
+        granted=True,
+        channel=ConsentChannel.WEB,
+        patient=patient,
+        user=account,
+    )
+    link = PatientLink.objects.create(
+        account=account,
+        patient=patient,
+        relationship=relationship,
+        granted_at=now,
+        granted_by=account,
+        consent_record=consent,
+        creation_key=key,
+    )
+    record_patient_event(
+        "patients.dependent.added",
+        request=request,
+        patient=patient,
+        metadata={"relationship": relationship},
+    )
     return link
 
 
@@ -238,10 +309,12 @@ def create_invite(
 ) -> tuple[DelegationInvite, str]:
     require(link, "invite")
     relationship = DELEGATE if link.relationship == SELF else GUARDIAN
+    consent_kind = ConsentKind.DELEGATION if relationship == DELEGATE else ConsentKind.GUARDIAN
+    consents.check_version(consent_kind, consent_version, field="consent_version")
     code = new_code()
     with transaction.atomic():
         consent = consents.record_consent(
-            kind=ConsentKind.DELEGATION if relationship == DELEGATE else ConsentKind.GUARDIAN,
+            kind=consent_kind,
             version=consent_version,
             granted=True,
             channel=ConsentChannel.WEB,
@@ -320,8 +393,21 @@ def _short(name: str) -> str:
     return f"{parts[0]} {parts[1][0]}."
 
 
+def can_revoke(account: Any, link: PatientLink, mine: dict[Any, set[str]]) -> bool:
+    """Mirrors revoke(): `mine` maps patient IDs to the account's active relationships."""
+    if link.account_id == account.pk:
+        return link.relationship != SELF
+    if link.relationship == SELF:
+        return False
+    held = mine.get(link.patient_id, set())
+    return SELF in held or (GUARDIAN in held and link.granted_by_id == account.pk)
+
+
 def delegations(account: Any) -> dict[str, Any]:
     mine = PatientLink.objects.for_account(account).active()
+    held: dict[Any, set[str]] = {}
+    for patient_id, relationship in mine.values_list("patient_id", "relationship"):
+        held.setdefault(patient_id, set()).add(relationship)
     managed = mine.filter(relationship__in=[SELF, GUARDIAN]).values_list("patient_id", flat=True)
     granted = (
         PatientLink.objects.active()
@@ -346,9 +432,7 @@ def delegations(account: Any) -> dict[str, Any]:
                 "holder_name": _short(link.account.full_name),
                 "relationship": link.relationship,
                 "granted_at": link.granted_at,
-                "can_revoke": link.relationship == DELEGATE
-                or link.granted_by_id == account.pk
-                or mine.filter(patient_id=link.patient_id, relationship=SELF).exists(),
+                "can_revoke": can_revoke(account, link, held),
             }
             for link in granted
         ],
@@ -360,7 +444,7 @@ def delegations(account: Any) -> dict[str, Any]:
                 "holder_name": _short(link.granted_by.full_name) if link.granted_by else None,
                 "relationship": link.relationship,
                 "granted_at": link.granted_at,
-                "can_revoke": True,
+                "can_revoke": can_revoke(account, link, held),
             }
             for link in received
         ],
@@ -426,9 +510,10 @@ def expire_invites() -> int:
 # ---- consents ------------------------------------------------------------------------------------
 
 ACCOUNT_KINDS = (ConsentKind.TERMS, ConsentKind.PRIVACY)
+# Account-level settings that can be given and withdrawn freely (contract §6.2 `/privacy`).
+TOGGLE_KINDS = (ConsentKind.NOTIFICATIONS, ConsentKind.LOCATION)
 PROFILE_KINDS = (ConsentKind.CARE, ConsentKind.RESEARCH)
 WITHDRAW_ACCOUNT = _("Withdrawing this consent closes your account. Contact support.")
-CURRENT_ONLY = _("Accept the current version.")
 
 
 def consent_state(account: Any) -> dict[str, Any]:
@@ -460,7 +545,8 @@ def consent_state(account: Any) -> dict[str, Any]:
 
     return {
         "current_versions": {
-            kind: consents.current_version(kind) for kind in (*ACCOUNT_KINDS, *PROFILE_KINDS)
+            kind: consents.current_version(kind)
+            for kind in (*ACCOUNT_KINDS, *TOGGLE_KINDS, *PROFILE_KINDS)
         },
         "consents": [row(r) for r in latest.values()],
         "history": [row(r) for r in records[:50]],
@@ -470,11 +556,10 @@ def consent_state(account: Any) -> dict[str, Any]:
 def give_consent(*, account: Any, data: dict[str, Any], request: Any) -> Any:
     kind = data["kind"]
     patient = None
-    if kind in ACCOUNT_KINDS:
-        if not data["granted"]:
-            raise rule(WITHDRAW_ACCOUNT)
-        if data["version"] != consents.current_version(kind):
-            raise rule(CURRENT_ONLY)
+    if kind in ACCOUNT_KINDS and not data["granted"]:
+        raise rule(WITHDRAW_ACCOUNT)
+    consents.check_version(kind, data["version"])
+    if kind in (*ACCOUNT_KINDS, *TOGGLE_KINDS):
         if data.get("patient_id"):
             raise exceptions.ValidationError({"patient_id": [str(NOT_ALLOWED)]})
     elif data.get("patient_id"):
@@ -516,10 +601,11 @@ def access_history(link: PatientLink, account: Any) -> Any:
             Patient.objects.filter(merged_into_id__in=frontier).values_list("pk", flat=True)
         )
         patient_ids.extend(frontier)
+    shown = Q()
+    for action, actor_kinds in sorted(ACCESS_HISTORY_ACTORS.items()):
+        shown |= Q(audit_entry__action=action, actor_kind__in=sorted(actor_kinds))
     return (
-        AuditLink.objects.filter(
-            patient_id__in=patient_ids, audit_entry__action__in=sorted(ACCESS_HISTORY)
-        )
+        AuditLink.objects.filter(shown, patient_id__in=patient_ids)
         .exclude(audit_entry__actor=account)
         .select_related("audit_entry", "audit_entry__facility")
         .order_by("-occurred_at")

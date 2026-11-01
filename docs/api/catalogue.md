@@ -17,7 +17,7 @@ Sprints and requirements follow the [backend](../roadmap/backend.md) and [fronte
 | [S6](#s6--clinical-record-and-history) | Clinical record and history | Planned |
 | [S7](#s7--pharmacy-and-documents) | Pharmacy and documents | Planned |
 | [S8](#s8--billing-and-payments) | Billing and payments | Planned |
-| [S9](#s9--notifications) | Notifications | Contracted ([contract](../architecture/contracts/README.md)); rows below are the plan, the contract wins |
+| [S9](#s9--notifications) | Notifications | Backend implemented (S9 pull request); the [contract](../architecture/contracts/sprint-09-notifications.md) §3.3 and the OpenAPI schema win over the rows below |
 | [S10](#s10--disputes-help-and-reports) | Disputes, help and reports | Planned |
 | [S11](#s11--hardening-and-pilot-readiness) | Hardening and pilot readiness | Planned |
 | [—](#not-yet-scheduled) | Not yet scheduled | Planned |
@@ -42,7 +42,8 @@ Copied from the [Sprint 0 contract](../architecture/03-sprint-0-contract.md) §2
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `POST` | `/api/v1/patient/auth/register/` | Sign up: user + self patient + link + consents | Public | FR-PAT-02, FR-SEC-04, FR-SEC-05, FR-AI-02 | `201 PatientMe` (logged in); password ≥ 15; Audit `patient.registered` | Implemented (backend-v0.1.0) |
+| `POST` | `/api/v1/patient/auth/register/` | Sign up: user + self patient + link + consents | Public | FR-PAT-02, FR-SEC-04, FR-SEC-05, FR-AI-02 | Always `202 {detail}` "check your email", also for an existing email (that owner gets an "account exists" email; R1 #83, #14); not signed in until the email is confirmed; password ≥ 15; Audit `patient.registered` | Implemented (R1 #83) |
+| `POST` | `/api/v1/patient/auth/verify-email/` | Confirm the sign-up email | Token (body) | FR-PAT-02 | `{token}` → `200 PatientMe` and signs in; single use, 3 days; `400` on `token`; Audit `auth.email.verified` | Implemented (R1 #83) |
 | `POST` | `/api/v1/patient/auth/login/` | Log in | Public | FR-PAT-02 | Generic `401`; RL: auth; rotates session | Implemented (backend-v0.1.0) |
 | `POST` | `/api/v1/patient/auth/logout/` | Log out | Patient session | FR-SEC-06 | `204`; deletes the patient session only | Implemented (backend-v0.1.0) |
 | `GET` | `/api/v1/patient/auth/me/` | Current patient account and profiles | Patient session | FR-PAT-03 | `PatientMe` | Implemented (backend-v0.1.0) |
@@ -97,7 +98,7 @@ Requirements: FR-ONB-01..03, 07, 08, 10; FR-DOC-03, 05 (uploads); FR-SEC-06 (loc
 | `GET` | `/api/v1/staff/master-data/{kind}/` | All nine kinds, read-only, searchable | Staff | FR-ONB-10 | Trigram search for drugs and diagnosis codes | Implemented (#47) |
 | `POST` | `/api/v1/staff/uploads/` | Upload a file for a purpose | Staff + purpose `can_upload` | FR-DOC-03 | Idem; RL: upload | Implemented (#47) |
 | `GET` | `/api/v1/staff/uploads/{id}/` | Upload and scan status | Uploader or purpose `can_read` | FR-DOC-03 | | Implemented (#47) |
-| `POST` | `/api/v1/staff/uploads/{id}/download-links/` | 5-minute signed link | As above | FR-DOC-05 | Clean files only; Audit | Implemented (#47) |
+| `POST` | `/api/v1/staff/uploads/{id}/download-links/` | 5-minute signed link | As above | FR-DOC-05 | Clean files only; always served as `attachment` (R1 #83); Audit | Implemented (#47) |
 
 ### Patient
 
@@ -173,8 +174,8 @@ Requirements: FR-ONB-04..07, 09; FR-SCH-05..06; FR-BIL-02, 05; FR-ACC-05..07.
 | `GET`, `PATCH` | `/api/v1/staff/facility/settings/` | Queue, booking, billing, document and notification settings | `facility.configure` | FR-ONB-04, FR-QUE-04 | Sections validated server-side; Ver; Step-up for billing | Planned |
 | `GET`, `PUT` | `/api/v1/staff/facility/branding/` | Letterhead, logo, stamp image, document footer | `facility.configure` | FR-ONB-04, FR-DOC-01 | `multipart` images through the upload pipeline | Planned |
 | `GET` | `/api/v1/staff/facility/config-changes/` | Configuration change log (old value, new value, who, when) | `facility.configure` | FR-ONB-04 | Append-only | Planned |
-| `GET` | `/api/v1/staff/facility/setup-checklist/` | Setup checklist and what is missing | `facility.configure` | FR-ONB-03 | Computed from the configuration | Planned |
-| `POST` | `/api/v1/staff/facility/go-live/` | Publish: `setup` → `live` | `facility.configure` | FR-ONB-03 | `422 business_rule_violation` lists missing steps; Audit | Planned |
+| `GET` | `/api/v1/staff/facility/setup-checklist/` | Setup checklist and what is missing | `facility.configure` | FR-ONB-03 | Computed from the configuration; returns `status_version` | Implemented (#85) |
+| `POST` | `/api/v1/staff/facility/go-live/` | Publish: `setup` → `live` | `facility.configure` | FR-ONB-03 | Sends `version` = `status_version`; `422 business_rule_violation` lists missing steps; `409` with `error.current`; Step-up; Idem; Audit | Implemented (#85) |
 | `GET`, `POST` | `/api/v1/staff/departments/` | Departments | `facility.configure` | FR-ONB-04 | Names rw/en/fr | Planned |
 | `GET`, `PATCH` | `/api/v1/staff/departments/{id}/` | Edit or retire a department | `facility.configure` | FR-ONB-04 | Ver | Planned |
 | `GET`, `POST` | `/api/v1/staff/services/` | Services: names, department, duration, bookable, walk-in, remote join, ticket prefix, level of care, age and sex rules, catalogue mapping | `facility.configure` | FR-ONB-04 | Ticket prefix unique per facility | Planned |
@@ -183,7 +184,7 @@ Requirements: FR-ONB-04..07, 09; FR-SCH-05..06; FR-BIL-02, 05; FR-ACC-05..07.
 | `GET`, `PATCH` | `/api/v1/staff/service-points/{id}/` | Edit or retire a service point | `facility.configure` | FR-ONB-04 | Ver | Planned |
 | `GET`, `POST` | `/api/v1/staff/calendar-events/` | Closures, holiday overrides, Umuganda behaviour, special days | `facility.configure` | FR-SCH-05 | Closures that hit bookings start the disruption flow (S5) | Planned |
 | `PATCH`, `DELETE` | `/api/v1/staff/calendar-events/{id}/` | Edit or remove a future event | `facility.configure` | FR-SCH-05 | Soft delete; past events kept | Planned |
-| `GET`, `POST` | `/api/v1/staff/schedule-templates/` | Doctor or service weekly blocks: service, service point, slot length, capacity, bookable share | `schedule.manage` (receptionist: read) | FR-SCH-06, FR-ONB-06 | Response lists cross-facility conflicts as time ranges only, never the other facility | Planned |
+| `GET`, `POST` | `/api/v1/staff/schedule-templates/` | Doctor or service weekly blocks: service, service point, slot length, capacity, bookable share | `schedule.manage` (receptionist: read) | FR-SCH-06, FR-ONB-06 | Response lists cross-facility conflicts as time ranges only, never the other facility; list paginated | Implemented (#85) |
 | `GET`, `PATCH`, `DELETE` | `/api/v1/staff/schedule-templates/{id}/` | Edit or end a block | `schedule.manage` | FR-SCH-06 | Ver; affects future unbooked slots only | Planned |
 | `GET`, `POST` | `/api/v1/staff/schedule-exceptions/` | Leave, training, extra sessions | `schedule.manage`; doctors: own leave requests | FR-SCH-06 | Doctor requests start as `requested` | Planned |
 | `PATCH` | `/api/v1/staff/schedule-exceptions/{id}/` | Edit an exception | `schedule.manage` | FR-SCH-06 | Ver | Planned |
@@ -193,16 +194,16 @@ Requirements: FR-ONB-04..07, 09; FR-SCH-05..06; FR-BIL-02, 05; FR-ACC-05..07.
 | `GET`, `POST` | `/api/v1/staff/insurer-rules/` | Accepted insurers: services, patient share, referral required, exclusions, ceiling | `facility.configure` | FR-BIL-02 | Step-up | Planned |
 | `GET`, `PATCH` | `/api/v1/staff/insurer-rules/{id}/` | Change a rule from a date | `facility.configure` | FR-BIL-02 | Step-up; versioned with `valid_from` | Planned |
 | `GET` | `/api/v1/staff/roles/` | Roles and their permissions | Any staff | FR-ACC-03 | Seeded data | Planned |
-| `GET` | `/api/v1/staff/memberships/` | Staff list | `staff.manage` | FR-ACC-01 | | Planned |
+| `GET` | `/api/v1/staff/memberships/` | Staff list | `staff.manage` | FR-ACC-01 | Paginated | Implemented (#85) |
 | `GET`, `PATCH` | `/api/v1/staff/memberships/{id}/` | Roles and service points of a member | `staff.manage` | FR-ACC-01, FR-ACC-03 | Step-up; rotates the member's sessions; Audit | Planned |
 | `POST` | `/api/v1/staff/memberships/{id}/deactivate/` | Remove access now | `staff.manage` | FR-ACC-06 | Ends sessions, closes sockets; Audit | Planned |
 | `POST` | `/api/v1/staff/memberships/{id}/attest-licence/` | Attest that the clinician licence was checked | `staff.manage` | FR-ACC-07 | Required before a clinician can sign; Audit | Planned |
 | `POST` | `/api/v1/staff/memberships/{id}/mfa-reset/` | Reset a member's second factor | `staff.manage` | FR-ACC-04 | Step-up; the member is notified | Planned |
-| `GET`, `POST` | `/api/v1/staff/invitations/` | Invite by email with roles and service points | `staff.manage` | FR-ACC-05, FR-ONB-05 | Step-up; 7-day expiry; an existing account gets a new membership | Planned |
+| `GET`, `POST` | `/api/v1/staff/invitations/` | Invite by email with roles and service points | `staff.manage` | FR-ACC-05, FR-ONB-05 | Step-up; Idem; 7-day expiry (an expired one doesn't block a re-invite); list paginated; refused when deactivated | Implemented (#85) |
 | `POST` | `/api/v1/staff/invitations/{id}/resend/` | Send the invitation again | `staff.manage` | FR-ACC-05 | New token, old one invalidated | Planned |
 | `POST` | `/api/v1/staff/invitations/{id}/revoke/` | Cancel an invitation | `staff.manage` | FR-ACC-05 | | Planned |
 | `POST` | `/api/v1/staff/auth/invitations/lookup/` | Show facility, inviter and roles for an invitation token | Invitee (token in body) | FR-ACC-05 | RL: auth | Planned |
-| `POST` | `/api/v1/staff/auth/invitations/accept/` | Accept: set a password (new account) or confirm (existing account), then MFA setup | Invitee (token in body) | FR-ACC-05, FR-ACC-04 | Single use; returns `LoginResult` | Planned |
+| `POST` | `/api/v1/staff/auth/invitations/accept/` | Accept: set a password (new account, then MFA setup) or confirm while signed in (existing account) | Invitee (token in body); existing account: signed-in staff session | FR-ACC-05, FR-ACC-04 | Single use; new: `LoginResult`; existing: `StaffMe`, `401` when not signed in | Implemented (#85) |
 | `GET`, `PATCH` | `/api/v1/staff/clinician-profile/` | Own licence council, licence number, specialty | Staff (self) | FR-ACC-07 | | Planned |
 
 ### Platform
@@ -233,7 +234,7 @@ Requirements: FR-PAT-01..09, 13, 14; FR-BIL-01; FR-SEC-04, 05, 08, 10, 12. Secur
 | `GET`, `PATCH` | `/api/v1/patient/profiles/{patient_id}/` | Profile, completion; edit names, birth date, sex, contacts | Linked account (names, birth date, sex: self or guardian) | FR-PAT-01, 02, 13, FR-SEC-12 | PA2–3; Ver | Implemented (#57) |
 | `GET`, `POST` | `/api/v1/patient/profiles/{patient_id}/identifiers/` | National ID, passport, refugee ID, birth certificate | Linked account (`POST`: self or guardian) | FR-PAT-07, FR-SEC-10 | PA4–5; masked; a checked document changes only at reception; RL: verification | Implemented (#57) |
 | `POST` | `/api/v1/patient/profiles/{patient_id}/identifiers/{identifier_id}/reveal/` | Show the full number | Self or guardian | FR-SEC-10 | PA6; `no-store`; RL: reveal; Audit | Implemented (#57) |
-| `POST` | `/api/v1/patient/dependents/` | Add a child (guardian) or a consenting adult (delegate) | Patient session | FR-PAT-03, FR-SEC-04 | PA7; records the consent; max 10 profiles | Implemented (#57) |
+| `POST` | `/api/v1/patient/dependents/` | Add a child (guardian) or a consenting adult (delegate) | Patient session | FR-PAT-03, FR-SEC-04 | PA7; records the consent (current version); max 10 profiles; Idem (`Idempotency-Key`) | Implemented (#57, R2 #84) |
 | `GET`, `POST` | `/api/v1/patient/delegations/` | Access granted and received; create a one-time code | Patient session (`POST`: self or guardian + password) | FR-PAT-03 | PA8–9; RL: verification; Audit | Implemented (#57) |
 | `POST` | `/api/v1/patient/delegations/accept/` | Accept a shared code | Patient session | FR-PAT-03 | PA10; RL: verification | Implemented (#57) |
 | `POST` | `/api/v1/patient/delegations/{id}/revoke/` | End a link or cancel an invite | Grantor, or the holder leaving | FR-PAT-03 | PA11; immediate | Implemented (#57) |
@@ -245,10 +246,10 @@ Requirements: FR-PAT-01..09, 13, 14; FR-BIL-01; FR-SEC-04, 05, 08, 10, 12. Secur
 | `GET` | `/api/v1/patient/profiles/{patient_id}/health-profile/` | Allergies, conditions, medicines | Linked account | FR-PAT-08, 13 | PA16 | Implemented (#57) |
 | `POST` | `/api/v1/patient/profiles/{patient_id}/{kind}/` | Add an allergy, condition or medicine (`allergies`, `conditions`, `medications`) | Linked account | FR-PAT-08 | PA17; unverified until a clinician checks | Implemented (#57) |
 | `POST` | `/api/v1/patient/profiles/{patient_id}/{kind}/{item_id}/entered-in-error/` | Remove an own unverified item | Linked account | FR-PAT-08 | PA18 | Implemented (#57) |
-| `POST` | `/api/v1/patient/record-claims/` | Claim a record a facility created | Patient session (self) | FR-PAT-06 | PA19; code to the contact email, or ID check at reception; RL: verification; Audit | Implemented (#57) |
+| `POST` | `/api/v1/patient/record-claims/` | Claim a record a facility created | Patient session (self) | FR-PAT-06 | PA19; code to the contact email, or ID check at reception; every refusal after the lookup is the same generic `422`; RL: verification; Audit | Implemented (#57, R2 #84) |
 | `GET` | `/api/v1/patient/record-claims/{id}/` | Claim status | Claim owner | FR-PAT-06 | PA20 | Implemented (#57) |
 | `POST` | `/api/v1/patient/record-claims/{id}/verify/` | Confirm with the emailed code | Claim owner | FR-PAT-06 | PA21; 5 attempts, 15 minutes | Implemented (#57) |
-| `GET`, `POST` | `/api/v1/patient/consents/` | Consents by kind and version; grant or withdraw | Patient session | FR-SEC-04, FR-SEC-05 | PA22–23; append-only | Implemented (#57) |
+| `GET`, `POST` | `/api/v1/patient/consents/` | Consents by kind and version; grant or withdraw | Patient session | FR-SEC-04, FR-SEC-05 | PA22–23; append-only; current version only (`422`, `fields.version`); account toggles `notifications`, `location` | Implemented (#57, R2 #84) |
 | `GET` | `/api/v1/patient/profiles/{patient_id}/access-history/` | Who opened or changed the profile | Self or guardian | FR-PAT-14, FR-SEC-08 | PA24; codes, the client writes the sentence | Implemented (#57) |
 
 ### Staff
@@ -261,7 +262,8 @@ Requirements: FR-PAT-01..09, 13, 14; FR-BIL-01; FR-SEC-04, 05, 08, 10, 12. Secur
 | `POST` | `/api/v1/staff/patients/duplicate-checks/` | Likely matches before registering | `patient.register` | FR-PAT-05 | ST2; RL: search; Audit | Implemented (#57) |
 | `POST` | `/api/v1/staff/patients/` | Register a walk-in with minimum fields and spoken consent | `patient.register` | FR-PAT-04, 01, 05, 07, FR-SEC-04 | ST3; Idem; possible duplicates need confirmation | Implemented (#57) |
 | `POST` | `/api/v1/staff/patients/add-existing/` | Add a patient already on MediLink | `patient.register` | FR-PAT-01, 05 | ST4; proof = MediLink number or document; Idem | Implemented (#57) |
-| `GET`, `PATCH` | `/api/v1/staff/patients/{fp_id}/` | Facility patient record | `GET`: `patients.view` · `PATCH`: `patient.register` | FR-PAT-01, 07 | ST5–6; Ver; every read audited | Implemented (#57) |
+| `GET`, `PATCH` | `/api/v1/staff/patients/{fp_id}/` | Facility patient record | `GET`: `patients.view` · `PATCH`: `patient.register` | FR-PAT-01, 07, FR-SEC-03 | ST5–6; Ver; `GET` needs a care relationship or a given reason (`403 access_reason_required`, then ST28); staff-as-patient always needs a reason; every read audited | Implemented (#57, R2 #84) |
+| `POST` | `/api/v1/staff/patients/{fp_id}/access-reasons/` | Give a reason to open a record outside a care relationship | `patients.view`, `clinical.view` or `prescription.view` | FR-SEC-03 | ST28; `{reason_code, reason_text}` → `201 {expires_at}`; kept in the staff session for 15 min; Audit | Implemented (R2 #84) |
 | `POST` | `/api/v1/staff/patients/{fp_id}/identifiers/` | Add or replace a document; mark it checked | `patient.register` | FR-PAT-07, FR-SEC-10 | ST7 | Implemented (#57) |
 | `POST` | `/api/v1/staff/patients/{fp_id}/reveal/` | Show a full identifier or phone number, with a reason | Identifier: `patients.identifier_reveal` · phone: `patients.view` | FR-SEC-10 | ST8; `no-store`; RL: reveal; Audit | Implemented (#57) |
 | `GET`, `POST` | `/api/v1/staff/patients/{fp_id}/insurance-profiles/` | Insurance cards | `GET`: `patients.view` · `POST`: `patient.register` | FR-BIL-01 | ST9–10 | Implemented (#57) |
@@ -269,18 +271,18 @@ Requirements: FR-PAT-01..09, 13, 14; FR-BIL-01; FR-SEC-04, 05, 08, 10, 12. Secur
 | `POST` | `/api/v1/staff/patients/{fp_id}/insurance-profiles/{profile_id}/verify/` | Mark verified or rejected | `patients.insurance_verify` | FR-BIL-01 | ST12; Audit | Implemented (#57) |
 | `POST` | `/api/v1/staff/patients/{fp_id}/insurance-profiles/{profile_id}/card-images/` | Capture a card photo at the desk | `patient.register` | FR-BIL-01, FR-DOC-03 | ST26; S1 upload pipeline | Implemented (#57) |
 | `POST` | `/api/v1/staff/patients/{fp_id}/insurance-profiles/{profile_id}/card-images/{side}/download-links/` | 5-minute link to a card photo | `patients.view` | FR-BIL-01, FR-DOC-05 | ST27 | Implemented (#57) |
-| `GET` | `/api/v1/staff/patients/{fp_id}/health-profile/` | Allergies, conditions, medicines | `clinical.view` (all) or `prescription.view` (allergies only) | FR-PAT-08 | ST13; Audit | Implemented (#57) |
+| `GET` | `/api/v1/staff/patients/{fp_id}/health-profile/` | Allergies, conditions, medicines | `clinical.view` (all) or `prescription.view` (allergies only) | FR-PAT-08, FR-SEC-03 | ST13; care relationship or a given reason (as ST5); Audit | Implemented (#57, R2 #84) |
 | `POST` | `/api/v1/staff/patients/{fp_id}/{kind}/` | Add a verified allergy, condition or medicine | `clinical.write` | FR-PAT-08 | ST14 | Implemented (#57) |
 | `POST` | `/api/v1/staff/patients/{fp_id}/{kind}/{item_id}/review/` | Verify, refute or mark entered in error | `clinical.write` | FR-PAT-08 | ST15; note required except to verify; Audit | Implemented (#57) |
 | `POST` | `/api/v1/staff/patients/{fp_id}/consents/` | Care or research consent given at the desk | `patient.register` | FR-SEC-04 | ST16; channel `staff_assisted` | Implemented (#57) |
-| `POST` | `/api/v1/staff/patients/{fp_id}/claim-confirmations/` | Confirm a record claim after an ID check | `patient.register` | FR-PAT-06 | ST17; Audit | Implemented (#57) |
+| `POST` | `/api/v1/staff/patients/{fp_id}/claim-confirmations/` | Confirm a record claim after an ID check | `patient.register` | FR-PAT-06 | ST17; idempotent (a replay at the same facility returns the completed claim); Audit | Implemented (#57, R2 #84) |
 | `GET`, `POST` | `/api/v1/staff/merge-requests/` | Merge requests of this facility; request a merge | `patients.merge_request` or `patients.merge_approve` (`POST`: `merge_request`) | FR-PAT-05 | ST18–19; Idem; Audit | Implemented (#57) |
 | `GET` | `/api/v1/staff/merge-requests/{id}/` | Request with preview | As above | FR-PAT-05 | ST20 | Implemented (#57) |
 | `POST` | `/api/v1/staff/merge-requests/{id}/approve/` | Approve and run the merge | `patients.merge_approve` | FR-PAT-05 | ST21; step-up; requester ≠ approver; facility scope only | Implemented (#57) |
 | `POST` | `/api/v1/staff/merge-requests/{id}/reject/` | Reject | `patients.merge_approve` | FR-PAT-05 | ST22; reason required | Implemented (#57) |
 | `POST` | `/api/v1/staff/merge-requests/{id}/cancel/` | Cancel own request | Requester | FR-PAT-05 | ST23 | Implemented (#57) |
 | `POST` | `/api/v1/staff/merge-requests/{id}/escalate/` | Send to the platform team (no other approver here) | Requester | FR-PAT-05 | ST24 | Implemented (#57) |
-| `POST` | `/api/v1/staff/merge-requests/{id}/undo/` | Reverse a facility merge | `patients.merge_approve` | FR-PAT-05 | ST25; step-up; reports skipped rows | Implemented (#57) |
+| `POST` | `/api/v1/staff/merge-requests/{id}/undo/` | Reverse a facility merge | `patients.merge_approve` | FR-PAT-05 | ST25; step-up; approver rule (not the requester; not escalated); reports skipped rows | Implemented (#57, R2 #84) |
 
 ### Platform
 
@@ -325,6 +327,7 @@ Dependency: the roadmap puts check-in of booked patients and the Expected list (
 | `POST` | `/api/v1/staff/tickets/{id}/step-out/` | Patient steps out (up to 30 min) | `queue.operate` | FR-QUE-09 | Ver | Planned |
 | `POST` | `/api/v1/staff/tickets/{id}/cancel/` | Cancel a waiting ticket | `queue.operate` | FR-QUE-09 | Ver; reason | Planned |
 | `POST` | `/api/v1/staff/tickets/{id}/mark-left/` | Patient left without service | `queue.operate` | FR-QUE-09 | Ver | Planned |
+| `POST` | `/api/v1/staff/tickets/{id}/confirm-arrival/` | Reception confirms a remote joiner is on site (the ticket can then be called) | `queue.operate` | FR-QUE-07 | Ver; `422` when not remote or already confirmed; "I'm here" alone is a claim (sprint-05 R10) | Implemented (R4, #86) |
 | `GET` | `/api/v1/staff/queue-reorders/` | Reorders to review | `facility.configure` | FR-QUE-10 | Filters `reviewed`, `staff` | Planned |
 | `POST` | `/api/v1/staff/queue-reorders/{id}/review/` | Mark a reorder as reviewed, with a comment | `facility.configure` | FR-QUE-10 | Audit | Planned |
 | `GET`, `PUT` | `/api/v1/staff/duty-status/` | Own status: on duty at a service point, break until, emergency, off | Doctor (self) | FR-QUE-14 | Singleton; updates estimates | Planned |
@@ -393,6 +396,7 @@ Requirements: FR-SCH-01..15; FR-BIL-03; FR-AI-01.
 | `POST` | `/api/v1/patient/bookings/{id}/accept-change/` | Accept or decline a facility disruption proposal | Linked account | FR-SCH-14 | Never counts as a patient cancellation | Planned |
 | `POST` | `/api/v1/patient/bookings/{id}/calendar-file/` | Get an `.ics` file for one booking | Linked account | FR-SCH-11 | Returns a short-lived link | Planned |
 | `POST` | `/api/v1/patient/remote-joins/` | Join today's queue remotely → ticket | Linked account | FR-SCH-09, FR-QUE-07 | Idem; before the cut-off; service must allow it | Planned |
+| `POST` | `/api/v1/patient/visits/{id}/arrived/` | "I'm here" for a remote ticket: records the claim only | Linked account (`self`, `guardian`) | FR-QUE-07 | Sets `remote_arrival_claimed_at`; reception confirms; self check-in is P2 (FR-QUE-18) (sprint-05 B9) | Implemented (R4, #86) |
 | `GET` | `/api/v1/patient/calendar-entries/` | Own and dependents' appointments and follow-ups | Patient session | FR-SCH-11 | `from`, `to` | Planned |
 | `GET`, `POST` | `/api/v1/patient/calendar-feeds/` | Create the private subscription link | Patient session | FR-SCH-11 | Token shown once | Planned |
 | `POST` | `/api/v1/patient/calendar-feeds/{id}/revoke/` | Revoke the subscription link | Patient session | FR-SCH-11 | | Planned |

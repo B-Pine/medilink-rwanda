@@ -23,7 +23,7 @@ Status: Draft v0.2
 - manage family members
 - raise disputes
 
-**Who:** anyone 16 or older with a phone number or email. Children and dependent adults are **dependents** managed by a caregiver; caregiver is a feature of the patient account, not a separate role. The minimum age for a self-managed account is an open question for legal review.
+**Who:** anyone with a phone number or email, old enough to manage their own account (the minimum age is open question Q4 in [17](17-assumptions-risks-and-open-questions.md), [#38](https://github.com/B-Pine/medilink-rwanda/issues/38); until it is decided there is no age check at sign-up, and a guardian can add dependents under 18). Children and dependent adults are **dependents** managed by a caregiver; caregiver is a feature of the patient account, not a separate role. The minimum age for a self-managed account is an open question for legal review.
 
 | Screen | Purpose |
 |---|---|

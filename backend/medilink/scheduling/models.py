@@ -14,8 +14,13 @@ from medilink.core.models import TimeStampedModel, UUIDModel
 class ScheduleTemplate(TimeStampedModel):
     facility = models.ForeignKey("tenancy.Facility", on_delete=models.PROTECT, related_name="+")
     version = models.PositiveIntegerField(default=1)
+    # NULL: a service schedule with no named doctor (contract sprint-05 §2.2 Slot generation)
     membership = models.ForeignKey(
-        "tenancy.FacilityMembership", on_delete=models.PROTECT, related_name="+"
+        "tenancy.FacilityMembership",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="+",
     )
     service = models.ForeignKey("facilities.Service", on_delete=models.PROTECT, related_name="+")
     service_point = models.ForeignKey(

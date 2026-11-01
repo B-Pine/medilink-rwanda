@@ -32,6 +32,8 @@ from medilink.uploads.serializers import (
     UploadSerializer,
 )
 from medilink.uploads.storage import (
+    FILE_RESPONSE_HEADERS,
+    SERVED_DISPOSITION,
     LocalFileSystemStorage,
     content_disposition,
     get_storage,
@@ -237,11 +239,8 @@ def serve_local_file(request: HttpRequest, token: str) -> FileResponse:
         raise Http404 from None
     response = FileResponse(handle, content_type=str(payload.get("c", "application/octet-stream")))
     response["Content-Disposition"] = content_disposition(
-        "attachment" if payload.get("d") == "attachment" else "inline",
-        str(payload.get("f", "file")),
+        SERVED_DISPOSITION, str(payload.get("f", "file"))
     )
-    response["X-Content-Type-Options"] = "nosniff"
-    response["Content-Security-Policy"] = "sandbox; default-src 'none'"
-    response["Cache-Control"] = "private, no-store"
-    response["Cross-Origin-Resource-Policy"] = "same-site"
+    for name, value in FILE_RESPONSE_HEADERS.items():
+        response[name] = value
     return response

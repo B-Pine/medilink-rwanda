@@ -45,13 +45,19 @@ class UploadCreateSerializer(serializers.Serializer):
 
 
 class DownloadLinkRequestSerializer(serializers.Serializer):
-    disposition = serializers.ChoiceField(choices=["inline", "attachment"], default="inline")
+    disposition = serializers.ChoiceField(
+        choices=["inline", "attachment"],
+        default="attachment",
+        help_text="Accepted for compatibility; files are always served as attachments.",
+    )
 
 
 class DownloadLinkSerializer(serializers.Serializer):
     url = serializers.URLField()
     expires_at = serializers.DateTimeField()
-    disposition = serializers.ChoiceField(choices=["inline", "attachment"])
+    disposition = serializers.ChoiceField(
+        choices=["inline", "attachment"], help_text="Always `attachment` (security 06 §6)."
+    )
 
     def to_representation(self, instance: Any) -> dict[str, Any]:
         return {

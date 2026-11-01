@@ -13,16 +13,20 @@ import {
   updateInsurance,
 } from "./patients";
 import {
+  ageYears,
+  completeClaim,
+  hasCareConsent,
   mask,
   medilinkNumber,
   MOCK_CLAIM_CODE,
+  MOCK_CONSENT_VERSION,
   normalizeMedilinkNumber,
   normalizePhone,
   type MockClaim,
   type MockLink,
   type MockPatient,
 } from "./patients-store";
-import { s1, str } from "./s1-common";
+import { page, s1, str } from "./s1-common";
 
 /**
  * S3 patient self-service mocks (sprint-03 §3.2). The mock account patient@medilink.test has its
@@ -30,7 +34,41 @@ import { s1, str } from "./s1-common";
  * S0 mock password; the claim code is always MOCK_CLAIM_CODE.
  */
 
-const CONSENT_VERSION = "2026-10";
+const CONSENT_VERSION = MOCK_CONSENT_VERSION;
+/** Backend `self_service.MAX_LINKS`: active profiles one account may hold. */
+const MAX_LINKS = 10;
+const ACCOUNT_KINDS = ["terms", "privacy"];
+/** Account-level settings given and withdrawn freely (contract §6.2, D-23). */
+const TOGGLE_KINDS = ["notifications", "location"];
+const PROFILE_KINDS = ["care", "research"];
+/** Accepted body fields per request; anything else is `400 Unknown field.` (StrictSerializer). */
+const FIELDS = {
+  profile: [
+    "version",
+    "full_name",
+    "preferred_name",
+    "date_of_birth",
+    "is_birth_date_estimated",
+    "sex",
+    "phone_e164",
+    "email",
+    "address",
+    "emergency_contact",
+    "no_known_allergies",
+  ],
+  dependent: [
+    "relationship",
+    "full_name",
+    "sex",
+    "date_of_birth",
+    "estimated_age_years",
+    "consent_version",
+    "consent_attested",
+  ],
+  invite: ["patient_id", "current_password", "consent_version"],
+  code: ["code"],
+  consent: ["kind", "version", "granted", "patient_id"],
+} as const;
 const RIGHTS = {
   edit_core: ["self", "guardian"],
   identifiers: ["self", "guardian"],
@@ -75,6 +113,42 @@ const MESSAGES = {
     fr: "Retirer ce consentement ferme votre compte. Contactez le support.",
     rw: "Gukuraho uru ruhushya bifunga konti yawe.",
   },
+  currentOnly: {
+    en: "Accept the current version.",
+    fr: "Acceptez la version actuelle.",
+    rw: "Emera verisiyo iriho ubu.",
+  },
+  delegateAge: {
+    en: "Add an adult as a delegate only with their agreement.",
+    fr: "N'ajoutez un adulte comme délégué qu'avec son accord.",
+    rw: "Ongeraho umuntu mukuru ari uko yabyemeye.",
+  },
+  tooManyProfiles: {
+    en: "You can manage up to 10 profiles.",
+    fr: "Vous pouvez gérer jusqu'à 10 profils.",
+    rw: "Ushobora gucunga porofile zigera ku 10.",
+  },
+  birthNeeded: {
+    en: "Give a date of birth or an age.",
+    fr: "Indiquez une date de naissance ou un âge.",
+    rw: "Andika itariki y'amavuko cyangwa imyaka.",
+  },
+  tooManyCodes: {
+    en: "Too many wrong codes. Start again or ask reception.",
+    fr: "Trop de codes erronés. Recommencez ou adressez-vous à l'accueil.",
+    rw: "Kode zitari zo zabaye nyinshi. Ongera utangire cyangwa ubaze ku iyakira.",
+  },
+  claimExpired: {
+    en: "This claim has expired. Start again.",
+    fr: "Cette demande a expiré. Recommencez.",
+    rw: "Iki cyifuzo cyarangiye. Ongera utangire.",
+  },
+  hasRecords: {
+    en: "Your profile already has facility records. Ask reception to request a merge instead.",
+    fr: "Votre profil a déjà des dossiers dans un établissement. Demandez plutôt une fusion à l'accueil.",
+    rw: "Porofile yawe isanzwe ifite amadosiye ku kigo. Saba iyakira gusaba guhuza amadosiye.",
+  },
+  unknownField: { en: "Unknown field.", fr: "Champ inconnu.", rw: "Iki gice ntikizwi." },
 } as const;
 type Key = keyof typeof MESSAGES;
 const m = (key: Key, lang: LanguageCode) => MESSAGES[key][lang];
@@ -118,6 +192,38 @@ export const profileMocks: FeatureMockFactory = (context) => {
       field ? { fields: { [field]: [m(key, lang)] } } : {},
     );
 
+  const invalid = (lang: LanguageCode, fields: Record<string, string>) =>
+    context.errorResponse(400, "validation_error", context.message("validation", lang), {
+      fields: Object.fromEntries(Object.entries(fields).map(([k, v]) => [k, [v]])),
+    });
+  /** StrictSerializer: unknown body fields are a `400` naming each one. */
+  const strict = (
+    lang: LanguageCode,
+    body: Record<string, unknown>,
+    allowed: readonly string[],
+  ) => {
+    const unknown = Object.keys(body)
+      .filter((k) => !allowed.includes(k))
+      .sort();
+    return unknown.length
+      ? invalid(lang, Object.fromEntries(unknown.map((k) => [k, m("unknownField", lang)])))
+      : null;
+  };
+  /** `consents.check_version()`: 422 on the consent's field when the text is not current. */
+  const outdated = (lang: LanguageCode, field: string) =>
+    context.errorResponse(422, "business_rule_violation", m("currentOnly", lang), {
+      fields: { [field]: [m("currentOnly", lang)] },
+    });
+  /** Account email to display name, as the backend reads `granted_by.full_name`. */
+  const nameOf = (email: string, me: PatientMe) =>
+    email === me.email
+      ? me.full_name
+      : (store().links.find((l) => l.account_email === email)?.holder_name ?? email);
+  const short = (full: string) => {
+    const [first, second] = full.split(" ");
+    return second ? `${first} ${second[0]}.` : full;
+  };
+
   const withLink = async (
     request: Request,
     patientId: string,
@@ -151,6 +257,10 @@ export const profileMocks: FeatureMockFactory = (context) => {
         const a = await withLink(request, str(params.id), undefined, true);
         if (a.error) return a.error;
         const body = await context.readJson(request);
+        const unknown = strict(a.lang, body, FIELDS.profile);
+        if (unknown) return unknown;
+        if (typeof body.version !== "number" || body.version < 1)
+          return invalid(a.lang, { version: context.message("required", a.lang) });
         if (body.version !== a.patient.version)
           return context.errorResponse(409, "conflict", s1("conflict", a.lang));
         const core = [
@@ -296,13 +406,10 @@ export const profileMocks: FeatureMockFactory = (context) => {
       http.get(`${p}/profiles/:id/access-history/`, async ({ request, params }) => {
         const a = await withLink(request, str(params.id), "history");
         if (a.error) return a.error;
-        const items = a.patient.history;
-        return HttpResponse.json({
-          count: items.length,
-          next: null,
-          previous: null,
-          results: items,
-        });
+        const items = [...a.patient.history].sort((x, y) =>
+          y.occurred_at.localeCompare(x.occurred_at),
+        );
+        return HttpResponse.json(page(items, new URL(request.url)));
       }),
 
       http.post(`${p}/profiles/:id/:kind/:item/entered-in-error/`, async ({ request, params }) => {
@@ -334,21 +441,54 @@ export const profileMocks: FeatureMockFactory = (context) => {
         if (a.error) return a.error;
         const body = await context.readJson(request);
         const s = store();
+        const key = request.headers.get("Idempotency-Key");
+        const replay = key ? s.dependentKeys.get(`${a.me.email}:${key}`) : undefined;
+        const previous = replay ? s.links.find((l) => l.id === replay) : undefined;
+        if (previous) return HttpResponse.json(summaryOf(previous), { status: 201 });
+        const unknown = strict(a.lang, body, FIELDS.dependent);
+        if (unknown) return unknown;
+        const required = context.message("required", a.lang);
+        const errors: Record<string, string> = {};
+        if (body.relationship !== "guardian" && body.relationship !== "delegate")
+          errors.relationship = required;
+        if (!str(body.full_name).trim()) errors.full_name = required;
+        if (!["female", "male", "other"].includes(str(body.sex))) errors.sex = required;
+        if (!str(body.consent_version)) errors.consent_version = required;
+        const today = new Date().toISOString().slice(0, 10);
+        if (body.date_of_birth && str(body.date_of_birth) > today) errors.date_of_birth = required;
+        else if (!body.date_of_birth && typeof body.estimated_age_years !== "number")
+          errors.date_of_birth = m("birthNeeded", a.lang);
+        if (Object.keys(errors).length) return invalid(a.lang, errors);
+        if (links(a.me).length >= MAX_LINKS) return rule(a.lang, "tooManyProfiles");
         const born = body.date_of_birth
           ? str(body.date_of_birth)
-          : typeof body.estimated_age_years === "number"
-            ? `${new Date().getFullYear() - body.estimated_age_years}-01-01`
-            : "";
-        const age = born ? new Date().getFullYear() - Number(born.slice(0, 4)) : 99;
+          : `${new Date().getFullYear() - Number(body.estimated_age_years)}-01-01`;
+        const age = ageYears(born) ?? 0;
         if (body.relationship === "guardian" && age >= 18) return rule(a.lang, "guardianAge");
-        if (body.relationship === "delegate" && (age < 18 || !body.consent_attested))
-          return context.errorResponse(422, "business_rule_violation", s1("notAllowed", a.lang));
+        if (body.relationship === "delegate" && (age < 18 || body.consent_attested !== true))
+          return rule(a.lang, "delegateAge");
+        if (str(body.consent_version) !== CONSENT_VERSION)
+          return outdated(a.lang, "consent_version");
+        const patientId = crypto.randomUUID();
         const patient: MockPatient = {
           ...emptyPatient(s.nextSeed++),
+          id: patientId,
           full_name: str(body.full_name),
           sex: body.sex as MockPatient["sex"],
           date_of_birth: born || null,
           is_birth_date_estimated: !body.date_of_birth,
+          // add_dependent() records the guardian or delegation consent in the same transaction
+          consents: [
+            {
+              id: crypto.randomUUID(),
+              kind: body.relationship === "guardian" ? "guardian" : "delegation",
+              patient_id: patientId,
+              granted: true,
+              version: str(body.consent_version),
+              granted_at: new Date().toISOString(),
+              channel: "web",
+            },
+          ],
         };
         s.patients.set(patient.id, patient);
         const link: MockLink = {
@@ -362,6 +502,7 @@ export const profileMocks: FeatureMockFactory = (context) => {
           revoked: false,
         };
         s.links.push(link);
+        if (key) s.dependentKeys.set(`${a.me.email}:${key}`, link.id);
         return HttpResponse.json(summaryOf(link), { status: 201 });
       }),
 
@@ -372,10 +513,8 @@ export const profileMocks: FeatureMockFactory = (context) => {
         const mine = links(a.me);
         const managed = mine.filter((l) => l.relationship !== "delegate").map((l) => l.patient_id);
         const name = (id: string) => s.patients.get(id)?.full_name ?? "";
-        const short = (full: string) => {
-          const [first, second] = full.split(" ");
-          return second ? `${first} ${second[0]}.` : full;
-        };
+        const holds = (patientId: string, relationship: string) =>
+          mine.some((l) => l.patient_id === patientId && l.relationship === relationship);
         return HttpResponse.json({
           granted: s.links
             .filter(
@@ -388,7 +527,11 @@ export const profileMocks: FeatureMockFactory = (context) => {
               holder_name: short(l.holder_name),
               relationship: l.relationship,
               granted_at: l.granted_at,
-              can_revoke: true,
+              // as revoke(): self ends any other link; a guardian only the links it granted
+              can_revoke:
+                l.relationship !== "self" &&
+                (holds(l.patient_id, "self") ||
+                  (holds(l.patient_id, "guardian") && l.granted_by === a.me.email)),
             })),
           received: mine
             .filter((l) => l.relationship !== "self")
@@ -396,7 +539,7 @@ export const profileMocks: FeatureMockFactory = (context) => {
               id: l.id,
               patient_id: l.patient_id,
               profile_name: name(l.patient_id),
-              holder_name: l.granted_by,
+              holder_name: l.granted_by ? short(nameOf(l.granted_by, a.me)) : null,
               relationship: l.relationship,
               granted_at: l.granted_at,
               can_revoke: true,
@@ -417,6 +560,8 @@ export const profileMocks: FeatureMockFactory = (context) => {
         const a = await auth(request, true);
         if (a.error) return a.error;
         const body = await context.readJson(request);
+        const unknown = strict(a.lang, body, FIELDS.invite);
+        if (unknown) return unknown;
         if (body.current_password !== MOCK_PASSWORD)
           return context.errorResponse(
             400,
@@ -429,6 +574,8 @@ export const profileMocks: FeatureMockFactory = (context) => {
         const link = linkFor(a.me, str(body.patient_id));
         if (!link) return notFound(a.lang);
         if (link.relationship === "delegate") return denied(a.lang);
+        if (str(body.consent_version) !== CONSENT_VERSION)
+          return outdated(a.lang, "consent_version");
         const code = Array.from(
           { length: 8 },
           () => "0123456789ABCDEFGHJKMNPQRSTVWXYZ"[Math.floor(Math.random() * 32)],
@@ -460,6 +607,8 @@ export const profileMocks: FeatureMockFactory = (context) => {
         const a = await auth(request, true);
         if (a.error) return a.error;
         const body = await context.readJson(request);
+        const unknown = strict(a.lang, body, FIELDS.code);
+        if (unknown) return unknown;
         const code = str(body.code).toUpperCase().replace(/\s/g, "");
         const invite = store().invites.find((i) => !i.used && i.code === code);
         if (!invite)
@@ -514,6 +663,10 @@ export const profileMocks: FeatureMockFactory = (context) => {
         if (a.error) return a.error;
         const body = await context.readJson(request);
         const s = store();
+        // checked before the lookup so no answer depends on whether a record matched
+        const own = links(a.me).find((l) => l.relationship === "self")?.patient_id;
+        if (s.records.some((r) => r.patient_id === own && r.is_active))
+          return rule(a.lang, "hasRecords");
         const lookup = (body.lookup ?? {}) as Record<string, unknown>;
         const dob = str(body.date_of_birth);
         let target: MockPatient | undefined;
@@ -537,7 +690,14 @@ export const profileMocks: FeatureMockFactory = (context) => {
           s.links.some(
             (l) => l.patient_id === target.id && l.relationship === "self" && !l.revoked,
           );
-        if (!target || target.date_of_birth !== dob || claimed) return rule(a.lang, "noMatch");
+        if (!target || target.id === own || target.date_of_birth !== dob || claimed)
+          return rule(a.lang, "noMatch");
+        for (const open of s.claims)
+          if (
+            open.account_email === a.me.email &&
+            (open.status === "code_sent" || open.status === "awaiting_reception")
+          )
+            open.status = "cancelled";
         const byCode = Boolean(target.email);
         const claim: MockClaim = {
           id: crypto.randomUUID(),
@@ -576,27 +736,24 @@ export const profileMocks: FeatureMockFactory = (context) => {
         const claim = s.claims.find((c) => c.id === params.id && c.account_email === a.me.email);
         if (!claim) return notFound(a.lang);
         const body = await context.readJson(request);
+        const unknown = strict(a.lang, body, FIELDS.code);
+        if (unknown) return unknown;
+        if (claim.status === "code_sent" && claim.expires_at < new Date().toISOString())
+          claim.status = "expired";
+        if (claim.status === "expired") return rule(a.lang, "claimExpired");
         if (claim.status !== "code_sent") return rule(a.lang, "noMatch");
-        if (str(body.code) !== claim.code) {
+        if (str(body.code).trim() !== claim.code) {
           claim.attempts++;
           if (claim.attempts >= 5) {
             claim.status = "failed";
-            return rule(a.lang, "noMatch");
+            return rule(a.lang, "tooManyCodes");
           }
           return context.errorResponse(400, "validation_error", m("wrongCode", a.lang), {
             fields: { code: [m("wrongCode", a.lang)] },
           });
         }
-        claim.status = "completed";
-        const own = links(a.me).find((l) => l.relationship === "self")!;
-        own.revoked = true;
-        const link: MockLink = {
-          ...own,
-          id: crypto.randomUUID(),
-          patient_id: claim.patient_id,
-          revoked: false,
-        };
-        s.links.push(link);
+        const link = completeClaim(s, claim);
+        if (!link) return rule(a.lang, "noMatch");
         return HttpResponse.json({ claim: publicClaim(claim), profile: summaryOf(link) });
       }),
 
@@ -610,23 +767,37 @@ export const profileMocks: FeatureMockFactory = (context) => {
         const a = await auth(request, true);
         if (a.error) return a.error;
         const body = await context.readJson(request);
+        const unknown = strict(a.lang, body, FIELDS.consent);
+        if (unknown) return unknown;
         const kind = str(body.kind);
-        if ((kind === "terms" || kind === "privacy") && !body.granted)
-          return rule(a.lang, "withdraw");
-        let patient: MockPatient | undefined;
-        if (body.patient_id) {
+        const required = context.message("required", a.lang);
+        const errors: Record<string, string> = {};
+        if (![...ACCOUNT_KINDS, ...TOGGLE_KINDS, ...PROFILE_KINDS].includes(kind))
+          errors.kind = required;
+        if (!str(body.version)) errors.version = required;
+        if (typeof body.granted !== "boolean") errors.granted = required;
+        if (Object.keys(errors).length) return invalid(a.lang, errors);
+        const own = store().patients.get(
+          links(a.me).find((l) => l.relationship === "self")!.patient_id,
+        );
+        // account-level records (patient_id null) are kept on the account's own profile
+        let patient: MockPatient | undefined = own;
+        let patientId: string | null = null;
+        if (ACCOUNT_KINDS.includes(kind) && !body.granted) return rule(a.lang, "withdraw");
+        if (str(body.version) !== CONSENT_VERSION) return outdated(a.lang, "version");
+        if ([...ACCOUNT_KINDS, ...TOGGLE_KINDS].includes(kind)) {
+          if (body.patient_id) return invalid(a.lang, { patient_id: s1("notAllowed", a.lang) });
+        } else if (body.patient_id) {
           const link = linkFor(a.me, str(body.patient_id));
           if (!link) return notFound(a.lang);
           if (link.relationship === "delegate") return denied(a.lang);
           patient = store().patients.get(link.patient_id);
-        } else
-          patient = store().patients.get(
-            links(a.me).find((l) => l.relationship === "self")!.patient_id,
-          );
+          patientId = link.patient_id;
+        } else if (kind === "care") patientId = own?.id ?? null;
         const record = {
           id: crypto.randomUUID(),
           kind,
-          patient_id: body.patient_id ? str(body.patient_id) : null,
+          patient_id: patientId,
           granted: Boolean(body.granted),
           version: str(body.version),
           granted_at: new Date().toISOString(),
@@ -681,15 +852,25 @@ export const profileMocks: FeatureMockFactory = (context) => {
       address: patient.address,
       emergency_contact: patient.emergency_contact,
       no_known_allergies: patient.no_known_allergies,
-      has_care_consent: patient.consents.some((c) => c.kind === "care" && c.granted),
+      has_care_consent: hasCareConsent(patient),
       completion: completion(patient),
       version: patient.version,
     };
   }
 
+  /** `consent_state()`: account records plus care and research of self and guardian profiles. */
   function consentState(me: PatientMe): ConsentState {
-    const own = links(me);
-    const all = own.flatMap((l) => store().patients.get(l.patient_id)?.consents ?? []);
+    const managed = links(me).filter((l) => l.relationship !== "delegate");
+    const ownId = managed.find((l) => l.relationship === "self")?.patient_id;
+    const all = managed
+      .flatMap((l) =>
+        (store().patients.get(l.patient_id)?.consents ?? []).filter(
+          (c) =>
+            (c.patient_id === null && l.patient_id === ownId) ||
+            (c.patient_id === l.patient_id && PROFILE_KINDS.includes(c.kind)),
+        ),
+      )
+      .sort((x, y) => y.granted_at.localeCompare(x.granted_at));
     const latest = new Map<string, (typeof all)[number]>();
     for (const c of all)
       if (!latest.has(`${c.kind}:${c.patient_id}`)) latest.set(`${c.kind}:${c.patient_id}`, c);
@@ -697,11 +878,13 @@ export const profileMocks: FeatureMockFactory = (context) => {
       current_versions: {
         terms: CONSENT_VERSION,
         privacy: CONSENT_VERSION,
+        notifications: CONSENT_VERSION,
+        location: CONSENT_VERSION,
         care: CONSENT_VERSION,
         research: CONSENT_VERSION,
       },
       consents: [...latest.values()],
-      history: all,
+      history: all.slice(0, 50),
     };
   }
 };
@@ -711,14 +894,21 @@ function completion(patient: MockPatient) {
     details: Boolean(patient.full_name && patient.date_of_birth && patient.sex),
     identifier: patient.identifiers.length > 0,
     emergency_contact: Boolean(patient.emergency_contact),
-    care_consent: patient.consents.some((c) => c.kind === "care" && c.granted),
+    care_consent: hasCareConsent(patient),
     insurance: patient.insurance.some((i) => i.is_active),
     allergies_reviewed: patient.no_known_allergies !== null,
   };
 }
 
 function publicClaim(claim: ReturnType<typeof patientsStore>["claims"][number]) {
-  const { account_email: _a, patient_id: _p, code: _c, attempts: _t, ...shown } = claim;
+  const {
+    account_email: _a,
+    patient_id: _p,
+    code: _c,
+    attempts: _t,
+    confirmed_facility_id: _f,
+    ...shown
+  } = claim;
   return shown;
 }
 

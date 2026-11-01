@@ -149,3 +149,8 @@ extend(_s3.PERMISSIONS, _s3.ROLE_GRANTS)
 # [/S2]
 # [S10]
 # [/S10]
+# [S6]
+from medilink.clinical import permissions as _s6  # noqa: E402
+
+extend(_s6.PERMISSIONS, _s6.ROLE_GRANTS)
+# [/S6]

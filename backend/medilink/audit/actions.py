@@ -79,3 +79,8 @@ from medilink.scheduling import audit_actions as _s5  # noqa: E402
 
 extend_actions(_s5.ACTIONS)
 # [/S5]
+# [S6]
+from medilink.clinical import audit_actions as _s6  # noqa: E402
+
+extend_actions(_s6.ACTIONS)
+# [/S6]

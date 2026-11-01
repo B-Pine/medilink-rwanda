@@ -195,6 +195,36 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - No-show job with strikes; jobs and the dev seed; `booking_concurrency_check` (DEBUG only).
 - `TIME_ZONE` is `Africa/Kigali` (was UTC; contract D-8).
 
+### Sprint 6a · Consultation and history
+
+- New app `medilink.clinical` ([contract](../docs/architecture/contracts/sprint-06-clinical.md)):
+  `clinical_consultation`, `clinical_diagnosis`, `clinical_addendum`, `clinical_vitals` and
+  `authz_access_reason`, all with forced facility RLS.
+- Consultation per visit (C1–C7): idempotent open, draft autosave with `version` (`409` when
+  stale), ICD-10 diagnoses from master data (one primary, provisional or confirmed; sensitive codes
+  suggest a restricted record), sign with recent re-authentication and a SHA-256 content hash
+  (late entry after 24 h, `integrity` recomputed on read), signed addenda by the author or another
+  clinician, entered in error with a reason, and the unsigned records list without content.
+- All consultation text, private notes and addendum bodies are field-encrypted (contract D-2).
+  Database triggers lock signed records, their diagnoses and vitals, make addenda and access
+  reasons append-only, and refuse every delete.
+- A consultation-stage ticket cannot complete or move on while its visit has a draft
+  (`pre_save` guard, D-6).
+- Vitals (V1–V2) with plausible ranges; reception reads only the rows it recorded.
+- Treatment-relationship rule (FR-SEC-03): an open visit today or care by the clinician in the
+  last 30 days; otherwise, and always for staff-as-patient records, `403 access_reason_required`
+  until a reason is given (A1, 120 minutes). Clinical reads and reasons are audited with patient
+  links.
+- History timeline with filters and problem summary (H1–H2); allergy, duplicate and dose alerts
+  (AL1) for S7 prescribing.
+- Patients read their own and dependants' signed records (PR1–PR2) through
+  `clinical_patient_records(account)`: no private notes, no examination; delegates never see
+  restricted records.
+- New permission `clinical.unsigned_list` (doctor, facility admin), seeded by `clinical.0002`.
+- Patient-scoped clinical routes live under `/staff/clinical/patients/…` because S3's
+  `/staff/patients/{id}/{kind}/` matches any word (D-12). `ReasonCodeEnum` (S3 reveal) keeps
+  its schema name through an `ENUM_NAME_OVERRIDES` entry in the `[S6]` block.
+
 ### Tests
 
 - `tests/test_rls_coverage.py`: every table with `facility_id` has forced RLS with the

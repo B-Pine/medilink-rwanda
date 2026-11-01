@@ -271,5 +271,19 @@
     "searchFor": "Shakisha abarwayi “{{query}}”",
     "results": "Abarwayi",
     "file": "Dosiye {{number}}"
+  },
+  "accessReason": {
+    "heading": "Dosiye y'umurwayi",
+    "title": "Kuki ufunguye iyi dosiye?",
+    "description": "Uyu murwayi nta gusura aherutse hano, cyangwa akora hano. Impamvu yawe yandikwa mu mateka y'abafunguye dosiye ye.",
+    "reason": "Impamvu",
+    "reasons": {
+      "care_continuity": "Gukomeza kumuvura",
+      "results_review": "Kureba ibisubizo",
+      "admin_request": "Icyifuzo cy'ubuyobozi",
+      "other": "Ikindi"
+    },
+    "reasonText": "Sobanura impamvu",
+    "open": "Fungura dosiye"
   }
 }

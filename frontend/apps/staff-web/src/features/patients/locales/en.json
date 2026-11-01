@@ -271,5 +271,19 @@
     "searchFor": "Search patients for “{{query}}”",
     "results": "Patients",
     "file": "File {{number}}"
+  },
+  "accessReason": {
+    "heading": "Patient record",
+    "title": "Why are you opening this record?",
+    "description": "This patient has no recent visit here, or works here. Your reason is recorded in their access history.",
+    "reason": "Reason",
+    "reasons": {
+      "care_continuity": "Continuing their care",
+      "results_review": "Reviewing results",
+      "admin_request": "Administrative request",
+      "other": "Other"
+    },
+    "reasonText": "Explain the reason",
+    "open": "Open record"
   }
 }

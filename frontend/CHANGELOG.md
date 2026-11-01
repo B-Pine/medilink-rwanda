@@ -57,6 +57,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   - `ProfileSwitcher` in the header; "My profile" and "Family" links on home.
 - Translations: `patients` and `profile` namespaces in rw/en/fr (Kinyarwanda flagged for native
   review).
+- R2 fixes ([#84](https://github.com/B-Pine/medilink-rwanda/issues/84)):
+  - patient-web access history loads older entries page by page ("Show older entries", PA24).
+  - The claim wizard polls the claim (PA20) every 10 s while it waits for reception, shows the
+    confirmation, and offers a fresh start when a claim fails or expires.
+  - Mocks follow the real API: strict request bodies (`Unknown field.`) and a required `version`
+    on PA3; consent kind, version and scope rules (PA22/PA23) and the latest care consent
+    decides; shortened holder names and `can_revoke` as `revoke()` allows; dependents replay on
+    `Idempotency-Key`, record their consent, check age and the 10-profile limit; the 5th wrong
+    claim code and expired claims have their own messages; walk-in care consent carries the
+    `patient_id`; reception confirmation moves the claimant's `self` link.
 
 ### Sprint 9 · Notifications
 

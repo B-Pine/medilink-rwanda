@@ -147,6 +147,28 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   - `price()` and `insurer_rule()` (S8).
 - Signal `scheduling.exception_approved`.
 - Jobs and commands: `expire_invitations` (daily) and dev seed `seed_setup_dev`.
+- Fixes from the S0–S5 audit (R3, #85):
+  - Go-live no longer always answers `409`: `FacilityProfile` and the setup checklist expose
+    `status_version`, the version go-live expects (not the profile `version`).
+  - Checklist: `schedules` is done when no service is bookable; `insurers` is done when the
+    application claimed no insurer.
+  - Invitation accept for an existing account needs a signed-in staff session and returns
+    `StaffMe`; the `{token, password}` path is gone (`401 not_authenticated` instead), so
+    passwords are only checked by login (lockout, MFA, audit).
+  - `POST /staff/invitations/` honours `Idempotency-Key` (same key: same invitation, one email).
+  - `GET /staff/memberships/`, `/staff/invitations/` (no more silent 200 cap) and
+    `/staff/schedule-templates/` are paginated (`{count, next, previous, results}`).
+  - `409 conflict` on a versioned resource carries the resource as it is now in `error.current`
+    (S1 onboarding, master data, S2 facility setup and staff).
+  - `Idempotency-Key` must be a UUID (`400` otherwise), as architecture 02 says.
+  - The membership-role join is an explicit model with `facility_id` and forced RLS (migration
+    `tenancy.0006`); users still read their own roles in every facility.
+  - Expired invitations are marked `expired` (new `expired_at`), not revoked, and no longer
+    block a re-invite; resending one revives it.
+  - Staff writes (invite, resend, accept, edit, reactivate, attest) are refused with `422` in a
+    deactivated facility.
+  - Celery beat hours are Kigali time (`CELERY_TIMEZONE`): invitation expiry 02:30, licence
+    reminders 07:00, stale drafts 03:00, delegation invites 02:00.
 
 ### Sprint 10 · Help center and support (part 1)
 

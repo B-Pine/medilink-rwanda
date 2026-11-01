@@ -40,3 +40,6 @@ export {
 } from "./features/notifications";
 export type { EmitMockNotificationInput } from "./features/notifications";
 // [/S9]
+// [S10]
+export { MOCK_HELP } from "./features/help";
+// [/S10]

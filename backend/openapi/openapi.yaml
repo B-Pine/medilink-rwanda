@@ -950,6 +950,65 @@ paths:
               schema:
                 $ref: '#/components/schemas/UnreadCount'
           description: ''
+  /api/v1/patient/prescriptions/:
+    get:
+      operationId: patient_prescriptions
+      summary: Prescriptions of my profiles, newest first (M1)
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: patient_id
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - active
+          - past
+      tags:
+      - patient-medicines
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPatientPrescriptionRowList'
+          description: ''
+  /api/v1/patient/prescriptions/{prescription_id}/:
+    get:
+      operationId: patient_prescription_detail
+      summary: One prescription with items and what was dispensed (M2)
+      parameters:
+      - in: path
+        name: prescription_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-medicines
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientPrescription'
+          description: ''
   /api/v1/patient/profiles/:
     get:
       operationId: patient_profiles_list
@@ -8327,6 +8386,83 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Not the author or already marked
+  /api/v1/staff/consultations/{consultation_id}/prescription/:
+    get:
+      operationId: staff_consultation_prescription
+      summary: The consultation's prescription with items and alerts (P1)
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason for this patient first'
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: None yet
+  /api/v1/staff/consultations/{consultation_id}/prescription/items/:
+    post:
+      operationId: staff_prescription_item_add
+      summary: Add an item; creates the prescription on the first item (P2)
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemCreateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required after issue, or access_reason_required
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not the author, unknown drug, or the prescription can't take
+            items
   /api/v1/staff/consultations/{consultation_id}/sign/:
     post:
       operationId: staff_consultation_sign
@@ -8606,6 +8742,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Already resolved
+  /api/v1/staff/drugs/:
+    get:
+      operationId: staff_drug_search
+      summary: Catalogue drugs by generic name, with availability here (PS1)
+      parameters:
+      - in: query
+        name: q
+        schema:
+          type: string
+        required: true
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DrugRow'
+          description: ''
   /api/v1/staff/duty-status/:
     get:
       operationId: staff_duty_status
@@ -10807,6 +10967,465 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: rate_limited
+  /api/v1/staff/pharmacy/availability/:
+    get:
+      operationId: staff_pharmacy_availability
+      summary: Catalogue drugs with their availability here (PA1)
+      parameters:
+      - in: query
+        name: available
+        schema:
+          type: boolean
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAvailabilityRowList'
+          description: ''
+  /api/v1/staff/pharmacy/availability/{drug_code}/:
+    put:
+      operationId: staff_pharmacy_availability_set
+      summary: Mark a catalogue drug available or not here (PA2)
+      parameters:
+      - in: path
+        name: drug_code
+        schema:
+          type: string
+        required: true
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvailabilityWriteRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailabilityRow'
+          description: ''
+  /api/v1/staff/pharmacy/queue/:
+    get:
+      operationId: staff_pharmacy_queue
+      summary: Prescriptions to dispense at my facility, oldest first (PQ1)
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - partly
+          - queried
+          - ready
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPharmacyQueueRowList'
+          description: ''
+  /api/v1/staff/prescription-items/{item_id}/:
+    patch:
+      operationId: staff_prescription_item_update
+      summary: Edit a draft item (P3)
+      parameters:
+      - in: path
+        name: item_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedItemUpdateRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Locked after issue or not the author
+    delete:
+      operationId: staff_prescription_item_delete
+      summary: Remove a draft item (P4)
+      parameters:
+      - in: path
+        name: item_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: version
+        schema:
+          type: integer
+        required: true
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Locked after issue or not the author
+  /api/v1/staff/prescription-items/{item_id}/cancel/:
+    post:
+      operationId: staff_prescription_item_cancel
+      summary: Cancel an issued item with a reason (P5)
+      parameters:
+      - in: path
+        name: item_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: A draft item, or already dispensed
+  /api/v1/staff/prescription-queries/{query_id}/answer/:
+    post:
+      operationId: staff_prescription_query_answer
+      summary: Link the addendum that answers the question (PQ3)
+      parameters:
+      - in: path
+        name: query_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryAnswerRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrescriptionQuery'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not open, or not this consultation
+  /api/v1/staff/prescription-queries/{query_id}/close/:
+    post:
+      operationId: staff_prescription_query_close
+      summary: Close an answered question (PQ4)
+      parameters:
+      - in: path
+        name: query_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrescriptionQuery'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not answered yet
+  /api/v1/staff/prescriptions/{prescription_id}/:
+    get:
+      operationId: staff_prescription_detail
+      summary: A prescription with dispense records and queries (P7)
+      parameters:
+      - in: path
+        name: prescription_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason for this patient first'
+  /api/v1/staff/prescriptions/{prescription_id}/cancel/:
+    post:
+      operationId: staff_prescription_cancel
+      summary: Cancel the whole prescription with a reason (P6)
+      parameters:
+      - in: path
+        name: prescription_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Something was dispensed
+  /api/v1/staff/prescriptions/{prescription_id}/dispense/:
+    post:
+      operationId: staff_prescription_dispense
+      summary: Record and sign a dispensing (PD1)
+      parameters:
+      - in: path
+        name: prescription_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DispenseRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Identity, substitution, quantity or controlled-medicine rule
+  /api/v1/staff/prescriptions/{prescription_id}/labels/:
+    get:
+      operationId: staff_prescription_labels
+      summary: Dosing labels for the dispensed lines (PD2)
+      parameters:
+      - in: query
+        name: language
+        schema:
+          type: string
+          enum:
+          - en
+          - fr
+          - rw
+      - in: path
+        name: prescription_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Labels'
+          description: ''
+  /api/v1/staff/prescriptions/{prescription_id}/queries/:
+    post:
+      operationId: staff_prescription_query_raise
+      summary: Send the prescription back to the doctor with a question (PQ2)
+      parameters:
+      - in: path
+        name: prescription_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryCreateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrescriptionQuery'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: A question is already open
   /api/v1/staff/queue/board/:
     get:
       operationId: staff_queue_board
@@ -12430,6 +13049,32 @@ components:
         * `allergy` - allergy
         * `duplicate` - duplicate
         * `dose` - dose
+    AlertOverride:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        kind:
+          $ref: '#/components/schemas/AlertKindEnum'
+        reason:
+          type: string
+          maxLength: 300
+          minLength: 5
+      required:
+      - kind
+      - reason
+    AlertOverrideRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        kind:
+          $ref: '#/components/schemas/AlertKindEnum'
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 300
+      required:
+      - kind
+      - reason
     AlertResult:
       type: object
       properties:
@@ -13049,6 +13694,32 @@ components:
       required:
       - full_name
       - membership_id
+    AvailabilityRow:
+      type: object
+      properties:
+        drug_code:
+          type: string
+        display:
+          type: string
+        is_available:
+          type: boolean
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - display
+      - drug_code
+      - is_available
+      - updated_at
+    AvailabilityWriteRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        is_available:
+          type: boolean
+      required:
+      - is_available
     BlankEnum:
       enum:
       - ''
@@ -14723,6 +15394,119 @@ components:
       description: |-
         * `primary` - Primary
         * `secondary` - Secondary
+    DispenseLineInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        item_id:
+          type: string
+          format: uuid
+        outcome:
+          $ref: '#/components/schemas/DispenseOutcomeEnum'
+        quantity:
+          type: integer
+          maximum: 10000
+          minimum: 0
+          nullable: true
+        substitute_drug_code:
+          type: string
+          default: ''
+          maxLength: 40
+        substitution_reason:
+          type: string
+          default: ''
+          maxLength: 300
+      required:
+      - item_id
+      - outcome
+    DispenseLineOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        item_id:
+          type: string
+          format: uuid
+        outcome:
+          $ref: '#/components/schemas/DispenseOutcomeEnum'
+        quantity:
+          type: integer
+        substitute_display:
+          type: string
+        substitution_reason:
+          type: string
+      required:
+      - id
+      - item_id
+      - outcome
+      - quantity
+      - substitute_display
+      - substitution_reason
+    DispenseOutcomeEnum:
+      enum:
+      - full
+      - partial
+      - substituted
+      - not_available
+      type: string
+      description: |-
+        * `full` - Dispensed in full
+        * `partial` - Dispensed in part
+        * `substituted` - Generic substitution
+        * `not_available` - Not available
+    DispenseRecord:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        pharmacist_name:
+          type: string
+        identity_check_method:
+          $ref: '#/components/schemas/IdentityCheckMethodEnum'
+        controlled_confirmed:
+          type: boolean
+        signed_at:
+          type: string
+          format: date-time
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/DispenseLineOut'
+      required:
+      - controlled_confirmed
+      - id
+      - identity_check_method
+      - lines
+      - pharmacist_name
+      - signed_at
+    DispenseRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        identity_check_method:
+          $ref: '#/components/schemas/IdentityCheckMethodEnum'
+        verification_code:
+          type: string
+          default: ''
+          maxLength: 24
+        controlled_confirmed:
+          type: boolean
+          default: false
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/DispenseLineInputRequest'
+          maxItems: 50
+          minItems: 1
+      required:
+      - identity_check_method
+      - lines
+      - version
     Display:
       type: object
       properties:
@@ -15202,6 +15986,51 @@ components:
       description: |-
         * `accepted` - accepted
         * `needs_change` - needs_change
+    DosingLabel:
+      type: object
+      properties:
+        line_id:
+          type: string
+          format: uuid
+        language:
+          $ref: '#/components/schemas/LanguageEnum'
+        drug:
+          type: string
+        quantity:
+          type: integer
+        dose:
+          type: string
+        frequency:
+          type: string
+        route:
+          type: string
+        duration:
+          type: string
+        instructions:
+          type: string
+        patient_name:
+          type: string
+        dispensed_on:
+          type: string
+          format: date
+        facility_name:
+          type: string
+        prescription_number:
+          type: string
+      required:
+      - dispensed_on
+      - dose
+      - drug
+      - duration
+      - facility_name
+      - frequency
+      - instructions
+      - language
+      - line_id
+      - patient_name
+      - prescription_number
+      - quantity
+      - route
     DownloadLink:
       type: object
       properties:
@@ -15235,6 +16064,31 @@ components:
 
             * `inline` - inline
             * `attachment` - attachment
+    DrugRow:
+      type: object
+      properties:
+        code:
+          type: string
+        display:
+          type: string
+        generic_name:
+          type: string
+        strength:
+          type: string
+        form:
+          type: string
+        is_controlled:
+          type: boolean
+        available_here:
+          type: boolean
+      required:
+      - available_here
+      - code
+      - display
+      - form
+      - generic_name
+      - is_controlled
+      - strength
     DrugsItem:
       type: object
       properties:
@@ -16520,6 +17374,24 @@ components:
         * `no_slot` - No open slot
         * `done` - Done
         * `cancelled` - Cancelled
+    FrequencyCodeEnum:
+      enum:
+      - once
+      - od
+      - bd
+      - tds
+      - qds
+      - nocte
+      - prn
+      type: string
+      description: |-
+        * `once` - Once
+        * `od` - Once a day
+        * `bd` - Twice a day
+        * `tds` - Three times a day
+        * `qds` - Four times a day
+        * `nocte` - At night
+        * `prn` - When needed
     GoLiveRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -17075,6 +17947,14 @@ components:
             $ref: '#/components/schemas/Identifier'
       required:
       - results
+    IdentityCheckMethodEnum:
+      enum:
+      - ticket_name_dob
+      - verification_code
+      type: string
+      description: |-
+        * `ticket_name_dob` - Ticket, name and date of birth
+        * `verification_code` - Prescription code
     ImportCreateRequest:
       type: object
       properties:
@@ -17716,6 +18596,64 @@ components:
       required:
       - comment
       - target
+    ItemCreateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        drug_code:
+          type: string
+          default: ''
+          maxLength: 40
+        free_text_drug:
+          type: string
+          default: ''
+          maxLength: 120
+        dose:
+          type: string
+          minLength: 1
+          maxLength: 60
+        frequency_code:
+          $ref: '#/components/schemas/FrequencyCodeEnum'
+        route:
+          $ref: '#/components/schemas/RouteEnum'
+        duration_days:
+          type: integer
+          maximum: 365
+          minimum: 1
+          nullable: true
+        quantity:
+          type: integer
+          maximum: 10000
+          minimum: 1
+          nullable: true
+        instructions:
+          type: string
+          default: ''
+          maxLength: 500
+        substitution_allowed:
+          type: boolean
+          default: true
+        alert_overrides:
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertOverrideRequest'
+        replaces_item_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - dose
+      - frequency_code
+      - route
+    Labels:
+      type: object
+      properties:
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/DosingLabel'
+      required:
+      - labels
     LanguageEnum:
       enum:
       - rw
@@ -18803,6 +19741,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ApplicationSummary'
+    PaginatedAvailabilityRowList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailabilityRow'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedConsultationRowList:
       type: object
       properties:
@@ -19123,6 +20083,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MasterDataChange'
+    PaginatedPatientPrescriptionRowList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientPrescriptionRow'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedPatientRecordRowList:
       type: object
       properties:
@@ -19140,6 +20122,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PatientRecordRow'
+      required:
+      - count
+      - next
+      - previous
+      - results
+    PaginatedPharmacyQueueRowList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/QueueRow'
       required:
       - count
       - next
@@ -19911,6 +20915,50 @@ components:
           type: integer
           maximum: 2147483647
           minimum: -2147483648
+    PatchedItemUpdateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        drug_code:
+          type: string
+          default: ''
+          maxLength: 40
+        free_text_drug:
+          type: string
+          default: ''
+          maxLength: 120
+        dose:
+          type: string
+          minLength: 1
+          maxLength: 60
+        frequency_code:
+          $ref: '#/components/schemas/FrequencyCodeEnum'
+        route:
+          $ref: '#/components/schemas/RouteEnum'
+        duration_days:
+          type: integer
+          maximum: 365
+          minimum: 1
+          nullable: true
+        quantity:
+          type: integer
+          maximum: 10000
+          minimum: 1
+          nullable: true
+        instructions:
+          type: string
+          default: ''
+          maxLength: 500
+        substitution_allowed:
+          type: boolean
+          default: true
+        alert_overrides:
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertOverrideRequest'
+        version:
+          type: integer
+          minimum: 1
     PatchedLicencePatchInputRequest:
       type: object
       properties:
@@ -20397,6 +21445,45 @@ components:
       - display
       - plain_language
       - rank
+    PatientItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        drug_display:
+          type: string
+        dose:
+          type: string
+        frequency_code:
+          $ref: '#/components/schemas/FrequencyCodeEnum'
+        route:
+          $ref: '#/components/schemas/RouteEnum'
+        duration_days:
+          type: integer
+          nullable: true
+        quantity:
+          type: integer
+        dispensed_quantity:
+          type: integer
+        instructions:
+          type: string
+        status:
+          $ref: '#/components/schemas/PrescriptionItemStatusEnum'
+        substitute_display:
+          type: string
+      required:
+      - dispensed_quantity
+      - dose
+      - drug_display
+      - duration_days
+      - frequency_code
+      - id
+      - instructions
+      - quantity
+      - route
+      - status
+      - substitute_display
     PatientLoginRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -20479,6 +21566,81 @@ components:
       - quiet_hours
       - reminder_offsets_minutes
       - version
+    PatientPrescription:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        number:
+          type: string
+        facility_name:
+          type: string
+        prescriber_name:
+          type: string
+        status:
+          $ref: '#/components/schemas/PrescriptionStatusEnum'
+        issued_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        item_count:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientItem'
+      required:
+      - expires_at
+      - facility_name
+      - id
+      - issued_at
+      - item_count
+      - items
+      - number
+      - patient_id
+      - prescriber_name
+      - status
+    PatientPrescriptionRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        number:
+          type: string
+        facility_name:
+          type: string
+        prescriber_name:
+          type: string
+        status:
+          $ref: '#/components/schemas/PrescriptionStatusEnum'
+        issued_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        item_count:
+          type: integer
+      required:
+      - expires_at
+      - facility_name
+      - id
+      - issued_at
+      - item_count
+      - number
+      - patient_id
+      - prescriber_name
+      - status
     PatientProfile:
       type: object
       properties:
@@ -21491,6 +22653,252 @@ components:
       - requester_audience
       - subject
       - topic
+    Prescription:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        consultation_id:
+          type: string
+          format: uuid
+        visit_id:
+          type: string
+          format: uuid
+        facility_patient_id:
+          type: string
+          format: uuid
+        patient_display_name:
+          type: string
+        prescriber_name:
+          type: string
+        status:
+          $ref: '#/components/schemas/PrescriptionStatusEnum'
+        number:
+          type: string
+          nullable: true
+        issued_at:
+          type: string
+          format: date-time
+          nullable: true
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        cancelled_reason:
+          type: string
+        version:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrescriptionItem'
+        alerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrescriptionAlert'
+        dispense_records:
+          type: array
+          items:
+            $ref: '#/components/schemas/DispenseRecord'
+        queries:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrescriptionQuery'
+      required:
+      - alerts
+      - cancelled_reason
+      - consultation_id
+      - dispense_records
+      - expires_at
+      - facility_patient_id
+      - id
+      - issued_at
+      - items
+      - number
+      - patient_display_name
+      - prescriber_name
+      - queries
+      - status
+      - version
+      - visit_id
+    PrescriptionAlert:
+      type: object
+      properties:
+        drug_code:
+          type: string
+        kind:
+          $ref: '#/components/schemas/AlertKindEnum'
+        severity:
+          $ref: '#/components/schemas/AlertSeverityEnum'
+        allergy_id:
+          type: string
+          format: uuid
+          nullable: true
+        substance:
+          type: string
+          nullable: true
+        verification_status:
+          type: string
+          nullable: true
+        max_usual_quantity:
+          type: integer
+          nullable: true
+        item_id:
+          type: string
+          format: uuid
+        overridden:
+          type: boolean
+      required:
+      - allergy_id
+      - drug_code
+      - item_id
+      - kind
+      - max_usual_quantity
+      - overridden
+      - severity
+      - substance
+      - verification_status
+    PrescriptionItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        drug_code:
+          type: string
+        drug_display:
+          type: string
+        is_off_catalogue:
+          type: boolean
+        is_controlled:
+          type: boolean
+        available_here:
+          type: boolean
+        dose:
+          type: string
+        frequency_code:
+          $ref: '#/components/schemas/FrequencyCodeEnum'
+        route:
+          $ref: '#/components/schemas/RouteEnum'
+        duration_days:
+          type: integer
+          nullable: true
+        quantity:
+          type: integer
+        dispensed_quantity:
+          type: integer
+        instructions:
+          type: string
+        substitution_allowed:
+          type: boolean
+        status:
+          $ref: '#/components/schemas/PrescriptionItemStatusEnum'
+        alert_overrides:
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertOverride'
+        replaces_item_id:
+          type: string
+          format: uuid
+          nullable: true
+        cancelled_reason:
+          type: string
+      required:
+      - alert_overrides
+      - available_here
+      - cancelled_reason
+      - dispensed_quantity
+      - dose
+      - drug_code
+      - drug_display
+      - duration_days
+      - frequency_code
+      - id
+      - instructions
+      - is_controlled
+      - is_off_catalogue
+      - quantity
+      - replaces_item_id
+      - route
+      - status
+      - substitution_allowed
+    PrescriptionItemStatusEnum:
+      enum:
+      - draft
+      - issued
+      - partly_dispensed
+      - dispensed
+      - not_available
+      - cancelled
+      - expired
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `issued` - Issued
+        * `partly_dispensed` - Partly dispensed
+        * `dispensed` - Dispensed
+        * `not_available` - Not available
+        * `cancelled` - Cancelled
+        * `expired` - Expired
+    PrescriptionQuery:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/SupportRequestStatusEnum'
+        message:
+          type: string
+        raised_by_name:
+          type: string
+        raised_at:
+          type: string
+          format: date-time
+        answered_by_addendum_id:
+          type: string
+          format: uuid
+          nullable: true
+        answered_at:
+          type: string
+          format: date-time
+          nullable: true
+        closed_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - answered_at
+      - answered_by_addendum_id
+      - closed_at
+      - id
+      - message
+      - raised_at
+      - raised_by_name
+      - status
+    PrescriptionStatusEnum:
+      enum:
+      - draft
+      - issued
+      - awaiting_payment
+      - ready_to_dispense
+      - partly_dispensed
+      - dispensed
+      - not_available
+      - cancelled
+      - expired
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `issued` - Issued
+        * `awaiting_payment` - Awaiting payment
+        * `ready_to_dispense` - Ready to dispense
+        * `partly_dispensed` - Partly dispensed
+        * `dispensed` - Dispensed
+        * `not_available` - Not available
+        * `cancelled` - Cancelled
+        * `expired` - Expired
     PrincipalRelationshipEnum:
       enum:
       - spouse
@@ -21951,6 +23359,25 @@ components:
       required:
       - endpoint
       - keys
+    QueryAnswerRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        addendum_id:
+          type: string
+          format: uuid
+      required:
+      - addendum_id
+    QueryCreateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+      - message
     QueueGroup:
       type: object
       properties:
@@ -21994,6 +23421,54 @@ components:
         * `low` - low
         * `medium` - medium
         * `high` - high
+    QueueRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        number:
+          type: string
+        status:
+          $ref: '#/components/schemas/PrescriptionStatusEnum'
+        patient_display_name:
+          type: string
+        patient_age:
+          type: integer
+          nullable: true
+        ticket_number:
+          type: string
+          nullable: true
+        issued_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        item_count:
+          type: integer
+        has_controlled:
+          type: boolean
+        has_open_query:
+          type: boolean
+        has_unavailable:
+          type: boolean
+        version:
+          type: integer
+      required:
+      - expires_at
+      - has_controlled
+      - has_open_query
+      - has_unavailable
+      - id
+      - issued_at
+      - item_count
+      - number
+      - patient_age
+      - patient_display_name
+      - status
+      - ticket_number
+      - version
     QuietHours:
       type: object
       properties:
@@ -22475,6 +23950,28 @@ components:
         * `receptionist` - Receptionist
         * `doctor` - Doctor / clinician
         * `pharmacist` - Pharmacist
+    RouteEnum:
+      enum:
+      - oral
+      - topical
+      - inhaled
+      - rectal
+      - vaginal
+      - eye
+      - ear
+      - nasal
+      - injection
+      type: string
+      description: |-
+        * `oral` - Oral
+        * `topical` - On the skin
+        * `inhaled` - Inhaled
+        * `rectal` - Rectal
+        * `vaginal` - Vaginal
+        * `eye` - In the eye
+        * `ear` - In the ear
+        * `nasal` - In the nose
+        * `injection` - Injection
     ScheduleExceptionKindEnum:
       enum:
       - leave
@@ -24802,6 +26299,20 @@ components:
         version:
           type: integer
       required:
+      - version
+    VersionReasonRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 300
+      required:
+      - reason
       - version
     VersionRequest:
       type: object

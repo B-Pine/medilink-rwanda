@@ -148,7 +148,8 @@
     "remoteConfirm": "Emeza ko yahageze",
     "remoteError": "Ntibyakunze kwemeza ko yahageze.",
     "expectedCheckedIn": "{{name}} yanditswe: {{ticket}}",
-    "expectedLateWalkIn": "Yahageze igihe cyo gutegereza cyarenze, ashyirwa ku murongo nk'utafashe gahunda. Mumuhe ikindi gihe niba abishaka."
+    "expectedLateWalkIn": "Yahageze igihe cyo gutegereza cyarenze, ashyirwa ku murongo nk'utafashe gahunda. Mumuhe ikindi gihe niba abishaka.",
+    "findPatient": "Shaka umurwayi: izina, telefoni, indangamuntu cyangwa nimero ya dosiye"
   },
   "panel": {
     "service": "Serivisi",
@@ -200,7 +201,8 @@
     "toPharmacy": "Mwohereze kuri farumasi",
     "toPayment": "Mwohereze kwishyura",
     "hold": "Ategereze ibisubizo",
-    "waiting": "Abategereje"
+    "waiting": "Abategereje",
+    "nextUp": "Ukurikiyeho"
   },
   "reorders": {
     "title": "Igenzura ry’umurongo",
@@ -300,5 +302,30 @@
     "avgConsult": "Igihe cyo kuvurwa uyu munsi (hagati)",
     "leftRate": "Abagiye batavuwe uyu munsi",
     "emergencies": "Ibyihutirwa, iminsi 14"
+  },
+  "flow": {
+    "label": "Abarwayi muri buri cyiciro",
+    "expected": "Abategerejwe",
+    "waiting": "Bategereje",
+    "withDoctor": "Kwa muganga",
+    "payment": "Kwishyura",
+    "pharmacy": "Farumasi",
+    "none": "Nta n'umwe",
+    "booked": "Bafashe gahunda, ntibaraza",
+    "late_one": "{{count}} yakererewe",
+    "late_other": "{{count}} bakererewe",
+    "median_one": "Hagati: iminota {{count}}",
+    "median_other": "Hagati: iminota {{count}}",
+    "called_one": "{{count}} arahamagawe",
+    "called_other": "{{count}} barahamagawe",
+    "slow": {
+      "waiting": "Gutegereza muganga ni ho bitinda ubu.",
+      "payment": "Kwishyura ni ho bitinda ubu.",
+      "pharmacy": "Farumasi ni ho bitinda ubu."
+    },
+    "slowDetail_one": "Umuntu {{count}}, hagati: iminota {{minutes}} kuva ahageze.",
+    "slowDetail_other": "Abantu {{count}}, hagati: iminota {{minutes}} kuva bahageze.",
+    "people_one": "Umuntu {{count}}",
+    "people_other": "Abantu {{count}}"
   }
 }

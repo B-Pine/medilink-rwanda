@@ -23,10 +23,10 @@ export function LeaveTodayCard() {
   return (
     <section
       aria-labelledby="today-leave"
-      className="flex flex-col gap-3 rounded-lg border border-border border-l-4 border-l-warning bg-surface p-5"
+      className="flex flex-col gap-3 rounded-lg bg-surface p-5 shadow-card"
     >
       <div className="flex items-center gap-3">
-        <span className="inline-flex size-10 items-center justify-center rounded-md bg-warning-bg text-warning">
+        <span className="inline-flex size-10 items-center justify-center rounded-md bg-attention-bg text-attention">
           <AirplaneTilt aria-hidden="true" weight="duotone" className="size-5" />
         </span>
         <div className="flex min-w-0 flex-1 flex-col">

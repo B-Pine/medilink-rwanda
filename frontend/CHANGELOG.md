@@ -9,6 +9,47 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Redesign · Patient app (#129)
+
+- patient-web: on phones the four destinations are a real bottom tab bar (the header's backdrop
+  blur had pinned the "fixed" bar under the header); tablets and up keep them in the header. The
+  header stays one row on phones (language moves to Settings; the profile switcher drops its badge).
+- Home: the live ticket leads as a deep-forest card (notched ticket, people ahead, wait, "leave home
+  by" in the attention tint); the alerts prompt moves below; find care is a search field on the
+  forest card with "Not sure? Describe your symptoms" beside it; account shortcuts are one list.
+- Tracker: the large notched ticket; the page no longer shows "Home" twice at the top.
+
+### Redesign · Facility admin and card polish (#127)
+
+- staff-web Today (facility admin): the patient-flow strip and a plain-language callout of the slow
+  step ("Waiting for a doctor is the slow step right now. 8 people, up to 31 min.") above the
+  figures; "Needs your attention" items are tinted rows.
+- Every card in staff-web and patient-web lifts with `shadow-card` instead of a hard border, and
+  coloured side-bar accents are gone: `Alert`, the leave card, platform overview tiles and the
+  emergency notices use tinted surfaces.
+- Fixed: the operations card showed the raw key `queue.ops.liveSummary` (the plural needed
+  `count`); the platform menu says "Facility applications" like the page.
+- Test: "moves an expected booking" no longer depends on the weekday.
+
+### Redesign · Doctor (#124)
+
+- staff-web My queue: the patient in the room is the focal card (large ticket stub, name, state,
+  actions behind a quiet divider); the duty switch is a segmented control with a coloured dot for
+  the current state and the room picker beside it; with nobody in the room, Call next sits on the
+  deep-forest band and names who is next; Up next uses ticket stubs (emergency red, next ochre).
+
+### Redesign · Front desk (#121)
+
+- staff-web queue board: a check-in bar on the deep-forest band (find a patient `/`, check in `N`,
+  book by phone), the live patient-flow strip (expected, waiting, with a doctor, payment, pharmacy;
+  the slowest stage over 15 minutes is highlighted), a segmented service filter, ticket stubs
+  tinted by state (emergency red, next up ochre, remote not yet seen grey), skeleton loading, and
+  softer Expected, remote-joiner and missed lists with compact actions.
+- staff-web Today: a quiet greeting with role chips, the most-used actions as one row of pills
+  (utilities like the inbox stay in their own places), and the patient flow as the focal card.
+- ui: `Button` presses (scale 0.97), a softer secondary style and a new `sm` size.
+- A full reload no longer flashes every queue row as "changed".
+
 ### Redesign · Foundation (#119)
 
 - Design system: neutrals lean toward the forest green (re-measured, WCAG AA in both themes); new

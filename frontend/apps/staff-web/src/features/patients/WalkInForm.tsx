@@ -156,7 +156,7 @@ export function WalkInForm({ onRegistered }: WalkInFormProps) {
       <form
         onSubmit={submit}
         noValidate
-        className="flex flex-col gap-6 rounded-lg border border-border bg-surface p-5 sm:p-6"
+        className="flex flex-col gap-6 rounded-lg bg-surface shadow-card p-5 sm:p-6"
         aria-label={t("patients.register.title")}
       >
         <FormSection title={t("patients.register.sections.person")}>

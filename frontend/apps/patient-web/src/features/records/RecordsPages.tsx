@@ -94,7 +94,7 @@ export function RecordsPage() {
             <li key={r.id}>
               <Link
                 to={`/records/${r.id}`}
-                className="flex min-h-target items-center gap-3 rounded-lg border border-border bg-surface p-4 text-fg no-underline hover:bg-subtle"
+                className="flex min-h-target items-center gap-3 rounded-lg bg-surface shadow-card p-4 text-fg no-underline hover:bg-subtle"
               >
                 <FileText
                   aria-hidden="true"

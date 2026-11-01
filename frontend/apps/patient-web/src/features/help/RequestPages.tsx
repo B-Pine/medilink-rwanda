@@ -89,7 +89,7 @@ export function RequestsPage() {
             <li key={r.id}>
               <Link
                 to={`/support/requests/${r.id}`}
-                className="flex min-h-target flex-col gap-2 rounded-lg border border-border bg-surface p-4 text-fg no-underline hover:bg-subtle"
+                className="flex min-h-target flex-col gap-2 rounded-lg bg-surface shadow-card p-4 text-fg no-underline hover:bg-subtle"
               >
                 <span className="flex flex-wrap items-center justify-between gap-2">
                   <span className="font-mono text-body-sm text-fg-secondary">{r.reference}</span>

@@ -92,7 +92,7 @@ function Section({
       id={id}
       tabIndex={-1}
       aria-labelledby={`${id}-title`}
-      className="flex scroll-mt-24 flex-col gap-3 rounded-lg border border-border bg-surface p-4"
+      className="flex scroll-mt-24 flex-col gap-3 rounded-lg bg-surface shadow-card p-4"
     >
       <h2 id={`${id}-title`} className="m-0 text-h3">
         {title}

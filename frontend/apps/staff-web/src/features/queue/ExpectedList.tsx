@@ -14,7 +14,7 @@ import { actionError, ReasonDialog, useCan, useServiceNames } from "./shared";
 export const expectedKey = ["queue", "expected"] as const;
 
 /** Today's confirmed and no-show bookings in one request, shared by Expected and Missed today. */
-function useTodayBookings(enabled = true) {
+export function useTodayBookings(enabled = true) {
   const api = useApi();
   const refetchInterval = usePollInterval();
   const today = kigaliToday();
@@ -122,23 +122,21 @@ export function ExpectedList({
       <ul
         aria-label={t("queue.board.expected")}
         aria-busy={bookings.isPending}
-        className="m-0 flex list-none flex-col divide-y divide-border rounded-lg border border-border bg-surface p-0"
+        className="m-0 flex list-none flex-col divide-y divide-border overflow-hidden rounded-lg bg-surface p-0 shadow-card"
       >
         {rows.map((booking) => (
           <li key={booking.id} className="flex flex-col gap-2.5 px-3 py-3">
             <div className="flex items-start gap-3">
               <time
                 dateTime={booking.starts_at}
-                className="shrink-0 font-semibold tabular-nums leading-6"
+                className="w-12 shrink-0 font-heading font-bold tabular-nums leading-6"
               >
                 {slotTime(booking.starts_at, language)}
               </time>
               <span className="flex min-w-0 flex-1 flex-col">
                 <span className="font-semibold leading-6 break-words">{booking.display_name}</span>
                 <span className="text-body-sm text-fg-muted break-words">
-                  {serviceName(booking.service_id)}
-                </span>
-                <span className="text-body-sm text-fg-muted break-words">
+                  {serviceName(booking.service_id)} ·{" "}
                   {booking.doctor ?? t("queue.board.expectedAnyDoctor")}
                 </span>
                 {booking.symptoms.length > 0 && (
@@ -154,10 +152,10 @@ export function ExpectedList({
               )}
             </div>
             {canCheckIn && (
-              <div className="flex gap-2">
+              <div className="flex gap-2 pl-15">
                 <Button
                   variant="secondary"
-                  className="flex-1"
+                  size="sm"
                   loading={checkIn.isPending && checkIn.variables?.id === booking.id}
                   disabled={checkIn.isPending}
                   onClick={() => checkIn.mutate(booking)}
@@ -165,7 +163,7 @@ export function ExpectedList({
                   {t("queue.board.expectedCheckIn")}
                 </Button>
                 {onNewTime && (
-                  <Button variant="ghost" onClick={() => onNewTime(booking)}>
+                  <Button variant="ghost" size="sm" onClick={() => onNewTime(booking)}>
                     {t("bookings.expected.newTime")}
                   </Button>
                 )}
@@ -218,7 +216,7 @@ export function MissedList({ serviceId }: { serviceId: string | null }) {
       <p className="m-0 text-body-sm text-fg-muted">{t("queue.board.missedHint")}</p>
       <ul
         aria-labelledby="missed-today"
-        className="m-0 flex list-none flex-col divide-y divide-border rounded-lg border border-dashed border-border p-0"
+        className="m-0 flex list-none flex-col divide-y divide-border overflow-hidden rounded-lg bg-surface/60 p-0 shadow-card"
       >
         {rows.map((booking) => (
           <li key={booking.id} className="flex flex-col gap-2 px-3 py-3">
@@ -236,7 +234,12 @@ export function MissedList({ serviceId }: { serviceId: string | null }) {
                 </span>
               </span>
             </div>
-            <Button variant="ghost" className="self-start" onClick={() => setUndoing(booking)}>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="self-start"
+              onClick={() => setUndoing(booking)}
+            >
               {t("queue.board.undoNoShow")}
             </Button>
           </li>

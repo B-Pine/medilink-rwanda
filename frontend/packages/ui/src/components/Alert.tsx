@@ -7,17 +7,17 @@ import { cx } from "../utils/cx";
 export type AlertTone = "info" | "success" | "warning" | "danger";
 
 const TONES: Record<AlertTone, { className: string; icon: Icon }> = {
-  info: { className: "border-info bg-info-bg text-fg [&_.ml-alert-icon]:text-info", icon: Info },
+  info: { className: "bg-info-bg text-fg [&_.ml-alert-icon]:text-info", icon: Info },
   success: {
-    className: "border-success bg-success-bg text-fg [&_.ml-alert-icon]:text-success",
+    className: "bg-success-bg text-fg [&_.ml-alert-icon]:text-success",
     icon: CheckCircle,
   },
   warning: {
-    className: "border-warning bg-warning-bg text-fg [&_.ml-alert-icon]:text-warning",
+    className: "bg-warning-bg text-fg [&_.ml-alert-icon]:text-warning",
     icon: Warning,
   },
   danger: {
-    className: "border-danger bg-danger-bg text-fg [&_.ml-alert-icon]:text-danger",
+    className: "bg-danger-bg text-fg [&_.ml-alert-icon]:text-danger",
     icon: WarningOctagon,
   },
 };
@@ -53,7 +53,7 @@ export function Alert({
       id={id}
       role={role}
       tabIndex={tabIndex}
-      className={cx("flex gap-3 rounded-md border-l-4 p-4", toneClass, className)}
+      className={cx("flex gap-3 rounded-md p-4", toneClass, className)}
     >
       <ToneIcon
         aria-hidden="true"

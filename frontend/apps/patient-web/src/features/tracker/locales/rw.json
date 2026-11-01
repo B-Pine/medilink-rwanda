@@ -63,5 +63,7 @@
     "passOver": "Gera ku kigo vuba wiyandikishe ku kwakira abarwayi. Nibatakwemeza mbere y'uko igihe cyawe kigera, umwanya wawe usubira inyuma.",
     "passOverClaimed": "Erekana tike yawe ku kwakira abarwayi ubu. Kugeza bemeje ko wahageze, umwanya wawe ushobora gusubira inyuma.",
     "changed": "Tike yawe yahindutse. Twayivuguruye. Ongera ugerageze."
-  }
+  },
+  "aheadShort_one": "umuntu uri imbere yawe",
+  "aheadShort_other": "abantu bari imbere yawe"
 }

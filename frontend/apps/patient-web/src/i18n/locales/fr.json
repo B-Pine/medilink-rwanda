@@ -255,7 +255,8 @@
       "family": "Membres de la famille",
       "privacy": "Confidentialité et accès à mon dossier",
       "settings": "Taille du texte, langue et thème"
-    }
+    },
+    "notSureBody": "Répondez à quelques questions sur ce que vous ressentez, nous vous suggérons où aller."
   },
   "info": {
     "back": "Retour à l’accueil",

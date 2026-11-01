@@ -5,9 +5,25 @@ import {
   socketUrl,
   type PatientVisit,
 } from "@medilink/api-client";
-import { Alert, Button, cx, Dialog, ProgressDots, TextField, TicketNumber } from "@medilink/ui";
+import {
+  Alert,
+  Button,
+  cx,
+  Dialog,
+  ImigongoPattern,
+  ProgressDots,
+  TextField,
+  TicketNumber,
+} from "@medilink/ui";
 import { formatTime } from "@medilink/ui/i18n";
-import { CloudSlash, MapPin, MegaphoneSimple, PersonSimpleWalk } from "@phosphor-icons/react";
+import {
+  CaretRight,
+  Clock,
+  CloudSlash,
+  MapPin,
+  MegaphoneSimple,
+  PersonSimpleWalk,
+} from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -108,7 +124,7 @@ export function TrackerPage() {
       )}
       {visits.isPending && <p className="m-0 text-fg-secondary">{t("tracker.loading")}</p>}
       {visits.data && !visit && (
-        <div className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-5">
+        <div className="flex flex-col gap-3 rounded-lg bg-surface shadow-card p-5">
           <p className="m-0 font-heading text-h3">{t("tracker.noVisitTitle")}</p>
           <p className="m-0 text-fg-secondary">{t("tracker.noVisit")}</p>
           <Link to="/home" className="font-semibold">
@@ -139,7 +155,7 @@ function Tracker({ visit, lang }: { visit: PatientVisit; lang: string }) {
       )}
       <section
         aria-labelledby="ticket"
-        className="flex flex-col items-center gap-5 rounded-lg border border-border bg-surface px-5 py-7 text-center shadow-raised"
+        className="flex flex-col items-center gap-5 rounded-lg bg-surface shadow-raised px-5 py-7 text-center "
       >
         <p className="m-0 text-fg-secondary">
           {visit.facility_name} · {name}
@@ -151,7 +167,8 @@ function Tracker({ visit, lang }: { visit: PatientVisit; lang: string }) {
           <TicketNumber
             number={visit.ticket_number}
             size="display"
-            className="text-[3.5rem] leading-none text-fg"
+            stub
+            tone={visit.state === "called" ? "attention" : "brand"}
           />
           <span className="text-fg-secondary">{t("tracker.yourTicket")}</span>
         </div>
@@ -179,7 +196,7 @@ function Tracker({ visit, lang }: { visit: PatientVisit; lang: string }) {
         <RemoteArrival visit={visit} />
       )}
 
-      <section aria-labelledby="stages" className="rounded-lg border border-border bg-surface p-5">
+      <section aria-labelledby="stages" className="rounded-lg bg-surface shadow-card p-5">
         <h2 id="stages" className="m-0 mb-3 font-heading text-h3">
           {t("tracker.stagesTitle")}
         </h2>
@@ -299,7 +316,7 @@ function RemoteArrival({ visit }: { visit: PatientVisit }) {
   return (
     <section
       aria-labelledby="remote-arrival"
-      className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-5"
+      className="flex flex-col gap-3 rounded-lg bg-surface shadow-card p-5"
     >
       <h2 id="remote-arrival" className="m-0 flex items-center gap-2 font-heading text-h3">
         <MapPin aria-hidden="true" className="size-5 text-brand" />
@@ -467,34 +484,77 @@ export function ActiveVisitCard() {
       <h2 id="active-visits" className="sr-only">
         {t("tracker.homeTitle")}
       </h2>
-      {list.map((v) => (
-        <Link
-          key={v.visit_id}
-          to={`/visits/${v.visit_id}`}
-          className={cx(
-            "flex items-center gap-4 rounded-lg p-5 no-underline shadow-raised",
-            v.state === "called" ? "bg-primary text-on-primary" : "bg-forest text-on-forest",
-          )}
-        >
-          <TicketNumber number={v.ticket_number} size="lg" className="text-[2.25rem]" />
-          <span className="flex min-w-0 flex-1 flex-col">
-            <span className="font-semibold">{v.facility_name}</span>
-            <span className="opacity-90">
-              {v.state === "called"
-                ? t("tracker.calledTo", { room: v.service_point ?? "" })
-                : v.state === "waiting"
-                  ? `${t("tracker.ahead", { count: v.ahead })}${v.estimate.min !== null ? ` · ${t("tracker.wait", { min: v.estimate.min, max: v.estimate.max })}` : ""}`
-                  : t(`tracker.states.${v.state}`, { defaultValue: t("tracker.inService") })}
+      {list.map((v) => {
+        const called = v.state === "called";
+        return (
+          <Link
+            key={v.visit_id}
+            to={`/visits/${v.visit_id}`}
+            className={cx(
+              "group relative isolate flex flex-col gap-4 overflow-hidden rounded-xl p-5 no-underline shadow-raised sm:p-6",
+              "transition-transform duration-150 active:scale-[0.99]",
+              called ? "bg-attention-solid text-on-attention-solid" : "bg-forest text-on-forest",
+            )}
+          >
+            {!called && <ImigongoPattern opacity={0.06} className="-z-10 text-on-forest-accent" />}
+            <span className="flex items-center justify-between gap-3 text-body-sm font-semibold">
+              <span className="min-w-0 truncate">{v.facility_name}</span>
+              <span className="inline-flex shrink-0 items-center gap-1.5">
+                <span aria-hidden="true" className="ml-live-dot" />
+                {t("tracker.open")}
+                <CaretRight
+                  aria-hidden="true"
+                  weight="bold"
+                  className="size-4 transition-transform group-hover:translate-x-0.5"
+                />
+              </span>
             </span>
-            {v.leave_by && (
-              <span className="text-body-sm opacity-90">
-                {t("tracker.leaveBy", { time: time(v.leave_by, lang) })}
+            <span className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <TicketNumber
+                number={v.ticket_number}
+                size="lg"
+                stub
+                tone={called ? "onSolid" : "onForest"}
+              />
+              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                {called ? (
+                  <span className="font-heading text-h2 font-bold">
+                    {t("tracker.calledTo", { room: v.service_point ?? "" })}
+                  </span>
+                ) : v.state === "waiting" ? (
+                  <>
+                    <span className="flex items-baseline gap-2">
+                      <span className="font-heading text-display leading-none font-extrabold tabular-nums">
+                        {v.ahead}
+                      </span>
+                      <span className="font-semibold">
+                        {t("tracker.aheadShort", { count: v.ahead })}
+                      </span>
+                    </span>
+                    {v.estimate.min !== null && (
+                      <span className="text-body-sm opacity-85">
+                        {t("tracker.wait", { min: v.estimate.min, max: v.estimate.max })}
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <span className="font-heading text-h2 font-bold">
+                    {t(`tracker.states.${v.state}`, { defaultValue: t("tracker.inService") })}
+                  </span>
+                )}
+              </span>
+            </span>
+            {v.leave_by && !called && (
+              <span className="flex items-center gap-3 rounded-lg bg-attention-bg px-4 py-3 text-attention">
+                <Clock aria-hidden="true" weight="bold" className="size-5 shrink-0" />
+                <span className="font-semibold text-fg">
+                  {t("tracker.leaveBy", { time: time(v.leave_by, lang) })}
+                </span>
               </span>
             )}
-          </span>
-          <span className="font-semibold underline underline-offset-4">{t("tracker.open")}</span>
-        </Link>
-      ))}
+          </Link>
+        );
+      })}
     </section>
   );
 }

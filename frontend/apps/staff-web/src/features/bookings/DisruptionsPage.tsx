@@ -121,7 +121,7 @@ function Disruptions() {
           {rows.map((d) => (
             <li
               key={d.id}
-              className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-surface p-4"
+              className="flex flex-wrap items-center gap-3 rounded-lg bg-surface shadow-card p-4"
             >
               <div className="flex min-w-0 flex-1 flex-col gap-1">
                 <Link to={`/disruptions/${d.id}`} className="font-semibold text-link">
@@ -373,7 +373,7 @@ function AffectedStep({ data, onApplied }: { data: DisruptionDetail; onApplied: 
   return (
     <div className="flex flex-col gap-4">
       <p className="m-0">{t("bookings.disruptions.affectedCount", { count: open.length })}</p>
-      <div className="flex flex-wrap items-end gap-2 rounded-lg border border-border bg-surface p-4">
+      <div className="flex flex-wrap items-end gap-2 rounded-lg bg-surface shadow-card p-4">
         <SelectField
           label={t("bookings.disruptions.forAll")}
           value={all}
@@ -403,7 +403,7 @@ function AffectedStep({ data, onApplied }: { data: DisruptionDetail; onApplied: 
         {open.map((item) => (
           <li
             key={item.id}
-            className="flex flex-wrap items-end gap-3 rounded-lg border border-border bg-surface p-3"
+            className="flex flex-wrap items-end gap-3 rounded-lg bg-surface shadow-card p-3"
           >
             <ItemLabel item={item} />
             <SelectField
@@ -472,7 +472,7 @@ function AnswersStep({ data }: { data: DisruptionDetail }) {
           return (
             <li
               key={item.id}
-              className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-surface p-3"
+              className="flex flex-wrap items-center gap-3 rounded-lg bg-surface shadow-card p-3"
             >
               <ItemLabel item={item} />
               <span className="text-body-sm text-fg-secondary">

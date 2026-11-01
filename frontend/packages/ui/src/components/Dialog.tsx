@@ -44,7 +44,7 @@ export function Dialog({
           {...(description ? {} : { "aria-describedby": undefined })}
           className={cx(
             "fixed top-1/2 left-1/2 z-50 flex max-h-[90vh] w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col",
-            "rounded-lg border border-border bg-surface text-fg shadow-lg",
+            "rounded-lg bg-surface shadow-lg text-fg ",
             size === "lg" ? "max-w-3xl" : "max-w-lg",
             className,
           )}

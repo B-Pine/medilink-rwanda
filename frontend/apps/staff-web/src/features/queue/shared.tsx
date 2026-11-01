@@ -1,3 +1,4 @@
+import { formatTime } from "@medilink/ui/i18n";
 import {
   hasPermission,
   isApiError,
@@ -8,6 +9,7 @@ import {
 } from "@medilink/api-client";
 import {
   Alert,
+  Badge,
   Button,
   Dialog,
   QueueFlagChip,
@@ -50,10 +52,26 @@ export function minutesSince(iso: string | null | undefined, now = Date.now()): 
 }
 
 export function Flags({ ticket }: { ticket: TicketRow }) {
-  const { t } = useTranslation();
-  if (!ticket.flags.length) return null;
+  const { t, i18n } = useTranslation();
+  const remote = ticket.is_remote && !ticket.remote_arrival_confirmed_at;
+  if (!ticket.flags.length && !ticket.slot_starts_at && !ticket.late && !remote) return null;
   return (
     <span className="flex flex-wrap gap-1">
+      {ticket.slot_starts_at && (
+        <Badge tone="brand">
+          {t("queue.flags.booked", {
+            time: formatTime(ticket.slot_starts_at, i18n.resolvedLanguage ?? "rw"),
+          })}
+        </Badge>
+      )}
+      {ticket.late && <Badge tone="warning">{t("queue.flags.lateWalkIn")}</Badge>}
+      {remote && (
+        <Badge tone="info">
+          {ticket.remote_arrival_claimed_at
+            ? t("queue.board.remoteClaimed")
+            : t("queue.flags.remote")}
+        </Badge>
+      )}
       {ticket.flags.map((flag) => {
         const [kind, detail] = flag.split(":") as [QueueFlag, string | undefined];
         return (

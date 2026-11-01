@@ -45,7 +45,10 @@
     "priority": "Priority",
     "return": "Back from tests",
     "stepped_out": "Stepped out",
-    "no_response": "Missed call"
+    "no_response": "Missed call",
+    "booked": "Booked {{time}}",
+    "lateWalkIn": "Late: walk-in",
+    "remote": "Remote, not here yet"
   },
   "priority": {
     "elderly": "Elderly",
@@ -92,7 +95,11 @@
     "step_out_expired": "Back from stepping out",
     "priority": "Priority changed",
     "reorder": "Moved in the queue",
-    "end_of_day": "Closed at end of day"
+    "end_of_day": "Closed at end of day",
+    "remote_join": "Joined from home",
+    "remote_arrival_claimed": "Said they're here",
+    "remote_arrival_confirmed": "Arrival confirmed",
+    "pass_over": "Moved back (not arrived)"
   },
   "columns": {
     "ticket": "Ticket",
@@ -133,7 +140,15 @@
     "missedHint": "Marked as no-shows. Undo if the patient was here or the delay was ours; the strike is removed.",
     "undoNoShow": "Undo no-show",
     "undoNoShowHelp": "The booking is closed and the patient's strike is removed.",
-    "undoNoShowError": "Could not undo this no-show."
+    "undoNoShowError": "Could not undo this no-show.",
+    "remote_one": "Joined from home ({{count}})",
+    "remote_other": "Joined from home ({{count}})",
+    "remoteHint": "Confirm when the patient is at the desk. Until then their place moves back near the front.",
+    "remoteClaimed": "Says they're here",
+    "remoteConfirm": "Confirm arrival",
+    "remoteError": "Could not confirm the arrival.",
+    "expectedCheckedIn": "{{name}} checked in: {{ticket}}",
+    "expectedLateWalkIn": "Arrived after the grace time, so queued as a walk-in. Offer a new time if they prefer."
   },
   "panel": {
     "service": "Service",
@@ -151,7 +166,9 @@
     "transferHint": "The patient keeps their arrival time in the new queue.",
     "stepOut": "Stepped out 15 min",
     "left": "Mark as left",
-    "timeline": "What happened"
+    "timeline": "What happened",
+    "remoteClaimed": "The patient tapped \"I'm here\". Check they are at the desk, then confirm.",
+    "remoteNotArrived": "Joined from home and not confirmed yet. Confirm when the patient is at the desk."
   },
   "checkIn": {
     "title": "Check in a patient",

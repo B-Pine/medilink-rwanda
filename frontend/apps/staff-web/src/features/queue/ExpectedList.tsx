@@ -1,4 +1,4 @@
-import type { NoShowReversalReason, StaffBooking } from "@medilink/api-client";
+import type { CheckInResult, NoShowReversalReason, StaffBooking } from "@medilink/api-client";
 import { newIdempotencyKey, NO_SHOW_REVERSAL_REASONS } from "@medilink/api-client";
 import { Alert, Badge, Button, EmptyState } from "@medilink/ui";
 import { CalendarCheck } from "@phosphor-icons/react";
@@ -45,10 +45,12 @@ export function ExpectedList({
   const canCheckIn = useCan("queue.operate");
   const language = i18n.resolvedLanguage ?? "en";
   const bookings = useTodayBookings();
+  const [checkedIn, setCheckedIn] = useState<{ booking: StaffBooking; result: CheckInResult }>();
 
   const checkIn = useMutation({
     mutationFn: (booking: StaffBooking) =>
       api.queue.checkIn({ booking_id: booking.id }, newIdempotencyKey()),
+    onSuccess: (result, booking) => setCheckedIn({ booking, result }),
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: expectedKey });
       void queryClient.invalidateQueries({ queryKey: queueKeys.board });
@@ -72,20 +74,46 @@ export function ExpectedList({
     (booking) => booking.status === "confirmed" && (!serviceId || booking.service_id === serviceId),
   );
 
+  const done = checkedIn && (
+    <Alert
+      tone={checkedIn.result.late ? "warning" : "success"}
+      role="status"
+      title={t("queue.board.expectedCheckedIn", {
+        name: checkedIn.booking.display_name,
+        ticket: checkedIn.result.ticket.number,
+      })}
+    >
+      {checkedIn.result.late && (
+        <span className="flex flex-col items-start gap-2">
+          {t("queue.board.expectedLateWalkIn")}
+          {onNewTime && (
+            <Button variant="secondary" onClick={() => onNewTime(checkedIn.booking)}>
+              {t("bookings.expected.newTime")}
+            </Button>
+          )}
+        </span>
+      )}
+    </Alert>
+  );
+
   if (bookings.isSuccess && rows.length === 0) {
     return (
-      <EmptyState
-        size="inline"
-        icon={CalendarCheck}
-        title={t("queue.board.expectedEmptyTitle")}
-        description={t("queue.board.expectedEmpty")}
-        className="rounded-lg border border-dashed border-border"
-      />
+      <div className="flex flex-col gap-3">
+        {done}
+        <EmptyState
+          size="inline"
+          icon={CalendarCheck}
+          title={t("queue.board.expectedEmptyTitle")}
+          description={t("queue.board.expectedEmpty")}
+          className="rounded-lg border border-dashed border-border"
+        />
+      </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-3">
+      {done}
       {checkIn.isError && (
         <Alert tone="danger">
           {actionError(checkIn.error, t("queue.board.expectedCheckInError"))}

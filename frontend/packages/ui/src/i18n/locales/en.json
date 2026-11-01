@@ -43,5 +43,11 @@
     "normal": "Normal",
     "large": "Large",
     "xlarge": "Extra large"
+  },
+  "chart": {
+    "showTable": "Show table",
+    "hideTable": "Hide table",
+    "keyboardHint": "Use the left and right arrow keys to read each value.",
+    "tableOf": "Data of the chart: {{title}}"
   }
 }

@@ -1,15 +1,20 @@
-import { ArrowDownRight, ArrowUpRight, Minus } from "@phosphor-icons/react";
-import { useId, useState, type ReactNode } from "react";
+import { ArrowDownRight, ArrowUpRight, Gauge, Minus, Table } from "@phosphor-icons/react";
+import { useId, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 import { cx } from "../utils/cx";
 
 /**
  * Chart kit (design 02 §6, design 04 §4). Rules: one y-axis; thin 2 px lines; text in ink colours,
- * never series colours; a hover readout on every chart; every chart has a table equivalent for
- * screen readers. Colours come from the validated `--color-chart-*` / `--color-seq-*` tokens.
+ * never series colours; a readout on every chart, by pointer and by keyboard; every chart has a
+ * table view (a visible "Show table" toggle; always available to screen readers). Colours come
+ * from the validated `--ml-chart-*` / `--ml-seq-*` tokens.
  */
 
-const SERIES = ["var(--ml-chart-1)", "var(--ml-chart-2)", "var(--ml-chart-3)", "var(--ml-chart-4)"];
+/** The six validated series colours, in their fixed order (design 02 §6). */
+export const CHART_SERIES = [1, 2, 3, 4, 5, 6].map((i) => `var(--ml-chart-${i})`);
+/** Steps of the sequential emerald ramp (design 02 §6). */
+export const SEQUENTIAL_STEPS = 4;
 
 function points(values: (number | null)[], width: number, height: number, pad = 2) {
   const known = values.filter((v): v is number => v !== null);
@@ -146,11 +151,51 @@ export interface TrendSeries {
   values: (number | null)[];
 }
 
-/** Line chart with hover readout and a table for assistive technology (design 04 §4). */
+/** Visible "Show table" toggle + the chart's data table (sr-only while collapsed). */
+function ChartTable({
+  title,
+  open,
+  onToggle,
+  children,
+}: {
+  title: string;
+  open: boolean;
+  onToggle: () => void;
+  children: ReactNode;
+}) {
+  const { t } = useTranslation("ui");
+  const id = useId();
+  return (
+    <>
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls={id}
+        onClick={onToggle}
+        className="inline-flex min-h-target cursor-pointer items-center gap-1.5 self-start rounded-md border-0 bg-transparent px-2 text-body-sm font-semibold text-link underline-offset-2 hover:underline"
+      >
+        <Table aria-hidden="true" weight="bold" className="size-4" />
+        {open ? t("chart.hideTable") : t("chart.showTable")}
+      </button>
+      <div id={id} className={open ? "overflow-x-auto" : "sr-only"}>
+        <table className="w-full border-collapse text-left text-body-sm tabular-nums [&_td]:border-b [&_td]:border-border [&_td]:px-4 [&_td]:py-1.5 [&_th]:border-b [&_th]:border-border [&_th]:px-4 [&_th]:py-1.5 [&_th]:font-semibold">
+          <caption className="sr-only">{t("chart.tableOf", { title })}</caption>
+          {children}
+        </table>
+      </div>
+    </>
+  );
+}
+
+/**
+ * Line chart (design 04 §4): up to six series in the validated order (fold a 7th and later into
+ * "Other" before passing them; extra series are not drawn). Readout on hover and on keyboard focus
+ * (arrow keys, Home, End, Escape); visible table toggle.
+ */
 export function TrendChart({
   title,
   labels,
-  series,
+  series: allSeries,
   unit = "",
   height = 200,
 }: {
@@ -160,9 +205,13 @@ export function TrendChart({
   unit?: string;
   height?: number;
 }) {
+  const { t } = useTranslation("ui");
+  const hintId = useId();
   const [hover, setHover] = useState<number | null>(null);
+  const [showTable, setShowTable] = useState(false);
+  const series = allSeries.slice(0, CHART_SERIES.length);
   const width = 640;
-  const pad = { l: 36, r: 12, t: 12, b: 26 };
+  const pad = { l: 40, r: 12, t: 12, b: 28 };
   const all = series.flatMap((s) => s.values.filter((v): v is number => v !== null));
   const max = Math.max(...all, 1);
   // whole-number ticks: round the top up to a multiple of 2, 10 or 20 so the middle tick is whole
@@ -172,6 +221,34 @@ export function TrendChart({
     pad.l + (labels.length > 1 ? (i * (width - pad.l - pad.r)) / (labels.length - 1) : 0);
   const y = (v: number) => pad.t + (height - pad.t - pad.b) * (1 - v / top);
   const ticks = [0, top / 2, top];
+  const last = labels.length - 1;
+
+  const value = (s: TrendSeries, i: number) => {
+    const v = s.values[i];
+    return v === null || v === undefined ? "—" : `${v}${unit}`;
+  };
+  const readout = (i: number) =>
+    `${labels[i]}: ${series.map((s) => `${s.name} ${value(s, i)}`).join(", ")}`;
+  const current = hover ?? Math.max(last, 0);
+
+  function onKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (last < 0) return;
+    if (event.key === "Escape") {
+      setHover(null);
+      return;
+    }
+    const current = hover ?? last;
+    const next: Record<string, number> = {
+      ArrowLeft: Math.max(0, current - 1),
+      ArrowRight: Math.min(last, current + 1),
+      Home: 0,
+      End: last,
+    };
+    if (!(event.key in next)) return;
+    event.preventDefault();
+    setHover(next[event.key]!);
+  }
+
   return (
     <figure className="m-0 flex flex-col gap-2">
       <figcaption className="flex flex-wrap items-center justify-between gap-2">
@@ -183,7 +260,7 @@ export function TrendChart({
                 <span
                   aria-hidden="true"
                   className="h-0.5 w-4 rounded-full"
-                  style={{ background: SERIES[i] }}
+                  style={{ background: CHART_SERIES[i] }}
                 />
                 {s.name}
               </span>
@@ -191,7 +268,26 @@ export function TrendChart({
           </span>
         )}
       </figcaption>
-      <div className="relative">
+      {/* Keyboard readout: a slider over the data points (arrow keys, Home, End). Screen readers
+          announce its value text, the same readout as the pointer tooltip. */}
+      <div
+        role="slider"
+        tabIndex={0}
+        aria-label={title}
+        aria-describedby={hintId}
+        aria-valuemin={0}
+        aria-valuemax={Math.max(last, 0)}
+        aria-valuenow={current}
+        aria-valuetext={labels.length ? readout(current) : undefined}
+        aria-orientation="horizontal"
+        onKeyDown={onKeyDown}
+        onFocus={() => setHover((h) => h ?? (last >= 0 ? last : null))}
+        onBlur={() => setHover(null)}
+        className="relative rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+      >
+        <span id={hintId} className="sr-only">
+          {t("chart.keyboardHint")}
+        </span>
         <svg
           aria-hidden="true"
           viewBox={`0 0 ${width} ${height}`}
@@ -200,38 +296,38 @@ export function TrendChart({
           onPointerMove={(e) => {
             const box = e.currentTarget.getBoundingClientRect();
             const rel = ((e.clientX - box.left) / box.width) * width;
-            const i = Math.round(((rel - pad.l) / (width - pad.l - pad.r)) * (labels.length - 1));
-            setHover(Math.max(0, Math.min(labels.length - 1, i)));
+            const i = Math.round(((rel - pad.l) / (width - pad.l - pad.r)) * last);
+            setHover(Math.max(0, Math.min(last, i)));
           }}
         >
-          {ticks.map((t) => (
-            <g key={t}>
+          {ticks.map((tick) => (
+            <g key={tick}>
               <line
                 x1={pad.l}
                 x2={width - pad.r}
-                y1={y(t)}
-                y2={y(t)}
+                y1={y(tick)}
+                y2={y(tick)}
                 stroke="var(--ml-chart-grid)"
                 strokeWidth="1"
               />
               <text
                 x={pad.l - 6}
-                y={y(t) + 4}
+                y={y(tick) + 4}
                 textAnchor="end"
-                className="fill-fg-muted text-[11px] tabular-nums"
+                className="fill-fg-muted text-caption tabular-nums"
               >
-                {t}
+                {tick}
               </text>
             </g>
           ))}
           {labels.map((l, i) =>
-            i % Math.ceil(labels.length / 7) === 0 || i === labels.length - 1 ? (
+            i % Math.ceil(labels.length / 7) === 0 || i === last ? (
               <text
                 key={l + i}
                 x={x(i)}
                 y={height - 6}
                 textAnchor="middle"
-                className="fill-fg-muted text-[11px]"
+                className="fill-fg-muted text-caption"
               >
                 {l}
               </text>
@@ -250,7 +346,7 @@ export function TrendChart({
                 key={s.name}
                 d={d}
                 fill="none"
-                stroke={SERIES[si]}
+                stroke={CHART_SERIES[si]}
                 strokeWidth="2"
                 strokeLinejoin="round"
                 strokeLinecap="round"
@@ -276,7 +372,7 @@ export function TrendChart({
                     cy={y(v)}
                     r="4"
                     fill="var(--ml-bg-surface)"
-                    stroke={SERIES[si]}
+                    stroke={CHART_SERIES[si]}
                     strokeWidth="2"
                   />
                 );
@@ -286,6 +382,8 @@ export function TrendChart({
         </svg>
         {hover !== null && (
           <div
+            aria-hidden="true"
+            data-testid="chart-readout"
             className="pointer-events-none absolute top-0 rounded-md border border-border bg-raised px-3 py-2 text-body-sm shadow-raised"
             style={{
               left: `${(x(hover) / width) * 100}%`,
@@ -302,24 +400,20 @@ export function TrendChart({
                   <span
                     aria-hidden="true"
                     className="size-2 rounded-full"
-                    style={{ background: SERIES[si] }}
+                    style={{ background: CHART_SERIES[si] }}
                   />
                   {s.name}
                 </span>
-                <span className="font-semibold">
-                  {s.values[hover] ?? "—"}
-                  {s.values[hover] !== null ? unit : ""}
-                </span>
+                <span className="font-semibold">{value(s, hover)}</span>
               </p>
             ))}
           </div>
         )}
       </div>
-      <table className="sr-only">
-        <caption>{title}</caption>
+      <ChartTable title={title} open={showTable} onToggle={() => setShowTable((o) => !o)}>
         <thead>
           <tr>
-            <th scope="col">{title}</th>
+            <td />
             {series.map((s) => (
               <th key={s.name} scope="col">
                 {s.name}
@@ -332,17 +426,20 @@ export function TrendChart({
             <tr key={l + i}>
               <th scope="row">{l}</th>
               {series.map((s) => (
-                <td key={s.name}>{s.values[i] ?? "—"}</td>
+                <td key={s.name}>{value(s, i)}</td>
               ))}
             </tr>
           ))}
         </tbody>
-      </table>
+      </ChartTable>
     </figure>
   );
 }
 
-/** Weekday × hour heat map, sequential emerald (design 04 §4 "arrivals by weekday × hour"). */
+/**
+ * Weekday × hour heat map, sequential emerald in 4 steps (design 02 §6, design 04 §4 "arrivals by
+ * weekday × hour"); zero is the subtle surface. Visible table toggle.
+ */
 export function HeatMap({
   title,
   rows,
@@ -356,8 +453,11 @@ export function HeatMap({
   value: (row: number, column: number) => number;
   legend: { less: string; more: string };
 }) {
+  const [showTable, setShowTable] = useState(false);
   const max = Math.max(1, ...rows.flatMap((_, r) => columns.map((c) => value(r, c))));
-  const step = (v: number) => (v === 0 ? 0 : Math.min(5, Math.ceil((v / max) * 5)));
+  const step = (v: number) =>
+    v === 0 ? 0 : Math.min(SEQUENTIAL_STEPS, Math.ceil((v / max) * SEQUENTIAL_STEPS));
+  const steps = Array.from({ length: SEQUENTIAL_STEPS }, (_, i) => i + 1);
   return (
     <figure className="m-0 flex flex-col gap-2">
       <figcaption>
@@ -384,6 +484,7 @@ export function HeatMap({
                   <span
                     key={c}
                     title={`${r} ${c}:00 · ${v}`}
+                    data-step={s}
                     className="aspect-[1.6] rounded-sm"
                     style={{ background: s ? `var(--ml-seq-${s})` : "var(--ml-bg-subtle)" }}
                   />
@@ -398,7 +499,7 @@ export function HeatMap({
         aria-hidden="true"
       >
         {legend.less}
-        {[1, 2, 3, 4, 5].map((s) => (
+        {steps.map((s) => (
           <span
             key={s}
             className="size-3 rounded-sm"
@@ -407,8 +508,7 @@ export function HeatMap({
         ))}
         {legend.more}
       </div>
-      <table className="sr-only">
-        <caption>{title}</caption>
+      <ChartTable title={title} open={showTable} onToggle={() => setShowTable((o) => !o)}>
         <thead>
           <tr>
             <td />
@@ -427,14 +527,17 @@ export function HeatMap({
             </tr>
           ))}
         </tbody>
-      </table>
+      </ChartTable>
     </figure>
   );
 }
 
 export type Load = "low" | "medium" | "high";
 
-/** Queue pressure bar (design 04 §3.4 "coloured by pressure", icon + label, never colour alone). */
+/**
+ * Queue pressure bar (design 04 §3.4 "coloured by pressure"): a gauge icon + the label, never
+ * colour alone.
+ */
 export function LoadMeter({
   load,
   label,
@@ -460,10 +563,11 @@ export function LoadMeter({
       </span>
       <span
         className={cx(
-          "text-caption font-semibold",
+          "inline-flex items-center gap-1 text-caption font-semibold",
           { low: "text-success", medium: "text-warning", high: "text-danger" }[load],
         )}
       >
+        <Gauge aria-hidden="true" weight="bold" className="size-3.5 shrink-0" />
         {label}
       </span>
     </span>

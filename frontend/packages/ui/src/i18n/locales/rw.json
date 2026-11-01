@@ -43,5 +43,11 @@
     "normal": "Isanzwe",
     "large": "Nini",
     "xlarge": "Nini cyane"
+  },
+  "chart": {
+    "showTable": "Erekana imbonerahamwe",
+    "hideTable": "Hisha imbonerahamwe",
+    "keyboardHint": "Koresha utubuto tw’imyambi y’ibumoso n’iburyo kugira ngo usome agaciro kamwe kamwe.",
+    "tableOf": "Imibare y’igishushanyo: {{title}}"
   }
 }

@@ -43,5 +43,11 @@
     "normal": "Normale",
     "large": "Grande",
     "xlarge": "Très grande"
+  },
+  "chart": {
+    "showTable": "Afficher le tableau",
+    "hideTable": "Masquer le tableau",
+    "keyboardHint": "Utilisez les flèches gauche et droite pour lire chaque valeur.",
+    "tableOf": "Données du graphique : {{title}}"
   }
 }

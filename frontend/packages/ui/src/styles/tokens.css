@@ -65,6 +65,13 @@
   /* Solid danger (destructive button, emergency badge): red-700 + white, 6.47:1 */
   --ml-danger-solid: #b91c1c;
   --ml-danger-solid-text: #ffffff;
+  /* Queue "on hold" (violet tint) and "priority" (violet solid, white text 7.10:1), design 02 §4.
+     Dark: violet-300 text on a 14% violet tint, violet-400 solid with dark text (contrast measured
+     in tokens.test.ts). */
+  --ml-violet-text: #6d28d9;
+  --ml-violet-bg: #f5f3ff;
+  --ml-violet-solid: #6d28d9;
+  --ml-violet-solid-text: #ffffff;
 
   /* Deep forest, combination B (design 02 §5): landing hero, login brand panel, display.
      Same in both themes. White 15:1, emerald-200/300 9.9-13:1. */
@@ -80,18 +87,18 @@
   --ml-qr-fg: #0f172a;
 
   /* Chart palette (design 02 §6, validated for colour-blind separation). Fixed series order;
-     sequential emerald for magnitude (heat maps). Red is never a series colour. */
+     sequential emerald for magnitude (heat maps): 4 steps, light to dark in the light theme and
+     dark to light in the dark theme (design 02 §6). Red is never a series colour. */
   --ml-chart-1: #059669;
   --ml-chart-2: #2a78d6;
   --ml-chart-3: #eb6834;
   --ml-chart-4: #6250d6;
   --ml-chart-5: #eda100;
   --ml-chart-6: #e87ba4;
-  --ml-seq-1: #d1fae5;
-  --ml-seq-2: #6ee7b7;
-  --ml-seq-3: #10b981;
-  --ml-seq-4: #059669;
-  --ml-seq-5: #047857;
+  --ml-seq-1: #10b981;
+  --ml-seq-2: #059669;
+  --ml-seq-3: #047857;
+  --ml-seq-4: #065f46;
   --ml-chart-grid: #e2e8f0;
 
   /* Elevation: mostly borders; shadows only for floating layers (design 03 §4) */
@@ -162,11 +169,10 @@
     --ml-chart-4: #9085e9;
     --ml-chart-5: #c98500;
     --ml-chart-6: #d55181;
-    --ml-seq-1: #0f2a22;
-    --ml-seq-2: #065f46;
-    --ml-seq-3: #047857;
-    --ml-seq-4: #10b981;
-    --ml-seq-5: #34d399;
+    --ml-seq-1: #065f46;
+    --ml-seq-2: #047857;
+    --ml-seq-3: #10b981;
+    --ml-seq-4: #34d399;
     --ml-chart-grid: #24332d;
     --ml-bg-page: #0b1411;
     --ml-bg-surface: #111c18;
@@ -197,6 +203,10 @@
     --ml-info-bg: color-mix(in srgb, #60a5fa 14%, #111c18);
     --ml-danger-solid: #f87171;
     --ml-danger-solid-text: #0f172a;
+    --ml-violet-text: #c4b5fd;
+    --ml-violet-bg: color-mix(in srgb, #a78bfa 14%, #111c18);
+    --ml-violet-solid: #a78bfa;
+    --ml-violet-solid-text: #0f172a;
     --ml-shadow-raised: 0 8px 24px rgb(0 0 0 / 0.5), 0 2px 6px rgb(0 0 0 / 0.4);
     color-scheme: dark;
   }
@@ -210,11 +220,10 @@
   --ml-chart-4: #9085e9;
   --ml-chart-5: #c98500;
   --ml-chart-6: #d55181;
-  --ml-seq-1: #0f2a22;
-  --ml-seq-2: #065f46;
-  --ml-seq-3: #047857;
-  --ml-seq-4: #10b981;
-  --ml-seq-5: #34d399;
+  --ml-seq-1: #065f46;
+  --ml-seq-2: #047857;
+  --ml-seq-3: #10b981;
+  --ml-seq-4: #34d399;
   --ml-chart-grid: #24332d;
   --ml-bg-page: #0b1411;
   --ml-bg-surface: #111c18;
@@ -245,6 +254,10 @@
   --ml-info-bg: color-mix(in srgb, #60a5fa 14%, #111c18);
   --ml-danger-solid: #f87171;
   --ml-danger-solid-text: #0f172a;
+  --ml-violet-text: #c4b5fd;
+  --ml-violet-bg: color-mix(in srgb, #a78bfa 14%, #111c18);
+  --ml-violet-solid: #a78bfa;
+  --ml-violet-solid-text: #0f172a;
   --ml-shadow-raised: 0 8px 24px rgb(0 0 0 / 0.5), 0 2px 6px rgb(0 0 0 / 0.4);
   color-scheme: dark;
 }

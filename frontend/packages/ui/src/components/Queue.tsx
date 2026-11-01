@@ -14,7 +14,7 @@ import {
 import type { ReactNode } from "react";
 
 import { cx } from "../utils/cx";
-import { Badge, type BadgeTone } from "./Badge";
+import { Badge, badgeToneClassName, type BadgeTone, type BadgeVariant } from "./Badge";
 
 export type QueueState =
   | "waiting"
@@ -28,24 +28,32 @@ export type QueueState =
   | "left_without_service"
   | "completed";
 
-/** Queue state colours and icons (design 02 §4): every state is an icon + a word. */
-const STATES: Record<QueueState, { tone: BadgeTone; icon: Icon }> = {
+/**
+ * Queue state colours and icons (design 02 §4): every state is an icon + a word. On hold is the
+ * violet tint, no response and left are red outlines, completed is the slate tint.
+ */
+const STATES: Record<QueueState, { tone: BadgeTone; variant?: BadgeVariant; icon: Icon }> = {
   waiting: { tone: "info", icon: HourglassMedium },
   called: { tone: "warning", icon: MegaphoneSimple },
   in_service: { tone: "brand", icon: Stethoscope },
-  no_response: { tone: "danger", icon: UserMinus },
-  on_hold: { tone: "neutral", icon: Flask },
+  no_response: { tone: "danger", variant: "outline", icon: UserMinus },
+  on_hold: { tone: "violet", icon: Flask },
   moved_to_next_stage: { tone: "neutral", icon: CheckCircle },
   transferred: { tone: "neutral", icon: ArrowUUpLeft },
-  cancelled: { tone: "neutral", icon: UserMinus },
-  left_without_service: { tone: "danger", icon: UserMinus },
-  completed: { tone: "success", icon: CheckCircle },
+  cancelled: { tone: "neutral", variant: "outline", icon: UserMinus },
+  left_without_service: { tone: "danger", variant: "outline", icon: UserMinus },
+  completed: { tone: "neutral", icon: CheckCircle },
 };
 
 export function QueueStateBadge({ state, children }: { state: QueueState; children: ReactNode }) {
-  const { tone, icon } = STATES[state];
+  const { tone, variant, icon } = STATES[state];
   return (
-    <Badge tone={tone} icon={icon} className={state === "called" ? "font-bold" : undefined}>
+    <Badge
+      tone={tone}
+      variant={variant}
+      icon={icon}
+      className={state === "called" ? "font-bold" : undefined}
+    >
       {children}
     </Badge>
   );
@@ -53,25 +61,28 @@ export function QueueStateBadge({ state, children }: { state: QueueState; childr
 
 export type QueueFlag = "emergency" | "priority" | "return" | "stepped_out" | "no_response";
 
-const FLAGS: Record<QueueFlag, { className: string; icon: Icon }> = {
-  emergency: { className: "bg-danger-solid text-on-danger-solid", icon: Siren },
-  priority: { className: "bg-info-bg text-info", icon: Star },
-  return: { className: "bg-brand-subtle text-on-brand-subtle", icon: ArrowUUpLeft },
-  stepped_out: { className: "bg-subtle text-fg-secondary", icon: PersonSimpleWalk },
-  no_response: { className: "bg-warning-bg text-warning", icon: UserMinus },
+const FLAGS: Record<QueueFlag, { tone: BadgeTone; variant: BadgeVariant; icon: Icon }> = {
+  emergency: { tone: "danger", variant: "solid", icon: Siren },
+  priority: { tone: "violet", variant: "solid", icon: Star },
+  return: { tone: "brand", variant: "tint", icon: ArrowUUpLeft },
+  stepped_out: { tone: "neutral", variant: "tint", icon: PersonSimpleWalk },
+  no_response: { tone: "danger", variant: "outline", icon: UserMinus },
 };
 
-/** A row flag chip (design 04 §3.1): solid red only for emergency, the one thing never missed. */
+/**
+ * A row flag chip (design 04 §3.1, colours design 02 §4): solid red only for emergency, the one
+ * thing never missed; priority is violet solid; no response is a red outline.
+ */
 export function QueueFlagChip({ flag, children }: { flag: QueueFlag; children: ReactNode }) {
-  const { className, icon: FlagIcon } = FLAGS[flag];
+  const { tone, variant, icon: FlagIcon } = FLAGS[flag];
   return (
     <span
       className={cx(
-        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-caption font-semibold",
-        className,
+        "inline-flex max-w-full items-center gap-1 rounded-full border px-2 py-0.5 text-caption font-semibold",
+        badgeToneClassName(tone, variant),
       )}
     >
-      <FlagIcon aria-hidden="true" weight="bold" className="size-3.5" />
+      <FlagIcon aria-hidden="true" weight="bold" className="size-3.5 shrink-0" />
       {children}
     </span>
   );

@@ -158,7 +158,10 @@ describe("contrast of text tokens (F8), both themes", () => {
       4.5,
     );
     expect(contrast(t["--ml-accent-text"]!, t["--ml-accent"]!)).toBeGreaterThanOrEqual(4.5);
-    for (const tone of ["success", "warning", "danger", "info"]) {
+    expect(contrast(t["--ml-violet-solid-text"]!, t["--ml-violet-solid"]!)).toBeGreaterThanOrEqual(
+      4.5,
+    );
+    for (const tone of ["success", "warning", "danger", "info", "violet"]) {
       expect(contrast(t[`--ml-${tone}-text`]!, t[`--ml-${tone}-bg`]!), tone).toBeGreaterThanOrEqual(
         4.5,
       );
@@ -176,10 +179,61 @@ describe("contrast of text tokens (F8), both themes", () => {
     expect(contrast(light["--ml-border-input"]!, "#ffffff")).toBeCloseTo(3.51, 1);
   });
 
+  it("queue violet (design 02 §4): #6D28D9 on #F5F3FF, priority solid with white text 7.10:1", () => {
+    expect(hex(light["--ml-violet-text"])).toBe("#6d28d9");
+    expect(hex(light["--ml-violet-bg"])).toBe("#f5f3ff");
+    expect(contrast(light["--ml-violet-solid-text"]!, light["--ml-violet-solid"]!)).toBeCloseTo(
+      7.1,
+      1,
+    );
+  });
+
+  it.each(Object.entries(themes))("%s: violet and outline badges >= 4.5:1 on surface", (_n, t) => {
+    for (const text of ["--ml-violet-text", "--ml-danger-text", "--ml-warning-text"]) {
+      expect(contrast(t[text]!, t["--ml-bg-surface"]!), text).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
   it("deep forest text >= 4.5:1", () => {
     expect(contrast(light["--ml-on-forest"]!, light["--ml-forest"]!)).toBeGreaterThanOrEqual(7);
     expect(contrast(light["--ml-on-forest-muted"]!, light["--ml-forest"]!)).toBeGreaterThanOrEqual(
       7,
     );
+  });
+});
+
+describe("chart palettes (design 02 §6)", () => {
+  it("six series colours in the validated order, per theme", () => {
+    const series = (t: Record<string, string>) =>
+      [1, 2, 3, 4, 5, 6].map((i) => hex(t[`--ml-chart-${i}`]));
+    expect(series(light)).toEqual([
+      "#059669",
+      "#2a78d6",
+      "#eb6834",
+      "#6250d6",
+      "#eda100",
+      "#e87ba4",
+    ]);
+    expect(series(dark)).toEqual([
+      "#059669",
+      "#3987e5",
+      "#d95926",
+      "#9085e9",
+      "#c98500",
+      "#d55181",
+    ]);
+  });
+
+  it("sequential emerald: 4 steps from the design ramps, ordered by lightness", () => {
+    const steps = (t: Record<string, string>) => [1, 2, 3, 4].map((i) => hex(t[`--ml-seq-${i}`]));
+    expect(steps(light)).toEqual(["#10b981", "#059669", "#047857", "#065f46"]);
+    // Dark ramp #065F46 → #047857 → #059669 → #10B981 → #34D399, 4 of its 5 steps (same legend).
+    expect(steps(dark)).toEqual(["#065f46", "#047857", "#10b981", "#34d399"]);
+    expect(light["--ml-seq-5"]).toBeUndefined();
+    // Magnitude reads as distance from the surface: each step is further from it than the last.
+    for (const t of [light, dark]) {
+      const c = [1, 2, 3, 4].map((i) => contrast(t[`--ml-seq-${i}`]!, t["--ml-bg-surface"]!));
+      expect([...c].sort((a, b) => a - b)).toEqual(c);
+    }
   });
 });

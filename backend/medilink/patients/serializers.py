@@ -35,6 +35,7 @@ from medilink.patients.normalize import (
     age_years,
     mask,
     mask_phone,
+    normalize_member_number,
     normalize_phone,
 )
 
@@ -114,7 +115,10 @@ class InsuranceInputSerializer(StrictSerializer):
     valid_until = serializers.DateField(required=False, allow_null=True)
 
     def validate_member_number(self, value: str) -> str:
-        return value.strip().upper()
+        cleaned = normalize_member_number(value)
+        if not cleaned:
+            raise serializers.ValidationError(_("Enter the member number."))
+        return cleaned
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         if attrs.get("is_principal", True) is False and not attrs.get("principal_name"):
@@ -568,12 +572,13 @@ class StaffIdentifierSerializer(IdentifierInputSerializer):
     seen_document = serializers.BooleanField(default=False)
 
 
+REVEAL_REASON_CODES = ("identity_check", "insurance_claim", "patient_request", "other")
+
+
 class StaffRevealSerializer(StrictSerializer):
     field = serializers.ChoiceField(choices=["identifier", "phone"])
     identifier_id = serializers.UUIDField(required=False)
-    reason_code = serializers.ChoiceField(
-        choices=["identity_check", "insurance_claim", "patient_request", "other"]
-    )
+    reason_code = serializers.ChoiceField(choices=REVEAL_REASON_CODES)
     reason_text = serializers.CharField(max_length=200, required=False, allow_blank=True)
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
@@ -615,3 +620,54 @@ class ClaimConfirmationSerializer(StrictSerializer):
         if not value:
             raise serializers.ValidationError(_("Confirm only when the document matches."))
         return value
+
+
+# ---- R2 ------------------------------------------------------------------------------------------
+
+
+def results_of(item: type[serializers.Serializer], name: str) -> serializers.Serializer:
+    """OpenAPI shape of the `{results: [item]}` wrapper that list endpoints return."""
+    from drf_spectacular.utils import inline_serializer
+
+    return inline_serializer(name=name, fields={"results": item(many=True)})
+
+
+def paginated(item: type[serializers.Serializer], name: str) -> serializers.Serializer:
+    """OpenAPI shape of a DefaultPagination page: `{count, next, previous, results}`."""
+    from drf_spectacular.utils import inline_serializer
+
+    return inline_serializer(
+        name=name,
+        fields={
+            "count": serializers.IntegerField(),
+            "next": serializers.URLField(allow_null=True),
+            "previous": serializers.URLField(allow_null=True),
+            "results": item(many=True),
+        },
+    )
+
+
+class RecordClaimSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    status = serializers.CharField()
+    method = serializers.CharField()
+    contact_hint = serializers.CharField(allow_null=True)
+    reference = serializers.CharField(allow_null=True)
+    expires_at = serializers.DateTimeField()
+
+
+ACCESS_REASON_CODES = ("care_continuity", "results_review", "admin_request", "other")
+
+
+class AccessReasonSerializer(StrictSerializer):
+    reason_code = serializers.ChoiceField(choices=ACCESS_REASON_CODES)
+    reason_text = serializers.CharField(max_length=200, required=False, allow_blank=True)
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        if attrs["reason_code"] == "other" and not attrs.get("reason_text", "").strip():
+            raise serializers.ValidationError({"reason_text": [_("Say why you need it.")]})
+        return attrs
+
+
+class AccessReasonResultSerializer(serializers.Serializer):
+    expires_at = serializers.DateTimeField()

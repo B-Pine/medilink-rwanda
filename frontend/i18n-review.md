@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 2206.
+Keys: 2220.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -740,6 +740,16 @@ File: `apps/staff-web/src/features/patients/locales/rw.json`
 | `palette.searchFor` | Shakisha abarwayi “{{query}}” | Search patients for “{{query}}” | needs native-speaker review |
 | `palette.results` | Abarwayi | Patients | needs native-speaker review |
 | `palette.file` | Dosiye {{number}} | File {{number}} | needs native-speaker review |
+| `accessReason.heading` | Dosiye y'umurwayi | Patient record | needs native-speaker review |
+| `accessReason.title` | Kuki ufunguye iyi dosiye? | Why are you opening this record? | needs native-speaker review |
+| `accessReason.description` | Uyu murwayi nta gusura aherutse hano, cyangwa akora hano. Impamvu yawe yandikwa mu mateka y'abafunguye dosiye ye. | This patient has no recent visit here, or works here. Your reason is recorded in their access history. | needs native-speaker review |
+| `accessReason.reason` | Impamvu | Reason | needs native-speaker review |
+| `accessReason.reasons.care_continuity` | Gukomeza kumuvura | Continuing their care | needs native-speaker review |
+| `accessReason.reasons.results_review` | Kureba ibisubizo | Reviewing results | needs native-speaker review |
+| `accessReason.reasons.admin_request` | Icyifuzo cy'ubuyobozi | Administrative request | needs native-speaker review |
+| `accessReason.reasons.other` | Ikindi | Other | needs native-speaker review |
+| `accessReason.reasonText` | Sobanura impamvu | Explain the reason | needs native-speaker review |
+| `accessReason.open` | Fungura dosiye | Open record | needs native-speaker review |
 
 ## staff-web feature: platform (namespace platform)
 
@@ -2225,6 +2235,10 @@ File: `apps/patient-web/src/features/profile/locales/rw.json`
 | `privacy.careHint` | Ibigo nderabuzima birukenera kugira ngo bibike dosiye yawe y'ubuzima. | Facilities need this to keep your health record. | needs native-speaker review |
 | `privacy.history` | Reba abafunguye dosiye yanjye | See who opened my record | needs native-speaker review |
 | `privacy.later` | Gukuramo cyangwa gusiba amakuru yawe bizaboneka nyuma. | Downloading or deleting your data will be available later. | needs native-speaker review |
+| `privacy.notifications` | Ubutumwa ku buvuzi bwanjye | Messages about my care | needs native-speaker review |
+| `privacy.notificationsHint` | Kwibutswa n'amakuru ku gusura no ku gufata gahunda. | Reminders and updates about visits and bookings. | needs native-speaker review |
+| `privacy.location` | Koresha aho ndi | Use my location | needs native-speaker review |
+| `privacy.locationHint` | Shaka ibigo biri hafi yawe. | Find facilities near you. | needs native-speaker review |
 | `claim.title` | Saba dosiye yanjye | Claim my record | needs native-speaker review |
 | `claim.intro` | Niba ikigo nderabuzima cyarakwanditse utarafungura konti, huza iyo dosiye na konti yawe. | If a facility registered you before you had an account, link that record to your account. | needs native-speaker review |
 | `claim.way` | Urashaka kuyishaka ute? | How do you want to find it? | needs native-speaker review |

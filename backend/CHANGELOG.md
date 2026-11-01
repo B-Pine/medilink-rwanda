@@ -8,6 +8,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Security
+
+- pypdf 6.21.2 → 6.21.4 in the hash-pinned locks (CVE-2026-119203 to CVE-2026-119209, reported by
+  `pip-audit`).
+
 ### Sprint 1 · Platform and onboarding
 
 - Upload pipeline v1 (`medilink.uploads`, contract §2.4, §3.6): `uploads_file` with forced RLS
@@ -111,6 +116,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   (60/min), `verification` (10/h), `reveal` (30/h). Jobs `expire_claims` (15 min) and
   `expire_delegation_invites` (daily); dev seed `seed_patients_dev`.
 - Dependency: cryptography.
+
+### Remediation R2 · Patients (#84)
+
+- Security: staff reads of a facility patient record (ST5) and its health profile (ST13) need a
+  care relationship (open visit, visit in the last 30 days, or registered today) or a reason
+  given first with the new `POST /staff/patients/{fp_id}/access-reasons/` (ST28); otherwise
+  `403 access_reason_required`. Records of staff members always need a reason. Reasons are
+  audited when given and on every read (FR-SEC-03).
+- Security: record claims answer every refusal after the lookup with the same generic message;
+  merge undo follows the approver rule (not the requester, not escalated merges at the facility).
+- Merge request bodies reject unknown fields. PA7 dependents honour `Idempotency-Key`; ST17 claim
+  confirmations are idempotent.
+- Every consent is checked against the current version (`422`, field named); PA23 accepts the
+  `notifications` and `location` account toggles; `PATIENTS_DEPENDENT_MAX_AGE` replaces the
+  literal 18.
+- File numbers are trimmed and uppercased, member numbers lose all spaces; unique violations on
+  facility records map to the right `409` by constraint name.
+- Access history shows each action only for the actor kinds that can perform it; `can_revoke`
+  in delegations matches what revoke allows.
+- OpenAPI: list responses describe the `{results}` wrapper or the paginated page; `/patient/`
+  operations declare only `patientSession`, staff patient operations only `staffSession`.
 
 ### Sprint 9 · Notifications
 

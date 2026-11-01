@@ -6,12 +6,13 @@ from typing import Any
 
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
-from drf_spectacular.utils import OpenApiResponse, extend_schema
+from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework import exceptions, serializers, status
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from medilink.accounts.authentication import PatientSessionAuthentication
 from medilink.accounts.serializers import StrictSerializer
 from medilink.authz.permissions import IsPatientAuthenticated
 from medilink.core.exceptions import error_response
@@ -35,7 +36,7 @@ from medilink.patients.staff import birth
 from medilink.patients.throttling import RevealRateThrottle, VerificationRateThrottle
 from medilink.uploads import services as uploads
 from medilink.uploads.throttling import UploadRateThrottle
-from medilink.uploads.views import rejected
+from medilink.uploads.views import idempotency_key, rejected
 
 TAGS = ["patient-profiles"]
 DEPENDENT_RELATIONSHIPS = ("guardian", "delegate")
@@ -183,13 +184,7 @@ class ClaimCreateSerializer(StrictSerializer):
     date_of_birth = serializers.DateField()
 
 
-class RecordClaimSerializer(serializers.Serializer):
-    id = serializers.UUIDField()
-    status = serializers.CharField()
-    method = serializers.CharField()
-    contact_hint = serializers.CharField(allow_null=True)
-    reference = serializers.CharField(allow_null=True)
-    expires_at = serializers.DateTimeField()
+RecordClaimSerializer = s.RecordClaimSerializer
 
 
 class ClaimVerifiedSerializer(serializers.Serializer):
@@ -199,7 +194,14 @@ class ClaimVerifiedSerializer(serializers.Serializer):
 
 class ConsentInputSerializer(StrictSerializer):
     kind = serializers.ChoiceField(
-        choices=[ConsentKind.TERMS, ConsentKind.PRIVACY, ConsentKind.CARE, ConsentKind.RESEARCH]
+        choices=[
+            ConsentKind.TERMS,
+            ConsentKind.PRIVACY,
+            ConsentKind.CARE,
+            ConsentKind.RESEARCH,
+            ConsentKind.NOTIFICATIONS,
+            ConsentKind.LOCATION,
+        ]
     )
     version = serializers.CharField(max_length=32)
     granted = serializers.BooleanField()
@@ -241,6 +243,7 @@ def claim_data(claim: RecordClaim) -> dict[str, Any]:
 
 
 class PatientView(PatientsAPIView):
+    authentication_classes = [PatientSessionAuthentication]
     permission_classes = [IsPatientAuthenticated]
 
     def link(self, patient_id: Any, right: str = "view") -> Any:
@@ -253,7 +256,7 @@ class ProfileListView(PatientView):
     @extend_schema(
         operation_id="patient_profiles_list",
         tags=TAGS,
-        responses={200: ProfileSummarySerializer(many=True)},
+        responses={200: s.results_of(ProfileSummarySerializer, "ProfileSummaryList")},
         summary="Profiles of this account: self first, then dependents and delegations",
     )
     def get(self, request: Request) -> Response:
@@ -296,7 +299,7 @@ class IdentifierListView(PatientView):
     @extend_schema(
         operation_id="patient_identifiers_list",
         tags=TAGS,
-        responses={200: s.IdentifierSerializer(many=True)},
+        responses={200: s.results_of(s.IdentifierSerializer, "IdentifierList")},
         summary="Identity documents (masked)",
     )
     def get(self, request: Request, patient_id: Any) -> Response:
@@ -397,8 +400,8 @@ class DependentCreateView(PatientView):
         operation_id="patient_dependents_create",
         tags=TAGS,
         request=DependentSerializer,
-        responses={201: ProfileSummarySerializer, 422: _err("age or limit rules")},
-        summary="Add a child (guardian) or an adult who agreed (delegate)",
+        responses={201: ProfileSummarySerializer, 422: _err("age, limit or consent version")},
+        summary="Add a child (guardian) or an adult who agreed (delegate); Idempotency-Key",
     )
     def post(self, request: Request) -> Response:
         body = DependentSerializer(data=request.data)
@@ -408,6 +411,7 @@ class DependentCreateView(PatientView):
             data=body.validated_data,
             birth=birth(body.validated_data),
             request=request,
+            idempotency_key=idempotency_key(request),
         )
         return Response(svc.summary_data(link), status=status.HTTP_201_CREATED)
 
@@ -516,7 +520,7 @@ class InsuranceListView(_PatientInsurance):
     @extend_schema(
         operation_id="patient_insurance_list",
         tags=TAGS,
-        responses={200: s.InsuranceProfileSerializer(many=True)},
+        responses={200: s.results_of(s.InsuranceProfileSerializer, "InsuranceProfileList")},
         summary="Insurance cards, active first",
     )
     def get(self, request: Request, patient_id: Any) -> Response:
@@ -800,7 +804,8 @@ class AccessHistoryView(PatientView):
     @extend_schema(
         operation_id="patient_access_history",
         tags=TAGS,
-        responses={200: AccessHistoryItemSerializer(many=True)},
+        parameters=[OpenApiParameter("page", int), OpenApiParameter("page_size", int)],
+        responses={200: s.paginated(AccessHistoryItemSerializer, "PaginatedAccessHistoryList")},
         summary="Who opened or changed this profile",
     )
     def get(self, request: Request, patient_id: Any) -> Response:

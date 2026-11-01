@@ -24,6 +24,15 @@ export type MatchLevel = "exact_identifier" | "strong" | "possible";
 export type SearchBy =
   "auto" | "name" | "phone" | "national_id" | "identifier" | "file_number" | "medilink_number";
 export type RevealReason = "identity_check" | "insurance_claim" | "patient_request" | "other";
+
+/** ST28 (R2, FR-SEC-03): why a record is opened outside a care relationship. */
+export type AccessReasonCode = "care_continuity" | "results_review" | "admin_request" | "other";
+
+export interface AccessReasonInput {
+  reason_code: AccessReasonCode;
+  /** Required for `other`; at most 200 characters. */
+  reason_text?: string;
+}
 export type MergeScope = "facility" | "cross_facility" | "claim";
 export type MergeStatus = "requested" | "rejected" | "cancelled" | "executed" | "undone";
 
@@ -339,6 +348,9 @@ export function createPatientsApi(client: ApiClient) {
       client.post<Identifier>(patientsPaths.recordAction(fp, "identifiers"), body),
     reveal: (fp: Uuid, body: RevealInput) =>
       client.post<{ value: string }>(patientsPaths.recordAction(fp, "reveal"), body),
+    /** ST28: after `403 access_reason_required` on ST5/ST13, give a reason, then retry the read. */
+    giveAccessReason: (fp: Uuid, body: AccessReasonInput) =>
+      client.post<{ expires_at: string }>(patientsPaths.recordAction(fp, "access-reasons"), body),
 
     insurance: (fp: Uuid) =>
       client.get<{ results: InsuranceProfile[] }>(patientsPaths.insurance(fp)),

@@ -9,6 +9,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Remediation R1 · Security core (#83)
+
+- patient-web: sign-up shows "check your email" for every request (no account enumeration) and the
+  new `/verify-email` page confirms the emailed link and signs in. api-client:
+  `patientAuth.register` returns `{detail}` (`202`), new `patientAuth.verifyEmail`; mocks follow
+  (`MOCK_VERIFY_TOKEN`).
+- CSP: `style-src` keeps `'unsafe-inline'` (Radix scroll lock and pdf.js inject `<style>` at
+  runtime; a static-host meta CSP can't carry a nonce), documented in `@medilink/config`.
+
 ### Sprint 1 · Platform and onboarding
 
 - api-client: `masterData`, `onboarding`, `security` and `uploads` modules (XHR uploads with
@@ -57,11 +66,26 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   - `ProfileSwitcher` in the header; "My profile" and "Family" links on home.
 - Translations: `patients` and `profile` namespaces in rw/en/fr (Kinyarwanda flagged for native
   review).
+- R2 fixes ([#84](https://github.com/B-Pine/medilink-rwanda/issues/84)):
+  - patient-web access history loads older entries page by page ("Show older entries", PA24).
+  - The claim wizard polls the claim (PA20) every 10 s while it waits for reception, shows the
+    confirmation, and offers a fresh start when a claim fails or expires.
+  - Mocks follow the real API: strict request bodies (`Unknown field.`) and a required `version`
+    on PA3; consent kind, version and scope rules (PA22/PA23) and the latest care consent
+    decides; shortened holder names and `can_revoke` as `revoke()` allows; dependents replay on
+    `Idempotency-Key`, record their consent, check age and the 10-profile limit; the 5th wrong
+    claim code and expired claims have their own messages; walk-in care consent carries the
+    `patient_id`; reception confirmation moves the claimant's `self` link.
 
 ### Sprint 9 · Notifications
 
 ### Sprint 2 · Facility setup and staff
 
+- Fixes from the S0–S5 audit (R3, #85): go-live sends the checklist's `status_version`; the
+  invitation page accepts an existing account only when signed in (`acceptInvitation(token)` →
+  `StaffMe`, new accounts use `acceptNewAccount`); staff, invitation and template lists read
+  every page of the now paginated API; the MSW mocks paginate, check the go-live version and
+  replay invitation `Idempotency-Key`s.
 - api-client `setup` ([#69](https://github.com/B-Pine/medilink-rwanda/pull/69)): profile,
   catalogue, schedules, billing setup, team and invitation endpoints with MSW mocks.
 - ui: `WeekGrid` (sessions to scale, leave hatched, list view alternative), `TimeRangeField`,

@@ -111,6 +111,28 @@ describe("staff patients", () => {
     );
   });
 
+  it("asks for a reason before opening a record outside care (R2, FR-SEC-03)", async () => {
+    const { user, container } = await signIn();
+    await user.type(
+      await screen.findByRole("combobox", { name: "Find a patient" }),
+      "Niyonsaba{Enter}",
+    );
+    const table = await screen.findByRole("table", { name: "Search results" });
+    await user.click(within(table).getByRole("link", { name: "Niyonsaba Claudine" }));
+    const prompt = await screen.findByRole("region", {
+      name: "Why are you opening this record?",
+    });
+    expect(await axe(container)).toHaveNoViolations();
+    await user.selectOptions(within(prompt).getByLabelText("Reason"), ["other"]);
+    const open = within(prompt).getByRole("button", { name: "Open record" });
+    expect(open).toBeDisabled();
+    await user.type(within(prompt).getByLabelText("Explain the reason"), "Insurance query");
+    await user.click(open);
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "Niyonsaba Claudine" }),
+    ).toBeInTheDocument();
+  });
+
   it("pharmacists don't see patients pages they can't use", async () => {
     await signIn("pharmacist@medilink.test", "/patients/merge-requests");
     expect(

@@ -36,6 +36,8 @@ FUNCTIONS = (
     "scheduling_booking_facilities()",
     "scheduling_slot_facility(uuid)",
     "scheduling_hold_facility(uuid, uuid)",
+    "scheduling_strike_times(uuid, timestamptz)",
+    "scheduling_account_holds(uuid)",
 )
 APPEND_ONLY = ("scheduling_booking_event",)
 

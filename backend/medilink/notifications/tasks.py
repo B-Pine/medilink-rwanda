@@ -68,7 +68,7 @@ def _finish(attempt: DeliveryAttempt, status: str, reason: str | None, now: dt.d
 
 
 def _backoff(priority: str, attempt_no: int) -> dt.timedelta:
-    steps = BACKOFF.get(priority, BACKOFF[Priority.ROUTINE])
+    steps = BACKOFF.get(Priority(priority), BACKOFF[Priority.ROUTINE])
     base = steps[min(attempt_no - 1, len(steps) - 1)]
     return dt.timedelta(seconds=base * random.uniform(0.8, 1.2))  # noqa: S311  (jitter)
 

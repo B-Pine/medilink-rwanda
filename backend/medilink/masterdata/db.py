@@ -11,6 +11,7 @@ from typing import Any
 from django.conf import settings
 from django.db import connections
 
+from medilink.core.db import existing_tables
 from medilink.masterdata.models import MASTER_DATA_MODELS, MasterDataChange
 
 NO_DELETE_TABLES = tuple(model._meta.db_table for model in MASTER_DATA_MODELS)
@@ -28,7 +29,8 @@ def revoke(
     no_update: tuple[str, ...] = (),
 ) -> None:
     """REVOKE DELETE/TRUNCATE on `no_delete`, UPDATE/DELETE/TRUNCATE on `append_only` and
-    UPDATE/TRUNCATE on `no_update` (rows that are never changed but may be purged)."""
+    UPDATE/TRUNCATE on `no_update` (rows that are never changed but may be purged). Tables that
+    don't exist (migrated back) are skipped."""
     connection = connections[using]
     if connection.vendor != "postgresql":
         return
@@ -41,9 +43,9 @@ def revoke(
         if not role_exists or current_user == role:
             return
         quoted = connection.ops.quote_name(role)
-        for table in no_delete:
+        for table in existing_tables(cursor, no_delete):
             cursor.execute(f"REVOKE DELETE, TRUNCATE ON {table} FROM {quoted}")
-        for table in append_only:
+        for table in existing_tables(cursor, append_only):
             cursor.execute(f"REVOKE UPDATE, DELETE, TRUNCATE ON {table} FROM {quoted}")
-        for table in no_update:
+        for table in existing_tables(cursor, no_update):
             cursor.execute(f"REVOKE UPDATE, TRUNCATE ON {table} FROM {quoted}")

@@ -1,0 +1,6 @@
+# hadolint (security 09 §3), run by .github/workflows/security.yml on every Dockerfile.
+# Warnings and errors fail the build; info and style findings are shown only.
+failure-threshold: warning
+# Base images come from Docker Hub only (pin by digest for production, see backend/Dockerfile).
+trustedRegistries:
+  - docker.io

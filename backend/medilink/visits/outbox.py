@@ -33,6 +33,23 @@ def display_group(facility_id: Any) -> str:
     return f"display.f{facility_id}"
 
 
+def display_link_group(link_id: Any) -> str:
+    """One display link's sockets: revoking the link closes them (R4)."""
+    return f"display.l{link_id}"
+
+
+def close_display_link(link_id: Any) -> None:
+    """Close the sockets of a revoked display link (after commit). Never raises."""
+    try:
+        layer = get_channel_layer()
+        if layer is not None:
+            async_to_sync(layer.group_send)(
+                display_link_group(link_id), {"type": "session_revoked"}
+            )
+    except Exception:  # the link is revoked anyway; the socket fails its next token check
+        logger.warning("display link close failed", exc_info=True)
+
+
 def visit_group(patient_id: Any) -> str:
     return f"visit.p{patient_id}"
 

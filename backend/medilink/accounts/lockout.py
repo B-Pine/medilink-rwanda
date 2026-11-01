@@ -4,6 +4,7 @@ Keyed by a hash of the normalised email (login) or the user ID (MFA), *not* by w
 account exists, so the behaviour for unknown emails is identical (no enumeration).
   login: from the 5th failure a growing delay (2^n s, max 60 s); from the 10th a 15-minute lock
   MFA:   5 failures -> 15-minute lock
+The account owner is emailed when a lock starts (never the requester).
 State lives in the cache (Redis in dev/prod).
 """
 
@@ -12,7 +13,9 @@ from __future__ import annotations
 import hashlib
 import math
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any
 
 from django.conf import settings
 from django.core.cache import cache
@@ -46,19 +49,26 @@ class LockoutPolicy:
                 return math.ceil(delay - elapsed)
         return 0
 
-    def register_failure(self, ident: str, now: float | None = None) -> int:
+    def register_failure(
+        self,
+        ident: str,
+        now: float | None = None,
+        on_lock: Callable[[], None] | None = None,
+    ) -> int:
+        """Count a failure. `on_lock` runs once when this failure starts a lock (to notify the
+        account owner); it never runs for later failures while the lock holds."""
         now = now if now is not None else time.time()
         key = self._key(ident)
         state = cache.get(key) or {}
         failures = int(state.get("failures", 0)) + 1
-        state = {
-            "failures": failures,
-            "last": now,
-            "locked_until": float(state.get("locked_until", 0)),
-        }
+        previous_lock = float(state.get("locked_until", 0))
+        state = {"failures": failures, "last": now, "locked_until": previous_lock}
+        newly_locked = failures >= self.lock_after and previous_lock <= now
         if failures >= self.lock_after:
             state["locked_until"] = now + self.lock_seconds
         cache.set(key, state, timeout=max(self.window_seconds, self.lock_seconds))
+        if newly_locked and on_lock is not None:
+            on_lock()
         return self.retry_after(ident, now)
 
     def reset(self, ident: str) -> None:
@@ -80,10 +90,11 @@ def login_policy() -> LockoutPolicy:
 RESET_EMAILS_PER_HOUR = 3
 
 
-def reset_email_allowed(email: str) -> bool:
-    """At most RESET_EMAILS_PER_HOUR reset emails per address per hour (silent limit)."""
+def reset_email_allowed(email: str, kind: str = "reset") -> bool:
+    """At most RESET_EMAILS_PER_HOUR emails of one kind per address per hour (silent limit).
+    Kinds: "reset" (password reset), "signup" (sign-up verification / account exists)."""
     digest = hashlib.sha256(email.strip().lower().encode("utf-8")).hexdigest()
-    key = f"lockout:reset:{digest}"
+    key = f"lockout:{kind}:{digest}"
     cache.add(key, 0, timeout=3600)
     try:
         count = cache.incr(key)
@@ -102,3 +113,31 @@ def mfa_policy() -> LockoutPolicy:
         max_delay_seconds=0,
         window_seconds=settings.MFA_LOCK_SECONDS,
     )
+
+
+def notify_on_lock(request: Any, user: Any, kind: str) -> Callable[[], None] | None:
+    """`on_lock` callback for `register_failure`: audit the lock and email the account owner.
+    None when there is no (active) account to tell, so unknown emails behave the same."""
+    if user is None or not getattr(user, "is_active", False):
+        return None
+
+    def _notify() -> None:
+        from django.db import transaction
+
+        from medilink.accounts.tasks import send_account_locked_email
+        from medilink.audit import actions
+        from medilink.audit.services import record
+
+        record(
+            actions.ACCOUNT_LOCKED,
+            request=request,
+            actor=user,
+            actor_role="",
+            object_type="user",
+            object_id=user.pk,
+            metadata={"kind": kind},
+        )
+        user_id = str(user.pk)
+        transaction.on_commit(lambda: send_account_locked_email.delay(user_id, kind))
+
+    return _notify

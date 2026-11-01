@@ -43,6 +43,9 @@ def prod_env(**overrides: str) -> dict[str, str]:
             "UPLOADS_SCANNER": "clamd",
             "UPLOADS_STORAGE": "s3",
             "UPLOADS_DOWNLOAD_BASE_URL": "https://files.medilink.rw",
+            "UPLOADS_S3_REGION": "test-region",  # R1: no default region
+            # R1: TOTP secret encryption key (random per run, never real)
+            "MFA_SECRET_KEYS": "1:" + base64.urlsafe_b64encode(secrets.token_bytes(32)).decode(),
             "PLATFORM_ALLOWED_NETWORKS": "10.0.0.0/8",  # S1: super admin console allowlist
             # S3: patient identifier encryption keys (random per run, never real)
             "MEDILINK_FIELD_KEYS": "1:"

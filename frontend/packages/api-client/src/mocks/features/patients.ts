@@ -10,6 +10,7 @@ import type {
   MergeRequest,
   MergeSide,
   PatientSummary,
+  RecordClaim,
 } from "../../features/patients";
 import type { LanguageCode, StaffMe } from "../../types";
 import { extendMockRoleGrants, FACILITIES, ROLE_PERMISSIONS, STAFF_USERS } from "../data";
@@ -17,14 +18,20 @@ import type { FeatureMockFactory } from "../features";
 import type { MockContext } from "../handlers";
 import {
   ageYears,
+  completeClaim,
   createPatientsStore,
+  hasCareConsent,
   mask,
   maskPhone,
   medilinkNumber,
+  MOCK_CONSENT_VERSION,
+  normalizeFileNumber,
   normalizeMedilinkNumber,
+  normalizeMemberNumber,
   normalizeName,
   normalizePhone,
   similarity,
+  type MockClaim,
   type MockFacilityRecord,
   type MockPatient,
   type PatientsStore,
@@ -87,6 +94,22 @@ const MESSAGES = {
     rw: "Indangamuntu igira imibare 16",
   },
   reason: { en: "Say why you need it.", fr: "Indiquez pourquoi.", rw: "Vuga impamvu." },
+  accessReason: {
+    en: "Say why you are opening this record.",
+    fr: "Indiquez pourquoi vous ouvrez ce dossier.",
+    rw: "Vuga impamvu ufunguye iyi dosiye.",
+  },
+  outdated: {
+    en: "Accept the current version.",
+    fr: "Acceptez la version actuelle.",
+    rw: "Emera verisiyo iriho ubu.",
+  },
+  memberNumber: {
+    en: "Enter the member number.",
+    fr: "Saisissez le numéro d'adhérent.",
+    rw: "Andika nomero y'umunyamuryango.",
+  },
+  unknownField: { en: "Unknown field.", fr: "Champ inconnu.", rw: "Iki gice ntikizwi." },
   requester: {
     en: "Another approver has to decide on your own request.",
     fr: "Un autre approbateur doit décider de votre demande.",
@@ -173,7 +196,7 @@ function detail(store: PatientsStore, record: MockFacilityRecord): FacilityPatie
     emergency_contact: contact ? { ...contact, phone_e164: maskPhone(contact.phone_e164)! } : null,
     reception_notes: record.reception_notes,
     identifiers: patient.identifiers.map(({ value: _value, ...rest }) => rest),
-    has_care_consent: patient.consents.some((c) => c.kind === "care" && c.granted),
+    has_care_consent: hasCareConsent(patient),
     open_claim_reference:
       store.claims.find((c) => c.patient_id === patient.id && c.status === "awaiting_reception")
         ?.reference ?? null,
@@ -340,6 +363,28 @@ export const patientsMocks: FeatureMockFactory = (context) => {
   const notFound = (lang: LanguageCode) =>
     context.errorResponse(404, "not_found", context.message("notFound", lang));
 
+  /** ST5/ST13 (R2, FR-SEC-03): in care here, or a reason given in this staff session. */
+  const reasonNeeded = (email: string, rec: MockFacilityRecord, lang: LanguageCode) => {
+    const until = store().accessReasons.get(`${email}:${rec.id}`) ?? 0;
+    if (until > Date.now() || (rec.in_care && !rec.is_staff_member)) return null;
+    return context.errorResponse(403, "access_reason_required", msg("accessReason", lang));
+  };
+
+  /** StrictSerializer: unknown body fields are a `400` naming each one. */
+  const strict = (lang: LanguageCode, body: Record<string, unknown>, fields: string[]) => {
+    const unknown = Object.keys(body).filter((k) => !fields.includes(k));
+    return unknown.length
+      ? context.errorResponse(400, "validation_error", context.message("validation", lang), {
+          fields: Object.fromEntries(unknown.map((k) => [k, [msg("unknownField", lang)]])),
+        })
+      : null;
+  };
+  /** `consents.check_version()`: 422 on the consent's field when the text is not current. */
+  const outdated = (lang: LanguageCode, field: string) =>
+    context.errorResponse(422, "business_rule_violation", msg("outdated", lang), {
+      fields: { [field]: [msg("outdated", lang)] },
+    });
+
   const unsafe = async (request: Request, codes: string[]) => {
     await context.settle();
     const auth = staff(context, request, codes);
@@ -405,7 +450,7 @@ export const patientsMocks: FeatureMockFactory = (context) => {
             .map((r) => summary(s, r, "phone"));
         } else if (by === "file_number") {
           results = here
-            .filter((r) => r.file_number?.toLowerCase() === q.toLowerCase())
+            .filter((r) => r.file_number !== null && r.file_number === normalizeFileNumber(q))
             .map((r) => {
               let target = r;
               while (target.merged_into)
@@ -474,9 +519,10 @@ export const patientsMocks: FeatureMockFactory = (context) => {
               fields: Object.fromEntries(Object.entries(errors).map(([k, v]) => [k, [v]])),
             },
           );
+        if (consent?.version !== MOCK_CONSENT_VERSION) return outdated(lang, "care_consent");
         if (ident?.value && byIdentifier(s, str(ident.kind), str(ident.value)))
           return fieldConflict(context, lang, "identifier", "existsElsewhere");
-        const fileNumber = str(body.file_number).trim() || null;
+        const fileNumber = normalizeFileNumber(body.file_number);
         if (
           fileNumber &&
           s.records.some((r) => r.facility_id === facilityId && r.file_number === fileNumber)
@@ -486,8 +532,9 @@ export const patientsMocks: FeatureMockFactory = (context) => {
         if (found.matches.some((m) => m.level !== "possible") && !body.confirm_not_duplicate)
           return fieldConflict(context, lang, "non_field_errors", "duplicate");
         const seed = s.nextSeed++;
+        const patientId = crypto.randomUUID();
         const patient: MockPatient = {
-          id: crypto.randomUUID(),
+          id: patientId,
           medilink_number: medilinkNumber(seed),
           full_name: str(body.full_name).trim(),
           preferred_name: null,
@@ -510,7 +557,7 @@ export const patientsMocks: FeatureMockFactory = (context) => {
             {
               id: crypto.randomUUID(),
               kind: "care",
-              patient_id: null,
+              patient_id: patientId,
               granted: true,
               version: str(consent?.version),
               granted_at: new Date().toISOString(),
@@ -544,6 +591,7 @@ export const patientsMocks: FeatureMockFactory = (context) => {
           file_number: fileNumber,
           reception_notes: null,
           is_staff_member: false,
+          in_care: true,
           is_active: true,
           merged_into: null,
           version: 1,
@@ -576,13 +624,17 @@ export const patientsMocks: FeatureMockFactory = (context) => {
           (r) => r.facility_id === facilityId && r.patient_id === patient.id,
         );
         if (existing) return HttpResponse.json(detail(s, existing));
+        const care = body.care_consent as { granted?: boolean; version?: string } | undefined;
+        if (care?.granted && care.version !== MOCK_CONSENT_VERSION)
+          return outdated(lang, "care_consent");
         const rec: MockFacilityRecord = {
           id: crypto.randomUUID(),
           facility_id: facilityId,
           patient_id: patient.id,
-          file_number: str(body.file_number).trim() || null,
+          file_number: normalizeFileNumber(body.file_number),
           reception_notes: null,
           is_staff_member: false,
+          in_care: true,
           is_active: true,
           merged_into: null,
           version: 1,
@@ -596,7 +648,38 @@ export const patientsMocks: FeatureMockFactory = (context) => {
         const auth = staff(context, request, ["patients.view"]);
         if ("error" in auth) return auth.error;
         const rec = record(auth.facilityId, str(params.fp));
-        return rec ? HttpResponse.json(detail(store(), rec)) : notFound(auth.lang);
+        if (!rec) return notFound(auth.lang);
+        return (
+          reasonNeeded(auth.me.email, rec, auth.lang) ?? HttpResponse.json(detail(store(), rec))
+        );
+      }),
+
+      http.post(`${base}/:fp/access-reasons/`, async ({ request, params }) => {
+        const auth = await unsafe(request, ["patients.view", "clinical.view", "prescription.view"]);
+        if ("error" in auth) return auth.error;
+        const rec = record(auth.facilityId, str(params.fp));
+        if (!rec) return notFound(auth.lang);
+        const body = await context.readJson(request);
+        const errors: Record<string, string> = {};
+        for (const k of Object.keys(body))
+          if (k !== "reason_code" && k !== "reason_text")
+            errors[k] = msg("unknownField", auth.lang);
+        const code = str(body.reason_code);
+        if (!["care_continuity", "results_review", "admin_request", "other"].includes(code))
+          errors.reason_code = context.message("required", auth.lang);
+        const text = str(body.reason_text);
+        if (text.length > 200) errors.reason_text = context.message("validation", auth.lang);
+        else if (code === "other" && !text.trim()) errors.reason_text = msg("reason", auth.lang);
+        if (Object.keys(errors).length)
+          return context.errorResponse(
+            400,
+            "validation_error",
+            context.message("validation", auth.lang),
+            { fields: Object.fromEntries(Object.entries(errors).map(([k, v]) => [k, [v]])) },
+          );
+        const until = Date.now() + 15 * 60_000;
+        store().accessReasons.set(`${auth.me.email}:${rec.id}`, until);
+        return HttpResponse.json({ expires_at: new Date(until).toISOString() }, { status: 201 });
       }),
 
       http.patch(`${base}/:fp/`, async ({ request, params }) => {
@@ -640,8 +723,9 @@ export const patientsMocks: FeatureMockFactory = (context) => {
             changed = true;
           }
         if (changed) patient.version++;
-        for (const f of ["file_number", "reception_notes"] as const)
-          if (f in body) rec[f] = (body[f] as string | null) ?? null;
+        if ("file_number" in body) rec.file_number = normalizeFileNumber(body.file_number);
+        if ("reception_notes" in body)
+          rec.reception_notes = (body.reception_notes as string | null) ?? null;
         rec.version++;
         return HttpResponse.json(detail(s, rec));
       }),
@@ -788,6 +872,8 @@ export const patientsMocks: FeatureMockFactory = (context) => {
         if ("error" in auth) return auth.error;
         const rec = record(auth.facilityId, str(params.fp));
         if (!rec) return notFound(auth.lang);
+        const needed = reasonNeeded(auth.me.email, rec, auth.lang);
+        if (needed) return needed;
         const full = (auth.me.permissions as string[]).includes("clinical.view");
         return HttpResponse.json(healthProfile(store().patients.get(rec.patient_id)!, full));
       }),
@@ -834,6 +920,7 @@ export const patientsMocks: FeatureMockFactory = (context) => {
               fields: { script_read: [context.message("required", auth.lang)] },
             },
           );
+        if (str(body.version) !== MOCK_CONSENT_VERSION) return outdated(auth.lang, "version");
         const consent = {
           id: crypto.randomUUID(),
           kind: str(body.kind),
@@ -855,14 +942,18 @@ export const patientsMocks: FeatureMockFactory = (context) => {
         const body = await context.readJson(request);
         const claim = store().claims.find(
           (c) =>
-            c.reference === str(body.claim_reference).toUpperCase() &&
+            c.reference === str(body.claim_reference).trim().toUpperCase() &&
             c.patient_id === rec.patient_id &&
-            c.status === "awaiting_reception",
+            c.method === "reception_check",
         );
         if (!claim) return notFound(auth.lang);
-        claim.status = "completed";
-        const { account_email: _a, patient_id: _p, code: _c, attempts: _t, ...shown } = claim;
-        return HttpResponse.json(shown);
+        if (claim.status === "completed" && claim.confirmed_facility_id === auth.facilityId)
+          return HttpResponse.json(publicClaim(claim));
+        if (claim.status !== "awaiting_reception") return notFound(auth.lang);
+        claim.confirmed_facility_id = auth.facilityId;
+        // the seeded claim's account has no mock profile; still mark it done for the staff flow
+        if (!completeClaim(store(), claim)) claim.status = "completed";
+        return HttpResponse.json(publicClaim(claim));
       }),
 
       http.post(`${base}/:fp/:kind/`, async ({ request, params }) => {
@@ -897,6 +988,12 @@ export const patientsMocks: FeatureMockFactory = (context) => {
         const auth = await unsafe(request, ["patients.merge_request"]);
         if ("error" in auth) return auth.error;
         const body = await context.readJson(request);
+        const unknown = strict(auth.lang, body, [
+          "surviving_facility_patient_id",
+          "merged_facility_patient_id",
+          "reason",
+        ]);
+        if (unknown) return unknown;
         const s = store();
         const survivor = record(auth.facilityId, str(body.surviving_facility_patient_id));
         const merged = record(auth.facilityId, str(body.merged_facility_patient_id));
@@ -1045,6 +1142,13 @@ export const patientsMocks: FeatureMockFactory = (context) => {
     platform: boolean,
   ) {
     const s = store();
+    const allowed: Record<string, string[]> = {
+      approve: ["version", "decision_reason"],
+      reject: ["version", "decision_reason"],
+      undo: ["version", "reason"],
+    };
+    const unknown = allowed[action] ? strict(lang, body, allowed[action]) : null;
+    if (unknown) return unknown;
     if (["approve", "undo"].includes(action) && (s.requireStepUp || !ctx.hasRecentAuth()))
       return ctx.errorResponse(403, "step_up_required", s1("stepUpRequired", lang));
     if (["approve", "reject", "undo"].includes(action) && body.version !== merge.version)
@@ -1101,7 +1205,10 @@ export const patientsMocks: FeatureMockFactory = (context) => {
       }
       case "undo": {
         if (merge.status !== "executed") return rule("openRequest");
-        if (!platform && merge.scope !== "facility") return rule("platformOnly");
+        // contract §2.5: the same approver rule as approval
+        if (isRequester) return rule("requester");
+        if (!platform && (merge.scope !== "facility" || merge.is_escalated))
+          return rule("platformOnly");
         const merged = s.patients.get(merge.merged.patient_id)!;
         merged.merged_into = null;
         for (const r of s.records) {
@@ -1126,6 +1233,18 @@ export const patientsMocks: FeatureMockFactory = (context) => {
     return HttpResponse.json(publicMerge(merge));
   }
 };
+
+function publicClaim(claim: MockClaim): RecordClaim {
+  const {
+    account_email: _a,
+    patient_id: _p,
+    code: _c,
+    attempts: _t,
+    confirmed_facility_id: _f,
+    ...shown
+  } = claim;
+  return shown;
+}
 
 function publicMerge(merge: PatientsStore["merges"][number]): MergeRequest {
   const { requested_by_email: _e, facility_id: _f, ...shown } = merge;
@@ -1152,7 +1271,11 @@ export function addInsurance(
     return context.errorResponse(400, "validation_error", context.message("validation", lang), {
       fields: { insurer_code: [context.message("required", lang)] },
     });
-  const number = str(body.member_number).trim().toUpperCase();
+  const number = normalizeMemberNumber(body.member_number);
+  if (!number)
+    return context.errorResponse(400, "validation_error", context.message("validation", lang), {
+      fields: { member_number: [msg("memberNumber", lang)] },
+    });
   if (
     patient.insurance.some(
       (p) => p.is_active && p.insurer_code === code && p.member_number === number,
@@ -1194,6 +1317,13 @@ export function updateInsurance(
 ) {
   if (body.version !== profile.version)
     return context.errorResponse(409, "conflict", s1("conflict", lang));
+  if ("member_number" in body) {
+    body.member_number = normalizeMemberNumber(body.member_number);
+    if (!body.member_number)
+      return context.errorResponse(400, "validation_error", context.message("validation", lang), {
+        fields: { member_number: [msg("memberNumber", lang)] },
+      });
+  }
   for (const [key, value] of Object.entries(body)) {
     if (key === "version") continue;
     (profile as unknown as Record<string, unknown>)[key] = value;

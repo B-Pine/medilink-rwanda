@@ -471,12 +471,16 @@ def test_api_import_preview_and_confirm(
     assert platform_client.post(f"{job_url}confirm/").status_code == 403
     login_staff(platform_client, MasterDataImport.objects.get().created_by)
     with django_capture_on_commit_callbacks(execute=True):
-        confirmed = platform_client.post(f"{job_url}confirm/", HTTP_IDEMPOTENCY_KEY="c-1")
+        confirmed = platform_client.post(
+            f"{job_url}confirm/", HTTP_IDEMPOTENCY_KEY="0b4f6a1e-0c1d-4c55-9a0e-000000000c01"
+        )
     assert confirmed.status_code == 202
     assert platform_client.get(job_url).json()["status"] == "applied"
     assert Symptom.objects.get(code="fever").name_i18n["en"] == "Fever (high temperature)"
     assert AuditEntry.objects.filter(action="masterdata.import.applied").exists()
-    replay = platform_client.post(f"{job_url}confirm/", HTTP_IDEMPOTENCY_KEY="c-1")
+    replay = platform_client.post(
+        f"{job_url}confirm/", HTTP_IDEMPOTENCY_KEY="0b4f6a1e-0c1d-4c55-9a0e-000000000c01"
+    )
     assert replay.status_code == 202
     assert platform_client.post(f"{job_url}confirm/").status_code == 422
     not_importable = platform_client.post(f"{PLATFORM}/insurers/imports/", {}, format="multipart")

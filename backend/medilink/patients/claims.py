@@ -98,6 +98,10 @@ def _reference() -> str:
 def request_claim(
     *, account: Any, own: Patient, lookup: dict[str, Any], date_of_birth: Any, request: Any
 ) -> RecordClaim:
+    # Checked before the lookup, so the answer never depends on whether a record matched: every
+    # refusal after it is the same generic NO_MATCH (no existence oracle).
+    if identity.facilities_of(own.pk):
+        raise rule(HAS_RECORDS)
     target = _find(lookup, date_of_birth)
     if (
         target is None
@@ -105,8 +109,6 @@ def request_claim(
         or PatientLink.objects.active().filter(patient=target, relationship="self").exists()
     ):
         raise rule(NO_MATCH)
-    if identity.facilities_of(own.pk):
-        raise rule(HAS_RECORDS)
     now = timezone.now()
     RecordClaim.objects.filter(
         account=account, status__in=[ClaimStatus.CODE_SENT, ClaimStatus.AWAITING_RECEPTION]
@@ -242,11 +244,15 @@ def confirm_at_reception(
         .filter(
             reference=reference.strip().upper(),
             patient=patient,
-            status=ClaimStatus.AWAITING_RECEPTION,
+            method=ClaimMethod.RECEPTION_CHECK,
         )
         .first()
     )
     if claim is None:
+        raise Http404
+    if claim.status == ClaimStatus.COMPLETED and claim.facility_id == facility_id:
+        return claim  # ST17 replay: the claim was already confirmed here
+    if claim.status != ClaimStatus.AWAITING_RECEPTION:
         raise Http404
     _expire_if_needed(claim)
     if claim.status == ClaimStatus.EXPIRED:

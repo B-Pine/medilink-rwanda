@@ -65,8 +65,10 @@ def checklist(facility: Any) -> list[Item]:
             "insurer_code", flat=True
         )
     )
+    # Done with an explicit "no insurers", or a rule for every insurer the application claimed
+    # (nothing to do when it claimed none).
     missing_rules = [code for code in _claimed_insurers(facility) if code not in ruled]
-    insurers_done = no_insurers or (bool(ruled) and not missing_rules)
+    insurers_done = no_insurers or not missing_rules
     return [
         Item("profile", profile_done, int(profile_done), "/settings/profile"),
         Item(
@@ -91,7 +93,7 @@ def checklist(facility: Any) -> list[Item]:
         Item("staff", clinicians.exists(), clinicians.count(), "/staff"),
         Item(
             "schedules",
-            services.filter(is_bookable=True).exists() and not bookable_without,
+            not bookable_without,  # no bookable service: nothing to schedule
             len(templated),
             "/settings/schedules",
         ),

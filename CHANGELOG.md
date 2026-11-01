@@ -6,9 +6,16 @@ This root changelog covers documentation and repository-wide changes (CI, toolin
 
 ## [Unreleased]
 
+### Changed
+
+- Backend CI: mypy is blocking; the coverage gate requires ≥ 95 % for `authz` and ≥ 90 % for `core` and every other app, and reports all apps before failing.
+- R1 (#83): docker-compose services and the CI service containers pinned by digest; Dependabot watches `docker-compose.yml`. Security 05 documents the Transit keystore and TOTP keys, security 06 the frontend `style-src` exception and HSTS preload opt-in.
+- Per-user agent and MCP configs (`.cursor/`, `.gemini/`, `.codex/`, `.agents/`) and `docker-compose.override.yml` are no longer tracked; `docker-compose.override.example.yml` documents the optional Postgres port override. `CLAUDE.md` and `AGENTS.md` point at the GitHub issue workflow.
+
 ### Added
 
 - ADR 0008: public patient-web pages are pre-rendered at build time with a Vite plugin (built in R8, #91). Issues for deferred items: magic-link login (#92), clinical sign-off of the red-flag list (#93), legal go-live items (#94) (#88).
+- CI and security gates from the testing strategy and security 09 §3 (#90): Semgrep (`p/django`, `p/python`, `p/owasp-top-ten` and MediLink rules in `.semgrep/medilink.yml`), osv-scanner over the Python and npm lockfiles (fixable CVSS ≥ 7.0), hadolint (`.hadolint.yaml`), Trivy scan of the built API image, CycloneDX SBOMs attached to each `security` run, cosign signing of the SBOMs on `main` once `COSIGN_PRIVATE_KEY` is set, a `migrations` job that reverses and re-applies each app's latest migration, and a Conventional Commit check on pull request titles (`pr-title.yml`). The raw SQL rule only reports until #103, the image scan until #106.
 - Acceptance records for Sprint 1 (`docs/qa/sprint-1-acceptance.md`, 40 checks) and Sprint 3 (`docs/qa/sprint-3-acceptance.md`, backend evidence and gaps).
 
 - `scripts/github-setup.sh`: labels `area:patients`, `area:security`, `area:ops`, `area:i18n`, `type:decision`, `wave:1` and `sprint:S1`..`sprint:S11`; milestones are skipped when they already exist, so the script can be re-run.
@@ -29,6 +36,7 @@ This root changelog covers documentation and repository-wide changes (CI, toolin
 ### Changed
 
 - Doc contradictions from the S0–S5 audit resolved (#88). Product decisions of 2026-10-31 written into analysis 05/06 and the S5 contract (D-9..D-12): a late booked patient checks in as a walk-in and a no-show is only marked at closing time; remote "I'm here" is a notice that reception confirms; strike thresholds are platform settings; the P1 red-flag list is a deviation awaiting clinical sign-off. API conventions now describe the built idempotency (key on the created row), WebSocket URLs and flat message format, and the 409/422 split; the database design uses the built table and column names (sessions, memberships, audit log without `patient_id`, facility profile, service points, schedules, tariffs, councils); S4 D-10 records per-facility socket groups; delegate booking rights in the S3 matrix; S9 named "Notification engine (core)" across the roadmap, plus the build order after remediation; ADR 0003 versions, ADR 0004 and 0005 accepted; age, checklist and subscription-grace wording in analysis 02/03; ML phase in the ml README; dated corrections in the Sprint 0 and design v2 QA records.
+- S3 contract (R2, #84): §2.2 clinical access and number normalisation rules, PA7/PA23/ST17/ST25 rules, new ST28 access reasons, deviations D-22 to D-25; API catalogue and the FR-SEC-03 traceability row updated.
 - Docs aligned with what is merged: the API catalogue S1 and S3 rows are rewritten from the contracts and marked Implemented (#47, #57); S1-built facility status actions are marked in S2; the contract index, the S1 and S3 contract headers and the docs README show the real status; the database design §5.5 describes the S3 schema as built (table names, functions, owner read policy, append-only triggers); S3 contract §10 records deviations D-16 to D-20; the backend README covers the S1/S3 apps, patient keys and sprint seeders.
 - Getting started reconciled with the shipped code (Python 3.14, hash-pinned install, `pnpm dev:mock`, Swagger UI, uvicorn for WebSockets); links to the backend and frontend READMEs and changelogs.
 - Traceability matrix: 16 Sprint 0 requirements Verified, summary gains a Verified column; NFR-UX-03 title says WCAG 2.2; NFR-OPS-07 (feature flags) moved to S1.

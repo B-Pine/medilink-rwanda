@@ -157,7 +157,8 @@
       "patients.merge.executed": "joined two of your records",
       "patients.merge.undone": "separated two records",
       "other": "used your record"
-    }
+    },
+    "more": "Show older entries"
   },
   "family": {
     "title": "Family and sharing",
@@ -200,7 +201,11 @@
     "care": "Consent to care",
     "careHint": "Facilities need this to keep your health record.",
     "history": "See who opened my record",
-    "later": "Downloading or deleting your data will be available later."
+    "later": "Downloading or deleting your data will be available later.",
+    "notifications": "Messages about my care",
+    "notificationsHint": "Reminders and updates about visits and bookings.",
+    "location": "Use my location",
+    "locationHint": "Find facilities near you."
   },
   "claim": {
     "title": "Claim my record",
@@ -218,7 +223,10 @@
     "receptionHint": "Show this reference and an identity document at reception. It's valid for 7 days.",
     "reference": "Claim reference",
     "done": "Your record is now linked to your account.",
-    "open": "Open my profile"
+    "open": "Open my profile",
+    "waiting": "Waiting for reception to check your document. This page updates by itself.",
+    "ended": "This claim is no longer open. Start again to claim your record.",
+    "again": "Start again"
   },
   "numberHint": "Show this number at any facility so staff find your record quickly.",
   "sectionHints": {

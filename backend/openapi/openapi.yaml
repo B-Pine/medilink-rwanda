@@ -1262,6 +1262,10 @@ paths:
   /api/v1/patient/visits/{visit_id}/arrived/:
     post:
       operationId: patient_visit_arrived
+      description: '"I''m here" for a remote ticket: records the patient''s claim
+        (`remote_arrival_claimed_at`) only. Reception confirms the arrival; until
+        then the ticket is not called and pass-over still applies (FR-QUE-07; self
+        check-in is P2).'
       parameters:
       - in: path
         name: visit_id
@@ -10012,6 +10016,11 @@ components:
           type: string
           format: uuid
           nullable: true
+        symptoms:
+          type: array
+          items:
+            $ref: '#/components/schemas/SymptomInputRequest'
+          maxItems: 5
     CheckInResponse:
       type: object
       properties:
@@ -10020,10 +10029,13 @@ components:
           format: uuid
         created:
           type: boolean
+        late:
+          type: boolean
         ticket:
           $ref: '#/components/schemas/TicketRow'
       required:
       - created
+      - late
       - ticket
       - visit_id
     CheckInSourceEnum:
@@ -15432,6 +15444,16 @@ components:
         travel_minutes:
           type: integer
           nullable: true
+        is_remote:
+          type: boolean
+        remote_arrival_claimed_at:
+          type: string
+          format: date-time
+          nullable: true
+        remote_arrival_confirmed_at:
+          type: string
+          format: date-time
+          nullable: true
         version:
           type: integer
         updated_at:
@@ -15442,9 +15464,12 @@ components:
       - estimate
       - facility_id
       - facility_name
+      - is_remote
       - leave_by
       - patient_display_name
       - patient_id
+      - remote_arrival_claimed_at
+      - remote_arrival_confirmed_at
       - service_name_i18n
       - service_point
       - stage
@@ -15916,6 +15941,11 @@ components:
           type: object
           additionalProperties:
             type: integer
+        insurer_share_rwf:
+          type: object
+          additionalProperties:
+            type: integer
+            nullable: true
         bookable:
           type: boolean
         remote_join:
@@ -15940,6 +15970,7 @@ components:
       - code
       - fee_rwf
       - id
+      - insurer_share_rwf
       - insurer_shares
       - insurers
       - max_age_months
@@ -16387,6 +16418,11 @@ components:
         patient_id:
           type: string
           format: uuid
+        symptoms:
+          type: array
+          items:
+            $ref: '#/components/schemas/SymptomInputRequest'
+          maxItems: 5
       required:
       - facility_slug
       - patient_id
@@ -17796,6 +17832,7 @@ components:
         membership_id:
           type: string
           format: uuid
+          nullable: true
         service_id:
           type: string
           format: uuid
@@ -17852,6 +17889,7 @@ components:
         membership_id:
           type: string
           format: uuid
+          nullable: true
         service_id:
           type: string
           format: uuid
@@ -18024,6 +18062,22 @@ components:
         position:
           type: integer
           nullable: true
+        slot_starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        late:
+          type: boolean
+        is_remote:
+          type: boolean
+        remote_arrival_claimed_at:
+          type: string
+          format: date-time
+          nullable: true
+        remote_arrival_confirmed_at:
+          type: string
+          format: date-time
+          nullable: true
         version:
           type: integer
       required:
@@ -18034,12 +18088,17 @@ components:
       - display_name
       - flags
       - id
+      - is_remote
+      - late
       - number
       - position
       - priority_rank
+      - remote_arrival_claimed_at
+      - remote_arrival_confirmed_at
       - service_id
       - service_point
       - sex
+      - slot_starts_at
       - stage
       - state
       - step_out_until

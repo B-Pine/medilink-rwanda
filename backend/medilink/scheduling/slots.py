@@ -217,6 +217,29 @@ def hold(slot_id: Any, *, account: Any = None, membership: Any = None) -> SlotHo
         )
 
 
+def release_other_holds(account: Any, facility_id: Any) -> int:
+    """One open hold per account across facilities (contract sprint-05 §2.2 Hold): release the
+    account's open holds at other facilities, each in its own facility context. Holds at
+    `facility_id` are released by `hold()` itself."""
+    from django.db import connection
+
+    from medilink.tenancy.context import rls_context
+
+    if connection.vendor != "postgresql":
+        return 0
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "SELECT hold_id, facility_id FROM scheduling_account_holds(%s)", [account.pk]
+        )
+        rows = [(h, f) for h, f in cursor.fetchall() if str(f) != str(facility_id)]
+    for hold_id, other in rows:
+        with rls_context(facility_id=other, user_id=account.pk), transaction.atomic():
+            h = SlotHold.objects.select_for_update().filter(pk=hold_id, account=account).first()
+            if h is not None and h.booking_id is None:
+                _release(h)
+    return len(rows)
+
+
 def _release(h: SlotHold) -> None:
     if h.released_at is not None:
         return

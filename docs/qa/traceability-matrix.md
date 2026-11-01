@@ -136,7 +136,7 @@ Source: [05 · Discovery, calendars, scheduling, booking](../analysis/05-discove
 | FR-SCH-10 | Reason for visit with the structured symptom picker | P1 | S5 | Both | API, CMP | Not started |
 | FR-SCH-11 | Patient calendar with dependents; .ics export and feed | P1 | S5 | Both | API, E2E | Not started |
 | FR-SCH-12 | Reception and doctor calendars (day, week) | P1 | S5 | Both | CMP, E2E | Not started |
-| FR-SCH-13 | No-show detection, reversal with reason, strikes | P1 | S5 | Both | BR | Not started |
+| FR-SCH-13 | No-show detection, reversal with reason, strikes | P1 | S5 | Both | BR | In progress (R4 #86) |
 | FR-SCH-14 | Disruption flow: bulk rebooking and notification | P1 | S5 | Both | BR, E2E | Not started |
 | FR-SCH-15 | Follow-up booking from the consultation | P1 | S5 | Both | API | Not started |
 | FR-SCH-16 | Recurring care plans | P2 | — | Both | BR | Not started |
@@ -154,8 +154,8 @@ Source: [06 · Visit lifecycle and live queue](../analysis/06-visit-lifecycle-an
 | FR-QUE-03 | Check-in and walk-in produce one ticket (idempotent) | P1 | S4 (walk-ins), S5 (booked) | Backend | BR | Not started |
 | FR-QUE-04 | Configurable stages incl. payment and pharmacy | P1 | S4 | Both | BR | Not started |
 | FR-QUE-05 | Ordering rules: emergency, return, priority, ratio, FIFO | P1 | S4 | Backend | BR | Not started |
-| FR-QUE-06 | Grace window; late arrivals become walk-ins | P1 | S5 | Backend | BR | Not started |
-| FR-QUE-07 | Remote joiners hold a place; pass-over rule | P1 | S5 | Backend | BR | Not started |
+| FR-QUE-06 | Grace window; late arrivals become walk-ins | P1 | S5 | Backend | BR | In progress (R4 #86) |
+| FR-QUE-07 | Remote joiners hold a place; pass-over rule | P1 | S5 | Backend | BR | In progress (R4 #86) |
 | FR-QUE-08 | Atomic Call next; versioned state changes | P1 | S4 | Backend | BR | Not started |
 | FR-QUE-09 | Ticket state machine with recorded transitions | P1 | S4 | Backend | BR | Not started |
 | FR-QUE-10 | Manual reorder only with reason; logged; reported | P1 | S4 | Both | BR, API | Not started |

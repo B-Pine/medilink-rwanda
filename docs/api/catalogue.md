@@ -326,6 +326,7 @@ Dependency: the roadmap puts check-in of booked patients and the Expected list (
 | `POST` | `/api/v1/staff/tickets/{id}/step-out/` | Patient steps out (up to 30 min) | `queue.operate` | FR-QUE-09 | Ver | Planned |
 | `POST` | `/api/v1/staff/tickets/{id}/cancel/` | Cancel a waiting ticket | `queue.operate` | FR-QUE-09 | Ver; reason | Planned |
 | `POST` | `/api/v1/staff/tickets/{id}/mark-left/` | Patient left without service | `queue.operate` | FR-QUE-09 | Ver | Planned |
+| `POST` | `/api/v1/staff/tickets/{id}/confirm-arrival/` | Reception confirms a remote joiner is on site (the ticket can then be called) | `queue.operate` | FR-QUE-07 | Ver; `422` when not remote or already confirmed; "I'm here" alone is a claim (sprint-05 R10) | Implemented (R4, #86) |
 | `GET` | `/api/v1/staff/queue-reorders/` | Reorders to review | `facility.configure` | FR-QUE-10 | Filters `reviewed`, `staff` | Planned |
 | `POST` | `/api/v1/staff/queue-reorders/{id}/review/` | Mark a reorder as reviewed, with a comment | `facility.configure` | FR-QUE-10 | Audit | Planned |
 | `GET`, `PUT` | `/api/v1/staff/duty-status/` | Own status: on duty at a service point, break until, emergency, off | Doctor (self) | FR-QUE-14 | Singleton; updates estimates | Planned |
@@ -394,6 +395,7 @@ Requirements: FR-SCH-01..15; FR-BIL-03; FR-AI-01.
 | `POST` | `/api/v1/patient/bookings/{id}/accept-change/` | Accept or decline a facility disruption proposal | Linked account | FR-SCH-14 | Never counts as a patient cancellation | Planned |
 | `POST` | `/api/v1/patient/bookings/{id}/calendar-file/` | Get an `.ics` file for one booking | Linked account | FR-SCH-11 | Returns a short-lived link | Planned |
 | `POST` | `/api/v1/patient/remote-joins/` | Join today's queue remotely → ticket | Linked account | FR-SCH-09, FR-QUE-07 | Idem; before the cut-off; service must allow it | Planned |
+| `POST` | `/api/v1/patient/visits/{id}/arrived/` | "I'm here" for a remote ticket: records the claim only | Linked account (`self`, `guardian`) | FR-QUE-07 | Sets `remote_arrival_claimed_at`; reception confirms; self check-in is P2 (FR-QUE-18) (sprint-05 B9) | Implemented (R4, #86) |
 | `GET` | `/api/v1/patient/calendar-entries/` | Own and dependents' appointments and follow-ups | Patient session | FR-SCH-11 | `from`, `to` | Planned |
 | `GET`, `POST` | `/api/v1/patient/calendar-feeds/` | Create the private subscription link | Patient session | FR-SCH-11 | Token shown once | Planned |
 | `POST` | `/api/v1/patient/calendar-feeds/{id}/revoke/` | Revoke the subscription link | Patient session | FR-SCH-11 | | Planned |

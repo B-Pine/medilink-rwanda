@@ -9,6 +9,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Remediation R1 · Security core (#83)
+
+- patient-web: sign-up shows "check your email" for every request (no account enumeration) and the
+  new `/verify-email` page confirms the emailed link and signs in. api-client:
+  `patientAuth.register` returns `{detail}` (`202`), new `patientAuth.verifyEmail`; mocks follow
+  (`MOCK_VERIFY_TOKEN`).
+- CSP: `style-src` keeps `'unsafe-inline'` (Radix scroll lock and pdf.js inject `<style>` at
+  runtime; a static-host meta CSP can't carry a nonce), documented in `@medilink/config`.
+
 ### Sprint 1 · Platform and onboarding
 
 - api-client: `masterData`, `onboarding`, `security` and `uploads` modules (XHR uploads with

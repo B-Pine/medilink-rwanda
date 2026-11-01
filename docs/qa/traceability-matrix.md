@@ -101,7 +101,7 @@ Source: [04 · Patient identity and medical history](../analysis/04-patient-iden
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
 | FR-PAT-01 | Account, patient and facility patient record are separate | P1 | S3 | Backend | UT, API | In progress |
-| FR-PAT-02 | Patient self sign-up (email/password; phone OTP in P3) | P1 | S0, S3 | Both | API, E2E | In progress |
+| FR-PAT-02 | Patient self sign-up (email/password; phone OTP in P3) | P1 | S0, S3, R1 #83 (verify-email, no enumeration) | Both | API, E2E | In progress |
 | FR-PAT-03 | Dependents, delegated access, profile switching | P1 | S3 | Both | AZ, E2E | In progress |
 | FR-PAT-04 | Walk-in registration in under one minute | P1 | S3 | Both | API, USA | In progress |
 | FR-PAT-05 | Duplicate detection; reversible merge with approval | P1 | S3 | Both | BR, API | In progress |
@@ -317,7 +317,7 @@ Source: [12 · Security, privacy, compliance](../analysis/12-security-privacy-an
 | FR-SEC-07 | Append-only, hash-chained audit log | P1 | S0 | Backend | API, SEC | Verified (S0, v0.1.0) |
 | FR-SEC-08 | Patient access history in plain language | P1 | S3 | Both | API, E2E | In progress |
 | FR-SEC-09 | Break-glass with reason, time limit, review, patient visibility | P1 | S6 | Both | AZ, API | Not started |
-| FR-SEC-10 | Encryption in transit and at rest; field-level encryption | P1 | S3 | Backend | UT, INS | In progress |
+| FR-SEC-10 | Encryption in transit and at rest; field-level encryption | P1 | S3, R1 #83 (TOTP secrets, Transit keystore) | Backend | UT, INS | In progress |
 | FR-SEC-11 | Patient data processed and stored in Rwanda | P1 | S11* | Ops | INS | Not started |
 | FR-SEC-12 | Data subject rights: access, download, rectification, erasure, portability | P1 | S10 | Both | API, E2E | Not started |
 | FR-SEC-13 | Retention rules per data type | P1 | S10 | Backend | UT, INS | Not started |

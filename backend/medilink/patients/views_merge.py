@@ -15,6 +15,7 @@ from medilink.core.pagination import DefaultPagination
 from medilink.patients import merge_requests as mr
 from medilink.patients.errors import PatientsAPIView
 from medilink.patients.models import Merge, MergeScope, MergeStatus
+from medilink.patients.serializers import paginated
 from medilink.patients.views_staff import Needs, StaffView, _err
 from medilink.uploads.views import idempotency_key
 
@@ -57,7 +58,7 @@ class StaffMergeListView(_StaffMerge):
         operation_id="staff_merge_requests_list",
         tags=STAFF_TAGS,
         parameters=LIST_PARAMS,
-        responses={200: mr.MergeRequestSerializer(many=True)},
+        responses={200: paginated(mr.MergeRequestSerializer, "PaginatedStaffMergeRequestList")},
         summary="This facility's merge requests",
     )
     def get(self, request: Request) -> Response:
@@ -233,7 +234,7 @@ class PlatformMergeListView(_PlatformMerge):
             *LIST_PARAMS,
             OpenApiParameter("scope", str, enum=[c for c, _ in MergeScope.choices]),
         ],
-        responses={200: mr.MergeRequestSerializer(many=True)},
+        responses={200: paginated(mr.MergeRequestSerializer, "PaginatedPlatformMergeRequestList")},
         summary="Cross-facility, escalated and claim merges",
     )
     def get(self, request: Request) -> Response:

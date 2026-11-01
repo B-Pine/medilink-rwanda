@@ -1,3 +1,9 @@
-# Task Management & TODO Guidelines
-- When viewing, querying, adding, updating, or deleting project tasks or TODOs, ALWAYS use the TODO MCP tools (`todo_get_tasks`, `todo_add_tasks`, `todo_update_tasks`, `todo_delete_tasks`, `todo_clear_category`, `todo_move_category`) on server `todo-mcp` or `todo-extension`.
-- NEVER edit the `.todo` file directly with file modification tools.
+# Agent instructions
+
+Follow [CONTRIBUTING.md](CONTRIBUTING.md) and the [git workflow](docs/development/git-workflow-and-releases.md).
+
+- Track work in GitHub issues and milestones on `B-Pine/medilink-rwanda`; link PRs with `Closes #N`.
+- Branch off `main`, use Conventional Commits, squash-merge only with CI green. Never push to `main`.
+- Build sprints contract-first ([sprint contracts](docs/architecture/contracts/README.md)); follow the shared-file protocol.
+- Update the CHANGELOG, the [API catalogue](docs/api/catalogue.md) and the [traceability matrix](docs/qa/traceability-matrix.md) with behaviour changes.
+- Keep per-user agent or MCP configs (`.cursor/`, `.gemini/`, `.codex/`, `.agents/`) out of git.

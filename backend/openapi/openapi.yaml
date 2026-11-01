@@ -437,7 +437,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -458,7 +457,6 @@ paths:
               $ref: '#/components/schemas/ConsentInputRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -474,7 +472,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -495,7 +492,6 @@ paths:
               $ref: '#/components/schemas/InviteCreateRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -518,7 +514,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '204':
@@ -536,7 +531,6 @@ paths:
               $ref: '#/components/schemas/CodeRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -548,7 +542,7 @@ paths:
   /api/v1/patient/dependents/:
     post:
       operationId: patient_dependents_create
-      summary: Add a child (guardian) or an adult who agreed (delegate)
+      summary: Add a child (guardian) or an adult who agreed (delegate); Idempotency-Key
       tags:
       - patient-profiles
       requestBody:
@@ -558,7 +552,6 @@ paths:
               $ref: '#/components/schemas/DependentRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -572,7 +565,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          description: age or limit rules
+          description: age, limit or consent version
   /api/v1/patient/holds/{hold_id}/:
     delete:
       operationId: patient_hold_release
@@ -610,7 +603,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedInsuranceUpdateRequest'
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -639,7 +631,6 @@ paths:
               $ref: '#/components/schemas/CardImageRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -667,7 +658,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -686,7 +676,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -702,16 +691,13 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ProfileSummary'
+                $ref: '#/components/schemas/ProfileSummaryList'
           description: ''
   /api/v1/patient/profiles/{patient_id}/:
     get:
@@ -727,7 +713,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -760,7 +745,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedProfileUpdateRequest'
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -801,7 +785,6 @@ paths:
               $ref: '#/components/schemas/AllergyInputRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -835,7 +818,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -855,6 +837,14 @@ paths:
       operationId: patient_access_history
       summary: Who opened or changed this profile
       parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
       - in: path
         name: patient_id
         schema:
@@ -864,16 +854,13 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AccessHistoryItem'
+                $ref: '#/components/schemas/PaginatedAccessHistoryList'
           description: ''
   /api/v1/patient/profiles/{patient_id}/health-profile/:
     get:
@@ -889,7 +876,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -912,16 +898,13 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Identifier'
+                $ref: '#/components/schemas/IdentifierList'
           description: ''
     post:
       operationId: patient_identifiers_create
@@ -942,7 +925,6 @@ paths:
               $ref: '#/components/schemas/IdentifierInputRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -977,7 +959,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -1000,16 +981,13 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/InsuranceProfile'
+                $ref: '#/components/schemas/InsuranceProfileList'
           description: ''
     post:
       operationId: patient_insurance_create
@@ -1030,7 +1008,6 @@ paths:
               $ref: '#/components/schemas/InsuranceInputRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -1058,7 +1035,6 @@ paths:
               $ref: '#/components/schemas/ClaimCreateRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -1087,7 +1063,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -1116,7 +1091,6 @@ paths:
               $ref: '#/components/schemas/CodeRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -4842,9 +4816,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/MergeRequest'
+                $ref: '#/components/schemas/PaginatedPlatformMergeRequestList'
           description: ''
   /api/v1/platform/merge-requests/{merge_id}/:
     get:
@@ -7354,15 +7326,12 @@ paths:
       - staff-merge-requests
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/MergeRequest'
+                $ref: '#/components/schemas/PaginatedStaffMergeRequestList'
           description: ''
     post:
       operationId: staff_merge_requests_create
@@ -7377,7 +7346,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '201':
           content:
@@ -7412,7 +7380,6 @@ paths:
       - staff-merge-requests
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -7441,7 +7408,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -7470,7 +7436,6 @@ paths:
       - staff-merge-requests
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -7493,7 +7458,6 @@ paths:
       - staff-merge-requests
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -7528,7 +7492,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -7557,7 +7520,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -7579,7 +7541,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '201':
           content:
@@ -7596,7 +7557,7 @@ paths:
   /api/v1/staff/patients/{fp_id}/:
     get:
       operationId: staff_patients_retrieve
-      summary: A facility patient record (audited)
+      summary: A facility patient record (care relationship or a reason; audited)
       parameters:
       - in: path
         name: fp_id
@@ -7608,7 +7569,6 @@ paths:
       - staff-patients
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -7616,6 +7576,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/FacilityPatientDetail'
           description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason first (ST28)'
         '404':
           content:
             application/json:
@@ -7641,7 +7607,6 @@ paths:
               $ref: '#/components/schemas/PatchedStaffPatientUpdateRequest'
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -7681,7 +7646,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '201':
           content:
@@ -7721,7 +7685,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -7729,10 +7692,44 @@ paths:
               schema:
                 $ref: '#/components/schemas/HealthItem'
           description: ''
+  /api/v1/staff/patients/{fp_id}/access-reasons/:
+    post:
+      operationId: staff_patients_access_reasons_create
+      summary: Give a reason to open a record without a care relationship (audited)
+      parameters:
+      - in: path
+        name: fp_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-patients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessReasonResult'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: not_found
   /api/v1/staff/patients/{fp_id}/claim-confirmations/:
     post:
       operationId: staff_patients_claim_confirm
-      summary: Confirm a patient's record claim after an ID check
+      summary: Confirm a patient's record claim after an ID check (idempotent)
       parameters:
       - in: path
         name: fp_id
@@ -7750,10 +7747,13 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
-          description: RecordClaim
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordClaim'
+          description: ''
         '404':
           content:
             application/json:
@@ -7781,7 +7781,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '201':
           content:
@@ -7804,7 +7803,6 @@ paths:
       - staff-patients
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -7812,6 +7810,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/HealthProfile'
           description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason first (ST28)'
   /api/v1/staff/patients/{fp_id}/identifiers/:
     post:
       operationId: staff_patients_identifiers_create
@@ -7833,7 +7837,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '201':
           content:
@@ -7862,15 +7865,12 @@ paths:
       - staff-patients
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/InsuranceProfile'
+                $ref: '#/components/schemas/StaffInsuranceProfileList'
           description: ''
     post:
       operationId: staff_patients_insurance_create
@@ -7892,7 +7892,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '201':
           content:
@@ -7932,7 +7931,6 @@ paths:
               $ref: '#/components/schemas/PatchedInsuranceUpdateRequest'
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -7973,7 +7971,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '201':
           content:
@@ -8007,7 +8004,6 @@ paths:
       - staff-patients
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           description: '{url, expires_at}'
@@ -8038,7 +8034,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8067,7 +8062,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8089,7 +8083,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8122,7 +8115,6 @@ paths:
               $ref: '#/components/schemas/DuplicateCheckRequest'
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8144,7 +8136,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -9063,6 +9054,37 @@ components:
       - facility
       - id
       - occurred_at
+    AccessReasonCodeEnum:
+      enum:
+      - care_continuity
+      - results_review
+      - admin_request
+      - other
+      type: string
+      description: |-
+        * `care_continuity` - care_continuity
+        * `results_review` - results_review
+        * `admin_request` - admin_request
+        * `other` - other
+    AccessReasonRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        reason_code:
+          $ref: '#/components/schemas/AccessReasonCodeEnum'
+        reason_text:
+          type: string
+          maxLength: 200
+      required:
+      - reason_code
+    AccessReasonResult:
+      type: object
+      properties:
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - expires_at
     ActionEnum:
       enum:
       - create
@@ -10238,12 +10260,16 @@ components:
       - privacy
       - care
       - research
+      - notifications
+      - location
       type: string
       description: |-
         * `terms` - terms
         * `privacy` - privacy
         * `care` - care
         * `research` - research
+        * `notifications` - notifications
+        * `location` - location
     ConsentInputRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -10461,6 +10487,7 @@ components:
       - version
     DecisionRequest:
       type: object
+      description: Rejects unknown fields instead of silently ignoring them.
       properties:
         version:
           type: integer
@@ -12379,6 +12406,15 @@ components:
         * `passport` - Passport
         * `refugee_id` - Refugee ID
         * `birth_certificate` - Birth certificate
+    IdentifierList:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identifier'
+      required:
+      - results
     ImportCreateRequest:
       type: object
       properties:
@@ -12573,6 +12609,15 @@ components:
       - status_reason
       - valid_until
       - version
+    InsuranceProfileList:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/InsuranceProfile'
+      required:
+      - results
     InsuranceProfileStatusEnum:
       enum:
       - unverified
@@ -13433,6 +13478,7 @@ components:
       - roles
     MergeCreateRequest:
       type: object
+      description: Rejects unknown fields instead of silently ignoring them.
       properties:
         surviving_facility_patient_id:
           type: string
@@ -13854,6 +13900,28 @@ components:
         * `private` - Private
         * `faith_based` - Faith-based
         * `ngo` - NGO
+    PaginatedAccessHistoryList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessHistoryItem'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedApplicationSummaryList:
       type: object
       required:
@@ -14153,6 +14221,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PlatformFacility'
+    PaginatedPlatformMergeRequestList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MergeRequest'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedPublicHolidaysItemList:
       type: object
       required:
@@ -14291,6 +14381,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ServiceCatalogueItemsPlatformItem'
+    PaginatedStaffMergeRequestList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MergeRequest'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedSymptomsItemList:
       type: object
       required:
@@ -15701,6 +15813,15 @@ components:
       - medilink_number
       - patient_id
       - relationship
+    ProfileSummaryList:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProfileSummary'
+      required:
+      - results
     ProofRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -16273,6 +16394,7 @@ components:
       - sex
     RejectRequest:
       type: object
+      description: Rejects unknown fields instead of silently ignoring them.
       properties:
         version:
           type: integer
@@ -17185,6 +17307,15 @@ components:
       required:
       - kind
       - value
+    StaffInsuranceProfileList:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/InsuranceProfile'
+      required:
+      - results
     StaffLoginRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -18025,6 +18156,7 @@ components:
       - minutes
     UndoRequest:
       type: object
+      description: Rejects unknown fields instead of silently ignoring them.
       properties:
         version:
           type: integer

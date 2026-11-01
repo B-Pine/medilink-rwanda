@@ -13,6 +13,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - pypdf 6.21.2 → 6.21.4 in the hash-pinned locks (CVE-2026-119203 to CVE-2026-119209, reported by
   `pip-audit`).
 
+### R7 · CI gates (#90)
+
+- `post_migrate` grant and revoke receivers (`core.db`, `masterdata.db`) skip tables that don't
+  exist, so migrating an app backwards no longer fails; `scripts/check_migrations_reversible.py`
+  reverses and re-applies each app's latest migration in CI (NFR-OPS-08).
+- Two platform-admin querysets (`masterdata` platform lists, `onboarding` facilities list) carry the
+  Semgrep review tag for `.objects.all()` in views.
+
 ### Sprint 1 · Platform and onboarding
 
 - Upload pipeline v1 (`medilink.uploads`, contract §2.4, §3.6): `uploads_file` with forced RLS

@@ -17,7 +17,7 @@ Sprints and requirements follow the [backend](../roadmap/backend.md) and [fronte
 | [S6](#s6--clinical-record-and-history) | Clinical record and history | Planned |
 | [S7](#s7--pharmacy-and-documents) | Pharmacy and documents | Planned |
 | [S8](#s8--billing-and-payments) | Billing and payments | Planned |
-| [S9](#s9--notifications) | Notifications | Contracted ([contract](../architecture/contracts/README.md)); rows below are the plan, the contract wins |
+| [S9](#s9--notifications) | Notifications | Backend implemented (S9 pull request); the [contract](../architecture/contracts/sprint-09-notifications.md) §3.3 and the OpenAPI schema win over the rows below |
 | [S10](#s10--disputes-help-and-reports) | Disputes, help and reports | Planned |
 | [S11](#s11--hardening-and-pilot-readiness) | Hardening and pilot readiness | Planned |
 | [—](#not-yet-scheduled) | Not yet scheduled | Planned |

@@ -246,17 +246,17 @@ Source: [09 · Notifications](../analysis/09-notifications-and-communication.md)
 
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
-| FR-NOT-01 | Event-driven notification service with channel adapters | P1 | S9 | Backend | UT, API | Not started |
-| FR-NOT-02 | In-app inbox and live updates | P1 | S9 | Both | API, E2E | Not started |
-| FR-NOT-03 | Web push: timely permission prompt, push-off banner | P1 | S9 | Both | CMP, E2E, SEC | Not started |
-| FR-NOT-04 | Email notifications with documents and calendar files | P1 | S9 | Backend | API | Not started |
-| FR-NOT-05 | Priority levels, quiet hours, fallback rules | P1 | S9 | Backend | BR | Not started |
-| FR-NOT-06 | Patient, staff and facility preferences | P1 | S9 | Both | API, CMP | Not started |
-| FR-NOT-07 | Notification catalogue (analysis 09 §4) | P1 | S9 | Both | API, INS | Not started |
-| FR-NOT-08 | Guardians receive dependents' notifications | P1 | S9 | Backend | BR | Not started |
-| FR-NOT-09 | Trilingual versioned templates; no clinical details | P1 | S9 | Backend | UT, INS | Not started |
-| FR-NOT-10 | Delivery log with status and failures; retries | P1 | S9 | Backend | API | Not started |
-| FR-NOT-11 | Facility and platform announcements | P1 | S9 | Both | API, E2E | Not started |
+| FR-NOT-01 | Event-driven notification service with channel adapters | P1 | S9 | Backend | UT, API | In progress |
+| FR-NOT-02 | In-app inbox and live updates | P1 | S9 | Both | API, E2E | In progress |
+| FR-NOT-03 | Web push: timely permission prompt, push-off banner | P1 | S9 | Both | CMP, E2E, SEC | In progress |
+| FR-NOT-04 | Email notifications with documents and calendar files | P1 | S9 | Backend | API | In progress |
+| FR-NOT-05 | Priority levels, quiet hours, fallback rules | P1 | S9 | Backend | BR | In progress |
+| FR-NOT-06 | Patient, staff and facility preferences | P1 | S9 | Both | API, CMP | In progress |
+| FR-NOT-07 | Notification catalogue (analysis 09 §4) | P1 | S9 | Both | API, INS | In progress |
+| FR-NOT-08 | Guardians receive dependents' notifications | P1 | S9 | Backend | BR | In progress |
+| FR-NOT-09 | Trilingual versioned templates; no clinical details | P1 | S9 | Backend | UT, INS | In progress |
+| FR-NOT-10 | Delivery log with status and failures; retries | P1 | S9 | Backend | API | In progress |
+| FR-NOT-11 | Facility and platform announcements | P1 | S9 | Both | API, E2E | In progress |
 | FR-NOT-12 | Tracker keeps screen awake; sound and vibration on call | P1 | S4*, S9 | Frontend | E2E, INS | In progress |
 | FR-NOT-13 | SMS and mobile push adapters | P3 | — | Backend | API | Not started |
 | FR-NOT-14 | WhatsApp adapter (approved templates) | P4 | — | Backend | API | Not started |
@@ -365,7 +365,7 @@ Source: [14 · Availability and reliability](../analysis/14-non-functional-requi
 | NFR-REL-02 | RPO ≤ 15 min, RTO ≤ 4 h | P1 | S11 | Ops | DRL | Not started |
 | NFR-REL-03 | No lost actions during brief network loss | P1 | S4*, S11 | Both | E2E | In progress |
 | NFR-REL-04 | Idempotent check-in, payment and dispensing | P1 | S4*, S7*, S8*, S11 | Backend | BR | In progress |
-| NFR-REL-05 | Background jobs retried and monitored | P1 | S9*, S11 | Backend | API, INS | Not started |
+| NFR-REL-05 | Background jobs retried and monitored | P1 | S9*, S11 | Backend | API, INS | In progress |
 
 ## NFR-NET · Low connectivity and devices
 

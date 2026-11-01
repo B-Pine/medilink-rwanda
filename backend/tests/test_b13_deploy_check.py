@@ -49,6 +49,9 @@ def prod_env(**overrides: str) -> dict[str, str]:
             + base64.urlsafe_b64encode(secrets.token_bytes(32)).decode(),
             "MEDILINK_BLIND_INDEX_KEYS": "1:"
             + base64.urlsafe_b64encode(secrets.token_bytes(32)).decode(),
+            # S9: web push VAPID keys (dummy values; check --deploy needs them, E010)
+            "WEB_PUSH_VAPID_PUBLIC_KEY": "BDummyPublicKeyForTheDeployCheckOnly",
+            "WEB_PUSH_VAPID_PRIVATE_KEY": "dummy-private-key-for-the-deploy-check-only",
             "PYTHONDONTWRITEBYTECODE": "1",
         }
     )

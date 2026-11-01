@@ -18,6 +18,7 @@ import { notificationsFeature } from "../features/notifications";
 import { setupFeature } from "../features/setup";
 // [/S2 imports]
 // [S10 imports]
+import { helpFeature } from "../features/help";
 // [/S10 imports]
 // [S4 imports]
 import { queueFeature } from "../features/queue";
@@ -70,6 +71,7 @@ export const FEATURES: FeatureRoutes[] = [
   setupFeature,
   // [/S2]
   // [S10]
+  helpFeature,
   // [/S10]
   // [S4]
   queueFeature,

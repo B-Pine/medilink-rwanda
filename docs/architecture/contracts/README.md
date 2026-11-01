@@ -15,7 +15,7 @@ A sprint contract is the agreement a sprint is built and verified against: scope
 | S4 · Visits and the live queue | [sprint-04-queue.md](sprint-04-queue.md) | 3 | Implemented: backend #73, frontend #74 ([acceptance](../../qa/sprint-4-acceptance.md)); real-API checks wait for #17 |
 | S5 · Discovery, booking and calendars | [sprint-05-booking.md](sprint-05-booking.md) | 4 | S5a implemented: backend and patient frontend #80, reception side (Expected list, booked check-in, no-show reversal, phone booking, new times) in the Phase 1 PR ([acceptance](../../qa/sprint-5-acceptance.md)); S5b (disruptions, follow-ups, calendar feed, calendars) not started |
 | S9 · Notification engine | [sprint-09-notifications.md](sprint-09-notifications.md) | 1 | Backend implemented (S9 pull request); frontend in progress ([acceptance](../../qa/sprint-9-acceptance.md)) |
-| S10 · Help center and support (part 1) | [sprint-10-help-support.md](sprint-10-help-support.md) | 3 | Backend implemented ([acceptance](../../qa/sprint-10-acceptance.md)); frontend in progress; disputes and reports are part 2 |
+| S10 · Help center and support (part 1) | [sprint-10-help-support.md](sprint-10-help-support.md) | 3 | Backend and frontend implemented ([acceptance](../../qa/sprint-10-acceptance.md)); real-API checks wait for #17; disputes and reports are part 2 |
 
 Acceptance checks are named per sprint: `S1-B1`, `S1-F1`, `S3-B1`, `S9-F4`, and so on (B = backend, F = frontend, I = integration).
 

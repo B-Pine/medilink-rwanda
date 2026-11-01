@@ -38,7 +38,7 @@ Every model field gets a class in code (a field option or metadata registry). Lo
 ## 4. Field-level encryption
 
 - **Algorithm:** AES-256-GCM (authenticated) via the Python `cryptography` library. Each value stores `key_version | nonce | ciphertext | tag`.
-- **Envelope encryption:** data encryption keys (DEKs) are wrapped by a key-encryption key held in the key store (OpenBao/Vault, or an HSM if available), never in the database or the repository.
+- **Envelope encryption:** data encryption keys (DEKs) are wrapped by a key-encryption key held in the key store (OpenBao/Vault, or an HSM if available), never in the database or the repository. Implementation: `MEDILINK_KEYSTORE=transit` reads wrapped DEKs (`1:vault:v1:…`) and unwraps them once per process through OpenBao/Vault Transit (`medilink.core.keystore_transit`); `env` (raw keys) is for development and CI only. TOTP secrets use their own key list, `MFA_SECRET_KEYS` (`manage.py rotate_mfa_secrets`).
 - **Searching encrypted national IDs:** a **blind index**: `HMAC-SHA256(index_key, normalized_id)` stored beside the ciphertext, with a separate key. Exact-match search works; the ID can't be read from the index.
 - **Rotation:** new writes use the new key version; a background job re-encrypts old rows. Old versions are retired after re-encryption.
 

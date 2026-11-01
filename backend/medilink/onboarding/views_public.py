@@ -7,8 +7,9 @@ from typing import Any
 
 from django.db import transaction
 from django.http import Http404
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
+from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import exceptions, status
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.request import Request
@@ -17,6 +18,8 @@ from rest_framework.views import APIView
 
 from medilink.audit.services import record
 from medilink.authz.permissions import PublicEndpoint
+from medilink.core.exceptions import CurrentOnConflict
+from medilink.core.idempotency import IDEMPOTENCY, idempotency_key
 from medilink.core.serializers import ErrorSerializer
 from medilink.core.throttling import BurstRateThrottle
 from medilink.masterdata.serializers import request_language
@@ -34,15 +37,10 @@ from medilink.uploads.throttling import UploadRateThrottle
 
 INVALID_LINK = _("This link is invalid or has expired. Ask for a new link.")
 TAG = ["facility-applications"]
-IDEMPOTENCY = OpenApiParameter("Idempotency-Key", str, OpenApiParameter.HEADER)
 
 
 def _err(description: str) -> OpenApiResponse:
     return OpenApiResponse(response=ErrorSerializer, description=description)
-
-
-def idempotency_key(request: Request) -> str | None:
-    return request.headers.get("Idempotency-Key", "").strip()[:200] or None
 
 
 def respond(request: Request, data: Any, status_code: int = 200) -> Response:
@@ -59,9 +57,38 @@ def app_data(request: Request, application: Application) -> dict[str, Any]:
     return s.application_data(application, language=request_language(request))
 
 
-class _Public(APIView):
+class _Public(CurrentOnConflict, APIView):
     permission_classes = [PublicEndpoint]
     authentication_classes: list[Any] = []
+
+    def conflict_current(self, request: Request, *args: Any, **kwargs: Any) -> Any:
+        """`error.current` on 409: the applicant's application (autosave or submit)."""
+        if "application_id" not in kwargs or "document_id" in kwargs:
+            return None
+        application = applicant.application_for_request(request._request, kwargs["application_id"])
+        return app_data(request, application)
+
+
+def _honeypot_response(request: Request, data: dict[str, Any]) -> Response:
+    """A success-shaped 201 that stores nothing, so a bot cannot tell it was caught."""
+    now = timezone.now()
+    decoy = Application(
+        facility_name=data["facility_name"],
+        applicant_name=data["applicant"]["name"],
+        applicant_email=data["applicant"]["email"],
+        applicant_phone=data["applicant"].get("phone", ""),
+        applicant_position=data["applicant"].get("position", ""),
+        preferred_language=data["preferred_language"],
+        last_activity_at=now,
+        created_at=now,
+        updated_at=now,
+    )
+    response = Response(
+        s.application_data(decoy, language=request_language(request)),
+        status=status.HTTP_201_CREATED,
+    )
+    applicant.set_cookie(response, applicant.new_token())  # matches no session
+    return response
 
 
 class StartView(_Public):
@@ -78,7 +105,7 @@ class StartView(_Public):
         body = s.StartApplicationInput(data=request.data)
         body.is_valid(raise_exception=True)
         if body.validated_data.get("website"):  # honeypot: pretend it worked
-            raise exceptions.ValidationError({"website": ["Leave this field empty."]})
+            return _honeypot_response(request, body.validated_data)
         application = services.start_application(
             applicant=body.validated_data["applicant"],
             facility_name=body.validated_data["facility_name"],

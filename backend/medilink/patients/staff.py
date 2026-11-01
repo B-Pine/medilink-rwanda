@@ -31,6 +31,7 @@ from medilink.patients.normalize import (
     InvalidValue,
     estimated_birth_date,
     looks_like_medilink_number,
+    normalize_file_number,
     normalize_name,
     normalize_phone,
 )
@@ -38,6 +39,8 @@ from medilink.patients.normalize import (
 SEARCH_LIMIT = 20
 NAME_SIMILARITY = 0.3
 
+ALREADY_HERE = _("This patient is already registered here. Reload and open their record.")
+SAVING = _("This registration is already being saved. Reload and try again.")
 IDENTIFIER_TAKEN = _("Another patient has this document. Request a merge instead.")
 EXISTS_ELSEWHERE = _("This patient is already on MediLink. Add them to this facility instead.")
 POSSIBLE_DUPLICATE = _("This patient may already be registered here. Check the matches first.")
@@ -134,8 +137,10 @@ def search(
                 for fp in records.filter(is_active=True, patient__phone_e164=phone)[:SEARCH_LIMIT]
             ]
     elif by == "file_number":
-        for fp in records.filter(file_number__iexact=query)[:SEARCH_LIMIT]:
-            found.append((_survivor(fp), "file_number"))
+        number = normalize_file_number(query)
+        if number:
+            for fp in records.filter(file_number__iexact=number)[:SEARCH_LIMIT]:
+                found.append((_survivor(fp), "file_number"))
     else:
         name = normalize_name(query)
         if name:
@@ -212,14 +217,34 @@ def _create_record(
             return FacilityPatient.objects.create(
                 facility_id=facility_id,
                 patient=patient,
-                file_number=(file_number or "").strip() or None,
+                file_number=normalize_file_number(file_number),
                 first_visit_on=timezone.localdate(),
                 registered_by=actor,
                 registration_key=key,
                 is_staff_member=is_staff_here(patient, facility_id),
             )
-    except IntegrityError:
-        raise FieldConflict("file_number", FILE_NUMBER_TAKEN) from None
+    except IntegrityError as exc:
+        raise integrity_conflict(exc) from None
+
+
+def constraint_name(exc: IntegrityError) -> str:
+    """The violated constraint (PostgreSQL diagnostics), or "" when the driver gives none."""
+    diag = getattr(exc.__cause__, "diag", None)
+    return str(getattr(diag, "constraint_name", "") or "")
+
+
+def integrity_conflict(exc: IntegrityError) -> Exception:
+    """Map a unique violation on the facility record to the error the client can act on."""
+    from medilink.core.exceptions import Conflict
+
+    name = constraint_name(exc)
+    if name == "patients_fp_file_number_uniq":
+        return FieldConflict("file_number", FILE_NUMBER_TAKEN)
+    if name == "patients_fp_facility_patient_uniq":
+        return Conflict(ALREADY_HERE)
+    if name == "patients_fp_registration_key_uniq":
+        return Conflict(SAVING)
+    return exc
 
 
 def register_walk_in(
@@ -234,6 +259,7 @@ def register_walk_in(
         ).first()
         if existing is not None:
             return existing, False
+    consents.check_version(ConsentKind.CARE, data["care_consent"]["version"], field="care_consent")
     ident = data.get("identifier")
     if ident:
         try:
@@ -246,7 +272,7 @@ def register_walk_in(
             raise ValidationError({"identifier": {"value": [str(exc)]}}) from None
         if holder is not None:
             raise FieldConflict("identifier", EXISTS_ELSEWHERE)
-    file_number = (data.get("file_number") or "").strip() or None
+    file_number = normalize_file_number(data.get("file_number"))
     if (
         file_number
         and FacilityPatient.objects.filter(
@@ -321,6 +347,10 @@ def add_existing(
     *, request: Any, principal: Any, data: dict[str, Any]
 ) -> tuple[FacilityPatient, bool]:
     facility_id = principal.active_facility_id
+    if data["care_consent"]["granted"]:
+        consents.check_version(
+            ConsentKind.CARE, data["care_consent"]["version"], field="care_consent"
+        )
     patient = Patient.objects.filter(pk=data["patient_ref"]).first()
     if patient is None:
         raise FieldRule("proof", PROOF_MISMATCH)
@@ -411,7 +441,7 @@ def update_record(fp: FacilityPatient, data: dict[str, Any], *, request: Any) ->
         if name in data:
             value = data[name]
             if name == "file_number":
-                value = (value or "").strip() or None
+                value = normalize_file_number(value)
             if getattr(fp, name) != value:
                 setattr(fp, name, value)
                 record_changed.append(name)
@@ -423,8 +453,8 @@ def update_record(fp: FacilityPatient, data: dict[str, Any], *, request: Any) ->
         try:
             with transaction.atomic():
                 fp.save()
-        except IntegrityError:
-            raise FieldConflict("file_number", FILE_NUMBER_TAKEN) from None
+        except IntegrityError as exc:
+            raise integrity_conflict(exc) from None
         record_patient_event(
             "patients.record.updated",
             request=request,

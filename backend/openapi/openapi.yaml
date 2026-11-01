@@ -195,7 +195,8 @@ paths:
   /api/v1/patient/auth/register/:
     post:
       operationId: patient_auth_register
-      summary: Patient sign-up (creates account, self profile and consents) and sign-in
+      summary: 'Patient sign-up: always 202 ''check your email'' (no account enumeration);
+        a new account signs in only after the emailed link is opened'
       tags:
       - patient-auth
       requestBody:
@@ -207,7 +208,41 @@ paths:
       security:
       - patientSession: []
       responses:
-        '201':
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: validation_error (never for an email that already has an account)
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: rate_limited
+  /api/v1/patient/auth/verify-email/:
+    post:
+      operationId: patient_auth_verify_email
+      summary: Confirm the sign-up email with the emailed link; activates and signs
+        in
+      tags:
+      - patient-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyEmailRequest'
+        required: true
+      security:
+      - patientSession: []
+      responses:
+        '200':
           content:
             application/json:
               schema:
@@ -218,7 +253,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          description: validation_error
+          description: 'validation_error: invalid, expired or already used link'
         '429':
           content:
             application/json:
@@ -402,7 +437,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -423,7 +457,6 @@ paths:
               $ref: '#/components/schemas/ConsentInputRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -439,7 +472,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -460,7 +492,6 @@ paths:
               $ref: '#/components/schemas/InviteCreateRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -483,7 +514,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '204':
@@ -501,7 +531,6 @@ paths:
               $ref: '#/components/schemas/CodeRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -513,7 +542,7 @@ paths:
   /api/v1/patient/dependents/:
     post:
       operationId: patient_dependents_create
-      summary: Add a child (guardian) or an adult who agreed (delegate)
+      summary: Add a child (guardian) or an adult who agreed (delegate); Idempotency-Key
       tags:
       - patient-profiles
       requestBody:
@@ -523,7 +552,6 @@ paths:
               $ref: '#/components/schemas/DependentRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -537,7 +565,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          description: age or limit rules
+          description: age, limit or consent version
   /api/v1/patient/holds/{hold_id}/:
     delete:
       operationId: patient_hold_release
@@ -575,7 +603,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedInsuranceUpdateRequest'
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -604,7 +631,6 @@ paths:
               $ref: '#/components/schemas/CardImageRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -632,7 +658,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -651,7 +676,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -830,16 +854,13 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ProfileSummary'
+                $ref: '#/components/schemas/ProfileSummaryList'
           description: ''
   /api/v1/patient/profiles/{patient_id}/:
     get:
@@ -855,7 +876,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -888,7 +908,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedProfileUpdateRequest'
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -929,7 +948,6 @@ paths:
               $ref: '#/components/schemas/AllergyInputRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -963,7 +981,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -983,6 +1000,14 @@ paths:
       operationId: patient_access_history
       summary: Who opened or changed this profile
       parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
       - in: path
         name: patient_id
         schema:
@@ -992,16 +1017,13 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AccessHistoryItem'
+                $ref: '#/components/schemas/PaginatedAccessHistoryList'
           description: ''
   /api/v1/patient/profiles/{patient_id}/health-profile/:
     get:
@@ -1017,7 +1039,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -1040,16 +1061,13 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Identifier'
+                $ref: '#/components/schemas/IdentifierList'
           description: ''
     post:
       operationId: patient_identifiers_create
@@ -1070,7 +1088,6 @@ paths:
               $ref: '#/components/schemas/IdentifierInputRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -1105,7 +1122,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -1128,16 +1144,13 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/InsuranceProfile'
+                $ref: '#/components/schemas/InsuranceProfileList'
           description: ''
     post:
       operationId: patient_insurance_create
@@ -1158,7 +1171,6 @@ paths:
               $ref: '#/components/schemas/InsuranceInputRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -1259,7 +1271,6 @@ paths:
               $ref: '#/components/schemas/ClaimCreateRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -1288,7 +1299,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -1317,7 +1327,6 @@ paths:
               $ref: '#/components/schemas/CodeRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -1524,6 +1533,10 @@ paths:
   /api/v1/patient/visits/{visit_id}/arrived/:
     post:
       operationId: patient_visit_arrived
+      description: '"I''m here" for a remote ticket: records the patient''s claim
+        (`remote_arrival_claimed_at`) only. Reception confirms the arrival; until
+        then the ticket is not called and pass-over still applies (FR-QUE-07; self
+        check-in is P2).'
       parameters:
       - in: path
         name: visit_id
@@ -1882,6 +1895,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: facility_id
         schema:
@@ -2029,6 +2044,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: facility_id
         schema:
@@ -2200,6 +2217,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: facility_id
         schema:
@@ -2256,6 +2275,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: facility_id
         schema:
@@ -2336,6 +2357,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: facility_id
         schema:
@@ -2557,6 +2580,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: application_id
         schema:
@@ -2613,6 +2638,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: application_id
         schema:
@@ -2817,6 +2844,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: application_id
         schema:
@@ -2873,6 +2902,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: application_id
         schema:
@@ -3288,6 +3319,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: import_id
         schema:
@@ -3586,6 +3619,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: import_id
         schema:
@@ -4263,6 +4298,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: import_id
         schema:
@@ -5128,6 +5165,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: import_id
         schema:
@@ -5219,9 +5258,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/MergeRequest'
+                $ref: '#/components/schemas/PaginatedPlatformMergeRequestList'
           description: ''
   /api/v1/platform/merge-requests/{merge_id}/:
     get:
@@ -5723,6 +5760,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: application_id
         schema:
@@ -5842,6 +5881,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: application_id
         schema:
@@ -6355,6 +6396,11 @@ paths:
   /api/v1/staff/auth/invitations/accept/:
     post:
       operationId: staff_auth_invitation_accept
+      description: 'Existing account: a signed-in staff session with the invited email
+        sends `{token}` and gets `StaffMe` with the new membership. New account: `{token,
+        full_name, password}` gets `LoginResult` (`mfa_setup_required`). Passwords
+        are never checked here: existing accounts sign in through the login endpoint
+        (lockout, MFA, audit).'
       tags:
       - staff-auth
       requestBody:
@@ -6370,7 +6416,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoginResult'
+                $ref: '#/components/schemas/InvitationAcceptResult'
           description: ''
         '400':
           content:
@@ -6378,6 +6424,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: invalid token or password
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'the email has an account: sign in first, then accept with
+            {token}'
         '403':
           content:
             application/json:
@@ -7316,6 +7369,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/FacilityProfile'
           description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'stale status_version (error.current: the profile)'
         '422':
           content:
             application/json:
@@ -7546,6 +7605,15 @@ paths:
   /api/v1/staff/invitations/:
     get:
       operationId: staff_invitations_list
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
       tags:
       - staff-team
       security:
@@ -7556,12 +7624,17 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Invitation'
+                $ref: '#/components/schemas/InvitationPage'
           description: ''
     post:
       operationId: staff_invitations_create
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       tags:
       - staff-team
       requestBody:
@@ -7586,6 +7659,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: pending invitation or already a member
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: facility deactivated
   /api/v1/staff/invitations/{invitation_id}/{action}/:
     post:
       operationId: staff_invitations_action
@@ -7972,6 +8051,14 @@ paths:
       operationId: staff_memberships_list
       parameters:
       - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
         name: q
         schema:
           type: string
@@ -7993,9 +8080,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/StaffMembership'
+                $ref: '#/components/schemas/StaffMembershipPage'
           description: ''
   /api/v1/staff/memberships/{membership_id}/:
     get:
@@ -8113,15 +8198,12 @@ paths:
       - staff-merge-requests
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/MergeRequest'
+                $ref: '#/components/schemas/PaginatedStaffMergeRequestList'
           description: ''
     post:
       operationId: staff_merge_requests_create
@@ -8136,7 +8218,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '201':
           content:
@@ -8171,7 +8252,6 @@ paths:
       - staff-merge-requests
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8200,7 +8280,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8229,7 +8308,6 @@ paths:
       - staff-merge-requests
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8252,7 +8330,6 @@ paths:
       - staff-merge-requests
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8287,7 +8364,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8316,7 +8392,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8533,7 +8608,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '201':
           content:
@@ -8550,7 +8624,7 @@ paths:
   /api/v1/staff/patients/{fp_id}/:
     get:
       operationId: staff_patients_retrieve
-      summary: A facility patient record (audited)
+      summary: A facility patient record (care relationship or a reason; audited)
       parameters:
       - in: path
         name: fp_id
@@ -8562,7 +8636,6 @@ paths:
       - staff-patients
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8570,6 +8643,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/FacilityPatientDetail'
           description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason first (ST28)'
         '404':
           content:
             application/json:
@@ -8595,7 +8674,6 @@ paths:
               $ref: '#/components/schemas/PatchedStaffPatientUpdateRequest'
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8635,7 +8713,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '201':
           content:
@@ -8675,7 +8752,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8683,10 +8759,44 @@ paths:
               schema:
                 $ref: '#/components/schemas/HealthItem'
           description: ''
+  /api/v1/staff/patients/{fp_id}/access-reasons/:
+    post:
+      operationId: staff_patients_access_reasons_create
+      summary: Give a reason to open a record without a care relationship (audited)
+      parameters:
+      - in: path
+        name: fp_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-patients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessReasonResult'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: not_found
   /api/v1/staff/patients/{fp_id}/claim-confirmations/:
     post:
       operationId: staff_patients_claim_confirm
-      summary: Confirm a patient's record claim after an ID check
+      summary: Confirm a patient's record claim after an ID check (idempotent)
       parameters:
       - in: path
         name: fp_id
@@ -8704,10 +8814,13 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
-          description: RecordClaim
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordClaim'
+          description: ''
         '404':
           content:
             application/json:
@@ -8735,7 +8848,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '201':
           content:
@@ -8758,7 +8870,6 @@ paths:
       - staff-patients
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8766,6 +8877,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/HealthProfile'
           description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason first (ST28)'
   /api/v1/staff/patients/{fp_id}/identifiers/:
     post:
       operationId: staff_patients_identifiers_create
@@ -8787,7 +8904,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '201':
           content:
@@ -8816,15 +8932,12 @@ paths:
       - staff-patients
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/InsuranceProfile'
+                $ref: '#/components/schemas/StaffInsuranceProfileList'
           description: ''
     post:
       operationId: staff_patients_insurance_create
@@ -8846,7 +8959,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '201':
           content:
@@ -8886,7 +8998,6 @@ paths:
               $ref: '#/components/schemas/PatchedInsuranceUpdateRequest'
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8927,7 +9038,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '201':
           content:
@@ -8961,7 +9071,6 @@ paths:
       - staff-patients
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           description: '{url, expires_at}'
@@ -8992,7 +9101,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -9021,7 +9129,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -9043,7 +9150,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -9076,7 +9182,6 @@ paths:
               $ref: '#/components/schemas/DuplicateCheckRequest'
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -9098,7 +9203,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -9390,6 +9494,14 @@ paths:
         schema:
           type: string
       - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
         name: service_id
         schema:
           type: string
@@ -9403,9 +9515,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Template'
+                $ref: '#/components/schemas/ScheduleTemplatePage'
           description: ''
     post:
       operationId: staff_schedule_templates_create
@@ -10017,6 +10127,37 @@ components:
       - facility
       - id
       - occurred_at
+    AccessReasonCodeEnum:
+      enum:
+      - care_continuity
+      - results_review
+      - admin_request
+      - other
+      type: string
+      description: |-
+        * `care_continuity` - care_continuity
+        * `results_review` - results_review
+        * `admin_request` - admin_request
+        * `other` - other
+    AccessReasonRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        reason_code:
+          $ref: '#/components/schemas/AccessReasonCodeEnum'
+        reason_text:
+          type: string
+          maxLength: 200
+      required:
+      - reason_code
+    AccessReasonResult:
+      type: object
+      properties:
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - expires_at
     ActionEnum:
       enum:
       - create
@@ -11224,6 +11365,11 @@ components:
           type: string
           format: uuid
           nullable: true
+        symptoms:
+          type: array
+          items:
+            $ref: '#/components/schemas/SymptomInputRequest'
+          maxItems: 5
     CheckInResponse:
       type: object
       properties:
@@ -11232,10 +11378,13 @@ components:
           format: uuid
         created:
           type: boolean
+        late:
+          type: boolean
         ticket:
           $ref: '#/components/schemas/TicketRow'
       required:
       - created
+      - late
       - ticket
       - visit_id
     CheckInSourceEnum:
@@ -11257,10 +11406,14 @@ components:
           type: boolean
         status:
           type: string
+        status_version:
+          type: integer
+          description: Send it back with go-live (F13).
       required:
       - complete
       - items
       - status
+      - status_version
     ChecklistItem:
       type: object
       properties:
@@ -11437,12 +11590,16 @@ components:
       - privacy
       - care
       - research
+      - notifications
+      - location
       type: string
       description: |-
         * `terms` - terms
         * `privacy` - privacy
         * `care` - care
         * `research` - research
+        * `notifications` - notifications
+        * `location` - location
     ConsentInputRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -11660,6 +11817,7 @@ components:
       - version
     DecisionRequest:
       type: object
+      description: Rejects unknown fields instead of silently ignoring them.
       properties:
         version:
           type: integer
@@ -12242,7 +12400,13 @@ components:
           type: string
           format: date-time
         disposition:
-          $ref: '#/components/schemas/DispositionEnum'
+          allOf:
+          - $ref: '#/components/schemas/DispositionEnum'
+          description: |-
+            Always `attachment` (security 06 §6).
+
+            * `inline` - inline
+            * `attachment` - attachment
       required:
       - disposition
       - expires_at
@@ -12253,7 +12417,12 @@ components:
         disposition:
           allOf:
           - $ref: '#/components/schemas/DispositionEnum'
-          default: inline
+          default: attachment
+          description: |-
+            Accepted for compatibility; files are always served as attachments.
+
+            * `inline` - inline
+            * `attachment` - attachment
     DrugsItem:
       type: object
       properties:
@@ -12657,6 +12826,11 @@ components:
         request_id:
           type: string
           description: Same value as the X-Request-ID header.
+        current:
+          type: object
+          additionalProperties: {}
+          description: '409 conflict on a versioned resource only: the resource as
+            it is now.'
       required:
       - code
       - fields
@@ -13056,6 +13230,10 @@ components:
           type: string
         version:
           type: integer
+          description: 'Profile version: send it back with PATCH.'
+        status_version:
+          type: integer
+          description: 'Status version: send it back with go-live (F13).'
       required:
       - address
       - description_i18n
@@ -13070,6 +13248,7 @@ components:
       - photos
       - slug
       - status
+      - status_version
       - version
       - village_code
       - website
@@ -13437,6 +13616,8 @@ components:
         version:
           type: integer
           minimum: 0
+          description: The facility's `status_version` (F1, F12), not the profile
+            version.
       required:
       - version
     Health:
@@ -13690,6 +13871,15 @@ components:
         * `passport` - Passport
         * `refugee_id` - Refugee ID
         * `birth_certificate` - Birth certificate
+    IdentifierList:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identifier'
+      required:
+      - results
     ImportCreateRequest:
       type: object
       properties:
@@ -13884,6 +14074,15 @@ components:
       - status_reason
       - valid_until
       - version
+    InsuranceProfileList:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/InsuranceProfile'
+      required:
+      - results
     InsuranceProfileStatusEnum:
       enum:
       - unverified
@@ -14165,6 +14364,10 @@ components:
       - role_codes
       - service_point_ids
       - status
+    InvitationAcceptResult:
+      oneOf:
+      - $ref: '#/components/schemas/StaffMe'
+      - $ref: '#/components/schemas/LoginResult'
     InvitationCreateRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -14214,6 +14417,26 @@ components:
       - facility_name
       - invited_by
       - role_codes
+    InvitationPage:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Invitation'
+      required:
+      - count
+      - next
+      - previous
+      - results
     InvitationStatusEnum:
       enum:
       - pending
@@ -14751,6 +14974,7 @@ components:
       - roles
     MergeCreateRequest:
       type: object
+      description: Rejects unknown fields instead of silently ignoring them.
       properties:
         surviving_facility_patient_id:
           type: string
@@ -15322,6 +15546,28 @@ components:
         * `private` - Private
         * `faith_based` - Faith-based
         * `ngo` - NGO
+    PaginatedAccessHistoryList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessHistoryItem'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedApplicationSummaryList:
       type: object
       required:
@@ -15621,6 +15867,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PlatformFacility'
+    PaginatedPlatformMergeRequestList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MergeRequest'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedPublicHolidaysItemList:
       type: object
       required:
@@ -15759,6 +16027,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ServiceCatalogueItemsPlatformItem'
+    PaginatedStaffMergeRequestList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MergeRequest'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedSymptomsItemList:
       type: object
       required:
@@ -16946,6 +17236,16 @@ components:
         travel_minutes:
           type: integer
           nullable: true
+        is_remote:
+          type: boolean
+        remote_arrival_claimed_at:
+          type: string
+          format: date-time
+          nullable: true
+        remote_arrival_confirmed_at:
+          type: string
+          format: date-time
+          nullable: true
         version:
           type: integer
         updated_at:
@@ -16956,9 +17256,12 @@ components:
       - estimate
       - facility_id
       - facility_name
+      - is_remote
       - leave_by
       - patient_display_name
       - patient_id
+      - remote_arrival_claimed_at
+      - remote_arrival_confirmed_at
       - service_name_i18n
       - service_point
       - stage
@@ -17281,6 +17584,15 @@ components:
       - medilink_number
       - patient_id
       - relationship
+    ProfileSummaryList:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProfileSummary'
+      required:
+      - results
     ProofRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -17421,6 +17733,11 @@ components:
           type: object
           additionalProperties:
             type: integer
+        insurer_share_rwf:
+          type: object
+          additionalProperties:
+            type: integer
+            nullable: true
         bookable:
           type: boolean
         remote_join:
@@ -17445,6 +17762,7 @@ components:
       - code
       - fee_rwf
       - id
+      - insurer_share_rwf
       - insurer_shares
       - insurers
       - max_age_months
@@ -17963,6 +18281,7 @@ components:
       - sex
     RejectRequest:
       type: object
+      description: Rejects unknown fields instead of silently ignoring them.
       properties:
         version:
           type: integer
@@ -18001,6 +18320,11 @@ components:
         patient_id:
           type: string
           format: uuid
+        symptoms:
+          type: array
+          items:
+            $ref: '#/components/schemas/SymptomInputRequest'
+          maxItems: 5
       required:
       - facility_slug
       - patient_id
@@ -18166,6 +18490,26 @@ components:
       - exceptions
       - full_name
       - membership_id
+    ScheduleTemplatePage:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Template'
+      required:
+      - count
+      - next
+      - previous
+      - results
     SchemeEnum:
       enum:
       - community
@@ -18875,6 +19219,15 @@ components:
       required:
       - kind
       - value
+    StaffInsuranceProfileList:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/InsuranceProfile'
+      required:
+      - results
     StaffLoginRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -18992,6 +19345,26 @@ components:
       - service_points
       - user_id
       - version
+    StaffMembershipPage:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffMembership'
+      required:
+      - count
+      - next
+      - previous
+      - results
     StaffPreferences:
       type: object
       properties:
@@ -19417,6 +19790,7 @@ components:
         membership_id:
           type: string
           format: uuid
+          nullable: true
         service_id:
           type: string
           format: uuid
@@ -19486,6 +19860,7 @@ components:
         membership_id:
           type: string
           format: uuid
+          nullable: true
         service_id:
           type: string
           format: uuid
@@ -19692,6 +20067,22 @@ components:
         position:
           type: integer
           nullable: true
+        slot_starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        late:
+          type: boolean
+        is_remote:
+          type: boolean
+        remote_arrival_claimed_at:
+          type: string
+          format: date-time
+          nullable: true
+        remote_arrival_confirmed_at:
+          type: string
+          format: date-time
+          nullable: true
         version:
           type: integer
       required:
@@ -19702,12 +20093,17 @@ components:
       - display_name
       - flags
       - id
+      - is_remote
+      - late
       - number
       - position
       - priority_rank
+      - remote_arrival_claimed_at
+      - remote_arrival_confirmed_at
       - service_id
       - service_point
       - sex
+      - slot_starts_at
       - stage
       - state
       - step_out_until
@@ -19778,6 +20174,7 @@ components:
       - minutes
     UndoRequest:
       type: object
+      description: Rejects unknown fields instead of silently ignoring them.
       properties:
         version:
           type: integer
@@ -19907,6 +20304,16 @@ components:
         * `infected` - Infected
         * `rejected` - Rejected
         * `failed` - Failed
+    VerifyEmailRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        token:
+          type: string
+          minLength: 1
+          maxLength: 512
+      required:
+      - token
     VersionInputRequest:
       type: object
       properties:

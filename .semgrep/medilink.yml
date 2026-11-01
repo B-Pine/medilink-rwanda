@@ -1,0 +1,139 @@
+# MediLink Semgrep rules (coding standards §3.9, security 09 §3). Run by .github/workflows/security.yml
+# together with the p/django, p/python and p/owasp-top-ten registry rulesets.
+#
+# medilink-raw-sql is reported but not yet blocking: the existing raw SQL (RLS helpers, grants,
+# SKIP LOCKED) still needs review tags (see the workflow step). All other rules block.
+#
+# Review tag: a reviewed exception carries `# nosemgrep: <rule-id>` and a reason on the same line,
+# e.g. `cursor.execute(sql)  # nosemgrep: medilink-raw-sql (constant DDL, reviewed in #NN)`.
+# A security fix adds a rule here where possible (security 09 §4).
+rules:
+  - id: medilink-raw-sql
+    languages: [python]
+    severity: ERROR
+    message: >-
+      Raw SQL needs a review (coding standards §3.9). Use the ORM, or keep the SQL constant, pass
+      values as parameters, and tag the line `# nosemgrep: medilink-raw-sql` with the reason.
+    metadata:
+      category: security
+      cwe: "CWE-89: SQL Injection"
+      references: [docs/development/coding-standards.md#39-security-rules-checked-in-review-and-by-semgrep]
+    paths:
+      exclude: ["**/migrations/**", "**/tests/**", "backend/scripts/**"]
+    pattern-either:
+      - pattern: $CURSOR.execute(...)
+      - pattern: $CURSOR.executemany(...)
+      - pattern: $QS.raw(...)
+      - pattern: $QS.extra(...)
+      - pattern: django.db.models.expressions.RawSQL(...)
+      - pattern: RawSQL(...)
+
+  - id: medilink-mark-safe
+    languages: [python]
+    severity: ERROR
+    message: >-
+      No mark_safe / SafeString on data (coding standards §3.9): it switches off escaping. Use
+      format_html() or a template with autoescape.
+    metadata:
+      category: security
+      cwe: "CWE-79: Cross-site Scripting"
+    paths:
+      exclude: ["**/tests/**"]
+    pattern-either:
+      - pattern: django.utils.safestring.mark_safe(...)
+      - pattern: mark_safe(...)
+      - pattern: django.utils.safestring.SafeString(...)
+      - pattern: SafeString(...)
+
+  - id: medilink-serializer-fields-all
+    languages: [python]
+    severity: ERROR
+    message: >-
+      Serializer and form fields must be listed explicitly (coding standards §3.4, §3.9):
+      `fields = "__all__"` and `exclude` expose every new model field, including sensitive ones,
+      to every role.
+    metadata:
+      category: security
+      cwe: "CWE-213: Exposure of Sensitive Information Due to Incompatible Policies"
+    paths:
+      exclude: ["**/tests/**"]
+    pattern-either:
+      - pattern: |
+          class $META:
+              ...
+              fields = "__all__"
+              ...
+      - pattern: |
+          class $META:
+              ...
+              exclude = ...
+              ...
+
+  - id: medilink-objects-all-in-view
+    languages: [python]
+    severity: ERROR
+    message: >-
+      No `.objects.all()` in views (coding standards §3.9): scope the queryset to the active
+      facility or the patient's links (security 04), or tag a reviewed exception.
+    metadata:
+      category: security
+      cwe: "CWE-639: Authorization Bypass Through User-Controlled Key"
+    paths:
+      include: ["**/views.py", "**/views_*.py", "**/views/**"]
+    pattern: $MODEL.objects.all()
+
+  - id: medilink-view-without-permission-classes
+    languages: [python]
+    severity: ERROR
+    message: >-
+      A view that extends a DRF base class directly must declare `permission_classes`
+      (security 09 §5, check B3). The DenyAll default hides the mistake until someone "fixes" it
+      with AllowAny. Shared base classes are exempt when their name starts with `_` or ends with
+      `APIView`, `Base` or `Mixin`; the concrete views that extend them are reviewed instead.
+    metadata:
+      category: security
+      cwe: "CWE-862: Missing Authorization"
+    paths:
+      exclude: ["**/tests/**"]
+    patterns:
+      - pattern-either:
+          - pattern: |
+              class $VIEW(..., $BASE, ...):
+                  ...
+      - metavariable-regex:
+          metavariable: $VIEW
+          regex: ^(?!_)(?!.*(APIView|Base|Mixin)$)
+      - metavariable-regex:
+          metavariable: $BASE
+          regex: ^(rest_framework\.)?(views\.|generics\.|viewsets\.)?(APIView|GenericAPIView|ViewSet|GenericViewSet|ModelViewSet|ReadOnlyModelViewSet|(List|Create|Retrieve|Update|Destroy|ListCreate|RetrieveUpdate|RetrieveDestroy|RetrieveUpdateDestroy)APIView)$
+      - pattern-not: |
+          class $VIEW(...):
+              ...
+              permission_classes = ...
+              ...
+
+  - id: medilink-api-view-without-permission-classes
+    languages: [python]
+    severity: ERROR
+    message: >-
+      A function view needs an explicit @permission_classes(...) decorator (security 09 §5).
+    metadata:
+      category: security
+      cwe: "CWE-862: Missing Authorization"
+    paths:
+      exclude: ["**/tests/**"]
+    patterns:
+      - pattern: |
+          @api_view(...)
+          def $FUNC(...):
+              ...
+      - pattern-not: |
+          @api_view(...)
+          @permission_classes(...)
+          def $FUNC(...):
+              ...
+      - pattern-not: |
+          @permission_classes(...)
+          @api_view(...)
+          def $FUNC(...):
+              ...

@@ -11,7 +11,7 @@ import hashlib
 import hmac
 import logging
 import re
-from typing import Any
+from typing import Any, Literal, cast
 
 from django.conf import settings
 from django.db import transaction
@@ -168,7 +168,7 @@ def handle_login(user_id: str, audience: str, digest: bytes, label: str) -> None
             return
         notify(
             "account.login.new_device",
-            Recipients.users(user_id, audience=audience),
+            Recipients.users(user_id, audience=cast(Literal["patient", "staff"], audience)),
             {"device_label": label, "date": now, "time": now, "device_id": device.pk},
         )
 

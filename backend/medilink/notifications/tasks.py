@@ -29,7 +29,7 @@ from medilink.notifications.models import (
 logger = logging.getLogger("medilink.notifications")
 
 MAX_ATTEMPTS = 4
-BACKOFF = {
+BACKOFF: dict[str, tuple[int, ...]] = {
     Priority.CRITICAL: (10, 30, 90),
     Priority.IMPORTANT: (60, 300, 900),
     Priority.ROUTINE: (60, 300, 900),

@@ -56,7 +56,10 @@ class FacilityProfileSerializer(serializers.Serializer):
     longitude = serializers.DecimalField(max_digits=9, decimal_places=6, allow_null=True)
     photos = serializers.ListField(child=serializers.UUIDField())
     level_of_care = serializers.CharField()
-    version = serializers.IntegerField()
+    version = serializers.IntegerField(help_text="Profile version: send it back with PATCH.")
+    status_version = serializers.IntegerField(
+        help_text="Status version: send it back with go-live (F13)."
+    )
 
 
 class FacilityProfileUpdateSerializer(StrictSerializer):
@@ -206,10 +209,13 @@ class ChecklistSerializer(serializers.Serializer):
     items = ChecklistItemSerializer(many=True)
     complete = serializers.BooleanField()
     status = serializers.CharField()
+    status_version = serializers.IntegerField(help_text="Send it back with go-live (F13).")
 
 
 class GoLiveSerializer(StrictSerializer):
-    version = serializers.IntegerField(min_value=0)
+    version = serializers.IntegerField(
+        min_value=0, help_text="The facility's `status_version` (F1, F12), not the profile version."
+    )
 
 
 # ---- catalogue -----------------------------------------------------------------------------------
@@ -301,7 +307,8 @@ class ServicePointUpdateSerializer(StrictSerializer):
 class TemplateSerializer(StrictSerializer):
     id = serializers.UUIDField(read_only=True)
     version = serializers.IntegerField(read_only=True)
-    membership_id = serializers.UUIDField()
+    # S5/R4: null for a service schedule with no named doctor
+    membership_id = serializers.UUIDField(allow_null=True)
     service_id = serializers.UUIDField()
     service_point_id = serializers.UUIDField(required=False, allow_null=True)
     weekday = serializers.IntegerField(min_value=0, max_value=6)
@@ -478,6 +485,24 @@ class StaffMembershipSerializer(serializers.Serializer):
     version = serializers.IntegerField()
 
 
+def page_of(item: type[serializers.Serializer], name: str) -> type[serializers.Serializer]:
+    """`{count, next, previous, results}` (architecture 02 §3) for the OpenAPI schema."""
+    return type(
+        name,
+        (serializers.Serializer,),
+        {
+            "count": serializers.IntegerField(),
+            "next": serializers.CharField(allow_null=True),
+            "previous": serializers.CharField(allow_null=True),
+            "results": item(many=True),
+        },
+    )
+
+
+StaffMembershipPageSerializer = page_of(StaffMembershipSerializer, "StaffMembershipPage")
+TemplatePageSerializer = page_of(TemplateSerializer, "ScheduleTemplatePage")
+
+
 class MembershipUpdateSerializer(StrictSerializer):
     version = serializers.IntegerField(min_value=1)
     role_codes = serializers.ListField(child=serializers.CharField(max_length=32), required=False)
@@ -505,6 +530,9 @@ class InvitationSerializer(serializers.Serializer):
     expires_at = serializers.DateTimeField()
     invited_by = serializers.CharField(allow_null=True)
     created_at = serializers.DateTimeField()
+
+
+InvitationPageSerializer = page_of(InvitationSerializer, "InvitationPage")
 
 
 class ClinicianProfileSerializer(StrictSerializer):

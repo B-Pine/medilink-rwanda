@@ -6,6 +6,7 @@ import io
 import socket
 import struct
 import threading
+from dataclasses import replace
 from typing import Any
 
 import pytest
@@ -248,7 +249,7 @@ def test_clamd_unreachable_is_an_error() -> None:
 def test_s3_storage_with_stubber() -> None:
     import boto3
 
-    conf = upload_settings()
+    conf = replace(upload_settings(), s3_region="af-south-1")
     client = boto3.client(
         "s3", region_name="af-south-1", aws_access_key_id="k", aws_secret_access_key="s"
     )
@@ -301,6 +302,65 @@ def test_s3_storage_with_stubber() -> None:
         storage.put("documents", "../etc/passwd", io.BytesIO(b""), "text/plain")
 
 
+def test_s3_storage_requires_a_region_and_uses_sse_kms_when_configured() -> None:
+    import boto3
+    from django.core.exceptions import ImproperlyConfigured
+
+    with pytest.raises(ImproperlyConfigured, match="UPLOADS_S3_REGION"):
+        S3CompatibleStorage(replace(upload_settings(), s3_region=""), client=0, signing_client=0)
+
+    conf = replace(
+        upload_settings(), s3_region="af-south-1", s3_sse_kms_key_id="arn:aws:kms:key/medilink"
+    )
+    client = boto3.client(
+        "s3", region_name="af-south-1", aws_access_key_id="k", aws_secret_access_key="s"
+    )
+    storage = S3CompatibleStorage(conf, client=client, signing_client=client)
+    key = "0b8f4c56-8f1e-4a55-9c55-4f0c5a6f1e02"
+    kms = {"ServerSideEncryption": "aws:kms", "SSEKMSKeyId": "arn:aws:kms:key/medilink"}
+    with Stubber(client) as stub:
+        stub.add_response(
+            "put_object",
+            {},
+            {
+                "Bucket": conf.s3_quarantine_bucket,
+                "Key": key,
+                "Body": b"data",
+                "ContentType": "application/pdf",
+                **kms,
+            },
+        )
+        stub.add_response(
+            "copy_object",
+            {},
+            {
+                "Bucket": conf.s3_documents_bucket,
+                "Key": key,
+                "CopySource": {"Bucket": conf.s3_quarantine_bucket, "Key": key},
+                **kms,
+            },
+        )
+        stub.add_response("delete_object", {}, {"Bucket": conf.s3_quarantine_bucket, "Key": key})
+        storage.put("quarantine", key, io.BytesIO(b"data"), "application/pdf")
+        storage.move("quarantine", "documents", key)
+        stub.assert_no_pending_responses()
+
+
+def test_deploy_check_requires_an_s3_region() -> None:
+    from medilink.uploads.checks import check_deploy_uploads
+
+    s3 = {
+        "storage": "s3",
+        "scanner": "clamd",
+        "download_base_url": "https://files.medilink.rw",
+        "s3_region": "",
+    }
+    with override_settings(UPLOADS=s3):
+        assert [m.id for m in check_deploy_uploads()] == ["medilink.uploads.E004"]
+    with override_settings(UPLOADS={**s3, "s3_region": "af-south-1"}):
+        assert check_deploy_uploads() == []
+
+
 @pytest.mark.acceptance("S1-B9")
 def test_deploy_check_refuses_fake_scanner_and_local_storage(settings: Any) -> None:
     with pytest.raises(SystemCheckError) as exc:
@@ -317,10 +377,16 @@ def test_deploy_check_clean_with_clamd_and_s3() -> None:
             "scanner": "clamd",
             "storage": "s3",
             "download_base_url": "https://files.medilink.rw",
+            "s3_region": "af-south-1",
         }
     ):
         assert check_deploy_uploads() == []
     with override_settings(
-        UPLOADS={"scanner": "clamd", "storage": "s3", "download_base_url": "http://files"}
+        UPLOADS={
+            "scanner": "clamd",
+            "storage": "s3",
+            "download_base_url": "http://files",
+            "s3_region": "af-south-1",
+        }
     ):
         assert [m.id for m in check_deploy_uploads()] == ["medilink.uploads.E003"]

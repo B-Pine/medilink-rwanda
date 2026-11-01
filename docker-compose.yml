@@ -1,11 +1,12 @@
 # Local infrastructure for development (architecture 01 §4). Not for production.
 #   docker compose up -d      PostgreSQL 17 (localhost:5433), Redis 7 (6379), Mailpit (1025 / UI 8025)
+# Images are pinned by digest (tag kept for readability; Dependabot proposes updates).
 # Passwords below are local development defaults only; override them in your shell or a root .env.
 name: medilink
 
 services:
   postgres:
-    image: postgres:17-alpine
+    image: postgres:17-alpine@sha256:266d3c257594e195b309ae9d1805e54c788f1d7b375f56bf6c367aac6c917e7b
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
@@ -27,7 +28,7 @@ services:
       retries: 20
 
   redis:
-    image: redis:7-alpine
+    image: redis:7-alpine@sha256:8da19c7399dca900c6822a1cf30f9d2285585e2c4b457ff4095b0f4500054d3f
     restart: unless-stopped
     command: ["redis-server", "--save", "", "--appendonly", "no"]
     ports:
@@ -39,7 +40,7 @@ services:
       retries: 20
 
   mailpit:
-    image: axllent/mailpit:v1.27
+    image: axllent/mailpit:v1.27@sha256:e22dce5b36f93c77082e204a3942fb6b283b7896e057458400a4c88344c3df68
     restart: unless-stopped
     ports:
       - "127.0.0.1:1025:1025"

@@ -128,9 +128,26 @@ def test_lifecycle_with_go_live_checks(
 @pytest.mark.acceptance("S1-B6")
 def test_versions_idempotency_and_step_up(approved: Facility, platform_client: APIClient) -> None:
     url = f"{FACILITIES}{approved.pk}/start-setup/"
-    assert platform_client.post(url, {"version": 99}, format="json").status_code == 409
-    first = platform_client.post(url, {"version": 1}, format="json", HTTP_IDEMPOTENCY_KEY="s-1")
-    again = platform_client.post(url, {"version": 1}, format="json", HTTP_IDEMPOTENCY_KEY="s-1")
+    stale = platform_client.post(url, {"version": 99}, format="json")
+    assert stale.status_code == 409
+    assert stale.json()["error"]["current"]["id"] == str(approved.pk)  # R3: the current facility
+    bad_key = platform_client.post(
+        url, {"version": 1}, format="json", HTTP_IDEMPOTENCY_KEY="not-a-uuid"
+    )
+    assert bad_key.status_code == 400
+    assert "Idempotency-Key" in bad_key.json()["error"]["fields"]
+    first = platform_client.post(
+        url,
+        {"version": 1},
+        format="json",
+        HTTP_IDEMPOTENCY_KEY="0b4f6a1e-0c1d-4c55-9a0e-0000000000f1",
+    )
+    again = platform_client.post(
+        url,
+        {"version": 1},
+        format="json",
+        HTTP_IDEMPOTENCY_KEY="0b4f6a1e-0c1d-4c55-9a0e-0000000000f1",
+    )
     assert first.status_code == again.status_code == 200
     assert FacilityStatusEvent.objects.filter(facility=approved).count() == 2
     age_recent_auth(platform_client)

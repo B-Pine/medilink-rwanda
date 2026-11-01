@@ -20,11 +20,11 @@ from medilink.accounts.serializers import LoginResultSerializer, StaffMeSerializ
 from medilink.accounts.services import complete_staff_login, staff_me_data, start_pending_mfa
 from medilink.audit.services import record
 from medilink.authz.permissions import (
-    IsPlatformAdmin,
     IsStaffAuthenticated,
     PublicEndpoint,
     get_principal,
 )
+from medilink.authz.platform import PlatformAdmin
 from medilink.authz.stepup import RecentAuthRequired
 from medilink.core.idempotency import IDEMPOTENCY, idempotency_key
 from medilink.core.throttling import BurstRateThrottle, IPScopedRateThrottle
@@ -446,7 +446,7 @@ class InvitationAcceptView(_InvitationAuthView):
 
 
 class PlatformMfaResetView(SetupAPIView):
-    permission_classes = [IsPlatformAdmin, RecentAuthRequired()]
+    permission_classes = [PlatformAdmin, RecentAuthRequired()]
 
     @extend_schema(
         operation_id="platform_memberships_mfa_reset",

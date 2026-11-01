@@ -1,8 +1,8 @@
 """Database role privileges, applied after every `migrate` (run by the owner role).
 
 The runtime role (settings.DATABASE_APP_ROLE, e.g. medilink_app) gets DML on application tables
-only. It can't change the schema, can't modify migration history, and can only INSERT/SELECT the
-audit log (security 04 §4, security 05 §6).
+only. It can't change the schema, can't modify migration history or the role/permission catalogue,
+and can only INSERT/SELECT the audit log (security 04 §4, security 05 §6).
 """
 
 from __future__ import annotations
@@ -16,7 +16,13 @@ from django.db import connections
 logger = logging.getLogger(__name__)
 
 APPEND_ONLY_TABLES = ("audit_auditentry",)
-READ_ONLY_TABLES = ("django_migrations",)
+# The role and permission catalogue is seeded by migrations (owner role) and only read at runtime.
+READ_ONLY_TABLES = (
+    "django_migrations",
+    "tenancy_role",
+    "tenancy_permission",
+    "tenancy_role_permissions",
+)
 
 
 def grant_app_role_privileges(sender: Any = None, using: str = "default", **kwargs: Any) -> None:

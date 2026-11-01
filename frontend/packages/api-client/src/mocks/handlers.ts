@@ -17,6 +17,7 @@ import {
   MOCK_RATE_LIMITED_EMAIL,
   MOCK_RECOVERY_CODE,
   MOCK_RESET_TOKEN,
+  MOCK_VERIFY_TOKEN,
   MOCK_RETRY_AFTER_SECONDS,
   MOCK_STEP_UP_SECONDS,
   MOCK_TOTP_CODE,
@@ -176,6 +177,7 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
   const enrolled = new Set<string>();
   const usedRecoveryCodes = new Set<string>();
   const registered: MockPatientRecord[] = [];
+  const pendingSignUps: string[] = []; // emails waiting for the verification link
   const pins = new Map<string, string>();
   const featureFlags: MockFeatureFlags = {
     defaults: new Map([["security.pin_unlock", true]]),
@@ -514,7 +516,6 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
       if (!fullName) fields.full_name = "required";
       if (!email) fields.email = "required";
       else if (!EMAIL_PATTERN.test(email)) fields.email = "invalidEmail";
-      else if (findPatient(email)) fields.email = "emailTaken";
       if (password.length < PATIENT_PASSWORD_MIN) {
         fields.password = [message("passwordTooShort", lang, { min: PATIENT_PASSWORD_MIN })];
       }
@@ -524,18 +525,38 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
       if (typeof body.research_consent !== "boolean") fields.research_consent = "required";
       if (Object.keys(fields).length > 0) return validationError(lang, fields);
 
-      const me: PatientMe = {
-        id: randomId(),
-        email,
-        full_name: fullName,
-        preferred_language: language as LanguageCode,
-        email_verified: false,
-        profiles: [{ patient_id: randomId(), display_name: fullName, relationship: "self" }],
-      };
-      registered.push({ me, password });
+      // Same 202 whether or not the email has an account (no enumeration); nobody signs in yet.
+      if (!findPatient(email)) {
+        const me: PatientMe = {
+          id: randomId(),
+          email,
+          full_name: fullName,
+          preferred_language: language as LanguageCode,
+          email_verified: false,
+          profiles: [{ patient_id: randomId(), display_name: fullName, relationship: "self" }],
+        };
+        registered.push({ me, password });
+        pendingSignUps.push(email);
+      }
+      return HttpResponse.json({ detail: message("signUpAccepted", lang) }, { status: 202 });
+    }),
+
+    http.post(`${API}/patient/auth/verify-email/`, async ({ request }) => {
+      await settle();
+      const lang = languageFrom(request);
+      const csrf = csrfFailure(request, lang);
+      if (csrf) return csrf;
+      const body = await readJson(request);
+      const email = pendingSignUps.at(-1);
+      const patient = email ? findPatient(email) : undefined;
+      if (asString(body.token) !== MOCK_VERIFY_TOKEN || !email || !patient) {
+        return validationError(lang, { token: "invalidVerifyLink" });
+      }
+      pendingSignUps.pop();
+      patient.me = { ...patient.me, email_verified: true };
       rotate();
-      setPatientSession({ me });
-      return HttpResponse.json(me, { status: 201 });
+      setPatientSession({ me: patient.me });
+      return HttpResponse.json(patient.me);
     }),
 
     http.post(`${API}/patient/auth/login/`, async ({ request }) => {
@@ -551,7 +572,8 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
       const key = `patient:${email}`;
       if (email === MOCK_RATE_LIMITED_EMAIL || tooManyFailures(key)) return rateLimited(lang);
       const patient = findPatient(email);
-      if (!patient || asString(body.password) !== patient.password) {
+      const pending = pendingSignUps.includes(email);
+      if (!patient || pending || asString(body.password) !== patient.password) {
         recordFailure(key);
         return errorResponse(401, "not_authenticated", message("invalidCredentials", lang));
       }
@@ -630,6 +652,7 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
       enrolled.clear();
       usedRecoveryCodes.clear();
       registered.length = 0;
+      pendingSignUps.length = 0;
       pins.clear();
       featureFlags.overrides.clear();
       featureFlags.defaults = new Map([["security.pin_unlock", true]]);

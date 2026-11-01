@@ -195,7 +195,8 @@ paths:
   /api/v1/patient/auth/register/:
     post:
       operationId: patient_auth_register
-      summary: Patient sign-up (creates account, self profile and consents) and sign-in
+      summary: 'Patient sign-up: always 202 ''check your email'' (no account enumeration);
+        a new account signs in only after the emailed link is opened'
       tags:
       - patient-auth
       requestBody:
@@ -207,7 +208,41 @@ paths:
       security:
       - patientSession: []
       responses:
-        '201':
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: validation_error (never for an email that already has an account)
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: rate_limited
+  /api/v1/patient/auth/verify-email/:
+    post:
+      operationId: patient_auth_verify_email
+      summary: Confirm the sign-up email with the emailed link; activates and signs
+        in
+      tags:
+      - patient-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyEmailRequest'
+        required: true
+      security:
+      - patientSession: []
+      responses:
+        '200':
           content:
             application/json:
               schema:
@@ -218,7 +253,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          description: validation_error
+          description: 'validation_error: invalid, expired or already used link'
         '429':
           content:
             application/json:
@@ -11017,7 +11052,13 @@ components:
           type: string
           format: date-time
         disposition:
-          $ref: '#/components/schemas/DispositionEnum'
+          allOf:
+          - $ref: '#/components/schemas/DispositionEnum'
+          description: |-
+            Always `attachment` (security 06 §6).
+
+            * `inline` - inline
+            * `attachment` - attachment
       required:
       - disposition
       - expires_at
@@ -11028,7 +11069,12 @@ components:
         disposition:
           allOf:
           - $ref: '#/components/schemas/DispositionEnum'
-          default: inline
+          default: attachment
+          description: |-
+            Accepted for compatibility; files are always served as attachments.
+
+            * `inline` - inline
+            * `attachment` - attachment
     DrugsItem:
       type: object
       properties:
@@ -18448,6 +18494,16 @@ components:
         * `infected` - Infected
         * `rejected` - Rejected
         * `failed` - Failed
+    VerifyEmailRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        token:
+          type: string
+          minLength: 1
+          maxLength: 512
+      required:
+      - token
     VersionInputRequest:
       type: object
       properties:

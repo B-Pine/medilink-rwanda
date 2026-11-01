@@ -35,7 +35,7 @@ jobs:
     timeout-minutes: 25
     services:
       postgres:
-        image: postgres:17-alpine
+        image: postgres:17-alpine@sha256:266d3c257594e195b309ae9d1805e54c788f1d7b375f56bf6c367aac6c917e7b
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres_ci_only
@@ -45,7 +45,7 @@ jobs:
           --health-cmd "pg_isready -U postgres"
           --health-interval 5s --health-timeout 5s --health-retries 20
       redis:
-        image: redis:7-alpine
+        image: redis:7-alpine@sha256:8da19c7399dca900c6822a1cf30f9d2285585e2c4b457ff4095b0f4500054d3f
         ports: ["6379:6379"]
         options: >-
           --health-cmd "redis-cli ping"
@@ -132,11 +132,12 @@ jobs:
           UPLOADS_SCANNER: clamd
           UPLOADS_STORAGE: s3
           UPLOADS_DOWNLOAD_BASE_URL: https://files.medilink.rw
+          UPLOADS_S3_REGION: ci-dummy-region
           PLATFORM_ALLOWED_NETWORKS: 10.0.0.0/8
         run: |
           # Random 32-byte keys for this check only (S3 patient identifier encryption)
           key() { python -c "import base64,os;print(base64.urlsafe_b64encode(os.urandom(32)).decode())"; }
-          export MEDILINK_FIELD_KEYS="1:$(key)" MEDILINK_BLIND_INDEX_KEYS="1:$(key)"
+          export MEDILINK_FIELD_KEYS="1:$(key)" MEDILINK_BLIND_INDEX_KEYS="1:$(key)" MFA_SECRET_KEYS="1:$(key)"
           python manage.py check --deploy --fail-level WARNING
 
       - name: pip-audit (known vulnerabilities in locked dependencies)

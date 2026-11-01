@@ -7,6 +7,7 @@ from typing import Any
 
 from django.db import transaction
 from django.http import Http404
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import exceptions, status
@@ -68,6 +69,28 @@ class _Public(CurrentOnConflict, APIView):
         return app_data(request, application)
 
 
+def _honeypot_response(request: Request, data: dict[str, Any]) -> Response:
+    """A success-shaped 201 that stores nothing, so a bot cannot tell it was caught."""
+    now = timezone.now()
+    decoy = Application(
+        facility_name=data["facility_name"],
+        applicant_name=data["applicant"]["name"],
+        applicant_email=data["applicant"]["email"],
+        applicant_phone=data["applicant"].get("phone", ""),
+        applicant_position=data["applicant"].get("position", ""),
+        preferred_language=data["preferred_language"],
+        last_activity_at=now,
+        created_at=now,
+        updated_at=now,
+    )
+    response = Response(
+        s.application_data(decoy, language=request_language(request)),
+        status=status.HTTP_201_CREATED,
+    )
+    applicant.set_cookie(response, applicant.new_token())  # matches no session
+    return response
+
+
 class StartView(_Public):
     throttle_classes = [BurstRateThrottle, ApplicationIPThrottle, ApplicationEmailThrottle]
 
@@ -82,7 +105,7 @@ class StartView(_Public):
         body = s.StartApplicationInput(data=request.data)
         body.is_valid(raise_exception=True)
         if body.validated_data.get("website"):  # honeypot: pretend it worked
-            raise exceptions.ValidationError({"website": ["Leave this field empty."]})
+            return _honeypot_response(request, body.validated_data)
         application = services.start_application(
             applicant=body.validated_data["applicant"],
             facility_name=body.validated_data["facility_name"],

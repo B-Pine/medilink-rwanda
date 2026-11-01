@@ -117,6 +117,35 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   `expire_delegation_invites` (daily); dev seed `seed_patients_dev`.
 - Dependency: cryptography.
 
+### Remediation R1 · Security core (#83)
+
+- Security: patient sign-up no longer reveals existing accounts (#14). `POST /patient/auth/register/`
+  always answers `202` "check your email"; a new account can't sign in until the emailed link is
+  confirmed with the new `POST /patient/auth/verify-email/` (single use, 3 days); an existing
+  email gets an "account exists" email instead. A password reset also confirms a pending sign-up.
+  **Breaking** for clients that expected `201 PatientMe` and an immediate session.
+- Security: TOTP secrets are encrypted at rest (AES-256-GCM, `MFA_SECRET_KEYS`), existing devices
+  migrated (accounts 0005, reversible), `manage.py rotate_mfa_secrets` for rotation; deploy check
+  `medilink.E110`/`E111` (#12).
+- Security: field keys can be data keys wrapped by an OpenBao/Vault Transit KEK
+  (`MEDILINK_KEYSTORE=transit`, `medilink.core.keystore_transit`).
+- Security: the account owner is emailed (and `auth.account.locked` audited) when a login or MFA
+  lock starts.
+- Security: platform MFA reset and patient merge-request views use `PlatformAdmin`, so the
+  `PLATFORM_ALLOWED_NETWORKS` allowlist applies; refused requests keep path and IP in the log.
+- Security: daily audit anchor (`audit.export_audit_anchor`, sink `AUDIT_ANCHOR_SINK` = log, email
+  or file); migration audit 0003 revokes `UPDATE`/`DELETE`/`TRUNCATE` on the audit table from the
+  runtime role; the runtime role can't write `tenancy_role`, `tenancy_permission` or
+  `tenancy_role_permissions`.
+- Security: uploads are always served as attachments (the `disposition` request field is kept for
+  compatibility and audited); `UPLOADS_S3_REGION` is required with S3 storage (no `af-south-1`
+  default, check `medilink.uploads.E004`); optional SSE-KMS with `UPLOADS_S3_SSE_KMS_KEY_ID`.
+- Security: a tripped onboarding honeypot gets the normal success-shaped `201`.
+- Changed: `asgi`, `wsgi`, `celery` and `manage.py` refuse to start without
+  `DJANGO_SETTINGS_MODULE` (environment or `backend/.env`) instead of defaulting to dev settings;
+  `SECURE_HSTS_PRELOAD` is opt-in (default off); stray S3 enum overrides removed from
+  `DEFAULT_THROTTLE_RATES`; the API image and compose services are pinned by digest.
+
 ### Remediation R2 · Patients (#84)
 
 - Security: staff reads of a facility patient record (ST5) and its health profile (ST13) need a

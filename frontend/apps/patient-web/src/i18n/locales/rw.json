@@ -224,7 +224,17 @@
     "researchHint": "Si ngombwa. Kwanga nta cyo bihindura ku buvuzi bwawe. Ushobora kubihindura nyuma.",
     "submit": "Fungura konti",
     "haveAccount": "Usanzwe ufite konti?",
-    "login": "Injira"
+    "login": "Injira",
+    "checkEmailTitle": "Reba imeyili yawe",
+    "checkEmailBody": "Twohereje ubutumwa kuri {{email}}. Fungura ihuriro riri muri ubwo butumwa kugira ngo urangize gufungura konti. Iryo huriro rimara iminsi 3.",
+    "checkEmailHint": "Nta meyili wabonye nyuma y’iminota mike? Reba mu butumwa bwa spam, cyangwa wongere wiyandikishe ubone irindi huriro."
+  },
+  "verifyEmail": {
+    "title": "Emeza imeyili yawe",
+    "working": "Turimo kwemeza imeyili yawe…",
+    "failedTitle": "Ntitwashoboye kwemeza imeyili yawe",
+    "invalidLink": "Iri huriro ntiryuzuye. Ongera ufungure ihuriro riri muri imeyili.",
+    "signUpAgain": "Ongera wiyandikishe"
   },
   "home": {
     "title": "Ahabanza",

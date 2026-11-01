@@ -8,6 +8,7 @@ This root changelog covers documentation and repository-wide changes (CI, toolin
 
 ### Changed
 
+- R1 (#83): docker-compose services and the CI service containers pinned by digest; Dependabot watches `docker-compose.yml`. Security 05 documents the Transit keystore and TOTP keys, security 06 the frontend `style-src` exception and HSTS preload opt-in.
 - Per-user agent and MCP configs (`.cursor/`, `.gemini/`, `.codex/`, `.agents/`) and `docker-compose.override.yml` are no longer tracked; `docker-compose.override.example.yml` documents the optional Postgres port override. `CLAUDE.md` and `AGENTS.md` point at the GitHub issue workflow.
 
 ### Added

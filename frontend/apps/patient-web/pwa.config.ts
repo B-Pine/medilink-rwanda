@@ -3,6 +3,12 @@ import type { VitePWAOptions } from "vite-plugin-pwa";
 import rw from "./src/i18n/locales/rw.json";
 
 /**
+ * The empty app shell (vite.config.ts): the navigation fallback for every path without a
+ * pre-rendered page. index.html is the pre-rendered landing page.
+ */
+export const APP_SHELL = "/app-shell.html";
+
+/**
  * PWA settings (design 07, security 06 §6).
  *
  * The service worker precaches the app shell only. It never caches /api/ responses: the API is
@@ -38,8 +44,14 @@ export const pwaOptions: Partial<VitePWAOptions> = {
   },
   workbox: {
     globPatterns: ["**/*.{js,css,html,woff2,png,webp,ico}"],
-    globIgnores: ["**/mockServiceWorker.js", "**/icon-dark-512.png"],
-    navigateFallback: "/index.html",
+    // The prerender script and React's server renderer run at build time only (vite.config.ts).
+    globIgnores: [
+      "**/mockServiceWorker.js",
+      "**/icon-dark-512.png",
+      "**/prerender-*.js",
+      "**/server.browser-*.js",
+    ],
+    navigateFallback: APP_SHELL,
     navigateFallbackDenylist: [/^\/api\//],
     cleanupOutdatedCaches: true,
     // Extra service-worker scripts (e.g. web push handlers): ONLY between the sprint's markers.

@@ -197,7 +197,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
     icon: GitMerge,
     group: "facility",
     labelKey: "patients.nav.merges",
-    visible: hasAny("patients.merge_approve"),
+    visible: hasAny("patients.merge_request", "patients.merge_approve"),
   },
   {
     key: "platformMerges",

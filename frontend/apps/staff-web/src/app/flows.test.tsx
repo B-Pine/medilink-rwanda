@@ -337,7 +337,7 @@ describe("other pages", () => {
     expect(
       await screen.findByRole("heading", { level: 1, name: "Page not found" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Go to Today" })).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: "Go to my start page" })).toHaveAttribute("href", "/");
   });
 
   it("MFA pages without a pending login go back to login", async () => {

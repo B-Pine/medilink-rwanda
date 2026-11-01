@@ -120,8 +120,12 @@
  * Ticket stub (design 03 §1a): the notched ticket a patient holds, used wherever a patient's
  * ticket appears (reception, doctor, pharmacy, tracker). Two half-circle notches cut from the sides.
  */
+@layer components {
+  .ml-ticket-stub {
+    --ml-notch: 0.4375rem;
+  }
+}
 .ml-ticket-stub {
-  --ml-notch: 0.4375rem;
   -webkit-mask:
     radial-gradient(circle var(--ml-notch) at 0 50%, transparent 98%, #000) left / 51% 100%
       no-repeat,

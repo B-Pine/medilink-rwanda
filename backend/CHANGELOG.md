@@ -148,6 +148,41 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Signal `scheduling.exception_approved`.
 - Jobs and commands: `expire_invitations` (daily) and dev seed `seed_setup_dev`.
 
+### Remediation R4 · Queue and booking fixes (#86)
+
+- A booked patient later than `slot + grace_after` checks in as a walk-in all day: the visit is
+  flagged `is_late_arrival`, the check-in response and ticket rows carry `late`. A booking becomes
+  `no_show` (with a strike) only after the facility has closed that day (FR-QUE-06, FR-SCH-13).
+- "I'm here" (`POST /patient/visits/{id}/arrived/`) records the patient's claim only
+  (`remote_arrival_claimed_at`); reception confirms with the new ticket action
+  `POST /staff/tickets/{id}/confirm-arrival/` (`remote_arrival_confirmed_at`, visit `on_site`).
+  Pass-over applies until then. Self check-in stays P2 (FR-QUE-07, FR-QUE-18). The ticket column
+  `remote_checked_in_at` is renamed `remote_arrival_confirmed_at`.
+- Pass-over warns first (event `pass_over_warning`, signal `ticket_pass_over_warning` with
+  `final`) and moves the ticket `queue.pass_over_warning_minutes` (new, default 5) later.
+- Manual queue places (no response, reorder, pass-over) use the new `visits_ticket.order_at` and
+  the S5 calling order; `arrival_at` stays the real arrival.
+- Ticket rows add `slot_starts_at`, `late`, `is_remote`, `remote_arrival_claimed_at`,
+  `remote_arrival_confirmed_at` (flags `late`, `remote`, `remote_claimed`); the tracker (PT1) adds
+  `is_remote` and both remote times. The board computes one calling order per queue; My queue and
+  the display "next" numbers follow the calling order.
+- Call next locks the doctor's duty row; partial unique index `visits_one_serving_ticket` (one
+  called or in-service ticket per staff member and day).
+- `next-stage` only from `in_service` and only forward.
+- Signal `visits.services.on_ticket_event` sent on commit for every ticket event (sprint-04 §7).
+- A booking for a patient already in today's queue joins that visit (same service, no booking
+  yet), otherwise `422`.
+- Optional `symptoms` at walk-in check-in and remote join (`captured_at_stage = check_in`).
+- Service schedules: `ScheduleTemplate.membership` is nullable; their slots have no doctor.
+- One patient-share rule (`booking.cover`: ceiling, excluded tariff codes, covered services) for
+  search, profile and booking; the profile adds `insurer_share_rwf`.
+- No-show strikes are a platform policy (`NO_SHOW_STRIKE_WARNING` 3, `NO_SHOW_STRIKE_LIMIT` 4,
+  `NO_SHOW_STRIKE_WINDOW_DAYS` 90, `NO_SHOW_LIMIT_DAYS` 30); `limits()` returns `limited_until`.
+- One open slot hold per account across facilities (`scheduling_account_holds`).
+- Wait metrics run from check-in (or confirmed remote arrival) to the first `call` event.
+- Revoking a display link closes its sockets.
+- Every socket answers `ping` with the same flat `{"type": "pong", "sent_at"}`.
+
 ### Sprint 10 · Help center and support (part 1)
 
 ### Added

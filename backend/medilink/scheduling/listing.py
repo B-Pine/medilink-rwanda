@@ -20,6 +20,7 @@ from medilink.billing.services import current_q, price
 from medilink.facilities.calendar import KIGALI, effective_calendar
 from medilink.facilities.models import Profile, PublicListing, Service
 from medilink.masterdata.models import Location, LocationLevel
+from medilink.scheduling.booking import cover
 from medilink.scheduling.slots import bookable
 from medilink.tenancy.models import Facility, FacilityStatus, FacilityType
 from medilink.visits.models import DutyState, Ticket, TicketState
@@ -100,11 +101,16 @@ def refresh(facility_id: Any) -> int:
     rows = []
     for service in Service.objects.filter(facility_id=facility_id, is_active=True):
         item = price(facility_id, service_id=service.pk, on=today)
-        insurers = {
-            r.insurer_code: r.patient_share_bp
-            for r in rules
-            if r.applies_to_all_services or str(service.pk) in {str(x) for x in r.service_ids}
-        }
+        fee = item.amount_rwf if item else None
+        insurers: dict[str, dict[str, Any]] = {}
+        for r in rules:
+            if not r.applies_to_all_services and str(service.pk) not in {
+                str(x) for x in r.service_ids
+            }:
+                continue
+            share, covered = cover(fee, r, item.code if item else None)
+            if covered:  # an excluded tariff is not accepted for this service
+                insurers[r.insurer_code] = {"bp": r.patient_share_bp, "share_rwf": share}
         next_slot = None
         if service.is_bookable:
             first = bookable(
@@ -175,6 +181,25 @@ def is_open(hours: list[list[Any]], now: dt.datetime) -> bool:
     return any(d == day and a <= time < b for d, a, b in hours)
 
 
+def insurer_bp(row: PublicListing) -> dict[str, int]:
+    """Patient share per accepted insurer in basis points of the fee."""
+    return {
+        code: int(value["bp"] if isinstance(value, dict) else value)
+        for code, value in (row.insurers or {}).items()
+    }
+
+
+def insurer_share_rwf(row: PublicListing) -> dict[str, int | None]:
+    """Patient share per accepted insurer in RWF, ceiling included (`booking.cover`)."""
+    out: dict[str, int | None] = {}
+    for code, value in (row.insurers or {}).items():
+        if isinstance(value, dict):
+            out[code] = value.get("share_rwf")
+        else:  # a row built before R4: no ceiling known
+            out[code] = None if row.fee_rwf is None else round(row.fee_rwf * int(value) / 10_000)
+    return out
+
+
 def _accepts(row: PublicListing, insurer_code: str | None) -> str:
     if not insurer_code:
         return "unknown"
@@ -186,7 +211,7 @@ def _share(row: PublicListing, insurer_code: str | None) -> int | None:
         return None
     if not insurer_code or insurer_code not in (row.insurers or {}):
         return row.fee_rwf
-    return round(row.fee_rwf * int(row.insurers[insurer_code]) / 10_000)
+    return insurer_share_rwf(row)[insurer_code]
 
 
 def search(query: Query) -> dict[str, Any]:

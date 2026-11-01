@@ -59,6 +59,8 @@ class Visit(TimeStampedModel):
     checked_in_at = models.DateTimeField(null=True, blank=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     is_emergency = models.BooleanField(default=False)
+    # S5: a booked patient who checked in after `slot + grace_after` (waits as a walk-in)
+    is_late_arrival = models.BooleanField(default=False)
     priority_class = models.CharField(  # noqa: DJ001
         max_length=12, choices=PriorityClass.choices, null=True, blank=True
     )
@@ -147,8 +149,14 @@ class Ticket(TimeStampedModel):
     priority_rank = models.PositiveSmallIntegerField(default=RANK_NORMAL)
     slot_starts_at = models.DateTimeField(null=True, blank=True)
     arrival_at = models.DateTimeField()
+    # Manual place in the queue (no response, reorder, pass-over); calling order reads
+    # `order_at` before `arrival_at` / `slot_starts_at`, so `arrival_at` stays the real arrival.
+    order_at = models.DateTimeField(null=True, blank=True)
     is_remote = models.BooleanField(default=False)
-    remote_checked_in_at = models.DateTimeField(null=True, blank=True)
+    # Remote join: "I'm here" from the tracker is a claim; reception confirms the arrival
+    remote_arrival_claimed_at = models.DateTimeField(null=True, blank=True)
+    remote_arrival_confirmed_at = models.DateTimeField(null=True, blank=True)
+    pass_over_warned_at = models.DateTimeField(null=True, blank=True)
     no_response_count = models.PositiveSmallIntegerField(default=0)
     pass_over_count = models.PositiveSmallIntegerField(default=0)
     step_out_until = models.DateTimeField(null=True, blank=True)
@@ -180,6 +188,12 @@ class Ticket(TimeStampedModel):
                 name="visits_one_active_ticket",
             ),
             models.CheckConstraint(condition=Q(priority_rank__lte=3), name="visits_ticket_rank"),
+            # One patient at a time per staff member and day: backs the Call next check
+            models.UniqueConstraint(
+                fields=["facility", "assigned_membership", "service_date"],
+                condition=Q(state__in=["called", "in_service"]),
+                name="visits_one_serving_ticket",
+            ),
         ]
 
     def __str__(self) -> str:

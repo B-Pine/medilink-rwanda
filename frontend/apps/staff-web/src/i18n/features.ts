@@ -33,6 +33,11 @@ import bookingsEn from "../features/bookings/locales/en.json";
 import bookingsFr from "../features/bookings/locales/fr.json";
 import bookingsRw from "../features/bookings/locales/rw.json";
 // [/S5 imports]
+// [S6 imports]
+import clinicalEn from "../features/clinical/locales/en.json";
+import clinicalFr from "../features/clinical/locales/fr.json";
+import clinicalRw from "../features/clinical/locales/rw.json";
+// [/S6 imports]
 
 /**
  * Feature translation namespaces: `<feature>` -> `src/features/<feature>/locales/{rw,en,fr}.json`.
@@ -59,4 +64,7 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   // [S5]
   bookings: { rw: bookingsRw, en: bookingsEn, fr: bookingsFr },
   // [/S5]
+  // [S6]
+  clinical: { rw: clinicalRw, en: clinicalEn, fr: clinicalFr },
+  // [/S6]
 };

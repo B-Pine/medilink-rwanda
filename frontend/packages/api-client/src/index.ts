@@ -31,3 +31,6 @@ export * from "./realtime";
 // [S5]
 export * from "./features/booking";
 // [/S5]
+// [S6]
+export * from "./features/clinical";
+// [/S6]

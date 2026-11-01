@@ -27,4 +27,13 @@ export {
   MOCK_INVITATION_TOKEN,
 } from "./features/setup";
 export { MOCK_DISPLAY_TOKEN } from "./features/queue";
+// [S6]
+export {
+  MOCK_CLINICAL_FP,
+  MOCK_CLINICAL_VISIT_ID,
+  MOCK_NO_CARE_FP,
+  MOCK_PRIVATE_NOTE,
+  MOCK_STAFF_PATIENT_FP,
+} from "./features/clinical";
+// [/S6]
 export type { MockFeatureFlags } from "./handlers";

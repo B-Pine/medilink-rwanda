@@ -2,7 +2,7 @@
 
 Contract: [sprint-06-clinical.md](../architecture/contracts/sprint-06-clinical.md) §9 · Pull requests: contract and S6a backend on the S6 branch (not yet opened) · Releases: none yet
 
-Status: **Open**. The S6a backend is implemented. The S6a frontend (F1–F6) and all S6b checks (B18–B21, F7) are not started. The real-API checks (I2, I3) wait for the frontend and staging ([#17](https://github.com/B-Pine/medilink-rwanda/issues/17)).
+Status: **Open**. The S6a backend is implemented. The S6a frontend (F1–F6) is implemented with tests. The S6b checks (B18–B21, F7) are not started. The real-API checks (I2, I3) wait for the frontend and staging ([#17](https://github.com/B-Pine/medilink-rwanda/issues/17)).
 
 Evidence collected on 2026-11-01 on PostgreSQL 16, suite run as the runtime role. Backend tests: `backend/tests/s6/test_clinical.py`, `backend/tests/s6/test_access_matrix.py`. A verifier who did not write the code fills **Verified by**, **Date** and **Result** ([QA README](README.md) §4).
 
@@ -36,7 +36,12 @@ Evidence collected on 2026-11-01 on PostgreSQL 16, suite run as the runtime role
 
 | # | Check | Evidence | Result |
 |---|---|---|---|
-| S6-F1 … F6 | S6a staff-web screens | Not started: no `frontend/apps/staff-web/src/features/clinical/`, api-client module or MSW mocks yet | Not started |
+| S6-F1 | All S6a screens on mocks; role gating; 409 refetch; step-up on sign | `clinical.test.tsx`: the doctor's flows end to end on the MSW mocks; reception gets not found for `/clinical/unsigned`. Sign goes through the shared `withStepUp` (dialog and retry covered by `lock.test.tsx`). The 409 reload with the conflict note is in the autosave code but has no test yet | Pending |
+| S6-F2 | One scroll with anchors; autosave status; permanent allergy banner; private notes marked | "one scroll with anchors, autosave status, permanent allergy banner, private notes marked" (axe clean); `s6-components.test.tsx` (AllergyBanner, AutosaveStatus, SectionAnchors) | Pending |
+| S6-F3 | ICD-10 type-ahead; primary/secondary; provisional/confirmed; sensitive suggests restricted | "ICD-10 type-ahead in plain language; primary and certainty; sign and lock" | Pending |
+| S6-F4 | History drawer with filters and problem summary | "the history drawer opens beside the record with filters and the problem summary" (axe clean) | Pending |
+| S6-F5 | Reason-for-access blocks the record until a reason is given | "a patient not in care is blocked until a reason is given" | Pending |
+| S6-F6 | `clinical` text in rw/en/fr; dates through `dateFormat()`; axe clean | `tests/i18n.test.ts` parity and review list; axe in the staff and patient tests. Patient records (PR1, PR2): `records.test.tsx`, never private notes or examination | Pending |
 | S6-F7 | (S6b) | Not started | Not in S6a |
 
 ## Integration checks

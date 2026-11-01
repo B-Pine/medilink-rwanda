@@ -151,4 +151,7 @@ extend(_s9.PERMISSIONS, _s9.ROLE_GRANTS)
 # [S2]
 # [/S2]
 # [S10]
+from medilink.support import permissions as _s10  # noqa: E402
+
+extend(_s10.PERMISSIONS, _s10.ROLE_GRANTS)
 # [/S10]

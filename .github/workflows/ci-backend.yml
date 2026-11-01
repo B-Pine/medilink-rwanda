@@ -132,6 +132,7 @@ jobs:
           UPLOADS_SCANNER: clamd
           UPLOADS_STORAGE: s3
           UPLOADS_DOWNLOAD_BASE_URL: https://files.medilink.rw
+          UPLOADS_S3_REGION: ci-dummy-region
           PLATFORM_ALLOWED_NETWORKS: 10.0.0.0/8
         run: |
           # Random 32-byte keys for this check only (S3 patient identifier encryption)

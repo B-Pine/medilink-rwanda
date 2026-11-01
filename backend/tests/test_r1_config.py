@@ -13,9 +13,7 @@ from config import environment
 from tests.test_b13_deploy_check import _run, prod_env
 
 
-def test_settings_module_comes_from_the_environment_first(
-    monkeypatch: Any, tmp_path: Path
-) -> None:
+def test_settings_module_comes_from_the_environment_first(monkeypatch: Any, tmp_path: Path) -> None:
     dot_env = tmp_path / ".env"
     dot_env.write_text("DJANGO_SETTINGS_MODULE=config.settings.dev\n", encoding="utf-8")
     monkeypatch.setenv("DJANGO_SETTINGS_MODULE", "config.settings.test")

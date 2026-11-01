@@ -19,8 +19,6 @@ import {
   CalendarCheck,
   ClockCountdown,
   MegaphoneSimple,
-  Phone,
-  Plus,
   Star,
   UsersThree,
 } from "@phosphor-icons/react";
@@ -31,10 +29,11 @@ import { useSearchParams } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PhoneBookingPanel, type PhoneBookingMode } from "../bookings";
-import { PageHeader } from "../../components/PageHeader";
+import { PageHeading } from "../../components/PageHeading";
 import { PatientPicker } from "../patients";
 import { queueKeys, usePollInterval, useQueueSocket } from "./live";
-import { ExpectedList, MissedList } from "./ExpectedList";
+import { ExpectedList, MissedList, useTodayBookings } from "./ExpectedList";
+import { DeskBar, DeskFlow, ServiceFilter, ticketTone } from "./FrontDesk";
 import { RemoteList, useConfirmArrival } from "./RemoteList";
 import { LiveBadge } from "./LiveIndicator";
 import {
@@ -48,7 +47,6 @@ import {
 } from "./shared";
 
 /** Keyboard shortcuts (design 04 §3.1): N new check-in, / find a patient to check in. */
-const SHORTCUT_NEW = "N";
 
 /** True while a dialog or side panel is open: board shortcuts must not fire behind it. */
 const dialogOpen = () => Boolean(document.querySelector('[role="dialog"], [role="alertdialog"]'));
@@ -67,7 +65,8 @@ function useChangedRows(rows: TicketRow[]): Set<string> {
     seen.current = new Map(rows.map((r) => [r.id, r.version]));
     if (!previous) return;
     const fresh = rows.filter((r) => previous.get(r.id) !== r.version).map((r) => r.id);
-    if (!fresh.length) return;
+    // Every row "changed" at once is a reload (e.g. coming back to the page), not a live update.
+    if (!fresh.length || (fresh.length === rows.length && rows.length > 1)) return;
     setChanged(new Set(fresh));
     const timer = setTimeout(() => setChanged(new Set()), 1_500);
     return () => clearTimeout(timer);
@@ -129,91 +128,71 @@ export function BoardPage() {
   const byService = new Map<string, QueueGroup[]>();
   for (const q of queues) byService.set(q.service_id, [...(byService.get(q.service_id) ?? []), q]);
   const shown = queues.filter((q) => !filter || q.service_id === filter);
-  const waitingTotal = queues.reduce((n, q) => n + q.waiting.length, 0);
   const serving = queues.flatMap((q) => [...q.called, ...q.in_service]);
   const changed = useChangedRows(queues.flatMap((q) => q.waiting));
+  const bookings = useTodayBookings();
 
   return (
     <div className="flex flex-col gap-5">
-      <PageHeader
-        title={t("queue.board.title")}
-        description={t("queue.board.intro")}
-        badges={<LiveBadge />}
-        actions={
-          <>
-            {canBook && (
-              <Button variant="secondary" onClick={() => setBooking({ kind: "new" })}>
-                <Phone aria-hidden="true" weight="bold" />
-                {t("bookings.phone.open")}
-              </Button>
-            )}
-            <Button onClick={() => setCheckingIn(true)} aria-keyshortcuts="N /">
-              <Plus aria-hidden="true" weight="bold" />
-              {t("queue.board.checkIn")}
-              <kbd className="ml-1 rounded-sm border border-on-primary/40 px-1 font-sans text-caption">
-                {SHORTCUT_NEW}
-              </kbd>
-            </Button>
-          </>
-        }
-      />
-
-      <div
-        className="flex flex-wrap items-center gap-2"
-        role="group"
-        aria-label={t("queue.board.services")}
-      >
-        <button
-          type="button"
-          aria-pressed={filter === null}
-          onClick={() => setFilter(null)}
-          className="inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-full border border-border bg-surface px-3.5 text-body-sm font-semibold text-fg-secondary hover:text-fg aria-pressed:border-primary aria-pressed:bg-brand-subtle aria-pressed:text-on-brand-subtle"
-        >
-          {t("queue.board.allServices")}
-          <span className="tabular-nums opacity-80">{waitingTotal}</span>
-        </button>
-        {[...byService.entries()].map(([serviceId, groups]) => {
-          const waiting = groups.reduce((n, g) => n + g.waiting.length, 0);
-          return (
-            <button
-              key={serviceId}
-              type="button"
-              aria-pressed={filter === serviceId}
-              onClick={() => setFilter(serviceId)}
-              className="inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-full border border-border bg-surface px-3.5 text-body-sm font-semibold text-fg-secondary hover:text-fg aria-pressed:border-primary aria-pressed:bg-brand-subtle aria-pressed:text-on-brand-subtle"
-            >
-              {serviceName(serviceId)}
-              <span className="tabular-nums opacity-80">{waiting}</span>
-            </button>
-          );
-        })}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <PageHeading title={t("queue.board.title")}>{t("queue.board.title")}</PageHeading>
+        <LiveBadge />
+        <p className="m-0 basis-full text-fg-muted">{t("queue.board.intro")}</p>
       </div>
 
+      <DeskBar
+        onFind={() => setCheckingIn(true)}
+        onCheckIn={() => setCheckingIn(true)}
+        onBookByPhone={canBook ? () => setBooking({ kind: "new" }) : undefined}
+      />
+
+      <DeskFlow queues={queues} expected={bookings.data?.results} />
+
+      {byService.size > 1 && (
+        <ServiceFilter
+          services={[...byService.entries()].map(([id, groups]) => ({
+            id,
+            waiting: groups.reduce((n, g) => n + g.waiting.length, 0),
+          }))}
+          value={filter}
+          onChange={setFilter}
+          serviceName={serviceName}
+          label={t("queue.board.services")}
+          allLabel={t("queue.board.allServices")}
+        />
+      )}
+
       {serving.length > 0 && (
-        <section aria-labelledby="now-serving" className="flex flex-col gap-2">
-          <h2 id="now-serving" className="m-0 flex items-center gap-2 font-heading text-h3">
-            <MegaphoneSimple aria-hidden="true" className="size-5 text-warning" />
+        <section aria-labelledby="now-serving" className="flex flex-col gap-2.5">
+          <h2
+            id="now-serving"
+            className="m-0 flex items-center gap-2 text-caption font-semibold tracking-wide text-fg-muted uppercase"
+          >
+            <MegaphoneSimple aria-hidden="true" weight="bold" className="size-4 text-attention" />
             {t("queue.board.nowServing")}
           </h2>
-          <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
+          <ul className="m-0 flex list-none flex-wrap gap-2.5 p-0">
             {serving.map((ticket) => (
               <li key={ticket.id}>
                 <button
                   type="button"
                   onClick={() => setOpen(ticket)}
                   className={cx(
-                    "flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-2 text-left",
-                    ticket.state === "called"
-                      ? "border-warning/50 bg-warning-bg"
-                      : "border-border bg-surface",
+                    "flex cursor-pointer items-center gap-3 rounded-lg py-2 pr-4 pl-2 text-left shadow-card",
+                    "transition-transform duration-150 active:scale-[0.98]",
+                    ticket.state === "called" ? "bg-attention-bg" : "bg-surface",
                   )}
                 >
-                  <TicketNumber number={ticket.number} />
+                  <TicketNumber
+                    number={ticket.number}
+                    stub
+                    tone={ticket.state === "called" ? "attention" : "brand"}
+                  />
                   <span className="flex flex-col">
                     <span className="text-body-sm font-semibold">
                       {ticket.service_point ?? "—"}
                     </span>
-                    <span className="text-caption text-fg-secondary">
+                    <span className="text-caption text-fg-muted">
                       {t(`queue.states.${ticket.state}`)}
                     </span>
                   </span>
@@ -224,7 +203,7 @@ export function BoardPage() {
         </section>
       )}
 
-      <div className="grid gap-5 xl:grid-cols-[18rem_minmax(0,1fr)]">
+      <div className="grid gap-5 xl:grid-cols-[21rem_minmax(0,1fr)]">
         <section aria-labelledby="expected" className="flex flex-col gap-3 self-start">
           <h2 id="expected" className="m-0 flex items-center gap-2 font-heading text-h3">
             <CalendarCheck aria-hidden="true" className="size-5 text-fg-muted" />
@@ -238,12 +217,19 @@ export function BoardPage() {
           <MissedList serviceId={filter} />
         </section>
 
-        <section aria-labelledby="on-site" className="flex min-w-0 flex-col gap-4">
+        <section aria-labelledby="on-site" className="flex min-w-0 flex-col gap-3">
           <h2 id="on-site" className="m-0 flex items-center gap-2 font-heading text-h3">
             <UsersThree aria-hidden="true" className="size-5 text-fg-muted" />
             {t("queue.board.onSite")}
           </h2>
-          {board.isPending && <p className="m-0 text-fg-muted">{t("queue.loading")}</p>}
+          {board.isPending && (
+            <div aria-busy="true" className="flex flex-col gap-3">
+              <p className="m-0 text-fg-muted">{t("queue.loading")}</p>
+              {[0, 1].map((i) => (
+                <div key={i} className="h-36 animate-pulse rounded-lg bg-surface shadow-card" />
+              ))}
+            </div>
+          )}
           {board.isError && <Alert tone="danger">{t("queue.loadFailed")}</Alert>}
           {board.data && shown.length === 0 && (
             <EmptyState
@@ -300,15 +286,15 @@ function QueueTable({
   const { t } = useTranslation();
   const est = group.estimate_next;
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-surface">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-subtle px-4 py-2.5">
-        <h3 className="m-0 font-heading text-h3">
+    <div className="overflow-hidden rounded-lg bg-surface shadow-card">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 pt-3.5 pb-2.5">
+        <h3 className="m-0 font-heading text-body font-bold">
           {title}{" "}
-          <span className="font-normal text-fg-secondary">
+          <span className="font-sans font-normal text-fg-muted">
             · {t(`queue.stages.${group.stage}`)}
           </span>
         </h3>
-        <div className="flex flex-wrap items-center gap-4 text-body-sm text-fg-secondary">
+        <div className="flex flex-wrap items-center gap-4 text-body-sm text-fg-muted">
           <span className="tabular-nums">
             {t("queue.board.waitingCount", { count: group.waiting.length })}
           </span>
@@ -325,7 +311,7 @@ function QueueTable({
       ) : (
         <table className="w-full border-collapse text-left">
           <caption className="sr-only">{`${title} · ${t(`queue.stages.${group.stage}`)}`}</caption>
-          <thead className="text-caption text-fg-muted">
+          <thead className="text-caption tracking-wide text-fg-muted uppercase">
             <tr>
               <th scope="col" className="w-12 px-4 py-2 font-semibold">
                 #
@@ -349,7 +335,7 @@ function QueueTable({
               <tr
                 key={ticket.id}
                 className={cx(
-                  "border-t border-border hover:bg-subtle",
+                  "border-t border-border transition-colors hover:bg-page",
                   // on at once, then fade out over 1.5 s
                   changed.has(ticket.id)
                     ? "bg-brand-subtle"
@@ -361,14 +347,14 @@ function QueueTable({
                   <button
                     type="button"
                     onClick={() => onOpen(ticket)}
-                    className="cursor-pointer text-link underline-offset-2 hover:underline"
+                    className="cursor-pointer rounded-md transition-transform duration-150 active:scale-[0.96]"
                   >
-                    <TicketNumber number={ticket.number} size="sm" />
+                    <TicketNumber number={ticket.number} stub tone={ticketTone(ticket, index)} />
                   </button>
                 </td>
                 <td className="px-2 py-2.5">
                   <span className="block font-semibold">{ticket.display_name}</span>
-                  <span className="text-body-sm text-fg-secondary">
+                  <span className="text-body-sm text-fg-muted">
                     {[
                       ticket.age_years !== null
                         ? t("queue.age", { count: ticket.age_years })

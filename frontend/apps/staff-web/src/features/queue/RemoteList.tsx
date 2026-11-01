@@ -62,12 +62,18 @@ export function RemoteList({
       )}
       <ul
         aria-labelledby="remote-joiners"
-        className="m-0 flex list-none flex-col divide-y divide-border rounded-lg border border-border bg-surface p-0"
+        className="m-0 flex list-none flex-col divide-y divide-border overflow-hidden rounded-lg bg-surface p-0 shadow-card"
       >
         {rows.map((ticket) => (
           <li key={ticket.id} className="flex flex-col gap-2.5 px-3 py-3">
             <div className="flex items-start gap-3">
-              <TicketNumber number={ticket.number} size="sm" className="shrink-0 leading-6" />
+              <TicketNumber
+                number={ticket.number}
+                size="sm"
+                stub
+                tone={ticket.remote_arrival_claimed_at ? "attention" : "neutral"}
+                className="shrink-0"
+              />
               <span className="flex min-w-0 flex-1 flex-col">
                 <span className="font-semibold leading-6 break-words">{ticket.display_name}</span>
                 <span className="text-body-sm text-fg-muted break-words">
@@ -83,6 +89,8 @@ export function RemoteList({
             </div>
             {canConfirm && (
               <Button
+                size="sm"
+                className="self-start"
                 variant={ticket.remote_arrival_claimed_at ? "primary" : "secondary"}
                 loading={confirm.isPending && confirm.variables?.id === ticket.id}
                 disabled={confirm.isPending}

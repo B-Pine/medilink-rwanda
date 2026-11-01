@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 3156.
+Keys: 3173.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -1891,6 +1891,7 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `board.remoteError` | Ntibyakunze kwemeza ko yahageze. | Could not confirm the arrival. | needs native-speaker review |
 | `board.expectedCheckedIn` | {{name}} yanditswe: {{ticket}} | {{name}} checked in: {{ticket}} | needs native-speaker review |
 | `board.expectedLateWalkIn` | Yahageze igihe cyo gutegereza cyarenze, ashyirwa ku murongo nk'utafashe gahunda. Mumuhe ikindi gihe niba abishaka. | Arrived after the grace time, so queued as a walk-in. Offer a new time if they prefer. | needs native-speaker review |
+| `board.findPatient` | Shaka umurwayi: izina, telefoni, indangamuntu cyangwa nimero ya dosiye | Find a patient: name, phone, national ID or file number | needs native-speaker review |
 | `panel.service` | Serivisi | Service | needs native-speaker review |
 | `panel.stage` | Intambwe | Stage | needs native-speaker review |
 | `panel.position` | Umwanya | Place | needs native-speaker review |
@@ -2020,6 +2021,22 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `reports.avgConsult` | Igihe cyo kuvurwa uyu munsi (hagati) | Average consultation today | needs native-speaker review |
 | `reports.leftRate` | Abagiye batavuwe uyu munsi | Left without being seen today | needs native-speaker review |
 | `reports.emergencies` | Ibyihutirwa, iminsi 14 | Emergencies, 14 days | needs native-speaker review |
+| `flow.label` | Abarwayi muri buri cyiciro | Patients in each stage | needs native-speaker review |
+| `flow.expected` | Abategerejwe | Expected | needs native-speaker review |
+| `flow.waiting` | Bategereje | Waiting | needs native-speaker review |
+| `flow.withDoctor` | Kwa muganga | With a doctor | needs native-speaker review |
+| `flow.payment` | Kwishyura | Payment | needs native-speaker review |
+| `flow.pharmacy` | Farumasi | Pharmacy | needs native-speaker review |
+| `flow.none` | Nta n'umwe | No one | needs native-speaker review |
+| `flow.booked` | Bafashe gahunda, ntibaraza | Booked, not here yet | needs native-speaker review |
+| `flow.late_one` | {{count}} yakererewe | {{count}} late | needs native-speaker review |
+| `flow.late_other` | {{count}} bakererewe | {{count}} late | needs native-speaker review |
+| `flow.median_one` | Hagati: iminota {{count}} | Median {{count}} min | needs native-speaker review |
+| `flow.median_other` | Hagati: iminota {{count}} | Median {{count}} min | needs native-speaker review |
+| `flow.longest_one` | Igihe kirekire: iminota {{count}} | Longest {{count}} min | needs native-speaker review |
+| `flow.longest_other` | Igihe kirekire: iminota {{count}} | Longest {{count}} min | needs native-speaker review |
+| `flow.called_one` | {{count}} arahamagawe | {{count}} being called | needs native-speaker review |
+| `flow.called_other` | {{count}} barahamagawe | {{count}} being called | needs native-speaker review |
 
 ## staff-web feature: setup (namespace setup)
 

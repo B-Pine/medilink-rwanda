@@ -9,6 +9,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Redesign · Front desk (#121)
+
+- staff-web queue board: a check-in bar on the deep-forest band (find a patient `/`, check in `N`,
+  book by phone), the live patient-flow strip (expected, waiting, with a doctor, payment, pharmacy;
+  the slowest stage over 15 minutes is highlighted), a segmented service filter, ticket stubs
+  tinted by state (emergency red, next up ochre, remote not yet seen grey), skeleton loading, and
+  softer Expected, remote-joiner and missed lists with compact actions.
+- staff-web Today: a quiet greeting with role chips, the most-used actions as one row of pills
+  (utilities like the inbox stay in their own places), and the patient flow as the focal card.
+- ui: `Button` presses (scale 0.97), a softer secondary style and a new `sm` size.
+- A full reload no longer flashes every queue row as "changed".
+
 ### Redesign · Foundation (#119)
 
 - Design system: neutrals lean toward the forest green (re-measured, WCAG AA in both themes); new

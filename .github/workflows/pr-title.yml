@@ -1,0 +1,37 @@
+# Pull request titles become the squash commit on main, so they must be Conventional Commits
+# (CONTRIBUTING.md, docs/development/git-workflow-and-releases.md §3).
+name: pr-title
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-title-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  conventional-commit:
+    name: PR title is a Conventional Commit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Check the title
+        env:
+          # Passed through the environment, never interpolated into the script.
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          types='feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert'
+          pattern="^(${types})(\([a-z0-9][a-z0-9./-]*(, ?[a-z0-9][a-z0-9./-]*)*\))?!?: [^ ].*$"
+          if printf '%s' "${TITLE}" | grep -Eq "${pattern}"; then
+            echo "OK: ${TITLE}"
+          else
+            echo "::error::PR title is not a Conventional Commit: \"${TITLE}\""
+            echo "Expected <type>(<optional scope>)!?: <summary>, type one of ${types//|/, }; e.g."
+            echo "  feat(backend): add call-next endpoint"
+            echo "  ci: add Semgrep and osv-scanner gates"
+            exit 1
+          fi

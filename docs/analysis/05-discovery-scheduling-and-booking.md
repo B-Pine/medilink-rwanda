@@ -101,7 +101,7 @@ available bookable slots = template blocks
 | When | Future date and time slot | Today only |
 | Gives | Appointment at a time | A place in today's walk-in queue |
 | Best for | Planned visits, specialists, follow-ups | Sick today, public facilities that work first-come-first-served |
-| Rules | Grace window around slot time (see [06](06-visit-lifecycle-and-queue.md)) | Must check in before reaching the front, or the ticket is passed over |
+| Rules | Grace window around slot time (see [06](06-visit-lifecycle-and-queue.md)); arriving later means checking in as a walk-in | Reception must confirm arrival before the ticket reaches the front, or the ticket is passed over. "I'm here" in the app only tells reception the patient says they have arrived |
 | Available when | Service is bookable | Service allows remote join, and before the remote-join cutoff time |
 
 ## 4. Booking
@@ -139,8 +139,9 @@ sequenceDiagram
 
 ### No-show policy
 
-- A booking not checked in by the end of its grace window is marked **no-show** automatically. The receptionist can reverse it with a reason (e.g. the patient was present but not checked in).
-- **Strikes:** 3 no-shows in 90 days → warning; 4 → booking limited to 1 active booking for 30 days. The numbers are configurable at platform level. Patients can dispute a strike (see [10](10-disputes-complaints-and-support.md)).
+- A patient who arrives **after the grace window** is still checked in, as a **walk-in** (ordered by arrival time); reception can also offer a new slot. The booking is then not a no-show.
+- A booking is marked **no-show** automatically only when the patient **has not arrived by the facility's closing time** that day. Only then does a strike count. The receptionist can reverse it with a reason (e.g. the patient was present but not checked in). *(Decision 2026-10-31.)*
+- **Strikes:** 3 no-shows in 90 days → warning; 4 → booking limited to 1 active booking for 30 days. These numbers are **platform settings** (the same for every facility, changed only by the platform team), because strikes count across facilities. Patients can dispute a strike (see [10](10-disputes-complaints-and-support.md)).
 - In P1 no-shows are never charged money. Deposits for booking come later with mobile money (P3), and only if facilities want them.
 
 ## 5. Waitlist, follow-ups and recurring visits

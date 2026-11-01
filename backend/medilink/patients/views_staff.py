@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from typing import Any
 
 from django.http import Http404
@@ -12,11 +13,12 @@ from rest_framework.permissions import BasePermission
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from medilink.accounts.authentication import StaffSessionAuthentication
 from medilink.audit.services import record
 from medilink.authz.permissions import IsStaffAuthenticated, get_principal
 from medilink.core.serializers import ErrorSerializer
 from medilink.core.throttling import BurstRateThrottle
-from medilink.patients import consents, health, insurance, staff
+from medilink.patients import access, consents, health, insurance, staff
 from medilink.patients import serializers as s
 from medilink.patients.audit import record_patient_event
 from medilink.patients.errors import PatientsAPIView
@@ -56,6 +58,8 @@ def Needs(*codes: str, methods: dict[str, tuple[str, ...]] | None = None) -> typ
 
 
 class StaffView(PatientsAPIView):
+    authentication_classes = [StaffSessionAuthentication]
+
     def principal(self) -> Any:
         principal = get_principal(self.request)
         if principal is None:  # the permission class ensures it
@@ -213,17 +217,24 @@ class PatientDetailView(StaffView):
     @extend_schema(
         operation_id="staff_patients_retrieve",
         tags=TAGS,
-        responses={200: s.FacilityPatientDetailSerializer, 404: _err("not_found")},
-        summary="A facility patient record (audited)",
+        responses={
+            200: s.FacilityPatientDetailSerializer,
+            403: _err("access_reason_required: give a reason first (ST28)"),
+            404: _err("not_found"),
+        },
+        summary="A facility patient record (care relationship or a reason; audited)",
     )
     def get(self, request: Request, fp_id: Any) -> Response:
         fp = self.record(fp_id)
+        basis, reason = access.check_clinical_access(request.session, fp)
         record_patient_event(
             "patients.record.viewed",
             request=request,
             patient=fp.patient,
             object_type="facility_patient",
             object_id=fp.pk,
+            reason=reason,
+            metadata={"basis": basis},
         )
         return Response(s.facility_patient_detail_data(fp))
 
@@ -240,6 +251,39 @@ class PatientDetailView(StaffView):
         body.is_valid(raise_exception=True)
         staff.update_record(fp, dict(body.validated_data), request=request)
         return Response(s.facility_patient_detail_data(fp))
+
+
+class AccessReasonView(StaffView):
+    permission_classes = [Needs("patients.view", "clinical.view", "prescription.view")]
+
+    @extend_schema(
+        operation_id="staff_patients_access_reasons_create",
+        tags=TAGS,
+        request=s.AccessReasonSerializer,
+        responses={201: s.AccessReasonResultSerializer, 404: _err("not_found")},
+        summary="Give a reason to open a record without a care relationship (audited)",
+    )
+    def post(self, request: Request, fp_id: Any) -> Response:
+        fp = self.record(fp_id)
+        body = s.AccessReasonSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        code = body.validated_data["reason_code"]
+        text = body.validated_data.get("reason_text", "")
+        until = access.give_reason(request.session, fp, code=code, text=text)
+        record_patient_event(
+            "patients.access_reason.given",
+            request=request,
+            patient=fp.patient,
+            object_type="facility_patient",
+            object_id=fp.pk,
+            reason=access.reason_text(code, text),
+            metadata={"reason_code": code, "staff_member": fp.is_staff_member},
+        )
+        expires_at = datetime.fromtimestamp(until, tz=UTC)
+        return Response(
+            s.AccessReasonResultSerializer({"expires_at": expires_at}).data,
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class IdentifierCreateView(StaffView):
@@ -315,7 +359,7 @@ class InsuranceListView(_InsuranceMixin):
     @extend_schema(
         operation_id="staff_patients_insurance_list",
         tags=TAGS,
-        responses={200: s.InsuranceProfileSerializer(many=True)},
+        responses={200: s.results_of(s.InsuranceProfileSerializer, "StaffInsuranceProfileList")},
         summary="Insurance profiles of the patient",
     )
     def get(self, request: Request, fp_id: Any) -> Response:
@@ -472,11 +516,15 @@ class HealthProfileView(StaffView):
     @extend_schema(
         operation_id="staff_patients_health_profile",
         tags=TAGS,
-        responses={200: s.HealthProfileSerializer},
+        responses={
+            200: s.HealthProfileSerializer,
+            403: _err("access_reason_required: give a reason first (ST28)"),
+        },
         summary="Allergies, conditions and medicines (pharmacy: allergies only)",
     )
     def get(self, request: Request, fp_id: Any) -> Response:
         fp = self.active_record(fp_id)
+        basis, reason = access.check_clinical_access(request.session, fp)
         full = "clinical.view" in self.principal().permissions
         sections = tuple(s.HEALTH_MODELS) if full else ("allergies",)
         record_patient_event(
@@ -485,7 +533,8 @@ class HealthProfileView(StaffView):
             patient=fp.patient,
             object_type="facility_patient",
             object_id=fp.pk,
-            metadata={"sections": list(sections)},
+            reason=reason,
+            metadata={"sections": list(sections), "basis": basis},
         )
         return Response(s.health_profile_data(fp.patient, sections=sections))
 
@@ -578,6 +627,7 @@ class ConsentCreateView(StaffView):
         body.is_valid(raise_exception=True)
         data = body.validated_data
         principal = self.principal()
+        consents.check_version(data["kind"], data["version"])
         consent = consents.record_consent(
             kind=data["kind"],
             version=data["version"],
@@ -610,8 +660,8 @@ class ClaimConfirmationView(StaffView):
         operation_id="staff_patients_claim_confirm",
         tags=TAGS,
         request=s.ClaimConfirmationSerializer,
-        responses={200: OpenApiResponse(description="RecordClaim"), 404: _err("not open here")},
-        summary="Confirm a patient's record claim after an ID check",
+        responses={200: s.RecordClaimSerializer, 404: _err("not open here")},
+        summary="Confirm a patient's record claim after an ID check (idempotent)",
     )
     def post(self, request: Request, fp_id: Any) -> Response:
         from medilink.patients import claims

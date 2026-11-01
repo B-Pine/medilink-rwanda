@@ -42,7 +42,10 @@ flowchart TB
 |---|---|---|
 | `accounts`, `authz`, `tenancy`, `audit` | ≥ 90 % (from S0) | [Sprint 0 contract](../architecture/03-sprint-0-contract.md) B17 |
 | `authz` | ≥ 95 % (CI gate) | [security 09](../security/09-secure-development-lifecycle.md) §3 |
+| `core` and every domain app (`uploads`, `masterdata`, `onboarding`, `patients`, `facilities`, `scheduling`, `billing`, `visits`) | ≥ 90 % (CI gate) | Sprint contracts |
 | Domain rules (queue ordering, billing, permissions) | High, branch coverage on rule functions | NFR-OPS-01 |
+
+The per-app gate is the "Coverage gate" step in `.github/workflows/ci-backend.yml`; it reports every app before it fails. A new app joins that list in the pull request that creates it.
 
 Coverage is a floor, not the goal: every rule in the analysis tables should map to at least one named test.
 
@@ -92,7 +95,7 @@ Use time control (`time-machine` or similar) instead of sleeping. Concurrency te
 
 ### 3.5 Migrations
 
-CI runs `migrate` from an empty database, then the latest migrations backwards and forwards again (NFR-OPS-08), and `makemigrations --check` to catch missing migrations.
+CI runs `migrate` from an empty database, then the latest migrations backwards and forwards again (NFR-OPS-08), and `makemigrations --check` to catch missing migrations. The `migrations` job in `ci-backend.yml` runs `backend/scripts/check_migrations_reversible.py`: for each `medilink.*` app it migrates back to the migration before the latest one and forward again, then checks that the schema matches the models. `post_migrate` receivers must tolerate missing tables, because they also run after a backwards migration.
 
 ## 4. Frontend tests
 
@@ -134,16 +137,19 @@ Results (tool output, p50/p95/p99, errors) are attached to the sprint's acceptan
 
 | Stage | Tools | Fails when |
 |---|---|---|
-| Lint and SAST | ruff (bandit rules), Semgrep (Django, Python, OWASP rules + our own), ESLint (`react/no-danger`), TypeScript strict | Any high finding or error |
-| Dependencies | `pip-audit`, `osv-scanner`, `npm audit --omit=dev` (pnpm equivalent); Dependabot weekly | Fixable high or critical |
+| Lint and SAST | ruff (bandit rules), mypy, Semgrep (`p/django`, `p/python`, `p/owasp-top-ten` + `.semgrep/medilink.yml`), ESLint (`react/no-danger`), TypeScript strict | Any error; any Semgrep `ERROR` finding (the raw SQL rule only reports until [#103](https://github.com/B-Pine/medilink-rwanda/issues/103)) |
+| Dependencies | `pip-audit`, `osv-scanner` (Python and npm lockfiles), `npm audit --omit=dev` (pnpm equivalent); Dependabot weekly | Fixable high or critical (osv: CVSS ≥ 7.0 with a fixed version) |
 | Secrets | gitleaks (`.github/workflows/security.yml`), GitHub push protection | Any finding |
 | Configuration | `manage.py check --deploy --fail-level WARNING` on production settings | Any warning |
-| Containers and IaC | Trivy (filesystem, image, config), hadolint | Fixable high or critical; high misconfiguration |
+| Containers and IaC | Trivy (filesystem, API image, config), hadolint (`.hadolint.yaml`) | Fixable high or critical (the image scan reports only until [#106](https://github.com/B-Pine/medilink-rwanda/issues/106)); high misconfiguration; hadolint warning |
+| Supply chain | CycloneDX SBOMs (API image and frontend) attached to every `security` run; cosign signatures of the SBOMs on `main` once `COSIGN_PRIVATE_KEY` is set | — |
+| Migrations | Latest migration of each app reversed and re-applied | Any failure |
+| Pull request title | Conventional Commit (`.github/workflows/pr-title.yml`) | Not a Conventional Commit |
 | Tests | Authorisation matrix, cross-tenant, RLS, business rules | Any failure; `authz` coverage < 95 % |
 | Staging | OWASP ZAP baseline + authenticated scan per role; Playwright security flows; CSP report review | High findings |
 | Before go-live, then yearly | Independent penetration test (access control, multi-tenancy, business logic, files) | Critical/high not fixed and retested |
 
-The full list and deadlines are in [security 09](../security/09-secure-development-lifecycle.md). The repository-wide secret and Trivy scans run in `security.yml`; the backend and frontend workflows add their own gates.
+The full list and deadlines are in [security 09](../security/09-secure-development-lifecycle.md). The repository-wide scans (gitleaks, Trivy, Semgrep, osv-scanner, hadolint, image scan and SBOM) run in `security.yml`; `ci-backend.yml` and `ci-frontend.yml` add lint, types, tests, coverage, migrations, the deploy check and dependency audits.
 
 ## 8. Accessibility and usability
 

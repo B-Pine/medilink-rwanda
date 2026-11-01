@@ -7,6 +7,7 @@ Staff clinical serializers carry `private_notes` and `examination_text`. The pat
 from __future__ import annotations
 
 from decimal import Decimal
+from typing import Any
 
 from rest_framework import serializers
 
@@ -25,7 +26,7 @@ NOTES_MAX = 10_000
 class _Strict(serializers.Serializer):
     """Reject unknown input fields (mass-assignment protection, security 04 §2)."""
 
-    def validate(self, attrs: dict) -> dict:  # type: ignore[type-arg]
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         unknown = set(getattr(self, "initial_data", {}) or {}) - set(self.fields)
         if unknown:
             raise serializers.ValidationError(
@@ -118,7 +119,7 @@ class VitalsInputSerializer(_Strict):
     muac_mm = _vital_field("muac_mm")
     recorded_at = serializers.DateTimeField(required=False)
 
-    def validate(self, attrs: dict) -> dict:  # type: ignore[type-arg]
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         attrs = super().validate(attrs)
         values = {k: v for k, v in attrs.items() if k in VITAL_RANGES and v is not None}
         if not values:
@@ -147,7 +148,7 @@ class AlertItemSerializer(serializers.Serializer):
 
 class AlertCheckSerializer(_Strict):
     facility_patient_id = serializers.UUIDField()
-    items = AlertItemSerializer(many=True, min_length=1, max_length=20)
+    items = serializers.ListField(child=AlertItemSerializer(), min_length=1, max_length=20)
 
 
 # ---- staff output -------------------------------------------------------------------------------

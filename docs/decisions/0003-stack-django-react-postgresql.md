@@ -7,15 +7,15 @@ The team chose Python/Django for the backend and React for the front end. Python
 
 ## Decision
 
-> **Version update (2026-10-17):** current versions are Django 6.x, PostgreSQL 17 and React 19. See [architecture 01](../architecture/01-system-architecture.md) and [ADR 0007](0007-frontend-toolchain.md). Folder names follow [ADR 0006](0006-separate-frontend-and-backend-hosting.md) (`backend/`, `frontend/`).
+> **Version update (2026-10-31):** the code runs Django 6.1, Python 3.12+ (images and CI use 3.14), PostgreSQL 17, Redis 7, React 19, Vite 8, Tailwind CSS 4, TypeScript 6 and Node 24 (pinned in `backend/requirements/*.txt`, `docker-compose.yml`, `frontend/pnpm-workspace.yaml` and `frontend/package.json`). The tables below give the original choices; where a version differs, the code and this note win. See [architecture 01](../architecture/01-system-architecture.md) and [ADR 0007](0007-frontend-toolchain.md). Folder names follow [ADR 0006](0006-separate-frontend-and-backend-hosting.md) (`backend/`, `frontend/`).
 
 
 ### Backend (`backend/`)
 | Concern | Choice |
 |---|---|
-| Language / framework | Python 3.12+, **Django 5.2 LTS**. *Version note (2026-10-17, security review): Django 6.0+ has built-in Content Security Policy and a tasks framework. Recommended: start on the latest 6.x and move to 6.2 LTS (expected April 2027). Staying on 5.2 LTS is fine with `django-csp`. See [security 06](../security/06-application-and-api-security.md) §2.* |
+| Language / framework | Python 3.12+, **Django 6.1** (originally 5.2 LTS; see the version update above). *Version note (2026-10-17, security review): Django 6.0+ has built-in Content Security Policy and a tasks framework. Recommended: start on the latest 6.x and move to 6.2 LTS (expected April 2027). Staying on 5.2 LTS is fine with `django-csp`. See [security 06](../security/06-application-and-api-security.md) §2.* |
 | API | Django REST Framework; OpenAPI schema with drf-spectacular |
-| Database | **PostgreSQL 16+**, with row-level security for tenant isolation |
+| Database | **PostgreSQL 17** (originally 16+), with row-level security for tenant isolation |
 | Real-time (queue boards, trackers, display) | Django Channels (WebSockets) with Redis as the channel layer; ASGI server (Uvicorn / Daphne) |
 | Background and scheduled jobs (notifications, reminders, end-of-day, PDFs) | Celery + Celery Beat with Redis as broker |
 | Authentication | Django auth with secure session cookies for the web apps; token auth added for the mobile app (P3); TOTP two-factor login (django-otp); Argon2 password hashing |
@@ -31,7 +31,7 @@ The team chose Python/Django for the backend and React for the front end. Python
 | `frontend/apps/patient-web` | Patient PWA: public facility pages, booking, tracker, records |
 | `frontend/apps/staff-web` | Super admin, facility admin, reception, doctor, pharmacy workspaces and the waiting-room display |
 
-Shared choices: **React 18 + TypeScript + Vite**, React Router, TanStack Query, react-hook-form + zod, i18next (Kinyarwanda first), vite-plugin-pwa (Workbox) for the patient app, a typed API client generated from the OpenAPI schema, Leaflet + OpenStreetMap for maps (no per-request cost), Vitest + Testing Library, Playwright for end-to-end tests. The UI component library and design system are chosen in the design phase.
+Shared choices: **React 19 + TypeScript + Vite** (originally React 18; [ADR 0007](0007-frontend-toolchain.md)), React Router, TanStack Query, react-hook-form + zod, i18next (Kinyarwanda first), vite-plugin-pwa (Workbox) for the patient app, a typed API client generated from the OpenAPI schema, Leaflet + OpenStreetMap for maps (no per-request cost), Vitest + Testing Library, Playwright for end-to-end tests. The UI component library and design system are chosen in the design phase.
 
 Two apps, not one, because patients and staff differ in security posture (public cacheable pages vs strict sessions and two-factor login), devices, and release pace. A shared UI package can be added if duplication grows.
 

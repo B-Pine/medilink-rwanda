@@ -19,6 +19,7 @@ from medilink.audit.services import record
 from medilink.core.exceptions import BusinessRuleViolation, Conflict
 from medilink.facilities.changelog import log_changes
 from medilink.facilities.models import ServicePoint
+from medilink.facilities.services import ensure_configurable
 from medilink.tenancy.context import rls_context
 from medilink.tenancy.models import (
     Facility,
@@ -95,7 +96,17 @@ def invite(
     request: Any,
     source: str = InvitationSource.STAFF,
     source_ref: str = "",
+    idempotency_key: str | None = None,
 ) -> Invitation:
+    """Invite by email. A repeat with the same `idempotency_key` returns the first invitation
+    (no second email); an expired pending invitation is closed first so it doesn't block."""
+    if idempotency_key:
+        replay = Invitation.objects.filter(
+            facility=facility, idempotency_key=idempotency_key
+        ).first()
+        if replay is not None:
+            return replay
+    ensure_configurable(facility)
     email = email.strip().lower()
     _check_roles(role_codes)
     points = _check_points(facility, service_point_ids)
@@ -105,6 +116,7 @@ def invite(
         from medilink.facilities.errors import FieldConflict
 
         raise FieldConflict("email", ALREADY_MEMBER)
+    _expire(Invitation.objects.filter(facility=facility, email=email))
     token = secrets.token_urlsafe(32)
     try:
         with transaction.atomic():
@@ -118,10 +130,18 @@ def invite(
                 expires_at=timezone.now() + INVITE_TTL,
                 source=source,
                 source_ref=source_ref,
+                idempotency_key=idempotency_key,
             )
     except IntegrityError:
         from medilink.facilities.errors import FieldConflict
 
+        replay = (
+            Invitation.objects.filter(facility=facility, idempotency_key=idempotency_key).first()
+            if idempotency_key
+            else None
+        )
+        if replay is not None:  # the same key, sent twice at once
+            return replay
         raise FieldConflict("email", PENDING) from None
     name = facility.name
     transaction.on_commit(lambda: _send_invitation(email, token, name))
@@ -140,10 +160,18 @@ def invite(
 def resend(invitation: Invitation, *, actor: Any, request: Any) -> Invitation:
     if invitation.accepted_at or invitation.revoked_at:
         raise BusinessRuleViolation(INVALID)
+    ensure_configurable(invitation.facility)
     token = secrets.token_urlsafe(32)
     invitation.token_hash = _hash(token)
     invitation.expires_at = timezone.now() + INVITE_TTL
-    invitation.save(update_fields=["token_hash", "expires_at", "updated_at"])
+    invitation.expired_at = None  # an expired invitation comes back to life
+    try:
+        with transaction.atomic():
+            invitation.save(update_fields=["token_hash", "expires_at", "expired_at", "updated_at"])
+    except IntegrityError:  # a newer pending invitation for this email exists
+        from medilink.facilities.errors import FieldConflict
+
+        raise FieldConflict("email", PENDING) from None
     email, name = invitation.email, invitation.facility.name
     transaction.on_commit(lambda: _send_invitation(email, token, name))
     record(
@@ -212,6 +240,7 @@ def lookup(token: str) -> dict[str, Any]:
 
 def _grant(found: dict[str, Any], user: Any, request: Any) -> FacilityMembership:
     """Create (or reactivate) the membership in the invitation's facility."""
+    ensure_configurable(Facility.objects.get(pk=found["facility_id"]))
     with rls_context(facility_id=found["facility_id"], user_id=user.pk):
         membership = FacilityMembership.objects.filter(
             facility_id=found["facility_id"], user=user
@@ -282,16 +311,24 @@ def accept_existing(token: str, *, user: Any, request: Any) -> FacilityMembershi
     return _grant(found, user, request)
 
 
+def _expire(invitations: Any) -> int:
+    """Mark pending invitations past `expires_at` as expired (not revoked)."""
+    return int(
+        invitations.filter(
+            accepted_at__isnull=True,
+            revoked_at__isnull=True,
+            expired_at__isnull=True,
+            expires_at__lte=timezone.now(),
+        ).update(expired_at=timezone.now())
+    )
+
+
 def expire_invitations() -> int:
     """Daily job: close expired pending invitations, one facility context at a time (RLS)."""
-    from django.db.models import Q
-
     count = 0
     for facility_id in Facility.objects.values_list("pk", flat=True):
         with rls_context(facility_id=facility_id):
-            count += Invitation.objects.filter(
-                Q(accepted_at__isnull=True, revoked_at__isnull=True), expires_at__lte=timezone.now()
-            ).update(revoked_at=timezone.now())
+            count += _expire(Invitation.objects.all())
     return count
 
 
@@ -310,6 +347,7 @@ def _active_admins(facility_id: Any, exclude: Any = None) -> int:
 def update_membership(
     membership: FacilityMembership, data: dict[str, Any], *, actor: Any, request: Any
 ) -> FacilityMembership:
+    ensure_configurable(membership.facility)
     if data.get("version") != membership.version:
         raise Conflict(STALE)
     before = {
@@ -406,6 +444,7 @@ def deactivate(
 def reactivate(membership: FacilityMembership, *, actor: Any, request: Any) -> FacilityMembership:
     if membership.is_active:
         return membership
+    ensure_configurable(membership.facility)
     membership.is_active = True
     membership.deactivated_at = None
     membership.version += 1
@@ -434,6 +473,7 @@ def attest_licence(
 ) -> FacilityMembership:
     from medilink.accounts.models import ClinicianProfile
 
+    ensure_configurable(membership.facility)
     if not ClinicianProfile.objects.filter(user_id=membership.user_id).exists():
         raise BusinessRuleViolation(NO_PROFILE)
     membership.licence_attested_at = timezone.now()

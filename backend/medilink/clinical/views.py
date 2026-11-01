@@ -169,7 +169,7 @@ def consultation_data(c: Consultation, principal: Any) -> dict[str, Any]:
                 "reason": c.entered_in_error_reason,
                 "by_name": (
                     c.entered_in_error_by_membership.user.full_name
-                    if c.entered_in_error_by_membership_id
+                    if c.entered_in_error_by_membership is not None
                     else None
                 ),
             }
@@ -650,7 +650,7 @@ class HistoryView(ClinicalView):
             object_id=record.pk,
         )
         paginator = DefaultPagination()
-        page = paginator.paginate_queryset(items, request, view=self)  # type: ignore[arg-type]
+        page = paginator.paginate_queryset(items, request, view=self)
         return paginator.get_paginated_response(s.HistoryItemSerializer(page, many=True).data)
 
 

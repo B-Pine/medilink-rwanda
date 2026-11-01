@@ -195,7 +195,8 @@ paths:
   /api/v1/patient/auth/register/:
     post:
       operationId: patient_auth_register
-      summary: Patient sign-up (creates account, self profile and consents) and sign-in
+      summary: 'Patient sign-up: always 202 ''check your email'' (no account enumeration);
+        a new account signs in only after the emailed link is opened'
       tags:
       - patient-auth
       requestBody:
@@ -207,7 +208,41 @@ paths:
       security:
       - patientSession: []
       responses:
-        '201':
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Detail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: validation_error (never for an email that already has an account)
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: rate_limited
+  /api/v1/patient/auth/verify-email/:
+    post:
+      operationId: patient_auth_verify_email
+      summary: Confirm the sign-up email with the emailed link; activates and signs
+        in
+      tags:
+      - patient-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyEmailRequest'
+        required: true
+      security:
+      - patientSession: []
+      responses:
+        '200':
           content:
             application/json:
               schema:
@@ -218,7 +253,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          description: validation_error
+          description: 'validation_error: invalid, expired or already used link'
         '429':
           content:
             application/json:
@@ -402,7 +437,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -423,7 +457,6 @@ paths:
               $ref: '#/components/schemas/ConsentInputRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -439,7 +472,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -460,7 +492,6 @@ paths:
               $ref: '#/components/schemas/InviteCreateRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -483,7 +514,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '204':
@@ -501,7 +531,6 @@ paths:
               $ref: '#/components/schemas/CodeRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -513,7 +542,7 @@ paths:
   /api/v1/patient/dependents/:
     post:
       operationId: patient_dependents_create
-      summary: Add a child (guardian) or an adult who agreed (delegate)
+      summary: Add a child (guardian) or an adult who agreed (delegate); Idempotency-Key
       tags:
       - patient-profiles
       requestBody:
@@ -523,7 +552,6 @@ paths:
               $ref: '#/components/schemas/DependentRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -537,7 +565,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-          description: age or limit rules
+          description: age, limit or consent version
   /api/v1/patient/holds/{hold_id}/:
     delete:
       operationId: patient_hold_release
@@ -575,7 +603,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedInsuranceUpdateRequest'
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -604,7 +631,6 @@ paths:
               $ref: '#/components/schemas/CardImageRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -632,7 +658,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -651,7 +676,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -660,12 +684,66 @@ paths:
               schema:
                 $ref: '#/components/schemas/InsuranceProfile'
           description: ''
-  /api/v1/patient/profiles/:
+  /api/v1/patient/notification-preferences/:
     get:
-      operationId: patient_profiles_list
-      summary: 'Profiles of this account: self first, then dependents and delegations'
+      operationId: patient_notification_preferences_retrieve
       tags:
-      - patient-profiles
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientPreferences'
+          description: ''
+    patch:
+      operationId: patient_notification_preferences_partial_update
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPatientPreferencesPatchRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientPreferences'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Critical is locked while a ticket is active
+  /api/v1/patient/notifications/:
+    get:
+      operationId: patient_notifications_list
+      parameters:
+      - in: query
+        name: is_read
+        schema:
+          type: boolean
+      - in: query
+        name: patient_id
+        schema:
+          type: string
+      tags:
+      - notifications
       security:
       - staffSession: []
       - patientSession: []
@@ -676,7 +754,113 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ProfileSummary'
+                  $ref: '#/components/schemas/Notification'
+          description: ''
+  /api/v1/patient/notifications/{notification_id}/:
+    get:
+      operationId: patient_notifications_retrieve
+      parameters:
+      - in: path
+        name: notification_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not yours
+  /api/v1/patient/notifications/{notification_id}/read/:
+    post:
+      operationId: patient_notifications_read_create
+      parameters:
+      - in: path
+        name: notification_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not yours
+  /api/v1/patient/notifications/read-all/:
+    post:
+      operationId: patient_notifications_read_all_create
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReadAllRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Marked'
+          description: ''
+  /api/v1/patient/notifications/unread-count/:
+    get:
+      operationId: patient_notifications_unread_count_retrieve
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnreadCount'
+          description: ''
+  /api/v1/patient/profiles/:
+    get:
+      operationId: patient_profiles_list
+      summary: 'Profiles of this account: self first, then dependents and delegations'
+      tags:
+      - patient-profiles
+      security:
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileSummaryList'
           description: ''
   /api/v1/patient/profiles/{patient_id}/:
     get:
@@ -692,7 +876,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -725,7 +908,6 @@ paths:
             schema:
               $ref: '#/components/schemas/PatchedProfileUpdateRequest'
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -766,7 +948,6 @@ paths:
               $ref: '#/components/schemas/AllergyInputRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -800,7 +981,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -820,6 +1000,14 @@ paths:
       operationId: patient_access_history
       summary: Who opened or changed this profile
       parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
       - in: path
         name: patient_id
         schema:
@@ -829,16 +1017,13 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AccessHistoryItem'
+                $ref: '#/components/schemas/PaginatedAccessHistoryList'
           description: ''
   /api/v1/patient/profiles/{patient_id}/health-profile/:
     get:
@@ -854,7 +1039,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -877,16 +1061,13 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Identifier'
+                $ref: '#/components/schemas/IdentifierList'
           description: ''
     post:
       operationId: patient_identifiers_create
@@ -907,7 +1088,6 @@ paths:
               $ref: '#/components/schemas/IdentifierInputRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -942,7 +1122,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -965,16 +1144,13 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/InsuranceProfile'
+                $ref: '#/components/schemas/InsuranceProfileList'
           description: ''
     post:
       operationId: patient_insurance_create
@@ -995,7 +1171,6 @@ paths:
               $ref: '#/components/schemas/InsuranceInputRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -1010,6 +1185,79 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: same card exists
+  /api/v1/patient/push-subscriptions/:
+    get:
+      operationId: patient_push_subscriptions_list
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PushSubscription'
+          description: ''
+    post:
+      operationId: patient_push_subscriptions_create
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PushSubscriptionRequestRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushSubscription'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushSubscription'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Endpoint not allowed or invalid keys
+  /api/v1/patient/push-subscriptions/{subscription_id}/:
+    delete:
+      operationId: patient_push_subscriptions_destroy
+      parameters:
+      - in: path
+        name: subscription_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '204':
+          description: No response body
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not yours
   /api/v1/patient/record-claims/:
     post:
       operationId: patient_record_claims_create
@@ -1023,7 +1271,6 @@ paths:
               $ref: '#/components/schemas/ClaimCreateRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '201':
@@ -1052,7 +1299,6 @@ paths:
       tags:
       - patient-profiles
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -1081,7 +1327,6 @@ paths:
               $ref: '#/components/schemas/CodeRequest'
         required: true
       security:
-      - staffSession: []
       - patientSession: []
       responses:
         '200':
@@ -1340,6 +1585,10 @@ paths:
   /api/v1/patient/visits/{visit_id}/arrived/:
     post:
       operationId: patient_visit_arrived
+      description: '"I''m here" for a remote ticket: records the patient''s claim
+        (`remote_arrival_claimed_at`) only. Reception confirms the arrival; until
+        then the ticket is not called and pass-over still applies (FR-QUE-07; self
+        check-in is P2).'
       parameters:
       - in: path
         name: visit_id
@@ -1423,6 +1672,182 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Closed
+  /api/v1/platform/announcements/:
+    get:
+      operationId: platform_announcements_list
+      parameters:
+      - in: query
+        name: status
+        schema:
+          type: string
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Announcement'
+          description: ''
+    post:
+      operationId: platform_announcements_create
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnnouncementWriteRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid
+  /api/v1/platform/announcements/{announcement_id}/:
+    get:
+      operationId: platform_announcements_retrieve
+      parameters:
+      - in: path
+        name: announcement_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
+    patch:
+      operationId: platform_announcements_partial_update
+      parameters:
+      - in: path
+        name: announcement_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAnnouncementPatchRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not a draft
+  /api/v1/platform/announcements/{announcement_id}/publish/:
+    post:
+      operationId: platform_announcements_publish_create
+      parameters:
+      - in: path
+        name: announcement_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not a draft
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Daily limit
+  /api/v1/platform/announcements/{announcement_id}/withdraw/:
+    post:
+      operationId: platform_announcements_withdraw_create
+      parameters:
+      - in: path
+        name: announcement_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not published
   /api/v1/platform/facilities/:
     get:
       operationId: platform_facilities_list
@@ -1522,6 +1947,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: facility_id
         schema:
@@ -1669,6 +2096,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: facility_id
         schema:
@@ -1840,6 +2269,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: facility_id
         schema:
@@ -1896,6 +2327,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: facility_id
         schema:
@@ -1976,6 +2409,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: facility_id
         schema:
@@ -2197,6 +2632,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: application_id
         schema:
@@ -2253,6 +2690,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: application_id
         schema:
@@ -2457,6 +2896,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: application_id
         schema:
@@ -2513,6 +2954,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: application_id
         schema:
@@ -2928,6 +3371,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: import_id
         schema:
@@ -3226,6 +3671,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: import_id
         schema:
@@ -3903,6 +4350,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: import_id
         schema:
@@ -4768,6 +5217,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: import_id
         schema:
@@ -4859,9 +5310,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/MergeRequest'
+                $ref: '#/components/schemas/PaginatedPlatformMergeRequestList'
           description: ''
   /api/v1/platform/merge-requests/{merge_id}/:
     get:
@@ -4973,6 +5422,200 @@ paths:
               schema:
                 $ref: '#/components/schemas/UndoResult'
           description: ''
+  /api/v1/platform/notification-deliveries/:
+    get:
+      operationId: platform_notification_deliveries_list
+      parameters:
+      - in: query
+        name: channel
+        schema:
+          type: string
+      - in: query
+        name: event_type
+        schema:
+          type: string
+      - in: query
+        name: recipient_user_id
+        schema:
+          type: string
+      - in: query
+        name: since
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeliveryLogEntry'
+          description: ''
+  /api/v1/platform/notification-deliveries/stats/:
+    get:
+      operationId: platform_notification_deliveries_stats_retrieve
+      parameters:
+      - in: query
+        name: since
+        schema:
+          type: string
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeliveryStats'
+          description: ''
+  /api/v1/platform/notification-templates/:
+    get:
+      operationId: platform_notification_templates_list
+      parameters:
+      - in: query
+        name: channel
+        schema:
+          type: string
+      - in: query
+        name: code
+        schema:
+          type: string
+      - in: query
+        name: is_active
+        schema:
+          type: string
+      - in: query
+        name: language
+        schema:
+          type: string
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NotificationTemplate'
+          description: ''
+  /api/v1/platform/notification-templates/{template_id}/:
+    get:
+      operationId: platform_notification_templates_retrieve
+      parameters:
+      - in: path
+        name: template_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationTemplate'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
+  /api/v1/platform/notification-templates/{template_id}/activate/:
+    post:
+      operationId: platform_notification_templates_activate_create
+      parameters:
+      - in: path
+        name: template_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationTemplate'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Already active
+  /api/v1/platform/notification-templates/{template_id}/revise/:
+    post:
+      operationId: platform_notification_templates_revise_create
+      parameters:
+      - in: path
+        name: template_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateReviseRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationTemplate'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid text
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not the latest version
   /api/v1/platform/overview/:
     get:
       operationId: platform_overview
@@ -5169,6 +5812,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: application_id
         schema:
@@ -5288,6 +5933,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: application_id
         schema:
@@ -5571,6 +6218,194 @@ paths:
                 items:
                   $ref: '#/components/schemas/Symptom'
           description: ''
+  /api/v1/public/web-push-key/:
+    get:
+      operationId: public_web_push_key_retrieve
+      tags:
+      - notifications
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebPushKey'
+          description: ''
+  /api/v1/staff/announcements/:
+    get:
+      operationId: staff_announcements_list
+      parameters:
+      - in: query
+        name: status
+        schema:
+          type: string
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Announcement'
+          description: ''
+    post:
+      operationId: staff_announcements_create
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnnouncementWriteRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid
+  /api/v1/staff/announcements/{announcement_id}/:
+    get:
+      operationId: staff_announcements_retrieve
+      parameters:
+      - in: path
+        name: announcement_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
+    patch:
+      operationId: staff_announcements_partial_update
+      parameters:
+      - in: path
+        name: announcement_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAnnouncementPatchRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not a draft
+  /api/v1/staff/announcements/{announcement_id}/publish/:
+    post:
+      operationId: staff_announcements_publish_create
+      parameters:
+      - in: path
+        name: announcement_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not a draft
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Daily limit
+  /api/v1/staff/announcements/{announcement_id}/withdraw/:
+    post:
+      operationId: staff_announcements_withdraw_create
+      parameters:
+      - in: path
+        name: announcement_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Announcement'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not published
   /api/v1/staff/auth/active-facility/:
     post:
       operationId: staff_auth_active_facility
@@ -5613,6 +6448,11 @@ paths:
   /api/v1/staff/auth/invitations/accept/:
     post:
       operationId: staff_auth_invitation_accept
+      description: 'Existing account: a signed-in staff session with the invited email
+        sends `{token}` and gets `StaffMe` with the new membership. New account: `{token,
+        full_name, password}` gets `LoginResult` (`mfa_setup_required`). Passwords
+        are never checked here: existing accounts sign in through the login endpoint
+        (lockout, MFA, audit).'
       tags:
       - staff-auth
       requestBody:
@@ -5628,7 +6468,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoginResult'
+                $ref: '#/components/schemas/InvitationAcceptResult'
           description: ''
         '400':
           content:
@@ -5636,6 +6476,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: invalid token or password
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'the email has an account: sign in first, then accept with
+            {token}'
         '403':
           content:
             application/json:
@@ -6990,6 +7837,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/FacilityProfile'
           description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'stale status_version (error.current: the profile)'
         '422':
           content:
             application/json:
@@ -7220,6 +8073,15 @@ paths:
   /api/v1/staff/invitations/:
     get:
       operationId: staff_invitations_list
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
       tags:
       - staff-team
       security:
@@ -7230,12 +8092,17 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Invitation'
+                $ref: '#/components/schemas/InvitationPage'
           description: ''
     post:
       operationId: staff_invitations_create
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       tags:
       - staff-team
       requestBody:
@@ -7260,6 +8127,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: pending invitation or already a member
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: facility deactivated
   /api/v1/staff/invitations/{invitation_id}/{action}/:
     post:
       operationId: staff_invitations_action
@@ -7646,6 +8519,14 @@ paths:
       operationId: staff_memberships_list
       parameters:
       - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
         name: q
         schema:
           type: string
@@ -7667,9 +8548,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/StaffMembership'
+                $ref: '#/components/schemas/StaffMembershipPage'
           description: ''
   /api/v1/staff/memberships/{membership_id}/:
     get:
@@ -7787,15 +8666,12 @@ paths:
       - staff-merge-requests
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/MergeRequest'
+                $ref: '#/components/schemas/PaginatedStaffMergeRequestList'
           description: ''
     post:
       operationId: staff_merge_requests_create
@@ -7810,7 +8686,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '201':
           content:
@@ -7845,7 +8720,6 @@ paths:
       - staff-merge-requests
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -7874,7 +8748,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -7903,7 +8776,6 @@ paths:
       - staff-merge-requests
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -7926,7 +8798,6 @@ paths:
       - staff-merge-requests
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -7961,7 +8832,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -7990,13 +8860,207 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UndoResult'
+          description: ''
+  /api/v1/staff/notification-deliveries/:
+    get:
+      operationId: staff_notification_deliveries_list
+      parameters:
+      - in: query
+        name: announcement_id
+        schema:
+          type: string
+      - in: query
+        name: event_type
+        schema:
+          type: string
+      - in: query
+        name: patient_id
+        schema:
+          type: string
+      - in: query
+        name: since
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DeliveryLogEntry'
+          description: ''
+  /api/v1/staff/notification-preferences/:
+    get:
+      operationId: staff_notification_preferences_retrieve
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffPreferences'
+          description: ''
+    patch:
+      operationId: staff_notification_preferences_partial_update
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffPreferencesPatchRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffPreferences'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+  /api/v1/staff/notifications/:
+    get:
+      operationId: staff_notifications_list
+      parameters:
+      - in: query
+        name: is_read
+        schema:
+          type: boolean
+      - in: query
+        name: patient_id
+        schema:
+          type: string
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Notification'
+          description: ''
+  /api/v1/staff/notifications/{notification_id}/:
+    get:
+      operationId: staff_notifications_retrieve
+      parameters:
+      - in: path
+        name: notification_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not yours
+  /api/v1/staff/notifications/{notification_id}/read/:
+    post:
+      operationId: staff_notifications_read_create
+      parameters:
+      - in: path
+        name: notification_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not yours
+  /api/v1/staff/notifications/read-all/:
+    post:
+      operationId: staff_notifications_read_all_create
+      tags:
+      - notifications
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReadAllRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Marked'
+          description: ''
+  /api/v1/staff/notifications/unread-count/:
+    get:
+      operationId: staff_notifications_unread_count_retrieve
+      tags:
+      - notifications
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnreadCount'
           description: ''
   /api/v1/staff/patients/:
     post:
@@ -8012,7 +9076,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '201':
           content:
@@ -8029,7 +9092,7 @@ paths:
   /api/v1/staff/patients/{fp_id}/:
     get:
       operationId: staff_patients_retrieve
-      summary: A facility patient record (audited)
+      summary: A facility patient record (care relationship or a reason; audited)
       parameters:
       - in: path
         name: fp_id
@@ -8041,7 +9104,6 @@ paths:
       - staff-patients
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8049,6 +9111,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/FacilityPatientDetail'
           description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason first (ST28)'
         '404':
           content:
             application/json:
@@ -8074,7 +9142,6 @@ paths:
               $ref: '#/components/schemas/PatchedStaffPatientUpdateRequest'
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8114,7 +9181,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '201':
           content:
@@ -8154,7 +9220,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8162,10 +9227,44 @@ paths:
               schema:
                 $ref: '#/components/schemas/HealthItem'
           description: ''
+  /api/v1/staff/patients/{fp_id}/access-reasons/:
+    post:
+      operationId: staff_patients_access_reasons_create
+      summary: Give a reason to open a record without a care relationship (audited)
+      parameters:
+      - in: path
+        name: fp_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-patients
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessReasonResult'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: not_found
   /api/v1/staff/patients/{fp_id}/claim-confirmations/:
     post:
       operationId: staff_patients_claim_confirm
-      summary: Confirm a patient's record claim after an ID check
+      summary: Confirm a patient's record claim after an ID check (idempotent)
       parameters:
       - in: path
         name: fp_id
@@ -8183,10 +9282,13 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
-          description: RecordClaim
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecordClaim'
+          description: ''
         '404':
           content:
             application/json:
@@ -8214,7 +9316,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '201':
           content:
@@ -8237,7 +9338,6 @@ paths:
       - staff-patients
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8245,6 +9345,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/HealthProfile'
           description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason first (ST28)'
   /api/v1/staff/patients/{fp_id}/identifiers/:
     post:
       operationId: staff_patients_identifiers_create
@@ -8266,7 +9372,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '201':
           content:
@@ -8295,15 +9400,12 @@ paths:
       - staff-patients
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/InsuranceProfile'
+                $ref: '#/components/schemas/StaffInsuranceProfileList'
           description: ''
     post:
       operationId: staff_patients_insurance_create
@@ -8325,7 +9427,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '201':
           content:
@@ -8365,7 +9466,6 @@ paths:
               $ref: '#/components/schemas/PatchedInsuranceUpdateRequest'
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8406,7 +9506,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '201':
           content:
@@ -8440,7 +9539,6 @@ paths:
       - staff-patients
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           description: '{url, expires_at}'
@@ -8471,7 +9569,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8500,7 +9597,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8522,7 +9618,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8555,7 +9650,6 @@ paths:
               $ref: '#/components/schemas/DuplicateCheckRequest'
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8577,7 +9671,6 @@ paths:
         required: true
       security:
       - staffSession: []
-      - patientSession: []
       responses:
         '200':
           content:
@@ -8869,6 +9962,14 @@ paths:
         schema:
           type: string
       - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
         name: service_id
         schema:
           type: string
@@ -8882,9 +9983,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Template'
+                $ref: '#/components/schemas/ScheduleTemplatePage'
           description: ''
     post:
       operationId: staff_schedule_templates_create
@@ -9652,6 +10751,18 @@ components:
       - other
       type: string
       description: |-
+        * `care_continuity` - care_continuity
+        * `results_review` - results_review
+        * `admin_request` - admin_request
+        * `other` - other
+    AccessReasonInputReasonCodeEnum:
+      enum:
+      - care_continuity
+      - results_review
+      - admin_request
+      - other
+      type: string
+      description: |-
         * `care_continuity` - Care continuity
         * `results_review` - Results review
         * `admin_request` - Administrative request
@@ -9662,12 +10773,31 @@ components:
         04 §2).
       properties:
         reason_code:
-          $ref: '#/components/schemas/AccessReasonCodeEnum'
+          $ref: '#/components/schemas/AccessReasonInputReasonCodeEnum'
         reason_text:
           type: string
           maxLength: 300
       required:
       - reason_code
+    AccessReasonRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        reason_code:
+          $ref: '#/components/schemas/AccessReasonCodeEnum'
+        reason_text:
+          type: string
+          maxLength: 200
+      required:
+      - reason_code
+    AccessReasonResult:
+      type: object
+      properties:
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - expires_at
     AccessState:
       type: object
       properties:
@@ -9867,6 +10997,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AlertItemRequest'
+          maxItems: 20
+          minItems: 1
       required:
       - facility_patient_id
       - items
@@ -9968,6 +11100,151 @@ components:
         * `moderate` - Moderate
         * `severe` - Severe
         * `unknown` - Unknown
+    Announcement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        facility_id:
+          type: string
+          format: uuid
+          nullable: true
+          readOnly: true
+        audience:
+          $ref: '#/components/schemas/AnnouncementAudienceEnum'
+        target_facility_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          nullable: true
+        range_starts_on:
+          type: string
+          format: date
+          nullable: true
+        range_ends_on:
+          type: string
+          format: date
+          nullable: true
+        priority:
+          $ref: '#/components/schemas/NotificationPriorityEnum'
+        title_i18n: {}
+        body_i18n: {}
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          $ref: '#/components/schemas/AnnouncementStatusEnum'
+        recipient_count:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        created_by:
+          type: object
+          additionalProperties: {}
+          readOnly: true
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        withdrawn_at:
+          type: string
+          format: date-time
+          nullable: true
+        version:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - audience
+      - created_at
+      - created_by
+      - facility_id
+      - id
+    AnnouncementAudienceEnum:
+      enum:
+      - patients_in_range
+      - display
+      - all_facilities
+      - selected_facilities
+      type: string
+      description: |-
+        * `patients_in_range` - Patients with visits in a date range
+        * `display` - Waiting-room display
+        * `all_facilities` - All facilities
+        * `selected_facilities` - Selected facilities
+    AnnouncementPriorityEnum:
+      enum:
+      - routine
+      - important
+      type: string
+      description: |-
+        * `routine` - Routine
+        * `important` - Important
+    AnnouncementStatusEnum:
+      enum:
+      - draft
+      - published
+      - withdrawn
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `published` - Published
+        * `withdrawn` - Withdrawn
+    AnnouncementWriteRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+        audience:
+          $ref: '#/components/schemas/AnnouncementAudienceEnum'
+        target_facility_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          nullable: true
+          maxItems: 200
+        range_starts_on:
+          type: string
+          format: date
+          nullable: true
+        range_ends_on:
+          type: string
+          format: date
+          nullable: true
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/AnnouncementPriorityEnum'
+          default: routine
+        title_i18n:
+          $ref: '#/components/schemas/I18nTextRequest'
+        body_i18n:
+          $ref: '#/components/schemas/I18nTextRequest'
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - audience
+      - body_i18n
+      - title_i18n
     ApplicantApplication:
       type: object
       properties:
@@ -10254,6 +11531,14 @@ components:
       - reviewer
       - status
       - submitted_at
+    ApprovalsDigestEnum:
+      enum:
+      - immediate
+      - daily
+      type: string
+      description: |-
+        * `immediate` - immediate
+        * `daily` - daily
     ApproveInputRequest:
       type: object
       properties:
@@ -10293,6 +11578,35 @@ components:
       required:
       - application
       - facility
+    AttemptLog:
+      type: object
+      properties:
+        channel:
+          type: string
+        attempt_no:
+          type: integer
+        is_fallback:
+          type: boolean
+        status:
+          $ref: '#/components/schemas/DeliveryAttemptStatusEnum'
+        failure_reason:
+          type: string
+          nullable: true
+        queued_at:
+          type: string
+          format: date-time
+        sent_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - attempt_no
+      - channel
+      - failure_reason
+      - is_fallback
+      - queued_at
+      - sent_at
+      - status
     Author:
       type: object
       properties:
@@ -10784,6 +12098,69 @@ components:
       description: |-
         * `provisional` - Provisional
         * `confirmed` - Confirmed
+    ChannelStat:
+      type: object
+      properties:
+        channel:
+          type: string
+        sent:
+          type: integer
+        failed:
+          type: integer
+        skipped:
+          type: integer
+        held:
+          type: integer
+        cancelled:
+          type: integer
+      required:
+      - cancelled
+      - channel
+      - failed
+      - held
+      - sent
+      - skipped
+    Channels:
+      type: object
+      properties:
+        critical:
+          type: array
+          items:
+            type: string
+        important:
+          type: array
+          items:
+            type: string
+        routine:
+          type: array
+          items:
+            type: string
+      required:
+      - critical
+      - important
+      - routine
+    ChannelsRequest:
+      type: object
+      properties:
+        critical:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        important:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        routine:
+          type: array
+          items:
+            type: string
+            minLength: 1
+      required:
+      - critical
+      - important
+      - routine
     CheckInRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -10819,6 +12196,11 @@ components:
           type: string
           format: uuid
           nullable: true
+        symptoms:
+          type: array
+          items:
+            $ref: '#/components/schemas/SymptomInputRequest'
+          maxItems: 5
     CheckInResponse:
       type: object
       properties:
@@ -10827,10 +12209,13 @@ components:
           format: uuid
         created:
           type: boolean
+        late:
+          type: boolean
         ticket:
           $ref: '#/components/schemas/TicketRow'
       required:
       - created
+      - late
       - ticket
       - visit_id
     CheckInSourceEnum:
@@ -10852,10 +12237,14 @@ components:
           type: boolean
         status:
           type: string
+        status_version:
+          type: integer
+          description: Send it back with go-live (F13).
       required:
       - complete
       - items
       - status
+      - status_version
     ChecklistItem:
       type: object
       properties:
@@ -11072,12 +12461,16 @@ components:
       - privacy
       - care
       - research
+      - notifications
+      - location
       type: string
       description: |-
         * `terms` - terms
         * `privacy` - privacy
         * `care` - care
         * `research` - research
+        * `notifications` - notifications
+        * `location` - location
     ConsentInputRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -11450,6 +12843,7 @@ components:
       - version
     DecisionRequest:
       type: object
+      description: Rejects unknown fields instead of silently ignoring them.
       properties:
         version:
           type: integer
@@ -11508,6 +12902,90 @@ components:
       - granted
       - pending_invites
       - received
+    DeliveryAttemptStatusEnum:
+      enum:
+      - queued
+      - held
+      - skipped
+      - sent
+      - delivered
+      - read
+      - failed
+      - cancelled
+      type: string
+      description: |-
+        * `queued` - Queued
+        * `held` - Held (quiet hours)
+        * `skipped` - Skipped
+        * `sent` - Sent
+        * `delivered` - Delivered
+        * `read` - Read
+        * `failed` - Failed
+        * `cancelled` - Cancelled
+    DeliveryLogEntry:
+      type: object
+      properties:
+        notification_id:
+          type: string
+          format: uuid
+        event_type:
+          type: string
+        priority:
+          type: string
+        recipient_user_id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+          nullable: true
+        template:
+          $ref: '#/components/schemas/TemplateRef'
+        title:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        read_at:
+          type: string
+          format: date-time
+          nullable: true
+        attempts:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttemptLog'
+      required:
+      - attempts
+      - created_at
+      - event_type
+      - notification_id
+      - patient_id
+      - priority
+      - read_at
+      - recipient_user_id
+      - template
+      - title
+    DeliveryStats:
+      type: object
+      properties:
+        since:
+          type: string
+          format: date-time
+        by_channel:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChannelStat'
+        failure_reasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReasonCount'
+        push_opt_in:
+          $ref: '#/components/schemas/PushOptIn'
+      required:
+      - by_channel
+      - failure_reasons
+      - push_opt_in
+      - since
     Department:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -11541,6 +13019,36 @@ components:
           default: true
       required:
       - name_i18n
+    DependentAlert:
+      type: object
+      properties:
+        patient_id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+          readOnly: true
+        relationship:
+          type: string
+          readOnly: true
+        receive_alerts:
+          type: boolean
+      required:
+      - display_name
+      - patient_id
+      - receive_alerts
+      - relationship
+    DependentAlertRequest:
+      type: object
+      properties:
+        patient_id:
+          type: string
+          format: uuid
+        receive_alerts:
+          type: boolean
+      required:
+      - patient_id
+      - receive_alerts
     DependentRelationshipEnum:
       enum:
       - guardian
@@ -11967,7 +13475,13 @@ components:
           type: string
           format: date-time
         disposition:
-          $ref: '#/components/schemas/DispositionEnum'
+          allOf:
+          - $ref: '#/components/schemas/DispositionEnum'
+          description: |-
+            Always `attachment` (security 06 §6).
+
+            * `inline` - inline
+            * `attachment` - attachment
       required:
       - disposition
       - expires_at
@@ -11978,7 +13492,12 @@ components:
         disposition:
           allOf:
           - $ref: '#/components/schemas/DispositionEnum'
-          default: inline
+          default: attachment
+          description: |-
+            Accepted for compatibility; files are always served as attachments.
+
+            * `inline` - inline
+            * `attachment` - attachment
     DrugsItem:
       type: object
       properties:
@@ -12412,6 +13931,11 @@ components:
         request_id:
           type: string
           description: Same value as the X-Request-ID header.
+        current:
+          type: object
+          additionalProperties: {}
+          description: '409 conflict on a versioned resource only: the resource as
+            it is now.'
       required:
       - code
       - fields
@@ -12811,6 +14335,10 @@ components:
           type: string
         version:
           type: integer
+          description: 'Profile version: send it back with PATCH.'
+        status_version:
+          type: integer
+          description: 'Status version: send it back with go-live (F13).'
       required:
       - address
       - description_i18n
@@ -12825,6 +14353,7 @@ components:
       - photos
       - slug
       - status
+      - status_version
       - version
       - village_code
       - website
@@ -13192,6 +14721,8 @@ components:
         version:
           type: integer
           minimum: 0
+          description: The facility's `status_version` (F1, F12), not the profile
+            version.
       required:
       - version
     Health:
@@ -13456,6 +14987,15 @@ components:
       - days
       - service_id
       - version
+    I18nTextRequest:
+      type: object
+      properties:
+        rw:
+          type: string
+        en:
+          type: string
+        fr:
+          type: string
     Identifier:
       type: object
       properties:
@@ -13511,6 +15051,15 @@ components:
         * `passport` - Passport
         * `refugee_id` - Refugee ID
         * `birth_certificate` - Birth certificate
+    IdentifierList:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Identifier'
+      required:
+      - results
     ImportCreateRequest:
       type: object
       properties:
@@ -13705,6 +15254,15 @@ components:
       - status_reason
       - valid_until
       - version
+    InsuranceProfileList:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/InsuranceProfile'
+      required:
+      - results
     InsuranceProfileStatusEnum:
       enum:
       - unverified
@@ -13994,6 +15552,10 @@ components:
       - role_codes
       - service_point_ids
       - status
+    InvitationAcceptResult:
+      oneOf:
+      - $ref: '#/components/schemas/StaffMe'
+      - $ref: '#/components/schemas/LoginResult'
     InvitationCreateRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -14043,6 +15605,26 @@ components:
       - facility_name
       - invited_by
       - role_codes
+    InvitationPage:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Invitation'
+      required:
+      - count
+      - next
+      - previous
+      - results
     InvitationStatusEnum:
       enum:
       - pending
@@ -14474,6 +16056,13 @@ components:
         * `authenticated` - authenticated
         * `mfa_required` - mfa_required
         * `mfa_setup_required` - mfa_setup_required
+    Marked:
+      type: object
+      properties:
+        marked:
+          type: integer
+      required:
+      - marked
     MasterDataChange:
       type: object
       properties:
@@ -14573,6 +16162,7 @@ components:
       - roles
     MergeCreateRequest:
       type: object
+      description: Rejects unknown fields instead of silently ignoring them.
       properties:
         surviving_facility_patient_id:
           type: string
@@ -14897,6 +16487,145 @@ components:
         * `visit` - Visit
         * `document_check` - Document check
         * `other` - Other
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        event_type:
+          type: string
+          maxLength: 60
+        priority:
+          $ref: '#/components/schemas/NotificationPriorityEnum'
+        language:
+          type: string
+          maxLength: 2
+        title:
+          type: string
+          maxLength: 120
+        body:
+          type: string
+          maxLength: 1000
+        action_path:
+          type: string
+          nullable: true
+          maxLength: 200
+        patient_id:
+          type: string
+          format: uuid
+          nullable: true
+        facility:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          readOnly: true
+        data: {}
+        is_read:
+          type: boolean
+          readOnly: true
+        read_at:
+          type: string
+          format: date-time
+          nullable: true
+        is_withdrawn:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - body
+      - created_at
+      - event_type
+      - facility
+      - id
+      - is_read
+      - language
+      - priority
+      - title
+    NotificationPriorityEnum:
+      enum:
+      - critical
+      - important
+      - routine
+      type: string
+      description: |-
+        * `critical` - Critical
+        * `important` - Important
+        * `routine` - Routine
+    NotificationTemplate:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        code:
+          type: string
+          maxLength: 60
+        channel:
+          type: string
+          maxLength: 16
+        language:
+          type: string
+          maxLength: 2
+        variant:
+          allOf:
+          - $ref: '#/components/schemas/TemplateVariantEnum'
+          default: self
+        template_version:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        subject:
+          type: string
+          maxLength: 120
+        body:
+          type: string
+        placeholders:
+          type: array
+          items:
+            type: string
+            maxLength: 40
+        allowed_placeholders:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        limits:
+          type: object
+          additionalProperties:
+            type: integer
+          readOnly: true
+        is_active:
+          type: boolean
+          default: true
+        source:
+          $ref: '#/components/schemas/TemplateSourceEnum'
+        created_by:
+          type: object
+          additionalProperties: {}
+          nullable: true
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - allowed_placeholders
+      - body
+      - channel
+      - code
+      - created_at
+      - created_by
+      - id
+      - language
+      - limits
+      - source
+      - subject
+      - template_version
     NullEnum:
       enum:
       - null
@@ -14953,6 +16682,17 @@ components:
       - doctors_on_duty
       - in_service
       - waiting
+    OtherFacilityCount:
+      type: object
+      properties:
+        facility_id:
+          type: string
+          format: uuid
+        unread:
+          type: integer
+      required:
+      - facility_id
+      - unread
     Overview:
       type: object
       properties:
@@ -14994,6 +16734,28 @@ components:
         * `private` - Private
         * `faith_based` - Faith-based
         * `ngo` - NGO
+    PaginatedAccessHistoryList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessHistoryItem'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedApplicationSummaryList:
       type: object
       required:
@@ -15359,6 +17121,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PlatformFacility'
+    PaginatedPlatformMergeRequestList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MergeRequest'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedPublicHolidaysItemList:
       type: object
       required:
@@ -15497,6 +17281,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ServiceCatalogueItemsPlatformItem'
+    PaginatedStaffMergeRequestList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MergeRequest'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedSymptomsItemList:
       type: object
       required:
@@ -15575,6 +17381,44 @@ components:
           maxLength: 254
       required:
       - email
+    PatchedAnnouncementPatchRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+        audience:
+          $ref: '#/components/schemas/AnnouncementAudienceEnum'
+        target_facility_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          nullable: true
+          maxItems: 200
+        range_starts_on:
+          type: string
+          format: date
+          nullable: true
+        range_ends_on:
+          type: string
+          format: date
+          nullable: true
+        priority:
+          allOf:
+          - $ref: '#/components/schemas/AnnouncementPriorityEnum'
+          default: routine
+        title_i18n:
+          $ref: '#/components/schemas/I18nTextRequest'
+        body_i18n:
+          $ref: '#/components/schemas/I18nTextRequest'
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        ends_at:
+          type: string
+          format: date-time
+          nullable: true
     PatchedApplicationPatchInputRequest:
       type: object
       properties:
@@ -15984,6 +17828,29 @@ components:
           items:
             type: string
             format: uuid
+    PatchedPatientPreferencesPatchRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 0
+        language:
+          $ref: '#/components/schemas/LanguageEnum'
+        channels:
+          $ref: '#/components/schemas/ChannelsRequest'
+        quiet_hours:
+          $ref: '#/components/schemas/QuietHoursRequest'
+        reminder_offsets_minutes:
+          type: array
+          items:
+            type: integer
+            maximum: 10080
+            minimum: 5
+          maxItems: 5
+        dependents:
+          type: array
+          items:
+            $ref: '#/components/schemas/DependentAlertRequest'
     PatchedProfileUpdateRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -16250,6 +18117,18 @@ components:
           nullable: true
           minLength: 1
           maxLength: 500
+    PatchedStaffPreferencesPatchRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 0
+        language:
+          $ref: '#/components/schemas/LanguageEnum'
+        sound_enabled:
+          type: boolean
+        approvals_digest:
+          $ref: '#/components/schemas/ApprovalsDigestEnum'
     PatchedSymptomsPlatformItemRequest:
       type: object
       properties:
@@ -16406,6 +18285,45 @@ components:
       - id
       - preferred_language
       - profiles
+    PatientPreferences:
+      type: object
+      properties:
+        language:
+          $ref: '#/components/schemas/LanguageEnum'
+        available_channels:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        channels:
+          $ref: '#/components/schemas/Channels'
+        quiet_hours:
+          $ref: '#/components/schemas/QuietHours'
+        reminder_offsets_minutes:
+          type: array
+          items:
+            type: integer
+            maximum: 10080
+            minimum: 5
+          maxItems: 5
+        dependents:
+          type: array
+          items:
+            $ref: '#/components/schemas/DependentAlert'
+        is_critical_locked:
+          type: boolean
+          readOnly: true
+        version:
+          type: integer
+      required:
+      - available_channels
+      - channels
+      - dependents
+      - is_critical_locked
+      - language
+      - quiet_hours
+      - reminder_offsets_minutes
+      - version
     PatientProfile:
       type: object
       properties:
@@ -16721,6 +18639,16 @@ components:
         travel_minutes:
           type: integer
           nullable: true
+        is_remote:
+          type: boolean
+        remote_arrival_claimed_at:
+          type: string
+          format: date-time
+          nullable: true
+        remote_arrival_confirmed_at:
+          type: string
+          format: date-time
+          nullable: true
         version:
           type: integer
         updated_at:
@@ -16731,9 +18659,12 @@ components:
       - estimate
       - facility_id
       - facility_name
+      - is_remote
       - leave_by
       - patient_display_name
       - patient_id
+      - remote_arrival_claimed_at
+      - remote_arrival_confirmed_at
       - service_name_i18n
       - service_point
       - stage
@@ -17137,6 +19068,15 @@ components:
       - medilink_number
       - patient_id
       - relationship
+    ProfileSummaryList:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProfileSummary'
+      required:
+      - results
     ProofRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -17277,6 +19217,11 @@ components:
           type: object
           additionalProperties:
             type: integer
+        insurer_share_rwf:
+          type: object
+          additionalProperties:
+            type: integer
+            nullable: true
         bookable:
           type: boolean
         remote_join:
@@ -17301,6 +19246,7 @@ components:
       - code
       - fee_rwf
       - id
+      - insurer_share_rwf
       - insurer_shares
       - insurers
       - max_age_months
@@ -17437,6 +19383,70 @@ components:
       - membership_id
       - open_places
       - starts_at
+    PushKeysRequest:
+      type: object
+      properties:
+        p256dh:
+          type: string
+          minLength: 1
+          maxLength: 100
+        auth:
+          type: string
+          minLength: 1
+          maxLength: 40
+      required:
+      - auth
+      - p256dh
+    PushOptIn:
+      type: object
+      properties:
+        patient_accounts:
+          type: integer
+        with_active_subscription:
+          type: integer
+      required:
+      - patient_accounts
+      - with_active_subscription
+    PushSubscription:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        label:
+          type: string
+          maxLength: 60
+        endpoint_host:
+          type: string
+          maxLength: 255
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        last_success_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - created_at
+      - endpoint_host
+      - id
+    PushSubscriptionRequestRequest:
+      type: object
+      properties:
+        endpoint:
+          type: string
+          minLength: 1
+          maxLength: 2048
+        expiration_time:
+          type: integer
+          nullable: true
+        keys:
+          $ref: '#/components/schemas/PushKeysRequest'
+      required:
+      - endpoint
+      - keys
     QueueGroup:
       type: object
       properties:
@@ -17480,6 +19490,42 @@ components:
         * `low` - low
         * `medium` - medium
         * `high` - high
+    QuietHours:
+      type: object
+      properties:
+        is_enabled:
+          type: boolean
+        start:
+          type: string
+          format: time
+        end:
+          type: string
+          format: time
+      required:
+      - end
+      - is_enabled
+      - start
+    QuietHoursRequest:
+      type: object
+      properties:
+        is_enabled:
+          type: boolean
+        start:
+          type: string
+          format: time
+        end:
+          type: string
+          format: time
+      required:
+      - end
+      - is_enabled
+      - start
+    ReadAllRequest:
+      type: object
+      properties:
+        before:
+          type: string
+          format: date-time
     ReasonCodeEnum:
       enum:
       - identity_check
@@ -17606,6 +19652,16 @@ components:
       - code
       - kind
       - label_i18n
+    ReasonCount:
+      type: object
+      properties:
+        reason:
+          type: string
+        count:
+          type: integer
+      required:
+      - count
+      - reason
     ReasonInputRequest:
       type: object
       properties:
@@ -17726,6 +19782,7 @@ components:
       - sex
     RejectRequest:
       type: object
+      description: Rejects unknown fields instead of silently ignoring them.
       properties:
         version:
           type: integer
@@ -17764,6 +19821,11 @@ components:
         patient_id:
           type: string
           format: uuid
+        symptoms:
+          type: array
+          items:
+            $ref: '#/components/schemas/SymptomInputRequest'
+          maxItems: 5
       required:
       - facility_slug
       - patient_id
@@ -17929,6 +19991,26 @@ components:
       - exceptions
       - full_name
       - membership_id
+    ScheduleTemplatePage:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Template'
+      required:
+      - count
+      - next
+      - previous
+      - results
     SchemeEnum:
       enum:
       - community
@@ -18638,6 +20720,15 @@ components:
       required:
       - kind
       - value
+    StaffInsuranceProfileList:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/InsuranceProfile'
+      required:
+      - results
     StaffLoginRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -18754,6 +20845,42 @@ components:
       - roles
       - service_points
       - user_id
+      - version
+    StaffMembershipPage:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffMembership'
+      required:
+      - count
+      - next
+      - previous
+      - results
+    StaffPreferences:
+      type: object
+      properties:
+        language:
+          $ref: '#/components/schemas/LanguageEnum'
+        sound_enabled:
+          type: boolean
+        approvals_digest:
+          $ref: '#/components/schemas/ApprovalsDigestEnum'
+        version:
+          type: integer
+      required:
+      - approvals_digest
+      - language
+      - sound_enabled
       - version
     StaffRevealRequest:
       type: object
@@ -19182,6 +21309,7 @@ components:
         membership_id:
           type: string
           format: uuid
+          nullable: true
         service_id:
           type: string
           format: uuid
@@ -19231,6 +21359,19 @@ components:
       - valid_to
       - version
       - weekday
+    TemplateRef:
+      type: object
+      properties:
+        code:
+          type: string
+        version:
+          type: integer
+        language:
+          type: string
+      required:
+      - code
+      - language
+      - version
     TemplateRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -19238,6 +21379,7 @@ components:
         membership_id:
           type: string
           format: uuid
+          nullable: true
         service_id:
           type: string
           format: uuid
@@ -19291,6 +21433,40 @@ components:
       required:
       - template
       - warnings
+    TemplateReviseRequest:
+      type: object
+      properties:
+        subject:
+          type: string
+          minLength: 1
+          maxLength: 120
+        body:
+          type: string
+          minLength: 1
+          maxLength: 4000
+        based_on_version:
+          type: integer
+          minimum: 1
+      required:
+      - based_on_version
+      - body
+      - subject
+    TemplateSourceEnum:
+      enum:
+      - seed
+      - platform
+      type: string
+      description: |-
+        * `seed` - Seed
+        * `platform` - Platform
+    TemplateVariantEnum:
+      enum:
+      - self
+      - dependent
+      type: string
+      description: |-
+        * `self` - Self
+        * `dependent` - Dependent
     TicketActionRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -19410,6 +21586,22 @@ components:
         position:
           type: integer
           nullable: true
+        slot_starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        late:
+          type: boolean
+        is_remote:
+          type: boolean
+        remote_arrival_claimed_at:
+          type: string
+          format: date-time
+          nullable: true
+        remote_arrival_confirmed_at:
+          type: string
+          format: date-time
+          nullable: true
         version:
           type: integer
       required:
@@ -19420,12 +21612,17 @@ components:
       - display_name
       - flags
       - id
+      - is_remote
+      - late
       - number
       - position
       - priority_rank
+      - remote_arrival_claimed_at
+      - remote_arrival_confirmed_at
       - service_id
       - service_point
       - sex
+      - slot_starts_at
       - stage
       - state
       - step_out_until
@@ -19496,6 +21693,7 @@ components:
       - minutes
     UndoRequest:
       type: object
+      description: Rejects unknown fields instead of silently ignoring them.
       properties:
         version:
           type: integer
@@ -19536,6 +21734,17 @@ components:
           type: string
           minLength: 1
           maxLength: 4096
+    UnreadCount:
+      type: object
+      properties:
+        unread:
+          type: integer
+        other_facilities:
+          type: array
+          items:
+            $ref: '#/components/schemas/OtherFacilityCount'
+      required:
+      - unread
     Upload:
       type: object
       properties:
@@ -19614,6 +21823,16 @@ components:
         * `infected` - Infected
         * `rejected` - Rejected
         * `failed` - Failed
+    VerifyEmailRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        token:
+          type: string
+          minLength: 1
+          maxLength: 512
+      required:
+      - token
     VersionInputRequest:
       type: object
       properties:
@@ -19832,6 +22051,17 @@ components:
           type: integer
       required:
       - kind
+    WebPushKey:
+      type: object
+      properties:
+        public_key:
+          type: string
+          nullable: true
+        is_enabled:
+          type: boolean
+      required:
+      - is_enabled
+      - public_key
   securitySchemes:
     patientSession:
       type: apiKey

@@ -30,20 +30,20 @@ const nodeFormData = (
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
   }).formData()
 ).constructor as typeof FormData;
-// React builds `new FormData(form, submitter)` on every form submit; Node's FormData takes no
-// form, so copy the form's text fields through jsdom's FormData first.
+// React 19 builds `new FormData(form, submitter)` when a submit is prevented inside a transition
+// (router navigation); Node's FormData can't read a jsdom form, so copy its text fields over.
 const JsdomFormData = window.FormData;
-class TestFormData extends nodeFormData {
+class FormDataFromForm extends nodeFormData {
   constructor(form?: HTMLFormElement, submitter?: HTMLElement | null) {
     super();
     if (!form) return;
-    for (const [name, value] of new JsdomFormData(form, submitter ?? undefined)) {
+    for (const [name, value] of new JsdomFormData(form, submitter)) {
       if (typeof value === "string") this.append(name, value);
     }
   }
 }
 for (const [name, value] of Object.entries({
-  FormData: TestFormData,
+  FormData: FormDataFromForm,
   File: NodeFile,
   Blob: NodeBlob,
 })) {

@@ -1,8 +1,8 @@
 """Database role privileges, applied after every `migrate` (run by the owner role).
 
 The runtime role (settings.DATABASE_APP_ROLE, e.g. medilink_app) gets DML on application tables
-only. It can't change the schema, can't modify migration history, and can only INSERT/SELECT the
-audit log (security 04 §4, security 05 §6).
+only. It can't change the schema, can't modify migration history or the role/permission catalogue,
+and can only INSERT/SELECT the audit log (security 04 §4, security 05 §6).
 """
 
 from __future__ import annotations
@@ -16,7 +16,13 @@ from django.db import connections
 logger = logging.getLogger(__name__)
 
 APPEND_ONLY_TABLES = ("audit_auditentry",)
-READ_ONLY_TABLES = ("django_migrations",)
+# The role and permission catalogue is seeded by migrations (owner role) and only read at runtime.
+READ_ONLY_TABLES = (
+    "django_migrations",
+    "tenancy_role",
+    "tenancy_permission",
+    "tenancy_role_permissions",
+)
 
 
 def grant_app_role_privileges(sender: Any = None, using: str = "default", **kwargs: Any) -> None:
@@ -40,9 +46,20 @@ def grant_app_role_privileges(sender: Any = None, using: str = "default", **kwar
             f"GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO {quoted}",
             f"GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO {quoted}",
         ]
-        for table in READ_ONLY_TABLES:
+        for table in existing_tables(cursor, READ_ONLY_TABLES):
             statements.append(f"REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON {table} FROM {quoted}")
-        for table in APPEND_ONLY_TABLES:
+        for table in existing_tables(cursor, APPEND_ONLY_TABLES):
             statements.append(f"REVOKE UPDATE, DELETE, TRUNCATE ON {table} FROM {quoted}")
         for statement in statements:
             cursor.execute(statement)
+
+
+def existing_tables(cursor: Any, tables: tuple[str, ...]) -> list[str]:
+    """The tables that exist. post_migrate also runs after migrating backwards (CI reverses the
+    latest migrations, testing strategy §3.5), when some tables are gone."""
+    found = []
+    for table in tables:
+        cursor.execute("SELECT to_regclass(%s)", [table])
+        if cursor.fetchone()[0] is not None:
+            found.append(table)
+    return found

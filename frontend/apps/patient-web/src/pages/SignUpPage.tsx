@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle, Circle } from "@phosphor-icons/react";
 import { isApiError } from "@medilink/api-client";
 import {
+  Alert,
   Button,
   CheckboxField,
   cx,
@@ -14,15 +15,13 @@ import {
   TextField,
 } from "@medilink/ui";
 import { isLanguage, SUPPORTED_LANGUAGES } from "@medilink/ui/i18n";
-import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useForm, useWatch, type Path } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation, useNavigate } from "react-router";
+import { Link, useLocation } from "react-router";
 import { z } from "zod";
 
 import { useApi } from "../app/services";
-import { patientMeKey } from "../auth/queries";
 import { PageHeading } from "../components/PageHeading";
 import { applyFieldErrors, describeApiError, translator } from "../forms/api-errors";
 import {
@@ -62,20 +61,20 @@ const DETAILS_NAMES = Object.keys(DETAILS_FIELDS) as Path<Values>[];
 
 /**
  * Patient sign-up (design 05, FR-PAT-02, FR-SEC-04/05): details, then a consent step where terms
- * and privacy are required and research consent is optional and unticked. Logged in right after.
+ * and privacy are required and research consent is optional and unticked. The answer is always
+ * "check your email" (no account enumeration, security 03 §6): the emailed link signs the patient in.
  */
 export function SignUpPage() {
   const { t, i18n } = useTranslation();
   const api = useApi();
-  const navigate = useNavigate();
   const location = useLocation();
-  const queryClient = useQueryClient();
   const initialEmail = (location.state as { email?: string } | null)?.email ?? "";
   const uiLanguage = i18n.resolvedLanguage;
 
   const [step, setStep] = useState<1 | 2>(1);
   const [attempt, setAttempt] = useState(0);
   const [formError, setFormError] = useState<string | null>(null);
+  const [sentTo, setSentTo] = useState<string | null>(null);
   const stepChanged = useRef(false);
   const headingRef = useRef<HTMLDivElement>(null);
 
@@ -119,7 +118,7 @@ export function SignUpPage() {
   const onValid = async (values: Values) => {
     setFormError(null);
     try {
-      const me = await api.patientAuth.register({
+      await api.patientAuth.register({
         full_name: values.full_name,
         email: values.email,
         password: values.password,
@@ -128,8 +127,7 @@ export function SignUpPage() {
         accepted_privacy_version: PRIVACY_VERSION,
         research_consent: values.research_consent,
       });
-      queryClient.setQueryData(patientMeKey, me);
-      await navigate("/home", { replace: true });
+      setSentTo(values.email.trim());
     } catch (error) {
       if (isApiError(error) && error.isValidationError) {
         // Details errors go back to step 1; consent errors stay on step 2.
@@ -149,6 +147,28 @@ export function SignUpPage() {
       setAttempt((n) => n + 1);
     }
   };
+
+  if (sentTo !== null) {
+    return (
+      <PublicLayout narrow showLogin={false}>
+        <div className="flex flex-col gap-6">
+          <PageHeading title={t("signup.checkEmailTitle")}>
+            {t("signup.checkEmailTitle")}
+          </PageHeading>
+          <Alert tone="success" role="status" title={t("signup.checkEmailTitle")}>
+            {t("signup.checkEmailBody", { email: sentTo })}
+          </Alert>
+          <p className="m-0 text-fg-secondary">{t("signup.checkEmailHint")}</p>
+          <p className="m-0">
+            {t("signup.haveAccount")}{" "}
+            <Link to="/login" className="font-semibold">
+              {t("signup.login")}
+            </Link>
+          </p>
+        </div>
+      </PublicLayout>
+    );
+  }
 
   const fields = step === 1 ? DETAILS_FIELDS : CONSENT_FIELDS;
   const summary = errorSummaryItems(errors, fields, translator(t), formError);

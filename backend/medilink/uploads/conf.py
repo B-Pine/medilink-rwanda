@@ -25,6 +25,7 @@ class UploadSettings:
     download_base_url: str
     s3_endpoint_url: str
     s3_region: str
+    s3_sse_kms_key_id: str  # empty = SSE-S3 (AES256)
     s3_access_key_id: str
     s3_secret_access_key: str
     s3_quarantine_bucket: str
@@ -49,7 +50,8 @@ def _defaults() -> dict[str, Any]:
             "UPLOADS_DOWNLOAD_BASE_URL", default="http://localhost:8000/api/v1/files"
         ),
         "s3_endpoint_url": _env("UPLOADS_S3_ENDPOINT_URL", default=""),
-        "s3_region": _env("UPLOADS_S3_REGION", default="af-south-1"),
+        "s3_region": _env("UPLOADS_S3_REGION", default=""),  # required with s3 storage
+        "s3_sse_kms_key_id": _env("UPLOADS_S3_SSE_KMS_KEY_ID", default=""),
         "s3_access_key_id": _env("UPLOADS_S3_ACCESS_KEY_ID", default=""),
         "s3_secret_access_key": _env("UPLOADS_S3_SECRET_ACCESS_KEY", default=""),
         "s3_quarantine_bucket": _env("UPLOADS_S3_QUARANTINE_BUCKET", default="medilink-quarantine"),

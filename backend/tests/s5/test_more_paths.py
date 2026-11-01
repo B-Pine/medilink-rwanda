@@ -48,7 +48,7 @@ def test_periodic_jobs_run_per_facility(
         clinic, bookable["service_id"], after=other.starts_at + dt.timedelta(minutes=1)
     )
     _hold(client, f"{P}slots/{third.pk}/hold/")  # an open hold lists the facility for the job
-    clock.now = other.starts_at + dt.timedelta(minutes=20)
+    clock.now = other.starts_at + dt.timedelta(days=1)  # no-show only once the facility closed (R4)
     assert tasks.mark_no_shows() == 1
     with rls_context(facility_id=clinic.pk):
         assert Booking.objects.get(pk=booking["id"]).status == BookingStatus.NO_SHOW

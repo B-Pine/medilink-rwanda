@@ -38,6 +38,8 @@ Sprints whose dependencies are done are built **at the same time**, one backend 
 | 6 | S10 part 2: disputes and reports · S9 event wiring across modules | most modules |
 | 7 | S11 hardening and pilot readiness | all |
 
+**Build order after the S0–S5 remediation (decided 2026-10-31).** S4 and S5a were built before the rest of Wave 1 and Wave 2, so the remaining sprints follow this order once the remediation tracks ([milestone "Remediation · S0–S5 audit"](https://github.com/B-Pine/medilink-rwanda/milestone/5), #83–#91) are merged: **S9 notification engine → S5b → S10 part 1 → S6 → S7 and S8 → S10 part 2 (with S9 event wiring) → S11.** The plan is in [the M1 completion master plan](../superpowers/plans/2026-10-31-m1-completion-master-plan.md).
+
 S10 is one sprint in the [backend](backend.md) and [frontend](frontend.md) roadmaps, delivered in two parts: part 1 (help center content and support requests, FR-DSP-11) needs only S1; part 2 (disputes, reports, exports, data subject rights, retention) needs most modules. Each part gets its own contract.
 
 Per wave: contracts first (merged), then parallel builders, then the orchestrator verifies each sprint against its contract and merges them one at a time (rebase, regenerate the OpenAPI schema, full suites, green CI).
@@ -66,7 +68,7 @@ Per wave: contracts first (merged), then parallel builders, then the orchestrato
 | S6 | Clinical record | Consultation, signing, addenda, history, results inbox, legacy import | Consultation screen, history timeline, import tools |
 | S7 | Pharmacy & documents | Prescriptions, dispensing, PDFs, QR verification, uploads | Prescription UI, pharmacy queue, documents, verify page |
 | S8 | Billing | Bills, payments, receipts, approvals, cash-up | Payments desk, approvals, receipts |
-| S9 | Notifications | Notification service, in-app, web push, email, preferences, announcements | Inbox, push opt-in, preferences, announcements |
+| S9 | Notification engine (core; module wiring in Wave 6) | Notification service, in-app, web push, email, preferences, announcements | Inbox, push opt-in, preferences, announcements |
 | S10 | Disputes, help, reports | Disputes, support, reports, exports | Dispute flows, help center, report dashboards |
 | S11 | Hardening & pilot readiness | Load tests, pen-test fixes, backups/restore, monitoring | Offline/PWA polish, a11y audit, usability fixes, training mode |
 

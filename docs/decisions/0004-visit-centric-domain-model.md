@@ -1,6 +1,6 @@
 # ADR 0004 — The visit is the central domain entity
 
-Status: Proposed (2026-10-17)
+Status: Accepted (2026-10-31; proposed 2026-10-17) · Built in S4 (`visits_visit`, `visits_ticket`) and S5 (bookings check in to visits)
 
 ## Context
 Patients reach a facility in many ways: online booking, phone booking, remote queue join, walk-in, follow-up, referral, emergency. Rwanda's public facilities are walk-in heavy. If the system is modelled around appointments, walk-ins become an afterthought, booked no-shows distort the queue, and clinical records, bills and prescriptions have no natural owner for unbooked patients.

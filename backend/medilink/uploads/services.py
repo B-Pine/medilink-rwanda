@@ -30,7 +30,12 @@ from medilink.uploads.models import ScanStatus, StorageBucket, UploadedFile
 from medilink.uploads.processing import UnsafeContent, process
 from medilink.uploads.purposes import UploadPurpose, get_purpose
 from medilink.uploads.scanner import get_scanner
-from medilink.uploads.storage import Disposition, DownloadLink, get_storage
+from medilink.uploads.storage import (
+    SERVED_DISPOSITION,
+    Disposition,
+    DownloadLink,
+    get_storage,
+)
 
 logger = logging.getLogger(__name__)
 security_logger = logging.getLogger("medilink.security")
@@ -310,11 +315,15 @@ def download_link(
     request: Any = None,
     actor: Any = None,
 ) -> DownloadLink:
-    """A 5-minute signed link to a clean file. The caller checks the read policy first."""
+    """A 5-minute signed link to a clean file. The caller checks the read policy first.
+
+    The file is always served as an attachment (security 06 §6); `disposition` is what the client
+    asked for and is kept only for the audit entry."""
     if file.scan_status != ScanStatus.CLEAN or file.deleted_at is not None:
         raise NotClean()
     if disposition not in ("inline", "attachment"):
         raise UploadRejected("disposition", MESSAGES["purpose"])
+    requested, disposition = disposition, SERVED_DISPOSITION
     conf = upload_settings()
     link = get_storage().signed_download_url(
         "documents",
@@ -333,7 +342,7 @@ def download_link(
         facility_id=file.facility_id,
         object_type="upload",
         object_id=file.pk,
-        metadata={"purpose": file.purpose, "disposition": disposition},
+        metadata={"purpose": file.purpose, "disposition": requested},
     )
     return link
 

@@ -136,7 +136,7 @@ class PatientRecordsView(PatientsAPIView):
         if wanted:
             rows = [r for r in rows if str(r[2]) == wanted]
         paginator = DefaultPagination()
-        page = paginator.paginate_queryset(rows, request, view=self)  # type: ignore[arg-type]
+        page = paginator.paginate_queryset(rows, request, view=self)
         data = [_load(cid, fid, request.user.pk, full=False) for cid, fid, _ in page or []]
         return paginator.get_paginated_response(data)
 

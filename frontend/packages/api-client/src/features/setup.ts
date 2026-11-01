@@ -32,7 +32,10 @@ export interface FacilityProfile {
   longitude: string | null;
   photos: Uuid[];
   level_of_care: string;
+  /** Profile version: send it back with profile updates. */
   version: number;
+  /** Status version: send it back with go-live (F13). */
+  status_version: number;
 }
 
 export type FacilityProfileUpdate = Partial<
@@ -148,6 +151,8 @@ export interface SetupChecklist {
   items: ChecklistItem[];
   complete: boolean;
   status: string;
+  /** Send it back with go-live (F13). */
+  status_version: number;
 }
 
 // ---- catalogue ---------------------------------------------------------------------------------
@@ -413,6 +418,27 @@ const query = (params: Record<string, string | number | undefined | null>) => {
     : "";
 };
 const idem = (key?: string) => (key ? { headers: { "Idempotency-Key": key } } : {});
+/** Largest page the API serves (architecture 02 §3). */
+const MAX_PAGE_SIZE = 100;
+
+/**
+ * Every row of a paginated list (`{count, next, previous, results}`), page by page, so screens that
+ * count or filter locally see the whole list and not a silent first page.
+ */
+async function allPages<T>(
+  client: ApiClient,
+  path: string,
+  params: Record<string, string | number | undefined | null> = {},
+): Promise<SetupList<T>> {
+  const results: T[] = [];
+  for (let page = 1; ; page += 1) {
+    const chunk = await client.get<SetupPage<T>>(
+      `${path}${query({ ...params, page, page_size: MAX_PAGE_SIZE })}`,
+    );
+    results.push(...chunk.results);
+    if (!chunk.next || chunk.results.length === 0) return { results };
+  }
+}
 
 export function createSetupApi(client: ApiClient) {
   const patch = <T>(path: string, body: unknown) => client.request<T>("PATCH", path, { body });
@@ -453,6 +479,7 @@ export function createSetupApi(client: ApiClient) {
     changes: (params: { entity?: string; page?: number } = {}) =>
       client.get<SetupPage<ConfigChange>>(`${setupPaths.changes}${query(params)}`),
     checklist: () => client.get<SetupChecklist>(setupPaths.checklist),
+    /** `version` is the facility's `status_version` (checklist or profile), not the profile version. */
     goLive: (version: number, idempotencyKey?: string) =>
       client.post<FacilityProfile>(setupPaths.goLive, { version }, idem(idempotencyKey)),
     // C1–C6
@@ -475,7 +502,7 @@ export function createSetupApi(client: ApiClient) {
       patch<ServicePoint>(setupPaths.point(id), body),
     // S1–S7
     templates: (params: { membership_id?: Uuid; service_id?: Uuid } = {}) =>
-      client.get<SetupList<ScheduleTemplate>>(`${setupPaths.templates}${query(params)}`),
+      allPages<ScheduleTemplate>(client, setupPaths.templates, params),
     addTemplate: (body: ScheduleTemplateInput) =>
       client.post<{ template: ScheduleTemplate; warnings: SetupWarning[] }>(
         setupPaths.templates,
@@ -516,7 +543,7 @@ export function createSetupApi(client: ApiClient) {
     // T1–T10, P1–P2, PL1
     roles: () => client.get<SetupList<StaffRole>>(setupPaths.roles),
     memberships: (params: { status?: "active" | "deactivated"; role?: string; q?: string } = {}) =>
-      client.get<SetupList<StaffMembership>>(`${setupPaths.memberships}${query(params)}`),
+      allPages<StaffMembership>(client, setupPaths.memberships, params),
     membership: (id: Uuid) => client.get<StaffMembership>(setupPaths.membership(id)),
     updateMembership: (
       id: Uuid,
@@ -531,7 +558,7 @@ export function createSetupApi(client: ApiClient) {
         setupPaths.membershipAction(id, action),
         reason === undefined ? {} : { reason },
       ),
-    invitations: () => client.get<SetupList<Invitation>>(setupPaths.invitations),
+    invitations: () => allPages<Invitation>(client, setupPaths.invitations),
     invite: (
       body: { email: string; role_codes: string[]; service_point_ids?: Uuid[] },
       idempotencyKey?: string,
@@ -543,8 +570,12 @@ export function createSetupApi(client: ApiClient) {
       patch<ClinicianProfile>(setupPaths.clinician, body),
     lookupInvitation: (token: string) =>
       client.post<InvitationLookup>(setupPaths.invitationLookup, { token }),
-    acceptInvitation: (body: { token: string; full_name?: string; password?: string }) =>
-      client.post<StaffLoginResult | StaffMe>(setupPaths.invitationAccept, body),
+    /** New account: `{token, full_name, password}` → `LoginResult` (`mfa_setup_required`). */
+    acceptNewAccount: (body: { token: string; full_name: string; password: string }) =>
+      client.post<StaffLoginResult>(setupPaths.invitationAccept, body),
+    /** Existing account, signed in with the invited email: `{token}` → `StaffMe`. */
+    acceptInvitation: (token: string) =>
+      client.post<StaffMe>(setupPaths.invitationAccept, { token }),
     platformMfaReset: (membershipId: Uuid) =>
       client.post<void>(setupPaths.platformMfaReset(membershipId), {}),
   };

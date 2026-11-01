@@ -2,8 +2,17 @@
 
 - `LocalFileSystemStorage`: development and tests. Download links point at
   `GET /api/v1/files/{token}/`, signed with Django's TimestampSigner.
-- `S3CompatibleStorage`: deployments (boto3, server-side encryption, presigned GET on
-  UPLOADS_DOWNLOAD_BASE_URL). `check --deploy` refuses local storage.
+- `S3CompatibleStorage`: deployments (boto3, server-side encryption with SSE-S3 or, when
+  UPLOADS_S3_SSE_KMS_KEY_ID is set, SSE-KMS; presigned GET on UPLOADS_DOWNLOAD_BASE_URL).
+  `check --deploy` refuses local storage and a missing UPLOADS_S3_REGION.
+
+Every download is served as an attachment (security 06 §6): browsers never render a stored file
+in a page of their own, whatever disposition the client asks for. The viewer still shows images
+and PDFs (an `<img>` element and pdf.js ignore Content-Disposition). Files are also served with
+FILE_RESPONSE_HEADERS: `serve_local_file` sets them itself; for S3 the files origin
+(files.medilink.rw, a reverse proxy or CDN in front of the bucket) must add the ones a presigned
+URL can't carry (`X-Content-Type-Options`, `Content-Security-Policy`,
+`Cross-Origin-Resource-Policy`).
 
 Keys are random UUIDs; buckets are "quarantine" (before the scan) and "documents" (clean).
 """
@@ -27,6 +36,13 @@ Disposition = Literal["inline", "attachment"]
 BUCKETS: tuple[Bucket, ...] = ("quarantine", "documents")
 
 LINK_SALT = "medilink.uploads.download"
+SERVED_DISPOSITION: Disposition = "attachment"
+FILE_RESPONSE_HEADERS: dict[str, str] = {
+    "X-Content-Type-Options": "nosniff",
+    "Content-Security-Policy": "sandbox; default-src 'none'",
+    "Cache-Control": "private, no-store",
+    "Cross-Origin-Resource-Policy": "same-site",
+}
 
 
 @dataclass(frozen=True)
@@ -139,6 +155,15 @@ def read_local_token(token: str) -> dict[str, Any] | None:
 
 class S3CompatibleStorage:
     def __init__(self, conf: UploadSettings, client: Any = None, signing_client: Any = None):
+        if not conf.s3_region:
+            from django.core.exceptions import ImproperlyConfigured
+
+            raise ImproperlyConfigured("UPLOADS_S3_REGION is required with S3 storage.")
+        self.encryption: dict[str, str] = (
+            {"ServerSideEncryption": "aws:kms", "SSEKMSKeyId": conf.s3_sse_kms_key_id}
+            if conf.s3_sse_kms_key_id
+            else {"ServerSideEncryption": "AES256"}
+        )
         self.buckets: dict[str, str] = {
             "quarantine": conf.s3_quarantine_bucket,
             "documents": conf.s3_documents_bucket,
@@ -173,7 +198,7 @@ class S3CompatibleStorage:
             Key=key,
             Body=stream.read(),
             ContentType=content_type,
-            ServerSideEncryption="AES256",
+            **self.encryption,
         )
 
     def open(self, bucket: Bucket, key: str) -> BinaryIO:
@@ -185,7 +210,7 @@ class S3CompatibleStorage:
             Bucket=self._bucket(dst, key),
             Key=key,
             CopySource={"Bucket": self._bucket(src, key), "Key": key},
-            ServerSideEncryption="AES256",
+            **self.encryption,
         )
         self.delete(src, key)
 

@@ -1,0 +1,211 @@
+{
+  "nav": {
+    "consultation": "Isuzuma",
+    "unsigned": "Dosiye zitarasinywa"
+  },
+  "title": "Isuzuma",
+  "headerTitle": "Isuzuma · {{name}}",
+  "loading": "Dosiye irimo gufunguka…",
+  "empty": "Nta cyanditswe.",
+  "reason": "Impamvu",
+  "reasonRequired": "Tanga impamvu.",
+  "cancel": "Hagarika",
+  "close": "Funga",
+  "previous": "Ibibanjirije",
+  "next": "Ibikurikira",
+  "lateEntry": "Yanditswe bitinze",
+  "age_one": "Umwaka {{count}}",
+  "age_other": "Imyaka {{count}}",
+  "sex": {
+    "female": "Gore",
+    "male": "Gabo",
+    "other": "Ikindi"
+  },
+  "status": {
+    "draft": "Agateganyo",
+    "signed": "Yasinywe",
+    "entered_in_error": "Yanditswe ku makosa"
+  },
+  "start": {
+    "title": "Isuzuma",
+    "description": "Umurwayi urimo kuvura ubu, uhereye ku murongo wanjye.",
+    "open": "Fungura isuzuma",
+    "none": "Nta murwayi uri kumwe nawe ubu",
+    "noneBody": "Hamagara umurwayi ukurikira ku murongo wawe, hanyuma ufungure isuzuma hano.",
+    "toQueue": "Jya ku murongo wanjye",
+    "state": {
+      "called": "Yahamagawe",
+      "in_service": "Ari mu isuzuma"
+    }
+  },
+  "allergy": {
+    "title": "Allerijiya",
+    "none": "Nta allerijiya izwi",
+    "unknown": "Allerijiya ntizanditswe. Baza umurwayi.",
+    "unverified": "yavuzwe n'umurwayi, ntiremezwa",
+    "severity": {
+      "mild": "Yoroheje",
+      "moderate": "Iringaniye",
+      "severe": "Ikomeye",
+      "unknown": "Uburemere butazwi"
+    }
+  },
+  "autosave": {
+    "idle": "Agateganyo",
+    "dirty": "Agateganyo · impinduka ntirabikwa",
+    "saving": "Birimo kubikwa…",
+    "saved": "Agateganyo · byabitswe saa {{time}}",
+    "error": "Ntibyabitswe",
+    "conflict": "Undi muntu yahinduye iyi dosiye. Yongeye gufunguka n'impinduka ze; yisuzume mbere yo gukomeza."
+  },
+  "sections": {
+    "nav": "Ibice by'isuzuma",
+    "vitals": "Ibipimo by'ingenzi",
+    "history": "Amateka y'uburwayi",
+    "examination": "Isuzuma ry'umubiri",
+    "diagnosis": "Indwara yasuzumwe",
+    "plan": "Gahunda y'ubuvuzi",
+    "instructions": "Amabwiriza ku murwayi",
+    "instructionsHint": "Umurwayi azabibona mu magambo yoroshye: icyo gukora n'igihe cyo kugaruka.",
+    "private-notes": "Inyandiko bwite",
+    "addenda": "Inyongera"
+  },
+  "privateNotes": {
+    "never": "Ntizigera zerekwa umurwayi"
+  },
+  "diagnosis": {
+    "search": "Shakisha indwara (ICD-10)",
+    "placeholder": "Andika izina cyangwa kode, urugero malariya",
+    "results": "Indwara zabonetse",
+    "searching": "Birimo gushakishwa…",
+    "noResults": "Nta ndwara yabonetse. Gerageza irindi jambo.",
+    "chosen": "Indwara zatoranyijwe",
+    "rank": "Urwego",
+    "primary": "Iy'ingenzi",
+    "secondary": "Iy'inyongera",
+    "certainty": "Icyizere",
+    "provisional": "By'agateganyo",
+    "confirmed": "Byemejwe",
+    "sensitive": "Ibanga",
+    "remove": "Kuramo {{code}}"
+  },
+  "restricted": {
+    "label": "Dosiye y'ibanga",
+    "hint": "Ihishwa abarwaza b'umurwayi kandi ntisangizwa ibindi bigo.",
+    "suggest": "Hari indwara y'ibanga. Tekereza kugira iyi dosiye iy'ibanga.",
+    "on": "Bifunguye",
+    "off": "Bifunze",
+    "badge": "Ibanga"
+  },
+  "sign": {
+    "action": "Sinya kandi ufunge",
+    "needPrimary": "Ongeraho indwara y'ingenzi kugira ngo usinye.",
+    "signedBy": "Yasinywe na {{name}} ku wa {{time}}",
+    "fingerprint": "Igikumwe {{hash}}…"
+  },
+  "integrity": {
+    "mismatch": "Iyi dosiye ntigihura n'igikumwe cyayo. Bimenyeshe umuyobozi w'ikigo."
+  },
+  "addendum": {
+    "none": "Nta nyongera.",
+    "add": "Ongeraho inyongera",
+    "reason": "Impamvu y'inyongera",
+    "body": "Inyongera",
+    "bodyRequired": "Andika inyongera.",
+    "by": "{{name}} · {{time}}",
+    "notAuthor": "yanditswe n'undi muganga"
+  },
+  "enteredInError": {
+    "action": "Shyiraho ko yanditswe ku makosa",
+    "title": "Kwemeza ko iyi dosiye yanditswe ku makosa?",
+    "consequences": "Bikoreshwa ku dosiye yanditswe ku murwayi utari we. Ihishwa mu mateka no ku murwayi, ikabikwa kubera igenzura. Ntisibwa na rimwe.",
+    "banner": "Yanditswe ku makosa",
+    "detail": "{{reason}} · {{name}} · {{time}}"
+  },
+  "vitals": {
+    "recorded": "Ibipimo byanditswe",
+    "none": "Nta bipimo byanditswe kuri uru ruzinduko.",
+    "form": "Andika ibipimo",
+    "save": "Bika ibipimo",
+    "by": "{{name}} · {{time}}",
+    "range": "{{low}}–{{high}}",
+    "outOfRange": "Andika umubare uri hagati ya {{low}} na {{high}}.",
+    "enterOne": "Andika nibura umubare umwe.",
+    "markWrong": "Shyiraho ko byanditswe ku makosa",
+    "markWrongTitle": "Kwemeza ko ibi bipimo byanditswe ku makosa?",
+    "fields": {
+      "temperature_c": "Ubushyuhe (°C)",
+      "systolic_mmhg": "Umuvuduko wo hejuru (mmHg)",
+      "diastolic_mmhg": "Umuvuduko wo hasi (mmHg)",
+      "pulse_bpm": "Gutera k'umutima (/umunota)",
+      "respiratory_rate": "Guhumeka (/umunota)",
+      "spo2_pct": "Umwuka mu maraso SpO₂ (%)",
+      "weight_kg": "Ibiro (kg)",
+      "height_cm": "Uburebure (cm)",
+      "muac_mm": "Umuzenguruko w'akaboko (mm)"
+    },
+    "short": {
+      "temperature": "T {{value}}",
+      "bp": "BP {{sys}}/{{dia}}",
+      "pulse": "P {{value}}",
+      "respiratory": "RR {{value}}",
+      "spo2": "SpO₂ {{value}}",
+      "weight": "{{value}} kg",
+      "height": "{{value}} cm",
+      "muac": "MUAC {{value}}"
+    }
+  },
+  "history": {
+    "title": "Amateka y'umurwayi",
+    "drawerTitle": "Amateka · {{name}}",
+    "open": "Amateka",
+    "backToRecord": "Dosiye y'umurwayi",
+    "filters": "Shungura amateka",
+    "type": "Erekana",
+    "all": "Byose",
+    "consultations": "Amasuzuma",
+    "vitals": "Ibipimo",
+    "code": "Kode y'indwara",
+    "codeHint": "Intangiriro ya kode ya ICD-10, urugero B5",
+    "from": "Kuva",
+    "to": "Kugeza",
+    "items": "Amateka, uhereye ku bya vuba",
+    "empty": "Nta kiri mu mateka gihuye n'aya mashungura.",
+    "noDiagnosis": "Nta ndwara yasuzumwe",
+    "addenda_one": "Inyongera {{count}}",
+    "addenda_other": "Inyongera {{count}}"
+  },
+  "summary": {
+    "title": "Incamake y'uburwayi",
+    "allergies": "Allerijiya",
+    "conditions": "Indwara zidakira",
+    "medications": "Imiti afata ubu",
+    "recentDiagnoses": "Indwara zasuzumwe vuba",
+    "none": "Nta cyanditswe",
+    "staffMember": "Uyu murwayi akora hano. Buri gufungura dosiye kwandikwa kandi kugenzurwa."
+  },
+  "access": {
+    "title": "Kuki urimo gufungura iyi dosiye?",
+    "description": "Uyu murwayi ntari mu bo wita ku buzima uyu munsi, cyangwa akora hano. Impamvu yawe yandikwa mu mateka y'abafunguye dosiye ye.",
+    "reason": "Impamvu",
+    "reasons": {
+      "care_continuity": "Gukomeza kumuvura",
+      "results_review": "Gusuzuma ibisubizo",
+      "admin_request": "Ubusabe bw'ubuyobozi",
+      "other": "Ikindi"
+    },
+    "reasonText": "Sobanura impamvu",
+    "textRequired": "Sobanura impamvu ukeneye iyi dosiye.",
+    "open": "Fungura dosiye"
+  },
+  "unsigned": {
+    "title": "Dosiye zitarasinywa",
+    "description": "Inyandiko z'agateganyo zitegereje gusinywa. Zirangize buri munsi: uruzinduko ntirushobora kurangira inyandiko yarwo itarasinywa.",
+    "mineOnly": "Izanjye gusa",
+    "started": "{{name}} · yatangiye {{time}}",
+    "overdue": "Zirengeje amasaha 24",
+    "open": "Fungura inyandiko ya {{name}}",
+    "empty": "Nta dosiye itarasinywa",
+    "emptyBody": "Amasuzuma yose yasinywe."
+  }
+}

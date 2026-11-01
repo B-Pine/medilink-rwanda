@@ -1,0 +1,31 @@
+{
+  "title": "Amadosiye yanjye y'ubuzima",
+  "homeTitle": "Amadosiye y'ubuzima",
+  "seeAll": "Reba byose",
+  "intro": "Ibyo muganga yanditse nyuma ya buri ruzinduko, mu magambo yoroshye. Amadosiye y'abo witaho nayo ari hano.",
+  "whose": "Amadosiye ya nde",
+  "everyone": "Bose",
+  "loadFailed": "Ntitwashoboye kubona amadosiye yawe.",
+  "empty": "Nta dosiye irahari",
+  "emptyBody": "Nyuma y'uruzinduko, dosiye yasinywe na muganga igaragara hano.",
+  "doctor": "Dr {{name}}",
+  "provisional": "bitaremezwa",
+  "back": "Amadosiye yose",
+  "notFound": "Dosiye ntiyabonetse",
+  "visitOn": "Uruzinduko rwo ku wa {{date}}",
+  "lateEntry": "yanditswe nyuma",
+  "diagnosis": "Ibyo muganga yasanze",
+  "instructions": "Icyo ugomba gukora",
+  "plan": "Gahunda y'ubuvuzi",
+  "history": "Ibyo wabwiye muganga",
+  "vitals": "Ibipimo",
+  "vitalsFields": {
+    "temperature": "Ubushyuhe",
+    "bloodPressure": "Umuvuduko w'amaraso",
+    "pulse": "Gutera k'umutima",
+    "spo2": "Umwuka (SpO₂)",
+    "weight": "Ibiro",
+    "height": "Uburebure"
+  },
+  "addenda": "Byongewemo nyuma na muganga"
+}

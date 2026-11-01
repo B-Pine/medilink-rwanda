@@ -1347,6 +1347,58 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: failed
+  /api/v1/patient/records/:
+    get:
+      operationId: patient_records
+      summary: Signed records of my profiles, newest first (PR1)
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: patient_id
+        schema:
+          type: string
+      tags:
+      - patient-records
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPatientRecordRowList'
+          description: ''
+  /api/v1/patient/records/{consultation_id}/:
+    get:
+      operationId: patient_record_detail
+      summary: One signed record in plain language, without private notes (PR2)
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-records
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientRecord'
+          description: ''
   /api/v1/patient/slots/{slot_id}/hold/:
     post:
       operationId: patient_slot_hold
@@ -6931,6 +6983,183 @@ paths:
               schema:
                 $ref: '#/components/schemas/StaffBooking'
           description: ''
+  /api/v1/staff/clinical/alerts/:
+    post:
+      operationId: staff_clinical_alerts
+      summary: Allergy, duplicate and dose checks before prescribing (AL1)
+      tags:
+      - clinical
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlertCheckRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertResult'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason for this patient first
+            (A1)'
+  /api/v1/staff/clinical/patients/{facility_patient_id}/access/:
+    get:
+      operationId: staff_patient_access_state
+      summary: Whether a reason is needed before opening the record (A2)
+      parameters:
+      - in: path
+        name: facility_patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessState'
+          description: ''
+  /api/v1/staff/clinical/patients/{facility_patient_id}/access-reasons/:
+    post:
+      operationId: staff_patient_access_reason
+      summary: Give a reason to open this patient's record (A1)
+      parameters:
+      - in: path
+        name: facility_patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessReasonInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessGrant'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Text needed for other
+  /api/v1/staff/clinical/patients/{facility_patient_id}/history/:
+    get:
+      operationId: staff_patient_history
+      summary: History timeline at this facility, newest first (H1)
+      parameters:
+      - in: query
+        name: code
+        schema:
+          type: string
+        description: ICD-10 code prefix
+      - in: path
+        name: facility_patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: from
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: to
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - consultation
+          - vitals
+      tags:
+      - clinical
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedHistoryItemList'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason for this patient first
+            (A1)'
+  /api/v1/staff/clinical/patients/{facility_patient_id}/problem-summary/:
+    get:
+      operationId: staff_patient_problem_summary
+      summary: Allergies, conditions, medicines and recent diagnoses (H2)
+      parameters:
+      - in: path
+        name: facility_patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemSummary'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason for this patient first
+            (A1)'
   /api/v1/staff/clinician-profile/:
     get:
       operationId: staff_clinician_profile_retrieve
@@ -6971,6 +7200,245 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: licence already registered
+  /api/v1/staff/consultations/:
+    get:
+      operationId: staff_consultations_unsigned
+      summary: Unsigned records list, without clinical content (C7)
+      parameters:
+      - in: query
+        name: mine
+        schema:
+          type: boolean
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - draft
+      tags:
+      - clinical
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedConsultationRowList'
+          description: ''
+  /api/v1/staff/consultations/{consultation_id}/:
+    get:
+      operationId: staff_consultation_detail
+      summary: Consultation with allergies, vitals, diagnoses and addenda (C2)
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consultation'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason for this patient first
+            (A1)'
+    patch:
+      operationId: staff_consultation_update
+      summary: Autosave the draft (C3)
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedConsultationUpdateRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consultation'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not a draft, not the author, or a diagnosis rule
+  /api/v1/staff/consultations/{consultation_id}/addenda/:
+    post:
+      operationId: staff_consultation_addendum
+      summary: Add a signed addendum (C5)
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddendumInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Addendum'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required, access_reason_required or permission_denied
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: The record is not signed
+  /api/v1/staff/consultations/{consultation_id}/entered-in-error/:
+    post:
+      operationId: staff_consultation_entered_in_error
+      summary: Mark a record entered in error (C6)
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnteredInErrorRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consultation'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not the author or already marked
+  /api/v1/staff/consultations/{consultation_id}/sign/:
+    post:
+      operationId: staff_consultation_sign
+      summary: Sign and lock the record (C4)
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClinicalVersionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consultation'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: No primary diagnosis, not a draft or not the author
   /api/v1/staff/departments/:
     get:
       operationId: staff_departments_list
@@ -10037,6 +10505,111 @@ paths:
               schema:
                 $ref: '#/components/schemas/VisitDetail'
           description: ''
+  /api/v1/staff/visits/{visit_id}/consultation/:
+    post:
+      operationId: staff_visit_consultation_open
+      summary: Open (or return) my draft consultation for a visit (C1)
+      parameters:
+      - in: path
+        name: visit_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consultation'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consultation'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason for this patient first
+            (A1)'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Visit cancelled or the patient left
+  /api/v1/staff/visits/{visit_id}/vitals/:
+    get:
+      operationId: staff_visit_vitals
+      summary: Vitals of a visit (V1); reception sees the rows it recorded
+      parameters:
+      - in: path
+        name: visit_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VitalsList'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason for this patient first
+            (A1)'
+    post:
+      operationId: staff_visit_vitals_record
+      summary: Record vitals (V1)
+      parameters:
+      - in: path
+        name: visit_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VitalsInputRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vitals'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: The visit is not open
   /api/v1/staff/visits/check-in/:
     post:
       operationId: staff_visits_check_in
@@ -10069,6 +10642,41 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Inactive record, service closed or missing reason
+  /api/v1/staff/vitals/{vitals_id}/entered-in-error/:
+    post:
+      operationId: staff_vitals_entered_in_error
+      summary: Mark vitals entered in error (V2)
+      parameters:
+      - in: path
+        name: vitals_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClinicalReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vitals'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Already marked
 components:
   schemas:
     AcceptNewRequest:
@@ -10100,6 +10708,14 @@ components:
         * `yes` - yes
         * `no` - no
         * `unknown` - unknown
+    AccessGrant:
+      type: object
+      properties:
+        granted_until:
+          type: string
+          format: date-time
+      required:
+      - granted_until
     AccessHistoryItem:
       type: object
       properties:
@@ -10139,6 +10755,30 @@ components:
         * `results_review` - results_review
         * `admin_request` - admin_request
         * `other` - other
+    AccessReasonInputReasonCodeEnum:
+      enum:
+      - care_continuity
+      - results_review
+      - admin_request
+      - other
+      type: string
+      description: |-
+        * `care_continuity` - Care continuity
+        * `results_review` - Results review
+        * `admin_request` - Administrative request
+        * `other` - Other
+    AccessReasonInputRequest:
+      type: object
+      description: Reject unknown input fields (mass-assignment protection, security
+        04 §2).
+      properties:
+        reason_code:
+          $ref: '#/components/schemas/AccessReasonInputReasonCodeEnum'
+        reason_text:
+          type: string
+          maxLength: 300
+      required:
+      - reason_code
     AccessReasonRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -10158,6 +10798,24 @@ components:
           format: date-time
       required:
       - expires_at
+    AccessState:
+      type: object
+      properties:
+        has_relationship:
+          type: boolean
+        is_staff_member:
+          type: boolean
+        reason_required:
+          type: boolean
+        granted_until:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - granted_until
+      - has_relationship
+      - is_staff_member
+      - reason_required
     ActionEnum:
       enum:
       - create
@@ -10210,6 +10868,49 @@ components:
       - care_consent
       - patient_ref
       - proof
+    Addendum:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        author_name:
+          type: string
+        is_by_author:
+          type: boolean
+        reason:
+          type: string
+        body:
+          type: string
+        signed_at:
+          type: string
+          format: date-time
+        content_hash:
+          type: string
+      required:
+      - author_name
+      - body
+      - content_hash
+      - id
+      - is_by_author
+      - reason
+      - signed_at
+    AddendumInputRequest:
+      type: object
+      description: Reject unknown input fields (mass-assignment protection, security
+        04 §2).
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 300
+        body:
+          type: string
+          minLength: 1
+          maxLength: 10000
+      required:
+      - body
+      - reason
     AdminBlock:
       type: object
       properties:
@@ -10254,6 +10955,117 @@ components:
       - accepted_dpa_version
       - accepted_terms_version
       - ncsa_registration_confirmed
+    Alert:
+      type: object
+      properties:
+        drug_code:
+          type: string
+        kind:
+          $ref: '#/components/schemas/AlertKindEnum'
+        severity:
+          $ref: '#/components/schemas/AlertSeverityEnum'
+        allergy_id:
+          type: string
+          format: uuid
+          nullable: true
+        substance:
+          type: string
+          nullable: true
+        verification_status:
+          type: string
+          nullable: true
+        max_usual_quantity:
+          type: integer
+          nullable: true
+      required:
+      - allergy_id
+      - drug_code
+      - kind
+      - max_usual_quantity
+      - severity
+      - substance
+      - verification_status
+    AlertCheckRequest:
+      type: object
+      description: Reject unknown input fields (mass-assignment protection, security
+        04 §2).
+      properties:
+        facility_patient_id:
+          type: string
+          format: uuid
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertItemRequest'
+          maxItems: 20
+          minItems: 1
+      required:
+      - facility_patient_id
+      - items
+    AlertItemRequest:
+      type: object
+      properties:
+        drug_code:
+          type: string
+          minLength: 1
+          maxLength: 40
+        quantity:
+          type: integer
+          maximum: 100000
+          minimum: 1
+      required:
+      - drug_code
+    AlertKindEnum:
+      enum:
+      - allergy
+      - duplicate
+      - dose
+      type: string
+      description: |-
+        * `allergy` - allergy
+        * `duplicate` - duplicate
+        * `dose` - dose
+    AlertResult:
+      type: object
+      properties:
+        alerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Alert'
+      required:
+      - alerts
+    AlertSeverityEnum:
+      enum:
+      - high
+      - medium
+      type: string
+      description: |-
+        * `high` - high
+        * `medium` - medium
+    Allergy:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        category:
+          type: string
+        substance:
+          type: string
+        reaction:
+          type: string
+          nullable: true
+        severity:
+          type: string
+        verification_status:
+          type: string
+      required:
+      - category
+      - id
+      - reaction
+      - severity
+      - substance
+      - verification_status
     AllergyInputRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -10795,6 +11607,17 @@ components:
       - queued_at
       - sent_at
       - status
+    Author:
+      type: object
+      properties:
+        membership_id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+      required:
+      - full_name
+      - membership_id
     BlankEnum:
       enum:
       - ''
@@ -11267,6 +12090,14 @@ components:
         * `drug` - Drug
         * `food` - Food
         * `other` - Other
+    CertaintyEnum:
+      enum:
+      - provisional
+      - confirmed
+      type: string
+      description: |-
+        * `provisional` - Provisional
+        * `confirmed` - Confirmed
     ChannelStat:
       type: object
       properties:
@@ -11487,6 +12318,46 @@ components:
       required:
       - claim
       - profile
+    ClinicalPatient:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+        age_years:
+          type: integer
+          nullable: true
+        sex:
+          type: string
+          nullable: true
+      required:
+      - age_years
+      - display_name
+      - id
+      - sex
+    ClinicalReasonRequest:
+      type: object
+      description: Reject unknown input fields (mass-assignment protection, security
+        04 §2).
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 300
+      required:
+      - reason
+    ClinicalVersionRequest:
+      type: object
+      description: Reject unknown input fields (mass-assignment protection, security
+        04 §2).
+      properties:
+        version:
+          type: integer
+          minimum: 1
+      required:
+      - version
     Clinician:
       type: object
       properties:
@@ -11668,6 +12539,161 @@ components:
       - consents
       - current_versions
       - history
+    Consultation:
+      type: object
+      description: Staff clinical view (doctors with clinical.view who pass the access
+        rule).
+      properties:
+        id:
+          type: string
+          format: uuid
+        visit_id:
+          type: string
+          format: uuid
+        facility_patient_id:
+          type: string
+          format: uuid
+        patient:
+          $ref: '#/components/schemas/ClinicalPatient'
+        author:
+          $ref: '#/components/schemas/Author'
+        status:
+          $ref: '#/components/schemas/ConsultationStatusEnum'
+        started_at:
+          type: string
+          format: date-time
+        signed_at:
+          type: string
+          format: date-time
+          nullable: true
+        is_late_entry:
+          type: boolean
+        is_restricted:
+          type: boolean
+        suggest_restricted:
+          type: boolean
+        history_text:
+          type: string
+        examination_text:
+          type: string
+        plan_text:
+          type: string
+        patient_instructions_text:
+          type: string
+        private_notes:
+          type: string
+        diagnoses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Diagnosis'
+        vitals:
+          type: array
+          items:
+            $ref: '#/components/schemas/Vitals'
+        addenda:
+          type: array
+          items:
+            $ref: '#/components/schemas/Addendum'
+        allergies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Allergy'
+        no_known_allergies:
+          type: boolean
+          nullable: true
+        content_hash:
+          type: string
+          nullable: true
+        integrity:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/IntegrityEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        entered_in_error:
+          allOf:
+          - $ref: '#/components/schemas/EnteredInErrorInfo'
+          nullable: true
+        can_edit:
+          type: boolean
+        can_sign:
+          type: boolean
+        version:
+          type: integer
+      required:
+      - addenda
+      - allergies
+      - author
+      - can_edit
+      - can_sign
+      - content_hash
+      - diagnoses
+      - entered_in_error
+      - examination_text
+      - facility_patient_id
+      - history_text
+      - id
+      - integrity
+      - is_late_entry
+      - is_restricted
+      - no_known_allergies
+      - patient
+      - patient_instructions_text
+      - plan_text
+      - private_notes
+      - signed_at
+      - started_at
+      - status
+      - suggest_restricted
+      - version
+      - visit_id
+      - vitals
+    ConsultationRow:
+      type: object
+      description: 'Unsigned records list: no clinical content (C7).'
+      properties:
+        id:
+          type: string
+          format: uuid
+        visit_id:
+          type: string
+          format: uuid
+        facility_patient_id:
+          type: string
+          format: uuid
+        patient_display_name:
+          type: string
+        service_date:
+          type: string
+          format: date
+        author:
+          $ref: '#/components/schemas/Author'
+        status:
+          $ref: '#/components/schemas/ConsultationStatusEnum'
+        started_at:
+          type: string
+          format: date-time
+        is_overdue:
+          type: boolean
+      required:
+      - author
+      - facility_patient_id
+      - id
+      - is_overdue
+      - patient_display_name
+      - service_date
+      - started_at
+      - status
+      - visit_id
+    ConsultationStatusEnum:
+      enum:
+      - draft
+      - signed
+      - entered_in_error
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `signed` - Signed
+        * `entered_in_error` - Entered in error
     Cost:
       type: object
       properties:
@@ -12071,6 +13097,32 @@ components:
           type: string
       required:
       - detail
+    Diagnosis:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        display:
+          type: string
+        plain_language:
+          type: string
+        rank:
+          $ref: '#/components/schemas/DiagnosisRankEnum'
+        certainty:
+          $ref: '#/components/schemas/CertaintyEnum'
+        is_sensitive:
+          type: boolean
+      required:
+      - certainty
+      - code
+      - display
+      - id
+      - is_sensitive
+      - plain_language
+      - rank
     DiagnosisCodesItem:
       type: object
       properties:
@@ -12199,6 +13251,29 @@ components:
       required:
       - code
       - title_i18n
+    DiagnosisInputRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 10
+        rank:
+          $ref: '#/components/schemas/DiagnosisRankEnum'
+        certainty:
+          $ref: '#/components/schemas/CertaintyEnum'
+      required:
+      - certainty
+      - code
+      - rank
+    DiagnosisRankEnum:
+      enum:
+      - primary
+      - secondary
+      type: string
+      description: |-
+        * `primary` - Primary
+        * `secondary` - Secondary
     Display:
       type: object
       properties:
@@ -12799,6 +13874,36 @@ components:
       - name
       - phone_e164
       - relationship
+    EnteredInErrorInfo:
+      type: object
+      properties:
+        at:
+          type: string
+          format: date-time
+        reason:
+          type: string
+        by_name:
+          type: string
+          nullable: true
+      required:
+      - at
+      - by_name
+      - reason
+    EnteredInErrorRequest:
+      type: object
+      description: Reject unknown input fields (mass-assignment protection, security
+        04 §2).
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 300
+      required:
+      - reason
+      - version
     Error:
       type: object
       properties:
@@ -13760,6 +14865,81 @@ components:
       - count
       - hour
       - weekday
+    HistoryDiagnosis:
+      type: object
+      properties:
+        code:
+          type: string
+        display:
+          type: string
+        certainty:
+          type: string
+        rank:
+          type: string
+      required:
+      - certainty
+      - code
+      - display
+      - rank
+    HistoryItem:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/HistoryItemKindEnum'
+        id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        visit_id:
+          type: string
+          format: uuid
+        service_name_i18n:
+          type: object
+          additionalProperties:
+            type: string
+        author_name:
+          type: string
+          nullable: true
+        status:
+          type: string
+          nullable: true
+        is_restricted:
+          type: boolean
+        is_late_entry:
+          type: boolean
+        diagnoses:
+          type: array
+          items:
+            $ref: '#/components/schemas/HistoryDiagnosis'
+        addenda_count:
+          type: integer
+        vitals:
+          allOf:
+          - $ref: '#/components/schemas/Vitals'
+          nullable: true
+      required:
+      - addenda_count
+      - author_name
+      - diagnoses
+      - id
+      - is_late_entry
+      - is_restricted
+      - kind
+      - occurred_at
+      - service_name_i18n
+      - status
+      - visit_id
+      - vitals
+    HistoryItemKindEnum:
+      enum:
+      - consultation
+      - vitals
+      type: string
+      description: |-
+        * `consultation` - consultation
+        * `vitals` - vitals
     Hold:
       type: object
       properties:
@@ -14326,6 +15506,14 @@ components:
       - code
       - name
       - scheme
+    IntegrityEnum:
+      enum:
+      - ok
+      - mismatch
+      type: string
+      description: |-
+        * `ok` - ok
+        * `mismatch` - mismatch
     Invitation:
       type: object
       properties:
@@ -15591,6 +16779,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ApplicationSummary'
+    PaginatedConsultationRowList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConsultationRow'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedDiagnosisCodesItemList:
       type: object
       required:
@@ -15729,6 +16939,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FacilityTypesPlatformItem'
+    PaginatedHistoryItemList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/HistoryItem'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedInsurersItemList:
       type: object
       required:
@@ -15844,6 +17076,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MasterDataChange'
+    PaginatedPatientRecordRowList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientRecordRow'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedPlatformFacilityList:
       type: object
       required:
@@ -16229,6 +17483,35 @@ components:
           type: string
           default: ''
           maxLength: 100
+    PatchedConsultationUpdateRequest:
+      type: object
+      description: Reject unknown input fields (mass-assignment protection, security
+        04 §2).
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        history_text:
+          type: string
+          maxLength: 20000
+        examination_text:
+          type: string
+          maxLength: 20000
+        plan_text:
+          type: string
+          maxLength: 20000
+        patient_instructions_text:
+          type: string
+          maxLength: 20000
+        private_notes:
+          type: string
+          maxLength: 10000
+        is_restricted:
+          type: boolean
+        diagnoses:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiagnosisInputRequest'
     PatchedDepartmentUpdateRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -16923,6 +18206,42 @@ components:
           type: integer
           maximum: 100
           minimum: 0
+    PatientAddendum:
+      type: object
+      properties:
+        author_name:
+          type: string
+        reason:
+          type: string
+        body:
+          type: string
+        signed_at:
+          type: string
+          format: date-time
+      required:
+      - author_name
+      - body
+      - reason
+      - signed_at
+    PatientDiagnosis:
+      type: object
+      properties:
+        code:
+          type: string
+        plain_language:
+          type: string
+        display:
+          type: string
+        certainty:
+          type: string
+        rank:
+          type: string
+      required:
+      - certainty
+      - code
+      - display
+      - plain_language
+      - rank
     PatientLoginRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -17083,6 +18402,90 @@ components:
       - relationship
       - sex
       - version
+    PatientRecord:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        facility_name:
+          type: string
+        service_date:
+          type: string
+          format: date
+        doctor_name:
+          type: string
+        signed_at:
+          type: string
+          format: date-time
+        diagnoses:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientDiagnosis'
+        is_late_entry:
+          type: boolean
+        history_text:
+          type: string
+        plan_text:
+          type: string
+        patient_instructions_text:
+          type: string
+        vitals:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientVitals'
+        addenda:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientAddendum'
+      required:
+      - addenda
+      - diagnoses
+      - doctor_name
+      - facility_name
+      - history_text
+      - id
+      - is_late_entry
+      - patient_id
+      - patient_instructions_text
+      - plan_text
+      - service_date
+      - signed_at
+      - vitals
+    PatientRecordRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        facility_name:
+          type: string
+        service_date:
+          type: string
+          format: date
+        doctor_name:
+          type: string
+        signed_at:
+          type: string
+          format: date-time
+        diagnoses:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientDiagnosis'
+      required:
+      - diagnoses
+      - doctor_name
+      - facility_name
+      - id
+      - patient_id
+      - service_date
+      - signed_at
     PatientRegisterRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -17271,6 +18674,56 @@ components:
       - updated_at
       - version
       - visit_id
+    PatientVitals:
+      type: object
+      properties:
+        recorded_at:
+          type: string
+          format: date-time
+        temperature_c:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,1})?$
+          nullable: true
+        systolic_mmhg:
+          type: integer
+          nullable: true
+        diastolic_mmhg:
+          type: integer
+          nullable: true
+        pulse_bpm:
+          type: integer
+          nullable: true
+        respiratory_rate:
+          type: integer
+          nullable: true
+        spo2_pct:
+          type: integer
+          nullable: true
+        weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          nullable: true
+        height_cm:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,1})?$
+          nullable: true
+        muac_mm:
+          type: integer
+          nullable: true
+      required:
+      - diastolic_mmhg
+      - height_cm
+      - muac_mm
+      - pulse_bpm
+      - recorded_at
+      - respiratory_rate
+      - spo2_pct
+      - systolic_mmhg
+      - temperature_c
+      - weight_kg
     PendingInvite:
       type: object
       properties:
@@ -17558,6 +19011,37 @@ components:
         * `pregnant` - Pregnant
         * `disability` - Disability
         * `very_sick` - Very sick
+    ProblemSummary:
+      type: object
+      properties:
+        allergies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Allergy'
+        no_known_allergies:
+          type: boolean
+          nullable: true
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/SummaryItem'
+        medications:
+          type: array
+          items:
+            $ref: '#/components/schemas/SummaryItem'
+        recent_diagnoses:
+          type: array
+          items:
+            $ref: '#/components/schemas/RecentDiagnosis'
+        is_staff_member:
+          type: boolean
+      required:
+      - allergies
+      - conditions
+      - is_staff_member
+      - medications
+      - no_known_allergies
+      - recent_diagnoses
     ProfileSummary:
       type: object
       properties:
@@ -18203,6 +19687,23 @@ components:
           maxLength: 300
       required:
       - reason
+    RecentDiagnosis:
+      type: object
+      properties:
+        code:
+          type: string
+        display:
+          type: string
+        certainty:
+          type: string
+        last_seen_at:
+          type: string
+          format: date-time
+      required:
+      - certainty
+      - code
+      - display
+      - last_seen_at
     RecordClaim:
       type: object
       properties:
@@ -19519,6 +21020,24 @@ components:
       - accepted_terms_version
       - ncsa_registration_confirmed
       - version
+    SummaryItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        display:
+          type: string
+        verification_status:
+          type: string
+        detail:
+          type: string
+          nullable: true
+      required:
+      - detail
+      - display
+      - id
+      - verification_status
     Symptom:
       type: object
       properties:
@@ -20390,6 +21909,133 @@ components:
         * `walk_in` - Walk-in
         * `referral` - Referral
         * `emergency` - Emergency
+    Vitals:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        visit_id:
+          type: string
+          format: uuid
+        recorded_at:
+          type: string
+          format: date-time
+        recorded_by_name:
+          type: string
+          nullable: true
+        temperature_c:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,1})?$
+          nullable: true
+        systolic_mmhg:
+          type: integer
+          nullable: true
+        diastolic_mmhg:
+          type: integer
+          nullable: true
+        pulse_bpm:
+          type: integer
+          nullable: true
+        respiratory_rate:
+          type: integer
+          nullable: true
+        spo2_pct:
+          type: integer
+          nullable: true
+        weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          nullable: true
+        height_cm:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,1})?$
+          nullable: true
+        muac_mm:
+          type: integer
+          nullable: true
+        is_entered_in_error:
+          type: boolean
+      required:
+      - diastolic_mmhg
+      - height_cm
+      - id
+      - is_entered_in_error
+      - muac_mm
+      - pulse_bpm
+      - recorded_at
+      - recorded_by_name
+      - respiratory_rate
+      - spo2_pct
+      - systolic_mmhg
+      - temperature_c
+      - visit_id
+      - weight_kg
+    VitalsInputRequest:
+      type: object
+      description: Reject unknown input fields (mass-assignment protection, security
+        04 §2).
+      properties:
+        temperature_c:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,1})?$
+          nullable: true
+        systolic_mmhg:
+          type: integer
+          maximum: 260
+          minimum: 50
+          nullable: true
+        diastolic_mmhg:
+          type: integer
+          maximum: 160
+          minimum: 20
+          nullable: true
+        pulse_bpm:
+          type: integer
+          maximum: 250
+          minimum: 20
+          nullable: true
+        respiratory_rate:
+          type: integer
+          maximum: 80
+          minimum: 4
+          nullable: true
+        spo2_pct:
+          type: integer
+          maximum: 100
+          minimum: 50
+          nullable: true
+        weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          nullable: true
+        height_cm:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,4}(?:\.\d{0,1})?$
+          nullable: true
+        muac_mm:
+          type: integer
+          maximum: 400
+          minimum: 50
+          nullable: true
+        recorded_at:
+          type: string
+          format: date-time
+    VitalsList:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Vitals'
+      required:
+      - results
     Warning:
       type: object
       properties:

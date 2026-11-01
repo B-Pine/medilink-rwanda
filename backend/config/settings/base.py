@@ -75,6 +75,9 @@ INSTALLED_APPS = [
     # [S4] visits and the live queue
     "medilink.visits",
     # [/S4]
+    # [S6] clinical record and history
+    "medilink.clinical",
+    # [/S6]
 ]
 
 MIDDLEWARE = [
@@ -453,6 +456,12 @@ SPECTACULAR_SETTINGS = {
         "LevelOfCareEnum": "medilink.masterdata.models.LevelOfCare",
         "QueueLoadEnum": [("low", "low"), ("medium", "medium"), ("high", "high")],
         # [/S5]
+        # [S6]
+        "ConsultationStatusEnum": "medilink.clinical.models.ConsultationStatus",
+        "DiagnosisRankEnum": "medilink.clinical.models.DiagnosisRank",
+        "CertaintyEnum": "medilink.clinical.models.Certainty",
+        # AccessReasonCodeEnum and ReasonCodeEnum: named in the [S3] block (same codes)
+        # [/S6]
     },
 }
 

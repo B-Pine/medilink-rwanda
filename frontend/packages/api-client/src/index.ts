@@ -24,6 +24,7 @@ export * from "./features/notifications";
 export * from "./features/setup";
 // [/S2]
 // [S10]
+export * from "./features/help";
 // [/S10]
 // [S4]
 export * from "./features/queue";

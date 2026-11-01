@@ -1,0 +1,117 @@
+{
+  "loading": "Biri gufunguka…",
+  "loadFailed": "Ntibyashobotse kubifungura. Reba interineti wongere ugerageze.",
+  "retry": "Ongera ugerageze",
+  "search": {
+    "label": "Shakisha ubufasha",
+    "placeholder": "Urugero: kongeramo umwana",
+    "submit": "Shakisha",
+    "results_one": "Inyandiko {{count}}",
+    "results_other": "Inyandiko {{count}}",
+    "none": "Nta nyandiko ihuye n'ibyo washakishije.",
+    "noneBody": "Gerageza andi magambo, cyangwa uvugane n'ubufasha."
+  },
+  "categories": {
+    "label": "Ingingo",
+    "all": "Zose",
+    "getting_started": "Gutangira",
+    "account_security": "Konti n'umutekano",
+    "booking_visits": "Gahunda no kujya kwivuza",
+    "family_profile": "Umuryango n'umwirondoro",
+    "notifications": "Kumenyeshwa",
+    "privacy": "Ibanga",
+    "facility_work": "Gukora ku ivuriro",
+    "other": "Ibindi"
+  },
+  "articles": "Inyandiko z'ubufasha",
+  "shownIn": "Byerekanywe mu {{language}}: ntibirandikwa mu rurimi rwawe.",
+  "languages": { "rw": "Kinyarwanda", "en": "Cyongereza", "fr": "Gifaransa" },
+  "article": {
+    "back": "Subira ku bufasha",
+    "notFound": "Inyandiko ntiyabonetse",
+    "notFoundBody": "Ishobora kuba yarimuwe cyangwa yarakuweho.",
+    "stillNeedHelp": "Uracyakeneye ubufasha?"
+  },
+  "contact": {
+    "title": "Uracyakeneye ubufasha?",
+    "body": "Baza ubufasha bwa MediLink ku bijyanye na porogaramu: konti, gahunda, kumenyeshwa cyangwa ibanga.",
+    "contact": "Vugana n'ubufasha",
+    "requests": "Ibibazo byanjye",
+    "open_one": "{{count}} gifunguye",
+    "open_other": "{{count}} bifunguye"
+  },
+  "status": {
+    "open": "Bitegereje MediLink",
+    "answered": "MediLink yasubije",
+    "closed": "Byafunzwe"
+  },
+  "topics": {
+    "account_access": "Kwinjira na konti yanjye",
+    "booking_visits": "Gahunda no kujya kwivuza",
+    "family_profile": "Umuryango n'umwirondoro",
+    "notifications": "Kumenyeshwa",
+    "privacy": "Ibanga n'amakuru yanjye",
+    "facility_setup": "Gutegura ivuriro",
+    "technical": "Hari ikitakora",
+    "other": "Ikindi kintu",
+    "health": "Ubuzima bwanjye cyangwa kuvurwa"
+  },
+  "topicHints": {
+    "account_access": "Ijambobanga, kode yo kwinjira, imeyili",
+    "booking_visits": "Gufata gahunda, kuyihagarika, umurongo",
+    "family_profile": "Abana, abo mu muryango, amakuru yanjye",
+    "notifications": "Ubutumwa kuri telefoni, imeyili",
+    "privacy": "Ababona amakuru yanjye, kuyasiba",
+    "facility_setup": "Ibyumba, serivisi, abakozi",
+    "technical": "Amakosa, urupapuro rudafunguka",
+    "other": "Ikindi kijyanye na porogaramu",
+    "health": "Ibimenyetso, ibisubizo, imiti"
+  },
+  "requests": {
+    "title": "Ibibazo byanjye",
+    "empty": "Nta bibazo birahari",
+    "emptyBody": "Iyo uvuganye n'ubufasha, ibibazo byawe bigaragara hano.",
+    "new": "Vugana n'ubufasha",
+    "lastActivity": "Igikorwa giheruka {{time}}",
+    "messages_one": "Ubutumwa {{count}}",
+    "messages_other": "Ubutumwa {{count}}"
+  },
+  "new": {
+    "title": "Vugana n'ubufasha",
+    "step1": "Ukeneye ubufasha kuki?",
+    "next": "Komeza",
+    "back": "Subira inyuma",
+    "health": {
+      "title": "Ntidushobora gusubiza ibibazo by'ubuzima hano",
+      "body": "Ubufasha bwa MediLink bufasha gusa ku bijyanye na porogaramu. Ku bimenyetso, ibisubizo cyangwa imiti, vugana n'ivuriro ryawe: rizi dosiye yawe.",
+      "findCare": "Shaka aho kwivuza",
+      "emergency": "Mu gihe cy'ubutabazi, hamagara 912."
+    },
+    "step2": "Tubwire byinshi",
+    "subject": "Umutwe",
+    "subjectHint": "Amagambo make, urugero: sinshobora guhagarika gahunda yanjye",
+    "body": "Byagenze bite?",
+    "bodyHint": "Ntushyiremo amakuru y'ubuzima: ubufasha ntibubona dosiye yawe kandi ntibuyikeneye.",
+    "counter": "Inyuguti {{count}} kuri {{max}}",
+    "send": "Ohereza",
+    "fixErrors": "Banza ukosore ibi mbere yo kohereza",
+    "sent": "Ikibazo {{reference}} cyoherejwe. Dusubiza mu munsi umwe w'akazi."
+  },
+  "thread": {
+    "title": "Ikibazo {{reference}}",
+    "topic": "Ingingo: {{topic}}",
+    "you": "Wowe",
+    "reply": "Igisubizo cyawe",
+    "send": "Ohereza igisubizo",
+    "close": "Funga ikibazo",
+    "closeConfirm": "Ufunge iki kibazo? Ushobora gufungura ikindi niba ukeneye ubufasha.",
+    "closeYes": "Gifunge",
+    "cancel": "Reka",
+    "closedTitle": "Iki kibazo cyafunzwe",
+    "closedBody": "Niba ugikeneye ubufasha, fungura ikindi kibazo.",
+    "openNew": "Fungura ikindi kibazo",
+    "notFound": "Ikibazo ntikibonetse",
+    "replySent": "Igisubizo cyoherejwe.",
+    "closedNotice": "Ikibazo cyafunzwe."
+  }
+}

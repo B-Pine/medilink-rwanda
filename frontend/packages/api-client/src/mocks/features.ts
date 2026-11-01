@@ -20,6 +20,7 @@ import { notificationsMocks } from "./features/notifications";
 import { setupMocks } from "./features/setup";
 // [/S2 imports]
 // [S10 imports]
+import { helpMocks } from "./features/help";
 // [/S10 imports]
 // [S4 imports]
 import { queueMocks } from "./features/queue";
@@ -62,6 +63,7 @@ export const FEATURE_MOCKS: FeatureMockFactory[] = [
   setupMocks,
   // [/S2]
   // [S10]
+  helpMocks,
   // [/S10]
   // [S4]
   queueMocks,

@@ -1,0 +1,117 @@
+{
+  "loading": "Chargement…",
+  "loadFailed": "Impossible de charger. Vérifiez votre connexion et réessayez.",
+  "retry": "Réessayer",
+  "search": {
+    "label": "Chercher dans l'aide",
+    "placeholder": "Par exemple : ajouter un enfant",
+    "submit": "Chercher",
+    "results_one": "{{count}} article",
+    "results_other": "{{count}} articles",
+    "none": "Aucun article ne correspond à votre recherche.",
+    "noneBody": "Essayez d'autres mots ou contactez le support."
+  },
+  "categories": {
+    "label": "Sujets",
+    "all": "Tous",
+    "getting_started": "Premiers pas",
+    "account_security": "Compte et sécurité",
+    "booking_visits": "Rendez-vous et visites",
+    "family_profile": "Famille et profil",
+    "notifications": "Notifications",
+    "privacy": "Confidentialité",
+    "facility_work": "Travailler dans un établissement",
+    "other": "Autre"
+  },
+  "articles": "Articles d'aide",
+  "shownIn": "Affiché en {{language}} : pas encore écrit dans votre langue.",
+  "languages": { "rw": "kinyarwanda", "en": "anglais", "fr": "français" },
+  "article": {
+    "back": "Retour à l'aide",
+    "notFound": "Article introuvable",
+    "notFoundBody": "Il a peut-être été déplacé ou supprimé.",
+    "stillNeedHelp": "Besoin d'aide ?"
+  },
+  "contact": {
+    "title": "Besoin d'aide ?",
+    "body": "Posez vos questions sur l'application au support MediLink : compte, rendez-vous, notifications ou confidentialité.",
+    "contact": "Contacter le support",
+    "requests": "Mes demandes",
+    "open_one": "{{count}} ouverte",
+    "open_other": "{{count}} ouvertes"
+  },
+  "status": {
+    "open": "En attente de MediLink",
+    "answered": "Réponse de MediLink",
+    "closed": "Fermée"
+  },
+  "topics": {
+    "account_access": "Connexion et compte",
+    "booking_visits": "Rendez-vous et visites",
+    "family_profile": "Famille et profil",
+    "notifications": "Notifications",
+    "privacy": "Confidentialité et données",
+    "facility_setup": "Configuration de l'établissement",
+    "technical": "Quelque chose ne fonctionne pas",
+    "other": "Autre chose",
+    "health": "Ma santé ou mon traitement"
+  },
+  "topicHints": {
+    "account_access": "Mot de passe, code de connexion, e-mail",
+    "booking_visits": "Réserver, annuler, la file d'attente",
+    "family_profile": "Enfants, membres de la famille, mes informations",
+    "notifications": "Alertes sur mon téléphone, e-mails",
+    "privacy": "Qui voit mes données, les supprimer",
+    "facility_setup": "Salles, services, personnel",
+    "technical": "Erreurs, une page qui ne s'ouvre pas",
+    "other": "Autre question sur l'application",
+    "health": "Symptômes, résultats, médicaments"
+  },
+  "requests": {
+    "title": "Mes demandes",
+    "empty": "Aucune demande",
+    "emptyBody": "Quand vous contactez le support, vos demandes apparaissent ici.",
+    "new": "Contacter le support",
+    "lastActivity": "Dernière activité {{time}}",
+    "messages_one": "{{count}} message",
+    "messages_other": "{{count}} messages"
+  },
+  "new": {
+    "title": "Contacter le support",
+    "step1": "Pour quoi avez-vous besoin d'aide ?",
+    "next": "Suivant",
+    "back": "Retour",
+    "health": {
+      "title": "Nous ne pouvons pas répondre aux questions de santé ici",
+      "body": "Le support MediLink aide seulement pour l'application. Pour vos symptômes, résultats ou médicaments, contactez votre établissement : il connaît votre dossier.",
+      "findCare": "Trouver des soins",
+      "emergency": "En cas d'urgence, appelez le 912."
+    },
+    "step2": "Dites-nous en plus",
+    "subject": "Objet",
+    "subjectHint": "Quelques mots, par exemple : je ne peux pas annuler mon rendez-vous",
+    "body": "Que s'est-il passé ?",
+    "bodyHint": "N'indiquez pas d'informations de santé : le support ne voit pas votre dossier et n'en a pas besoin.",
+    "counter": "{{count}} sur {{max}} caractères",
+    "send": "Envoyer",
+    "fixErrors": "Corrigez ces points avant d'envoyer",
+    "sent": "Demande {{reference}} envoyée. Nous répondons en général sous un jour ouvré."
+  },
+  "thread": {
+    "title": "Demande {{reference}}",
+    "topic": "Sujet : {{topic}}",
+    "you": "Vous",
+    "reply": "Votre réponse",
+    "send": "Envoyer la réponse",
+    "close": "Fermer la demande",
+    "closeConfirm": "Fermer cette demande ? Vous pourrez en ouvrir une nouvelle si besoin.",
+    "closeYes": "La fermer",
+    "cancel": "Annuler",
+    "closedTitle": "Cette demande est fermée",
+    "closedBody": "Si vous avez encore besoin d'aide, ouvrez une nouvelle demande.",
+    "openNew": "Ouvrir une nouvelle demande",
+    "notFound": "Demande introuvable",
+    "replySent": "Réponse envoyée.",
+    "closedNotice": "Demande fermée."
+  }
+}

@@ -1,0 +1,208 @@
+{
+  "nav": {
+    "help": "Ubufasha",
+    "platformSupport": "Ibibazo by'ubufasha",
+    "platformHelpArticles": "Inyandiko z'ubufasha"
+  },
+  "loadFailed": "Ntibyashobotse kubifungura. Reba interineti wongere ugerageze.",
+  "retry": "Ongera ugerageze",
+  "notFound": "Ntibibonetse",
+  "categories": {
+    "all": "Ingingo zose",
+    "getting_started": "Gutangira",
+    "account_security": "Konti n'umutekano",
+    "booking_visits": "Gahunda no kwivuza",
+    "family_profile": "Umuryango n'umwirondoro",
+    "notifications": "Kumenyeshwa",
+    "privacy": "Ibanga",
+    "facility_work": "Gukora ku ivuriro",
+    "other": "Ibindi"
+  },
+  "topics": {
+    "account_access": "Kwinjira na konti",
+    "booking_visits": "Gahunda no kwivuza",
+    "family_profile": "Umuryango n'umwirondoro",
+    "notifications": "Kumenyeshwa",
+    "privacy": "Ibanga n'amakuru",
+    "facility_setup": "Gutegura ivuriro",
+    "technical": "Hari ikitakora",
+    "other": "Ikindi kintu"
+  },
+  "status": {
+    "open": "Bitegereje MediLink",
+    "answered": "MediLink yasubije",
+    "closed": "Byafunzwe"
+  },
+  "platformStatus": {
+    "open": "Gifunguye",
+    "answered": "Cyasubijwe",
+    "closed": "Cyafunzwe"
+  },
+  "priority": {
+    "normal": "Bisanzwe",
+    "high": "Byihutirwa"
+  },
+  "audience": {
+    "patient": "Umurwayi",
+    "staff": "Umukozi"
+  },
+  "closeReasons": {
+    "resolved": "Byakemutse",
+    "no_response": "Nta gisubizo",
+    "duplicate": "Cyisubiyemo",
+    "redirected_to_facility": "Cyoherejwe ku ivuriro",
+    "withdrawn": "Cyafunzwe n'uwakibajije"
+  },
+  "languages": {
+    "rw": "Kinyarwanda",
+    "en": "Cyongereza",
+    "fr": "Gifaransa"
+  },
+  "shownIn": "Byerekanywe mu {{language}}: ntibirandikwa mu rurimi rwawe.",
+  "support": {
+    "title": "Ubufasha",
+    "description": "Amabwiriza y'akazi ku ivuriro, n'ibibazo ku bufasha bwa MediLink.",
+    "guides": "Amabwiriza",
+    "mine": "Ibibazo byanjye",
+    "facility": "Ibibazo by'ivuriro",
+    "search": "Shakisha amabwiriza",
+    "category": "Ingingo",
+    "noGuides": "Nta mabwiriza ahuye.",
+    "noRequests": "Nta bibazo",
+    "noRequestsBody": "Ibibazo woherereje ubufasha bwa MediLink bigaragara hano.",
+    "noFacilityRequests": "Nta bibazo by'abakozi b'ivuriro ryawe.",
+    "new": "Vugana n'ubufasha",
+    "lastActivity": "Igikorwa giheruka {{time}}",
+    "openedBy": "Cyafunguwe na {{name}}"
+  },
+  "article": {
+    "back": "Ubufasha",
+    "notFoundBody": "Ishobora kuba yarimuwe cyangwa yarakuweho."
+  },
+  "new": {
+    "title": "Vugana n'ubufasha bwa MediLink",
+    "topic": "Ingingo",
+    "subject": "Umutwe",
+    "body": "Byagenze bite?",
+    "adminNotice": "Umuyobozi w'ivuriro ryawe ashobora kubona iki kibazo.",
+    "noHealth": "Ntushyiremo amakuru y'ubuzima bw'abarwayi: ubufasha bufasha kuri sisitemu, si ku kuvura.",
+    "counter": "Inyuguti {{count}} kuri {{max}}",
+    "send": "Ohereza",
+    "fixErrors": "Banza ukosore ibi mbere yo kohereza",
+    "sent": "Ikibazo {{reference}} cyoherejwe."
+  },
+  "thread": {
+    "title": "Ikibazo {{reference}}",
+    "reply": "Igisubizo cyawe",
+    "send": "Ohereza igisubizo",
+    "close": "Funga ikibazo",
+    "closeConfirm": "Ufunge iki kibazo?",
+    "closeYes": "Gifunge",
+    "cancel": "Reka",
+    "readOnly": "{{name}} ni we wafunguye iki kibazo. Ushobora kugisoma, ariko ni we wenyine ushobora gusubiza.",
+    "closedTitle": "Iki kibazo cyafunzwe",
+    "openNew": "Fungura ikindi kibazo",
+    "replySent": "Igisubizo cyoherejwe.",
+    "closedNotice": "Ikibazo cyafunzwe.",
+    "you": "Wowe"
+  },
+  "queue": {
+    "title": "Ibibazo by'ubufasha",
+    "noun": "ibibazo",
+    "reference": "Nimero",
+    "subject": "Umutwe",
+    "requester": "Uwabajije",
+    "facility": "Ivuriro",
+    "topic": "Ingingo",
+    "priority": "Ikihutirwa",
+    "status": "Uko bimeze",
+    "assignee": "Ushinzwe",
+    "lastActivity": "Igikorwa giheruka",
+    "tabs": {
+      "active": "Bikiri gukorwaho",
+      "open": "Bifunguye",
+      "answered": "Byasubijwe",
+      "closed": "Byafunzwe"
+    },
+    "statusTabs": "Uko bimeze",
+    "allTopics": "Ingingo zose",
+    "allAudiences": "Abarwayi n'abakozi",
+    "audienceFilter": "Uwabajije",
+    "assigned": "Ushinzwe",
+    "anyone": "Bose",
+    "me": "Ibyo nshinzwe",
+    "none": "Nta ushinzwe",
+    "open": "Fungura {{reference}}",
+    "unassigned": "—"
+  },
+  "triage": {
+    "title": "Ibisobanuro",
+    "requester": "Uwabajije",
+    "audience": "Ubwoko",
+    "facility": "Ivuriro",
+    "language": "Ururimi",
+    "device": "Igikoresho",
+    "path": "Cyafunguwe kuri",
+    "priority": "Ikihutirwa",
+    "topic": "Ingingo",
+    "assignee": "Ushinzwe",
+    "assignMe": "Mbishinzwe",
+    "unassign": "Kuraho ushinzwe",
+    "save": "Bika ibisobanuro",
+    "saved": "Ibisobanuro byabitswe.",
+    "stale": "Undi muntu yahinduye iki kibazo. Cyongeye gufunguka: kigenzure wongere ugerageze."
+  },
+  "reply": {
+    "label": "Subiza uwabajije",
+    "send": "Ohereza igisubizo",
+    "closeTitle": "Funga ikibazo",
+    "reason": "Impamvu",
+    "closingMessage": "Ubutumwa bwo gusoza (si ngombwa)",
+    "close": "Funga ikibazo",
+    "closed": "Ikibazo cyafunzwe."
+  },
+  "articles": {
+    "title": "Inyandiko z'ubufasha",
+    "noun": "inyandiko",
+    "new": "Inyandiko nshya",
+    "slug": "Aderesi",
+    "titleCol": "Umutwe",
+    "audience": "Ni iya",
+    "category": "Ingingo",
+    "status": "Uko imeze",
+    "missing": "Indimi zibura",
+    "complete": "Yuzuye",
+    "draft": "Umushinga",
+    "published": "Yatangajwe",
+    "allAudiences": "Abarwayi n'abakozi",
+    "allStatuses": "Uko imeze kose",
+    "edit": "Hindura {{title}}"
+  },
+  "editor": {
+    "newTitle": "Inyandiko nshya y'ubufasha",
+    "editTitle": "Hindura inyandiko",
+    "slug": "Aderesi",
+    "slugHint": "Inyuguti nto, imibare n'akamenyetso kamwe, urugero: ongeramo-umwana",
+    "audience": "Ni iya",
+    "category": "Ingingo",
+    "sortOrder": "Umwanya",
+    "languages": "Indimi",
+    "fieldTitle": "Umutwe ({{language}})",
+    "fieldSummary": "Incamake ({{language}})",
+    "fieldBody": "Inyandiko ({{language}})",
+    "bodyHint": "Inyandiko isanzwe: umurongo wuzuye ubusa utangira igika gishya, umurongo utangirwa na \"- \" ni urutonde.",
+    "counter": "{{count}} kuri {{max}}",
+    "missing": "Hibura: {{languages}}. Andika indimi zose mbere yo gutangaza.",
+    "preview": "Uko izagaragara ({{language}})",
+    "save": "Bika",
+    "saved": "Byabitswe.",
+    "publish": "Tangaza",
+    "published": "Yatangajwe: abantu bashobora kuyisoma.",
+    "unpublish": "Kuraho itangazwa",
+    "unpublished": "Yasubijwe mu mushinga: ntikigaragara.",
+    "stale": "Undi muntu yahinduye iyi nyandiko. Yongeye gufunguka: yigenzure wongere ubike.",
+    "fixErrors": "Banza ukosore ibi mbere yo kubika",
+    "statusDraft": "Umushinga",
+    "statusPublished": "Yatangajwe"
+  }
+}

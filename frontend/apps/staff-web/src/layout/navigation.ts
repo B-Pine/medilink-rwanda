@@ -23,6 +23,7 @@ import { ChartPieSlice, Database, FileText, ToggleRight } from "@phosphor-icons/
 import { GitMerge } from "@phosphor-icons/react";
 // [/S3 imports]
 // [S9 imports]
+import { Megaphone, MegaphoneSimple } from "@phosphor-icons/react";
 // [/S9 imports]
 // [S2 imports]
 import { CalendarDots, ClipboardText } from "@phosphor-icons/react";
@@ -201,6 +202,22 @@ export const NAV_ITEMS: readonly NavItem[] = [
   },
   // [/S3]
   // [S9]
+  {
+    key: "announcements",
+    path: "/announcements",
+    icon: Megaphone,
+    group: "facility",
+    labelKey: "notifications.nav.announcements",
+    visible: hasAny("announcements.manage"),
+  },
+  {
+    key: "platformAnnouncements",
+    path: "/platform/announcements",
+    icon: MegaphoneSimple,
+    group: "platform",
+    labelKey: "notifications.nav.platformAnnouncements",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
   // [/S9]
   // [S2]
   {

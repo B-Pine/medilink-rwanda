@@ -49,6 +49,7 @@ export const pwaOptions: Partial<VitePWAOptions> = {
       // [S3]
       // [/S3]
       // [S9]
+      "push-sw.js",
       // [/S9]
       // [S2]
       // [/S2]

@@ -28,3 +28,15 @@ export {
 } from "./features/setup";
 export { MOCK_DISPLAY_TOKEN } from "./features/queue";
 export type { MockFeatureFlags } from "./handlers";
+// [S9]
+export {
+  allowedPushHost,
+  emitMockNotification,
+  MOCK_PUSH_ENDPOINT_BASE,
+  MOCK_VAPID_PUBLIC_KEY,
+  mockSocketLog,
+  setMockCriticalLocked,
+  setMockPushEnabled,
+} from "./features/notifications";
+export type { EmitMockNotificationInput } from "./features/notifications";
+// [/S9]

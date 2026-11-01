@@ -147,5 +147,36 @@
     "cancelLate": "Hasigaye amasaha ari munsi ya 2 (ku buntu kugeza {{time}}). Bizandikwa ko wasibye utinze.",
     "keep": "Yigumishe",
     "cancelConfirm": "Siba gahunda"
+  },
+  "offer": {
+    "title": "Umwanya wawe wahindutse",
+    "moved": "Ikigo cyimuye gahunda yawe kuva {{from}} kugeza {{to}}.",
+    "movedTo": "Ikigo cyimuriye gahunda yawe {{to}}.",
+    "doctor": "Uzakirwa na {{doctor}}.",
+    "autoAccept": "Nutasubiza bitarenze {{time}}, tuzakubikira igihe gishya.",
+    "answer": "Turagusaba gusubiza: ikigo gishobora no kuguhamagara.",
+    "keep": "Emera igihe gishya",
+    "other": "Hitamo ikindi gihe",
+    "cancel": "Hagarika uyu mwanya",
+    "cancelBody": "Umwanya {{code}} urahagarikwa. Ntibibarwa nko guhagarika bitinze.",
+    "otherTitle": "Hitamo ikindi gihe",
+    "loading": "Turashaka imyanya iboneka…",
+    "noTimes": "Nta mwanya uboneka muri iki cyumweru. Emera igihe gishya cyangwa uhagarike.",
+    "day": "Umunsi",
+    "times": "Imyanya iboneka"
+  },
+  "feed": {
+    "title": "Kwiyandikisha kuri kalendari",
+    "body": "Shyira gahunda z'umuryango wawe kuri kalendari ya telefoni yawe. Igaragaza ikigo, serivisi, isaha na kode gusa.",
+    "toggle": "Ihuza rya kalendari",
+    "on": "Birakora",
+    "off": "Ntibikora",
+    "link": "Ihuza ryawe bwite",
+    "once": "Rikoporore ubu: rigaragara rimwe gusa. Ufite iri huza wese abona amasaha ya gahunda zawe.",
+    "copy": "Koporora ihuza",
+    "copied": "Ihuza ryakoporowe.",
+    "open": "Fungura muri kalendari yanjye",
+    "since": "Birakora kuva {{day}}. Ushaka irindi huza, bizimye hanyuma ubyongere ubifungure.",
+    "failed": "Ntibishobotse guhindura ihuza rya kalendari. Ongera ugerageze."
   }
 }

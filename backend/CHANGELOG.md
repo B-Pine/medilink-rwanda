@@ -8,6 +8,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+
+### Sprint 5b · Disruptions, follow-ups and the calendar feed
+
+- Disruptions (FR-SCH-14): staff mark a doctor, service or the whole facility unavailable for a
+  period; the affected confirmed bookings and today's remote tickets are listed; per item or in
+  bulk, move to another doctor or time, offer a choice or cancel. Patients keep, choose another
+  time or cancel (never a late cancellation and never a strike); an unanswered offer more than a
+  day ahead is accepted automatically. Slot generation opens a disruption when booked slots no
+  longer fit the schedule.
+- Follow-ups (FR-SCH-15): the doctor books the same doctor for a later date or, when no slot is
+  free, stores a reminder.
+- Calendar feed (FR-SCH-11): a private `.ics` subscription per account, dependants included; the
+  32-byte token is shown once and stored as SHA-256, revocable, served `no-store`.
+- Reception calendar (day and week, per doctor) and the doctor's own calendar.
+- New tables `scheduling_disruption`, `scheduling_disruption_item`, `scheduling_follow_up`,
+  `scheduling_calendar_feed` with forced row-level security (facility; the feed by account); a
+  periodic job accepts unanswered offers after the reply window.
+
 ### Security
 
 - pypdf 6.21.2 → 6.21.4 in the hash-pinned locks (CVE-2026-119203 to CVE-2026-119209, reported by

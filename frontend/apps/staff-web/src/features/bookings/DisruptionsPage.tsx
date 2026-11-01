@@ -28,7 +28,7 @@ import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
 import { SetupGate, useLocalName } from "../setup/shared";
 import { calendarKeys } from "./CalendarPage";
-import { kigaliDate, slotDay, slotTime } from "./time";
+import { kigaliDate, slotDay, slotTime, text } from "./time";
 
 const ACTIONS: DisruptionAction[] = ["move_doctor", "next_slot", "cancel"];
 const KINDS: DisruptionKind[] = ["doctor_absent", "closure", "schedule_change"];
@@ -228,11 +228,11 @@ function WhatStep({
     mutationFn: (form: FormData) =>
       api.booking.staff.createDisruption({
         kind,
-        membership_id: String(form.get("membership_id") ?? "") || null,
-        service_id: String(form.get("service_id") ?? "") || null,
-        starts_at: kigaliIso(String(form.get("starts_at"))),
-        ends_at: kigaliIso(String(form.get("ends_at"))),
-        reason: String(form.get("reason") ?? ""),
+        membership_id: text(form, "membership_id") || null,
+        service_id: text(form, "service_id") || null,
+        starts_at: kigaliIso(text(form, "starts_at")),
+        ends_at: kigaliIso(text(form, "ends_at")),
+        reason: text(form, "reason"),
       }),
     onSuccess: onCreated,
   });

@@ -6,7 +6,7 @@ import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useApi } from "../../app/services";
-import { slotDay, slotTime } from "./time";
+import { slotDay, slotTime, text } from "./time";
 
 const followUpKey = (visitId: string) => ["bookings", "follow-up", visitId] as const;
 
@@ -65,11 +65,11 @@ export function FollowUpAction({ visitId, name }: { visitId: string; name: strin
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    const count = Number(form.get("count"));
-    const unit = String(form.get("unit"));
+    const count = Number(text(form, "count"));
+    const unit = text(form, "unit");
     save.mutate({
       in_days: unit === "weeks" ? count * 7 : count,
-      mode: String(form.get("mode")) as FollowUpMode,
+      mode: text(form, "mode") as FollowUpMode,
     });
   };
   const done = existing.data ?? null;

@@ -1,3 +1,4 @@
+import { formatTime } from "@medilink/ui/i18n";
 import type { DutyState, TicketRow } from "@medilink/api-client";
 import {
   Alert,
@@ -36,7 +37,7 @@ const DUTY: DutyState[] = ["on_duty", "break", "emergency", "off"];
  * the waiting list in calling order.
  */
 export function MyQueuePage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const api = useApi();
   const queryClient = useQueryClient();
   const serviceName = useServiceNames();
@@ -159,10 +160,7 @@ export function MyQueuePage() {
         {duty?.state === "break" && duty.until_at && (
           <p className="m-0 text-body-sm text-fg-secondary">
             {t("queue.mine.breakUntil", {
-              time: new Date(duty.until_at).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              }),
+              time: formatTime(duty.until_at, i18n.resolvedLanguage ?? "rw"),
             })}
           </p>
         )}

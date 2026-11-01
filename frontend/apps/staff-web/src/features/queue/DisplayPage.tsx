@@ -1,3 +1,4 @@
+import { formatTime } from "@medilink/ui/i18n";
 import {
   connectLive,
   isApiError,
@@ -132,7 +133,7 @@ export function DisplayPage() {
             </button>
           )}
           <p className="m-0 font-heading text-[4vh] font-bold tabular-nums">
-            {now.toLocaleTimeString(lang, { hour: "2-digit", minute: "2-digit" })}
+            {formatTime(now, lang)}
           </p>
         </div>
       </header>

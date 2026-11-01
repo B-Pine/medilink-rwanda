@@ -487,6 +487,11 @@ def mailers_config(email_url: str) -> dict[str, dict[str, Any]]:
 MAILERS = mailers_config(env("EMAIL_URL", default="smtp://127.0.0.1:1025"))
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="MediLink Rwanda <no-reply@medilink.test>")
 
+# Daily audit anchor (medilink.audit.anchor): log | email | file
+AUDIT_ANCHOR_SINK = env("AUDIT_ANCHOR_SINK", default="log")
+AUDIT_ANCHOR_EMAIL = env("AUDIT_ANCHOR_EMAIL", default="")
+AUDIT_ANCHOR_FILE = env("AUDIT_ANCHOR_FILE", default="")
+
 # --------------------------------------------------------------------------------------------
 # Logging: structured, request ID on every line, personal data scrubbed (security 08 §1).
 # --------------------------------------------------------------------------------------------

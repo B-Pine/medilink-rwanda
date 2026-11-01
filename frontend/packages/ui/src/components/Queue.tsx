@@ -77,13 +77,16 @@ export function QueueFlagChip({ flag, children }: { flag: QueueFlag; children: R
   );
 }
 
-export type TicketTone = "brand" | "attention" | "danger" | "neutral";
+/** `onForest` and `onSolid` sit on the deep-forest band and on a solid ochre card. */
+export type TicketTone = "brand" | "attention" | "danger" | "neutral" | "onForest" | "onSolid";
 
 const TICKET_TONES: Record<TicketTone, string> = {
   brand: "bg-brand-subtle text-on-brand-subtle",
   attention: "bg-attention-bg text-attention",
   danger: "bg-danger-bg text-danger",
   neutral: "bg-subtle text-fg-secondary",
+  onForest: "bg-on-forest/10 text-on-forest",
+  onSolid: "bg-surface text-fg",
 };
 
 const STUB_SIZES = {

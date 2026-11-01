@@ -122,9 +122,15 @@ export function DeskFlow({
 
 export type FlowBottleneck = {
   stage: "waiting" | "payment" | "pharmacy";
-  minutes: number;
+  /** Median minutes since arrival, for the waiting stage only. */
+  minutes: number | null;
   people: number;
 };
+
+/** A median wait from arrival this long marks waiting as the slow step. */
+const SLOW_WAIT_MINUTES = 20;
+/** This many people at payment or the pharmacy is a queue forming there. */
+const QUEUE_FORMING = 3;
 
 /** The numbers behind the flow strip, shared by reception and the facility dashboard. */
 export function useFlowModel(
@@ -134,25 +140,30 @@ export function useFlowModel(
   const { t } = useTranslation();
   const inStage = (stages: string[], pick: (q: QueueGroup) => TicketRow[]) =>
     queues.filter((q) => stages.includes(q.stage)).flatMap(pick);
-  const waitOf = (rows: TicketRow[]) => rows.map((r) => minutesSince(r.arrival_at));
+  // Remote joiners reception has not seen yet are not on site (S5 D-10)
+  const onSite = (r: TicketRow) => !r.is_remote || Boolean(r.remote_arrival_confirmed_at);
 
-  const waiting = inStage(["reception", "consultation"], (q) => q.waiting);
+  // Waiting: everyone on site before the doctor, including those at the reception desk
+  const waiting = inStage(["reception", "consultation"], (q) => q.waiting).filter(onSite);
+  const atDesk = inStage(["reception"], (q) => [...q.called, ...q.in_service]);
   const withDoctor = inStage(["consultation"], (q) => [...q.called, ...q.in_service]);
   const paying = inStage(["payment"], (q) => [...q.waiting, ...q.called, ...q.in_service]);
   const pharmacy = inStage(["pharmacy"], (q) => [...q.waiting, ...q.called, ...q.in_service]);
   const booked = (expected ?? []).filter((b) => b.status === "confirmed");
   const late = booked.filter((b) => b.late).length;
 
-  const longest = {
-    waiting: median(waitOf(waiting)),
-    payment: Math.max(0, ...waitOf(paying)),
-    pharmacy: Math.max(0, ...waitOf(pharmacy)),
-  };
-  const slowest = (Object.entries(longest) as [keyof typeof longest, number][])
-    .filter(([, minutes]) => minutes >= 15)
-    .sort((a, b) => b[1] - a[1])[0]?.[0];
+  // Minutes since arrival is a patient's whole wait, so it only measures the first stage. Later
+  // stages have no stage-entry time on the row, so they are judged by how many people queue.
+  const waitingMedian = median(waiting.map((r) => minutesSince(r.arrival_at)));
+  const candidates: [FlowBottleneck["stage"], boolean, number][] = [
+    ["waiting", waitingMedian >= SLOW_WAIT_MINUTES, waiting.length],
+    ["payment", paying.length >= QUEUE_FORMING, paying.length],
+    ["pharmacy", pharmacy.length >= QUEUE_FORMING, pharmacy.length],
+  ];
+  const slowest = candidates.filter(([, slow]) => slow).sort((a, b) => b[2] - a[2])[0]?.[0];
 
-  const counts = [booked.length, waiting.length, withDoctor.length, paying.length, pharmacy.length];
+  const waitingCount = waiting.length + atDesk.length;
+  const counts = [booked.length, waitingCount, withDoctor.length, paying.length, pharmacy.length];
   const top = Math.max(1, ...counts);
   const stages: FlowStage[] = [
     {
@@ -171,11 +182,11 @@ export function useFlowModel(
       key: "waiting",
       label: t("queue.flow.waiting"),
       icon: UsersThree,
-      count: waiting.length,
+      count: waitingCount,
       detail: waiting.length
-        ? t("queue.flow.median", { count: longest.waiting })
+        ? t("queue.flow.median", { count: waitingMedian })
         : t("queue.flow.none"),
-      share: waiting.length / top,
+      share: waitingCount / top,
       hot: slowest === "waiting",
     },
     {
@@ -194,7 +205,7 @@ export function useFlowModel(
       icon: Receipt,
       count: paying.length,
       detail: paying.length
-        ? t("queue.flow.longest", { count: longest.payment })
+        ? t("queue.flow.people", { count: paying.length })
         : t("queue.flow.none"),
       share: paying.length / top,
       hot: slowest === "payment",
@@ -205,7 +216,7 @@ export function useFlowModel(
       icon: Pill,
       count: pharmacy.length,
       detail: pharmacy.length
-        ? t("queue.flow.longest", { count: longest.pharmacy })
+        ? t("queue.flow.people", { count: pharmacy.length })
         : t("queue.flow.none"),
       share: pharmacy.length / top,
       hot: slowest === "pharmacy",
@@ -215,7 +226,11 @@ export function useFlowModel(
   return {
     stages,
     bottleneck: slowest
-      ? { stage: slowest, minutes: longest[slowest], people: people[slowest] }
+      ? {
+          stage: slowest,
+          minutes: slowest === "waiting" ? waitingMedian : null,
+          people: people[slowest],
+        }
       : null,
   };
 }
@@ -228,14 +243,13 @@ export function BottleneckCallout({ bottleneck }: { bottleneck: FlowBottleneck |
   const { t } = useTranslation();
   if (!bottleneck) return null;
   return (
-    <p
-      role="status"
-      className="m-0 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md bg-attention-bg px-4 py-3 text-attention"
-    >
+    <p className="m-0 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md bg-attention-bg px-4 py-3 text-attention">
       <WarningCircle aria-hidden="true" weight="bold" className="size-5 shrink-0" />
       <strong className="font-semibold text-fg">{t(`queue.flow.slow.${bottleneck.stage}`)}</strong>
       <span>
-        {t("queue.flow.slowDetail", { count: bottleneck.people, minutes: bottleneck.minutes })}
+        {bottleneck.minutes === null
+          ? t("queue.flow.people", { count: bottleneck.people })
+          : t("queue.flow.slowDetail", { count: bottleneck.people, minutes: bottleneck.minutes })}
       </span>
     </p>
   );

@@ -117,7 +117,7 @@ export function BookingCard({ booking }: { booking: Booking }) {
   return (
     <article
       aria-labelledby={`bk-${booking.id}`}
-      className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5 shadow-raised"
+      className="flex flex-col gap-4 rounded-lg bg-surface shadow-raised p-5 "
     >
       <div className="flex items-start gap-4">
         <DateTile iso={booking.starts_at} />

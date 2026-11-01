@@ -316,8 +316,6 @@
     "late_other": "{{count}} en retard",
     "median_one": "Médiane {{count}} min",
     "median_other": "Médiane {{count}} min",
-    "longest_one": "Le plus long {{count}} min",
-    "longest_other": "Le plus long {{count}} min",
     "called_one": "{{count}} appelé",
     "called_other": "{{count}} appelés",
     "slow": {
@@ -325,7 +323,9 @@
       "payment": "Le paiement est l'étape la plus lente en ce moment.",
       "pharmacy": "La pharmacie est l'étape la plus lente en ce moment."
     },
-    "slowDetail_one": "{{count}} personne, jusqu'à {{minutes}} min.",
-    "slowDetail_other": "{{count}} personnes, jusqu'à {{minutes}} min."
+    "slowDetail_one": "{{count}} personne, médiane {{minutes}} min depuis l'arrivée.",
+    "slowDetail_other": "{{count}} personnes, médiane {{minutes}} min depuis l'arrivée.",
+    "people_one": "{{count}} personne",
+    "people_other": "{{count}} personnes"
   }
 }

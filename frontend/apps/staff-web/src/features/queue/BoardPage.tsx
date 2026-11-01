@@ -65,8 +65,13 @@ function useChangedRows(rows: TicketRow[]): Set<string> {
     seen.current = new Map(rows.map((r) => [r.id, r.version]));
     if (!previous) return;
     const fresh = rows.filter((r) => previous.get(r.id) !== r.version).map((r) => r.id);
-    // Every row "changed" at once is a reload (e.g. coming back to the page), not a live update.
-    if (!fresh.length || (fresh.length === rows.length && rows.length > 1)) return;
+    // Every row "changed" at once is a reload (e.g. coming back to the page), not a live update,
+    // so it is not highlighted (a rare live update touching every row is not either). With
+    // nothing new, clear any highlight whose timer the previous run's cleanup cancelled.
+    if (!fresh.length || (fresh.length === rows.length && rows.length > 1)) {
+      setChanged((current) => (current.size ? new Set() : current));
+      return;
+    }
     setChanged(new Set(fresh));
     const timer = setTimeout(() => setChanged(new Set()), 1_500);
     return () => clearTimeout(timer);

@@ -84,7 +84,8 @@ export function MyQueuePage() {
       const typing =
         target?.isContentEditable ||
         ["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(target?.tagName ?? "");
-      if (event.code === "Space" && !typing && canCall) {
+      const dialogOpen = Boolean(document.querySelector('[role="dialog"], [role="alertdialog"]'));
+      if (event.code === "Space" && !typing && !event.repeat && !dialogOpen && canCall) {
         event.preventDefault();
         callNext.mutate();
       }

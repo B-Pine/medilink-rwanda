@@ -155,7 +155,7 @@ function Tracker({ visit, lang }: { visit: PatientVisit; lang: string }) {
       )}
       <section
         aria-labelledby="ticket"
-        className="flex flex-col items-center gap-5 rounded-lg bg-surface shadow-card px-5 py-7 text-center shadow-raised"
+        className="flex flex-col items-center gap-5 rounded-lg bg-surface shadow-raised px-5 py-7 text-center "
       >
         <p className="m-0 text-fg-secondary">
           {visit.facility_name} · {name}
@@ -514,8 +514,7 @@ export function ActiveVisitCard() {
                 number={v.ticket_number}
                 size="lg"
                 stub
-                tone={called ? "neutral" : "brand"}
-                className={called ? "bg-surface text-fg" : "bg-on-forest/10 text-on-forest"}
+                tone={called ? "onSolid" : "onForest"}
               />
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                 {called ? (

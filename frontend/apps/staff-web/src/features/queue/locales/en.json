@@ -316,8 +316,6 @@
     "late_other": "{{count}} late",
     "median_one": "Median {{count}} min",
     "median_other": "Median {{count}} min",
-    "longest_one": "Longest {{count}} min",
-    "longest_other": "Longest {{count}} min",
     "called_one": "{{count}} being called",
     "called_other": "{{count}} being called",
     "slow": {
@@ -325,7 +323,9 @@
       "payment": "Payment is the slow step right now.",
       "pharmacy": "The pharmacy is the slow step right now."
     },
-    "slowDetail_one": "{{count}} person, up to {{minutes}} min.",
-    "slowDetail_other": "{{count}} people, up to {{minutes}} min."
+    "slowDetail_one": "{{count}} person, median {{minutes}} min since arriving.",
+    "slowDetail_other": "{{count}} people, median {{minutes}} min since arriving.",
+    "people_one": "{{count}} person",
+    "people_other": "{{count}} people"
   }
 }

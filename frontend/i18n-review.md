@@ -2035,15 +2035,15 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `flow.late_other` | {{count}} bakererewe | {{count}} late | needs native-speaker review |
 | `flow.median_one` | Hagati: iminota {{count}} | Median {{count}} min | needs native-speaker review |
 | `flow.median_other` | Hagati: iminota {{count}} | Median {{count}} min | needs native-speaker review |
-| `flow.longest_one` | Igihe kirekire: iminota {{count}} | Longest {{count}} min | needs native-speaker review |
-| `flow.longest_other` | Igihe kirekire: iminota {{count}} | Longest {{count}} min | needs native-speaker review |
 | `flow.called_one` | {{count}} arahamagawe | {{count}} being called | needs native-speaker review |
 | `flow.called_other` | {{count}} barahamagawe | {{count}} being called | needs native-speaker review |
 | `flow.slow.waiting` | Gutegereza muganga ni ho bitinda ubu. | Waiting for a doctor is the slow step right now. | needs native-speaker review |
 | `flow.slow.payment` | Kwishyura ni ho bitinda ubu. | Payment is the slow step right now. | needs native-speaker review |
 | `flow.slow.pharmacy` | Farumasi ni ho bitinda ubu. | The pharmacy is the slow step right now. | needs native-speaker review |
-| `flow.slowDetail_one` | Umuntu {{count}}, kugeza ku minota {{minutes}}. | {{count}} person, up to {{minutes}} min. | needs native-speaker review |
-| `flow.slowDetail_other` | Abantu {{count}}, kugeza ku minota {{minutes}}. | {{count}} people, up to {{minutes}} min. | needs native-speaker review |
+| `flow.slowDetail_one` | Umuntu {{count}}, hagati: iminota {{minutes}} kuva ahageze. | {{count}} person, median {{minutes}} min since arriving. | needs native-speaker review |
+| `flow.slowDetail_other` | Abantu {{count}}, hagati: iminota {{minutes}} kuva bahageze. | {{count}} people, median {{minutes}} min since arriving. | needs native-speaker review |
+| `flow.people_one` | Umuntu {{count}} | {{count}} person | needs native-speaker review |
+| `flow.people_other` | Abantu {{count}} | {{count}} people | needs native-speaker review |
 
 ## staff-web feature: setup (namespace setup)
 

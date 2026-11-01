@@ -22,8 +22,7 @@ export interface ButtonProps extends ComponentPropsWithRef<"button"> {
 
 const VARIANTS: Record<ButtonVariant, string> = {
   primary: "bg-primary text-on-primary hover:bg-primary-hover border border-transparent",
-  secondary:
-    "bg-surface text-fg border border-transparent shadow-[inset_0_0_0_1px_var(--ml-border-input)] hover:bg-subtle",
+  secondary: "bg-surface text-fg border border-border-input hover:bg-subtle",
   ghost: "bg-transparent text-fg border border-transparent hover:bg-subtle",
   danger: "bg-danger-solid text-on-danger-solid border border-transparent hover:bg-danger-solid/90",
 };

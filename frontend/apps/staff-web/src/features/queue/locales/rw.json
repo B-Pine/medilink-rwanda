@@ -316,8 +316,6 @@
     "late_other": "{{count}} bakererewe",
     "median_one": "Hagati: iminota {{count}}",
     "median_other": "Hagati: iminota {{count}}",
-    "longest_one": "Igihe kirekire: iminota {{count}}",
-    "longest_other": "Igihe kirekire: iminota {{count}}",
     "called_one": "{{count}} arahamagawe",
     "called_other": "{{count}} barahamagawe",
     "slow": {
@@ -325,7 +323,9 @@
       "payment": "Kwishyura ni ho bitinda ubu.",
       "pharmacy": "Farumasi ni ho bitinda ubu."
     },
-    "slowDetail_one": "Umuntu {{count}}, kugeza ku minota {{minutes}}.",
-    "slowDetail_other": "Abantu {{count}}, kugeza ku minota {{minutes}}."
+    "slowDetail_one": "Umuntu {{count}}, hagati: iminota {{minutes}} kuva ahageze.",
+    "slowDetail_other": "Abantu {{count}}, hagati: iminota {{minutes}} kuva bahageze.",
+    "people_one": "Umuntu {{count}}",
+    "people_other": "Abantu {{count}}"
   }
 }

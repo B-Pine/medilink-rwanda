@@ -105,7 +105,7 @@ export function ExpectedList({
           icon={CalendarCheck}
           title={t("queue.board.expectedEmptyTitle")}
           description={t("queue.board.expectedEmpty")}
-          className="rounded-lg bg-surface shadow-card"
+          className="rounded-lg border border-dashed border-border"
         />
       </div>
     );

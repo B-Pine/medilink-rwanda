@@ -167,7 +167,8 @@ function Tracker({ visit, lang }: { visit: PatientVisit; lang: string }) {
           <TicketNumber
             number={visit.ticket_number}
             size="display"
-            className="text-[3.5rem] leading-none text-fg"
+            stub
+            tone={visit.state === "called" ? "attention" : "brand"}
           />
           <span className="text-fg-secondary">{t("tracker.yourTicket")}</span>
         </div>
@@ -495,15 +496,17 @@ export function ActiveVisitCard() {
               called ? "bg-attention-solid text-on-attention-solid" : "bg-forest text-on-forest",
             )}
           >
-            {!called && (
-              <ImigongoPattern opacity={0.06} className="-z-10 text-on-forest-accent" />
-            )}
+            {!called && <ImigongoPattern opacity={0.06} className="-z-10 text-on-forest-accent" />}
             <span className="flex items-center justify-between gap-3 text-body-sm font-semibold">
               <span className="min-w-0 truncate">{v.facility_name}</span>
               <span className="inline-flex shrink-0 items-center gap-1.5">
                 <span aria-hidden="true" className="ml-live-dot" />
                 {t("tracker.open")}
-                <CaretRight aria-hidden="true" weight="bold" className="size-4 transition-transform group-hover:translate-x-0.5" />
+                <CaretRight
+                  aria-hidden="true"
+                  weight="bold"
+                  className="size-4 transition-transform group-hover:translate-x-0.5"
+                />
               </span>
             </span>
             <span className="flex flex-wrap items-center gap-x-5 gap-y-3">
@@ -525,7 +528,9 @@ export function ActiveVisitCard() {
                       <span className="font-heading text-display leading-none font-extrabold tabular-nums">
                         {v.ahead}
                       </span>
-                      <span className="font-semibold">{t("tracker.aheadShort", { count: v.ahead })}</span>
+                      <span className="font-semibold">
+                        {t("tracker.aheadShort", { count: v.ahead })}
+                      </span>
                     </span>
                     {v.estimate.min !== null && (
                       <span className="text-body-sm opacity-85">

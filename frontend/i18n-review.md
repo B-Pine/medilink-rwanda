@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 3179.
+Keys: 3182.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -412,6 +412,7 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `home.links.family` | Abagize umuryango | Family members | needs native-speaker review |
 | `home.links.privacy` | Ibanga n’abarebye dosiye yanjye | Privacy and who saw my records | needs native-speaker review |
 | `home.links.settings` | Ingano y’inyandiko, ururimi n’ibara | Text size, language and theme | needs native-speaker review |
+| `home.notSureBody` | Subiza ibibazo bike ku buryo wiyumva, tukakwereka aho wajya. | Answer a few questions about how you feel, and we suggest where to go. | needs native-speaker review |
 | `info.back` | Subira ahabanza | Back to the home page | needs native-speaker review |
 | `info.verify.title` | Genzura inyandiko | Verify a document | needs native-speaker review |
 | `info.verify.body` | Vuba aha, farumasi n’abakoresha bazashobora kugenzura hano urupapuro rwa muganga, inyemezabwishyu cyangwa icyemezo cy’uburwayi bakoresheje kode cyangwa QR. | Soon pharmacies and employers can check a prescription, receipt or sick note here with its code or QR. | needs native-speaker review |
@@ -3328,4 +3329,6 @@ File: `apps/patient-web/src/features/tracker/locales/rw.json`
 | `remote.passOver` | Gera ku kigo vuba wiyandikishe ku kwakira abarwayi. Nibatakwemeza mbere y'uko igihe cyawe kigera, umwanya wawe usubira inyuma. | Get to the facility and check in at reception soon. If reception hasn't confirmed you when your turn comes, your place moves back. | needs native-speaker review |
 | `remote.passOverClaimed` | Erekana tike yawe ku kwakira abarwayi ubu. Kugeza bemeje ko wahageze, umwanya wawe ushobora gusubira inyuma. | Show your ticket at reception now. Until they confirm you're here, your place can move back. | needs native-speaker review |
 | `remote.changed` | Tike yawe yahindutse. Twayivuguruye. Ongera ugerageze. | Your ticket changed. We refreshed it. Try again. | needs native-speaker review |
+| `aheadShort_one` | umuntu uri imbere yawe | person ahead of you | needs native-speaker review |
+| `aheadShort_other` | abantu bari imbere yawe | people ahead of you | needs native-speaker review |
 

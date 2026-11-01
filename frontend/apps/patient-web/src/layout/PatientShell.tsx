@@ -25,7 +25,7 @@ import {
   ProfileSwitcher,
   SkipLink,
 } from "@medilink/ui";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, NavLink, Outlet, useLocation, useNavigate, useParams } from "react-router";
 
@@ -150,6 +150,21 @@ function HeaderProfileSwitcher() {
   );
 }
 
+const WIDE = "(min-width: 48rem)";
+
+/** Tablet width and up (the md breakpoint): the menu moves from the bottom bar into the header. */
+function useWide(): boolean {
+  return useSyncExternalStore(
+    (onChange) => {
+      const query = window.matchMedia?.(WIDE);
+      query?.addEventListener?.("change", onChange);
+      return () => query?.removeEventListener?.("change", onChange);
+    },
+    () => window.matchMedia?.(WIDE).matches ?? false,
+    () => false,
+  );
+}
+
 /**
  * The four destinations (design 07 §2). Phones get a bottom tab bar, rendered outside the sticky
  * header: the header's backdrop blur would otherwise pin a "fixed" bar to the header itself.
@@ -163,8 +178,8 @@ function PrimaryNav({ variant }: { variant: "bar" | "top" }) {
       aria-label={t("shell.nav")}
       className={cx(
         bar
-          ? "fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
-          : "ml-2 hidden shrink-0 md:block",
+          ? "fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md"
+          : "ml-2 shrink-0",
       )}
     >
       <ul className={cx("m-0 list-none p-0", bar ? "grid grid-cols-4" : "flex gap-1")}>
@@ -222,24 +237,28 @@ function PrimaryNav({ variant }: { variant: "bar" | "top" }) {
 export function PatientShell() {
   const { t } = useTranslation();
   const online = useOnline();
+  const wide = useWide();
   return (
     <div className="flex min-h-dvh flex-col bg-page text-body">
       <SkipLink />
       <header className="sticky top-0 z-30 border-b border-border bg-page/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-[72rem] flex-wrap items-center md:flex-nowrap gap-x-3 gap-y-2 px-4 py-2 sm:px-6">
+        <div className="mx-auto flex max-w-[72rem] items-center gap-x-3 px-4 py-2 sm:px-6">
           <Link
             to="/home"
             className="inline-flex min-h-target items-center rounded-sm no-underline"
           >
-            <Logo className="h-10" />
+            <Logo className="h-9" />
           </Link>
-          <PrimaryNav variant="top" />
-          <div className="ml-auto flex min-w-0 flex-wrap items-center md:flex-nowrap justify-end gap-2">
+          {wide && <PrimaryNav variant="top" />}
+          <div className="ml-auto flex min-w-0 items-center justify-end gap-1.5 sm:gap-2">
             <HeaderProfileSwitcher />
             {FEATURE_HEADER_ITEMS().map((Item, index) => (
               <Item key={index} />
             ))}
-            <LanguageSwitcher compact />
+            {/* On phones the language lives in Settings, so the header stays one row */}
+            <div className="hidden sm:block">
+              <LanguageSwitcher compact />
+            </div>
             <AccountMenu />
           </div>
         </div>
@@ -260,7 +279,7 @@ export function PatientShell() {
       >
         <Outlet />
       </main>
-      <PrimaryNav variant="bar" />
+      {!wide && <PrimaryNav variant="bar" />}
     </div>
   );
 }

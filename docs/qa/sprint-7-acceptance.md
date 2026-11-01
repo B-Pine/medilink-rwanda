@@ -23,7 +23,7 @@ Evidence collected on 2026-11-01 on PostgreSQL 16, suite run as the runtime role
 | S7-B11 | Dosing labels, Kinyarwanda by default | `test_substitution_not_available_and_controlled` (labels `rw` by default, `en` on request) | | | Pending |
 | S7-B12 | My medicines: statuses, no overrides or notes, delegates and restricted | `test_patient_reads_own_prescriptions`, `test_delegates_do_not_see_restricted_and_strangers_see_nothing`, `test_patient_schemas_carry_no_overrides_or_consultation_text` | | | Pending |
 | S7-B13 | Expiry job; `mark_covered` | `test_expiry_job`, `test_issue_numbers_expiry_and_payment_first` | | | Pending |
-| S7-B14 | Forced RLS; append-only; audit IDs only; migrations reverse; coverage ≥ 90 % | `test_every_pharmacy_table_has_forced_rls`, `tests/test_rls_coverage.py`, the append-only and lock assertions above, `test_audit_entries_carry_ids_only`; `migrate pharmacy zero` / `documents zero` and back; coverage: `pharmacy` 96 %, `documents` 100 % on the S7 suites | | | Pending |
+| S7-B14 | Forced RLS; append-only; audit IDs only; migrations reverse; coverage ≥ 90 % | `test_every_pharmacy_table_has_forced_rls`, `tests/test_rls_coverage.py`, the append-only and lock assertions above, `test_audit_entries_carry_ids_only`; `migrate pharmacy zero` / `documents zero` and back; coverage on the full suite: `pharmacy` 97 %, `documents` 100 % | | | Pending |
 | S7-B15..B22 | (S7b) documents | Not started | | | Not in S7a |
 
 ## Frontend checks
@@ -46,3 +46,4 @@ Evidence collected on 2026-11-01 on PostgreSQL 16, suite run as the runtime role
 |---|---|---|
 | 2026-11-01 | `ruff check`, `ruff format --check`, `mypy .`, `makemigrations --check`, `spectacular --validate --fail-on-warn` | Clean |
 | 2026-11-01 | `pytest tests/s7 tests/s6` with coverage | 55 passed |
+| 2026-11-01 | Full backend suite with coverage, per-app gate | 765 passed; `pharmacy` 97 %, `documents` 100 %, every other app at or above its floor |

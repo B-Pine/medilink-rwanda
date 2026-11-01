@@ -166,7 +166,8 @@ class _PlatformList(_PlatformBase):
     parser_classes = [JSONParser]
 
     def get_queryset(self) -> QuerySet[Any]:
-        qs = self.kind.model.objects.all()
+        # Reviewed: platform admins manage master data for every facility (not tenant data).
+        qs = self.kind.model.objects.all()  # nosemgrep: medilink-objects-all-in-view
         params = self.request.query_params
         if "is_active" in params:
             qs = qs.filter(is_active=_bool_param(params["is_active"]))

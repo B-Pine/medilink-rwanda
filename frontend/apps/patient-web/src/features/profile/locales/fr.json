@@ -201,7 +201,11 @@
     "care": "Consentement aux soins",
     "careHint": "Les établissements en ont besoin pour conserver votre dossier médical.",
     "history": "Voir qui a ouvert mon dossier",
-    "later": "Le téléchargement et la suppression de vos données seront disponibles plus tard."
+    "later": "Le téléchargement et la suppression de vos données seront disponibles plus tard.",
+    "notifications": "Messages sur mes soins",
+    "notificationsHint": "Rappels et nouvelles sur les visites et les rendez-vous.",
+    "location": "Utiliser ma position",
+    "locationHint": "Trouver des établissements près de vous."
   },
   "claim": {
     "title": "Réclamer mon dossier",

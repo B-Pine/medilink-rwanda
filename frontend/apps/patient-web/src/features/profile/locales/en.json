@@ -201,7 +201,11 @@
     "care": "Consent to care",
     "careHint": "Facilities need this to keep your health record.",
     "history": "See who opened my record",
-    "later": "Downloading or deleting your data will be available later."
+    "later": "Downloading or deleting your data will be available later.",
+    "notifications": "Messages about my care",
+    "notificationsHint": "Reminders and updates about visits and bookings.",
+    "location": "Use my location",
+    "locationHint": "Find facilities near you."
   },
   "claim": {
     "title": "Claim my record",

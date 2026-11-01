@@ -94,6 +94,13 @@ describe("patient profile", () => {
     await waitFor(() =>
       expect(screen.getByRole("switch", { name: /health research/ })).toBeChecked(),
     );
+    const location = screen.getByRole("switch", { name: /Use my location/ });
+    expect(location).not.toBeChecked();
+    await user.click(location);
+    await waitFor(() =>
+      expect(screen.getByRole("switch", { name: /Use my location/ })).toBeChecked(),
+    );
+    expect(screen.getByRole("switch", { name: /Messages about my care/ })).toBeInTheDocument();
   });
 
   it("claim: no match gives the generic message", async () => {

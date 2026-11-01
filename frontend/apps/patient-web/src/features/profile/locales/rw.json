@@ -201,7 +201,11 @@
     "care": "Uruhushya rwo kuvurwa",
     "careHint": "Ibigo nderabuzima birukenera kugira ngo bibike dosiye yawe y'ubuzima.",
     "history": "Reba abafunguye dosiye yanjye",
-    "later": "Gukuramo cyangwa gusiba amakuru yawe bizaboneka nyuma."
+    "later": "Gukuramo cyangwa gusiba amakuru yawe bizaboneka nyuma.",
+    "notifications": "Ubutumwa ku buvuzi bwanjye",
+    "notificationsHint": "Kwibutswa n'amakuru ku gusura no ku gufata gahunda.",
+    "location": "Koresha aho ndi",
+    "locationHint": "Shaka ibigo biri hafi yawe."
   },
   "claim": {
     "title": "Saba dosiye yanjye",

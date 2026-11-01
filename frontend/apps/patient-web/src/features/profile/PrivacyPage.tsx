@@ -7,6 +7,9 @@ import { useApi } from "../../app/services";
 import { can, ProfileLayout, useProfiles, useRelationshipLabel } from "./ProfileLayout";
 import { CONSENT_VERSION, errorText } from "./shared";
 
+/** Account-level switches (PA23): research and, since R2, notifications and location. */
+const ACCOUNT_SWITCHES = ["research", "notifications", "location"] as const;
+
 /** /privacy/settings: consent switches (research off by default) and care consent per profile. */
 export function PrivacyPage() {
   const { t } = useTranslation();
@@ -42,15 +45,18 @@ export function PrivacyPage() {
       {state.data && (
         <>
           <Card padding="md" className="flex flex-col gap-3">
-            <SwitchField
-              label={t("profile.privacy.research")}
-              hint={t("profile.privacy.researchHint")}
-              checked={current("research", null)}
-              stateLabel={
-                current("research", null) ? t("profile.privacy.on") : t("profile.privacy.off")
-              }
-              onCheckedChange={(on) => give.mutate({ kind: "research", granted: on })}
-            />
+            {ACCOUNT_SWITCHES.filter((kind) => kind in state.data.current_versions).map((kind) => (
+              <SwitchField
+                key={kind}
+                label={t(`profile.privacy.${kind}`)}
+                hint={t(`profile.privacy.${kind}Hint`)}
+                checked={current(kind, null)}
+                stateLabel={
+                  current(kind, null) ? t("profile.privacy.on") : t("profile.privacy.off")
+                }
+                onCheckedChange={(on) => give.mutate({ kind, granted: on })}
+              />
+            ))}
           </Card>
           <Card as="section" aria-labelledby="care" padding="md" className="flex flex-col gap-3">
             <h2 id="care" className="m-0 text-h3">

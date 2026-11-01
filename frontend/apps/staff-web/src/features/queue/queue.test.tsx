@@ -5,7 +5,7 @@ import {
   MOCK_TOTP_CODE,
 } from "@medilink/api-client/mocks";
 import { screen, waitFor, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 
 import { logIn, renderApp } from "../../test/render";
@@ -138,7 +138,17 @@ describe("admin pages and display (S4-F1, F5)", () => {
 });
 
 describe("operations dashboard and reports (design 04 §3.4, analysis 13 §1)", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("shows the facility admin today's figures, queue load and what needs attention", async () => {
+    // The mock history has no patients on Sundays, so on a Sunday there is no "vs last" figure:
+    // pin the clock (Date only, timers stay real) to the coming Wednesday.
+    const wednesday = new Date();
+    wednesday.setUTCDate(wednesday.getUTCDate() + ((3 - wednesday.getUTCDay() + 7) % 7));
+    wednesday.setUTCHours(10, 0, 0, 0);
+    vi.useFakeTimers({ toFake: ["Date"], now: wednesday });
     const { container } = await signIn(MOCK_FACILITY_ADMIN_EMAIL, "/today");
     const ops = await screen.findByRole("region", { name: /^Operations today/ });
     expect(await within(ops).findByText("Patients today")).toBeInTheDocument();

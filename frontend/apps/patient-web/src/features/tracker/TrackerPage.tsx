@@ -1,6 +1,13 @@
-import { connectLive, queueSockets, socketUrl, type PatientVisit } from "@medilink/api-client";
+import {
+  connectLive,
+  isApiError,
+  queueSockets,
+  socketUrl,
+  type PatientVisit,
+} from "@medilink/api-client";
 import { Alert, Button, cx, Dialog, ProgressDots, TextField, TicketNumber } from "@medilink/ui";
-import { CloudSlash, MegaphoneSimple, PersonSimpleWalk } from "@phosphor-icons/react";
+import { formatTime } from "@medilink/ui/i18n";
+import { CloudSlash, MapPin, MegaphoneSimple, PersonSimpleWalk } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -31,6 +38,11 @@ export function useActiveVisits() {
 }
 
 const STAGES = ["consultation", "payment", "pharmacy"] as const;
+/**
+ * `queue.pass_over_places` (contract sprint-05 §2.2): a remote ticket that reception has not
+ * confirmed moves back when it comes this close to the front.
+ */
+export const PASS_OVER_PLACES = 5;
 
 function useOnline() {
   const [online, setOnline] = useState(() => navigator.onLine);
@@ -70,8 +82,7 @@ function useWakeLock() {
   }, []);
 }
 
-const time = (iso: string, lang: string) =>
-  new Date(iso).toLocaleTimeString(lang, { hour: "2-digit", minute: "2-digit" });
+const time = (iso: string, lang: string) => formatTime(iso, lang);
 
 /** /visits/:visitId (design 07 §3.3): the signature screen. */
 export function TrackerPage() {
@@ -164,6 +175,10 @@ function Tracker({ visit, lang }: { visit: PatientVisit; lang: string }) {
         {visit.state === "waiting" && <WaitBlock visit={visit} lang={lang} />}
       </section>
 
+      {visit.is_remote && !visit.remote_arrival_confirmed_at && visit.state === "waiting" && (
+        <RemoteArrival visit={visit} />
+      )}
+
       <section aria-labelledby="stages" className="rounded-lg border border-border bg-surface p-5">
         <h2 id="stages" className="m-0 mb-3 font-heading text-h3">
           {t("tracker.stagesTitle")}
@@ -254,6 +269,70 @@ function WaitBlock({ visit, lang }: { visit: PatientVisit; lang: string }) {
   );
 }
 
+/**
+ * Remote joiners (design 07 §3.3 "I'm here – check in"; decision 2026-10-31): "I'm here" only
+ * tells reception the patient says they arrived. Reception confirms the arrival; until then the
+ * pass-over rule applies, so the banner warns near the front of the queue.
+ */
+function RemoteArrival({ visit }: { visit: PatientVisit }) {
+  const { t } = useTranslation();
+  const api = useApi();
+  const queryClient = useQueryClient();
+  const claimed = Boolean(visit.remote_arrival_claimed_at);
+  const here = useMutation({
+    mutationFn: () => api.booking.arrived(visit.visit_id),
+    onSuccess: (updated) => {
+      queryClient.setQueryData<{ results: PatientVisit[] }>(trackerKey, (old) =>
+        old
+          ? { results: old.results.map((v) => (v.visit_id === updated.visit_id ? updated : v)) }
+          : old,
+      );
+      void queryClient.invalidateQueries({ queryKey: trackerKey });
+    },
+    onError: (error) => {
+      if (isApiError(error) && error.status === 409)
+        void queryClient.invalidateQueries({ queryKey: trackerKey });
+    },
+  });
+  const nearFront = visit.ahead <= PASS_OVER_PLACES;
+
+  return (
+    <section
+      aria-labelledby="remote-arrival"
+      className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-5"
+    >
+      <h2 id="remote-arrival" className="m-0 flex items-center gap-2 font-heading text-h3">
+        <MapPin aria-hidden="true" className="size-5 text-brand" />
+        {t("tracker.remote.title")}
+      </h2>
+      {nearFront && (
+        <Alert tone="warning" title={t("tracker.remote.passOverTitle")}>
+          {claimed ? t("tracker.remote.passOverClaimed") : t("tracker.remote.passOver")}
+        </Alert>
+      )}
+      {claimed ? (
+        <p className="m-0 text-fg-secondary" role="status">
+          {t("tracker.remote.claimed")}
+        </p>
+      ) : (
+        <>
+          <p className="m-0 text-fg-secondary">{t("tracker.remote.body")}</p>
+          <Button size="lg" fullWidth loading={here.isPending} onClick={() => here.mutate()}>
+            {t("tracker.remote.here")}
+          </Button>
+        </>
+      )}
+      {here.isError && (
+        <Alert tone="danger" role="alert">
+          {isApiError(here.error) && here.error.status === 409
+            ? t("tracker.remote.changed")
+            : t("tracker.failed")}
+        </Alert>
+      )}
+    </section>
+  );
+}
+
 function CancelVisit({ visit }: { visit: PatientVisit }) {
   const { t } = useTranslation();
   const api = useApi();
@@ -316,10 +395,12 @@ function CalledTakeover({
   const button = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     button.current?.focus();
+    // One AudioContext for the whole takeover (browsers limit how many a page may open)
+    let context: AudioContext | null = null;
     const alert = () => {
       navigator.vibrate?.([400, 150, 400]);
       try {
-        const context = new AudioContext();
+        context ??= new AudioContext();
         const osc = context.createOscillator();
         const gain = context.createGain();
         osc.frequency.value = 880;
@@ -334,7 +415,10 @@ function CalledTakeover({
     };
     alert();
     const timer = setInterval(alert, 30_000);
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+      void context?.close().catch(() => undefined);
+    };
   }, []);
   return (
     <div

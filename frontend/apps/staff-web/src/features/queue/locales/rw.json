@@ -45,7 +45,10 @@
     "priority": "Yihutishwa",
     "return": "Avuye mu bizamini",
     "stepped_out": "Yasohotse gato",
-    "no_response": "Ntiyitabye"
+    "no_response": "Ntiyitabye",
+    "booked": "Yafashe gahunda {{time}}",
+    "lateWalkIn": "Yakererewe: nk'utafashe gahunda",
+    "remote": "Ari kure, ntarahagera"
   },
   "priority": {
     "elderly": "Umusaza/Umukecuru",
@@ -92,7 +95,11 @@
     "step_out_expired": "Yagarutse",
     "priority": "Kwihutishwa byahinduwe",
     "reorder": "Yimuwe ku murongo",
-    "end_of_day": "Byafunzwe umunsi urangiye"
+    "end_of_day": "Byafunzwe umunsi urangiye",
+    "remote_join": "Yiyandikishije ari mu rugo",
+    "remote_arrival_claimed": "Yavuze ko yahageze",
+    "remote_arrival_confirmed": "Kuhagera byemejwe",
+    "pass_over": "Yasubijwe inyuma (ntarahagera)"
   },
   "columns": {
     "ticket": "Tike",
@@ -133,7 +140,15 @@
     "missedHint": "Banditswe ko batitabiriye. Kuraho niba umurwayi yari ahari cyangwa gutinda kwaturutse kuri twe; igihano kivanwaho.",
     "undoNoShow": "Kuraho ko atitabiriye",
     "undoNoShowHelp": "Gahunda irafungwa kandi igihano cy’umurwayi kikavanwaho.",
-    "undoNoShowError": "Ntibyashobotse gukuraho ko atitabiriye."
+    "undoNoShowError": "Ntibyashobotse gukuraho ko atitabiriye.",
+    "remote_one": "Yiyandikishije ari mu rugo ({{count}})",
+    "remote_other": "Biyandikishije bari mu rugo ({{count}})",
+    "remoteHint": "Emeza igihe umurwayi ageze ku biro. Kugeza icyo gihe, umwanya we usubira inyuma iyo ageze hafi y'imbere.",
+    "remoteClaimed": "Avuga ko yahageze",
+    "remoteConfirm": "Emeza ko yahageze",
+    "remoteError": "Ntibyakunze kwemeza ko yahageze.",
+    "expectedCheckedIn": "{{name}} yanditswe: {{ticket}}",
+    "expectedLateWalkIn": "Yahageze igihe cyo gutegereza cyarenze, ashyirwa ku murongo nk'utafashe gahunda. Mumuhe ikindi gihe niba abishaka."
   },
   "panel": {
     "service": "Serivisi",
@@ -151,7 +166,9 @@
     "transferHint": "Umurwayi agumana isaha yageriyeho ku murongo mushya.",
     "stepOut": "Yasohotse iminota 15",
     "left": "Yagiye",
-    "timeline": "Ibyabaye"
+    "timeline": "Ibyabaye",
+    "remoteClaimed": "Umurwayi yakanze \"Nahageze\". Reba ko ari ku biro, hanyuma wemeze.",
+    "remoteNotArrived": "Yiyandikishije ari mu rugo kandi ntaremezwa. Emeza igihe umurwayi ageze ku biro."
   },
   "checkIn": {
     "title": "Andika umurwayi",

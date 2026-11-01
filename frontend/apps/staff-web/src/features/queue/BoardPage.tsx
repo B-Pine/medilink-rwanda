@@ -1,3 +1,4 @@
+import { formatTime } from "@medilink/ui/i18n";
 import type { PriorityClass, QueueGroup, TicketRow } from "@medilink/api-client";
 import { newIdempotencyKey } from "@medilink/api-client";
 import {
@@ -34,6 +35,7 @@ import { PageHeader } from "../../components/PageHeader";
 import { PatientPicker } from "../patients";
 import { queueKeys, usePollInterval, useQueueSocket } from "./live";
 import { ExpectedList, MissedList } from "./ExpectedList";
+import { RemoteList, useConfirmArrival } from "./RemoteList";
 import { LiveBadge } from "./LiveIndicator";
 import {
   actionError,
@@ -45,8 +47,34 @@ import {
   useTicketAction,
 } from "./shared";
 
-/** Keyboard shortcut for a new check-in (design 04 §3.1). */
+/** Keyboard shortcuts (design 04 §3.1): N new check-in, / find a patient to check in. */
 const SHORTCUT_NEW = "N";
+
+/** True while a dialog or side panel is open: board shortcuts must not fire behind it. */
+const dialogOpen = () => Boolean(document.querySelector('[role="dialog"], [role="alertdialog"]'));
+
+/**
+ * Rows whose ticket changed in the last update (new, or a new version), so the board can fade
+ * them in (design 04: a brief emerald-50 highlight that fades over 1.5 s). Nothing is marked on
+ * first load.
+ */
+function useChangedRows(rows: TicketRow[]): Set<string> {
+  const seen = useRef<Map<string, number> | null>(null);
+  const [changed, setChanged] = useState<Set<string>>(new Set());
+  const signature = rows.map((r) => `${r.id}:${r.version}`).join(",");
+  useEffect(() => {
+    const previous = seen.current;
+    seen.current = new Map(rows.map((r) => [r.id, r.version]));
+    if (!previous) return;
+    const fresh = rows.filter((r) => previous.get(r.id) !== r.version).map((r) => r.id);
+    if (!fresh.length) return;
+    setChanged(new Set(fresh));
+    const timer = setTimeout(() => setChanged(new Set()), 1_500);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the signature covers `rows`
+  }, [signature]);
+  return changed;
+}
 const PRIORITIES: PriorityClass[] = ["elderly", "pregnant", "disability", "very_sick"];
 const REORDER_REASONS = ["clinical_urgency", "staff_error", "patient_request", "other"];
 const LEAVE_REASONS = ["patient_left", "patient_request", "duplicate", "other"];
@@ -86,7 +114,9 @@ export function BoardPage() {
       const typing =
         target?.isContentEditable ||
         ["INPUT", "TEXTAREA", "SELECT"].includes(target?.tagName ?? "");
-      if (!typing && !event.ctrlKey && !event.metaKey && (event.key === "n" || event.key === "N")) {
+      if (typing || event.ctrlKey || event.metaKey || event.altKey || dialogOpen()) return;
+      // "/" opens the check-in search (the patient search has focus)
+      if (event.key === "n" || event.key === "N" || event.key === "/") {
         event.preventDefault();
         setCheckingIn(true);
       }
@@ -101,6 +131,7 @@ export function BoardPage() {
   const shown = queues.filter((q) => !filter || q.service_id === filter);
   const waitingTotal = queues.reduce((n, q) => n + q.waiting.length, 0);
   const serving = queues.flatMap((q) => [...q.called, ...q.in_service]);
+  const changed = useChangedRows(queues.flatMap((q) => q.waiting));
 
   return (
     <div className="flex flex-col gap-5">
@@ -116,7 +147,7 @@ export function BoardPage() {
                 {t("bookings.phone.open")}
               </Button>
             )}
-            <Button onClick={() => setCheckingIn(true)} aria-keyshortcuts="N">
+            <Button onClick={() => setCheckingIn(true)} aria-keyshortcuts="N /">
               <Plus aria-hidden="true" weight="bold" />
               {t("queue.board.checkIn")}
               <kbd className="ml-1 rounded-sm border border-on-primary/40 px-1 font-sans text-caption">
@@ -203,6 +234,7 @@ export function BoardPage() {
             serviceId={filter}
             onNewTime={(b) => setBooking({ kind: "reschedule", booking: b })}
           />
+          <RemoteList queues={queues} serviceId={filter} />
           <MissedList serviceId={filter} />
         </section>
 
@@ -229,6 +261,7 @@ export function BoardPage() {
               group={group}
               title={serviceName(group.service_id)}
               onOpen={setOpen}
+              changed={changed}
             />
           ))}
         </section>
@@ -257,10 +290,12 @@ function QueueTable({
   group,
   title,
   onOpen,
+  changed,
 }: {
   group: QueueGroup;
   title: string;
   onOpen: (t: TicketRow) => void;
+  changed: Set<string>;
 }) {
   const { t } = useTranslation();
   const est = group.estimate_next;
@@ -311,7 +346,16 @@ function QueueTable({
           </thead>
           <tbody>
             {group.waiting.map((ticket, index) => (
-              <tr key={ticket.id} className="border-t border-border hover:bg-subtle">
+              <tr
+                key={ticket.id}
+                className={cx(
+                  "border-t border-border hover:bg-subtle",
+                  // on at once, then fade out over 1.5 s
+                  changed.has(ticket.id)
+                    ? "bg-brand-subtle"
+                    : "transition-colors duration-1500 motion-reduce:transition-none",
+                )}
+              >
                 <td className="px-4 py-2.5 text-body-sm text-fg-muted tabular-nums">{index + 1}</td>
                 <td className="px-2 py-2.5">
                   <button
@@ -361,11 +405,12 @@ function TicketPanel({
   services: string[];
   board: QueueGroup[];
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const api = useApi();
   const serviceName = useServiceNames();
   const canOperate = useCan("queue.operate");
   const act = useTicketAction();
+  const confirmArrival = useConfirmArrival();
   const visit = useQuery({
     queryKey: queueKeys.visit(ticket.visit_id),
     queryFn: () => api.queue.visit(ticket.visit_id),
@@ -423,6 +468,27 @@ function TicketPanel({
           </div>
         </dl>
 
+        {canOperate && waiting && current.is_remote && !current.remote_arrival_confirmed_at && (
+          <div className="flex flex-col gap-2 rounded-md bg-info-bg p-3 text-body-sm">
+            <p className="m-0">
+              {current.remote_arrival_claimed_at
+                ? t("queue.panel.remoteClaimed")
+                : t("queue.panel.remoteNotArrived")}
+            </p>
+            <Button
+              className="self-start"
+              loading={confirmArrival.isPending}
+              onClick={() => confirmArrival.mutate(current)}
+            >
+              {t("queue.board.remoteConfirm")}
+            </Button>
+            {confirmArrival.isError && (
+              <Alert tone="danger" role="alert">
+                {actionError(confirmArrival.error, t("queue.board.remoteError"))}
+              </Alert>
+            )}
+          </div>
+        )}
         {canOperate && waiting && (
           <div className="flex flex-wrap gap-2">
             <Button variant="secondary" onClick={() => setDialog("priority")}>
@@ -472,10 +538,7 @@ function TicketPanel({
                   <span className="font-normal text-fg-muted">· {e.ticket_number}</span>
                 </p>
                 <p className="m-0 text-body-sm text-fg-secondary tabular-nums">
-                  {new Date(e.occurred_at).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  {formatTime(e.occurred_at, i18n.resolvedLanguage ?? "rw")}
                   {e.actor_name && ` · ${e.actor_name}`}
                   {e.reason_code &&
                     ` · ${t(`queue.reasons.${e.reason_code}`, { defaultValue: e.reason_code })}`}

@@ -45,7 +45,10 @@
     "priority": "Prioritaire",
     "return": "Retour d’examens",
     "stepped_out": "Sorti un moment",
-    "no_response": "Appel manqué"
+    "no_response": "Appel manqué",
+    "booked": "Rendez-vous {{time}}",
+    "lateWalkIn": "En retard : sans rendez-vous",
+    "remote": "À distance, pas encore là"
   },
   "priority": {
     "elderly": "Personne âgée",
@@ -92,7 +95,11 @@
     "step_out_expired": "Revenu",
     "priority": "Priorité modifiée",
     "reorder": "Déplacé dans la file",
-    "end_of_day": "Clôturé en fin de journée"
+    "end_of_day": "Clôturé en fin de journée",
+    "remote_join": "Inscrit depuis chez lui",
+    "remote_arrival_claimed": "Dit être arrivé",
+    "remote_arrival_confirmed": "Arrivée confirmée",
+    "pass_over": "Reculé (pas arrivé)"
   },
   "columns": {
     "ticket": "Ticket",
@@ -133,7 +140,15 @@
     "missedHint": "Marqués absents. Annulez si le patient était là ou si le retard venait de nous ; la pénalité est retirée.",
     "undoNoShow": "Annuler l’absence",
     "undoNoShowHelp": "La réservation est clôturée et la pénalité du patient est retirée.",
-    "undoNoShowError": "Impossible d’annuler cette absence."
+    "undoNoShowError": "Impossible d’annuler cette absence.",
+    "remote_one": "Inscrit depuis chez lui ({{count}})",
+    "remote_other": "Inscrits depuis chez eux ({{count}})",
+    "remoteHint": "Confirmez quand le patient est au guichet. D’ici là, sa place recule près du début de la file.",
+    "remoteClaimed": "Dit être arrivé",
+    "remoteConfirm": "Confirmer l’arrivée",
+    "remoteError": "Impossible de confirmer l’arrivée.",
+    "expectedCheckedIn": "{{name}} enregistré : {{ticket}}",
+    "expectedLateWalkIn": "Arrivé après le délai de grâce : placé comme sans rendez-vous. Proposez un autre horaire s’il le préfère."
   },
   "panel": {
     "service": "Service",
@@ -151,7 +166,9 @@
     "transferHint": "Le patient garde son heure d’arrivée dans la nouvelle file.",
     "stepOut": "Sorti 15 min",
     "left": "Marquer comme parti",
-    "timeline": "Historique"
+    "timeline": "Historique",
+    "remoteClaimed": "Le patient a touché « Je suis là ». Vérifiez qu’il est au guichet, puis confirmez.",
+    "remoteNotArrived": "Inscrit depuis chez lui et pas encore confirmé. Confirmez quand le patient est au guichet."
   },
   "checkIn": {
     "title": "Enregistrer un patient",

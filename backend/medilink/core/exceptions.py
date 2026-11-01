@@ -3,6 +3,8 @@
 Every error response looks like:
     {"error": {"code": "...", "message": "...", "fields": {...}, "request_id": "..."}}
 `fields` is always present: field -> list of messages for validation errors, otherwise {}.
+A `409 conflict` on a versioned resource adds `current`: the resource as it is now (§1, optimistic
+concurrency), so the client can reload or merge without a second request.
 """
 
 from __future__ import annotations
@@ -56,9 +58,41 @@ class StepUpRequired(exceptions.PermissionDenied):
 
 
 class Conflict(exceptions.APIException):
+    """`409 conflict`. `current` (JSON-ready) is the resource as it is now; views that mix in
+    `CurrentOnConflict` fill it in when the raiser can't."""
+
     status_code = status.HTTP_409_CONFLICT
     default_code = "conflict"
     default_detail = GENERIC_MESSAGES["conflict"]
+
+    def __init__(self, detail: Any = None, code: Any = None, *, current: Any = None) -> None:
+        super().__init__(detail, code)
+        self.current = current
+
+
+# View mixin: a `Conflict` without `current` gets the resource as the view shows it. By default the
+# view's own `get` (for `PATCH`/`PUT` on a detail URL); views whose writes are `POST` actions
+# override `conflict_current()`. Must come before the APIView base. (A comment, not a docstring:
+# drf-spectacular would copy a docstring into every operation's description.)
+class CurrentOnConflict:
+    def conflict_current(self, request: Any, *args: Any, **kwargs: Any) -> Any:
+        get = getattr(self, "get", None)
+        if get is None or request.method not in ("PATCH", "PUT"):
+            return None
+        return get(request, *args, **kwargs).data
+
+    def handle_exception(self, exc: Exception) -> Response:
+        if isinstance(exc, Conflict) and exc.current is None:
+            request = self.request  # type: ignore[attr-defined]
+            try:
+                exc.current = self.conflict_current(
+                    request,
+                    *self.args,  # type: ignore[attr-defined]
+                    **self.kwargs,  # type: ignore[attr-defined]
+                )
+            except (exceptions.APIException, Http404, DjangoPermissionDenied):
+                exc.current = None  # the plain 409 is still right
+        return super().handle_exception(exc)  # type: ignore[misc]
 
 
 class BusinessRuleViolation(exceptions.APIException):
@@ -74,16 +108,20 @@ class RateLimited(exceptions.Throttled):
 
 
 def error_payload(
-    code: str, message: Any = None, fields: dict[str, list[str]] | None = None
+    code: str,
+    message: Any = None,
+    fields: dict[str, list[str]] | None = None,
+    current: Any = None,
 ) -> dict[str, Any]:
-    return {
-        "error": {
-            "code": code,
-            "message": str(message if message is not None else GENERIC_MESSAGES.get(code, code)),
-            "fields": fields or {},
-            "request_id": request_id_var.get(),
-        }
+    error: dict[str, Any] = {
+        "code": code,
+        "message": str(message if message is not None else GENERIC_MESSAGES.get(code, code)),
+        "fields": fields or {},
+        "request_id": request_id_var.get(),
     }
+    if current is not None:
+        error["current"] = current
+    return {"error": error}
 
 
 def error_response(
@@ -134,6 +172,7 @@ def _rollback() -> None:
 
 def api_exception_handler(exc: Exception, context: dict[str, Any]) -> Response | None:
     headers: dict[str, str] = {}
+    current = None
     if isinstance(exc, Http404):
         exc = exceptions.NotFound()
     elif isinstance(exc, DjangoPermissionDenied):
@@ -173,6 +212,7 @@ def api_exception_handler(exc: Exception, context: dict[str, Any]) -> Response |
             code = "bad_request"
         elif isinstance(exc, Conflict | BusinessRuleViolation):
             code = exc.default_code
+            current = getattr(exc, "current", None)
         else:
             code = str(getattr(exc, "default_code", "bad_request"))
         detail = exc.detail
@@ -196,7 +236,9 @@ def api_exception_handler(exc: Exception, context: dict[str, Any]) -> Response |
         message = GENERIC_MESSAGES[code]
 
     _rollback()
-    return Response(error_payload(code, message, fields), status=status_code, headers=headers)
+    return Response(
+        error_payload(code, message, fields, current), status=status_code, headers=headers
+    )
 
 
 # --- plain Django handlers ------------------------------------------------------------------

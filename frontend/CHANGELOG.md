@@ -72,6 +72,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 ### Sprint 2 · Facility setup and staff
 
+- Fixes from the S0–S5 audit (R3, #85): go-live sends the checklist's `status_version`; the
+  invitation page accepts an existing account only when signed in (`acceptInvitation(token)` →
+  `StaffMe`, new accounts use `acceptNewAccount`); staff, invitation and template lists read
+  every page of the now paginated API; the MSW mocks paginate, check the go-live version and
+  replay invitation `Idempotency-Key`s.
+
 ### Sprint 10 · Help center and support (part 1)
 
 ## [0.1.0] - 2026-10-17

@@ -474,7 +474,8 @@ class FacilitiesView(GenericAPIView):
 
     def get_queryset(self) -> QuerySet[Facility]:
         params = self.request.query_params
-        qs = Facility.objects.all()
+        # Reviewed: the platform admin list covers every facility by design.
+        qs = Facility.objects.all()  # nosemgrep: medilink-objects-all-in-view
         if params.get("status"):
             qs = qs.filter(status=params["status"])
         if params.get("facility_type"):

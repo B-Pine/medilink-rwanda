@@ -1,10 +1,16 @@
 # Repository-wide security scans (docs/security/09-secure-development-lifecycle.md §3):
 # - gitleaks: secrets in the full git history
 # - Trivy: known vulnerabilities in lockfiles and misconfigurations (Dockerfiles, IaC)
-# Backend and frontend workflows add their own gates (SAST, pip-audit, npm audit, image scan).
+# - Semgrep: SAST with p/django, p/python, p/owasp-top-ten and our own rules (.semgrep/)
+# - osv-scanner: known vulnerabilities in the Python and npm lockfiles (fixable high/critical)
+# - hadolint: Dockerfile lint (.hadolint.yaml)
+# - API image: Trivy image scan, CycloneDX SBOMs (image and frontend), cosign signatures of the
+#   SBOMs on main once the COSIGN_PRIVATE_KEY secret exists
+# Backend and frontend workflows add their own gates (ruff, mypy, pip-audit, npm audit, tests).
 #
-# Tools run from container images pinned by version and digest; the only action used is
-# actions/checkout, pinned by commit SHA. Dependabot keeps the action up to date.
+# Tools run from container images pinned by version and digest; the only actions used are
+# actions/checkout and actions/upload-artifact, pinned by commit SHA. Dependabot keeps them up to
+# date.
 name: security
 
 on:
@@ -25,6 +31,10 @@ concurrency:
 env:
   GITLEAKS_IMAGE: zricethezav/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
   TRIVY_IMAGE: aquasec/trivy:0.75.0@sha256:af6acf9a6b85dfe389a1941505c0ce9efef52a4719635e1a962f022a3d855daa
+  SEMGREP_IMAGE: semgrep/semgrep:1.182.1@sha256:451b3d875c00dac7ed5db5293e584a07de11449a409c10b3c2d2652f429630b6
+  OSV_SCANNER_IMAGE: ghcr.io/google/osv-scanner:v2.7.0@sha256:4f3b7e2c64b9d38a5febc5a7e4a3dfef1d1362f726dea7a2ef4762b46469fcd0
+  HADOLINT_IMAGE: hadolint/hadolint:v2.15.1@sha256:32dac94127fd60b7b7e3fbfc65e1383b9b5e25c9bfd7b8536de7a539fe68a12d
+  COSIGN_IMAGE: ghcr.io/sigstore/cosign/cosign:v3.1.4@sha256:0f06154836d2de34f887a5c273506d52ca43edaa1d9e53e6510fa78a48f69c2d
 
 jobs:
   secrets:
@@ -74,3 +84,147 @@ jobs:
             -v "${RUNNER_TEMP}/trivy-cache:/root/.cache/trivy" \
             "${TRIVY_IMAGE}" \
             config --severity HIGH,CRITICAL --exit-code 1 /src
+
+  semgrep:
+    name: SAST (Semgrep)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Registry rulesets at ERROR severity ("high") and every MediLink rule except raw SQL.
+      - name: Blocking rules (p/django, p/python, p/owasp-top-ten at ERROR; .semgrep/)
+        run: |
+          docker run --rm -v "${GITHUB_WORKSPACE}:/src" -w /src "${SEMGREP_IMAGE}" \
+            semgrep scan --metrics=off --disable-version-check --error \
+            --config p/django --config p/python --config p/owasp-top-ten --config .semgrep/ \
+            --severity ERROR --exclude-rule semgrep.medilink-raw-sql \
+            backend frontend
+
+      # The existing RLS, grant and SKIP LOCKED helpers don't carry review tags yet: report only
+      # until they do (issue #103).
+      - name: Raw SQL without a review tag (report only)
+        run: |
+          docker run --rm -v "${GITHUB_WORKSPACE}:/src" -w /src "${SEMGREP_IMAGE}" \
+            semgrep scan --metrics=off --disable-version-check \
+            --config .semgrep/medilink.yml backend
+
+  osv-scanner:
+    name: Dependency vulnerabilities (osv-scanner)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Scan the Python and npm lockfiles
+        run: |
+          # Exit code 1 only means "vulnerabilities found"; the next step applies the threshold.
+          set +e
+          docker run --rm -v "${GITHUB_WORKSPACE}:/src:ro" "${OSV_SCANNER_IMAGE}" \
+            scan source --format json \
+            -L requirements.txt:/src/backend/requirements/prod.txt \
+            -L requirements.txt:/src/backend/requirements/dev.txt \
+            -L /src/frontend/pnpm-lock.yaml > "${RUNNER_TEMP}/osv.json"
+          code=$?
+          set -e
+          if [ "$code" -gt 1 ]; then exit "$code"; fi
+
+      - name: Fail on fixable high or critical (CVSS >= 7.0)
+        run: python3 .github/scripts/osv_gate.py "${RUNNER_TEMP}/osv.json"
+
+  hadolint:
+    name: Dockerfile lint (hadolint)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Lint every Dockerfile
+        run: |
+          mapfile -t files < <(git ls-files '*Dockerfile' '*.Dockerfile')
+          for file in "${files[@]}"; do
+            echo "== ${file}"
+            docker run --rm -i -v "${GITHUB_WORKSPACE}/.hadolint.yaml:/hadolint.yaml:ro" \
+              "${HADOLINT_IMAGE}" hadolint --config /hadolint.yaml - < "${file}"
+          done
+
+  image:
+    name: Image scan, SBOM and signing
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      IMAGE: medilink-api:${{ github.sha }}
+      COSIGN_KEY_SET: ${{ secrets.COSIGN_PRIVATE_KEY != '' }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build the API image (no push)
+        run: docker build --tag "${IMAGE}" backend
+
+      - name: Prepare the Trivy cache and output folder
+        run: mkdir -p "${RUNNER_TEMP}/trivy-cache" "${RUNNER_TEMP}/sbom"
+
+      - name: Known vulnerabilities in the image (fixable high and critical)
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v "${RUNNER_TEMP}/trivy-cache:/root/.cache/trivy" \
+            "${TRIVY_IMAGE}" \
+            image --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed \
+            --exit-code 1 --no-progress "${IMAGE}"
+
+      - name: CycloneDX SBOMs (API image incl. Python packages; frontend npm packages)
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v "${RUNNER_TEMP}/trivy-cache:/root/.cache/trivy" \
+            -v "${RUNNER_TEMP}/sbom:/out" \
+            "${TRIVY_IMAGE}" \
+            image --format cyclonedx --output /out/medilink-api.cdx.json --no-progress "${IMAGE}"
+          docker run --rm \
+            -v "${GITHUB_WORKSPACE}:/src:ro" \
+            -v "${RUNNER_TEMP}/trivy-cache:/root/.cache/trivy" \
+            -v "${RUNNER_TEMP}/sbom:/out" \
+            "${TRIVY_IMAGE}" \
+            fs --format cyclonedx --output /out/medilink-frontend.cdx.json /src/frontend
+
+      # Signing needs a key pair: `cosign generate-key-pair`, then store COSIGN_PRIVATE_KEY and
+      # COSIGN_PASSWORD as repository secrets. Images get signed by digest once a registry push
+      # exists (security 09 §2); until then the SBOMs are signed.
+      - name: Sign the SBOMs (cosign; main only, when the key is configured)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && env.COSIGN_KEY_SET == 'true'
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+        run: |
+          for sbom in "${RUNNER_TEMP}"/sbom/*.cdx.json; do
+            name="$(basename "${sbom}")"
+            docker run --rm -e COSIGN_PRIVATE_KEY -e COSIGN_PASSWORD \
+              -v "${RUNNER_TEMP}/sbom:/sbom" "${COSIGN_IMAGE}" \
+              sign-blob --yes --key env://COSIGN_PRIVATE_KEY \
+              --bundle "/sbom/${name}.sigstore.json" "/sbom/${name}"
+          done
+
+      - name: Signing skipped (no key)
+        if: env.COSIGN_KEY_SET != 'true'
+        run: echo "::notice::COSIGN_PRIVATE_KEY is not set; the SBOMs are not signed."
+
+      - name: Attach the SBOMs to the run
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: sbom-${{ github.sha }}
+          path: ${{ runner.temp }}/sbom/
+          retention-days: 90
+          if-no-files-found: error

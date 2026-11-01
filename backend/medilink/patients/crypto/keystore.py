@@ -5,9 +5,10 @@
     MEDILINK_BLIND_INDEX_KEYS         "1:<base64url 32 bytes>"
     MEDILINK_BLIND_INDEX_ACTIVE_KEY_ID
 
-Without keys and only with DEBUG, keys are derived from SECRET_KEY (HKDF-SHA256) and check
-patients.W001 warns; without DEBUG, check patients.E001 fails. Tests override with
-`override_settings(PATIENT_KEYS={...})`.
+MEDILINK_KEYSTORE=transit reads the same variables as data keys wrapped by an OpenBao/Vault KEK
+(medilink.core.keystore_transit). Without keys and only with DEBUG, keys are derived from
+SECRET_KEY (HKDF-SHA256) and check patients.W001 warns; without DEBUG, check patients.E001 fails.
+Tests override with `override_settings(PATIENT_KEYS={...})`.
 """
 
 from __future__ import annotations
@@ -154,14 +155,22 @@ def _build(
 
 
 def get_keystore() -> StaticKeyStore:
+    """`env`: raw keys from the environment (development, CI). `transit`: the same variables hold
+    data keys wrapped by an OpenBao/Vault Transit KEK, unwrapped once per process
+    (medilink.core.keystore_transit, security 05 §4-5)."""
     backend = _env("MEDILINK_KEYSTORE", default="env")
-    if backend != "env":
+    if backend not in ("env", "transit"):
         raise KeyStoreError(f"Unknown MEDILINK_KEYSTORE {backend!r}")
     conf = _configured()
+    field_keys, index_keys = str(conf["field_keys"]), str(conf["index_keys"])
+    if backend == "transit":
+        from medilink.core.keystore_transit import unwrapped
+
+        field_keys, index_keys = unwrapped(field_keys), unwrapped(index_keys)
     return _build(
-        str(conf["field_keys"]),
+        field_keys,
         str(conf["field_active"]),
-        str(conf["index_keys"]),
+        index_keys,
         str(conf["index_active"]),
         bool(settings.DEBUG),
     )

@@ -36,6 +36,9 @@ import { ArrowsDownUp } from "@phosphor-icons/react";
 // [S5 imports]
 import { CalendarX } from "@phosphor-icons/react";
 // [/S5 imports]
+// [S6 imports]
+import { Notepad, Signature } from "@phosphor-icons/react";
+// [/S6 imports]
 
 /** Sections of the Sprint 0 shell (labels in `shell.nav.<key>`). Features use their own keys. */
 export type CoreNavKey =
@@ -271,6 +274,24 @@ export const NAV_ITEMS: readonly NavItem[] = [
     visible: hasAny("schedule.manage"),
   },
   // [/S5]
+  // [S6]
+  {
+    key: "clinicalConsultation",
+    path: "/clinical/consultation",
+    icon: Notepad,
+    group: "facility",
+    labelKey: "clinical.nav.consultation",
+    visible: hasAny("clinical.write"),
+  },
+  {
+    key: "clinicalUnsigned",
+    path: "/clinical/unsigned",
+    icon: Signature,
+    group: "facility",
+    labelKey: "clinical.nav.unsigned",
+    visible: hasAny("clinical.unsigned_list"),
+  },
+  // [/S6]
 ];
 
 /** Translation key of a nav item's label. */

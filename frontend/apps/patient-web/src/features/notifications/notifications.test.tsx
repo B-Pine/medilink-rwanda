@@ -68,9 +68,10 @@ describe("bell and inbox (S9-F5)", () => {
     const { user } = await signIn("/notifications");
     const list = await screen.findByRole("list", { name: "Notifications" });
     await user.click(within(list).getAllByRole("link")[0]!);
-    expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent(
-      /New sign-in|Hari uwinjiye/,
-    );
+    // wait for the detail page itself, not the inbox heading still on screen
+    expect(
+      await screen.findByRole("heading", { level: 1, name: /New sign-in|Hari uwinjiye/ }),
+    ).toBeInTheDocument();
     expect(
       await screen.findByRole("link", { name: "Notifications, 1 unread" }),
     ).toBeInTheDocument();

@@ -63,6 +63,10 @@ api_v1: list[URLPattern | URLResolver] = [
     path("staff/", include("medilink.scheduling.urls.staff")),
     path("calendar/", include("medilink.scheduling.urls.calendar")),
     # [/S5]
+    # [S6]
+    path("staff/", include("medilink.clinical.urls.staff")),
+    path("patient/records/", include("medilink.clinical.urls.patient")),
+    # [/S6]
 ]
 
 if settings.SCHEMA_ENABLED:  # non-production only (architecture 02 §7)

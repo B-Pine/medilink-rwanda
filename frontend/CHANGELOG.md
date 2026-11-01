@@ -160,6 +160,20 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   card (link shown once, `webcal:` link, turn off to revoke).
 - api-client booking module and mocks for disruptions, offers, follow-ups and the feed.
 
+### Sprint 6a · Clinical record
+
+- staff-web `clinical`: consultation page on one scroll with section anchors, an always-visible
+  autosave status (409 reloads with a conflict note), a permanent allergy banner, private notes
+  marked "Never shown to the patient", ICD-10 type-ahead in plain language with primary and
+  certainty (a sensitive code suggests a restricted record), sign and lock behind step-up,
+  addenda and entered-in-error; vitals panel with plausible ranges; history drawer and page with
+  filters and the problem summary; reason-for-access prompt; Unsigned records list; nav and
+  command palette entries by permission.
+- patient-web `records`: my and my dependants' signed records in plain language, a Home card,
+  never private notes or examination.
+- api-client `clinical` module and MSW mocks; ui `AllergyBanner`, `AutosaveStatus`,
+  `SectionAnchors`.
+
 ### Design v2
 
 - patient-web app shell (design 07 §2): one header with profile switcher, language and account

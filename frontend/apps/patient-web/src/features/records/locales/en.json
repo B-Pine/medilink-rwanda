@@ -1,0 +1,31 @@
+{
+  "title": "My health records",
+  "homeTitle": "Health records",
+  "seeAll": "See all",
+  "intro": "What your doctor wrote after each visit, in plain language. Records of the people you care for are here too.",
+  "whose": "Whose records",
+  "everyone": "Everyone",
+  "loadFailed": "We couldn't load your records.",
+  "empty": "No records yet",
+  "emptyBody": "After a visit, the doctor's signed record appears here.",
+  "doctor": "Dr {{name}}",
+  "provisional": "to be confirmed",
+  "back": "All records",
+  "notFound": "Record not found",
+  "visitOn": "Visit on {{date}}",
+  "lateEntry": "written later",
+  "diagnosis": "What the doctor found",
+  "instructions": "What to do",
+  "plan": "Treatment plan",
+  "history": "What you told the doctor",
+  "vitals": "Measurements",
+  "vitalsFields": {
+    "temperature": "Temperature",
+    "bloodPressure": "Blood pressure",
+    "pulse": "Pulse",
+    "spo2": "Oxygen (SpO₂)",
+    "weight": "Weight",
+    "height": "Height"
+  },
+  "addenda": "Added later by the doctor"
+}

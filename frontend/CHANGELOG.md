@@ -9,6 +9,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Redesign · Doctor (#124)
+
+- staff-web My queue: the patient in the room is the focal card (large ticket stub, name, state,
+  actions behind a quiet divider); the duty switch is a segmented control with a coloured dot for
+  the current state and the room picker beside it; with nobody in the room, Call next sits on the
+  deep-forest band and names who is next; Up next uses ticket stubs (emergency red, next ochre).
+
 ### Redesign · Front desk (#121)
 
 - staff-web queue board: a check-in bar on the deep-forest band (find a patient `/`, check in `N`,

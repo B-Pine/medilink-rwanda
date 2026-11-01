@@ -33,15 +33,20 @@ Status: v0.1 · Framework: NIST SP 800-218 **SSDF** (Prepare the organisation ·
 
 | Stage | Tools | Fails the build when |
 |---|---|---|
-| Lint & SAST (Python) | ruff (incl. bandit `S` rules), Semgrep (`p/django`, `p/python`, `p/owasp-top-ten`, plus our own rules: no `.objects.all()` in views, no `fields="__all__"`, no `mark_safe` on user data, no raw SQL without review tag) | Any high finding |
+| Lint & SAST (Python) | ruff (incl. bandit `S` rules), mypy, Semgrep (`p/django`, `p/python`, `p/owasp-top-ten`, plus our own rules in `.semgrep/medilink.yml`: no `.objects.all()` in views, no `fields="__all__"` or `exclude`, no `mark_safe`, explicit `permission_classes` on DRF views, no raw SQL without the review tag `# nosemgrep: medilink-raw-sql`) | Any high (`ERROR`) finding; the raw SQL rule only reports until the existing helpers are tagged ([#103](https://github.com/B-Pine/medilink-rwanda/issues/103)) |
 | SAST (TypeScript) | ESLint with security and React rules (`react/no-danger` error), TypeScript strict | Any error |
-| Dependencies | `pip-audit` + `osv-scanner` (Python & npm), `npm audit --omit=dev` | Fixable high/critical |
+| Dependencies | `pip-audit` + `osv-scanner` (Python & npm lockfiles), `npm audit --omit=dev` | Fixable high/critical (osv: CVSS ≥ 7.0 with a fixed version) |
 | Lockfiles | Hash-pinned Python requirements (`uv`/`pip-tools --generate-hashes`), `npm ci` | Lockfile drift |
 | Secrets | gitleaks | Any finding |
 | Django config | `manage.py check --deploy --fail-level WARNING` (prod settings) | Any warning |
-| Containers & IaC | Trivy (image + config), hadolint | Fixable critical/high; misconfig high |
-| Tests | Unit + authz matrix + cross-tenant + RLS + business-rule tests | Any failure; coverage on `authz` < 95% |
-| SBOM | CycloneDX for Python and npm, attached to the build | — |
+| Containers & IaC | Trivy (filesystem, API image, config), hadolint | Fixable critical/high; misconfig high; hadolint warning |
+| Tests | Unit + authz matrix + cross-tenant + RLS + business-rule tests | Any failure; coverage on `authz` < 95%, on `core` or any other app < 90% |
+| Migrations | Latest migration of each app reversed and re-applied, then `makemigrations --check` | Any failure |
+| SBOM | CycloneDX for the API image (OS and Python packages) and the frontend (npm), attached to the `security` run | — |
+| Signing | cosign `sign-blob` of the SBOMs on `main` when the `COSIGN_PRIVATE_KEY` secret exists; image signatures by digest once images are pushed to a registry | — |
+| PR title | Conventional Commit (it becomes the squash commit on `main`) | Not a Conventional Commit |
+
+Where each gate runs: `.github/workflows/ci-backend.yml` (ruff, mypy, tests, coverage, migrations, OpenAPI drift, deploy check, pip-audit), `security.yml` (gitleaks, Trivy, Semgrep, osv-scanner, hadolint, image scan, SBOM, signing), `ci-frontend.yml` (ESLint, TypeScript, tests, npm audit) and `pr-title.yml`.
 
 ### Staging gates (before release)
 

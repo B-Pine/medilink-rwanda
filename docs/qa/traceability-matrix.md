@@ -401,13 +401,13 @@ Source: [14 · Maintainability and operations](../analysis/14-non-functional-req
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
 | NFR-OPS-01 | Automated tests for domain rules; e2e for core flows | P1 | S0 | Both | INS | In progress |
-| NFR-OPS-02 | CI: lint, types, tests, dependency and secret scanning | P1 | S0 | Both | INS | Verified (S0, v0.1.0) |
+| NFR-OPS-02 | CI: lint, types, tests, dependency and secret scanning | P1 | S0 | Both | INS | Verified (S0, v0.1.0); blocking mypy, Semgrep, osv-scanner, hadolint, image scan, SBOM and PR title gates added in #90 |
 | NFR-OPS-03 | Container deployments; separate dev, staging, production | P1 | S0 | Ops | INS | In progress |
 | NFR-OPS-04 | Monitoring and alerts (scrubbed of personal data) | P1 | S0, S11* | Ops | INS, DRL | In progress |
 | NFR-OPS-05 | Structured logs without personal data | P1 | S0 | Backend | UT, INS | Verified (S0, v0.1.0) |
 | NFR-OPS-06 | API documented (OpenAPI) and versioned | P1 | S0 | Backend | CON | Verified (S0, v0.1.0) |
 | NFR-OPS-07 | Feature flags per facility | P1 | S1* | Both | API | In progress |
-| NFR-OPS-08 | Database migrations reviewed and reversible | P1 | S0 | Backend | INS | Verified (S0, v0.1.0) |
+| NFR-OPS-08 | Database migrations reviewed and reversible | P1 | S0 | Backend | INS | Verified (S0, v0.1.0); CI reverses and re-applies each app's latest migration (#90) |
 
 ## NFR-INT · Interoperability
 

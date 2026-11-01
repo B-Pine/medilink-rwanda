@@ -147,5 +147,36 @@
     "cancelLate": "It's less than 2 hours before the visit (free until {{time}}). It will be recorded as a late cancellation.",
     "keep": "Keep it",
     "cancelConfirm": "Cancel booking"
+  },
+  "offer": {
+    "title": "Your booking has changed",
+    "moved": "The facility moved your visit from {{from}} to {{to}}.",
+    "movedTo": "The facility moved your visit to {{to}}.",
+    "doctor": "You will see {{doctor}}.",
+    "autoAccept": "If you don't answer by {{time}}, we keep the new time for you.",
+    "answer": "Please answer: the facility may also call you.",
+    "keep": "Keep the new time",
+    "other": "Choose another time",
+    "cancel": "Cancel this booking",
+    "cancelBody": "Booking {{code}} will be cancelled. It is not counted as a late cancellation.",
+    "otherTitle": "Choose another time",
+    "loading": "Loading free times…",
+    "noTimes": "No free time this week. Keep the new time or cancel.",
+    "day": "Day",
+    "times": "Free times"
+  },
+  "feed": {
+    "title": "Calendar subscription",
+    "body": "Add your family's bookings to your phone's calendar. It shows the facility, service, time and booking code only.",
+    "toggle": "Calendar link",
+    "on": "On",
+    "off": "Off",
+    "link": "Your private link",
+    "once": "Copy it now: it is shown only once. Anyone with the link sees your booking times.",
+    "copy": "Copy link",
+    "copied": "Link copied.",
+    "open": "Open in my calendar app",
+    "since": "On since {{day}}. To get a new link, turn it off and on again.",
+    "failed": "We couldn't change the calendar link. Try again."
   }
 }

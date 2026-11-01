@@ -8,7 +8,7 @@ from celery import shared_task
 from django.db import connection
 
 from medilink.facilities.models import PublicListing
-from medilink.scheduling import booking, listing, slots
+from medilink.scheduling import booking, disruptions, listing, slots
 from medilink.tenancy.context import rls_context
 from medilink.visits import remote
 from medilink.visits.tasks import _open_facilities
@@ -82,4 +82,17 @@ def purge() -> int:
     for facility_id in listing.live_facilities():
         with rls_context(facility_id=facility_id):
             total += slots.purge(facility_id)
+    return total
+
+
+@shared_task(name="medilink.scheduling.tasks.disruption_auto_accept")
+def disruption_auto_accept() -> int:
+    """S5b: accept unanswered disruption offers after the reply window (contract §5)."""
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT facility_id FROM scheduling_disruption_facilities()")
+        facilities = [row[0] for row in cursor.fetchall()]
+    total = 0
+    for facility_id in facilities:
+        with rls_context(facility_id=facility_id):
+            total += disruptions.auto_accept(facility_id)
     return total

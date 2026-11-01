@@ -341,3 +341,217 @@ class NoShowStrike(TimeStampedModel):
 
     def __str__(self) -> str:
         return f"strike {self.booking_id}"
+
+
+# ---- S5b: disruptions, follow-ups and the calendar feed (contract sprint-05 §2.1) ----------------
+
+
+class DisruptionKind(models.TextChoices):
+    DOCTOR_ABSENT = "doctor_absent", "Doctor absent"
+    CLOSURE = "closure", "Closure"
+    SCHEDULE_CHANGE = "schedule_change", "Schedule change"
+
+
+class DisruptionStatus(models.TextChoices):
+    OPEN = "open", "Open"
+    RESOLVED = "resolved", "Resolved"
+
+
+class Disruption(TimeStampedModel):
+    """Who or what is unavailable, and when. Its slots stay closed (slot generation skips them),
+    and the affected bookings and remote tickets become items (FR-SCH-14)."""
+
+    facility = models.ForeignKey("tenancy.Facility", on_delete=models.PROTECT, related_name="+")
+    version = models.PositiveIntegerField(default=1)
+    kind = models.CharField(max_length=16, choices=DisruptionKind.choices)
+    membership = models.ForeignKey(
+        "tenancy.FacilityMembership",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+    service = models.ForeignKey(
+        "facilities.Service", on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    starts_at = models.DateTimeField()
+    ends_at = models.DateTimeField()
+    reason = models.CharField(max_length=300)  # C1 staff note, never shown to patients
+    status = models.CharField(
+        max_length=10, choices=DisruptionStatus.choices, default=DisruptionStatus.OPEN
+    )
+    # NULL when slot generation opened it (a booked slot no longer fits the schedule)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    resolved_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = "scheduling_disruption"
+        indexes: ClassVar[list[Any]] = [
+            models.Index(fields=["facility", "starts_at"], name="scheduling_disruption_day")
+        ]
+        constraints: ClassVar[list[Any]] = [
+            models.CheckConstraint(
+                condition=Q(starts_at__lt=F("ends_at")), name="scheduling_disruption_order"
+            ),
+            models.CheckConstraint(
+                condition=~Q(kind="doctor_absent") | Q(membership__isnull=False),
+                name="scheduling_disruption_doctor",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.kind} {self.starts_at:%Y-%m-%d}"
+
+    def covers(self, service_id: Any, membership_id: Any, at: Any) -> bool:
+        """Whether a slot or booking (service, doctor, start time) falls inside this disruption."""
+        if not self.starts_at <= at < self.ends_at:
+            return False
+        if self.service_id and str(self.service_id) != str(service_id):
+            return False
+        return not (self.membership_id and str(self.membership_id) != str(membership_id))
+
+
+class DisruptionAction(models.TextChoices):
+    MOVE_DOCTOR = "move_doctor", "Move to another doctor"
+    NEXT_SLOT = "next_slot", "Move to the next open slot"
+    CANCEL = "cancel", "Cancel"
+
+
+class PatientResponse(models.TextChoices):
+    PENDING = "pending", "Pending"
+    ACCEPTED = "accepted", "Accepted"
+    DECLINED = "declined", "Declined"
+    REBOOKED_OTHER = "rebooked_other", "Chose another time"
+    CANCELLED = "cancelled", "Cancelled"
+
+
+class DisruptionItem(TimeStampedModel):
+    """One affected booking or remote ticket, the action staff chose and the patient's answer."""
+
+    facility = models.ForeignKey("tenancy.Facility", on_delete=models.PROTECT, related_name="+")
+    version = models.PositiveIntegerField(default=1)
+    disruption = models.ForeignKey(Disruption, on_delete=models.PROTECT, related_name="items")
+    booking = models.ForeignKey(
+        Booking, on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    ticket = models.ForeignKey(
+        "visits.Ticket", on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    action = models.CharField(  # noqa: DJ001
+        max_length=12, choices=DisruptionAction.choices, null=True, blank=True
+    )
+    # Where the booking was before the move (the booking itself moves in place, D-10)
+    previous_starts_at = models.DateTimeField(null=True, blank=True)
+    previous_membership = models.ForeignKey(
+        "tenancy.FacilityMembership",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+    new_booking = models.ForeignKey(
+        Booking, on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    patient_response = models.CharField(
+        max_length=16, choices=PatientResponse.choices, default=PatientResponse.PENDING
+    )
+    applied_at = models.DateTimeField(null=True, blank=True)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = "scheduling_disruption_item"
+        constraints: ClassVar[list[Any]] = [
+            models.CheckConstraint(
+                condition=Q(booking__isnull=False) | Q(ticket__isnull=False),
+                name="scheduling_disruption_item_target",
+            ),
+            models.UniqueConstraint(
+                fields=["disruption", "booking"],
+                condition=Q(booking__isnull=False),
+                name="scheduling_disruption_item_booking",
+            ),
+            models.UniqueConstraint(
+                fields=["disruption", "ticket"],
+                condition=Q(ticket__isnull=False),
+                name="scheduling_disruption_item_ticket",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"item {self.pk}"
+
+
+class FollowUpMode(models.TextChoices):
+    BOOKING = "booking", "Booking"
+    REMINDER = "reminder", "Reminder"
+
+
+class FollowUpStatus(models.TextChoices):
+    BOOKED = "booked", "Booked"
+    DUE = "due", "Reminder due"
+    NO_SLOT = "no_slot", "No open slot"
+    DONE = "done", "Done"
+    CANCELLED = "cancelled", "Cancelled"
+
+
+class FollowUp(TimeStampedModel):
+    """Come back in N days, set on a visit (FR-SCH-15). `consultation_id` stays empty until S6."""
+
+    facility = models.ForeignKey("tenancy.Facility", on_delete=models.PROTECT, related_name="+")
+    version = models.PositiveIntegerField(default=1)
+    visit = models.OneToOneField("visits.Visit", on_delete=models.PROTECT, related_name="+")
+    consultation_id = models.UUIDField(null=True, blank=True)
+    patient = models.ForeignKey("patients.Patient", on_delete=models.PROTECT, related_name="+")
+    service = models.ForeignKey("facilities.Service", on_delete=models.PROTECT, related_name="+")
+    membership = models.ForeignKey(
+        "tenancy.FacilityMembership",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+    due_on = models.DateField()
+    mode = models.CharField(max_length=10, choices=FollowUpMode.choices)
+    booking = models.ForeignKey(
+        Booking, on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    status = models.CharField(max_length=10, choices=FollowUpStatus.choices)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
+    )
+
+    class Meta:
+        db_table = "scheduling_follow_up"
+        indexes: ClassVar[list[Any]] = [
+            models.Index(fields=["facility", "due_on", "status"], name="scheduling_follow_up_due")
+        ]
+
+    def __str__(self) -> str:
+        return f"follow-up {self.due_on}"
+
+
+class CalendarFeed(TimeStampedModel):
+    """Private `.ics` subscription link of one account (FR-SCH-11). Only the SHA-256 of the
+    32-byte token is stored; the token is shown once. Row security by account (D-11)."""
+
+    account = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
+    )
+    token_hash = models.BinaryField(unique=True)
+    revoked_at = models.DateTimeField(null=True, blank=True)
+    last_accessed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = "scheduling_calendar_feed"
+        constraints: ClassVar[list[Any]] = [
+            models.UniqueConstraint(
+                fields=["account"],
+                condition=Q(revoked_at__isnull=True),
+                name="scheduling_feed_one_active",
+            )
+        ]
+
+    def __str__(self) -> str:
+        return f"feed {self.account_id}"

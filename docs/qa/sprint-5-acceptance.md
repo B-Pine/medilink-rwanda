@@ -2,7 +2,7 @@
 
 Contract: [sprint-05-booking.md](../architecture/contracts/sprint-05-booking.md) §9 · Pull requests: contract `ec01ef4`, backend and patient frontend [#80](https://github.com/B-Pine/medilink-rwanda/pull/80), reception side in the Phase 1 pull request ([plan](../superpowers/plans/2026-10-31-phase-1-repair-and-s5a-staff.md)) · Releases: none yet
 
-Status: **Open**. S5a is implemented. S5b checks (B13–B15) are not started. The real-API checks (I2, I3) wait for staging ([#17](https://github.com/B-Pine/medilink-rwanda/issues/17)).
+Status: **Open**. S5a is implemented. S5b (B13–B15) is implemented with tests: backend, the reception calendar, disruption wizard and follow-up action in staff-web, and the disruption offer and calendar feed in patient-web. The real-API checks (I2, I3) wait for staging ([#17](https://github.com/B-Pine/medilink-rwanda/issues/17)).
 
 Evidence collected on 2026-10-31 (backend 514 passed on PostgreSQL; frontend 296 passed; `booking_concurrency_check` on the dev database). A verifier who did not write the code fills **Verified by**, **Date** and **Result** ([QA README](README.md) §4). Backend tests: `backend/tests/s5/test_booking.py`; frontend: `frontend/apps/staff-web/src/features/bookings/bookings.test.tsx`, `…/queue/queue.test.tsx`, `frontend/packages/ui/src/components/s5-components.test.tsx`.
 
@@ -22,9 +22,9 @@ Evidence collected on 2026-10-31 (backend 514 passed on PostgreSQL; frontend 296
 | S5-B10 | Remote join: cutoff, I'm here, pass-over | `test_remote_join_im_here_and_pass_over` | | | Pending |
 | S5-B11 | No-show job, strike, reversal with reason | `test_no_show_strike_and_reversal` | | | Pending |
 | S5-B12 | Events and symptoms append-only; reason encrypted; nothing clinical in `.ics` | `test_booking_history_and_symptoms_are_append_only`; `test_hold_book_idempotent_cancel_and_counters` (reason stored encrypted, `.ics` content) | | | Pending |
-| S5-B13 | (S5b) Disruptions | Not started | | | Not in S5a |
-| S5-B14 | (S5b) Follow-up booking and reminder | Not started | | | Not in S5a |
-| S5-B15 | (S5b) Calendar feed | Not started | | | Not in S5a |
+| S5-B13 | (S5b) Disruption: affected list, actions, patient responses, auto-accept | `tests/s5/test_s5b.py`: `test_disruption_lists_affected_bookings_and_applies_each_action`, `test_bulk_move_auto_accept_and_unanswered_offer_never_strikes`, `test_disruption_offer_cancel_is_never_late_and_remote_tickets_are_items`, `test_slot_generation_opens_a_disruption_for_booked_slots_that_no_longer_fit`, `test_reception_calendar_day_and_week_and_doctor_sees_own`, `test_s5b_tables_have_forced_row_security`; `test_s5b_paths.py` input rules and offer answers | | | Pending |
+| S5-B14 | (S5b) Follow-up booking and reminder | `test_follow_up_books_the_same_doctor_or_stores_a_reminder` | | | Pending |
+| S5-B15 | (S5b) Calendar feed: token hashed, revocable, dependants, no-store | `test_calendar_feed_is_hashed_revocable_includes_dependants_and_is_not_cached` | | | Pending |
 | S5-B16 | Migrations reversible; earlier suites green; `scheduling` coverage ≥ 90 % | Full suite 514 passed; coverage gate in CI. Reversibility not exercised (Gaps) | | | Pending |
 
 ## Frontend checks
@@ -38,6 +38,13 @@ Evidence collected on 2026-10-31 (backend 514 passed on PostgreSQL; frontend 296
 | S5-F5 | My visits upcoming: cancel, reschedule, `.ics` | "lists the upcoming booking and cancels it after a confirmation"; `.ics` link checked on the booking success screen. Reschedule from My visits untested (Gaps) | | | Pending |
 | S5-F6 | Reception Expected list, booked check-in, late and no-show actions, phone booking | "lists who is on site in calling order…" (Expected rows), "checks in a booked patient from the Expected list", "undoes a no-show only with a reason", "finds the patient, holds a time, records the reason and confirms", "needs a valid Rwandan number…", "opens from /bookings/new", "moves an expected booking to a new time" | | | Pending |
 | S5-F7 | Text in rw, en, fr; axe on new screens; map code only on the map view | Locale parity (`tests/i18n.test.ts`); axe in the phone booking test and the SymptomPicker test. No map yet | | | Pending |
+
+S5b frontend evidence (no separate check numbers in the contract; counted under S5-F1, F5, F7):
+`frontend/apps/staff-web/src/features/bookings/s5b.test.tsx` (reception calendar week and day,
+doctor's own calendar, disruption wizard: list, create, affected bookings, apply to all, date
+rule, hidden from reception) and `frontend/apps/patient-web/src/features/booking/s5b.test.tsx`
+(offer: explanation, deadline, keep the new time, choose another time; calendar feed: link
+shown once, `webcal:` link, turn off). Axe clean.
 
 ## Integration checks
 

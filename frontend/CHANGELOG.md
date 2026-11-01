@@ -150,6 +150,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 - api-client: booking module and mocks; `staff.reschedule()`, `NO_SHOW_REVERSAL_REASONS`; mocks
   honour the slots `date` and enforce the reversal rules.
 
+### Sprint 5b · Disruptions, follow-ups and the calendar feed
+
+- staff-web `bookings`: reception calendar (week and day, doctor filter; doctors see their own),
+  disruption wizard (who or what, period and reason, affected bookings, one action for all or per
+  booking, patient answers) and the follow-up action on My queue.
+- patient-web `booking`: the "Your booking has changed" offer on My visits (keep the new time,
+  choose another time, cancel; auto-accept deadline explained) and the private calendar feed
+  card (link shown once, `webcal:` link, turn off to revoke).
+- api-client booking module and mocks for disruptions, offers, follow-ups and the feed.
+
 ### Sprint 6a · Clinical record
 
 - staff-web `clinical`: consultation page on one scroll with section anchors, an always-visible

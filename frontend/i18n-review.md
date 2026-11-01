@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 2725.
+Keys: 2864.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -553,6 +553,7 @@ File: `apps/staff-web/src/features/bookings/locales/rw.json`
 | `nav.back` | Subira inyuma | Back | needs native-speaker review |
 | `nav.next` | Komeza | Continue | needs native-speaker review |
 | `nav.change` | Hindura umurwayi | Change patient | needs native-speaker review |
+| `nav.disruptions` | Impinduka | Disruptions | needs native-speaker review |
 | `body.general` | Rusange | General | needs native-speaker review |
 | `body.respiratory` | Guhumeka | Breathing | needs native-speaker review |
 | `body.digestive` | Inda | Stomach | needs native-speaker review |
@@ -564,6 +565,117 @@ File: `apps/staff-web/src/features/bookings/locales/rw.json`
 | `body.eye` | Amaso | Eyes | needs native-speaker review |
 | `body.urinary` | Inkari | Urine | needs native-speaker review |
 | `expected.newTime` | Igihe gishya | New time | needs native-speaker review |
+| `status.confirmed` | Yafashe umwanya | Booked | needs native-speaker review |
+| `status.checked_in` | Yageze | Checked in | needs native-speaker review |
+| `status.no_show` | Ntiyaje | No-show | needs native-speaker review |
+| `status.cancelled` | Byahagaritswe | Cancelled | needs native-speaker review |
+| `status.late_cancelled` | Byahagaritswe bitinze | Late cancel | needs native-speaker review |
+| `status.superseded` | Byimuwe | Moved | needs native-speaker review |
+| `calendar.title` | Kalendari | Calendar | needs native-speaker review |
+| `calendar.mineTitle` | Kalendari yanjye | My calendar | needs native-speaker review |
+| `calendar.description` | Amasaha y'akazi n'abafashe imyanya kuri buri serivisi na buri muganga. | Sessions and bookings per service and doctor. | needs native-speaker review |
+| `calendar.view` | Uko bigaragara | View | needs native-speaker review |
+| `calendar.dayView` | Umunsi | Day | needs native-speaker review |
+| `calendar.weekView` | Icyumweru | Week | needs native-speaker review |
+| `calendar.previous` | Ibibanza | Previous | needs native-speaker review |
+| `calendar.next` | Ibikurikira | Next | needs native-speaker review |
+| `calendar.today` | Uyu munsi | Today | needs native-speaker review |
+| `calendar.weekOf` | Icyumweru cya {{date}} | Week of {{date}} | needs native-speaker review |
+| `calendar.allServices` | Serivisi zose | All services | needs native-speaker review |
+| `calendar.booked` | {{booked}} kuri {{capacity}} bafashe umwanya | {{booked}} of {{capacity}} booked | needs native-speaker review |
+| `calendar.serviceSchedule` | Gahunda ya serivisi | Service schedule | needs native-speaker review |
+| `calendar.noBookings` | Nta wafashe umwanya kugeza ubu. | No bookings yet. | needs native-speaker review |
+| `calendar.noSessions` | Nta masaha y'akazi kuri uyu munsi. | No sessions on this day. | needs native-speaker review |
+| `calendar.outside` | Bafashe umwanya hanze y'amasaha y'akazi | Booked outside a session | needs native-speaker review |
+| `calendar.awaitingAnswer` | Dutegereje igisubizo cy'umurwayi | Waiting for the patient | needs native-speaker review |
+| `calendar.disrupted` | Hari impinduka itararangira | A disruption is open | needs native-speaker review |
+| `calendar.disruptedBody_one` | Impinduka {{count}} iracyategereje ibikorwa cyangwa ibisubizo. | {{count}} disruption still waits for actions or answers. | needs native-speaker review |
+| `calendar.disruptedBody_other` | Impinduka {{count}} ziracyategereje ibikorwa cyangwa ibisubizo. | {{count}} disruptions still wait for actions or answers. | needs native-speaker review |
+| `calendar.failed` | Ntibishobotse gufungura kalendari. | Could not load the calendar. | needs native-speaker review |
+| `calendar.emptyTitle` | Nta giteganyijwe | Nothing scheduled | needs native-speaker review |
+| `calendar.empty` | Nta masaha y'akazi cyangwa abafashe imyanya muri iki gihe. | No sessions or bookings in this period. | needs native-speaker review |
+| `calendar.ownOnly` | Urabona amasaha yawe n'abagufatiyeho umwanya gusa. | You see your own sessions and bookings. | needs native-speaker review |
+| `calendar.gridView` | Imbonerahamwe y'amasaha | Grid | needs native-speaker review |
+| `calendar.tableView` | Urutonde | Table | needs native-speaker review |
+| `calendar.day` | Umunsi | Day | needs native-speaker review |
+| `calendar.time` | Isaha | Time | needs native-speaker review |
+| `calendar.session` | Igihe cy'akazi | Session | needs native-speaker review |
+| `calendar.actions` | Ibikorwa | Actions | needs native-speaker review |
+| `calendar.openDay` | Fungura umunsi | Open the day | needs native-speaker review |
+| `disruptions.title` | Impinduka | Disruptions | needs native-speaker review |
+| `disruptions.description` | Iyo umuganga adahari cyangwa ikigo gifunze, imura abafashe imyanya bose icyarimwe. | When a doctor is away or the facility closes, move the affected bookings in one go. | needs native-speaker review |
+| `disruptions.new` | Impinduka nshya | New disruption | needs native-speaker review |
+| `disruptions.wizardTitle` | Impinduka | Disruption | needs native-speaker review |
+| `disruptions.back` | Impinduka zose | All disruptions | needs native-speaker review |
+| `disruptions.progress` | Intambwe z'impinduka | Disruption steps | needs native-speaker review |
+| `disruptions.steps.what` | Nde n'igihe | Who and when | needs native-speaker review |
+| `disruptions.steps.affected` | Abafashe imyanya bibagiraho ingaruka | Affected bookings | needs native-speaker review |
+| `disruptions.steps.answers` | Ibisubizo by'abarwayi | Patient answers | needs native-speaker review |
+| `disruptions.failed` | Ntibishobotse gufungura cyangwa kubika impinduka. | Could not load or save the disruption. | needs native-speaker review |
+| `disruptions.noneTitle` | Nta mpinduka | No disruptions | needs native-speaker review |
+| `disruptions.none` | Nta kibazo gihari. Kora impinduka iyo umuganga adahari cyangwa ikigo gifunze. | Nothing is disrupted. Create one when a doctor is away or the facility closes. | needs native-speaker review |
+| `disruptions.summary` | {{total}} bibagiraho ingaruka, {{pending}} bategereje | {{total}} affected, {{pending}} waiting | needs native-speaker review |
+| `disruptions.kindLabel` | Icyabaye | What happened | needs native-speaker review |
+| `disruptions.kind.doctor_absent` | Umuganga ntahari | Doctor absent | needs native-speaker review |
+| `disruptions.kind.closure` | Ikigo kirafunze | Closure | needs native-speaker review |
+| `disruptions.kind.schedule_change` | Gahunda yahindutse | Schedule change | needs native-speaker review |
+| `disruptions.status.open` | Irakomeje | Open | needs native-speaker review |
+| `disruptions.status.resolved` | Yarangiye | Resolved | needs native-speaker review |
+| `disruptions.anyDoctor` | Nta muganga wihariye | No specific doctor | needs native-speaker review |
+| `disruptions.from` | Kuva | From | needs native-speaker review |
+| `disruptions.to` | Kugeza | To | needs native-speaker review |
+| `disruptions.reason` | Impamvu (y'abakozi) | Reason (for staff) | needs native-speaker review |
+| `disruptions.reasonHint` | Abarwayi ntibabona iyi nyandiko. | Patients never see this note. | needs native-speaker review |
+| `disruptions.findAffected` | Shaka abo bibagiraho ingaruka | Find affected bookings | needs native-speaker review |
+| `disruptions.affectedCount_one` | Umwanya {{count}} cyangwa itike bibagiraho ingaruka. | {{count}} booking or ticket is affected. | needs native-speaker review |
+| `disruptions.affectedCount_other` | Imyanya {{count}} cyangwa amatike bibagiraho ingaruka. | {{count}} bookings or tickets are affected. | needs native-speaker review |
+| `disruptions.forAll` | Igikorwa ku basigaye bose | Action for everyone not done yet | needs native-speaker review |
+| `disruptions.applyAll` | Kora kuri bose | Apply to all | needs native-speaker review |
+| `disruptions.choose` | Hitamo igikorwa | Choose an action | needs native-speaker review |
+| `disruptions.actionFor` | Igikorwa kuri {{name}} | Action for {{name}} | needs native-speaker review |
+| `disruptions.action.move_doctor` | Mwimurire ku wundi muganga | Move to another doctor | needs native-speaker review |
+| `disruptions.action.next_slot` | Mwimurire ku mwanya ukurikira | Move to the next free time | needs native-speaker review |
+| `disruptions.action.cancel` | Hagarika | Cancel | needs native-speaker review |
+| `disruptions.apply` | Kora ibikorwa wahisemo | Apply chosen actions | needs native-speaker review |
+| `disruptions.someLeft_one` | Ikintu {{count}} nticyahinduwe. Hitamo ikindi gikorwa. | {{count}} item could not be changed. Choose another action. | needs native-speaker review |
+| `disruptions.someLeft_other` | Ibintu {{count}} ntibyahinduwe. Hitamo ikindi gikorwa. | {{count}} items could not be changed. Choose another action. | needs native-speaker review |
+| `disruptions.problem.no_slot` | Nta mwanya uhari: hitamo ikindi gikorwa. | No free time: choose another action. | needs native-speaker review |
+| `disruptions.problem.same_day_service` | Umurwayi asanzwe afite iyi serivisi uwo munsi. | The patient already has this service that day. | needs native-speaker review |
+| `disruptions.problem.not_for_ticket` | Ntibishoboka ku matike y'umurongo w'uyu munsi. | Not possible for today's queue tickets. | needs native-speaker review |
+| `disruptions.problem.booking_closed` | Uyu mwanya wari usanzwe warafunzwe. | This booking was already closed. | needs native-speaker review |
+| `disruptions.problem.ticket_closed` | Iyi tike ntikiri ku murongo. | This ticket is no longer waiting. | needs native-speaker review |
+| `disruptions.problem.already_applied` | Byarakozwe. | Already done. | needs native-speaker review |
+| `disruptions.problem.not_found` | Ntibibonetse. | Not found. | needs native-speaker review |
+| `disruptions.remoteTicket` | Itike ya kure {{number}} | Remote ticket {{number}} | needs native-speaker review |
+| `disruptions.nothingTitle` | Nta cyo kwimura | Nothing to move | needs native-speaker review |
+| `disruptions.nothing` | Nta mwanya wemejwe cyangwa itike ya kure muri iki gihe. | No confirmed booking or remote ticket falls in this period. | needs native-speaker review |
+| `disruptions.resolved` | Abarwayi bose basubije. Iyi mpinduka yarangiye. | All patients have answered. This disruption is resolved. | needs native-speaker review |
+| `disruptions.waiting_one` | Umurwayi {{count}} ntarasubiza. | {{count}} patient has not answered yet. | needs native-speaker review |
+| `disruptions.waiting_other` | Abarwayi {{count}} ntibarasubiza. | {{count}} patients have not answered yet. | needs native-speaker review |
+| `disruptions.noAction` | Nta gikorwa | No action | needs native-speaker review |
+| `disruptions.was` | byari {{when}} | was {{when}} | needs native-speaker review |
+| `disruptions.response.pending` | Dutegereje | Waiting | needs native-speaker review |
+| `disruptions.response.accepted` | Yemeye | Accepted | needs native-speaker review |
+| `disruptions.response.declined` | Ntiyasubije | No answer | needs native-speaker review |
+| `disruptions.response.rebooked_other` | Yahisemo ikindi gihe | Chose another time | needs native-speaker review |
+| `disruptions.response.cancelled` | Byahagaritswe | Cancelled | needs native-speaker review |
+| `disruptions.call` | Hamagara umurwayi | Call the patient | needs native-speaker review |
+| `disruptions.callAt` | Hamagara {{phone}} | Call {{phone}} | needs native-speaker review |
+| `followUp.open` | Gukurikirana | Follow-up | needs native-speaker review |
+| `followUp.title` | Gukurikirana {{name}} | Follow-up for {{name}} | needs native-speaker review |
+| `followUp.in` | Azagaruke nyuma ya | Come back in | needs native-speaker review |
+| `followUp.unit` | Igipimo | Unit | needs native-speaker review |
+| `followUp.days` | Iminsi | Days | needs native-speaker review |
+| `followUp.weeks` | Ibyumweru | Weeks | needs native-speaker review |
+| `followUp.how` | Uko bikorwa | How | needs native-speaker review |
+| `followUp.mode.booking` | Mufatire umwanya wa mbere uboneka | Book the first free time | needs native-speaker review |
+| `followUp.mode.reminder` | Kwibutsa umurwayi gusa | Only remind the patient | needs native-speaker review |
+| `followUp.save` | Bika gukurikirana | Save follow-up | needs native-speaker review |
+| `followUp.cancel` | Reka | Cancel | needs native-speaker review |
+| `followUp.booked` | Umwanya wo gukurikirana wafashwe | Follow-up booked | needs native-speaker review |
+| `followUp.bookedBody` | {{day}} saa {{time}} kwa {{doctor}}. Kode y'umwanya {{code}}. | {{day}} at {{time}} with {{doctor}}. Booking code {{code}}. | needs native-speaker review |
+| `followUp.reminder` | Umurwayi azibutswa kugaruka ku itariki {{day}}. | The patient will be reminded to come back on {{day}}. | needs native-speaker review |
+| `followUp.noSlot` | Nta mwanya uboneka guhera {{day}}. Abakira abarwayi bazahamagara umurwayi. | No free time from {{day}}. Reception will call the patient to book. | needs native-speaker review |
 
 ## staff-web feature: clinical (namespace clinical)
 
@@ -2299,6 +2411,33 @@ File: `apps/patient-web/src/features/booking/locales/rw.json`
 | `upcoming.cancelLate` | Hasigaye amasaha ari munsi ya 2 (ku buntu kugeza {{time}}). Bizandikwa ko wasibye utinze. | It's less than 2 hours before the visit (free until {{time}}). It will be recorded as a late cancellation. | needs native-speaker review |
 | `upcoming.keep` | Yigumishe | Keep it | needs native-speaker review |
 | `upcoming.cancelConfirm` | Siba gahunda | Cancel booking | needs native-speaker review |
+| `offer.title` | Umwanya wawe wahindutse | Your booking has changed | needs native-speaker review |
+| `offer.moved` | Ikigo cyimuye gahunda yawe kuva {{from}} kugeza {{to}}. | The facility moved your visit from {{from}} to {{to}}. | needs native-speaker review |
+| `offer.movedTo` | Ikigo cyimuriye gahunda yawe {{to}}. | The facility moved your visit to {{to}}. | needs native-speaker review |
+| `offer.doctor` | Uzakirwa na {{doctor}}. | You will see {{doctor}}. | needs native-speaker review |
+| `offer.autoAccept` | Nutasubiza bitarenze {{time}}, tuzakubikira igihe gishya. | If you don't answer by {{time}}, we keep the new time for you. | needs native-speaker review |
+| `offer.answer` | Turagusaba gusubiza: ikigo gishobora no kuguhamagara. | Please answer: the facility may also call you. | needs native-speaker review |
+| `offer.keep` | Emera igihe gishya | Keep the new time | needs native-speaker review |
+| `offer.other` | Hitamo ikindi gihe | Choose another time | needs native-speaker review |
+| `offer.cancel` | Hagarika uyu mwanya | Cancel this booking | needs native-speaker review |
+| `offer.cancelBody` | Umwanya {{code}} urahagarikwa. Ntibibarwa nko guhagarika bitinze. | Booking {{code}} will be cancelled. It is not counted as a late cancellation. | needs native-speaker review |
+| `offer.otherTitle` | Hitamo ikindi gihe | Choose another time | needs native-speaker review |
+| `offer.loading` | Turashaka imyanya iboneka… | Loading free times… | needs native-speaker review |
+| `offer.noTimes` | Nta mwanya uboneka muri iki cyumweru. Emera igihe gishya cyangwa uhagarike. | No free time this week. Keep the new time or cancel. | needs native-speaker review |
+| `offer.day` | Umunsi | Day | needs native-speaker review |
+| `offer.times` | Imyanya iboneka | Free times | needs native-speaker review |
+| `feed.title` | Kwiyandikisha kuri kalendari | Calendar subscription | needs native-speaker review |
+| `feed.body` | Shyira gahunda z'umuryango wawe kuri kalendari ya telefoni yawe. Igaragaza ikigo, serivisi, isaha na kode gusa. | Add your family's bookings to your phone's calendar. It shows the facility, service, time and booking code only. | needs native-speaker review |
+| `feed.toggle` | Ihuza rya kalendari | Calendar link | needs native-speaker review |
+| `feed.on` | Birakora | On | needs native-speaker review |
+| `feed.off` | Ntibikora | Off | needs native-speaker review |
+| `feed.link` | Ihuza ryawe bwite | Your private link | needs native-speaker review |
+| `feed.once` | Rikoporore ubu: rigaragara rimwe gusa. Ufite iri huza wese abona amasaha ya gahunda zawe. | Copy it now: it is shown only once. Anyone with the link sees your booking times. | needs native-speaker review |
+| `feed.copy` | Koporora ihuza | Copy link | needs native-speaker review |
+| `feed.copied` | Ihuza ryakoporowe. | Link copied. | needs native-speaker review |
+| `feed.open` | Fungura muri kalendari yanjye | Open in my calendar app | needs native-speaker review |
+| `feed.since` | Birakora kuva {{day}}. Ushaka irindi huza, bizimye hanyuma ubyongere ubifungure. | On since {{day}}. To get a new link, turn it off and on again. | needs native-speaker review |
+| `feed.failed` | Ntibishobotse guhindura ihuza rya kalendari. Ongera ugerageze. | We couldn't change the calendar link. Try again. | needs native-speaker review |
 
 ## patient-web feature: facilityApplication (namespace facilityApplication)
 

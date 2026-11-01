@@ -33,6 +33,9 @@ import { CalendarDots, ClipboardText } from "@phosphor-icons/react";
 // [S4 imports]
 import { ArrowsDownUp } from "@phosphor-icons/react";
 // [/S4 imports]
+// [S5 imports]
+import { CalendarX } from "@phosphor-icons/react";
+// [/S5 imports]
 // [S6 imports]
 import { Notepad, Signature } from "@phosphor-icons/react";
 // [/S6 imports]
@@ -261,6 +264,16 @@ export const NAV_ITEMS: readonly NavItem[] = [
     visible: hasAny("facility.configure"),
   },
   // [/S4]
+  // [S5]
+  {
+    key: "disruptions",
+    path: "/disruptions",
+    icon: CalendarX,
+    group: "facility",
+    labelKey: "bookings.nav.disruptions",
+    visible: hasAny("schedule.manage"),
+  },
+  // [/S5]
   // [S6]
   {
     key: "clinicalConsultation",

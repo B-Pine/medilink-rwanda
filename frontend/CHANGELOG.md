@@ -103,6 +103,26 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   check-in and phone booking.
 - api-client: booking module and mocks; `staff.reschedule()`, `NO_SHOW_REVERSAL_REASONS`; mocks
   honour the slots `date` and enforce the reversal rules.
+- S0–S5 audit, R5 ([#87](https://github.com/B-Pine/medilink-rwanda/issues/87)), following the
+  2026-10-31 decisions (S5 D-10):
+  - Remote joiners: the tracker shows "I'm here", which only tells reception the patient says
+    they arrived, and a pass-over warning near the front. The board lists remote joiners not yet
+    confirmed (those who tapped "I'm here" first) with Confirm arrival, also in the ticket panel.
+  - A booked patient checked in after the grace window is queued as a walk-in: the board says so
+    and offers a new time. Ticket rows show the booked slot time, "Late: walk-in" and remote
+    status.
+  - Booking flow: the step, person and service are in the URL, so browser Back and refresh keep
+    the place; symptoms and the reason never go in the URL.
+  - Board: `/` opens the check-in search, shortcuts are ignored while a dialog is open, and
+    changed rows highlight briefly (design 04 §5).
+  - Tracker: one AudioContext per call alert, closed when it ends.
+  - ui: shared `formatTime`, `formatDate`, `formatMoney`, `kigaliDate`, `kigaliHour` (24-hour,
+    Africa/Kigali) replace ad-hoc formatters.
+  - api-client: R4 field names (`is_remote`, `remote_arrival_claimed_at`,
+    `remote_arrival_confirmed_at`, `slot_starts_at`, `late`), `queue.confirmArrival()`,
+    `booking.arrived(visitId, version)`. Mocks: remote join, "I'm here", confirm arrival,
+    `calendar.ics`, Idempotency-Key replay for bookings, and reschedule checks in the backend's
+    order.
 
 ### Design v2
 

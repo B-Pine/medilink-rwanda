@@ -169,7 +169,7 @@ function Hub({ profile }: { profile: PatientProfileDetail }) {
         </Card>
       )}
       <nav aria-label={t("profile.sectionsLabel")}>
-        <ul className="m-0 flex list-none flex-col overflow-hidden rounded-lg border border-border bg-surface p-0">
+        <ul className="m-0 flex list-none flex-col overflow-hidden rounded-lg bg-surface shadow-card p-0">
           {sections.map(({ to, icon: SectionIcon }) => (
             <li key={to} className="border-b border-border last:border-0">
               <Link

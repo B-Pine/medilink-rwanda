@@ -63,5 +63,7 @@
     "passOver": "Get to the facility and check in at reception soon. If reception hasn't confirmed you when your turn comes, your place moves back.",
     "passOverClaimed": "Show your ticket at reception now. Until they confirm you're here, your place can move back.",
     "changed": "Your ticket changed. We refreshed it. Try again."
-  }
+  },
+  "aheadShort_one": "person ahead of you",
+  "aheadShort_other": "people ahead of you"
 }

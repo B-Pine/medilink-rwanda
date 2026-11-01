@@ -140,7 +140,7 @@ function Checklist() {
             ) : (
               <section
                 aria-labelledby="go-live"
-                className="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-border bg-surface p-5"
+                className="flex flex-wrap items-center justify-between gap-4 rounded-lg bg-surface shadow-card p-5"
               >
                 <div className="flex max-w-xl flex-col gap-1">
                   <h2 id="go-live" className="m-0 font-heading text-h3">
@@ -175,7 +175,7 @@ function Checklist() {
                 )}
               </Alert>
             )}
-            <ol className="m-0 flex list-none flex-col overflow-hidden rounded-lg border border-border bg-surface p-0">
+            <ol className="m-0 flex list-none flex-col overflow-hidden rounded-lg bg-surface shadow-card p-0">
               {data.items.map((item) => {
                 const ItemIcon = CHECKLIST_ICONS[item.code];
                 return (
@@ -271,7 +271,7 @@ export function SetupTodayCard() {
   return (
     <section
       aria-labelledby="today-setup"
-      className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5 lg:col-span-2"
+      className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5 lg:col-span-2"
     >
       <div className="flex items-center gap-4">
         <div className="text-primary">

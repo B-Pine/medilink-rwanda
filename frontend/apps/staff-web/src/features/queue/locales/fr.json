@@ -148,7 +148,8 @@
     "remoteConfirm": "Confirmer l’arrivée",
     "remoteError": "Impossible de confirmer l’arrivée.",
     "expectedCheckedIn": "{{name}} enregistré : {{ticket}}",
-    "expectedLateWalkIn": "Arrivé après le délai de grâce : placé comme sans rendez-vous. Proposez un autre horaire s’il le préfère."
+    "expectedLateWalkIn": "Arrivé après le délai de grâce : placé comme sans rendez-vous. Proposez un autre horaire s’il le préfère.",
+    "findPatient": "Trouver un patient : nom, téléphone, carte d'identité ou numéro de dossier"
   },
   "panel": {
     "service": "Service",
@@ -200,7 +201,8 @@
     "toPharmacy": "Envoyer à la pharmacie",
     "toPayment": "Envoyer au paiement",
     "hold": "Attendre les résultats",
-    "waiting": "En attente"
+    "waiting": "En attente",
+    "nextUp": "Ensuite"
   },
   "reorders": {
     "title": "Contrôle de la file",
@@ -300,5 +302,30 @@
     "avgConsult": "Consultation moyenne aujourd’hui",
     "leftRate": "Partis sans consultation aujourd’hui",
     "emergencies": "Urgences, 14 jours"
+  },
+  "flow": {
+    "label": "Patients à chaque étape",
+    "expected": "Attendus",
+    "waiting": "En attente",
+    "withDoctor": "Chez le médecin",
+    "payment": "Paiement",
+    "pharmacy": "Pharmacie",
+    "none": "Personne",
+    "booked": "Rendez-vous, pas encore arrivés",
+    "late_one": "{{count}} en retard",
+    "late_other": "{{count}} en retard",
+    "median_one": "Médiane {{count}} min",
+    "median_other": "Médiane {{count}} min",
+    "called_one": "{{count}} appelé",
+    "called_other": "{{count}} appelés",
+    "slow": {
+      "waiting": "L'attente du médecin est l'étape la plus lente en ce moment.",
+      "payment": "Le paiement est l'étape la plus lente en ce moment.",
+      "pharmacy": "La pharmacie est l'étape la plus lente en ce moment."
+    },
+    "slowDetail_one": "{{count}} personne, médiane {{minutes}} min depuis l'arrivée.",
+    "slowDetail_other": "{{count}} personnes, médiane {{minutes}} min depuis l'arrivée.",
+    "people_one": "{{count}} personne",
+    "people_other": "{{count}} personnes"
   }
 }

@@ -255,7 +255,8 @@
       "family": "Family members",
       "privacy": "Privacy and who saw my records",
       "settings": "Text size, language and theme"
-    }
+    },
+    "notSureBody": "Answer a few questions about how you feel, and we suggest where to go."
   },
   "info": {
     "back": "Back to the home page",

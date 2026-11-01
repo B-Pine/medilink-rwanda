@@ -143,7 +143,7 @@ function AnnouncementsList({ scope }: { scope: AnnouncementScope }) {
           }
         />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-border bg-surface">
+        <div className="overflow-x-auto rounded-lg bg-surface shadow-card">
           <table className="w-full border-collapse text-left">
             <caption className="sr-only">{t(`notifications.announcements.${scope}Title`)}</caption>
             <thead className="bg-subtle text-body-sm text-fg-secondary">

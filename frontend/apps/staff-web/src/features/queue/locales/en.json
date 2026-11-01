@@ -148,7 +148,8 @@
     "remoteConfirm": "Confirm arrival",
     "remoteError": "Could not confirm the arrival.",
     "expectedCheckedIn": "{{name}} checked in: {{ticket}}",
-    "expectedLateWalkIn": "Arrived after the grace time, so queued as a walk-in. Offer a new time if they prefer."
+    "expectedLateWalkIn": "Arrived after the grace time, so queued as a walk-in. Offer a new time if they prefer.",
+    "findPatient": "Find a patient: name, phone, national ID or file number"
   },
   "panel": {
     "service": "Service",
@@ -200,7 +201,8 @@
     "toPharmacy": "Send to pharmacy",
     "toPayment": "Send to payment",
     "hold": "Wait for results",
-    "waiting": "Waiting"
+    "waiting": "Waiting",
+    "nextUp": "Next up"
   },
   "reorders": {
     "title": "Queue reviews",
@@ -300,5 +302,30 @@
     "avgConsult": "Average consultation today",
     "leftRate": "Left without being seen today",
     "emergencies": "Emergencies, 14 days"
+  },
+  "flow": {
+    "label": "Patients in each stage",
+    "expected": "Expected",
+    "waiting": "Waiting",
+    "withDoctor": "With a doctor",
+    "payment": "Payment",
+    "pharmacy": "Pharmacy",
+    "none": "No one",
+    "booked": "Booked, not here yet",
+    "late_one": "{{count}} late",
+    "late_other": "{{count}} late",
+    "median_one": "Median {{count}} min",
+    "median_other": "Median {{count}} min",
+    "called_one": "{{count}} being called",
+    "called_other": "{{count}} being called",
+    "slow": {
+      "waiting": "Waiting for a doctor is the slow step right now.",
+      "payment": "Payment is the slow step right now.",
+      "pharmacy": "The pharmacy is the slow step right now."
+    },
+    "slowDetail_one": "{{count}} person, median {{minutes}} min since arriving.",
+    "slowDetail_other": "{{count}} people, median {{minutes}} min since arriving.",
+    "people_one": "{{count}} person",
+    "people_other": "{{count}} people"
   }
 }

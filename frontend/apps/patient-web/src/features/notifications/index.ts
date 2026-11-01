@@ -26,5 +26,6 @@ export const notificationsFeature: FeatureRoutes = {
     { path: "/notifications/:id", lazy: lazy(inbox, "NotificationDetailPage") },
   ],
   headerItems: [NotificationBellLink],
-  homeTop: [PushOffBanner],
+  // Under the main content: a live ticket must lead the home page (design 07 §3.1)
+  homeMain: [PushOffBanner],
 };

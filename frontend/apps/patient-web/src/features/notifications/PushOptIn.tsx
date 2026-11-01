@@ -89,12 +89,7 @@ export function PushOptIn({ compact = false }: { compact?: boolean }) {
   })();
 
   return (
-    <div
-      className={cx(
-        "flex flex-col gap-3",
-        !compact && "rounded-lg border border-border bg-surface p-5",
-      )}
-    >
+    <div className={cx("flex flex-col gap-3", !compact && "rounded-lg bg-surface shadow-card p-5")}>
       {body}
       {failed && (
         <Alert tone="danger" role="alert">

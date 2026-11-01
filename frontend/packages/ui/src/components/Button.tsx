@@ -5,11 +5,11 @@ import { cx } from "../utils/cx";
 import { Spinner } from "./Spinner";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
-export type ButtonSize = "md" | "lg";
+export type ButtonSize = "sm" | "md" | "lg";
 
 export interface ButtonProps extends ComponentPropsWithRef<"button"> {
   variant?: ButtonVariant;
-  /** `lg` = primary action height (56px patient, 40px staff). */
+  /** `lg` = primary action height (56px patient, 40px staff); `sm` = dense rows (staff lists). */
   size?: ButtonSize;
   /** Busy: shows a spinner, sets aria-busy and ignores clicks, but keeps focus (unlike disabled). */
   loading?: boolean;
@@ -28,8 +28,9 @@ const VARIANTS: Record<ButtonVariant, string> = {
 };
 
 const SIZES: Record<ButtonSize, string> = {
-  md: "min-h-control px-4",
-  lg: "min-h-control-primary px-6",
+  sm: "min-h-8 px-3 py-1 text-body-sm",
+  md: "min-h-control px-4 py-2 text-body",
+  lg: "min-h-control-primary px-6 py-2 text-body",
 };
 
 export function buttonClassName({
@@ -40,8 +41,9 @@ export function buttonClassName({
 }: Pick<ButtonProps, "variant" | "size" | "fullWidth" | "className">): string {
   return cx(
     // Text may wrap to two lines (long Kinyarwanda labels, design 03 §2); no fixed widths.
-    "inline-flex items-center justify-center gap-2 rounded-md py-2 text-center text-body font-semibold no-underline",
-    "transition-colors duration-150 ease-out cursor-pointer select-none",
+    "inline-flex items-center justify-center gap-2 rounded-md text-center font-semibold no-underline",
+    "transition-[background-color,color,box-shadow,transform] duration-150 ease-out cursor-pointer select-none",
+    "enabled:active:scale-[0.97] motion-reduce:enabled:active:scale-100",
     "aria-disabled:cursor-not-allowed aria-disabled:opacity-70 disabled:cursor-not-allowed disabled:opacity-70",
     VARIANTS[variant],
     SIZES[size],

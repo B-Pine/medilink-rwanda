@@ -266,7 +266,7 @@ export function SignUpPage() {
           </div>
 
           <div className={cx("flex flex-col gap-6", step !== 2 && "hidden")}>
-            <div className="flex flex-col gap-3 rounded-card border border-border bg-surface p-5">
+            <div className="flex flex-col gap-3 rounded-card bg-surface shadow-card p-5">
               <p className="m-0 font-semibold">{t("signup.consentIntro")}</p>
               <ul className="m-0 flex list-disc flex-col gap-2 pl-6">
                 <li>{t("signup.consentPoint1")}</li>

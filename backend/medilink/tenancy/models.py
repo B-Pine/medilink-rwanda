@@ -137,7 +137,9 @@ class FacilityMembership(TimeStampedModel):
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="memberships"
     )
     facility = models.ForeignKey(Facility, on_delete=models.PROTECT, related_name="memberships")
-    roles = models.ManyToManyField(Role, related_name="memberships", blank=True)
+    roles = models.ManyToManyField(
+        Role, related_name="memberships", blank=True, through="MembershipRole"
+    )
     is_active = models.BooleanField(default=True)
     deactivated_at = models.DateTimeField(null=True, blank=True)
     # S2: licence attestation (FR-ACC-07) and deactivation details (FR-ACC-06)
@@ -162,6 +164,46 @@ class FacilityMembership(TimeStampedModel):
 
     def __str__(self) -> str:
         return f"membership {self.pk}"
+
+
+class MembershipRoleQuerySet(models.QuerySet):
+    def bulk_create(self, objs: Any, *args: Any, **kwargs: Any) -> list[Any]:
+        """`membership.roles.set()/add()` build rows without `facility_id`: copy the membership's
+        (visible only in its facility context, so RLS still decides)."""
+        objs = list(objs)
+        missing = {o.facilitymembership_id for o in objs if o.facility_id is None}
+        if missing:
+            facilities = dict(
+                FacilityMembership.objects.filter(pk__in=missing).values_list("pk", "facility_id")
+            )
+            for o in objs:
+                if o.facility_id is None:
+                    o.facility_id = facilities.get(o.facilitymembership_id)
+        return super().bulk_create(objs, *args, **kwargs)
+
+
+class MembershipRole(models.Model):
+    """The membership-role join, with its own `facility_id` so forced RLS covers it (security 04
+    §4): `facility_isolation`, plus reading the roles of your own memberships (as memberships)."""
+
+    id = models.BigAutoField(primary_key=True)
+    facilitymembership = models.ForeignKey(FacilityMembership, on_delete=models.CASCADE)
+    role = models.ForeignKey(Role, on_delete=models.CASCADE)
+    facility = models.ForeignKey(Facility, on_delete=models.PROTECT, related_name="+")
+
+    objects = MembershipRoleQuerySet.as_manager()
+
+    class Meta:
+        db_table = "tenancy_facilitymembership_roles"
+        unique_together = [("facilitymembership", "role")]
+
+    def __str__(self) -> str:
+        return f"membership role {self.pk}"
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        if self.facility_id is None:
+            self.facility_id = self.facilitymembership.facility_id
+        super().save(*args, **kwargs)
 
 
 class FacilityNote(TimeStampedModel):
@@ -223,6 +265,9 @@ class Invitation(TimeStampedModel):
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, blank=True, related_name="+"
     )
     revoked_at = models.DateTimeField(null=True, blank=True)
+    # Closed by the daily job or by a re-invite once `expires_at` passed (not a revocation).
+    expired_at = models.DateTimeField(null=True, blank=True)
+    idempotency_key = models.UUIDField(null=True, blank=True)
     source = models.CharField(
         max_length=24, choices=InvitationSource.choices, default=InvitationSource.STAFF
     )
@@ -233,7 +278,14 @@ class Invitation(TimeStampedModel):
         constraints = [
             models.UniqueConstraint(
                 fields=["facility", "email"],
-                condition=models.Q(accepted_at__isnull=True, revoked_at__isnull=True),
+                condition=models.Q(
+                    accepted_at__isnull=True, revoked_at__isnull=True, expired_at__isnull=True
+                ),
                 name="tenancy_invitation_pending_unique",
-            )
+            ),
+            models.UniqueConstraint(
+                fields=["facility", "idempotency_key"],
+                condition=models.Q(idempotency_key__isnull=False),
+                name="tenancy_invitation_idempotency_unique",
+            ),
         ]

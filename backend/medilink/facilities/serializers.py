@@ -484,6 +484,24 @@ class StaffMembershipSerializer(serializers.Serializer):
     version = serializers.IntegerField()
 
 
+def page_of(item: type[serializers.Serializer], name: str) -> type[serializers.Serializer]:
+    """`{count, next, previous, results}` (architecture 02 §3) for the OpenAPI schema."""
+    return type(
+        name,
+        (serializers.Serializer,),
+        {
+            "count": serializers.IntegerField(),
+            "next": serializers.CharField(allow_null=True),
+            "previous": serializers.CharField(allow_null=True),
+            "results": item(many=True),
+        },
+    )
+
+
+StaffMembershipPageSerializer = page_of(StaffMembershipSerializer, "StaffMembershipPage")
+TemplatePageSerializer = page_of(TemplateSerializer, "ScheduleTemplatePage")
+
+
 class MembershipUpdateSerializer(StrictSerializer):
     version = serializers.IntegerField(min_value=1)
     role_codes = serializers.ListField(child=serializers.CharField(max_length=32), required=False)
@@ -511,6 +529,9 @@ class InvitationSerializer(serializers.Serializer):
     expires_at = serializers.DateTimeField()
     invited_by = serializers.CharField(allow_null=True)
     created_at = serializers.DateTimeField()
+
+
+InvitationPageSerializer = page_of(InvitationSerializer, "InvitationPage")
 
 
 class ClinicianProfileSerializer(StrictSerializer):

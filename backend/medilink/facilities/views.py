@@ -505,15 +505,22 @@ class ChecklistView(FacilityView):
 class GoLiveView(FacilityView):
     permission_classes = [Needs(CONFIGURE), RecentAuthRequired()]
 
+    def conflict_current(self, request: Request, *args: Any, **kwargs: Any) -> Any:
+        return profile_data(self.facility())
+
     @extend_schema(
         operation_id="staff_facility_go_live",
         tags=TAGS,
         request=s.GoLiveSerializer,
-        responses={200: s.FacilityProfileSerializer, 422: err("failing checks in fields")},
+        responses={
+            200: s.FacilityProfileSerializer,
+            409: err("stale status_version (error.current: the profile)"),
+            422: err("failing checks in fields"),
+        },
     )
     def post(self, request: Request) -> Response:
+        from medilink.core.idempotency import idempotency_key
         from medilink.onboarding.services import GoLiveFailed, change_facility_status
-        from medilink.uploads.views import idempotency_key
 
         body = s.GoLiveSerializer(data=request.data)
         body.is_valid(raise_exception=True)

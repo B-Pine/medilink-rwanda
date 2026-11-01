@@ -415,6 +415,8 @@ function seed() {
 export const setupMocks: FeatureMockFactory = (context) => {
   const { api } = context;
   let db = seed();
+  /** Idempotency-Key → invitation created with it (a repeat returns the same row). */
+  const invitationKeys = new Map<string, Invitation>();
 
   type Ok = { lang: LanguageCode; email: string; permissions: string[] };
   /** Staff in Kigali Clinic with any of `codes` (`[]` = any member). */
@@ -609,6 +611,7 @@ export const setupMocks: FeatureMockFactory = (context) => {
   return {
     reset() {
       db = seed();
+      invitationKeys.clear();
     },
     handlers: [
       // ---- facility ------------------------------------------------------------------------
@@ -1000,14 +1003,17 @@ export const setupMocks: FeatureMockFactory = (context) => {
         const canRead = isManager(ok) || ok.permissions.includes("schedule.view");
         const membership = canRead ? url.searchParams.get("membership_id") : own;
         const service = url.searchParams.get("service_id");
-        return HttpResponse.json({
-          results: db.templates.filter(
-            (t) =>
-              !t.valid_to &&
-              (!membership || t.membership_id === membership) &&
-              (!service || t.service_id === service),
+        return HttpResponse.json(
+          page(
+            db.templates.filter(
+              (t) =>
+                !t.valid_to &&
+                (!membership || t.membership_id === membership) &&
+                (!service || t.service_id === service),
+            ),
+            url,
           ),
-        });
+        );
       }),
       http.post(`${api}/staff/schedule-templates/`, async ({ request }) => {
         await context.settle();
@@ -1314,14 +1320,17 @@ export const setupMocks: FeatureMockFactory = (context) => {
         const status = url.searchParams.get("status");
         const role = url.searchParams.get("role");
         const q = (url.searchParams.get("q") ?? "").toLowerCase();
-        return HttpResponse.json({
-          results: db.memberships.filter(
-            (m) =>
-              (!status || (status === "active") === m.is_active) &&
-              (!role || m.roles.includes(role)) &&
-              (!q || m.full_name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q)),
+        return HttpResponse.json(
+          page(
+            db.memberships.filter(
+              (m) =>
+                (!status || (status === "active") === m.is_active) &&
+                (!role || m.roles.includes(role)) &&
+                (!q || m.full_name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q)),
+            ),
+            url,
           ),
-        });
+        );
       }),
       http.get(`${api}/staff/memberships/:id/`, async ({ request, params }) => {
         await context.settle();
@@ -1414,7 +1423,9 @@ export const setupMocks: FeatureMockFactory = (context) => {
       http.get(`${api}/staff/invitations/`, async ({ request }) => {
         await context.settle();
         const ok = guard(request, ["staff.manage"]);
-        return ok instanceof Response ? ok : HttpResponse.json({ results: db.invitations });
+        return ok instanceof Response
+          ? ok
+          : HttpResponse.json(page(db.invitations, new URL(request.url)));
       }),
       http.post(`${api}/staff/invitations/`, async ({ request }) => {
         await context.settle();
@@ -1422,6 +1433,9 @@ export const setupMocks: FeatureMockFactory = (context) => {
         if (ok instanceof Response) return ok;
         const step = stepUpFailure(context, ok.lang);
         if (step) return step;
+        const key = request.headers.get("Idempotency-Key");
+        const replay = key ? invitationKeys.get(key) : undefined;
+        if (replay) return HttpResponse.json(replay, { status: 201 });
         const data = await body(request);
         const email = str(data.email).trim().toLowerCase();
         if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))
@@ -1444,6 +1458,7 @@ export const setupMocks: FeatureMockFactory = (context) => {
           created_at: now(),
         };
         db.invitations.unshift(row);
+        if (key) invitationKeys.set(key, row);
         return HttpResponse.json(row, { status: 201 });
       }),
       http.post(`${api}/staff/invitations/:id/:action/`, async ({ request, params }) => {
@@ -1495,6 +1510,7 @@ export const setupMocks: FeatureMockFactory = (context) => {
         const found = invitationFor(str(data.token));
         if (!found) return context.errorResponse(400, "invalid_token", INVALID[lang]);
         if (found.existing) {
+          // Existing account: a signed-in session only (no password path), answered with StaffMe.
           const result = context.authenticatedStaff(lang);
           if ("error" in result) return result.error;
           return HttpResponse.json(result.me);

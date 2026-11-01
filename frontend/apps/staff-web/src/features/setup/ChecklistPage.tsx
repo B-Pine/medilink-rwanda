@@ -115,7 +115,8 @@ function Checklist() {
   const [refused, setRefused] = useState<string[]>([]);
 
   const goLive = useMutation({
-    mutationFn: () => withStepUp(() => api.setup.goLive(checklist.data?.status_version ?? 0, key.current)),
+    mutationFn: () =>
+      withStepUp(() => api.setup.goLive(checklist.data?.status_version ?? 0, key.current)),
     onSuccess: () => {
       setRefused([]);
       void queryClient.invalidateQueries({ queryKey: ["setup"] });

@@ -60,6 +60,8 @@ class User(AbstractBaseUser):
     is_platform_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     email_verified_at = models.DateTimeField(null=True, blank=True)
+    # Self sign-up (security 03 §6): the account can't sign in until the emailed link is opened.
+    email_verification_pending = models.BooleanField(default=False)
     # S1 (contract §2.5): staff unlock PIN, Argon2id hash (C3); null = no PIN
     pin_hash = models.CharField(max_length=256, null=True, blank=True)  # noqa: DJ001
     pin_set_at = models.DateTimeField(null=True, blank=True)

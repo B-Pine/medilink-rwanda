@@ -12,6 +12,7 @@ from django.core.management.base import CommandError
 from django.db import DatabaseError, connection, transaction
 from rest_framework.test import APIClient
 
+from medilink.accounts.models import User
 from medilink.audit import actions
 from medilink.audit.models import AppendOnlyError, AuditEntry
 from medilink.audit.services import (
@@ -225,6 +226,7 @@ def test_b11_patient_events(api: APIClient, patient_user: Any) -> None:
     assert _actions() == [actions.LOGIN_SUCCESS, actions.LOGOUT, actions.PATIENT_REGISTERED]
     registered = AuditEntry.objects.get(action=actions.PATIENT_REGISTERED)
     assert registered.actor_role == "patient"
+    assert str(registered.actor_id) == str(User.objects.get(email="claudine@example.test").pk)
     assert registered.metadata == {
         "terms_version": "2026-10",
         "privacy_version": "2026-10",

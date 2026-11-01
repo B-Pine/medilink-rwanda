@@ -329,7 +329,7 @@ All follow [API conventions](../02-api-conventions.md): error envelope, paginati
 
 ### 3.4 WebSockets
 
-| Path | Server → client (`{type, data, sent_at}`) | Client → server | Close codes |
+| Path | Server → client (flat `{type, …ids}`, [API conventions](../02-api-conventions.md) §6) | Client → server | Close codes |
 |---|---|---|---|
 | `/ws/v1/patient/notifications/` | `notification.created` `{id, priority, patient_id}` · `notification.read` `{ids}` or `{all: true}` · `notification.updated` `{id}` | `ping` → `pong` | `4401` not authenticated or session revoked; `4429` more than 30 client messages per minute |
 | `/ws/v1/staff/notifications/` | Same, with `facility_id` in `notification.created` | `ping` → `pong` | Same |

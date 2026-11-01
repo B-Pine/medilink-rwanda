@@ -4,19 +4,31 @@ from __future__ import annotations
 
 from typing import Any
 
-from drf_spectacular.utils import OpenApiResponse
+from drf_spectacular.utils import OpenApiParameter, OpenApiResponse
 from rest_framework import exceptions
 from rest_framework.permissions import BasePermission
 from rest_framework.request import Request
+from rest_framework.response import Response
 
 from medilink.authz.permissions import IsStaffAuthenticated, get_principal
+from medilink.core.exceptions import CurrentOnConflict
+from medilink.core.pagination import DefaultPagination
 from medilink.core.serializers import ErrorSerializer
 from medilink.facilities.errors import SetupAPIView
 from medilink.tenancy.models import Facility
 
+PAGE = [OpenApiParameter("page", int), OpenApiParameter("page_size", int)]
+
 
 def err(description: str) -> OpenApiResponse:
     return OpenApiResponse(response=ErrorSerializer, description=description)
+
+
+def paginated(view: Any, request: Request, rows: Any, render: Any) -> Response:
+    """Page-number pagination (architecture 02 §3): `{count, next, previous, results}`."""
+    paginator = DefaultPagination()
+    page: list[Any] | None = paginator.paginate_queryset(rows, request, view=view)
+    return paginator.get_paginated_response([render(row) for row in page or []])
 
 
 def Needs(*codes: str, methods: dict[str, tuple[str, ...]] | None = None) -> type[BasePermission]:
@@ -40,7 +52,8 @@ def Needs(*codes: str, methods: dict[str, tuple[str, ...]] | None = None) -> typ
 Member = Needs()
 
 
-class FacilityView(SetupAPIView):
+# A view of the active facility; a `409` carries the current resource (`error.current`).
+class FacilityView(CurrentOnConflict, SetupAPIView):
     def principal(self) -> Any:
         principal = get_principal(self.request)
         if principal is None:

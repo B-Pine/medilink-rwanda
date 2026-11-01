@@ -279,6 +279,23 @@ def test_signed_link_headers_and_audit(
 
 
 @pytest.mark.acceptance("S1-B10")
+def test_inline_request_is_still_served_as_attachment(
+    staff_client: APIClient, clean_upload: dict[str, Any]
+) -> None:
+    response = staff_client.post(
+        f"{STAFF}{clean_upload['id']}/download-links/", {"disposition": "inline"}, format="json"
+    )
+    assert response.status_code == 200
+    assert response.json()["disposition"] == "attachment"
+    download = APIClient().get(response.json()["url"].removeprefix("http://testserver"))
+    assert download["Content-Disposition"].startswith("attachment;")
+    assert download["X-Content-Type-Options"] == "nosniff"
+    assert download["Content-Security-Policy"] == "sandbox; default-src 'none'"
+    entry = AuditEntry.objects.filter(action="upload.download_link_issued").latest("sequence")
+    assert entry.metadata["disposition"] == "inline"  # what was asked for
+
+
+@pytest.mark.acceptance("S1-B10")
 def test_expired_or_tampered_links_404(
     staff_client: APIClient, clean_upload: dict[str, Any]
 ) -> None:

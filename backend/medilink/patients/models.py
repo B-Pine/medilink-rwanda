@@ -187,6 +187,8 @@ class PatientLink(TimeStampedModel):
     revoke_reason = models.CharField(  # noqa: DJ001
         max_length=24, choices=RevokeReason.choices, null=True, blank=True
     )
+    # R2: Idempotency-Key of the PA7 request that created a dependent's link
+    creation_key = models.UUIDField(null=True, blank=True)
 
     objects: ClassVar[Any] = PatientLinkQuerySet.as_manager()
 
@@ -201,6 +203,11 @@ class PatientLink(TimeStampedModel):
                 fields=["account"],
                 condition=Q(relationship="self", revoked_at__isnull=True),
                 name="patients_link_one_self_per_account",
+            ),
+            models.UniqueConstraint(
+                fields=["account", "creation_key"],
+                condition=Q(creation_key__isnull=False),
+                name="patients_link_creation_key_uniq",
             ),
         ]
 

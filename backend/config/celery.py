@@ -3,11 +3,11 @@
 Run a worker:  celery -A config worker -l info   (Windows: add --pool=solo)
 """
 
-import os
-
 from celery import Celery
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.dev")
+from config.environment import require_settings_module
+
+require_settings_module()
 
 app = Celery("medilink")
 app.config_from_object("django.conf:settings", namespace="CELERY")

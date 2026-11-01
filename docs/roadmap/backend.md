@@ -115,7 +115,8 @@ Status: v0.1 · Process and Definition of Done: [roadmap README](README.md) · C
 - **Requirements:** FR-BIL-04..13
 - **Tests:** money invariants (no negative, server-side totals, no self-approval)
 
-### S9 · Notifications
+### S9 · Notification engine (core)
+- **Scope note:** the [S9 contract](../architecture/contracts/sprint-09-notifications.md) builds the engine, channels, preferences and announcements. Each module's events (booking reminders, time-to-leave, pass-over warnings, results, bills) are wired in Wave 6 ("S9 event wiring").
 - **Build:**
   - event → notification service (recipients, preferences, quiet hours, priority, templates rw/en/fr)
   - channel adapters: in-app, web push (VAPID, endpoint allowlist), email

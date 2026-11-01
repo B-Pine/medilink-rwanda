@@ -7,7 +7,7 @@ from django.db.models.signals import post_migrate
 BEAT_SCHEDULE = {
     "facilities.expire_invitations": {
         "task": "medilink.facilities.tasks.expire_invitations",
-        "schedule": crontab(hour=0, minute=30),  # 02:30 Kigali
+        "schedule": crontab(hour=2, minute=30),  # Kigali time (CELERY_TIMEZONE)
     },
 }
 FUNCTIONS = ("tenancy_find_invitation(bytea)", "scheduling_busy_ranges(uuid, uuid)")

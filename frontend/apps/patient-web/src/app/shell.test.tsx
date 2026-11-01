@@ -81,11 +81,17 @@ describe("patient shell (design 07 §2)", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  it("help answers common questions and keeps the emergency notice first", async () => {
+  it("help shows searchable articles and keeps the emergency notice first", async () => {
     const { user, container } = await signIn("/support");
     expect(await screen.findByRole("heading", { level: 1, name: "Help" })).toBeInTheDocument();
-    await user.click(screen.getByText("How do I follow my turn?"));
-    expect(screen.getByText(/open My visits/)).toBeVisible();
+    // S10: searchable help articles replace the static questions (sprint-10 S10-D5)
+    const articles = await screen.findByRole("region", { name: "Help articles" });
+    expect(
+      screen.getByText(/call 912/).compareDocumentPosition(articles) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    await user.click(await within(articles).findByRole("link", { name: /Add your child/ }));
+    expect(await screen.findByRole("heading", { level: 1, name: "Add your child" })).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
   });
 });

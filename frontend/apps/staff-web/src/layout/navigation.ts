@@ -29,6 +29,7 @@ import { Megaphone, MegaphoneSimple } from "@phosphor-icons/react";
 import { CalendarDots, ClipboardText } from "@phosphor-icons/react";
 // [/S2 imports]
 // [S10 imports]
+import { Article, Headset, Lifebuoy } from "@phosphor-icons/react";
 // [/S10 imports]
 // [S4 imports]
 import { ArrowsDownUp } from "@phosphor-icons/react";
@@ -253,6 +254,31 @@ export const NAV_ITEMS: readonly NavItem[] = [
   },
   // [/S2]
   // [S10]
+  {
+    key: "help",
+    path: "/support",
+    icon: Lifebuoy,
+    group: "facility",
+    labelKey: "help.nav.help",
+    // every member of the active facility (S10-D6)
+    visible: (me: StaffMe) => Boolean(me.active_facility_id),
+  },
+  {
+    key: "platformSupport",
+    path: "/platform/support",
+    icon: Headset,
+    group: "platform",
+    labelKey: "help.nav.platformSupport",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
+  {
+    key: "platformHelpArticles",
+    path: "/platform/help-articles",
+    icon: Article,
+    group: "platform",
+    labelKey: "help.nav.platformHelpArticles",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
   // [/S10]
   // [S4]
   {

@@ -150,6 +150,23 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 - api-client: booking module and mocks; `staff.reschedule()`, `NO_SHOW_REVERSAL_REASONS`; mocks
   honour the slots `date` and enforce the reversal rules.
 
+### Sprint 10 · Help center and support (part 1)
+
+- api-client `help`: articles (public, staff, platform), support requests (patient, staff,
+  platform triage, replies and closing), `pickText()` (UI language, then rw → en → fr) and
+  `articleBlocks()` (plain text to paragraphs and lists); MSW mocks for every contract §3.2
+  endpoint (sessions, CSRF, `support.view_facility`, the open limit, clinical words, the state
+  machine, 409 and step-up on publish).
+- patient-web: the Help tab's `[S10]` block replaces the static questions with searchable articles
+  (category chips, fallback-language note) and a "Still need help?" card; article pages render
+  text only, never HTML; Contact support with topic cards where "My health or treatment" sends
+  nothing and points to the facility; My requests and the thread (reply, close, open a new one).
+- staff-web: Help and support (Guides, My requests, Facility requests with
+  `support.view_facility`, read-only colleague view, the "facility admin can see this" notice);
+  the platform support queue (status tabs, filters, search) and request page (details, triage
+  with assign to me, reply, close with a reason); the help article editor (rw/en/fr tabs with
+  counters, missing languages, preview, save, publish with step-up, unpublish).
+
 ### Sprint 5b · Disruptions, follow-ups and the calendar feed
 
 - staff-web `bookings`: reception calendar (week and day, doctor filter; doctors see their own),
@@ -190,8 +207,6 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   showed English names; all UI dates now go through `dateFormat()` in `@medilink/ui/i18n`.
 - Tests: React 19 builds `new FormData(form)` on submit; the test setup's Node FormData now
   accepts a form (removes an unhandled error that failed the suite).
-
-### Sprint 10 · Help center and support (part 1)
 
 ## [0.1.0] - 2026-10-17
 

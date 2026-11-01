@@ -1,0 +1,208 @@
+{
+  "nav": {
+    "help": "Aide et support",
+    "platformSupport": "File du support",
+    "platformHelpArticles": "Articles d'aide"
+  },
+  "loadFailed": "Impossible de charger. Vérifiez votre connexion et réessayez.",
+  "retry": "Réessayer",
+  "notFound": "Introuvable",
+  "categories": {
+    "all": "Tous les sujets",
+    "getting_started": "Premiers pas",
+    "account_security": "Compte et sécurité",
+    "booking_visits": "Rendez-vous et visites",
+    "family_profile": "Famille et profil",
+    "notifications": "Notifications",
+    "privacy": "Confidentialité",
+    "facility_work": "Travailler dans un établissement",
+    "other": "Autre"
+  },
+  "topics": {
+    "account_access": "Connexion et compte",
+    "booking_visits": "Rendez-vous et visites",
+    "family_profile": "Famille et profil",
+    "notifications": "Notifications",
+    "privacy": "Confidentialité et données",
+    "facility_setup": "Configuration de l'établissement",
+    "technical": "Quelque chose ne fonctionne pas",
+    "other": "Autre chose"
+  },
+  "status": {
+    "open": "En attente de MediLink",
+    "answered": "Réponse de MediLink",
+    "closed": "Fermée"
+  },
+  "platformStatus": {
+    "open": "Ouverte",
+    "answered": "Répondue",
+    "closed": "Fermée"
+  },
+  "priority": {
+    "normal": "Normale",
+    "high": "Haute"
+  },
+  "audience": {
+    "patient": "Patient",
+    "staff": "Personnel"
+  },
+  "closeReasons": {
+    "resolved": "Résolue",
+    "no_response": "Sans réponse",
+    "duplicate": "Doublon",
+    "redirected_to_facility": "Envoyée à l'établissement",
+    "withdrawn": "Fermée par le demandeur"
+  },
+  "languages": {
+    "rw": "kinyarwanda",
+    "en": "anglais",
+    "fr": "français"
+  },
+  "shownIn": "Affiché en {{language}} : pas encore écrit dans votre langue.",
+  "support": {
+    "title": "Aide et support",
+    "description": "Guides pour votre travail dans l'établissement et questions au support MediLink.",
+    "guides": "Guides",
+    "mine": "Mes demandes",
+    "facility": "Demandes de l'établissement",
+    "search": "Chercher un guide",
+    "category": "Sujet",
+    "noGuides": "Aucun guide ne correspond.",
+    "noRequests": "Aucune demande",
+    "noRequestsBody": "Les questions envoyées au support MediLink apparaissent ici.",
+    "noFacilityRequests": "Aucune demande du personnel de votre établissement.",
+    "new": "Contacter le support",
+    "lastActivity": "Dernière activité {{time}}",
+    "openedBy": "Ouverte par {{name}}"
+  },
+  "article": {
+    "back": "Aide et support",
+    "notFoundBody": "Il a peut-être été déplacé ou supprimé."
+  },
+  "new": {
+    "title": "Contacter le support MediLink",
+    "topic": "Sujet",
+    "subject": "Objet",
+    "body": "Que s'est-il passé ?",
+    "adminNotice": "L'administrateur de votre établissement peut voir cette demande.",
+    "noHealth": "N'indiquez pas d'informations de santé des patients : le support aide pour le système, pas pour les soins.",
+    "counter": "{{count}} sur {{max}} caractères",
+    "send": "Envoyer",
+    "fixErrors": "Corrigez ces points avant d'envoyer",
+    "sent": "Demande {{reference}} envoyée."
+  },
+  "thread": {
+    "title": "Demande {{reference}}",
+    "reply": "Votre réponse",
+    "send": "Envoyer la réponse",
+    "close": "Fermer la demande",
+    "closeConfirm": "Fermer cette demande ?",
+    "closeYes": "La fermer",
+    "cancel": "Annuler",
+    "readOnly": "{{name}} a ouvert cette demande. Vous pouvez la lire, mais seule cette personne peut répondre.",
+    "closedTitle": "Cette demande est fermée",
+    "openNew": "Ouvrir une nouvelle demande",
+    "replySent": "Réponse envoyée.",
+    "closedNotice": "Demande fermée.",
+    "you": "Vous"
+  },
+  "queue": {
+    "title": "File du support",
+    "noun": "demandes",
+    "reference": "Référence",
+    "subject": "Objet",
+    "requester": "Demandeur",
+    "facility": "Établissement",
+    "topic": "Sujet",
+    "priority": "Priorité",
+    "status": "Statut",
+    "assignee": "Attribuée à",
+    "lastActivity": "Dernière activité",
+    "tabs": {
+      "active": "Actives",
+      "open": "Ouvertes",
+      "answered": "Répondues",
+      "closed": "Fermées"
+    },
+    "statusTabs": "Statut",
+    "allTopics": "Tous les sujets",
+    "allAudiences": "Patients et personnel",
+    "audienceFilter": "Demandeur",
+    "assigned": "Attribution",
+    "anyone": "Tout le monde",
+    "me": "Attribuées à moi",
+    "none": "Non attribuées",
+    "open": "Ouvrir {{reference}}",
+    "unassigned": "—"
+  },
+  "triage": {
+    "title": "Détails",
+    "requester": "Demandeur",
+    "audience": "Type",
+    "facility": "Établissement",
+    "language": "Langue",
+    "device": "Appareil",
+    "path": "Ouverte depuis",
+    "priority": "Priorité",
+    "topic": "Sujet",
+    "assignee": "Attribuée à",
+    "assignMe": "Me l'attribuer",
+    "unassign": "Retirer l'attribution",
+    "save": "Enregistrer les détails",
+    "saved": "Détails enregistrés.",
+    "stale": "Quelqu'un d'autre a modifié cette demande. Elle a été rechargée : vérifiez et réessayez."
+  },
+  "reply": {
+    "label": "Répondre au demandeur",
+    "send": "Envoyer la réponse",
+    "closeTitle": "Fermer la demande",
+    "reason": "Motif",
+    "closingMessage": "Message de clôture (facultatif)",
+    "close": "Fermer la demande",
+    "closed": "Demande fermée."
+  },
+  "articles": {
+    "title": "Articles d'aide",
+    "noun": "articles",
+    "new": "Nouvel article",
+    "slug": "Adresse",
+    "titleCol": "Titre",
+    "audience": "Pour",
+    "category": "Sujet",
+    "status": "Statut",
+    "missing": "Langues manquantes",
+    "complete": "Complet",
+    "draft": "Brouillon",
+    "published": "Publié",
+    "allAudiences": "Patients et personnel",
+    "allStatuses": "Tous les statuts",
+    "edit": "Modifier {{title}}"
+  },
+  "editor": {
+    "newTitle": "Nouvel article d'aide",
+    "editTitle": "Modifier l'article",
+    "slug": "Adresse",
+    "slugHint": "Minuscules, chiffres et tirets simples, ex. ajouter-un-enfant",
+    "audience": "Pour",
+    "category": "Sujet",
+    "sortOrder": "Ordre",
+    "languages": "Langues",
+    "fieldTitle": "Titre ({{language}})",
+    "fieldSummary": "Résumé ({{language}})",
+    "fieldBody": "Texte ({{language}})",
+    "bodyHint": "Texte simple : une ligne vide commence un paragraphe, une ligne commençant par « - » est un élément de liste.",
+    "counter": "{{count}} sur {{max}}",
+    "missing": "Manquant : {{languages}}. Rédigez toutes les langues avant de publier.",
+    "preview": "Aperçu ({{language}})",
+    "save": "Enregistrer",
+    "saved": "Enregistré.",
+    "publish": "Publier",
+    "published": "Publié : les utilisateurs peuvent le lire.",
+    "unpublish": "Dépublier",
+    "unpublished": "Revenu en brouillon : il n'est plus visible.",
+    "stale": "Quelqu'un d'autre a modifié cet article. Il a été rechargé : vérifiez et enregistrez à nouveau.",
+    "fixErrors": "Corrigez ces points avant d'enregistrer",
+    "statusDraft": "Brouillon",
+    "statusPublished": "Publié"
+  }
+}

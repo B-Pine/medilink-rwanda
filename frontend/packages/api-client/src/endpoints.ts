@@ -43,6 +43,7 @@ import { createNotificationsApi } from "./features/notifications";
 // [S2 imports]
 // [/S2 imports]
 // [S10 imports]
+import { createHelpApi } from "./features/help";
 // [/S10 imports]
 
 /** Every Sprint 0 endpoint (docs/architecture/03-sprint-0-contract.md §2), typed. */
@@ -147,6 +148,7 @@ export function createMediLinkApi(client: ApiClient) {
     setup: createSetupApi(client),
     // [/S2]
     // [S10]
+    help: createHelpApi(client),
     // [/S10]
     // [S4]
     queue: createQueueApi(client),

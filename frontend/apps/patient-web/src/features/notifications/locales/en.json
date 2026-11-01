@@ -1,0 +1,114 @@
+{
+  "offline": "You're offline. New notifications will show when you're back online.",
+  "loadError": "We couldn't load your notifications",
+  "loading": "Loading notifications",
+  "on": "On",
+  "off": "Off",
+  "priority": {
+    "critical": "Urgent",
+    "important": "Important",
+    "routine": "Other updates"
+  },
+  "languages": {
+    "rw": "Ikinyarwanda",
+    "en": "English",
+    "fr": "Français"
+  },
+  "channels": {
+    "in_app": "In MediLink",
+    "web_push": "Alerts on this phone or computer",
+    "email": "Email"
+  },
+  "bell": {
+    "label_one": "Notifications, {{count}} unread",
+    "label_other": "Notifications, {{count}} unread",
+    "labelNone": "Notifications, none unread",
+    "newArrived_one": "New notification. {{count}} unread.",
+    "newArrived_other": "New notification. {{count}} unread."
+  },
+  "push": {
+    "on": "Alerts are on for this browser",
+    "onBody": "We'll alert you when it's time to leave, when you're called and when a visit changes.",
+    "turnOff": "Turn off alerts here",
+    "why": "Get alerts when it matters",
+    "whyBody": "We'll tell you when to leave for your visit and when you're called, even when MediLink is closed. Your browser will ask for permission next.",
+    "turnOn": "Turn on alerts",
+    "denied": "Alerts are blocked for this site",
+    "deniedBody": "To turn them on, open your browser's site settings for MediLink, allow notifications, then come back to this page.",
+    "ios": "On iPhone, add MediLink to your Home Screen first",
+    "iosStep1": "Tap the Share button in Safari.",
+    "iosStep2": "Choose “Add to Home Screen”.",
+    "iosStep3": "Open MediLink from the Home Screen and turn on alerts there.",
+    "unsupported": "This browser can't show alerts",
+    "unsupportedBody": "You'll still see every notification here and by email. Chrome, Firefox and Edge support alerts.",
+    "failed": "We couldn't turn alerts on or off. Try again."
+  },
+  "banner": {
+    "title": "Turn on alerts so we can tell you when to leave",
+    "body": "Your phone tells you when you're called and when a visit changes.",
+    "notNow": "Not now"
+  },
+  "inbox": {
+    "title": "Notifications",
+    "unreadSummary_one": "{{count}} unread notification.",
+    "unreadSummary_other": "{{count}} unread notifications.",
+    "about": "About {{name}}",
+    "new": "New",
+    "withdrawn": "Withdrawn",
+    "empty": "No notifications yet",
+    "emptyBody": "Visit reminders, queue updates and messages from your health facilities will appear here.",
+    "markAll": "Mark all as read",
+    "pages": "Pages",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {{page}} of {{pages}}",
+    "back": "Back to notifications"
+  },
+  "detail": {
+    "notFound": "Notification not found",
+    "notFoundBody": "It may have been removed, or it belongs to another account.",
+    "open": "Open"
+  },
+  "settings": {
+    "link": "Settings",
+    "title": "Notification settings",
+    "thisBrowser": "Alerts on this browser",
+    "browsers": "Browsers that get alerts",
+    "noBrowsers": "No browser gets alerts yet.",
+    "since": "Since {{when}}",
+    "remove": "Remove",
+    "removeBrowser": "Remove {{name}}",
+    "conflictTitle": "Your settings changed somewhere else",
+    "conflict": "Your choices are still here. Load the latest version, then save again.",
+    "reload": "Load the latest version",
+    "saveFailed": "We couldn't save your settings. Try again.",
+    "saved": "Settings saved.",
+    "languageTitle": "Language",
+    "language": "Language of notifications",
+    "languageHint": "Also used for emails and this app.",
+    "channelsTitle": "How we tell you",
+    "channelsHint": "Notifications always appear in MediLink. Choose where else you get them.",
+    "lockedTitle": "Urgent alerts stay on for now",
+    "locked": "You have a ticket in a queue, so at least one way to reach you for urgent alerts must stay on until your visit ends.",
+    "level": "Type",
+    "levelHint": {
+      "critical": "You're called, a visit today is cancelled",
+      "important": "Time to leave, changes to a booking",
+      "routine": "Reminders and announcements"
+    },
+    "cell": "{{level}}: {{channel}}",
+    "alwaysOn": "Always on",
+    "quietTitle": "Quiet hours",
+    "quiet": "No alerts or emails at night",
+    "quietHint": "Urgent alerts still come through. Times are Kigali time.",
+    "quietStart": "From",
+    "quietEnd": "Until",
+    "familyTitle": "Family",
+    "familyAlerts": "Alerts about {{name}}",
+    "relationship": {
+      "guardian": "You are their guardian.",
+      "delegate": "They gave you access."
+    },
+    "save": "Save settings"
+  }
+}

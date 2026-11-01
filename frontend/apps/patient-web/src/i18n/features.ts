@@ -12,6 +12,9 @@ import profileFr from "../features/profile/locales/fr.json";
 import profileRw from "../features/profile/locales/rw.json";
 // [/S3 imports]
 // [S9 imports]
+import notificationsEn from "../features/notifications/locales/en.json";
+import notificationsFr from "../features/notifications/locales/fr.json";
+import notificationsRw from "../features/notifications/locales/rw.json";
 // [/S9 imports]
 // [S2 imports]
 // [/S2 imports]
@@ -44,6 +47,7 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   profile: { rw: profileRw, en: profileEn, fr: profileFr },
   // [/S3]
   // [S9]
+  notifications: { rw: notificationsRw, en: notificationsEn, fr: notificationsFr },
   // [/S9]
   // [S2]
   // [/S2]

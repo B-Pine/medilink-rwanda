@@ -1,0 +1,114 @@
+{
+  "offline": "Nta murandasi ufite. Ubutumwa bushya buzagaragara niwongera kugira murandasi.",
+  "loadError": "Ntibyashobotse gufungura ubutumwa bwawe",
+  "loading": "Turimo gufungura ubutumwa",
+  "on": "Birakora",
+  "off": "Ntibikora",
+  "priority": {
+    "critical": "Byihutirwa",
+    "important": "Ingenzi",
+    "routine": "Andi makuru"
+  },
+  "languages": {
+    "rw": "Ikinyarwanda",
+    "en": "English",
+    "fr": "Français"
+  },
+  "channels": {
+    "in_app": "Muri MediLink",
+    "web_push": "Kumenyeshwa kuri iyi telefoni cyangwa mudasobwa",
+    "email": "Imeyili"
+  },
+  "bell": {
+    "label_one": "Ubutumwa, {{count}} butarasomwa",
+    "label_other": "Ubutumwa, {{count}} butarasomwa",
+    "labelNone": "Ubutumwa, nta butarasomwa",
+    "newArrived_one": "Ubutumwa bushya. {{count}} butarasomwa.",
+    "newArrived_other": "Ubutumwa bushya. {{count}} butarasomwa."
+  },
+  "push": {
+    "on": "Kumenyeshwa birakora kuri iyi mushakisha",
+    "onBody": "Tuzakumenyesha igihe cyo kugenda, igihe uhamagawe n'igihe gahunda ihindutse.",
+    "turnOff": "Hagarika kumenyeshwa hano",
+    "why": "Menyeshwa igihe bikenewe",
+    "whyBody": "Tuzakubwira igihe cyo kugenda ku ivuriro n'igihe uhamagawe, nubwo MediLink ifunze. Mushakisha yawe izahita igusaba uruhushya.",
+    "turnOn": "Fungura kumenyeshwa",
+    "denied": "Kumenyeshwa byahagaritswe kuri uru rubuga",
+    "deniedBody": "Kugira ngo ubifungure, jya mu igenamiterere rya mushakisha yawe kuri MediLink, wemere kumenyeshwa, hanyuma ugaruke kuri iyi paji.",
+    "ios": "Kuri iPhone, banza ushyire MediLink kuri ekarani y'ibanze",
+    "iosStep1": "Kanda buto yo Gusangiza muri Safari.",
+    "iosStep2": "Hitamo “Shyira kuri ekarani y'ibanze”.",
+    "iosStep3": "Fungura MediLink uhereye kuri ekarani y'ibanze, ufungure kumenyeshwa aho.",
+    "unsupported": "Iyi mushakisha ntishobora kwerekana kumenyeshwa",
+    "unsupportedBody": "Uzakomeza kubona ubutumwa bwose hano no kuri imeyili. Chrome, Firefox na Edge birabishobora.",
+    "failed": "Ntibyashobotse gufungura cyangwa guhagarika kumenyeshwa. Ongera ugerageze."
+  },
+  "banner": {
+    "title": "Fungura kumenyeshwa tukubwire igihe cyo kugenda",
+    "body": "Telefoni yawe ikubwira igihe uhamagawe n'igihe gahunda ihindutse.",
+    "notNow": "Ubu oya"
+  },
+  "inbox": {
+    "title": "Ubutumwa",
+    "unreadSummary_one": "Ubutumwa {{count}} butarasomwa.",
+    "unreadSummary_other": "Ubutumwa {{count}} butarasomwa.",
+    "about": "Bireba {{name}}",
+    "new": "Bushya",
+    "withdrawn": "Bwakuweho",
+    "empty": "Nta butumwa buraza",
+    "emptyBody": "Ibyibutsa bya gahunda, amakuru y'umurongo n'ubutumwa bw'amavuriro yawe bizagaragara hano.",
+    "markAll": "Byose byasomwe",
+    "pages": "Impapuro",
+    "previous": "Ibibanza",
+    "next": "Ibikurikira",
+    "page": "Urupapuro {{page}} kuri {{pages}}",
+    "back": "Subira ku butumwa"
+  },
+  "detail": {
+    "notFound": "Ubu butumwa ntibubonetse",
+    "notFoundBody": "Bushobora kuba bwarakuweho, cyangwa ari ubw'indi konti.",
+    "open": "Fungura"
+  },
+  "settings": {
+    "link": "Igenamiterere",
+    "title": "Igenamiterere ry'ubutumwa",
+    "thisBrowser": "Kumenyeshwa kuri iyi mushakisha",
+    "browsers": "Mushakisha zimenyeshwa",
+    "noBrowsers": "Nta mushakisha iramenyeshwa.",
+    "since": "Kuva {{when}}",
+    "remove": "Kuraho",
+    "removeBrowser": "Kuraho {{name}}",
+    "conflictTitle": "Igenamiterere ryawe ryahinduriwe ahandi",
+    "conflict": "Ibyo wahisemo biracyahari. Fungura verisiyo nshya, hanyuma wongere ubike.",
+    "reload": "Fungura verisiyo nshya",
+    "saveFailed": "Ntibyashobotse kubika igenamiterere. Ongera ugerageze.",
+    "saved": "Igenamiterere ryabitswe.",
+    "languageTitle": "Ururimi",
+    "language": "Ururimi rw'ubutumwa",
+    "languageHint": "Rukoreshwa no kuri imeyili n'iyi porogaramu.",
+    "channelsTitle": "Uko tukumenyesha",
+    "channelsHint": "Ubutumwa buhora bugaragara muri MediLink. Hitamo ahandi wifuza kubwakira.",
+    "lockedTitle": "Ubutumwa bwihutirwa buguma bukora ubu",
+    "locked": "Ufite itike ku murongo, bityo nibura uburyo bumwe bwo kukugeraho ku butumwa bwihutirwa bugomba kuguma bukora kugeza gahunda irangiye.",
+    "level": "Ubwoko",
+    "levelHint": {
+      "critical": "Wahamagawe, gahunda y'uyu munsi yahagaritswe",
+      "important": "Igihe cyo kugenda, impinduka kuri gahunda",
+      "routine": "Ibyibutsa n'amatangazo"
+    },
+    "cell": "{{level}}: {{channel}}",
+    "alwaysOn": "Buhora bukora",
+    "quietTitle": "Amasaha y'ituze",
+    "quiet": "Nta kumenyeshwa cyangwa imeyili nijoro",
+    "quietHint": "Ubutumwa bwihutirwa buracyaza. Amasaha ni aya Kigali.",
+    "quietStart": "Kuva",
+    "quietEnd": "Kugeza",
+    "familyTitle": "Umuryango",
+    "familyAlerts": "Ubutumwa bureba {{name}}",
+    "relationship": {
+      "guardian": "Uri umurezi we.",
+      "delegate": "Yaguhaye uburenganzira."
+    },
+    "save": "Bika igenamiterere"
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "offline": "Vous êtes hors ligne. Les nouvelles notifications s'afficheront à votre retour en ligne.",
+  "loadError": "Impossible de charger vos notifications",
+  "loading": "Chargement des notifications",
+  "on": "Activé",
+  "off": "Désactivé",
+  "priority": {
+    "critical": "Urgent",
+    "important": "Important",
+    "routine": "Autres nouvelles"
+  },
+  "languages": {
+    "rw": "Ikinyarwanda",
+    "en": "English",
+    "fr": "Français"
+  },
+  "channels": {
+    "in_app": "Dans MediLink",
+    "web_push": "Alertes sur ce téléphone ou cet ordinateur",
+    "email": "E-mail"
+  },
+  "bell": {
+    "label_one": "Notifications, {{count}} non lue",
+    "label_other": "Notifications, {{count}} non lues",
+    "labelNone": "Notifications, aucune non lue",
+    "newArrived_one": "Nouvelle notification. {{count}} non lue.",
+    "newArrived_other": "Nouvelle notification. {{count}} non lues."
+  },
+  "push": {
+    "on": "Les alertes sont activées pour ce navigateur",
+    "onBody": "Nous vous alerterons quand il est temps de partir, quand vous êtes appelé et quand une visite change.",
+    "turnOff": "Désactiver les alertes ici",
+    "why": "Recevez des alertes quand c'est important",
+    "whyBody": "Nous vous dirons quand partir pour votre visite et quand vous êtes appelé, même quand MediLink est fermé. Votre navigateur va ensuite demander l'autorisation.",
+    "turnOn": "Activer les alertes",
+    "denied": "Les alertes sont bloquées pour ce site",
+    "deniedBody": "Pour les activer, ouvrez les paramètres du site MediLink dans votre navigateur, autorisez les notifications, puis revenez sur cette page.",
+    "ios": "Sur iPhone, ajoutez d'abord MediLink à l'écran d'accueil",
+    "iosStep1": "Touchez le bouton Partager dans Safari.",
+    "iosStep2": "Choisissez « Sur l'écran d'accueil ».",
+    "iosStep3": "Ouvrez MediLink depuis l'écran d'accueil et activez-y les alertes.",
+    "unsupported": "Ce navigateur ne peut pas afficher d'alertes",
+    "unsupportedBody": "Vous verrez toujours chaque notification ici et par e-mail. Chrome, Firefox et Edge prennent en charge les alertes.",
+    "failed": "Impossible d'activer ou de désactiver les alertes. Réessayez."
+  },
+  "banner": {
+    "title": "Activez les alertes pour savoir quand partir",
+    "body": "Votre téléphone vous prévient quand vous êtes appelé et quand une visite change.",
+    "notNow": "Plus tard"
+  },
+  "inbox": {
+    "title": "Notifications",
+    "unreadSummary_one": "{{count}} notification non lue.",
+    "unreadSummary_other": "{{count}} notifications non lues.",
+    "about": "Concerne {{name}}",
+    "new": "Nouveau",
+    "withdrawn": "Retirée",
+    "empty": "Aucune notification pour l'instant",
+    "emptyBody": "Les rappels de visite, nouvelles de la file et messages de vos établissements de santé apparaîtront ici.",
+    "markAll": "Tout marquer comme lu",
+    "pages": "Pages",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "page": "Page {{page}} sur {{pages}}",
+    "back": "Retour aux notifications"
+  },
+  "detail": {
+    "notFound": "Notification introuvable",
+    "notFoundBody": "Elle a peut-être été supprimée, ou elle appartient à un autre compte.",
+    "open": "Ouvrir"
+  },
+  "settings": {
+    "link": "Paramètres",
+    "title": "Paramètres des notifications",
+    "thisBrowser": "Alertes sur ce navigateur",
+    "browsers": "Navigateurs qui reçoivent des alertes",
+    "noBrowsers": "Aucun navigateur ne reçoit encore d'alertes.",
+    "since": "Depuis le {{when}}",
+    "remove": "Retirer",
+    "removeBrowser": "Retirer {{name}}",
+    "conflictTitle": "Vos paramètres ont été modifiés ailleurs",
+    "conflict": "Vos choix sont conservés. Chargez la dernière version, puis enregistrez à nouveau.",
+    "reload": "Charger la dernière version",
+    "saveFailed": "Impossible d'enregistrer vos paramètres. Réessayez.",
+    "saved": "Paramètres enregistrés.",
+    "languageTitle": "Langue",
+    "language": "Langue des notifications",
+    "languageHint": "Utilisée aussi pour les e-mails et cette application.",
+    "channelsTitle": "Comment nous vous prévenons",
+    "channelsHint": "Les notifications apparaissent toujours dans MediLink. Choisissez où les recevoir aussi.",
+    "lockedTitle": "Les alertes urgentes restent activées pour l'instant",
+    "locked": "Vous avez un ticket dans une file : au moins un moyen de vous joindre pour les alertes urgentes doit rester activé jusqu'à la fin de votre visite.",
+    "level": "Type",
+    "levelHint": {
+      "critical": "Vous êtes appelé, une visite du jour est annulée",
+      "important": "Heure de partir, changement de rendez-vous",
+      "routine": "Rappels et annonces"
+    },
+    "cell": "{{level}} : {{channel}}",
+    "alwaysOn": "Toujours activé",
+    "quietTitle": "Heures calmes",
+    "quiet": "Pas d'alertes ni d'e-mails la nuit",
+    "quietHint": "Les alertes urgentes passent quand même. Heures de Kigali.",
+    "quietStart": "De",
+    "quietEnd": "Jusqu'à",
+    "familyTitle": "Famille",
+    "familyAlerts": "Alertes concernant {{name}}",
+    "relationship": {
+      "guardian": "Vous êtes son tuteur.",
+      "delegate": "Cette personne vous a donné accès."
+    },
+    "save": "Enregistrer"
+  }
+}

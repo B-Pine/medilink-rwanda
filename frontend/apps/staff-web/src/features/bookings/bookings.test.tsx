@@ -95,6 +95,11 @@ describe("phone booking (S5-F6)", () => {
       await within(panel).findByRole("heading", { name: "Booking moved" }),
     ).toBeInTheDocument();
     await user.click(within(panel).getByRole("button", { name: "Done" }));
-    await waitFor(() => expect(within(expected).queryByText("Mutesi A.")).not.toBeInTheDocument());
+    // The booking left its 10:30 slot: gone from today's list, or (when the first free time is
+    // later today) still listed at its new time.
+    await waitFor(() => {
+      const moved = within(expected).queryByText("Mutesi A.")?.closest("li");
+      expect(moved ? within(moved).queryByText("10:30") : null).not.toBeInTheDocument();
+    });
   });
 });

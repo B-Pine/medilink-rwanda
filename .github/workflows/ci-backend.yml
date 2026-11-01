@@ -133,6 +133,9 @@ jobs:
           UPLOADS_STORAGE: s3
           UPLOADS_DOWNLOAD_BASE_URL: https://files.medilink.rw
           PLATFORM_ALLOWED_NETWORKS: 10.0.0.0/8
+          # S9: dummy VAPID keys (check --deploy refuses push without keys, notifications.E010)
+          WEB_PUSH_VAPID_PUBLIC_KEY: BDummyPublicKeyForTheDeployCheckOnly
+          WEB_PUSH_VAPID_PRIVATE_KEY: dummy-private-key-for-the-deploy-check-only
         run: |
           # Random 32-byte keys for this check only (S3 patient identifier encryption)
           key() { python -c "import base64,os;print(base64.urlsafe_b64encode(os.urandom(32)).decode())"; }

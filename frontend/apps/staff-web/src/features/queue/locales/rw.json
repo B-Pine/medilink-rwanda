@@ -100,6 +100,7 @@
   },
   "live": {
     "live": "Ako kanya · hashize amasegonda {{seconds}}",
+    "connected": "Ako kanya",
     "reconnecting": "Birongera guhuzwa",
     "offline_one": "Nta interineti · igikorwa {{count}} gitegereje",
     "offline_other": "Nta interineti · ibikorwa {{count}} bitegereje"

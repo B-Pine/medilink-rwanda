@@ -100,6 +100,7 @@
   },
   "live": {
     "live": "Live · {{seconds}} s ago",
+    "connected": "Live",
     "reconnecting": "Reconnecting",
     "offline_one": "Offline · {{count}} action waiting",
     "offline_other": "Offline · {{count}} actions waiting"

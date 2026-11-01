@@ -16,6 +16,8 @@ PASSWORD_RESET_REQUESTED = "auth.password_reset.requested"  # noqa: S105 (not a 
 PASSWORD_RESET_COMPLETED = "auth.password_reset.completed"  # noqa: S105 (not a secret)
 FACILITY_SWITCHED = "staff.facility.switched"
 PATIENT_REGISTERED = "patient.registered"
+EMAIL_VERIFIED = "auth.email.verified"
+ACCOUNT_LOCKED = "auth.account.locked"
 
 # Mutable on purpose: `extend_actions()` adds sprint actions in place, so `record()` sees them.
 ACTIONS: set[str] = set(
@@ -30,6 +32,8 @@ ACTIONS: set[str] = set(
         PASSWORD_RESET_COMPLETED,
         FACILITY_SWITCHED,
         PATIENT_REGISTERED,
+        EMAIL_VERIFIED,
+        ACCOUNT_LOCKED,
     }
 )
 
@@ -82,3 +86,8 @@ from medilink.scheduling import audit_actions as _s5  # noqa: E402
 
 extend_actions(_s5.ACTIONS)
 # [/S5]
+# [S6]
+from medilink.clinical import audit_actions as _s6  # noqa: E402
+
+extend_actions(_s6.ACTIONS)
+# [/S6]

@@ -111,6 +111,10 @@ export { ProfileSwitcher } from "./components/ProfileSwitcher";
 export type { ProfileSwitcherProps, SwitcherProfile } from "./components/ProfileSwitcher";
 // [/S3]
 // [S9]
+export { CountBadge, formatCount } from "./components/CountBadge";
+export type { CountBadgeProps } from "./components/CountBadge";
+export { useWakeLock } from "./hooks/useWakeLock";
+export type { WakeLockState } from "./hooks/useWakeLock";
 // [/S9]
 // [S2]
 export { formatRwf, MoneyField, TimeRangeField, timeBefore } from "./components/SetupFields";
@@ -142,3 +146,11 @@ export type { Load, StatTileProps, TrendSeries } from "./components/Charts";
 export { BODY_SYSTEM_ORDER, SymptomPicker } from "./components/SymptomPicker";
 export type { SymptomPickerItem, SymptomPickerProps } from "./components/SymptomPicker";
 // [/S5]
+// [S6]
+export { AllergyBanner } from "./components/AllergyBanner";
+export type { AllergyBannerItem, AllergyBannerProps } from "./components/AllergyBanner";
+export { AutosaveStatus } from "./components/AutosaveStatus";
+export type { AutosaveState, AutosaveStatusProps } from "./components/AutosaveStatus";
+export { SectionAnchors } from "./components/SectionAnchors";
+export type { SectionAnchor, SectionAnchorsProps } from "./components/SectionAnchors";
+// [/S6]

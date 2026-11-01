@@ -9,6 +9,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Remediation R1 · Security core (#83)
+
+- patient-web: sign-up shows "check your email" for every request (no account enumeration) and the
+  new `/verify-email` page confirms the emailed link and signs in. api-client:
+  `patientAuth.register` returns `{detail}` (`202`), new `patientAuth.verifyEmail`; mocks follow
+  (`MOCK_VERIFY_TOKEN`).
+- CSP: `style-src` keeps `'unsafe-inline'` (Radix scroll lock and pdf.js inject `<style>` at
+  runtime; a static-host meta CSP can't carry a nonce), documented in `@medilink/config`.
+
 ### Sprint 1 · Platform and onboarding
 
 - api-client: `masterData`, `onboarding`, `security` and `uploads` modules (XHR uploads with
@@ -57,11 +66,48 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   - `ProfileSwitcher` in the header; "My profile" and "Family" links on home.
 - Translations: `patients` and `profile` namespaces in rw/en/fr (Kinyarwanda flagged for native
   review).
+- R2 fixes ([#84](https://github.com/B-Pine/medilink-rwanda/issues/84)):
+  - patient-web access history loads older entries page by page ("Show older entries", PA24).
+  - The claim wizard polls the claim (PA20) every 10 s while it waits for reception, shows the
+    confirmation, and offers a fresh start when a claim fails or expires.
+  - Mocks follow the real API: strict request bodies (`Unknown field.`) and a required `version`
+    on PA3; consent kind, version and scope rules (PA22/PA23) and the latest care consent
+    decides; shortened holder names and `can_revoke` as `revoke()` allows; dependents replay on
+    `Idempotency-Key`, record their consent, check age and the 10-profile limit; the 5th wrong
+    claim code and expired claims have their own messages; walk-in care consent carries the
+    `patient_id`; reception confirmation moves the claimant's `self` link.
 
 ### Sprint 9 · Notifications
 
+- api-client `notifications`: inboxes, preferences, push subscriptions, announcements, templates
+  and delivery log, with MSW mocks for every contract §3.3 endpoint (CSRF, sessions, permission,
+  error envelopes, push allowlist, 409) and `notification.created` / `notification.read` on both
+  sockets.
+- staff-web `notifications`: header bell (count with 99+, latest 10, Mark all as read, other
+  facilities' count, live across tabs, 60 s polling while the socket is down); inbox with
+  All/Unread; settings (sound off by default with a test sound, digest, version conflicts keep
+  the input); facility announcement composer (audiences, dates, priority, rw/en/fr with counters
+  and a missing-language warning, preview, draft, publish and withdraw with confirmation) behind
+  `announcements.manage`; platform announcements for super admins.
+- patient-web `notifications`: header bell, inbox with 18 px cards and the "About <name>" chip
+  for dependents, detail page that marks read; settings (language, channels per level with
+  in-app always on, quiet hours 21:00–06:00, dependents, locked critical level, browsers);
+  `PushOptIn` (asks only on a button press, reason first; denied, unsupported and
+  iOS-not-installed states; re-syncs on start; Turn off unsubscribes) and the push-off banner on
+  Home and the inbox (Not now hides it for 7 days); `public/push-sw.js` push and click handlers
+  (critical notifications stay on screen; clicks open only same-origin `/notifications` paths;
+  no requests, no caching).
+- ui: `CountBadge`, `Switch` and `useWakeLock`.
+- A new announcement shows "Draft saved" or "Published" only on its own page, after the move
+  from `/new`, so nothing is clicked on the page being replaced.
+
 ### Sprint 2 · Facility setup and staff
 
+- Fixes from the S0–S5 audit (R3, #85): go-live sends the checklist's `status_version`; the
+  invitation page accepts an existing account only when signed in (`acceptInvitation(token)` →
+  `StaffMe`, new accounts use `acceptNewAccount`); staff, invitation and template lists read
+  every page of the now paginated API; the MSW mocks paginate, check the go-live version and
+  replay invitation `Idempotency-Key`s.
 - api-client `setup` ([#69](https://github.com/B-Pine/medilink-rwanda/pull/69)): profile,
   catalogue, schedules, billing setup, team and invitation endpoints with MSW mocks.
 - ui: `WeekGrid` (sessions to scale, leave hatched, list view alternative), `TimeRangeField`,
@@ -126,6 +172,20 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
     booking review uses the server's `insurer_share_rwf`. Mocks: remote join, "I'm here", confirm arrival,
     `calendar.ics`, Idempotency-Key replay for bookings, reschedule checks in the backend's
     order, and a delegate gets `403` on remote join and "I'm here".
+
+### Sprint 6a · Clinical record
+
+- staff-web `clinical`: consultation page on one scroll with section anchors, an always-visible
+  autosave status (409 reloads with a conflict note), a permanent allergy banner, private notes
+  marked "Never shown to the patient", ICD-10 type-ahead in plain language with primary and
+  certainty (a sensitive code suggests a restricted record), sign and lock behind step-up,
+  addenda and entered-in-error; vitals panel with plausible ranges; history drawer and page with
+  filters and the problem summary; reason-for-access prompt; Unsigned records list; nav and
+  command palette entries by permission.
+- patient-web `records`: my and my dependants' signed records in plain language, a Home card,
+  never private notes or examination.
+- api-client `clinical` module and MSW mocks; ui `AllergyBanner`, `AutosaveStatus`,
+  `SectionAnchors`.
 
 ### Design v2
 

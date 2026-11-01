@@ -13,6 +13,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - pypdf 6.21.2 → 6.21.4 in the hash-pinned locks (CVE-2026-119203 to CVE-2026-119209, reported by
   `pip-audit`).
 
+### R7 · CI gates (#90)
+
+- `post_migrate` grant and revoke receivers (`core.db`, `masterdata.db`) skip tables that don't
+  exist, so migrating an app backwards no longer fails; `scripts/check_migrations_reversible.py`
+  reverses and re-applies each app's latest migration in CI (NFR-OPS-08).
+- Two platform-admin querysets (`masterdata` platform lists, `onboarding` facilities list) carry the
+  Semgrep review tag for `.objects.all()` in views.
+
 ### Sprint 1 · Platform and onboarding
 
 - Upload pipeline v1 (`medilink.uploads`, contract §2.4, §3.6): `uploads_file` with forced RLS
@@ -117,6 +125,56 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   `expire_delegation_invites` (daily); dev seed `seed_patients_dev`.
 - Dependency: cryptography.
 
+### Remediation R1 · Security core (#83)
+
+- Security: patient sign-up no longer reveals existing accounts (#14). `POST /patient/auth/register/`
+  always answers `202` "check your email"; a new account can't sign in until the emailed link is
+  confirmed with the new `POST /patient/auth/verify-email/` (single use, 3 days); an existing
+  email gets an "account exists" email instead. A password reset also confirms a pending sign-up.
+  **Breaking** for clients that expected `201 PatientMe` and an immediate session.
+- Security: TOTP secrets are encrypted at rest (AES-256-GCM, `MFA_SECRET_KEYS`), existing devices
+  migrated (accounts 0005, reversible), `manage.py rotate_mfa_secrets` for rotation; deploy check
+  `medilink.E110`/`E111` (#12).
+- Security: field keys can be data keys wrapped by an OpenBao/Vault Transit KEK
+  (`MEDILINK_KEYSTORE=transit`, `medilink.core.keystore_transit`).
+- Security: the account owner is emailed (and `auth.account.locked` audited) when a login or MFA
+  lock starts.
+- Security: platform MFA reset and patient merge-request views use `PlatformAdmin`, so the
+  `PLATFORM_ALLOWED_NETWORKS` allowlist applies; refused requests keep path and IP in the log.
+- Security: daily audit anchor (`audit.export_audit_anchor`, sink `AUDIT_ANCHOR_SINK` = log, email
+  or file); migration audit 0003 revokes `UPDATE`/`DELETE`/`TRUNCATE` on the audit table from the
+  runtime role; the runtime role can't write `tenancy_role`, `tenancy_permission` or
+  `tenancy_role_permissions`.
+- Security: uploads are always served as attachments (the `disposition` request field is kept for
+  compatibility and audited); `UPLOADS_S3_REGION` is required with S3 storage (no `af-south-1`
+  default, check `medilink.uploads.E004`); optional SSE-KMS with `UPLOADS_S3_SSE_KMS_KEY_ID`.
+- Security: a tripped onboarding honeypot gets the normal success-shaped `201`.
+- Changed: `asgi`, `wsgi`, `celery` and `manage.py` refuse to start without
+  `DJANGO_SETTINGS_MODULE` (environment or `backend/.env`) instead of defaulting to dev settings;
+  `SECURE_HSTS_PRELOAD` is opt-in (default off); stray S3 enum overrides removed from
+  `DEFAULT_THROTTLE_RATES`; the API image and compose services are pinned by digest.
+
+### Remediation R2 · Patients (#84)
+
+- Security: staff reads of a facility patient record (ST5) and its health profile (ST13) need a
+  care relationship (open visit, visit in the last 30 days, or registered today) or a reason
+  given first with the new `POST /staff/patients/{fp_id}/access-reasons/` (ST28); otherwise
+  `403 access_reason_required`. Records of staff members always need a reason. Reasons are
+  audited when given and on every read (FR-SEC-03).
+- Security: record claims answer every refusal after the lookup with the same generic message;
+  merge undo follows the approver rule (not the requester, not escalated merges at the facility).
+- Merge request bodies reject unknown fields. PA7 dependents honour `Idempotency-Key`; ST17 claim
+  confirmations are idempotent.
+- Every consent is checked against the current version (`422`, field named); PA23 accepts the
+  `notifications` and `location` account toggles; `PATIENTS_DEPENDENT_MAX_AGE` replaces the
+  literal 18.
+- File numbers are trimmed and uppercased, member numbers lose all spaces; unique violations on
+  facility records map to the right `409` by constraint name.
+- Access history shows each action only for the actor kinds that can perform it; `can_revoke`
+  in delegations matches what revoke allows.
+- OpenAPI: list responses describe the `{results}` wrapper or the paginated page; `/patient/`
+  operations declare only `patientSession`, staff patient operations only `staffSession`.
+
 ### Sprint 9 · Notifications
 
 - New app `medilink.notifications` (contract sprint-09): notifications, delivery attempts,
@@ -182,6 +240,63 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   - `price()` and `insurer_rule()` (S8).
 - Signal `scheduling.exception_approved`.
 - Jobs and commands: `expire_invitations` (daily) and dev seed `seed_setup_dev`.
+- Fixes from the S0–S5 audit (R3, #85):
+  - Go-live no longer always answers `409`: `FacilityProfile` and the setup checklist expose
+    `status_version`, the version go-live expects (not the profile `version`).
+  - Checklist: `schedules` is done when no service is bookable; `insurers` is done when the
+    application claimed no insurer.
+  - Invitation accept for an existing account needs a signed-in staff session and returns
+    `StaffMe`; the `{token, password}` path is gone (`401 not_authenticated` instead), so
+    passwords are only checked by login (lockout, MFA, audit).
+  - `POST /staff/invitations/` honours `Idempotency-Key` (same key: same invitation, one email).
+  - `GET /staff/memberships/`, `/staff/invitations/` (no more silent 200 cap) and
+    `/staff/schedule-templates/` are paginated (`{count, next, previous, results}`).
+  - `409 conflict` on a versioned resource carries the resource as it is now in `error.current`
+    (S1 onboarding, master data, S2 facility setup and staff).
+  - `Idempotency-Key` must be a UUID (`400` otherwise), as architecture 02 says.
+  - The membership-role join is an explicit model with `facility_id` and forced RLS (migration
+    `tenancy.0006`); users still read their own roles in every facility.
+  - Expired invitations are marked `expired` (new `expired_at`), not revoked, and no longer
+    block a re-invite; resending one revives it.
+  - Staff writes (invite, resend, accept, edit, reactivate, attest) are refused with `422` in a
+    deactivated facility.
+  - Celery beat hours are Kigali time (`CELERY_TIMEZONE`): invitation expiry 02:30, licence
+    reminders 07:00, stale drafts 03:00, delegation invites 02:00.
+
+### Remediation R4 · Queue and booking fixes (#86)
+
+- A booked patient later than `slot + grace_after` checks in as a walk-in all day: the visit is
+  flagged `is_late_arrival`, the check-in response and ticket rows carry `late`. A booking becomes
+  `no_show` (with a strike) only after the facility has closed that day (FR-QUE-06, FR-SCH-13).
+- "I'm here" (`POST /patient/visits/{id}/arrived/`) records the patient's claim only
+  (`remote_arrival_claimed_at`); reception confirms with the new ticket action
+  `POST /staff/tickets/{id}/confirm-arrival/` (`remote_arrival_confirmed_at`, visit `on_site`).
+  Pass-over applies until then. Self check-in stays P2 (FR-QUE-07, FR-QUE-18). The ticket column
+  `remote_checked_in_at` is renamed `remote_arrival_confirmed_at`.
+- Pass-over warns first (event `pass_over_warning`, signal `ticket_pass_over_warning` with
+  `final`) and moves the ticket `queue.pass_over_warning_minutes` (new, default 5) later.
+- Manual queue places (no response, reorder, pass-over) use the new `visits_ticket.order_at` and
+  the S5 calling order; `arrival_at` stays the real arrival.
+- Ticket rows add `slot_starts_at`, `late`, `is_remote`, `remote_arrival_claimed_at`,
+  `remote_arrival_confirmed_at` (flags `late`, `remote`, `remote_claimed`); the tracker (PT1) adds
+  `is_remote` and both remote times. The board computes one calling order per queue; My queue and
+  the display "next" numbers follow the calling order.
+- Call next locks the doctor's duty row; partial unique index `visits_one_serving_ticket` (one
+  called or in-service ticket per staff member and day).
+- `next-stage` only from `in_service` and only forward.
+- Signal `visits.services.on_ticket_event` sent on commit for every ticket event (sprint-04 §7).
+- A booking for a patient already in today's queue joins that visit (same service, no booking
+  yet), otherwise `422`.
+- Optional `symptoms` at walk-in check-in and remote join (`captured_at_stage = check_in`).
+- Service schedules: `ScheduleTemplate.membership` is nullable; their slots have no doctor.
+- One patient-share rule (`booking.cover`: ceiling, excluded tariff codes, covered services) for
+  search, profile and booking; the profile adds `insurer_share_rwf`.
+- No-show strikes are a platform policy (`NO_SHOW_STRIKE_WARNING` 3, `NO_SHOW_STRIKE_LIMIT` 4,
+  `NO_SHOW_STRIKE_WINDOW_DAYS` 90, `NO_SHOW_LIMIT_DAYS` 30); `limits()` returns `limited_until`.
+- One open slot hold per account across facilities (`scheduling_account_holds`).
+- Wait metrics run from check-in (or confirmed remote arrival) to the first `call` event.
+- Revoking a display link closes its sockets.
+- Every socket answers `ping` with the same flat `{"type": "pong", "sent_at"}`.
 
 ### Sprint 4 · Visits and the live queue
 
@@ -229,6 +344,36 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   reversal with a reason (`patient_was_present`, `facility_delay`, `other`).
 - No-show job with strikes; jobs and the dev seed; `booking_concurrency_check` (DEBUG only).
 - `TIME_ZONE` is `Africa/Kigali` (was UTC; contract D-8).
+
+### Sprint 6a · Consultation and history
+
+- New app `medilink.clinical` ([contract](../docs/architecture/contracts/sprint-06-clinical.md)):
+  `clinical_consultation`, `clinical_diagnosis`, `clinical_addendum`, `clinical_vitals` and
+  `authz_access_reason`, all with forced facility RLS.
+- Consultation per visit (C1–C7): idempotent open, draft autosave with `version` (`409` when
+  stale), ICD-10 diagnoses from master data (one primary, provisional or confirmed; sensitive codes
+  suggest a restricted record), sign with recent re-authentication and a SHA-256 content hash
+  (late entry after 24 h, `integrity` recomputed on read), signed addenda by the author or another
+  clinician, entered in error with a reason, and the unsigned records list without content.
+- All consultation text, private notes and addendum bodies are field-encrypted (contract D-2).
+  Database triggers lock signed records, their diagnoses and vitals, make addenda and access
+  reasons append-only, and refuse every delete.
+- A consultation-stage ticket cannot complete or move on while its visit has a draft
+  (`pre_save` guard, D-6).
+- Vitals (V1–V2) with plausible ranges; reception reads only the rows it recorded.
+- Treatment-relationship rule (FR-SEC-03): an open visit today or care by the clinician in the
+  last 30 days; otherwise, and always for staff-as-patient records, `403 access_reason_required`
+  until a reason is given (A1, 120 minutes). Clinical reads and reasons are audited with patient
+  links.
+- History timeline with filters and problem summary (H1–H2); allergy, duplicate and dose alerts
+  (AL1) for S7 prescribing.
+- Patients read their own and dependants' signed records (PR1–PR2) through
+  `clinical_patient_records(account)`: no private notes, no examination; delegates never see
+  restricted records.
+- New permission `clinical.unsigned_list` (doctor, facility admin), seeded by `clinical.0002`.
+- Patient-scoped clinical routes live under `/staff/clinical/patients/…` because S3's
+  `/staff/patients/{id}/{kind}/` matches any word (D-12). `ReasonCodeEnum` (S3 reveal) keeps
+  its schema name through an `ENUM_NAME_OVERRIDES` entry in the `[S6]` block.
 
 ### Tests
 

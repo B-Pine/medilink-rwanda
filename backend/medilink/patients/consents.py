@@ -6,7 +6,9 @@ from typing import Any
 
 from django.conf import settings
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
+from medilink.patients.errors import FieldRule
 from medilink.patients.models import ConsentKind, ConsentRecord, Patient
 
 DEFAULT_VERSIONS = {
@@ -16,7 +18,10 @@ DEFAULT_VERSIONS = {
     ConsentKind.RESEARCH: "2026-10",
     ConsentKind.GUARDIAN: "2026-10",
     ConsentKind.DELEGATION: "2026-10",
+    ConsentKind.NOTIFICATIONS: "2026-10",
+    ConsentKind.LOCATION: "2026-10",
 }
+OUTDATED = _("Accept the current version.")
 
 
 def current_versions() -> dict[str, str]:
@@ -25,6 +30,12 @@ def current_versions() -> dict[str, str]:
 
 def current_version(kind: str) -> str:
     return current_versions()[kind]
+
+
+def check_version(kind: str, version: str, *, field: str = "version") -> None:
+    """Every consent is recorded against the current version of its text (FR-SEC-04)."""
+    if version != current_versions().get(kind):
+        raise FieldRule(field, OUTDATED)
 
 
 def latest(patient: Patient, kind: str) -> ConsentRecord | None:

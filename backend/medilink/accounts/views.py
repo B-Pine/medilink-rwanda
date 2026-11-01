@@ -12,6 +12,7 @@ from uuid import UUID
 
 from django.conf import settings
 from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.tokens import default_token_generator
 from django.db import IntegrityError, transaction
 from django.utils.encoding import force_str
@@ -23,12 +24,17 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from medilink.accounts import mfa
+from medilink.accounts import mfa, verification
 from medilink.accounts.authentication import (
     PatientSessionAuthentication,
     StaffSessionAuthentication,
 )
-from medilink.accounts.lockout import login_policy, mfa_policy, reset_email_allowed
+from medilink.accounts.lockout import (
+    login_policy,
+    mfa_policy,
+    notify_on_lock,
+    reset_email_allowed,
+)
 from medilink.accounts.models import User
 from medilink.accounts.principal import Principal, PrincipalState, is_staff_member
 from medilink.accounts.serializers import (
@@ -46,6 +52,7 @@ from medilink.accounts.serializers import (
     PatientRegisterSerializer,
     StaffLoginSerializer,
     StaffMeSerializer,
+    VerifyEmailSerializer,
     run_password_validators,
 )
 from medilink.accounts.services import (
@@ -58,7 +65,12 @@ from medilink.accounts.services import (
     start_pending_mfa,
     switch_active_facility,
 )
-from medilink.accounts.tasks import send_password_changed_email, send_password_reset_email
+from medilink.accounts.tasks import (
+    send_account_exists_email,
+    send_password_changed_email,
+    send_password_reset_email,
+    send_verify_email,
+)
 from medilink.audit import actions
 from medilink.audit.services import record
 from medilink.authz.permissions import (
@@ -82,6 +94,10 @@ INVALID_CREDENTIALS = _("Email or password is incorrect.")
 INVALID_CODE = _("That code didn't work. Check your authenticator app and try again.")
 INVALID_RECOVERY_CODE = _("That recovery code didn't work.")
 INVALID_RESET_LINK = _("This link is invalid or has expired. Ask for a new link.")
+INVALID_VERIFY_LINK = _(
+    "This link is invalid, expired or already used. Sign up again for a new one."
+)
+SIGNUP_ACCEPTED = _("Check your email to finish creating your account.")
 RESET_ACCEPTED = _("If an account exists for this email, we sent a link to reset the password.")
 
 ERR = ErrorSerializer
@@ -117,8 +133,8 @@ def _check_login_lockout(email: str) -> None:
 
 
 def _login_failure(request: Request, email: str, audience: str, reason: str) -> Response:
-    login_policy().register_failure(email)
-    actor = User.objects.filter(email=email).only("pk").first()
+    actor = User.objects.filter(email=email).only("pk", "is_active").first()
+    login_policy().register_failure(email, on_lock=notify_on_lock(request, actor, "login"))
     record(
         actions.LOGIN_FAILURE,
         request=request,
@@ -242,7 +258,7 @@ class StaffMfaConfirmView(_AuthView):
         if wait:
             raise RateLimited(wait=wait)
         if not mfa.confirm_totp_enrolment(user, serializer.validated_data["code"]):
-            policy.register_failure(str(user.pk))
+            policy.register_failure(str(user.pk), on_lock=notify_on_lock(request, user, "mfa"))
             record(
                 actions.MFA_FAILURE,
                 request=request,
@@ -306,7 +322,7 @@ class StaffMfaVerifyView(_AuthView):
                 mfa.use_recovery_code(user, recovery_code),
             )
         if not ok:
-            policy.register_failure(str(user.pk))
+            policy.register_failure(str(user.pk), on_lock=notify_on_lock(request, user, "mfa"))
             record(
                 actions.MFA_FAILURE,
                 request=request,
@@ -417,35 +433,83 @@ class PatientRegisterView(_AuthView):
         tags=["patient-auth"],
         request=PatientRegisterSerializer,
         responses={
-            201: PatientMeSerializer,
-            400: _err("validation_error"),
+            202: DetailSerializer,
+            400: _err("validation_error (never for an email that already has an account)"),
             429: _err("rate_limited"),
         },
-        summary="Patient sign-up (creates account, self profile and consents) and sign-in",
+        summary=(
+            "Patient sign-up: always 202 'check your email' (no account enumeration); "
+            "a new account signs in only after the emailed link is opened"
+        ),
     )
     def post(self, request: Request) -> Response:
         serializer = PatientRegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-        try:
-            registration = register_patient(**data)  # atomic (savepoint)
-        except IntegrityError as exc:  # same email registered concurrently
-            raise serializers.ValidationError(
-                {"email": [PatientRegisterSerializer.default_error_messages["email_taken"]]}
-            ) from exc
-        complete_patient_login(request, registration.user)
-        record(
-            actions.PATIENT_REGISTERED,
-            request=request,
-            object_type="patient",
-            object_id=registration.patient.pk,
-            metadata={
-                "terms_version": data["accepted_terms_version"],
-                "privacy_version": data["accepted_privacy_version"],
-                "research_consent": data["research_consent"],
-            },
-        )
-        return Response(PatientMeSerializer(patient_me_data(registration.user)).data, status=201)
+        email = data["email"]
+        existing = User.objects.filter(email=email).only("pk").first()
+        if existing is None:
+            try:
+                with transaction.atomic():
+                    registration = register_patient(**data)
+                    User.objects.filter(pk=registration.user.pk).update(
+                        email_verification_pending=True
+                    )
+            except IntegrityError:  # same email registered concurrently: treat as existing
+                existing = User.objects.filter(email=email).only("pk").first()
+            else:
+                record(
+                    actions.PATIENT_REGISTERED,
+                    request=request,
+                    actor=registration.user,
+                    actor_role="patient",
+                    object_type="patient",
+                    object_id=registration.patient.pk,
+                    metadata={
+                        "terms_version": data["accepted_terms_version"],
+                        "privacy_version": data["accepted_privacy_version"],
+                        "research_consent": data["research_consent"],
+                    },
+                )
+                if reset_email_allowed(email, kind="signup"):
+                    new_id = str(registration.user.pk)
+                    transaction.on_commit(lambda: send_verify_email.delay(new_id))
+        if existing is not None:
+            make_password(data["password"])  # same hashing cost as creating an account
+            if reset_email_allowed(email, kind="signup"):
+                existing_id = str(existing.pk)
+                transaction.on_commit(lambda: send_account_exists_email.delay(existing_id))
+        return Response(DetailSerializer({"detail": str(SIGNUP_ACCEPTED)}).data, status=202)
+
+
+class PatientVerifyEmailView(_AuthView):
+    authentication_classes = [PatientSessionAuthentication]
+    permission_classes = [PublicEndpoint]
+    throttle_scope = "password_reset"
+
+    @extend_schema(
+        operation_id="patient_auth_verify_email",
+        tags=["patient-auth"],
+        request=VerifyEmailSerializer,
+        responses={
+            200: PatientMeSerializer,
+            400: _err("validation_error: invalid, expired or already used link"),
+            429: _err("rate_limited"),
+        },
+        summary="Confirm the sign-up email with the emailed link; activates and signs in",
+    )
+    def post(self, request: Request) -> Response:
+        serializer = VerifyEmailSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = verification.user_for_token(serializer.validated_data["token"])
+        if user is None:
+            raise serializers.ValidationError({"token": [INVALID_VERIFY_LINK]})
+        set_user_context(user.pk)
+        verification.mark_verified(user)
+        complete_patient_login(request, user)
+        record(actions.EMAIL_VERIFIED, request=request, metadata={"audience": "patient"})
+        record(actions.LOGIN_SUCCESS, request=request, metadata={"audience": "patient"})
+        return Response(PatientMeSerializer(patient_me_data(user)).data)
 
 
 class PatientLoginView(_AuthView):
@@ -595,6 +659,8 @@ class PasswordResetConfirmView(_AuthView):
 
         user.set_password(data["new_password"])
         user.save(update_fields=["password", "updated_at"])
+        if user.email_verification_pending:  # the reset link proves the email too
+            verification.mark_verified(user)
         revoked = revoke_all_sessions(user)
         login_policy().reset(user.email)
         record(

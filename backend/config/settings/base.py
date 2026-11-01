@@ -75,6 +75,9 @@ INSTALLED_APPS = [
     # [S4] visits and the live queue
     "medilink.visits",
     # [/S4]
+    # [S6] clinical record and history
+    "medilink.clinical",
+    # [/S6]
 ]
 
 MIDDLEWARE = [
@@ -212,8 +215,12 @@ AUTH_PASSWORD_VALIDATORS = [
 # Optional offline breached-password list: SHA-1 hashes, one per line (HIBP "HASH:count" format ok).
 PASSWORD_BREACHED_HASHES_FILE = env("PASSWORD_BREACHED_HASHES_FILE", default="")
 PASSWORD_RESET_TIMEOUT = 30 * 60  # 30 minutes, single use (security 03 §6)
+EMAIL_VERIFICATION_TIMEOUT = 3 * 24 * 3600  # sign-up link: 3 days, single use (security 03 §6)
 
 OTP_TOTP_ISSUER = env("MFA_TOTP_ISSUER", default="MediLink Rwanda")
+# TOTP secrets are encrypted at rest (medilink.accounts.totp_crypto): "1:<base64url 32 bytes>,…"
+MFA_SECRET_KEYS = env("MFA_SECRET_KEYS", default="")
+MFA_SECRET_ACTIVE_KEY_ID = env("MFA_SECRET_ACTIVE_KEY_ID", default="")
 MFA_PENDING_TIMEOUT = 10 * 60  # password OK -> second factor must follow within 10 minutes
 MFA_MAX_FAILURES = 5
 MFA_LOCK_SECONDS = 15 * 60
@@ -364,12 +371,6 @@ REST_FRAMEWORK = {
         # [S1]
         # [/S1]
         # [S3]
-        "IdentifierKindEnum": "medilink.patients.models.IdentifierKind",
-        "HealthItemKindEnum": "medilink.patients.serializers.HEALTH_KINDS",
-        "StaffConsentKindEnum": "medilink.patients.serializers.STAFF_CONSENT_KINDS",
-        "PatientRelationshipEnum": "medilink.patients.models.Relationship",
-        "DependentRelationshipEnum": "medilink.patients.views_patient.DEPENDENT_RELATIONSHIPS",
-        "PrincipalRelationshipEnum": "medilink.patients.models.PrincipalRelationship",
         # [/S3]
         # [S9]
         # [/S9]
@@ -419,6 +420,8 @@ SPECTACULAR_SETTINGS = {
         "PatientRelationshipEnum": "medilink.patients.models.Relationship",
         "DependentRelationshipEnum": "medilink.patients.views_patient.DEPENDENT_RELATIONSHIPS",
         "PrincipalRelationshipEnum": "medilink.patients.models.PrincipalRelationship",
+        "ReasonCodeEnum": "medilink.patients.serializers.REVEAL_REASON_CODES",
+        "AccessReasonCodeEnum": "medilink.patients.serializers.ACCESS_REASON_CODES",
         # [/S3]
         # [S9]
         "NotificationPriorityEnum": "medilink.notifications.models.Priority",
@@ -453,6 +456,12 @@ SPECTACULAR_SETTINGS = {
         "LevelOfCareEnum": "medilink.masterdata.models.LevelOfCare",
         "QueueLoadEnum": [("low", "low"), ("medium", "medium"), ("high", "high")],
         # [/S5]
+        # [S6]
+        "ConsultationStatusEnum": "medilink.clinical.models.ConsultationStatus",
+        "DiagnosisRankEnum": "medilink.clinical.models.DiagnosisRank",
+        "CertaintyEnum": "medilink.clinical.models.Certainty",
+        # AccessReasonCodeEnum and ReasonCodeEnum: named in the [S3] block (same codes)
+        # [/S6]
     },
 }
 
@@ -499,6 +508,11 @@ def mailers_config(email_url: str) -> dict[str, dict[str, Any]]:
 
 MAILERS = mailers_config(env("EMAIL_URL", default="smtp://127.0.0.1:1025"))
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="MediLink Rwanda <no-reply@medilink.test>")
+
+# Daily audit anchor (medilink.audit.anchor): log | email | file
+AUDIT_ANCHOR_SINK = env("AUDIT_ANCHOR_SINK", default="log")
+AUDIT_ANCHOR_EMAIL = env("AUDIT_ANCHOR_EMAIL", default="")
+AUDIT_ANCHOR_FILE = env("AUDIT_ANCHOR_FILE", default="")
 
 # --------------------------------------------------------------------------------------------
 # Logging: structured, request ID on every line, personal data scrubbed (security 08 §1).

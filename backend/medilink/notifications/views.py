@@ -6,7 +6,7 @@ from __future__ import annotations
 import base64
 import datetime as dt
 from collections import Counter
-from typing import Any
+from typing import Any, cast
 
 from django.db import transaction
 from django.db.models import Count, Prefetch
@@ -16,6 +16,7 @@ from rest_framework import exceptions, status
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from medilink.accounts.models import User
 from medilink.audit.services import record
 from medilink.authz.permissions import (
     IsPatientAuthenticated,
@@ -62,6 +63,11 @@ from medilink.patients.errors import FieldRule, PatientsAPIView
 
 TAGS = ["notifications"]
 MAX_ACTIVE_SUBSCRIPTIONS = 10
+
+
+def _user(request: Request) -> User:
+    """The signed-in account (every view here requires authentication)."""
+    return cast(User, request.user)
 
 
 def _bad(field: str, message: str) -> exceptions.ValidationError:
@@ -112,7 +118,7 @@ class _Inbox(PatientsAPIView):
 
     def inbox(self) -> Any:
         return Notification.objects.for_inbox(
-            self.request.user, self.audience, facility_id=self.facility_id()
+            _user(self.request), self.audience, facility_id=self.facility_id()
         )
 
     def facility_names(self, rows: list[Notification]) -> dict[Any, str]:
@@ -161,12 +167,12 @@ class _ListView(_Inbox):
         patient_id = _uuid_param(request, "patient_id")
         if patient_id:
             if self.audience != Audience.PATIENT or patient_id not in _linked_patient_ids(
-                request.user
+                _user(request)
             ):
                 raise exceptions.NotFound()
             rows = rows.filter(patient_id=patient_id)
         paginator = DefaultPagination()
-        page = paginator.paginate_queryset(rows, request, view=self) or []
+        page: list[Any] = paginator.paginate_queryset(rows, request, view=self) or []
         return paginator.get_paginated_response(self.serialize(list(page)))
 
 
@@ -183,7 +189,7 @@ class _CountView(_Inbox):
         if self.audience == Audience.STAFF:
             others = (
                 Notification.objects.filter(
-                    recipient_user=request.user,
+                    recipient_user=_user(request),
                     audience=Audience.STAFF,
                     read_at__isnull=True,
                     facility_id__isnull=False,
@@ -219,7 +225,7 @@ class _ReadView(_Inbox):
         with transaction.atomic():
             ids = _mark_read(self.inbox().filter(pk=row.pk), timezone.now())
         if ids:
-            user_id, audience = request.user.pk, self.audience
+            user_id, audience = _user(request).pk, self.audience
             transaction.on_commit(
                 lambda: socket_publish(
                     audience, user_id, "notification.read", {"ids": [str(i) for i in ids]}
@@ -241,7 +247,7 @@ class _ReadAllView(_Inbox):
         with transaction.atomic():
             ids = _mark_read(rows, timezone.now())
         if ids:
-            user_id, audience = request.user.pk, self.audience
+            user_id, audience = _user(request).pk, self.audience
             transaction.on_commit(
                 lambda: socket_publish(audience, user_id, "notification.read", {"all": True})
             )
@@ -322,7 +328,7 @@ class PatientPreferencesView(_Inbox):
 
     @extend_schema(tags=TAGS, responses={200: s.PatientPreferencesSerializer})
     def get(self, request: Request) -> Response:
-        return Response(self.build(request.user))
+        return Response(self.build(_user(request)))
 
     @extend_schema(
         tags=TAGS,
@@ -337,7 +343,7 @@ class PatientPreferencesView(_Inbox):
         body = s.PatientPreferencesPatchSerializer(data=request.data)
         body.is_valid(raise_exception=True)
         data = body.validated_data
-        user = request.user
+        user = _user(request)
         with transaction.atomic():
             saved = (
                 Preference.objects.select_for_update()
@@ -421,7 +427,7 @@ class StaffPreferencesView(_Inbox):
 
     @extend_schema(tags=TAGS, responses={200: s.StaffPreferencesSerializer})
     def get(self, request: Request) -> Response:
-        return Response(self.build(request.user))
+        return Response(self.build(_user(request)))
 
     @extend_schema(
         tags=TAGS,
@@ -432,7 +438,7 @@ class StaffPreferencesView(_Inbox):
         body = s.StaffPreferencesPatchSerializer(data=request.data)
         body.is_valid(raise_exception=True)
         data = body.validated_data
-        user = request.user
+        user = _user(request)
         with transaction.atomic():
             saved = (
                 Preference.objects.select_for_update()
@@ -501,9 +507,9 @@ class PushSubscriptionsView(_Inbox):
 
     @extend_schema(tags=TAGS, responses={200: s.PushSubscriptionSerializer(many=True)})
     def get(self, request: Request) -> Response:
-        rows = PushSubscription.objects.filter(user=request.user, revoked_at__isnull=True).order_by(
-            "created_at"
-        )
+        rows = PushSubscription.objects.filter(
+            user=_user(request), revoked_at__isnull=True
+        ).order_by("created_at")
         return Response(s.PushSubscriptionSerializer(rows, many=True).data)
 
     @extend_schema(
@@ -528,7 +534,7 @@ class PushSubscriptionsView(_Inbox):
             raise _bad("keys.p256dh", "Invalid key.")
         if _b64url_len(data["keys"]["auth"]) != 16:
             raise _bad("keys.auth", "Invalid key.")
-        user = request.user
+        user = _user(request)
         session_key = getattr(request.session, "session_key", None)
         label = observers.device_label(user_agent(request))
         now = timezone.now()
@@ -600,7 +606,7 @@ class PushSubscriptionDetailView(_Inbox):
         with transaction.atomic():
             sub = (
                 PushSubscription.objects.select_for_update()
-                .filter(pk=subscription_id, user=request.user, revoked_at__isnull=True)
+                .filter(pk=subscription_id, user=_user(request), revoked_at__isnull=True)
                 .first()
             )
             if sub is None:
@@ -713,7 +719,7 @@ class _AnnouncementList(_Announcements):
         if wanted:
             rows = rows.filter(status=wanted)
         paginator = DefaultPagination()
-        page = paginator.paginate_queryset(rows, request, view=self) or []
+        page: list[Any] = paginator.paginate_queryset(rows, request, view=self) or []
         return paginator.get_paginated_response(s.AnnouncementSerializer(page, many=True).data)
 
     @extend_schema(
@@ -728,7 +734,7 @@ class _AnnouncementList(_Announcements):
         with transaction.atomic():
             row = Announcement.objects.create(
                 facility_id=None if self.platform else self.principal().active_facility_id,
-                created_by=request.user,
+                created_by=_user(request),
                 **merged,
             )
             record(
@@ -801,7 +807,7 @@ class _AnnouncementPublish(_Announcements):
                 and ann.published_today(row.facility_id) >= ann.DAILY_PUBLISH_LIMIT
             ):
                 raise exceptions.Throttled(detail="At most 10 announcements a day.")
-            ann.publish(row, request.user)
+            ann.publish(row, _user(request))
             record(
                 "announcement.published",
                 request=request,
@@ -931,7 +937,7 @@ class _Deliveries(PatientsAPIView):
 
     def respond(self, request: Request, rows: Any, audit: tuple[str, Any] | None) -> Response:
         paginator = DefaultPagination()
-        page = paginator.paginate_queryset(rows, request, view=self) or []
+        page: list[Any] = paginator.paginate_queryset(rows, request, view=self) or []
         if audit:
             key, value = audit
             record(
@@ -995,7 +1001,6 @@ class PlatformDeliveryStatsView(PatientsAPIView):
         responses={200: s.DeliveryStatsSerializer},
     )
     def get(self, request: Request) -> Response:
-        from medilink.accounts.models import User
         from medilink.patients.models import PatientLink
 
         since = _since(request, timezone.now() - dt.timedelta(hours=24))
@@ -1071,7 +1076,7 @@ class TemplatesView(PatientsAPIView):
         if is_active in ("true", "false"):
             rows = rows.filter(is_active=is_active == "true")
         paginator = DefaultPagination()
-        page = paginator.paginate_queryset(rows, request, view=self) or []
+        page: list[Any] = paginator.paginate_queryset(rows, request, view=self) or []
         return paginator.get_paginated_response(
             s.NotificationTemplateSerializer(page, many=True).data
         )
@@ -1140,7 +1145,7 @@ class TemplateReviseView(PatientsAPIView):
                 placeholders=used,
                 is_active=True,
                 source=TemplateSource.PLATFORM,
-                created_by=request.user,
+                created_by=_user(request),
             )
             record(
                 "notifications.template.revised",

@@ -18,6 +18,7 @@ export * from "./features/patients";
 export * from "./features/profile";
 // [/S3]
 // [S9]
+export * from "./features/notifications";
 // [/S9]
 // [S2]
 export * from "./features/setup";
@@ -31,3 +32,6 @@ export * from "./realtime";
 // [S5]
 export * from "./features/booking";
 // [/S5]
+// [S6]
+export * from "./features/clinical";
+// [/S6]

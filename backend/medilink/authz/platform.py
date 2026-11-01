@@ -60,7 +60,7 @@ class PlatformAdmin(IsPlatformAdmin):
             return True
         security_logger.warning(
             "Platform request refused by the network allowlist",
-            extra={"path": getattr(request, "path", ""), "ip": ip},
+            extra={"extra_data": {"path": getattr(request, "path", ""), "ip": ip}},
         )
         return False
 

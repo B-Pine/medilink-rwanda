@@ -67,9 +67,14 @@ def test_invite_new_account_and_accept(
     assert "new.nurse@example.test" in [m["email"] for m in listed]
 
 
-def test_existing_account_accepts_with_password(
-    admin_client: Any, other_facility: Any, django_capture_on_commit_callbacks: Any
+def test_existing_account_accepts_only_when_signed_in(
+    admin_client: Any,
+    other_facility: Any,
+    setup_facility: Any,
+    django_capture_on_commit_callbacks: Any,
 ) -> None:
+    from tests.conftest import login_staff
+
     existing = make_staff(other_facility, roles=("doctor",), email="doc.elsewhere@example.test")
     token = _invite(admin_client, existing.email, django_capture_on_commit_callbacks, ["doctor"])
     anon = APIClient()
@@ -77,11 +82,17 @@ def test_existing_account_accepts_with_password(
         anon.post(f"{AUTH}lookup/", {"token": token}, format="json").json()["account_exists"]
         is True
     )
-    wrong = anon.post(f"{AUTH}accept/", {"token": token, "password": "nope"}, format="json")
-    assert wrong.status_code == 400
-    ok = anon.post(f"{AUTH}accept/", {"token": token, "password": PASSWORD}, format="json")
-    assert ok.status_code == 200
-    assert ok.json()["status"] == "mfa_required"
+    # No password path: an existing account signs in through login (lockout, MFA, audit).
+    for body in ({"token": token, "password": PASSWORD}, {"token": token}):
+        refused = anon.post(f"{AUTH}accept/", body, format="json")
+        assert refused.status_code == 401, refused.content
+        assert refused.json()["error"]["code"] == "not_authenticated"
+    login_staff(anon, existing)
+    ok = anon.post(f"{AUTH}accept/", {"token": token}, format="json")
+    assert ok.status_code == 200, ok.content
+    me = ok.json()  # StaffMe with the new membership
+    assert me["email"] == existing.email
+    assert str(setup_facility.pk) in [m["facility"]["id"] for m in me["memberships"]]
 
 
 def test_resend_invalidates_and_revoke(
@@ -266,11 +277,13 @@ def test_full_setup_then_go_live(admin: Any, setup_facility: Any) -> None:
     )
     checklist = admin_client.get(f"{F}setup-checklist/").json()
     assert checklist["complete"] is True, checklist
-    from medilink.onboarding.services import facility_version
-
-    live = admin_client.post(
-        f"{F}go-live/", {"version": facility_version(setup_facility)}, format="json"
-    )
+    # What the staff app sends: the status version the API exposes (not the internal helper).
+    profile = admin_client.get(F).json()
+    assert profile["status_version"] == checklist["status_version"]
+    assert profile["status_version"] != profile["version"]  # the profile version would 409
+    stale = admin_client.post(f"{F}go-live/", {"version": profile["version"]}, format="json")
+    assert stale.status_code == 409
+    live = admin_client.post(f"{F}go-live/", {"version": profile["status_version"]}, format="json")
     assert live.status_code == 200, live.content
     assert live.json()["status"] == "live"
 

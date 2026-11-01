@@ -63,7 +63,7 @@ def busy_ranges(user_id: Any, exclude_facility_id: Any) -> list[tuple[int, dt.ti
 
 
 def _warnings(
-    facility_id: Any, template: ScheduleTemplate, membership: FacilityMembership
+    facility_id: Any, template: ScheduleTemplate, membership: FacilityMembership | None
 ) -> list[dict[str, Any]]:
     warnings: list[dict[str, Any]] = []
     hours = (
@@ -76,7 +76,8 @@ def _warnings(
     )
     if hours is None or template.starts_at < hours.opens_at or template.ends_at > hours.closes_at:
         warnings.append({"kind": "outside_hours", "weekday": template.weekday})
-    for weekday, starts, ends in busy_ranges(membership.user_id, facility_id):
+    others = busy_ranges(membership.user_id, facility_id) if membership is not None else []
+    for weekday, starts, ends in others:
         if weekday == template.weekday and starts < template.ends_at and template.starts_at < ends:
             warnings.append(
                 {
@@ -89,7 +90,9 @@ def _warnings(
     return warnings
 
 
-def _check_membership(facility_id: Any, membership_id: Any) -> FacilityMembership:
+def _check_membership(facility_id: Any, membership_id: Any) -> FacilityMembership | None:
+    if membership_id is None:
+        return None  # a service schedule (no named doctor)
     membership = FacilityMembership.objects.filter(
         pk=membership_id, facility_id=facility_id, is_active=True
     ).first()
@@ -140,9 +143,15 @@ def save_template(
         raise exceptions.ValidationError({"ends_at": [str(_("The end must be after the start."))]})
     if (_minutes(template.ends_at) - _minutes(template.starts_at)) % template.slot_minutes:
         raise exceptions.ValidationError({"slot_minutes": [str(SLOT_FIT)]})
+    # A doctor has one block at a time; a service schedule one per service at a time
+    same = (
+        {"membership_id": template.membership_id}
+        if template.membership_id is not None
+        else {"membership__isnull": True, "service_id": template.service_id}
+    )
     overlapping = ScheduleTemplate.objects.filter(
         facility=facility,
-        membership_id=template.membership_id,
+        **same,
         weekday=template.weekday,
         ended_at__isnull=True,
         starts_at__lt=template.ends_at,
@@ -343,7 +352,7 @@ def blocks(facility_id: Any, start: dt.date, end: dt.date) -> list[dict[str, Any
                 continue
             block_start = dt.datetime.combine(day, t.starts_at, tz)
             block_end = dt.datetime.combine(day, t.ends_at, tz)
-            off = any(
+            off = t.membership_id is not None and any(
                 e.membership_id == t.membership_id
                 and e.kind != ExceptionKind.EXTRA_SESSION
                 and e.starts_at < block_end
@@ -354,7 +363,7 @@ def blocks(facility_id: Any, start: dt.date, end: dt.date) -> list[dict[str, Any
                 continue
             out.append(
                 {
-                    "membership_id": str(t.membership_id),
+                    "membership_id": str(t.membership_id) if t.membership_id else None,
                     "template_id": str(t.pk),
                     "service_id": str(t.service_id),
                     "service_point_id": str(t.service_point_id) if t.service_point_id else None,

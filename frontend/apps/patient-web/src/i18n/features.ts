@@ -12,6 +12,9 @@ import profileFr from "../features/profile/locales/fr.json";
 import profileRw from "../features/profile/locales/rw.json";
 // [/S3 imports]
 // [S9 imports]
+import notificationsEn from "../features/notifications/locales/en.json";
+import notificationsFr from "../features/notifications/locales/fr.json";
+import notificationsRw from "../features/notifications/locales/rw.json";
 // [/S9 imports]
 // [S2 imports]
 // [/S2 imports]
@@ -27,6 +30,11 @@ import bookingEn from "../features/booking/locales/en.json";
 import bookingFr from "../features/booking/locales/fr.json";
 import bookingRw from "../features/booking/locales/rw.json";
 // [/S5 imports]
+// [S6 imports]
+import recordsEn from "../features/records/locales/en.json";
+import recordsFr from "../features/records/locales/fr.json";
+import recordsRw from "../features/records/locales/rw.json";
+// [/S6 imports]
 
 /**
  * Feature translation namespaces: `<feature>` -> `src/features/<feature>/locales/{rw,en,fr}.json`.
@@ -44,6 +52,7 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   profile: { rw: profileRw, en: profileEn, fr: profileFr },
   // [/S3]
   // [S9]
+  notifications: { rw: notificationsRw, en: notificationsEn, fr: notificationsFr },
   // [/S9]
   // [S2]
   // [/S2]
@@ -55,4 +64,7 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   // [S5]
   booking: { rw: bookingRw, en: bookingEn, fr: bookingFr },
   // [/S5]
+  // [S6]
+  records: { rw: recordsRw, en: recordsEn, fr: recordsFr },
+  // [/S6]
 };

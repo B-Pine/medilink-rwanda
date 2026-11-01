@@ -24,12 +24,15 @@ describe("command palette", () => {
     await waitFor(() => expect(input).toHaveFocus());
     expect(await axe(baseElement)).toHaveNoViolations();
 
+    // Sections that only open a placeholder are not offered (design 04 §2: no dead ends)
+    await user.type(input, "pay");
+    expect(screen.queryByRole("option", { name: "Payments" })).not.toBeInTheDocument();
+    await user.clear(input);
+
     await user.type(input, "calen");
     const list = screen.getByRole("listbox");
     expect(within(list).getByRole("option", { name: "Calendar" })).toBeInTheDocument();
     expect(within(list).queryByRole("option", { name: "Queue" })).not.toBeInTheDocument();
-    // Sections that only open a placeholder are not offered (design 04 §2: no dead ends)
-    expect(within(list).queryByRole("option", { name: "Payments" })).not.toBeInTheDocument();
     await user.keyboard("{Enter}");
 
     await waitFor(() => expect(router.state.location.pathname).toBe("/calendar"));

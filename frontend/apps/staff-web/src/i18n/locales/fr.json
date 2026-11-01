@@ -185,7 +185,7 @@
   "notFound": {
     "title": "Page introuvable",
     "body": "Vérifiez l’adresse ou revenez à votre page Aujourd’hui.",
-    "home": "Aller à Aujourd’hui"
+    "home": "Aller à ma page d'accueil"
   },
   "forgot": {
     "title": "Réinitialiser votre mot de passe",

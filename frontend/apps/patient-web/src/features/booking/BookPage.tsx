@@ -590,9 +590,9 @@ export function BookPage() {
   const fee = service?.fee_rwf ?? null;
   const card = (insurances.data?.results ?? []).find((c) => c.id === insurance);
   const accepted = card ? service?.insurers.includes(card.insurer_code) : null;
-  const shareBp = card && accepted ? service?.insurer_shares[card.insurer_code] : undefined;
-  const yourShare =
-    fee === null ? null : shareBp === undefined ? fee : Math.round((fee * shareBp) / 10_000);
+  // R4 (#102): the server's share after exclusions and ceilings; no cover means the full fee
+  const covered = card && accepted ? service?.insurer_share_rwf[card.insurer_code] : undefined;
+  const yourShare = fee === null ? null : (covered ?? fee);
 
   const header = (
     <div className="flex flex-col gap-1">

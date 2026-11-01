@@ -51,10 +51,16 @@ export function minutesSince(iso: string | null | undefined, now = Date.now()): 
   return Math.max(0, Math.round((now - new Date(iso).getTime()) / 60_000));
 }
 
+/** S5 flags (R4 #102) shown as badges; the S4 flags keep their chips (design 04 §3.1). */
+const S5_FLAGS: Record<string, { tone: "warning" | "info"; key: string }> = {
+  late: { tone: "warning", key: "queue.flags.lateWalkIn" },
+  remote: { tone: "info", key: "queue.flags.remote" },
+  remote_claimed: { tone: "info", key: "queue.board.remoteClaimed" },
+};
+
 export function Flags({ ticket }: { ticket: TicketRow }) {
   const { t, i18n } = useTranslation();
-  const remote = ticket.is_remote && !ticket.remote_arrival_confirmed_at;
-  if (!ticket.flags.length && !ticket.slot_starts_at && !ticket.late && !remote) return null;
+  if (!ticket.flags.length && !ticket.slot_starts_at) return null;
   return (
     <span className="flex flex-wrap gap-1">
       {ticket.slot_starts_at && (
@@ -64,15 +70,14 @@ export function Flags({ ticket }: { ticket: TicketRow }) {
           })}
         </Badge>
       )}
-      {ticket.late && <Badge tone="warning">{t("queue.flags.lateWalkIn")}</Badge>}
-      {remote && (
-        <Badge tone="info">
-          {ticket.remote_arrival_claimed_at
-            ? t("queue.board.remoteClaimed")
-            : t("queue.flags.remote")}
-        </Badge>
-      )}
       {ticket.flags.map((flag) => {
+        const s5 = S5_FLAGS[flag];
+        if (s5)
+          return (
+            <Badge key={flag} tone={s5.tone}>
+              {t(s5.key)}
+            </Badge>
+          );
         const [kind, detail] = flag.split(":") as [QueueFlag, string | undefined];
         return (
           <QueueFlagChip key={flag} flag={kind}>

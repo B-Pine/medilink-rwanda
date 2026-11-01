@@ -58,7 +58,7 @@
     "title": "Vous avez rejoint la file depuis chez vous",
     "body": "Quand vous arrivez à l’établissement, touchez « Je suis là », puis montrez ce ticket à l’accueil.",
     "here": "Je suis là",
-    "claimed": "L’accueil sait que vous dites être arrivé. Montrez ce ticket au guichet pour qu’il le confirme.",
+    "claimed": "En attente de la confirmation de l’accueil. Montrez ce ticket au guichet.",
     "passOverTitle": "Vous approchez de votre tour",
     "passOver": "Rendez-vous à l’établissement et présentez-vous à l’accueil bientôt. Si l’accueil ne vous a pas confirmé à votre tour, votre place recule.",
     "passOverClaimed": "Montrez votre ticket à l’accueil maintenant. Tant qu’il n’a pas confirmé votre arrivée, votre place peut reculer.",

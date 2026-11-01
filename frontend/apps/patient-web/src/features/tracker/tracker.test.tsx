@@ -70,7 +70,7 @@ describe("live tracker", () => {
     expect(await axe(container)).toHaveNoViolations();
     await user.click(within(remote).getByRole("button", { name: "I'm here" }));
     expect(await within(remote).findByRole("status")).toHaveTextContent(
-      /Reception knows you say you're here/,
+      /Waiting for reception to confirm you're here/,
     );
     expect(within(remote).queryByRole("button", { name: "I'm here" })).not.toBeInTheDocument();
   }, 60_000);

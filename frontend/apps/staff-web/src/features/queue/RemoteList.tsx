@@ -12,11 +12,11 @@ export function unconfirmedRemote(queues: QueueGroup[], serviceId: string | null
   return queues
     .filter((q) => !serviceId || q.service_id === serviceId)
     .flatMap((q) => q.waiting)
-    .filter((t) => t.is_remote && !t.remote_arrival_confirmed_at)
+    .filter((t) => t.flags.includes("remote") || t.flags.includes("remote_claimed"))
     .sort(
       (a, b) =>
-        Number(Boolean(b.remote_arrival_claimed_at)) -
-          Number(Boolean(a.remote_arrival_claimed_at)) || (a.position ?? 0) - (b.position ?? 0),
+        Number(b.flags.includes("remote_claimed")) - Number(a.flags.includes("remote_claimed")) ||
+        (a.position ?? 0) - (b.position ?? 0),
     );
 }
 
@@ -25,7 +25,7 @@ export function useConfirmArrival() {
   const api = useApi();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (ticket: TicketRow) => api.queue.confirmArrival(ticket.visit_id),
+    mutationFn: (ticket: TicketRow) => api.queue.confirmArrival(ticket),
     onSettled: () => void queryClient.invalidateQueries({ queryKey: queueKeys.all }),
   });
 }

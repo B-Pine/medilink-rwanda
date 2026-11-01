@@ -70,7 +70,8 @@ INSTALLED_APPS = [
     "medilink.scheduling",
     "medilink.billing",
     # [/S2]
-    # [S10]
+    # [S10] help center and support requests (part 1)
+    "medilink.support",
     # [/S10]
     # [S4] visits and the live queue
     "medilink.visits",
@@ -441,6 +442,15 @@ SPECTACULAR_SETTINGS = {
         "ServiceSexRestrictionEnum": "medilink.facilities.models.SexRestriction",
         # [/S2]
         # [S10]
+        "HelpAudienceEnum": "medilink.support.models.Audience",
+        "HelpArticleCategoryEnum": "medilink.support.models.ArticleCategory",
+        "HelpArticleStatusEnum": "medilink.support.models.ArticleStatus",
+        "SupportTopicEnum": "medilink.support.models.Topic",
+        "SupportRequestStatusEnum": "medilink.support.models.RequestStatus",
+        "SupportPriorityEnum": "medilink.support.models.RequestPriority",
+        "SupportCloseReasonEnum": "medilink.support.models.CloseReason",
+        "SupportStaffCloseReasonEnum": "medilink.support.serializers.SUPPORT_CLOSE_REASONS",
+        "SupportAuthorKindEnum": "medilink.support.models.AuthorKind",
         # [/S10]
         # [S4]
         "TicketStateEnum": "medilink.visits.models.TicketState",

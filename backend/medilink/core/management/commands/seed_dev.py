@@ -86,6 +86,7 @@ DEV_SEED_COMMANDS: list[str] = [
     "seed_setup_dev",
     # [/S2]
     # [S10]
+    "seed_support_dev",
     # [/S10]
     # [S4]
     "seed_queue_dev",

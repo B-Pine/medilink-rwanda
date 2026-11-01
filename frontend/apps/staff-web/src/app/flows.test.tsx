@@ -318,6 +318,9 @@ describe("shell: user menu, language, theme, logout", () => {
       "Patient merges",
       // S9 notifications (super admins only)
       "Platform announcements",
+      // S10 help and support (super admins only)
+      "Support queue",
+      "Help articles",
     ]);
   });
 

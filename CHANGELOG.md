@@ -6,6 +6,10 @@ This root changelog covers documentation and repository-wide changes (CI, toolin
 
 ## [Unreleased]
 
+### Changed
+
+- Per-user agent and MCP configs (`.cursor/`, `.gemini/`, `.codex/`, `.agents/`) and `docker-compose.override.yml` are no longer tracked; `docker-compose.override.example.yml` documents the optional Postgres port override. `CLAUDE.md` and `AGENTS.md` point at the GitHub issue workflow.
+
 ### Added
 
 - Acceptance records for Sprint 1 (`docs/qa/sprint-1-acceptance.md`, 40 checks) and Sprint 3 (`docs/qa/sprint-3-acceptance.md`, backend evidence and gaps).

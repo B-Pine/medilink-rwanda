@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 2202.
+Keys: 2210.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -383,6 +383,14 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `signup.submit` | Fungura konti | Create account | needs native-speaker review |
 | `signup.haveAccount` | Usanzwe ufite konti? | Already have an account? | needs native-speaker review |
 | `signup.login` | Injira | Log in | needs native-speaker review |
+| `signup.checkEmailTitle` | Reba imeyili yawe | Check your email | needs native-speaker review |
+| `signup.checkEmailBody` | Twohereje ubutumwa kuri {{email}}. Fungura ihuriro riri muri ubwo butumwa kugira ngo urangize gufungura konti. Iryo huriro rimara iminsi 3. | We sent a message to {{email}}. Open the link in it to finish creating your account. The link works for 3 days. | needs native-speaker review |
+| `signup.checkEmailHint` | Nta meyili wabonye nyuma y’iminota mike? Reba mu butumwa bwa spam, cyangwa wongere wiyandikishe ubone irindi huriro. | No email after a few minutes? Check your spam folder, or sign up again to get a new link. | needs native-speaker review |
+| `verifyEmail.title` | Emeza imeyili yawe | Confirm your email | needs native-speaker review |
+| `verifyEmail.working` | Turimo kwemeza imeyili yawe… | Confirming your email… | needs native-speaker review |
+| `verifyEmail.failedTitle` | Ntitwashoboye kwemeza imeyili yawe | We couldn't confirm your email | needs native-speaker review |
+| `verifyEmail.invalidLink` | Iri huriro ntiryuzuye. Ongera ufungure ihuriro riri muri imeyili. | This link is incomplete. Open the link from the email again. | needs native-speaker review |
+| `verifyEmail.signUpAgain` | Ongera wiyandikishe | Sign up again | needs native-speaker review |
 | `home.title` | Ahabanza | Home | needs native-speaker review |
 | `home.findCare` | Shaka ubuvuzi | Find care | needs native-speaker review |
 | `home.nextVisitTitle` | Uruzinduko rwawe rukurikira | Your next visit | needs native-speaker review |

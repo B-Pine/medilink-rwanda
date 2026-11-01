@@ -176,6 +176,7 @@ def test_preference_off_is_skipped_but_in_app_stays(event: Any) -> None:
     assert attempts["email"] == "preference_off" and "in_app" in attempts
 
 
+@pytest.mark.real_clock
 @pytest.mark.parametrize(
     ("priority", "for_today", "held"),
     [

@@ -206,6 +206,7 @@ def staff_rows(bookings: list[Booking]) -> list[dict[str, Any]]:
                 "starts_at": b.starts_at,
                 "symptoms": symptoms.get(b.pk, []),
                 "late": b.status == BookingStatus.CONFIRMED and now > b.starts_at + grace,
+                "has_pending_change": b.pending_change is not None,
                 "visit_id": b.visit_id,
                 "version": b.version,
             }

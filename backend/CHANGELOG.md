@@ -8,6 +8,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+
+### Sprint 5b · Disruptions, follow-ups and the calendar feed
+
+- Disruptions (FR-SCH-14): staff mark a doctor, service or the whole facility unavailable for a
+  period; the affected confirmed bookings and today's remote tickets are listed; per item or in
+  bulk, move to another doctor or time, offer a choice or cancel. Patients keep, choose another
+  time or cancel (never a late cancellation and never a strike); an unanswered offer more than a
+  day ahead is accepted automatically. Slot generation opens a disruption when booked slots no
+  longer fit the schedule.
+- Follow-ups (FR-SCH-15): the doctor books the same doctor for a later date or, when no slot is
+  free, stores a reminder.
+- Calendar feed (FR-SCH-11): a private `.ics` subscription per account, dependants included; the
+  32-byte token is shown once and stored as SHA-256, revocable, served `no-store`.
+- Reception calendar (day and week, per doctor) and the doctor's own calendar.
+- New tables `scheduling_disruption`, `scheduling_disruption_item`, `scheduling_follow_up`,
+  `scheduling_calendar_feed` with forced row-level security (facility; the feed by account); a
+  periodic job accepts unanswered offers after the reply window.
+
 ### Security
 
 - pypdf 6.21.2 → 6.21.4 in the hash-pinned locks (CVE-2026-119203 to CVE-2026-119209, reported by
@@ -344,6 +362,36 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   reversal with a reason (`patient_was_present`, `facility_delay`, `other`).
 - No-show job with strikes; jobs and the dev seed; `booking_concurrency_check` (DEBUG only).
 - `TIME_ZONE` is `Africa/Kigali` (was UTC; contract D-8).
+
+### Sprint 6a · Consultation and history
+
+- New app `medilink.clinical` ([contract](../docs/architecture/contracts/sprint-06-clinical.md)):
+  `clinical_consultation`, `clinical_diagnosis`, `clinical_addendum`, `clinical_vitals` and
+  `authz_access_reason`, all with forced facility RLS.
+- Consultation per visit (C1–C7): idempotent open, draft autosave with `version` (`409` when
+  stale), ICD-10 diagnoses from master data (one primary, provisional or confirmed; sensitive codes
+  suggest a restricted record), sign with recent re-authentication and a SHA-256 content hash
+  (late entry after 24 h, `integrity` recomputed on read), signed addenda by the author or another
+  clinician, entered in error with a reason, and the unsigned records list without content.
+- All consultation text, private notes and addendum bodies are field-encrypted (contract D-2).
+  Database triggers lock signed records, their diagnoses and vitals, make addenda and access
+  reasons append-only, and refuse every delete.
+- A consultation-stage ticket cannot complete or move on while its visit has a draft
+  (`pre_save` guard, D-6).
+- Vitals (V1–V2) with plausible ranges; reception reads only the rows it recorded.
+- Treatment-relationship rule (FR-SEC-03): an open visit today or care by the clinician in the
+  last 30 days; otherwise, and always for staff-as-patient records, `403 access_reason_required`
+  until a reason is given (A1, 120 minutes). Clinical reads and reasons are audited with patient
+  links.
+- History timeline with filters and problem summary (H1–H2); allergy, duplicate and dose alerts
+  (AL1) for S7 prescribing.
+- Patients read their own and dependants' signed records (PR1–PR2) through
+  `clinical_patient_records(account)`: no private notes, no examination; delegates never see
+  restricted records.
+- New permission `clinical.unsigned_list` (doctor, facility admin), seeded by `clinical.0002`.
+- Patient-scoped clinical routes live under `/staff/clinical/patients/…` because S3's
+  `/staff/patients/{id}/{kind}/` matches any word (D-12). `ReasonCodeEnum` (S3 reveal) keeps
+  its schema name through an `ENUM_NAME_OVERRIDES` entry in the `[S6]` block.
 
 ### Tests
 

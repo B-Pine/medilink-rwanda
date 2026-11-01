@@ -114,7 +114,7 @@ jobs:
           # authz: security 09 §3 and testing strategy §3.1. Every app is checked even after a
           # failure, so the log shows all of them.
           failed=0
-          for app in authz:95 core:90 accounts:90 tenancy:90 audit:90 uploads:90 masterdata:90 onboarding:90 patients:90 facilities:90 scheduling:90 billing:90 visits:90 notifications:90 support:90; do
+          for app in authz:95 core:90 accounts:90 tenancy:90 audit:90 uploads:90 masterdata:90 onboarding:90 patients:90 facilities:90 scheduling:90 billing:90 visits:90 notifications:90 clinical:90 support:90; do
             name="${app%%:*}" floor="${app##*:}"
             echo "== medilink/$name (>= $floor%)"
             python -m coverage report --include="medilink/$name/*" --fail-under="$floor" | tail -1 || failed=1

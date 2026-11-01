@@ -63,6 +63,7 @@ testpaths = ["tests"]
 addopts = "-ra --strict-markers"
 markers = [
   "acceptance(check): links a test to a Sprint 0 backend acceptance check (B1-B17)",
+  "real_clock: notification test that checks quiet hours itself (no daytime default)",
 ]
 filterwarnings = [
   "error::RuntimeWarning",

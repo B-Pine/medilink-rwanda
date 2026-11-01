@@ -71,7 +71,8 @@
   "nav": {
     "back": "Subira inyuma",
     "next": "Komeza",
-    "change": "Hindura umurwayi"
+    "change": "Hindura umurwayi",
+    "disruptions": "Impinduka"
   },
   "body": {
     "general": "Rusange",
@@ -87,5 +88,138 @@
   },
   "expected": {
     "newTime": "Igihe gishya"
+  },
+  "status": {
+    "confirmed": "Yafashe umwanya",
+    "checked_in": "Yageze",
+    "no_show": "Ntiyaje",
+    "cancelled": "Byahagaritswe",
+    "late_cancelled": "Byahagaritswe bitinze",
+    "superseded": "Byimuwe"
+  },
+  "calendar": {
+    "title": "Kalendari",
+    "mineTitle": "Kalendari yanjye",
+    "description": "Amasaha y'akazi n'abafashe imyanya kuri buri serivisi na buri muganga.",
+    "view": "Uko bigaragara",
+    "dayView": "Umunsi",
+    "weekView": "Icyumweru",
+    "previous": "Ibibanza",
+    "next": "Ibikurikira",
+    "today": "Uyu munsi",
+    "weekOf": "Icyumweru cya {{date}}",
+    "allServices": "Serivisi zose",
+    "booked": "{{booked}} kuri {{capacity}} bafashe umwanya",
+    "serviceSchedule": "Gahunda ya serivisi",
+    "noBookings": "Nta wafashe umwanya kugeza ubu.",
+    "noSessions": "Nta masaha y'akazi kuri uyu munsi.",
+    "outside": "Bafashe umwanya hanze y'amasaha y'akazi",
+    "awaitingAnswer": "Dutegereje igisubizo cy'umurwayi",
+    "disrupted": "Hari impinduka itararangira",
+    "disruptedBody_one": "Impinduka {{count}} iracyategereje ibikorwa cyangwa ibisubizo.",
+    "disruptedBody_other": "Impinduka {{count}} ziracyategereje ibikorwa cyangwa ibisubizo.",
+    "failed": "Ntibishobotse gufungura kalendari.",
+    "emptyTitle": "Nta giteganyijwe",
+    "empty": "Nta masaha y'akazi cyangwa abafashe imyanya muri iki gihe.",
+    "ownOnly": "Urabona amasaha yawe n'abagufatiyeho umwanya gusa.",
+    "gridView": "Imbonerahamwe y'amasaha",
+    "tableView": "Urutonde",
+    "day": "Umunsi",
+    "time": "Isaha",
+    "session": "Igihe cy'akazi",
+    "actions": "Ibikorwa",
+    "openDay": "Fungura umunsi"
+  },
+  "disruptions": {
+    "title": "Impinduka",
+    "description": "Iyo umuganga adahari cyangwa ikigo gifunze, imura abafashe imyanya bose icyarimwe.",
+    "new": "Impinduka nshya",
+    "wizardTitle": "Impinduka",
+    "back": "Impinduka zose",
+    "progress": "Intambwe z'impinduka",
+    "steps": {
+      "what": "Nde n'igihe",
+      "affected": "Abafashe imyanya bibagiraho ingaruka",
+      "answers": "Ibisubizo by'abarwayi"
+    },
+    "failed": "Ntibishobotse gufungura cyangwa kubika impinduka.",
+    "noneTitle": "Nta mpinduka",
+    "none": "Nta kibazo gihari. Kora impinduka iyo umuganga adahari cyangwa ikigo gifunze.",
+    "summary": "{{total}} bibagiraho ingaruka, {{pending}} bategereje",
+    "kindLabel": "Icyabaye",
+    "kind": {
+      "doctor_absent": "Umuganga ntahari",
+      "closure": "Ikigo kirafunze",
+      "schedule_change": "Gahunda yahindutse"
+    },
+    "status": {
+      "open": "Irakomeje",
+      "resolved": "Yarangiye"
+    },
+    "anyDoctor": "Nta muganga wihariye",
+    "from": "Kuva",
+    "to": "Kugeza",
+    "reason": "Impamvu (y'abakozi)",
+    "reasonHint": "Abarwayi ntibabona iyi nyandiko.",
+    "findAffected": "Shaka abo bibagiraho ingaruka",
+    "affectedCount_one": "Umwanya {{count}} cyangwa itike bibagiraho ingaruka.",
+    "affectedCount_other": "Imyanya {{count}} cyangwa amatike bibagiraho ingaruka.",
+    "forAll": "Igikorwa ku basigaye bose",
+    "applyAll": "Kora kuri bose",
+    "choose": "Hitamo igikorwa",
+    "actionFor": "Igikorwa kuri {{name}}",
+    "action": {
+      "move_doctor": "Mwimurire ku wundi muganga",
+      "next_slot": "Mwimurire ku mwanya ukurikira",
+      "cancel": "Hagarika"
+    },
+    "apply": "Kora ibikorwa wahisemo",
+    "someLeft_one": "Ikintu {{count}} nticyahinduwe. Hitamo ikindi gikorwa.",
+    "someLeft_other": "Ibintu {{count}} ntibyahinduwe. Hitamo ikindi gikorwa.",
+    "problem": {
+      "no_slot": "Nta mwanya uhari: hitamo ikindi gikorwa.",
+      "same_day_service": "Umurwayi asanzwe afite iyi serivisi uwo munsi.",
+      "not_for_ticket": "Ntibishoboka ku matike y'umurongo w'uyu munsi.",
+      "booking_closed": "Uyu mwanya wari usanzwe warafunzwe.",
+      "ticket_closed": "Iyi tike ntikiri ku murongo.",
+      "already_applied": "Byarakozwe.",
+      "not_found": "Ntibibonetse."
+    },
+    "remoteTicket": "Itike ya kure {{number}}",
+    "nothingTitle": "Nta cyo kwimura",
+    "nothing": "Nta mwanya wemejwe cyangwa itike ya kure muri iki gihe.",
+    "resolved": "Abarwayi bose basubije. Iyi mpinduka yarangiye.",
+    "waiting_one": "Umurwayi {{count}} ntarasubiza.",
+    "waiting_other": "Abarwayi {{count}} ntibarasubiza.",
+    "noAction": "Nta gikorwa",
+    "was": "byari {{when}}",
+    "response": {
+      "pending": "Dutegereje",
+      "accepted": "Yemeye",
+      "declined": "Ntiyasubije",
+      "rebooked_other": "Yahisemo ikindi gihe",
+      "cancelled": "Byahagaritswe"
+    },
+    "call": "Hamagara umurwayi",
+    "callAt": "Hamagara {{phone}}"
+  },
+  "followUp": {
+    "open": "Gukurikirana",
+    "title": "Gukurikirana {{name}}",
+    "in": "Azagaruke nyuma ya",
+    "unit": "Igipimo",
+    "days": "Iminsi",
+    "weeks": "Ibyumweru",
+    "how": "Uko bikorwa",
+    "mode": {
+      "booking": "Mufatire umwanya wa mbere uboneka",
+      "reminder": "Kwibutsa umurwayi gusa"
+    },
+    "save": "Bika gukurikirana",
+    "cancel": "Reka",
+    "booked": "Umwanya wo gukurikirana wafashwe",
+    "bookedBody": "{{day}} saa {{time}} kwa {{doctor}}. Kode y'umwanya {{code}}.",
+    "reminder": "Umurwayi azibutswa kugaruka ku itariki {{day}}.",
+    "noSlot": "Nta mwanya uboneka guhera {{day}}. Abakira abarwayi bazahamagara umurwayi."
   }
 }

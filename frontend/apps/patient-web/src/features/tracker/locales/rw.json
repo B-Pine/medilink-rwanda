@@ -53,5 +53,15 @@
     "history": "Gahunda zabanje",
     "historyEmpty": "Amateka y’isura zawe atangirira hano",
     "historyEmptyBody": "Nyuma ya buri sura, uzahasanga incamake, imiti yawe, inyandiko n’inyemezabwishyu."
+  },
+  "remote": {
+    "title": "Wiyandikishije ku murongo uri mu rugo",
+    "body": "Nugera ku kigo nderabuzima, kanda \"Nahageze\", hanyuma werekane iyi tike ku kwakira abarwayi.",
+    "here": "Nahageze",
+    "claimed": "Abakira abarwayi bamenye ko uvuga ko wahageze. Erekana iyi tike ku biro byabo kugira ngo babyemeze.",
+    "passOverTitle": "Uri hafi y'imbere",
+    "passOver": "Gera ku kigo vuba wiyandikishe ku kwakira abarwayi. Nibatakwemeza mbere y'uko igihe cyawe kigera, umwanya wawe usubira inyuma.",
+    "passOverClaimed": "Erekana tike yawe ku kwakira abarwayi ubu. Kugeza bemeje ko wahageze, umwanya wawe ushobora gusubira inyuma.",
+    "changed": "Tike yawe yahindutse. Twayivuguruye. Ongera ugerageze."
   }
 }

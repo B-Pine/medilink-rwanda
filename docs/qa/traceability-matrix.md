@@ -1,6 +1,6 @@
 # Requirements traceability matrix
 
-Status: v0.1 · updated 2026-11-01 (S2, S4, S5a, S6a in progress until staging; S6b and S9 not started) · Every `FR-*` and `NFR-*` requirement in the [system analysis](../README.md), with its planned sprint, the side that implements it, how it is verified, and its status. How to keep it up to date: [QA README](README.md).
+Status: v0.1 · updated 2026-11-01 (S2, S4, S5a, S6a, S9 in progress until staging; S6b not started) · Every `FR-*` and `NFR-*` requirement in the [system analysis](../README.md), with its planned sprint, the side that implements it, how it is verified, and its status. How to keep it up to date: [QA README](README.md).
 
 Built from the requirement tables in `docs/analysis/` (titles shortened; the analysis documents are authoritative) and the sprint plans in the [backend](../roadmap/backend.md) and [frontend](../roadmap/frontend.md) roadmaps.
 

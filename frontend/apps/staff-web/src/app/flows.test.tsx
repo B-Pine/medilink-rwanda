@@ -316,6 +316,8 @@ describe("shell: user menu, language, theme, logout", () => {
       "Feature flags",
       // S3 patients
       "Patient merges",
+      // S9 notifications (super admins only)
+      "Platform announcements",
     ]);
   });
 

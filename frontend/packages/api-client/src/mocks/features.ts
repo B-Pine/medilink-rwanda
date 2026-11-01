@@ -14,6 +14,7 @@ import { patientsMocks } from "./features/patients";
 import { profileMocks } from "./features/profile";
 // [/S3 imports]
 // [S9 imports]
+import { notificationsMocks } from "./features/notifications";
 // [/S9 imports]
 // [S2 imports]
 import { setupMocks } from "./features/setup";
@@ -55,6 +56,7 @@ export const FEATURE_MOCKS: FeatureMockFactory[] = [
   profileMocks,
   // [/S3]
   // [S9]
+  notificationsMocks,
   // [/S9]
   // [S2]
   setupMocks,

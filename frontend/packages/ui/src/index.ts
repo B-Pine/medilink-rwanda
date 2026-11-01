@@ -111,6 +111,10 @@ export { ProfileSwitcher } from "./components/ProfileSwitcher";
 export type { ProfileSwitcherProps, SwitcherProfile } from "./components/ProfileSwitcher";
 // [/S3]
 // [S9]
+export { CountBadge, formatCount } from "./components/CountBadge";
+export type { CountBadgeProps } from "./components/CountBadge";
+export { useWakeLock } from "./hooks/useWakeLock";
+export type { WakeLockState } from "./hooks/useWakeLock";
 // [/S9]
 // [S2]
 export { formatRwf, MoneyField, TimeRangeField, timeBefore } from "./components/SetupFields";

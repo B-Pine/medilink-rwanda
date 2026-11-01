@@ -2,7 +2,7 @@
 
 Contract: [sprint-09-notifications.md](../architecture/contracts/sprint-09-notifications.md) §9 · Pull request: S9 (backend first; the frontend follows in the same sprint) · Releases: none yet
 
-Status: **Open**. The backend is implemented with tests. The frontend (S9-F1..F12) is in progress. Real web push on devices (S9-I2) and the staging checks wait for staging ([#17](https://github.com/B-Pine/medilink-rwanda/issues/17)).
+Status: **Open**. The backend is implemented with tests. The frontend (S9-F1..F12) is implemented with tests. Real web push on devices (S9-I2) and the staging checks wait for staging ([#17](https://github.com/B-Pine/medilink-rwanda/issues/17)).
 
 Evidence collected on 2026-10-31 by running `pytest tests/notifications` (55 tests) and the full backend suite on PostgreSQL. Per [QA README](README.md) §4, a verifier who did not write the code fills **Verified by**, **Date** and **Result**. Tests: `backend/tests/notifications/test_core.py`, `test_api.py`, `test_events_sockets.py`, `test_more_paths.py`.
 
@@ -32,7 +32,26 @@ Evidence collected on 2026-10-31 by running `pytest tests/notifications` (55 tes
 
 ## Frontend checks
 
-S9-F1..F12: in progress (separate commit in the S9 pull request).
+Evidence: `pnpm test` (vitest + vitest-axe) on 2026-11-01. Staff tests in
+`frontend/apps/staff-web/src/features/notifications/notifications.test.tsx`, patient tests in
+`frontend/apps/patient-web/src/features/notifications/` (`notifications.test.tsx`, `pushSw.test.ts`),
+mocks in `frontend/packages/api-client/src/mocks/s9.test.ts`, ui in
+`frontend/packages/ui/src/components/s9-components.test.tsx`.
+
+| # | Check (short; full text in the contract §9) | Evidence | Verified by | Date | Result |
+|---|---|---|---|---|---|
+| S9-F1 | Staff bell: count, name, latest 10, mark all, other facilities, live, polling | "notification bell (S9-F1)": 4 tests incl. 99+, polite announcement, 60 s polling | | | Pending |
+| S9-F2 | Staff inbox and settings; sound off; digest; 409 keeps input | "inbox and settings (S9-F2)" | | | Pending |
+| S9-F3 | Facility composer; nav only with `announcements.manage` | "facility announcements (S9-F3)": permission test and the full composer flow, axe clean | | | Pending |
+| S9-F4 | Platform announcements for super admins only | "platform announcements (S9-F4)"; the platform admin's menu in `app/flows.test.tsx` | | | Pending |
+| S9-F5 | Patient bell and inbox; About chip; detail marks read | "bell and inbox (S9-F5)" | | | Pending |
+| S9-F6 | Patient settings; quiet hours default; locked critical; browsers | "settings (S9-F6)" | | | Pending |
+| S9-F7 | Push opt-in states; prompt only on press; re-sync; turn off | "push opt-in (S9-F7)": 5 tests | | | Pending |
+| S9-F8 | Push-off banner on Home and inbox; 7 days | "push-off banner (S9-F8)" | | | Pending |
+| S9-F9 | Service worker push/click; same-origin only; no fetch or caching | `pushSw.test.ts` (10 tests); `pwa.test.ts` | | | Pending |
+| S9-F10 | MSW mocks for every endpoint and both sockets | `mocks/s9.test.ts` (inboxes, preferences, push, announcements, templates, delivery log, sockets) | | | Pending |
+| S9-F11 | rw/en/fr parity; axe; keyboard; live region; reduced motion | `tests/i18n.test.ts` parity and review list; axe in both apps' notification tests | | | Pending |
+| S9-F12 | `CountBadge`, `Switch`, `useWakeLock` unit and axe tests | `s9-components.test.tsx` | | | Pending |
 
 ## Integration checks
 

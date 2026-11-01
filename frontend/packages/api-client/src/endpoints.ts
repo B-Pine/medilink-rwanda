@@ -38,6 +38,7 @@ import { createBookingApi } from "./features/booking";
 import { createClinicalApi } from "./features/clinical";
 // [/S6 imports]
 // [S9 imports]
+import { createNotificationsApi } from "./features/notifications";
 // [/S9 imports]
 // [S2 imports]
 // [/S2 imports]
@@ -140,6 +141,7 @@ export function createMediLinkApi(client: ApiClient) {
     profile: createProfileApi(client),
     // [/S3]
     // [S9]
+    notifications: createNotificationsApi(client),
     // [/S9]
     // [S2]
     setup: createSetupApi(client),

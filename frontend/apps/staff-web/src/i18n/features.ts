@@ -15,6 +15,9 @@ import patientsFr from "../features/patients/locales/fr.json";
 import patientsRw from "../features/patients/locales/rw.json";
 // [/S3 imports]
 // [S9 imports]
+import notificationsEn from "../features/notifications/locales/en.json";
+import notificationsFr from "../features/notifications/locales/fr.json";
+import notificationsRw from "../features/notifications/locales/rw.json";
 // [/S9 imports]
 // [S2 imports]
 import setupEn from "../features/setup/locales/en.json";
@@ -52,6 +55,7 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   patients: { rw: patientsRw, en: patientsEn, fr: patientsFr },
   // [/S3]
   // [S9]
+  notifications: { rw: notificationsRw, en: notificationsEn, fr: notificationsFr },
   // [/S9]
   // [S2]
   setup: { rw: setupRw, en: setupEn, fr: setupFr },

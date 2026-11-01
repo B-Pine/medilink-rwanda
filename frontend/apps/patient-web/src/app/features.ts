@@ -9,6 +9,7 @@ import { facilityApplicationFeature } from "../features/facilityApplication";
 import { profileFeature } from "../features/profile";
 // [/S3 imports]
 // [S9 imports]
+import { notificationsFeature } from "../features/notifications";
 // [/S9 imports]
 // [S2 imports]
 // [/S2 imports]
@@ -61,6 +62,7 @@ export const FEATURES: FeatureRoutes[] = [
   profileFeature,
   // [/S3]
   // [S9]
+  notificationsFeature,
   // [/S9]
   // [S2]
   // [/S2]

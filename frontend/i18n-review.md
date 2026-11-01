@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 3127.
+Keys: 3152.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -1800,6 +1800,9 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `flags.return` | Avuye mu bizamini | Back from tests | needs native-speaker review |
 | `flags.stepped_out` | Yasohotse gato | Stepped out | needs native-speaker review |
 | `flags.no_response` | Ntiyitabye | Missed call | needs native-speaker review |
+| `flags.booked` | Yafashe gahunda {{time}} | Booked {{time}} | needs native-speaker review |
+| `flags.lateWalkIn` | Yakererewe: nk'utafashe gahunda | Late: walk-in | needs native-speaker review |
+| `flags.remote` | Ari kure, ntarahagera | Remote, not here yet | needs native-speaker review |
 | `priority.elderly` | Umusaza/Umukecuru | Elderly | needs native-speaker review |
 | `priority.pregnant` | Atwite | Pregnant | needs native-speaker review |
 | `priority.disability` | Ufite ubumuga | Disability | needs native-speaker review |
@@ -1837,6 +1840,10 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `actions.priority` | Kwihutishwa byahinduwe | Priority changed | needs native-speaker review |
 | `actions.reorder` | Yimuwe ku murongo | Moved in the queue | needs native-speaker review |
 | `actions.end_of_day` | Byafunzwe umunsi urangiye | Closed at end of day | needs native-speaker review |
+| `actions.remote_join` | Yiyandikishije ari mu rugo | Joined from home | needs native-speaker review |
+| `actions.remote_arrival_claimed` | Yavuze ko yahageze | Said they're here | needs native-speaker review |
+| `actions.remote_arrival_confirmed` | Kuhagera byemejwe | Arrival confirmed | needs native-speaker review |
+| `actions.pass_over` | Yasubijwe inyuma (ntarahagera) | Moved back (not arrived) | needs native-speaker review |
 | `columns.ticket` | Tike | Ticket | needs native-speaker review |
 | `columns.patient` | Umurwayi | Patient | needs native-speaker review |
 | `columns.flags` | Ibimenyetso | Flags | needs native-speaker review |
@@ -1872,6 +1879,14 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `board.undoNoShow` | Kuraho ko atitabiriye | Undo no-show | needs native-speaker review |
 | `board.undoNoShowHelp` | Gahunda irafungwa kandi igihano cy’umurwayi kikavanwaho. | The booking is closed and the patient's strike is removed. | needs native-speaker review |
 | `board.undoNoShowError` | Ntibyashobotse gukuraho ko atitabiriye. | Could not undo this no-show. | needs native-speaker review |
+| `board.remote_one` | Yiyandikishije ari mu rugo ({{count}}) | Joined from home ({{count}}) | needs native-speaker review |
+| `board.remote_other` | Biyandikishije bari mu rugo ({{count}}) | Joined from home ({{count}}) | needs native-speaker review |
+| `board.remoteHint` | Emeza igihe umurwayi ageze ku biro. Kugeza icyo gihe, umwanya we usubira inyuma iyo ageze hafi y'imbere. | Confirm when the patient is at the desk. Until then their place moves back near the front. | needs native-speaker review |
+| `board.remoteClaimed` | Avuga ko yahageze | Says they're here | needs native-speaker review |
+| `board.remoteConfirm` | Emeza ko yahageze | Confirm arrival | needs native-speaker review |
+| `board.remoteError` | Ntibyakunze kwemeza ko yahageze. | Could not confirm the arrival. | needs native-speaker review |
+| `board.expectedCheckedIn` | {{name}} yanditswe: {{ticket}} | {{name}} checked in: {{ticket}} | needs native-speaker review |
+| `board.expectedLateWalkIn` | Yahageze igihe cyo gutegereza cyarenze, ashyirwa ku murongo nk'utafashe gahunda. Mumuhe ikindi gihe niba abishaka. | Arrived after the grace time, so queued as a walk-in. Offer a new time if they prefer. | needs native-speaker review |
 | `panel.service` | Serivisi | Service | needs native-speaker review |
 | `panel.stage` | Intambwe | Stage | needs native-speaker review |
 | `panel.position` | Umwanya | Place | needs native-speaker review |
@@ -1888,6 +1903,8 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `panel.stepOut` | Yasohotse iminota 15 | Stepped out 15 min | needs native-speaker review |
 | `panel.left` | Yagiye | Mark as left | needs native-speaker review |
 | `panel.timeline` | Ibyabaye | What happened | needs native-speaker review |
+| `panel.remoteClaimed` | Umurwayi yakanze "Nahageze". Reba ko ari ku biro, hanyuma wemeze. | The patient tapped "I'm here". Check they are at the desk, then confirm. | needs native-speaker review |
+| `panel.remoteNotArrived` | Yiyandikishije ari mu rugo kandi ntaremezwa. Emeza igihe umurwayi ageze ku biro. | Joined from home and not confirmed yet. Confirm when the patient is at the desk. | needs native-speaker review |
 | `checkIn.title` | Andika umurwayi | Check in a patient | needs native-speaker review |
 | `checkIn.back` | Subira inyuma | Back | needs native-speaker review |
 | `checkIn.submit` | Andika | Check in | needs native-speaker review |
@@ -3276,4 +3293,12 @@ File: `apps/patient-web/src/features/tracker/locales/rw.json`
 | `visits.history` | Gahunda zabanje | Earlier visits | needs native-speaker review |
 | `visits.historyEmpty` | Amateka y’isura zawe atangirira hano | Your visit history starts here | needs native-speaker review |
 | `visits.historyEmptyBody` | Nyuma ya buri sura, uzahasanga incamake, imiti yawe, inyandiko n’inyemezabwishyu. | After each visit you'll find the summary, your medicines, documents and the receipt here. | needs native-speaker review |
+| `remote.title` | Wiyandikishije ku murongo uri mu rugo | You joined from home | needs native-speaker review |
+| `remote.body` | Nugera ku kigo nderabuzima, kanda "Nahageze", hanyuma werekane iyi tike ku kwakira abarwayi. | When you reach the facility, tap "I'm here", then show this ticket at reception. | needs native-speaker review |
+| `remote.here` | Nahageze | I'm here | needs native-speaker review |
+| `remote.claimed` | Dutegereje ko abakira abarwayi bemeza ko wahageze. Erekana iyi tike ku biro byabo. | Waiting for reception to confirm you're here. Show this ticket at the desk. | needs native-speaker review |
+| `remote.passOverTitle` | Uri hafi y'imbere | You're near the front | needs native-speaker review |
+| `remote.passOver` | Gera ku kigo vuba wiyandikishe ku kwakira abarwayi. Nibatakwemeza mbere y'uko igihe cyawe kigera, umwanya wawe usubira inyuma. | Get to the facility and check in at reception soon. If reception hasn't confirmed you when your turn comes, your place moves back. | needs native-speaker review |
+| `remote.passOverClaimed` | Erekana tike yawe ku kwakira abarwayi ubu. Kugeza bemeje ko wahageze, umwanya wawe ushobora gusubira inyuma. | Show your ticket at reception now. Until they confirm you're here, your place can move back. | needs native-speaker review |
+| `remote.changed` | Tike yawe yahindutse. Twayivuguruye. Ongera ugerageze. | Your ticket changed. We refreshed it. Try again. | needs native-speaker review |
 

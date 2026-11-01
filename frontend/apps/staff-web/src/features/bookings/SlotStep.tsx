@@ -1,3 +1,4 @@
+import { kigaliHour } from "@medilink/ui/i18n";
 import { isApiError, type Hold, type PublicSlot, type Uuid } from "@medilink/api-client";
 import { Alert, Button, cx, SelectField } from "@medilink/ui";
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
@@ -9,14 +10,7 @@ import { useApi } from "../../app/services";
 import { kigaliDate, slotDay, slotTime } from "./time";
 
 const DAY_MS = 86_400_000;
-const isMorning = (iso: string) =>
-  Number(
-    new Intl.DateTimeFormat("en-GB", {
-      hour: "2-digit",
-      hourCycle: "h23",
-      timeZone: "Africa/Kigali",
-    }).format(new Date(iso)),
-  ) < 12;
+const isMorning = (iso: string) => kigaliHour(iso) < 12;
 
 /**
  * Free times of one service for 7 days (contract S5 R2), with a doctor filter, and an atomic

@@ -20,7 +20,7 @@ import {
   ImigongoPattern,
   LoadingState,
 } from "@medilink/ui";
-import { dateFormat } from "@medilink/ui/i18n";
+import { dateFormat, kigaliDate } from "@medilink/ui/i18n";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -148,7 +148,7 @@ export function FacilityPage() {
   const byDay = new Map(f.hours.map(([date, open, close]) => [date, `${open}–${close}`]));
   const week = Array.from({ length: 7 }, (_, i) => {
     const date = new Date(now + i * 86_400_000);
-    const iso = new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Kigali" }).format(date);
+    const iso = kigaliDate(date);
     return { iso, hours: byDay.get(iso) ?? null };
   });
 

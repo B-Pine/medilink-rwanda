@@ -1,3 +1,4 @@
+import { formatDate, formatTime } from "@medilink/ui/i18n";
 import { Alert, Badge, Button, CheckboxField, Dialog, EmptyState, TextField } from "@medilink/ui";
 import { ArrowsDownUp, Copy, Monitor, Plus } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -13,7 +14,8 @@ import { actionError, useCan, useServiceNames } from "./shared";
 
 /** /queue/reorders (FR-QUE-10): every manual reorder, with who, why, and a review mark. */
 export function ReordersPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.resolvedLanguage ?? "rw";
   const api = useApi();
   const queryClient = useQueryClient();
   const allowed = useCan("facility.configure");
@@ -60,10 +62,7 @@ export function ReordersPage() {
               {list.map((r) => (
                 <tr key={r.event_id} className="border-t border-border">
                   <td className="px-4 py-3 text-body-sm tabular-nums">
-                    {new Date(r.occurred_at).toLocaleString([], {
-                      dateStyle: "short",
-                      timeStyle: "short",
-                    })}
+                    {`${formatDate(r.occurred_at, lang)} ${formatTime(r.occurred_at, lang)}`}
                   </td>
                   <td className="px-4 py-3 font-heading font-bold tabular-nums">
                     {r.ticket_number}
@@ -106,7 +105,8 @@ export function ReordersPage() {
 
 /** /settings/displays: waiting-room screen links; the token is shown once (contract §3.1 Q9). */
 export function DisplaysPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.resolvedLanguage ?? "rw";
   const api = useApi();
   const queryClient = useQueryClient();
   const serviceName = useServiceNames();
@@ -168,10 +168,7 @@ export function DisplaysPage() {
               <p className="m-0 text-body-sm text-fg-secondary">
                 {link.last_seen_at
                   ? t("queue.displays.lastSeen", {
-                      time: new Date(link.last_seen_at).toLocaleString([], {
-                        dateStyle: "short",
-                        timeStyle: "short",
-                      }),
+                      time: `${formatDate(link.last_seen_at, lang)} ${formatTime(link.last_seen_at, lang)}`,
                     })
                   : t("queue.displays.neverSeen")}
               </p>

@@ -593,7 +593,10 @@ class QueryAnswerView(QueriesView):
         operation_id="staff_prescription_query_answer",
         tags=TAGS,
         request=s.QueryAnswerSerializer,
-        responses={200: s.PrescriptionQuerySerializer, 422: err("Not open, or not this consultation")},
+        responses={
+            200: s.PrescriptionQuerySerializer,
+            422: err("Not open, or not this consultation"),
+        },
         summary="Link the addendum that answers the question (PQ3)",
     )
     def post(self, request: Request, query_id: Any) -> Response:

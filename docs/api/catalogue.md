@@ -233,7 +233,7 @@ Requirements: FR-PAT-01..09, 13, 14; FR-BIL-01; FR-SEC-04, 05, 08, 10, 12. Secur
 | `GET`, `PATCH` | `/api/v1/patient/profiles/{patient_id}/` | Profile, completion; edit names, birth date, sex, contacts | Linked account (names, birth date, sex: self or guardian) | FR-PAT-01, 02, 13, FR-SEC-12 | PA2–3; Ver | Implemented (#57) |
 | `GET`, `POST` | `/api/v1/patient/profiles/{patient_id}/identifiers/` | National ID, passport, refugee ID, birth certificate | Linked account (`POST`: self or guardian) | FR-PAT-07, FR-SEC-10 | PA4–5; masked; a checked document changes only at reception; RL: verification | Implemented (#57) |
 | `POST` | `/api/v1/patient/profiles/{patient_id}/identifiers/{identifier_id}/reveal/` | Show the full number | Self or guardian | FR-SEC-10 | PA6; `no-store`; RL: reveal; Audit | Implemented (#57) |
-| `POST` | `/api/v1/patient/dependents/` | Add a child (guardian) or a consenting adult (delegate) | Patient session | FR-PAT-03, FR-SEC-04 | PA7; records the consent; max 10 profiles | Implemented (#57) |
+| `POST` | `/api/v1/patient/dependents/` | Add a child (guardian) or a consenting adult (delegate) | Patient session | FR-PAT-03, FR-SEC-04 | PA7; records the consent (current version); max 10 profiles; Idem (`Idempotency-Key`) | Implemented (#57, R2 #84) |
 | `GET`, `POST` | `/api/v1/patient/delegations/` | Access granted and received; create a one-time code | Patient session (`POST`: self or guardian + password) | FR-PAT-03 | PA8–9; RL: verification; Audit | Implemented (#57) |
 | `POST` | `/api/v1/patient/delegations/accept/` | Accept a shared code | Patient session | FR-PAT-03 | PA10; RL: verification | Implemented (#57) |
 | `POST` | `/api/v1/patient/delegations/{id}/revoke/` | End a link or cancel an invite | Grantor, or the holder leaving | FR-PAT-03 | PA11; immediate | Implemented (#57) |
@@ -245,10 +245,10 @@ Requirements: FR-PAT-01..09, 13, 14; FR-BIL-01; FR-SEC-04, 05, 08, 10, 12. Secur
 | `GET` | `/api/v1/patient/profiles/{patient_id}/health-profile/` | Allergies, conditions, medicines | Linked account | FR-PAT-08, 13 | PA16 | Implemented (#57) |
 | `POST` | `/api/v1/patient/profiles/{patient_id}/{kind}/` | Add an allergy, condition or medicine (`allergies`, `conditions`, `medications`) | Linked account | FR-PAT-08 | PA17; unverified until a clinician checks | Implemented (#57) |
 | `POST` | `/api/v1/patient/profiles/{patient_id}/{kind}/{item_id}/entered-in-error/` | Remove an own unverified item | Linked account | FR-PAT-08 | PA18 | Implemented (#57) |
-| `POST` | `/api/v1/patient/record-claims/` | Claim a record a facility created | Patient session (self) | FR-PAT-06 | PA19; code to the contact email, or ID check at reception; RL: verification; Audit | Implemented (#57) |
+| `POST` | `/api/v1/patient/record-claims/` | Claim a record a facility created | Patient session (self) | FR-PAT-06 | PA19; code to the contact email, or ID check at reception; every refusal after the lookup is the same generic `422`; RL: verification; Audit | Implemented (#57, R2 #84) |
 | `GET` | `/api/v1/patient/record-claims/{id}/` | Claim status | Claim owner | FR-PAT-06 | PA20 | Implemented (#57) |
 | `POST` | `/api/v1/patient/record-claims/{id}/verify/` | Confirm with the emailed code | Claim owner | FR-PAT-06 | PA21; 5 attempts, 15 minutes | Implemented (#57) |
-| `GET`, `POST` | `/api/v1/patient/consents/` | Consents by kind and version; grant or withdraw | Patient session | FR-SEC-04, FR-SEC-05 | PA22–23; append-only | Implemented (#57) |
+| `GET`, `POST` | `/api/v1/patient/consents/` | Consents by kind and version; grant or withdraw | Patient session | FR-SEC-04, FR-SEC-05 | PA22–23; append-only; current version only (`422`, `fields.version`); account toggles `notifications`, `location` | Implemented (#57, R2 #84) |
 | `GET` | `/api/v1/patient/profiles/{patient_id}/access-history/` | Who opened or changed the profile | Self or guardian | FR-PAT-14, FR-SEC-08 | PA24; codes, the client writes the sentence | Implemented (#57) |
 
 ### Staff
@@ -261,7 +261,8 @@ Requirements: FR-PAT-01..09, 13, 14; FR-BIL-01; FR-SEC-04, 05, 08, 10, 12. Secur
 | `POST` | `/api/v1/staff/patients/duplicate-checks/` | Likely matches before registering | `patient.register` | FR-PAT-05 | ST2; RL: search; Audit | Implemented (#57) |
 | `POST` | `/api/v1/staff/patients/` | Register a walk-in with minimum fields and spoken consent | `patient.register` | FR-PAT-04, 01, 05, 07, FR-SEC-04 | ST3; Idem; possible duplicates need confirmation | Implemented (#57) |
 | `POST` | `/api/v1/staff/patients/add-existing/` | Add a patient already on MediLink | `patient.register` | FR-PAT-01, 05 | ST4; proof = MediLink number or document; Idem | Implemented (#57) |
-| `GET`, `PATCH` | `/api/v1/staff/patients/{fp_id}/` | Facility patient record | `GET`: `patients.view` · `PATCH`: `patient.register` | FR-PAT-01, 07 | ST5–6; Ver; every read audited | Implemented (#57) |
+| `GET`, `PATCH` | `/api/v1/staff/patients/{fp_id}/` | Facility patient record | `GET`: `patients.view` · `PATCH`: `patient.register` | FR-PAT-01, 07, FR-SEC-03 | ST5–6; Ver; `GET` needs a care relationship or a given reason (`403 access_reason_required`, then ST28); staff-as-patient always needs a reason; every read audited | Implemented (#57, R2 #84) |
+| `POST` | `/api/v1/staff/patients/{fp_id}/access-reasons/` | Give a reason to open a record outside a care relationship | `patients.view`, `clinical.view` or `prescription.view` | FR-SEC-03 | ST28; `{reason_code, reason_text}` → `201 {expires_at}`; kept in the staff session for 15 min; Audit | Implemented (R2 #84) |
 | `POST` | `/api/v1/staff/patients/{fp_id}/identifiers/` | Add or replace a document; mark it checked | `patient.register` | FR-PAT-07, FR-SEC-10 | ST7 | Implemented (#57) |
 | `POST` | `/api/v1/staff/patients/{fp_id}/reveal/` | Show a full identifier or phone number, with a reason | Identifier: `patients.identifier_reveal` · phone: `patients.view` | FR-SEC-10 | ST8; `no-store`; RL: reveal; Audit | Implemented (#57) |
 | `GET`, `POST` | `/api/v1/staff/patients/{fp_id}/insurance-profiles/` | Insurance cards | `GET`: `patients.view` · `POST`: `patient.register` | FR-BIL-01 | ST9–10 | Implemented (#57) |
@@ -269,18 +270,18 @@ Requirements: FR-PAT-01..09, 13, 14; FR-BIL-01; FR-SEC-04, 05, 08, 10, 12. Secur
 | `POST` | `/api/v1/staff/patients/{fp_id}/insurance-profiles/{profile_id}/verify/` | Mark verified or rejected | `patients.insurance_verify` | FR-BIL-01 | ST12; Audit | Implemented (#57) |
 | `POST` | `/api/v1/staff/patients/{fp_id}/insurance-profiles/{profile_id}/card-images/` | Capture a card photo at the desk | `patient.register` | FR-BIL-01, FR-DOC-03 | ST26; S1 upload pipeline | Implemented (#57) |
 | `POST` | `/api/v1/staff/patients/{fp_id}/insurance-profiles/{profile_id}/card-images/{side}/download-links/` | 5-minute link to a card photo | `patients.view` | FR-BIL-01, FR-DOC-05 | ST27 | Implemented (#57) |
-| `GET` | `/api/v1/staff/patients/{fp_id}/health-profile/` | Allergies, conditions, medicines | `clinical.view` (all) or `prescription.view` (allergies only) | FR-PAT-08 | ST13; Audit | Implemented (#57) |
+| `GET` | `/api/v1/staff/patients/{fp_id}/health-profile/` | Allergies, conditions, medicines | `clinical.view` (all) or `prescription.view` (allergies only) | FR-PAT-08, FR-SEC-03 | ST13; care relationship or a given reason (as ST5); Audit | Implemented (#57, R2 #84) |
 | `POST` | `/api/v1/staff/patients/{fp_id}/{kind}/` | Add a verified allergy, condition or medicine | `clinical.write` | FR-PAT-08 | ST14 | Implemented (#57) |
 | `POST` | `/api/v1/staff/patients/{fp_id}/{kind}/{item_id}/review/` | Verify, refute or mark entered in error | `clinical.write` | FR-PAT-08 | ST15; note required except to verify; Audit | Implemented (#57) |
 | `POST` | `/api/v1/staff/patients/{fp_id}/consents/` | Care or research consent given at the desk | `patient.register` | FR-SEC-04 | ST16; channel `staff_assisted` | Implemented (#57) |
-| `POST` | `/api/v1/staff/patients/{fp_id}/claim-confirmations/` | Confirm a record claim after an ID check | `patient.register` | FR-PAT-06 | ST17; Audit | Implemented (#57) |
+| `POST` | `/api/v1/staff/patients/{fp_id}/claim-confirmations/` | Confirm a record claim after an ID check | `patient.register` | FR-PAT-06 | ST17; idempotent (a replay at the same facility returns the completed claim); Audit | Implemented (#57, R2 #84) |
 | `GET`, `POST` | `/api/v1/staff/merge-requests/` | Merge requests of this facility; request a merge | `patients.merge_request` or `patients.merge_approve` (`POST`: `merge_request`) | FR-PAT-05 | ST18–19; Idem; Audit | Implemented (#57) |
 | `GET` | `/api/v1/staff/merge-requests/{id}/` | Request with preview | As above | FR-PAT-05 | ST20 | Implemented (#57) |
 | `POST` | `/api/v1/staff/merge-requests/{id}/approve/` | Approve and run the merge | `patients.merge_approve` | FR-PAT-05 | ST21; step-up; requester ≠ approver; facility scope only | Implemented (#57) |
 | `POST` | `/api/v1/staff/merge-requests/{id}/reject/` | Reject | `patients.merge_approve` | FR-PAT-05 | ST22; reason required | Implemented (#57) |
 | `POST` | `/api/v1/staff/merge-requests/{id}/cancel/` | Cancel own request | Requester | FR-PAT-05 | ST23 | Implemented (#57) |
 | `POST` | `/api/v1/staff/merge-requests/{id}/escalate/` | Send to the platform team (no other approver here) | Requester | FR-PAT-05 | ST24 | Implemented (#57) |
-| `POST` | `/api/v1/staff/merge-requests/{id}/undo/` | Reverse a facility merge | `patients.merge_approve` | FR-PAT-05 | ST25; step-up; reports skipped rows | Implemented (#57) |
+| `POST` | `/api/v1/staff/merge-requests/{id}/undo/` | Reverse a facility merge | `patients.merge_approve` | FR-PAT-05 | ST25; step-up; approver rule (not the requester; not escalated); reports skipped rows | Implemented (#57, R2 #84) |
 
 ### Platform
 

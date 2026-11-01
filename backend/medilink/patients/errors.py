@@ -39,6 +39,13 @@ class FieldRule(FieldError):
     code = "business_rule_violation"
 
 
+class AccessReasonRequired(exceptions.PermissionDenied):
+    """403 `access_reason_required`: the client gives a reason (ST28), then retries the read."""
+
+    default_code = "access_reason_required"
+    default_detail = _("Say why you are opening this record.")
+
+
 def rule(message: Any) -> BusinessRuleViolation:
     return BusinessRuleViolation(message)
 
@@ -52,6 +59,8 @@ NOT_ALLOWED = _("You can't do this for this profile.")
 
 class PatientsAPIView(APIView):
     def handle_exception(self, exc: Exception) -> Response:
+        if isinstance(exc, AccessReasonRequired):
+            return Response(error_payload(exc.default_code, exc.detail), status=exc.status_code)
         if isinstance(exc, FieldError):
             for conn in connections.all(initialized_only=True):
                 if conn.in_atomic_block:

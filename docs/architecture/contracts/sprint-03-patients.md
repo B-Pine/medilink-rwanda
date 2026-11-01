@@ -166,7 +166,7 @@ Every merge transition writes a `patients_merge_event` row and an audit entry. T
 | Rule | Detail |
 |---|---|
 | Merge request | Staff name two **active facility records of the active facility** (`surviving_facility_patient_id`, `merged_facility_patient_id`) and a reason. Scope is computed: `facility` when neither patient is known elsewhere (`patients_known_elsewhere = 0`) and neither has an active account link; otherwise `cross_facility` (it touches another facility's records or an account holder's data). |
-| Blocking conflicts (`422`, checked at request and again at execution) | Same patient; either already merged; an open request exists for either (`409`); both have an active `self` link (two accounts); both have active identifiers of the same kind and country with different values |
+| Blocking conflicts (`422`, except an open request, which is `409`; checked at request and again at execution) | Same patient; either already merged; an open request exists for either (`409`); both have an active `self` link (two accounts); both have active identifiers of the same kind and country with different values |
 | Approval | `facility` scope: a member with `patients.merge_approve` who is not the requester, with step-up. `cross_facility` or escalated: platform admin, with step-up. **Escalate:** the requester escalates a `facility` request when no other active member of the facility holds `patients.merge_approve` (the single-owner clinic) |
 | Execution (one transaction) | Re-points to the survivor and records each change in `moved_rows` as `{table, id, column, from, to}`: identifiers (an identical identifier is superseded), insurance profiles (an identical active one is deactivated), allergies, conditions, medications, patient-level consents, patient links (merged patient's link revoked with `merged`, an equivalent link created unless it exists), pending delegation invites (revoked). Facility records: re-pointed when the survivor has none at that facility; otherwise the merged one becomes `is_active = false`, `merged_into_id` = survivor's record (its file number still finds the survivor). Survivor's demographics win; its empty fields are filled from the merged patient. Merged patient gets `merged_into_id`, `merged_at`. |
 | Undo | Same approver rule as approval, step-up and reason. Restores every moved row whose current value still equals `to`; rows created after the merge stay with the survivor; skipped rows are counted in the response and the audit metadata |
@@ -186,6 +186,8 @@ Every merge transition writes a `patients_merge_event` row and an audit entry. T
 | Edit contacts, emergency contact, address; insurance; add health items | ✓ | ✓ | ✓ |
 | Add identifiers, reveal own identifier | ✓ | ✓ | — |
 | Access history | ✓ | ✓ | — |
+| See bookings (S5) | ✓ | ✓ | ✓ |
+| Book, cancel, reschedule, join a queue remotely (S5) | ✓ | ✓ | — |
 | Create delegation invite | ✓ (`delegate`) | ✓ (`guardian`) | — |
 
 ### 2.6 Audit events

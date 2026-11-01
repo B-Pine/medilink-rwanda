@@ -88,7 +88,7 @@ Status: v0.1 · Process and Definition of Done: [roadmap README](README.md) · T
 - **staff-web admin:** approvals inbox
 - **patient-web:** receipts, unpaid balances, estimated costs during booking
 
-### S9 · Notifications
+### S9 · Notification engine (core)
 - **Both apps:** notification inbox, bell with count, preferences, quiet hours
 - **patient-web:** web push opt-in at the right moment, push-off banner
 - **staff-web:** sounds for queue events (optional), announcements composer (facility), platform announcements (super admin)

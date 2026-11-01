@@ -59,7 +59,7 @@ Columns follow the [database design](../04-database-design.md) §S4 tables. All 
 | Time to leave | Tracker: `estimated call time − travel minutes − 10 min`, shown only when a travel time is set |
 | End of day | Job every 15 min: facilities past closing time + `queue.end_of_day_minutes` (60): waiting/called/no-response/on-hold tickets → `left_without_service` (system actor), visits closed; in-service tickets left for the doctor |
 | Display | Shows per selected service: now serving (number → service point name) and next 5 numbers. **Never names**, even if `queue.show_names_on_display` is on (D-4) |
-| Patient view | A patient (or guardian/delegate with `history` rights) sees their own active visits only (patient RLS policy) |
+| Patient view | A patient sees the active visits of profiles they are `self` or `guardian` for (S3 §2.5; delegates do not), and nothing else (D-7) |
 | Real time | Every state change writes an outbox event; consumers receive `{"type": "<topic>", ...ids}` and refetch. Groups: `queue.f{facility}.s{service}` (boards, my queue), `visit.p{patient}` (tracker), `display.{link}` |
 
 New settings fields (`register_settings_fields("queue", …)`): `start_stage` (`consultation`/`reception`), `no_response_places` (1–10, 3), `no_response_limit` (0–5, 2), `return_priority` (bool, true), `step_out_max_minutes` (5–120, 30), `end_of_day_minutes` (0–240, 60).
@@ -221,9 +221,10 @@ Shared files: S4 adds `[S4]` blocks next to the existing markers in the same fil
 | D-1 | Booked visits, Expected list, grace window, ratio, remote join | S5 (roadmap scope note). Columns exist; the board shows an empty Expected column with a note |
 | D-2 | `payment` stage | Exists as a queue stage only; bills and payment rules are S8 |
 | D-3 | "Call next" timeout to `no_response` (analysis 06 §4 "e.g. 3 min") | Manual "No response" button in S4; an automatic timeout needs the S9 notification first |
-| D-4 | `queue.show_names_on_display` (S2 setting) | The display never shows names (design 04 §3.6 "No names, ever"); the setting is hidden in S4 and removed in S5 |
+| D-4 | `queue.show_names_on_display` (S2 setting) | The display never shows names (design 04 §3.6 "No names, ever"); the setting is hidden in S4. Removing it needs a settings data clean-up and moved to S11 (S5 §2.2) |
 | D-5 | `core_idempotency_key` table (database design) | Not built: check-in stores the key on the visit (`check_in_key`), as S1/S3 do (S1-D6) |
 | D-6 | Display token in the URL path | The display URL is a capability for a kiosk browser; it carries no personal data, is revocable and stored hashed. Documented exception to "no secrets in URLs" for this case only |
 | D-7 | Patient read policy on `visits_visit` / `visits_ticket` (database design) | The tracker finds the account's visits with the SECURITY DEFINER function `visits_patient_active(account)` (own and guarded profiles only), then reads that one facility in its RLS context and returns only the patient's own ticket and counts (people ahead, estimate). No other patient's row leaves the server |
 | D-8 | `core_outbox_event` lives in the `core` app | `core` has no migrations; the table keeps its database-design name but is created by the `visits` app until `core` gets migrations |
 | D-9 | S4-B4..B6 concurrency as pytest tests | The suite avoids `transaction=True` (tests/conftest.py); concurrency is proven by `manage.py queue_concurrency_check` (DEBUG only), which commits rows in a throwaway facility and runs parallel threads; output recorded in the acceptance record |
+| D-10 | WebSocket groups and messages (§2.2 Real time, §3 sockets), recorded 2026-10-31 | As built: groups are per facility, `queue.f{facility}` and `display.f{facility}` (not per service or per link); staff clients filter on `service_id` in the message. Messages are flat (`{"type", …ids}`), and the display gets `{"type": "display.changed"}` and refetches D1 instead of a `called` object. [API conventions](../02-api-conventions.md) §6 now describes this format; S9 follows it |

@@ -1,0 +1,211 @@
+{
+  "nav": {
+    "consultation": "Consultation",
+    "unsigned": "Unsigned records"
+  },
+  "title": "Consultation",
+  "headerTitle": "Consultation · {{name}}",
+  "loading": "Loading the record…",
+  "empty": "Nothing written.",
+  "reason": "Reason",
+  "reasonRequired": "Give a reason.",
+  "cancel": "Cancel",
+  "close": "Close",
+  "previous": "Previous",
+  "next": "Next",
+  "lateEntry": "Late entry",
+  "age_one": "{{count}} year",
+  "age_other": "{{count}} years",
+  "sex": {
+    "female": "Female",
+    "male": "Male",
+    "other": "Other"
+  },
+  "status": {
+    "draft": "Draft",
+    "signed": "Signed",
+    "entered_in_error": "Entered in error"
+  },
+  "start": {
+    "title": "Consultation",
+    "description": "The patient you are seeing now, from My queue.",
+    "open": "Open consultation",
+    "none": "No patient with you right now",
+    "noneBody": "Call the next patient from My queue, then open the consultation here.",
+    "toQueue": "Go to My queue",
+    "state": {
+      "called": "Called",
+      "in_service": "In consultation"
+    }
+  },
+  "allergy": {
+    "title": "Allergies",
+    "none": "No known allergies",
+    "unknown": "Allergies not recorded. Ask the patient.",
+    "unverified": "reported by the patient, not verified",
+    "severity": {
+      "mild": "Mild",
+      "moderate": "Moderate",
+      "severe": "Severe",
+      "unknown": "Severity unknown"
+    }
+  },
+  "autosave": {
+    "idle": "Draft",
+    "dirty": "Draft · changes not saved yet",
+    "saving": "Saving…",
+    "saved": "Draft · saved {{time}}",
+    "error": "Not saved",
+    "conflict": "Someone else changed this record. It was reloaded with their changes; check it before you continue."
+  },
+  "sections": {
+    "nav": "Consultation sections",
+    "vitals": "Vitals",
+    "history": "History",
+    "examination": "Examination",
+    "diagnosis": "Diagnosis",
+    "plan": "Plan",
+    "instructions": "Patient instructions",
+    "instructionsHint": "Shown to the patient in plain language: what to do and when to come back.",
+    "private-notes": "Private notes",
+    "addenda": "Addenda"
+  },
+  "privateNotes": {
+    "never": "Never shown to the patient"
+  },
+  "diagnosis": {
+    "search": "Find an ICD-10 diagnosis",
+    "placeholder": "Type a name or code, e.g. malaria",
+    "results": "Diagnoses found",
+    "searching": "Searching…",
+    "noResults": "No diagnosis found. Try another word.",
+    "chosen": "Chosen diagnoses",
+    "rank": "Rank",
+    "primary": "Primary",
+    "secondary": "Secondary",
+    "certainty": "Certainty",
+    "provisional": "Provisional",
+    "confirmed": "Confirmed",
+    "sensitive": "Sensitive",
+    "remove": "Remove {{code}}"
+  },
+  "restricted": {
+    "label": "Restricted record",
+    "hint": "Hidden from the patient's caregivers and never shared with other facilities.",
+    "suggest": "A diagnosis is sensitive. Consider marking this record restricted.",
+    "on": "On",
+    "off": "Off",
+    "badge": "Restricted"
+  },
+  "sign": {
+    "action": "Sign and lock",
+    "needPrimary": "Add a primary diagnosis to sign.",
+    "signedBy": "Signed by {{name}} on {{time}}",
+    "fingerprint": "Fingerprint {{hash}}…"
+  },
+  "integrity": {
+    "mismatch": "This record no longer matches its fingerprint. Report it to the facility admin."
+  },
+  "addendum": {
+    "none": "No addenda.",
+    "add": "Add addendum",
+    "reason": "Reason for the addendum",
+    "body": "Addendum",
+    "bodyRequired": "Write the addendum.",
+    "by": "{{name}} · {{time}}",
+    "notAuthor": "by another clinician"
+  },
+  "enteredInError": {
+    "action": "Mark entered in error",
+    "title": "Mark this record entered in error?",
+    "consequences": "Use this for a record on the wrong patient. It is hidden from the history and from the patient, and kept for audit. It is never deleted.",
+    "banner": "Entered in error",
+    "detail": "{{reason}} · {{name}} · {{time}}"
+  },
+  "vitals": {
+    "recorded": "Vitals recorded",
+    "none": "No vitals recorded for this visit.",
+    "form": "Record vitals",
+    "save": "Save vitals",
+    "by": "{{name}} · {{time}}",
+    "range": "{{low}}–{{high}}",
+    "outOfRange": "Enter a value between {{low}} and {{high}}.",
+    "enterOne": "Enter at least one value.",
+    "markWrong": "Mark entered in error",
+    "markWrongTitle": "Mark these vitals entered in error?",
+    "fields": {
+      "temperature_c": "Temperature (°C)",
+      "systolic_mmhg": "Systolic (mmHg)",
+      "diastolic_mmhg": "Diastolic (mmHg)",
+      "pulse_bpm": "Pulse (/min)",
+      "respiratory_rate": "Breathing (/min)",
+      "spo2_pct": "SpO₂ (%)",
+      "weight_kg": "Weight (kg)",
+      "height_cm": "Height (cm)",
+      "muac_mm": "MUAC (mm)"
+    },
+    "short": {
+      "temperature": "T {{value}}",
+      "bp": "BP {{sys}}/{{dia}}",
+      "pulse": "P {{value}}",
+      "respiratory": "RR {{value}}",
+      "spo2": "SpO₂ {{value}}",
+      "weight": "{{value}} kg",
+      "height": "{{value}} cm",
+      "muac": "MUAC {{value}}"
+    }
+  },
+  "history": {
+    "title": "Patient history",
+    "drawerTitle": "History · {{name}}",
+    "open": "History",
+    "backToRecord": "Patient record",
+    "filters": "Filter the history",
+    "type": "Show",
+    "all": "Everything",
+    "consultations": "Consultations",
+    "vitals": "Vitals",
+    "code": "Diagnosis code",
+    "codeHint": "Start of an ICD-10 code, e.g. B5",
+    "from": "From",
+    "to": "To",
+    "items": "History, newest first",
+    "empty": "Nothing in the history for these filters.",
+    "noDiagnosis": "No diagnosis",
+    "addenda_one": "{{count}} addendum",
+    "addenda_other": "{{count}} addenda"
+  },
+  "summary": {
+    "title": "Problem summary",
+    "allergies": "Allergies",
+    "conditions": "Long-term conditions",
+    "medications": "Current medicines",
+    "recentDiagnoses": "Recent diagnoses",
+    "none": "None recorded",
+    "staffMember": "This patient works here. Every access is recorded and reviewed."
+  },
+  "access": {
+    "title": "Why are you opening this record?",
+    "description": "This patient is not in your care today, or works here. Your reason is recorded in their access history.",
+    "reason": "Reason",
+    "reasons": {
+      "care_continuity": "Continuing their care",
+      "results_review": "Reviewing results",
+      "admin_request": "Administrative request",
+      "other": "Other"
+    },
+    "reasonText": "Explain the reason",
+    "textRequired": "Explain why you need this record.",
+    "open": "Open record"
+  },
+  "unsigned": {
+    "title": "Unsigned records",
+    "description": "Drafts waiting for a signature. Clear them every day: a visit cannot finish while its draft is open.",
+    "mineOnly": "Only my drafts",
+    "started": "{{name}} · started {{time}}",
+    "overdue": "Over 24 hours",
+    "open": "Open the draft for {{name}}",
+    "empty": "No unsigned records",
+    "emptyBody": "Every consultation is signed."
+  }
+}

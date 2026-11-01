@@ -21,7 +21,10 @@ export type BookingRuleCode =
   | "hold_expired"
   | "cancel_closed"
   | "remote_closed"
-  | "not_allowed";
+  | "not_allowed"
+  // S5b
+  | "no_offer"
+  | "resolved";
 
 export interface FacilitySearchInput {
   service_code?: string;
@@ -176,7 +179,8 @@ export interface Booking {
   can_change: boolean;
   change_until: string;
   rescheduled_to_id: Uuid | null;
-  pending_change: Record<string, unknown> | null;
+  /** S5b: an unanswered disruption offer (the booking already shows the new time). */
+  pending_change: PendingChange | null;
   version: number;
 }
 
@@ -196,9 +200,166 @@ export interface StaffBooking {
   starts_at: string;
   symptoms: BookedSymptom[];
   late: boolean;
+  /** S5b: a disruption offer waits for the patient's answer. */
+  has_pending_change: boolean;
   visit_id: Uuid | null;
   version: number;
 }
+
+// ---- S5b: disruptions, follow-ups, calendars (contract sprint-05 §3 B10, B11, R7-R9) ----------
+
+export type DisruptionKind = "doctor_absent" | "closure" | "schedule_change";
+export type DisruptionAction = "move_doctor" | "next_slot" | "cancel";
+export type PatientResponse = "pending" | "accepted" | "declined" | "rebooked_other" | "cancelled";
+/** Why one item could not be applied (R7 `problems`). */
+export type DisruptionProblem =
+  | "no_slot"
+  | "same_day_service"
+  | "not_for_ticket"
+  | "booking_closed"
+  | "ticket_closed"
+  | "already_applied"
+  | "not_found";
+
+/** The offer shown to the patient: codes, times and the doctor's name; never the staff note. */
+export interface PendingChange {
+  item_id: Uuid;
+  disruption_kind: DisruptionKind;
+  action: DisruptionAction;
+  previous_starts_at: string | null;
+  previous_doctor: string | null;
+  reply_by: string;
+  /** True when silence counts as yes after `reply_by`; otherwise reception calls. */
+  auto_accept: boolean;
+}
+
+export interface Disruption {
+  id: Uuid;
+  kind: DisruptionKind;
+  membership_id: Uuid | null;
+  doctor: string | null;
+  service_id: Uuid | null;
+  service_name_i18n: I18n | null;
+  starts_at: string;
+  ends_at: string;
+  reason: string;
+  status: "open" | "resolved";
+  created_by: string | null;
+  created_at: string;
+  resolved_at: string | null;
+  counts: {
+    total: number;
+    not_applied: number;
+    pending: number;
+    accepted: number;
+    declined: number;
+    rebooked_other: number;
+    cancelled: number;
+  };
+  version: number;
+}
+
+export interface DisruptionItem {
+  id: Uuid;
+  target: "booking" | "ticket";
+  booking_id: Uuid | null;
+  booking_code: string | null;
+  ticket_id: Uuid | null;
+  ticket_number: string | null;
+  facility_patient_id: Uuid | null;
+  display_name: string;
+  contact_phone: string | null;
+  service_id: Uuid;
+  starts_at: string;
+  doctor: string | null;
+  previous_starts_at: string | null;
+  previous_doctor: string | null;
+  action: DisruptionAction | null;
+  patient_response: PatientResponse;
+  reply_by: string | null;
+  auto_accept: boolean | null;
+  new_booking_id: Uuid | null;
+  applied_at: string | null;
+  resolved_at: string | null;
+  version: number;
+}
+
+export interface DisruptionDetail {
+  disruption: Disruption;
+  items: DisruptionItem[];
+  /** Item ID -> reason code, after an apply. */
+  problems?: Record<Uuid, DisruptionProblem>;
+}
+
+export interface DisruptionInput {
+  kind: DisruptionKind;
+  membership_id?: Uuid | null;
+  service_id?: Uuid | null;
+  starts_at: string;
+  ends_at: string;
+  reason: string;
+}
+
+export type DisruptionApplyInput =
+  | { items: { id: Uuid; action: DisruptionAction; membership_id?: Uuid | null }[] }
+  | { all: DisruptionAction; membership_id?: Uuid | null };
+
+export type FollowUpMode = "booking" | "reminder";
+export interface FollowUp {
+  id: Uuid;
+  visit_id: Uuid;
+  due_on: string;
+  mode: FollowUpMode;
+  status: "booked" | "due" | "no_slot" | "done" | "cancelled";
+  booking: StaffBooking | null;
+  created_at: string;
+  version: number;
+}
+
+export interface CalendarBlock {
+  service_id: Uuid;
+  membership_id: Uuid | null;
+  doctor: string | null;
+  starts_at: string;
+  ends_at: string;
+  capacity: number;
+  booked: number;
+  bookings: StaffBooking[];
+}
+
+export interface StaffCalendar {
+  view: "day" | "week";
+  from_date: string;
+  to_date: string;
+  /** Staff without reception rights (doctors) see only their own calendar. */
+  only_own: boolean;
+  services: { id: Uuid; name_i18n: I18n }[];
+  doctors: { id: Uuid; name: string }[];
+  days: { date: string; blocks: CalendarBlock[]; other_bookings: StaffBooking[] }[];
+  disruptions: {
+    id: Uuid;
+    kind: DisruptionKind;
+    membership_id: Uuid | null;
+    service_id: Uuid | null;
+    starts_at: string;
+    ends_at: string;
+    status: "open" | "resolved";
+  }[];
+}
+
+export interface CalendarFeedStatus {
+  is_active: boolean;
+  created_at: string | null;
+  last_accessed_at: string | null;
+}
+
+/** B10: keep the moved time, cancel, or another time with a hold. */
+export type RespondInput =
+  | { response: "accept" | "cancel"; version?: number }
+  | {
+      hold_id: Uuid;
+      version?: number;
+    };
 
 /** No-show reversal reasons (contract sprint-05 §2.2 No-show); `other` needs `reason_text`. */
 export const NO_SHOW_REVERSAL_REASONS = ["patient_was_present", "facility_delay", "other"] as const;
@@ -243,6 +404,14 @@ export const bookingPaths = {
   staffCancel: (id: Uuid) => `${STF}/bookings/${id}/cancel/`,
   staffReschedule: (id: Uuid) => `${STF}/bookings/${id}/reschedule/`,
   reverseNoShow: (id: Uuid) => `${STF}/bookings/${id}/reverse-no-show/`,
+  // S5b
+  respond: (id: Uuid) => `${PAT}/bookings/${id}/respond/`,
+  calendarFeed: `${PAT}/calendar-feed/`,
+  disruptions: `${STF}/disruptions/`,
+  disruption: (id: Uuid) => `${STF}/disruptions/${id}/`,
+  disruptionApply: (id: Uuid) => `${STF}/disruptions/${id}/apply/`,
+  followUp: (visitId: Uuid) => `${STF}/visits/${visitId}/follow-up/`,
+  staffCalendar: `${STF}/calendar/`,
 };
 
 const idem = (key?: string) => (key ? { headers: { "Idempotency-Key": key } } : {});
@@ -279,6 +448,14 @@ export function createBookingApi(client: ApiClient) {
       idempotencyKey?: string,
     ) => client.post<PatientVisit>(bookingPaths.remoteJoin, body, idem(idempotencyKey)),
     arrived: (visitId: Uuid) => client.post<PatientVisit>(bookingPaths.arrived(visitId), {}),
+    /** B10 (S5b): answer a disruption offer; with `hold_id` the result is the new booking. */
+    respond: (id: Uuid, body: RespondInput) => client.post<Booking>(bookingPaths.respond(id), body),
+    /** B11 (S5b): the private calendar link; `create` shows the URL once. */
+    calendarFeed: {
+      get: () => client.get<CalendarFeedStatus>(bookingPaths.calendarFeed),
+      create: () => client.post<{ url: string; created_at: string }>(bookingPaths.calendarFeed, {}),
+      revoke: () => client.request<void>("DELETE", bookingPaths.calendarFeed),
+    },
     staff: {
       bookings: (p: { date?: string; service_id?: Uuid; status?: string } = {}) =>
         client.get<{ count: number; results: StaffBooking[] }>(
@@ -308,6 +485,26 @@ export function createBookingApi(client: ApiClient) {
           reason_code: reasonCode,
           reason_text: reasonText,
         }),
+      // S5b
+      disruptions: (p: { status?: "open" | "resolved" } = {}) =>
+        client.get<{ count: number; results: Disruption[] }>(bookingPaths.disruptions + query(p)),
+      disruption: (id: Uuid) => client.get<DisruptionDetail>(bookingPaths.disruption(id)),
+      createDisruption: (body: DisruptionInput) =>
+        client.post<DisruptionDetail>(bookingPaths.disruptions, body),
+      applyDisruption: (id: Uuid, body: DisruptionApplyInput) =>
+        client.post<DisruptionDetail>(bookingPaths.disruptionApply(id), body),
+      followUp: (visitId: Uuid) => client.get<FollowUp>(bookingPaths.followUp(visitId)),
+      createFollowUp: (visitId: Uuid, body: { in_days: number; mode: FollowUpMode }) =>
+        client.post<FollowUp>(bookingPaths.followUp(visitId), body),
+      calendar: (
+        p: {
+          from?: string;
+          to?: string;
+          view?: "day" | "week";
+          service_id?: Uuid;
+          membership_id?: Uuid;
+        } = {},
+      ) => client.get<StaffCalendar>(bookingPaths.staffCalendar + query(p)),
     },
   };
 }

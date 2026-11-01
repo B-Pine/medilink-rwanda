@@ -15,7 +15,7 @@ from medilink.facilities.calendar import KIGALI, effective_calendar
 from medilink.facilities.models import Service, Settings
 from medilink.facilities.settings_schema import with_defaults
 from medilink.scheduling.errors import BookingConflict
-from medilink.scheduling.models import Slot, SlotHold, SlotStatus
+from medilink.scheduling.models import Disruption, Slot, SlotHold, SlotStatus
 from medilink.scheduling.services import blocks
 from medilink.tenancy.models import Facility, FacilityStatus
 
@@ -69,6 +69,14 @@ def generate(facility_id: Any, *, today: dt.date | None = None) -> dict[str, int
         for s in Service.objects.filter(facility_id=facility_id, is_active=True, is_bookable=True)
     }
     ranges = {sid: _open_ranges(facility_id, sid, today, end) for sid in services}
+    window_start = dt.datetime.combine(today, dt.time.min, KIGALI)
+    window_end = dt.datetime.combine(end + dt.timedelta(days=1), dt.time.min, KIGALI)
+    # S5b: a disruption keeps its slots closed, open or resolved (the doctor is still away)
+    disruptions = list(
+        Disruption.objects.filter(
+            facility_id=facility_id, ends_at__gt=window_start, starts_at__lt=window_end
+        )
+    )
     wanted: dict[tuple[str, str | None, dt.datetime], dict[str, Any]] = {}
     for block in blocks(facility_id, today, end):
         sid = block["service_id"]
@@ -78,7 +86,9 @@ def generate(facility_id: Any, *, today: dt.date | None = None) -> dict[str, int
         start = block["starts_at"]
         while start + step <= block["ends_at"]:
             day_ranges = ranges[sid].get(start.astimezone(KIGALI).date(), [])
-            if _inside(day_ranges, start, start + step):
+            if _inside(day_ranges, start, start + step) and not any(
+                d.covers(sid, block["membership_id"], start) for d in disruptions
+            ):
                 capacity = block["capacity"]
                 wanted[(sid, block["membership_id"], start)] = {
                     "ends_at": start + step,
@@ -89,8 +99,6 @@ def generate(facility_id: Any, *, today: dt.date | None = None) -> dict[str, int
                 }
             start += step
 
-    window_start = dt.datetime.combine(today, dt.time.min, KIGALI)
-    window_end = dt.datetime.combine(end + dt.timedelta(days=1), dt.time.min, KIGALI)
     existing = {
         (str(s.service_id), str(s.membership_id) if s.membership_id else None, s.starts_at): s
         for s in Slot.objects.filter(
@@ -98,6 +106,7 @@ def generate(facility_id: Any, *, today: dt.date | None = None) -> dict[str, int
         )
     }
     created = closed = 0
+    booked_closed: list[Slot] = []
     with transaction.atomic():
         for key, values in wanted.items():
             slot = existing.get(key)
@@ -132,6 +141,12 @@ def generate(facility_id: Any, *, today: dt.date | None = None) -> dict[str, int
                     status=SlotStatus.CLOSED, updated_at=timezone.now()
                 )
                 closed += 1
+                if slot.booked_count:
+                    booked_closed.append(slot)
+        if booked_closed:
+            from medilink.scheduling.disruptions import open_for_closed_slots
+
+            open_for_closed_slots(facility_id, booked_closed)
     return {"created": created, "closed": closed}
 
 

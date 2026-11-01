@@ -76,6 +76,9 @@ INSTALLED_APPS = [
     # [S4] visits and the live queue
     "medilink.visits",
     # [/S4]
+    # [S6] clinical record and history
+    "medilink.clinical",
+    # [/S6]
 ]
 
 MIDDLEWARE = [
@@ -462,7 +465,22 @@ SPECTACULAR_SETTINGS = {
         "BookingSourceEnum": "medilink.scheduling.models.BookingSource",
         "LevelOfCareEnum": "medilink.masterdata.models.LevelOfCare",
         "QueueLoadEnum": [("low", "low"), ("medium", "medium"), ("high", "high")],
+        "DisruptionKindEnum": "medilink.scheduling.models.DisruptionKind",
+        "DisruptionActionEnum": "medilink.scheduling.models.DisruptionAction",
+        "DisruptionStatusEnum": "medilink.scheduling.models.DisruptionStatus",
+        "PatientResponseEnum": "medilink.scheduling.models.PatientResponse",
+        "FollowUpModeEnum": "medilink.scheduling.models.FollowUpMode",
+        "FollowUpStatusEnum": "medilink.scheduling.models.FollowUpStatus",
+        # S5b adds `mode` and `action` fields: pin the S1 enums to their existing names
+        "ModeEnum": "medilink.masterdata.models.ImportMode",
+        "ActionEnum": "medilink.masterdata.models.ChangeAction",
         # [/S5]
+        # [S6]
+        "ConsultationStatusEnum": "medilink.clinical.models.ConsultationStatus",
+        "DiagnosisRankEnum": "medilink.clinical.models.DiagnosisRank",
+        "CertaintyEnum": "medilink.clinical.models.Certainty",
+        # AccessReasonCodeEnum and ReasonCodeEnum: named in the [S3] block (same codes)
+        # [/S6]
     },
 }
 

@@ -77,6 +77,8 @@ omit = [
   # Threads with their own connections and committed rows: run against the dev database, not
   # inside the test transaction (contract sprint-04 D-9).
   "medilink/visits/management/commands/queue_concurrency_check.py",
+  # The same for S5 holds (contract sprint-05 S5-B5, following sprint-04 D-9).
+  "medilink/scheduling/management/commands/booking_concurrency_check.py",
 ]
 
 [tool.coverage.report]

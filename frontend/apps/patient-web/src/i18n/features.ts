@@ -19,6 +19,9 @@ import notificationsRw from "../features/notifications/locales/rw.json";
 // [S2 imports]
 // [/S2 imports]
 // [S10 imports]
+import helpEn from "../features/help/locales/en.json";
+import helpFr from "../features/help/locales/fr.json";
+import helpRw from "../features/help/locales/rw.json";
 // [/S10 imports]
 // [S4 imports]
 import trackerEn from "../features/tracker/locales/en.json";
@@ -52,6 +55,7 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   // [S2]
   // [/S2]
   // [S10]
+  help: { rw: helpRw, en: helpEn, fr: helpFr },
   // [/S10]
   // [S4]
   tracker: { rw: trackerRw, en: trackerEn, fr: trackerFr },

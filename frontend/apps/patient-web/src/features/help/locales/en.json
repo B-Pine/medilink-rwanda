@@ -1,0 +1,117 @@
+{
+  "loading": "Loading…",
+  "loadFailed": "We couldn't load this. Check your connection and try again.",
+  "retry": "Try again",
+  "search": {
+    "label": "Search help",
+    "placeholder": "For example: add a child",
+    "submit": "Search",
+    "results_one": "{{count}} article",
+    "results_other": "{{count}} articles",
+    "none": "No article matches your search.",
+    "noneBody": "Try other words, or contact support."
+  },
+  "categories": {
+    "label": "Topics",
+    "all": "All",
+    "getting_started": "Getting started",
+    "account_security": "Account and security",
+    "booking_visits": "Bookings and visits",
+    "family_profile": "Family and profile",
+    "notifications": "Notifications",
+    "privacy": "Privacy",
+    "facility_work": "Working at a facility",
+    "other": "Other"
+  },
+  "articles": "Help articles",
+  "shownIn": "Shown in {{language}}: not written in your language yet.",
+  "languages": { "rw": "Kinyarwanda", "en": "English", "fr": "French" },
+  "article": {
+    "back": "Back to Help",
+    "notFound": "Article not found",
+    "notFoundBody": "It may have been moved or removed.",
+    "stillNeedHelp": "Still need help?"
+  },
+  "contact": {
+    "title": "Still need help?",
+    "body": "Ask MediLink support about the app: your account, bookings, notifications or privacy.",
+    "contact": "Contact support",
+    "requests": "My requests",
+    "open_one": "{{count}} open",
+    "open_other": "{{count}} open"
+  },
+  "status": {
+    "open": "Waiting for MediLink",
+    "answered": "Reply from MediLink",
+    "closed": "Closed"
+  },
+  "topics": {
+    "account_access": "Logging in and my account",
+    "booking_visits": "Bookings and visits",
+    "family_profile": "Family and profile",
+    "notifications": "Notifications",
+    "privacy": "Privacy and my data",
+    "facility_setup": "Facility setup",
+    "technical": "Something isn't working",
+    "other": "Something else",
+    "health": "My health or treatment"
+  },
+  "topicHints": {
+    "account_access": "Password, login code, email",
+    "booking_visits": "Booking, cancelling, the queue",
+    "family_profile": "Children, family members, my details",
+    "notifications": "Alerts on my phone, emails",
+    "privacy": "Who sees my data, deleting it",
+    "facility_setup": "Rooms, services, staff",
+    "technical": "Errors, a page that won't load",
+    "other": "Anything else about the app",
+    "health": "Symptoms, results, medicines"
+  },
+  "requests": {
+    "title": "My requests",
+    "empty": "No requests yet",
+    "emptyBody": "When you contact support, your requests appear here.",
+    "new": "Contact support",
+    "lastActivity": "Last activity {{time}}",
+    "messages_one": "{{count}} message",
+    "messages_other": "{{count}} messages"
+  },
+  "new": {
+    "title": "Contact support",
+    "step1": "What do you need help with?",
+    "next": "Next",
+    "back": "Back",
+    "health": {
+      "title": "We can't help with health questions here",
+      "body": "MediLink support only helps with the app. For symptoms, results or medicines, contact your facility: they know your record.",
+      "findCare": "Find care",
+      "emergency": "In an emergency, call 912."
+    },
+    "step2": "Tell us more",
+    "subject": "Subject",
+    "subjectHint": "A few words, for example: I can't cancel my booking",
+    "body": "What happened?",
+    "bodyHint": "Don't include health details: support can't see your record and doesn't need it.",
+    "counter": "{{count}} of {{max}} characters",
+    "send": "Send",
+    "fixErrors": "Please fix these before sending",
+    "sent": "Request {{reference}} sent. We usually answer within one working day."
+  },
+  "thread": {
+    "title": "Request {{reference}}",
+    "topic": "Topic: {{topic}}",
+    "you": "You",
+    "reply": "Your reply",
+    "send": "Send reply",
+    "close": "Close request",
+    "closeConfirm": "Close this request? You can open a new one if you need help again.",
+    "closeYes": "Close it",
+    "cancel": "Cancel",
+    "closedTitle": "This request is closed",
+    "closedBody": "If you still need help, open a new request.",
+    "openNew": "Open a new request",
+    "notFound": "Request not found",
+    "replySent": "Reply sent.",
+    "closedNotice": "Request closed."
+  }
+}

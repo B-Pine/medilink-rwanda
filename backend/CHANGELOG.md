@@ -353,6 +353,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Sprint 10 · Help center and support (part 1)
 
+- New app `medilink.support` (contract sprint-10): help articles for patients and staff (rw/en/fr
+  plain text, categories, search across languages, draft and publish with step-up and all three
+  languages) and support requests (patients and staff open, reply and close; platform admins
+  triage, reply and close with a reason; facility admins see their staff's requests read-only).
+- No clinical data: subjects and messages are checked against the S9 clinical-terms list; at most
+  5 open requests per account; `support_write` rate limit; messages are append-only.
+- S9 notifications for created, followed up, answered and closed requests; audit actions with IDs
+  and codes only; permission `support.view_facility`; `support_request` listed as an RLS
+  exception (platform queue, sprint-10 §2.5); `support` in the CI coverage gate; dev seed.
+
 ### Added
 
 - `DEV_SKIP_STAFF_MFA` (development only): staff log in without the second factor for local

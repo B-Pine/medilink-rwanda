@@ -18,7 +18,7 @@ Sprints and requirements follow the [backend](../roadmap/backend.md) and [fronte
 | [S7](#s7--pharmacy-and-documents) | Pharmacy and documents | Planned |
 | [S8](#s8--billing-and-payments) | Billing and payments | Planned |
 | [S9](#s9--notifications) | Notifications | Backend implemented (S9 pull request); the [contract](../architecture/contracts/sprint-09-notifications.md) §3.3 and the OpenAPI schema win over the rows below |
-| [S10](#s10--disputes-help-and-reports) | Disputes, help and reports | Planned |
+| [S10](#s10--disputes-help-and-reports) | Disputes, help and reports | Part 1 (help center, support requests) backend implemented; disputes and reports planned |
 | [S11](#s11--hardening-and-pilot-readiness) | Hardening and pilot readiness | Planned |
 | [—](#not-yet-scheduled) | Not yet scheduled | Planned |
 
@@ -631,9 +631,9 @@ Requirements: FR-DSP-01..11; FR-RPT-01..05; FR-SEC-12, 13. Retention jobs (FR-SE
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `GET` | `/api/v1/public/help-articles/` | Help center articles | Public | FR-DSP-11 | rw/en/fr | Planned |
-| `GET` | `/api/v1/public/help-articles/{slug}/` | One article | Public | FR-DSP-11 | | Planned |
-| `POST` | `/api/v1/public/support-requests/` | Ask for help without logging in ("I can't log in") | Public | FR-DSP-11 | No clinical data; RL: auth | Planned |
+| `GET` | `/api/v1/public/help-articles/` | Help center articles (`?q`, `?category`) | Public | FR-DSP-11 | rw/en/fr; RL: burst | Implemented (S10 part 1 backend) |
+| `GET` | `/api/v1/public/help-articles/{slug}/` | One article | Public | FR-DSP-11 | Plain text, never HTML | Implemented (S10 part 1 backend) |
+| `POST` | `/api/v1/public/support-requests/` | Ask for help without logging in ("I can't log in") | Public | FR-DSP-11 | No clinical data; RL: auth | Deferred (sprint-10 S10-D2: needs a bot check) |
 
 ### Patient
 
@@ -647,7 +647,10 @@ Requirements: FR-DSP-01..11; FR-RPT-01..05; FR-SEC-12, 13. Retention jobs (FR-SE
 | `POST` | `/api/v1/patient/disputes/{id}/accept/` | Accept the resolution → closed | Linked account | FR-DSP-03 | | Planned |
 | `POST` | `/api/v1/patient/disputes/{id}/escalate/` | Disagree within 14 days → super admin | Linked account | FR-DSP-02, FR-DSP-03 | | Planned |
 | `POST` | `/api/v1/patient/disputes/{id}/reopen/` | Reopen with new evidence (within 30 days, once) | Linked account | FR-DSP-03 | | Planned |
-| `GET`, `POST` | `/api/v1/patient/support-requests/` | Support requests | Patient session | FR-DSP-11 | Clinical issues are redirected to the facility | Planned |
+| `GET`, `POST` | `/api/v1/patient/support-requests/` | Own support requests (`?status`); open one | Patient session | FR-DSP-11 | No clinical words; 5 open at most; RL: support_write | Implemented (S10 part 1 backend) |
+| `GET` | `/api/v1/patient/support-requests/{id}/` | One request with its messages | Patient session (own) | FR-DSP-11 | Support shown as "MediLink support" | Implemented (S10 part 1 backend) |
+| `POST` | `/api/v1/patient/support-requests/{id}/messages/` | Reply | Patient session (own) | FR-DSP-11 | 422 when closed | Implemented (S10 part 1 backend) |
+| `POST` | `/api/v1/patient/support-requests/{id}/close/` | Close (withdrawn) | Patient session (own) | FR-DSP-11 | 409 when closed | Implemented (S10 part 1 backend) |
 | `POST` | `/api/v1/patient/data-exports/` | Download all my data (PDF + machine-readable) | Patient session | FR-SEC-12 | Step-up; Async | Planned |
 | `GET` | `/api/v1/patient/data-exports/{id}/` | Export status and link | Patient session | FR-SEC-12 | Link valid 15 minutes | Planned |
 | `POST` | `/api/v1/patient/auth/close-account/` | Close the account after the retention explanation | Patient session | FR-SEC-12, FR-SEC-13 | Step-up; non-clinical data deleted after 30 days | Planned |
@@ -658,6 +661,10 @@ Rectification of personal details uses `PATCH /api/v1/patient/profiles/{patient_
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
+| `GET` | `/api/v1/staff/help-articles/`, `…/{slug}/` | Staff help articles | Any member | FR-DSP-11 | | Implemented (S10 part 1 backend) |
+| `GET`, `POST` | `/api/v1/staff/support-requests/` | Own requests, or the facility's with `?scope=facility`; open one | Member; facility scope needs `support.view_facility` | FR-DSP-11 | Carries the active facility | Implemented (S10 part 1 backend) |
+| `GET` | `/api/v1/staff/support-requests/{id}/` | One request | Own, or `support.view_facility` | FR-DSP-11 | Facility admin: read-only | Implemented (S10 part 1 backend) |
+| `POST` | `/api/v1/staff/support-requests/{id}/messages/`, `…/close/` | Reply; close | Own only | FR-DSP-11 | | Implemented (S10 part 1 backend) |
 | `GET` | `/api/v1/staff/disputes/` | Facility disputes by status, type, deadline | `disputes.handle`; others: assigned for comment | FR-DSP-02, FR-DSP-03 | Filter `overdue=true` | Planned |
 | `POST` | `/api/v1/staff/disputes/` | Raise a dispute at the counter for a patient | `queue.operate` | FR-DSP-09 | Marked "raised at the counter"; see note below | Planned |
 | `GET` | `/api/v1/staff/disputes/{id}/` | Dispute with thread and internal notes | `disputes.handle` | FR-DSP-04 | | Planned |
@@ -696,8 +703,13 @@ Note: the permission matrix in analysis 02 §3 gives the receptionist no "raise 
 | `POST` | `/api/v1/platform/disputes/{id}/messages/` | Ask the facility or patient for information | Platform admin | FR-DSP-04 | | Planned |
 | `POST` | `/api/v1/platform/disputes/{id}/final-decision/` | Final decision with written reasons | Platform admin | FR-DSP-02, FR-DSP-06 | Step-up; corrections are still made by the facility | Planned |
 | `POST` | `/api/v1/platform/facilities/{id}/warnings/` | Record a warning on a facility | Platform admin | FR-DSP-06 | | Planned |
-| `GET` | `/api/v1/platform/support-requests/` | Support queue | Platform admin | FR-DSP-11 | | Planned |
-| `POST` | `/api/v1/platform/support-requests/{id}/replies/` | Reply | Platform admin | FR-DSP-11 | | Planned |
+| `GET` | `/api/v1/platform/support-requests/` | Support queue (status, topic, audience, priority, facility, assigned, search) | Platform admin | FR-DSP-11 | High first, then oldest activity | Implemented (S10 part 1 backend) |
+| `GET`, `PATCH` | `/api/v1/platform/support-requests/{id}/` | Request with messages; triage (priority, topic, assignee) | Platform admin | FR-DSP-11 | 409 stale version, 422 closed | Implemented (S10 part 1 backend) |
+| `POST` | `/api/v1/platform/support-requests/{id}/close/` | Close with a reason and an optional message | Platform admin | FR-DSP-11 | | Implemented (S10 part 1 backend) |
+| `GET`, `POST` | `/api/v1/platform/help-articles/` | Help articles (all states); create a draft | Platform admin | FR-DSP-11 | rw/en/fr keys only | Implemented (S10 part 1 backend) |
+| `GET`, `PATCH` | `/api/v1/platform/help-articles/{id}/` | One article; edit | Platform admin | FR-DSP-11 | 409 stale version | Implemented (S10 part 1 backend) |
+| `POST` | `/api/v1/platform/help-articles/{id}/publish/`, `…/unpublish/` | Publish (all three languages, step-up) or back to draft | Platform admin | FR-DSP-11 | | Implemented (S10 part 1 backend) |
+| `POST` | `/api/v1/platform/support-requests/{id}/replies/` | Reply | Platform admin | FR-DSP-11 | Notifies the requester | Implemented (S10 part 1 backend) |
 | `POST` | `/api/v1/platform/support-requests/{id}/close/` | Close | Platform admin | FR-DSP-11 | | Planned |
 | `GET`, `POST` | `/api/v1/platform/help-articles/` | Help center content | Platform admin | FR-DSP-11 | | Planned |
 | `GET`, `PATCH` | `/api/v1/platform/help-articles/{id}/` | Edit an article | Platform admin | FR-DSP-11 | Ver | Planned |

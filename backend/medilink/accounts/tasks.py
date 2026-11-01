@@ -64,3 +64,71 @@ def send_password_changed_email(user_id: str) -> None:
         from_email=None,
         recipient_list=[user.email],
     )
+
+
+@shared_task(ignore_result=True, time_limit=30, soft_time_limit=20, max_retries=3)
+def send_verify_email(user_id: str) -> None:
+    """Sign-up: the link that activates a new patient account."""
+    from medilink.accounts import verification
+
+    user = User.objects.filter(pk=user_id, is_active=True, email_verification_pending=True).first()
+    if user is None:
+        return
+    days = settings.EMAIL_VERIFICATION_TIMEOUT // 86400
+    send_mail(
+        subject="Confirm your email to finish creating your MediLink account",
+        message=(
+            "Thank you for signing up to MediLink.\n\n"
+            f"Open this link within {days} days to confirm your email and sign in:\n"
+            f"{verification.build_link(user)}\n\n"
+            "If you didn't sign up, you can ignore this email: no account will be activated.\n"
+        ),
+        from_email=None,
+        recipient_list=[user.email],
+    )
+
+
+@shared_task(ignore_result=True, time_limit=30, soft_time_limit=20, max_retries=3)
+def send_account_exists_email(user_id: str) -> None:
+    """Sign-up with an email that already has an account: tell the owner, never the requester."""
+    user = User.objects.filter(pk=user_id, is_active=True).first()
+    if user is None:
+        return
+    if user.email_verification_pending:  # signed up before and never confirmed: resend the link
+        send_verify_email(user_id)
+        return
+    send_mail(
+        subject="Someone tried to create a MediLink account with your email",
+        message=(
+            "Someone, maybe you, tried to create a MediLink account with this email address. "
+            "You already have an account, so nothing was changed.\n\n"
+            f"Sign in: {_app_url(user)}/login\n"
+            f"Forgot your password? {_app_url(user)}/forgot-password\n\n"
+            "If this wasn't you, you can ignore this email.\n"
+        ),
+        from_email=None,
+        recipient_list=[user.email],
+    )
+
+
+@shared_task(ignore_result=True, time_limit=30, soft_time_limit=20, max_retries=3)
+def send_account_locked_email(user_id: str, kind: str) -> None:
+    """Too many failed sign-in (or MFA) attempts locked the account for a while (security 03 §6)."""
+    user = User.objects.filter(pk=user_id, is_active=True).first()
+    if user is None:
+        return
+    step = "two-step verification codes" if kind == "mfa" else "passwords"
+    seconds = settings.MFA_LOCK_SECONDS if kind == "mfa" else settings.AUTH_LOCKOUT["LOCK_SECONDS"]
+    minutes = max(1, int(seconds) // 60)
+    send_mail(
+        subject="Your MediLink sign-in was locked",
+        message=(
+            f"Sign-in to your MediLink account was locked for {minutes} minutes after too many "
+            f"wrong {step}.\n\n"
+            "If this was you, wait and try again. If it wasn't, someone may know or be guessing "
+            f"your password: reset it now at {_app_url(user)}/forgot-password and contact "
+            "support.\n"
+        ),
+        from_email=None,
+        recipient_list=[user.email],
+    )

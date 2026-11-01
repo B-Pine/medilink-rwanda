@@ -293,7 +293,7 @@ class NotificationTemplateSerializer(serializers.ModelSerializer[Template]):
         return {"subject": limits.subject, "body": limits.body} if limits else {}
 
     def get_created_by(self, obj: Template) -> dict[str, Any] | None:
-        if obj.created_by_id is None:
+        if obj.created_by is None:
             return None
         return {"id": obj.created_by_id, "full_name": obj.created_by.full_name}
 

@@ -37,6 +37,11 @@ ALTER DEFAULT PRIVILEGES FOR ROLE medilink_owner IN SCHEMA public
   GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO medilink_app;
 ALTER DEFAULT PRIVILEGES FOR ROLE medilink_owner IN SCHEMA public
   GRANT USAGE, SELECT ON SEQUENCES TO medilink_app;
+-- The tables don't exist yet. Narrower privileges are applied by migrations and after every
+-- migrate (medilink.core.db and the apps' post_migrate receivers), e.g.:
+--   REVOKE UPDATE, DELETE, TRUNCATE ON audit_auditentry FROM medilink_app;   (audit 0003)
+--   REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON tenancy_role, tenancy_permission,
+--     tenancy_role_permissions, django_migrations FROM medilink_app;
 EOSQL
 
 echo "MediLink roles ready: medilink_owner (migrations), medilink_app (runtime, NOBYPASSRLS)."

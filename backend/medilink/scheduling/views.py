@@ -13,7 +13,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from medilink.facilities import serializers as s
-from medilink.facilities.views_base import FacilityView, Needs, query_date
+from medilink.facilities.views_base import PAGE, FacilityView, Needs, paginated, query_date
 from medilink.scheduling import services
 from medilink.scheduling.models import ScheduleException, ScheduleTemplate
 from medilink.tenancy.models import FacilityMembership
@@ -45,8 +45,12 @@ class TemplatesView(ScheduleView):
     @extend_schema(
         operation_id="staff_schedule_templates_list",
         tags=TAGS,
-        parameters=[OpenApiParameter("membership_id", str), OpenApiParameter("service_id", str)],
-        responses={200: s.TemplateSerializer(many=True)},
+        parameters=[
+            OpenApiParameter("membership_id", str),
+            OpenApiParameter("service_id", str),
+            *PAGE,
+        ],
+        responses={200: s.TemplatePageSerializer},
     )
     def get(self, request: Request) -> Response:
         rows = self.readable(
@@ -57,9 +61,7 @@ class TemplatesView(ScheduleView):
         for name in ("membership_id", "service_id"):
             if request.query_params.get(name):
                 rows = rows.filter(**{name: request.query_params[name]})
-        return Response(
-            {"results": [template_data(t) for t in rows.order_by("weekday", "starts_at")]}
-        )
+        return paginated(self, request, rows.order_by("weekday", "starts_at", "pk"), template_data)
 
     @extend_schema(
         operation_id="staff_schedule_templates_create",

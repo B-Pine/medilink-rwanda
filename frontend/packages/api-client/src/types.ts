@@ -171,6 +171,15 @@ export interface PatientRegisterRequest {
   research_consent: boolean;
 }
 
+/** 202 body of sign-up and password reset: the same text whether or not the account exists. */
+export interface DetailResponse {
+  detail: string;
+}
+
+export interface VerifyEmailRequest {
+  token: string;
+}
+
 export interface PasswordResetRequest {
   email: string;
 }

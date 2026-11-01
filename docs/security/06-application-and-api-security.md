@@ -28,7 +28,7 @@ SECURE_SSL_REDIRECT = True
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")   # only because the proxy overwrites it
 SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True                                       # after a stable period
+SECURE_HSTS_PRELOAD = env.bool("SECURE_HSTS_PRELOAD", default=False)  # opt-in after a stable period
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_REFERRER_POLICY = "same-origin"
 SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin"
@@ -63,7 +63,7 @@ SECURE_CSP = {
     "object-src": [CSP.NONE],
 }
 ```
-Start with `SECURE_CSP_REPORT_ONLY` in staging, then enforce. The React builds must not need `unsafe-inline` or `unsafe-eval`.
+Start with `SECURE_CSP_REPORT_ONLY` in staging, then enforce. The React builds must not need `unsafe-eval` or inline scripts. Exception: their `style-src` keeps `'unsafe-inline'`, because Radix (scroll lock) and pdf.js inject `<style>` elements at runtime and a static-host meta CSP can't carry a nonce; see `frontend/packages/config/vite.js`.
 
 - **Other headers** (set at the proxy for static assets too): `Permissions-Policy: camera=(self), geolocation=(self), microphone=()`, `Cross-Origin-Resource-Policy: same-site`.
 - **Django admin:** only for engineers, on a non-obvious path, reachable only through the VPN, MFA enforced (`django-otp` admin site), read-only models where possible.

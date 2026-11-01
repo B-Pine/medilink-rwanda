@@ -1,4 +1,4 @@
-import { MOCK_PASSWORD, PATIENTS } from "@medilink/api-client/mocks";
+import { MOCK_PASSWORD, MOCK_TOTP_CODE, PATIENTS } from "@medilink/api-client/mocks";
 
 const SELF = PATIENTS[0]!.me.profiles[0]!.patient_id;
 import { screen, waitFor, within } from "@testing-library/react";
@@ -94,6 +94,13 @@ describe("patient profile", () => {
     await waitFor(() =>
       expect(screen.getByRole("switch", { name: /health research/ })).toBeChecked(),
     );
+    const location = screen.getByRole("switch", { name: /Use my location/ });
+    expect(location).not.toBeChecked();
+    await user.click(location);
+    await waitFor(() =>
+      expect(screen.getByRole("switch", { name: /Use my location/ })).toBeChecked(),
+    );
+    expect(screen.getByRole("switch", { name: /Messages about my care/ })).toBeInTheDocument();
   });
 
   it("claim: no match gives the generic message", async () => {
@@ -102,5 +109,43 @@ describe("patient profile", () => {
     await user.type(screen.getByLabelText("Date of birth"), "1990-01-01");
     await user.click(screen.getByRole("button", { name: "Find my record" }));
     expect(await screen.findByText(/couldn't match these details/)).toBeInTheDocument();
+  });
+
+  it("access history loads older entries page by page", async () => {
+    const { user } = await signIn(`/profile/${SELF}/access-history`);
+    expect(await screen.findAllByText(/viewed your/)).toHaveLength(25);
+    await user.click(screen.getByRole("button", { name: "Show older entries" }));
+    await waitFor(() => expect(screen.getAllByText(/viewed your/)).toHaveLength(29));
+    expect(screen.queryByRole("button", { name: "Show older entries" })).not.toBeInTheDocument();
+  });
+
+  it("claim at reception: the page polls until reception confirms", async () => {
+    const app = await signIn("/claim");
+    await app.user.selectOptions(await screen.findByLabelText("How do you want to find it?"), [
+      "national_id",
+    ]);
+    await app.user.type(screen.getByLabelText("National ID"), "1198470012345678");
+    await app.user.type(screen.getByLabelText("Date of birth"), "1984-01-01");
+    await app.user.click(screen.getByRole("button", { name: "Find my record" }));
+    const reference = await screen.findByLabelText("Claim reference");
+    expect(screen.getByText(/This page updates by itself/)).toBeInTheDocument();
+    const { api, queryClient } = app.services;
+    await api.staffAuth.login({ email: "reception@medilink.test", password: MOCK_PASSWORD });
+    await api.staffAuth.mfaVerify({ code: MOCK_TOTP_CODE });
+    const found = await api.patients.search({ query: "Mukamana Jeanne" });
+    const jeanne = found.results.find((r) => r.full_name === "Mukamana Jeanne")!;
+    await api.patients.confirmClaim(jeanne.facility_patient_id, {
+      claim_reference: reference.textContent ?? "",
+      document_kind: "national_id",
+      document_matches: true,
+    });
+    await queryClient.refetchQueries({ queryKey: ["profile", "claim"] });
+    expect(
+      await screen.findByText("Your record is now linked to your account."),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Open my profile" })).toHaveAttribute(
+      "href",
+      "/profile",
+    );
   });
 });

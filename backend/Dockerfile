@@ -4,8 +4,9 @@
 # Runs the ASGI app (HTTP + WebSockets) with uvicorn. Configuration comes only from the environment
 # (see .env.example); migrations run as a separate job with DATABASE_OWNER_URL:
 #   docker run --rm --env-file prod.env medilink-api python manage.py migrate
-# For production, pin the base image by digest (python:3.14-slim@sha256:...).
-ARG PYTHON_IMAGE=python:3.14-slim
+# The base image is pinned by digest (multi-arch index), so a rebuild can't pick up a different
+# image under the same tag. Dependabot (docker ecosystem) proposes digest updates.
+ARG PYTHON_IMAGE=python:3.14-slim@sha256:cd89c30eda26ee911a4611b18680086e0ea42e6f5f8cbe653d07fa7958c9cec8
 
 FROM ${PYTHON_IMAGE} AS builder
 ENV PIP_NO_CACHE_DIR=1 \

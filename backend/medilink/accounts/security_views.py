@@ -23,7 +23,7 @@ from rest_framework.views import APIView
 
 from medilink.accounts import lock as lock_service
 from medilink.accounts.authentication import StaffSessionAuthentication
-from medilink.accounts.lockout import mfa_policy
+from medilink.accounts.lockout import mfa_policy, notify_on_lock
 from medilink.accounts.mfa import verify_totp
 from medilink.accounts.models import User
 from medilink.accounts.principal import Principal, resolve_principal
@@ -304,7 +304,7 @@ class StepUpView(APIView):
             until = recent_auth_until(session)
             assert until is not None  # noqa: S101 (just set)
             return Response({"step_up_valid_until": datetime.fromtimestamp(until, tz=UTC)})
-        mfa_policy().register_failure(ident)
+        mfa_policy().register_failure(ident, on_lock=notify_on_lock(request, user, "mfa"))
         failures = int(session.get(STEP_UP_FAILURES_KEY, 0)) + 1
         session[STEP_UP_FAILURES_KEY] = failures
         record("auth.step_up.failure", request=request, actor=user, metadata={"failures": failures})

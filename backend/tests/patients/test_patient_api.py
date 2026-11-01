@@ -382,6 +382,6 @@ def test_signup_patient_gets_medilink_number(api: Any) -> None:
         },
         format="json",
     )
-    assert response.status_code == 201, response.content
+    assert response.status_code == 202, response.content
     patient = Patient.objects.get(full_name="Ishimwe Claude")
     assert patient.medilink_number and patient.medilink_number.startswith("ML-")

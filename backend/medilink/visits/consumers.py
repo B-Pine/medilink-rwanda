@@ -13,7 +13,7 @@ from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.db import connection
 
-from medilink.core.realtime import CLOSE_UNAUTHENTICATED, session_group, user_group
+from medilink.core.realtime import CLOSE_UNAUTHENTICATED, pong, session_group, user_group
 from medilink.visits import outbox
 
 QUEUE_PERMISSIONS = ("queue.operate", "queue.call", "pharmacy.dispense")
@@ -39,7 +39,7 @@ class _Relay(AsyncJsonWebsocketConsumer):
 
     async def receive_json(self, content: Any, **kwargs: Any) -> None:
         if isinstance(content, dict) and content.get("type") == "ping":
-            await self.send_json({"type": "pong"})
+            await self.send_json(pong())
 
 
 class StaffQueueConsumer(_Relay):
@@ -87,13 +87,13 @@ class PatientVisitsConsumer(_Relay):
         await self.accept()
 
 
-def _display_link(token: str) -> tuple[str, list[str]] | None:
+def _display_link(token: str) -> tuple[str, str, list[str]] | None:
     from medilink.visits.views import find_display_link
 
     link = find_display_link(token)
     if link is None:
         return None
-    return str(link.facility_id), [str(s) for s in link.service_ids]
+    return str(link.pk), str(link.facility_id), [str(s) for s in link.service_ids]
 
 
 class DisplayConsumer(_Relay):
@@ -105,8 +105,8 @@ class DisplayConsumer(_Relay):
         if found is None:
             await self.close(code=CLOSE_UNAUTHENTICATED)
             return
-        facility_id, self.services = found
-        await self._join([outbox.display_group(facility_id)])
+        link_id, facility_id, self.services = found
+        await self._join([outbox.display_group(facility_id), outbox.display_link_group(link_id)])
         await self.accept()
 
     async def relay(self, event: dict[str, Any]) -> None:

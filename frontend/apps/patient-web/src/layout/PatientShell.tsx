@@ -151,6 +151,70 @@ function HeaderProfileSwitcher() {
 }
 
 /**
+ * The four destinations (design 07 §2). Phones get a bottom tab bar, rendered outside the sticky
+ * header: the header's backdrop blur would otherwise pin a "fixed" bar to the header itself.
+ * Tablets and up get the same items inline in the header.
+ */
+function PrimaryNav({ variant }: { variant: "bar" | "top" }) {
+  const { t } = useTranslation();
+  const bar = variant === "bar";
+  return (
+    <nav
+      aria-label={t("shell.nav")}
+      className={cx(
+        bar
+          ? "fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
+          : "ml-2 hidden shrink-0 md:block",
+      )}
+    >
+      <ul className={cx("m-0 list-none p-0", bar ? "grid grid-cols-4" : "flex gap-1")}>
+        {NAV.map(({ to, key, icon: NavIcon, end }) => (
+          <li key={to}>
+            <NavLink
+              to={to}
+              end={end}
+              className={({ isActive }) =>
+                cx(
+                  "relative flex items-center font-semibold no-underline transition-colors duration-150",
+                  bar
+                    ? "min-h-16 flex-col justify-center gap-0.5 px-2 text-caption"
+                    : "min-h-target gap-2 rounded-full px-3.5 whitespace-nowrap text-body-sm",
+                  isActive
+                    ? bar
+                      ? "text-brand"
+                      : "bg-surface text-fg shadow-card"
+                    : "text-fg-muted hover:text-fg",
+                )
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  {bar && (
+                    <span
+                      aria-hidden="true"
+                      className={cx(
+                        "absolute inset-x-7 top-0 h-[3px] rounded-b-full",
+                        isActive ? "bg-brand" : "bg-transparent",
+                      )}
+                    />
+                  )}
+                  <NavIcon
+                    aria-hidden="true"
+                    weight={isActive ? "fill" : "regular"}
+                    className={bar ? "size-6" : "size-[1.125rem]"}
+                  />
+                  {t(`shell.items.${key}`)}
+                </>
+              )}
+            </NavLink>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
+/**
  * Shell of every logged-in patient page (design 07 §2): header with the profile switcher,
  * notifications, language and account; the four destinations as a bottom bar on phones and a top
  * bar from tablet width; an offline banner (design 07 §4).
@@ -161,7 +225,7 @@ export function PatientShell() {
   return (
     <div className="flex min-h-dvh flex-col bg-page text-body">
       <SkipLink />
-      <header className="sticky top-0 z-30 border-b border-border bg-surface/95 backdrop-blur supports-[backdrop-filter]:bg-surface/85">
+      <header className="sticky top-0 z-30 border-b border-border bg-page/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-[72rem] flex-wrap items-center md:flex-nowrap gap-x-3 gap-y-2 px-4 py-2 sm:px-6">
           <Link
             to="/home"
@@ -169,53 +233,7 @@ export function PatientShell() {
           >
             <Logo className="h-10" />
           </Link>
-          <nav
-            aria-label={t("shell.nav")}
-            className={cx(
-              // Phones: fixed bottom bar, 64 px targets, clear of the home indicator
-              "fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface pb-[env(safe-area-inset-bottom)]",
-              // Tablet and up: inline in the header
-              "md:static md:ml-2 md:shrink-0 md:border-0 md:bg-transparent md:pb-0",
-            )}
-          >
-            <ul className="m-0 grid list-none grid-cols-4 p-0 md:flex md:gap-1">
-              {NAV.map(({ to, key, icon: NavIcon, end }) => (
-                <li key={to}>
-                  <NavLink
-                    to={to}
-                    end={end}
-                    className={({ isActive }) =>
-                      cx(
-                        "relative flex min-h-16 flex-col items-center justify-center gap-0.5 px-2 text-caption font-semibold no-underline",
-                        "md:min-h-target md:flex-row md:gap-2 md:whitespace-nowrap md:rounded-md md:px-3 md:text-body",
-                        isActive
-                          ? "text-brand md:bg-brand-subtle md:text-on-brand-subtle"
-                          : "text-fg-muted hover:text-fg md:hover:bg-subtle",
-                      )
-                    }
-                  >
-                    {({ isActive }) => (
-                      <>
-                        <span
-                          aria-hidden="true"
-                          className={cx(
-                            "absolute inset-x-6 top-0 h-1 rounded-b-full md:hidden",
-                            isActive ? "bg-brand" : "bg-transparent",
-                          )}
-                        />
-                        <NavIcon
-                          aria-hidden="true"
-                          weight={isActive ? "fill" : "regular"}
-                          className="size-6 md:size-5"
-                        />
-                        {t(`shell.items.${key}`)}
-                      </>
-                    )}
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          <PrimaryNav variant="top" />
           <div className="ml-auto flex min-w-0 flex-wrap items-center md:flex-nowrap justify-end gap-2">
             <HeaderProfileSwitcher />
             {FEATURE_HEADER_ITEMS().map((Item, index) => (
@@ -242,6 +260,7 @@ export function PatientShell() {
       >
         <Outlet />
       </main>
+      <PrimaryNav variant="bar" />
     </div>
   );
 }

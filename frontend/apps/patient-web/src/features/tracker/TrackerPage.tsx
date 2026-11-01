@@ -5,9 +5,25 @@ import {
   socketUrl,
   type PatientVisit,
 } from "@medilink/api-client";
-import { Alert, Button, cx, Dialog, ProgressDots, TextField, TicketNumber } from "@medilink/ui";
+import {
+  Alert,
+  Button,
+  cx,
+  Dialog,
+  ImigongoPattern,
+  ProgressDots,
+  TextField,
+  TicketNumber,
+} from "@medilink/ui";
 import { formatTime } from "@medilink/ui/i18n";
-import { CloudSlash, MapPin, MegaphoneSimple, PersonSimpleWalk } from "@phosphor-icons/react";
+import {
+  CaretRight,
+  Clock,
+  CloudSlash,
+  MapPin,
+  MegaphoneSimple,
+  PersonSimpleWalk,
+} from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -467,34 +483,74 @@ export function ActiveVisitCard() {
       <h2 id="active-visits" className="sr-only">
         {t("tracker.homeTitle")}
       </h2>
-      {list.map((v) => (
-        <Link
-          key={v.visit_id}
-          to={`/visits/${v.visit_id}`}
-          className={cx(
-            "flex items-center gap-4 rounded-lg p-5 no-underline shadow-raised",
-            v.state === "called" ? "bg-primary text-on-primary" : "bg-forest text-on-forest",
-          )}
-        >
-          <TicketNumber number={v.ticket_number} size="lg" className="text-[2.25rem]" />
-          <span className="flex min-w-0 flex-1 flex-col">
-            <span className="font-semibold">{v.facility_name}</span>
-            <span className="opacity-90">
-              {v.state === "called"
-                ? t("tracker.calledTo", { room: v.service_point ?? "" })
-                : v.state === "waiting"
-                  ? `${t("tracker.ahead", { count: v.ahead })}${v.estimate.min !== null ? ` · ${t("tracker.wait", { min: v.estimate.min, max: v.estimate.max })}` : ""}`
-                  : t(`tracker.states.${v.state}`, { defaultValue: t("tracker.inService") })}
+      {list.map((v) => {
+        const called = v.state === "called";
+        return (
+          <Link
+            key={v.visit_id}
+            to={`/visits/${v.visit_id}`}
+            className={cx(
+              "group relative isolate flex flex-col gap-4 overflow-hidden rounded-xl p-5 no-underline shadow-raised sm:p-6",
+              "transition-transform duration-150 active:scale-[0.99]",
+              called ? "bg-attention-solid text-on-attention-solid" : "bg-forest text-on-forest",
+            )}
+          >
+            {!called && (
+              <ImigongoPattern opacity={0.06} className="-z-10 text-on-forest-accent" />
+            )}
+            <span className="flex items-center justify-between gap-3 text-body-sm font-semibold">
+              <span className="min-w-0 truncate">{v.facility_name}</span>
+              <span className="inline-flex shrink-0 items-center gap-1.5">
+                <span aria-hidden="true" className="ml-live-dot" />
+                {t("tracker.open")}
+                <CaretRight aria-hidden="true" weight="bold" className="size-4 transition-transform group-hover:translate-x-0.5" />
+              </span>
             </span>
-            {v.leave_by && (
-              <span className="text-body-sm opacity-90">
-                {t("tracker.leaveBy", { time: time(v.leave_by, lang) })}
+            <span className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <TicketNumber
+                number={v.ticket_number}
+                size="lg"
+                stub
+                tone={called ? "neutral" : "brand"}
+                className={called ? "bg-surface text-fg" : "bg-on-forest/10 text-on-forest"}
+              />
+              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                {called ? (
+                  <span className="font-heading text-h2 font-bold">
+                    {t("tracker.calledTo", { room: v.service_point ?? "" })}
+                  </span>
+                ) : v.state === "waiting" ? (
+                  <>
+                    <span className="flex items-baseline gap-2">
+                      <span className="font-heading text-display leading-none font-extrabold tabular-nums">
+                        {v.ahead}
+                      </span>
+                      <span className="font-semibold">{t("tracker.aheadShort", { count: v.ahead })}</span>
+                    </span>
+                    {v.estimate.min !== null && (
+                      <span className="text-body-sm opacity-85">
+                        {t("tracker.wait", { min: v.estimate.min, max: v.estimate.max })}
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <span className="font-heading text-h2 font-bold">
+                    {t(`tracker.states.${v.state}`, { defaultValue: t("tracker.inService") })}
+                  </span>
+                )}
+              </span>
+            </span>
+            {v.leave_by && !called && (
+              <span className="flex items-center gap-3 rounded-lg bg-attention-bg px-4 py-3 text-attention">
+                <Clock aria-hidden="true" weight="bold" className="size-5 shrink-0" />
+                <span className="font-semibold text-fg">
+                  {t("tracker.leaveBy", { time: time(v.leave_by, lang) })}
+                </span>
               </span>
             )}
-          </span>
-          <span className="font-semibold underline underline-offset-4">{t("tracker.open")}</span>
-        </Link>
-      ))}
+          </Link>
+        );
+      })}
     </section>
   );
 }

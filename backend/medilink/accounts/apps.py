@@ -8,4 +8,9 @@ class AccountsConfig(AppConfig):
 
     def ready(self) -> None:
         # Registers the OpenAPI security schemes for the audience session cookies.
-        from medilink.accounts import authentication  # noqa: F401
+        from medilink.accounts import (
+            authentication,  # noqa: F401
+            totp_crypto,
+        )
+
+        totp_crypto.install()  # TOTP secrets encrypted at rest (issue #12)

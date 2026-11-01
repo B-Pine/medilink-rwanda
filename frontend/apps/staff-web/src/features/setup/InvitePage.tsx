@@ -105,9 +105,9 @@ function AcceptExisting({ token }: { token: string }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const accept = useMutation({
-    mutationFn: () => api.setup.acceptInvitation({ token }),
+    mutationFn: () => api.setup.acceptInvitation(token),
     onSuccess: (me) => {
-      if ("memberships" in me) queryClient.setQueryData(staffMeKey, me);
+      queryClient.setQueryData(staffMeKey, me);
       void navigate("/select-facility", { replace: true });
     },
   });
@@ -132,7 +132,7 @@ function NewAccount({ token, email }: { token: string; email: string }) {
   const { setPending } = useAuthFlow();
   const [form, setForm] = useState({ full_name: "", password: "" });
   const accept = useMutation({
-    mutationFn: () => api.setup.acceptInvitation({ token, ...form }),
+    mutationFn: () => api.setup.acceptNewAccount({ token, ...form }),
     onSuccess: () => {
       setPending({ status: "mfa_setup_required", email });
       void navigate("/login/mfa/setup", { replace: true });

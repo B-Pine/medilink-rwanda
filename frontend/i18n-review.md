@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 2202.
+Keys: 2228.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -383,6 +383,14 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `signup.submit` | Fungura konti | Create account | needs native-speaker review |
 | `signup.haveAccount` | Usanzwe ufite konti? | Already have an account? | needs native-speaker review |
 | `signup.login` | Injira | Log in | needs native-speaker review |
+| `signup.checkEmailTitle` | Reba imeyili yawe | Check your email | needs native-speaker review |
+| `signup.checkEmailBody` | Twohereje ubutumwa kuri {{email}}. Fungura ihuriro riri muri ubwo butumwa kugira ngo urangize gufungura konti. Iryo huriro rimara iminsi 3. | We sent a message to {{email}}. Open the link in it to finish creating your account. The link works for 3 days. | needs native-speaker review |
+| `signup.checkEmailHint` | Nta meyili wabonye nyuma y’iminota mike? Reba mu butumwa bwa spam, cyangwa wongere wiyandikishe ubone irindi huriro. | No email after a few minutes? Check your spam folder, or sign up again to get a new link. | needs native-speaker review |
+| `verifyEmail.title` | Emeza imeyili yawe | Confirm your email | needs native-speaker review |
+| `verifyEmail.working` | Turimo kwemeza imeyili yawe… | Confirming your email… | needs native-speaker review |
+| `verifyEmail.failedTitle` | Ntitwashoboye kwemeza imeyili yawe | We couldn't confirm your email | needs native-speaker review |
+| `verifyEmail.invalidLink` | Iri huriro ntiryuzuye. Ongera ufungure ihuriro riri muri imeyili. | This link is incomplete. Open the link from the email again. | needs native-speaker review |
+| `verifyEmail.signUpAgain` | Ongera wiyandikishe | Sign up again | needs native-speaker review |
 | `home.title` | Ahabanza | Home | needs native-speaker review |
 | `home.findCare` | Shaka ubuvuzi | Find care | needs native-speaker review |
 | `home.nextVisitTitle` | Uruzinduko rwawe rukurikira | Your next visit | needs native-speaker review |
@@ -740,6 +748,16 @@ File: `apps/staff-web/src/features/patients/locales/rw.json`
 | `palette.searchFor` | Shakisha abarwayi “{{query}}” | Search patients for “{{query}}” | needs native-speaker review |
 | `palette.results` | Abarwayi | Patients | needs native-speaker review |
 | `palette.file` | Dosiye {{number}} | File {{number}} | needs native-speaker review |
+| `accessReason.heading` | Dosiye y'umurwayi | Patient record | needs native-speaker review |
+| `accessReason.title` | Kuki ufunguye iyi dosiye? | Why are you opening this record? | needs native-speaker review |
+| `accessReason.description` | Uyu murwayi nta gusura aherutse hano, cyangwa akora hano. Impamvu yawe yandikwa mu mateka y'abafunguye dosiye ye. | This patient has no recent visit here, or works here. Your reason is recorded in their access history. | needs native-speaker review |
+| `accessReason.reason` | Impamvu | Reason | needs native-speaker review |
+| `accessReason.reasons.care_continuity` | Gukomeza kumuvura | Continuing their care | needs native-speaker review |
+| `accessReason.reasons.results_review` | Kureba ibisubizo | Reviewing results | needs native-speaker review |
+| `accessReason.reasons.admin_request` | Icyifuzo cy'ubuyobozi | Administrative request | needs native-speaker review |
+| `accessReason.reasons.other` | Ikindi | Other | needs native-speaker review |
+| `accessReason.reasonText` | Sobanura impamvu | Explain the reason | needs native-speaker review |
+| `accessReason.open` | Fungura dosiye | Open record | needs native-speaker review |
 
 ## staff-web feature: platform (namespace platform)
 
@@ -2185,6 +2203,7 @@ File: `apps/patient-web/src/features/profile/locales/rw.json`
 | `history.actions.patients.merge.executed` | yahuje dosiye zawe ebyiri | joined two of your records | needs native-speaker review |
 | `history.actions.patients.merge.undone` | yatandukanyije dosiye ebyiri | separated two records | needs native-speaker review |
 | `history.actions.other` | yakoresheje dosiye yawe | used your record | needs native-speaker review |
+| `history.more` | Erekana ibya mbere | Show older entries | needs native-speaker review |
 | `family.title` | Umuryango no gusangiza | Family and sharing | needs native-speaker review |
 | `family.profiles` | Imyirondoro ucunga | Profiles you manage | needs native-speaker review |
 | `family.access` | Ubona iki | Who can see what | needs native-speaker review |
@@ -2224,6 +2243,10 @@ File: `apps/patient-web/src/features/profile/locales/rw.json`
 | `privacy.careHint` | Ibigo nderabuzima birukenera kugira ngo bibike dosiye yawe y'ubuzima. | Facilities need this to keep your health record. | needs native-speaker review |
 | `privacy.history` | Reba abafunguye dosiye yanjye | See who opened my record | needs native-speaker review |
 | `privacy.later` | Gukuramo cyangwa gusiba amakuru yawe bizaboneka nyuma. | Downloading or deleting your data will be available later. | needs native-speaker review |
+| `privacy.notifications` | Ubutumwa ku buvuzi bwanjye | Messages about my care | needs native-speaker review |
+| `privacy.notificationsHint` | Kwibutswa n'amakuru ku gusura no ku gufata gahunda. | Reminders and updates about visits and bookings. | needs native-speaker review |
+| `privacy.location` | Koresha aho ndi | Use my location | needs native-speaker review |
+| `privacy.locationHint` | Shaka ibigo biri hafi yawe. | Find facilities near you. | needs native-speaker review |
 | `claim.title` | Saba dosiye yanjye | Claim my record | needs native-speaker review |
 | `claim.intro` | Niba ikigo nderabuzima cyarakwanditse utarafungura konti, huza iyo dosiye na konti yawe. | If a facility registered you before you had an account, link that record to your account. | needs native-speaker review |
 | `claim.way` | Urashaka kuyishaka ute? | How do you want to find it? | needs native-speaker review |
@@ -2238,6 +2261,9 @@ File: `apps/patient-web/src/features/profile/locales/rw.json`
 | `claim.reference` | Nomero y'ubusabe | Claim reference | needs native-speaker review |
 | `claim.done` | Dosiye yawe ubu ihujwe na konti yawe. | Your record is now linked to your account. | needs native-speaker review |
 | `claim.open` | Fungura umwirondoro wanjye | Open my profile | needs native-speaker review |
+| `claim.waiting` | Dutegereje ko iyakira igenzura inyandiko yawe. Uru rupapuro rwivugurura ubwarwo. | Waiting for reception to check your document. This page updates by itself. | needs native-speaker review |
+| `claim.ended` | Iki cyifuzo ntikigikora. Ongera utangire usabe dosiye yawe. | This claim is no longer open. Start again to claim your record. | needs native-speaker review |
+| `claim.again` | Ongera utangire | Start again | needs native-speaker review |
 | `numberHint` | Erekana iyi nimero ku kigo icyo ari cyo cyose kugira ngo babone dosiye yawe vuba. | Show this number at any facility so staff find your record quickly. | needs native-speaker review |
 | `sectionHints.details` | Amazina, itariki y’amavuko, telefoni, uwo guhamagara mu byihutirwa | Name, birth date, phone, emergency contact | needs native-speaker review |
 | `sectionHints.identifiers` | Indangamuntu, pasiporo cyangwa ikarita y’impunzi | National ID, passport or refugee ID | needs native-speaker review |

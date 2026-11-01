@@ -28,6 +28,7 @@ from medilink.facilities.models import (
     ServicePoint,
 )
 from medilink.facilities.views_base import FacilityView, Member, Needs, err, query_date
+from medilink.onboarding.services import facility_version
 from medilink.uploads import services as uploads
 from medilink.uploads.throttling import UploadRateThrottle
 from medilink.uploads.views import rejected
@@ -57,6 +58,7 @@ def profile_data(facility: Any) -> dict[str, Any]:
             "photos": profile.photo_file_ids,
             "level_of_care": profile.level_of_care,
             "version": profile.version,
+            "status_version": facility_version(facility),
         }
     ).data
 
@@ -495,6 +497,7 @@ class ChecklistView(FacilityView):
                 "items": [vars(i) for i in items],
                 "complete": all(i.done for i in items),
                 "status": facility.status,
+                "status_version": facility_version(facility),
             }
         )
 
@@ -502,15 +505,22 @@ class ChecklistView(FacilityView):
 class GoLiveView(FacilityView):
     permission_classes = [Needs(CONFIGURE), RecentAuthRequired()]
 
+    def conflict_current(self, request: Request, *args: Any, **kwargs: Any) -> Any:
+        return profile_data(self.facility())
+
     @extend_schema(
         operation_id="staff_facility_go_live",
         tags=TAGS,
         request=s.GoLiveSerializer,
-        responses={200: s.FacilityProfileSerializer, 422: err("failing checks in fields")},
+        responses={
+            200: s.FacilityProfileSerializer,
+            409: err("stale status_version (error.current: the profile)"),
+            422: err("failing checks in fields"),
+        },
     )
     def post(self, request: Request) -> Response:
+        from medilink.core.idempotency import idempotency_key
         from medilink.onboarding.services import GoLiveFailed, change_facility_status
-        from medilink.uploads.views import idempotency_key
 
         body = s.GoLiveSerializer(data=request.data)
         body.is_valid(raise_exception=True)

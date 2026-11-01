@@ -7,11 +7,11 @@ from django.db.models.signals import post_migrate
 BEAT_SCHEDULE = {
     "onboarding.send_licence_reminders": {
         "task": "medilink.onboarding.tasks.send_licence_reminders",
-        "schedule": crontab(hour=5, minute=0),  # 07:00 Kigali
+        "schedule": crontab(hour=7, minute=0),  # Kigali time (CELERY_TIMEZONE)
     },
     "onboarding.expire_stale_drafts": {
         "task": "medilink.onboarding.tasks.expire_stale_drafts",
-        "schedule": crontab(hour=1, minute=0),
+        "schedule": crontab(hour=3, minute=0),  # Kigali time (CELERY_TIMEZONE)
     },
 }
 

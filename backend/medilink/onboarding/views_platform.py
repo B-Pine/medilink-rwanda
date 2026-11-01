@@ -19,7 +19,8 @@ from medilink.audit.services import record
 from medilink.authz.permissions import get_principal
 from medilink.authz.platform import PlatformAdmin
 from medilink.authz.stepup import RecentAuthRequired
-from medilink.core.exceptions import BusinessRuleViolation, error_response
+from medilink.core.exceptions import BusinessRuleViolation, CurrentOnConflict, error_response
+from medilink.core.idempotency import IDEMPOTENCY, idempotency_key
 from medilink.core.pagination import DefaultPagination
 from medilink.core.serializers import ErrorSerializer
 from medilink.core.throttling import BurstRateThrottle
@@ -37,7 +38,7 @@ from medilink.onboarding.models import (
     FacilityStatusEvent,
     FeatureFlag,
 )
-from medilink.onboarding.views_public import IDEMPOTENCY, add_document, idempotency_key
+from medilink.onboarding.views_public import add_document
 from medilink.tenancy.models import Facility
 from medilink.uploads.serializers import DownloadLinkRequestSerializer, DownloadLinkSerializer
 from medilink.uploads.services import NotClean, download_link
@@ -73,9 +74,29 @@ def _platform_data(request: Request, application: Application) -> dict[str, Any]
     return s.application_data(application, platform=True, language=request_language(request))
 
 
-class _Platform(APIView):
+class _Platform(CurrentOnConflict, APIView):
     permission_classes = [PlatformAdmin]
     parser_classes = [JSONParser]
+
+    def conflict_current(self, request: Request, *args: Any, **kwargs: Any) -> Any:
+        """`error.current` on 409: the view's own resource, else the application or facility the
+        action is on."""
+        current = super().conflict_current(request, *args, **kwargs)
+        if current is not None:
+            return current
+        if "licence_id" in kwargs:
+            licence = FacilityLicence.objects.filter(
+                pk=kwargs["licence_id"], facility_id=kwargs["facility_id"]
+            ).first()
+            return s.licence_data(licence) if licence else None
+        if "code" in kwargs and "facility_id" not in kwargs:
+            flag = FeatureFlag.objects.filter(code=kwargs["code"]).first()
+            return s.flag_data(flag) if flag else None
+        if "application_id" in kwargs:
+            return _platform_data(request, _application(kwargs["application_id"]))
+        if "facility_id" in kwargs and "code" not in kwargs:
+            return s.facility_data(_facility(kwargs["facility_id"]))
+        return None
 
 
 class _StepUp(_Platform):

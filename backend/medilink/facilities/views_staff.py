@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from django.contrib.auth import authenticate
 from django.http import Http404
 from django.utils import timezone
-from drf_spectacular.utils import OpenApiParameter, extend_schema
+from django.utils.translation import gettext_lazy as _
+from drf_spectacular.utils import OpenApiParameter, PolymorphicProxySerializer, extend_schema
 from rest_framework import exceptions, status
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -16,27 +16,29 @@ from medilink.accounts import mfa
 from medilink.accounts.authentication import StaffSessionAuthentication
 from medilink.accounts.models import ClinicianProfile, User
 from medilink.accounts.principal import PrincipalState
-from medilink.accounts.serializers import LoginResultSerializer
+from medilink.accounts.serializers import LoginResultSerializer, StaffMeSerializer
 from medilink.accounts.services import complete_staff_login, staff_me_data, start_pending_mfa
 from medilink.audit.services import record
 from medilink.authz.permissions import (
-    IsPlatformAdmin,
     IsStaffAuthenticated,
     PublicEndpoint,
     get_principal,
 )
+from medilink.authz.platform import PlatformAdmin
 from medilink.authz.stepup import RecentAuthRequired
+from medilink.core.idempotency import IDEMPOTENCY, idempotency_key
 from medilink.core.throttling import BurstRateThrottle, IPScopedRateThrottle
 from medilink.facilities import serializers as s
 from medilink.facilities import staff
 from medilink.facilities.errors import SetupAPIView
 from medilink.facilities.throttling import InvitationRateThrottle
-from medilink.facilities.views_base import FacilityView, Member, Needs, err
+from medilink.facilities.views_base import PAGE, FacilityView, Member, Needs, err, paginated
 from medilink.tenancy.context import rls_context
 from medilink.tenancy.models import FacilityMembership, Invitation, Role
 
 TAGS = ["staff-team"]
 MANAGE = "staff.manage"
+SIGN_IN_FIRST = _("You already have an account: sign in with it, then accept the invitation.")
 
 
 class RolesView(FacilityView):
@@ -113,8 +115,9 @@ class MembershipsView(StaffView):
             OpenApiParameter("status", str),
             OpenApiParameter("role", str),
             OpenApiParameter("q", str),
+            *PAGE,
         ],
-        responses={200: s.StaffMembershipSerializer(many=True)},
+        responses={200: s.StaffMembershipPageSerializer},
     )
     def get(self, request: Request) -> Response:
         rows = self.memberships()
@@ -126,8 +129,8 @@ class MembershipsView(StaffView):
         q = request.query_params.get("q", "").strip()
         if q:
             rows = rows.filter(user__full_name__icontains=q) | rows.filter(user__email__icontains=q)
-        return Response(
-            {"results": [membership_data(m) for m in rows.distinct().order_by("user__full_name")]}
+        return paginated(
+            self, request, rows.distinct().order_by("user__full_name", "pk"), membership_data
         )
 
 
@@ -200,7 +203,7 @@ def invitation_data(i: Invitation) -> dict[str, Any]:
         state = "accepted"
     elif i.revoked_at:
         state = "revoked"
-    elif i.expires_at <= timezone.now():
+    elif i.expired_at or i.expires_at <= timezone.now():
         state = "expired"
     else:
         state = "pending"
@@ -227,23 +230,28 @@ class InvitationsView(StaffView):
     @extend_schema(
         operation_id="staff_invitations_list",
         tags=TAGS,
-        responses={200: s.InvitationSerializer(many=True)},
+        parameters=PAGE,
+        responses={200: s.InvitationPageSerializer},
     )
     def get(self, request: Request) -> Response:
         rows = Invitation.objects.filter(
             facility_id=self.principal().active_facility_id
         ).select_related("invited_by")
-        return Response(
-            {"results": [invitation_data(i) for i in rows.order_by("-created_at")[:200]]}
-        )
+        return paginated(self, request, rows.order_by("-created_at", "pk"), invitation_data)
 
     @extend_schema(
         operation_id="staff_invitations_create",
         tags=TAGS,
         request=s.InvitationCreateSerializer,
-        responses={201: s.InvitationSerializer, 409: err("pending invitation or already a member")},
+        parameters=[IDEMPOTENCY],
+        responses={
+            201: s.InvitationSerializer,
+            409: err("pending invitation or already a member"),
+            422: err("facility deactivated"),
+        },
     )
     def post(self, request: Request) -> Response:
+        key = idempotency_key(request)
         body = s.InvitationCreateSerializer(data=request.data)
         body.is_valid(raise_exception=True)
         data = body.validated_data
@@ -254,6 +262,7 @@ class InvitationsView(StaffView):
             service_point_ids=data["service_point_ids"],
             actor=request.user,
             request=request,
+            idempotency_key=key,
         )
         return Response(invitation_data(invitation), status=status.HTTP_201_CREATED)
 
@@ -378,10 +387,21 @@ class InvitationAcceptView(_InvitationAuthView):
         tags=["staff-auth"],
         request=s.AcceptNewSerializer,
         responses={
-            200: LoginResultSerializer,
+            200: PolymorphicProxySerializer(
+                component_name="InvitationAcceptResult",
+                serializers=[StaffMeSerializer, LoginResultSerializer],
+                resource_type_field_name=None,
+            ),
             400: err("invalid token or password"),
+            401: err("the email has an account: sign in first, then accept with {token}"),
             403: err("other account signed in"),
         },
+        description=(
+            "Existing account: a signed-in staff session with the invited email sends `{token}` "
+            "and gets `StaffMe` with the new membership. New account: `{token, full_name, "
+            "password}` gets `LoginResult` (`mfa_setup_required`). Passwords are never checked "
+            "here: existing accounts sign in through the login endpoint (lockout, MFA, audit)."
+        ),
     )
     def post(self, request: Request) -> Response:
         body = s.AcceptNewSerializer(data=request.data)
@@ -397,30 +417,16 @@ class InvitationAcceptView(_InvitationAuthView):
         )
         if signed_in:  # an authenticated staff session: add the membership to this account
             staff.accept_existing(token, user=request.user, request=request)
-            return Response(
-                LoginResultSerializer(
-                    {
-                        "status": "authenticated",
-                        "user": staff_me_data(self.signed_in_principal(request), request.session),
-                    }
-                ).data
+            return Response(staff_me_data(self.signed_in_principal(request), request.session))
+        if User.objects.filter(email__iexact=found["email"]).exists():
+            raise exceptions.NotAuthenticated(SIGN_IN_FIRST)
+        if not data.get("full_name") or not data.get("password"):
+            raise exceptions.ValidationError(
+                {"password": ["Choose a password."], "full_name": ["Give your names."]}
             )
-        existing = User.objects.filter(email__iexact=found["email"]).first()
-        if existing is None:
-            if not data.get("full_name") or not data.get("password"):
-                raise exceptions.ValidationError(
-                    {"password": ["Choose a password."], "full_name": ["Give your names."]}
-                )
-            user = staff.accept_new_account(
-                token, full_name=data["full_name"], password=data["password"], request=request
-            )
-        else:
-            user = authenticate(
-                request._request, email=existing.email, password=data.get("password") or ""
-            )
-            if user is None:
-                raise exceptions.ValidationError({"password": ["That password isn't right."]})
-            staff.accept_existing(token, user=user, request=request)
+        user = staff.accept_new_account(
+            token, full_name=data["full_name"], password=data["password"], request=request
+        )
         from medilink.accounts.views import dev_skip_staff_mfa
 
         if dev_skip_staff_mfa():
@@ -440,7 +446,7 @@ class InvitationAcceptView(_InvitationAuthView):
 
 
 class PlatformMfaResetView(SetupAPIView):
-    permission_classes = [IsPlatformAdmin, RecentAuthRequired()]
+    permission_classes = [PlatformAdmin, RecentAuthRequired()]
 
     @extend_schema(
         operation_id="platform_memberships_mfa_reset",

@@ -20,7 +20,8 @@ CONTRACT = {
     ("/api/v1/staff/auth/logout/", "post"): "204",
     ("/api/v1/staff/auth/me/", "get"): "200",
     ("/api/v1/staff/auth/active-facility/", "post"): "200",
-    ("/api/v1/patient/auth/register/", "post"): "201",
+    ("/api/v1/patient/auth/register/", "post"): "202",
+    ("/api/v1/patient/auth/verify-email/", "post"): "200",
     ("/api/v1/patient/auth/login/", "post"): "200",
     ("/api/v1/patient/auth/logout/", "post"): "204",
     ("/api/v1/patient/auth/me/", "get"): "200",
@@ -114,7 +115,19 @@ def test_b2_request_bodies_match_contract(schema: dict[str, Any]) -> None:
 
 
 def test_b2_error_envelope_is_documented(schema: dict[str, Any]) -> None:
-    assert set(_props(schema, "ErrorDetail")) == {"code", "message", "fields", "request_id"}
+    assert set(_props(schema, "ErrorDetail")) == {
+        "code",
+        "message",
+        "fields",
+        "request_id",
+        "current",  # 409 on a versioned resource only (R3)
+    }
+    assert set(schema["components"]["schemas"]["ErrorDetail"]["required"]) == {
+        "code",
+        "message",
+        "fields",
+        "request_id",
+    }
     login = schema["paths"]["/api/v1/staff/auth/login/"]["post"]["responses"]
     assert login["401"]["content"]["application/json"]["schema"]["$ref"].endswith("/Error")
 

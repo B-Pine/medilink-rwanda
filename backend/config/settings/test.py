@@ -35,6 +35,8 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.PBKDF2PasswordHasher",
 ]
 
+# Fixed test-only key for TOTP secret encryption (medilink.accounts.totp_crypto).
+MFA_SECRET_KEYS = "1:dGVzdC1vbmx5LW1mYS1zZWNyZXQta2V5LTMyYnl0ZSE"  # noqa: S105 (test only)
 ADMIN_ENABLED = True
 SCHEMA_ENABLED = True
 SPECTACULAR_SETTINGS = {**SPECTACULAR_SETTINGS}

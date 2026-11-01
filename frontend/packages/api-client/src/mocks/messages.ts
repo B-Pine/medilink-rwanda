@@ -25,10 +25,15 @@ const MESSAGES = {
     fr: "Utilisez au moins {min} caractères.",
     rw: "Koresha nibura inyuguti {min}.",
   },
-  emailTaken: {
-    en: "Check this email address or log in instead.",
-    fr: "Vérifiez cette adresse e-mail ou connectez-vous.",
-    rw: "Reba iyi meyili cyangwa winjire.",
+  signUpAccepted: {
+    en: "Check your email to finish creating your account.",
+    fr: "Consultez vos e-mails pour terminer la création de votre compte.",
+    rw: "Reba imeyili yawe kugira ngo urangize gufungura konti.",
+  },
+  invalidVerifyLink: {
+    en: "This link is invalid, expired or already used. Sign up again.",
+    fr: "Ce lien n’est pas valide, a expiré ou a déjà été utilisé. Inscrivez-vous à nouveau.",
+    rw: "Iri huriro ntirigikora cyangwa ryarakoreshejwe. Ongera wiyandikishe.",
   },
   invalidCredentials: {
     en: "Email or password is incorrect.",

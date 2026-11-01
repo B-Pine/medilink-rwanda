@@ -1,4 +1,5 @@
-"""S1 system check: the staff lock delay stays within 5 to 30 minutes (contract §2.5)."""
+"""Account system checks: the staff lock delay stays within 5 to 30 minutes (S1 contract §2.5);
+TOTP secret encryption keys are configured in deployments (R1, issue #12)."""
 
 from __future__ import annotations
 
@@ -31,4 +32,20 @@ def check_staff_lock_after(app_configs: Any = None, **kwargs: Any) -> list[Check
                 id="medilink.E101",
             )
         ]
+    return []
+
+
+@register(Tags.security, deploy=True)
+def check_mfa_secret_keys(app_configs: Any = None, **kwargs: Any) -> list[CheckMessage]:
+    """TOTP secrets need their own encryption keys in deployments (issue #12)."""
+    from django.core.exceptions import ImproperlyConfigured
+
+    from medilink.accounts import totp_crypto
+
+    if not totp_crypto.keys_configured():
+        return [Error("MFA_SECRET_KEYS must be set (TOTP secret encryption).", id="medilink.E110")]
+    try:
+        totp_crypto.keyring()
+    except ImproperlyConfigured as exc:
+        return [Error(str(exc), id="medilink.E111")]
     return []

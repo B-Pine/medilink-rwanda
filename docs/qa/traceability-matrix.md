@@ -310,7 +310,7 @@ Source: [12 · Security, privacy, compliance](../analysis/12-security-privacy-an
 |---|---|---|---|---|---|---|
 | FR-SEC-01 | Server-side RBAC and facility scoping on every request | P1 | S0 | Backend | AZ, RLS | Verified (S0, v0.1.0) |
 | FR-SEC-02 | PostgreSQL row-level security for tenant isolation | P1 | S0 | Backend | RLS | Verified (S0, v0.1.0) |
-| FR-SEC-03 | Treatment-relationship rule for clinical data | P1 | S6 | Backend | AZ | Not started |
+| FR-SEC-03 | Treatment-relationship rule for clinical data | P1 | S3 (R2 #84), S6 | Backend | AZ | In progress |
 | FR-SEC-04 | Versioned consent records | P1 | S0 | Both | API | Verified (S0, v0.1.0) |
 | FR-SEC-05 | Separate optional research consent | P1 | S0 | Both | API, E2E | Verified (S0, v0.1.0) |
 | FR-SEC-06 | Staff 2FA; re-authentication to sign; idle lock with PIN | P1 | S0 (MFA), S1 (PIN lock, step-up) | Both | API, E2E, SEC | In progress |

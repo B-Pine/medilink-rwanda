@@ -201,7 +201,8 @@
     "toPharmacy": "Send to pharmacy",
     "toPayment": "Send to payment",
     "hold": "Wait for results",
-    "waiting": "Waiting"
+    "waiting": "Waiting",
+    "nextUp": "Next up"
   },
   "reorders": {
     "title": "Queue reviews",

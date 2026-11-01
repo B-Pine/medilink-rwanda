@@ -201,7 +201,8 @@
     "toPharmacy": "Envoyer à la pharmacie",
     "toPayment": "Envoyer au paiement",
     "hold": "Attendre les résultats",
-    "waiting": "En attente"
+    "waiting": "En attente",
+    "nextUp": "Ensuite"
   },
   "reorders": {
     "title": "Contrôle de la file",

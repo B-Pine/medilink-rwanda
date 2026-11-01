@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 3173.
+Keys: 3174.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -1938,6 +1938,7 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `mine.toPayment` | Mwohereze kwishyura | Send to payment | needs native-speaker review |
 | `mine.hold` | Ategereze ibisubizo | Wait for results | needs native-speaker review |
 | `mine.waiting` | Abategereje | Waiting | needs native-speaker review |
+| `mine.nextUp` | Ukurikiyeho | Next up | needs native-speaker review |
 | `reorders.title` | Igenzura ry’umurongo | Queue reviews | needs native-speaker review |
 | `reorders.intro` | Igihe cyose umurwayi yimuwe imbere ku murongo, n’impamvu. Bigenzure kugira ngo umurongo ube uw’ukuri. | Every time someone moved a patient up the queue, with the reason. Review them to keep the queue fair. | needs native-speaker review |
 | `reorders.onlyOpen` | Erekana gusa ibitaragenzurwa | Show only moves not yet reviewed | needs native-speaker review |

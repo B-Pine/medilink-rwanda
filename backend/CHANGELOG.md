@@ -8,6 +8,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Security
+
+- pypdf 6.21.2 → 6.21.4 in the hash-pinned locks (CVE-2026-119203 to CVE-2026-119209, reported by
+  `pip-audit`).
+
 ### Sprint 1 · Platform and onboarding
 
 - Upload pipeline v1 (`medilink.uploads`, contract §2.4, §3.6): `uploads_file` with forced RLS

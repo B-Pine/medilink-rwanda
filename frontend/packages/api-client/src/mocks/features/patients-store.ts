@@ -51,6 +51,8 @@ export interface MockFacilityRecord {
   file_number: string | null;
   reception_notes: string | null;
   is_staff_member: boolean;
+  /** Open or recent visit, or registered today: ST5/ST13 need no access reason (R2). */
+  in_care: boolean;
   is_active: boolean;
   merged_into: string | null;
   version: number;
@@ -80,6 +82,8 @@ export interface MockInvite {
 export interface MockClaim extends RecordClaim {
   account_email: string;
   patient_id: string;
+  /** The facility whose reception confirmed it (ST17 replays there return the claim). */
+  confirmed_facility_id?: string | null;
   code: string | null;
   attempts: number;
 }
@@ -160,6 +164,19 @@ export function maskPhone(e164: string | null): string | null {
 
 export const mask = (last4: string) => `••••${last4}`;
 
+/** Current version of every consent text (backend `consents.DEFAULT_VERSIONS`). */
+export const MOCK_CONSENT_VERSION = "2026-10";
+
+/** Backend `normalize_file_number`: trimmed and uppercased; empty means none. */
+export function normalizeFileNumber(value: unknown): string | null {
+  return (typeof value === "string" ? value : "").trim().toUpperCase() || null;
+}
+
+/** Backend `normalize_member_number`: every space removed, uppercased. */
+export function normalizeMemberNumber(value: unknown): string {
+  return (typeof value === "string" ? value : "").replace(/\s+/g, "").toUpperCase();
+}
+
 /** Like `consents.has_care_consent()`: the latest care record decides (consents are newest first). */
 export function hasCareConsent(patient: MockPatient): boolean {
   return patient.consents.find((c) => c.kind === "care")?.granted ?? false;
@@ -231,6 +248,8 @@ export interface PatientsStore {
   invites: MockInvite[];
   claims: MockClaim[];
   merges: (MergeRequest & { requested_by_email: string; facility_id: string | null })[];
+  /** ST28 access reasons: `${staff email}:${facility record id}` → expiry (ms). */
+  accessReasons: Map<string, number>;
   /** PA7 `Idempotency-Key` replays: `${account email}:${key}` → link id. */
   dependentKeys: Map<string, string>;
   /** Tests: approve and undo answer `step_up_required` while true. */
@@ -281,6 +300,7 @@ export function createPatientsStore(): PatientsStore {
     claims: [],
     merges: [],
     dependentKeys: new Map(),
+    accessReasons: new Map(),
     requireStepUp: false,
     nextSeed: 100,
   };
@@ -328,6 +348,7 @@ export function createPatientsStore(): PatientsStore {
         file_number: `KC-${String(index + 1).padStart(4, "0")}`,
         reception_notes: null,
         is_staff_member: index === 2, // Habimana Eric is also staff (reception@medilink.test)
+        in_care: index !== 4, // Niyonsaba Claudine has no recent visit: opening her needs a reason
         is_active: true,
         merged_into: null,
         version: 1,

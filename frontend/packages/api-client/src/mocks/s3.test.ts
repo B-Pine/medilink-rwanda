@@ -153,6 +153,119 @@ describe("staff patients", () => {
       document_matches: true,
     });
     expect(claim.status).toBe("completed");
+    const replay = await api.patients.confirmClaim(paul!.facility_patient_id, {
+      claim_reference: MOCK_CLAIM_REFERENCE.toLowerCase(),
+      document_kind: "national_id",
+      document_matches: true,
+    });
+    expect(replay).toMatchObject({ id: claim.id, status: "completed" });
+    expect(replay).not.toHaveProperty("confirmed_facility_id");
+  });
+
+  it("R2: clinical reads outside care need a reason (ST5, ST13, ST28)", async () => {
+    await staff("doctor@medilink.test");
+    await api.staffAuth.setActiveFacility("4f0c1d2e-5b6a-4c7d-8e9f-0a1b2c3d4e01");
+    const { results } = await api.patients.search({ query: "Niyonsaba" });
+    const fp = results[0]!.facility_patient_id;
+    const denied = await failure(api.patients.get(fp));
+    expect(denied.status).toBe(403);
+    expect(denied.code).toBe("access_reason_required");
+    expect((await failure(api.patients.healthProfile(fp))).code).toBe("access_reason_required");
+    const bad = await failure(
+      api.patients.giveAccessReason(fp, {
+        reason_code: "other",
+        reason_text: " ",
+        extra: 1,
+      } as unknown as Parameters<MediLinkApi["patients"]["giveAccessReason"]>[1]),
+    );
+    expect(bad.status).toBe(400);
+    expect(bad.fieldError("extra")).toBe("Unknown field.");
+    expect(
+      (await failure(api.patients.giveAccessReason(fp, { reason_code: "other" }))).fieldError(
+        "reason_text",
+      ),
+    ).toBeTruthy();
+    const given = await api.patients.giveAccessReason(fp, { reason_code: "results_review" });
+    expect(Date.parse(given.expires_at)).toBeGreaterThan(Date.now());
+    expect((await api.patients.get(fp)).full_name).toBe("Niyonsaba Claudine");
+    expect((await api.patients.healthProfile(fp)).allergies).toEqual([]);
+    expect(
+      (
+        await failure(
+          api.patients.giveAccessReason("00000000-0000-4000-8000-000000000000", {
+            reason_code: "admin_request",
+          }),
+        )
+      ).status,
+    ).toBe(404);
+  });
+
+  it("R2: a colleague's record always needs a reason", async () => {
+    await staff();
+    const { results } = await api.patients.search({ query: "Habimana Eric" });
+    const fp = results[0]!.facility_patient_id;
+    expect((await failure(api.patients.get(fp))).code).toBe("access_reason_required");
+    await api.patients.giveAccessReason(fp, { reason_code: "care_continuity" });
+    expect((await api.patients.get(fp)).is_staff_member).toBe(true);
+  });
+
+  it("R2: consent versions, file and member numbers are checked like the API", async () => {
+    await staff();
+    const stale = await failure(
+      api.patients.register({ ...walkIn, care_consent: { version: "2020-01", granted: true } }),
+    );
+    expect(stale.status).toBe(422);
+    expect(stale.fieldError("care_consent")).toMatch(/current version/);
+    const created = await api.patients.register({ ...walkIn, file_number: "  kc-9001 " });
+    expect(created.file_number).toBe("KC-9001");
+    expect((await api.patients.search({ query: "kc-9001" })).results).toHaveLength(1);
+    const card = await api.patients.addInsurance(created.facility_patient_id, {
+      insurer_code: "mutuelle",
+      member_number: " 12 34/ab ",
+    });
+    expect(card.member_number).toBe("1234/AB");
+    expect(
+      (
+        await failure(
+          api.patients.addInsurance(created.facility_patient_id, {
+            insurer_code: "mutuelle",
+            member_number: "   ",
+          }),
+        )
+      ).fieldError("member_number"),
+    ).toBeTruthy();
+  });
+
+  it("R2: merge bodies are strict and the requester can't undo", async () => {
+    await staff();
+    const results = (await api.patients.search({ query: "mukamana" })).results;
+    const a = results.find((r) => r.full_name === "Mukamana Jeanne")!;
+    const b = results.find((r) => r.full_name === "Jeanne Mukamana")!;
+    const body = {
+      surviving_facility_patient_id: a.facility_patient_id,
+      merged_facility_patient_id: b.facility_patient_id,
+      reason: "Registered twice",
+    };
+    const extra = await failure(
+      api.patients.requestMerge({ ...body, scope: "facility" } as typeof body),
+    );
+    expect(extra.fieldError("scope")).toBe("Unknown field.");
+    const merge = await api.patients.requestMerge(body);
+    const escalated = await api.patients.escalateMerge(merge.id);
+    await api.staffAuth.logout();
+    await staff("admin@medilink.test");
+    const done = await api.patients.platform.approve(merge.id, { version: escalated.version });
+    expect(
+      (
+        await failure(
+          api.patients.platform.undo(merge.id, {
+            version: done.version,
+            reason: "Mistake",
+            force: true,
+          } as unknown as { version: number; reason: string }),
+        )
+      ).status,
+    ).toBe(400);
   });
 });
 
@@ -407,5 +520,67 @@ describe("patient profile", () => {
     const second = await api.profile.accessHistory(SELF_PATIENT_ID, 2);
     expect(second.results).toHaveLength(4);
     expect(second.next).toBeNull();
+  });
+
+  it("R2: consent versions are checked for every kind; notifications and location toggle", async () => {
+    const stale = await failure(
+      api.profile.giveConsent({ kind: "research", version: "2020-01", granted: true }),
+    );
+    expect(stale.status).toBe(422);
+    expect(stale.fieldError("version")).toMatch(/current version/);
+    expect((await api.profile.consents()).current_versions).toMatchObject({
+      notifications: "2026-10",
+      location: "2026-10",
+    });
+    await api.profile.giveConsent({ kind: "location", version: "2026-10", granted: true });
+    const off = await api.profile.giveConsent({
+      kind: "location",
+      version: "2026-10",
+      granted: false,
+    });
+    expect(off.patient_id).toBeNull();
+    expect(
+      (
+        await failure(
+          api.profile.giveConsent({
+            kind: "notifications",
+            version: "2026-10",
+            granted: true,
+            patient_id: SELF_PATIENT_ID,
+          }),
+        )
+      ).fieldError("patient_id"),
+    ).toBeTruthy();
+    const dependent = await failure(
+      api.profile.addDependent({
+        relationship: "guardian",
+        full_name: "Mugisha Ian",
+        sex: "male",
+        date_of_birth: "2020-03-03",
+        consent_version: "2020-01",
+      }),
+    );
+    expect(dependent.fieldError("consent_version")).toBeTruthy();
+    const invite = await failure(
+      api.profile.createInvite({
+        patient_id: SELF_PATIENT_ID,
+        current_password: MOCK_PASSWORD,
+        consent_version: "2020-01",
+      }),
+    );
+    expect(invite.status).toBe(422);
+    expect(invite.fieldError("consent_version")).toBeTruthy();
+  });
+
+  it("R2: a profile with facility records is told so before any lookup", async () => {
+    const s = patientsStore();
+    s.records.push({ ...s.records[0]!, id: "rec-own", patient_id: SELF_PATIENT_ID });
+    const refused = await failure(
+      api.profile.requestClaim({
+        lookup: { medilink_number: "ML-0000-0000" },
+        date_of_birth: "1990-01-01",
+      }),
+    );
+    expect(refused.message).toMatch(/already has facility records/);
   });
 });

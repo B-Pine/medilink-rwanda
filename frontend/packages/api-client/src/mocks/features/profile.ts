@@ -19,6 +19,7 @@ import {
   mask,
   medilinkNumber,
   MOCK_CLAIM_CODE,
+  MOCK_CONSENT_VERSION,
   normalizeMedilinkNumber,
   normalizePhone,
   type MockClaim,
@@ -33,10 +34,12 @@ import { page, s1, str } from "./s1-common";
  * S0 mock password; the claim code is always MOCK_CLAIM_CODE.
  */
 
-const CONSENT_VERSION = "2026-10";
+const CONSENT_VERSION = MOCK_CONSENT_VERSION;
 /** Backend `self_service.MAX_LINKS`: active profiles one account may hold. */
 const MAX_LINKS = 10;
 const ACCOUNT_KINDS = ["terms", "privacy"];
+/** Account-level settings given and withdrawn freely (contract §6.2, D-23). */
+const TOGGLE_KINDS = ["notifications", "location"];
 const PROFILE_KINDS = ["care", "research"];
 /** Accepted body fields per request; anything else is `400 Unknown field.` (StrictSerializer). */
 const FIELDS = {
@@ -206,6 +209,11 @@ export const profileMocks: FeatureMockFactory = (context) => {
       ? invalid(lang, Object.fromEntries(unknown.map((k) => [k, m("unknownField", lang)])))
       : null;
   };
+  /** `consents.check_version()`: 422 on the consent's field when the text is not current. */
+  const outdated = (lang: LanguageCode, field: string) =>
+    context.errorResponse(422, "business_rule_violation", m("currentOnly", lang), {
+      fields: { [field]: [m("currentOnly", lang)] },
+    });
   /** Account email to display name, as the backend reads `granted_by.full_name`. */
   const nameOf = (email: string, me: PatientMe) =>
     email === me.email
@@ -459,6 +467,8 @@ export const profileMocks: FeatureMockFactory = (context) => {
         if (body.relationship === "guardian" && age >= 18) return rule(a.lang, "guardianAge");
         if (body.relationship === "delegate" && (age < 18 || body.consent_attested !== true))
           return rule(a.lang, "delegateAge");
+        if (str(body.consent_version) !== CONSENT_VERSION)
+          return outdated(a.lang, "consent_version");
         const patientId = crypto.randomUUID();
         const patient: MockPatient = {
           ...emptyPatient(s.nextSeed++),
@@ -503,8 +513,8 @@ export const profileMocks: FeatureMockFactory = (context) => {
         const mine = links(a.me);
         const managed = mine.filter((l) => l.relationship !== "delegate").map((l) => l.patient_id);
         const name = (id: string) => s.patients.get(id)?.full_name ?? "";
-        const owns = (patientId: string) =>
-          mine.some((l) => l.patient_id === patientId && l.relationship === "self");
+        const holds = (patientId: string, relationship: string) =>
+          mine.some((l) => l.patient_id === patientId && l.relationship === relationship);
         return HttpResponse.json({
           granted: s.links
             .filter(
@@ -517,9 +527,11 @@ export const profileMocks: FeatureMockFactory = (context) => {
               holder_name: short(l.holder_name),
               relationship: l.relationship,
               granted_at: l.granted_at,
-              // self revokes any link; a guardian only the links it granted (sprint-03 §2.5)
+              // as revoke(): self ends any other link; a guardian only the links it granted
               can_revoke:
-                l.relationship === "delegate" || l.granted_by === a.me.email || owns(l.patient_id),
+                l.relationship !== "self" &&
+                (holds(l.patient_id, "self") ||
+                  (holds(l.patient_id, "guardian") && l.granted_by === a.me.email)),
             })),
           received: mine
             .filter((l) => l.relationship !== "self")
@@ -562,6 +574,8 @@ export const profileMocks: FeatureMockFactory = (context) => {
         const link = linkFor(a.me, str(body.patient_id));
         if (!link) return notFound(a.lang);
         if (link.relationship === "delegate") return denied(a.lang);
+        if (str(body.consent_version) !== CONSENT_VERSION)
+          return outdated(a.lang, "consent_version");
         const code = Array.from(
           { length: 8 },
           () => "0123456789ABCDEFGHJKMNPQRSTVWXYZ"[Math.floor(Math.random() * 32)],
@@ -649,6 +663,10 @@ export const profileMocks: FeatureMockFactory = (context) => {
         if (a.error) return a.error;
         const body = await context.readJson(request);
         const s = store();
+        // checked before the lookup so no answer depends on whether a record matched
+        const own = links(a.me).find((l) => l.relationship === "self")?.patient_id;
+        if (s.records.some((r) => r.patient_id === own && r.is_active))
+          return rule(a.lang, "hasRecords");
         const lookup = (body.lookup ?? {}) as Record<string, unknown>;
         const dob = str(body.date_of_birth);
         let target: MockPatient | undefined;
@@ -672,11 +690,8 @@ export const profileMocks: FeatureMockFactory = (context) => {
           s.links.some(
             (l) => l.patient_id === target.id && l.relationship === "self" && !l.revoked,
           );
-        const own = links(a.me).find((l) => l.relationship === "self")?.patient_id;
         if (!target || target.id === own || target.date_of_birth !== dob || claimed)
           return rule(a.lang, "noMatch");
-        if (s.records.some((r) => r.patient_id === own && r.is_active))
-          return rule(a.lang, "hasRecords");
         for (const open of s.claims)
           if (
             open.account_email === a.me.email &&
@@ -757,7 +772,8 @@ export const profileMocks: FeatureMockFactory = (context) => {
         const kind = str(body.kind);
         const required = context.message("required", a.lang);
         const errors: Record<string, string> = {};
-        if (![...ACCOUNT_KINDS, ...PROFILE_KINDS].includes(kind)) errors.kind = required;
+        if (![...ACCOUNT_KINDS, ...TOGGLE_KINDS, ...PROFILE_KINDS].includes(kind))
+          errors.kind = required;
         if (!str(body.version)) errors.version = required;
         if (typeof body.granted !== "boolean") errors.granted = required;
         if (Object.keys(errors).length) return invalid(a.lang, errors);
@@ -767,9 +783,9 @@ export const profileMocks: FeatureMockFactory = (context) => {
         // account-level records (patient_id null) are kept on the account's own profile
         let patient: MockPatient | undefined = own;
         let patientId: string | null = null;
-        if (ACCOUNT_KINDS.includes(kind)) {
-          if (!body.granted) return rule(a.lang, "withdraw");
-          if (str(body.version) !== CONSENT_VERSION) return rule(a.lang, "currentOnly");
+        if (ACCOUNT_KINDS.includes(kind) && !body.granted) return rule(a.lang, "withdraw");
+        if (str(body.version) !== CONSENT_VERSION) return outdated(a.lang, "version");
+        if ([...ACCOUNT_KINDS, ...TOGGLE_KINDS].includes(kind)) {
           if (body.patient_id) return invalid(a.lang, { patient_id: s1("notAllowed", a.lang) });
         } else if (body.patient_id) {
           const link = linkFor(a.me, str(body.patient_id));
@@ -862,6 +878,8 @@ export const profileMocks: FeatureMockFactory = (context) => {
       current_versions: {
         terms: CONSENT_VERSION,
         privacy: CONSENT_VERSION,
+        notifications: CONSENT_VERSION,
+        location: CONSENT_VERSION,
         care: CONSENT_VERSION,
         research: CONSENT_VERSION,
       },
@@ -883,7 +901,14 @@ function completion(patient: MockPatient) {
 }
 
 function publicClaim(claim: ReturnType<typeof patientsStore>["claims"][number]) {
-  const { account_email: _a, patient_id: _p, code: _c, attempts: _t, ...shown } = claim;
+  const {
+    account_email: _a,
+    patient_id: _p,
+    code: _c,
+    attempts: _t,
+    confirmed_facility_id: _f,
+    ...shown
+  } = claim;
   return shown;
 }
 

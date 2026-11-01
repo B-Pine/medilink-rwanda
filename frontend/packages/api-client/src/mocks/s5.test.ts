@@ -4,6 +4,7 @@ import { createApiClient } from "../client";
 import { createMediLinkApi, type MediLinkApi } from "../endpoints";
 import { ApiError } from "../errors";
 import { FACILITIES, MOCK_PASSWORD, MOCK_TOTP_CODE } from "./data";
+import { PARENT_PATIENT_ID } from "./features/patients-store";
 import { createMockServer } from "./node";
 
 /** S5-F1: the S5 mocks follow the contract (sprint-05 §3, R4 field names), through the client. */
@@ -99,6 +100,20 @@ describe("remote join and I'm here (B8, B9)", () => {
     expect(claimed.state).toBe("waiting");
   });
 
+  it("a delegate cannot join a queue for the patient (403)", async () => {
+    await patient();
+    const service = await serviceAt(FACILITIES.remera.slug, true);
+    const error = await failure(
+      api.booking.remoteJoin({
+        facility_slug: FACILITIES.remera.slug,
+        service_id: service.id,
+        patient_id: PARENT_PATIENT_ID,
+        symptoms: [{ code: "cough" }],
+      }),
+    );
+    expect(error.status).toBe(403);
+  });
+
   it("a walk-in ticket has no I'm here (422)", async () => {
     await patient();
     const visits = await api.queue.patientVisits();
@@ -109,26 +124,33 @@ describe("remote join and I'm here (B8, B9)", () => {
 });
 
 describe("reception: remote arrival and booked check-in", () => {
-  it("the board shows remote joiners; confirm arrival sets remote_arrival_confirmed_at", async () => {
+  it("the board flags remote joiners; confirm arrival is a ticket action (R4 #102)", async () => {
     await reception();
     const board = await api.queue.board();
     const waiting = board.queues.flatMap((q) => q.waiting);
     const claimed = waiting.find((t) => t.is_remote && t.remote_arrival_claimed_at)!;
     expect(claimed.remote_arrival_confirmed_at).toBeNull();
-    expect(waiting.some((t) => t.is_remote && !t.remote_arrival_claimed_at)).toBe(true);
-    const confirmed = await api.queue.confirmArrival(claimed.visit_id);
+    expect(claimed.flags).toContain("remote_claimed");
+    const notHere = waiting.find((t) => t.is_remote && !t.remote_arrival_claimed_at)!;
+    expect(notHere.flags).toContain("remote");
+    const stale = await failure(
+      api.queue.confirmArrival({ id: claimed.id, version: claimed.version + 3 }),
+    );
+    expect(stale.status).toBe(409);
+    const confirmed = await api.queue.confirmArrival(claimed);
     expect(confirmed.remote_arrival_confirmed_at).not.toBeNull();
     expect(confirmed.version).toBe(claimed.version + 1);
-    // confirming twice changes nothing
-    const again = await api.queue.confirmArrival(claimed.visit_id);
-    expect(again.version).toBe(confirmed.version);
+    expect(confirmed.flags).not.toContain("remote_claimed");
+    // already confirmed: 422
+    const again = await failure(api.queue.confirmArrival(confirmed));
+    expect(again.status).toBe(422);
   });
 
   it("confirm arrival refuses a walk-in ticket (422)", async () => {
     await reception();
     const board = await api.queue.board();
     const walkIn = board.queues.flatMap((q) => q.waiting).find((t) => !t.is_remote)!;
-    const error = await failure(api.queue.confirmArrival(walkIn.visit_id));
+    const error = await failure(api.queue.confirmArrival(walkIn));
     expect(error.status).toBe(422);
   });
 
@@ -142,13 +164,26 @@ describe("reception: remote arrival and booked check-in", () => {
       expect(out.late).toBe(true);
       expect(out.ticket.slot_starts_at).toBeNull();
       expect(out.ticket.late).toBe(true);
+      expect(out.ticket.flags).toContain("late");
     }
     if (onTime) {
-      const out = await api.queue.checkIn({ booking_id: onTime.id });
+      const out = await api.queue.checkIn({
+        booking_id: onTime.id,
+        symptoms: [{ code: "fever", duration_days: 2 }],
+      });
       expect(out.late).toBe(false);
       expect(out.ticket.slot_starts_at).toBe(onTime.starts_at);
     }
     expect(late ?? onTime).toBeDefined();
+  });
+});
+
+describe("public facility profile (P2, R4 #102)", () => {
+  it("gives the patient share in RWF per insurer", async () => {
+    const facility = await api.booking.facility(FACILITIES.kigaliClinic.slug);
+    const general = facility.services.find((s) => s.code === "general_consultation")!;
+    expect(general.fee_rwf).toBe(8000);
+    expect(general.insurer_share_rwf).toEqual({ rama: 1200, mmi: 800 });
   });
 });
 

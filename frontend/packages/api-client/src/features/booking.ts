@@ -73,6 +73,11 @@ export interface PublicService {
   insurers: string[];
   /** Patient share per insurer, in basis points of the fee. */
   insurer_shares: Record<string, number>;
+  /**
+   * R4 (#102): the patient's share in RWF per accepted insurer, after exclusions and ceilings;
+   * `null` when the insurer does not cover this service. Use this, not `insurer_shares`.
+   */
+  insurer_share_rwf: Record<string, number | null>;
   bookable: boolean;
   remote_join: boolean;
   walk_in: boolean;
@@ -276,7 +281,12 @@ export function createBookingApi(client: ApiClient) {
     reschedule: (id: Uuid, version: number, holdId: Uuid) =>
       client.post<Booking>(bookingPaths.reschedule(id), { version, hold_id: holdId }),
     remoteJoin: (
-      body: { facility_slug: string; service_id: Uuid; patient_id: Uuid },
+      body: {
+        facility_slug: string;
+        service_id: Uuid;
+        patient_id: Uuid;
+        symptoms?: SymptomInput[];
+      },
       idempotencyKey?: string,
     ) => client.post<PatientVisit>(bookingPaths.remoteJoin, body, idem(idempotencyKey)),
     /** "I'm here" (B9): records the patient's claim; reception confirms the arrival. */

@@ -4,6 +4,7 @@
  */
 import type { ApiClient } from "../client";
 import type { Uuid } from "../types";
+import type { SymptomInput } from "./booking";
 
 export type Stage = "reception" | "payment" | "consultation" | "pharmacy";
 export type TicketState =
@@ -32,6 +33,8 @@ export type TicketAction =
   | "left"
   | "step-out"
   | "priority"
+  /** S5 (R4 #102): reception confirms a remote joiner is on site; `{version}`. */
+  | "confirm-arrival"
   | "reorder";
 
 export interface TicketRow {
@@ -45,6 +48,10 @@ export interface TicketRow {
   age_years: number | null;
   sex: string | null;
   /** `emergency`, `priority:<class>`, `return`, `stepped_out`, `no_response`. */
+  /**
+   * `emergency`, `priority:<class>`, `return`, `stepped_out`, `no_response`; S5 adds `late`,
+   * `remote` and `remote_claimed` (remote joiner not confirmed, with or without "I'm here").
+   */
   flags: string[];
   priority_rank: number;
   arrival_at: string;
@@ -115,6 +122,8 @@ export interface CheckInInput {
   priority_reason_code?: string | null;
   reason_text?: string | null;
   insurance_profile_id?: Uuid | null;
+  /** S5 (R4): optional symptoms at check-in (`captured_at_stage = check_in`). */
+  symptoms?: SymptomInput[];
 }
 
 export interface CheckInResult {
@@ -253,8 +262,6 @@ const S = "/api/v1/staff";
 export const queuePaths = {
   checkIn: `${S}/visits/check-in/`,
   visit: (id: Uuid) => `${S}/visits/${id}/`,
-  /** S5: reception confirms a remote patient is on site (after "I'm here" or at the desk). */
-  confirmArrival: (visitId: Uuid) => `${S}/visits/${visitId}/confirm-arrival/`,
   board: `${S}/queue/board/`,
   mine: `${S}/queue/mine/`,
   callNext: `${S}/queue/call-next/`,
@@ -285,8 +292,14 @@ export function createQueueApi(client: ApiClient) {
     checkIn: (body: CheckInInput, idempotencyKey?: string) =>
       client.post<CheckInResult>(queuePaths.checkIn, body, idem(idempotencyKey)),
     visit: (id: Uuid) => client.get<VisitDetail>(queuePaths.visit(id)),
-    confirmArrival: (visitId: Uuid) =>
-      client.post<TicketRow>(queuePaths.confirmArrival(visitId), {}),
+    /**
+     * S5 (R4 #102): reception confirms a remote joiner is on site. `422` when the ticket is not
+     * remote or the arrival is already confirmed; `409` on a stale version.
+     */
+    confirmArrival: (ticket: Pick<TicketRow, "id" | "version">) =>
+      client.post<TicketRow>(queuePaths.ticket(ticket.id, "confirm-arrival"), {
+        version: ticket.version,
+      }),
     board: () => client.get<QueueBoard>(queuePaths.board),
     mine: () => client.get<MyQueue>(queuePaths.mine),
     /** `null` when nobody is waiting (204). */

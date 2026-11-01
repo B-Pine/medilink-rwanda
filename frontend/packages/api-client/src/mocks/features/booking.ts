@@ -67,6 +67,7 @@ const svc = (
   fee_rwf: fee,
   insurers: [],
   insurer_shares: {},
+  insurer_share_rwf: {},
   bookable: true,
   remote_join: false,
   walk_in: true,
@@ -821,6 +822,9 @@ export const bookingMocks: FeatureMockFactory = (context) => {
               ...s,
               insurers: Object.keys(f.insurers),
               insurer_shares: f.insurers,
+              insurer_share_rwf: Object.fromEntries(
+                Object.entries(f.insurers).map(([code, bp]) => [code, share(s.fee_rwf, bp)]),
+              ),
               queue_load: f.load,
               next_slot_at: nextSlot(f.slug, s.id),
             }),

@@ -15,6 +15,7 @@ import { FACILITIES } from "../data";
 import type { FeatureMockFactory } from "../features";
 import { fieldError, id, now, rule, s1, str } from "./s1-common";
 import { checkInMockBooking, remoteJoinMockService } from "./booking";
+import { patientsStore } from "./patients";
 import { MEMBERSHIP_BY_EMAIL, SETUP_IDS } from "./setup";
 
 /**
@@ -222,9 +223,30 @@ export const queueMocks: FeatureMockFactory = (context) => {
       join_key: _k,
       ...rest
     } = t;
-    return { ...rest, position: position(t) };
+    const flags = rest.flags.filter((f) => !["late", "remote", "remote_claimed"].includes(f));
+    if (t.late) flags.push("late");
+    if (t.is_remote && !t.remote_arrival_confirmed_at)
+      flags.push(t.remote_arrival_claimed_at ? "remote_claimed" : "remote");
+    return { ...rest, flags, position: position(t) };
   };
   const atKigali = (t: MockTicket) => t.facility_id === FACILITIES.kigaliClinic.id;
+  /** The account's patients and link: the session profiles plus S3 links (guardian, delegate). */
+  const accountPatients = (me: {
+    email: string;
+    profiles: { patient_id: string; display_name: string; relationship: string }[];
+  }) => {
+    const out = new Map<string, { name: string; relationship: string }>();
+    for (const p of me.profiles)
+      out.set(p.patient_id, { name: p.display_name, relationship: p.relationship });
+    const store = patientsStore();
+    for (const link of store.links)
+      if (link.account_email === me.email && !link.revoked && !out.has(link.patient_id))
+        out.set(link.patient_id, {
+          name: store.patients.get(link.patient_id)?.full_name ?? "",
+          relationship: link.relationship,
+        });
+    return out;
+  };
   const patientSession = (request: Request) => {
     const lang = context.languageFrom(request);
     const result = context.authenticatedPatient(lang);
@@ -491,9 +513,15 @@ export const queueMocks: FeatureMockFactory = (context) => {
       http.post(`${api}/staff/tickets/:ticketId/:action/`, async ({ request, params }) => {
         await context.settle();
         const action = str(params.action);
-        const operate = ["transfer", "cancel", "left", "step-out", "priority", "reorder"].includes(
-          action,
-        );
+        const operate = [
+          "transfer",
+          "cancel",
+          "left",
+          "step-out",
+          "priority",
+          "reorder",
+          "confirm-arrival",
+        ].includes(action);
         const ok = staff(request, operate ? ["queue.operate"] : ["queue.call"]);
         if ("error" in ok) return ok.error;
         const t = db.tickets.find((x) => x.id === params.ticketId);
@@ -583,6 +611,12 @@ export const queueMocks: FeatureMockFactory = (context) => {
                 fields: { reason_code: ["Give a reason."] },
               });
             set(action === "cancel" ? "cancelled" : "left_without_service");
+            break;
+          case "confirm-arrival":
+            // "I'm here" alone is only a claim: reception confirms the patient is on site
+            if (!need("waiting") || !t.is_remote || t.remote_arrival_confirmed_at)
+              return rule(context, ok.lang);
+            t.remote_arrival_confirmed_at = now();
             break;
           case "step-out":
             t.step_out_until = new Date(
@@ -729,23 +763,6 @@ export const queueMocks: FeatureMockFactory = (context) => {
               ticket_number: tickets.find((t) => t.id === e.ticket_id)!.number,
             })),
         });
-      }),
-      // S5: reception confirms a remote patient is on site ("I'm here" is only the patient's claim)
-      http.post(`${api}/staff/visits/:visitId/confirm-arrival/`, async ({ request, params }) => {
-        await context.settle();
-        const ok = staff(request, ["queue.operate"]);
-        if ("error" in ok) return ok.error;
-        const t = db.tickets.find(
-          (x) => x.visit_id === params.visitId && atKigali(x) && ACTIVE.includes(x.state),
-        );
-        if (!t) return notFound(ok.lang);
-        if (!t.is_remote) return rule(context, ok.lang);
-        if (!t.remote_arrival_confirmed_at) {
-          t.remote_arrival_confirmed_at = now();
-          t.version += 1;
-          event(t, "remote_arrival_confirmed", t.state, ok.me.full_name);
-        }
-        return HttpResponse.json(row(t));
       }),
       http.get(`${api}/staff/duty-status/`, async ({ request }) => {
         await context.settle();
@@ -900,7 +917,7 @@ export const queueMocks: FeatureMockFactory = (context) => {
         await context.settle();
         const ok = patientSession(request);
         if ("error" in ok) return ok.error;
-        const mine = new Set(ok.me.profiles.map((p) => p.patient_id));
+        const mine = new Set(accountPatients(ok.me).keys());
         const out = db.tickets
           .filter((t) => mine.has(t.patient_id) && ACTIVE.includes(t.state))
           .map(tracker);
@@ -916,9 +933,13 @@ export const queueMocks: FeatureMockFactory = (context) => {
         const replayed = key ? db.tickets.find((t) => t.join_key === key) : undefined;
         if (replayed) return HttpResponse.json(tracker(replayed));
         const body = (await context.readJson(request)) ?? {};
-        const profile = ok.me.profiles.find((p) => p.patient_id === str(body.patient_id));
+        const linked = accountPatients(ok.me).get(str(body.patient_id));
         const service = remoteJoinMockService(str(body.facility_slug), str(body.service_id));
-        if (!profile || !service) return notFound(ok.lang);
+        if (!linked || !service) return notFound(ok.lang);
+        // a delegate can follow a visit but not join a queue for the patient (contract B8)
+        if (linked.relationship === "delegate")
+          return context.errorResponse(403, "permission_denied", s1("permissionDenied", ok.lang));
+        const profile = { patient_id: str(body.patient_id), display_name: linked.name };
         if (!service.remote_join)
           return context.errorResponse(
             422,
@@ -974,12 +995,14 @@ export const queueMocks: FeatureMockFactory = (context) => {
         await context.settle();
         const ok = patientSession(request);
         if ("error" in ok) return ok.error;
-        const mine = new Set(ok.me.profiles.map((p) => p.patient_id));
+        const links = accountPatients(ok.me);
         const t = db.tickets.find(
           (x) =>
-            x.visit_id === params.visitId && mine.has(x.patient_id) && ACTIVE.includes(x.state),
+            x.visit_id === params.visitId && links.has(x.patient_id) && ACTIVE.includes(x.state),
         );
         if (!t) return notFound(ok.lang);
+        if (links.get(t.patient_id)?.relationship === "delegate")
+          return context.errorResponse(403, "permission_denied", s1("permissionDenied", ok.lang));
         const body = (await context.readJson(request)) ?? {};
         if (Number(body.version) !== t.version) return stale(ok.lang);
         if (!t.is_remote || t.remote_arrival_confirmed_at) return rule(context, ok.lang);
@@ -995,7 +1018,7 @@ export const queueMocks: FeatureMockFactory = (context) => {
         const lang = context.languageFrom(request);
         const result = context.authenticatedPatient(lang);
         if ("error" in result) return result.error;
-        const mine = new Set(result.me.profiles.map((p) => p.patient_id));
+        const mine = new Set(accountPatients(result.me).keys());
         const t = db.tickets.find((x) => x.visit_id === params.visitId && mine.has(x.patient_id));
         if (!t) return notFound(lang);
         if (t.state !== "waiting") return rule(context, lang);

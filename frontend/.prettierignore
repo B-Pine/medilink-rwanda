@@ -12,3 +12,7 @@ i18n-review.md
 
 # Local design-tool cache
 **/.impeccable
+
+# Playwright output
+test-results
+playwright-report

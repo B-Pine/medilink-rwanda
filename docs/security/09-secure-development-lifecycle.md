@@ -39,7 +39,7 @@ Status: v0.1 · Framework: NIST SP 800-218 **SSDF** (Prepare the organisation ·
 | Lockfiles | Hash-pinned Python requirements (`uv`/`pip-tools --generate-hashes`), `npm ci` | Lockfile drift |
 | Secrets | gitleaks | Any finding |
 | Django config | `manage.py check --deploy --fail-level WARNING` (prod settings) | Any warning |
-| Containers & IaC | Trivy (filesystem, API image, config), hadolint | Fixable critical/high; misconfig high; hadolint warning |
+| Containers & IaC | Trivy (filesystem, API image, config), hadolint | Fixable critical/high (the image scan reports only until [#106](https://github.com/B-Pine/medilink-rwanda/issues/106)); misconfig high; hadolint warning |
 | Tests | Unit + authz matrix + cross-tenant + RLS + business-rule tests | Any failure; coverage on `authz` < 95%, on `core` or any other app < 90% |
 | Migrations | Latest migration of each app reversed and re-applied, then `makemigrations --check` | Any failure |
 | SBOM | CycloneDX for the API image (OS and Python packages) and the frontend (npm), attached to the `security` run | — |

@@ -141,7 +141,7 @@ Results (tool output, p50/p95/p99, errors) are attached to the sprint's acceptan
 | Dependencies | `pip-audit`, `osv-scanner` (Python and npm lockfiles), `npm audit --omit=dev` (pnpm equivalent); Dependabot weekly | Fixable high or critical (osv: CVSS ≥ 7.0 with a fixed version) |
 | Secrets | gitleaks (`.github/workflows/security.yml`), GitHub push protection | Any finding |
 | Configuration | `manage.py check --deploy --fail-level WARNING` on production settings | Any warning |
-| Containers and IaC | Trivy (filesystem, API image, config), hadolint (`.hadolint.yaml`) | Fixable high or critical; high misconfiguration; hadolint warning |
+| Containers and IaC | Trivy (filesystem, API image, config), hadolint (`.hadolint.yaml`) | Fixable high or critical (the image scan reports only until [#106](https://github.com/B-Pine/medilink-rwanda/issues/106)); high misconfiguration; hadolint warning |
 | Supply chain | CycloneDX SBOMs (API image and frontend) attached to every `security` run; cosign signatures of the SBOMs on `main` once `COSIGN_PRIVATE_KEY` is set | — |
 | Migrations | Latest migration of each app reversed and re-applied | Any failure |
 | Pull request title | Conventional Commit (`.github/workflows/pr-title.yml`) | Not a Conventional Commit |

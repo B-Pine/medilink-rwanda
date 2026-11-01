@@ -13,7 +13,7 @@ This root changelog covers documentation and repository-wide changes (CI, toolin
 
 ### Added
 
-- CI and security gates from the testing strategy and security 09 §3 (#90): Semgrep (`p/django`, `p/python`, `p/owasp-top-ten` and MediLink rules in `.semgrep/medilink.yml`), osv-scanner over the Python and npm lockfiles (fixable CVSS ≥ 7.0), hadolint (`.hadolint.yaml`), Trivy scan of the built API image, CycloneDX SBOMs attached to each `security` run, cosign signing of the SBOMs on `main` once `COSIGN_PRIVATE_KEY` is set, a `migrations` job that reverses and re-applies each app's latest migration, and a Conventional Commit check on pull request titles (`pr-title.yml`). The raw SQL rule only reports until #103.
+- CI and security gates from the testing strategy and security 09 §3 (#90): Semgrep (`p/django`, `p/python`, `p/owasp-top-ten` and MediLink rules in `.semgrep/medilink.yml`), osv-scanner over the Python and npm lockfiles (fixable CVSS ≥ 7.0), hadolint (`.hadolint.yaml`), Trivy scan of the built API image, CycloneDX SBOMs attached to each `security` run, cosign signing of the SBOMs on `main` once `COSIGN_PRIVATE_KEY` is set, a `migrations` job that reverses and re-applies each app's latest migration, and a Conventional Commit check on pull request titles (`pr-title.yml`). The raw SQL rule only reports until #103, the image scan until #106.
 - Acceptance records for Sprint 1 (`docs/qa/sprint-1-acceptance.md`, 40 checks) and Sprint 3 (`docs/qa/sprint-3-acceptance.md`, backend evidence and gaps).
 
 - `scripts/github-setup.sh`: labels `area:patients`, `area:security`, `area:ops`, `area:i18n`, `type:decision`, `wave:1` and `sprint:S1`..`sprint:S11`; milestones are skipped when they already exist, so the script can be re-run.

@@ -63,7 +63,7 @@ SECURE_CSP = {
     "object-src": [CSP.NONE],
 }
 ```
-Start with `SECURE_CSP_REPORT_ONLY` in staging, then enforce. The React builds must not need `unsafe-inline` or `unsafe-eval`.
+Start with `SECURE_CSP_REPORT_ONLY` in staging, then enforce. The React builds must not need `unsafe-eval` or inline scripts. Exception: their `style-src` keeps `'unsafe-inline'`, because Radix (scroll lock) and pdf.js inject `<style>` elements at runtime and a static-host meta CSP can't carry a nonce; see `frontend/packages/config/vite.js`.
 
 - **Other headers** (set at the proxy for static assets too): `Permissions-Policy: camera=(self), geolocation=(self), microphone=()`, `Cross-Origin-Resource-Policy: same-site`.
 - **Django admin:** only for engineers, on a non-obvious path, reachable only through the VPN, MFA enforced (`django-otp` admin site), read-only models where possible.

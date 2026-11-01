@@ -116,10 +116,10 @@ All under `/api/v1`. **Ver** = `version` in the body; **Up** = recent authentica
 | C7 | `GET /staff/consultations/` | `clinical.unsigned_list` | `?status=draft&mine=true&page=` → paginated `ConsultationRow` (patient display name, visit date, author, started_at, status, is_late) | No clinical content; doctors see their own unless they also hold `facility.configure` |
 | V1 | `GET`, `POST /staff/visits/{visit_id}/vitals/` | `GET`: `vitals.record` or `clinical.view` · `POST`: `vitals.record` | `POST {temperature_c?, systolic_mmhg?, …, recorded_at?}` → `201 Vitals` · `GET` → `{results: [Vitals]}` | Reception sees own rows only |
 | V2 | `POST /staff/vitals/{id}/entered-in-error/` | recorder, or `clinical.write` | `{reason}` → `200 Vitals` | |
-| H1 | `GET /staff/patients/{facility_patient_id}/history/` | `clinical.view` | `?type=consultation\|vitals&code=&from=&to=&page=&page_size=` → paginated `HistoryItem` newest first | Rel. `code` matches a diagnosis code prefix (`B5` → B50–B54). < 2 s for 200 visits (NFR-PERF) |
-| H2 | `GET /staff/patients/{facility_patient_id}/problem-summary/` | `clinical.view` | → `{allergies, no_known_allergies, conditions, medications, recent_diagnoses, is_staff_member}` | Rel |
-| A1 | `POST /staff/patients/{facility_patient_id}/access-reasons/` | `clinical.view` | `{reason_code, reason_text?}` (text required for `other`) → `201 {granted_until}` | |
-| A2 | `GET /staff/patients/{facility_patient_id}/access/` | `clinical.view` | → `{has_relationship, is_staff_member, reason_required, granted_until}` | Lets the screen ask for the reason before loading |
+| H1 | `GET /staff/clinical/patients/{facility_patient_id}/history/` | `clinical.view` | `?type=consultation\|vitals&code=&from=&to=&page=&page_size=` → paginated `HistoryItem` newest first | Rel. `code` matches a diagnosis code prefix (`B5` → B50–B54). < 2 s for 200 visits (NFR-PERF) |
+| H2 | `GET /staff/clinical/patients/{facility_patient_id}/problem-summary/` | `clinical.view` | → `{allergies, no_known_allergies, conditions, medications, recent_diagnoses, is_staff_member}` | Rel |
+| A1 | `POST /staff/clinical/patients/{facility_patient_id}/access-reasons/` | `clinical.view` | `{reason_code, reason_text?}` (text required for `other`) → `201 {granted_until}` | |
+| A2 | `GET /staff/clinical/patients/{facility_patient_id}/access/` | `clinical.view` | → `{has_relationship, is_staff_member, reason_required, granted_until}` | Lets the screen ask for the reason before loading |
 | AL1 | `POST /staff/clinical/alerts/` | `clinical.write` or `prescription.issue` | `{facility_patient_id, items: [{drug_code, quantity?}]}` → `{alerts: [{drug_code, kind: allergy\|duplicate\|dose, severity, allergy_id?, substance?, verification_status?}]}` | Rel. 1–20 items; unknown drug `400` |
 
 `Consultation`: `id, visit_id, facility_patient_id, patient {id, display_name, age_years, sex}, author {membership_id, full_name}, status, started_at, signed_at, is_late_entry, is_restricted, suggest_restricted, history_text, examination_text, plan_text, patient_instructions_text, private_notes, diagnoses: [{id, code, display, plain_language, rank, certainty, is_sensitive}], vitals: [Vitals], addenda: [Addendum], allergies: [Allergy], no_known_allergies, content_hash (hex), integrity, entered_in_error {at, reason, by} | null, can_edit, can_sign, version`.
@@ -139,8 +139,8 @@ All under `/api/v1`. **Ver** = `version` in the body; **Up** = recent authentica
 |---|---|---|---|
 | R1 | `GET /staff/results-inbox/` · `POST /staff/results-inbox/{id}/review/` | `clinical.view` | `{comment?}`; FR-CLN-09 |
 | L1 | `POST /staff/patient-imports/` · `GET …/{id}/` · `PUT …/{id}/mapping/` · `GET …/{id}/rows/` · `POST …/{id}/confirm/` · `POST …/{id}/rollback/` | `records.import` | Up on confirm and rollback; FR-PAT-10 |
-| L2 | `POST /staff/patients/{facility_patient_id}/scans/` | `documents.upload` | S1 upload + document type and date; FR-PAT-11 |
-| L3 | `GET`, `POST /staff/patients/{facility_patient_id}/history-entries/` | `records.import_clinical` | FR-PAT-12; shown in H1 as `kind = legacy` |
+| L2 | `POST /staff/clinical/patients/{facility_patient_id}/scans/` | `documents.upload` | S1 upload + document type and date; FR-PAT-11 |
+| L3 | `GET`, `POST /staff/clinical/patients/{facility_patient_id}/history-entries/` | `records.import_clinical` | FR-PAT-12; shown in H1 as `kind = legacy` |
 | G1 | `POST /platform/break-glass/` · `GET /platform/break-glass/` · `POST …/{id}/review/` | super admin, Up | FR-ACC-09, FR-SEC-09 |
 | G2 | `GET /platform/break-glass/{id}/patients/{patient_id}/history/` | super admin with an open session | Read-only H1 and C2 data for that facility |
 
@@ -265,3 +265,4 @@ Shared files: S6 adds `[S6]` blocks next to the existing markers:
 | D-9 | Signing "with PIN or password" (analysis 07 §2) | Uses the S1 step-up (password and authenticator code, or the login's second factor within 5 minutes). The PIN only unlocks an idle session (security 03 §5) and is not a signing factor |
 | D-10 | Opening a consultation on the S4 `start` action (S4 §7 "interfaces offered") | The S4 signal was never built. The doctor opens the consultation from My queue (C1, idempotent), so a started ticket without notes stays possible (e.g. a quick transfer) |
 | D-11 | Break-glass for doctors across facilities (security 03 §8) | P2 with consent sharing; S6b builds the super admin case only (FR-ACC-09) |
+| D-12 | Paths of the patient-scoped clinical endpoints (found while building S6a) | S3 routes `/staff/patients/{id}/{kind}/` for its health profile items, which matches any `/staff/patients/{id}/<word>/`. S6 therefore serves H1, H2, A1, A2 (and S6b L2, L3) under `/staff/clinical/patients/{facility_patient_id}/…`. The ID is still the S3 facility record |

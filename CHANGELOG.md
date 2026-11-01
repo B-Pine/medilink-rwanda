@@ -31,6 +31,7 @@ This root changelog covers documentation and repository-wide changes (CI, toolin
 
 ### Changed
 
+- S3 contract (R2, #84): §2.2 clinical access and number normalisation rules, PA7/PA23/ST17/ST25 rules, new ST28 access reasons, deviations D-22 to D-25; API catalogue and the FR-SEC-03 traceability row updated.
 - Docs aligned with what is merged: the API catalogue S1 and S3 rows are rewritten from the contracts and marked Implemented (#47, #57); S1-built facility status actions are marked in S2; the contract index, the S1 and S3 contract headers and the docs README show the real status; the database design §5.5 describes the S3 schema as built (table names, functions, owner read policy, append-only triggers); S3 contract §10 records deviations D-16 to D-20; the backend README covers the S1/S3 apps, patient keys and sprint seeders.
 - Getting started reconciled with the shipped code (Python 3.14, hash-pinned install, `pnpm dev:mock`, Swagger UI, uvicorn for WebSockets); links to the backend and frontend READMEs and changelogs.
 - Traceability matrix: 16 Sprint 0 requirements Verified, summary gains a Verified column; NFR-UX-03 title says WCAG 2.2; NFR-OPS-07 (feature flags) moved to S1.

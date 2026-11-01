@@ -27,7 +27,7 @@ import { useParams, useSearchParams } from "react-router";
 import { useApi } from "../../app/services";
 import { useStaffMe } from "../../auth/queries";
 import { PageHeader } from "../../components/PageHeader";
-import { NotFoundContent } from "../../pages/NotFoundPage";
+import { NoAccessContent } from "../../pages/NotFoundPage";
 import { useStepUp } from "../lock";
 import { AccessReasonPrompt } from "./AccessGate";
 import { DiagnosisPicker, type PickedDiagnosis } from "./DiagnosisPicker";
@@ -565,7 +565,7 @@ export function ConsultationPage() {
     queryFn: () => api.clinical.get(consultationId),
     enabled: allowed,
   });
-  if (!allowed) return <NotFoundContent />;
+  if (!allowed) return <NoAccessContent />;
   if (consultation.isPending) return <LoadingState label={t("clinical.loading")} />;
   if (consultation.isError) {
     const fp = search.get("fp");

@@ -210,10 +210,10 @@ describe("permissions (S2-F1, F10)", () => {
     expect(await screen.findAllByText("Waiting")).not.toHaveLength(0);
   });
 
-  it("receptionist gets not found on settings", async () => {
+  it("receptionist gets no access on settings", async () => {
     await signIn("reception@medilink.test", "/settings/tariffs");
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Page not found" }),
+      await screen.findByRole("heading", { level: 1, name: "You don't have access to this page" }),
     ).toBeInTheDocument();
   });
 });

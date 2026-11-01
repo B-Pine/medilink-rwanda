@@ -131,7 +131,7 @@
       "staff": "Personnel",
       "settings": "Paramètres",
       "audit": "Journal d’audit",
-      "platformFacilities": "Demandes d’établissements"
+      "platformFacilities": "Établissements"
     },
     "connection": {
       "label": "Connexion",
@@ -160,7 +160,10 @@
       "shortcut": "Ctrl K"
     },
     "collapse": "Réduire le menu",
-    "expand": "Développer le menu"
+    "expand": "Développer le menu",
+    "section": {
+      "manage": "Gestion"
+    }
   },
   "today": {
     "title": "Aujourd’hui",
@@ -182,7 +185,7 @@
   "notFound": {
     "title": "Page introuvable",
     "body": "Vérifiez l’adresse ou revenez à votre page Aujourd’hui.",
-    "home": "Aller à Aujourd’hui"
+    "home": "Aller à ma page d'accueil"
   },
   "forgot": {
     "title": "Réinitialiser votre mot de passe",
@@ -202,5 +205,10 @@
     "doneBody": "Votre mot de passe a été modifié et vous avez été déconnecté partout. Connectez-vous avec le nouveau mot de passe.",
     "invalidLink": "Ce lien est incomplet. Ouvrez à nouveau le lien de l’e-mail ou demandez-en un nouveau.",
     "toLogin": "Aller à la connexion"
+  },
+  "noAccess": {
+    "title": "Vous n'avez pas accès à cette page",
+    "body": "Votre rôle dans cet établissement ne l'inclut pas. Si vous en avez besoin, demandez à l'administrateur de l'établissement.",
+    "home": "Retour à mon travail"
   }
 }

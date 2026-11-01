@@ -324,10 +324,78 @@ export const NAV_ITEMS: readonly NavItem[] = [
 export const navLabelKey = (item: Pick<NavItem, "key" | "labelKey">) =>
   item.labelKey ?? `shell.nav.${item.key}`;
 
-export function visibleNavItems(me: StaffMe): NavItem[] {
+/**
+ * Menu sections (design 04 §2): what the person does all day comes first, running the facility
+ * second, help last. Items not listed here are daily work.
+ */
+export type NavSection = "work" | "manage" | "help";
+const MANAGE_KEYS = new Set<string>([
+  "approvals",
+  "reports",
+  "staff",
+  "setup",
+  "settings",
+  "doctorSchedules",
+  "queueReorders",
+  "disruptions",
+  "announcements",
+  "patientMerges",
+  "audit",
+]);
+export const navSection = (item: Pick<NavItem, "key">): NavSection =>
+  item.key === "help" ? "help" : MANAGE_KEYS.has(item.key) ? "manage" : "work";
+
+/** Reached from the queue with a patient, never on its own, so not in the menu. */
+const NOT_IN_MENU = new Set<string>(["clinicalConsultation"]);
+
+/** Menu order; keys not listed keep their place after the listed ones. */
+const ORDER = [
+  "today",
+  "queue",
+  "calendar",
+  "patients",
+  "clinicalUnsigned",
+  "mySchedule",
+  "pharmacy",
+  "payments",
+  "reports",
+  "approvals",
+  "staff",
+  "doctorSchedules",
+  "setup",
+  "settings",
+  "queueReorders",
+  "disruptions",
+  "announcements",
+  "patientMerges",
+  "audit",
+  "help",
+  "platformOverview",
+  "platformApplications",
+  "platformFacilities",
+  "platformSupport",
+  "platformMasterData",
+  "platformAnnouncements",
+  "platformHelpArticles",
+  "platformMerges",
+  "platformFeatureFlags",
+];
+const rank = (key: string) => {
+  const index = ORDER.indexOf(key);
+  return index === -1 ? ORDER.length : index;
+};
+
+/**
+ * The menu for this person: permitted (analysis 02 §3), needing a facility when it is a facility
+ * page, and built. `built` is the set of paths that have a real page; sections that would only
+ * open a placeholder stay out of the menu (design 04 §2: no dead ends).
+ */
+export function visibleNavItems(me: StaffMe, built?: ReadonlySet<string>): NavItem[] {
   return NAV_ITEMS.filter(
     (item) =>
-      (item.group === "facility" && item.key !== "today" ? hasFacility(me) : true) &&
+      !NOT_IN_MENU.has(item.key) &&
+      (item.group === "facility" ? hasFacility(me) : true) &&
+      (built === undefined || item.key === "today" || built.has(item.path)) &&
       item.visible(me),
-  );
+  ).sort((a, b) => rank(a.key) - rank(b.key));
 }

@@ -1,7 +1,8 @@
 import { LoadingState } from "@medilink/ui";
 import type { ComponentType } from "react";
-import { Navigate, type RouteObject } from "react-router";
+import type { RouteObject } from "react-router";
 
+import { HomeRedirect } from "../auth/HomeRedirect";
 import { RequireStaff } from "../auth/RequireStaff";
 import { AppShell } from "../layout/AppShell";
 import { NAV_ITEMS } from "../layout/navigation";
@@ -53,7 +54,7 @@ export const routes: RouteObject[] = [
           {
             element: <AppShell />,
             children: [
-              { index: true, element: <Navigate to="/today" replace /> },
+              { index: true, element: <HomeRedirect /> },
               { path: "/today", lazy: page(() => import("../pages/TodayPage"), "TodayPage") },
               ...featureShell,
               // Placeholders for sections whose feature has not been built yet.

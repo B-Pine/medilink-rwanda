@@ -15,7 +15,7 @@ import { Link, useNavigate, useParams } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
-import { NotFoundContent } from "../../pages/NotFoundPage";
+import { NoAccessContent } from "../../pages/NotFoundPage";
 import { errorText, isReasonRequired, useCan } from "./shared";
 
 /** Opens (or returns) my draft for a visit (C1) and goes to it. */
@@ -42,7 +42,7 @@ export function StartPage() {
     enabled: allowed,
   });
   const open = useOpen();
-  if (!allowed) return <NotFoundContent />;
+  if (!allowed) return <NoAccessContent />;
   const current = mine.data?.current ?? null;
   return (
     <div className="flex max-w-3xl flex-col gap-5">
@@ -111,7 +111,7 @@ export function OpenForVisitPage() {
       open.mutate(visitId);
     }
   }, [allowed, open, visitId]);
-  if (!allowed) return <NotFoundContent />;
+  if (!allowed) return <NoAccessContent />;
   if (open.isError)
     return (
       <Alert tone={isReasonRequired(open.error) ? "warning" : "danger"} role="alert">

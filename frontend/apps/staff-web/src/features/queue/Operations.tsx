@@ -26,7 +26,7 @@ import { Link } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
-import { NotFoundContent } from "../../pages/NotFoundPage";
+import { NoAccessContent } from "../../pages/NotFoundPage";
 import { queueKeys, usePollInterval, useQueueSocket } from "./live";
 import { LiveBadge } from "./LiveIndicator";
 import { useCan } from "./shared";
@@ -271,7 +271,7 @@ export function ReportsPage() {
   const allowed = useCan("reports.view");
   const ops = useOperations(allowed);
   const label = useDayLabel();
-  if (!allowed) return <NotFoundContent />;
+  if (!allowed) return <NoAccessContent />;
   const data = ops.data;
   const days = data?.trend ?? [];
   const weekdays = Array.from({ length: 6 }, (_, i) =>

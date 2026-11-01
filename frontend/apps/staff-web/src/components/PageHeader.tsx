@@ -23,23 +23,23 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <header className="flex flex-col gap-3 border-b border-border pb-5">
+    <header className="flex flex-col gap-2 pb-2">
       {back && (
         <Link
           to={back.to}
-          className="inline-flex items-center gap-1.5 self-start text-body-sm font-semibold text-link"
+          className="inline-flex items-center gap-1.5 self-start text-body-sm font-semibold text-fg-muted no-underline hover:text-fg"
         >
           <ArrowLeft aria-hidden="true" weight="bold" className="size-4" />
           {back.label}
         </Link>
       )}
-      <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
-        <div className="flex min-w-0 flex-col gap-1.5">
+      <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+        <div className="flex min-w-0 flex-col gap-1">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <PageHeading title={title}>{title}</PageHeading>
             {badges}
           </div>
-          {description && <div className="m-0 max-w-3xl text-fg-secondary">{description}</div>}
+          {description && <div className="m-0 max-w-3xl text-fg-muted">{description}</div>}
         </div>
         {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
       </div>

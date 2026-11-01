@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 3152.
+Keys: 3156.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -165,7 +165,7 @@ File: `apps/staff-web/src/i18n/locales/rw.json`
 | `shell.nav.staff` | Abakozi | Staff | needs native-speaker review |
 | `shell.nav.settings` | Igenamiterere | Settings | needs native-speaker review |
 | `shell.nav.audit` | Igitabo cy’ibikorwa | Audit log | needs native-speaker review |
-| `shell.nav.platformFacilities` | Ubusabe bw’ibigo | Facility applications | needs native-speaker review |
+| `shell.nav.platformFacilities` | Ibigo | Facilities | needs native-speaker review |
 | `shell.connection.label` | Murandasi | Connection | needs native-speaker review |
 | `shell.connection.online` | Kuri murandasi | Online | needs native-speaker review |
 | `shell.connection.offline` | Nta murandasi | Offline | needs native-speaker review |
@@ -188,6 +188,7 @@ File: `apps/staff-web/src/i18n/locales/rw.json`
 | `shell.palette.shortcut` | Ctrl K | Ctrl K | needs native-speaker review |
 | `shell.collapse` | Gabanya menyu | Collapse menu | needs native-speaker review |
 | `shell.expand` | Agura menyu | Expand menu | needs native-speaker review |
+| `shell.section.manage` | Gucunga ikigo | Manage | needs native-speaker review |
 | `today.title` | Uyu munsi | Today | needs native-speaker review |
 | `today.greeting` | Muraho, {{name}} | Hello, {{name}} | needs native-speaker review |
 | `today.facility` | Ukorera kuri {{facility}}. | You are working at {{facility}}. | needs native-speaker review |
@@ -202,8 +203,8 @@ File: `apps/staff-web/src/i18n/locales/rw.json`
 | `placeholder.back` | Subira ku Uyu munsi | Back to Today | needs native-speaker review |
 | `placeholder.heading` | {{section}} biraje vuba | {{section}} is on its way | needs native-speaker review |
 | `notFound.title` | Iyi paji ntibonetse | Page not found | needs native-speaker review |
-| `notFound.body` | Reba aderesi, cyangwa usubire kuri paji y’Uyu munsi. | Check the address, or go back to your Today page. | needs native-speaker review |
-| `notFound.home` | Jya ku Uyu munsi | Go to Today | needs native-speaker review |
+| `notFound.body` | Reba aderesi, cyangwa usubire kuri paji y’Uyu munsi. | Check the address, or go back to your start page. | needs native-speaker review |
+| `notFound.home` | Jya ku ipaji yanjye ibanza | Go to my start page | needs native-speaker review |
 | `forgot.title` | Hindura ijambo ry’ibanga | Reset your password | needs native-speaker review |
 | `forgot.intro` | Andika imeyili y’akazi. Niba ifite konti, tuzakoherereza ihuriro ryo gushyiraho ijambo ry’ibanga rishya. | Enter your work email. If it belongs to an account, we will send a link to set a new password. | needs native-speaker review |
 | `forgot.email` | Imeyili | Email | needs native-speaker review |
@@ -219,6 +220,9 @@ File: `apps/staff-web/src/i18n/locales/rw.json`
 | `reset.doneBody` | Ijambo ry’ibanga ryahinduwe kandi wasohowe ahantu hose. Injira ukoresheje ijambo ry’ibanga rishya. | Your password was changed and you were logged out everywhere. Log in with your new password. | needs native-speaker review |
 | `reset.invalidLink` | Iri huriro ntiryuzuye. Ongera ufungure ihuriro riri muri imeyili, cyangwa usabe irindi. | This link is incomplete. Open the link from the email again, or ask for a new one. | needs native-speaker review |
 | `reset.toLogin` | Jya ku kwinjira | Go to log in | needs native-speaker review |
+| `noAccess.title` | Nta burenganzira ufite kuri iyi paji | You don't have access to this page | needs native-speaker review |
+| `noAccess.body` | Inshingano zawe muri iki kigo ntizirimo iyi paji. Niba uyikeneye, baza umuyobozi w'ikigo. | Your role at this facility doesn't include it. If you need it, ask your facility admin. | needs native-speaker review |
+| `noAccess.home` | Subira ku kazi kanjye | Back to my work | needs native-speaker review |
 
 ## Patient app
 

@@ -82,7 +82,7 @@ const svc = (
   next_slot_at: null,
   min_age_months: null,
   max_age_months: null,
-  doctor: "Dr Keza Umutoni",
+  doctor: "Dr Uwimana Keza",
   membership_id: SETUP_IDS.mKeza,
   weekdays: [0, 1, 2, 3, 4],
   from: 8,
@@ -124,7 +124,7 @@ function facilities(): MockFacility[] {
             "Consultation pédiatrique",
             10000,
             {
-              doctor: "Dr Paul Nkusi",
+              doctor: "Dr Niyonsenga Paul",
               membership_id: SETUP_IDS.mPaul,
               weekdays: [1, 3],
               from: 14,
@@ -324,7 +324,7 @@ type MockItem = DisruptionItem & { disruption_id: string };
 /** S5b: the second doctor at Kigali Clinic, the target of "move to another doctor". */
 const MOCK_OTHER_DOCTOR = { membership_id: SETUP_IDS.mPaul, name: "Dr Niyonsenga Paul" };
 const DOCTOR_NAMES: Record<string, string> = {
-  [SETUP_IDS.mKeza]: "Dr Keza Umutoni",
+  [SETUP_IDS.mKeza]: "Dr Uwimana Keza",
   [SETUP_IDS.mPaul]: MOCK_OTHER_DOCTOR.name,
 };
 
@@ -338,6 +338,12 @@ function kigaliDay(offset: number): Date {
 }
 const isoDate = (d: Date) => new Date(d.getTime() + 2 * 3600_000).toISOString().slice(0, 10);
 const weekday = (d: Date) => (new Date(d.getTime() + 2 * 3600_000).getUTCDay() + 6) % 7;
+/** Mock opening hours, the same the profile shows: Monday to Friday 07:30-17:00, Kigali time. */
+const openNow = (now = new Date()) => {
+  const kigali = new Date(now.getTime() + 2 * 3600_000);
+  const minutes = kigali.getUTCHours() * 60 + kigali.getUTCMinutes();
+  return weekday(now) < 5 && minutes >= 7 * 60 + 30 && minutes < 17 * 60;
+};
 
 function makeSlots(all: MockFacility[]): MockSlot[] {
   const out: MockSlot[] = [];
@@ -510,7 +516,7 @@ export const bookingMocks: FeatureMockFactory = (context) => {
         service_id: SETUP_IDS.sGen,
         starts_at: today(h, m),
         ends_at: today(h, m + 30),
-        doctor: "Dr Keza Umutoni",
+        doctor: "Dr Uwimana Keza",
         membership_id: SETUP_IDS.mKeza,
         open_places: 0,
         capacity: 1,
@@ -529,7 +535,7 @@ export const bookingMocks: FeatureMockFactory = (context) => {
         service_id: SETUP_IDS.sGen,
         starts_at: today(7, 30),
         ends_at: today(8, 0),
-        doctor: "Dr Keza Umutoni",
+        doctor: "Dr Uwimana Keza",
         membership_id: SETUP_IDS.mKeza,
         open_places: 0,
         capacity: 1,
@@ -644,7 +650,7 @@ export const bookingMocks: FeatureMockFactory = (context) => {
       id: id(),
       kind: "doctor_absent",
       membership_id: SETUP_IDS.mKeza,
-      doctor: "Dr Keza Umutoni",
+      doctor: "Dr Uwimana Keza",
       service_id: null,
       service_name_i18n: null,
       starts_at: new Date(new Date(b.starts_at).getTime() - 3600_000).toISOString(),
@@ -892,7 +898,7 @@ export const bookingMocks: FeatureMockFactory = (context) => {
             district: f.district,
             sector: f.sector,
             distance_km: km,
-            open_now: true,
+            open_now: openNow(),
             service_code: s.code,
             service_name_i18n: s.name_i18n,
             accepts_insurance: insurer ? (insurer in f.insurers ? "yes" : "no") : "unknown",
@@ -963,7 +969,7 @@ export const bookingMocks: FeatureMockFactory = (context) => {
           sector: f.sector,
           lat: f.lat,
           lng: f.lng,
-          open_now: true,
+          open_now: openNow(),
           hours,
           closures: [],
           services: f.services.map(

@@ -151,7 +151,7 @@ describe("facility announcements (S9-F3)", () => {
   it("the nav item and pages need announcements.manage", async () => {
     await signIn("reception@medilink.test", "/announcements");
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Page not found" }),
+      await screen.findByRole("heading", { level: 1, name: "You don't have access to this page" }),
     ).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Announcements" })).not.toBeInTheDocument();
   });

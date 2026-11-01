@@ -10,7 +10,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 
-import { FEATURE_COMMANDS } from "../app/features";
+import { BUILT_PATHS, FEATURE_COMMANDS } from "../app/features";
 import { useApi } from "../app/services";
 import type { PaletteItem } from "./commands";
 import { navLabelKey, visibleNavItems } from "./navigation";
@@ -66,7 +66,7 @@ export function CommandPalette({
     }
   };
 
-  const pages: PaletteItem[] = visibleNavItems(me).map((item) => ({
+  const pages: PaletteItem[] = visibleNavItems(me, BUILT_PATHS()).map((item) => ({
     id: `page:${item.key}`,
     label: t(navLabelKey(item)),
     icon: item.icon,

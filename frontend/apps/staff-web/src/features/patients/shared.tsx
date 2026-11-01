@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useStaffMe } from "../../auth/queries";
-import { PageHeading } from "../../components/PageHeading";
+import { NoAccessContent } from "../../pages/NotFoundPage";
 import { isStepUpCancelled } from "../lock";
 
 /** Whether the signed-in staff member holds any of these codes in the active facility. */
@@ -14,12 +14,10 @@ export function useCan(...codes: string[]): boolean {
   return codes.some((code) => hasPermission(me, code));
 }
 
-/** Pages behind a permission: everyone else sees "not found" (no greyed-out screens). */
+/** Pages behind a permission: everyone else sees "no access" (no greyed-out screens). */
 export function Gate({ codes, children }: { codes: string[]; children: ReactNode }) {
-  const { t } = useTranslation();
   const allowed = useCan(...codes);
-  if (!allowed)
-    return <PageHeading title={t("patients.notFound")}>{t("patients.notFound")}</PageHeading>;
+  if (!allowed) return <NoAccessContent />;
   return <>{children}</>;
 }
 

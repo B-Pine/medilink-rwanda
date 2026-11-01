@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
-import { NotFoundContent } from "../../pages/NotFoundPage";
+import { NoAccessContent } from "../../pages/NotFoundPage";
 import { queueKeys } from "./live";
 import { actionError, useCan, useServiceNames } from "./shared";
 
@@ -29,7 +29,7 @@ export function ReordersPage() {
     mutationFn: (eventId: string) => api.queue.review(eventId),
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: queueKeys.reorders }),
   });
-  if (!allowed) return <NotFoundContent />;
+  if (!allowed) return <NoAccessContent />;
   const list = rows.data?.results ?? [];
   return (
     <div className="flex flex-col gap-5">
@@ -121,7 +121,7 @@ export function DisplaysPage() {
     mutationFn: (id: string) => api.queue.revokeDisplayLink(id),
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: queueKeys.displays }),
   });
-  if (!allowed) return <NotFoundContent />;
+  if (!allowed) return <NoAccessContent />;
   const list = links.data?.results ?? [];
   return (
     <div className="flex flex-col gap-5">

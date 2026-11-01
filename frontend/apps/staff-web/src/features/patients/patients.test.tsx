@@ -136,7 +136,7 @@ describe("staff patients", () => {
   it("pharmacists don't see patients pages they can't use", async () => {
     await signIn("pharmacist@medilink.test", "/patients/merge-requests");
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Page not found" }),
+      await screen.findByRole("heading", { level: 1, name: "You don't have access to this page" }),
     ).toBeInTheDocument();
   });
 });

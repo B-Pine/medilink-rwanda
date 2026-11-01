@@ -7,7 +7,7 @@ import { Link } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
-import { NotFoundContent } from "../../pages/NotFoundPage";
+import { NoAccessContent } from "../../pages/NotFoundPage";
 import { clinicalKeys, errorText, useCan, useWhen } from "./shared";
 
 /**
@@ -29,7 +29,7 @@ export function UnsignedPage() {
     queryFn: () => api.clinical.unsigned({ mine, page }),
     enabled: allowed,
   });
-  if (!allowed) return <NotFoundContent />;
+  if (!allowed) return <NoAccessContent />;
   return (
     <div className="flex max-w-4xl flex-col gap-5">
       <PageHeader

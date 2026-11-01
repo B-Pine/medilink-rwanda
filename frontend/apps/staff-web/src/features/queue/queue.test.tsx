@@ -192,7 +192,7 @@ describe("admin pages and display (S4-F1, F5)", () => {
   it("pharmacists don't get the queue board", async () => {
     await signIn("pharmacist@medilink.test", "/queue");
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Page not found" }),
+      await screen.findByRole("heading", { level: 1, name: "You don't have access to this page" }),
     ).toBeInTheDocument();
   });
 });

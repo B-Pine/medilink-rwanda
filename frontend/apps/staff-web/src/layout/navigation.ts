@@ -32,6 +32,9 @@ import { CalendarDots, ClipboardText } from "@phosphor-icons/react";
 // [S4 imports]
 import { ArrowsDownUp } from "@phosphor-icons/react";
 // [/S4 imports]
+// [S5 imports]
+import { CalendarX } from "@phosphor-icons/react";
+// [/S5 imports]
 
 /** Sections of the Sprint 0 shell (labels in `shell.nav.<key>`). Features use their own keys. */
 export type CoreNavKey =
@@ -241,6 +244,16 @@ export const NAV_ITEMS: readonly NavItem[] = [
     visible: hasAny("facility.configure"),
   },
   // [/S4]
+  // [S5]
+  {
+    key: "disruptions",
+    path: "/disruptions",
+    icon: CalendarX,
+    group: "facility",
+    labelKey: "bookings.nav.disruptions",
+    visible: hasAny("schedule.manage"),
+  },
+  // [/S5]
 ];
 
 /** Translation key of a nav item's label. */

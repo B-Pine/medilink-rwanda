@@ -284,6 +284,10 @@ class PublicListing(UUIDModel):
     hours = models.JSONField(default=list)
     next_slot_at = models.DateTimeField(null=True, blank=True)
     queue_load = models.CharField(max_length=8, blank=True)
+    # Public queue figures (contract PT §2.1): counts only, refreshed with the row
+    waiting = models.PositiveIntegerField(default=0)
+    wait_min = models.PositiveIntegerField(null=True, blank=True)
+    wait_max = models.PositiveIntegerField(null=True, blank=True)
     updated_at = models.DateTimeField()
 
     class Meta:

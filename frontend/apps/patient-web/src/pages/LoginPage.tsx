@@ -180,7 +180,7 @@ export function LoginPage() {
         </form>
 
         {step === "password" && (
-          <div className="flex flex-col gap-1 rounded-card border border-border bg-surface p-4">
+          <div className="flex flex-col gap-1 rounded-card bg-surface shadow-card p-4">
             <p className="m-0 font-semibold">{t("login.newHere")}</p>
             <Link
               to="/signup"

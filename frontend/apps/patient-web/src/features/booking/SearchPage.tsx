@@ -100,7 +100,7 @@ export function FacilityCard({
   return (
     <article
       aria-labelledby={`fac-${result.slug}`}
-      className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5 shadow-raised sm:flex-row sm:items-stretch"
+      className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5 shadow-raised sm:flex-row sm:items-stretch"
     >
       <div className="flex min-w-0 flex-1 flex-col gap-2">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">

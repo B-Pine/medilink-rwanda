@@ -9,6 +9,7 @@ import {
   Receipt,
   Stethoscope,
   UsersThree,
+  WarningCircle,
 } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 
@@ -115,6 +116,22 @@ export function DeskFlow({
   className?: string;
 }) {
   const { t } = useTranslation();
+  const { stages } = useFlowModel(queues, expected);
+  return <FlowStrip stages={stages} label={t("queue.flow.label")} className={className} />;
+}
+
+export type FlowBottleneck = {
+  stage: "waiting" | "payment" | "pharmacy";
+  minutes: number;
+  people: number;
+};
+
+/** The numbers behind the flow strip, shared by reception and the facility dashboard. */
+export function useFlowModel(
+  queues: QueueGroup[],
+  expected: StaffBooking[] | undefined,
+): { stages: FlowStage[]; bottleneck: FlowBottleneck | null } {
+  const { t } = useTranslation();
   const inStage = (stages: string[], pick: (q: QueueGroup) => TicketRow[]) =>
     queues.filter((q) => stages.includes(q.stage)).flatMap(pick);
   const waitOf = (rows: TicketRow[]) => rows.map((r) => minutesSince(r.arrival_at));
@@ -194,7 +211,34 @@ export function DeskFlow({
       hot: slowest === "pharmacy",
     },
   ];
-  return <FlowStrip stages={stages} label={t("queue.flow.label")} className={className} />;
+  const people = { waiting: waiting.length, payment: paying.length, pharmacy: pharmacy.length };
+  return {
+    stages,
+    bottleneck: slowest
+      ? { stage: slowest, minutes: longest[slowest], people: people[slowest] }
+      : null,
+  };
+}
+
+/**
+ * The slow step in words (design 04 §3.4): "Payment is the slow step today", with how long and
+ * how many, so the facility admin knows where to send help.
+ */
+export function BottleneckCallout({ bottleneck }: { bottleneck: FlowBottleneck | null }) {
+  const { t } = useTranslation();
+  if (!bottleneck) return null;
+  return (
+    <p
+      role="status"
+      className="m-0 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md bg-attention-bg px-4 py-3 text-attention"
+    >
+      <WarningCircle aria-hidden="true" weight="bold" className="size-5 shrink-0" />
+      <strong className="font-semibold text-fg">{t(`queue.flow.slow.${bottleneck.stage}`)}</strong>
+      <span>
+        {t("queue.flow.slowDetail", { count: bottleneck.people, minutes: bottleneck.minutes })}
+      </span>
+    </p>
+  );
 }
 
 /** Service filter (design 04 §3.1): one segmented row, the waiting count on each. */

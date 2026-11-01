@@ -106,7 +106,7 @@ export function CommandPalette({
           aria-describedby={undefined}
           className={cx(
             "fixed top-[12vh] left-1/2 z-50 flex max-h-[76vh] w-[calc(100vw-2rem)] max-w-xl -translate-x-1/2 flex-col",
-            "overflow-hidden rounded-lg border border-border bg-surface text-fg shadow-lg",
+            "overflow-hidden rounded-lg bg-surface shadow-card text-fg shadow-lg",
           )}
         >
           <RadixDialog.Title className="sr-only">{labels.title}</RadixDialog.Title>

@@ -319,6 +319,13 @@
     "longest_one": "Longest {{count}} min",
     "longest_other": "Longest {{count}} min",
     "called_one": "{{count}} being called",
-    "called_other": "{{count}} being called"
+    "called_other": "{{count}} being called",
+    "slow": {
+      "waiting": "Waiting for a doctor is the slow step right now.",
+      "payment": "Payment is the slow step right now.",
+      "pharmacy": "The pharmacy is the slow step right now."
+    },
+    "slowDetail_one": "{{count}} person, up to {{minutes}} min.",
+    "slowDetail_other": "{{count}} people, up to {{minutes}} min."
   }
 }

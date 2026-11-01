@@ -2,7 +2,7 @@
   "notFound": "Page not found",
   "nav": {
     "platformOverview": "Platform overview",
-    "platformApplications": "Review applications",
+    "platformApplications": "Facility applications",
     "platformMasterData": "Master data",
     "platformFeatureFlags": "Feature flags"
   },

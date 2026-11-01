@@ -46,7 +46,7 @@ export function ReordersPage() {
           description={t("queue.reorders.empty")}
         />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-border bg-surface">
+        <div className="overflow-x-auto rounded-lg bg-surface shadow-card">
           <table className="w-full border-collapse text-left">
             <caption className="sr-only">{t("queue.reorders.title")}</caption>
             <thead className="bg-subtle text-body-sm text-fg-secondary">
@@ -145,10 +145,7 @@ export function DisplaysPage() {
       ) : (
         <ul className="m-0 grid list-none gap-3 p-0 md:grid-cols-2">
           {list.map((link) => (
-            <li
-              key={link.id}
-              className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-5"
-            >
+            <li key={link.id} className="flex flex-col gap-3 rounded-lg bg-surface shadow-card p-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <span className="inline-flex size-10 items-center justify-center rounded-md bg-forest text-on-forest-accent">

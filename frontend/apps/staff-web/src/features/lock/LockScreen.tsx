@@ -80,7 +80,7 @@ export function LockScreen({ onUnlocked, onSignedOut }: LockScreenProps) {
       aria-labelledby="lock-title"
       className="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto bg-page p-4"
     >
-      <div className="flex w-full max-w-sm flex-col gap-5 rounded-lg border border-border bg-surface p-6 shadow-lg">
+      <div className="flex w-full max-w-sm flex-col gap-5 rounded-lg bg-surface shadow-card p-6 shadow-lg">
         <Logo className="h-8 self-start" />
         <div className="flex items-center gap-3">
           <LockKey aria-hidden="true" className="size-8 text-primary" />

@@ -319,6 +319,13 @@
     "longest_one": "Le plus long {{count}} min",
     "longest_other": "Le plus long {{count}} min",
     "called_one": "{{count}} appelé",
-    "called_other": "{{count}} appelés"
+    "called_other": "{{count}} appelés",
+    "slow": {
+      "waiting": "L'attente du médecin est l'étape la plus lente en ce moment.",
+      "payment": "Le paiement est l'étape la plus lente en ce moment.",
+      "pharmacy": "La pharmacie est l'étape la plus lente en ce moment."
+    },
+    "slowDetail_one": "{{count}} personne, jusqu'à {{minutes}} min.",
+    "slowDetail_other": "{{count}} personnes, jusqu'à {{minutes}} min."
   }
 }

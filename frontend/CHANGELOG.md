@@ -9,6 +9,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Redesign · Facility admin and card polish (#127)
+
+- staff-web Today (facility admin): the patient-flow strip and a plain-language callout of the slow
+  step ("Waiting for a doctor is the slow step right now. 8 people, up to 31 min.") above the
+  figures; "Needs your attention" items are tinted rows.
+- Every card in staff-web and patient-web lifts with `shadow-card` instead of a hard border, and
+  coloured side-bar accents are gone: `Alert`, the leave card, platform overview tiles and the
+  emergency notices use tinted surfaces.
+- Fixed: the operations card showed the raw key `queue.ops.liveSummary` (the plural needed
+  `count`); the platform menu says "Facility applications" like the page.
+- Test: "moves an expected booking" no longer depends on the weekday.
+
 ### Redesign · Doctor (#124)
 
 - staff-web My queue: the patient in the room is the focal card (large ticket stub, name, state,

@@ -108,7 +108,7 @@ export function StaffPage() {
           {stats.map((s) => (
             <li
               key={s.label}
-              className="flex flex-col gap-1 rounded-lg border border-border bg-surface px-4 py-3"
+              className="flex flex-col gap-1 rounded-lg bg-surface shadow-card px-4 py-3"
             >
               <span className="text-body-sm font-semibold text-fg-secondary">{s.label}</span>
               <span className="font-heading text-h1 tabular-nums">{s.value}</span>
@@ -165,7 +165,7 @@ export function StaffPage() {
                       description={t("setup.staff.none")}
                     />
                   ) : (
-                    <div className="overflow-x-auto rounded-lg border border-border bg-surface">
+                    <div className="overflow-x-auto rounded-lg bg-surface shadow-card">
                       <table className="w-full border-collapse text-left">
                         <caption className="sr-only">{t("setup.staff.members")}</caption>
                         <thead className="bg-subtle text-body-sm text-fg-secondary">
@@ -300,7 +300,7 @@ function InvitationList({ invitations }: { invitations: Invitation[] }) {
     );
   return (
     <>
-      <ul className="m-0 list-none overflow-hidden rounded-lg border border-border bg-surface p-0">
+      <ul className="m-0 list-none overflow-hidden rounded-lg bg-surface shadow-card p-0">
         {invitations.map((i) => (
           <li
             key={i.id}
@@ -751,7 +751,7 @@ function ClinicianForm({ profile }: { profile: ClinicianProfile }) {
         e.preventDefault();
         save.mutate();
       }}
-      className="flex flex-col gap-5 rounded-lg border border-border bg-surface p-5"
+      className="flex flex-col gap-5 rounded-lg bg-surface shadow-card p-5"
     >
       <SelectField
         label={t("setup.clinician.council")}

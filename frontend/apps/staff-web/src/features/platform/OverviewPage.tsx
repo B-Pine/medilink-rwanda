@@ -29,13 +29,13 @@ function Tile({
       <Link
         to={to}
         className={cx(
-          "group flex flex-1 flex-col gap-2 rounded-lg border border-border bg-surface p-4 no-underline",
-          "border-l-4 hover:border-border-input hover:bg-raised",
+          "group flex flex-1 flex-col gap-2 rounded-lg p-4 no-underline shadow-card",
+          "transition-[background-color,transform] duration-150 active:scale-[0.98]",
           flagged
             ? attention === "danger"
-              ? "border-l-danger"
-              : "border-l-warning"
-            : "border-l-border",
+              ? "bg-danger-bg"
+              : "bg-attention-bg"
+            : "bg-surface hover:bg-raised",
         )}
       >
         <span className="text-body-sm font-semibold text-fg-secondary group-hover:text-fg">
@@ -69,7 +69,7 @@ function Pipeline({ counts }: { counts: PlatformOverview["applications"] }) {
   return (
     <section
       aria-labelledby="ov-apps"
-      className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5"
+      className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5"
     >
       <h2 id="ov-apps" className="m-0 font-heading text-h3">
         {t("platform.overview.applications")}
@@ -129,7 +129,7 @@ function Network({ rows }: { rows: PlatformOverview["facilities_by_district"] })
   return (
     <section
       aria-labelledby="ov-network"
-      className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5"
+      className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5"
     >
       <h2 id="ov-network" className="m-0 flex items-center gap-2 font-heading text-h3">
         <MapPin aria-hidden="true" weight="duotone" className="size-6 text-brand" />

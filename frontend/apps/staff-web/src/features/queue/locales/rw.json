@@ -319,6 +319,13 @@
     "longest_one": "Igihe kirekire: iminota {{count}}",
     "longest_other": "Igihe kirekire: iminota {{count}}",
     "called_one": "{{count}} arahamagawe",
-    "called_other": "{{count}} barahamagawe"
+    "called_other": "{{count}} barahamagawe",
+    "slow": {
+      "waiting": "Gutegereza muganga ni ho bitinda ubu.",
+      "payment": "Kwishyura ni ho bitinda ubu.",
+      "pharmacy": "Farumasi ni ho bitinda ubu."
+    },
+    "slowDetail_one": "Umuntu {{count}}, kugeza ku minota {{minutes}}.",
+    "slowDetail_other": "Abantu {{count}}, kugeza ku minota {{minutes}}."
   }
 }

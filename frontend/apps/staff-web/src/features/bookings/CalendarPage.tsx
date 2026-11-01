@@ -87,7 +87,7 @@ function DayView({ data }: { data: StaffCalendar }) {
               <article
                 key={`${block.service_id}-${block.membership_id}-${block.starts_at}`}
                 aria-label={`${block.doctor ?? service(block.service_id)} ${slotTime(block.starts_at, lang)}`}
-                className="flex flex-col gap-2 rounded-lg border border-border bg-surface p-4"
+                className="flex flex-col gap-2 rounded-lg bg-surface shadow-card p-4"
               >
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <h3 className="m-0 text-h4">

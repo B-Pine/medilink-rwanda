@@ -108,7 +108,7 @@ export function TrackerPage() {
       )}
       {visits.isPending && <p className="m-0 text-fg-secondary">{t("tracker.loading")}</p>}
       {visits.data && !visit && (
-        <div className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-5">
+        <div className="flex flex-col gap-3 rounded-lg bg-surface shadow-card p-5">
           <p className="m-0 font-heading text-h3">{t("tracker.noVisitTitle")}</p>
           <p className="m-0 text-fg-secondary">{t("tracker.noVisit")}</p>
           <Link to="/home" className="font-semibold">
@@ -139,7 +139,7 @@ function Tracker({ visit, lang }: { visit: PatientVisit; lang: string }) {
       )}
       <section
         aria-labelledby="ticket"
-        className="flex flex-col items-center gap-5 rounded-lg border border-border bg-surface px-5 py-7 text-center shadow-raised"
+        className="flex flex-col items-center gap-5 rounded-lg bg-surface shadow-card px-5 py-7 text-center shadow-raised"
       >
         <p className="m-0 text-fg-secondary">
           {visit.facility_name} · {name}
@@ -179,7 +179,7 @@ function Tracker({ visit, lang }: { visit: PatientVisit; lang: string }) {
         <RemoteArrival visit={visit} />
       )}
 
-      <section aria-labelledby="stages" className="rounded-lg border border-border bg-surface p-5">
+      <section aria-labelledby="stages" className="rounded-lg bg-surface shadow-card p-5">
         <h2 id="stages" className="m-0 mb-3 font-heading text-h3">
           {t("tracker.stagesTitle")}
         </h2>
@@ -299,7 +299,7 @@ function RemoteArrival({ visit }: { visit: PatientVisit }) {
   return (
     <section
       aria-labelledby="remote-arrival"
-      className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-5"
+      className="flex flex-col gap-3 rounded-lg bg-surface shadow-card p-5"
     >
       <h2 id="remote-arrival" className="m-0 flex items-center gap-2 font-heading text-h3">
         <MapPin aria-hidden="true" className="size-5 text-brand" />

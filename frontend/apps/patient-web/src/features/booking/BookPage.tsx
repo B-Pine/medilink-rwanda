@@ -724,10 +724,7 @@ export function BookPage() {
             <Skeleton height="10rem" className="rounded-lg" />
           )}
           {redFlag && (
-            <div
-              role="alert"
-              className="flex items-start gap-3 rounded-md border-l-4 border-danger bg-danger-bg p-4"
-            >
+            <div role="alert" className="flex items-start gap-3 rounded-md bg-danger-bg p-4">
               <Siren
                 aria-hidden="true"
                 weight="bold"

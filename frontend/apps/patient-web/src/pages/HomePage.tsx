@@ -28,7 +28,7 @@ function QuickLink({ to, label, icon: LinkIcon }: { to: string; label: string; i
   return (
     <Link
       to={to}
-      className="group flex min-h-target items-center gap-3 rounded-lg border border-border bg-surface p-4 font-semibold text-fg no-underline hover:border-brand hover:bg-brand-subtle"
+      className="group flex min-h-target items-center gap-3 rounded-lg bg-surface shadow-card p-4 font-semibold text-fg no-underline hover:border-brand hover:bg-brand-subtle"
     >
       <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-subtle text-on-brand-subtle group-hover:bg-surface">
         <LinkIcon aria-hidden="true" weight="duotone" className="size-6" />

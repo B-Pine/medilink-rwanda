@@ -108,10 +108,7 @@ export function RecordsSection() {
         </div>
         <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
           {RECORDS.map(({ key, icon: RecordIcon }) => (
-            <li
-              key={key}
-              className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-5"
-            >
+            <li key={key} className="flex flex-col gap-3 rounded-lg bg-surface shadow-card p-5">
               <RecordIcon aria-hidden="true" weight="duotone" className="size-8 text-brand" />
               <h3 className="m-0 text-h3">{t(`landing.records.items.${key}.title`)}</h3>
               <p className="m-0 text-body-sm text-fg-secondary">
@@ -171,7 +168,7 @@ export function FaqSection() {
         <h2 id="faq-title" className="m-0 text-h1">
           {t("landing.faq.title")}
         </h2>
-        <div className="flex flex-col divide-y divide-border rounded-lg border border-border bg-surface">
+        <div className="flex flex-col divide-y divide-border rounded-lg bg-surface shadow-card">
           {FAQ.map((key) => (
             <details key={key} className="group px-5">
               <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-3 font-semibold [&::-webkit-details-marker]:hidden">

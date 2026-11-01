@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 3174.
+Keys: 3179.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -1450,7 +1450,7 @@ File: `apps/staff-web/src/features/platform/locales/rw.json`
 |---|---|---|---|
 | `notFound` | Paji ntiyabonetse | Page not found | needs native-speaker review |
 | `nav.platformOverview` | Incamake ya sisitemu | Platform overview | needs native-speaker review |
-| `nav.platformApplications` | Gusuzuma ubusabe | Review applications | needs native-speaker review |
+| `nav.platformApplications` | Ubusabe bw'ibigo | Facility applications | needs native-speaker review |
 | `nav.platformMasterData` | Amakuru shingiro | Master data | needs native-speaker review |
 | `nav.platformFeatureFlags` | Imikorere | Feature flags | needs native-speaker review |
 | `table.search` | Shakisha | Search | needs native-speaker review |
@@ -2038,6 +2038,11 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `flow.longest_other` | Igihe kirekire: iminota {{count}} | Longest {{count}} min | needs native-speaker review |
 | `flow.called_one` | {{count}} arahamagawe | {{count}} being called | needs native-speaker review |
 | `flow.called_other` | {{count}} barahamagawe | {{count}} being called | needs native-speaker review |
+| `flow.slow.waiting` | Gutegereza muganga ni ho bitinda ubu. | Waiting for a doctor is the slow step right now. | needs native-speaker review |
+| `flow.slow.payment` | Kwishyura ni ho bitinda ubu. | Payment is the slow step right now. | needs native-speaker review |
+| `flow.slow.pharmacy` | Farumasi ni ho bitinda ubu. | The pharmacy is the slow step right now. | needs native-speaker review |
+| `flow.slowDetail_one` | Umuntu {{count}}, kugeza ku minota {{minutes}}. | {{count}} person, up to {{minutes}} min. | needs native-speaker review |
+| `flow.slowDetail_other` | Abantu {{count}}, kugeza ku minota {{minutes}}. | {{count}} people, up to {{minutes}} min. | needs native-speaker review |
 
 ## staff-web feature: setup (namespace setup)
 

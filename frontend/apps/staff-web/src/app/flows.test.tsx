@@ -303,7 +303,7 @@ describe("shell: user menu, language, theme, logout", () => {
         .map((link) => link.textContent),
     ).toEqual([
       "Platform overview",
-      "Review applications",
+      "Facility applications",
       "Facilities",
       "Support queue",
       "Master data",

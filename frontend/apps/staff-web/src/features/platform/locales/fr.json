@@ -2,7 +2,7 @@
   "notFound": "Page introuvable",
   "nav": {
     "platformOverview": "Vue d'ensemble",
-    "platformApplications": "Examiner les demandes",
+    "platformApplications": "Demandes d'inscription",
     "platformMasterData": "Données de référence",
     "platformFeatureFlags": "Fonctionnalités"
   },

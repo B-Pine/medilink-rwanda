@@ -3,6 +3,7 @@ import {
   Badge,
   buttonClassName,
   cx,
+  FlowStrip,
   HeatMap,
   LoadMeter,
   Skeleton,
@@ -29,6 +30,8 @@ import { PageHeader } from "../../components/PageHeader";
 import { NoAccessContent } from "../../pages/NotFoundPage";
 import { queueKeys, usePollInterval, useQueueSocket } from "./live";
 import { LiveBadge } from "./LiveIndicator";
+import { useTodayBookings } from "./ExpectedList";
+import { BottleneckCallout, useFlowModel } from "./FrontDesk";
 import { useCan } from "./shared";
 
 const operationsKey = [...queueKeys.all, "operations"] as const;
@@ -117,7 +120,7 @@ function LiveByService({ data }: { data: Operations }) {
   return (
     <section
       aria-labelledby="ops-live"
-      className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5"
+      className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id="ops-live" className="m-0 font-heading text-h3">
@@ -126,7 +129,7 @@ function LiveByService({ data }: { data: Operations }) {
         <span className="text-body-sm text-fg-secondary tabular-nums">
           {t("queue.ops.liveSummary", {
             waiting: data.now.waiting,
-            doctors: data.now.doctors_on_duty,
+            count: data.now.doctors_on_duty,
           })}
         </span>
       </div>
@@ -191,7 +194,7 @@ function Attention({ data }: { data: Operations }) {
   return (
     <section
       aria-labelledby="ops-attention"
-      className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-5"
+      className="flex flex-col gap-3 rounded-lg bg-surface shadow-card p-5"
     >
       <h2 id="ops-attention" className="m-0 font-heading text-h3">
         {t("queue.ops.attention")}
@@ -204,9 +207,9 @@ function Attention({ data }: { data: Operations }) {
             <li key={to}>
               <Link
                 to={to}
-                className="flex min-h-target items-center gap-3 rounded-md border border-l-4 border-border border-l-warning px-3 py-2 text-fg no-underline hover:bg-subtle"
+                className="flex min-h-target items-center gap-3 rounded-md bg-attention-bg px-3 py-2.5 text-fg no-underline transition-colors hover:brightness-[0.98]"
               >
-                <Icon aria-hidden="true" className="size-5 shrink-0 text-warning" />
+                <Icon aria-hidden="true" weight="bold" className="size-5 shrink-0 text-attention" />
                 <span className="flex-1 font-semibold">{label}</span>
                 <CaretRight aria-hidden="true" className="size-4 text-fg-muted" />
               </Link>
@@ -234,14 +237,28 @@ function DashboardSkeleton() {
 /** Today card for facility admins (design 04 §3.4): KPI tiles, live load, needs your attention. */
 export function OperationsTodayCard() {
   const { t } = useTranslation();
+  const api = useApi();
   const allowed = useCan("reports.view");
+  const seesQueue = useCan("queue.operate");
   useQueueSocket(allowed);
   const ops = useOperations(allowed);
+  const refetchInterval = usePollInterval();
+  const board = useQuery({
+    queryKey: queueKeys.board,
+    queryFn: () => api.queue.board(),
+    enabled: allowed && seesQueue,
+    refetchInterval,
+  });
+  const bookings = useTodayBookings(allowed && seesQueue);
+  const flow = useFlowModel(board.data?.queues ?? [], bookings.data?.results);
   if (!allowed) return null;
   return (
     <section aria-labelledby="ops-title" className="flex flex-col gap-4 lg:col-span-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 id="ops-title" className="m-0 flex items-center gap-3 font-heading text-h2">
+        <h2
+          id="ops-title"
+          className="m-0 flex items-center gap-3 font-heading text-h2 tracking-tight"
+        >
           {t("queue.ops.title")}
           <LiveBadge />
         </h2>
@@ -250,6 +267,12 @@ export function OperationsTodayCard() {
           <CaretRight aria-hidden="true" />
         </Link>
       </div>
+      {board.data && (
+        <div className="flex flex-col gap-3">
+          <FlowStrip stages={flow.stages} label={t("queue.flow.label")} />
+          <BottleneckCallout bottleneck={flow.bottleneck} />
+        </div>
+      )}
       {!ops.data ? (
         <DashboardSkeleton />
       ) : (
@@ -300,7 +323,7 @@ export function ReportsPage() {
         <>
           <KpiRow data={data} />
           <div className="grid gap-4 xl:grid-cols-2">
-            <div className="rounded-lg border border-border bg-surface p-5">
+            <div className="rounded-lg bg-surface shadow-card p-5">
               <TrendChart
                 title={t("queue.reports.patientsPerDay")}
                 labels={days.map((d) => label(d.date))}
@@ -309,7 +332,7 @@ export function ReportsPage() {
                 ]}
               />
             </div>
-            <div className="rounded-lg border border-border bg-surface p-5">
+            <div className="rounded-lg bg-surface shadow-card p-5">
               <TrendChart
                 title={t("queue.reports.waitToBeSeen")}
                 labels={days.map((d) => label(d.date))}
@@ -322,7 +345,7 @@ export function ReportsPage() {
             </div>
           </div>
           <div className="grid gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-            <div className="rounded-lg border border-border bg-surface p-5">
+            <div className="rounded-lg bg-surface shadow-card p-5">
               <HeatMap
                 title={t("queue.reports.arrivals")}
                 rows={weekdays}
@@ -348,9 +371,7 @@ export function ReportsPage() {
               ].map(([k, v]) => (
                 <div
                   key={String(k)}
-                  className={cx(
-                    "flex flex-col gap-1 rounded-lg border border-border bg-surface p-4",
-                  )}
+                  className={cx("flex flex-col gap-1 rounded-lg bg-surface shadow-card p-4")}
                 >
                   <dt className="text-body-sm font-semibold text-fg-secondary">{k}</dt>
                   <dd className="m-0 font-heading text-h1 tabular-nums">{v}</dd>

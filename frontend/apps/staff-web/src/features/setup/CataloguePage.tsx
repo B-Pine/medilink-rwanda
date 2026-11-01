@@ -194,7 +194,7 @@ function ServicesTab({
           description={t("setup.catalogue.noServices")}
         />
       ) : (
-        <ul className="m-0 list-none overflow-hidden rounded-lg border border-border bg-surface p-0">
+        <ul className="m-0 list-none overflow-hidden rounded-lg bg-surface shadow-card p-0">
           {services.map((s) => (
             <Row
               key={s.id}
@@ -408,7 +408,7 @@ function DepartmentsTab({ departments }: { departments: Department[] }) {
           description={t("setup.catalogue.noDepartments")}
         />
       ) : (
-        <ul className="m-0 list-none overflow-hidden rounded-lg border border-border bg-surface p-0">
+        <ul className="m-0 list-none overflow-hidden rounded-lg bg-surface shadow-card p-0">
           {departments.map((d) => (
             <Row
               key={d.id}
@@ -529,7 +529,7 @@ function PointsTab({ points, services }: { points: ServicePoint[]; services: Ser
           description={t("setup.catalogue.noPoints")}
         />
       ) : (
-        <ul className="m-0 list-none overflow-hidden rounded-lg border border-border bg-surface p-0">
+        <ul className="m-0 list-none overflow-hidden rounded-lg bg-surface shadow-card p-0">
           {points.map((p) => (
             <Row
               key={p.id}

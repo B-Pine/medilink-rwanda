@@ -21,6 +21,14 @@ async function signIn(email = "reception@medilink.test", path = "/today") {
   return app;
 }
 
+/** A local date a few days ahead, as the date inputs take it (YYYY-MM-DD). */
+const daysAhead = (days: number) => {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+};
+
 const bell = (name: RegExp | string = /^Notifications, /) => screen.findByRole("button", { name });
 
 describe("notification bell (S9-F1)", () => {
@@ -160,8 +168,8 @@ describe("facility announcements (S9-F3)", () => {
     expect(
       await screen.findByRole("radio", { name: /Patients with visits on these dates/ }),
     ).toBeChecked();
-    await user.type(screen.getByLabelText("From"), "2026-11-06");
-    await user.type(screen.getByLabelText("To"), "2026-11-06");
+    await user.type(screen.getByLabelText("From"), daysAhead(5));
+    await user.type(screen.getByLabelText("To"), daysAhead(5));
     await user.click(screen.getByRole("radio", { name: /Important/ }));
 
     await user.click(screen.getByRole("tab", { name: /English/ }));

@@ -350,6 +350,14 @@ function Composer({ scope, row }: { scope: AnnouncementScope; row: Announcement 
     void queryClient.invalidateQueries({ queryKey: notificationKeys.announcements(scope) });
   };
 
+  /** A new announcement moves to its own URL. The detail query is seeded so that page renders at
+   * once, and the notice shows only there, so nothing is clicked on the page being replaced. */
+  const moveTo = (next: Announcement, message: string) => {
+    queryClient.setQueryData(notificationKeys.announcement(scope, next.id), next);
+    void queryClient.invalidateQueries({ queryKey: notificationKeys.announcements(scope) });
+    void navigate(`${base}/${next.id}`, { replace: true, state: { notice: message } });
+  };
+
   const save = useMutation({
     mutationFn: async () => {
       const body = toInput(draft);
@@ -358,13 +366,8 @@ function Composer({ scope, row }: { scope: AnnouncementScope; row: Announcement 
         : ann.create(body);
     },
     onSuccess: (next) => {
-      const created = !current;
-      settled(next, t("notifications.announcements.savedDraft"));
-      if (created)
-        void navigate(`${base}/${next.id}`, {
-          replace: true,
-          state: { notice: t("notifications.announcements.savedDraft") },
-        });
+      if (current) settled(next, t("notifications.announcements.savedDraft"));
+      else moveTo(next, t("notifications.announcements.savedDraft"));
     },
     onError: handleError,
   });
@@ -378,12 +381,8 @@ function Composer({ scope, row }: { scope: AnnouncementScope; row: Announcement 
       return ann.publish(saved.id);
     },
     onSuccess: (next) => {
-      settled(next, t("notifications.announcements.publishedNotice"));
-      if (!row)
-        void navigate(`${base}/${next.id}`, {
-          replace: true,
-          state: { notice: t("notifications.announcements.publishedNotice") },
-        });
+      if (row) settled(next, t("notifications.announcements.publishedNotice"));
+      else moveTo(next, t("notifications.announcements.publishedNotice"));
     },
     onError: (error) => {
       setConfirm(null);

@@ -2,43 +2,55 @@ import type { StaffMe } from "@medilink/api-client";
 import { cx, Logo } from "@medilink/ui";
 import { SidebarSimple } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
-import { NavLink } from "react-router";
+import { NavLink, useLocation } from "react-router";
 
 import { BUILT_PATHS } from "../app/features";
 import { ConnectionIndicator } from "./ConnectionIndicator";
 import { navLabelKey, navSection, visibleNavItems, type NavItem } from "./navigation";
 
+/**
+ * The one menu item for the current address: the longest path that matches it, so /queue/mine
+ * keeps Queue lit while /queue/reorders (its own item) lights only itself.
+ */
+function activePath(items: NavItem[], pathname: string): string | undefined {
+  return items
+    .map((item) => item.path)
+    .filter((path) => pathname === path || pathname.startsWith(`${path}/`))
+    .sort((a, b) => b.length - a.length)[0];
+}
+
 function NavList({
   items,
+  active,
   collapsed,
   onNavigate,
 }: {
   items: NavItem[];
+  active: string | undefined;
   collapsed: boolean;
   onNavigate?: (() => void) | undefined;
 }) {
   const { t } = useTranslation();
   return (
     <ul className="m-0 flex list-none flex-col gap-0.5 p-0">
-      {items.map(({ key, path, icon: ItemIcon, labelKey }) => (
-        <li key={key}>
-          <NavLink
-            to={path}
-            end={path === "/platform" || path === "/queue" || path === "/settings"}
-            onClick={onNavigate}
-            title={collapsed ? t(navLabelKey({ key, labelKey })) : undefined}
-            className={({ isActive }) =>
-              cx(
+      {items.map(({ key, path, icon: ItemIcon, labelKey }) => {
+        const isActive = path === active;
+        return (
+          <li key={key}>
+            <NavLink
+              to={path}
+              onClick={onNavigate}
+              aria-current={isActive ? "page" : undefined}
+              title={collapsed ? t(navLabelKey({ key, labelKey })) : undefined}
+              className={cx(
                 "flex min-h-9 items-center gap-2.5 rounded-md px-2.5 text-body-sm font-medium no-underline",
                 "transition-[background-color,color,box-shadow] duration-150",
                 collapsed && "lg:justify-center lg:px-0",
                 isActive
                   ? "bg-surface font-semibold text-fg shadow-card"
                   : "text-fg-secondary hover:bg-subtle hover:text-fg",
-              )
-            }
-          >
-            {({ isActive }) => (
+              )}
+            >
               <>
                 <ItemIcon
                   aria-hidden="true"
@@ -49,10 +61,10 @@ function NavList({
                   {t(navLabelKey({ key, labelKey }))}
                 </span>
               </>
-            )}
-          </NavLink>
-        </li>
-      ))}
+            </NavLink>
+          </li>
+        );
+      })}
     </ul>
   );
 }
@@ -91,7 +103,9 @@ export function Sidebar({
   onNavigate?: () => void;
 }) {
   const { t } = useTranslation();
+  const { pathname } = useLocation();
   const items = visibleNavItems(me, BUILT_PATHS());
+  const active = activePath(items, pathname);
   const facility = items.filter((item) => item.group === "facility");
   const work = facility.filter((item) => navSection(item) === "work");
   const manage = facility.filter((item) => navSection(item) === "manage");
@@ -111,23 +125,32 @@ export function Sidebar({
       <div className={cx("hidden pb-3 lg:block", collapsed ? "self-center" : "px-2")}>
         {collapsed ? <Logo variant="symbol" className="h-8" /> : <Logo className="h-8" />}
       </div>
-      <div className="flex flex-1 flex-col gap-1 overflow-y-auto">
-        {work.length > 0 && <NavList items={work} collapsed={collapsed} onNavigate={onNavigate} />}
+      <div className="-mx-1.5 flex flex-1 flex-col gap-1 overflow-y-auto px-1.5 py-1">
+        {work.length > 0 && (
+          <NavList items={work} active={active} collapsed={collapsed} onNavigate={onNavigate} />
+        )}
         {manage.length > 0 && (
           <div className="flex flex-col">
             <SectionLabel collapsed={collapsed}>{t("shell.section.manage")}</SectionLabel>
-            <NavList items={manage} collapsed={collapsed} onNavigate={onNavigate} />
+            <NavList items={manage} active={active} collapsed={collapsed} onNavigate={onNavigate} />
           </div>
         )}
         {platform.length > 0 && (
           <div className="flex flex-col">
             <SectionLabel collapsed={collapsed}>{t("shell.platformAdmin")}</SectionLabel>
-            <NavList items={platform} collapsed={collapsed} onNavigate={onNavigate} />
+            <NavList
+              items={platform}
+              active={active}
+              collapsed={collapsed}
+              onNavigate={onNavigate}
+            />
           </div>
         )}
       </div>
-      <div className="flex flex-col gap-2 border-t border-border pt-3">
-        {help.length > 0 && <NavList items={help} collapsed={collapsed} onNavigate={onNavigate} />}
+      <div className="-mx-1.5 flex flex-col gap-2 border-t border-border px-1.5 pt-3">
+        {help.length > 0 && (
+          <NavList items={help} active={active} collapsed={collapsed} onNavigate={onNavigate} />
+        )}
         <div
           className={cx(
             "flex items-center justify-between gap-2",

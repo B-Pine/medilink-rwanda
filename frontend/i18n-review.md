@@ -203,8 +203,8 @@ File: `apps/staff-web/src/i18n/locales/rw.json`
 | `placeholder.back` | Subira ku Uyu munsi | Back to Today | needs native-speaker review |
 | `placeholder.heading` | {{section}} biraje vuba | {{section}} is on its way | needs native-speaker review |
 | `notFound.title` | Iyi paji ntibonetse | Page not found | needs native-speaker review |
-| `notFound.body` | Reba aderesi, cyangwa usubire kuri paji y’Uyu munsi. | Check the address, or go back to your Today page. | needs native-speaker review |
-| `notFound.home` | Jya ku Uyu munsi | Go to Today | needs native-speaker review |
+| `notFound.body` | Reba aderesi, cyangwa usubire kuri paji y’Uyu munsi. | Check the address, or go back to your start page. | needs native-speaker review |
+| `notFound.home` | Jya ku ipaji yanjye ibanza | Go to my start page | needs native-speaker review |
 | `forgot.title` | Hindura ijambo ry’ibanga | Reset your password | needs native-speaker review |
 | `forgot.intro` | Andika imeyili y’akazi. Niba ifite konti, tuzakoherereza ihuriro ryo gushyiraho ijambo ry’ibanga rishya. | Enter your work email. If it belongs to an account, we will send a link to set a new password. | needs native-speaker review |
 | `forgot.email` | Imeyili | Email | needs native-speaker review |

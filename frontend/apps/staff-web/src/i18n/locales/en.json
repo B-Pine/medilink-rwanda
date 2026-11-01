@@ -184,8 +184,8 @@
   },
   "notFound": {
     "title": "Page not found",
-    "body": "Check the address, or go back to your Today page.",
-    "home": "Go to Today"
+    "body": "Check the address, or go back to your start page.",
+    "home": "Go to my start page"
   },
   "forgot": {
     "title": "Reset your password",

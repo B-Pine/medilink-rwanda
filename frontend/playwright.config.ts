@@ -3,9 +3,10 @@ import { defineConfig, devices } from "@playwright/test";
 /**
  * End-to-end tests (Playwright) against the mock builds: the apps run in the browser with the MSW
  * contract mocks (VITE_USE_MOCKS, `--mode mock`), so no backend is needed. `pnpm e2e` builds and
- * previews staff-web in mock mode; run `pnpm e2e:install` once for the browser.
+ * previews staff-web and patient-web in mock mode; run `pnpm e2e:install` once for the browser.
  */
 const STAFF_PORT = 4173;
+const PATIENT_PORT = 4174;
 
 export default defineConfig({
   testDir: "e2e",
@@ -25,11 +26,21 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
-  webServer: {
-    command:
-      "pnpm --filter @medilink/staff-web build:mock && pnpm --filter @medilink/staff-web preview",
-    url: `http://localhost:${STAFF_PORT}`,
-    reuseExistingServer: !process.env.CI,
-    timeout: 300_000,
-  },
+  webServer: [
+    {
+      command:
+        "pnpm --filter @medilink/staff-web build:mock && pnpm --filter @medilink/staff-web preview",
+      url: `http://localhost:${STAFF_PORT}`,
+      reuseExistingServer: !process.env.CI,
+      timeout: 300_000,
+    },
+    {
+      // Includes the pre-rendered public pages (built from the contract mocks).
+      command:
+        "pnpm --filter @medilink/patient-web build:mock && pnpm --filter @medilink/patient-web preview",
+      url: `http://localhost:${PATIENT_PORT}`,
+      reuseExistingServer: !process.env.CI,
+      timeout: 300_000,
+    },
+  ],
 });

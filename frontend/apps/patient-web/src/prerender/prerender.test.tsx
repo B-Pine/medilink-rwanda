@@ -1,3 +1,4 @@
+import type { PublicFacility } from "@medilink/api-client";
 import { describe, expect, it } from "vitest";
 
 import { routes } from "../app/routes";
@@ -50,7 +51,13 @@ describe("prerender (build time)", () => {
     const data = dataOf(result!.html);
     expect(data).toMatchObject({ path: facility, hydrate: false });
     const query = data.queries.queries.find((q) => q.queryKey[1] === "facility");
-    const name = (query?.state.data as { name: string }).name;
+    const facilityData = query?.state.data as PublicFacility;
+    const name = facilityData.name;
+    // ADR 0008: no fees, queue load or next free time in a build-time snapshot
+    for (const service of facilityData.services) {
+      expect(service).toMatchObject({ fee_rwf: null, queue_load: null, next_slot_at: null });
+    }
+    expect(result!.html).not.toMatch(/\d RWF/);
     expect(result!.html).toContain(name);
     expect(result!.head?.title).toContain(name);
   });

@@ -1,4 +1,4 @@
-import type { MediLinkApi } from "@medilink/api-client";
+import type { MediLinkApi, PublicFacility } from "@medilink/api-client";
 import { dehydrate } from "@tanstack/react-query";
 import { StrictMode } from "react";
 import { createStaticHandler, createStaticRouter, StaticRouterProvider } from "react-router";
@@ -26,6 +26,24 @@ interface PrerenderResult {
     lang: string;
     title: string;
     elements: Set<{ type: string; props: Record<string, string> }>;
+  };
+}
+
+/**
+ * ADR 0008: a pre-rendered facility page carries static, public facts only (name, type, services,
+ * address, hours). Fees, queue load and next free times change during the day, so they are left
+ * out and load in the browser; a stale build never shows a wrong price or time.
+ */
+export function staticFacility(facility: PublicFacility): PublicFacility {
+  return {
+    ...facility,
+    services: facility.services.map((service) => ({
+      ...service,
+      fee_rwf: null,
+      insurer_shares: {},
+      queue_load: null,
+      next_slot_at: null,
+    })),
   };
 }
 
@@ -156,7 +174,7 @@ export async function prerender({ url }: { url: string }): Promise<PrerenderResu
       // Same key as FacilityPage, so the page renders from this data.
       const data = await queryClient.fetchQuery({
         queryKey: [PUBLIC_QUERY_ROOT, "facility", slug],
-        queryFn: () => api.booking.facility(slug),
+        queryFn: async () => staticFacility(await api.booking.facility(slug)),
       });
       const about = data.description_i18n[LANGUAGE] || data.description_i18n.en;
       if (about) description = about;

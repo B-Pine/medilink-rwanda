@@ -27,14 +27,11 @@ async function logOut(page: Page) {
 const openQueue = (page: Page) =>
   page.getByRole("navigation", { name: "Main menu" }).getByRole("link", { name: "Queue" }).click();
 
-// English UI (the apps default to Kinyarwanda): the stored language preference.
-test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => window.localStorage.setItem("medilink.language", "en"));
-});
-
 test("walk-in: checked in at reception, called by the doctor, completed", async ({ page }) => {
   // Reception checks in a walk-in from the queue board.
   await page.goto("/queue");
+  // English UI: the login page's language switch (the apps default to Kinyarwanda).
+  await page.getByRole("combobox", { name: "Ururimi" }).selectOption("en");
   await logIn(page, "reception@medilink.test");
   await expect(page.getByRole("heading", { level: 1, name: "Queue" })).toBeVisible();
   const board = page.getByRole("table", { name: /General consultation/ });

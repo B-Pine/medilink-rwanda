@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 2864.
+Keys: 2869.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -50,6 +50,10 @@ File: `packages/ui/src/i18n/locales/rw.json`
 | `textSize.normal` | Isanzwe | Normal | needs native-speaker review |
 | `textSize.large` | Nini | Large | needs native-speaker review |
 | `textSize.xlarge` | Nini cyane | Extra large | needs native-speaker review |
+| `chart.showTable` | Erekana imbonerahamwe | Show table | needs native-speaker review |
+| `chart.hideTable` | Hisha imbonerahamwe | Hide table | needs native-speaker review |
+| `chart.keyboardHint` | Koresha utubuto tw’imyambi y’ibumoso n’iburyo kugira ngo usome agaciro kamwe kamwe. | Use the left and right arrow keys to read each value. | needs native-speaker review |
+| `chart.tableOf` | Imibare y’igishushanyo: {{title}} | Data of the chart: {{title}} | needs native-speaker review |
 
 ## Staff app
 
@@ -1667,6 +1671,7 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `columns.flags` | Ibimenyetso | Flags | needs native-speaker review |
 | `columns.waiting` | Ategereje | Waiting | needs native-speaker review |
 | `live.live` | Ako kanya · hashize amasegonda {{seconds}} | Live · {{seconds}} s ago | needs native-speaker review |
+| `live.connected` | Ako kanya | Live | needs native-speaker review |
 | `live.reconnecting` | Birongera guhuzwa | Reconnecting | needs native-speaker review |
 | `live.offline_one` | Nta interineti · igikorwa {{count}} gitegereje | Offline · {{count}} action waiting | needs native-speaker review |
 | `live.offline_other` | Nta interineti · ibikorwa {{count}} bitegereje | Offline · {{count}} actions waiting | needs native-speaker review |

@@ -6,7 +6,8 @@
  *    data block; `/facilities/<slug>` pages are checked the same way when the API had facilities;
  *  - `app-shell.html` (the fallback for every other path) is the empty shell;
  *  - no personal data: a data block only carries public discovery queries, and no page contains
- *    an email address or a 16-digit national ID.
+ *    an email address or a 16-digit national ID;
+ *  - no live data in facility snapshots (fees, queue load, next free time load in the browser).
  *
  *   node scripts/check-prerender.mjs apps/patient-web/dist
  */
@@ -45,6 +46,13 @@ function checkPage(file, path) {
         query.queryKey?.[0] === PUBLIC_QUERY_ROOT,
         `${name}: non-public query in the data block: ${JSON.stringify(query.queryKey)}`,
       );
+      // ADR 0008: live data (fees, queue load, next free time) never goes into a snapshot
+      for (const service of query.state?.data?.services ?? []) {
+        check(
+          service.fee_rwf === null && service.queue_load === null && service.next_slot_at === null,
+          `${name}: live data (fee, queue load or next time) in a pre-rendered facility page`,
+        );
+      }
     }
   }
   const text = html.replace(/<script\b[^>]*src=[^>]*><\/script>|<link\b[^>]*>/g, "");

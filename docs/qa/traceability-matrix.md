@@ -69,7 +69,7 @@ Source: [02 · Users, roles, access](../analysis/02-users-roles-and-permissions.
 | FR-ACC-02 | Several facility memberships; switch active facility | P1 | S0 | Both | API, E2E | Verified (S0, v0.1.0) |
 | FR-ACC-03 | Six phase-1 roles with the matrix permissions | P1 | S0 | Both | AZ | Verified (S0, v0.1.0) |
 | FR-ACC-04 | Staff two-factor login | P1 | S0 | Both | API, E2E | Verified (S0, v0.1.0) |
-| FR-ACC-05 | Staff invitations by email, expiring, single use | P1 | S0, S2 | Both | API, E2E | In progress |
+| FR-ACC-05 | Staff invitations by email, expiring, single use | P1 | S0, S2 (R3 #85) | Both | API, E2E | In progress |
 | FR-ACC-06 | Deactivation removes access and ends sessions at once | P1 | S0, S2 | Both | API, E2E | In progress |
 | FR-ACC-07 | Clinician licence number; admin attests the check | P1 | S0, S2 | Both | API, CMP | In progress |
 | FR-ACC-08 | Server-side, logged permission checks on patient data | P1 | S0 | Backend | AZ, API | Verified (S0, v0.1.0) |
@@ -84,7 +84,7 @@ Source: [03 · Tenancy, onboarding, master data](../analysis/03-tenancy-onboardi
 |---|---|---|---|---|---|---|
 | FR-ONB-01 | Self-registration with documents; super admin-created applications | P1 | S1 | Both | API, E2E | In progress |
 | FR-ONB-02 | Verification: approve, request changes, reject, with history | P1 | S1 | Both | API, BR, E2E | In progress |
-| FR-ONB-03 | Setup checklist; searchable only when Live | P1 | S1, S2* | Both | API, BR, E2E | In progress |
+| FR-ONB-03 | Setup checklist; searchable only when Live | P1 | S1, S2* (R3 #85) | Both | API, BR, E2E | In progress |
 | FR-ONB-04 | Facility configuration with change log | P1 | S2 | Both | API, E2E | Not started |
 | FR-ONB-05 | Invitation adds a membership to an existing account | P1 | S2 | Backend | API | Not started |
 | FR-ONB-06 | Cross-facility schedule conflict warning without details | P1 | S2 | Both | API, RLS | Not started |

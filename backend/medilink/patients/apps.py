@@ -11,7 +11,7 @@ BEAT_SCHEDULE = {
     },
     "patients.expire_delegation_invites": {
         "task": "medilink.patients.tasks.expire_delegation_invites",
-        "schedule": crontab(hour=0, minute=0),  # 02:00 Kigali
+        "schedule": crontab(hour=2, minute=0),  # Kigali time (CELERY_TIMEZONE)
     },
 }
 

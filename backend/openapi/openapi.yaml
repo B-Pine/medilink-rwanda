@@ -1448,6 +1448,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: facility_id
         schema:
@@ -1595,6 +1597,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: facility_id
         schema:
@@ -1766,6 +1770,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: facility_id
         schema:
@@ -1822,6 +1828,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: facility_id
         schema:
@@ -1902,6 +1910,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: facility_id
         schema:
@@ -2123,6 +2133,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: application_id
         schema:
@@ -2179,6 +2191,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: application_id
         schema:
@@ -2383,6 +2397,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: application_id
         schema:
@@ -2439,6 +2455,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: application_id
         schema:
@@ -2854,6 +2872,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: import_id
         schema:
@@ -3152,6 +3172,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: import_id
         schema:
@@ -3829,6 +3851,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: import_id
         schema:
@@ -4694,6 +4718,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: import_id
         schema:
@@ -5093,6 +5119,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: application_id
         schema:
@@ -5212,6 +5240,8 @@ paths:
         name: Idempotency-Key
         schema:
           type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       - in: path
         name: application_id
         schema:
@@ -5537,6 +5567,11 @@ paths:
   /api/v1/staff/auth/invitations/accept/:
     post:
       operationId: staff_auth_invitation_accept
+      description: 'Existing account: a signed-in staff session with the invited email
+        sends `{token}` and gets `StaffMe` with the new membership. New account: `{token,
+        full_name, password}` gets `LoginResult` (`mfa_setup_required`). Passwords
+        are never checked here: existing accounts sign in through the login endpoint
+        (lockout, MFA, audit).'
       tags:
       - staff-auth
       requestBody:
@@ -5552,7 +5587,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LoginResult'
+                $ref: '#/components/schemas/InvitationAcceptResult'
           description: ''
         '400':
           content:
@@ -5560,6 +5595,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: invalid token or password
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'the email has an account: sign in first, then accept with
+            {token}'
         '403':
           content:
             application/json:
@@ -6498,6 +6540,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/FacilityProfile'
           description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'stale status_version (error.current: the profile)'
         '422':
           content:
             application/json:
@@ -6728,6 +6776,15 @@ paths:
   /api/v1/staff/invitations/:
     get:
       operationId: staff_invitations_list
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
       tags:
       - staff-team
       security:
@@ -6738,12 +6795,17 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Invitation'
+                $ref: '#/components/schemas/InvitationPage'
           description: ''
     post:
       operationId: staff_invitations_create
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        description: A UUID (architecture 02 §6); a repeat returns the original result.
       tags:
       - staff-team
       requestBody:
@@ -6768,6 +6830,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: pending invitation or already a member
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: facility deactivated
   /api/v1/staff/invitations/{invitation_id}/{action}/:
     post:
       operationId: staff_invitations_action
@@ -7154,6 +7222,14 @@ paths:
       operationId: staff_memberships_list
       parameters:
       - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
         name: q
         schema:
           type: string
@@ -7175,9 +7251,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/StaffMembership'
+                $ref: '#/components/schemas/StaffMembershipPage'
           description: ''
   /api/v1/staff/memberships/{membership_id}/:
     get:
@@ -8396,6 +8470,14 @@ paths:
         schema:
           type: string
       - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
         name: service_id
         schema:
           type: string
@@ -8409,9 +8491,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Template'
+                $ref: '#/components/schemas/ScheduleTemplatePage'
           description: ''
     post:
       operationId: staff_schedule_templates_create
@@ -10057,10 +10137,14 @@ components:
           type: boolean
         status:
           type: string
+        status_version:
+          type: integer
+          description: Send it back with go-live (F13).
       required:
       - complete
       - items
       - status
+      - status_version
     ChecklistItem:
       type: object
       properties:
@@ -11348,6 +11432,11 @@ components:
         request_id:
           type: string
           description: Same value as the X-Request-ID header.
+        current:
+          type: object
+          additionalProperties: {}
+          description: '409 conflict on a versioned resource only: the resource as
+            it is now.'
       required:
       - code
       - fields
@@ -11747,6 +11836,10 @@ components:
           type: string
         version:
           type: integer
+          description: 'Profile version: send it back with PATCH.'
+        status_version:
+          type: integer
+          description: 'Status version: send it back with go-live (F13).'
       required:
       - address
       - description_i18n
@@ -11761,6 +11854,7 @@ components:
       - photos
       - slug
       - status
+      - status_version
       - version
       - village_code
       - website
@@ -12128,6 +12222,8 @@ components:
         version:
           type: integer
           minimum: 0
+          description: The facility's `status_version` (F1, F12), not the profile
+            version.
       required:
       - version
     Health:
@@ -12865,6 +12961,10 @@ components:
       - role_codes
       - service_point_ids
       - status
+    InvitationAcceptResult:
+      oneOf:
+      - $ref: '#/components/schemas/StaffMe'
+      - $ref: '#/components/schemas/LoginResult'
     InvitationCreateRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -12914,6 +13014,26 @@ components:
       - facility_name
       - invited_by
       - role_codes
+    InvitationPage:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Invitation'
+      required:
+      - count
+      - next
+      - previous
+      - results
     InvitationStatusEnum:
       enum:
       - pending
@@ -16588,6 +16708,26 @@ components:
       - exceptions
       - full_name
       - membership_id
+    ScheduleTemplatePage:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Template'
+      required:
+      - count
+      - next
+      - previous
+      - results
     SchemeEnum:
       enum:
       - community
@@ -17423,6 +17563,26 @@ components:
       - service_points
       - user_id
       - version
+    StaffMembershipPage:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          nullable: true
+        previous:
+          type: string
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StaffMembership'
+      required:
+      - count
+      - next
+      - previous
+      - results
     StaffRevealRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.

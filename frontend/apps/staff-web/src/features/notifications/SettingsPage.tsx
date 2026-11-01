@@ -30,13 +30,15 @@ function SettingsForm({ saved }: { saved: StaffNotificationPreferences }) {
   const [done, setDone] = useState(false);
   const [testResult, setTestResult] = useState<"played" | "blocked" | null>(null);
 
+  const languageChanged = draft.language !== saved.language;
   const save = useMutation({
     mutationFn: () => api.notifications.staff.updatePreferences({ version, ...draft }),
     onSuccess: (next) => {
       queryClient.setQueryData(notificationKeys.preferences, next);
       setVersion(next.version);
       setDone(true);
-      if (isLanguage(next.language) && next.language !== i18n.resolvedLanguage)
+      // Switch the UI only when the user picked another language here.
+      if (languageChanged && isLanguage(next.language) && next.language !== i18n.resolvedLanguage)
         void i18n.changeLanguage(next.language);
     },
   });

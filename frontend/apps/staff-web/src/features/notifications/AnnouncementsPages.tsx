@@ -31,7 +31,7 @@ import { Megaphone, Plus, Warning } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useLocation, useNavigate, useParams } from "react-router";
 
 import { useApi } from "../../app/services";
 import { useStaffMe } from "../../auth/queries";
@@ -310,14 +310,20 @@ function Composer({ scope, row }: { scope: AnnouncementScope; row: Announcement 
   const day = useFormatDay();
   const [draft, setDraft] = useState<Draft>(() => draftFrom(row, scope));
   const [current, setCurrent] = useState<Announcement | null>(row);
-  const [tab, setTab] = useState<LanguageCode>("rw");
+  const [tab, setTab] = useState<LanguageCode>(
+    () => LANGS.find((l) => row?.title_i18n[l]?.trim()) ?? "rw",
+  );
   const [preview, setPreview] = useState<LanguageCode>(
     (i18n.resolvedLanguage as LanguageCode | undefined) ?? "rw",
   );
   const [confirm, setConfirm] = useState<"publish" | "withdraw" | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [failCount, setFailCount] = useState(0);
-  const [notice, setNotice] = useState<string | null>(null);
+  // A new draft moves to its own URL; the notice travels in the navigation state.
+  const location = useLocation();
+  const [notice, setNotice] = useState<string | null>(
+    () => (location.state as { notice?: string } | null)?.notice ?? null,
+  );
   const editable = !current || current.status === "draft";
   const base = basePath(scope);
 
@@ -354,7 +360,11 @@ function Composer({ scope, row }: { scope: AnnouncementScope; row: Announcement 
     onSuccess: (next) => {
       const created = !current;
       settled(next, t("notifications.announcements.savedDraft"));
-      if (created) void navigate(`${base}/${next.id}`, { replace: true });
+      if (created)
+        void navigate(`${base}/${next.id}`, {
+          replace: true,
+          state: { notice: t("notifications.announcements.savedDraft") },
+        });
     },
     onError: handleError,
   });
@@ -369,7 +379,11 @@ function Composer({ scope, row }: { scope: AnnouncementScope; row: Announcement 
     },
     onSuccess: (next) => {
       settled(next, t("notifications.announcements.publishedNotice"));
-      if (!row) void navigate(`${base}/${next.id}`, { replace: true });
+      if (!row)
+        void navigate(`${base}/${next.id}`, {
+          replace: true,
+          state: { notice: t("notifications.announcements.publishedNotice") },
+        });
     },
     onError: (error) => {
       setConfirm(null);
@@ -567,6 +581,7 @@ function Composer({ scope, row }: { scope: AnnouncementScope; row: Announcement 
                             className={cx("size-4", hasError ? "text-danger" : "text-warning")}
                           />
                           <span className="sr-only">
+                            {" "}
                             {hasError
                               ? t("notifications.announcements.tabError")
                               : t("notifications.announcements.tabMissing")}

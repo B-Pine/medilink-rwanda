@@ -6,6 +6,7 @@ import {
   cx,
   EmptyState,
   Tabs,
+  TabsContent,
   TabsList,
   TabsTrigger,
 } from "@medilink/ui";
@@ -150,29 +151,59 @@ export function InboxPage() {
             {t("notifications.inbox.unreadTab", { count: unread })}
           </TabsTrigger>
         </TabsList>
+        <TabsContent value="all" className="pt-4">
+          {list.isPending ? (
+            <ListSkeleton label={t("notifications.loading")} />
+          ) : list.isError ? (
+            <LoadError error={list.error} onRetry={() => void list.refetch()} />
+          ) : rows.length === 0 ? (
+            <EmptyState
+              icon={BellSimple}
+              title={
+                tab === "unread"
+                  ? t("notifications.inbox.emptyUnread")
+                  : t("notifications.inbox.empty")
+              }
+              description={t("notifications.inbox.emptyBody")}
+            />
+          ) : (
+            <ul
+              className="m-0 flex list-none flex-col gap-3 p-0"
+              aria-label={t("notifications.inbox.title")}
+            >
+              {rows.map((item) => (
+                <NotificationRow key={item.id} item={item} />
+              ))}
+            </ul>
+          )}
+        </TabsContent>
+        <TabsContent value="unread" className="pt-4">
+          {list.isPending ? (
+            <ListSkeleton label={t("notifications.loading")} />
+          ) : list.isError ? (
+            <LoadError error={list.error} onRetry={() => void list.refetch()} />
+          ) : rows.length === 0 ? (
+            <EmptyState
+              icon={BellSimple}
+              title={
+                tab === "unread"
+                  ? t("notifications.inbox.emptyUnread")
+                  : t("notifications.inbox.empty")
+              }
+              description={t("notifications.inbox.emptyBody")}
+            />
+          ) : (
+            <ul
+              className="m-0 flex list-none flex-col gap-3 p-0"
+              aria-label={t("notifications.inbox.title")}
+            >
+              {rows.map((item) => (
+                <NotificationRow key={item.id} item={item} />
+              ))}
+            </ul>
+          )}
+        </TabsContent>
       </Tabs>
-      {list.isPending ? (
-        <ListSkeleton label={t("notifications.loading")} />
-      ) : list.isError ? (
-        <LoadError error={list.error} onRetry={() => void list.refetch()} />
-      ) : rows.length === 0 ? (
-        <EmptyState
-          icon={BellSimple}
-          title={
-            tab === "unread" ? t("notifications.inbox.emptyUnread") : t("notifications.inbox.empty")
-          }
-          description={t("notifications.inbox.emptyBody")}
-        />
-      ) : (
-        <ul
-          className="m-0 flex list-none flex-col gap-3 p-0"
-          aria-label={t("notifications.inbox.title")}
-        >
-          {rows.map((item) => (
-            <NotificationRow key={item.id} item={item} />
-          ))}
-        </ul>
-      )}
       {pages > 1 && (
         <nav
           aria-label={t("notifications.inbox.pages")}

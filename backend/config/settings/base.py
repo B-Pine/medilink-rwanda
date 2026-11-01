@@ -418,6 +418,8 @@ SPECTACULAR_SETTINGS = {
         "PatientRelationshipEnum": "medilink.patients.models.Relationship",
         "DependentRelationshipEnum": "medilink.patients.views_patient.DEPENDENT_RELATIONSHIPS",
         "PrincipalRelationshipEnum": "medilink.patients.models.PrincipalRelationship",
+        "ReasonCodeEnum": "medilink.patients.serializers.REVEAL_REASON_CODES",
+        "AccessReasonCodeEnum": "medilink.patients.serializers.ACCESS_REASON_CODES",
         # [/S3]
         # [S9]
         # [/S9]

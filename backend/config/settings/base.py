@@ -444,6 +444,15 @@ SPECTACULAR_SETTINGS = {
         "BookingSourceEnum": "medilink.scheduling.models.BookingSource",
         "LevelOfCareEnum": "medilink.masterdata.models.LevelOfCare",
         "QueueLoadEnum": [("low", "low"), ("medium", "medium"), ("high", "high")],
+        "DisruptionKindEnum": "medilink.scheduling.models.DisruptionKind",
+        "DisruptionActionEnum": "medilink.scheduling.models.DisruptionAction",
+        "DisruptionStatusEnum": "medilink.scheduling.models.DisruptionStatus",
+        "PatientResponseEnum": "medilink.scheduling.models.PatientResponse",
+        "FollowUpModeEnum": "medilink.scheduling.models.FollowUpMode",
+        "FollowUpStatusEnum": "medilink.scheduling.models.FollowUpStatus",
+        # S5b adds `mode` and `action` fields: pin the S1 enums to their existing names
+        "ModeEnum": "medilink.masterdata.models.ImportMode",
+        "ActionEnum": "medilink.masterdata.models.ChangeAction",
         # [/S5]
     },
 }

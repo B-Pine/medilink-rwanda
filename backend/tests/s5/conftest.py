@@ -151,3 +151,47 @@ def book(client: APIClient, user: Any, slot: Slot, key: str | None = None, **ext
         format="json",
         **headers,
     )
+
+
+# ---- S5b -----------------------------------------------------------------------------------------
+
+
+def at(clock: Clock, days: int, hour: int, minute: int = 0) -> dt.datetime:
+    """A Kigali time `days` after the test clock's Monday."""
+    return dt.datetime.combine(
+        clock.now.astimezone(KIGALI).date() + dt.timedelta(days=days), dt.time(hour, minute), KIGALI
+    )
+
+
+def slot_at(clinic: Any, membership: Any, when: dt.datetime) -> Slot:
+    with rls_context(facility_id=clinic.pk):
+        return Slot.objects.get(facility=clinic, membership=membership, starts_at=when)
+
+
+@pytest.fixture
+def two_doctors(
+    clock: Clock,
+    clinic: Any,
+    bookable: dict[str, Any],
+    doctor2: tuple[APIClient, Any],
+    catalogue: dict[str, Any],
+) -> dict[str, Any]:
+    """The S5 clinic plus a second doctor with the same weekday mornings."""
+    second = attest(doctor2[1], clinic, licence="RMDC/5678")
+    with rls_context(facility_id=clinic.pk):
+        for weekday in range(5):
+            ScheduleTemplate.objects.create(
+                facility=clinic,
+                membership=second,
+                service_id=bookable["service_id"],
+                service_point_id=catalogue["point"]["id"],
+                weekday=weekday,
+                starts_at=dt.time(8, 0),
+                ends_at=dt.time(12, 0),
+                slot_minutes=15,
+                capacity=2,
+                bookable_share_pct=50,
+                valid_from=clock.now.date() - dt.timedelta(days=7),
+            )
+        slots.generate(clinic.pk)
+    return {**bookable, "second": second}

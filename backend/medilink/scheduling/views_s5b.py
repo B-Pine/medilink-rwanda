@@ -219,7 +219,7 @@ class DisruptionsView(StaffBookingView):
         return Response(detail(d), status=status.HTTP_201_CREATED)
 
 
-class DisruptionView(StaffBookingView):
+class DisruptionBase(StaffBookingView):
     permission_classes = [Needs(MANAGE)]
 
     def disruption(self, disruption_id: Any) -> Disruption:
@@ -228,6 +228,8 @@ class DisruptionView(StaffBookingView):
             raise exceptions.NotFound()
         return d
 
+
+class DisruptionView(DisruptionBase):
     @extend_schema(
         operation_id="staff_disruption", tags=TAGS, responses={200: s.DisruptionDetailSerializer}
     )
@@ -235,7 +237,7 @@ class DisruptionView(StaffBookingView):
         return Response(detail(self.disruption(disruption_id)))
 
 
-class DisruptionApplyView(DisruptionView):
+class DisruptionApplyView(DisruptionBase):
     @extend_schema(
         operation_id="staff_disruption_apply",
         tags=TAGS,

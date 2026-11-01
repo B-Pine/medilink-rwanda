@@ -135,7 +135,7 @@ class FollowUpSerializer(serializers.Serializer):
 # ---- R9 calendar -------------------------------------------------------------------------------
 
 
-class CalendarBlockSerializer(serializers.Serializer):
+class StaffCalendarBlockSerializer(serializers.Serializer):
     service_id = serializers.UUIDField()
     membership_id = serializers.UUIDField(allow_null=True)
     doctor = serializers.CharField(allow_null=True)
@@ -146,7 +146,7 @@ class CalendarBlockSerializer(serializers.Serializer):
     bookings = StaffBookingSerializer(many=True)
 
 
-class CalendarDisruptionSerializer(serializers.Serializer):
+class StaffCalendarDisruptionSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     kind = serializers.ChoiceField(choices=DisruptionKind.choices)
     membership_id = serializers.UUIDField(allow_null=True)
@@ -156,18 +156,18 @@ class CalendarDisruptionSerializer(serializers.Serializer):
     status = serializers.ChoiceField(choices=DisruptionStatus.choices)
 
 
-class CalendarDaySerializer(serializers.Serializer):
+class StaffCalendarDaySerializer(serializers.Serializer):
     date = serializers.DateField()
-    blocks = CalendarBlockSerializer(many=True)
+    blocks = StaffCalendarBlockSerializer(many=True)
     other_bookings = StaffBookingSerializer(many=True)
 
 
-class CalendarNameSerializer(serializers.Serializer):
+class StaffCalendarDoctorSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     name = serializers.CharField()
 
 
-class CalendarServiceSerializer(serializers.Serializer):
+class StaffCalendarServiceSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     name_i18n = serializers.DictField(child=serializers.CharField())
 
@@ -177,10 +177,10 @@ class StaffCalendarSerializer(serializers.Serializer):
     from_date = serializers.DateField()
     to_date = serializers.DateField()
     only_own = serializers.BooleanField()
-    services = CalendarServiceSerializer(many=True)
-    doctors = CalendarNameSerializer(many=True)
-    days = CalendarDaySerializer(many=True)
-    disruptions = CalendarDisruptionSerializer(many=True)
+    services = StaffCalendarServiceSerializer(many=True)
+    doctors = StaffCalendarDoctorSerializer(many=True)
+    days = StaffCalendarDaySerializer(many=True)
+    disruptions = StaffCalendarDisruptionSerializer(many=True)
 
 
 # ---- B10, B11 patient ----------------------------------------------------------------------------

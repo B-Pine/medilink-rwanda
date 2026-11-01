@@ -12,7 +12,6 @@ from django.db import connection
 from rest_framework.test import APIClient
 
 from medilink.audit.models import AuditEntry
-from medilink.facilities.calendar import KIGALI
 from medilink.patients.models import Patient, PatientLink
 from medilink.scheduling import booking as svc
 from medilink.scheduling import disruptions, slots, tasks
@@ -30,60 +29,21 @@ from medilink.tenancy.context import rls_context
 from medilink.visits.models import Ticket
 from tests.conftest import error_code, login_patient, login_staff
 from tests.factories import FacilityFactory
-from tests.s2.conftest import attest, client_for
+from tests.s2.conftest import client_for
 from tests.s4.conftest import check_in, register
 from tests.s5.conftest import (
     Clock,
     P,
     S,
+    at,
     book,
     patient_client,
     self_id,
     settings_for,
+    slot_at,
 )
 
 pytestmark = pytest.mark.django_db
-
-
-def at(clock: Clock, days: int, hour: int, minute: int = 0) -> dt.datetime:
-    """A Kigali time `days` after the test clock's Monday."""
-    return dt.datetime.combine(
-        clock.now.astimezone(KIGALI).date() + dt.timedelta(days=days), dt.time(hour, minute), KIGALI
-    )
-
-
-def slot_at(clinic: Any, membership: Any, when: dt.datetime) -> Slot:
-    with rls_context(facility_id=clinic.pk):
-        return Slot.objects.get(facility=clinic, membership=membership, starts_at=when)
-
-
-@pytest.fixture
-def two_doctors(
-    clock: Clock,
-    clinic: Any,
-    bookable: dict[str, Any],
-    doctor2: tuple[APIClient, Any],
-    catalogue: dict[str, Any],
-) -> dict[str, Any]:
-    """The S5 clinic plus a second doctor with the same weekday mornings."""
-    second = attest(doctor2[1], clinic, licence="RMDC/5678")
-    with rls_context(facility_id=clinic.pk):
-        for weekday in range(5):
-            ScheduleTemplate.objects.create(
-                facility=clinic,
-                membership=second,
-                service_id=bookable["service_id"],
-                service_point_id=catalogue["point"]["id"],
-                weekday=weekday,
-                starts_at=dt.time(8, 0),
-                ends_at=dt.time(12, 0),
-                slot_minutes=15,
-                capacity=2,
-                bookable_share_pct=50,
-                valid_from=clock.now.date() - dt.timedelta(days=7),
-            )
-        slots.generate(clinic.pk)
-    return {**bookable, "second": second}
 
 
 def create_disruption(client: APIClient, **body: Any) -> Any:

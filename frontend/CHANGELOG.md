@@ -79,6 +79,28 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 ### Sprint 9 · Notifications
 
+- api-client `notifications`: inboxes, preferences, push subscriptions, announcements, templates
+  and delivery log, with MSW mocks for every contract §3.3 endpoint (CSRF, sessions, permission,
+  error envelopes, push allowlist, 409) and `notification.created` / `notification.read` on both
+  sockets.
+- staff-web `notifications`: header bell (count with 99+, latest 10, Mark all as read, other
+  facilities' count, live across tabs, 60 s polling while the socket is down); inbox with
+  All/Unread; settings (sound off by default with a test sound, digest, version conflicts keep
+  the input); facility announcement composer (audiences, dates, priority, rw/en/fr with counters
+  and a missing-language warning, preview, draft, publish and withdraw with confirmation) behind
+  `announcements.manage`; platform announcements for super admins.
+- patient-web `notifications`: header bell, inbox with 18 px cards and the "About <name>" chip
+  for dependents, detail page that marks read; settings (language, channels per level with
+  in-app always on, quiet hours 21:00–06:00, dependents, locked critical level, browsers);
+  `PushOptIn` (asks only on a button press, reason first; denied, unsupported and
+  iOS-not-installed states; re-syncs on start; Turn off unsubscribes) and the push-off banner on
+  Home and the inbox (Not now hides it for 7 days); `public/push-sw.js` push and click handlers
+  (critical notifications stay on screen; clicks open only same-origin `/notifications` paths;
+  no requests, no caching).
+- ui: `CountBadge`, `Switch` and `useWakeLock`.
+- A new announcement shows "Draft saved" or "Published" only on its own page, after the move
+  from `/new`, so nothing is clicked on the page being replaced.
+
 ### Sprint 2 · Facility setup and staff
 
 - Fixes from the S0–S5 audit (R3, #85): go-live sends the checklist's `status_version`; the

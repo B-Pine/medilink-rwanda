@@ -54,6 +54,7 @@ describe("front-end security rules (F6)", () => {
     const keys = [...storage.matchAll(/"(medilink\.[\w.]+)"/g)].map((m) => m[1]);
     expect(keys.sort()).toEqual([
       "medilink.language",
+      "medilink.pushBannerDismissedUntil",
       "medilink.sidebarCollapsed",
       "medilink.tableDensity",
       "medilink.textSize",

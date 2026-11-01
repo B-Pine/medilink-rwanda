@@ -137,7 +137,7 @@ jobs:
         run: |
           # Random 32-byte keys for this check only (S3 patient identifier encryption)
           key() { python -c "import base64,os;print(base64.urlsafe_b64encode(os.urandom(32)).decode())"; }
-          export MEDILINK_FIELD_KEYS="1:$(key)" MEDILINK_BLIND_INDEX_KEYS="1:$(key)"
+          export MEDILINK_FIELD_KEYS="1:$(key)" MEDILINK_BLIND_INDEX_KEYS="1:$(key)" MFA_SECRET_KEYS="1:$(key)"
           python manage.py check --deploy --fail-level WARNING
 
       - name: pip-audit (known vulnerabilities in locked dependencies)

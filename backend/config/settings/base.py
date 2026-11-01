@@ -214,6 +214,9 @@ PASSWORD_RESET_TIMEOUT = 30 * 60  # 30 minutes, single use (security 03 §6)
 EMAIL_VERIFICATION_TIMEOUT = 3 * 24 * 3600  # sign-up link: 3 days, single use (security 03 §6)
 
 OTP_TOTP_ISSUER = env("MFA_TOTP_ISSUER", default="MediLink Rwanda")
+# TOTP secrets are encrypted at rest (medilink.accounts.totp_crypto): "1:<base64url 32 bytes>,…"
+MFA_SECRET_KEYS = env("MFA_SECRET_KEYS", default="")
+MFA_SECRET_ACTIVE_KEY_ID = env("MFA_SECRET_ACTIVE_KEY_ID", default="")
 MFA_PENDING_TIMEOUT = 10 * 60  # password OK -> second factor must follow within 10 minutes
 MFA_MAX_FAILURES = 5
 MFA_LOCK_SECONDS = 15 * 60

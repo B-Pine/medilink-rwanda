@@ -346,17 +346,22 @@ def test_remote_join_im_here_and_pass_over(
         check_in(desk[0], register(clinic, desk[1], f"Here Now{i}"), service_id)
     with rls_context(facility_id=clinic.pk):
         remote_ticket = Ticket.objects.get(visit_id=visit_id)
-        assert remote_ticket.is_remote and remote_ticket.remote_checked_in_at is None
-        # at the front without having arrived: moved back once, then loses the ticket
+        assert remote_ticket.is_remote and remote_ticket.remote_arrival_confirmed_at is None
+        # at the front without having arrived: warned, moved back once, then loses the ticket
+        notice = dt.timedelta(minutes=6)
+        assert remote.pass_over(clinic.pk) == 1  # warning
+        clock.now += notice
         assert remote.pass_over(clinic.pk) == 1
         remote_ticket.refresh_from_db()
         assert remote_ticket.pass_over_count == 1 and remote_ticket.state == "waiting"
         Ticket.objects.exclude(pk=remote_ticket.pk).update(state="completed")
+        assert remote.pass_over(clinic.pk) == 1  # final warning
+        clock.now += notice
         assert remote.pass_over(clinic.pk) == 1
         remote_ticket.refresh_from_db()
         assert remote_ticket.state == "left_without_service"
 
-    # a new join, then "I'm here"
+    # a new join, then "I'm here" and reception's confirmation
     clock.now += dt.timedelta(minutes=1)
     other, other_user = patient_client("remote2@example.test", "Second Joiner")
     second = other.post(
@@ -368,9 +373,13 @@ def test_remote_join_im_here_and_pass_over(
     # clock calls the service directly)
     with rls_context(facility_id=clinic.pk):
         joined_ticket = Ticket.objects.get(visit_id=second["visit_id"])
-        remote.arrived(joined_ticket, actor=Actor(user=other_user, membership=None))
+        remote.claim_arrival(joined_ticket, actor=Actor(user=other_user, membership=None))
         joined_ticket.refresh_from_db()
-        assert joined_ticket.remote_checked_in_at is not None
+        assert joined_ticket.remote_arrival_claimed_at is not None
+        assert joined_ticket.visit.status == "remote_pending"
+        remote.confirm_arrival(joined_ticket, actor=Actor(user=desk[1], membership=None))
+        joined_ticket.refresh_from_db()
+        assert joined_ticket.remote_arrival_confirmed_at is not None
         assert joined_ticket.visit.status == "on_site"
 
     clock.at(15, 0)  # after the default 11:00 cutoff
@@ -392,9 +401,12 @@ def test_no_show_strike_and_reversal(
     booking = book(client, user, slot).json()
     clock.now = slot.starts_at + dt.timedelta(minutes=20)
     with rls_context(facility_id=clinic.pk):
+        assert svc.mark_no_shows(clinic.pk) == 0  # may still arrive (as a walk-in) today
+    clock.at(17, 0)  # closing time
+    with rls_context(facility_id=clinic.pk):
         assert svc.mark_no_shows(clinic.pk) == 1
         assert NoShowStrike.objects.filter(booking_id=booking["id"]).count() == 1
-    assert svc.strike_count(user.patient_links.get().patient_id) == 1
+    assert svc.strike_status(user.patient_links.get().patient_id)["strikes"] == 1
     day = slot.starts_at.astimezone(KIGALI).date()
     login_staff(desk[0], desk[1])  # the session expired while the clock moved on
     listed = desk[0].get(f"{S}bookings/?date={day}&status=no_show")
@@ -412,7 +424,7 @@ def test_no_show_strike_and_reversal(
         format="json",
     )
     assert reversed_.status_code == 200, reversed_.content
-    assert svc.strike_count(user.patient_links.get().patient_id) == 0
+    assert svc.strike_status(user.patient_links.get().patient_id)["strikes"] == 0
 
 
 @pytest.mark.acceptance("S5-B6")

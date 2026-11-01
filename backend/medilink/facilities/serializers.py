@@ -307,7 +307,8 @@ class ServicePointUpdateSerializer(StrictSerializer):
 class TemplateSerializer(StrictSerializer):
     id = serializers.UUIDField(read_only=True)
     version = serializers.IntegerField(read_only=True)
-    membership_id = serializers.UUIDField()
+    # S5/R4: null for a service schedule with no named doctor
+    membership_id = serializers.UUIDField(allow_null=True)
     service_id = serializers.UUIDField()
     service_point_id = serializers.UUIDField(required=False, allow_null=True)
     weekday = serializers.IntegerField(min_value=0, max_value=6)

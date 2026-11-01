@@ -1,5 +1,5 @@
 import type { I18n } from "@medilink/api-client";
-import { dateFormat } from "@medilink/ui/i18n";
+import { formatDate, formatMoney, formatTime, kigaliHour } from "@medilink/ui/i18n";
 
 /**
  * Discovery choices shared by the landing hero, Find care and search (design 06 §2 H1). Service
@@ -52,34 +52,22 @@ export function pick(value: I18n | undefined, language: string): string {
 
 export function rwf(amount: number | null | undefined, language: string): string {
   if (amount === null || amount === undefined) return "";
-  return `${new Intl.NumberFormat(language === "en" ? "en-RW" : language, { maximumFractionDigits: 0 }).format(amount)} RWF`;
+  return formatMoney(amount, language);
 }
 
-const KIGALI = "Africa/Kigali";
-
-export function time(iso: string, language: string): string {
-  return dateFormat(language, {
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: KIGALI,
-  }).format(new Date(iso));
-}
+export const time = (iso: string, language: string): string => formatTime(iso, language);
 
 export function day(iso: string, language: string, style: "short" | "long" = "long"): string {
-  return dateFormat(language, {
+  return formatDate(iso, language, {
     weekday: style,
     day: "numeric",
     month: style === "long" ? "long" : "short",
-    timeZone: KIGALI,
-  }).format(new Date(iso.length === 10 ? `${iso}T12:00:00+02:00` : iso));
+  });
 }
 
 /** Morning before 12:00 Kigali time (design 07 §3.2 time chips grouped by part of day). */
 export function isMorning(iso: string): boolean {
-  const hour = Number(
-    new Intl.DateTimeFormat("en-GB", { hour: "numeric", timeZone: KIGALI }).format(new Date(iso)),
-  );
-  return hour < 12;
+  return kigaliHour(iso) < 12;
 }
 
 /** The value of a named field of a submitted form ("" when missing). */

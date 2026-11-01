@@ -107,3 +107,11 @@ export function flattenKeys(tree: TranslationTree, prefix = ""): Record<string, 
 
 export { dateFormat, hasKinyarwandaDates, setKinyarwandaDatesSupport } from "./dates";
 export type { DateFormat } from "./dates";
+export {
+  formatDate,
+  formatMoney,
+  formatTime,
+  KIGALI_TIME_ZONE,
+  kigaliDate,
+  kigaliHour,
+} from "./format";

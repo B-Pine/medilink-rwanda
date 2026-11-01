@@ -9,7 +9,7 @@ import {
   type Icon,
 } from "@phosphor-icons/react";
 import { Alert, buttonClassName, ImigongoPattern } from "@medilink/ui";
-import { dateFormat } from "@medilink/ui/i18n";
+import { dateFormat, kigaliHour } from "@medilink/ui/i18n";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
@@ -20,9 +20,7 @@ import { EmergencyNotice } from "../layout/EmergencyNotice";
 
 /** Morning before 12:00, afternoon before 18:00, evening after, in Kigali time. */
 function partOfDay(now: Date): "morning" | "afternoon" | "evening" {
-  const hour = Number(
-    new Intl.DateTimeFormat("en-GB", { hour: "numeric", timeZone: "Africa/Kigali" }).format(now),
-  );
+  const hour = kigaliHour(now);
   return hour < 12 ? "morning" : hour < 18 ? "afternoon" : "evening";
 }
 

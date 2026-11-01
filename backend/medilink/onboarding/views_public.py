@@ -9,7 +9,7 @@ from django.db import transaction
 from django.http import Http404
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
+from drf_spectacular.utils import OpenApiResponse, extend_schema
 from rest_framework import exceptions, status
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.request import Request
@@ -18,6 +18,8 @@ from rest_framework.views import APIView
 
 from medilink.audit.services import record
 from medilink.authz.permissions import PublicEndpoint
+from medilink.core.exceptions import CurrentOnConflict
+from medilink.core.idempotency import IDEMPOTENCY, idempotency_key
 from medilink.core.serializers import ErrorSerializer
 from medilink.core.throttling import BurstRateThrottle
 from medilink.masterdata.serializers import request_language
@@ -35,15 +37,10 @@ from medilink.uploads.throttling import UploadRateThrottle
 
 INVALID_LINK = _("This link is invalid or has expired. Ask for a new link.")
 TAG = ["facility-applications"]
-IDEMPOTENCY = OpenApiParameter("Idempotency-Key", str, OpenApiParameter.HEADER)
 
 
 def _err(description: str) -> OpenApiResponse:
     return OpenApiResponse(response=ErrorSerializer, description=description)
-
-
-def idempotency_key(request: Request) -> str | None:
-    return request.headers.get("Idempotency-Key", "").strip()[:200] or None
 
 
 def respond(request: Request, data: Any, status_code: int = 200) -> Response:
@@ -60,9 +57,16 @@ def app_data(request: Request, application: Application) -> dict[str, Any]:
     return s.application_data(application, language=request_language(request))
 
 
-class _Public(APIView):
+class _Public(CurrentOnConflict, APIView):
     permission_classes = [PublicEndpoint]
     authentication_classes: list[Any] = []
+
+    def conflict_current(self, request: Request, *args: Any, **kwargs: Any) -> Any:
+        """`error.current` on 409: the applicant's application (autosave or submit)."""
+        if "application_id" not in kwargs or "document_id" in kwargs:
+            return None
+        application = applicant.application_for_request(request._request, kwargs["application_id"])
+        return app_data(request, application)
 
 
 def _honeypot_response(request: Request, data: dict[str, Any]) -> Response:

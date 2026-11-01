@@ -8,6 +8,7 @@ import statistics
 from collections import Counter
 from typing import Any
 
+from django.db.models import Min
 from django.utils import timezone
 
 from medilink.visits.models import (
@@ -47,12 +48,18 @@ def _day_figures(facility_id: Any, day: dt.date) -> dict[str, Any]:
     consult = Ticket.objects.filter(
         facility_id=facility_id, service_date=day, stage=Stage.CONSULTATION
     )
+    # Wait = check-in (or confirmed remote arrival) to the first call (analysis 13 §1). The
+    # first `call` event is kept: `called_at` moves on recall and no response, and `arrival_at`
+    # of a remote joiner is the join time at home.
+    first_calls = (
+        TicketEvent.objects.filter(facility_id=facility_id, action="call", ticket__in=consult)
+        .values("ticket_id", "ticket__visit__checked_in_at")
+        .annotate(first=Min("occurred_at"))
+    )
     waits = [
-        _minutes(called - arrived)
-        for arrived, called in consult.filter(called_at__isnull=False).values_list(
-            "arrival_at", "called_at"
-        )
-        if called is not None
+        _minutes(row["first"] - row["ticket__visit__checked_in_at"])
+        for row in first_calls
+        if row["ticket__visit__checked_in_at"] is not None
     ]
     durations = [
         _minutes(end - start)
@@ -97,7 +104,7 @@ def operations(facility_id: Any) -> dict[str, Any]:
     tickets = list(
         Ticket.objects.filter(
             facility_id=facility_id, service_date=today, state__in=ACTIVE_STATES
-        ).select_related("service")
+        ).select_related("service", "visit")
     )
     by_service: dict[Any, dict[str, Any]] = {}
     for t in tickets:
@@ -113,9 +120,10 @@ def operations(facility_id: Any) -> dict[str, Any]:
         )
         if t.state == TicketState.WAITING:
             row["waiting"] += 1
-            row["longest_wait_min"] = max(
-                row["longest_wait_min"], round(_minutes(now - t.arrival_at))
-            )
+            if t.visit.checked_in_at is not None:  # remote joiners wait from confirmed arrival
+                row["longest_wait_min"] = max(
+                    row["longest_wait_min"], round(_minutes(now - t.visit.checked_in_at))
+                )
         elif t.state in (TicketState.CALLED, TicketState.IN_SERVICE):
             row["in_service"] += 1
     services = []

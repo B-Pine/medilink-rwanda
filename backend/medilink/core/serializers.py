@@ -20,6 +20,10 @@ class ErrorDetailSerializer(serializers.Serializer):
         help_text="Field name -> messages. Empty object when not a validation error.",
     )
     request_id = serializers.CharField(help_text="Same value as the X-Request-ID header.")
+    current = serializers.DictField(
+        required=False,
+        help_text="409 conflict on a versioned resource only: the resource as it is now.",
+    )
 
 
 class ErrorSerializer(serializers.Serializer):

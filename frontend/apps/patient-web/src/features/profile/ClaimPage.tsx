@@ -9,8 +9,8 @@ import {
   TextField,
   toE164,
 } from "@medilink/ui";
-import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
@@ -20,10 +20,17 @@ import { errorText, fieldErrors } from "./shared";
 
 type Way = "medilink_number" | "national_id" | "phone";
 
-/** /claim: lookup → emailed code, or the reception reference shown large → done (FR-PAT-06). */
+/** How often the page asks whether reception has confirmed the claim (PA20). */
+const RECEPTION_POLL_MS = 10_000;
+
+/**
+ * /claim: lookup → emailed code, or the reception reference shown large and polled until reception
+ * confirms it → done (FR-PAT-06).
+ */
 export function ClaimPage() {
   const { t } = useTranslation();
   const api = useApi();
+  const queryClient = useQueryClient();
   const [way, setWay] = useState<Way>("medilink_number");
   const [value, setValue] = useState("");
   const [name, setName] = useState("");
@@ -46,14 +53,46 @@ export function ClaimPage() {
     mutationFn: () => api.profile.verifyClaim(claim!.id, code),
     onSuccess: (data) => setDone(data.profile.patient_id),
   });
+  const atReception = claim?.method === "reception_check";
+  const polled = useQuery({
+    queryKey: ["profile", "claim", claim?.id],
+    queryFn: () => api.profile.claim(claim!.id),
+    enabled: atReception,
+    refetchInterval: (query) =>
+      (query.state.data?.status ?? "awaiting_reception") === "awaiting_reception"
+        ? RECEPTION_POLL_MS
+        : false,
+  });
+  const receptionStatus =
+    claim?.method === "reception_check" ? (polled.data?.status ?? claim.status) : null;
+  const confirmed = receptionStatus === "completed";
+  useEffect(() => {
+    // the account's own profile moved to the claimed record: reload the profile list
+    if (confirmed) void queryClient.invalidateQueries({ queryKey: ["profile", "list"] });
+  }, [confirmed, queryClient]);
+  const restart = () => {
+    setClaim(null);
+    setCode("");
+    start.reset();
+    verify.reset();
+  };
 
   return (
     <ProfileLayout title={t("profile.claim.title")}>
-      {done ? (
+      {done || confirmed ? (
         <Alert tone="success" role="status" title={t("profile.claim.done")}>
-          <Link to={`/profile/${done}`} className={buttonClassName({ size: "lg" })}>
+          <Link
+            to={done ? `/profile/${done}` : "/profile"}
+            className={buttonClassName({ size: "lg" })}
+          >
             {t("profile.claim.open")}
           </Link>
+        </Alert>
+      ) : atReception && receptionStatus !== "awaiting_reception" ? (
+        <Alert tone="warning" role="status" title={t("profile.claim.ended")}>
+          <Button variant="secondary" onClick={restart}>
+            {t("profile.claim.again")}
+          </Button>
         </Alert>
       ) : claim?.method === "reception_check" ? (
         <Card padding="md" className="flex flex-col gap-3">
@@ -70,6 +109,9 @@ export function ClaimPage() {
           >
             {t("profile.family.copy")}
           </Button>
+          <p className="m-0 text-fg-muted" role="status">
+            {t("profile.claim.waiting")}
+          </p>
         </Card>
       ) : claim ? (
         <form
@@ -91,6 +133,9 @@ export function ClaimPage() {
           {verify.isError && !fieldErrors(verify.error).code && (
             <Alert tone="danger" role="alert">
               {errorText(verify.error, t("profile.error"))}
+              <Button variant="secondary" onClick={restart}>
+                {t("profile.claim.again")}
+              </Button>
             </Alert>
           )}
           <Button type="submit" size="lg" disabled={code.length < 6 || verify.isPending}>

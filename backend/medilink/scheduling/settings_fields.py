@@ -22,5 +22,7 @@ register_settings_fields(
         "booked_ratio": SettingField("choice", "1:2", choices=("1:1", "1:2", "2:1", "1:3")),
         "pass_over_places": SettingField("int", 5, minimum=1, maximum=20),
         "pass_over_limit": SettingField("int", 2, minimum=0, maximum=5),
+        # R4: the patient is warned this long before each pass-over step
+        "pass_over_warning_minutes": SettingField("int", 5, minimum=1, maximum=30),
     },
 )

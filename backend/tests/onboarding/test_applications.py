@@ -265,14 +265,14 @@ def test_full_flow_with_changes_requested(
                 "items": [{"target": "location.address", "comment": "Add the plot number."}],
             },
             format="json",
-            HTTP_IDEMPOTENCY_KEY="rc-1",
+            HTTP_IDEMPOTENCY_KEY="0b4f6a1e-0c1d-4c55-9a0e-0000000000c1",
         )
     assert changes.status_code == 200 and changes.json()["status"] == "changes_requested"
     replay = platform_client.post(
         f"{PLATFORM}{app['id']}/request-changes/",
         {"version": review["version"], "items": [{"target": "x", "comment": "y"}]},
         format="json",
-        HTTP_IDEMPOTENCY_KEY="rc-1",
+        HTTP_IDEMPOTENCY_KEY="0b4f6a1e-0c1d-4c55-9a0e-0000000000c1",
     )
     assert replay.status_code == 200 and replay.json()["version"] == changes.json()["version"]
     seen = applicant.get(f"{PUBLIC}{app['id']}/").json()
@@ -389,7 +389,7 @@ def test_approve_creates_the_tenant(
                 f"{PLATFORM}{app['id']}/approve/",
                 approve_body(app),
                 format="json",
-                HTTP_IDEMPOTENCY_KEY="ap-1",
+                HTTP_IDEMPOTENCY_KEY="0b4f6a1e-0c1d-4c55-9a0e-0000000000a1",
             )
         assert approved.status_code == 200, approved.content
         body = approved.json()
@@ -420,7 +420,7 @@ def test_approve_creates_the_tenant(
             f"{PLATFORM}{app['id']}/approve/",
             approve_body(app),
             format="json",
-            HTTP_IDEMPOTENCY_KEY="ap-1",
+            HTTP_IDEMPOTENCY_KEY="0b4f6a1e-0c1d-4c55-9a0e-0000000000a1",
         )
         assert replay.status_code == 200 and replay.json()["facility"]["id"] == str(facility.pk)
         assert Facility.objects.filter(slug="clinique-ubuzima").count() == 1

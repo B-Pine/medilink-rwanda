@@ -349,6 +349,7 @@ def test_only_a_no_show_can_be_reversed_and_other_needs_a_text(
     )
     assert confirmed.status_code == 422 and error_code(confirmed) == "not_allowed"
     clock.now = slot.starts_at + dt.timedelta(minutes=20)
+    clock.at(17, 1)  # a no-show only once the facility has closed (R4)
     with rls_context(facility_id=clinic.pk):
         assert svc.mark_no_shows(clinic.pk) == 1
         version = Booking.objects.get(pk=booking["id"]).version
@@ -382,6 +383,8 @@ def test_periodic_jobs_expire_holds_mark_no_shows_and_purge(
     hold_id = other.post(f"{P}slots/{held.pk}/hold/").json()["hold_id"]
 
     clock.now = slot.starts_at + dt.timedelta(minutes=20)
+    assert tasks.mark_no_shows() == 0  # the patient may still arrive as a walk-in (R4)
+    clock.at(17, 1)
     assert tasks.mark_no_shows() == 1
     assert tasks.expire_holds() == 1
     assert tasks.pass_over() == 0  # no one joined remotely

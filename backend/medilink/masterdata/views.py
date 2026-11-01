@@ -35,7 +35,8 @@ from rest_framework.views import APIView
 from medilink.authz.permissions import IsStaffAuthenticated, PublicEndpoint, get_principal
 from medilink.authz.platform import PlatformAdmin
 from medilink.authz.stepup import RecentAuthRequired
-from medilink.core.exceptions import BusinessRuleViolation
+from medilink.core.exceptions import BusinessRuleViolation, CurrentOnConflict
+from medilink.core.idempotency import IDEMPOTENCY, idempotency_key
 from medilink.core.pagination import DefaultPagination
 from medilink.core.serializers import ErrorSerializer
 from medilink.masterdata import models as m
@@ -219,8 +220,12 @@ def _write_values(validated: dict[str, Any]) -> dict[str, Any]:
     return values
 
 
-class _PlatformDetail(_PlatformBase):
+class _PlatformDetail(CurrentOnConflict, _PlatformBase):
     parser_classes = [JSONParser]
+
+    def conflict_current(self, request: Request, *args: Any, **kwargs: Any) -> Any:
+        """`error.current` on 409: the row as it is now."""
+        return self.get_serializer(self.get_object()).data
 
     def get_object(self) -> Any:
         row = self.kind.model.objects.filter(pk=self.kwargs["item_id"]).first()
@@ -317,7 +322,7 @@ class _ImportConfirm(_ImportDetail):
     permission_classes = [PlatformAdmin, RecentAuthRequired()]
 
     def confirm_response(self, request: Request, import_id: Any) -> Response:
-        key = request.headers.get("Idempotency-Key", "").strip()[:200]
+        key = idempotency_key(request) or ""
         with transaction.atomic():
             job = self.get_job(import_id)
             job = m.MasterDataImport.objects.select_for_update().get(pk=job.pk)
@@ -522,7 +527,7 @@ def build_views(kind: Kind) -> dict[str, Any]:
                     tags=tag,
                     operation_id=f"platform_master_data_{slug_id}_import_confirm",
                     request=None,
-                    parameters=[OpenApiParameter("Idempotency-Key", str, OpenApiParameter.HEADER)],
+                    parameters=[IDEMPOTENCY],
                     responses={
                         202: MasterDataImportSerializer,
                         403: _err("Step-up required"),

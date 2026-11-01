@@ -69,7 +69,7 @@ Source: [02 · Users, roles, access](../analysis/02-users-roles-and-permissions.
 | FR-ACC-02 | Several facility memberships; switch active facility | P1 | S0 | Both | API, E2E | Verified (S0, v0.1.0) |
 | FR-ACC-03 | Six phase-1 roles with the matrix permissions | P1 | S0 | Both | AZ | Verified (S0, v0.1.0) |
 | FR-ACC-04 | Staff two-factor login | P1 | S0 | Both | API, E2E | Verified (S0, v0.1.0) |
-| FR-ACC-05 | Staff invitations by email, expiring, single use | P1 | S0, S2 | Both | API, E2E | In progress |
+| FR-ACC-05 | Staff invitations by email, expiring, single use | P1 | S0, S2 (R3 #85) | Both | API, E2E | In progress |
 | FR-ACC-06 | Deactivation removes access and ends sessions at once | P1 | S0, S2 | Both | API, E2E | In progress |
 | FR-ACC-07 | Clinician licence number; admin attests the check | P1 | S0, S2 | Both | API, CMP | In progress |
 | FR-ACC-08 | Server-side, logged permission checks on patient data | P1 | S0 | Backend | AZ, API | Verified (S0, v0.1.0) |
@@ -84,7 +84,7 @@ Source: [03 · Tenancy, onboarding, master data](../analysis/03-tenancy-onboardi
 |---|---|---|---|---|---|---|
 | FR-ONB-01 | Self-registration with documents; super admin-created applications | P1 | S1 | Both | API, E2E | In progress |
 | FR-ONB-02 | Verification: approve, request changes, reject, with history | P1 | S1 | Both | API, BR, E2E | In progress |
-| FR-ONB-03 | Setup checklist; searchable only when Live | P1 | S1, S2* | Both | API, BR, E2E | In progress |
+| FR-ONB-03 | Setup checklist; searchable only when Live | P1 | S1, S2* (R3 #85) | Both | API, BR, E2E | In progress |
 | FR-ONB-04 | Facility configuration with change log | P1 | S2 | Both | API, E2E | Not started |
 | FR-ONB-05 | Invitation adds a membership to an existing account | P1 | S2 | Backend | API | Not started |
 | FR-ONB-06 | Cross-facility schedule conflict warning without details | P1 | S2 | Both | API, RLS | Not started |
@@ -136,7 +136,7 @@ Source: [05 · Discovery, calendars, scheduling, booking](../analysis/05-discove
 | FR-SCH-10 | Reason for visit with the structured symptom picker | P1 | S5 | Both | API, CMP | Not started |
 | FR-SCH-11 | Patient calendar with dependents; .ics export and feed | P1 | S5 | Both | API, E2E | Not started |
 | FR-SCH-12 | Reception and doctor calendars (day, week) | P1 | S5 | Both | CMP, E2E | Not started |
-| FR-SCH-13 | No-show detection, reversal with reason, strikes | P1 | S5 | Both | BR | Not started |
+| FR-SCH-13 | No-show detection, reversal with reason, strikes | P1 | S5 | Both | BR | In progress (R4 #86) |
 | FR-SCH-14 | Disruption flow: bulk rebooking and notification | P1 | S5 | Both | BR, E2E | Not started |
 | FR-SCH-15 | Follow-up booking from the consultation | P1 | S5 | Both | API | Not started |
 | FR-SCH-16 | Recurring care plans | P2 | — | Both | BR | Not started |
@@ -154,8 +154,8 @@ Source: [06 · Visit lifecycle and live queue](../analysis/06-visit-lifecycle-an
 | FR-QUE-03 | Check-in and walk-in produce one ticket (idempotent) | P1 | S4 (walk-ins), S5 (booked) | Backend | BR | Not started |
 | FR-QUE-04 | Configurable stages incl. payment and pharmacy | P1 | S4 | Both | BR | Not started |
 | FR-QUE-05 | Ordering rules: emergency, return, priority, ratio, FIFO | P1 | S4 | Backend | BR | Not started |
-| FR-QUE-06 | Grace window; late arrivals become walk-ins | P1 | S5 | Backend | BR | Not started |
-| FR-QUE-07 | Remote joiners hold a place; pass-over rule | P1 | S5 | Backend | BR | Not started |
+| FR-QUE-06 | Grace window; late arrivals become walk-ins | P1 | S5 | Backend | BR | In progress (R4 #86) |
+| FR-QUE-07 | Remote joiners hold a place; pass-over rule | P1 | S5 | Backend | BR | In progress (R4 #86) |
 | FR-QUE-08 | Atomic Call next; versioned state changes | P1 | S4 | Backend | BR | Not started |
 | FR-QUE-09 | Ticket state machine with recorded transitions | P1 | S4 | Backend | BR | Not started |
 | FR-QUE-10 | Manual reorder only with reason; logged; reported | P1 | S4 | Both | BR, API | Not started |

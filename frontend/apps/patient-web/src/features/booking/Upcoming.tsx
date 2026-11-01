@@ -26,6 +26,7 @@ import { Link } from "react-router";
 import { useApi } from "../../app/services";
 import { bookingsKey } from "./BookPage";
 import { day, pick, rwf, time } from "./discovery";
+import { CalendarFeedCard, OfferBanner } from "./Offer";
 
 export function useUpcoming() {
   const api = useApi();
@@ -146,6 +147,7 @@ export function BookingCard({ booking }: { booking: Booking }) {
           </p>
         </div>
       </div>
+      {booking.pending_change && <OfferBanner booking={booking} />}
       <div className="flex flex-wrap items-center gap-2 border-t border-border pt-3">
         <a
           href={api.booking.icsUrl(booking.id)}
@@ -201,6 +203,7 @@ export function UpcomingSection() {
       ) : (
         rows.map((b) => <BookingCard key={b.id} booking={b} />)
       )}
+      <CalendarFeedCard />
     </section>
   );
 }

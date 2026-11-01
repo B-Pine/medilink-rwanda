@@ -26,6 +26,7 @@ import { useTranslation } from "react-i18next";
 
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
+import { FollowUpAction } from "../bookings";
 import { queueKeys, usePollInterval, useQueueSocket } from "./live";
 import { LiveBadge } from "./LiveIndicator";
 import { actionError, Flags, minutesSince, useServiceNames, useTicketAction } from "./shared";
@@ -243,6 +244,8 @@ export function MyQueuePage() {
                       <Flask aria-hidden="true" />
                       {t("queue.mine.hold")}
                     </Button>
+                    {/* S5b (contract R8, D-4): follow-up on the visit being served */}
+                    <FollowUpAction visitId={current.visit_id} name={current.display_name} />
                   </>
                 )}
               </div>

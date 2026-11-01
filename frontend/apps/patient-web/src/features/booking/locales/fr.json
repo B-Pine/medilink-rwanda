@@ -147,5 +147,36 @@
     "cancelLate": "Il reste moins de 2 heures avant la visite (gratuit jusqu’à {{time}}). L’annulation sera enregistrée comme tardive.",
     "keep": "La garder",
     "cancelConfirm": "Annuler la réservation"
+  },
+  "offer": {
+    "title": "Votre réservation a changé",
+    "moved": "L'établissement a déplacé votre visite du {{from}} au {{to}}.",
+    "movedTo": "L'établissement a déplacé votre visite au {{to}}.",
+    "doctor": "Vous verrez {{doctor}}.",
+    "autoAccept": "Sans réponse avant le {{time}}, nous gardons la nouvelle heure pour vous.",
+    "answer": "Merci de répondre : l'établissement peut aussi vous appeler.",
+    "keep": "Garder la nouvelle heure",
+    "other": "Choisir une autre heure",
+    "cancel": "Annuler cette réservation",
+    "cancelBody": "La réservation {{code}} sera annulée. Ce n'est pas compté comme une annulation tardive.",
+    "otherTitle": "Choisir une autre heure",
+    "loading": "Chargement des créneaux libres…",
+    "noTimes": "Aucun créneau libre cette semaine. Gardez la nouvelle heure ou annulez.",
+    "day": "Jour",
+    "times": "Créneaux libres"
+  },
+  "feed": {
+    "title": "Abonnement au calendrier",
+    "body": "Ajoutez les réservations de votre famille au calendrier de votre téléphone. Il montre seulement l'établissement, le service, l'heure et le code.",
+    "toggle": "Lien du calendrier",
+    "on": "Activé",
+    "off": "Désactivé",
+    "link": "Votre lien privé",
+    "once": "Copiez-le maintenant : il n'est affiché qu'une fois. Toute personne ayant le lien voit vos heures de rendez-vous.",
+    "copy": "Copier le lien",
+    "copied": "Lien copié.",
+    "open": "Ouvrir dans mon agenda",
+    "since": "Activé depuis le {{day}}. Pour un nouveau lien, désactivez puis réactivez.",
+    "failed": "Impossible de modifier le lien du calendrier. Réessayez."
   }
 }

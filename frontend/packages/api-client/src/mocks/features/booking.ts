@@ -3,7 +3,14 @@ import { http, HttpResponse } from "msw";
 import type {
   Booking,
   BookingStatus,
+  CalendarFeedStatus,
+  Disruption,
+  DisruptionAction,
+  DisruptionItem,
+  DisruptionProblem,
   FacilityResult,
+  FollowUp,
+  PendingChange,
   PublicFacility,
   PublicService,
   PublicSlot,
@@ -15,7 +22,7 @@ import { FACILITIES } from "../data";
 import { patientsStore } from "./patients";
 import type { FeatureMockFactory } from "../features";
 import { id, str } from "./s1-common";
-import { SETUP_IDS } from "./setup";
+import { MEMBERSHIP_BY_EMAIL, SETUP_IDS } from "./setup";
 
 /**
  * S5 mocks (sprint-05 §6.3): six facilities across Gasabo, Kicukiro, Nyarugenge and Musanze with
@@ -308,7 +315,18 @@ interface MockSlot extends PublicSlot {
 
 interface MockBooking extends Booking {
   account_patient: boolean;
+  /** The booked doctor (S5b moves change it). */
+  membership_id?: string;
 }
+
+type MockItem = DisruptionItem & { disruption_id: string };
+
+/** S5b: the second doctor at Kigali Clinic, the target of "move to another doctor". */
+const MOCK_OTHER_DOCTOR = { membership_id: SETUP_IDS.mPaul, name: "Dr Niyonsenga Paul" };
+const DOCTOR_NAMES: Record<string, string> = {
+  [SETUP_IDS.mKeza]: "Dr Keza Umutoni",
+  [SETUP_IDS.mPaul]: MOCK_OTHER_DOCTOR.name,
+};
 
 /** Kigali midnight of a day offset from today (Kigali is UTC+2, no daylight saving). */
 function kigaliDay(offset: number): Date {
@@ -378,6 +396,11 @@ function seed() {
     bookings: [] as MockBooking[],
     /** `Idempotency-Key` to booking id (B3, R3: a repeated request returns the same booking). */
     keys: new Map<string, string>(),
+    // S5b
+    disruptions: [] as Disruption[],
+    items: [] as MockItem[],
+    followUps: new Map<string, FollowUp>(),
+    feed: { is_active: false, created_at: null, last_accessed_at: null } as CalendarFeedStatus,
   };
 }
 
@@ -528,6 +551,138 @@ export const bookingMocks: FeatureMockFactory = (context) => {
   };
   seedBookings();
 
+  // ---- S5b state: one disruption offer for Mukamana (contract §6.3) ----
+  const counts = (disruptionId: string): Disruption["counts"] => {
+    const c = {
+      total: 0,
+      not_applied: 0,
+      pending: 0,
+      accepted: 0,
+      declined: 0,
+      rebooked_other: 0,
+      cancelled: 0,
+    };
+    for (const i of db.items.filter((x) => x.disruption_id === disruptionId)) {
+      c.total += 1;
+      if (i.action === null && i.resolved_at === null) c.not_applied += 1;
+      else c[i.patient_response] += 1;
+    }
+    return c;
+  };
+  const refresh = (d: Disruption) => {
+    d.counts = counts(d.id);
+    const open = db.items.some((i) => i.disruption_id === d.id && i.resolved_at === null);
+    if (d.status === "open" && !open) {
+      d.status = "resolved";
+      d.resolved_at = new Date().toISOString();
+      d.version += 1;
+    }
+  };
+  const itemFor = (b: MockBooking, disruptionId: string): MockItem => {
+    const parts = b.patient_display_name.split(" ");
+    return {
+      disruption_id: disruptionId,
+      id: id(),
+      target: "booking",
+      booking_id: b.id,
+      booking_code: b.booking_code,
+      ticket_id: null,
+      ticket_number: null,
+      facility_patient_id: `fp-${b.patient_id}`,
+      display_name: `${parts[0]} ${parts.at(-1)?.[0] ?? ""}.`,
+      contact_phone: b.source === "phone" ? "+250788123456" : null,
+      service_id: b.service_id,
+      starts_at: b.starts_at,
+      doctor: b.doctor,
+      previous_starts_at: null,
+      previous_doctor: null,
+      action: null,
+      patient_response: "pending",
+      reply_by: null,
+      auto_accept: null,
+      new_booking_id: null,
+      applied_at: null,
+      resolved_at: null,
+      version: 1,
+    };
+  };
+  const offerFor = (b: MockBooking, item: MockItem, d: Disruption): PendingChange => ({
+    item_id: item.id,
+    disruption_kind: d.kind,
+    action: item.action ?? "move_doctor",
+    previous_starts_at: item.previous_starts_at,
+    previous_doctor: item.previous_doctor,
+    reply_by: new Date(Date.now() + 24 * 3600_000).toISOString(),
+    // as the backend: further than a day away, silence counts as yes
+    auto_accept: new Date(b.starts_at).getTime() - Date.now() > 86_400_000,
+  });
+  /** Move a booking in place (same ID and code) and attach the offer. */
+  const moveBooking = (
+    b: MockBooking,
+    item: MockItem,
+    d: Disruption,
+    action: DisruptionAction,
+    target: { starts_at: string; membership_id: string; doctor: string },
+  ) => {
+    const now = new Date().toISOString();
+    item.previous_starts_at = b.starts_at;
+    item.previous_doctor = b.doctor;
+    b.starts_at = target.starts_at;
+    b.membership_id = target.membership_id;
+    b.doctor = target.doctor;
+    b.version += 1;
+    Object.assign(item, { action, applied_at: now, starts_at: b.starts_at, doctor: b.doctor });
+    b.pending_change = offerFor(b, item, d);
+    item.reply_by = b.pending_change.reply_by;
+    item.auto_accept = b.pending_change.auto_accept;
+    item.version += 1;
+  };
+  const seedOffer = () => {
+    const b = db.bookings.find((x) => x.account_patient && x.status === "confirmed");
+    if (!b) return;
+    const d: Disruption = {
+      id: id(),
+      kind: "doctor_absent",
+      membership_id: SETUP_IDS.mKeza,
+      doctor: "Dr Keza Umutoni",
+      service_id: null,
+      service_name_i18n: null,
+      starts_at: new Date(new Date(b.starts_at).getTime() - 3600_000).toISOString(),
+      ends_at: new Date(new Date(b.starts_at).getTime() + 3 * 3600_000).toISOString(),
+      reason: "Training",
+      status: "open",
+      created_by: "Mukeshimana Alice",
+      created_at: new Date().toISOString(),
+      resolved_at: null,
+      counts: counts(""),
+      version: 1,
+    };
+    const item = itemFor(b, d.id);
+    db.disruptions.push(d);
+    db.items.push(item);
+    moveBooking(b, item, d, "move_doctor", {
+      starts_at: b.starts_at,
+      membership_id: MOCK_OTHER_DOCTOR.membership_id,
+      doctor: MOCK_OTHER_DOCTOR.name,
+    });
+    b.version = 1;
+    refresh(d);
+  };
+  seedOffer();
+
+  /** Close a booking's open disruption items, as the backend's `settle_booking`. */
+  const settle = (b: MockBooking, response: DisruptionItem["patient_response"], newId?: string) => {
+    b.pending_change = null;
+    for (const i of db.items.filter((x) => x.booking_id === b.id && x.resolved_at === null)) {
+      i.patient_response = response;
+      i.resolved_at = new Date().toISOString();
+      i.new_booking_id = newId ?? null;
+      i.version += 1;
+      const d = db.disruptions.find((x) => x.id === i.disruption_id);
+      if (d) refresh(d);
+    }
+  };
+
   const staffRow = (b: MockBooking): StaffBooking => {
     const parts = b.patient_display_name.split(" ");
     return {
@@ -541,11 +696,12 @@ export const bookingMocks: FeatureMockFactory = (context) => {
       age_years: 34,
       sex: "female",
       service_id: b.service_id,
-      membership_id: SETUP_IDS.mKeza,
+      membership_id: b.membership_id ?? SETUP_IDS.mKeza,
       doctor: b.doctor,
       starts_at: b.starts_at,
       symptoms: b.symptoms,
       late: b.status === "confirmed" && Date.now() > new Date(b.starts_at).getTime() + 15 * 60_000,
+      has_pending_change: b.pending_change !== null,
       visit_id: null,
       version: b.version,
     };
@@ -658,7 +814,7 @@ export const bookingMocks: FeatureMockFactory = (context) => {
     return booking;
   };
 
-  const strip = ({ account_patient: _a, ...b }: MockBooking): Booking => b;
+  const strip = ({ account_patient: _a, membership_id: _m, ...b }: MockBooking): Booking => b;
   const replay = (request: Request) => {
     const key = request.headers.get("Idempotency-Key");
     const done = key ? db.bookings.find((b) => b.id === db.keys.get(key)) : undefined;
@@ -704,6 +860,7 @@ export const bookingMocks: FeatureMockFactory = (context) => {
     reset: () => {
       db = seed();
       seedBookings();
+      seedOffer();
     },
     handlers: [
       // ---- public
@@ -931,7 +1088,9 @@ export const bookingMocks: FeatureMockFactory = (context) => {
           return context.errorResponse(409, "stale", "Someone else changed this booking.");
         if (b.status !== "confirmed")
           return ruleError("cancel_closed", "This booking can't be changed any more.");
-        b.status = b.can_change ? "cancelled" : "late_cancelled";
+        // declining a disruption offer is never a late cancellation
+        b.status = b.can_change || b.pending_change ? "cancelled" : "late_cancelled";
+        settle(b, "cancelled");
         b.can_change = false;
         b.version += 1;
         return HttpResponse.json(strip(b));
@@ -962,6 +1121,7 @@ export const bookingMocks: FeatureMockFactory = (context) => {
         made.account_patient = true;
         old.rescheduled_to_id = made.id;
         old.version += 1;
+        settle(old, "rebooked_other", made.id);
         return HttpResponse.json(strip(made));
       }),
 
@@ -1067,6 +1227,7 @@ export const bookingMocks: FeatureMockFactory = (context) => {
         }
         old.rescheduled_to_id = made.id;
         old.version += 1;
+        settle(old, "rebooked_other", made.id);
         return HttpResponse.json(staffRow(made));
       }),
       http.post(`${api}/staff/bookings/:id/cancel/`, async ({ request, params }) => {
@@ -1115,8 +1276,429 @@ export const bookingMocks: FeatureMockFactory = (context) => {
         b.version += 1;
         return HttpResponse.json(staffRow(b));
       }),
+      ...s5bHandlers(),
     ],
   };
+
+  // ---- S5b handlers (contract sprint-05 §3 B10, B11, R7-R9): the same rules as the backend ----
+  function s5bHandlers() {
+    const detail = (d: Disruption, problems?: Record<string, DisruptionProblem>) => {
+      d.counts = counts(d.id);
+      return {
+        disruption: d,
+        items: db.items
+          .filter((i) => i.disruption_id === d.id)
+          .map(({ disruption_id: _d, ...i }) => i),
+        ...(problems ? { problems } : {}),
+      };
+    };
+    const clinicBookings = () =>
+      db.bookings.filter((b) => b.facility_slug === FACILITIES.kigaliClinic.slug);
+    const invalid = (field: string, message: string) =>
+      context.errorResponse(400, "validation_error", "Some fields need attention.", {
+        fields: { [field]: [message] },
+      });
+    const rule = (field: string, message: string) =>
+      context.errorResponse(422, "business_rule_violation", message, {
+        fields: { [field]: [message] },
+      });
+    const ownMembership = (email: string) => MEMBERSHIP_BY_EMAIL[email] ?? SETUP_IDS.mKeza;
+
+    return [
+      // B10: answer a disruption offer
+      http.post(`${api}/patient/bookings/:id/respond/`, async ({ request, params }) => {
+        await context.settle();
+        const ok = patientOnly(request);
+        if ("error" in ok) return ok.error;
+        const body = (await context.readJson(request)) ?? {};
+        const b = db.bookings.find((x) => x.id === params.id && x.account_patient);
+        if (!b) return context.errorResponse(404, "not_found", "Not found.");
+        if ((body.response === undefined) === (body.hold_id === undefined))
+          return invalid("response", "Send either response or hold_id.");
+        if (body.version !== undefined && body.version !== b.version)
+          return context.errorResponse(409, "stale", "Someone else changed this booking.");
+        if (b.status !== "confirmed" || !b.pending_change)
+          return ruleError("no_offer", "There is no change to answer for this booking.");
+        if (body.response === "accept") {
+          settle(b, "accepted");
+          b.version += 1;
+          return HttpResponse.json(strip(b));
+        }
+        if (body.response === "cancel") {
+          b.status = "cancelled"; // never a late cancellation
+          b.can_change = false;
+          b.version += 1;
+          settle(b, "cancelled");
+          return HttpResponse.json(strip(b));
+        }
+        b.status = "superseded";
+        const made = confirm(
+          str(body.hold_id),
+          b.patient_id,
+          b.patient_display_name,
+          b.symptoms.map((x) => ({ code: x.code })),
+          b.cost.insurer_code,
+          b.source,
+        );
+        if (made instanceof Response) {
+          b.status = "confirmed";
+          return made;
+        }
+        made.account_patient = true;
+        b.rescheduled_to_id = made.id;
+        b.version += 1;
+        settle(b, "rebooked_other", made.id);
+        return HttpResponse.json(strip(made));
+      }),
+
+      // B11: private calendar feed (the URL is shown once)
+      http.get(`${api}/patient/calendar-feed/`, async ({ request }) => {
+        await context.settle();
+        const ok = patientOnly(request);
+        if ("error" in ok) return ok.error;
+        return HttpResponse.json(db.feed);
+      }),
+      http.post(`${api}/patient/calendar-feed/`, async ({ request }) => {
+        await context.settle();
+        const ok = patientOnly(request);
+        if ("error" in ok) return ok.error;
+        const created_at = new Date().toISOString();
+        db.feed = { is_active: true, created_at, last_accessed_at: null };
+        const token = `mock${id().replace(/-/g, "")}`;
+        return HttpResponse.json(
+          { url: `https://api.medilink.rw/api/v1/calendar/${token}.ics`, created_at },
+          { status: 201 },
+        );
+      }),
+      http.delete(`${api}/patient/calendar-feed/`, async ({ request }) => {
+        await context.settle();
+        const ok = patientOnly(request);
+        if ("error" in ok) return ok.error;
+        db.feed = { is_active: false, created_at: null, last_accessed_at: null };
+        return new HttpResponse(null, { status: 204 });
+      }),
+
+      // R7: disruptions (schedule.manage)
+      http.get(`${api}/staff/disruptions/`, async ({ request }) => {
+        await context.settle();
+        const ok = staffOnly(request, ["schedule.manage"]);
+        if ("error" in ok) return ok.error;
+        const wanted = new URL(request.url).searchParams.get("status");
+        const rows = db.disruptions
+          .filter((d) => !wanted || d.status === wanted)
+          .map((d) => ({ ...d, counts: counts(d.id) }))
+          .sort((a, b) => b.starts_at.localeCompare(a.starts_at));
+        return HttpResponse.json({ count: rows.length, results: rows });
+      }),
+      http.post(`${api}/staff/disruptions/`, async ({ request }) => {
+        await context.settle();
+        const ok = staffOnly(request, ["schedule.manage"]);
+        if ("error" in ok) return ok.error;
+        const body = (await context.readJson(request)) ?? {};
+        const kind = str(body.kind) as Disruption["kind"];
+        const starts = str(body.starts_at);
+        const ends = str(body.ends_at);
+        const membership = body.membership_id ? str(body.membership_id) : null;
+        const service = body.service_id ? str(body.service_id) : null;
+        if (!["doctor_absent", "closure", "schedule_change"].includes(kind))
+          return invalid("kind", "Choose a valid kind.");
+        if (!str(body.reason).trim()) return invalid("reason", "This field is required.");
+        if (!starts || !ends || new Date(starts) >= new Date(ends) || new Date(ends) <= new Date())
+          return rule("ends_at", "The end must be after the start, and in the future.");
+        if (kind === "doctor_absent" && !membership)
+          return rule("membership_id", "Choose the doctor who is absent.");
+        const d: Disruption = {
+          id: id(),
+          kind,
+          membership_id: membership,
+          doctor: membership ? (DOCTOR_NAMES[membership] ?? null) : null,
+          service_id: service,
+          service_name_i18n: null,
+          starts_at: new Date(starts).toISOString(),
+          ends_at: new Date(ends).toISOString(),
+          reason: str(body.reason).trim().slice(0, 300),
+          status: "open",
+          created_by: ok.me.full_name,
+          created_at: new Date().toISOString(),
+          resolved_at: null,
+          counts: counts(""),
+          version: 1,
+        };
+        const busy = new Set(
+          db.items.filter((i) => i.resolved_at === null).map((i) => i.booking_id),
+        );
+        const affected = clinicBookings().filter(
+          (b) =>
+            b.status === "confirmed" &&
+            b.starts_at >= d.starts_at &&
+            b.starts_at < d.ends_at &&
+            (!service || b.service_id === service) &&
+            (!membership || (b.membership_id ?? SETUP_IDS.mKeza) === membership) &&
+            !busy.has(b.id),
+        );
+        // the open slots in scope close (nobody else can book them)
+        for (const s of db.slots)
+          if (
+            s.slug === FACILITIES.kigaliClinic.slug &&
+            s.starts_at >= d.starts_at &&
+            s.starts_at < d.ends_at &&
+            (!service || s.service_id === service) &&
+            (!membership || s.membership_id === membership)
+          )
+            s.open_places = 0;
+        db.disruptions.push(d);
+        for (const b of affected) db.items.push(itemFor(b, d.id));
+        refresh(d);
+        return HttpResponse.json(detail(d), { status: 201 });
+      }),
+      http.get(`${api}/staff/disruptions/:id/`, async ({ request, params }) => {
+        await context.settle();
+        const ok = staffOnly(request, ["schedule.manage"]);
+        if ("error" in ok) return ok.error;
+        const d = db.disruptions.find((x) => x.id === params.id);
+        return d
+          ? HttpResponse.json(detail(d))
+          : context.errorResponse(404, "not_found", "Not found.");
+      }),
+      http.post(`${api}/staff/disruptions/:id/apply/`, async ({ request, params }) => {
+        await context.settle();
+        const ok = staffOnly(request, ["schedule.manage"]);
+        if ("error" in ok) return ok.error;
+        const d = db.disruptions.find((x) => x.id === params.id);
+        if (!d) return context.errorResponse(404, "not_found", "Not found.");
+        if (d.status === "resolved")
+          return ruleError("resolved", "This disruption is already resolved.");
+        const body = (await context.readJson(request)) ?? {};
+        type Step = { id: string; action: DisruptionAction; membership_id?: string | null };
+        if (Array.isArray(body.items) === (body.all !== undefined))
+          return invalid("items", "Send either items or all.");
+        const steps: Step[] = Array.isArray(body.items)
+          ? (body.items as Step[])
+          : db.items
+              .filter(
+                (i) => i.disruption_id === d.id && i.action === null && i.resolved_at === null,
+              )
+              .map((i) => ({
+                id: i.id,
+                action: str(body.all) as DisruptionAction,
+                membership_id: (body.membership_id as string | null | undefined) ?? null,
+              }));
+        const problems: Record<string, DisruptionProblem> = {};
+        for (const step of steps) {
+          const item = db.items.find((i) => i.id === step.id && i.disruption_id === d.id);
+          if (!item) {
+            problems[step.id] = "not_found";
+            continue;
+          }
+          if (item.action || item.resolved_at) {
+            problems[item.id] = "already_applied";
+            continue;
+          }
+          const b = db.bookings.find((x) => x.id === item.booking_id);
+          if (!b || b.status !== "confirmed") {
+            problems[item.id] = "booking_closed";
+            continue;
+          }
+          const now = new Date().toISOString();
+          if (step.action === "cancel") {
+            b.status = "cancelled";
+            b.version += 1;
+            Object.assign(item, {
+              action: "cancel",
+              applied_at: now,
+              resolved_at: now,
+              patient_response: "cancelled",
+            });
+            continue;
+          }
+          const current = b.membership_id ?? SETUP_IDS.mKeza;
+          let target: { starts_at: string; membership_id: string; doctor: string } | undefined;
+          if (step.action === "move_doctor") {
+            // same time, same service, another doctor
+            const other =
+              step.membership_id ?? Object.keys(DOCTOR_NAMES).find((m) => m !== current);
+            if (other && other !== current && other !== d.membership_id)
+              target = {
+                starts_at: b.starts_at,
+                membership_id: other,
+                doctor: DOCTOR_NAMES[other] ?? "",
+              };
+          } else {
+            const after = d.ends_at > now ? d.ends_at : now;
+            const slot = db.slots
+              .filter(
+                (s) =>
+                  s.slug === b.facility_slug &&
+                  s.service_id === b.service_id &&
+                  s.open_places > 0 &&
+                  s.starts_at >= after,
+              )
+              .sort((x, y) => x.starts_at.localeCompare(y.starts_at))[0];
+            if (slot) {
+              slot.open_places -= 1;
+              slot.booked += 1;
+              target = {
+                starts_at: slot.starts_at,
+                membership_id: slot.membership_id ?? current,
+                doctor: slot.doctor ?? "",
+              };
+            }
+          }
+          if (!target) {
+            problems[item.id] = "no_slot";
+            continue;
+          }
+          moveBooking(b, item, d, step.action, target);
+        }
+        refresh(d);
+        return HttpResponse.json(detail(d, problems));
+      }),
+
+      // R8: follow-up from a visit (queue.call)
+      http.get(`${api}/staff/visits/:id/follow-up/`, async ({ request, params }) => {
+        await context.settle();
+        const ok = staffOnly(request, ["queue.call"]);
+        if ("error" in ok) return ok.error;
+        const fu = db.followUps.get(str(params.id));
+        return fu ? HttpResponse.json(fu) : context.errorResponse(404, "not_found", "Not found.");
+      }),
+      http.post(`${api}/staff/visits/:id/follow-up/`, async ({ request, params }) => {
+        await context.settle();
+        const ok = staffOnly(request, ["queue.call"]);
+        if ("error" in ok) return ok.error;
+        const visitId = str(params.id);
+        const body = (await context.readJson(request)) ?? {};
+        const days = Number(body.in_days);
+        if (!Number.isInteger(days) || days < 1 || days > 365)
+          return invalid("in_days", "Ensure this value is between 1 and 365.");
+        if (!["booking", "reminder"].includes(str(body.mode)))
+          return invalid("mode", "Choose booking or reminder.");
+        if (db.followUps.has(visitId))
+          return context.errorResponse(
+            409,
+            "follow_up_exists",
+            "A follow-up is already set for this visit.",
+          );
+        const due = kigaliDay(days);
+        const fu: FollowUp = {
+          id: id(),
+          visit_id: visitId,
+          due_on: isoDate(due),
+          mode: body.mode as FollowUp["mode"],
+          status: "due",
+          booking: null,
+          created_at: new Date().toISOString(),
+          version: 1,
+        };
+        if (fu.mode === "booking") {
+          // the first open slot on or after the day, with the same doctor when possible
+          const open = db.slots
+            .filter(
+              (s) =>
+                s.slug === FACILITIES.kigaliClinic.slug &&
+                s.service_id === SETUP_IDS.sGen &&
+                s.open_places > 0 &&
+                s.starts_at >= due.toISOString(),
+            )
+            .sort((a, b) => a.starts_at.localeCompare(b.starts_at));
+          const slot = open.find((s) => s.membership_id === ownMembership(ok.me.email)) ?? open[0];
+          if (slot) {
+            slot.open_places -= 1;
+            slot.booked += 1;
+            const made = makeBooking(
+              slot,
+              `fu-${visitId}`,
+              "Follow Up",
+              "confirmed",
+              [],
+              null,
+              "follow_up",
+            );
+            db.bookings.push(made);
+            fu.booking = staffRow(made);
+            fu.status = "booked";
+          } else fu.status = "no_slot";
+        }
+        db.followUps.set(visitId, fu);
+        return HttpResponse.json(fu, { status: 201 });
+      }),
+
+      // R9: reception calendar, and the doctor's own
+      http.get(`${api}/staff/calendar/`, async ({ request }) => {
+        await context.settle();
+        const ok = staffOnly(request, ["schedule.view", "queue.call"]);
+        if ("error" in ok) return ok.error;
+        const url = new URL(request.url);
+        const view = url.searchParams.get("view") ?? "week";
+        if (view !== "day" && view !== "week") return invalid("view", "Use day or week.");
+        const granted = ok.me.permissions as readonly string[];
+        const onlyOwn = !granted.includes("queue.operate") && !granted.includes("schedule.manage");
+        const from = url.searchParams.get("from") ?? isoDate(kigaliDay(0));
+        const start = new Date(`${from}T00:00:00+02:00`);
+        const serviceId = url.searchParams.get("service_id");
+        const own = ownMembership(ok.me.email);
+        const membershipId = onlyOwn ? own : url.searchParams.get("membership_id");
+        const clinic = facility(FACILITIES.kigaliClinic.slug)!;
+        const services = clinic.services.filter((x) => !serviceId || x.id === serviceId);
+        const doctors = Object.keys(DOCTOR_NAMES).filter(
+          (m) => !membershipId || m === membershipId,
+        );
+        const days = Array.from({ length: view === "day" ? 1 : 7 }, (_, i) => {
+          const midnight = new Date(start.getTime() + i * 86_400_000);
+          const blocks = [];
+          for (const sv of services) {
+            if (!sv.weekdays.includes(weekday(midnight))) continue;
+            for (const m of doctors) {
+              const startsAt = new Date(midnight.getTime() + sv.from * 3600_000).toISOString();
+              const endsAt = new Date(midnight.getTime() + sv.to * 3600_000).toISOString();
+              const bookings = clinicBookings()
+                .filter(
+                  (b) =>
+                    ["confirmed", "checked_in", "no_show"].includes(b.status) &&
+                    b.service_id === sv.id &&
+                    (b.membership_id ?? SETUP_IDS.mKeza) === m &&
+                    b.starts_at >= startsAt &&
+                    b.starts_at < endsAt,
+                )
+                .sort((a, b) => a.starts_at.localeCompare(b.starts_at))
+                .map(staffRow);
+              blocks.push({
+                service_id: sv.id,
+                membership_id: m,
+                doctor: DOCTOR_NAMES[m] ?? null,
+                starts_at: startsAt,
+                ends_at: endsAt,
+                capacity: ((sv.to - sv.from) * 60) / sv.minutes,
+                booked: bookings.filter((b) => b.status !== "no_show").length,
+                bookings,
+              });
+            }
+          }
+          return { date: isoDate(midnight), blocks, other_bookings: [] };
+        });
+        return HttpResponse.json({
+          view,
+          from_date: from,
+          to_date: days.at(-1)?.date ?? from,
+          only_own: onlyOwn,
+          services: clinic.services.map((x) => ({ id: x.id, name_i18n: x.name_i18n })),
+          doctors: Object.entries(DOCTOR_NAMES)
+            .filter(([m]) => !onlyOwn || m === own)
+            .map(([m, name]) => ({ id: m, name })),
+          days,
+          disruptions: db.disruptions.map((d) => ({
+            id: d.id,
+            kind: d.kind,
+            membership_id: d.membership_id,
+            service_id: d.service_id,
+            starts_at: d.starts_at,
+            ends_at: d.ends_at,
+            status: d.status,
+          })),
+        });
+      }),
+    ];
+  }
 };
 
 /**

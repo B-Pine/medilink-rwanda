@@ -1003,8 +1003,6 @@ export const queueMocks: FeatureMockFactory = (context) => {
         if (!t) return notFound(ok.lang);
         if (links.get(t.patient_id)?.relationship === "delegate")
           return context.errorResponse(403, "permission_denied", s1("permissionDenied", ok.lang));
-        const body = (await context.readJson(request)) ?? {};
-        if (Number(body.version) !== t.version) return stale(ok.lang);
         if (!t.is_remote || t.remote_arrival_confirmed_at) return rule(context, ok.lang);
         if (!t.remote_arrival_claimed_at) {
           t.remote_arrival_claimed_at = now();

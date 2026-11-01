@@ -91,9 +91,7 @@ describe("remote join and I'm here (B8, B9)", () => {
       service_id: service.id,
       patient_id: me.profiles[0]!.patient_id,
     });
-    const stale = await failure(api.booking.arrived(joined.visit_id, joined.version + 5));
-    expect(stale.status).toBe(409);
-    const claimed = await api.booking.arrived(joined.visit_id, joined.version);
+    const claimed = await api.booking.arrived(joined.visit_id);
     expect(claimed.remote_arrival_claimed_at).not.toBeNull();
     expect(claimed.remote_arrival_confirmed_at).toBeNull();
     expect(claimed.is_remote).toBe(true);
@@ -118,7 +116,7 @@ describe("remote join and I'm here (B8, B9)", () => {
     await patient();
     const visits = await api.queue.patientVisits();
     const walkIn = visits.results.find((v) => !v.is_remote)!;
-    const error = await failure(api.booking.arrived(walkIn.visit_id, walkIn.version));
+    const error = await failure(api.booking.arrived(walkIn.visit_id));
     expect(error.status).toBe(422);
   });
 });

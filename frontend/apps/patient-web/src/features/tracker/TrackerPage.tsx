@@ -280,7 +280,7 @@ function RemoteArrival({ visit }: { visit: PatientVisit }) {
   const queryClient = useQueryClient();
   const claimed = Boolean(visit.remote_arrival_claimed_at);
   const here = useMutation({
-    mutationFn: () => api.booking.arrived(visit.visit_id, visit.version),
+    mutationFn: () => api.booking.arrived(visit.visit_id),
     onSuccess: (updated) => {
       queryClient.setQueryData<{ results: PatientVisit[] }>(trackerKey, (old) =>
         old

@@ -118,11 +118,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   - Tracker: one AudioContext per call alert, closed when it ends.
   - ui: shared `formatTime`, `formatDate`, `formatMoney`, `kigaliDate`, `kigaliHour` (24-hour,
     Africa/Kigali) replace ad-hoc formatters.
-  - api-client: R4 field names (`is_remote`, `remote_arrival_claimed_at`,
-    `remote_arrival_confirmed_at`, `slot_starts_at`, `late`), `queue.confirmArrival()`,
-    `booking.arrived(visitId, version)`. Mocks: remote join, "I'm here", confirm arrival,
-    `calendar.ics`, Idempotency-Key replay for bookings, and reschedule checks in the backend's
-    order.
+  - api-client, matching R4 ([#102](https://github.com/B-Pine/medilink-rwanda/pull/102)): field
+    names `is_remote`, `remote_arrival_claimed_at`, `remote_arrival_confirmed_at`,
+    `slot_starts_at`, `late`; flags `late`, `remote`, `remote_claimed`;
+    `queue.confirmArrival(ticket)` (ticket action `confirm-arrival` with `version`);
+    `booking.arrived(visitId, version)`; optional `symptoms` at check-in and remote join; the
+    booking review uses the server's `insurer_share_rwf`. Mocks: remote join, "I'm here", confirm arrival,
+    `calendar.ics`, Idempotency-Key replay for bookings, reschedule checks in the backend's
+    order, and a delegate gets `403` on remote join and "I'm here".
 
 ### Design v2
 

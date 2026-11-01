@@ -2411,7 +2411,7 @@ File: `apps/patient-web/src/features/tracker/locales/rw.json`
 | `remote.title` | Wiyandikishije ku murongo uri mu rugo | You joined from home | needs native-speaker review |
 | `remote.body` | Nugera ku kigo nderabuzima, kanda "Nahageze", hanyuma werekane iyi tike ku kwakira abarwayi. | When you reach the facility, tap "I'm here", then show this ticket at reception. | needs native-speaker review |
 | `remote.here` | Nahageze | I'm here | needs native-speaker review |
-| `remote.claimed` | Abakira abarwayi bamenye ko uvuga ko wahageze. Erekana iyi tike ku biro byabo kugira ngo babyemeze. | Reception knows you say you're here. Show this ticket at the desk so they can confirm it. | needs native-speaker review |
+| `remote.claimed` | Dutegereje ko abakira abarwayi bemeza ko wahageze. Erekana iyi tike ku biro byabo. | Waiting for reception to confirm you're here. Show this ticket at the desk. | needs native-speaker review |
 | `remote.passOverTitle` | Uri hafi y'imbere | You're near the front | needs native-speaker review |
 | `remote.passOver` | Gera ku kigo vuba wiyandikishe ku kwakira abarwayi. Nibatakwemeza mbere y'uko igihe cyawe kigera, umwanya wawe usubira inyuma. | Get to the facility and check in at reception soon. If reception hasn't confirmed you when your turn comes, your place moves back. | needs native-speaker review |
 | `remote.passOverClaimed` | Erekana tike yawe ku kwakira abarwayi ubu. Kugeza bemeje ko wahageze, umwanya wawe ushobora gusubira inyuma. | Show your ticket at reception now. Until they confirm you're here, your place can move back. | needs native-speaker review |

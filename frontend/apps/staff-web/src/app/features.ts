@@ -54,6 +54,13 @@ export const FEATURE_COMMANDS = (): CommandProvider[] =>
   FEATURES.flatMap((feature) => feature.commands ?? []);
 export const FEATURE_SHELL_OVERLAYS = (): ComponentType[] =>
   FEATURES.flatMap((feature) => feature.shellOverlays ?? []);
+/** Shell paths that have a real page (the rest open a placeholder and stay out of the menu). */
+export const BUILT_PATHS = (): ReadonlySet<string> =>
+  new Set(
+    FEATURES.flatMap((feature) => feature.shell ?? []).flatMap((route) =>
+      route.path ? [route.path] : [],
+    ),
+  );
 
 /**
  * Feature registry. Shared-file protocol (docs/architecture/contracts/README.md): each sprint

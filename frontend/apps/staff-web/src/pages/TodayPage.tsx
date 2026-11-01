@@ -4,7 +4,7 @@ import { CaretRight } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
-import { FEATURE_COMMANDS, FEATURE_TODAY_CARDS } from "../app/features";
+import { BUILT_PATHS, FEATURE_COMMANDS, FEATURE_TODAY_CARDS } from "../app/features";
 import { useStaffMe } from "../auth/queries";
 import { PageHeading } from "../components/PageHeading";
 import { roleLabel } from "../facility/labels";
@@ -37,7 +37,7 @@ export function TodayPage() {
   const membership = me.memberships.find((m) => m.facility.id === me.active_facility_id);
   const title = t("today.title");
   const actions = FEATURE_COMMANDS().flatMap((provider) => provider.actions?.(me, t) ?? []);
-  const shortcuts = visibleNavItems(me)
+  const shortcuts = visibleNavItems(me, BUILT_PATHS())
     .filter((item) => item.key !== "today")
     .slice(0, Math.max(0, 6 - actions.length));
   const cards = FEATURE_TODAY_CARDS();

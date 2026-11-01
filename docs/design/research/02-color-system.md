@@ -26,19 +26,21 @@ Based on the widely used Tailwind emerald scale, so designers and developers sha
 
 ## 2. Neutrals
 
-Slate (cool grey) pairs cleanly with emerald and reads clinical, not cold. The page background is a faintly green-tinted off-white.
+Revised 2026-11-01 with the approved redesign ([interface system](../../../.interface-design/system.md)): the neutrals lean toward the forest green instead of slate, so structure and brand share one hue. Every value was measured again.
 
 | Token | Light | Dark | Measured contrast |
 |---|---|---|---|
-| `bg-page` | `#F6F8F7` | `#0B1411` | — |
-| `bg-surface` (cards, tables) | `#FFFFFF` | `#111C18` | — |
-| `bg-raised` (menus, popovers) | `#FFFFFF` + shadow | `#16231E` | — |
-| `bg-subtle` (table header, wells) | `#F1F5F9` | `#16231E` | — |
-| `text-primary` | `#0F172A` | `#F1F5F9` | 17.85 on white · 17.08 on dark bg |
-| `text-secondary` | `#334155` | `#CBD5E1` | 10.35 on white · 11.76 on dark surface |
-| `text-muted` | `#475569` | `#94A3B8` | 7.58 white · 7.10 page · 6.81 dark surface |
-| `border-subtle` (decorative dividers) | `#E2E8F0` | `#24332D` | decorative only |
-| `border-input` (form controls) | `#7C8A9D` | `#5B6E66` | 3.51 on white · 3.21 on dark (≥ 3:1 required for controls) |
+| `bg-page` | `#F2F5F3` | `#0A1310` | — |
+| `bg-surface` (cards, tables) | `#FFFFFF` | `#101C17` | — |
+| `bg-raised` (menus, popovers) | `#FFFFFF` + shadow | `#14221C` | — |
+| `bg-subtle` (table header, wells) | `#EAEFEC` | `#14221C` | — |
+| `text-primary` | `#0E1F18` | `#E6EFEA` | 17.10 on white · 15.58 on page · 14.91 on dark surface |
+| `text-secondary` | `#3C4E46` | `#B3C3BB` | 8.86 on white · 9.53 on dark surface |
+| `text-muted` | `#55665E` | `#8FA198` | 6.09 white · 5.55 page · 5.24 subtle · 6.43 dark surface |
+| `border-subtle` (decorative dividers) | `#DFE6E2` | `#22312B` | decorative only |
+| `border-input` (form controls) | `#7B8A83` | `#5B6E66` | 3.62 on white · 3.22 on dark (≥ 3:1 required for controls) |
+
+Cards lift with a 1px ring and soft depth (`shadow-card`) instead of a border; dark mode keeps only the ring.
 
 ### Traps found
 
@@ -57,6 +59,8 @@ Slate (cool grey) pairs cleanly with emerald and reads clinical, not cold. The p
 | `link` | `#047857` | `#34D399` | Underlined in body text |
 | `focus-ring` | `#059669` (2–3 px + 2 px offset) | `#34D399` | 3.77 / 9.08 vs surface (≥ 3:1) |
 | `accent` | `#FBBF24` (amber-400) with `#0F172A` text | `#FBBF24` | Highlights, "new", "time to leave". 10.69:1 with dark text. **Never white text on amber.** |
+| `attention-bg` / `attention-text` | `#FBF0D8` / `#8A5A05` | 14 % ochre on dark surface / `#F6C66C` | The one ochre accent: "your turn", next up, the slow step, work waiting for someone. 5.23 / 8.37. |
+| `attention-solid` + `attention-solid-text` | `#B7790A` + `#0E1F18` | `#F0B443` + `#1B1405` | Filled ochre (bars, dots). 4.69:1 light. |
 
 ### Status colours
 

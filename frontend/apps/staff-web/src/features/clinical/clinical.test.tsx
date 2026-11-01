@@ -105,7 +105,7 @@ describe("role gating (S6-F1)", () => {
     const app = await signIn("reception@medilink.test");
     await app.router.navigate("/clinical/unsigned");
     expect(
-      await screen.findByRole("heading", { level: 1, name: /not found|Page not found/i }),
+      await screen.findByRole("heading", { level: 1, name: "You don't have access to this page" }),
     ).toBeInTheDocument();
   });
 });

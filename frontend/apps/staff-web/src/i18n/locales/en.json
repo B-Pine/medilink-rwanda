@@ -131,7 +131,7 @@
       "staff": "Staff",
       "settings": "Settings",
       "audit": "Audit log",
-      "platformFacilities": "Facility applications"
+      "platformFacilities": "Facilities"
     },
     "connection": {
       "label": "Connection",
@@ -160,7 +160,10 @@
       "shortcut": "Ctrl K"
     },
     "collapse": "Collapse menu",
-    "expand": "Expand menu"
+    "expand": "Expand menu",
+    "section": {
+      "manage": "Manage"
+    }
   },
   "today": {
     "title": "Today",
@@ -202,5 +205,10 @@
     "doneBody": "Your password was changed and you were logged out everywhere. Log in with your new password.",
     "invalidLink": "This link is incomplete. Open the link from the email again, or ask for a new one.",
     "toLogin": "Go to log in"
+  },
+  "noAccess": {
+    "title": "You don't have access to this page",
+    "body": "Your role at this facility doesn't include it. If you need it, ask your facility admin.",
+    "home": "Back to my work"
   }
 }

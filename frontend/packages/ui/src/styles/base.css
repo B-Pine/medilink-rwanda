@@ -29,6 +29,7 @@
     background-color: var(--ml-bg-page);
     color: var(--ml-text-primary);
     -webkit-font-smoothing: antialiased;
+    font-feature-settings: "cv11";
   }
 
   h1,
@@ -37,7 +38,14 @@
   h4 {
     font-family: var(--ml-font-heading);
     font-weight: 700;
+    letter-spacing: -0.015em;
     text-wrap: balance;
+  }
+
+  p,
+  li,
+  dd {
+    text-wrap: pretty;
   }
 
   a {
@@ -106,4 +114,37 @@
 
 :root[data-theme="dark"] .ml-logo-for-dark {
   display: inline-block;
+}
+
+/*
+ * Ticket stub (design 03 §1a): the notched ticket a patient holds, used wherever a patient's
+ * ticket appears (reception, doctor, pharmacy, tracker). Two half-circle notches cut from the sides.
+ */
+.ml-ticket-stub {
+  --ml-notch: 0.4375rem;
+  -webkit-mask:
+    radial-gradient(circle var(--ml-notch) at 0 50%, transparent 98%, #000) left / 51% 100%
+      no-repeat,
+    radial-gradient(circle var(--ml-notch) at 100% 50%, transparent 98%, #000) right / 51% 100%
+      no-repeat;
+  mask:
+    radial-gradient(circle var(--ml-notch) at 0 50%, transparent 98%, #000) left / 51% 100%
+      no-repeat,
+    radial-gradient(circle var(--ml-notch) at 100% 50%, transparent 98%, #000) right / 51% 100%
+      no-repeat;
+}
+
+/* Live dot: a soft pulse while data is streaming; still when the user prefers less motion. */
+@keyframes ml-live-pulse {
+  50% {
+    box-shadow: 0 0 0 5px transparent;
+  }
+}
+.ml-live-dot {
+  width: 0.4375rem;
+  height: 0.4375rem;
+  border-radius: 999px;
+  background: currentColor;
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 22%, transparent);
+  animation: ml-live-pulse 2s ease-in-out infinite;
 }

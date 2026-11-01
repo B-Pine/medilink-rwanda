@@ -128,7 +128,9 @@ export { readPreference, writePreference } from "./preferences/storage";
 export type { PreferenceKey } from "./preferences/storage";
 // [S4]
 export { ProgressDots, QueueFlagChip, QueueStateBadge, TicketNumber } from "./components/Queue";
-export type { QueueFlag, QueueState } from "./components/Queue";
+export type { QueueFlag, QueueState, TicketTone } from "./components/Queue";
+export { FlowStrip } from "./components/FlowStrip";
+export type { FlowStage } from "./components/FlowStrip";
 // [/S4]
 // [design-v2]
 export { HeatMap, LoadMeter, Sparkline, StatTile, TrendChart } from "./components/Charts";

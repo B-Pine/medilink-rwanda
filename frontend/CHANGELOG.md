@@ -9,6 +9,24 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Redesign · Foundation (#119)
+
+- Design system: neutrals lean toward the forest green (re-measured, WCAG AA in both themes); new
+  ochre `attention-*` tokens for "your turn" and work waiting for someone; cards lift with
+  `shadow-card` instead of a border. Recorded in `.interface-design/system.md`.
+- ui: `TicketNumber` gains the notched `stub` variant with `brand`, `attention`, `danger` and
+  `neutral` tones; new `FlowStrip` (patient flow by stage, bottleneck highlighted).
+- staff-web: the sidebar sits on the page colour and groups daily work, "Manage", the MediLink
+  platform and help; only permitted sections with a built page appear (no placeholder dead ends,
+  also in the command palette and Today shortcuts). `/platform/facilities` is labelled
+  "Facilities" (it was "Facility applications", a duplicate).
+- staff-web: a platform admin without a facility starts on the platform overview; one `homePath`
+  rule serves login, the facility picker and `/`.
+- staff-web: a facility page outside the person's role says "You don't have access to this page"
+  instead of "Page not found"; platform pages stay hidden from facility staff (S1 §6.1).
+- Mocks: one cast for Kigali Clinic (Dr Uwimana Keza, Dr Niyonsenga Paul) across booking, setup
+  and queue; "open now" follows the mock opening hours instead of always being true.
+
 ### Remediation R1 · Security core (#83)
 
 - patient-web: sign-up shows "check your email" for every request (no account enumeration) and the

@@ -42,12 +42,12 @@ export function AppShell() {
     <div
       className={cx(
         "min-h-dvh bg-page lg:grid",
-        collapsed ? "lg:grid-cols-[4.5rem_minmax(0,1fr)]" : "lg:grid-cols-[15.5rem_minmax(0,1fr)]",
+        collapsed ? "lg:grid-cols-[4.25rem_minmax(0,1fr)]" : "lg:grid-cols-[14.5rem_minmax(0,1fr)]",
       )}
     >
       <SkipLink />
       <div className="lg:contents">
-        <div className="flex items-center justify-between border-b border-border bg-surface px-3 py-2 print:hidden lg:hidden">
+        <div className="flex items-center justify-between border-b border-border bg-page px-3 py-2 print:hidden lg:hidden">
           <Logo className="h-8" />
           <button
             type="button"
@@ -74,7 +74,7 @@ export function AppShell() {
         />
       </div>
       <div className="flex min-w-0 flex-col">
-        <header className="sticky top-0 z-30 flex min-h-16 items-center gap-3 border-b border-border bg-surface px-4 print:hidden lg:px-8">
+        <header className="sticky top-0 z-30 flex min-h-14 items-center gap-3 border-b border-border bg-page/90 px-4 backdrop-blur-md print:hidden lg:px-6">
           <FacilitySwitcher me={me} />
           <button
             type="button"
@@ -82,14 +82,14 @@ export function AppShell() {
             aria-label={t("shell.palette.open")}
             aria-keyshortcuts="Control+K Meta+K"
             className={cx(
-              "ml-auto inline-flex min-h-target min-w-target cursor-pointer items-center justify-center gap-2 rounded-md",
-              "border border-border-input bg-page px-3 text-fg-muted hover:text-fg",
+              "ml-auto inline-flex min-h-9 min-w-9 cursor-pointer items-center justify-center gap-2 rounded-md",
+              "bg-surface px-3 text-body-sm text-fg-muted shadow-card hover:text-fg",
               "md:w-72 md:justify-start",
             )}
           >
             <MagnifyingGlass aria-hidden="true" className="size-icon shrink-0" />
             <span className="hidden flex-1 text-left md:inline">{t("shell.palette.open")}</span>
-            <kbd className="hidden rounded-sm border border-border bg-surface px-1.5 font-sans text-caption text-fg-muted md:inline">
+            <kbd className="hidden rounded-sm border border-border bg-subtle px-1.5 font-sans text-caption text-fg-muted md:inline">
               {t("shell.palette.shortcut")}
             </kbd>
           </button>
@@ -103,7 +103,7 @@ export function AppShell() {
         <main
           id={MAIN_CONTENT_ID}
           tabIndex={-1}
-          className="mx-auto w-full max-w-[90rem] flex-1 p-4 sm:p-6 lg:p-8"
+          className="mx-auto w-full max-w-[90rem] flex-1 px-4 py-5 sm:px-6 lg:px-8 lg:py-7"
         >
           <Outlet />
         </main>

@@ -28,3 +28,9 @@ description = "Synthetic sign-up passphrase in the S3 patient API test; not a re
 condition = "AND"
 paths = ['''^backend/tests/patients/test_patient_api\.py$''']
 regexes = ['''a-Long-and-unusual-passphrase-42''']
+
+[[allowlists]]
+description = "False-positive generic-api-key finding in historical test fixture commit for uploads processing"
+condition = "AND"
+commits = ['''84674db5b604610791ce5607bf3885c3c8cddc1b''']
+paths = ['''^backend/tests/uploads/test_processing\.py$''']

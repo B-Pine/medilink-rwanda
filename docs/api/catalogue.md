@@ -15,7 +15,7 @@ Sprints and requirements follow the [backend](../roadmap/backend.md) and [fronte
 | [S4](#s4--visits-and-the-live-queue) | Visits and the live queue | Implemented: backend #73, frontend #74. The [contract](../architecture/contracts/sprint-04-queue.md) and the OpenAPI schema win over the rows below |
 | [S5](#s5--booking-remote-join-and-calendars) | Booking, remote join and calendars | S5a implemented (#80 and the Phase 1 PR); S5b planned. The [contract](../architecture/contracts/sprint-05-booking.md) and the OpenAPI schema win over the rows below |
 | [S6](#s6--clinical-record-and-history) | Clinical record and history | Planned |
-| [S7](#s7--pharmacy-and-documents) | Pharmacy and documents | Planned |
+| [S7](#s7--pharmacy-and-documents) | Pharmacy and documents | S7a implemented (backend); S7b planned. The [contract](../architecture/contracts/sprint-07-pharmacy-documents.md) and the OpenAPI schema win over the rows below |
 | [S8](#s8--billing-and-payments) | Billing and payments | Planned |
 | [S9](#s9--notifications) | Notifications | Backend implemented (S9 pull request); the [contract](../architecture/contracts/sprint-09-notifications.md) §3.3 and the OpenAPI schema win over the rows below |
 | [S10](#s10--disputes-help-and-reports) | Disputes, help and reports | Part 1 (help center, support requests) backend implemented; disputes and reports planned |
@@ -442,8 +442,7 @@ Requirements: FR-CLN-01..09; FR-PAT-10..12; FR-SEC-03, 09. Prescription drafting
 | `GET` | `/api/v1/staff/consultations/{id}/` | Consultation with addenda | `clinical.write`; treatment relationship | FR-CLN-01, FR-SEC-03 | `403 access_reason_required` outside the relationship; Audit | Planned |
 | `PATCH` | `/api/v1/staff/consultations/{id}/` | Autosave the draft | `clinical.write` (author) | FR-CLN-02 | Ver; draft only | Planned |
 | `POST`, `DELETE` | `/api/v1/staff/consultations/{id}/diagnoses/` | Add or remove ICD-10 diagnoses (primary/secondary, provisional/confirmed) | `clinical.write` (author) | FR-CLN-06 | Draft only; code and display text snapshotted | Planned |
-| `POST` | `/api/v1/staff/consultations/{id}/prescription-items/` | Add a prescription item → safety alerts | `clinical.write` (author) | FR-CLN-07, FR-PHA-01 | Allergy, duplicate, dose and pregnancy checks; override needs a reason | Planned |
-| `PATCH`, `DELETE` | `/api/v1/staff/consultations/{id}/prescription-items/{item_id}/` | Edit or remove a draft item | `clinical.write` (author) | FR-PHA-01 | Draft only | Planned |
+| `POST` | `/api/v1/staff/consultations/{id}/prescription/items/` | Add a prescription item → safety alerts | `prescription.issue` (author) | FR-CLN-07, FR-PHA-01 | Moved to [S7](#s7--pharmacy-and-documents) (P2) | Implemented (S7a) |
 | `POST` | `/api/v1/staff/consultations/{id}/sign/` | Sign: re-enter PIN or password; lock; content hash | `clinical.sign` (author) | FR-CLN-02, FR-SEC-06 | Idem; late entry flagged after 24 h; issues prescriptions and documents (S7); Audit | Planned |
 | `POST` | `/api/v1/staff/consultations/{id}/addenda/` | Signed addendum with a reason | `clinical.sign` | FR-CLN-03 | Step-up; original never changes | Planned |
 | `POST` | `/api/v1/staff/consultations/{id}/entered-in-error/` | Mark entered in error with a reason | `clinical.sign` (author) | FR-CLN-04 | Step-up; hidden from normal views, never deleted | Planned |
@@ -488,17 +487,21 @@ Requirements: FR-PHA-01..05; FR-DOC-01..07. Visit summaries, prescriptions, sick
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `GET` | `/api/v1/staff/prescriptions/` | Pharmacy queue and prescription lists | `pharmacy.dispense`, `clinical.write` | FR-PHA-02 | Filter `status=ready_to_dispense` | Planned |
-| `GET` | `/api/v1/staff/prescriptions/{id}/` | Prescription, items, allergies, identity | `pharmacy.dispense`, `clinical.write` | FR-PHA-02 | Pharmacist serializer: no consultation notes | Planned |
-| `POST` | `/api/v1/staff/prescriptions/{id}/confirm-identity/` | Record the identity check (ticket + name + date of birth, or code) | `pharmacy.dispense` | FR-PHA-02 | Audit | Planned |
-| `POST` | `/api/v1/staff/prescriptions/{id}/dispense-records/` | Dispense per item: full, partial, generic substitution with reason, not available; signed | `pharmacy.dispense` | FR-PHA-02, FR-PHA-03 | Idem; quantities ≤ prescribed; `422` if unpaid and payment is required | Planned |
-| `POST` | `/api/v1/staff/prescriptions/{id}/queries/` | Send back to the doctor with a question | `pharmacy.dispense` | FR-PHA-02 | Doctor answers with an addendum | Planned |
-| `POST` | `/api/v1/staff/prescriptions/{id}/cancel/` | Cancel a prescription with a reason | `clinical.sign` (prescriber) | FR-PHA-01 | Only before dispensing | Planned |
-| `POST` | `/api/v1/staff/prescriptions/{id}/items/{item_id}/cancel/` | Cancel one item after signing (then add a new one by addendum) | `clinical.sign` (prescriber) | FR-PHA-01 | Both items stay visible with reasons | Planned |
-| `POST` | `/api/v1/staff/prescriptions/{id}/labels/` | Printable dosing labels (Kinyarwanda by default) | `pharmacy.dispense` | FR-PHA-05 | Returns a document link | Planned |
-| `GET` | `/api/v1/staff/dispense-records/` | Dispensing history | `pharmacy.dispense` | FR-PHA-03 | Filters `from`, `to` | Planned |
-| `GET` | `/api/v1/staff/drug-availabilities/` | Availability of catalogue drugs here | `pharmacy.dispense`, `clinical.write` | FR-PHA-04 | | Planned |
-| `PUT` | `/api/v1/staff/drug-availabilities/{drug_id}/` | Mark available or not available | `pharmacy.dispense` | FR-PHA-04 | | Planned |
+| `GET` | `/api/v1/staff/consultations/{id}/prescription/` | The consultation's prescription with items and alerts (P1) | `clinical.view`; Rel | FR-PHA-01, FR-CLN-07 | `404` when none; Audit (access history) | Implemented (S7a) |
+| `POST` | `/api/v1/staff/consultations/{id}/prescription/items/` | Add an item; creates the prescription on the first item (P2) | `prescription.issue` (author while draft) | FR-PHA-01, FR-CLN-07 | Catalogue drug or flagged free text; quantity default; after issue: Up and `replaces_item_id` | Implemented (S7a) |
+| `PATCH`, `DELETE` | `/api/v1/staff/prescription-items/{id}/` | Edit or remove a draft item (P3, P4) | `prescription.issue` (author) | FR-PHA-01 | Ver (`?version=` on delete); `422` after issue | Implemented (S7a) |
+| `POST` | `/api/v1/staff/prescription-items/{id}/cancel/` | Cancel an issued item with a reason (P5) | `prescription.issue` | FR-PHA-01 | Ver; `422` when dispensed; event | Implemented (S7a) |
+| `GET` | `/api/v1/staff/prescriptions/{id}/` | Prescription with dispense records and queries (P7) | `prescription.view` or `clinical.view` | FR-PHA-02 | Pharmacist: own facility, no Rel (D-5); doctor: Rel; no consultation text; Audit | Implemented (S7a) |
+| `POST` | `/api/v1/staff/prescriptions/{id}/cancel/` | Cancel the whole prescription with a reason (P6) | `prescription.issue` | FR-PHA-01 | Ver; `422` when anything was dispensed | Implemented (S7a) |
+| `GET` | `/api/v1/staff/pharmacy/queue/` | Pharmacy queue: ready, partly dispensed, queried (PQ1) | `pharmacy.dispense` | FR-PHA-02 | `status`, `q`; oldest issue first; flags | Implemented (S7a) |
+| `POST` | `/api/v1/staff/prescriptions/{id}/dispense/` | Identity check and dispensing per item: full, partial, generic substitution, not available; signed (PD1) | `pharmacy.dispense` | FR-PHA-02, FR-PHA-03 | Ver; row lock; controlled confirmation; never more than prescribed; Audit | Implemented (S7a) |
+| `GET` | `/api/v1/staff/prescriptions/{id}/labels/` | Dosing labels for dispensed lines (PD2) | `pharmacy.dispense` | FR-PHA-05 | `?language=`; default `documents.label_language` (`rw`) | Implemented (S7a) |
+| `POST` | `/api/v1/staff/prescriptions/{id}/queries/` | Send back to the doctor with a question (PQ2) | `pharmacy.dispense` | FR-PHA-02 | One open at a time (`409`); message encrypted | Implemented (S7a) |
+| `POST` | `/api/v1/staff/prescription-queries/{id}/answer/` | Link the addendum that answers (PQ3) | `prescription.issue` | FR-PHA-02 | Addendum on the same consultation | Implemented (S7a) |
+| `POST` | `/api/v1/staff/prescription-queries/{id}/close/` | Close an answered question (PQ4) | `pharmacy.dispense` | FR-PHA-02 | | Implemented (S7a) |
+| `GET` | `/api/v1/staff/pharmacy/availability/` | Catalogue drugs with availability here (PA1) | `pharmacy.dispense` or `pharmacy.availability` | FR-PHA-04 | `q`, `available` | Implemented (S7a) |
+| `PUT` | `/api/v1/staff/pharmacy/availability/{drug_code}/` | Mark available or not (PA2) | `pharmacy.availability` | FR-PHA-04 | Audit | Implemented (S7a) |
+| `GET` | `/api/v1/staff/drugs/` | Drug search with "not in stock here" (PS1) | `prescription.issue` or `pharmacy.dispense` | FR-PHA-01, FR-PHA-04 | `q` ≥ 2 characters; 25 rows | Implemented (S7a) |
 | `GET` | `/api/v1/staff/documents/` | Documents of a patient or visit | Role-specific | FR-DOC-01, FR-DOC-03 | Filters `patient`, `visit`, `kind`; restricted by role | Planned |
 | `POST` | `/api/v1/staff/documents/` | Upload a document (result, referral letter brought by the patient, scan) | `documents.upload` | FR-DOC-03 | `multipart`; results go to the results inbox | Planned |
 | `GET` | `/api/v1/staff/documents/{id}/` | Document metadata and versions | Role-specific | FR-DOC-02 | Superseded versions marked | Planned |
@@ -511,7 +514,8 @@ Requirements: FR-PHA-01..05; FR-DOC-01..07. Visit summaries, prescriptions, sick
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `GET` | `/api/v1/patient/medicines/` | My medicines with dispensing status | Patient session | FR-PHA-03 | Filter `patient_id` | Planned |
+| `GET` | `/api/v1/patient/prescriptions/` | My medicines: prescriptions of my profiles (M1) | Patient session | FR-PHA-03 | `patient_id`, `status=active\|past`; delegates don't see restricted consultations | Implemented (S7a) |
+| `GET` | `/api/v1/patient/prescriptions/{id}/` | One prescription with items and what was dispensed (M2) | Linked account | FR-PHA-03 | No alert overrides, no consultation text | Implemented (S7a) |
 | `GET` | `/api/v1/patient/documents/` | My documents | Patient session | FR-DOC-06 | Filter `patient_id`, `kind` | Planned |
 | `POST` | `/api/v1/patient/documents/` | Upload ID, insurance card, previous results, outside prescriptions | Linked account | FR-DOC-03 | `multipart`; RL: upload | Planned |
 | `GET` | `/api/v1/patient/documents/{id}/` | Document metadata | Linked account | FR-DOC-06 | | Planned |

@@ -640,3 +640,29 @@ def test_patient_rights_self_guardian_delegate_and_other_facility(
     anon = APIClient()
     assert anon.get(f"{P}bookings/").status_code in (401, 403)
     assert anon.get(f"{S}bookings/").status_code in (401, 403)
+
+
+@pytest.mark.acceptance("S5-B6")
+def test_sex_rule_refuses_a_booking_for_the_wrong_sex(
+    clock: Clock, clinic: Any, bookable: dict[str, Any]
+) -> None:
+    service_id = bookable["service_id"]
+    with rls_context(facility_id=clinic.pk):
+        Service.objects.filter(pk=service_id).update(sex_restriction="female")
+    client, user = patient_client("sexrule@example.test", "Mugisha Paul")
+    patient = user.patient_links.get().patient
+    patient.sex = "male"
+    patient.save()
+    later = clock.now + dt.timedelta(hours=3)
+    refused = book(client, user, first_slot(clinic, service_id, after=later))
+    assert refused.status_code == 422 and error_code(refused) == "sex_rule"
+    patient.sex = "female"
+    patient.save()
+    with rls_context(facility_id=clinic.pk):
+        slot = (
+            Slot.objects.filter(facility=clinic, service_id=service_id, starts_at__gte=later)
+            .order_by("starts_at")
+            .filter(held_count=0)
+            .first()
+        )
+    assert book(client, user, slot).status_code == 201

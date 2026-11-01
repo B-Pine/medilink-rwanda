@@ -275,6 +275,7 @@ class StaffBookingSerializer(serializers.Serializer):
     starts_at = serializers.DateTimeField()
     symptoms = BookedSymptomSerializer(many=True)
     late = serializers.BooleanField()
+    has_pending_change = serializers.BooleanField()  # S5b: a disruption offer is unanswered
     visit_id = serializers.UUIDField(allow_null=True)
     version = serializers.IntegerField()
 

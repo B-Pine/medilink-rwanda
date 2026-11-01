@@ -24,7 +24,7 @@ from tests.s4 import conftest as s4
 
 # S4 fixtures reused as they are (a live clinic, its admin, catalogue and staff)
 admin, catalogue, clinic = s4.admin, s4.catalogue, s4.clinic
-desk, doctor, patient_keys = s4.desk, s4.doctor, s4.patient_keys
+desk, doctor, doctor2, patient_keys = s4.desk, s4.doctor, s4.doctor2, s4.patient_keys
 
 P = "/api/v1/patient/"
 PUB = "/api/v1/public/"
@@ -144,9 +144,9 @@ def book(client: APIClient, user: Any, slot: Slot, key: str | None = None, **ext
         f"{P}bookings/",
         {
             "hold_id": hold.json()["hold_id"],
-            "patient_id": self_id(user),
             "symptoms": [{"code": "fever", "duration_days": 2}],
             **extra,
+            "patient_id": extra.get("patient_id") or self_id(user),
         },
         format="json",
         **headers,

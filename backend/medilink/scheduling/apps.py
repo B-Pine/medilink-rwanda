@@ -24,6 +24,10 @@ BEAT_SCHEDULE = {
         "task": "medilink.scheduling.tasks.refresh_public_listing",
         "schedule": crontab(minute="*/10"),
     },
+    "scheduling.disruption_auto_accept": {
+        "task": "medilink.scheduling.tasks.disruption_auto_accept",
+        "schedule": crontab(minute="*/15"),
+    },
     "scheduling.purge": {
         "task": "medilink.scheduling.tasks.purge",
         "schedule": crontab(hour="3", minute="30"),
@@ -36,6 +40,9 @@ FUNCTIONS = (
     "scheduling_booking_facilities()",
     "scheduling_slot_facility(uuid)",
     "scheduling_hold_facility(uuid, uuid)",
+    "scheduling_find_feed(bytea)",
+    "scheduling_feed_bookings(uuid)",
+    "scheduling_disruption_facilities()",
 )
 APPEND_ONLY = ("scheduling_booking_event",)
 

@@ -353,6 +353,13 @@ def _close(booking: Booking, status: str, who: Who | None, *, reason_code: str =
     _event(booking, before, who, reason_code=reason_code)
 
 
+def _settle(booking: Booking, response: str, who: Any, new: Booking | None = None) -> bool:
+    """Close any open disruption item of the booking (S5b), whichever screen changed it."""
+    from medilink.scheduling.disruptions import settle_booking
+
+    return settle_booking(booking, response, who, new)
+
+
 def locked(booking_id: Any, version: Any) -> Booking:
     booking = Booking.objects.select_for_update().get(pk=booking_id)
     if version is not None and version != booking.version:
@@ -376,8 +383,10 @@ def cancel(booking_id: Any, *, version: Any, who: Who, reason_code: str = "") ->
             status = BookingStatus.CANCELLED
         else:
             reason_code = "patient_request"
-            late = timezone.now() > cancel_deadline(booking)
+            # Declining a disruption offer is never a late cancellation (contract §2.2)
+            late = timezone.now() > cancel_deadline(booking) and not booking.pending_change
             status = BookingStatus.LATE_CANCELLED if late else BookingStatus.CANCELLED
+        _settle(booking, "cancelled", who)
         _close(booking, status, who, reason_code=reason_code)
     record(
         "scheduling.booking.cancel",
@@ -404,7 +413,11 @@ def reschedule(
         old = locked(booking_id, version)
         if old.status != BookingStatus.CONFIRMED:
             raise BookingRule(CANCEL_CLOSED, "cancel_closed")
-        if not who.is_staff and timezone.now() > cancel_deadline(old):
+        if (
+            not who.is_staff
+            and timezone.now() > cancel_deadline(old)
+            and not old.pending_change  # a disruption offer can always be moved
+        ):
             raise BookingRule(CANCEL_CLOSED, "cancel_closed")
         symptoms = [
             {"code": s.symptom_code, "duration_days": s.duration_days, "severity": s.severity}
@@ -441,6 +454,7 @@ def reschedule(
                 text, table="scheduling_booking", column="reason_encrypted", row_id=new.pk
             )
             new.save(update_fields=["reason_encrypted"])
+        _settle(old, "rebooked_other", who, new)
     return new
 
 
@@ -464,13 +478,16 @@ def mark_no_shows(facility_id: Any, now: dt.datetime | None = None) -> int:
             )
         )
         for booking in late:
+            # An unanswered disruption offer: the facility moved it, so no strike (contract §2.2)
+            offered = _settle(booking, "declined", None)
             _close(booking, BookingStatus.NO_SHOW, None, reason_code="no_show")
-            NoShowStrike.objects.create(
-                facility_id=facility_id,
-                patient_id=booking.patient_id,
-                booking=booking,
-                occurred_at=now,
-            )
+            if not offered:
+                NoShowStrike.objects.create(
+                    facility_id=facility_id,
+                    patient_id=booking.patient_id,
+                    booking=booking,
+                    occurred_at=now,
+                )
             booking_id, fid = booking.pk, facility_id
             transaction.on_commit(
                 lambda b=booking_id, f=fid: no_show_recorded.send(  # type: ignore[misc]
@@ -520,6 +537,7 @@ def reverse_no_show(
 
 def mark_checked_in(booking: Booking, visit_id: Any, who: Who) -> None:
     """Called by the S4 check-in inside its transaction (contract §2.2 Check-in (booked))."""
+    _settle(booking, "accepted", who)
     before = booking.status
     booking.status = BookingStatus.CHECKED_IN
     booking.visit_id = visit_id

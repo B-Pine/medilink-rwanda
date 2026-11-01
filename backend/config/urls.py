@@ -57,6 +57,7 @@ api_v1: list[URLPattern | URLResolver] = [
     path("public/", include("medilink.scheduling.urls.public")),
     path("patient/", include("medilink.scheduling.urls.patient")),
     path("staff/", include("medilink.scheduling.urls.staff")),
+    path("calendar/", include("medilink.scheduling.urls.calendar")),
     # [/S5]
 ]
 

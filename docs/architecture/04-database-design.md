@@ -715,7 +715,7 @@ erDiagram
     disputes_dispute ||--o{ disputes_evidence : "evidence"
     disputes_dispute ||--o{ disputes_comment_request : "asks staff"
     disputes_dispute ||--o{ disputes_action : "outcome actions"
-    disputes_support_request ||--o{ disputes_support_reply : "replies"
+    support_request ||--o{ support_message : "messages"
 ```
 
 | Table | Purpose | RLS | Class | Mutability | Retention | Sprint |
@@ -726,9 +726,9 @@ erDiagram
 | `disputes_evidence` | Frozen audit extracts and uploads | ✓ | C3 | Append-only | R-DSP | S10 |
 | `disputes_comment_request` | Requests for staff comments | ✓ | C2 | Mutable (response link) | R-DSP | S10 |
 | `disputes_action` | Actions created by the outcome | ✓ | C2 | Append-only (+ `done_at`) | R-DSP | S10 |
-| `disputes_support_request` | Support requests (no clinical data) | — (platform) | C2 | State machine (light) | R-DSP | S10 |
-| `disputes_support_reply` | Support replies | — | C2 | Append-only | R-DSP | S10 |
-| `disputes_help_article` | Help center content | — | C0 | Versioned | R-MD | S10 |
+| `support_request` (was `disputes_support_request`) | Support requests (no clinical data); `facility_id` for staff requests, triage columns | — (platform; sprint-10 §2.5) | C2 | State machine (light) | R-DSP | S10 part 1 |
+| `support_message` (was `disputes_support_reply`) | Requester and support messages | — | C2 | Append-only | R-DSP | S10 part 1 |
+| `support_help_article` (was `disputes_help_article`) | Help center content; `audience`, `category`, `summary_i18n` | — | C0 | Mutable with `version` (sprint-10 S10-D3) | R-MD | S10 part 1 |
 
 | Table | Key columns |
 |---|---|

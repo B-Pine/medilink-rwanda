@@ -14821,6 +14821,247 @@ paths:
               schema:
                 $ref: '#/components/schemas/UnreadCount'
           description: ''
+  /api/v1/staff/patient-imports/:
+    get:
+      operationId: staff_patient_imports
+      summary: Register imports of this facility, newest first (L1)
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      tags:
+      - patient-imports
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedImportBatchList'
+          description: ''
+    post:
+      operationId: staff_patient_import_create
+      summary: Start an import from an uploaded CSV; suggests a column mapping (L1)
+      tags:
+      - patient-imports
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientImportCreateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientImportBatch'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not a CSV, empty, or too many rows
+  /api/v1/staff/patient-imports/{batch_id}/:
+    get:
+      operationId: staff_patient_import_detail
+      summary: An import with its counts (L1)
+      parameters:
+      - in: path
+        name: batch_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-imports
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientImportBatch'
+          description: ''
+  /api/v1/staff/patient-imports/{batch_id}/confirm/:
+    post:
+      operationId: staff_patient_import_confirm
+      summary: Create the valid rows' patients and facility records (L1)
+      parameters:
+      - in: path
+        name: batch_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-imports
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientImportVersionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientImportBatch'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+  /api/v1/staff/patient-imports/{batch_id}/mapping/:
+    put:
+      operationId: staff_patient_import_mapping
+      summary: 'Map columns and preview: errors and likely duplicates, nothing saved
+        (L1)'
+      parameters:
+      - in: path
+        name: batch_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-imports
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientImportMappingInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientImportBatch'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Mapping or state
+  /api/v1/staff/patient-imports/{batch_id}/rollback/:
+    post:
+      operationId: staff_patient_import_rollback
+      summary: Roll back within 7 days when no imported patient has a visit (L1)
+      parameters:
+      - in: path
+        name: batch_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-imports
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientImportVersionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientImportBatch'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Window passed or a visit is attached
+  /api/v1/staff/patient-imports/{batch_id}/rows/:
+    get:
+      operationId: staff_patient_import_rows
+      summary: Preview rows with their errors and likely duplicates (L1)
+      parameters:
+      - in: path
+        name: batch_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - created
+          - duplicate
+          - error
+          - pending
+          - rolled_back
+          - valid
+      tags:
+      - patient-imports
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedImportRowList'
+          description: ''
   /api/v1/staff/patients/:
     post:
       operationId: staff_patients_create
@@ -29049,6 +29290,50 @@ components:
       - next
       - previous
       - results
+    PaginatedImportBatchList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientImportBatch'
+      required:
+      - count
+      - next
+      - previous
+      - results
+    PaginatedImportRowList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientImportRow'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedInsurersItemList:
       type: object
       required:
@@ -31059,6 +31344,219 @@ components:
       - verification_code
       - version_no
       - versions
+    PatientImportBatch:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/PatientImportStatusEnum'
+        file_name:
+          type: string
+        headers:
+          type: array
+          items:
+            type: string
+        column_mapping:
+          $ref: '#/components/schemas/PatientImportMapping'
+        row_count:
+          type: integer
+        valid_count:
+          type: integer
+        error_count:
+          type: integer
+        duplicate_count:
+          type: integer
+        created_count:
+          type: integer
+        created_by_name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        confirmed_at:
+          type: string
+          format: date-time
+          nullable: true
+        rollback_until:
+          type: string
+          format: date-time
+          nullable: true
+        can_roll_back:
+          type: boolean
+        rolled_back_at:
+          type: string
+          format: date-time
+          nullable: true
+        version:
+          type: integer
+      required:
+      - can_roll_back
+      - column_mapping
+      - confirmed_at
+      - created_at
+      - created_by_name
+      - created_count
+      - duplicate_count
+      - error_count
+      - file_name
+      - headers
+      - id
+      - rollback_until
+      - rolled_back_at
+      - row_count
+      - status
+      - valid_count
+      - version
+    PatientImportCreateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        upload_id:
+          type: string
+          format: uuid
+      required:
+      - upload_id
+    PatientImportMapping:
+      type: object
+      properties:
+        full_name:
+          type: string
+        sex:
+          type: string
+        date_of_birth:
+          type: string
+        phone:
+          type: string
+        file_number:
+          type: string
+        national_id:
+          type: string
+    PatientImportMappingInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        mapping:
+          $ref: '#/components/schemas/PatientImportMappingRequest'
+      required:
+      - mapping
+      - version
+    PatientImportMappingRequest:
+      type: object
+      properties:
+        full_name:
+          type: string
+        sex:
+          type: string
+        date_of_birth:
+          type: string
+        phone:
+          type: string
+        file_number:
+          type: string
+        national_id:
+          type: string
+    PatientImportRow:
+      type: object
+      properties:
+        row_number:
+          type: integer
+        status:
+          $ref: '#/components/schemas/PatientImportRowStatusEnum'
+        full_name:
+          type: string
+        sex:
+          type: string
+          nullable: true
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        phone_e164:
+          type: string
+          nullable: true
+        file_number:
+          type: string
+          nullable: true
+        has_national_id:
+          type: boolean
+        problems:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientImportRowProblem'
+        matched_patient_id:
+          type: string
+          format: uuid
+          nullable: true
+        created_facility_patient_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - created_facility_patient_id
+      - date_of_birth
+      - file_number
+      - full_name
+      - has_national_id
+      - matched_patient_id
+      - phone_e164
+      - problems
+      - row_number
+      - sex
+      - status
+    PatientImportRowProblem:
+      type: object
+      properties:
+        field:
+          type: string
+        code:
+          type: string
+      required:
+      - code
+      - field
+    PatientImportRowStatusEnum:
+      enum:
+      - pending
+      - valid
+      - error
+      - duplicate
+      - created
+      - rolled_back
+      type: string
+      description: |-
+        * `pending` - Not checked yet
+        * `valid` - Ready to import
+        * `error` - Has errors
+        * `duplicate` - Likely duplicate
+        * `created` - Imported
+        * `rolled_back` - Rolled back
+    PatientImportStatusEnum:
+      enum:
+      - uploaded
+      - previewed
+      - confirmed
+      - rolled_back
+      - failed
+      type: string
+      description: |-
+        * `uploaded` - Uploaded
+        * `previewed` - Previewed
+        * `confirmed` - Confirmed
+        * `rolled_back` - Rolled back
+        * `failed` - Failed
+    PatientImportVersionRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+      required:
+      - version
     PatientItem:
       type: object
       properties:

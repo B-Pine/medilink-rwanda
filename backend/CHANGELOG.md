@@ -818,6 +818,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - No-show job with strikes; jobs and the dev seed; `booking_concurrency_check` (DEBUG only).
 - `TIME_ZONE` is `Africa/Kigali` (was UTC; contract D-8).
 
+### Sprint 6b · Legacy register import (part 2)
+
+- Import a facility's paper register from CSV (contract sprint-06 §3.3 L1, FR-PAT-10): upload
+  (`patient_import`), suggested column mapping (English, Kinyarwanda and French headers), preview
+  with per-row problems (name, sex, dates, Rwandan phone numbers, 16-digit national IDs, file
+  numbers already used) and likely duplicates from the S3 matching; nothing is created before
+  confirm (step-up). Confirm creates patients and facility records in one transaction; rollback
+  within 7 days unless an imported patient has a visit. No patient is notified.
+- Raw rows are encrypted and purged daily after the rollback window (`purge_import_rows`, through
+  the SECURITY DEFINER `patients_import_purge_facilities()`); the preview never holds a national
+  ID. Tables `patients_import_batch` and `patients_import_row` with forced facility RLS.
+
 ### Sprint 6b · Results inbox, scans, back-entry and break-glass (part 1)
 
 - Scans and outside results (contract sprint-06 §3.3 L2, R1): staff attach a `clinical_document`

@@ -29,6 +29,7 @@ import { bookingFeature } from "../features/booking";
 import { recordsFeature } from "../features/records";
 // [/S6 imports]
 // [S7 imports]
+import { documentsFeature } from "../features/documents";
 import { medicinesFeature } from "../features/medicines";
 // [/S7 imports]
 
@@ -90,5 +91,6 @@ export const FEATURES: FeatureRoutes[] = [
   // [/S6]
   // [S7]
   medicinesFeature,
+  documentsFeature,
   // [/S7]
 ];

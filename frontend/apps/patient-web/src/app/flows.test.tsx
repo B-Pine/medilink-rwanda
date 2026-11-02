@@ -227,7 +227,7 @@ describe("sign-up with consent", () => {
 });
 
 describe("other pages", () => {
-  it("verify-a-document placeholder and 404", async () => {
+  it("verify a document (S7b) and 404", async () => {
     renderApp("/verify");
     expect(
       await screen.findByRole("heading", { level: 1, name: "Verify a document" }),

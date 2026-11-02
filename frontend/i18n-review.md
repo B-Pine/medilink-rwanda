@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 3607.
+Keys: 3718.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -438,8 +438,6 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `home.links.settings` | Ingano y’inyandiko, ururimi n’ibara | Text size, language and theme | needs native-speaker review |
 | `home.notSureBody` | Subiza ibibazo bike ku buryo wiyumva, tukakwereka aho wajya. | Answer a few questions about how you feel, and we suggest where to go. | needs native-speaker review |
 | `info.back` | Subira ahabanza | Back to the home page | needs native-speaker review |
-| `info.verify.title` | Genzura inyandiko | Verify a document | needs native-speaker review |
-| `info.verify.body` | Vuba aha, farumasi n’abakoresha bazashobora kugenzura hano urupapuro rwa muganga, inyemezabwishyu cyangwa icyemezo cy’uburwayi bakoresheje kode cyangwa QR. | Soon pharmacies and employers can check a prescription, receipt or sick note here with its code or QR. | needs native-speaker review |
 | `info.forFacilities.title` | MediLink ku bigo by’ubuvuzi | MediLink for health facilities | needs native-speaker review |
 | `info.forFacilities.body` | Kwiyandikisha kw’ibigo kuzatangira mu gice gikurikira. Muzashobora gusaba kuri interineti mugatangira nyuma yo kugenzurwa. | Facility registration opens in the next release. You will be able to apply online and go live after verification. | needs native-speaker review |
 | `info.terms.title` | Amabwiriza yo gukoresha | Terms of use | needs native-speaker review |
@@ -873,6 +871,61 @@ File: `apps/staff-web/src/features/clinical/locales/rw.json`
 | `unsigned.open` | Fungura inyandiko ya {{name}} | Open the draft for {{name}} | needs native-speaker review |
 | `unsigned.empty` | Nta dosiye itarasinywa | No unsigned records | needs native-speaker review |
 | `unsigned.emptyBody` | Amasuzuma yose yasinywe. | Every consultation is signed. | needs native-speaker review |
+
+## staff-web feature: documents (namespace documents)
+
+File: `apps/staff-web/src/features/documents/locales/rw.json`
+
+| Key | Kinyarwanda (draft) | English source | Status |
+|---|---|---|---|
+| `loading` | Turimo gushaka inyandiko | Loading documents | needs native-speaker review |
+| `download` | Kuramo | Download | needs native-speaker review |
+| `print` | Gucapa | Print | needs native-speaker review |
+| `preparing` | Iracyategurwa | Preparing | needs native-speaker review |
+| `version` | verisiyo ya {{n}} | version {{n}} | needs native-speaker review |
+| `kind.prescription` | Resept | Prescription | needs native-speaker review |
+| `kind.referral` | Urwandiko rwohereza umurwayi | Referral letter | needs native-speaker review |
+| `kind.lab_request` | Gusaba ibizamini | Lab or imaging request | needs native-speaker review |
+| `kind.sick_note` | Icyemezo cy'uburwayi | Sick note | needs native-speaker review |
+| `status.active` | Iremewe | Valid | needs native-speaker review |
+| `status.dispensed` | Yatanzwe | Dispensed | needs native-speaker review |
+| `status.cancelled` | Yahagaritswe | Cancelled | needs native-speaker review |
+| `status.expired` | Yarangiye | Expired | needs native-speaker review |
+| `urgency.routine` | Bisanzwe | Routine | needs native-speaker review |
+| `urgency.urgent` | Byihutirwa | Urgent | needs native-speaker review |
+| `urgency.emergency` | Byihutirwa cyane | Emergency | needs native-speaker review |
+| `letters.title` | Amabaruwa n'ibisabwa | Letters and requests | needs native-speaker review |
+| `letters.draftHint` | Bisinywa hamwe n'isuzuma kandi bigacapwa bifite kode ya QR. | They are signed with the consultation and printed with a QR code. | needs native-speaker review |
+| `letters.signedHint` | Igishya gisinywa iyo ukibitse; bazongera kugusaba ijambo ry'ibanga. | A new one is signed when you save it; it asks for your password again. | needs native-speaker review |
+| `letters.none` | Nta baruwa cyangwa icyasabwe kirahari. | No letter or request yet. | needs native-speaker review |
+| `letters.add.referral` | Urwandiko rwohereza | Referral letter | needs native-speaker review |
+| `letters.add.lab_request` | Gusaba ibizamini | Lab request | needs native-speaker review |
+| `letters.add.sick_note` | Icyemezo cy'uburwayi | Sick note | needs native-speaker review |
+| `letters.referralLine` | Kuri {{to}}, {{specialty}} · {{urgency}} | To {{to}}, {{specialty}} · {{urgency}} | needs native-speaker review |
+| `letters.sickLine` | Kuruhuka kuva {{from}} kugeza {{to}} | Rest from {{from}} to {{to}} | needs native-speaker review |
+| `letters.signedAt` | Byasinywe {{time}} | Signed {{time}} | needs native-speaker review |
+| `letters.signsWith` | Bizasinywa hamwe n'isuzuma | Signs with the consultation | needs native-speaker review |
+| `letters.visitDocuments` | Inyandiko z'uru ruzinduko | Documents of this visit | needs native-speaker review |
+| `form.to` | Ohereza kuri (ivuriro) | Refer to (facility) | needs native-speaker review |
+| `form.specialty` | Ubuhanga | Specialty | needs native-speaker review |
+| `form.urgency` | Byihutirwa | Urgency | needs native-speaker review |
+| `form.reason` | Impamvu | Reason | needs native-speaker review |
+| `form.tests` | Ibizamini | Tests | needs native-speaker review |
+| `form.testsHint` | Kimwe ku murongo, cyangwa ubitandukanyishije akitso. | One per line, or separated by commas. | needs native-speaker review |
+| `form.testsRequired` | Ongeraho nibura ikizamini kimwe. | Add at least one test. | needs native-speaker review |
+| `form.from` | Umunsi wa mbere wo kuruhuka | First day of rest | needs native-speaker review |
+| `form.until` | Umunsi wa nyuma wo kuruhuka | Last day of rest | needs native-speaker review |
+| `form.datesOrder` | Umunsi wa nyuma uri mbere y'uwa mbere. | The last day is before the first. | needs native-speaker review |
+| `form.showDiagnosis` | Erekana indwara ku cyemezo | Show the diagnosis on the sick note | needs native-speaker review |
+| `form.showDiagnosisHint` | Ntibigaragara bisanzwe: umukoresha cyangwa ishuri bakeneye amatariki gusa. | Off by default: an employer or school only needs the dates. | needs native-speaker review |
+| `form.required` | Uzuza aha. | Fill this in. | needs native-speaker review |
+| `form.save` | Ongeraho | Add | needs native-speaker review |
+| `form.signNow` | Sinya kandi wongereho | Sign and add | needs native-speaker review |
+| `form.cancel` | Reka | Cancel | needs native-speaker review |
+| `patient.title` | Inyandiko | Documents | needs native-speaker review |
+| `patient.clinicalHint` | Resept, amabaruwa n'ibisabwa byasinywe muri iri vuriro. | Prescriptions, letters and requests signed at this facility. | needs native-speaker review |
+| `patient.printHint` | Capa ibyo umurwayi asaba. Buri gucapa kurandikwa. | Print what the patient asks for. Each print is recorded. | needs native-speaker review |
+| `patient.none` | Nta nyandiko irahari. | No documents yet. | needs native-speaker review |
 
 ## staff-web feature: help (namespace help)
 
@@ -2902,6 +2955,78 @@ File: `apps/patient-web/src/features/booking/locales/rw.json`
 | `feed.open` | Fungura muri kalendari yanjye | Open in my calendar app | needs native-speaker review |
 | `feed.since` | Birakora kuva {{day}}. Ushaka irindi huza, bizimye hanyuma ubyongere ubifungure. | On since {{day}}. To get a new link, turn it off and on again. | needs native-speaker review |
 | `feed.failed` | Ntibishobotse guhindura ihuza rya kalendari. Ongera ugerageze. | We couldn't change the calendar link. Try again. | needs native-speaker review |
+
+## patient-web feature: documents (namespace documents)
+
+File: `apps/patient-web/src/features/documents/locales/rw.json`
+
+| Key | Kinyarwanda (draft) | English source | Status |
+|---|---|---|---|
+| `title` | Inyandiko zanjye | My documents | needs native-speaker review |
+| `intro` | Resept, ibyemezo by'uburwayi, amabaruwa yohereza n'ibizamini byasabwe mu ngendo zawe. Buri imwe ifite kode umuntu wese ashobora kugenzura. | Prescriptions, sick notes, referral letters and lab requests from your visits. Each one has a code anyone can check. | needs native-speaker review |
+| `seeAll` | Reba byose | See all | needs native-speaker review |
+| `whose` | Inyandiko za nde | Whose documents | needs native-speaker review |
+| `everyone` | Bose | Everyone | needs native-speaker review |
+| `downloadAll` | Kuramo zose (ZIP) | Download all (ZIP) | needs native-speaker review |
+| `failed` | Ntibyakunze. Ongera ugerageze. | That didn't work. Try again. | needs native-speaker review |
+| `empty` | Nta nyandiko irahari | No documents yet | needs native-speaker review |
+| `emptyBody` | Muganga nasinya resept, urwandiko cyangwa icyemezo cy'uburwayi, kizagaragara hano. | When a doctor signs a prescription, letter or sick note for you, it appears here. | needs native-speaker review |
+| `back` | Inyandiko zanjye | My documents | needs native-speaker review |
+| `notFound` | Ntitubona iyi nyandiko. | We can't find this document. | needs native-speaker review |
+| `by` | na {{name}} | by {{name}} | needs native-speaker review |
+| `codeLabel` | Kode yo kugenzura | Verification code | needs native-speaker review |
+| `codeHint` | Iri munsi ya kode ya QR ku rupapuro. Nimero {{number}}. | Under the QR code on the paper. Number {{number}}. | needs native-speaker review |
+| `download` | Kuramo | Download | needs native-speaker review |
+| `preparing` | Iracyategurwa | Preparing | needs native-speaker review |
+| `newVersion` | Iyi ni verisiyo ya {{n}}. Izacapwe mbere ntizikigezweho. | This is version {{n}}. Earlier printouts are out of date. | needs native-speaker review |
+| `kind.prescription` | Resept | Prescription | needs native-speaker review |
+| `kind.referral` | Urwandiko rwohereza umurwayi | Referral letter | needs native-speaker review |
+| `kind.lab_request` | Gusaba ibizamini | Lab or imaging request | needs native-speaker review |
+| `kind.sick_note` | Icyemezo cy'uburwayi | Sick note | needs native-speaker review |
+| `status.active` | Iremewe | Valid | needs native-speaker review |
+| `status.dispensed` | Yatanzwe | Dispensed | needs native-speaker review |
+| `status.cancelled` | Yahagaritswe | Cancelled | needs native-speaker review |
+| `status.expired` | Yarangiye | Expired | needs native-speaker review |
+| `share.title` | Sangiza undi muntu | Share with someone | needs native-speaker review |
+| `share.intro` | Kora ihuza ry'umukoresha, ishuri cyangwa undi muganga. Rifungura iyi nyandiko yonyine kandi rihagarara iyo igihe cyaryo kirangiye. | Make a link for an employer, a school or another doctor. It opens only this document and stops working when it expires. | needs native-speaker review |
+| `share.lasts` | Ihuza rimara | The link lasts | needs native-speaker review |
+| `share.days_one` | Umunsi {{count}} | {{count}} day | needs native-speaker review |
+| `share.days_other` | Iminsi {{count}} | {{count}} days | needs native-speaker review |
+| `share.make` | Kora ihuza | Make a link | needs native-speaker review |
+| `share.made` | Ihuza ryawe | Your link | needs native-speaker review |
+| `share.once` | Rikoporore ubu: turyerekana rimwe gusa. | Copy it now: we show it only once. | needs native-speaker review |
+| `share.copy` | Koporora ihuza | Copy the link | needs native-speaker review |
+| `share.copied` | Ryakoporowe | Copied | needs native-speaker review |
+| `share.until` | Rikora kugeza {{date}} | Works until {{date}} | needs native-speaker review |
+| `share.opened_one` | Ryafunguwe inshuro {{count}} | Opened {{count}} time | needs native-speaker review |
+| `share.opened_other` | Ryafunguwe inshuro {{count}} | Opened {{count}} times | needs native-speaker review |
+| `share.revoke` | Hagarika iri huza | Stop this link | needs native-speaker review |
+| `verify.title` | Genzura inyandiko | Verify a document | needs native-speaker review |
+| `verify.intro` | Farumasi, abakoresha n'amashuri bashobora kugenzura hano inyandiko ya MediLink. Andika kode iri munsi ya kode ya QR. | Pharmacies, employers and schools can check a MediLink document here. Type the code printed under its QR code. | needs native-speaker review |
+| `verify.code` | Kode yo kugenzura | Verification code | needs native-speaker review |
+| `verify.codeHint` | Inyuguti n'imibare 10 | 10 letters and numbers | needs native-speaker review |
+| `verify.check` | Genzura | Check | needs native-speaker review |
+| `verify.notFound` | Nta nyandiko ifite iyi kode | No document has this code | needs native-speaker review |
+| `verify.notFoundBody` | Ongera urebe kode. Inyandiko itabonetse ishobora kuba ari impimbano. | Check the code again. A document that is not found may be forged. | needs native-speaker review |
+| `verify.limited` | Wagenzuye kenshi. Tegereza umunota umwe wongere ugerageze. | Too many checks. Wait a minute and try again. | needs native-speaker review |
+| `verify.genuine` | Inyandiko nyayo ya MediLink | Genuine MediLink document | needs native-speaker review |
+| `verify.notValid` | Iyi nyandiko ntikiremewe | This document is no longer valid | needs native-speaker review |
+| `verify.kind` | Inyandiko | Document | needs native-speaker review |
+| `verify.number` | Nimero | Number | needs native-speaker review |
+| `verify.issued` | Yatanzwe | Issued | needs native-speaker review |
+| `verify.validUntil` | Igihe izamara | Valid until | needs native-speaker review |
+| `verify.facility` | Ivuriro | Facility | needs native-speaker review |
+| `verify.author` | Byasinywe na | Signed by | needs native-speaker review |
+| `verify.version` | Verisiyo ya {{n}}: indi nshya yasimbuye iyacapwe bwa mbere. | Version {{n}}: a newer version replaced the first printout. | needs native-speaker review |
+| `verify.detailsIntro` | Kugira ngo urebe ibiyirimo, andika itariki y'amavuko y'umurwayi. | To see what it says, give the patient's date of birth. | needs native-speaker review |
+| `verify.dob` | Itariki y'amavuko y'umurwayi | Patient's date of birth | needs native-speaker review |
+| `verify.showDetails` | Erekana ibiyirimo | Show the content | needs native-speaker review |
+| `verify.dobMismatch` | Iyo tariki y'amavuko ntihuye n'iyi nyandiko. | That date of birth doesn't match this document. | needs native-speaker review |
+| `verify.for` | Ya {{name}} | For {{name}} | needs native-speaker review |
+| `shared.title` | Inyandiko yasangijwe | Shared document | needs native-speaker review |
+| `shared.gone` | Iri huza ntirigikora | This link no longer works | needs native-speaker review |
+| `shared.goneBody` | Igihe cyaryo cyarangiye cyangwa umurwayi yarihagaritse. Musabe irindi huza. | It expired or the patient stopped it. Ask them for a new link. | needs native-speaker review |
+| `shared.until` | Ihuza rikora kugeza {{date}}. | The link works until {{date}}. | needs native-speaker review |
 
 ## patient-web feature: facilityApplication (namespace facilityApplication)
 

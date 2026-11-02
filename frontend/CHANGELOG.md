@@ -9,6 +9,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Sprint 7b · Documents (frontend, #123)
+
+- staff-web consultation: a Letters and requests section (referral letter, lab request, sick note)
+  signed with the consultation, or at once after it; the visit's documents with Download.
+- staff-web patient record: a Documents tab; clinicians download, reception and the pharmacy print.
+- patient-web `/documents` and a Home card: my documents with Download, a ZIP of all of them, the
+  verification code, and share links shown once that can be stopped.
+- patient-web public `/verify` (replaces the placeholder) and `/verify/:code`: genuine or not, then
+  the content after the patient's date of birth; `/shared/:token` opens a shared document.
+
 ### Sprint 7a · Pharmacy (frontend, #123)
 
 - staff-web consultation: a Prescription section (anchor) to add medicines from the catalogue with

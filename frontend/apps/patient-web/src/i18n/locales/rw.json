@@ -290,10 +290,6 @@
   },
   "info": {
     "back": "Subira ahabanza",
-    "verify": {
-      "title": "Genzura inyandiko",
-      "body": "Vuba aha, farumasi n’abakoresha bazashobora kugenzura hano urupapuro rwa muganga, inyemezabwishyu cyangwa icyemezo cy’uburwayi bakoresheje kode cyangwa QR."
-    },
     "forFacilities": {
       "title": "MediLink ku bigo by’ubuvuzi",
       "body": "Kwiyandikisha kw’ibigo kuzatangira mu gice gikurikira. Muzashobora gusaba kuri interineti mugatangira nyuma yo kugenzurwa."

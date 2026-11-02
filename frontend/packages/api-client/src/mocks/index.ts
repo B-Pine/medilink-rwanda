@@ -61,4 +61,11 @@ export {
   MOCK_RX_QUERIED,
   MOCK_RX_READY,
 } from "./features/pharmacy";
+export {
+  MOCK_DOCUMENT_RX,
+  MOCK_DOCUMENT_SICK,
+  MOCK_SHARE_TOKEN,
+  MOCK_VERIFY_CODE,
+  MOCK_VERIFY_DOB,
+} from "./features/documents";
 // [/S7]

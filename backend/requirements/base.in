@@ -41,3 +41,8 @@ pywebpush>=2.0
 # [/S2]
 # [S10]
 # [/S10]
+# [S7]
+# Generated documents (contract sprint-07 §1, D-8): PDF drawing and its built-in QR code widget.
+# Pure drawing API, no HTML or URL fetching, no system libraries (WeasyPrint needs Pango).
+reportlab>=4.2
+# [/S7]

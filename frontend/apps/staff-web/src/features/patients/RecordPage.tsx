@@ -34,6 +34,9 @@ import { Link, useNavigate, useParams } from "react-router";
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
 import { AccessReasonPrompt, isAccessReasonRequired } from "./AccessReason";
+// [S7 imports]
+import { PatientDocuments } from "../documents";
+// [/S7 imports]
 import { PageHeading } from "../../components/PageHeading";
 import {
   actionError,
@@ -72,6 +75,7 @@ function Record() {
   const record = useRecord(fpId);
   const age = useAge();
   const canHealth = useCan("clinical.view", "prescription.view");
+  const canDocuments = useCan("clinical.view", "documents.print"); // [S7]
   if (record.isPending) return <LoadingState />;
   if (isAccessReasonRequired(record.error))
     return (
@@ -126,6 +130,11 @@ function Record() {
             <TabsTrigger value="health">{t("patients.record.tabs.health")}</TabsTrigger>
           )}
           <TabsTrigger value="consents">{t("patients.record.tabs.consents")}</TabsTrigger>
+          {/* [S7] */}
+          {canDocuments && (
+            <TabsTrigger value="documents">{t("documents.patient.title")}</TabsTrigger>
+          )}
+          {/* [/S7] */}
         </TabsList>
         <TabsContent value="details">
           <Details record={p} />
@@ -144,6 +153,13 @@ function Record() {
         <TabsContent value="consents">
           <Consents record={p} />
         </TabsContent>
+        {/* [S7] */}
+        {canDocuments && (
+          <TabsContent value="documents">
+            <PatientDocuments fpId={fpId} />
+          </TabsContent>
+        )}
+        {/* [/S7] */}
       </Tabs>
     </div>
   );

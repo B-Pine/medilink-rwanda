@@ -207,13 +207,13 @@ Source: [07 · Documents](../analysis/07-clinical-documentation-and-pharmacy.md)
 
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
-| FR-DOC-01 | Generated PDFs: letterhead, licence, number, QR, language | P1 | S7 | Backend | API, INS, PERF | Not started |
-| FR-DOC-02 | New version on amendment; superseded versions kept | P1 | S7 | Backend | BR | Not started |
+| FR-DOC-01 | Generated PDFs: letterhead, licence, number, QR, language | P1 | S7 | Backend | API, INS, PERF | In progress (S7b) |
+| FR-DOC-02 | New version on amendment; superseded versions kept | P1 | S7 | Backend | BR | In progress (S7b) |
 | FR-DOC-03 | Uploads: type, date, virus scan, fingerprint, compression | P1 | S1, S7 | Both | API, SEC | In progress |
-| FR-DOC-04 | Public verification page with minimal data; logged | P1 | S7 | Both | API, SEC | Not started |
-| FR-DOC-05 | Encrypted storage in Rwanda; signed links; access logged | P1 | S7 | Backend | SEC, INS | Not started |
-| FR-DOC-06 | Patient download (single / all) and expiring share link | P1 | S7 | Both | API, E2E | Not started |
-| FR-DOC-07 | Reception prints released documents | P1 | S7 | Both | E2E | Not started |
+| FR-DOC-04 | Public verification page with minimal data; logged | P1 | S7 | Both | API, SEC | In progress (S7b) |
+| FR-DOC-05 | Encrypted storage in Rwanda; signed links; access logged | P1 | S7 | Backend | SEC, INS | In progress (S7b) |
+| FR-DOC-06 | Patient download (single / all) and expiring share link | P1 | S7 | Both | API, E2E | In progress (S7b) |
+| FR-DOC-07 | Reception prints released documents | P1 | S7 | Both | E2E | In progress (S7b) |
 
 ## FR-BIL · Billing, payments, insurance
 

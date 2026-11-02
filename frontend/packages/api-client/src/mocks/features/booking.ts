@@ -79,6 +79,8 @@ const svc = (
   remote_join: false,
   walk_in: true,
   queue_load: null,
+  waiting: null,
+  wait_range: null,
   next_slot_at: null,
   min_age_months: null,
   max_age_months: null,
@@ -337,6 +339,23 @@ function kigaliDay(offset: number): Date {
   );
 }
 const isoDate = (d: Date) => new Date(d.getTime() + 2 * 3600_000).toISOString().slice(0, 10);
+/**
+ * Mock public queue by load (contract public-pages §2.1): low 2, medium 6, high 11 waiting, one
+ * doctor, 15-minute consultations, the backend's -20 % / +25 % rounded to 5.
+ */
+const MOCK_WAITING = { low: 2, medium: 6, high: 11 } as const;
+const liveQueue = (load: string | null | undefined) => {
+  const waiting =
+    load && load in MOCK_WAITING ? MOCK_WAITING[load as keyof typeof MOCK_WAITING] : 0;
+  const minutes = waiting * 15;
+  return {
+    waiting,
+    wait_range: {
+      min: Math.floor((minutes * 0.8) / 5) * 5,
+      max: Math.max(Math.ceil((minutes * 1.25) / 5) * 5, 5),
+    },
+  };
+};
 const weekday = (d: Date) => (new Date(d.getTime() + 2 * 3600_000).getUTCDay() + 6) % 7;
 /** Mock opening hours, the same the profile shows: Monday to Friday 07:30-17:00, Kigali time. */
 const openNow = (now = new Date()) => {
@@ -902,10 +921,12 @@ export const bookingMocks: FeatureMockFactory = (context) => {
             service_code: s.code,
             service_name_i18n: s.name_i18n,
             accepts_insurance: insurer ? (insurer in f.insurers ? "yes" : "no") : "unknown",
+            insurers: Object.keys(f.insurers).sort(),
             fee_rwf: s.fee_rwf,
             patient_share_rwf: share(s.fee_rwf, insurer ? f.insurers[insurer] : undefined),
             next_slot_at: s.bookable ? nextSlot(f.slug, s.id) : null,
             queue_load: f.load,
+            ...liveQueue(f.load),
             allows_remote_join: s.remote_join,
             referral_hint: insurer === "mutuelle" && f.level_of_care !== "primary",
             lat: f.lat,
@@ -989,6 +1010,7 @@ export const bookingMocks: FeatureMockFactory = (context) => {
                 Object.entries(f.insurers).map(([code, bp]) => [code, share(s.fee_rwf, bp)]),
               ),
               queue_load: f.load,
+              ...liveQueue(f.load),
               next_slot_at: nextSlot(f.slug, s.id),
             }),
           ),

@@ -55,3 +55,5 @@ def test_profile_shows_waiting_count_and_range_without_people(
         if r["slug"] == clinic.slug
     ]
     assert row["waiting"] == 3 and row["wait_range"] == {"min": 35, "max": 60}
+    # the home page cards list the accepted insurers without a second call
+    assert row["insurers"] == sorted(service["insurers"])

@@ -1,0 +1,204 @@
+{
+  "toConfirm": "To confirm",
+  "checker": {
+    "eyebrow": "Symptom checker",
+    "title": "Not sure where to go?",
+    "intro": "Answer a few questions. We suggest how soon to see someone and which kind of care, then show places near you.",
+    "loadFailed": "We could not load the questions. Check your connection and try again.",
+    "dangerTitle": "First: is any of this happening now?",
+    "dangerIntro": "Choose any that apply. If none do, go on.",
+    "unconscious": "Fainting, a fit, or not waking up",
+    "noneOfThese": "None of these",
+    "whoTitle": "Who is this for?",
+    "age": {
+      "infant": "A baby (under 1 year)",
+      "child": "A child (1 to 12)",
+      "teen": "A teenager (13 to 17)",
+      "adult": "An adult (18 to 64)",
+      "older": "An older person (65 or over)"
+    },
+    "pregnant": "She is pregnant",
+    "whatTitle": "What do they feel?",
+    "whatHint": "Choose up to 8.",
+    "longTitle": "For how long?",
+    "duration": {
+      "today": "Since today",
+      "days": "2 to 6 days",
+      "week": "A week or more"
+    },
+    "back": "Back",
+    "next": "Next",
+    "seeAdvice": "See the advice",
+    "failed": "We could not get advice just now. Try again.",
+    "answerEyebrow": "Our suggestion",
+    "urgency": {
+      "today": "See a clinician today",
+      "soon": "Book in the next few days",
+      "self_care": "Care at home for now"
+    },
+    "service": {
+      "general_consultation": "A general consultation at a health centre or clinic.",
+      "paediatric_consultation": "A children's consultation at a health centre or clinic.",
+      "antenatal_care": "Antenatal care, at a health centre or clinic with maternity services.",
+      "dental_care": "A dentist.",
+      "eye_care": "An eye clinic.",
+      "dermatology": "A skin doctor, or a general consultation first."
+    },
+    "reason": {
+      "pregnancy_warning": "In pregnancy, these signs should be checked by a midwife or doctor the same day.",
+      "infant_illness": "Babies get ill quickly; a clinician should see them today.",
+      "fever": "A fever needs a malaria test the same day.",
+      "fluid_loss": "Diarrhoea with vomiting can dry the body out fast.",
+      "long_cough": "A cough of a week or more should be checked, including for TB.",
+      "teeth": "A dentist can see what is causing the pain.",
+      "eyes": "An eye clinic can check what is wrong.",
+      "skin": "A rash is usually not urgent but should be looked at.",
+      "urine": "Pain when passing urine is often an infection that needs treatment.",
+      "self_care": "Rest, drink water and watch how it goes. If it gets worse or lasts a week, book a visit.",
+      "see_clinician": "A clinician can look at this in the next few days.",
+      "safety_age": "For the very young and the elderly we always suggest a visit.",
+      "safety_duration": "Because it has lasted a week, a clinician should see the baby today."
+    },
+    "findPlaces": "See places near me",
+    "selfCareWhen": "Come in sooner if you get a high fever, cannot drink, or feel much worse.",
+    "notSignedOff": "These rules are being reviewed by clinicians before the pilot.",
+    "restart": "Start again",
+    "disclaimer": "This is guidance, not a diagnosis. If you feel very unwell, go to the nearest emergency department or call 912.",
+    "emergencyTitle": "Get help now",
+    "emergencyBody": "Call {{number}} or go to the nearest emergency department. Do not wait for a booking.",
+    "emergencyMore": "What to do in an emergency"
+  },
+  "about": {
+    "eyebrow": "About MediLink",
+    "title": "Care that knows you are coming",
+    "lead": "MediLink connects patients in Rwanda with verified health facilities: find care that takes your insurance, book or join the queue from your phone, and arrive when it is your turn.",
+    "points": {
+      "patients": {
+        "title": "For patients and families",
+        "body": "Search by service, place and insurance, see how busy a facility is, and keep your visits, prescriptions and receipts in one place."
+      },
+      "facilities": {
+        "title": "For health facilities",
+        "body": "Run reception, the queue, consultations, the pharmacy and billing in one system, and let patients find you."
+      },
+      "verified": {
+        "title": "Verified facilities only",
+        "body": "Every facility is checked against its licence before it appears on MediLink."
+      },
+      "rwanda": {
+        "title": "Your data stays in Rwanda",
+        "body": "Health information is encrypted, stored in Rwanda, and opened only by the staff caring for you. You can see who did."
+      }
+    },
+    "whoTitle": "Who runs MediLink",
+    "whoBody": "MediLink Rwanda is operated by [To confirm]. Our registered address, contact details and data protection officer are listed below.",
+    "contact": {
+      "entity": "Operator",
+      "address": "Address",
+      "email": "Email",
+      "phone": "Phone"
+    },
+    "contactValue": {
+      "entity": "[To confirm]",
+      "address": "[To confirm]",
+      "email": "[To confirm]",
+      "phone": "[To confirm]"
+    },
+    "forFacilities": "MediLink for health facilities",
+    "privacy": "How we protect your data"
+  },
+  "emergency": {
+    "eyebrow": "Emergency",
+    "title": "In an emergency, do not wait",
+    "lead": "MediLink is not for emergencies. Call {{number}} or go straight to the nearest emergency department.",
+    "call": "Call for help",
+    "signsTitle": "Danger signs",
+    "signs": {
+      "chest": "Chest pain or pressure",
+      "breathing": "Trouble breathing",
+      "bleeding": "Heavy bleeding",
+      "unconscious": "Fainting, a fit, or not waking up",
+      "stroke": "Sudden weakness on one side of the body or face",
+      "pregnancy": "In pregnancy: bleeding, severe headache or fits",
+      "baby": "A baby that cannot drink or feed, or vomits everything",
+      "injury": "Severe burns or a serious injury"
+    },
+    "goTitle": "Nearest emergency department",
+    "goBody": "District and referral hospitals have emergency departments open day and night. Health centres can stabilise and refer you.",
+    "notForTitle": "What MediLink is for",
+    "notForBody": "Booking visits, joining queues and keeping your records. For anything urgent, call or go now."
+  },
+  "legal": {
+    "eyebrow": "Legal",
+    "draft": "Draft for review: this text is being checked by a lawyer before launch. Parts marked \"To confirm\" are not final.",
+    "summaryTitle": "In short"
+  },
+  "privacy": {
+    "title": "Privacy notice",
+    "summary": "We collect only what is needed to arrange and record your care, keep it encrypted and stored in Rwanda, show it only to the staff caring for you, and let you see, correct and download it.",
+    "sections": {
+      "who": {
+        "title": "Who is responsible",
+        "body": "The operator of MediLink ([To confirm]) and each health facility that cares for you are responsible for your data, under Law No. 058/2021 on the protection of personal data and privacy."
+      },
+      "what": {
+        "title": "What we collect",
+        "body": "Your name, contact details, date of birth, sex, identifiers such as your national ID or insurance number, your bookings and queue tickets, and the records health facilities write about your visits."
+      },
+      "why": {
+        "title": "Why we use it",
+        "body": "To find and book care, run the queue, keep your health records, bill and claim insurance, send you reminders, and keep the service safe. We never sell your data or use it for advertising."
+      },
+      "where": {
+        "title": "Where it is kept",
+        "body": "On servers in Rwanda, encrypted in transit and at rest. Health records can be opened only by staff at a facility that is caring for you, and every opening is logged."
+      },
+      "rights": {
+        "title": "Your rights",
+        "body": "You can see who opened your record, download your data, ask for corrections, and close your account. Facilities must keep medical records for the period the law requires."
+      },
+      "retention": {
+        "title": "How long we keep it",
+        "body": "Medical records are kept as long as the law requires ([To confirm]); other data is deleted or anonymised when no longer needed."
+      },
+      "contact": {
+        "title": "Contact",
+        "body": "Questions or complaints: our data protection officer at [To confirm]. You can also contact the National Cyber Security Authority."
+      }
+    }
+  },
+  "terms": {
+    "title": "Terms of use",
+    "summary": "MediLink helps you find, book and track care. The care itself is given by the health facility. MediLink is not for emergencies and its symptom checker gives guidance, not a diagnosis.",
+    "sections": {
+      "account": {
+        "title": "Your account",
+        "body": "Keep your password private. You may manage profiles for your children and people you care for, and share access with others you trust."
+      },
+      "bookings": {
+        "title": "Bookings and the queue",
+        "body": "Arrive on time or cancel before the deadline. If you arrive late, you are checked in as a walk-in. Bookings you miss without cancelling count as no-shows, and repeated no-shows can limit new bookings for a while."
+      },
+      "emergencies": {
+        "title": "Not for emergencies",
+        "body": "In an emergency call 912 or go to the nearest emergency department."
+      },
+      "guidance": {
+        "title": "Guidance, not diagnosis",
+        "body": "The symptom checker suggests how soon to seek care and which kind. It does not diagnose. Only a clinician can."
+      },
+      "facilities": {
+        "title": "Facilities and care",
+        "body": "Health facilities are independent and responsible for the care they give, their prices and their records."
+      },
+      "fairUse": {
+        "title": "Fair use",
+        "body": "Do not misuse the service, impersonate others or try to access data that is not yours."
+      },
+      "law": {
+        "title": "Liability and law",
+        "body": "[To confirm] These terms are governed by the laws of Rwanda."
+      }
+    }
+  }
+}

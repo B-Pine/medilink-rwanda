@@ -17084,6 +17084,10 @@ components:
             type: string
         accepts_insurance:
           $ref: '#/components/schemas/AcceptsInsuranceEnum'
+        insurers:
+          type: array
+          items:
+            type: string
         fee_rwf:
           type: integer
           nullable: true
@@ -17124,6 +17128,7 @@ components:
       - distance_km
       - district
       - fee_rwf
+      - insurers
       - lat
       - level_of_care
       - lng

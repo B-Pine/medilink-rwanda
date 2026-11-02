@@ -18,6 +18,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Public facility profile and search: each service carries `waiting` (people before the
   consultation) and `wait_range` (the new-arrival estimate reception sees). The profile computes
   them live; search reads the listing (refreshed every 10 minutes). Counts only, never a person.
+- Search results also list the accepted `insurers` codes, so the home page shows them per facility.
 
 
 ### Sprint 5b · Disruptions, follow-ups and the calendar feed

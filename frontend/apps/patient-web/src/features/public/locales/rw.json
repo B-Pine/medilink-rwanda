@@ -1,0 +1,204 @@
+{
+  "toConfirm": "Bizemezwa",
+  "checker": {
+    "eyebrow": "Isuzuma ry'ibimenyetso",
+    "title": "Ntuzi aho wajya?",
+    "intro": "Subiza ibibazo bike. Tukubwira igihe ukwiye kubonana n'umuganga n'ubwoko bw'ubuvuzi, hanyuma tukakwereka aho wajya hafi yawe.",
+    "loadFailed": "Ntitwashoboye kuzana ibibazo. Reba interineti wongere ugerageze.",
+    "dangerTitle": "Mbere na mbere: hari kimwe muri ibi kiri kuba ubu?",
+    "dangerIntro": "Hitamo ibihari. Niba ntacyo, komeza.",
+    "unconscious": "Guta ubwenge, kugagara, cyangwa kudakanguka",
+    "noneOfThese": "Nta na kimwe",
+    "whoTitle": "Ni nde urwaye?",
+    "age": {
+      "infant": "Uruhinja (munsi y'umwaka)",
+      "child": "Umwana (imyaka 1 kugeza 12)",
+      "teen": "Ingimbi cyangwa umwangavu (13 kugeza 17)",
+      "adult": "Umuntu mukuru (18 kugeza 64)",
+      "older": "Umusaza cyangwa umukecuru (65 kuzamura)"
+    },
+    "pregnant": "Aratwite",
+    "whatTitle": "Yumva ate?",
+    "whatHint": "Hitamo kugeza ku 8.",
+    "longTitle": "Bimaze igihe kingana iki?",
+    "duration": {
+      "today": "Kuva uyu munsi",
+      "days": "Iminsi 2 kugeza 6",
+      "week": "Icyumweru cyangwa birenga"
+    },
+    "back": "Subira inyuma",
+    "next": "Komeza",
+    "seeAdvice": "Reba inama",
+    "failed": "Ntitwashoboye kubona inama ubu. Ongera ugerageze.",
+    "answerEyebrow": "Inama yacu",
+    "urgency": {
+      "today": "Bonana n'umuganga uyu munsi",
+      "soon": "Fata gahunda mu minsi mike",
+      "self_care": "Iyiteho mu rugo ubu"
+    },
+    "service": {
+      "general_consultation": "Isuzumwa risanzwe ku kigo nderabuzima cyangwa ivuriro.",
+      "paediatric_consultation": "Isuzumwa ry'abana ku kigo nderabuzima cyangwa ivuriro.",
+      "antenatal_care": "Kwisuzumisha utwite, ku kigo gifite serivisi y'ababyeyi.",
+      "dental_care": "Muganga w'amenyo.",
+      "eye_care": "Ivuriro ry'amaso.",
+      "dermatology": "Muganga w'uruhu, cyangwa isuzumwa risanzwe mbere."
+    },
+    "reason": {
+      "pregnancy_warning": "Mu gihe utwite, ibi bimenyetso bigomba kurebwa n'umubyaza cyangwa muganga uwo munsi.",
+      "infant_illness": "Impinja zirwara vuba; umuganga agomba kuzibona uyu munsi.",
+      "fever": "Umuriro ukeneye gupimwa malariya uwo munsi.",
+      "fluid_loss": "Gucibwamo no kuruka bishobora gukamya umubiri vuba.",
+      "long_cough": "Inkorora imaze icyumweru cyangwa irenga igomba gusuzumwa, harimo n'igituntu.",
+      "teeth": "Muganga w'amenyo yabona icyateye ububabare.",
+      "eyes": "Ivuriro ry'amaso ryasuzuma ikibazo.",
+      "skin": "Ibiheri ku ruhu akenshi si ibyihutirwa ariko bikwiye kurebwa.",
+      "urine": "Kubabara wihagarika akenshi ni indwara ikeneye kuvurwa.",
+      "self_care": "Ruhuka, unywe amazi kandi ukurikirane. Nibikomera cyangwa bikamara icyumweru, fata gahunda.",
+      "see_clinician": "Umuganga yabireba mu minsi mike.",
+      "safety_age": "Ku bana bato cyane n'abasaza, buri gihe tugira inama yo kujya kwa muganga.",
+      "safety_duration": "Kubera ko bimaze icyumweru, umuganga agomba kubona uruhinja uyu munsi."
+    },
+    "findPlaces": "Reba aho wajya hafi yanjye",
+    "selfCareWhen": "Jya kwa muganga vuba niba ufite umuriro mwinshi, udashobora kunywa, cyangwa urushijeho kuremba.",
+    "notSignedOff": "Aya mategeko arimo gusuzumwa n'abaganga mbere y'igerageza.",
+    "restart": "Ongera utangire",
+    "disclaimer": "Iyi ni inama, si isuzuma rya muganga. Niba urembye cyane, jya ku bitaro byihutirwa bikwegereye cyangwa uhamagare 912.",
+    "emergencyTitle": "Shaka ubufasha ubu",
+    "emergencyBody": "Hamagara {{number}} cyangwa ujye ku bitaro byihutirwa bikwegereye. Ntutegereze gahunda.",
+    "emergencyMore": "Icyo wakora mu gihe cy'ibyihutirwa"
+  },
+  "about": {
+    "eyebrow": "Ibyerekeye MediLink",
+    "title": "Ubuvuzi bukwiteguye",
+    "lead": "MediLink ihuza abarwayi mu Rwanda n'ibigo by'ubuvuzi byemejwe: shaka ubuvuzi bwemera ubwishingizi bwawe, fata gahunda cyangwa ujye ku murongo uri kuri telefoni, ugere aho igihe cyawe kigeze.",
+    "points": {
+      "patients": {
+        "title": "Ku barwayi n'imiryango",
+        "body": "Shaka ukurikije serivisi, ahantu n'ubwishingizi, urebe uko ikigo cyuzuye, kandi ubike gahunda zawe, imiti n'inyemezabwishyu ahantu hamwe."
+      },
+      "facilities": {
+        "title": "Ku bigo by'ubuvuzi",
+        "body": "Kora ibyakira abarwayi, umurongo, isuzumwa, farumasi n'ubwishyu muri sisitemu imwe, abarwayi bakakubona."
+      },
+      "verified": {
+        "title": "Ibigo byemejwe gusa",
+        "body": "Buri kigo kigenzurwa hakurikijwe uruhushya rwacyo mbere yo kugaragara kuri MediLink."
+      },
+      "rwanda": {
+        "title": "Amakuru yawe aguma mu Rwanda",
+        "body": "Amakuru y'ubuzima arinzwe, abikwa mu Rwanda, kandi afungurwa n'abakuvura gusa. Ushobora kureba uwayafunguye."
+      }
+    },
+    "whoTitle": "Abayobora MediLink",
+    "whoBody": "MediLink Rwanda iyobowe na [To confirm]. Aderesi yacu, uko wadusanga n'ushinzwe kurinda amakuru biri hasi.",
+    "contact": {
+      "entity": "Uyiyobora",
+      "address": "Aderesi",
+      "email": "Imeyili",
+      "phone": "Telefoni"
+    },
+    "contactValue": {
+      "entity": "[To confirm]",
+      "address": "[To confirm]",
+      "email": "[To confirm]",
+      "phone": "[To confirm]"
+    },
+    "forFacilities": "MediLink ku bigo by'ubuvuzi",
+    "privacy": "Uko turinda amakuru yawe"
+  },
+  "emergency": {
+    "eyebrow": "Ibyihutirwa",
+    "title": "Mu gihe cy'ibyihutirwa, ntutegereze",
+    "lead": "MediLink si iy'ibyihutirwa. Hamagara {{number}} cyangwa ujye ako kanya ku bitaro byihutirwa bikwegereye.",
+    "call": "Saba ubufasha",
+    "signsTitle": "Ibimenyetso by'akaga",
+    "signs": {
+      "chest": "Kubabara cyangwa kuremererwa mu gatuza",
+      "breathing": "Guhumeka bigoranye",
+      "bleeding": "Kuva amaraso menshi",
+      "unconscious": "Guta ubwenge, kugagara, cyangwa kudakanguka",
+      "stroke": "Gucika intege mu buryo butunguranye ku ruhande rumwe rw'umubiri cyangwa mu maso",
+      "pregnancy": "Mu gihe utwite: kuva amaraso, kurwara umutwe cyane cyangwa kugagara",
+      "baby": "Uruhinja rudashobora konka cyangwa kunywa, cyangwa ruruka byose",
+      "injury": "Ubushye bukabije cyangwa gukomereka bikomeye"
+    },
+    "goTitle": "Ibitaro byihutirwa bikwegereye",
+    "goBody": "Ibitaro by'akarere n'ibyo kohererezwamo bifite serivisi z'ibyihutirwa amanywa n'ijoro. Ibigo nderabuzima bishobora kugufasha no kukohereza.",
+    "notForTitle": "Icyo MediLink ikorera",
+    "notForBody": "Gufata gahunda, kujya ku murongo no kubika amakuru yawe. Ku byihutirwa byose, hamagara cyangwa ujyeyo ubu."
+  },
+  "legal": {
+    "eyebrow": "Amategeko",
+    "draft": "Inyandiko itaranozwa: iri suzumwa n'umunyamategeko mbere yo gutangira. Ibice byanditseho \"Bizemezwa\" ntibirarangira.",
+    "summaryTitle": "Muri make"
+  },
+  "privacy": {
+    "title": "Itangazo ry'ibanga",
+    "summary": "Dukusanya gusa ibikenewe mu gutegura no kwandika ubuvuzi bwawe, tubirinda kandi tubibika mu Rwanda, tubyereka abakuvura gusa, kandi ushobora kubireba, kubikosora no kubikuramo.",
+    "sections": {
+      "who": {
+        "title": "Who is responsible",
+        "body": "The operator of MediLink ([To confirm]) and each health facility that cares for you are responsible for your data, under Law No. 058/2021 on the protection of personal data and privacy."
+      },
+      "what": {
+        "title": "What we collect",
+        "body": "Your name, contact details, date of birth, sex, identifiers such as your national ID or insurance number, your bookings and queue tickets, and the records health facilities write about your visits."
+      },
+      "why": {
+        "title": "Why we use it",
+        "body": "To find and book care, run the queue, keep your health records, bill and claim insurance, send you reminders, and keep the service safe. We never sell your data or use it for advertising."
+      },
+      "where": {
+        "title": "Where it is kept",
+        "body": "On servers in Rwanda, encrypted in transit and at rest. Health records can be opened only by staff at a facility that is caring for you, and every opening is logged."
+      },
+      "rights": {
+        "title": "Your rights",
+        "body": "You can see who opened your record, download your data, ask for corrections, and close your account. Facilities must keep medical records for the period the law requires."
+      },
+      "retention": {
+        "title": "How long we keep it",
+        "body": "Medical records are kept as long as the law requires ([To confirm]); other data is deleted or anonymised when no longer needed."
+      },
+      "contact": {
+        "title": "Contact",
+        "body": "Questions or complaints: our data protection officer at [To confirm]. You can also contact the National Cyber Security Authority."
+      }
+    }
+  },
+  "terms": {
+    "title": "Amabwiriza yo gukoresha",
+    "summary": "MediLink igufasha gushaka, gufata gahunda no gukurikirana ubuvuzi. Ubuvuzi butangwa n'ikigo cy'ubuvuzi. MediLink si iy'ibyihutirwa kandi isuzuma ry'ibimenyetso ritanga inama, si isuzuma rya muganga.",
+    "sections": {
+      "account": {
+        "title": "Your account",
+        "body": "Keep your password private. You may manage profiles for your children and people you care for, and share access with others you trust."
+      },
+      "bookings": {
+        "title": "Bookings and the queue",
+        "body": "Arrive on time or cancel before the deadline. If you arrive late, you are checked in as a walk-in. Bookings you miss without cancelling count as no-shows, and repeated no-shows can limit new bookings for a while."
+      },
+      "emergencies": {
+        "title": "Not for emergencies",
+        "body": "In an emergency call 912 or go to the nearest emergency department."
+      },
+      "guidance": {
+        "title": "Guidance, not diagnosis",
+        "body": "The symptom checker suggests how soon to seek care and which kind. It does not diagnose. Only a clinician can."
+      },
+      "facilities": {
+        "title": "Facilities and care",
+        "body": "Health facilities are independent and responsible for the care they give, their prices and their records."
+      },
+      "fairUse": {
+        "title": "Fair use",
+        "body": "Do not misuse the service, impersonate others or try to access data that is not yours."
+      },
+      "law": {
+        "title": "Liability and law",
+        "body": "[To confirm] These terms are governed by the laws of Rwanda."
+      }
+    }
+  }
+}

@@ -46,6 +46,8 @@ Added to each service in `GET /public/facilities/{slug}/` and to each result of 
 
 Both come from the public listing that already holds `queue_load` and are refreshed with it. No ticket numbers, names or per-person data, ever.
 
+Each P1 result also carries `insurers`: the codes of the insurers the facility accepts for that service, sorted. The home page shows them on each nearby facility without a second call.
+
 ### 2.2 P5 `POST /public/triage/`
 
 Request:

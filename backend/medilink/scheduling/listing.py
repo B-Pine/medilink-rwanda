@@ -320,6 +320,7 @@ def search(query: Query) -> dict[str, Any]:
                 "service_code": row.service_code,
                 "service_name_i18n": row.service_name_i18n,
                 "accepts_insurance": _accepts(row, query.insurer_code),
+                "insurers": sorted(row.insurers or {}),
                 "fee_rwf": row.fee_rwf,
                 "patient_share_rwf": _share(row, query.insurer_code),
                 "next_slot_at": row.next_slot_at,

@@ -55,6 +55,8 @@ class FacilitySearchResultSerializer(serializers.Serializer):
     service_code = serializers.CharField()
     service_name_i18n = I18nField()
     accepts_insurance = serializers.ChoiceField(choices=["yes", "no", "unknown"])
+    # contract PT §2.1: accepted insurer codes, for the home page cards
+    insurers = serializers.ListField(child=serializers.CharField())
     fee_rwf = serializers.IntegerField(allow_null=True)
     patient_share_rwf = serializers.IntegerField(allow_null=True)
     next_slot_at = serializers.DateTimeField(allow_null=True)

@@ -42,5 +42,9 @@ def dispatch(event: str, **ids: Any) -> None:
         from medilink.onboarding.tasks import send_notification
 
         send_notification.delay(event, payload)
+        if event == "facility_application.submitted":  # S1-I6: in-app for platform admins (S9b)
+            from medilink.notifications import wiring
+
+            wiring.application_submitted(payload["application_id"])
 
     transaction.on_commit(_send)

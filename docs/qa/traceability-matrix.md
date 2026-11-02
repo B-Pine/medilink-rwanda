@@ -252,7 +252,7 @@ Source: [09 · Notifications](../analysis/09-notifications-and-communication.md)
 | FR-NOT-04 | Email notifications with documents and calendar files | P1 | S9 | Backend | API | In progress |
 | FR-NOT-05 | Priority levels, quiet hours, fallback rules | P1 | S9 | Backend | BR | In progress |
 | FR-NOT-06 | Patient, staff and facility preferences | P1 | S9 | Both | API, CMP | In progress |
-| FR-NOT-07 | Notification catalogue (analysis 09 §4) | P1 | S9 | Both | API, INS | In progress |
+| FR-NOT-07 | Notification catalogue (analysis 09 §4) | P1 | S9, S9b | Both | API, INS | In progress |
 | FR-NOT-08 | Guardians receive dependents' notifications | P1 | S9 | Backend | BR | In progress |
 | FR-NOT-09 | Trilingual versioned templates; no clinical details | P1 | S9 | Backend | UT, INS | In progress |
 | FR-NOT-10 | Delivery log with status and failures; retries | P1 | S9 | Backend | API | In progress |

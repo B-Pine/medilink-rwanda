@@ -1,0 +1,376 @@
+"""Wave 6 part A catalogue events (contract sprint-09 §11, analysis 09 §4).
+
+Texts are neutral ("a visit", not "your visit") because guardians receive their dependants'
+notices with the same template. No clinical words: no service, medicine or diagnosis names.
+Kinyarwanda drafts need native-speaker review before go-live (#11).
+"""
+
+from __future__ import annotations
+
+from datetime import timedelta
+
+from medilink.notifications.registry import EventDefinition, Placeholder, Text
+
+P = Placeholder
+
+BOOKING_CONFIRMED = "scheduling.booking.confirmed"
+BOOKING_CANCELLED = "scheduling.booking.cancelled"
+BOOKING_CHANGED = "scheduling.booking.changed"
+BOOKING_NO_SHOW = "scheduling.booking.no_show"
+TICKET_CALLED = "queue.ticket.called"
+TICKET_ALMOST = "queue.ticket.almost"
+TICKET_PASS_OVER = "queue.ticket.pass_over"  # noqa: S105 (an event name)
+RX_READY = "pharmacy.prescription.ready"
+RX_DISPENSED = "pharmacy.prescription.dispensed"
+RX_TO_DISPENSE = "pharmacy.prescription.to_dispense"
+RX_QUERY = "pharmacy.query.raised"
+DOCUMENT_READY = "documents.document.ready"
+APPLICATION_SUBMITTED = "onboarding.application.submitted"
+MERGE_REQUESTED = "patients.merge.requested"
+
+
+def _texts(
+    channels: tuple[str, ...], by_language: dict[str, tuple[str, str]]
+) -> dict[tuple[str, str, str], Text]:
+    return {
+        (channel, language, "self"): Text(subject, body)
+        for channel in channels
+        for language, (subject, body) in by_language.items()
+    }
+
+
+PATIENT_ALL = ("in_app", "web_push", "email")
+PATIENT_LIVE = ("in_app", "web_push")
+WHEN = {"facility_name": P.FACILITY_NAME, "date": P.DATE, "time": P.TIME}
+
+T_CONFIRMED = {
+    "rw": (
+        "Gahunda yemejwe",
+        "Gahunda yo kwivuza kuri $facility_name yemejwe ku wa $date saa $time.",
+    ),
+    "en": ("Booking confirmed", "A visit at $facility_name is booked for $date at $time."),
+    "fr": ("Rendez-vous confirmé", "Une visite à $facility_name est réservée le $date à $time."),
+}
+T_CANCELLED = {
+    "rw": (
+        "Gahunda yahagaritswe",
+        "$facility_name yahagaritse gahunda yo ku wa $date saa $time. Fungura MediLink ufate "
+        "indi saha.",
+    ),
+    "en": (
+        "Booking cancelled",
+        "$facility_name cancelled the visit on $date at $time. Open MediLink to book another time.",
+    ),
+    "fr": (
+        "Rendez-vous annulé",
+        "$facility_name a annulé la visite du $date à $time. Ouvrez MediLink pour choisir une "
+        "autre heure.",
+    ),
+}
+T_CHANGED = {
+    "rw": (
+        "Gahunda yahinduwe",
+        "$facility_name yahinduye gahunda: ubu ni ku wa $date saa $time. Fungura MediLink "
+        "wemeze cyangwa uhitemo indi saha.",
+    ),
+    "en": (
+        "Booking changed",
+        "$facility_name changed a visit: it is now on $date at $time. Open MediLink to keep it "
+        "or choose another time.",
+    ),
+    "fr": (
+        "Rendez-vous modifié",
+        "$facility_name a modifié une visite : elle est maintenant le $date à $time. Ouvrez "
+        "MediLink pour la garder ou choisir une autre heure.",
+    ),
+}
+T_NO_SHOW = {
+    "rw": (
+        "Gahunda itubahirijwe",
+        "Ntimwaje kuri gahunda yo kuri $facility_name ku wa $date. Iyo bibaye kenshi, gufata "
+        "gahunda kuri interineti bihagarara igihe gito.",
+    ),
+    "en": (
+        "Missed visit recorded",
+        "Nobody came to the visit at $facility_name on $date. After several missed visits, "
+        "online booking pauses for a while.",
+    ),
+    "fr": (
+        "Visite manquée enregistrée",
+        "Personne n'est venu à la visite à $facility_name le $date. Après plusieurs visites "
+        "manquées, la réservation en ligne est suspendue un moment.",
+    ),
+}
+T_CALLED = {
+    "rw": ("Igihe kirageze: $room", "Tike $ticket_number: genda kuri $room ubu."),
+    "en": ("It's your turn: $room", "Ticket $ticket_number: please go to $room now."),
+    "fr": ("C'est votre tour : $room", "Ticket $ticket_number : allez à $room maintenant."),
+}
+T_ALMOST = {
+    "rw": (
+        "Hasigaye abantu $count",
+        "Tike $ticket_number: hasigaye abantu $count imbere yawe kuri $facility_name. Guma hafi.",
+    ),
+    "en": (
+        "$count people before you",
+        "Ticket $ticket_number: $count people before you at $facility_name. Please stay close.",
+    ),
+    "fr": (
+        "$count personnes avant vous",
+        "Ticket $ticket_number : $count personnes avant vous à $facility_name. Restez à proximité.",
+    ),
+}
+T_PASS_OVER = {
+    "rw": (
+        "Emeza ko uhari",
+        "Tike $ticket_number igeze imbere kuri $facility_name. Emeza ko uhari bitaba ibyo "
+        "isubizwe inyuma.",
+    ),
+    "en": (
+        "Confirm you are here",
+        "Ticket $ticket_number is near the front at $facility_name. Confirm you are here or it "
+        "moves back.",
+    ),
+    "fr": (
+        "Confirmez que vous êtes là",
+        "Le ticket $ticket_number approche du début de la file à $facility_name. Confirmez que "
+        "vous êtes là, sinon il recule.",
+    ),
+}
+T_RX_READY = {
+    "rw": ("Imiti iriteguye", "Resept yiteguye kuri farumasi ya $facility_name."),
+    "en": ("Medicines ready", "A prescription is ready at the $facility_name pharmacy."),
+    "fr": ("Médicaments prêts", "Une ordonnance est prête à la pharmacie de $facility_name."),
+}
+T_RX_DISPENSED = {
+    "rw": (
+        "Farumasi yanditse imiti yatanzwe",
+        "Farumasi ya $facility_name yanditse imiti yatanze. Reba Imiti yanjye umenye ibisigaye "
+        "kugurwa hanze.",
+    ),
+    "en": (
+        "The pharmacy recorded the medicines",
+        "The $facility_name pharmacy recorded what it gave. Open My medicines to see anything "
+        "left to buy outside.",
+    ),
+    "fr": (
+        "La pharmacie a enregistré les médicaments",
+        "La pharmacie de $facility_name a enregistré ce qu'elle a donné. Ouvrez Mes médicaments "
+        "pour voir ce qui reste à acheter ailleurs.",
+    ),
+}
+T_TO_DISPENSE = {
+    "rw": ("Resept nshya", "Resept nshya itegereje gutangwa kuri farumasi."),
+    "en": ("New prescription to dispense", "A new prescription is waiting at the pharmacy."),
+    "fr": ("Nouvelle ordonnance à délivrer", "Une nouvelle ordonnance attend à la pharmacie."),
+}
+T_QUERY = {
+    "rw": (
+        "Ikibazo cya farumasi",
+        "Umufarumasiye yabajije ikibazo kuri resept wasinye. Yifungure usubize.",
+    ),
+    "en": (
+        "Question from the pharmacy",
+        "The pharmacist asked about a prescription you signed. Open it to answer.",
+    ),
+    "fr": (
+        "Question de la pharmacie",
+        "Le pharmacien a posé une question sur une ordonnance que vous avez signée. Ouvrez-la "
+        "pour répondre.",
+    ),
+}
+T_DOCUMENT = {
+    "rw": (
+        "Inyandiko nshya iriteguye",
+        "$facility_name yasinye inyandiko nshya. Fungura Inyandiko zanjye uyikuremo.",
+    ),
+    "en": (
+        "New document ready",
+        "$facility_name signed a new document. Open My documents to download it.",
+    ),
+    "fr": (
+        "Nouveau document prêt",
+        "$facility_name a signé un nouveau document. Ouvrez Mes documents pour le télécharger.",
+    ),
+}
+T_APPLICATION = {
+    "rw": ("Ubusabe bushya bw'ivuriro", "$facility_name yasabye kwinjira muri MediLink."),
+    "en": ("New facility application", "$facility_name applied to join MediLink."),
+    "fr": ("Nouvelle demande d'établissement", "$facility_name a demandé à rejoindre MediLink."),
+}
+T_MERGE = {
+    "rw": (
+        "Gusaba guhuza amadosiye",
+        "Ivuriro ryasabye guhuza amadosiye abiri y'umurwayi. Bisuzume.",
+    ),
+    "en": ("Merge request to review", "A facility asked to merge two patient records. Review it."),
+    "fr": (
+        "Demande de fusion à examiner",
+        "Un établissement a demandé de fusionner deux dossiers patient. Examinez-la.",
+    ),
+}
+
+EVENTS: list[EventDefinition] = [
+    EventDefinition(
+        type=BOOKING_CONFIRMED,
+        audience="patient",
+        priority="important",
+        channels=PATIENT_ALL,
+        placeholders=WHEN,
+        data_keys=frozenset({"booking_id"}),
+        action_path="/visits",
+        dedupe="{type}:{booking_id}",
+        templates=_texts(PATIENT_ALL, T_CONFIRMED),
+    ),
+    EventDefinition(
+        type=BOOKING_CANCELLED,
+        audience="patient",
+        priority="important",
+        channels=PATIENT_ALL,
+        placeholders=WHEN,
+        data_keys=frozenset({"booking_id"}),
+        action_path="/visits",
+        dedupe="{type}:{booking_id}",
+        templates=_texts(PATIENT_ALL, T_CANCELLED),
+    ),
+    EventDefinition(
+        type=BOOKING_CHANGED,
+        audience="patient",
+        priority="important",
+        channels=PATIENT_ALL,
+        placeholders=WHEN,
+        data_keys=frozenset({"booking_id"}),
+        action_path="/visits",
+        dedupe="{type}:{booking_id}:{date}:{time}",
+        templates=_texts(PATIENT_ALL, T_CHANGED),
+    ),
+    EventDefinition(
+        type=BOOKING_NO_SHOW,
+        audience="patient",
+        priority="important",
+        channels=("in_app", "email"),
+        placeholders={"facility_name": P.FACILITY_NAME, "date": P.DATE},
+        data_keys=frozenset({"booking_id"}),
+        action_path="/visits",
+        dedupe="{type}:{booking_id}",
+        templates=_texts(("in_app", "email"), T_NO_SHOW),
+    ),
+    EventDefinition(
+        type=TICKET_CALLED,
+        audience="patient",
+        priority="critical",
+        channels=PATIENT_LIVE,
+        placeholders={"ticket_number": P.TICKET_NUMBER, "room": P.ROOM},
+        data_keys=frozenset({"ticket_id", "visit_id"}),
+        action_path="/visits/{visit_id}",
+        dedupe="{type}:{ticket_id}:{room}",
+        ttl=timedelta(minutes=30),
+        templates=_texts(PATIENT_LIVE, T_CALLED),
+    ),
+    EventDefinition(
+        type=TICKET_ALMOST,
+        audience="patient",
+        priority="critical",
+        channels=PATIENT_LIVE,
+        placeholders={
+            "ticket_number": P.TICKET_NUMBER,
+            "count": P.COUNT,
+            "facility_name": P.FACILITY_NAME,
+        },
+        data_keys=frozenset({"ticket_id", "visit_id"}),
+        action_path="/visits/{visit_id}",
+        dedupe="{type}:{ticket_id}",
+        ttl=timedelta(hours=1),
+        templates=_texts(PATIENT_LIVE, T_ALMOST),
+    ),
+    EventDefinition(
+        type=TICKET_PASS_OVER,
+        audience="patient",
+        priority="critical",
+        channels=PATIENT_LIVE,
+        placeholders={"ticket_number": P.TICKET_NUMBER, "facility_name": P.FACILITY_NAME},
+        data_keys=frozenset({"ticket_id", "visit_id"}),
+        action_path="/visits/{visit_id}",
+        dedupe="{type}:{ticket_id}",
+        ttl=timedelta(minutes=30),
+        templates=_texts(PATIENT_LIVE, T_PASS_OVER),
+    ),
+    EventDefinition(
+        type=RX_READY,
+        audience="patient",
+        priority="important",
+        channels=PATIENT_LIVE,
+        placeholders={"facility_name": P.FACILITY_NAME},
+        data_keys=frozenset({"prescription_id"}),
+        action_path="/medicines/{prescription_id}",
+        dedupe="{type}:{prescription_id}",
+        templates=_texts(PATIENT_LIVE, T_RX_READY),
+    ),
+    EventDefinition(
+        type=RX_DISPENSED,
+        audience="patient",
+        priority="routine",
+        channels=("in_app",),
+        placeholders={"facility_name": P.FACILITY_NAME},
+        data_keys=frozenset({"prescription_id", "record_id"}),
+        action_path="/medicines/{prescription_id}",
+        dedupe="{type}:{record_id}",
+        templates=_texts(("in_app",), T_RX_DISPENSED),
+    ),
+    EventDefinition(
+        type=RX_TO_DISPENSE,
+        audience="staff",
+        priority="routine",
+        channels=("in_app",),
+        data_keys=frozenset({"prescription_id"}),
+        action_path="/pharmacy/prescriptions/{prescription_id}",
+        dedupe="{type}:{prescription_id}",
+        rate_limit=(200, timedelta(hours=1)),
+        templates=_texts(("in_app",), T_TO_DISPENSE),
+    ),
+    EventDefinition(
+        type=RX_QUERY,
+        audience="staff",
+        priority="important",
+        channels=("in_app",),
+        data_keys=frozenset({"query_id", "consultation_id"}),
+        action_path="/clinical/consultations/{consultation_id}",
+        dedupe="{type}:{query_id}",
+        rate_limit=(50, timedelta(hours=1)),
+        templates=_texts(("in_app",), T_QUERY),
+    ),
+    EventDefinition(
+        type=DOCUMENT_READY,
+        audience="patient",
+        priority="important",
+        channels=("in_app", "email"),
+        placeholders={"facility_name": P.FACILITY_NAME},
+        data_keys=frozenset({"document_id"}),
+        action_path="/documents/{document_id}",
+        dedupe="{type}:{document_id}",
+        templates=_texts(("in_app", "email"), T_DOCUMENT),
+    ),
+    EventDefinition(
+        type=APPLICATION_SUBMITTED,
+        audience="staff",
+        priority="important",
+        channels=("in_app", "email"),
+        placeholders={"facility_name": P.FACILITY_NAME},
+        data_keys=frozenset({"application_id"}),
+        action_path="/platform/applications/{application_id}",
+        dedupe="{type}:{application_id}",
+        rate_limit=(200, timedelta(hours=1)),
+        templates=_texts(("in_app", "email"), T_APPLICATION),
+    ),
+    EventDefinition(
+        type=MERGE_REQUESTED,
+        audience="staff",
+        priority="important",
+        channels=("in_app",),
+        data_keys=frozenset({"merge_id"}),
+        action_path="/platform/merge-requests",
+        dedupe="{type}:{merge_id}",
+        rate_limit=(200, timedelta(hours=1)),
+        templates=_texts(("in_app",), T_MERGE),
+    ),
+]

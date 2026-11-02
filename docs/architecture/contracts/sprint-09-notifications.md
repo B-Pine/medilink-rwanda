@@ -507,3 +507,30 @@ Wave 1 rule: S1 and S3 don't import `medilink.notifications`, and S9 imports nei
 | S9-D7 | Settings are read from Django settings first, then the environment (`conf.py`); `.env.example` documents them | §3.2 configuration | `base.py` has no top-level `[S9]` block; tests override through settings |
 | S9-D8 | Push subscribe returns `422 business_rule_violation` while push is disabled (no VAPID keys) | §3.3 POST push-subscriptions | The client hides opt-in when `is_enabled` is false; the server refuses instead of storing an unusable row |
 | S9-D9 | Platform announcements reach active members of `live` and `setup` facilities | §3.1 "all active members" | Facilities in setup already have staff who need platform notices |
+
+## 11. Wave 6 part A: catalogue wiring (S9b)
+
+The catalogue events of [analysis 09](../../analysis/09-notifications-and-communication.md#4-notification-catalogue) §4 for the modules built so far. Billing (S8) and disputes (S10 part 2) wire their own events in their sprints.
+
+**How.** The domain modules send Django signals after commit (most already exist; S9b adds `prescription_ready`, `prescription_dispensed`, `query_raised` in `pharmacy`, `document_generated` in `documents`, `application_submitted` in `onboarding` and `merge_requested` in `patients`, each a one-line `on_commit` send). `medilink.notifications.wiring` connects one receiver per signal. A receiver loads the rows it needs in the facility's RLS context and calls `notify()` there. A receiver never raises: a failure is logged and the domain change stands. The events live in `medilink/notifications/wiring_events.py`, registered with the S9 registry like every other event; no template carries clinical content (S9-B12 checks them).
+
+| Event type | Signal (module) | To | Priority | Channels | Placeholders |
+|---|---|---|---|---|---|
+| `scheduling.booking.confirmed` | `booking_confirmed` (S5) | Patient (and guardians) | important | in-app, push, email | facility name, date, time |
+| `scheduling.booking.cancelled` | `booking_cancelled` (S5), staff cancellations only | Patient | critical when today, else important | in-app, push, email | facility name, date, time |
+| `scheduling.booking.changed` | `booking_changed_by_facility` (S5b) | Patient | critical when today, else important | in-app, push, email | facility name, date, time |
+| `scheduling.booking.no_show` | `no_show_recorded` (S5) | Patient | important | in-app, email | facility name, date |
+| `queue.ticket.called` | `on_ticket_event` with `call` (S4) | Patient | critical (TTL 30 min) | in-app, push | ticket number, room |
+| `queue.ticket.almost` | `on_ticket_event` with `call`: the ticket with 3 people ahead in the same queue | Patient | critical | in-app, push | ticket number, count, facility name |
+| `queue.ticket.pass_over` | `ticket_pass_over_warning` (S5) | Patient | critical | in-app, push | ticket number, facility name |
+| `pharmacy.prescription.ready` | `prescription_ready` (issue or covered, status ready) | Patient | important | in-app, push | facility name |
+| `pharmacy.prescription.dispensed` | `prescription_dispensed` | Patient | routine | in-app | facility name |
+| `pharmacy.prescription.to_dispense` | `prescription_ready` | Facility staff with `pharmacy.dispense` | routine | in-app | — |
+| `pharmacy.query.raised` | `query_raised` | The prescriber | important | in-app | — |
+| `documents.document.ready` | `document_generated` (letters, requests, sick notes; the prescription has its own notice) | Patient | important | in-app, email | facility name |
+| `onboarding.application.submitted` | `application_submitted` (S1) | Platform admins | important | in-app, email | facility name |
+| `patients.merge.requested` | `merge_requested` (S3) | Platform admins | important | in-app | — |
+
+"3 people ahead" is the analysis default; a facility setting comes with the settings screens. Dedupe keys are per booking, ticket, prescription, document, application or merge, so a repeated signal never sends twice.
+
+**Acceptance (S9b).** S9b-B1: every event above is registered with rw/en/fr texts and passes the registry checks (E001–E004). S9b-B2: each signal produces its notification for the right recipients, guardians included, and nothing for walk-ins without an account. S9b-B3: a receiver failure never breaks the domain change. S9b-B4: no event reaches another facility's staff.

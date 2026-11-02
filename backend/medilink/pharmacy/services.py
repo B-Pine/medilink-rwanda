@@ -24,6 +24,7 @@ from medilink.facilities.settings_schema import with_defaults
 from medilink.masterdata.models import Drug
 from medilink.patients.crypto.fields import decrypt, encrypt
 from medilink.patients.errors import FieldRule
+from medilink.pharmacy import signals
 from medilink.pharmacy.models import (
     OPEN_ITEM,
     PER_DAY,
@@ -412,7 +413,15 @@ def issue(consultation: Consultation, *, request: Any) -> Prescription | None:
         status=prescription.status,
     )
     documents.for_prescription(prescription, request=request)  # S7b: PDF with a QR code
+    if prescription.status == PrescriptionStatus.READY:
+        _signal_ready(prescription)
     return prescription
+
+
+def _signal_ready(prescription: Prescription) -> None:
+    """S9b: the patient and the pharmacy hear that it is ready (after commit)."""
+    ids = {"prescription_id": prescription.pk, "facility_id": prescription.facility_id}
+    transaction.on_commit(lambda: signals.prescription_ready.send(sender=Prescription, **ids))
 
 
 def mark_covered(prescription_id: Any, *, request: Any = None) -> Prescription:
@@ -428,6 +437,7 @@ def mark_covered(prescription_id: Any, *, request: Any = None) -> Prescription:
             )
             _bump(prescription)
             _audit("pharmacy.prescription.covered", request, prescription)
+            _signal_ready(prescription)
     return prescription
 
 
@@ -700,6 +710,14 @@ def dispense(
             outcomes=sorted({line.outcome for _i, line, _q, _s in prepared}),
             controlled=controlled_confirmed,
         )
+        ids = {
+            "prescription_id": prescription.pk,
+            "record_id": record_row.pk,
+            "facility_id": prescription.facility_id,
+        }
+        transaction.on_commit(
+            lambda: signals.prescription_dispensed.send(sender=Prescription, **ids)
+        )
     return prescription
 
 
@@ -736,6 +754,12 @@ def raise_query(
         )
         query.save()
         _audit("pharmacy.query.raised", request, prescription, query_id=str(query.pk))
+        ids = {
+            "query_id": query.pk,
+            "prescription_id": prescription.pk,
+            "facility_id": prescription.facility_id,
+        }
+        transaction.on_commit(lambda: signals.query_raised.send(sender=PrescriptionQuery, **ids))
     return query
 
 

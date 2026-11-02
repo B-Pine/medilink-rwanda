@@ -41,4 +41,8 @@ class NotificationsConfig(AppConfig):
             dispatch_uid="notifications.audit_entry",
         )
         post_migrate.connect(templates.sync_defaults, sender=self, weak=False)
+        # Wave 6 part A (contract §11): domain signals to notify()
+        from medilink.notifications import wiring
+
+        wiring.connect()
         app.conf.beat_schedule = {**(app.conf.beat_schedule or {}), **BEAT_SCHEDULE}

@@ -66,3 +66,12 @@ mocks in `frontend/packages/api-client/src/mocks/s9.test.ts`, ui in
 ## Decisions
 
 See the contract §10 (S9-D1 … S9-D9).
+
+## S9b: catalogue wiring (contract §11)
+
+| # | Check | Evidence | Verified by | Date | Result |
+|---|---|---|---|---|---|
+| S9b-B1 | Every wired event registered with rw/en/fr texts; registry checks E001–E004 pass | `test_every_wired_event_is_registered_with_three_languages`; `manage.py check` clean | | | Pending |
+| S9b-B2 | Each signal reaches the right recipients | `test_booking_confirmed_and_staff_cancellation` (patient-cancelled sends nothing), `test_pharmacy_and_document_notices` (patient, pharmacists, prescriber; no medicine names), `test_call_tells_the_patient_where_to_go` (critical, room in the title) | | | Pending |
+| S9b-B3 | A receiver failure never breaks the domain change | `test_receivers_never_raise_and_platform_events_reach_admins` | | | Pending |
+| S9b-B4 | No event reaches another facility's staff | Staff recipients resolve with `Recipients.facility_staff(facility_id, permission=…)` or the prescriber's own account; S9-B2 tests cover the resolver | | | Pending |

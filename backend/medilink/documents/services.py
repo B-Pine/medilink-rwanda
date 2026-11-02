@@ -22,6 +22,7 @@ from typing import Any
 
 from django.conf import settings
 from django.db import transaction
+from django.dispatch import Signal
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -43,6 +44,9 @@ from medilink.documents.numbers import next_number
 from medilink.documents.render import label, render_pdf
 from medilink.patients.crypto.fields import blind_index, blind_indexes, decrypt, encrypt
 from medilink.uploads.storage import Bucket
+
+# S9b: kwargs document_id, facility_id; sent after commit (contract sprint-09 §11)
+document_generated = Signal()
 
 CODE_ALPHABET = "23456789ABCDEFGHJKMNPQRSTUVWXYZ"  # no 0/O, 1/I/L
 CODE_LENGTH = 10
@@ -160,6 +164,8 @@ def create(
     )
     _audit("documents.generated", document, request)
     schedule_render(document)
+    ids = {"document_id": document.pk, "facility_id": facility_id}
+    transaction.on_commit(lambda: document_generated.send(sender=Document, **ids))
     return document
 
 

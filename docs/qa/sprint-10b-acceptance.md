@@ -14,4 +14,6 @@ Status: **Open**. The backend is implemented with tests. The screens (S10b-F1..F
 | S10b-B6 | Conflict of interest | `test_conflict_of_interest_and_one_person_facility` | | | Pending |
 | S10b-B7 | `no_show_reversed` reverses the strike; pending actions; statement only after a refused correction | `test_no_show_reversed_outcome_removes_the_strike` | | | Pending |
 | S10b-B8 | Forced RLS, append-only, encrypted text, audit IDs only, notices | `tests/test_rls_coverage.py`; description encrypted (raise test); S9 registry checks | | | Pending |
-| S10b-F1..F3 | Screens and mocks | Next pull request | | | Not started |
+| S10b-F1 | patient-web raise, thread, accept/disagree/reopen, statement | `apps/patient-web/src/features/disputes/disputes.test.tsx` (list, internal notes hidden, reply, raise from an item, axe clean); "Report a problem" on the medicine detail | | | Pass (mocks) |
+| S10b-F2 | staff-web queue, detail with evidence, notes, comments, resolve; platform final decision | `apps/staff-web/src/features/disputes/disputes.test.tsx` (queue, facts, internal note, outcomes limited to the subject, decision; reception has no queue; axe clean) | | | Pass (mocks) |
+| S10b-F3 | MSW mocks for every endpoint; `disputes` namespaces in rw/en/fr | `packages/api-client/src/mocks/features/disputes.ts`; `i18n:review` regenerated | | | Pass (mocks) |

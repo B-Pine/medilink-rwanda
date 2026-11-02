@@ -14,6 +14,7 @@ import { notificationsFeature } from "../features/notifications";
 // [S2 imports]
 // [/S2 imports]
 // [S10 imports]
+import { disputesFeature } from "../features/disputes";
 import { helpFeature } from "../features/help";
 // [/S10 imports]
 // [PT imports]
@@ -76,6 +77,7 @@ export const FEATURES: FeatureRoutes[] = [
   // [/S2]
   // [S10]
   helpFeature,
+  disputesFeature,
   // [/S10]
   // [PT]
   publicFeature,

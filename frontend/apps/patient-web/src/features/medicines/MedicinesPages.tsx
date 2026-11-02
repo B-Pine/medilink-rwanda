@@ -19,6 +19,9 @@ import { PageHeading } from "../../components/PageHeading";
 import { useProfiles } from "../profile/ProfileLayout";
 import { useDate } from "../records/RecordsPages";
 import { medicinesKeys, STATUS_TONE } from "./shared";
+// [S10 imports]
+import { ReportProblemLink } from "../disputes";
+// [/S10 imports]
 
 type Tab = "active" | "past";
 
@@ -157,6 +160,13 @@ export function MedicineDetailPage() {
                 {t("medicines.issued", { date: date(rx.data.issued_at) })}
               </span>
             </p>
+            {/* [S10] */}
+            <ReportProblemLink
+              subjectType="prescription"
+              subjectId={rx.data.id}
+              patientId={rx.data.patient_id}
+            />
+            {/* [/S10] */}
           </div>
           <Card className="flex flex-col gap-1">
             <span className="text-caption font-semibold tracking-wide text-fg-muted uppercase">

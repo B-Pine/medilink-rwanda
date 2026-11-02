@@ -9,6 +9,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Sprint 10 part 2a · Disputes (frontend)
+
+- patient-web `/disputes`: my disputes with their state and what happens next; "Report a problem"
+  on the medicine detail opens `/disputes/new` for that item; the detail shows the thread (never
+  internal notes), lets me reply, accept, disagree within 14 days, reopen once within 30 days,
+  and add a disagreement statement after a refused correction.
+- staff-web `/disputes` (`disputes.handle`): Open, Overdue and All, nearest deadline first, with
+  counter and "many rejected" flags. The detail leads with the facts (what the patient said, the
+  frozen audit trail), then the thread with internal notes and staff comments, then acknowledge,
+  ask the patient, ask a colleague, and a decision limited to outcomes that fit the subject.
+- staff-web `/platform/disputes`: escalated cases with the final decision (step-up).
+
 ### Remediation R8 · UI kit, charts, pre-rendering and Playwright (#91)
 
 - ui: violet queue tokens (`#6D28D9` on `#F5F3FF`; priority solid, 7.10:1) and `Badge`

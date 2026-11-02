@@ -29,7 +29,7 @@ import { Megaphone, MegaphoneSimple } from "@phosphor-icons/react";
 import { CalendarDots, ClipboardText } from "@phosphor-icons/react";
 // [/S2 imports]
 // [S10 imports]
-import { Article, Headset, Lifebuoy } from "@phosphor-icons/react";
+import { Article, Headset, Lifebuoy, Scales } from "@phosphor-icons/react";
 // [/S10 imports]
 // [S4 imports]
 import { ArrowsDownUp } from "@phosphor-icons/react";
@@ -282,6 +282,22 @@ export const NAV_ITEMS: readonly NavItem[] = [
     labelKey: "help.nav.platformHelpArticles",
     visible: (me: StaffMe) => me.is_platform_admin,
   },
+  {
+    key: "disputes",
+    path: "/disputes",
+    icon: Scales,
+    group: "facility",
+    labelKey: "disputes.nav.disputes",
+    visible: hasAny("disputes.handle"),
+  },
+  {
+    key: "platformDisputes",
+    path: "/platform/disputes",
+    icon: Scales,
+    group: "platform",
+    labelKey: "disputes.nav.platformDisputes",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
   // [/S10]
   // [S4]
   {
@@ -344,6 +360,7 @@ export const navLabelKey = (item: Pick<NavItem, "key" | "labelKey">) =>
 export type NavSection = "work" | "manage" | "help";
 const MANAGE_KEYS = new Set<string>([
   "approvals",
+  "disputes",
   "reports",
   "staff",
   "setup",
@@ -376,6 +393,7 @@ const ORDER = [
   "payments",
   "reports",
   "approvals",
+  "disputes",
   "staff",
   "doctorSchedules",
   "setup",
@@ -390,6 +408,7 @@ const ORDER = [
   "platformApplications",
   "platformFacilities",
   "platformSupport",
+  "platformDisputes",
   "platformMasterData",
   "platformAnnouncements",
   "platformHelpArticles",

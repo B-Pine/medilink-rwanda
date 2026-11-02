@@ -24,6 +24,7 @@ export * from "./features/notifications";
 export * from "./features/setup";
 // [/S2]
 // [S10]
+export * from "./features/disputes";
 export * from "./features/help";
 // [/S10]
 // [PT]

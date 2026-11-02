@@ -126,7 +126,7 @@ Source: [05 · Discovery, calendars, scheduling, booking](../analysis/05-discove
 |---|---|---|---|---|---|---|
 | FR-SCH-01 | Facility search with filters; list and map | P1 | S5 | Both | API, E2E | In progress |
 | FR-SCH-02 | Facility profile: services, fees, share, insurers, hours, doctors, load | P1 | S5 | Both | API, E2E | In progress |
-| FR-SCH-03 | Public facility pages indexable by search engines | P1 | S5 | Frontend | INS | In progress |
+| FR-SCH-03 | Public facility pages indexable by search engines | P1 | S5 | Frontend | INS, E2E | In progress (R8: pre-rendered at build time, ADR 0008) |
 | FR-SCH-04 | Referral pathway hint for Mutuelle patients | P1 | S5 | Both | BR, CMP | In progress |
 | FR-SCH-05 | Facility calendar: hours, closures, holidays, Umuganda | P1 | S2, S5 | Both | UT, API | In progress |
 | FR-SCH-06 | Doctor weekly templates and exceptions | P1 | S2, S5 | Both | API, CMP | In progress |
@@ -164,7 +164,7 @@ Source: [06 · Visit lifecycle and live queue](../analysis/06-visit-lifecycle-an
 | FR-QUE-13 | Waiting-room display: ticket numbers only, chime | P1 | S4 | Both | E2E, INS | In progress |
 | FR-QUE-14 | Doctor status: on duty, break, emergency, off | P1 | S4 | Both | API | In progress |
 | FR-QUE-15 | End-of-day auto-close rules | P1 | S4 | Backend | BR | In progress |
-| FR-QUE-16 | Offline banner, action retry, paper fallback | P1 | S4 | Both | E2E, DRL | In progress |
+| FR-QUE-16 | Offline banner, action retry, paper fallback | P1 | S4 | Both | E2E, DRL | In progress (R8: live indicator stale after 30 s) |
 | FR-QUE-17 | Transfer keeps the original arrival time | P1 | S4 | Backend | BR | In progress |
 | FR-QUE-18 | Self check-in by QR at the facility | P2 | — | Both | E2E | Not started |
 | FR-QUE-19 | Travel time from location for time to leave | P2 | — | Both | UT | Not started |
@@ -207,13 +207,13 @@ Source: [07 · Documents](../analysis/07-clinical-documentation-and-pharmacy.md)
 
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
-| FR-DOC-01 | Generated PDFs: letterhead, licence, number, QR, language | P1 | S7 | Backend | API, INS, PERF | Not started |
-| FR-DOC-02 | New version on amendment; superseded versions kept | P1 | S7 | Backend | BR | Not started |
+| FR-DOC-01 | Generated PDFs: letterhead, licence, number, QR, language | P1 | S7 | Backend | API, INS, PERF | In progress (S7b) |
+| FR-DOC-02 | New version on amendment; superseded versions kept | P1 | S7 | Backend | BR | In progress (S7b) |
 | FR-DOC-03 | Uploads: type, date, virus scan, fingerprint, compression | P1 | S1, S7 | Both | API, SEC | In progress |
-| FR-DOC-04 | Public verification page with minimal data; logged | P1 | S7 | Both | API, SEC | Not started |
-| FR-DOC-05 | Encrypted storage in Rwanda; signed links; access logged | P1 | S7 | Backend | SEC, INS | Not started |
-| FR-DOC-06 | Patient download (single / all) and expiring share link | P1 | S7 | Both | API, E2E | Not started |
-| FR-DOC-07 | Reception prints released documents | P1 | S7 | Both | E2E | Not started |
+| FR-DOC-04 | Public verification page with minimal data; logged | P1 | S7 | Both | API, SEC | In progress (S7b) |
+| FR-DOC-05 | Encrypted storage in Rwanda; signed links; access logged | P1 | S7 | Backend | SEC, INS | In progress (S7b) |
+| FR-DOC-06 | Patient download (single / all) and expiring share link | P1 | S7 | Both | API, E2E | In progress (S7b) |
+| FR-DOC-07 | Reception prints released documents | P1 | S7 | Both | E2E | In progress (S7b) |
 
 ## FR-BIL · Billing, payments, insurance
 
@@ -389,7 +389,7 @@ Source: [14 · Usability, accessibility, languages](../analysis/14-non-functiona
 | NFR-UX-01 | Kinyarwanda first; no hard-coded text; language switch | P1 | S0 | Both | UT, INS | Verified (S0, v0.1.0) |
 | NFR-UX-02 | Elderly and low-literacy friendly; booking ≤ 5 steps | P1 | S5*, S11* | Frontend | USA | In progress |
 | NFR-UX-03 | WCAG 2.2 AA for patient and staff apps | P1 | S0*–S11 | Frontend | CMP, A11Y | In progress |
-| NFR-UX-04 | Walk-in + ticket < 60 s; booked check-in < 15 s | P1 | S3*, S4* | Both | USA, E2E | In progress |
+| NFR-UX-04 | Walk-in + ticket < 60 s; booked check-in < 15 s | P1 | S3*, S4* | Both | USA, E2E | In progress (R8: Playwright walk-in journey) |
 | NFR-UX-05 | Keyboard shortcuts for reception and doctors | P1 | S4* | Frontend | CMP, E2E | In progress |
 | NFR-UX-06 | Local date and number formats; RWF without decimals | P1 | S0* | Frontend | UT | In progress |
 | NFR-UX-07 | Plain-language errors with what to do next | P1 | S0* | Both | CMP, INS | In progress |

@@ -1,0 +1,64 @@
+{
+  "loading": "Loading documents",
+  "download": "Download",
+  "print": "Print",
+  "preparing": "Preparing",
+  "version": "version {{n}}",
+  "kind": {
+    "prescription": "Prescription",
+    "referral": "Referral letter",
+    "lab_request": "Lab or imaging request",
+    "sick_note": "Sick note"
+  },
+  "status": {
+    "active": "Valid",
+    "dispensed": "Dispensed",
+    "cancelled": "Cancelled",
+    "expired": "Expired"
+  },
+  "urgency": {
+    "routine": "Routine",
+    "urgent": "Urgent",
+    "emergency": "Emergency"
+  },
+  "letters": {
+    "title": "Letters and requests",
+    "draftHint": "They are signed with the consultation and printed with a QR code.",
+    "signedHint": "A new one is signed when you save it; it asks for your password again.",
+    "none": "No letter or request yet.",
+    "add": {
+      "referral": "Referral letter",
+      "lab_request": "Lab request",
+      "sick_note": "Sick note"
+    },
+    "referralLine": "To {{to}}, {{specialty}} · {{urgency}}",
+    "sickLine": "Rest from {{from}} to {{to}}",
+    "signedAt": "Signed {{time}}",
+    "signsWith": "Signs with the consultation",
+    "visitDocuments": "Documents of this visit"
+  },
+  "form": {
+    "to": "Refer to (facility)",
+    "specialty": "Specialty",
+    "urgency": "Urgency",
+    "reason": "Reason",
+    "tests": "Tests",
+    "testsHint": "One per line, or separated by commas.",
+    "testsRequired": "Add at least one test.",
+    "from": "First day of rest",
+    "until": "Last day of rest",
+    "datesOrder": "The last day is before the first.",
+    "showDiagnosis": "Show the diagnosis on the sick note",
+    "showDiagnosisHint": "Off by default: an employer or school only needs the dates.",
+    "required": "Fill this in.",
+    "save": "Add",
+    "signNow": "Sign and add",
+    "cancel": "Cancel"
+  },
+  "patient": {
+    "title": "Documents",
+    "clinicalHint": "Prescriptions, letters and requests signed at this facility.",
+    "printHint": "Print what the patient asks for. Each print is recorded.",
+    "none": "No documents yet."
+  }
+}

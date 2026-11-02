@@ -35,6 +35,7 @@ import { bookingMocks } from "./features/booking";
 import { clinicalMocks } from "./features/clinical";
 // [/S6 imports]
 // [S7 imports]
+import { documentsMocks } from "./features/documents";
 import { pharmacyMocks } from "./features/pharmacy";
 // [/S7 imports]
 
@@ -85,5 +86,6 @@ export const FEATURE_MOCKS: FeatureMockFactory[] = [
   // [/S6]
   // [S7]
   pharmacyMocks,
+  documentsMocks,
   // [/S7]
 ];

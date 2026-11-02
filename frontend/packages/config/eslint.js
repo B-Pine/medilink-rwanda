@@ -37,6 +37,8 @@ export function medilinkEslintConfig({ rootDir }) {
         "**/dist/**",
         "**/dev-dist/**",
         "**/coverage/**",
+        "**/test-results/**",
+        "**/playwright-report/**",
         "**/public/mockServiceWorker.js",
         "**/*.d.ts",
       ],

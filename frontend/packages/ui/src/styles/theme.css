@@ -44,6 +44,10 @@
   --color-info-bg: var(--ml-info-bg);
   --color-danger-solid: var(--ml-danger-solid);
   --color-on-danger-solid: var(--ml-danger-solid-text);
+  --color-violet: var(--ml-violet-text);
+  --color-violet-bg: var(--ml-violet-bg);
+  --color-violet-solid: var(--ml-violet-solid);
+  --color-on-violet-solid: var(--ml-violet-solid-text);
 
   --color-qr-bg: var(--ml-qr-bg);
   --color-qr-fg: var(--ml-qr-fg);
@@ -82,6 +86,7 @@
   --spacing-target: var(--ml-target-min);
   --spacing-icon: var(--ml-icon-size);
   --spacing-sidebar: 15.5rem; /* 248px, design 04 §2 / 03 §4 */
+  --spacing-sidebar-collapsed: 4rem; /* 64px, design 03 §4 */
 
   --shadow-card: var(--ml-shadow-card);
   --shadow-raised: var(--ml-shadow-raised);

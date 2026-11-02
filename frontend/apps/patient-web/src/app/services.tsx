@@ -27,6 +27,8 @@ export interface CreateServicesOptions {
   language?: Language;
   persistLanguage?: boolean;
   apiBaseUrl?: string;
+  /** Build-time pre-rendering of a mock build answers from the contract mocks (prerender/). */
+  fetch?: typeof fetch;
 }
 
 /** Everything the app needs, created once in main.tsx (and per test). */
@@ -49,6 +51,7 @@ export function createServices(options: CreateServicesOptions = {}): AppServices
   const api = createMediLinkApi(
     createApiClient({
       baseUrl: options.apiBaseUrl ?? env.apiBaseUrl,
+      ...(options.fetch ? { fetch: options.fetch } : {}),
       getLanguage: () => i18n.resolvedLanguage ?? i18n.language,
       onUnauthorized: () => {
         void queryClient.resetQueries({ queryKey: patientMeKey });

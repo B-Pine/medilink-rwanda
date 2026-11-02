@@ -78,6 +78,9 @@ api_v1: list[URLPattern | URLResolver] = [
     # [S7]
     path("staff/", include("medilink.pharmacy.urls.staff")),
     path("patient/prescriptions/", include("medilink.pharmacy.urls.patient")),
+    path("staff/", include("medilink.documents.urls.staff")),
+    path("patient/documents/", include("medilink.documents.urls.patient")),
+    path("public/", include("medilink.documents.urls.public")),
     # [/S7]
     # [S8]
     path("staff/", include("medilink.billing.urls.staff")),

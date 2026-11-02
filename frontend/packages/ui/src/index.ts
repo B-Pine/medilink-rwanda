@@ -1,7 +1,7 @@
 export { Alert } from "./components/Alert";
 export type { AlertProps, AlertTone } from "./components/Alert";
-export { Badge } from "./components/Badge";
-export type { BadgeProps, BadgeTone } from "./components/Badge";
+export { Badge, badgeToneClassName } from "./components/Badge";
+export type { BadgeProps, BadgeTone, BadgeVariant } from "./components/Badge";
 export { Button, buttonClassName } from "./components/Button";
 export type { ButtonProps, ButtonSize, ButtonVariant } from "./components/Button";
 export { Card } from "./components/Card";
@@ -133,7 +133,15 @@ export { FlowStrip } from "./components/FlowStrip";
 export type { FlowStage } from "./components/FlowStrip";
 // [/S4]
 // [design-v2]
-export { HeatMap, LoadMeter, Sparkline, StatTile, TrendChart } from "./components/Charts";
+export {
+  CHART_SERIES,
+  HeatMap,
+  LoadMeter,
+  SEQUENTIAL_STEPS,
+  Sparkline,
+  StatTile,
+  TrendChart,
+} from "./components/Charts";
 export {
   applyTextSize,
   initTextSize,

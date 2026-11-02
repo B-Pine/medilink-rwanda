@@ -42,7 +42,10 @@ export function AppShell() {
     <div
       className={cx(
         "min-h-dvh bg-page lg:grid",
-        collapsed ? "lg:grid-cols-[4.25rem_minmax(0,1fr)]" : "lg:grid-cols-[14.5rem_minmax(0,1fr)]",
+        // Sidebar 248 px, collapsed to icons at 64 px (design 03 §4; tokens sidebar / sidebar-collapsed)
+        collapsed
+          ? "lg:grid-cols-[var(--spacing-sidebar-collapsed)_minmax(0,1fr)]"
+          : "lg:grid-cols-[var(--spacing-sidebar)_minmax(0,1fr)]",
       )}
     >
       <SkipLink />

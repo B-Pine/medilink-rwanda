@@ -42,6 +42,7 @@ import {
 } from "./shared";
 import { VitalsPanel } from "./VitalsPanel";
 // [S7 imports]
+import { LettersSection } from "../documents";
 import { PrescriptionSection } from "../pharmacy";
 // [/S7 imports]
 
@@ -603,7 +604,10 @@ export function ConsultationPage() {
     // [S7]
     ...(c.status === "entered_in_error"
       ? []
-      : [{ id: "prescription", label: t("pharmacy.prescription.title") }]),
+      : [
+          { id: "prescription", label: t("pharmacy.prescription.title") },
+          { id: "letters", label: t("documents.letters.title") },
+        ]),
     // [/S7]
     { id: "instructions", label: t("clinical.sections.instructions") },
     { id: "private-notes", label: t("clinical.sections.private-notes") },
@@ -646,6 +650,7 @@ export function ConsultationPage() {
       {isDraft && c.can_edit ? <DraftEditor key={c.id} c={c} /> : <SignedView c={c} />}
       {/* [S7] */}
       <PrescriptionSection consultation={c} />
+      <LettersSection consultation={c} />
       {/* [/S7] */}
       <HistoryDrawer
         fpId={c.facility_patient_id}

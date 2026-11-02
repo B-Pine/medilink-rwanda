@@ -7,8 +7,8 @@
   "scripts": {
     "dev": "vite",
     "dev:mock": "vite --mode mock",
-    "build": "vite build && node ../../scripts/check-pwa.mjs dist",
-    "build:mock": "vite build --mode mock && node ../../scripts/check-pwa.mjs dist",
+    "build": "vite build && node ../../scripts/check-pwa.mjs dist && node ../../scripts/check-prerender.mjs dist",
+    "build:mock": "vite build --mode mock && node ../../scripts/check-pwa.mjs dist && node ../../scripts/check-prerender.mjs dist",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
@@ -44,6 +44,7 @@
     "typescript": "catalog:",
     "vite": "catalog:",
     "vite-plugin-pwa": "catalog:",
+    "vite-prerender-plugin": "0.5.14",
     "vitest": "catalog:",
     "vitest-axe": "catalog:",
     "workbox-build": "catalog:",

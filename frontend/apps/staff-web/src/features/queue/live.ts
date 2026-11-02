@@ -1,5 +1,5 @@
 import { connectLive, queueSockets, socketUrl, type LiveStatus } from "@medilink/api-client";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, type Query } from "@tanstack/react-query";
 import { useEffect, useSyncExternalStore } from "react";
 
 import { env } from "../../env";
@@ -43,6 +43,7 @@ export const liveStore = {
   get: () => state,
   touched: () => emit({ updatedAt: Date.now() }),
   setPending: (pending: number) => emit({ pending }),
+  setStatus: (status: LiveStatus) => emit({ status }),
 };
 
 export function useLiveState(): LiveState {
@@ -60,12 +61,32 @@ let connection: { close: () => void } | null = null;
 
 export function useQueueSocket(enabled: boolean): void {
   const queryClient = useQueryClient();
+  // A successful queue fetch (polling without a socket, or after a message) is fresh data too.
   useEffect(() => {
-    if (!enabled || env.useMocks) return;
+    if (!enabled) return;
+    return queryClient.getQueryCache().subscribe((event) => {
+      const key = (event.query as Query).queryKey;
+      if (
+        event.type === "updated" &&
+        event.action.type === "success" &&
+        key[0] === queueKeys.all[0]
+      ) {
+        emit({ updatedAt: Date.now() });
+      }
+    });
+  }, [enabled, queryClient]);
+  useEffect(() => {
+    if (!enabled) return;
+    if (env.useMocks) {
+      // Mock mode has no socket: stand in for its 25 s pong so the indicator stays "Live".
+      const timer = setInterval(() => emit({ updatedAt: Date.now() }), 10_000);
+      return () => clearInterval(timer);
+    }
     users += 1;
     if (!connection) {
       connection = connectLive(socketUrl(env.apiBaseUrl, queueSockets.staff), {
         onStatus: (status) => emit({ status }),
+        onAlive: () => emit({ updatedAt: Date.now() }),
         onMessage: () => {
           emit({ updatedAt: Date.now() });
           void queryClient.invalidateQueries({ queryKey: queueKeys.all });

@@ -507,12 +507,11 @@ Requirements: FR-PHA-01..05; FR-DOC-01..07. Visit summaries, prescriptions, sick
 | `GET` | `/api/v1/staff/pharmacy/availability/` | Catalogue drugs with availability here (PA1) | `pharmacy.dispense` or `pharmacy.availability` | FR-PHA-04 | `q`, `available` | Implemented (S7a) |
 | `PUT` | `/api/v1/staff/pharmacy/availability/{drug_code}/` | Mark available or not (PA2) | `pharmacy.availability` | FR-PHA-04 | Audit | Implemented (S7a) |
 | `GET` | `/api/v1/staff/drugs/` | Drug search with "not in stock here" (PS1) | `prescription.issue` or `pharmacy.dispense` | FR-PHA-01, FR-PHA-04 | `q` ≥ 2 characters; 25 rows | Implemented (S7a) |
-| `GET` | `/api/v1/staff/documents/` | Documents of a patient or visit | Role-specific | FR-DOC-01, FR-DOC-03 | Filters `patient`, `visit`, `kind`; restricted by role | Planned |
-| `POST` | `/api/v1/staff/documents/` | Upload a document (result, referral letter brought by the patient, scan) | `documents.upload` | FR-DOC-03 | `multipart`; results go to the results inbox | Planned |
-| `GET` | `/api/v1/staff/documents/{id}/` | Document metadata and versions | Role-specific | FR-DOC-02 | Superseded versions marked | Planned |
-| `POST` | `/api/v1/staff/documents/{id}/download-links/` | Short-lived signed link | Role-specific | FR-DOC-05 | 5 minutes on `files.medilink.rw`; Audit | Planned |
-| `POST` | `/api/v1/staff/documents/{id}/release/` | Mark released to the patient (printable by reception) | `clinical.sign` | FR-DOC-07 | | Planned |
-| `POST` | `/api/v1/staff/documents/{id}/prints/` | Print a released document for the patient | `queue.operate`, `billing.record_payment` | FR-DOC-07 | Returns a link; Audit `document.printed` | Planned |
+| `GET`, `POST` | `/api/v1/staff/consultations/{id}/referrals/` · `…/lab-requests/` · `…/sick-notes/` | Letters and requests (CR1) | `clinical.view` read; `clinical.write` (author) write | FR-DOC-01 | Draft: signed with the consultation; after signing: signed at once (Up); reason encrypted | Implemented (S7b) |
+| `GET` | `/api/v1/staff/documents/` | Documents of a patient or visit (D1) | `clinical.view` (Rel) or `documents.print` (released) | FR-DOC-01, FR-DOC-07 | `facility_patient_id` or `visit_id`, `kind` (D-12) | Implemented (S7b) |
+| `GET` | `/api/v1/staff/documents/{id}/` | Metadata, verification code and versions (D1) | as above | FR-DOC-02 | Superseded versions kept | Implemented (S7b) |
+| `POST` | `/api/v1/staff/documents/{id}/download-link/` | Signed link to the current version (D2) | as above | FR-DOC-05 | 5 minutes; Audit `documents.downloaded` (access history) | Implemented (S7b) |
+| `POST` | `/api/v1/staff/documents/{id}/print/` | Print a released document (D3) | `documents.print` | FR-DOC-07 | Returns a link; Audit `documents.printed` | Implemented (S7b) |
 | `POST` | `/api/v1/staff/tickets/{id}/slips/` | Printable ticket slip (80 mm) | `queue.operate` | NFR-NET-06 | No names beyond what the patient needs | Planned |
 
 ### Patient
@@ -521,22 +520,24 @@ Requirements: FR-PHA-01..05; FR-DOC-01..07. Visit summaries, prescriptions, sick
 |---|---|---|---|---|---|---|
 | `GET` | `/api/v1/patient/prescriptions/` | My medicines: prescriptions of my profiles (M1) | Patient session | FR-PHA-03 | `patient_id`, `status=active\|past`; delegates don't see restricted consultations | Implemented (S7a) |
 | `GET` | `/api/v1/patient/prescriptions/{id}/` | One prescription with items and what was dispensed (M2) | Linked account | FR-PHA-03 | No alert overrides, no consultation text | Implemented (S7a) |
-| `GET` | `/api/v1/patient/documents/` | My documents | Patient session | FR-DOC-06 | Filter `patient_id`, `kind` | Planned |
+| `GET` | `/api/v1/patient/documents/` | My documents (D4) | Patient session | FR-DOC-06 | `patient_id`, `kind`; delegates don't see restricted consultations | Implemented (S7b) |
+| `GET` | `/api/v1/patient/documents/{id}/` | Metadata, verification code, versions, my share links (D4) | Linked account | FR-DOC-06 | | Implemented (S7b) |
+| `POST` | `/api/v1/patient/documents/{id}/download-link/` | Signed link (D4) | Linked account | FR-DOC-05, FR-DOC-06 | Audit | Implemented (S7b) |
+| `POST` | `/api/v1/patient/documents/archive/` | All my documents as a ZIP (D4) | Patient session | FR-DOC-06 | 5-minute link, 100 documents at most (D-12) | Implemented (S7b) |
+| `POST` | `/api/v1/patient/documents/{id}/share-links/` | Expiring share link (D5) | Linked account | FR-DOC-06 | 1–30 days; token shown once, SHA-256 stored | Implemented (S7b) |
+| `DELETE` | `/api/v1/patient/documents/{id}/share-links/{link_id}/` | Stop a share link (D5) | Account that made it | FR-DOC-06 | | Implemented (S7b) |
 | `POST` | `/api/v1/patient/documents/` | Upload ID, insurance card, previous results, outside prescriptions | Linked account | FR-DOC-03 | `multipart`; RL: upload | Planned |
-| `GET` | `/api/v1/patient/documents/{id}/` | Document metadata | Linked account | FR-DOC-06 | | Planned |
 | `DELETE` | `/api/v1/patient/documents/{id}/` | Delete own non-clinical upload | Linked account (uploader) | FR-DOC-06 | Clinical documents can't be deleted | Planned |
-| `POST` | `/api/v1/patient/documents/{id}/download-links/` | Short-lived signed link | Linked account | FR-DOC-05, FR-DOC-06 | Audit | Planned |
-| `POST` | `/api/v1/patient/documents/{id}/share-links/` | Expiring share link for one document | Linked account | FR-DOC-06 | Token shown once | Planned |
-| `POST` | `/api/v1/patient/share-links/{id}/revoke/` | Revoke a share link | Linked account | FR-DOC-06 | | Planned |
-| `POST` | `/api/v1/patient/documents/{id}/facility-shares/` | Share an own upload with a facility | Linked account | FR-DOC-03 | Visible to that facility's clinicians | Planned |
-| `POST` | `/api/v1/patient/document-archives/` | Download all documents as a ZIP | Patient session | FR-DOC-06 | Step-up; Async | Planned |
+| `POST` | `/api/v1/patient/documents/{id}/facility-shares/` | Share an own upload with a facility | Linked account | FR-DOC-03 | D-13 | Planned |
 
 ### Public
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
 | `POST` | `/api/v1/public/document-verifications/` | Verify a document by code; details only with the patient's date of birth | Public | FR-DOC-04 | Minimal data; RL: verification; every check logged | Planned |
-| `GET` | `/api/v1/public/shared-documents/{token}/` | Open a document shared by a patient | Share token | FR-DOC-06 | Expiring; returns a signed link; README §6 item 6 | Planned |
+| `GET` | `/api/v1/public/verify/{code}/` | Check a document by the code under its QR code (V1) | Public | FR-DOC-04 | Minimal projection; every attempt logged (`documents_verification_log`); RL `verify` 30/min | Implemented (S7b) |
+| `POST` | `/api/v1/public/verify/{code}/details/` | The document's content after a date-of-birth match (V1) | Public | FR-DOC-04 | `{date_of_birth}`; `422` mismatch, logged | Implemented (S7b) |
+| `GET` | `/api/v1/public/shared-documents/{token}/` | Open a document shared by a patient (D5) | Share token | FR-DOC-06 | Expiring; returns a 5-minute link; counts opens | Implemented (S7b) |
 
 ---
 

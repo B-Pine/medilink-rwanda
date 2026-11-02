@@ -500,6 +500,11 @@ SPECTACULAR_SETTINGS = {
         "PrescriptionItemStatusEnum": "medilink.pharmacy.models.ItemStatus",
         "FrequencyCodeEnum": "medilink.pharmacy.models.Frequency",
         "RouteEnum": "medilink.pharmacy.models.Route",
+        "ClinicalDocumentKindEnum": "medilink.documents.models.DocumentKind",
+        "ReferralUrgencyEnum": "medilink.documents.models.Urgency",
+        # keeps the public triage name stable now that referrals also have an urgency
+        "UrgencyEnum": "medilink.triage.rules.URGENCY_ORDER",
+        "VerificationStatusEnum": "medilink.documents.models.VerificationStatus",
         "IdentityCheckMethodEnum": "medilink.pharmacy.models.IdentityMethod",
         "DispenseOutcomeEnum": "medilink.pharmacy.models.DispenseOutcome",
         # query statuses (open, answered, closed) share SupportRequestStatusEnum ([S10])

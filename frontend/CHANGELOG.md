@@ -9,6 +9,38 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Remediation R8 · UI kit, charts, pre-rendering and Playwright (#91)
+
+- ui: violet queue tokens (`#6D28D9` on `#F5F3FF`; priority solid, 7.10:1) and `Badge`
+  `variant` (`tint`, `outline`, `solid`): on hold violet tint, priority violet solid, no response
+  and left red outline, completed slate (design 02 §4). Badges wrap in narrow containers.
+- ui: sequential emerald ramp per design 02 §6 (4 steps, light and dark); charts draw up to six
+  series, have a keyboard readout (arrow keys, Home, End, Escape), a visible "Show table" toggle
+  and caption-size axis text; `LoadMeter` shows a gauge icon. New `CHART_SERIES`,
+  `SEQUENTIAL_STEPS`, `badgeToneClassName` exports.
+- ui: `DataTable` search input id from `useId`, column `meta.align` / `meta.label`, 16 px cell
+  padding (design 08). Staff sidebar collapses to 4rem (`--spacing-sidebar-collapsed`).
+- staff-web: the live indicator turns yellow ("Reconnecting") once data is older than 30 s, also
+  with the socket open (pongs and successful queue fetches count as fresh); only the header badge
+  announces, and only state changes.
+- patient-web: `/`, `/for-facilities` and `/facilities/<slug>` are pre-rendered at build time with
+  `vite-prerender-plugin` 0.5.14 ([ADR 0008](../docs/decisions/0008-prerender-public-pages.md)).
+  Static pages hydrate; facility snapshots hold no fees, queue load or next times. The service
+  worker falls back to `app-shell.html`. `scripts/check-prerender.mjs` runs after every build
+  (pages present, public data only, no email or national ID).
+- Playwright (`@playwright/test` 1.64.1): `pnpm e2e` runs the S4 walk-in journey (check-in, call,
+  complete) and the pre-rendered pages' checks against the mock builds; new `e2e` CI job.
+- HeroIllustration uses brand tokens; a workspace test forbids raw hex colours in components.
+### Sprint 7b · Documents (frontend, #123)
+
+- staff-web consultation: a Letters and requests section (referral letter, lab request, sick note)
+  signed with the consultation, or at once after it; the visit's documents with Download.
+- staff-web patient record: a Documents tab; clinicians download, reception and the pharmacy print.
+- patient-web `/documents` and a Home card: my documents with Download, a ZIP of all of them, the
+  verification code, and share links shown once that can be stopped.
+- patient-web public `/verify` (replaces the placeholder) and `/verify/:code`: genuine or not, then
+  the content after the patient's date of birth; `/shared/:token` opens a shared document.
+
 ### Sprint 7a · Pharmacy (frontend, #123)
 
 - staff-web consultation: a Prescription section (anchor) to add medicines from the catalogue with

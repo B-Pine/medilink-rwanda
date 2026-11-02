@@ -94,6 +94,9 @@ export interface PrescriptionItem {
   id: Uuid;
   drug_code: string;
   drug_display: string;
+  /** Catalogue generic name and strength, for the substitute search; blank off catalogue. */
+  generic_name: string;
+  strength: string;
   is_off_catalogue: boolean;
   is_controlled: boolean;
   available_here: boolean;

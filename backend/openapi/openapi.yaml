@@ -22828,6 +22828,10 @@ components:
           type: string
         drug_display:
           type: string
+        generic_name:
+          type: string
+        strength:
+          type: string
         is_off_catalogue:
           type: boolean
         is_controlled:
@@ -22873,6 +22877,7 @@ components:
       - drug_display
       - duration_days
       - frequency_code
+      - generic_name
       - id
       - instructions
       - is_controlled
@@ -22881,6 +22886,7 @@ components:
       - replaces_item_id
       - route
       - status
+      - strength
       - substitution_allowed
     PrescriptionItemStatusEnum:
       enum:

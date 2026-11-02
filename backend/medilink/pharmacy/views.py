@@ -69,6 +69,9 @@ def item_data(item: PrescriptionItem, unavailable: set[str]) -> dict[str, Any]:
         "id": item.pk,
         "drug_code": item.drug_code,
         "drug_display": item.drug_display,
+        # for the substitute search (S7a follow-up #134); blank for off-catalogue items
+        "generic_name": item.drug.generic_name if item.drug else "",
+        "strength": item.drug.strength if item.drug else "",
         "is_off_catalogue": item.is_off_catalogue,
         "is_controlled": item.is_controlled,
         "available_here": not item.drug_code or item.drug_code not in unavailable,
@@ -127,7 +130,7 @@ def load(prescription_id: Any) -> Prescription:
             "patient", "prescriber_membership__user", "facility_patient"
         )
         .prefetch_related(
-            "items",
+            Prefetch("items", queryset=PrescriptionItem.objects.select_related("drug")),
             Prefetch(
                 "dispense_records",
                 queryset=DispenseRecord.objects.select_related(
@@ -428,10 +431,18 @@ def queue_rows(facility_id: Any, status_filter: str, q: str) -> QuerySet[Prescri
     else:
         rows = rows.filter(Q(status__in=[ready, partly]) | Q(has_query=True))
     if q:
+        from medilink.visits.models import Ticket
+        from medilink.visits.services import ACTIVE_STATES
+
+        # contract §6.1: name, number or ticket (the visit's active ticket, exact)
+        ticket = Ticket.objects.filter(
+            visit_id=OuterRef("visit_id"), state__in=ACTIVE_STATES, number__iexact=q
+        )
         rows = rows.filter(
             Q(number__icontains=q)
             | Q(patient__full_name__icontains=q)
             | Q(patient__preferred_name__icontains=q)
+            | Exists(ticket)
         )
     return (
         rows.select_related("patient", "visit")

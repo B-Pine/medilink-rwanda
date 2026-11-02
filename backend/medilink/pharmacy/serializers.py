@@ -147,6 +147,8 @@ class PrescriptionItemSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     drug_code = serializers.CharField(allow_blank=True)
     drug_display = serializers.CharField()
+    generic_name = serializers.CharField(allow_blank=True)
+    strength = serializers.CharField(allow_blank=True)
     is_off_catalogue = serializers.BooleanField()
     is_controlled = serializers.BooleanField()
     available_here = serializers.BooleanField()

@@ -131,6 +131,10 @@ export function DispensePage() {
     }
     if (it.outcome === "substituted") {
       if (!it.substitute) return t("pharmacy.dispense.chooseSubstitute");
+      // blank gives everything left; otherwise part of it (contract §2.2)
+      const n = Number(it.quantity);
+      if (it.quantity.trim() && (!Number.isInteger(n) || n < 1 || n > left))
+        return t("pharmacy.dispense.substituteRange", { max: left });
       if (it.reason.trim().length < 5) return t("pharmacy.reasonMin");
     }
     return null;
@@ -151,7 +155,11 @@ export function DispensePage() {
         outcome,
         ...(outcome === "partial" ? { quantity: Number(it.quantity) } : {}),
         ...(outcome === "substituted"
-          ? { substitute_drug_code: it.substitute, substitution_reason: it.reason.trim() }
+          ? {
+              substitute_drug_code: it.substitute,
+              substitution_reason: it.reason.trim(),
+              ...(it.quantity.trim() ? { quantity: Number(it.quantity) } : {}),
+            }
           : {}),
       };
     });
@@ -388,7 +396,7 @@ function ItemPlan({
                 name={`outcome-${item.id}`}
                 value={o}
                 checked={plan.outcome === o}
-                onChange={() => onChange({ outcome: o })}
+                onChange={() => onChange({ outcome: o, quantity: "" })}
                 className="sr-only"
               />
               {t(`pharmacy.outcome.${o}`, { count: left })}
@@ -408,7 +416,7 @@ function ItemPlan({
           />
         )}
         {plan.outcome === "substituted" && (
-          <Substitute item={item} plan={plan} onChange={onChange} />
+          <Substitute item={item} plan={plan} left={left} onChange={onChange} />
         )}
         {problem && (
           <p role="alert" className="m-0 text-body-sm font-semibold text-danger">
@@ -471,31 +479,32 @@ export function ItemFlags({ item }: { item: PrescriptionItem }) {
 function Substitute({
   item,
   plan,
+  left,
   onChange,
 }: {
   item: PrescriptionItem;
   plan: Plan;
+  left: number;
   onChange: (change: Partial<Plan>) => void;
 }) {
   const { t } = useTranslation();
   const api = useApi();
+  const same = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
   const original = useQuery({
-    // the display starts with the ingredient ("Amoxicillin 500 mg capsule"); the search is by it
-    queryKey: pharmacyKeys.drugs(item.drug_display.split(" ")[0] ?? ""),
-    queryFn: () => api.pharmacy.drugs(item.drug_display.split(" ")[0] ?? ""),
+    queryKey: pharmacyKeys.drugs(item.generic_name),
+    queryFn: () => api.pharmacy.drugs(item.generic_name),
+    enabled: item.generic_name.length > 1,
   });
-  const self = original.data?.find((d) => d.code === item.drug_code);
   const options =
     original.data?.filter(
       (d) =>
-        self &&
-        d.code !== self.code &&
-        d.generic_name === self.generic_name &&
-        d.strength === self.strength,
+        d.code !== item.drug_code &&
+        same(d.generic_name, item.generic_name) &&
+        same(d.strength, item.strength),
     ) ?? [];
   return (
     <div className="flex flex-col gap-3 rounded-md bg-subtle p-3">
-      {original.isPending ? (
+      {original.isLoading ? (
         <LoadingState label={t("pharmacy.loading")} />
       ) : options.length ? (
         <SelectField
@@ -515,6 +524,17 @@ function Substitute({
       ) : (
         <p className="m-0 text-body-sm text-fg-secondary">{t("pharmacy.dispense.noSubstitute")}</p>
       )}
+      <TextField
+        type="number"
+        inputMode="numeric"
+        min={1}
+        max={left}
+        label={t("pharmacy.dispense.substituteQuantity")}
+        hint={t("pharmacy.dispense.substituteQuantityHint", { count: left })}
+        value={plan.quantity}
+        onChange={(event) => onChange({ quantity: event.target.value })}
+        className="sm:w-40"
+      />
       <TextareaField
         label={t("pharmacy.dispense.substituteReason")}
         rows={2}

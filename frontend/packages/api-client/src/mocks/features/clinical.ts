@@ -45,6 +45,8 @@ export const MOCK_CLINICAL_FP = "5c3d2e1f-3333-4000-8000-000000000001";
 export const MOCK_STAFF_PATIENT_FP = "5c3d2e1f-3333-4000-8000-000000000003";
 export const MOCK_NO_CARE_FP = "5c3d2e1f-3333-4000-8000-000000000005";
 export const MOCK_CLINICAL_VISIT_ID = "7c000000-0000-4000-8000-000000000001";
+/** Mukamana's signed blood-pressure consultation; its prescription has an open pharmacist question. */
+export const MOCK_PRESSURE_CONSULTATION = "7c000000-0000-4000-8000-000000000020";
 export const MOCK_PRIVATE_NOTE = "Consider typhoid if the fever lasts";
 
 const DOCTOR = { membership_id: SETUP_IDS.mKeza, full_name: "Uwimana Keza" };
@@ -273,6 +275,7 @@ function seed(): Store {
     diagnoses: [diagnosis("B54", "primary", "confirmed")],
   });
   const pressure = signed(20, {
+    id: MOCK_PRESSURE_CONSULTATION,
     history_text: "Headaches in the morning.",
     plan_text: "Amlodipine 5 mg once a day.",
     patient_instructions_text:

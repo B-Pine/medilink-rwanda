@@ -1,5 +1,6 @@
 import {
   MOCK_PASSWORD,
+  MOCK_PRESSURE_CONSULTATION,
   MOCK_RX_CONTROLLED,
   MOCK_RX_READY,
   MOCK_TOTP_CODE,
@@ -47,6 +48,13 @@ describe("pharmacy queue (S7-F2)", () => {
     );
     expect(screen.getByRole("link", { name: "Niyonsaba Claudine" })).toBeInTheDocument();
 
+    // #134: the active ticket finds it too
+    const find = screen.getByRole("searchbox", { name: "Find a prescription" });
+    await app.user.clear(find);
+    await app.user.type(find, "g-012");
+    expect(await screen.findByRole("link", { name: "Mukamana Jeanne" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Niyonsaba Claudine" })).not.toBeInTheDocument();
+
     await app.user.clear(screen.getByRole("searchbox", { name: "Find a prescription" }));
     await app.user.click(screen.getByRole("tab", { name: "Questions" }));
     expect(await screen.findByRole("link", { name: "Uwase Aline" })).toBeInTheDocument();
@@ -73,6 +81,13 @@ describe("dispensing (S7-F3, F4)", () => {
     ).toBeInTheDocument();
     expect(within(choose).queryByRole("option", { name: /Ibuprofen/ })).not.toBeInTheDocument();
     await app.user.selectOptions(choose, "PARA500-P");
+    // #134: part of it as a substitute; more than is left is refused before sending
+    const howMany = screen.getByRole("spinbutton", { name: "How many" });
+    await app.user.type(howMany, "99");
+    await app.user.click(screen.getByRole("button", { name: "Sign and give" }));
+    expect(await screen.findByText(/^Give \d+ or fewer\.$/)).toBeInTheDocument();
+    await app.user.clear(howMany);
+    await app.user.type(howMany, "6");
     await app.user.type(
       screen.getByRole("textbox", { name: "Why you substitute" }),
       "Out of the generic",
@@ -84,6 +99,12 @@ describe("dispensing (S7-F3, F4)", () => {
     expect(await screen.findByText("Signed")).toBeInTheDocument();
     expect(
       screen.getByText(/instead of Paracetamol 500 mg tablet: Out of the generic/),
+    ).toBeInTheDocument();
+    // 6 of 30 given as the substitute: the rest stays open
+    expect(
+      within(screen.getByRole("group", { name: /Paracetamol/ })).getByRole("radio", {
+        name: "Give all 24",
+      }),
     ).toBeInTheDocument();
     await app.user.click(screen.getByRole("link", { name: "Print labels" }));
     expect(
@@ -176,3 +197,44 @@ describe("prescription builder in the consultation (S7-F1)", () => {
     ).toBeInTheDocument();
   });
 });
+
+describe("pharmacist question in the consultation (PQ3, #134)", () => {
+  it("the doctor answers with a new addendum; the question then waits for the pharmacist", async () => {
+    const app = await signIn("doctor@medilink.test");
+    await app.router.navigate(`/clinical/consultations/${MOCK_PRESSURE_CONSULTATION}`);
+    await screen.findByRole("heading", { level: 1, name: /^Consultation · Mukamana/ });
+    const question = await screen.findByRole("group", { name: /^Question from Nshimiyimana/ });
+    expect(question).toHaveTextContent("Continue 5 mg or change to 10 mg?");
+
+    // an existing addendum can answer too; here the doctor writes a new one
+    expect(within(question).getByRole("combobox", { name: "Answer with" })).toHaveValue("new");
+    await app.user.click(within(question).getByRole("button", { name: "Send the answer" }));
+    expect(within(question).getByText("Write the answer.")).toBeInTheDocument();
+    await app.user.type(
+      within(question).getByRole("textbox", { name: "Addendum reason" }),
+      "Pharmacy question",
+    );
+    await app.user.type(
+      within(question).getByRole("textbox", { name: "Your answer" }),
+      "Continue 5 mg once a day.",
+    );
+    await app.user.click(within(question).getByRole("button", { name: "Send the answer" }));
+    await stepUpIfAsked(app);
+    expect(
+      await screen.findByText("Answered. The pharmacist will close the question."),
+    ).toBeInTheDocument();
+    expect(await screen.findByText("Continue 5 mg once a day.")).toBeInTheDocument();
+    expect(await axe(app.container)).toHaveNoViolations();
+  });
+});
+
+/** Confirms the password when the step-up dialog opens (writing an addendum needs it). */
+async function stepUpIfAsked(app: Awaited<ReturnType<typeof signIn>>) {
+  const dialog = await screen.findByRole("dialog", undefined, { timeout: 1500 }).catch(() => null);
+  if (!dialog) return;
+  const password = within(dialog).queryByLabelText(/password/i);
+  if (password) await app.user.type(password, MOCK_PASSWORD);
+  const code = within(dialog).queryByLabelText(/6-digit code/i);
+  if (code) await app.user.type(code, MOCK_TOTP_CODE);
+  await app.user.click(within(dialog).getByRole("button", { name: /confirm|verify|continue/i }));
+}

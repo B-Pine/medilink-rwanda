@@ -72,7 +72,7 @@
       "queried": "Questions"
     },
     "search": "Trouver une ordonnance",
-    "searchHint": "Nom ou numéro d'ordonnance",
+    "searchHint": "Nom, numéro d'ordonnance ou ticket",
     "issued": "Émise {{time}}",
     "items_one": "{{count}} médicament",
     "items_other": "{{count}} médicaments",
@@ -146,7 +146,10 @@
     "reloaded": "Quelqu'un a modifié cette ordonnance entre-temps. Elle a été rechargée : vérifiez et signez à nouveau.",
     "nothingOpen": "Plus rien à délivrer sur cette ordonnance.",
     "history": "Déjà délivré",
-    "signedBy": "{{name}} · {{time}}"
+    "signedBy": "{{name}} · {{time}}",
+    "substituteRange": "Donnez {{max}} ou moins.",
+    "substituteQuantity": "Combien",
+    "substituteQuantityHint": "Laissez vide pour donner les {{count}} restants."
   },
   "query": {
     "title": "Question au médecin",
@@ -158,7 +161,18 @@
     "send": "Envoyer au médecin",
     "waiting": "En attente de la réponse du médecin.",
     "answered": "Le médecin a répondu par un addendum.",
-    "close": "Clore la question"
+    "close": "Clore la question",
+    "fromPharmacy": "Question de {{name}} (pharmacie), {{time}}",
+    "answeredWait": "Répondu. Le pharmacien fermera la question.",
+    "answerWith": "Répondre avec",
+    "newAddendum": "Un nouvel addendum",
+    "existing": "Addendum : {{reason}} ({{time}})",
+    "reason": "Motif de l'addendum",
+    "reasonRequired": "Indiquez le motif.",
+    "body": "Votre réponse",
+    "bodyHint": "Enregistrée comme addendum signé sur cette consultation.",
+    "bodyRequired": "Écrivez la réponse.",
+    "answer": "Envoyer la réponse"
   },
   "availability": {
     "title": "Disponibilité des médicaments",

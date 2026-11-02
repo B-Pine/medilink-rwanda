@@ -72,7 +72,7 @@
       "queried": "Questions"
     },
     "search": "Find a prescription",
-    "searchHint": "Name or prescription number",
+    "searchHint": "Name, prescription number or ticket",
     "issued": "Issued {{time}}",
     "items_one": "{{count}} medicine",
     "items_other": "{{count}} medicines",
@@ -146,7 +146,10 @@
     "reloaded": "Someone changed this prescription meanwhile. It was reloaded: check it and sign again.",
     "nothingOpen": "Nothing left to give on this prescription.",
     "history": "Given so far",
-    "signedBy": "{{name}} · {{time}}"
+    "signedBy": "{{name}} · {{time}}",
+    "substituteRange": "Give {{max}} or fewer.",
+    "substituteQuantity": "How many",
+    "substituteQuantityHint": "Leave empty to give all {{count}} left."
   },
   "query": {
     "title": "Question to the doctor",
@@ -158,7 +161,18 @@
     "send": "Send to the doctor",
     "waiting": "Waiting for the doctor's answer.",
     "answered": "The doctor answered with an addendum.",
-    "close": "Close the question"
+    "close": "Close the question",
+    "fromPharmacy": "Question from {{name}} (pharmacy), {{time}}",
+    "answeredWait": "Answered. The pharmacist will close the question.",
+    "answerWith": "Answer with",
+    "newAddendum": "A new addendum",
+    "existing": "Addendum: {{reason}} ({{time}})",
+    "reason": "Addendum reason",
+    "reasonRequired": "Give the reason.",
+    "body": "Your answer",
+    "bodyHint": "Saved as a signed addendum on this consultation.",
+    "bodyRequired": "Write the answer.",
+    "answer": "Send the answer"
   },
   "availability": {
     "title": "Medicine availability",

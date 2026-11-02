@@ -16,11 +16,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   the item and an allergy needs a reason before Sign. After signing, items are read-only with
   Change (cancel + new item, step-up) and Cancel with a reason.
 - staff-web `/pharmacy`: the queue in three tabs (Ready, Partly given, Questions) with search by
-  name or prescription number and flags; `/pharmacy/prescriptions/:id` confirms who is at the counter
+  name, prescription number or ticket and flags; `/pharmacy/prescriptions/:id` confirms who is at the counter
   first, then an outcome per item (give all, part, a same-ingredient substitute with a reason, not
   available), the controlled-medicine confirmation and one signature; a question to the doctor;
   `/pharmacy/prescriptions/:id/labels` prints 62 mm dosing labels (Kinyarwanda by default);
   `/pharmacy/availability` switches stock on and off.
+- Follow-ups (#134): the doctor answers a pharmacist's question on the consultation's Prescription
+  section with a new or an existing addendum (PQ3); a substitute can cover part of what is left;
+  substitutes are looked up by the item's generic name and strength.
 - patient-web `/medicines` and a Home card: active and past prescriptions with plain-language
   states ("Ready at the pharmacy", "Partly given: 10 of 21", "Not available here: buy outside
   before …") and the prescription code to show at any pharmacy.

@@ -458,6 +458,12 @@ def test_queue_rows_flags_filters_and_facility_isolation(
     assert numbers("status=queried") == [p1["number"]]
     assert numbers("q=Mugisha") == [p2["number"]]
     assert numbers(f"q={p1['number'][-6:]}") == [p1["number"]]
+    # #134: the visit's active ticket, exact and case-insensitive
+    assert numbers(f"q={visit['ticket']['number'].lower()}") == [p1["number"]]
+
+    # #134: items carry the catalogue generic name and strength for the substitute search
+    item = client.get(f"{S}prescriptions/{p1['id']}/").json()["items"][0]
+    assert (item["generic_name"], item["strength"]) == ("Morphine", "10 mg")
 
     # P7: the pharmacist reads without the relationship rule; the other doctor needs a reason
     detail = client.get(f"{S}prescriptions/{p1['id']}/")

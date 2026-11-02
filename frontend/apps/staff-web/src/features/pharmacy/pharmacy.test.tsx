@@ -30,7 +30,7 @@ async function signIn(email: string, path = "/today") {
 const pharmacist = () => signIn("pharmacist@medilink.test");
 
 describe("pharmacy queue (S7-F2)", () => {
-  it("tabs, search by ticket, flags; the menu shows Pharmacy and availability", async () => {
+  it("tabs, search by number, flags; the menu shows Pharmacy and availability", async () => {
     const app = await pharmacist();
     const nav = screen.getByRole("navigation", { name: /Main/ });
     expect(within(nav).getByRole("link", { name: "Pharmacy" })).toBeInTheDocument();
@@ -41,7 +41,7 @@ describe("pharmacy queue (S7-F2)", () => {
     expect(await screen.findByRole("link", { name: "Mukamana Jeanne" })).toBeInTheDocument();
     expect(screen.getByText("Controlled")).toBeInTheDocument();
 
-    await app.user.type(screen.getByRole("searchbox", { name: "Find a prescription" }), "G-015");
+    await app.user.type(screen.getByRole("searchbox", { name: "Find a prescription" }), "000103");
     await waitFor(() =>
       expect(screen.queryByRole("link", { name: "Mukamana Jeanne" })).not.toBeInTheDocument(),
     );
@@ -171,6 +171,8 @@ describe("prescription builder in the consultation (S7-F1)", () => {
     expect(await screen.findByText(/^Signed by /)).toBeInTheDocument();
     const issued = screen.getByRole("region", { name: "Prescription" });
     expect(await within(issued).findByText(/^RX-2026-/)).toBeInTheDocument();
-    expect(within(issued).getByRole("button", { name: "Change" })).toBeInTheDocument();
+    expect(
+      within(issued).getByRole("button", { name: /^Change\s*Amoxicillin/ }),
+    ).toBeInTheDocument();
   });
 });

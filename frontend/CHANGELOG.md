@@ -16,7 +16,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   the item and an allergy needs a reason before Sign. After signing, items are read-only with
   Change (cancel + new item, step-up) and Cancel with a reason.
 - staff-web `/pharmacy`: the queue in three tabs (Ready, Partly given, Questions) with search by
-  name, number or ticket and flags; `/pharmacy/prescriptions/:id` confirms who is at the counter
+  name or prescription number and flags; `/pharmacy/prescriptions/:id` confirms who is at the counter
   first, then an outcome per item (give all, part, a same-ingredient substitute with a reason, not
   available), the controlled-medicine confirmation and one signature; a question to the doctor;
   `/pharmacy/prescriptions/:id/labels` prints 62 mm dosing labels (Kinyarwanda by default);

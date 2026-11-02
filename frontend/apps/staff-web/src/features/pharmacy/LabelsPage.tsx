@@ -9,7 +9,7 @@ import { useParams } from "react-router";
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
 import { NoAccessContent } from "../../pages/NotFoundPage";
-import { errorText, pharmacyKeys, useCan } from "./shared";
+import { errorText, pharmacyKeys, useCan, useWhen } from "./shared";
 
 const LANGUAGES: LanguageCode[] = ["rw", "en", "fr"];
 
@@ -22,6 +22,7 @@ export function LabelsPage() {
   const api = useApi();
   const { prescriptionId = "" } = useParams();
   const allowed = useCan("pharmacy.dispense");
+  const when = useWhen();
   const [language, setLanguage] = useState<LanguageCode>("rw");
   const labels = useQuery({
     queryKey: pharmacyKeys.labels(prescriptionId, language),
@@ -83,7 +84,8 @@ export function LabelsPage() {
               <span>{[label.route, label.duration].filter(Boolean).join(" · ")}</span>
               {label.instructions && <span className="font-semibold">{label.instructions}</span>}
               <span className="mt-1 border-t border-black/30 pt-1 text-[9pt]">
-                {label.patient_name} · {label.dispensed_on} · ×{label.quantity}
+                {label.patient_name} · {when.date(`${label.dispensed_on}T12:00:00Z`)} · ×
+                {label.quantity}
               </span>
               <span className="font-mono text-[8pt]">{label.prescription_number}</span>
             </li>

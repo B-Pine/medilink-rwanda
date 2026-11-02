@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 3590.
+Keys: 3593.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -1531,7 +1531,7 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `queue.tab.partly` | Zatanzwe igice | Partly given | needs native-speaker review |
 | `queue.tab.queried` | Ibibazo | Questions | needs native-speaker review |
 | `queue.search` | Shaka resept | Find a prescription | needs native-speaker review |
-| `queue.searchHint` | Izina, nimero ya resept cyangwa tike | Name, prescription number or ticket | needs native-speaker review |
+| `queue.searchHint` | Izina cyangwa nimero ya resept | Name or prescription number | needs native-speaker review |
 | `queue.issued` | Yatanzwe {{time}} | Issued {{time}} | needs native-speaker review |
 | `queue.items_one` | Umuti {{count}} | {{count}} medicine | needs native-speaker review |
 | `queue.items_other` | Imiti {{count}} | {{count}} medicines | needs native-speaker review |
@@ -1659,6 +1659,9 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `prescription.cancelConsequences` | Farumasi ntizawutanga. Umurwayi azabona ko wahagaritswe. | The pharmacy will not give it. The patient sees it as cancelled. | needs native-speaker review |
 | `prescription.changeTitle` | Hindura {{name}}? | Change {{name}}? | needs native-speaker review |
 | `prescription.changeConsequences` | Uyu urahagarikwa n'impamvu yawe, hanyuma wongeremo mushya. | This one is cancelled with your reason, then you add the new one. | needs native-speaker review |
+| `pages` | Amapaji | Pages | needs native-speaker review |
+| `previous` | Ibibanza | Previous | needs native-speaker review |
+| `next` | Ibikurikira | Next | needs native-speaker review |
 
 ## staff-web feature: platform (namespace platform)
 

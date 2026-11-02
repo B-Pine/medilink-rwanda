@@ -72,7 +72,7 @@
       "queried": "Ibibazo"
     },
     "search": "Shaka resept",
-    "searchHint": "Izina, nimero ya resept cyangwa tike",
+    "searchHint": "Izina cyangwa nimero ya resept",
     "issued": "Yatanzwe {{time}}",
     "items_one": "Umuti {{count}}",
     "items_other": "Imiti {{count}}",
@@ -224,5 +224,8 @@
     "cancelConsequences": "Farumasi ntizawutanga. Umurwayi azabona ko wahagaritswe.",
     "changeTitle": "Hindura {{name}}?",
     "changeConsequences": "Uyu urahagarikwa n'impamvu yawe, hanyuma wongeremo mushya."
-  }
+  },
+  "pages": "Amapaji",
+  "previous": "Ibibanza",
+  "next": "Ibikurikira"
 }

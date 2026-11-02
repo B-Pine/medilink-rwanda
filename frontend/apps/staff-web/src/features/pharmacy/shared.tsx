@@ -3,7 +3,8 @@ import type {
   PrescriptionItemStatus,
   PrescriptionStatus,
 } from "@medilink/api-client";
-import type { BadgeTone } from "@medilink/ui";
+import { Button, type BadgeTone } from "@medilink/ui";
+import { useTranslation } from "react-i18next";
 
 export { errorText, useCan, useWhen } from "../clinical/shared";
 
@@ -44,3 +45,29 @@ export const ITEM_TONE: Record<PrescriptionItemStatus, BadgeTone> = {
 /** What is left to give of an item. */
 export const remaining = (item: PrescriptionItem) =>
   Math.max(item.quantity - item.dispensed_quantity, 0);
+
+/** Previous and next for the paginated lists (25 per page). */
+export function Pager({
+  page,
+  hasPrevious,
+  hasNext,
+  onPage,
+}: {
+  page: number;
+  hasPrevious: boolean;
+  hasNext: boolean;
+  onPage: (page: number) => void;
+}) {
+  const { t } = useTranslation();
+  if (!hasPrevious && !hasNext) return null;
+  return (
+    <nav aria-label={t("pharmacy.pages")} className="flex gap-2">
+      <Button variant="secondary" disabled={!hasPrevious} onClick={() => onPage(page - 1)}>
+        {t("pharmacy.previous")}
+      </Button>
+      <Button variant="secondary" disabled={!hasNext} onClick={() => onPage(page + 1)}>
+        {t("pharmacy.next")}
+      </Button>
+    </nav>
+  );
+}

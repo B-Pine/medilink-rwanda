@@ -72,7 +72,7 @@
       "queried": "Questions"
     },
     "search": "Trouver une ordonnance",
-    "searchHint": "Nom, numéro d'ordonnance ou ticket",
+    "searchHint": "Nom ou numéro d'ordonnance",
     "issued": "Émise {{time}}",
     "items_one": "{{count}} médicament",
     "items_other": "{{count}} médicaments",
@@ -224,5 +224,8 @@
     "cancelConsequences": "La pharmacie ne le délivrera pas. Le patient le voit comme annulé.",
     "changeTitle": "Modifier {{name}} ?",
     "changeConsequences": "Celui-ci est annulé avec votre motif, puis vous ajoutez le nouveau."
-  }
+  },
+  "pages": "Pages",
+  "previous": "Précédent",
+  "next": "Suivant"
 }

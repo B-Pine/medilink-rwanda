@@ -27,7 +27,7 @@ import { Link } from "react-router";
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
 import { NoAccessContent } from "../../pages/NotFoundPage";
-import { errorText, pharmacyKeys, useCan, useWhen } from "./shared";
+import { errorText, Pager, pharmacyKeys, useCan, useWhen } from "./shared";
 
 const TABS: PharmacyQueueTab[] = ["ready", "partly", "queried"];
 
@@ -42,9 +42,10 @@ export function QueuePage() {
   const [tab, setTab] = useState<PharmacyQueueTab>("ready");
   const [search, setSearch] = useState("");
   const q = useDeferredValue(search.trim());
+  const [page, setPage] = useState(1);
   const list = useQuery({
-    queryKey: pharmacyKeys.queue(tab, q),
-    queryFn: () => api.pharmacy.queue({ status: tab, q }),
+    queryKey: [...pharmacyKeys.queue(tab, q), page],
+    queryFn: () => api.pharmacy.queue({ status: tab, q, page }),
     enabled: allowed,
     placeholderData: keepPreviousData,
     refetchInterval: 30_000,
@@ -65,6 +66,14 @@ export function QueuePage() {
       {rows.map((row) => (
         <QueueItem key={row.id} row={row} />
       ))}
+      <li className="list-none">
+        <Pager
+          page={page}
+          hasPrevious={Boolean(list.data?.previous)}
+          hasNext={Boolean(list.data?.next)}
+          onPage={setPage}
+        />
+      </li>
     </ul>
   ) : (
     <EmptyState
@@ -82,10 +91,19 @@ export function QueuePage() {
         label={t("pharmacy.queue.search")}
         hint={t("pharmacy.queue.searchHint")}
         value={search}
-        onChange={(event) => setSearch(event.target.value)}
+        onChange={(event) => {
+          setPage(1);
+          setSearch(event.target.value);
+        }}
         className="w-full sm:w-80"
       />
-      <Tabs value={tab} onValueChange={(value) => setTab(value as PharmacyQueueTab)}>
+      <Tabs
+        value={tab}
+        onValueChange={(value) => {
+          setPage(1);
+          setTab(value as PharmacyQueueTab);
+        }}
+      >
         <TabsList aria-label={t("pharmacy.queue.tabs")}>
           {TABS.map((key) => (
             <TabsTrigger key={key} value={key}>

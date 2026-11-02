@@ -88,6 +88,9 @@ export function DispensePage() {
       void queryClient.invalidateQueries({ queryKey: ["pharmacy", "queue"] });
       setPlans({});
       setControlled(false);
+      // identity is confirmed again for every dispensing (contract §2.2)
+      setIdentity(null);
+      setCode("");
       setTried(false);
       setSigned(true);
     },
@@ -372,7 +375,7 @@ function ItemPlan({
             <label
               key={o}
               className={cx(
-                "inline-flex min-h-target cursor-pointer items-center gap-2 rounded-full border px-4 text-body-sm font-semibold has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus",
+                "inline-flex min-h-target cursor-pointer items-center gap-2 rounded-full border px-4 text-body-sm font-semibold focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-focus has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus",
                 plan.outcome === o
                   ? o === "not_available"
                     ? "border-danger bg-danger-bg text-danger"
@@ -617,14 +620,16 @@ function QuerySection({ p }: { p: Prescription }) {
               ? t("pharmacy.query.answered")
               : t("pharmacy.query.waiting")}
           </p>
-          <Button
-            variant="secondary"
-            className="self-start"
-            loading={close.isPending}
-            onClick={() => close.mutate(open.id)}
-          >
-            {t("pharmacy.query.close")}
-          </Button>
+          {open.status === "answered" && (
+            <Button
+              variant="secondary"
+              className="self-start"
+              loading={close.isPending}
+              onClick={() => close.mutate(open.id)}
+            >
+              {t("pharmacy.query.close")}
+            </Button>
+          )}
         </div>
       ) : (
         <form

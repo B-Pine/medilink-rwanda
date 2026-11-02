@@ -58,6 +58,7 @@ export function PrescriptionSection({ consultation: c }: { consultation: Consult
     },
   });
   const [adding, setAdding] = useState(false);
+  const [shortReason, setShortReason] = useState(false);
   const [replacing, setReplacing] = useState<PrescriptionItem | null>(null);
   const [cancelling, setCancelling] = useState<{ item: PrescriptionItem; change: boolean } | null>(
     null,
@@ -197,8 +198,13 @@ export function PrescriptionSection({ consultation: c }: { consultation: Consult
         reasonRequired
         reasonRequiredMessage={t("pharmacy.reasonMin")}
         busy={cancel.isPending}
-        error={errorText(cancel.error, t("errors.generic"))}
-        onConfirm={(reason) => cancelling && cancel.mutate({ item: cancelling.item, reason })}
+        error={shortReason ? t("pharmacy.reasonMin") : errorText(cancel.error, t("errors.generic"))}
+        onConfirm={(reason) => {
+          if (!cancelling) return;
+          if (reason.trim().length < 5) return setShortReason(true);
+          setShortReason(false);
+          cancel.mutate({ item: cancelling.item, reason: reason.trim() });
+        }}
       />
     </section>
   );
@@ -254,9 +260,11 @@ function ItemRow({
           <span className="flex gap-1">
             <Button variant="secondary" size="sm" onClick={() => onCancel(true)}>
               {t("pharmacy.prescription.change")}
+              <span className="sr-only"> {item.drug_display}</span>
             </Button>
             <Button variant="ghost" size="sm" onClick={() => onCancel(false)}>
               {t("pharmacy.prescription.cancel")}
+              <span className="sr-only"> {item.drug_display}</span>
             </Button>
           </span>
         )}

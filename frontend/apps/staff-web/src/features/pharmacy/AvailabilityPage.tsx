@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
 import { NoAccessContent } from "../../pages/NotFoundPage";
-import { errorText, pharmacyKeys, useCan, useWhen } from "./shared";
+import { errorText, Pager, pharmacyKeys, useCan, useWhen } from "./shared";
 
 /**
  * /pharmacy/availability (S7-F4, FR-PHA-04): what this facility has on the shelf. Doctors see
@@ -21,9 +21,10 @@ export function AvailabilityPage() {
   const canChange = useCan("pharmacy.availability");
   const [search, setSearch] = useState("");
   const q = useDeferredValue(search.trim());
+  const [page, setPage] = useState(1);
   const list = useQuery({
-    queryKey: pharmacyKeys.availability(q),
-    queryFn: () => api.pharmacy.availability({ q }),
+    queryKey: [...pharmacyKeys.availability(q), page],
+    queryFn: () => api.pharmacy.availability({ q, page }),
     enabled: canView,
     placeholderData: keepPreviousData,
   });
@@ -41,7 +42,10 @@ export function AvailabilityPage() {
         type="search"
         label={t("pharmacy.availability.search")}
         value={search}
-        onChange={(event) => setSearch(event.target.value)}
+        onChange={(event) => {
+          setPage(1);
+          setSearch(event.target.value);
+        }}
         className="sm:w-80"
       />
       {list.isPending ? (
@@ -60,6 +64,12 @@ export function AvailabilityPage() {
               <AvailabilityItem key={row.drug_code} row={row} canChange={canChange} />
             ))}
           </ul>
+          <Pager
+            page={page}
+            hasPrevious={Boolean(list.data?.previous)}
+            hasNext={Boolean(list.data?.next)}
+            onPage={setPage}
+          />
         </>
       ) : (
         <EmptyState icon={Pill} title={t("pharmacy.availability.none")} />

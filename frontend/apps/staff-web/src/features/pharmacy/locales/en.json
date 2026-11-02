@@ -72,7 +72,7 @@
       "queried": "Questions"
     },
     "search": "Find a prescription",
-    "searchHint": "Name, prescription number or ticket",
+    "searchHint": "Name or prescription number",
     "issued": "Issued {{time}}",
     "items_one": "{{count}} medicine",
     "items_other": "{{count}} medicines",
@@ -224,5 +224,8 @@
     "cancelConsequences": "The pharmacy will not give it. The patient sees it as cancelled.",
     "changeTitle": "Change {{name}}?",
     "changeConsequences": "This one is cancelled with your reason, then you add the new one."
-  }
+  },
+  "pages": "Pages",
+  "previous": "Previous",
+  "next": "Next"
 }

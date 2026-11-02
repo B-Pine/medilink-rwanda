@@ -370,7 +370,9 @@ const ORDER = [
   "clinicalUnsigned",
   "mySchedule",
   "pharmacy",
+  // [S7]
   "pharmacyAvailability",
+  // [/S7]
   "payments",
   "reports",
   "approvals",

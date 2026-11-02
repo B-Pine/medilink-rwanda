@@ -136,6 +136,11 @@ const MESSAGES = {
     fr: "Une question est déjà ouverte sur cette ordonnance.",
     rw: "Hari ikibazo kigifunguye kuri iyi resept.",
   },
+  notAnswered: {
+    en: "The doctor has not answered this question yet.",
+    fr: "Le médecin n'a pas encore répondu à cette question.",
+    rw: "Muganga ntarasubiza iki kibazo.",
+  },
   notOpen: {
     en: "This item can no longer be given.",
     fr: "Cette ligne ne peut plus être délivrée.",
@@ -592,6 +597,10 @@ export const pharmacyMocks: FeatureMockFactory = (context) => {
           reason?: string;
         };
         if (body.version !== r.version) return stale(ok.lang);
+        if ((body.reason ?? "").trim().length < 5)
+          return context.validationError(ok.lang, {
+            reason: ["Give a reason (5 characters or more)."],
+          });
         if (r.items.some((i) => i.dispensed_quantity > 0)) return rule(ok.lang, "dispensed");
         r.status = "cancelled";
         r.cancelled_reason = (body.reason ?? "").trim();
@@ -609,9 +618,8 @@ export const pharmacyMocks: FeatureMockFactory = (context) => {
         const q = (url.searchParams.get("q") ?? "").trim().toLowerCase();
         const rows: PharmacyQueueRow[] = db.prescriptions
           .filter((r) => {
-            const queried = r.queries.some((x) => x.status === "open");
-            if (tab === "queried") return queried;
-            if (queried) return false;
+            // backend queue_rows: "queried" = an open query; the others filter by status only
+            if (tab === "queried") return r.queries.some((x) => x.status === "open");
             return tab === "partly"
               ? r.status === "partly_dispensed"
               : r.status === "ready_to_dispense";
@@ -619,9 +627,7 @@ export const pharmacyMocks: FeatureMockFactory = (context) => {
           .filter(
             (r) =>
               !q ||
-              [r.patient_display_name, r.number ?? "", r.ticket_number ?? ""].some((v) =>
-                v.toLowerCase().includes(q),
-              ),
+              [r.patient_display_name, r.number ?? ""].some((v) => v.toLowerCase().includes(q)),
           )
           .sort((a, b) => (a.issued_at ?? "").localeCompare(b.issued_at ?? ""))
           .map((r) => ({
@@ -683,7 +689,8 @@ export const pharmacyMocks: FeatureMockFactory = (context) => {
           if (line.outcome === "full") qty = remaining;
           else if (line.outcome === "partial") {
             qty = line.quantity ?? 0;
-            if (qty < 1 || qty >= remaining) return rule(ok.lang, "quantity");
+            // backend: a "partial" of everything left is recorded as full
+            if (qty < 1 || qty > remaining) return rule(ok.lang, "quantity");
           } else if (line.outcome === "substituted") {
             if (!i.substitution_allowed) return rule(ok.lang, "noSubstitution");
             const original = drug(i.drug_code);
@@ -800,6 +807,26 @@ export const pharmacyMocks: FeatureMockFactory = (context) => {
         return HttpResponse.json(created, { status: 201 });
       }),
 
+      http.post(`${S}/prescription-queries/:queryId/answer/`, async ({ request, params }) => {
+        await context.settle();
+        const ok = staff(request, ["prescription.issue"]);
+        if ("error" in ok) return ok.error;
+        const body = ((await context.readJson(request)) ?? {}) as { addendum_id?: string };
+        if (!body.addendum_id)
+          return context.validationError(ok.lang, { addendum_id: ["Choose the addendum."] });
+        for (const r of db.prescriptions) {
+          const found = r.queries.find((x) => x.id === params.queryId);
+          if (!found) continue;
+          if (found.status !== "open") return rule(ok.lang, "notOpen");
+          found.status = "answered";
+          found.answered_by_addendum_id = body.addendum_id;
+          found.answered_at = now();
+          r.version += 1;
+          return HttpResponse.json(found);
+        }
+        return notFound(ok.lang);
+      }),
+
       http.post(`${S}/prescription-queries/:queryId/close/`, async ({ request, params }) => {
         await context.settle();
         const ok = staff(request, ["pharmacy.dispense"]);
@@ -807,6 +834,7 @@ export const pharmacyMocks: FeatureMockFactory = (context) => {
         for (const r of db.prescriptions) {
           const found = r.queries.find((x) => x.id === params.queryId);
           if (!found) continue;
+          if (found.status !== "answered") return rule(ok.lang, "notAnswered");
           found.status = "closed";
           found.closed_at = now();
           r.version += 1;

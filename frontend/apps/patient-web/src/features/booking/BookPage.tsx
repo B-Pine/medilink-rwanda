@@ -168,12 +168,17 @@ function ChoiceCard({
 function WhenStep({
   facility,
   service,
+  doctor,
+  onAnyDoctor,
   onHeld,
   onJoinToday,
   joining,
 }: {
   facility: PublicFacility;
   service: PublicService;
+  /** "Book this doctor" from the facility page: only this doctor's times. */
+  doctor: { membership_id: string; name: string } | null;
+  onAnyDoctor: () => void;
   onHeld: (slot: PublicSlot, hold: Hold) => void;
   onJoinToday: () => void;
   joining: boolean;
@@ -185,8 +190,20 @@ function WhenStep({
   const [now] = useState(() => Date.now());
   const date = kigaliDate(new Date(now + start * 86_400_000));
   const week = useQuery({
-    queryKey: ["discovery", "slots", facility.slug, service.id, date],
-    queryFn: () => api.booking.slots(facility.slug, { service_id: service.id, date }),
+    queryKey: [
+      "discovery",
+      "slots",
+      facility.slug,
+      service.id,
+      date,
+      doctor?.membership_id ?? null,
+    ],
+    queryFn: () =>
+      api.booking.slots(facility.slug, {
+        service_id: service.id,
+        date,
+        membership_id: doctor?.membership_id ?? null,
+      }),
   });
   const days = week.data?.days ?? [];
   const [chosenDay, setChosenDay] = useState<string | null>(null);
@@ -232,6 +249,18 @@ function WhenStep({
 
   return (
     <div className="flex flex-col gap-5">
+      {doctor && (
+        <p className="m-0 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg bg-brand-subtle px-4 py-3 text-on-brand-subtle">
+          <span className="font-semibold">{t("booking.flow.with", { doctor: doctor.name })}</span>
+          <button
+            type="button"
+            onClick={onAnyDoctor}
+            className="cursor-pointer font-semibold text-link underline underline-offset-4"
+          >
+            {t("booking.flow.anyDoctor")}
+          </button>
+        </p>
+      )}
       {service.remote_join && (
         <Card className="flex flex-col gap-3 border-2 border-brand sm:flex-row sm:items-center">
           <PersonSimpleWalk
@@ -685,6 +714,12 @@ export function BookPage() {
           <WhenStep
             facility={f}
             service={service}
+            doctor={f.doctors.find((d) => d.membership_id === params.get("doctor")) ?? null}
+            onAnyDoctor={() => {
+              const next = new URLSearchParams(params);
+              next.delete("doctor");
+              setParams(next, { replace: true });
+            }}
             joining={join.isPending}
             onJoinToday={() => join.mutate()}
             onHeld={(s, h) => {

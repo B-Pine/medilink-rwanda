@@ -41,8 +41,6 @@ export const routes: RouteObject[] = [
         lazy: page(() => import("../pages/VerifyEmailPage"), "VerifyEmailPage"),
       },
       info("/verify", "verify"),
-      info("/terms", "terms"),
-      info("/privacy", "privacy"),
       info("/help", "help"),
       {
         element: <RequirePatient />,

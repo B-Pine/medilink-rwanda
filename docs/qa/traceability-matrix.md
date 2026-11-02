@@ -291,10 +291,10 @@ Source: [11 · AI symptom checker](../analysis/11-ai-symptom-checker.md)
 | FR-AI-01 | Structured symptom list (3 languages) for reason for visit | P1 | S5 | Both | API, INS | In progress |
 | FR-AI-02 | Research consent separate from care consent | P1 | S0* | Both | API, E2E | Verified (S0, v0.1.0) |
 | FR-AI-03 | De-identified export of intake + diagnosis pairs | P2 | — | Backend | INS | Not started |
-| FR-AI-04 | Red-flag rules engine with clinician sign-off | P2 | — | Backend | BR, INS | Not started |
-| FR-AI-05 | Symptom → service → level-of-care routing | P2 | — | Both | BR | Not started |
-| FR-AI-06 | Safety layer: low confidence → safe default | P2 | — | Backend | BR | Not started |
-| FR-AI-07 | Prediction log with model version, inputs, outputs | P2 | — | Backend | API | Not started |
+| FR-AI-04 | Red-flag rules engine with clinician sign-off | P2 | PT | Backend | BR, INS | In progress (rules shipped, sign-off pending #93) |
+| FR-AI-05 | Symptom → service → level-of-care routing | P2 | PT | Both | BR | In progress |
+| FR-AI-06 | Safety layer: low confidence → safe default | P2 | PT | Backend | BR | In progress |
+| FR-AI-07 | Prediction log with model version, inputs, outputs | P2 | PT | Backend | API | In progress |
 | FR-AI-08 | ML model in shadow mode, doctors only | P3 | — | Both | AZ, INS | Not started |
 | FR-AI-09 | Vignette evaluation suite; under-triage release gate | P3 | — | Backend | INS | Not started |
 | FR-AI-10 | Model cards and model registry | P3 | — | Backend | INS | Not started |

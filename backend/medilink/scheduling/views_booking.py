@@ -277,6 +277,8 @@ class FacilityProfileView(PublicView):
                 )
             )
             days = effective_calendar(facility.pk, today, today + dt.timedelta(days=30))
+            # Live, not from the listing: the profile is per facility and cheap (PT §2.1)
+            live = listing.live_queue(facility.pk, services)
             templates = list(
                 ScheduleTemplate.objects.filter(
                     facility_id=facility.pk, ended_at__isnull=True
@@ -338,6 +340,8 @@ class FacilityProfileView(PublicView):
                         "remote_join": sv.allows_remote_join,
                         "walk_in": sv.allows_walk_in,
                         "queue_load": rows[sv.pk].queue_load or None if sv.pk in rows else None,
+                        "waiting": live[sv.pk].waiting if sv.pk in live else None,
+                        "wait_range": listing.wait_range(live.get(sv.pk)),
                         "next_slot_at": rows[sv.pk].next_slot_at if sv.pk in rows else None,
                         "min_age_months": sv.min_age_months,
                         "max_age_months": sv.max_age_months,

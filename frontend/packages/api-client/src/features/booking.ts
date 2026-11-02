@@ -52,14 +52,25 @@ export interface FacilityResult {
   service_code: string;
   service_name_i18n: I18n;
   accepts_insurance: "yes" | "no" | "unknown";
+  /** Accepted insurer codes, sorted (public-pages contract §2.1). */
+  insurers: string[];
   fee_rwf: number | null;
   patient_share_rwf: number | null;
   next_slot_at: string | null;
   queue_load: QueueLoad | null;
+  /** People waiting now and the wait for a new arrival (public-pages contract §2.1). */
+  waiting: number | null;
+  wait_range: WaitRange | null;
   allows_remote_join: boolean;
   referral_hint: boolean;
   lat: number | null;
   lng: number | null;
+}
+
+/** Minutes a new arrival can expect to wait. */
+export interface WaitRange {
+  min: number;
+  max: number;
 }
 
 export interface FacilitySearchPage {
@@ -85,6 +96,9 @@ export interface PublicService {
   remote_join: boolean;
   walk_in: boolean;
   queue_load: QueueLoad | null;
+  /** Live, counts only (public-pages contract §2.1); null when the queue is not published. */
+  waiting: number | null;
+  wait_range: WaitRange | null;
   next_slot_at: string | null;
   min_age_months: number | null;
   max_age_months: number | null;

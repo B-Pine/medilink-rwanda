@@ -373,13 +373,14 @@ Requirements: FR-SCH-01..15; FR-BIL-03; FR-AI-01.
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `GET` | `/api/v1/public/facilities/` | Search: location, service, insurance, open now/today, level of care, availability, type, ownership | Public | FR-SCH-01, FR-SCH-04, FR-BIL-03 | Live facilities only; distance, open status, accepts insurance, fee, estimated share, next slot, queue load, referral hint; RL: search | Planned |
-| `GET` | `/api/v1/public/facilities/{slug}/` | Facility profile | Public | FR-SCH-02, FR-SCH-03 | Pre-rendered by patient-web at build time | Planned |
+| `GET` | `/api/v1/public/facilities/` | Search: location, service, insurance, open now/today, level of care, availability, type, ownership | Public | FR-SCH-01, FR-SCH-04, FR-BIL-03 | Live facilities only; distance, open status, accepts insurance, fee, estimated share, next slot, queue load, live `waiting` and `wait_range`, accepted `insurers` (contract PT §2.1), referral hint; RL: search | Planned |
+| `GET` | `/api/v1/public/facilities/{slug}/` | Facility profile | Public | FR-SCH-02, FR-SCH-03 | Pre-rendered by patient-web at build time; each service carries the live `waiting` count and `wait_range` (contract PT §2.1) | Planned |
 | `GET` | `/api/v1/public/facilities/{slug}/services/` | Services with fees, insurers and estimated share | Public | FR-SCH-02, FR-BIL-03 | `?insurer=` for the share | Planned |
 | `GET` | `/api/v1/public/facilities/{slug}/doctors/` | Doctors: name, specialty, days present | Public | FR-SCH-02 | No other personal data | Planned |
 | `GET` | `/api/v1/public/facilities/{slug}/queue-load/` | Queue load (low/medium/high) and walk-in wait estimate | Public | FR-SCH-02 | Cached a few seconds | Planned |
 | `GET` | `/api/v1/public/facilities/{slug}/slots/` | Bookable slots for a service, doctor and date range | Public | FR-SCH-07 | Server recomputes at hold time | Planned |
 | `GET` | `/api/v1/public/symptoms/` | Structured symptom list | Public | FR-AI-01, FR-SCH-10 | rw/en/fr | Planned |
+| `POST` | `/api/v1/public/triage/` | Rules-based symptom triage: urgency, service, level of care | Public | FR-AI-04, FR-AI-05, FR-AI-06, FR-AI-07 | [Contract PT §2.2](../architecture/contracts/public-pages-and-triage.md); rules `2026.11-p1`, not signed off (#93); logged without personal data; 20/min | Implemented |
 | `GET` | `/api/v1/public/calendar-feeds/{token}/` | Private `.ics` subscription feed | Feed token | FR-SCH-11 | `text/calendar`; no clinical details; revocable; README §6 item 6 | Planned |
 
 ### Patient

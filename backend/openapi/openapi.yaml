@@ -7169,6 +7169,27 @@ paths:
                 items:
                   $ref: '#/components/schemas/Symptom'
           description: ''
+  /api/v1/public/triage/:
+    post:
+      operationId: public_triage
+      description: 'Rules-based care navigation, not a diagnosis (analysis 11): an
+        urgency, a service and a level of care. No account and no personal data; each
+        answer is logged de-identified.'
+      tags:
+      - public
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TriageRequestRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriageResult'
+          description: ''
   /api/v1/public/web-push-key/:
     get:
       operationId: public_web_push_key_retrieve
@@ -12964,6 +12985,20 @@ components:
         phone:
           type: string
           maxLength: 20
+    AgeGroupEnum:
+      enum:
+      - infant
+      - child
+      - teen
+      - adult
+      - older
+      type: string
+      description: |-
+        * `infant` - infant
+        * `child` - child
+        * `teen` - teen
+        * `adult` - adult
+        * `older` - older
     AgreementsBlock:
       type: object
       properties:
@@ -16362,6 +16397,16 @@ components:
         * `exact_identifier` - exact_identifier
         * `strong` - strong
         * `possible` - possible
+    DurationEnum:
+      enum:
+      - today
+      - days
+      - week
+      type: string
+      description: |-
+        * `today` - today
+        * `days` - days
+        * `week` - week
     DutyRow:
       type: object
       properties:
@@ -17039,6 +17084,10 @@ components:
             type: string
         accepts_insurance:
           $ref: '#/components/schemas/AcceptsInsuranceEnum'
+        insurers:
+          type: array
+          items:
+            type: string
         fee_rwf:
           type: integer
           nullable: true
@@ -17054,6 +17103,13 @@ components:
           oneOf:
           - $ref: '#/components/schemas/QueueLoadEnum'
           - $ref: '#/components/schemas/NullEnum'
+        waiting:
+          type: integer
+          nullable: true
+        wait_range:
+          allOf:
+          - $ref: '#/components/schemas/WaitRange'
+          nullable: true
         allows_remote_join:
           type: boolean
         referral_hint:
@@ -17072,6 +17128,7 @@ components:
       - distance_km
       - district
       - fee_rwf
+      - insurers
       - lat
       - level_of_care
       - lng
@@ -17087,6 +17144,8 @@ components:
       - service_name_i18n
       - slug
       - type
+      - wait_range
+      - waiting
     FacilityStatusEnum:
       enum:
       - draft
@@ -23143,6 +23202,13 @@ components:
         queue_load:
           type: string
           nullable: true
+        waiting:
+          type: integer
+          nullable: true
+        wait_range:
+          allOf:
+          - $ref: '#/components/schemas/WaitRange'
+          nullable: true
         next_slot_at:
           type: string
           format: date-time
@@ -23167,6 +23233,8 @@ components:
       - next_slot_at
       - queue_load
       - remote_join
+      - wait_range
+      - waiting
       - walk_in
     PublicHolidaysItem:
       type: object
@@ -26151,6 +26219,57 @@ components:
           minimum: 0
       required:
       - minutes
+    TriageRequestRequest:
+      type: object
+      properties:
+        symptoms:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 40
+          maxItems: 8
+          minItems: 1
+        duration:
+          $ref: '#/components/schemas/DurationEnum'
+        age_group:
+          $ref: '#/components/schemas/AgeGroupEnum'
+        pregnant:
+          type: boolean
+          default: false
+      required:
+      - age_group
+      - duration
+      - symptoms
+    TriageResult:
+      type: object
+      properties:
+        urgency:
+          $ref: '#/components/schemas/UrgencyEnum'
+        service_code:
+          type: string
+        level_of_care:
+          type: string
+        red_flags:
+          type: array
+          items:
+            type: string
+        reasons:
+          type: array
+          items:
+            type: string
+        rules_version:
+          type: string
+        signed_off:
+          type: boolean
+      required:
+      - level_of_care
+      - reasons
+      - red_flags
+      - rules_version
+      - service_code
+      - signed_off
+      - urgency
     UndoRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -26283,6 +26402,18 @@ components:
         * `infected` - Infected
         * `rejected` - Rejected
         * `failed` - Failed
+    UrgencyEnum:
+      enum:
+      - self_care
+      - soon
+      - today
+      - emergency
+      type: string
+      description: |-
+        * `self_care` - self_care
+        * `soon` - soon
+        * `today` - today
+        * `emergency` - emergency
     VerifyEmailRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -26518,6 +26649,16 @@ components:
             $ref: '#/components/schemas/Vitals'
       required:
       - results
+    WaitRange:
+      type: object
+      properties:
+        min:
+          type: integer
+        max:
+          type: integer
+      required:
+      - max
+      - min
     Warning:
       type: object
       properties:

@@ -18,6 +18,7 @@ A sprint contract is the agreement a sprint is built and verified against: scope
 | S7 · Pharmacy and documents | [sprint-07-pharmacy-documents.md](sprint-07-pharmacy-documents.md) | 5 | Contracted (v0.1); S7a prescribing and dispensing in progress, S7b documents and verification next |
 | S9 · Notification engine | [sprint-09-notifications.md](sprint-09-notifications.md) | 1 | Backend implemented (S9 pull request); frontend in progress ([acceptance](../../qa/sprint-9-acceptance.md)) |
 | S10 · Help center and support (part 1) | [sprint-10-help-support.md](sprint-10-help-support.md) | 3 | Backend and frontend implemented ([acceptance](../../qa/sprint-10-acceptance.md)); real-API checks wait for #17; disputes and reports are part 2 |
+| Public pages and symptom triage | [public-pages-and-triage.md](public-pages-and-triage.md) | — | Backend implemented (live public queue, rules-based triage); public pages follow |
 
 Acceptance checks are named per sprint: `S1-B1`, `S1-F1`, `S3-B1`, `S9-F4`, and so on (B = backend, F = frontend, I = integration).
 

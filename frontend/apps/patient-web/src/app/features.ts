@@ -16,6 +16,9 @@ import { notificationsFeature } from "../features/notifications";
 // [S10 imports]
 import { helpFeature } from "../features/help";
 // [/S10 imports]
+// [PT imports]
+import { publicFeature } from "../features/public";
+// [/PT imports]
 // [S4 imports]
 import { trackerFeature } from "../features/tracker";
 // [/S4 imports]
@@ -73,6 +76,9 @@ export const FEATURES: FeatureRoutes[] = [
   // [S10]
   helpFeature,
   // [/S10]
+  // [PT]
+  publicFeature,
+  // [/PT]
   // [S4]
   trackerFeature,
   // [/S4]

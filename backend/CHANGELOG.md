@@ -8,6 +8,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Public pages and symptom triage (contract public-pages-and-triage)
+
+- `medilink.triage`: `POST /public/triage/` turns structured answers (symptoms, how long, age group,
+  pregnancy) into an urgency, a service and a level of care. Rules version `2026.11-p1` (red flags
+  first, R2-R12, a safety layer that only raises urgency) are code with one test per rule and ship
+  `signed_off: false` until clinical sign-off (#93). Each answer is logged in the append-only
+  `triage_log` without account, IP or device. Throttle `triage` (20/min, `THROTTLE_RATE_TRIAGE`).
+- Public facility profile and search: each service carries `waiting` (people before the
+  consultation) and `wait_range` (the new-arrival estimate reception sees). The profile computes
+  them live; search reads the listing (refreshed every 10 minutes). Counts only, never a person.
+- Search results also list the accepted `insurers` codes, so the home page shows them per facility.
+
 
 ### Sprint 5b · Disruptions, follow-ups and the calendar feed
 

@@ -1,0 +1,205 @@
+{
+  "toConfirm": "À confirmer",
+  "checker": {
+    "eyebrow": "Vérificateur de symptômes",
+    "title": "Vous ne savez pas où aller ?",
+    "intro": "Répondez à quelques questions. Nous vous indiquons dans quel délai consulter et quel type de soins, puis des établissements près de chez vous.",
+    "loadFailed": "Impossible de charger les questions. Vérifiez votre connexion et réessayez.",
+    "dangerTitle": "D'abord : l'un de ces signes est-il présent maintenant ?",
+    "dangerIntro": "Choisissez ceux qui s'appliquent. Sinon, continuez.",
+    "unconscious": "Évanouissement, convulsions ou impossible à réveiller",
+    "noneOfThese": "Aucun de ces signes",
+    "whoTitle": "Pour qui ?",
+    "age": {
+      "infant": "Un bébé (moins d'un an)",
+      "child": "Un enfant (1 à 12 ans)",
+      "teen": "Un adolescent (13 à 17 ans)",
+      "adult": "Un adulte (18 à 64 ans)",
+      "older": "Une personne âgée (65 ans ou plus)"
+    },
+    "pregnant": "Elle est enceinte",
+    "whatTitle": "Que ressent la personne ?",
+    "whatHint": "Jusqu'à 8 choix.",
+    "longTitle": "Depuis combien de temps ?",
+    "duration": {
+      "today": "Depuis aujourd'hui",
+      "days": "2 à 6 jours",
+      "week": "Une semaine ou plus"
+    },
+    "back": "Retour",
+    "next": "Suivant",
+    "seeAdvice": "Voir le conseil",
+    "failed": "Impossible d'obtenir un conseil pour le moment. Réessayez.",
+    "answerEyebrow": "Notre suggestion",
+    "urgency": {
+      "today": "Consultez aujourd'hui",
+      "soon": "Prenez rendez-vous dans les prochains jours",
+      "self_care": "Soins à la maison pour l'instant"
+    },
+    "service": {
+      "general_consultation": "Une consultation générale dans un centre de santé ou une clinique.",
+      "paediatric_consultation": "Une consultation pour enfants dans un centre de santé ou une clinique.",
+      "antenatal_care": "Des soins prénatals, dans un établissement avec un service de maternité.",
+      "dental_care": "Un dentiste.",
+      "eye_care": "Une clinique ophtalmologique.",
+      "dermatology": "Un dermatologue, ou d'abord une consultation générale."
+    },
+    "reason": {
+      "pregnancy_warning": "Pendant la grossesse, ces signes doivent être vus par une sage-femme ou un médecin le jour même.",
+      "infant_illness": "Les bébés tombent vite malades ; un soignant doit les voir aujourd'hui.",
+      "fever": "Une fièvre nécessite un test du paludisme le jour même.",
+      "fluid_loss": "Diarrhée et vomissements peuvent vite déshydrater.",
+      "long_cough": "Une toux d'une semaine ou plus doit être examinée, y compris pour la tuberculose.",
+      "teeth": "Un dentiste peut trouver la cause de la douleur.",
+      "eyes": "Une clinique ophtalmologique peut examiner le problème.",
+      "skin": "Une éruption n'est généralement pas urgente mais doit être examinée.",
+      "urine": "Une douleur en urinant est souvent une infection à traiter.",
+      "self_care": "Reposez-vous, buvez de l'eau et observez. Si cela s'aggrave ou dure une semaine, prenez rendez-vous.",
+      "see_clinician": "Un soignant peut examiner cela dans les prochains jours.",
+      "safety_age": "Pour les plus jeunes et les plus âgés, nous conseillons toujours une consultation.",
+      "safety_duration": "Comme cela dure depuis une semaine, un soignant doit voir le bébé aujourd'hui."
+    },
+    "findPlaces": "Voir les établissements proches",
+    "selfCareWhen": "Consultez plus tôt en cas de forte fièvre, si la personne ne peut pas boire ou se sent beaucoup plus mal.",
+    "notSignedOff": "Ces règles sont en cours de validation par des cliniciens avant le pilote.",
+    "restart": "Recommencer",
+    "disclaimer": "Ceci est un conseil, pas un diagnostic. Si vous vous sentez très mal, allez aux urgences les plus proches ou appelez le 912.",
+    "emergencyTitle": "Obtenez de l'aide maintenant",
+    "emergencyBody": "Appelez le {{number}} ou allez aux urgences les plus proches. N'attendez pas un rendez-vous.",
+    "emergencyMore": "Que faire en cas d'urgence"
+  },
+  "about": {
+    "eyebrow": "À propos de MediLink",
+    "title": "Des soins qui vous attendent",
+    "lead": "MediLink relie les patients au Rwanda aux établissements de santé vérifiés : trouvez des soins qui acceptent votre assurance, réservez ou rejoignez la file depuis votre téléphone, et arrivez quand c'est votre tour.",
+    "points": {
+      "patients": {
+        "title": "Pour les patients et les familles",
+        "body": "Cherchez par service, lieu et assurance, voyez l'affluence d'un établissement, et gardez vos visites, ordonnances et reçus au même endroit."
+      },
+      "facilities": {
+        "title": "Pour les établissements de santé",
+        "body": "Gérez l'accueil, la file, les consultations, la pharmacie et la facturation dans un seul système, et laissez les patients vous trouver."
+      },
+      "verified": {
+        "title": "Établissements vérifiés uniquement",
+        "body": "Chaque établissement est vérifié par rapport à sa licence avant d'apparaître sur MediLink."
+      },
+      "rwanda": {
+        "title": "Vos données restent au Rwanda",
+        "body": "Les informations de santé sont chiffrées, stockées au Rwanda et consultées uniquement par le personnel qui vous soigne. Vous voyez qui les a consultées."
+      }
+    },
+    "whoTitle": "Qui gère MediLink",
+    "whoBody": "MediLink Rwanda est exploité par [To confirm]. Notre adresse, nos coordonnées et notre délégué à la protection des données figurent ci-dessous.",
+    "contact": {
+      "entity": "Exploitant",
+      "address": "Adresse",
+      "email": "E-mail",
+      "phone": "Téléphone"
+    },
+    "contactValue": {
+      "entity": "[To confirm]",
+      "address": "[To confirm]",
+      "email": "[To confirm]",
+      "phone": "[To confirm]"
+    },
+    "forFacilities": "MediLink pour les établissements de santé",
+    "privacy": "Comment nous protégeons vos données"
+  },
+  "emergency": {
+    "eyebrow": "Urgence",
+    "title": "En cas d'urgence, n'attendez pas",
+    "lead": "MediLink n'est pas fait pour les urgences. Appelez le {{number}} ou allez directement aux urgences les plus proches.",
+    "call": "Appeler à l'aide",
+    "signsTitle": "Signes de danger",
+    "signs": {
+      "chest": "Douleur ou pression dans la poitrine",
+      "breathing": "Difficulté à respirer",
+      "bleeding": "Saignement abondant",
+      "unconscious": "Évanouissement, convulsions ou impossible à réveiller",
+      "stroke": "Faiblesse soudaine d'un côté du corps ou du visage",
+      "pregnancy": "Pendant la grossesse : saignement, mal de tête intense ou convulsions",
+      "baby": "Un bébé qui ne peut pas boire ou téter, ou vomit tout",
+      "injury": "Brûlures graves ou blessure sérieuse"
+    },
+    "goTitle": "Urgences les plus proches",
+    "goBody": "Les hôpitaux de district et de référence ont des urgences ouvertes jour et nuit. Les centres de santé peuvent stabiliser et orienter.",
+    "notForTitle": "À quoi sert MediLink",
+    "notForBody": "Prendre rendez-vous, rejoindre la file et garder vos dossiers. Pour toute urgence, appelez ou allez-y maintenant.",
+    "findNearest": "Trouver l'établissement le plus proche"
+  },
+  "legal": {
+    "eyebrow": "Mentions légales",
+    "draft": "Projet en relecture : ce texte est vérifié par un juriste avant le lancement. Les parties marquées « À confirmer » ne sont pas définitives.",
+    "summaryTitle": "En bref"
+  },
+  "privacy": {
+    "title": "Avis de confidentialité",
+    "summary": "Nous ne collectons que ce qui est nécessaire pour organiser et enregistrer vos soins, nous le chiffrons et le stockons au Rwanda, le montrons uniquement au personnel qui vous soigne, et vous permettons de le consulter, le corriger et le télécharger.",
+    "sections": {
+      "who": {
+        "title": "Who is responsible",
+        "body": "The operator of MediLink ([To confirm]) and each health facility that cares for you are responsible for your data, under Law No. 058/2021 on the protection of personal data and privacy."
+      },
+      "what": {
+        "title": "What we collect",
+        "body": "Your name, contact details, date of birth, sex, identifiers such as your national ID or insurance number, your bookings and queue tickets, and the records health facilities write about your visits."
+      },
+      "why": {
+        "title": "Why we use it",
+        "body": "To find and book care, run the queue, keep your health records, bill and claim insurance, send you reminders, and keep the service safe. We never sell your data or use it for advertising."
+      },
+      "where": {
+        "title": "Where it is kept",
+        "body": "On servers in Rwanda, encrypted in transit and at rest. Health records can be opened only by staff at a facility that is caring for you, and every opening is logged."
+      },
+      "rights": {
+        "title": "Your rights",
+        "body": "You can see who opened your record, download your data, ask for corrections, and close your account. Facilities must keep medical records for the period the law requires."
+      },
+      "retention": {
+        "title": "How long we keep it",
+        "body": "Medical records are kept as long as the law requires ([To confirm]); other data is deleted or anonymised when no longer needed."
+      },
+      "contact": {
+        "title": "Contact",
+        "body": "Questions or complaints: our data protection officer at [To confirm]. You can also contact the National Cyber Security Authority."
+      }
+    }
+  },
+  "terms": {
+    "title": "Conditions d'utilisation",
+    "summary": "MediLink vous aide à trouver, réserver et suivre vos soins. Les soins sont donnés par l'établissement de santé. MediLink n'est pas fait pour les urgences et son vérificateur de symptômes donne un conseil, pas un diagnostic.",
+    "sections": {
+      "account": {
+        "title": "Your account",
+        "body": "Keep your password private. You may manage profiles for your children and people you care for, and share access with others you trust."
+      },
+      "bookings": {
+        "title": "Bookings and the queue",
+        "body": "Arrive on time or cancel before the deadline. If you arrive late, you are checked in as a walk-in. Bookings you miss without cancelling count as no-shows, and repeated no-shows can limit new bookings for a while."
+      },
+      "emergencies": {
+        "title": "Not for emergencies",
+        "body": "In an emergency call 912 or go to the nearest emergency department."
+      },
+      "guidance": {
+        "title": "Guidance, not diagnosis",
+        "body": "The symptom checker suggests how soon to seek care and which kind. It does not diagnose. Only a clinician can."
+      },
+      "facilities": {
+        "title": "Facilities and care",
+        "body": "Health facilities are independent and responsible for the care they give, their prices and their records."
+      },
+      "fairUse": {
+        "title": "Fair use",
+        "body": "Do not misuse the service, impersonate others or try to access data that is not yours."
+      },
+      "law": {
+        "title": "Liability and law",
+        "body": "[To confirm] These terms are governed by the laws of Rwanda."
+      }
+    }
+  }
+}

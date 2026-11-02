@@ -65,7 +65,16 @@
     "closed": "Closed",
     "closures": "Closed on {{list}}",
     "contact": "Address and contact",
-    "directions": "Directions"
+    "directions": "Directions",
+    "queueNow": "Queue right now",
+    "queueLive": "Live",
+    "queueWait": "{{min}}–{{max}} min",
+    "queueWaiting_one": "{{count}} person waiting",
+    "queueWaiting_other": "{{count}} people waiting",
+    "queueNoDoctor_one": "{{count}} waiting · no doctor on duty yet",
+    "queueNoDoctor_other": "{{count}} waiting · no doctor on duty yet",
+    "queueEmpty": "No one waiting",
+    "bookShort": "Book"
   },
   "flow": {
     "title": "Book a visit",
@@ -119,7 +128,8 @@
     "addToCalendar": "Add to my calendar",
     "directions": "Facility and directions",
     "toVisits": "See my visits",
-    "with": "with {{doctor}}"
+    "with": "with {{doctor}}",
+    "anyDoctor": "Any doctor"
   },
   "body": {
     "general": "General",

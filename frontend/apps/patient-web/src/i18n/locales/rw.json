@@ -164,6 +164,33 @@
           "a": "Yego. Baza ku kwakira: bakwandika bakaguha tike, kandi ugumana nimero yawe ya MediLink."
         }
       }
+    },
+    "near": {
+      "eyebrow": "Hafi yawe",
+      "title": "Ubuvuzi hafi yawe",
+      "body": "Ibigo byemejwe bikwegereye, uko byuzuye ubu, n'ubwishingizi byemera.",
+      "ask": "Sangiza aho uri urebe ibigo bikwegereye",
+      "usingLocation": "Ibigo bikwegereye",
+      "private": "Bikoreshwa kuri iri shakisha gusa. Ntitubibika.",
+      "orDistrict": "Cyangwa hitamo akarere",
+      "chooseDistrict": "Hitamo akarere",
+      "loading": "Turashaka ibigo",
+      "none": "Nta kigo cyemejwe kiri hano ubu. Gerageza akandi karere.",
+      "all": "Shakisha ibigo byose",
+      "wait_one": "{{count}} ategereje · iminota {{min}}–{{max}}",
+      "wait_other": "{{count}} bategereje · iminota {{min}}–{{max}}",
+      "insurers": "Ubwishingizi bwemewe",
+      "cashOnly": "Kwiyishyurira gusa"
+    },
+    "checker": {
+      "title": "Ntuzi aho wajya?",
+      "body": "Suzuma ibimenyetso mu munota umwe"
+    },
+    "insurersShort": {
+      "mutuelle": "Mutuelle",
+      "rama": "RAMA",
+      "mmi": "MMI",
+      "private": "Ubwishingizi bwigenga"
     }
   },
   "emergency": {
@@ -177,7 +204,10 @@
     "verify": "Genzura inyandiko",
     "forFacilities": "Ku bigo by’ubuvuzi",
     "help": "Ubufasha",
-    "copyright": "© {{year}} MediLink Rwanda"
+    "copyright": "© {{year}} MediLink Rwanda",
+    "about": "Ibyerekeye",
+    "emergency": "Ibyihutirwa",
+    "checkSymptoms": "Suzuma ibimenyetso"
   },
   "login": {
     "title": "Injira cyangwa ufungure konti",

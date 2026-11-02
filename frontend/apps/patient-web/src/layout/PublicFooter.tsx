@@ -6,6 +6,11 @@ import { Link } from "react-router";
 import { EmergencyNotice } from "./EmergencyNotice";
 
 const LINKS = [
+  // [PT]
+  { to: "/about", key: "footer.about" },
+  { to: "/check-symptoms", key: "footer.checkSymptoms" },
+  { to: "/emergency", key: "footer.emergency" },
+  // [/PT]
   { to: "/verify", key: "footer.verify" },
   { to: "/for-facilities", key: "footer.forFacilities" },
   { to: "/help", key: "footer.help" },

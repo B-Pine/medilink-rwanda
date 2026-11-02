@@ -37,6 +37,11 @@ class FacilitySearchSerializer(serializers.Serializer):
     page = serializers.IntegerField(required=False, min_value=1, max_value=50, default=1)
 
 
+class WaitRangeSerializer(serializers.Serializer):
+    min = serializers.IntegerField()
+    max = serializers.IntegerField()
+
+
 class FacilitySearchResultSerializer(serializers.Serializer):
     slug = serializers.CharField()
     name = serializers.CharField()
@@ -50,10 +55,15 @@ class FacilitySearchResultSerializer(serializers.Serializer):
     service_code = serializers.CharField()
     service_name_i18n = I18nField()
     accepts_insurance = serializers.ChoiceField(choices=["yes", "no", "unknown"])
+    # contract PT §2.1: accepted insurer codes, for the home page cards
+    insurers = serializers.ListField(child=serializers.CharField())
     fee_rwf = serializers.IntegerField(allow_null=True)
     patient_share_rwf = serializers.IntegerField(allow_null=True)
     next_slot_at = serializers.DateTimeField(allow_null=True)
     queue_load = serializers.ChoiceField(choices=["low", "medium", "high"], allow_null=True)
+    # contract PT §2.1: people waiting now and the wait for a new arrival (counts only)
+    waiting = serializers.IntegerField(allow_null=True)
+    wait_range = WaitRangeSerializer(allow_null=True)
     allows_remote_join = serializers.BooleanField()
     referral_hint = serializers.BooleanField()
     lat = serializers.FloatField(allow_null=True)
@@ -80,6 +90,9 @@ class PublicFacilityServiceSerializer(serializers.Serializer):
     remote_join = serializers.BooleanField()
     walk_in = serializers.BooleanField()
     queue_load = serializers.CharField(allow_null=True)
+    # contract PT §2.1: live, counts only
+    waiting = serializers.IntegerField(allow_null=True)
+    wait_range = WaitRangeSerializer(allow_null=True)
     next_slot_at = serializers.DateTimeField(allow_null=True)
     min_age_months = serializers.IntegerField(allow_null=True)
     max_age_months = serializers.IntegerField(allow_null=True)

@@ -43,6 +43,11 @@ import medicinesEn from "../features/medicines/locales/en.json";
 import medicinesFr from "../features/medicines/locales/fr.json";
 import medicinesRw from "../features/medicines/locales/rw.json";
 // [/S7 imports]
+// [PT imports]
+import publicEn from "../features/public/locales/en.json";
+import publicFr from "../features/public/locales/fr.json";
+import publicRw from "../features/public/locales/rw.json";
+// [/PT imports]
 
 /**
  * Feature translation namespaces: `<feature>` -> `src/features/<feature>/locales/{rw,en,fr}.json`.
@@ -79,4 +84,7 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   // [S7]
   medicines: { rw: medicinesRw, en: medicinesEn, fr: medicinesFr },
   // [/S7]
+  // [PT]
+  public: { rw: publicRw, en: publicEn, fr: publicFr },
+  // [/PT]
 };

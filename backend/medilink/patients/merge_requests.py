@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from django.db import IntegrityError, transaction
+from django.dispatch import Signal
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
@@ -16,6 +17,8 @@ from medilink.patients.audit import record_patient_event
 from medilink.patients.errors import rule, stale
 from medilink.patients.models import FacilityPatient, Merge, MergeScope, MergeStatus
 from medilink.tenancy.context import rls_context
+
+merge_requested = Signal()  # kwargs: merge_id; after commit (contract sprint-09 §11)
 
 REQUESTER = _("Another approver has to decide on your own request.")
 NOT_HERE = _("This request needs the platform team.")
@@ -212,6 +215,8 @@ def request_merge(
         raise Conflict(engine.OPEN_REQUEST) from None
     engine.event(merge, from_status=None, actor=principal.user, reason=merge.reason)
     _audit("patients.merge.requested", merge, request=request, reason=merge.reason)
+    merge_id = merge.pk
+    transaction.on_commit(lambda: merge_requested.send(sender=Merge, merge_id=merge_id))
     return merge
 
 

@@ -220,3 +220,8 @@ EVENTS: list[EventDefinition] = [
         templates=_texts(("in_app", "web_push", "email"), TEST),
     ),
 ]
+
+# Wave 6 part A (contract §11): the catalogue events of the modules built so far
+from medilink.notifications.wiring_events import EVENTS as _WIRING_EVENTS  # noqa: E402
+
+EVENTS += _WIRING_EVENTS

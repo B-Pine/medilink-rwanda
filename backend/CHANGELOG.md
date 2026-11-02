@@ -8,6 +8,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Sprint 9b · Catalogue wiring (contract sprint-09 §11)
+
+- `medilink.notifications.wiring`: domain signals now reach patients and staff through
+  `notify()`: booking confirmed, cancelled by the facility, changed, missed; called to a room;
+  3 people before you; confirm you are here (pass-over); medicines ready and recorded; new
+  prescription for the pharmacy; pharmacist question for the prescriber; new document ready;
+  new facility application and merge request for platform admins. Texts in rw/en/fr without
+  clinical words; receivers never break the change that triggered them.
+- New after-commit signals: `pharmacy.signals` (`prescription_ready`, `prescription_dispensed`,
+  `query_raised`), `documents.services.document_generated`, `patients.merge_requests.merge_requested`;
+  S1's `dispatch()` also notifies platform admins in-app when an application is submitted (S1-I6).
+
 ### Public pages and symptom triage (contract public-pages-and-triage)
 
 - `medilink.triage`: `POST /public/triage/` turns structured answers (symptoms, how long, age group,

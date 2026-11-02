@@ -41,7 +41,7 @@ export function AppShell() {
   return (
     <div
       className={cx(
-        "min-h-dvh bg-page lg:grid",
+        "ml-soft min-h-dvh bg-page lg:grid",
         // Sidebar 248 px, collapsed to icons at 64 px (design 03 §4; tokens sidebar / sidebar-collapsed)
         collapsed
           ? "lg:grid-cols-[var(--spacing-sidebar-collapsed)_minmax(0,1fr)]"
@@ -50,14 +50,14 @@ export function AppShell() {
     >
       <SkipLink />
       <div className="lg:contents">
-        <div className="flex items-center justify-between border-b border-border bg-page px-3 py-2 print:hidden lg:hidden">
-          <Logo className="h-8" />
+        <div className="flex items-center justify-between bg-forest px-3 py-2 text-on-forest print:hidden lg:hidden">
+          <Logo tone="onDark" className="h-8" />
           <button
             type="button"
             aria-expanded={menuOpen}
             aria-controls={SIDEBAR_ID}
             onClick={() => setMenuOpen((open) => !open)}
-            className="inline-flex min-h-target min-w-target cursor-pointer items-center justify-center gap-2 rounded-md px-3 font-semibold text-fg hover:bg-subtle"
+            className="inline-flex min-h-target min-w-target cursor-pointer items-center justify-center gap-2 rounded-full px-3 font-semibold text-on-forest hover:bg-on-forest/10"
           >
             {menuOpen ? (
               <X aria-hidden="true" className="size-icon" />
@@ -77,7 +77,7 @@ export function AppShell() {
         />
       </div>
       <div className="flex min-w-0 flex-col">
-        <header className="sticky top-0 z-30 flex min-h-14 items-center gap-3 border-b border-border bg-page/90 px-4 backdrop-blur-md print:hidden lg:px-6">
+        <header className="sticky top-0 z-30 flex min-h-16 items-center gap-3 border-b border-border/70 bg-surface px-4 print:hidden lg:px-8">
           <FacilitySwitcher me={me} />
           <button
             type="button"
@@ -85,9 +85,10 @@ export function AppShell() {
             aria-label={t("shell.palette.open")}
             aria-keyshortcuts="Control+K Meta+K"
             className={cx(
-              "ml-auto inline-flex min-h-9 min-w-9 cursor-pointer items-center justify-center gap-2 rounded-md",
-              "bg-surface px-3 text-body-sm text-fg-muted shadow-card hover:text-fg",
-              "md:w-72 md:justify-start",
+              "ml-auto inline-flex min-h-10 min-w-10 cursor-pointer items-center justify-center gap-2 rounded-full",
+              "border border-border bg-page px-4 text-body-sm text-fg-muted",
+              "transition-[border-color,color] duration-150 ease-out-quint hover:border-fg-muted hover:text-fg",
+              "md:w-80 md:justify-start",
             )}
           >
             <MagnifyingGlass aria-hidden="true" className="size-icon shrink-0" />
@@ -106,7 +107,7 @@ export function AppShell() {
         <main
           id={MAIN_CONTENT_ID}
           tabIndex={-1}
-          className="mx-auto w-full max-w-[90rem] flex-1 px-4 py-5 sm:px-6 lg:px-8 lg:py-7"
+          className="ml-stagger mx-auto w-full max-w-[90rem] flex-1 px-4 py-6 focus:outline-none sm:px-6 lg:px-8 lg:py-8"
         >
           <Outlet />
         </main>

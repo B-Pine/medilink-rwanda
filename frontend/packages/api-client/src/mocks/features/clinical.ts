@@ -414,6 +414,15 @@ const rowOf = ({
   ...row
 }: PatientRecord): PatientRecordRow => row;
 
+// [S7]
+type SignHook = (c: Consultation, lang: LanguageCode) => Response | null;
+let consultationSignHook: SignHook = () => null;
+/** S7 contract D-1: the pharmacy mock issues the prescription on sign, or refuses (a Response). */
+export function setConsultationSignHook(hook: SignHook): void {
+  consultationSignHook = hook;
+}
+// [/S7]
+
 export const clinicalMocks: FeatureMockFactory = (context) => {
   const { api } = context;
   let db = seed();
@@ -570,6 +579,10 @@ export const clinicalMocks: FeatureMockFactory = (context) => {
           return context.errorResponse(422, "business_rule_violation", msg("locked", ok.lang));
         if (!c.diagnoses.some((d) => d.rank === "primary"))
           return context.errorResponse(422, "business_rule_violation", msg("needPrimary", ok.lang));
+        // [S7]
+        const refused = consultationSignHook(c, ok.lang);
+        if (refused) return refused;
+        // [/S7]
         c.status = "signed";
         c.signed_at = now();
         c.is_late_entry = Date.now() - Date.parse(c.started_at) > 86_400_000;

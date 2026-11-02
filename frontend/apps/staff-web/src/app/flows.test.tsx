@@ -106,9 +106,10 @@ describe("staff login → MFA verify → facility picker → shell", () => {
     await user.click(screen.getByRole("button", { name: "Verify and log in" }));
     await screen.findByRole("heading", { level: 1, name: /^Good (morning|afternoon|evening)/ });
 
+    // A built section the role cannot use says so (S1 §6.1)
     await router.navigate("/pharmacy");
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Page not found" }),
+      await screen.findByRole("heading", { level: 1, name: "You don't have access to this page" }),
     ).toBeInTheDocument();
     await router.navigate("/queue");
     expect(await screen.findByRole("heading", { level: 1, name: "Queue" })).toBeInTheDocument();

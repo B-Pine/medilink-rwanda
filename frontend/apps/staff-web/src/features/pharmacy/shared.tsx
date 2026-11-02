@@ -1,0 +1,46 @@
+import type {
+  PrescriptionItem,
+  PrescriptionItemStatus,
+  PrescriptionStatus,
+} from "@medilink/api-client";
+import type { BadgeTone } from "@medilink/ui";
+
+export { errorText, useCan, useWhen } from "../clinical/shared";
+
+export const pharmacyKeys = {
+  all: ["pharmacy"] as const,
+  queue: (tab: string, q: string) => ["pharmacy", "queue", tab, q] as const,
+  prescription: (id: string) => ["pharmacy", "prescription", id] as const,
+  labels: (id: string, language: string) => ["pharmacy", "labels", id, language] as const,
+  availability: (q: string) => ["pharmacy", "availability", q] as const,
+  drugs: (q: string) => ["pharmacy", "drugs", q] as const,
+  /** Under `clinical` so signing the consultation refetches it (S6 invalidates `clinical`). */
+  forConsultation: (consultationId: string) =>
+    ["clinical", "prescription", consultationId] as const,
+};
+
+export const STATUS_TONE: Record<PrescriptionStatus, BadgeTone> = {
+  draft: "neutral",
+  issued: "info",
+  awaiting_payment: "warning",
+  ready_to_dispense: "brand",
+  partly_dispensed: "warning",
+  dispensed: "success",
+  not_available: "danger",
+  cancelled: "neutral",
+  expired: "neutral",
+};
+
+export const ITEM_TONE: Record<PrescriptionItemStatus, BadgeTone> = {
+  draft: "neutral",
+  issued: "info",
+  partly_dispensed: "warning",
+  dispensed: "success",
+  not_available: "danger",
+  cancelled: "neutral",
+  expired: "neutral",
+};
+
+/** What is left to give of an item. */
+export const remaining = (item: PrescriptionItem) =>
+  Math.max(item.quantity - item.dispensed_quantity, 0);

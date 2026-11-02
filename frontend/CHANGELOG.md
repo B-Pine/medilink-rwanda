@@ -9,6 +9,24 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Sprint 7a · Pharmacy (frontend, #123)
+
+- staff-web consultation: a Prescription section (anchor) to add medicines from the catalogue with
+  "Not in stock here", dose, how often, route, days and the calculated quantity; S6 alerts sit on
+  the item and an allergy needs a reason before Sign. After signing, items are read-only with
+  Change (cancel + new item, step-up) and Cancel with a reason.
+- staff-web `/pharmacy`: the queue in three tabs (Ready, Partly given, Questions) with search by
+  name, number or ticket and flags; `/pharmacy/prescriptions/:id` confirms who is at the counter
+  first, then an outcome per item (give all, part, a same-ingredient substitute with a reason, not
+  available), the controlled-medicine confirmation and one signature; a question to the doctor;
+  `/pharmacy/prescriptions/:id/labels` prints 62 mm dosing labels (Kinyarwanda by default);
+  `/pharmacy/availability` switches stock on and off.
+- patient-web `/medicines` and a Home card: active and past prescriptions with plain-language
+  states ("Ready at the pharmacy", "Partly given: 10 of 21", "Not available here: buy outside
+  before …") and the prescription code to show at any pharmacy.
+- api-client `pharmacy` module and MSW mocks for §3.1–3.2 (409, 422, step-up, issue on sign);
+  `pharmacy` and `medicines` namespaces in rw/en/fr.
+
 ### Redesign · Patient app (#129)
 
 - patient-web: on phones the four destinations are a real bottom tab bar (the header's backdrop

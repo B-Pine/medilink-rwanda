@@ -193,11 +193,11 @@ Source: [07 · Pharmacy](../analysis/07-clinical-documentation-and-pharmacy.md)
 
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
-| FR-PHA-01 | Prescription items from the catalogue, with states | P1 | S7 | Both | BR | In progress |
-| FR-PHA-02 | Pharmacy queue, identity check, full/partial, substitution, not available | P1 | S7 | Both | BR, E2E | In progress |
-| FR-PHA-03 | Signed dispensing record; status visible to the patient | P1 | S7 | Both | API, E2E | In progress |
-| FR-PHA-04 | Drug availability toggle visible to prescribers | P1 | S7 | Both | API | In progress |
-| FR-PHA-05 | Dosing labels | P1 | S7 | Both | INS | In progress |
+| FR-PHA-01 | Prescription items from the catalogue, with states | P1 | S7 | Both | BR | In progress (backend and frontend on mocks; staging S7-I1 pending) |
+| FR-PHA-02 | Pharmacy queue, identity check, full/partial, substitution, not available | P1 | S7 | Both | BR, E2E | In progress (backend and frontend on mocks; staging S7-I1 pending) |
+| FR-PHA-03 | Signed dispensing record; status visible to the patient | P1 | S7 | Both | API, E2E | In progress (backend and frontend on mocks; staging S7-I1 pending) |
+| FR-PHA-04 | Drug availability toggle visible to prescribers | P1 | S7 | Both | API | In progress (backend and frontend on mocks; staging S7-I1 pending) |
+| FR-PHA-05 | Dosing labels | P1 | S7 | Both | INS | In progress (backend and frontend on mocks; staging S7-I1 pending) |
 | FR-PHA-06 | Simple stock (quantity, expiry) | P2 | — | Both | BR | Not started |
 | FR-PHA-07 | Controlled medicines register | P2 | — | Both | BR | Not started |
 

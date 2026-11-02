@@ -37,6 +37,9 @@ import { createBookingApi } from "./features/booking";
 // [S6 imports]
 import { createClinicalApi } from "./features/clinical";
 // [/S6 imports]
+// [S7 imports]
+import { createPharmacyApi } from "./features/pharmacy";
+// [/S7 imports]
 // [S9 imports]
 import { createNotificationsApi } from "./features/notifications";
 // [/S9 imports]
@@ -159,6 +162,9 @@ export function createMediLinkApi(client: ApiClient) {
     // [S6]
     clinical: createClinicalApi(client),
     // [/S6]
+    // [S7]
+    pharmacy: createPharmacyApi(client),
+    // [/S7]
   };
 }
 

@@ -41,6 +41,9 @@ import {
   useWhen,
 } from "./shared";
 import { VitalsPanel } from "./VitalsPanel";
+// [S7 imports]
+import { PrescriptionSection } from "../pharmacy";
+// [/S7 imports]
 
 const AUTOSAVE_MS = 1500;
 
@@ -597,6 +600,11 @@ export function ConsultationPage() {
     { id: "examination", label: t("clinical.sections.examination") },
     { id: "diagnosis", label: t("clinical.sections.diagnosis") },
     { id: "plan", label: t("clinical.sections.plan") },
+    // [S7]
+    ...(c.status === "entered_in_error"
+      ? []
+      : [{ id: "prescription", label: t("pharmacy.prescription.title") }]),
+    // [/S7]
     { id: "instructions", label: t("clinical.sections.instructions") },
     { id: "private-notes", label: t("clinical.sections.private-notes") },
     ...(isDraft ? [] : [{ id: "addenda", label: t("clinical.sections.addenda") }]),
@@ -636,6 +644,9 @@ export function ConsultationPage() {
       />
       <SectionAnchors sections={sections} label={t("clinical.sections.nav")} />
       {isDraft && c.can_edit ? <DraftEditor key={c.id} c={c} /> : <SignedView c={c} />}
+      {/* [S7] */}
+      <PrescriptionSection consultation={c} />
+      {/* [/S7] */}
       <HistoryDrawer
         fpId={c.facility_patient_id}
         open={historyOpen}

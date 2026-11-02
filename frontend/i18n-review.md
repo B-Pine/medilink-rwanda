@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 3182.
+Keys: 3423.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -1442,6 +1442,199 @@ File: `apps/staff-web/src/features/patients/locales/rw.json`
 | `accessReason.reasons.other` | Ikindi | Other | needs native-speaker review |
 | `accessReason.reasonText` | Sobanura impamvu | Explain the reason | needs native-speaker review |
 | `accessReason.open` | Fungura dosiye | Open record | needs native-speaker review |
+
+## staff-web feature: pharmacy (namespace pharmacy)
+
+File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
+
+| Key | Kinyarwanda (draft) | English source | Status |
+|---|---|---|---|
+| `loading` | Biratangira | Loading | needs native-speaker review |
+| `nav.availability` | Imiti iboneka | Medicine availability | needs native-speaker review |
+| `age_one` | Umwaka {{count}} | {{count}} year | needs native-speaker review |
+| `age_other` | Imyaka {{count}} | {{count}} years | needs native-speaker review |
+| `days_one` | Umunsi {{count}} | {{count}} day | needs native-speaker review |
+| `days_other` | Iminsi {{count}} | {{count}} days | needs native-speaker review |
+| `byDoctor` | Dr {{name}} | Dr {{name}} | needs native-speaker review |
+| `validUntil` | ifite agaciro kugeza {{date}} | valid until {{date}} | needs native-speaker review |
+| `reason` | Impamvu | Reason | needs native-speaker review |
+| `reasonMin` | Tanga impamvu (inyuguti 5 cyangwa zirenga). | Give a reason (5 characters or more). | needs native-speaker review |
+| `keep` | Bireke | Keep it | needs native-speaker review |
+| `close` | Funga | Close | needs native-speaker review |
+| `yes` | Yego | Yes | needs native-speaker review |
+| `no` | Oya | No | needs native-speaker review |
+| `frequency.once` | Rimwe | Once | needs native-speaker review |
+| `frequency.od` | Rimwe ku munsi | Once a day | needs native-speaker review |
+| `frequency.bd` | Kabiri ku munsi | Twice a day | needs native-speaker review |
+| `frequency.tds` | Gatatu ku munsi | Three times a day | needs native-speaker review |
+| `frequency.qds` | Kane ku munsi | Four times a day | needs native-speaker review |
+| `frequency.nocte` | Nijoro | At night | needs native-speaker review |
+| `frequency.prn` | Igihe bikenewe | When needed | needs native-speaker review |
+| `route.oral` | Kunywa | By mouth | needs native-speaker review |
+| `route.topical` | Gusiga ku ruhu | On the skin | needs native-speaker review |
+| `route.inhaled` | Guhumeka | Inhaled | needs native-speaker review |
+| `route.rectal` | Mu kibuno | Rectal | needs native-speaker review |
+| `route.vaginal` | Mu gitsina | Vaginal | needs native-speaker review |
+| `route.eye` | Mu jisho | In the eye | needs native-speaker review |
+| `route.ear` | Mu gutwi | In the ear | needs native-speaker review |
+| `route.nasal` | Mu zuru | In the nose | needs native-speaker review |
+| `route.injection` | Urushinge | Injection | needs native-speaker review |
+| `status.draft` | Itarangira | Draft | needs native-speaker review |
+| `status.issued` | Yatanzwe | Issued | needs native-speaker review |
+| `status.awaiting_payment` | Itegereje kwishyurwa | Waiting for payment | needs native-speaker review |
+| `status.ready_to_dispense` | Yiteguye | Ready | needs native-speaker review |
+| `status.partly_dispensed` | Yatanzwe igice | Partly given | needs native-speaker review |
+| `status.dispensed` | Yatanzwe | Given | needs native-speaker review |
+| `status.not_available` | Ntiboneka hano | Not available here | needs native-speaker review |
+| `status.cancelled` | Yahagaritswe | Cancelled | needs native-speaker review |
+| `status.expired` | Yarengeje igihe | Expired | needs native-speaker review |
+| `itemStatus.draft` | Itarangira | Draft | needs native-speaker review |
+| `itemStatus.issued` | Gutangwa | To give | needs native-speaker review |
+| `itemStatus.partly_dispensed` | Yatanzwe igice | Partly given | needs native-speaker review |
+| `itemStatus.dispensed` | Yatanzwe | Given | needs native-speaker review |
+| `itemStatus.not_available` | Gura hanze | Buy outside | needs native-speaker review |
+| `itemStatus.cancelled` | Yahagaritswe | Cancelled | needs native-speaker review |
+| `itemStatus.expired` | Yarengeje igihe | Expired | needs native-speaker review |
+| `flag.controlled` | Ugenzurwa | Controlled | needs native-speaker review |
+| `flag.queried` | Ikibazo kuri muganga | Question to the doctor | needs native-speaker review |
+| `flag.notInStock` | Ntuboneka hano | Not in stock here | needs native-speaker review |
+| `flag.offCatalogue` | Ntuba mu rutonde | Not in the catalogue | needs native-speaker review |
+| `flag.noSubstitution` | Nta gusimbuza | No substitution | needs native-speaker review |
+| `queue.title` | Farumasi | Pharmacy | needs native-speaker review |
+| `queue.description` | Resept zo gutanga muri iki kigo, izabanje mbere. | Prescriptions to give at this facility, oldest first. | needs native-speaker review |
+| `queue.tabs` | Resept hakurikijwe uko zimeze | Prescriptions by state | needs native-speaker review |
+| `queue.tab.ready` | Ziteguye | Ready | needs native-speaker review |
+| `queue.tab.partly` | Zatanzwe igice | Partly given | needs native-speaker review |
+| `queue.tab.queried` | Ibibazo | Questions | needs native-speaker review |
+| `queue.search` | Shaka resept | Find a prescription | needs native-speaker review |
+| `queue.searchHint` | Izina, nimero ya resept cyangwa tike | Name, prescription number or ticket | needs native-speaker review |
+| `queue.issued` | Yatanzwe {{time}} | Issued {{time}} | needs native-speaker review |
+| `queue.items_one` | Umuti {{count}} | {{count}} medicine | needs native-speaker review |
+| `queue.items_other` | Imiti {{count}} | {{count}} medicines | needs native-speaker review |
+| `queue.empty.ready` | Nta kintu gitegereje. Resept zigaragara iyo muganga asinye. | Nothing waiting. New prescriptions appear when a doctor signs. | needs native-speaker review |
+| `queue.empty.partly` | Nta resept yatanzwe igice. | No prescription is partly given. | needs native-speaker review |
+| `queue.empty.queried` | Nta kibazo gifunguye kuri muganga. | No open question to a doctor. | needs native-speaker review |
+| `queue.noMatch` | Nta resept ihuye | No prescription matches | needs native-speaker review |
+| `queue.noMatchBody` | Reba uko wanditse, cyangwa ushake ukoresheje nimero ya resept cyangwa tike. | Check the spelling, or search by prescription number or ticket. | needs native-speaker review |
+| `identity.title` | Ni nde uri ku idirishya? | Who is at the counter? | needs native-speaker review |
+| `identity.hint` | Emeza umuntu mbere yo gutanga ikintu. | Confirm the person before you give anything. | needs native-speaker review |
+| `identity.ticket_name_dob` | Tike, izina n'itariki y'amavuko | Ticket, name and date of birth | needs native-speaker review |
+| `identity.ticket_name_dobHint` | Wagenzuye byose uko ari bitatu n'umurwayi. | You checked all three with the patient. | needs native-speaker review |
+| `identity.verification_code` | Kode ya resept | Prescription code | needs native-speaker review |
+| `identity.verification_codeHint` | Umurwayi yerekana kode kuri telefoni cyangwa ku rupapuro. | The patient shows the code on their phone or paper. | needs native-speaker review |
+| `identity.code` | Kode umurwayi yerekanye | Code shown by the patient | needs native-speaker review |
+| `identity.codeRequired` | Andika kode umurwayi yerekanye. | Type the code the patient shows. | needs native-speaker review |
+| `identity.required` | Banza wemeze umurwayi uwo ari we. | Confirm who the patient is first. | needs native-speaker review |
+| `item.toGive` | gutangwa | to give | needs native-speaker review |
+| `item.leftOf` | bisigaye · {{given}} kuri {{total}} byatanzwe | left · {{given}} of {{total}} given | needs native-speaker review |
+| `item.quantity_one` | {{count}} | {{count}} unit | needs native-speaker review |
+| `item.quantity_other` | {{count}} | {{count}} units | needs native-speaker review |
+| `item.partly` | {{given}} kuri {{total}} byatanzwe | {{given}} of {{total}} given | needs native-speaker review |
+| `outcome.full_one` | Tanga {{count}} | Give {{count}} | needs native-speaker review |
+| `outcome.full_other` | Tanga byose ({{count}}) | Give all {{count}} | needs native-speaker review |
+| `outcome.partial_one` | Tanga igice | Give part | needs native-speaker review |
+| `outcome.partial_other` | Tanga igice | Give part | needs native-speaker review |
+| `outcome.substituted_one` | Simbuza | Substitute | needs native-speaker review |
+| `outcome.substituted_other` | Simbuza | Substitute | needs native-speaker review |
+| `outcome.not_available_one` | Ntibihari | Not available | needs native-speaker review |
+| `outcome.not_available_other` | Ntibihari | Not available | needs native-speaker review |
+| `outcome.skip_one` | Si ubu | Not now | needs native-speaker review |
+| `outcome.skip_other` | Si ubu | Not now | needs native-speaker review |
+| `given.full_one` | {{count}} byatanzwe | {{count}} given | needs native-speaker review |
+| `given.full_other` | {{count}} byatanzwe | {{count}} given | needs native-speaker review |
+| `given.partial_one` | {{count}} byatanzwe (igice) | {{count}} given (part) | needs native-speaker review |
+| `given.partial_other` | {{count}} byatanzwe (igice) | {{count}} given (part) | needs native-speaker review |
+| `given.substituted_one` | {{count}} byatanzwe | {{count}} given | needs native-speaker review |
+| `given.substituted_other` | {{count}} byatanzwe | {{count}} given | needs native-speaker review |
+| `given.not_available_one` | ntibihari, gura hanze | not available, buy outside | needs native-speaker review |
+| `given.not_available_other` | ntibihari, gura hanze | not available, buy outside | needs native-speaker review |
+| `given.insteadOf` | mu mwanya wa {{name}}: {{reason}} | instead of {{name}}: {{reason}} | needs native-speaker review |
+| `dispense.title` | Gutanga imiti | Give medicines | needs native-speaker review |
+| `dispense.outcomeFor` | Ibyo utanga kuri {{name}} | What you give of {{name}} | needs native-speaker review |
+| `dispense.quantity` | Umubare utanga ubu | How many you give now | needs native-speaker review |
+| `dispense.partialRange` | Tanga hagati ya 1 na {{max}}. | Give between 1 and {{max}}. | needs native-speaker review |
+| `dispense.substitute` | Umuti usimbura | Substitute | needs native-speaker review |
+| `dispense.substituteHint` | Umuti n'urugero bimwe gusa. | Same ingredient and strength only. | needs native-speaker review |
+| `dispense.chooseSubstitute` | Hitamo umuti usimbura | Choose a substitute | needs native-speaker review |
+| `dispense.noSubstitute` | Nta muti ufite umuti n'urugero bimwe mu rutonde. | No product with the same ingredient and strength in the catalogue. | needs native-speaker review |
+| `dispense.substituteReason` | Impamvu usimbuza | Why you substitute | needs native-speaker review |
+| `dispense.controlled` | Nagenzuye amategeko y'imiti igenzurwa | I checked the rules for controlled medicines | needs native-speaker review |
+| `dispense.controlledHint` | Umwirondoro, umubare n'iyandikwa mu gitabo. | Identity, quantity and the register entry. | needs native-speaker review |
+| `dispense.controlledRequired` | Emeza igenzura ry'umuti ugenzurwa. | Confirm the controlled medicine check. | needs native-speaker review |
+| `dispense.controlledChecked` | umuti ugenzurwa wagenzuwe | controlled medicine checked | needs native-speaker review |
+| `dispense.chooseOne` | Hitamo ibyo utanga nibura ku muti umwe. | Choose what you give for at least one medicine. | needs native-speaker review |
+| `dispense.sign` | Sinya utange | Sign and give | needs native-speaker review |
+| `dispense.signed` | Byasinywe | Signed | needs native-speaker review |
+| `dispense.signedBody` | Umurwayi abibona mu Miti yanjye. Ubu capa ibirango. | The patient sees this in My medicines. Print the labels next. | needs native-speaker review |
+| `dispense.reloaded` | Undi muntu yahinduye iyi resept hagati aho. Yongeye gufungurwa: yigenzure wongere usinye. | Someone changed this prescription meanwhile. It was reloaded: check it and sign again. | needs native-speaker review |
+| `dispense.nothingOpen` | Nta kintu gisigaye gutangwa kuri iyi resept. | Nothing left to give on this prescription. | needs native-speaker review |
+| `dispense.history` | Ibyatanzwe kugeza ubu | Given so far | needs native-speaker review |
+| `dispense.signedBy` | {{name}} · {{time}} | {{name}} · {{time}} | needs native-speaker review |
+| `query.title` | Ikibazo kuri muganga | Question to the doctor | needs native-speaker review |
+| `query.openTitle` | Ikibazo gifunguye | Open question | needs native-speaker review |
+| `query.openBody` | {{name}} yabajije: | {{name}} asked: | needs native-speaker review |
+| `query.message` | Ikibazo cyawe | Your question | needs native-speaker review |
+| `query.hint` | Muganga asubiza akoresheje inyongera. Ntuzigere uhindura umuti ubwawe. | The doctor answers with an addendum. Never change a medicine yourself. | needs native-speaker review |
+| `query.required` | Andika ikibazo. | Write the question. | needs native-speaker review |
+| `query.send` | Ohereza kuri muganga | Send to the doctor | needs native-speaker review |
+| `query.waiting` | Dutegereje igisubizo cya muganga. | Waiting for the doctor's answer. | needs native-speaker review |
+| `query.answered` | Muganga yasubije akoresheje inyongera. | The doctor answered with an addendum. | needs native-speaker review |
+| `query.close` | Funga ikibazo | Close the question | needs native-speaker review |
+| `availability.title` | Imiti iboneka | Medicine availability | needs native-speaker review |
+| `availability.description` | Zimya imiti yashize. Abaganga babona "Ntuboneka hano" iyo bandika resept. | Switch off what is out of stock. Doctors then see "Not in stock here" when they prescribe. | needs native-speaker review |
+| `availability.search` | Shaka umuti | Find a medicine | needs native-speaker review |
+| `availability.summary_one` | Umuti {{count}} washize | {{count}} medicine out of stock | needs native-speaker review |
+| `availability.summary_other` | Imiti {{count}} yashize | {{count}} medicines out of stock | needs native-speaker review |
+| `availability.in` | Urahari | In stock | needs native-speaker review |
+| `availability.out` | Washize | Out of stock | needs native-speaker review |
+| `availability.since` | Washize kuva {{date}} | Out since {{date}} | needs native-speaker review |
+| `availability.none` | Nta muti uhuye. | No medicine matches. | needs native-speaker review |
+| `labels.title` | Ibirango by'imiti | Dosing labels | needs native-speaker review |
+| `labels.description` | Ikirango kimwe kuri buri muti watanzwe, mm 62 z'ubugari. | One label per medicine given, 62 mm wide. | needs native-speaker review |
+| `labels.print` | Capa ibirango | Print labels | needs native-speaker review |
+| `labels.language` | Ururimi rw'ibirango | Label language | needs native-speaker review |
+| `labels.languages.rw` | Ikinyarwanda | Kinyarwanda | needs native-speaker review |
+| `labels.languages.en` | Icyongereza | English | needs native-speaker review |
+| `labels.languages.fr` | Igifaransa | Français | needs native-speaker review |
+| `labels.none` | Nta birango biraboneka: nta kintu cyatanzwe. | No labels yet: nothing has been given. | needs native-speaker review |
+| `alert.allergy` | Aleriji: {{substance}} | Allergy: {{substance}} | needs native-speaker review |
+| `alert.dose` | Birenze umubare usanzwe ({{max}}) | More than the usual quantity ({{max}}) | needs native-speaker review |
+| `alert.duplicate` | Umuti umwe kabiri | Same medicine twice | needs native-speaker review |
+| `alert.overridden` | impamvu yatanzwe: {{reason}} | reason given: {{reason}} | needs native-speaker review |
+| `alert.reason` | Impamvu uwandika uko byagenda kose | Why you prescribe it anyway | needs native-speaker review |
+| `alert.saveReason` | Bika impamvu | Save reason | needs native-speaker review |
+| `prescription.title` | Resept | Prescription | needs native-speaker review |
+| `prescription.empty` | Nta muti urajyamo. | No medicine yet. | needs native-speaker review |
+| `prescription.none` | Nta muti wanditswe. | No medicine prescribed. | needs native-speaker review |
+| `prescription.add` | Ongeramo umuti | Add a medicine | needs native-speaker review |
+| `prescription.save` | Shyira kuri resept | Add to prescription | needs native-speaker review |
+| `prescription.replace` | Mu mwanya wa {{name}} | Instead of {{name}} | needs native-speaker review |
+| `prescription.drug` | Umuti | Medicine | needs native-speaker review |
+| `prescription.drugHint` | Andika inyuguti 2 cyangwa zirenga z'izina. | Type 2 letters or more of the name. | needs native-speaker review |
+| `prescription.drugRequired` | Hitamo umuti. | Choose a medicine. | needs native-speaker review |
+| `prescription.changeDrug` | Hindura | Change | needs native-speaker review |
+| `prescription.useTyped` | Koresha "{{name}}" (ntuba mu rutonde) | Use "{{name}}" (not in the catalogue) | needs native-speaker review |
+| `prescription.offCatalogue` | "{{name}}" ntuba mu rutonde. Umufarumasiye azawubona uko wanditswe. | "{{name}}" is not in the catalogue. The pharmacist will see it as typed. | needs native-speaker review |
+| `prescription.dose` | Urugero | Dose | needs native-speaker review |
+| `prescription.doseHint` | Urugero: ikinini 1, ml 5 | For example 1 tablet, 5 ml | needs native-speaker review |
+| `prescription.doseRequired` | Tanga urugero. | Give the dose. | needs native-speaker review |
+| `prescription.frequency` | Inshuro | How often | needs native-speaker review |
+| `prescription.route` | Uburyo | Route | needs native-speaker review |
+| `prescription.days` | Iminsi | Days | needs native-speaker review |
+| `prescription.quantity` | Umubare wo gutanga | Quantity to give | needs native-speaker review |
+| `prescription.quantityHint_one` | {{count}} hakurikijwe urugero, inshuro n'iminsi | {{count}} from dose, how often and days | needs native-speaker review |
+| `prescription.quantityHint_other` | {{count}} hakurikijwe urugero, inshuro n'iminsi | {{count}} from dose, how often and days | needs native-speaker review |
+| `prescription.quantityRequired` | Tanga umubare wo gutanga. | Give the quantity to give. | needs native-speaker review |
+| `prescription.instructions` | Amabwiriza ku murwayi | Instructions for the patient | needs native-speaker review |
+| `prescription.substitution` | Umufarumasiye ashobora gusimbuza | The pharmacist may substitute | needs native-speaker review |
+| `prescription.substitutionHint` | Gusa n'umuti n'urugero bimwe. | Only with the same ingredient and strength. | needs native-speaker review |
+| `prescription.remove` | Kuramo {{name}} | Remove {{name}} | needs native-speaker review |
+| `prescription.cancel` | Hagarika | Cancel | needs native-speaker review |
+| `prescription.change` | Hindura | Change | needs native-speaker review |
+| `prescription.cancelTitle` | Hagarika {{name}}? | Cancel {{name}}? | needs native-speaker review |
+| `prescription.cancelConsequences` | Farumasi ntizawutanga. Umurwayi azabona ko wahagaritswe. | The pharmacy will not give it. The patient sees it as cancelled. | needs native-speaker review |
+| `prescription.changeTitle` | Hindura {{name}}? | Change {{name}}? | needs native-speaker review |
+| `prescription.changeConsequences` | Uyu urahagarikwa n'impamvu yawe, hanyuma wongeremo mushya. | This one is cancelled with your reason, then you add the new one. | needs native-speaker review |
 
 ## staff-web feature: platform (namespace platform)
 
@@ -2934,6 +3127,68 @@ File: `apps/patient-web/src/features/help/locales/rw.json`
 | `thread.notFound` | Ikibazo ntikibonetse | Request not found | needs native-speaker review |
 | `thread.replySent` | Igisubizo cyoherejwe. | Reply sent. | needs native-speaker review |
 | `thread.closedNotice` | Ikibazo cyafunzwe. | Request closed. | needs native-speaker review |
+
+## patient-web feature: medicines (namespace medicines)
+
+File: `apps/patient-web/src/features/medicines/locales/rw.json`
+
+| Key | Kinyarwanda (draft) | English source | Status |
+|---|---|---|---|
+| `title` | Imiti yanjye | My medicines | needs native-speaker review |
+| `intro` | Resept zo mu ngendo zawe n'ibyo farumasi yatanze. Erekana kode kuri farumasi iyo ari yo yose. | Prescriptions from your visits and what the pharmacy gave. Show the code at any pharmacy. | needs native-speaker review |
+| `whose` | Imiti ya nde | Whose medicines | needs native-speaker review |
+| `everyone` | Bose | Everyone | needs native-speaker review |
+| `which` | Resept zihe | Which prescriptions | needs native-speaker review |
+| `tab.active` | Iziriho | Active | needs native-speaker review |
+| `tab.past` | Izashize | Past | needs native-speaker review |
+| `failed` | Ntitwashoboye kuzana imiti yawe. | We couldn't load your medicines. | needs native-speaker review |
+| `empty.active` | Nta resept iriho. | No active prescription. | needs native-speaker review |
+| `empty.past` | Nta resept yashize. | No past prescription. | needs native-speaker review |
+| `emptyBody` | Iyo muganga akwandikiye umuti, ugaragara hano. | When a doctor prescribes something, it appears here. | needs native-speaker review |
+| `seeAll` | Reba byose | See all | needs native-speaker review |
+| `count_one` | Umuti {{count}} | {{count}} medicine | needs native-speaker review |
+| `count_other` | Imiti {{count}} | {{count}} medicines | needs native-speaker review |
+| `issued` | yanditswe {{date}} | prescribed {{date}} | needs native-speaker review |
+| `byDoctor` | Dr {{name}} | Dr {{name}} | needs native-speaker review |
+| `back` | Imiti yanjye | My medicines | needs native-speaker review |
+| `notFound` | Ntitwabonye iyi resept. | We couldn't find this prescription. | needs native-speaker review |
+| `codeLabel` | Kode ya resept | Prescription code | needs native-speaker review |
+| `codeHint` | Yerekane kuri farumasi. Ifite agaciro kugeza {{date}}. | Show it at the pharmacy. Valid until {{date}}. | needs native-speaker review |
+| `days_one` | umunsi {{count}} | for {{count}} day | needs native-speaker review |
+| `days_other` | iminsi {{count}} | for {{count}} days | needs native-speaker review |
+| `status.draft` | Iracyandikwa | Being written | needs native-speaker review |
+| `status.issued` | Yanditswe | Prescribed | needs native-speaker review |
+| `status.awaiting_payment` | Banza wishyure, hanyuma ufate | Pay first, then collect | needs native-speaker review |
+| `status.ready_to_dispense` | Yiteguye kuri farumasi | Ready at the pharmacy | needs native-speaker review |
+| `status.partly_dispensed` | Yatanzwe igice | Partly given | needs native-speaker review |
+| `status.dispensed` | Yatanzwe | Given | needs native-speaker review |
+| `status.not_available` | Ntiboneka hano | Not available here | needs native-speaker review |
+| `status.cancelled` | Yahagaritswe | Cancelled | needs native-speaker review |
+| `status.expired` | Yarengeje igihe | Expired | needs native-speaker review |
+| `item.draft` | Uracyandikwa | Being written | needs native-speaker review |
+| `item.issued` | Witeguye kuri farumasi | Ready at the pharmacy | needs native-speaker review |
+| `item.partly` | Watanzwe igice: {{given}} kuri {{total}} | Partly given: {{given}} of {{total}} | needs native-speaker review |
+| `item.dispensed` | Watanzwe | Given | needs native-speaker review |
+| `item.not_available` | Ntuboneka hano: ugure hanze mbere ya {{date}} | Not available here: buy outside before {{date}} | needs native-speaker review |
+| `item.cancelled` | Wahagaritswe na muganga | Cancelled by the doctor | needs native-speaker review |
+| `item.expired` | Warengeje igihe | Expired | needs native-speaker review |
+| `item.givenAs` | Watanzwe nka {{name}} (umuti umwe) | Given as {{name}} (same medicine) | needs native-speaker review |
+| `frequency.once` | Rimwe | once | needs native-speaker review |
+| `frequency.od` | Rimwe ku munsi | once a day | needs native-speaker review |
+| `frequency.bd` | Kabiri ku munsi | twice a day | needs native-speaker review |
+| `frequency.tds` | Gatatu ku munsi | three times a day | needs native-speaker review |
+| `frequency.qds` | Kane ku munsi | four times a day | needs native-speaker review |
+| `frequency.nocte` | Nijoro | at night | needs native-speaker review |
+| `frequency.prn` | Igihe bikenewe | when needed | needs native-speaker review |
+| `route.oral` | Kunywa | By mouth | needs native-speaker review |
+| `route.topical` | Gusiga ku ruhu | On the skin | needs native-speaker review |
+| `route.inhaled` | Guhumeka | Inhaled | needs native-speaker review |
+| `route.rectal` | Mu kibuno | Rectal | needs native-speaker review |
+| `route.vaginal` | Mu gitsina | Vaginal | needs native-speaker review |
+| `route.eye` | Mu jisho | In the eye | needs native-speaker review |
+| `route.ear` | Mu gutwi | In the ear | needs native-speaker review |
+| `route.nasal` | Mu zuru | In the nose | needs native-speaker review |
+| `route.injection` | Urushinge | Injection | needs native-speaker review |
 
 ## patient-web feature: notifications (namespace notifications)
 

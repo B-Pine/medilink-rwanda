@@ -1,0 +1,69 @@
+{
+  "title": "My medicines",
+  "intro": "Prescriptions from your visits and what the pharmacy gave. Show the code at any pharmacy.",
+  "whose": "Whose medicines",
+  "everyone": "Everyone",
+  "which": "Which prescriptions",
+  "tab": {
+    "active": "Active",
+    "past": "Past"
+  },
+  "failed": "We couldn't load your medicines.",
+  "empty": {
+    "active": "No active prescription.",
+    "past": "No past prescription."
+  },
+  "emptyBody": "When a doctor prescribes something, it appears here.",
+  "seeAll": "See all",
+  "count_one": "{{count}} medicine",
+  "count_other": "{{count}} medicines",
+  "issued": "prescribed {{date}}",
+  "byDoctor": "Dr {{name}}",
+  "back": "My medicines",
+  "notFound": "We couldn't find this prescription.",
+  "codeLabel": "Prescription code",
+  "codeHint": "Show it at the pharmacy. Valid until {{date}}.",
+  "days_one": "for {{count}} day",
+  "days_other": "for {{count}} days",
+  "status": {
+    "draft": "Being written",
+    "issued": "Prescribed",
+    "awaiting_payment": "Pay first, then collect",
+    "ready_to_dispense": "Ready at the pharmacy",
+    "partly_dispensed": "Partly given",
+    "dispensed": "Given",
+    "not_available": "Not available here",
+    "cancelled": "Cancelled",
+    "expired": "Expired"
+  },
+  "item": {
+    "draft": "Being written",
+    "issued": "Ready at the pharmacy",
+    "partly": "Partly given: {{given}} of {{total}}",
+    "dispensed": "Given",
+    "not_available": "Not available here: buy outside before {{date}}",
+    "cancelled": "Cancelled by the doctor",
+    "expired": "Expired",
+    "givenAs": "Given as {{name}} (same medicine)"
+  },
+  "frequency": {
+    "once": "once",
+    "od": "once a day",
+    "bd": "twice a day",
+    "tds": "three times a day",
+    "qds": "four times a day",
+    "nocte": "at night",
+    "prn": "when needed"
+  },
+  "route": {
+    "oral": "By mouth",
+    "topical": "On the skin",
+    "inhaled": "Inhaled",
+    "rectal": "Rectal",
+    "vaginal": "Vaginal",
+    "eye": "In the eye",
+    "ear": "In the ear",
+    "nasal": "In the nose",
+    "injection": "Injection"
+  }
+}

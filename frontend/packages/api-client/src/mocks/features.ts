@@ -31,6 +31,9 @@ import { bookingMocks } from "./features/booking";
 // [S6 imports]
 import { clinicalMocks } from "./features/clinical";
 // [/S6 imports]
+// [S7 imports]
+import { pharmacyMocks } from "./features/pharmacy";
+// [/S7 imports]
 
 /** A feature's MSW handlers, plus how to reset its in-memory state between tests. */
 export interface FeatureMock {
@@ -74,4 +77,7 @@ export const FEATURE_MOCKS: FeatureMockFactory[] = [
   // [S6]
   clinicalMocks,
   // [/S6]
+  // [S7]
+  pharmacyMocks,
+  // [/S7]
 ];

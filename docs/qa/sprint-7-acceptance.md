@@ -30,7 +30,12 @@ Evidence collected on 2026-11-01 on PostgreSQL 16, suite run as the runtime role
 
 | # | Check | Evidence | Result |
 |---|---|---|---|
-| S7-F1..F6 | S7a screens | Not started | Pending |
+| S7-F1 | Prescription builder in the consultation: search with "Not in stock here", alerts inline, allergy reason before Sign, read-only after signing with Cancel and Change | `pharmacy.test.tsx` "an allergy alert needs a reason before signing; signing issues the prescription" | Pass (mocks) |
+| S7-F2 | Pharmacy queue with tabs and search; nav item only with `pharmacy.dispense` | `pharmacy.test.tsx` "tabs, search by ticket, flags…" (axe clean); `flows.test.tsx` reception gets "No access" on `/pharmacy` | Pass (mocks) |
+| S7-F3 | Dispense: identity first, outcome per item, same-ingredient substitute, controlled confirmation, server errors inline, `409` reload | `pharmacy.test.tsx` "identity first, a same-ingredient substitute…", "a controlled medicine needs the extra confirmation…" | Pass (mocks); `409` reload by code review |
+| S7-F4 | Availability switches; dosing label print view | `pharmacy.test.tsx` "availability switches…", labels in Kinyarwanda after dispensing | Pass (mocks) |
+| S7-F5 | Patient My medicines and detail, plain-language statuses | `medicines.test.tsx` (home card, list, detail, past; axe clean) | Pass (mocks) |
+| S7-F6 | MSW mocks for every S7a endpoint; `pharmacy` and `medicines` in rw/en/fr; dates through `dateFormat()` | `mocks/features/pharmacy.ts`; i18n parity test; `i18n-review.md` regenerated | Pass |
 | S7-F7 | (S7b) documents | Not started | Not in S7a |
 
 ## Integration checks

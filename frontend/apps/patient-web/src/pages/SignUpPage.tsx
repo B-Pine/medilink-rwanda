@@ -22,7 +22,6 @@ import { Link, useLocation } from "react-router";
 import { z } from "zod";
 
 import { useApi } from "../app/services";
-import { PageHeading } from "../components/PageHeading";
 import { applyFieldErrors, describeApiError, translator } from "../forms/api-errors";
 import {
   EMAIL_PATTERN,
@@ -30,7 +29,7 @@ import {
   PRIVACY_VERSION,
   TERMS_VERSION,
 } from "../forms/validation";
-import { PublicLayout } from "../layout/PublicLayout";
+import { AuthLayout, AuthTitle } from "../layout/AuthLayout";
 
 const schema = z.object({
   full_name: z.string().trim().min(1, "validation.nameRequired"),
@@ -150,23 +149,21 @@ export function SignUpPage() {
 
   if (sentTo !== null) {
     return (
-      <PublicLayout narrow showLogin={false}>
-        <div className="flex flex-col gap-6">
-          <PageHeading title={t("signup.checkEmailTitle")}>
-            {t("signup.checkEmailTitle")}
-          </PageHeading>
+      <AuthLayout>
+        <div className="flex flex-col gap-5">
+          <AuthTitle title={t("signup.checkEmailTitle")} />
           <Alert tone="success" role="status" title={t("signup.checkEmailTitle")}>
             {t("signup.checkEmailBody", { email: sentTo })}
           </Alert>
           <p className="m-0 text-fg-secondary">{t("signup.checkEmailHint")}</p>
-          <p className="m-0">
+          <p className="m-0 text-center text-body-sm text-fg-secondary">
             {t("signup.haveAccount")}{" "}
             <Link to="/login" className="font-semibold">
               {t("signup.login")}
             </Link>
           </p>
         </div>
-      </PublicLayout>
+      </AuthLayout>
     );
   }
 
@@ -175,14 +172,26 @@ export function SignUpPage() {
   const title = step === 1 ? t("signup.title") : t("signup.consentTitle");
 
   return (
-    <PublicLayout narrow showLogin={false}>
-      <div className="flex flex-col gap-6">
-        <div ref={headingRef} className="flex flex-col gap-2">
-          <p className="m-0 text-body-sm font-semibold text-fg-muted">
-            {t("signup.step", { current: step, total: 2 })}
-          </p>
-          <PageHeading title={title}>{title}</PageHeading>
-          {step === 1 && <p className="m-0 text-fg-secondary">{t("signup.intro")}</p>}
+    <AuthLayout wide>
+      <div className="flex flex-col gap-5">
+        <div ref={headingRef}>
+          {/* two-step progress: a short bar per step, filled as the person moves on */}
+          <div
+            className="mb-4 flex items-center justify-center gap-2"
+            aria-label={t("signup.step", { current: step, total: 2 })}
+            role="img"
+          >
+            {[1, 2].map((n) => (
+              <span
+                key={n}
+                className={cx(
+                  "h-1.5 w-10 rounded-full transition-colors duration-200 ease-out-quint",
+                  n <= step ? "bg-primary" : "bg-subtle",
+                )}
+              />
+            ))}
+          </div>
+          <AuthTitle title={title} hint={step === 1 ? t("signup.intro") : undefined} />
         </div>
         <ErrorSummary items={summary} focusKey={attempt} />
 
@@ -197,9 +206,9 @@ export function SignUpPage() {
             }
             void handleSubmit(onValid, () => setAttempt((n) => n + 1))(event);
           }}
-          className="flex flex-col gap-6"
+          className="flex flex-col gap-5"
         >
-          <div className={cx("flex flex-col gap-6", step !== 1 && "hidden")}>
+          <div className={cx("flex animate-enter flex-col gap-5", step !== 1 && "hidden")}>
             <TextField
               id={DETAILS_FIELDS.full_name}
               label={t("signup.fullName")}
@@ -265,8 +274,8 @@ export function SignUpPage() {
             </Button>
           </div>
 
-          <div className={cx("flex flex-col gap-6", step !== 2 && "hidden")}>
-            <div className="flex flex-col gap-3 rounded-card bg-surface shadow-card p-5">
+          <div className={cx("flex animate-enter flex-col gap-5", step !== 2 && "hidden")}>
+            <div className="flex flex-col gap-3 rounded-xl bg-subtle p-4">
               <p className="m-0 font-semibold">{t("signup.consentIntro")}</p>
               <ul className="m-0 flex list-disc flex-col gap-2 pl-6">
                 <li>{t("signup.consentPoint1")}</li>
@@ -323,13 +332,14 @@ export function SignUpPage() {
           </div>
         </form>
 
-        <p className="m-0">
+        <div aria-hidden="true" className="border-t border-border" />
+        <p className="m-0 text-center text-body-sm text-fg-secondary">
           {t("signup.haveAccount")}{" "}
           <Link to="/login" className="font-semibold">
             {t("signup.login")}
           </Link>
         </p>
       </div>
-    </PublicLayout>
+    </AuthLayout>
   );
 }

@@ -9,6 +9,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Sign-in and sign-up shell
+
+- Changed: log in, sign up, check email, forgot and reset password and email verification use one
+  `AuthLayout`: a full-height deep-forest band (Imigongo pattern, soft emerald light), a centred
+  card that rises in with the MediLink mark and a centred title, a two-bar step indicator on sign-up,
+  and "Continue without an account" under the card. Top bar: logo, Emergency · 912, language. Form
+  logic, validation, error summaries and consent are unchanged.
+
 ### Upgrade U2 · Public pages polish and motion (upgrade 02 §2–6)
 
 - Changed: the home hero is a deep-forest band (Imigongo at 6 %) holding the search, chips and

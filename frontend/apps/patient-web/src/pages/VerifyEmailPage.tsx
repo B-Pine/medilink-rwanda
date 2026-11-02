@@ -7,9 +7,8 @@ import { Link, useNavigate, useSearchParams } from "react-router";
 
 import { useApi } from "../app/services";
 import { patientMeKey } from "../auth/queries";
-import { PageHeading } from "../components/PageHeading";
 import { describeApiError } from "../forms/api-errors";
-import { PublicLayout } from "../layout/PublicLayout";
+import { AuthLayout, AuthTitle } from "../layout/AuthLayout";
 
 /**
  * Landing page of the sign-up email: /verify-email?token=… (single use, security 03 §6).
@@ -44,9 +43,9 @@ export function VerifyEmailPage() {
 
   const title = error ? t("verifyEmail.failedTitle") : t("verifyEmail.title");
   return (
-    <PublicLayout narrow showLogin={false}>
-      <div className="flex flex-col gap-6">
-        <PageHeading title={title}>{title}</PageHeading>
+    <AuthLayout>
+      <div className="flex flex-col gap-5">
+        <AuthTitle title={title} />
         {!token || error ? (
           <>
             <Alert tone="warning" title={t("verifyEmail.failedTitle")}>
@@ -60,6 +59,6 @@ export function VerifyEmailPage() {
           <LoadingState label={t("verifyEmail.working")} />
         )}
       </div>
-    </PublicLayout>
+    </AuthLayout>
   );
 }

@@ -15,10 +15,9 @@ import { Link } from "react-router";
 import { z } from "zod";
 
 import { useApi } from "../app/services";
-import { PageHeading } from "../components/PageHeading";
 import { applyFieldErrors, describeApiError, translator } from "../forms/api-errors";
 import { EMAIL_PATTERN } from "../forms/validation";
-import { PublicLayout } from "../layout/PublicLayout";
+import { AuthLayout, AuthTitle } from "../layout/AuthLayout";
 
 const schema = z.object({
   email: z
@@ -60,9 +59,9 @@ export function ForgotPasswordPage() {
 
   const title = sentTo ? t("forgot.sentTitle") : t("forgot.title");
   return (
-    <PublicLayout narrow showLogin={false}>
-      <div className="flex flex-col gap-6">
-        <PageHeading title={title}>{title}</PageHeading>
+    <AuthLayout>
+      <div className="flex flex-col gap-5">
+        <AuthTitle title={title} />
         {sentTo ? (
           <Alert tone="success" role="status" title={t("forgot.sentTitle")}>
             {t("forgot.sentBody", { email: sentTo })}
@@ -103,6 +102,6 @@ export function ForgotPasswordPage() {
           {t("forgot.back")}
         </Link>
       </div>
-    </PublicLayout>
+    </AuthLayout>
   );
 }

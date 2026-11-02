@@ -125,7 +125,7 @@ function QueueItem({ row }: { row: PharmacyQueueRow }) {
   const { t } = useTranslation();
   const when = useWhen();
   return (
-    <li className="group relative flex flex-wrap items-center gap-4 rounded-lg bg-surface p-4 shadow-card transition-shadow hover:shadow-raised">
+    <li className="group relative flex animate-enter flex-wrap items-center gap-4 rounded-2xl bg-surface p-4 shadow-card transition-[box-shadow,transform] duration-200 ease-out-quint hover:-translate-y-0.5 hover:shadow-raised motion-reduce:hover:translate-y-0">
       {row.ticket_number ? (
         <TicketNumber number={row.ticket_number} size="sm" stub tone="brand" />
       ) : (

@@ -43,7 +43,7 @@ Built from the requirement tables in `docs/analysis/` (titles shortened; the ana
 | `FR-CLN` | [Clinical record](../analysis/07-clinical-documentation-and-pharmacy.md) | 10 | 9 | 1 | 0 | 0 | 0 | 8 | 2 |
 | `FR-PHA` | [Pharmacy](../analysis/07-clinical-documentation-and-pharmacy.md) | 7 | 5 | 2 | 0 | 0 | 0 | 5 | 2 |
 | `FR-DOC` | [Documents](../analysis/07-clinical-documentation-and-pharmacy.md) | 7 | 7 | 0 | 0 | 0 | 0 | 1 | 6 |
-| `FR-BIL` | [Billing, payments, insurance](../analysis/08-billing-payments-and-insurance.md) | 18 | 13 | 2 | 1 | 2 | 0 | 1 | 17 |
+| `FR-BIL` | [Billing, payments, insurance](../analysis/08-billing-payments-and-insurance.md) | 18 | 13 | 2 | 1 | 2 | 0 | 10 | 8 |
 | `FR-NOT` | [Notifications](../analysis/09-notifications-and-communication.md) | 14 | 12 | 0 | 1 | 1 | 0 | 12 | 2 |
 | `FR-DSP` | [Disputes, complaints, support](../analysis/10-disputes-complaints-and-support.md) | 14 | 11 | 3 | 0 | 0 | 0 | 0 | 14 |
 | `FR-AI` | [AI symptom checker](../analysis/11-ai-symptom-checker.md) | 13 | 2 | 5 | 3 | 3 | 1 | 0 | 12 |
@@ -55,7 +55,7 @@ Built from the requirement tables in `docs/analysis/` (titles shortened; the ana
 | `NFR-UX` | [Usability, accessibility, languages](../analysis/14-non-functional-requirements.md) | 7 | 7 | 0 | 0 | 0 | 1 | 4 | 2 |
 | `NFR-OPS` | [Maintainability and operations](../analysis/14-non-functional-requirements.md) | 8 | 8 | 0 | 0 | 0 | 4 | 4 | 0 |
 | `NFR-INT` | [Interoperability](../analysis/14-non-functional-requirements.md) | 3 | 1 | 0 | 2 | 0 | 0 | 0 | 3 |
-| **All** | | **220** | **179** | **26** | **7** | **8** | **16** | **51** | **153** |
+| **All** | | **220** | **179** | **26** | **7** | **8** | **16** | **60** | **144** |
 
 `NFR-INT-03` is phased "P3–P4" in the analysis and is counted under P3.
 
@@ -224,16 +224,16 @@ Source: [08 · Billing, payments, insurance](../analysis/08-billing-payments-and
 | FR-BIL-01 | Insurance profiles with card photos, validity, status | P1 | S3 | Both | API | In progress |
 | FR-BIL-02 | Facility insurer acceptance rules | P1 | S2, S8 | Both | BR | In progress |
 | FR-BIL-03 | Estimated patient share in discovery and booking | P1 | S5 | Both | BR | In progress |
-| FR-BIL-04 | Manual insurance verification per visit; rejection reason | P1 | S8 | Both | API | Not started |
+| FR-BIL-04 | Manual insurance verification per visit; rejection reason | P1 | S8 | Both | API | In progress |
 | FR-BIL-05 | Facility tariff with effective dates | P1 | S2, S8 | Both | BR | In progress |
-| FR-BIL-06 | One bill per visit with insurer / patient split | P1 | S8 | Both | BR | Not started |
-| FR-BIL-07 | Payment recording with references; partial payments | P1 | S8 | Both | BR, API | Not started |
-| FR-BIL-08 | Gapless receipts; to app, email and print | P1 | S8 | Both | BR | Not started |
-| FR-BIL-09 | Voids, refunds, credit notes with approval and separation of duties | P1 | S8 | Both | BR, AZ | Not started |
-| FR-BIL-10 | Shift open/close with expected vs counted totals | P1 | S8 | Both | BR | Not started |
-| FR-BIL-11 | Exemptions and waivers with approval thresholds | P1 | S8 | Both | BR | Not started |
-| FR-BIL-12 | Unpaid balances per patient per facility | P1 | S8 | Both | API, RLS | Not started |
-| FR-BIL-13 | Optional EBM receipt number on payments | P1 | S8 | Both | API | Not started |
+| FR-BIL-06 | One bill per visit with insurer / patient split | P1 | S8 | Both | BR | In progress |
+| FR-BIL-07 | Payment recording with references; partial payments | P1 | S8 | Both | BR, API | In progress |
+| FR-BIL-08 | Gapless receipts; to app, email and print | P1 | S8 | Both | BR | In progress |
+| FR-BIL-09 | Voids, refunds, credit notes with approval and separation of duties | P1 | S8 | Both | BR, AZ | In progress |
+| FR-BIL-10 | Shift open/close with expected vs counted totals | P1 | S8 | Both | BR | In progress |
+| FR-BIL-11 | Exemptions and waivers with approval thresholds | P1 | S8 | Both | BR | In progress |
+| FR-BIL-12 | Unpaid balances per patient per facility | P1 | S8 | Both | API, RLS | In progress |
+| FR-BIL-13 | Optional EBM receipt number on payments | P1 | S8 | Both | API | In progress |
 | FR-BIL-14 | Monthly insurance claim list with claim status | P2 | — | Both | API | Not started |
 | FR-BIL-15 | Platform subscriptions, invoices, grace and listing rules | P2 | — | Both | BR | Not started |
 | FR-BIL-16 | Mobile money payment requests and confirmation | P3 | — | Both | API, SEC | Not started |

@@ -22,7 +22,7 @@ import {
 import type { LanguageCode } from "../../types";
 import { extendMockRoleGrants } from "../data";
 import type { FeatureMockFactory } from "../features";
-import { MOCK_CLINICAL_FP, setConsultationSignHook } from "./clinical";
+import { MOCK_CLINICAL_FP, MOCK_PRESSURE_CONSULTATION, setConsultationSignHook } from "./clinical";
 import { SELF_PATIENT_ID } from "./patients-store";
 import { id, now, page, s1, stepUpFailure } from "./s1-common";
 
@@ -46,6 +46,8 @@ export const MOCK_RX_READY = "8d000000-0000-4000-8000-000000000101";
 export const MOCK_RX_PARTLY = "8d000000-0000-4000-8000-000000000102";
 export const MOCK_RX_CONTROLLED = "8d000000-0000-4000-8000-000000000103";
 export const MOCK_RX_QUERIED = "8d000000-0000-4000-8000-000000000104";
+const MOCK_RX_PRESSURE = "8d000000-0000-4000-8000-000000000106";
+const MOCK_QUERY_PRESSURE = "8d000000-0000-4000-8000-000000000206";
 export const MOCK_RX_PAST = "8d000000-0000-4000-8000-000000000105";
 
 interface MockDrug extends Omit<DrugRow, "available_here"> {
@@ -141,6 +143,11 @@ const MESSAGES = {
     fr: "Le médecin n'a pas encore répondu à cette question.",
     rw: "Muganga ntarasubiza iki kibazo.",
   },
+  notDispensable: {
+    en: "This prescription can't be dispensed now.",
+    fr: "Cette ordonnance ne peut pas être délivrée maintenant.",
+    rw: "Iyi resept ntishobora gutangwa ubu.",
+  },
   notOpen: {
     en: "This item can no longer be given.",
     fr: "Cette ligne ne peut plus être délivrée.",
@@ -169,6 +176,8 @@ function item(
     id: id(),
     drug_code: code,
     drug_display: d.display,
+    generic_name: d.generic_name,
+    strength: d.strength,
     is_off_catalogue: false,
     is_controlled: d.is_controlled,
     available_here: true,
@@ -273,6 +282,31 @@ function seed(): { prescriptions: MockRx[]; unavailable: Map<string, string> } {
         items: [
           item("MORPH10", "1 tablet", "qds", 3, { substitution_allowed: false }),
           item("ARTE20", "4 tablets", "bd", 3, { available_here: false }),
+        ],
+      }),
+      // PQ3 for the doctor: Mukamana's signed pressure consultation (clinical mock)
+      rx(MOCK_RX_PRESSURE, 106, "Mukamana Jeanne", {
+        consultation_id: MOCK_PRESSURE_CONSULTATION,
+        status: "partly_dispensed",
+        issued_at: daysFromNow(-20),
+        expires_at: daysFromNow(10),
+        items: [
+          item("AMLO5", "1 tablet", "od", 30, {
+            status: "partly_dispensed",
+            dispensed_quantity: 10,
+          }),
+        ],
+        queries: [
+          {
+            id: MOCK_QUERY_PRESSURE,
+            status: "open",
+            message: "Only 5 mg left in stock. Continue 5 mg or change to 10 mg?",
+            raised_by_name: "Nshimiyimana Patrick",
+            raised_at: daysFromNow(-0.2),
+            answered_by_addendum_id: null,
+            answered_at: null,
+            closed_at: null,
+          },
         ],
       }),
       rx(MOCK_RX_QUERIED, 104, "Uwase Aline", {
@@ -439,6 +473,8 @@ export const pharmacyMocks: FeatureMockFactory = (context) => {
       fields: {
         drug_code: d?.code ?? "",
         drug_display: d?.display ?? free,
+        generic_name: d?.generic_name ?? "",
+        strength: d?.strength ?? "",
         is_off_catalogue: !d,
         is_controlled: d?.is_controlled ?? false,
         dose: body.dose!.trim(),
@@ -627,7 +663,8 @@ export const pharmacyMocks: FeatureMockFactory = (context) => {
           .filter(
             (r) =>
               !q ||
-              [r.patient_display_name, r.number ?? ""].some((v) => v.toLowerCase().includes(q)),
+              [r.patient_display_name, r.number ?? ""].some((v) => v.toLowerCase().includes(q)) ||
+              r.ticket_number?.toLowerCase() === q,
           )
           .sort((a, b) => (a.issued_at ?? "").localeCompare(b.issued_at ?? ""))
           .map((r) => ({
@@ -662,6 +699,12 @@ export const pharmacyMocks: FeatureMockFactory = (context) => {
           lines?: DispenseLineInput[];
         };
         if (body.version !== r.version) return stale(ok.lang);
+        // backend dispense(): only ready or partly, and never after expires_at
+        if (
+          !["ready_to_dispense", "partly_dispensed"].includes(r.status) ||
+          (r.expires_at !== null && new Date(r.expires_at).getTime() <= Date.now())
+        )
+          return rule(ok.lang, "notDispensable");
         if (!body.identity_check_method)
           return context.validationError(ok.lang, {
             identity_check_method: ["Confirm who the patient is."],

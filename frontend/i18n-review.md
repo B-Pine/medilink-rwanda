@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 3593.
+Keys: 3607.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -1531,7 +1531,7 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `queue.tab.partly` | Zatanzwe igice | Partly given | needs native-speaker review |
 | `queue.tab.queried` | Ibibazo | Questions | needs native-speaker review |
 | `queue.search` | Shaka resept | Find a prescription | needs native-speaker review |
-| `queue.searchHint` | Izina cyangwa nimero ya resept | Name or prescription number | needs native-speaker review |
+| `queue.searchHint` | Izina, nimero ya resept cyangwa tike | Name, prescription number or ticket | needs native-speaker review |
 | `queue.issued` | Yatanzwe {{time}} | Issued {{time}} | needs native-speaker review |
 | `queue.items_one` | Umuti {{count}} | {{count}} medicine | needs native-speaker review |
 | `queue.items_other` | Imiti {{count}} | {{count}} medicines | needs native-speaker review |
@@ -1594,6 +1594,9 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `dispense.nothingOpen` | Nta kintu gisigaye gutangwa kuri iyi resept. | Nothing left to give on this prescription. | needs native-speaker review |
 | `dispense.history` | Ibyatanzwe kugeza ubu | Given so far | needs native-speaker review |
 | `dispense.signedBy` | {{name}} · {{time}} | {{name}} · {{time}} | needs native-speaker review |
+| `dispense.substituteRange` | Tanga {{max}} cyangwa munsi. | Give {{max}} or fewer. | needs native-speaker review |
+| `dispense.substituteQuantity` | Ingano | How many | needs native-speaker review |
+| `dispense.substituteQuantityHint` | Ntiwandike niba utanga {{count}} zose zisigaye. | Leave empty to give all {{count}} left. | needs native-speaker review |
 | `query.title` | Ikibazo kuri muganga | Question to the doctor | needs native-speaker review |
 | `query.openTitle` | Ikibazo gifunguye | Open question | needs native-speaker review |
 | `query.openBody` | {{name}} yabajije: | {{name}} asked: | needs native-speaker review |
@@ -1604,6 +1607,17 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `query.waiting` | Dutegereje igisubizo cya muganga. | Waiting for the doctor's answer. | needs native-speaker review |
 | `query.answered` | Muganga yasubije akoresheje inyongera. | The doctor answered with an addendum. | needs native-speaker review |
 | `query.close` | Funga ikibazo | Close the question | needs native-speaker review |
+| `query.fromPharmacy` | Ikibazo cya {{name}} (farumasi), {{time}} | Question from {{name}} (pharmacy), {{time}} | needs native-speaker review |
+| `query.answeredWait` | Byasubijwe. Umufarumasiye azafunga ikibazo. | Answered. The pharmacist will close the question. | needs native-speaker review |
+| `query.answerWith` | Subiza ukoresheje | Answer with | needs native-speaker review |
+| `query.newAddendum` | Inyongera nshya | A new addendum | needs native-speaker review |
+| `query.existing` | Inyongera: {{reason}} ({{time}}) | Addendum: {{reason}} ({{time}}) | needs native-speaker review |
+| `query.reason` | Impamvu y'inyongera | Addendum reason | needs native-speaker review |
+| `query.reasonRequired` | Andika impamvu. | Give the reason. | needs native-speaker review |
+| `query.body` | Igisubizo cyawe | Your answer | needs native-speaker review |
+| `query.bodyHint` | Kibikwa nk'inyongera yasinywe kuri iri suzuma. | Saved as a signed addendum on this consultation. | needs native-speaker review |
+| `query.bodyRequired` | Andika igisubizo. | Write the answer. | needs native-speaker review |
+| `query.answer` | Ohereza igisubizo | Send the answer | needs native-speaker review |
 | `availability.title` | Imiti iboneka | Medicine availability | needs native-speaker review |
 | `availability.description` | Zimya imiti yashize. Abaganga babona "Ntuboneka hano" iyo bandika resept. | Switch off what is out of stock. Doctors then see "Not in stock here" when they prescribe. | needs native-speaker review |
 | `availability.search` | Shaka umuti | Find a medicine | needs native-speaker review |

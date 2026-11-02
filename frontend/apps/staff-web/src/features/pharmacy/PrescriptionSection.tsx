@@ -11,6 +11,7 @@ import {
   type Prescription,
   type PrescriptionAlert,
   type PrescriptionItem,
+  type PrescriptionQuery,
 } from "@medilink/api-client";
 import {
   Alert,
@@ -24,7 +25,14 @@ import {
   TextareaField,
   TextField,
 } from "@medilink/ui";
-import { Plus, Storefront, Trash, Warning, WarningOctagon } from "@phosphor-icons/react";
+import {
+  ChatCircleText,
+  Plus,
+  Storefront,
+  Trash,
+  Warning,
+  WarningOctagon,
+} from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDeferredValue, useId, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
@@ -32,7 +40,7 @@ import { useTranslation } from "react-i18next";
 import { useApi } from "../../app/services";
 import { useStepUp } from "../lock";
 import { ItemFlags, ItemLine } from "./DispensePage";
-import { errorText, ITEM_TONE, pharmacyKeys, STATUS_TONE, useCan } from "./shared";
+import { errorText, ITEM_TONE, pharmacyKeys, STATUS_TONE, useCan, useWhen } from "./shared";
 
 /**
  * The consultation's Prescription section (S7-F1, FR-PHA-01, FR-CLN-07), mounted by the S6 page in
@@ -154,6 +162,11 @@ export function PrescriptionSection({ consultation: c }: { consultation: Consult
               {errorText(remove.error, t("errors.generic"))}
             </Alert>
           )}
+          {p?.queries
+            .filter((q) => q.status !== "closed")
+            .map((q) => (
+              <QueryAnswer key={q.id} consultation={c} query={q} canAnswer={canIssue} />
+            ))}
           {showForm ? (
             <AddItem
               consultation={c}
@@ -622,5 +635,124 @@ function AddItem({
         </Button>
       </div>
     </form>
+  );
+}
+
+const NEW = "new";
+
+/**
+ * PQ3: a pharmacist's question about this prescription. The prescriber answers with an addendum on
+ * the consultation, an existing one or one written here; the pharmacist then closes it (PQ4).
+ */
+function QueryAnswer({
+  consultation: c,
+  query,
+  canAnswer,
+}: {
+  consultation: Consultation;
+  query: PrescriptionQuery;
+  canAnswer: boolean;
+}) {
+  const { t } = useTranslation();
+  const api = useApi();
+  const when = useWhen();
+  const queryClient = useQueryClient();
+  const { withStepUp } = useStepUp();
+  const [pick, setPick] = useState(NEW);
+  const [reason, setReason] = useState("");
+  const [body, setBody] = useState("");
+  const [tried, setTried] = useState(false);
+  const answer = useMutation({
+    mutationFn: async () => {
+      const addendumId =
+        pick === NEW
+          ? (
+              await withStepUp(() =>
+                api.clinical.addAddendum(c.id, { reason: reason.trim(), body: body.trim() }),
+              )
+            ).id
+          : pick;
+      return api.pharmacy.answerQuery(query.id, addendumId);
+    },
+    // the consultation (new addendum) and its prescription both live under `clinical`
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["clinical"] }),
+  });
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    setTried(true);
+    if (pick === NEW && (!reason.trim() || !body.trim())) return;
+    answer.mutate();
+  };
+  const open = query.status === "open";
+  return (
+    <div
+      role="group"
+      aria-labelledby={`query-${query.id}`}
+      className="flex flex-col gap-3 rounded-md border border-border bg-subtle p-3"
+    >
+      <p id={`query-${query.id}`} className="m-0 flex flex-wrap items-center gap-2 font-semibold">
+        <ChatCircleText aria-hidden="true" weight="bold" className="size-icon text-warning" />
+        {t("pharmacy.query.fromPharmacy", {
+          name: query.raised_by_name,
+          time: when.dateTime(query.raised_at),
+        })}
+      </p>
+      <blockquote className="m-0 border-l-2 border-warning pl-3 whitespace-pre-wrap">
+        {query.message}
+      </blockquote>
+      {!open ? (
+        <p className="m-0 text-body-sm text-fg-secondary">{t("pharmacy.query.answeredWait")}</p>
+      ) : !canAnswer ? (
+        <p className="m-0 text-body-sm text-fg-secondary">{t("pharmacy.query.waiting")}</p>
+      ) : (
+        <form noValidate onSubmit={submit} className="flex flex-col gap-3">
+          {c.addenda.length > 0 && (
+            <SelectField
+              label={t("pharmacy.query.answerWith")}
+              value={pick}
+              onChange={(event) => setPick(event.target.value)}
+              className="sm:w-96"
+            >
+              <option value={NEW}>{t("pharmacy.query.newAddendum")}</option>
+              {c.addenda.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {t("pharmacy.query.existing", {
+                    reason: a.reason,
+                    time: when.dateTime(a.signed_at),
+                  })}
+                </option>
+              ))}
+            </SelectField>
+          )}
+          {pick === NEW && (
+            <>
+              <TextField
+                label={t("pharmacy.query.reason")}
+                value={reason}
+                maxLength={200}
+                onChange={(event) => setReason(event.target.value)}
+                error={tried && !reason.trim() ? t("pharmacy.query.reasonRequired") : undefined}
+              />
+              <TextareaField
+                label={t("pharmacy.query.body")}
+                hint={t("pharmacy.query.bodyHint")}
+                rows={3}
+                value={body}
+                onChange={(event) => setBody(event.target.value)}
+                error={tried && !body.trim() ? t("pharmacy.query.bodyRequired") : undefined}
+              />
+            </>
+          )}
+          {answer.isError && (
+            <Alert tone="danger" role="alert">
+              {errorText(answer.error, t("errors.generic"))}
+            </Alert>
+          )}
+          <Button type="submit" className="self-start" loading={answer.isPending}>
+            {t("pharmacy.query.answer")}
+          </Button>
+        </form>
+      )}
+    </div>
   );
 }

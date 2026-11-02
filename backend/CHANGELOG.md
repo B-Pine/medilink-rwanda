@@ -431,6 +431,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   dispense records and lines append-only; triggers lock issued prescriptions and items; SECURITY
   DEFINER `pharmacy_patient_prescriptions(uuid)` and `pharmacy_expiry_facilities()`; hourly
   `pharmacy.expire_prescriptions` job. `pharmacy` and `documents` join the CI coverage gate.
+- Follow-ups (#134): the pharmacy queue search `q` also matches the visit's active ticket number
+  (exact, any case); prescription items carry the catalogue `generic_name` and `strength` (blank off
+  catalogue) for the substitute search.
+
 
 ### Sprint 10 · Help center and support (part 1)
 

@@ -72,7 +72,7 @@
       "queried": "Ibibazo"
     },
     "search": "Shaka resept",
-    "searchHint": "Izina cyangwa nimero ya resept",
+    "searchHint": "Izina, nimero ya resept cyangwa tike",
     "issued": "Yatanzwe {{time}}",
     "items_one": "Umuti {{count}}",
     "items_other": "Imiti {{count}}",
@@ -146,7 +146,10 @@
     "reloaded": "Undi muntu yahinduye iyi resept hagati aho. Yongeye gufungurwa: yigenzure wongere usinye.",
     "nothingOpen": "Nta kintu gisigaye gutangwa kuri iyi resept.",
     "history": "Ibyatanzwe kugeza ubu",
-    "signedBy": "{{name}} · {{time}}"
+    "signedBy": "{{name}} · {{time}}",
+    "substituteRange": "Tanga {{max}} cyangwa munsi.",
+    "substituteQuantity": "Ingano",
+    "substituteQuantityHint": "Ntiwandike niba utanga {{count}} zose zisigaye."
   },
   "query": {
     "title": "Ikibazo kuri muganga",
@@ -158,7 +161,18 @@
     "send": "Ohereza kuri muganga",
     "waiting": "Dutegereje igisubizo cya muganga.",
     "answered": "Muganga yasubije akoresheje inyongera.",
-    "close": "Funga ikibazo"
+    "close": "Funga ikibazo",
+    "fromPharmacy": "Ikibazo cya {{name}} (farumasi), {{time}}",
+    "answeredWait": "Byasubijwe. Umufarumasiye azafunga ikibazo.",
+    "answerWith": "Subiza ukoresheje",
+    "newAddendum": "Inyongera nshya",
+    "existing": "Inyongera: {{reason}} ({{time}})",
+    "reason": "Impamvu y'inyongera",
+    "reasonRequired": "Andika impamvu.",
+    "body": "Igisubizo cyawe",
+    "bodyHint": "Kibikwa nk'inyongera yasinywe kuri iri suzuma.",
+    "bodyRequired": "Andika igisubizo.",
+    "answer": "Ohereza igisubizo"
   },
   "availability": {
     "title": "Imiti iboneka",

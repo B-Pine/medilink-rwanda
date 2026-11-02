@@ -92,4 +92,11 @@
   --shadow-raised: var(--ml-shadow-raised);
 
   --breakpoint-xs: 22.5rem; /* 360px small Android */
+
+  /* Motion (upgrade 02 §6): one easing, 150–250 ms. `ease-out-quint` drives every transition. */
+  --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+  --animate-enter: ml-enter 220ms var(--ease-out-quint) both;
+  --animate-rise: ml-rise 240ms var(--ease-out-quint) both;
+  --animate-glow: ml-glow 1.5s var(--ease-out-quint);
+  --animate-fade: ml-fade 200ms var(--ease-out-quint) both;
 }

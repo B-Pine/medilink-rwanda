@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 import { cx } from "../utils/cx";
 
@@ -99,9 +99,12 @@ export function FacilityRow({
       onMouseEnter={onActivate}
       onFocus={onActivate}
       className={cx(
-        "grid gap-x-6 gap-y-1.5 border-b border-border px-4 py-3.5 transition-colors last:border-b-0",
+        "relative grid gap-x-6 gap-y-2 border-b border-border px-4 py-4 last:border-b-0",
+        "transition-[background-color,box-shadow] duration-200 ease-out-quint hover:bg-subtle/50",
         COLUMNS,
-        selected && "bg-brand-subtle/60",
+        // the selected place (pin or row): a tint and an emerald edge, no layout shift
+        selected &&
+          "bg-brand-subtle/50 shadow-[inset_3px_0_0_var(--color-primary)] hover:bg-brand-subtle/50",
       )}
     >
       <h3 className="m-0 min-w-0 truncate text-body font-semibold">{title}</h3>
@@ -132,7 +135,7 @@ export function FacilityRow({
                 className={cx("size-2 rounded-full bg-current", TONE_DOT[wait.tone])}
               />
             )}
-            {wait.text}
+            <LiveText text={wait.text} />
           </>
         ) : null}
       </p>
@@ -150,5 +153,34 @@ export function FacilityRow({
         {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
       </div>
     </li>
+  );
+}
+
+/**
+ * A live value that glows once when it changes (upgrade 02 §5 "Live without noise"); never on the
+ * first render, never when the person prefers less motion.
+ */
+function LiveText({ text }: { text: string }) {
+  const node = useRef<HTMLSpanElement>(null);
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    const element = node.current;
+    if (!element || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    element.animate(
+      [
+        { backgroundColor: "color-mix(in srgb, var(--color-attention-solid) 22%, transparent)" },
+        {},
+      ],
+      { duration: 1500, easing: "cubic-bezier(0.23, 1, 0.32, 1)" },
+    );
+  }, [text]);
+  return (
+    <span ref={node} className="-mx-1 rounded-sm px-1">
+      {text}
+    </span>
   );
 }

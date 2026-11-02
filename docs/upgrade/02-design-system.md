@@ -75,6 +75,7 @@ All live in `packages/ui`, one file each, with unit and axe tests. Feature code 
 - 150–250 ms, easing `cubic-bezier(0.23, 1, 0.32, 1)`; buttons scale to 0.97 on press.
 - Only three moments animate: the "You're called" takeover (with sound and vibration until acknowledged), live-row highlights, and panels entering.
 - No parallax, no scroll-jacking, no animated counters. `prefers-reduced-motion` and data-saver mode turn movement off.
+- **Decision 2026-11-02 (product owner):** public pages also use gentle transitions. Page sections enter with a 220 ms fade and 4 px lift, staggered by 40 ms (`.ml-stagger`); cards, dialogs and the map card rise into place (`animate-rise`, 240 ms); hover and pressed states ease over 150–200 ms; a live value glows once when it changes. Opacity and transform only, one easing (`ease-out-quint`).
 
 ## 7. Accessibility and performance (release gates)
 

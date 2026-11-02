@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 3724.
+Keys: 3732.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -297,7 +297,6 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `landing.insurersShort.private` | Ubwishingizi bwigenga | Private | needs native-speaker review |
 | `emergency.title` | Ubutabazi bwihuse? | Emergency? | needs native-speaker review |
 | `emergency.body` | Jya ku ishami ry’ubutabazi bwihuse rikwegereye cyangwa uhamagare 912. MediLink si iy’ubutabazi bwihuse. | Go to the nearest emergency department or call 912. MediLink is not for emergencies. | needs native-speaker review |
-| `footer.label` | Amahuza y’urubuga | Site links | needs native-speaker review |
 | `footer.privacy` | Itangazo ry’ibanga | Privacy notice | needs native-speaker review |
 | `footer.terms` | Amabwiriza yo gukoresha | Terms of use | needs native-speaker review |
 | `footer.verify` | Genzura inyandiko | Verify a document | needs native-speaker review |
@@ -307,6 +306,10 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `footer.about` | Ibyerekeye | About | needs native-speaker review |
 | `footer.emergency` | Ibyihutirwa | Emergency | needs native-speaker review |
 | `footer.checkSymptoms` | Suzuma ibimenyetso | Check symptoms | needs native-speaker review |
+| `footer.groups.care` | Ubuvuzi | Care | needs native-speaker review |
+| `footer.groups.medilink` | MediLink | MediLink | needs native-speaker review |
+| `footer.groups.trust` | Kwizerwa | Trust | needs native-speaker review |
+| `footer.emergencyLine` | Ubutabazi? Hamagara 912 | Emergency? Call 912 | needs native-speaker review |
 | `login.title` | Injira cyangwa ufungure konti | Log in or create an account | needs native-speaker review |
 | `login.intro` | Fata igihe cyo kwivuza wirinde gutegereza igihe kirekire. | Book care and skip the long wait. | needs native-speaker review |
 | `login.email` | Imeyili | Email | needs native-speaker review |
@@ -433,6 +436,11 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `home.scan` | Soma QR | Scan QR | needs native-speaker review |
 | `home.forFacilities` | Ku bigo by’ubuvuzi | For facilities | needs native-speaker review |
 | `home.register` | Iyandikishe | Register | needs native-speaker review |
+| `home.now.title` | Ubu nonaha | Right now | needs native-speaker review |
+| `home.now.open` | ahantu hafunguye | places open | needs native-speaker review |
+| `home.now.waiting` | Abategereje | People waiting | needs native-speaker review |
+| `home.now.shortest` | Igihe gito cyo gutegereza | Shortest wait | needs native-speaker review |
+| `home.now.minutes` | ≤ iminota {{max}} | ≤ {{max}} min | needs native-speaker review |
 | `info.back` | Subira ahabanza | Back to the home page | needs native-speaker review |
 | `info.forFacilities.title` | MediLink ku bigo by’ubuvuzi | MediLink for health facilities | needs native-speaker review |
 | `info.forFacilities.body` | Kwiyandikisha kw’ibigo kuzatangira mu gice gikurikira. Muzashobora gusaba kuri interineti mugatangira nyuma yo kugenzurwa. | Facility registration opens in the next release. You will be able to apply online and go live after verification. | needs native-speaker review |

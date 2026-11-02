@@ -1,6 +1,6 @@
 import type { FacilitySearchInput, LevelOfCare } from "@medilink/api-client";
 import { Crosshair, Faders, X } from "@phosphor-icons/react";
-import { Button, Dialog, SelectField } from "@medilink/ui";
+import { Button, cx, Dialog, SelectField } from "@medilink/ui";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useMemo, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -17,7 +17,7 @@ import {
   SERVICE_KEYS,
   type ServiceKey,
 } from "./discovery";
-import { PlacesView, sortResults, TYPES, useNearMe, type Sort } from "./Places";
+import { FILTER, PlacesView, sortResults, TYPES, useNearMe, type Sort } from "./Places";
 
 const LEVELS: LevelOfCare[] = ["primary", "secondary", "tertiary"];
 const DISTANCES = [2, 5, 10, 25] as const;
@@ -223,8 +223,11 @@ export function CarePage() {
 
   return (
     <PublicLayout>
-      <div className="mx-auto grid max-w-[80rem] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[15rem_minmax(0,1fr)] lg:py-8">
-        <aside aria-labelledby="filters" className="hidden lg:block">
+      <div className="ml-stagger mx-auto grid max-w-[80rem] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-8 lg:py-10">
+        <aside
+          aria-labelledby="filters"
+          className="hidden self-start rounded-2xl bg-surface p-5 shadow-card lg:sticky lg:top-4 lg:block"
+        >
           <h2 id="filters" className="mt-0 mb-4 text-h3">
             {t("care.filters")}
           </h2>
@@ -238,12 +241,12 @@ export function CarePage() {
               className="m-0 flex list-none flex-wrap items-center gap-2 p-0"
             >
               {chips.map((chip) => (
-                <li key={chip.key}>
+                <li key={chip.key} className="animate-enter">
                   <button
                     type="button"
                     onClick={chip.remove}
                     aria-label={t("care.remove", { label: chip.label })}
-                    className="inline-flex min-h-target cursor-pointer items-center gap-1.5 rounded-full bg-brand-subtle px-3 text-body-sm font-semibold text-on-brand-subtle hover:bg-subtle"
+                    className="inline-flex min-h-target cursor-pointer items-center gap-1.5 rounded-full bg-brand-subtle px-3 text-body-sm font-semibold text-on-brand-subtle transition-[background-color,transform] duration-150 ease-out-quint hover:bg-subtle active:scale-[0.97] motion-reduce:active:scale-100"
                   >
                     {chip.label}
                     <X aria-hidden="true" weight="bold" className="size-4" />
@@ -267,6 +270,7 @@ export function CarePage() {
             headingLevel={1}
             rows={rows}
             state={results.status}
+            busy={results.isPlaceholderData}
             onRetry={() => void results.refetch()}
             near={near}
             sort={sort}
@@ -322,7 +326,7 @@ function Toggle({
       type="button"
       aria-pressed={on}
       onClick={() => onChange(!on)}
-      className="inline-flex min-h-target cursor-pointer items-center rounded-md border border-border-input bg-surface px-3 text-left font-semibold text-fg aria-pressed:border-primary aria-pressed:bg-brand-subtle aria-pressed:text-on-brand-subtle"
+      className={cx(FILTER, "inline-flex items-center text-left")}
     >
       {children}
     </button>

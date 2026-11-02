@@ -139,10 +139,19 @@ export default function FacilityMap({
   }, [points, selectedId, you]);
 
   return (
-    <div className={cx("relative isolate overflow-hidden rounded-lg bg-subtle", className)}>
+    <div
+      className={cx(
+        "relative isolate overflow-hidden rounded-2xl bg-subtle shadow-card",
+        className,
+      )}
+    >
       <div ref={node} role="region" aria-label={label} className="absolute inset-0" />
       {card && (
-        <div className="absolute inset-x-3 bottom-3 z-[1000] rounded-lg bg-surface p-4 shadow-raised">
+        // keyed by the place, so each newly selected card rises into view (upgrade 02 §6)
+        <div
+          key={selectedId}
+          className="absolute inset-x-3 bottom-3 z-[1000] animate-rise rounded-lg bg-surface p-4 shadow-raised"
+        >
           {card}
         </div>
       )}

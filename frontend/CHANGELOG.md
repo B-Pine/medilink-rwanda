@@ -9,6 +9,19 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Public pages polish and motion (upgrade 02 §2–6)
+
+- Changed: the home hero is a deep-forest band (Imigongo at 6 %) holding the search, chips and
+  filters, with a "Right now" ticket stub of live facts (places open, people waiting, shortest
+  wait) and a heartbeat line; numbers show dashes until the data arrives. Filters are compact
+  pills; service tiles, alerts, verify and for-facilities blocks share one card style.
+- Changed: the footer has three link groups (Care, MediLink, Trust), one emergency line, the
+  language switch and copyright, on a hairline instead of the boxed notice.
+- Added: motion tokens (`ease-out-quint`, `animate-enter`, `animate-rise`, `animate-fade`) and
+  `.ml-stagger`; dialogs and the map card rise in; list rows ease on hover and show the selected
+  place with an emerald edge; a changed live wait glows once; the list dims while new results load.
+  All of it is off with reduced motion or data saver.
+
 ### Upgrade U2 · Find care `/care` (upgrade 03 §3)
 
 - Added: `/care` with the same list and map at full width and every filter in a panel (a dialog

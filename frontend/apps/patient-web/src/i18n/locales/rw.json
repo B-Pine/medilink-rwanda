@@ -87,7 +87,6 @@
     "body": "Jya ku ishami ry’ubutabazi bwihuse rikwegereye cyangwa uhamagare 912. MediLink si iy’ubutabazi bwihuse."
   },
   "footer": {
-    "label": "Amahuza y’urubuga",
     "privacy": "Itangazo ry’ibanga",
     "terms": "Amabwiriza yo gukoresha",
     "verify": "Genzura inyandiko",
@@ -96,7 +95,13 @@
     "copyright": "© {{year}} MediLink Rwanda",
     "about": "Ibyerekeye",
     "emergency": "Ibyihutirwa",
-    "checkSymptoms": "Suzuma ibimenyetso"
+    "checkSymptoms": "Suzuma ibimenyetso",
+    "groups": {
+      "care": "Ubuvuzi",
+      "medilink": "MediLink",
+      "trust": "Kwizerwa"
+    },
+    "emergencyLine": "Ubutabazi? Hamagara 912"
   },
   "login": {
     "title": "Injira cyangwa ufungure konti",
@@ -240,7 +245,14 @@
     "check": "Genzura",
     "scan": "Soma QR",
     "forFacilities": "Ku bigo by’ubuvuzi",
-    "register": "Iyandikishe"
+    "register": "Iyandikishe",
+    "now": {
+      "title": "Ubu nonaha",
+      "open": "ahantu hafunguye",
+      "waiting": "Abategereje",
+      "shortest": "Igihe gito cyo gutegereza",
+      "minutes": "≤ iminota {{max}}"
+    }
   },
   "info": {
     "back": "Subira ahabanza",

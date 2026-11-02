@@ -94,6 +94,53 @@
   }
 }
 
+/*
+ * Motion (upgrade 02 §6, decision 2026-11-02): content enters with a short fade and lift, panels
+ * and cards rise into place, a changed live row glows once. Opacity and transform only, so nothing
+ * reflows; reduced motion and data saver turn it off (above).
+ */
+@keyframes ml-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+@keyframes ml-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+@keyframes ml-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes ml-glow {
+  from {
+    background-color: color-mix(in srgb, var(--color-attention-solid) 18%, transparent);
+  }
+}
+/* Sections of a page follow each other by 40 ms, at most five steps. */
+.ml-stagger > * {
+  animation: var(--animate-enter);
+}
+.ml-stagger > :nth-child(2) {
+  animation-delay: 40ms;
+}
+.ml-stagger > :nth-child(3) {
+  animation-delay: 80ms;
+}
+.ml-stagger > :nth-child(4) {
+  animation-delay: 120ms;
+}
+.ml-stagger > :nth-child(n + 5) {
+  animation-delay: 160ms;
+}
+:root[data-data-saver="on"] .ml-stagger > * {
+  animation: none;
+}
+
 /* Logo: the colour version on light surfaces, the white version on dark ones. */
 .ml-logo-for-dark {
   display: none;

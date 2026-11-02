@@ -87,7 +87,6 @@
     "body": "Go to the nearest emergency department or call 912. MediLink is not for emergencies."
   },
   "footer": {
-    "label": "Site links",
     "privacy": "Privacy notice",
     "terms": "Terms of use",
     "verify": "Verify a document",
@@ -96,7 +95,13 @@
     "copyright": "© {{year}} MediLink Rwanda",
     "about": "About",
     "emergency": "Emergency",
-    "checkSymptoms": "Check symptoms"
+    "checkSymptoms": "Check symptoms",
+    "groups": {
+      "care": "Care",
+      "medilink": "MediLink",
+      "trust": "Trust"
+    },
+    "emergencyLine": "Emergency? Call 912"
   },
   "login": {
     "title": "Log in or create an account",
@@ -240,7 +245,14 @@
     "check": "Check",
     "scan": "Scan QR",
     "forFacilities": "For facilities",
-    "register": "Register"
+    "register": "Register",
+    "now": {
+      "title": "Right now",
+      "open": "places open",
+      "waiting": "People waiting",
+      "shortest": "Shortest wait",
+      "minutes": "≤ {{max}} min"
+    }
   },
   "info": {
     "back": "Back to the home page",

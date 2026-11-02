@@ -20,6 +20,52 @@ import { INSURER_CODES, INSURER_KEYS, pinKind, time, type InsurerKey } from "./d
 // Leaflet and the tiles load only when the map is on screen (upgrade 03 §2, < 100 KB JS budget)
 const FacilityMap = lazy(() => import("@medilink/ui/map"));
 
+/** Pill chip: a toggle (aria-pressed) or a link; presses scale like buttons (upgrade 02 §6). */
+export const CHIP =
+  "inline-flex min-h-target cursor-pointer items-center gap-1.5 rounded-full px-4 text-body-sm font-semibold no-underline select-none " +
+  "bg-subtle text-fg transition-[background-color,color,transform] duration-150 ease-out-quint " +
+  "hover:bg-brand-subtle active:scale-[0.97] aria-pressed:bg-primary aria-pressed:text-on-primary motion-reduce:active:scale-100";
+
+/** Compact filter control (select or toggle) with the same height and border as inputs. */
+export const FILTER =
+  "min-h-target cursor-pointer rounded-md border border-border-input bg-surface px-3 text-body-sm font-semibold text-fg " +
+  "transition-[border-color,background-color,color] duration-150 ease-out-quint hover:border-fg-muted " +
+  "aria-pressed:border-primary aria-pressed:bg-brand-subtle aria-pressed:text-on-brand-subtle";
+
+/** A filter select whose first option names it ("All districts"); the label is for screen readers. */
+export function FilterSelect({
+  id,
+  label,
+  value,
+  onChange,
+  disabled,
+  children,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  disabled?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <>
+      <label htmlFor={id} className="sr-only">
+        {label}
+      </label>
+      <select
+        id={id}
+        value={value}
+        disabled={disabled}
+        onChange={(event) => onChange(event.target.value)}
+        className={cx(FILTER, value && "border-primary bg-brand-subtle text-on-brand-subtle")}
+      >
+        {children}
+      </select>
+    </>
+  );
+}
+
 /** Facility types offered as a filter (S1 types; upgrade 03 §3). */
 export const TYPES = [
   "health_post",
@@ -149,6 +195,7 @@ export function PlacesView({
   headingLevel = 2,
   rows,
   state,
+  busy = false,
   onRetry,
   near,
   sort,
@@ -161,6 +208,8 @@ export function PlacesView({
   headingLevel?: 1 | 2;
   rows: FacilityResult[];
   state: "pending" | "error" | "success";
+  /** New results are loading over the shown ones: the list dims instead of jumping. */
+  busy?: boolean;
   onRetry: () => void;
   near: { lat: number; lng: number } | null;
   sort: Sort;
@@ -246,7 +295,9 @@ export function PlacesView({
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_26rem]">
         <div
           className={cx(
-            "min-w-0 rounded-lg bg-surface shadow-card",
+            "min-w-0 overflow-hidden rounded-2xl bg-surface shadow-card",
+            "transition-opacity duration-200 ease-out-quint",
+            busy && "opacity-60",
             !wide && view === "map" && "hidden",
           )}
         >

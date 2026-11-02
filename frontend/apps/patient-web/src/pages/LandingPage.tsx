@@ -1,6 +1,6 @@
 import type { FacilityResult, FacilitySearchInput } from "@medilink/api-client";
 import { Crosshair, MagnifyingGlass, NavigationArrow, Phone, QrCode } from "@phosphor-icons/react";
-import { Button, buttonClassName, SelectField } from "@medilink/ui";
+import { Button, buttonClassName, cx, ImigongoPattern } from "@medilink/ui";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
@@ -19,6 +19,9 @@ import {
   type ServiceKey,
 } from "../features/booking/discovery";
 import {
+  CHIP,
+  FILTER,
+  FilterSelect,
   PlacesView,
   sortResults,
   TYPES,
@@ -29,6 +32,10 @@ import {
 import { saveChoice, useRecentPlaces, useSavedChoice } from "../features/booking/recent";
 import { PublicLayout } from "../layout/PublicLayout";
 import { useInstallPrompt } from "../pwa/install";
+
+/** Chips on the deep-forest band: translucent until chosen. */
+const ON_FOREST_CHIP =
+  "bg-on-forest/10 text-on-forest ring-1 ring-on-forest/20 hover:bg-on-forest/20 aria-pressed:bg-on-forest aria-pressed:text-forest aria-pressed:ring-0";
 
 /** Chips under the search field, for people who don't type (upgrade 03 §2). */
 const CHIPS: { key: string; service?: ServiceKey }[] = [
@@ -127,126 +134,129 @@ export function LandingPage() {
 
   return (
     <PublicLayout>
-      <div className="mx-auto flex max-w-[80rem] flex-col gap-10 px-4 py-6 sm:px-6 lg:py-8">
-        <section aria-labelledby="ask" className="flex flex-col gap-3">
-          <form onSubmit={onSearch} role="search" className="flex flex-col gap-3">
-            <h1 id="ask" className="m-0 text-h1">
-              {t("home.ask")}
-            </h1>
-            <div className="flex gap-2">
-              <input
-                id="ask-input"
-                aria-labelledby="ask"
-                type="search"
-                value={text}
-                onChange={(event) => setText(event.target.value)}
-                placeholder={t("home.placeholder")}
-                maxLength={500}
-                autoComplete="off"
-                className="min-h-[3.5rem] min-w-0 flex-1 rounded-md border border-border-input bg-surface px-4 text-body text-fg placeholder:text-fg-muted"
-              />
-              <Button
-                type="submit"
-                size="lg"
-                iconStart={<MagnifyingGlass aria-hidden="true" className="size-icon" />}
+      <div className="ml-stagger mx-auto flex max-w-[80rem] flex-col gap-8 px-4 py-6 sm:px-6 lg:gap-10 lg:py-10">
+        <section
+          aria-labelledby="ask"
+          className="relative isolate grid gap-8 overflow-hidden rounded-[1.25rem] bg-forest p-5 text-on-forest sm:p-8 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-center lg:gap-10 lg:p-10"
+        >
+          <ImigongoPattern opacity={0.06} className="-z-10" />
+          <div className="flex min-w-0 flex-col gap-5">
+            <form onSubmit={onSearch} role="search" className="flex flex-col gap-4">
+              <h1 id="ask" className="m-0 text-display leading-tight tracking-tight text-on-forest">
+                {t("home.ask")}
+              </h1>
+              <div className="flex items-center gap-2 rounded-xl border border-transparent bg-surface p-1.5 pl-4 text-fg shadow-raised transition-[border-color,box-shadow] duration-200 ease-out-quint focus-within:border-primary focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_18%,transparent)]">
+                <MagnifyingGlass aria-hidden="true" className="size-5 shrink-0 text-fg-muted" />
+                <input
+                  id="ask-input"
+                  aria-labelledby="ask"
+                  type="search"
+                  value={text}
+                  onChange={(event) => setText(event.target.value)}
+                  placeholder={t("home.placeholder")}
+                  maxLength={500}
+                  autoComplete="off"
+                  className="min-h-12 min-w-0 flex-1 border-0 bg-transparent text-body text-fg outline-none placeholder:text-fg-muted"
+                />
+                <Button type="submit" size="lg">
+                  {t("home.search")}
+                </Button>
+              </div>
+            </form>
+            <ul
+              aria-label={t("home.chipsLabel")}
+              className="m-0 flex list-none flex-wrap gap-2 p-0"
+            >
+              {CHIPS.map((chip) => (
+                <li key={chip.key}>
+                  {chip.service ? (
+                    <button
+                      type="button"
+                      aria-pressed={service === chip.service}
+                      onClick={() => pickService(service === chip.service ? "" : chip.service!)}
+                      className={cx(CHIP, ON_FOREST_CHIP)}
+                    >
+                      {t(`home.chips.${chip.key}`)}
+                    </button>
+                  ) : (
+                    <Link to="/check-symptoms" className={cx(CHIP, ON_FOREST_CHIP)}>
+                      {t(`home.chips.${chip.key}`)}
+                    </Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+            <div
+              role="group"
+              aria-label={t("care.filters")}
+              className="flex flex-wrap items-center gap-2 border-t border-on-forest/15 pt-4"
+            >
+              <FilterSelect
+                id="home-district"
+                label={t("home.district")}
+                value={near ? "" : district}
+                onChange={(value) => {
+                  setDistrict(value as DistrictKey | "");
+                  setNear(null);
+                }}
               >
-                {t("home.search")}
-              </Button>
+                <option value="">{near ? t("home.nearYou") : t("home.anyDistrict")}</option>
+                {DISTRICT_KEYS.map((key) => (
+                  <option key={key} value={key}>
+                    {t(`landing.districts.${key}`)}
+                  </option>
+                ))}
+              </FilterSelect>
+              <FilterSelect
+                id="home-insurer"
+                label={t("home.insurance")}
+                value={insurer}
+                onChange={(value) => setInsurer(value as InsurerKey | "")}
+              >
+                <option value="">{t("home.anyInsurance")}</option>
+                {INSURER_KEYS.filter((key) => INSURER_CODES[key]).map((key) => (
+                  <option key={key} value={key}>
+                    {t(`landing.insurersShort.${key}`)}
+                  </option>
+                ))}
+              </FilterSelect>
+              <FilterSelect id="home-type" label={t("home.type")} value={type} onChange={setType}>
+                <option value="">{t("home.anyType")}</option>
+                {TYPES.map((key) => (
+                  <option key={key} value={key}>
+                    {t(`booking.types.${key}`)}
+                  </option>
+                ))}
+              </FilterSelect>
+              <button
+                type="button"
+                aria-pressed={openNow}
+                onClick={() => setOpenNow((on) => !on)}
+                className={FILTER}
+              >
+                {t("home.openNow")}
+              </button>
+              <button
+                type="button"
+                aria-pressed={near !== null}
+                onClick={locate}
+                disabled={locating === "busy"}
+                className={cx(FILTER, "inline-flex items-center gap-1.5 sm:ml-auto")}
+              >
+                <Crosshair
+                  aria-hidden="true"
+                  className={cx("size-4", locating === "busy" && "animate-spin")}
+                />
+                {near ? t("home.nearYou") : t("home.nearMe")}
+              </button>
             </div>
-          </form>
-          <ul aria-label={t("home.chipsLabel")} className="m-0 flex list-none flex-wrap gap-2 p-0">
-            {CHIPS.map((chip) => (
-              <li key={chip.key}>
-                {chip.service ? (
-                  <button
-                    type="button"
-                    aria-pressed={service === chip.service}
-                    onClick={() => pickService(service === chip.service ? "" : chip.service!)}
-                    className="inline-flex min-h-target cursor-pointer items-center rounded-full bg-subtle px-4 text-body-sm font-semibold text-fg hover:bg-brand-subtle aria-pressed:bg-primary aria-pressed:text-on-primary"
-                  >
-                    {t(`home.chips.${chip.key}`)}
-                  </button>
-                ) : (
-                  <Link
-                    to="/check-symptoms"
-                    className="inline-flex min-h-target items-center rounded-full bg-subtle px-4 text-body-sm font-semibold text-fg no-underline hover:bg-brand-subtle"
-                  >
-                    {t(`home.chips.${chip.key}`)}
-                  </Link>
-                )}
-              </li>
-            ))}
-          </ul>
-          <div className="flex flex-wrap items-end gap-3">
-            <SelectField
-              id="home-district"
-              label={t("home.district")}
-              value={district}
-              onChange={(event) => {
-                setDistrict(event.target.value as DistrictKey | "");
-                setNear(null);
-              }}
-              className="w-44"
-            >
-              <option value="">{t("home.anyDistrict")}</option>
-              {DISTRICT_KEYS.map((key) => (
-                <option key={key} value={key}>
-                  {t(`landing.districts.${key}`)}
-                </option>
-              ))}
-            </SelectField>
-            <SelectField
-              id="home-insurer"
-              label={t("home.insurance")}
-              value={insurer}
-              onChange={(event) => setInsurer(event.target.value as InsurerKey | "")}
-              className="w-48"
-            >
-              <option value="">{t("home.anyInsurance")}</option>
-              {INSURER_KEYS.filter((key) => INSURER_CODES[key]).map((key) => (
-                <option key={key} value={key}>
-                  {t(`landing.insurersShort.${key}`)}
-                </option>
-              ))}
-            </SelectField>
-            <SelectField
-              id="home-type"
-              label={t("home.type")}
-              value={type}
-              onChange={(event) => setType(event.target.value)}
-              className="w-48"
-            >
-              <option value="">{t("home.anyType")}</option>
-              {TYPES.map((key) => (
-                <option key={key} value={key}>
-                  {t(`booking.types.${key}`)}
-                </option>
-              ))}
-            </SelectField>
-            <button
-              type="button"
-              aria-pressed={openNow}
-              onClick={() => setOpenNow((on) => !on)}
-              className="inline-flex min-h-target cursor-pointer items-center rounded-md border border-border-input bg-surface px-4 font-semibold text-fg aria-pressed:border-primary aria-pressed:bg-brand-subtle aria-pressed:text-on-brand-subtle"
-            >
-              {t("home.openNow")}
-            </button>
-            <Button
-              variant="secondary"
-              onClick={locate}
-              loading={locating === "busy"}
-              aria-pressed={near !== null}
-              iconStart={<Crosshair aria-hidden="true" className="size-icon" />}
-              className="ml-auto"
-            >
-              {near ? t("home.nearYou") : t("home.nearMe")}
-            </Button>
+            {locating === "denied" && (
+              <p role="status" className="m-0 -mt-2 text-body-sm text-on-forest-muted">
+                {t("home.locationDenied")}
+              </p>
+            )}
           </div>
-          {locating === "denied" && (
-            <p role="status" className="m-0 text-body-sm text-fg-secondary">
-              {t("home.locationDenied")}
-            </p>
-          )}
+          <TodayStub rows={rows} ready={results.isSuccess} />
         </section>
 
         <PlacesView
@@ -254,6 +264,7 @@ export function LandingPage() {
           headingId="places"
           rows={rows}
           state={results.status}
+          busy={results.isFetching && !results.isPending}
           onRetry={() => void results.refetch()}
           near={near}
           sort={sort}
@@ -283,7 +294,7 @@ export function LandingPage() {
           <h2 id="by-service" className="m-0 text-h2">
             {t("home.byService")}
           </h2>
-          <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
+          <ul className="m-0 grid list-none grid-cols-2 gap-2 p-0 sm:grid-cols-4">
             {BY_SERVICE.map((key) => (
               <li key={key}>
                 <button
@@ -292,7 +303,7 @@ export function LandingPage() {
                     pickService(key);
                     document.getElementById("places")?.scrollIntoView({ block: "start" });
                   }}
-                  className="inline-flex min-h-target cursor-pointer items-center rounded-md bg-surface px-4 font-semibold text-fg shadow-card hover:bg-subtle"
+                  className="flex min-h-14 w-full cursor-pointer items-center rounded-xl bg-surface px-4 text-left font-semibold text-fg shadow-card transition-[box-shadow,transform] duration-200 ease-out-quint hover:shadow-raised active:scale-[0.98] motion-reduce:active:scale-100"
                 >
                   {t(`landing.services.${key}`)}
                 </button>
@@ -303,13 +314,12 @@ export function LandingPage() {
 
         <RecentPlaces rows={results.data?.results ?? []} />
 
-        <AlertsBand />
-
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <AlertsBand />
           <VerifyBlock />
           <section
             aria-labelledby="for-facilities"
-            className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-surface p-5 shadow-card"
+            className="flex flex-col items-start justify-between gap-4 rounded-2xl bg-surface p-5 shadow-card"
           >
             <h2 id="for-facilities" className="m-0 text-h3">
               {t("home.forFacilities")}
@@ -339,7 +349,7 @@ function EmergencyRow({ near }: { near: { lat: number; lng: number } | null }) {
   return (
     <section
       aria-labelledby="emergency-24h"
-      className="flex flex-col gap-3 rounded-lg bg-danger-bg p-4 sm:flex-row sm:items-center"
+      className="flex flex-col gap-3 rounded-2xl bg-danger-bg p-4 sm:flex-row sm:items-center sm:gap-6 sm:px-5"
     >
       <div className="flex items-center gap-3 sm:w-56">
         <h2 id="emergency-24h" className="m-0 text-h3 text-danger">
@@ -350,9 +360,9 @@ function EmergencyRow({ near }: { near: { lat: number; lng: number } | null }) {
           {t("home.call912")}
         </a>
       </div>
-      <ul className="m-0 flex flex-1 list-none flex-col gap-2 p-0 sm:flex-row sm:flex-wrap sm:gap-x-6">
+      <ul className="m-0 flex flex-1 list-none flex-col divide-y divide-danger/15 p-0 sm:flex-row sm:flex-wrap sm:divide-x sm:divide-y-0">
         {(hospitals.data ?? []).map((h) => (
-          <li key={h.slug} className="flex items-center gap-2">
+          <li key={h.slug} className="flex items-center gap-2 py-1 sm:px-4 sm:py-0 sm:first:pl-0">
             <Link to={`/facilities/${h.slug}`} className="font-semibold text-fg">
               {h.name}
             </Link>
@@ -416,19 +426,21 @@ function AlertsBand() {
   return (
     <section
       aria-labelledby="alerts"
-      className="flex flex-wrap items-center gap-3 rounded-lg bg-surface p-5 shadow-card"
+      className="flex flex-col items-start justify-between gap-4 rounded-2xl bg-surface p-5 shadow-card"
     >
-      <h2 id="alerts" className="m-0 mr-auto text-h3">
+      <h2 id="alerts" className="m-0 text-h3">
         {t("home.alerts")}
       </h2>
-      {install && (
-        <Button variant="secondary" onClick={install}>
-          {t("home.install")}
-        </Button>
-      )}
-      <Link to="/notifications/settings" className={buttonClassName({ variant: "secondary" })}>
-        {t("home.turnOnAlerts")}
-      </Link>
+      <div className="flex flex-wrap gap-2">
+        <Link to="/notifications/settings" className={buttonClassName({ variant: "secondary" })}>
+          {t("home.turnOnAlerts")}
+        </Link>
+        {install && (
+          <Button variant="ghost" onClick={install}>
+            {t("home.install")}
+          </Button>
+        )}
+      </div>
     </section>
   );
 }
@@ -440,7 +452,7 @@ function VerifyBlock() {
   return (
     <section
       aria-labelledby="verify"
-      className="flex flex-col gap-3 rounded-lg bg-surface p-5 shadow-card"
+      className="flex flex-col gap-4 rounded-2xl bg-surface p-5 shadow-card"
     >
       <h2 id="verify" className="m-0 text-h3">
         {t("home.verify")}
@@ -472,5 +484,84 @@ function VerifyBlock() {
         </Link>
       </form>
     </section>
+  );
+}
+
+/**
+ * "Right now" ticket stub on the hero (upgrade 02 §1 ticket device): live facts from the list
+ * below, never invented (upgrade 01 principle 2). A heartbeat line marks it as care. Before the
+ * data arrives (and in the pre-rendered page) the numbers show as dashes.
+ */
+function TodayStub({ rows, ready }: { rows: FacilityResult[]; ready: boolean }) {
+  const { t } = useTranslation();
+  const open = rows.filter((r) => r.open_now).length;
+  const waiting = rows.reduce((sum, r) => sum + (r.waiting ?? 0), 0);
+  const shortest = rows
+    .filter((r) => r.open_now && r.wait_range)
+    .sort((a, b) => a.wait_range!.max - b.wait_range!.max)[0];
+  const value = (n: number) => (ready ? String(n) : "–");
+  return (
+    <aside
+      aria-labelledby="today-stub"
+      className="relative hidden animate-rise flex-col gap-4 rounded-2xl bg-surface p-5 text-fg shadow-raised [animation-delay:120ms] sm:flex"
+    >
+      {/* the ticket notches */}
+      <span
+        aria-hidden="true"
+        className="absolute top-[5.25rem] -left-2.5 size-5 rounded-full bg-forest"
+      />
+      <span
+        aria-hidden="true"
+        className="absolute top-[5.25rem] -right-2.5 size-5 rounded-full bg-forest"
+      />
+      <div className="flex items-center justify-between">
+        <h2
+          id="today-stub"
+          className="m-0 flex items-center gap-2 text-body-sm font-semibold text-fg-secondary"
+        >
+          <span aria-hidden="true" className="ml-live-dot text-success" />
+          {t("home.now.title")}
+        </h2>
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 96 24"
+          className="h-6 w-24 text-primary"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M0 12h30l5-8 7 16 6-12 4 4h44" />
+        </svg>
+      </div>
+      <p className="m-0 flex items-baseline gap-2">
+        <span className="font-heading text-[3rem] leading-none font-bold tracking-tight tabular-nums">
+          {value(open)}
+        </span>
+        <span className="text-fg-secondary">{t("home.now.open")}</span>
+      </p>
+      <div aria-hidden="true" className="-mx-5 border-t border-dashed border-border" />
+      <dl className="m-0 grid grid-cols-2 gap-3">
+        <div>
+          <dt className="text-caption text-fg-muted">{t("home.now.waiting")}</dt>
+          <dd className="m-0 font-heading text-h2 font-bold tabular-nums">{value(waiting)}</dd>
+        </div>
+        <div>
+          <dt className="text-caption text-fg-muted">{t("home.now.shortest")}</dt>
+          <dd className="m-0 font-heading text-h2 font-bold text-attention tabular-nums">
+            {shortest ? t("home.now.minutes", { max: shortest.wait_range!.max }) : "–"}
+          </dd>
+        </div>
+      </dl>
+      {shortest && (
+        <Link
+          to={`/facilities/${shortest.slug}`}
+          className="truncate text-body-sm font-semibold text-link"
+        >
+          {shortest.name}
+        </Link>
+      )}
+    </aside>
   );
 }

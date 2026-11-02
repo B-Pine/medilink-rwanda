@@ -44,6 +44,11 @@ import clinicalEn from "../features/clinical/locales/en.json";
 import clinicalFr from "../features/clinical/locales/fr.json";
 import clinicalRw from "../features/clinical/locales/rw.json";
 // [/S6 imports]
+// [S7 imports]
+import pharmacyEn from "../features/pharmacy/locales/en.json";
+import pharmacyFr from "../features/pharmacy/locales/fr.json";
+import pharmacyRw from "../features/pharmacy/locales/rw.json";
+// [/S7 imports]
 
 /**
  * Feature translation namespaces: `<feature>` -> `src/features/<feature>/locales/{rw,en,fr}.json`.
@@ -75,4 +80,7 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   // [S6]
   clinical: { rw: clinicalRw, en: clinicalEn, fr: clinicalFr },
   // [/S6]
+  // [S7]
+  pharmacy: { rw: pharmacyRw, en: pharmacyEn, fr: pharmacyFr },
+  // [/S7]
 };

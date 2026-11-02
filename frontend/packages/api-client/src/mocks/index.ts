@@ -52,3 +52,12 @@ export type { EmitMockNotificationInput } from "./features/notifications";
 // [S10]
 export { MOCK_HELP } from "./features/help";
 // [/S10]
+// [S7]
+export {
+  MOCK_RX_CONTROLLED,
+  MOCK_RX_PARTLY,
+  MOCK_RX_PAST,
+  MOCK_RX_QUERIED,
+  MOCK_RX_READY,
+} from "./features/pharmacy";
+// [/S7]

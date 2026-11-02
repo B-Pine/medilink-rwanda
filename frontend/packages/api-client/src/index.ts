@@ -39,3 +39,6 @@ export * from "./features/booking";
 // [S6]
 export * from "./features/clinical";
 // [/S6]
+// [S7]
+export * from "./features/pharmacy";
+// [/S7]

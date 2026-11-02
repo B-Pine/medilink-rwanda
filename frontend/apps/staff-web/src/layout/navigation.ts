@@ -40,6 +40,9 @@ import { CalendarX } from "@phosphor-icons/react";
 // [S6 imports]
 import { Notepad, Signature } from "@phosphor-icons/react";
 // [/S6 imports]
+// [S7 imports]
+import { Storefront } from "@phosphor-icons/react";
+// [/S7 imports]
 
 /** Sections of the Sprint 0 shell (labels in `shell.nav.<key>`). Features use their own keys. */
 export type CoreNavKey =
@@ -318,6 +321,16 @@ export const NAV_ITEMS: readonly NavItem[] = [
     visible: hasAny("clinical.unsigned_list"),
   },
   // [/S6]
+  // [S7]
+  {
+    key: "pharmacyAvailability",
+    path: "/pharmacy/availability",
+    icon: Storefront,
+    group: "facility",
+    labelKey: "pharmacy.nav.availability",
+    visible: hasAny("pharmacy.availability"),
+  },
+  // [/S7]
 ];
 
 /** Translation key of a nav item's label. */
@@ -357,6 +370,9 @@ const ORDER = [
   "clinicalUnsigned",
   "mySchedule",
   "pharmacy",
+  // [S7]
+  "pharmacyAvailability",
+  // [/S7]
   "payments",
   "reports",
   "approvals",

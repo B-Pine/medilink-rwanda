@@ -38,6 +38,11 @@ import recordsEn from "../features/records/locales/en.json";
 import recordsFr from "../features/records/locales/fr.json";
 import recordsRw from "../features/records/locales/rw.json";
 // [/S6 imports]
+// [S7 imports]
+import medicinesEn from "../features/medicines/locales/en.json";
+import medicinesFr from "../features/medicines/locales/fr.json";
+import medicinesRw from "../features/medicines/locales/rw.json";
+// [/S7 imports]
 // [PT imports]
 import publicEn from "../features/public/locales/en.json";
 import publicFr from "../features/public/locales/fr.json";
@@ -76,6 +81,9 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   // [S6]
   records: { rw: recordsRw, en: recordsEn, fr: recordsFr },
   // [/S6]
+  // [S7]
+  medicines: { rw: medicinesRw, en: medicinesEn, fr: medicinesFr },
+  // [/S7]
   // [PT]
   public: { rw: publicRw, en: publicEn, fr: publicFr },
   // [/PT]

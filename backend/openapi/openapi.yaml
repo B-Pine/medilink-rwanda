@@ -2538,6 +2538,42 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Closed
+  /api/v1/platform/access-events/:
+    get:
+      operationId: platform_access_events
+      parameters:
+      - in: query
+        name: action
+        schema:
+          type: string
+      - in: query
+        name: outcome
+        schema:
+          type: string
+          enum:
+          - failure
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+      tags:
+      - platform-admin
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventRow'
+          description: ''
   /api/v1/platform/announcements/:
     get:
       operationId: platform_announcements_list
@@ -2881,6 +2917,21 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Your own session or reviewed
+  /api/v1/platform/command-center/:
+    get:
+      operationId: platform_command_center
+      tags:
+      - platform-admin
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommandCenter'
+          description: ''
   /api/v1/platform/disputes/:
     get:
       operationId: platform_disputes
@@ -7024,6 +7075,42 @@ paths:
               schema:
                 $ref: '#/components/schemas/Overview'
           description: ''
+  /api/v1/platform/security-events/:
+    get:
+      operationId: platform_security_events
+      parameters:
+      - in: query
+        name: action
+        schema:
+          type: string
+      - in: query
+        name: outcome
+        schema:
+          type: string
+          enum:
+          - failure
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+      tags:
+      - platform-admin
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EventRow'
+          description: ''
   /api/v1/platform/support-requests/:
     get:
       operationId: platform_support_requests_list
@@ -7280,6 +7367,188 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Closed
+  /api/v1/platform/users/:
+    get:
+      operationId: platform_users
+      parameters:
+      - in: query
+        name: kind
+        schema:
+          type: string
+          enum:
+          - patient
+          - platform
+          - staff
+      - in: query
+        name: mfa
+        schema:
+          type: string
+          enum:
+          - 'off'
+          - 'on'
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - active
+          - locked
+      tags:
+      - platform-admin
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserRow'
+          description: ''
+  /api/v1/platform/users/{user_id}/:
+    get:
+      operationId: platform_user
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-admin
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
+  /api/v1/platform/users/{user_id}/lock/:
+    post:
+      operationId: platform_user_lock
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRow'
+          description: ''
+  /api/v1/platform/users/{user_id}/reset-mfa/:
+    post:
+      operationId: platform_user_mfa_reset
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRow'
+          description: ''
+  /api/v1/platform/users/{user_id}/revoke-sessions/:
+    post:
+      operationId: platform_user_sessions_revoke
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRow'
+          description: ''
+  /api/v1/platform/users/{user_id}/unlock/:
+    post:
+      operationId: platform_user_unlock
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRow'
+          description: ''
   /api/v1/public/facilities/{slug}/:
     get:
       operationId: public_facility_profile
@@ -15469,6 +15738,16 @@ components:
       - has_relationship
       - is_staff_member
       - reason_required
+    AccountReasonRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 300
+      required:
+      - reason
     Action:
       type: object
       properties:
@@ -16455,6 +16734,31 @@ components:
       - queued_at
       - sent_at
       - status
+    Attention:
+      type: object
+      properties:
+        applications_waiting:
+          type: integer
+        licences_expiring:
+          type: integer
+        licences_expired:
+          type: integer
+        disputes_escalated:
+          type: integer
+        break_glass_to_review:
+          type: integer
+        stale_facilities:
+          type: integer
+        locked_accounts:
+          type: integer
+      required:
+      - applications_waiting
+      - break_glass_to_review
+      - disputes_escalated
+      - licences_expired
+      - licences_expiring
+      - locked_accounts
+      - stale_facilities
     AttributeInputRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -17831,6 +18135,39 @@ components:
           maxLength: 20
       required:
       - code
+    CommandCenter:
+      type: object
+      properties:
+        generated_at:
+          type: string
+          format: date-time
+        overview:
+          $ref: '#/components/schemas/Overview'
+        waiting_now:
+          type: integer
+        live_facilities:
+          type: integer
+        attention:
+          $ref: '#/components/schemas/Attention'
+        security:
+          $ref: '#/components/schemas/SecuritySummary'
+        map:
+          type: array
+          items:
+            $ref: '#/components/schemas/MapPoint'
+        activity:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventRow'
+      required:
+      - activity
+      - attention
+      - generated_at
+      - live_facilities
+      - map
+      - overview
+      - security
+      - waiting_now
     CommentRequest:
       type: object
       properties:
@@ -20382,6 +20719,66 @@ components:
       - occurred_at
       - reason
       - to_status
+    EventRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        action:
+          type: string
+        outcome:
+          $ref: '#/components/schemas/EventRowOutcomeEnum'
+        actor_id:
+          type: string
+          format: uuid
+          nullable: true
+        actor_name:
+          type: string
+        actor_email:
+          type: string
+        actor_role:
+          type: string
+        facility_name:
+          type: string
+        object_type:
+          type: string
+        object_ref:
+          type: string
+        reason:
+          type: string
+        ip:
+          type: string
+        device:
+          type: string
+      required:
+      - action
+      - actor_email
+      - actor_id
+      - actor_name
+      - actor_role
+      - device
+      - facility_name
+      - id
+      - ip
+      - object_ref
+      - object_type
+      - occurred_at
+      - outcome
+      - reason
+    EventRowOutcomeEnum:
+      enum:
+      - success
+      - failure
+      - info
+      type: string
+      description: |-
+        * `success` - success
+        * `failure` - failure
+        * `info` - info
     EvidenceEntry:
       type: object
       properties:
@@ -23183,6 +23580,40 @@ components:
         * `authenticated` - authenticated
         * `mfa_required` - mfa_required
         * `mfa_setup_required` - mfa_setup_required
+    MapPoint:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        slug:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        district:
+          type: string
+        lat:
+          type: number
+          format: double
+        lng:
+          type: number
+          format: double
+        waiting:
+          type: integer
+        stale:
+          type: boolean
+      required:
+      - district
+      - id
+      - lat
+      - lng
+      - name
+      - slug
+      - stale
+      - type
+      - waiting
     Marked:
       type: object
       properties:
@@ -23286,6 +23717,25 @@ components:
             $ref: '#/components/schemas/RoleCodeEnum'
       required:
       - facility
+      - roles
+    MembershipRow:
+      type: object
+      properties:
+        facility_id:
+          type: string
+          format: uuid
+        facility_name:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        is_active:
+          type: boolean
+      required:
+      - facility_id
+      - facility_name
+      - is_active
       - roles
     MergeCreateRequest:
       type: object
@@ -29358,6 +29808,25 @@ components:
         * `documents` - documents
         * `notifications` - notifications
         * `umuganda` - umuganda
+    SecuritySummary:
+      type: object
+      properties:
+        failed_logins_24h:
+          type: integer
+        successful_logins_24h:
+          type: integer
+        staff_total:
+          type: integer
+        staff_with_mfa:
+          type: integer
+        active_sessions:
+          type: integer
+      required:
+      - active_sessions
+      - failed_logins_24h
+      - staff_total
+      - staff_with_mfa
+      - successful_logins_24h
     Service:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -29734,6 +30203,26 @@ components:
       description: |-
         * `female` - Female
         * `male` - Male
+    SessionRow:
+      type: object
+      properties:
+        ref:
+          type: string
+          description: Short, non-secret reference of the session.
+        audience:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - audience
+      - created_at
+      - expires_at
+      - ref
     Settings:
       type: object
       properties:
@@ -31964,6 +32453,103 @@ components:
         * `soon` - soon
         * `today` - today
         * `emergency` - emergency
+    UserDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        email:
+          type: string
+        kind:
+          $ref: '#/components/schemas/UserKindEnum'
+        is_active:
+          type: boolean
+        mfa_enabled:
+          type: boolean
+        facilities:
+          type: array
+          items:
+            $ref: '#/components/schemas/MembershipRow'
+        last_login:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        email_verified:
+          type: boolean
+        sessions:
+          type: array
+          items:
+            $ref: '#/components/schemas/SessionRow'
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventRow'
+      required:
+      - created_at
+      - email
+      - email_verified
+      - events
+      - facilities
+      - full_name
+      - id
+      - is_active
+      - kind
+      - last_login
+      - mfa_enabled
+      - sessions
+    UserKindEnum:
+      enum:
+      - platform
+      - staff
+      - patient
+      type: string
+      description: |-
+        * `platform` - platform
+        * `staff` - staff
+        * `patient` - patient
+    UserRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        email:
+          type: string
+        kind:
+          $ref: '#/components/schemas/UserKindEnum'
+        is_active:
+          type: boolean
+        mfa_enabled:
+          type: boolean
+        facilities:
+          type: array
+          items:
+            $ref: '#/components/schemas/MembershipRow'
+        last_login:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - created_at
+      - email
+      - facilities
+      - full_name
+      - id
+      - is_active
+      - kind
+      - last_login
+      - mfa_enabled
     ValueEnum:
       enum:
       - A+

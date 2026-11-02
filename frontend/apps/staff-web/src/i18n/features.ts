@@ -52,6 +52,11 @@ import documentsEn from "../features/documents/locales/en.json";
 import documentsFr from "../features/documents/locales/fr.json";
 import documentsRw from "../features/documents/locales/rw.json";
 // [/S7 imports]
+// [S8 imports]
+import billingEn from "../features/billing/locales/en.json";
+import billingFr from "../features/billing/locales/fr.json";
+import billingRw from "../features/billing/locales/rw.json";
+// [/S8 imports]
 
 /**
  * Feature translation namespaces: `<feature>` -> `src/features/<feature>/locales/{rw,en,fr}.json`.
@@ -87,4 +92,7 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   pharmacy: { rw: pharmacyRw, en: pharmacyEn, fr: pharmacyFr },
   documents: { rw: documentsRw, en: documentsEn, fr: documentsFr },
   // [/S7]
+  // [S8]
+  billing: { rw: billingRw, en: billingEn, fr: billingFr },
+  // [/S8]
 };

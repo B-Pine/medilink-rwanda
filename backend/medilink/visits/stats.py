@@ -8,7 +8,7 @@ import statistics
 from collections import Counter
 from typing import Any
 
-from django.db.models import Min
+from django.db.models import Min, Sum
 from django.utils import timezone
 
 from medilink.visits.models import (
@@ -93,6 +93,112 @@ def _load(waiting: int, doctors: int) -> str:
     return "low" if per_doctor < 4 else "medium" if per_doctor < 8 else "high"
 
 
+def _attention(facility_id: Any, today: dt.date) -> dict[str, int]:
+    """Needs-your-attention counts for the facility admin (upgrade 05 §5)."""
+    from django_otp.plugins.otp_totp.models import TOTPDevice
+
+    from medilink.billing.models import ApprovalRequest, ApprovalStatus, CashShift, ShiftStatus
+    from medilink.clinical.models import Consultation, ConsultationStatus
+    from medilink.disputes.models import OPEN_STATUSES, Dispute
+    from medilink.onboarding.models import FacilityLicence
+    from medilink.tenancy.models import FacilityMembership, Invitation
+
+    member_ids = FacilityMembership.objects.filter(
+        facility_id=facility_id, is_active=True
+    ).values_list("user_id", flat=True)
+    with_mfa = TOTPDevice.objects.filter(confirmed=True, user_id__in=member_ids)
+    out = {
+        "unreviewed_reorders": TicketEvent.objects.filter(
+            facility_id=facility_id, action="reorder", review__isnull=True
+        ).count(),
+        "approvals_pending": ApprovalRequest.objects.filter(
+            facility_id=facility_id, status=ApprovalStatus.PENDING
+        ).count(),
+        "shifts_to_review": CashShift.objects.filter(
+            facility_id=facility_id, status=ShiftStatus.CLOSED
+        ).count(),
+        "unsigned_records": Consultation.objects.filter(
+            facility_id=facility_id, status=ConsultationStatus.DRAFT
+        ).count(),
+        "disputes_open": Dispute.objects.filter(
+            facility_id=facility_id, status__in=OPEN_STATUSES
+        ).count(),
+        "invitations_pending": Invitation.objects.filter(
+            facility_id=facility_id,
+            accepted_at__isnull=True,
+            revoked_at__isnull=True,
+            expires_at__gt=timezone.now(),
+        ).count(),
+        "staff_without_mfa": max(
+            0, member_ids.count() - with_mfa.values("user_id").distinct().count()
+        ),
+    }
+    licence = (
+        FacilityLicence.objects.filter(facility_id=facility_id, superseded_by__isnull=True)
+        .order_by("expires_on")
+        .first()
+    )
+    if licence is not None:
+        out["licence_days_left"] = (licence.expires_on - today).days
+    return out
+
+
+def _finance(facility_id: Any, today: dt.date) -> dict[str, int]:
+    """Money today (S8): amounts and counts only, never patients."""
+    from medilink.billing.models import Bill, Payment, PaymentStatus
+
+    payments = Payment.objects.filter(
+        facility_id=facility_id, status=PaymentStatus.RECORDED, received_at__date=today
+    )
+    return {
+        "collected_today_rwf": payments.aggregate(n=Sum("amount_rwf"))["n"] or 0,
+        "payments_today": payments.count(),
+        "bills_today": Bill.objects.filter(
+            facility_id=facility_id, visit__service_date=today
+        ).count(),
+        "open_balance_rwf": Bill.objects.filter(
+            facility_id=facility_id, balance_rwf__gt=0
+        ).aggregate(n=Sum("balance_rwf"))["n"]
+        or 0,
+    }
+
+
+def _bookings(facility_id: Any, today: dt.date) -> dict[str, int]:
+    """Today's bookings (S5): expected, arrived and no-shows."""
+    from medilink.scheduling.models import Booking, BookingStatus
+
+    day = Counter(
+        Booking.objects.filter(facility_id=facility_id, service_date=today).values_list(
+            "status", flat=True
+        )
+    )
+    no_shows = day[BookingStatus.NO_SHOW]
+    expected = day[BookingStatus.CONFIRMED] + day[BookingStatus.CHECKED_IN] + no_shows
+    return {
+        "expected_today": expected,
+        "checked_in_today": day[BookingStatus.CHECKED_IN],
+        "no_shows_today": no_shows,
+        "no_show_rate_pct": round(100 * no_shows / expected) if expected else 0,
+    }
+
+
+def _on_duty(facility_id: Any) -> list[dict[str, Any]]:
+    rows = (
+        DutyStatus.objects.filter(facility_id=facility_id)
+        .exclude(state=DutyState.OFF)
+        .select_related("membership__user", "service_point")
+        .order_by("state", "membership__user__full_name")
+    )
+    return [
+        {
+            "name": r.membership.user.full_name,
+            "state": r.state,
+            "room": r.service_point.name if r.service_point else "",
+        }
+        for r in rows
+    ]
+
+
 def operations(facility_id: Any) -> dict[str, Any]:
     now = timezone.now()
     today = timezone.localdate()
@@ -163,10 +269,9 @@ def operations(facility_id: Any) -> dict[str, Any]:
         "arrivals_heatmap": [
             {"weekday": w, "hour": h, "count": c} for (w, h), c in sorted(heat.items())
         ],
-        "attention": {
-            "unreviewed_reorders": TicketEvent.objects.filter(
-                facility_id=facility_id, action="reorder", review__isnull=True
-            ).count(),
-        },
+        "attention": _attention(facility_id, today),
+        "finance": _finance(facility_id, today),
+        "bookings": _bookings(facility_id, today),
+        "on_duty": _on_duty(facility_id),
         "updated_at": now,
     }

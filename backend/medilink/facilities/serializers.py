@@ -479,6 +479,8 @@ class StaffMembershipSerializer(serializers.Serializer):
     service_points = serializers.ListField(child=serializers.UUIDField())
     is_active = serializers.BooleanField()
     mfa_enabled = serializers.BooleanField()
+    # upgrade 05 §5: when the person last signed in (any facility), for access hygiene
+    last_login = serializers.DateTimeField(allow_null=True)
     clinician = ClinicianSerializer(allow_null=True)
     joined_at = serializers.DateTimeField()
     deactivation_reason = serializers.CharField()

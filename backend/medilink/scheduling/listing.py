@@ -52,7 +52,8 @@ def queue_load(waiting: int, doctors: int) -> str:
 class LiveQueue:
     """Public queue figures for one service: counts only, never a person (contract PT §2.1)."""
 
-    waiting: int
+    # None: the service has no queue to publish (no doctor on duty and nobody waiting)
+    waiting: int | None
     wait_min: int | None
     wait_max: int | None
 
@@ -71,6 +72,8 @@ def live_queue(facility_id: Any, services: list[Service]) -> dict[Any, LiveQueue
         facility_id=facility_id,
         service_date=today,
         state=TicketState.WAITING,
+        # PAYMENT is left out: it comes before and after the consultation (visits STAGE_ORDER), so
+        # a ticket there cannot be counted as still waiting for the doctor
         stage__in=[Stage.RECEPTION, Stage.CONSULTATION],
     ).values_list("service_id", flat=True):
         waiting[service_id] = waiting.get(service_id, 0) + 1
@@ -79,7 +82,8 @@ def live_queue(facility_id: Any, services: list[Service]) -> dict[Any, LiveQueue
         count = waiting.get(service.pk, 0)
         doctors = doctors_for(facility_id, service.pk).filter(state=DutyState.ON_DUTY).count()
         if not doctors:
-            result[service.pk] = LiveQueue(count, None, None)
+            # nobody on duty: publish the count only when people are already waiting
+            result[service.pk] = LiveQueue(count or None, None, None)
             continue
         done = Ticket.objects.filter(
             facility_id=facility_id,
@@ -196,7 +200,7 @@ def refresh(facility_id: Any) -> int:
                 insurers=insurers,
                 hours=hours,
                 next_slot_at=next_slot,
-                queue_load=queue_load(live[service.pk].waiting, doctors),
+                queue_load=queue_load(live[service.pk].waiting or 0, doctors),
                 waiting=live[service.pk].waiting,
                 wait_min=live[service.pk].wait_min,
                 wait_max=live[service.pk].wait_max,

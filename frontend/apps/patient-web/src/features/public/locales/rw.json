@@ -126,7 +126,8 @@
     "goTitle": "Ibitaro byihutirwa bikwegereye",
     "goBody": "Ibitaro by'akarere n'ibyo kohererezwamo bifite serivisi z'ibyihutirwa amanywa n'ijoro. Ibigo nderabuzima bishobora kugufasha no kukohereza.",
     "notForTitle": "Icyo MediLink ikorera",
-    "notForBody": "Gufata gahunda, kujya ku murongo no kubika amakuru yawe. Ku byihutirwa byose, hamagara cyangwa ujyeyo ubu."
+    "notForBody": "Gufata gahunda, kujya ku murongo no kubika amakuru yawe. Ku byihutirwa byose, hamagara cyangwa ujyeyo ubu.",
+    "findNearest": "Shaka ikigo kikwegereye"
   },
   "legal": {
     "eyebrow": "Amategeko",

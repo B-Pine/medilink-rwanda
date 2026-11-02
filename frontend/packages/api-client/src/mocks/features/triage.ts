@@ -2,9 +2,11 @@ import { http, HttpResponse } from "msw";
 
 import type { TriageInput, TriageResult } from "../../features/triage";
 import type { FeatureMockFactory } from "../features";
+import { SYMPTOMS } from "./booking";
 
 /** The backend's rules `2026.11-p1` (medilink/triage/rules.py), so the mock answers the same. */
-const RED_FLAGS = new Set(["chest_pain", "shortness_of_breath", "bleeding"]);
+const KNOWN = new Set(SYMPTOMS.map((s) => s.code));
+const RED_FLAGS = new Set(SYMPTOMS.filter((s) => s.is_red_flag).map((s) => s.code));
 const ORDER = ["self_care", "soon", "today", "emergency"] as const;
 
 export function mockTriage(input: TriageInput): TriageResult {
@@ -91,6 +93,8 @@ export const triageMocks: FeatureMockFactory = (context) => ({
       const body = ((await context.readJson(request)) ?? {}) as Partial<TriageInput>;
       if (!Array.isArray(body.symptoms) || body.symptoms.length < 1 || body.symptoms.length > 8)
         return context.errorResponse(400, "validation_error", "Choose 1 to 8 symptoms.");
+      if (body.symptoms.some((code) => !KNOWN.has(code)))
+        return context.errorResponse(400, "validation_error", "Unknown symptom.");
       if (!body.duration || !body.age_group)
         return context.errorResponse(400, "validation_error", "Say how long and who it is for.");
       return HttpResponse.json(mockTriage(body as TriageInput));

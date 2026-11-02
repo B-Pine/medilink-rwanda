@@ -19,7 +19,7 @@ import {
 } from "@phosphor-icons/react";
 import { Alert, Button, buttonClassName, cx, LoadingState } from "@medilink/ui";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
@@ -105,6 +105,21 @@ export function SymptomCheckerPage() {
     staleTime: 3_600_000,
   });
   const [step, setStep] = useState<Step>("danger");
+  // Each step replaces the last: move focus to its heading so keyboard and screen-reader users
+  // hear where they are (WCAG 2.4.3); not on first load
+  const stepHeading = useRef<HTMLElement | null>(null);
+  const firstStep = useRef(true);
+  useEffect(() => {
+    if (firstStep.current) {
+      firstStep.current = false;
+      return;
+    }
+    if (step === "result") document.getElementById("checker-answer")?.focus();
+    else stepHeading.current?.focus();
+  }, [step]);
+  const headingRef = (el: HTMLElement | null) => {
+    stepHeading.current = el;
+  };
   const [danger, setDanger] = useState<string[]>([]);
   const [age, setAge] = useState<TriageAgeGroup | null>(null);
   const [pregnant, setPregnant] = useState(false);
@@ -152,7 +167,12 @@ export function SymptomCheckerPage() {
 
         {symptoms.data && step === "danger" && (
           <section aria-labelledby="checker-danger" className="flex flex-col gap-4">
-            <h2 id="checker-danger" className="m-0 font-heading text-h2 font-bold">
+            <h2
+              id="checker-danger"
+              ref={headingRef}
+              tabIndex={-1}
+              className="m-0 font-heading text-h2 font-bold focus:outline-none"
+            >
               {t("public.checker.dangerTitle")}
             </h2>
             <p className="m-0 text-fg-muted">{t("public.checker.dangerIntro")}</p>
@@ -186,7 +206,12 @@ export function SymptomCheckerPage() {
 
         {step === "who" && (
           <section aria-labelledby="checker-who" className="flex flex-col gap-4">
-            <h2 id="checker-who" className="m-0 font-heading text-h2 font-bold">
+            <h2
+              id="checker-who"
+              ref={headingRef}
+              tabIndex={-1}
+              className="m-0 font-heading text-h2 font-bold focus:outline-none"
+            >
               {t("public.checker.whoTitle")}
             </h2>
             <div className="grid gap-2 sm:grid-cols-2">
@@ -211,7 +236,12 @@ export function SymptomCheckerPage() {
 
         {step === "what" && (
           <section aria-labelledby="checker-what" className="flex flex-col gap-4">
-            <h2 id="checker-what" className="m-0 font-heading text-h2 font-bold">
+            <h2
+              id="checker-what"
+              ref={headingRef}
+              tabIndex={-1}
+              className="m-0 font-heading text-h2 font-bold focus:outline-none"
+            >
               {t("public.checker.whatTitle")}
             </h2>
             <p className="m-0 text-fg-muted">{t("public.checker.whatHint")}</p>
@@ -236,7 +266,12 @@ export function SymptomCheckerPage() {
 
         {step === "how-long" && (
           <section aria-labelledby="checker-long" className="flex flex-col gap-4">
-            <h2 id="checker-long" className="m-0 font-heading text-h2 font-bold">
+            <h2
+              id="checker-long"
+              ref={headingRef}
+              tabIndex={-1}
+              className="m-0 font-heading text-h2 font-bold focus:outline-none"
+            >
               {t("public.checker.longTitle")}
             </h2>
             <div className="grid gap-2 sm:grid-cols-3">
@@ -336,7 +371,11 @@ function Answer({ result, onRestart }: { result: TriageResult; onRestart: () => 
         </p>
         <h2
           id="checker-answer"
-          className={cx("m-0 flex items-center gap-2.5 font-heading text-h1 font-bold", look.badge)}
+          tabIndex={-1}
+          className={cx(
+            "m-0 flex items-center focus:outline-none gap-2.5 font-heading text-h1 font-bold",
+            look.badge,
+          )}
         >
           <UrgencyIcon aria-hidden="true" weight="fill" className="size-8 shrink-0" />
           {t(`public.checker.urgency.${result.urgency}`)}

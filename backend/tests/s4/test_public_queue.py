@@ -29,10 +29,14 @@ def test_profile_shows_waiting_count_and_range_without_people(
     doctor: tuple[APIClient, Any],
 ) -> None:
     service_id = catalogue["service"]["id"]
+    api = APIClient()
+    # Nobody on duty and nobody waiting: no queue to publish, so no count (not "empty")
+    idle = _service(api.get(f"{PUB}facilities/{clinic.slug}/").json(), service_id)
+    assert idle["waiting"] is None and idle["wait_range"] is None
+
     for name in ("Uwase Aline", "Mugabo Eric", "Ishimwe Kevin"):
         assert check_in(desk[0], register(clinic, desk[1], name), service_id).status_code == 201
 
-    api = APIClient()
     before = _service(api.get(f"{PUB}facilities/{clinic.slug}/").json(), service_id)
     # Nobody on duty: the count is known, the wait is not
     assert before["waiting"] == 3 and before["wait_range"] is None

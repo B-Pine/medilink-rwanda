@@ -23,6 +23,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='publiclisting',
             name='waiting',
-            field=models.PositiveIntegerField(default=0),
+            field=models.PositiveIntegerField(blank=True, null=True),
         ),
     ]

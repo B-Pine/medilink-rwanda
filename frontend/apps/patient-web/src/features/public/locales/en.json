@@ -126,7 +126,8 @@
     "goTitle": "Nearest emergency department",
     "goBody": "District and referral hospitals have emergency departments open day and night. Health centres can stabilise and refer you.",
     "notForTitle": "What MediLink is for",
-    "notForBody": "Booking visits, joining queues and keeping your records. For anything urgent, call or go now."
+    "notForBody": "Booking visits, joining queues and keeping your records. For anything urgent, call or go now.",
+    "findNearest": "Find the nearest facility"
   },
   "legal": {
     "eyebrow": "Legal",

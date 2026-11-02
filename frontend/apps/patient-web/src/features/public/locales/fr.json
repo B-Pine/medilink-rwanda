@@ -126,7 +126,8 @@
     "goTitle": "Urgences les plus proches",
     "goBody": "Les hôpitaux de district et de référence ont des urgences ouvertes jour et nuit. Les centres de santé peuvent stabiliser et orienter.",
     "notForTitle": "À quoi sert MediLink",
-    "notForBody": "Prendre rendez-vous, rejoindre la file et garder vos dossiers. Pour toute urgence, appelez ou allez-y maintenant."
+    "notForBody": "Prendre rendez-vous, rejoindre la file et garder vos dossiers. Pour toute urgence, appelez ou allez-y maintenant.",
+    "findNearest": "Trouver l'établissement le plus proche"
   },
   "legal": {
     "eyebrow": "Mentions légales",

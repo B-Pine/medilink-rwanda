@@ -270,7 +270,8 @@ function facilities(): MockFacility[] {
   ];
 }
 
-const SYMPTOMS: Symptom[] = [
+/** Shared with the triage mock, which reads the red flags from it as the backend reads master data. */
+export const SYMPTOMS: Symptom[] = [
   ["fever", "Fever", "Umuriro", "Fièvre", "general", false],
   ["cough", "Cough", "Inkorora", "Toux", "respiratory", false],
   ["headache", "Headache", "Kuribwa umutwe", "Mal de tête", "nervous", false],
@@ -345,8 +346,9 @@ const isoDate = (d: Date) => new Date(d.getTime() + 2 * 3600_000).toISOString().
  */
 const MOCK_WAITING = { low: 2, medium: 6, high: 11 } as const;
 const liveQueue = (load: string | null | undefined) => {
-  const waiting =
-    load && load in MOCK_WAITING ? MOCK_WAITING[load as keyof typeof MOCK_WAITING] : 0;
+  // no load: the facility publishes no queue, so no count (contract PT §2.1)
+  if (!load || !(load in MOCK_WAITING)) return { waiting: null, wait_range: null };
+  const waiting = MOCK_WAITING[load as keyof typeof MOCK_WAITING];
   const minutes = waiting * 15;
   return {
     waiting,

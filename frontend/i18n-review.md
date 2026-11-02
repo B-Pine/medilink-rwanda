@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 3348.
+Keys: 3349.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -3371,6 +3371,7 @@ File: `apps/patient-web/src/features/public/locales/rw.json`
 | `emergency.goBody` | Ibitaro by'akarere n'ibyo kohererezwamo bifite serivisi z'ibyihutirwa amanywa n'ijoro. Ibigo nderabuzima bishobora kugufasha no kukohereza. | District and referral hospitals have emergency departments open day and night. Health centres can stabilise and refer you. | needs native-speaker review |
 | `emergency.notForTitle` | Icyo MediLink ikorera | What MediLink is for | needs native-speaker review |
 | `emergency.notForBody` | Gufata gahunda, kujya ku murongo no kubika amakuru yawe. Ku byihutirwa byose, hamagara cyangwa ujyeyo ubu. | Booking visits, joining queues and keeping your records. For anything urgent, call or go now. | needs native-speaker review |
+| `emergency.findNearest` | Shaka ikigo kikwegereye | Find the nearest facility | needs native-speaker review |
 | `legal.eyebrow` | Amategeko | Legal | needs native-speaker review |
 | `legal.draft` | Inyandiko itaranozwa: iri suzumwa n'umunyamategeko mbere yo gutangira. Ibice byanditseho "Bizemezwa" ntibirarangira. | Draft for review: this text is being checked by a lawyer before launch. Parts marked "To confirm" are not final. | needs native-speaker review |
 | `legal.summaryTitle` | Muri make | In short | needs native-speaker review |

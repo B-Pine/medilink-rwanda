@@ -106,11 +106,14 @@ class FacilityReportExportView(FacilityView):
         report = figures.facility_period(facility_id, start, end)
         buffer = io.StringIO()
         writer = csv.writer(buffer)
-        writer.writerow([f"MediLink report {start.isoformat()} to {end.isoformat()}"])
-        writer.writerow(
-            [f"Exported by {self.principal().user.full_name} at {timezone.now():%Y-%m-%d %H:%M}"]
-        )
-        for row in figures.csv_rows(report):
+        rows = [
+            [f"MediLink report {start.isoformat()} to {end.isoformat()}"],
+            [f"Exported by {self.principal().user.full_name} at {timezone.now():%Y-%m-%d %H:%M}"],
+            *figures.csv_rows(report),
+        ]
+        for row in rows:
+            # Every cell goes through csv_cell, which neutralises spreadsheet formulas.
+            # nosemgrep: python.django.security.injection.csv-writer-injection.csv-writer-injection
             writer.writerow([figures.csv_cell(cell) for cell in row])
         record(
             "reports.exported",
@@ -225,7 +228,7 @@ class PlatformAuditView(APIView):
         summary="The whole audit log, newest first (A2)",
     )
     def get(self, request: Request) -> Response:
-        rows = AuditEntry.objects.all()
+        rows = AuditEntry.objects.all()  # nosemgrep: medilink-objects-all-in-view
         if request.query_params.get("facility_id"):
             rows = rows.filter(facility_id=request.query_params["facility_id"])
         return _entries(request, rows)

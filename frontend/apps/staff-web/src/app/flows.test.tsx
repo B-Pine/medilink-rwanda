@@ -42,11 +42,11 @@ describe("staff login → MFA verify → facility picker → shell", () => {
     expect(router.state.location.pathname).toBe("/today");
     expect(screen.getByText("You are working at Remera Health Center.")).toBeInTheDocument();
     const nav = screen.getByRole("navigation", { name: "Main menu" });
-    for (const name of ["Today", "Queue", "Patients", "Reports", "Staff", "Settings"]) {
+    for (const name of ["Today", "Queue", "Patients", "Reports", "Audit log", "Staff", "Settings"]) {
       expect(within(nav).getByRole("link", { name })).toBeInTheDocument();
     }
     // Sections without a built page stay out of the menu (design 04 §2: no dead ends)
-    for (const name of ["Pharmacy", "Approvals", "Payments", "Audit log"]) {
+    for (const name of ["Pharmacy", "Approvals", "Payments"]) {
       expect(within(nav).queryByRole("link", { name })).not.toBeInTheDocument();
     }
     expect(within(nav).getByRole("link", { name: "Today" })).toHaveAttribute(
@@ -308,6 +308,8 @@ describe("shell: user menu, language, theme, logout", () => {
       "Facilities",
       "Support queue",
       "Escalated disputes",
+      "Network report",
+      "Audit log",
       "Master data",
       "Platform announcements",
       "Help articles",

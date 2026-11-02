@@ -9,6 +9,31 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Public website (upgrade 11)
+
+- Added: every public route of the brief: `/find-care`, `/facilities`, `/facilities/:slug`,
+  `/doctors`, `/doctors/:slug`, `/services`, `/services/:slug`, `/how-it-works`, `/emergency`,
+  `/help`, `/about`, `/contact`, `/privacy`, `/terms`, `/accessibility` (new `site` feature with
+  locales in rw, en and fr; Kinyarwanda and French are drafts for native review). `/care` and
+  `/search` redirect to `/find-care`.
+- Changed: home follows the brief (hero with a custom SVG illustration, search, facilities near
+  you with list and map, emergency access, how it works, sign-in band, final call). Navbar: Home ·
+  Find Care · Facilities · Doctors · Services · How It Works with a sliding indicator, Emergency,
+  language, Sign In and a Find Care button; 80 px; a slide-down menu under 1024 px that locks the
+  page. Footer: deep forest with Explore, Information and Legal columns.
+- Changed: facility profile with a Today panel (hours, live wait, queue and booking, insurers,
+  hospital note), tabs (Overview, Services, Doctors, Insurance, Hours & Location with a map) and
+  What to bring; the primary action follows real availability.
+- Changed: light palette from the brief (forest `#123D2B`, emerald `#168451`, link `#11744A`,
+  text `#17231D`, page `#F7F9F7`, light green `#EDF5EF`); token tests updated.
+- Added: shared public kit (`PageContainer`, `PageHeader`, `Breadcrumbs`, `SearchBar`,
+  `LocationSelector`, `FacilityStatus`, `WaitingTime`, `InsuranceList`, `LinkRow`, `Faq`,
+  `EmptyState` with an illustration, `LoadingRows`, `ErrorState`), the `help.public.contact` API
+  call with a development mock, and pre-rendering of how-it-works, about, privacy, terms and
+  accessibility. Pre-rendered facility snapshots no longer carry live waits.
+- Known gaps (upgrade 11 §13): doctors come from facility profiles (no directory endpoint yet);
+  the emergency filter and list show hospitals; `POST /public/contact/` is not on the API yet.
+
 ### Upgrade U2 · Soft public look
 
 - Changed: public pages use `.ml-soft`: wide, diffuse shadows tinted toward the brand green (a

@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { env } from "../../env";
+import { EmptyState } from "../site/kit";
 import { INSURER_CODES, INSURER_KEYS, pinKind, time, type InsurerKey } from "./discovery";
 
 // Leaflet and the tiles load only when the map is on screen (upgrade 03 §2, < 100 KB JS budget)
@@ -320,7 +321,11 @@ export function PlacesView({
               </Button>
             </p>
           ) : rows.length === 0 ? (
-            <div className="flex flex-wrap items-center gap-3 p-4 text-fg-secondary">{empty}</div>
+            typeof empty === "string" ? (
+              <EmptyState title={empty} />
+            ) : (
+              empty
+            )
           ) : (
             <FacilityList
               labels={{

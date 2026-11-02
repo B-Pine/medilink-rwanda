@@ -81,7 +81,7 @@ export function HomePage() {
               <p className="m-0 max-w-[30rem] text-on-forest-muted">{t("home.findCareBody")}</p>
             </div>
             <Link
-              to="/care"
+              to="/find-care"
               className={cx(
                 "flex min-h-14 items-center gap-3 rounded-lg bg-surface px-4 text-fg-muted no-underline shadow-raised",
                 "transition-transform duration-150 active:scale-[0.99]",

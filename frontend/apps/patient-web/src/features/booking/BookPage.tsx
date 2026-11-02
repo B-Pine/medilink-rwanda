@@ -574,7 +574,7 @@ export function BookPage() {
         icon={Clock}
         title={t("booking.facility.notFound")}
         action={
-          <Link to="/care" className={buttonClassName({})}>
+          <Link to="/find-care" className={buttonClassName({})}>
             {t("booking.facility.backToSearch")}
           </Link>
         }

@@ -389,7 +389,7 @@ function Answer({ result, onRestart }: { result: TriageResult; onRestart: () => 
       </div>
       {result.urgency !== "self_care" ? (
         <Link
-          to={`/care?service=${searchKey(result.service_code)}`}
+          to={`/find-care?service=${searchKey(result.service_code)}`}
           className={buttonClassName({ size: "lg", fullWidth: true })}
         >
           <MagnifyingGlass aria-hidden="true" weight="bold" />

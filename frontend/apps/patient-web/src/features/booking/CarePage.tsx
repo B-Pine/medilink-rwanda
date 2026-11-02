@@ -2,12 +2,14 @@ import type { FacilitySearchInput, LevelOfCare } from "@medilink/api-client";
 import { Crosshair, Faders, X } from "@phosphor-icons/react";
 import { Button, cx, Dialog, SelectField } from "@medilink/ui";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { useMemo, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PublicLayout } from "../../layout/PublicLayout";
+import { isHospital } from "../site/data";
+import { EmptyState, PageContainer, PageHeader, SearchBar } from "../site/kit";
 import {
   DISTRICT_CODES,
   DISTRICT_KEYS,
@@ -25,9 +27,10 @@ const AVAILABILITY = ["today", "remote"] as const;
 type Availability = (typeof AVAILABILITY)[number];
 
 /**
- * Find care `/care` (upgrade 03 §3): the list and map at full width with every filter in a panel
- * (a dialog on phones). Active filters show as removable chips with "Clear all" and the count.
- * No prices (U-01). Doctor language and gender wait for doctor profiles (U-06).
+ * Find care `/find-care` (upgrade 11 §5): one search for a facility, service, specialty or
+ * symptom, the location, and every filter in a panel (a dialog on phones); the list and map below.
+ * Active filters are removable chips with "Clear all" and the count. No prices (U-01). The
+ * emergency filter shows hospitals until listings carry `has_emergency_24h` (upgrade 11 §13).
  */
 export function CarePage() {
   const { t } = useTranslation();
@@ -36,6 +39,8 @@ export function CarePage() {
   const [sort, setSort] = useState<Sort>("soonest");
   const { near, setNear, locating, locate } = useNearMe(() => setSort("nearest"));
   const [panel, setPanel] = useState(false);
+  // what is typed before Enter; the URL keeps the submitted search
+  const [draft, setDraft] = useState<string | null>(null);
 
   const service = valid(params.get("service"), SERVICE_KEYS);
   const district = valid(params.get("district"), DISTRICT_KEYS);
@@ -46,6 +51,20 @@ export function CarePage() {
   const today = params.get("today") === "1";
   const remote = params.get("remote") === "1";
   const km = Number(params.get("km")) || 0;
+  const emergency = params.get("emergency") === "1";
+  const q = params.get("q") ?? "";
+  // A service word in the search ("dentist", "pregnancy") selects that service; other words
+  // match facility and service names.
+  const words = q.trim().toLowerCase();
+  const keywordService =
+    !service && words
+      ? SERVICE_KEYS.find((key) =>
+          t(`home.keywords.${key}`)
+            .split("|")
+            .some((word) => word && words.includes(word)),
+        )
+      : undefined;
+  const activeService = service || keywordService || "";
 
   // Choices live in the URL so a search can be shared; never the location (S5 D-2).
   const set = (key: string, value: string) =>
@@ -64,7 +83,7 @@ export function CarePage() {
   };
 
   const body: FacilitySearchInput = {
-    service_code: service ? SERVICE_CODES[service] : undefined,
+    service_code: activeService ? SERVICE_CODES[activeService] : undefined,
     district_code: near ? undefined : district ? DISTRICT_CODES[district] : undefined,
     insurer_code: insurer ? INSURER_CODES[insurer] || undefined : undefined,
     open_now: openNow || undefined,
@@ -77,15 +96,20 @@ export function CarePage() {
     queryFn: () => api.booking.search(body),
     placeholderData: keepPreviousData,
   });
-  const rows = useMemo(() => {
+  const rows = (() => {
     const all = (results.data?.results ?? []).filter(
       (r) =>
         (!type || r.type === type) &&
+        (!emergency || isHospital(r.type)) &&
+        (!words ||
+          keywordService !== undefined ||
+          r.name.toLowerCase().includes(words) ||
+          Object.values(r.service_name_i18n).some((name) => name?.toLowerCase().includes(words))) &&
         (!remote || r.allows_remote_join) &&
         (!km || !near || (r.distance_km !== null && r.distance_km <= km)),
     );
     return sortResults(all, sort);
-  }, [results.data, type, remote, km, near, sort]);
+  })();
 
   const chips: { key: string; label: string; remove: () => void }[] = [
     service && { key: "service", label: t(`landing.services.${service}`) },
@@ -97,6 +121,8 @@ export function CarePage() {
     today && { key: "today", label: t("care.availability.today") },
     remote && { key: "remote", label: t("care.availability.remote") },
     km > 0 && near && { key: "km", label: t("care.withinKm", { km }) },
+    emergency && { key: "emergency", label: t("site.care.emergencyFilter") },
+    q && { key: "q", label: `“${q}”` },
   ]
     .filter((chip): chip is { key: string; label: string } => Boolean(chip))
     .map((chip) => ({ ...chip, remove: () => set(chip.key, "") }));
@@ -178,6 +204,9 @@ export function CarePage() {
         <Toggle on={openNow} onChange={(on) => set("open", on ? "1" : "")}>
           {t("home.openNow")}
         </Toggle>
+        <Toggle on={emergency} onChange={(on) => set("emergency", on ? "1" : "")}>
+          {t("site.care.emergencyFilter")}
+        </Toggle>
         {AVAILABILITY.map((key: Availability) => (
           <Toggle
             key={key}
@@ -223,7 +252,26 @@ export function CarePage() {
 
   return (
     <PublicLayout>
-      <div className="ml-stagger mx-auto grid max-w-[80rem] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-8 lg:py-10">
+      <PageContainer>
+        <PageHeader
+          crumbs={[{ label: t("nav.findCare") }]}
+          title={t("site.care.title")}
+          lead={t("site.care.lead")}
+        />
+        <SearchBar
+          id="care-search"
+          label={t("site.searchLabel")}
+          value={draft ?? q}
+          onChange={setDraft}
+          placeholder={t("site.searchPlaceholder")}
+          className="max-w-2xl"
+          onSubmit={() => {
+            set("q", (draft ?? q).trim());
+            setDraft(null);
+          }}
+        />
+      </PageContainer>
+      <div className="ml-stagger mx-auto grid max-w-[80rem] gap-6 px-4 pt-6 pb-16 sm:px-6 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-8 lg:px-8">
         <aside
           aria-labelledby="filters"
           className="hidden self-start rounded-3xl bg-surface p-6 shadow-card lg:sticky lg:top-4 lg:block"
@@ -265,9 +313,8 @@ export function CarePage() {
             </ul>
           )}
           <PlacesView
-            heading={t("care.title")}
-            headingId="care-title"
-            headingLevel={1}
+            heading={t("site.care.results")}
+            headingId="care-results"
             rows={rows}
             state={results.status}
             busy={results.isPlaceholderData}
@@ -276,17 +323,21 @@ export function CarePage() {
             sort={sort}
             onSort={setSort}
             toolbar={
-              <Button
-                variant="secondary"
-                size="sm"
-                className="lg:hidden"
-                onClick={() => setPanel(true)}
-                iconStart={<Faders aria-hidden="true" className="size-4" />}
-              >
-                {chips.length ? t("care.filtersCount", { count: chips.length }) : t("care.filters")}
-              </Button>
+              <span className="lg:hidden">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  pill
+                  onClick={() => setPanel(true)}
+                  iconStart={<Faders aria-hidden="true" className="size-4" />}
+                >
+                  {chips.length
+                    ? t("care.filtersCount", { count: chips.length })
+                    : t("care.filters")}
+                </Button>
+              </span>
             }
-            empty={<NoMatch service={service} onClear={clearAll} />}
+            empty={<NoMatch service={activeService} query={q} onClear={clearAll} />}
           />
         </div>
       </div>
@@ -337,7 +388,15 @@ function Toggle({
  * No results: one line with the reason and, when a service was chosen, the nearest health centre
  * offering it (upgrade 03 §3).
  */
-function NoMatch({ service, onClear }: { service: ServiceKey | ""; onClear: () => void }) {
+function NoMatch({
+  service,
+  query,
+  onClear,
+}: {
+  service: ServiceKey | "";
+  query: string;
+  onClear: () => void;
+}) {
   const { t } = useTranslation();
   const api = useApi();
   const fallback = useQuery({
@@ -347,16 +406,29 @@ function NoMatch({ service, onClear }: { service: ServiceKey | ""; onClear: () =
     select: (page) => page.results.find((r) => r.type === "health_center") ?? page.results[0],
   });
   return (
-    <>
-      <span>{t("care.none")}</span>
-      {fallback.data && (
-        <Link to={`/facilities/${fallback.data.slug}`} className="font-semibold">
-          {t("care.tryInstead", { name: fallback.data.name })}
-        </Link>
-      )}
-      <Button variant="secondary" size="sm" onClick={onClear}>
-        {t("care.clearAll")}
-      </Button>
-    </>
+    <EmptyState
+      title={t("care.none")}
+      action={
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          {fallback.data && (
+            <Link to={`/facilities/${fallback.data.slug}`} viewTransition className="font-semibold">
+              {t("care.tryInstead", { name: fallback.data.name })}
+            </Link>
+          )}
+          {query && (
+            <Link
+              to={`/check-symptoms?q=${encodeURIComponent(query)}`}
+              viewTransition
+              className="font-semibold"
+            >
+              {t("site.care.checkSymptoms")}
+            </Link>
+          )}
+          <Button variant="secondary" size="sm" pill onClick={onClear}>
+            {t("care.clearAll")}
+          </Button>
+        </div>
+      }
+    />
   );
 }

@@ -31,13 +31,19 @@
   },
   "nav": {
     "label": "Main",
-    "findCare": "Find care",
+    "findCare": "Find Care",
     "forFacilities": "For facilities",
-    "login": "Sign in",
+    "login": "Sign In",
     "home": "Home",
     "checkSymptoms": "Check symptoms",
-    "emergency": "Emergency · 912",
-    "menu": "Menu"
+    "emergency": "Emergency help",
+    "menu": "Menu",
+    "facilities": "Facilities",
+    "doctors": "Doctors",
+    "services": "Services",
+    "howItWorks": "How It Works",
+    "emergencyShort": "Emergency",
+    "closeMenu": "Close menu"
   },
   "landing": {
     "search": {
@@ -88,21 +94,24 @@
     "body": "Go to the nearest emergency department or call 912. MediLink is not for emergencies."
   },
   "footer": {
-    "privacy": "Privacy notice",
-    "terms": "Terms of use",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
     "verify": "Verify a document",
     "forFacilities": "For facilities",
-    "help": "Help",
+    "help": "Help & Support",
     "copyright": "© {{year}} MediLink Rwanda",
-    "about": "About",
+    "about": "About MediLink",
     "emergency": "Emergency",
     "checkSymptoms": "Check symptoms",
     "groups": {
-      "care": "Care",
-      "medilink": "MediLink",
-      "trust": "Trust"
+      "explore": "Explore",
+      "information": "Information",
+      "legal": "Legal"
     },
-    "emergencyLine": "Emergency? Call 912"
+    "tagline": "Connecting people to healthcare facilities across Rwanda.",
+    "trust": "Search without an account. Your location is used only for your search and never stored.",
+    "contact": "Contact",
+    "accessibility": "Accessibility"
   },
   "login": {
     "title": "Log in or create an account",

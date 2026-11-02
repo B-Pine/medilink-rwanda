@@ -46,7 +46,7 @@ export function searchUrl(choice: { service?: string; district?: string; insurer
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries(choice)) if (value) params.set(key, value);
   const query = params.toString();
-  return query ? `/care?${query}` : "/care";
+  return query ? `/find-care?${query}` : "/find-care";
 }
 
 export function pick(value: I18n | undefined, language: string): string {

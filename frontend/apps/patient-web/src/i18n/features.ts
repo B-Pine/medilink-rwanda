@@ -46,6 +46,11 @@ import documentsEn from "../features/documents/locales/en.json";
 import documentsFr from "../features/documents/locales/fr.json";
 import documentsRw from "../features/documents/locales/rw.json";
 // [/S7 imports]
+// [Upgrade U2 imports]
+import siteEn from "../features/site/locales/en.json";
+import siteFr from "../features/site/locales/fr.json";
+import siteRw from "../features/site/locales/rw.json";
+// [/Upgrade U2 imports]
 // [PT imports]
 import publicEn from "../features/public/locales/en.json";
 import publicFr from "../features/public/locales/fr.json";
@@ -88,6 +93,9 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   medicines: { rw: medicinesRw, en: medicinesEn, fr: medicinesFr },
   documents: { rw: documentsRw, en: documentsEn, fr: documentsFr },
   // [/S7]
+  // [Upgrade U2]
+  site: { rw: siteRw, en: siteEn, fr: siteFr },
+  // [/Upgrade U2]
   // [PT]
   public: { rw: publicRw, en: publicEn, fr: publicFr },
   // [/PT]

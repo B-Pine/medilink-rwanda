@@ -197,7 +197,7 @@ export function NewRequestPage() {
             <Alert tone="warning" title={t("help.new.health.title")}>
               <p className="m-0">{t("help.new.health.body")}</p>
               <p className="m-0 font-semibold">{t("help.new.health.emergency")}</p>
-              <Link to="/care" className={buttonClassName({ variant: "secondary" })}>
+              <Link to="/find-care" className={buttonClassName({ variant: "secondary" })}>
                 <FirstAidKit aria-hidden="true" />
                 {t("help.new.health.findCare")}
               </Link>

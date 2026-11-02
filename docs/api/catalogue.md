@@ -645,6 +645,8 @@ Requirements: FR-DSP-01..11; FR-RPT-01..05; FR-SEC-12, 13. Retention jobs (FR-SE
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
 | `GET` | `/api/v1/public/help-articles/` | Help center articles (`?q`, `?category`) | Public | FR-DSP-11 | rw/en/fr; RL: burst | Implemented (S10 part 1 backend) |
+| `POST` | `/api/v1/public/contact/` | Public contact form: name, email or phone, subject, message | Public | Upgrade 11 §5 | RL: strict; no account; spam protection to decide | Proposed (upgrade 11 §13; frontend uses a development mock) |
+| `GET` | `/api/v1/public/doctors/`, `/api/v1/public/doctors/{id}/` | Doctor directory and profile (name, specialty, facility, days, verified qualifications) | Public | FR-SCH-19 (proposed) | Never patients or bookings | Proposed (upgrade 11 §13; built from facility profiles meanwhile) |
 | `GET` | `/api/v1/public/help-articles/{slug}/` | One article | Public | FR-DSP-11 | Plain text, never HTML | Implemented (S10 part 1 backend) |
 | `POST` | `/api/v1/public/support-requests/` | Ask for help without logging in ("I can't log in") | Public | FR-DSP-11 | No clinical data; RL: auth | Deferred (sprint-10 S10-D2: needs a bot check) |
 

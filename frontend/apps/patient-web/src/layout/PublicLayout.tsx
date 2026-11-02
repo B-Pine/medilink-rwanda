@@ -1,6 +1,7 @@
 import { cx, MAIN_CONTENT_ID, SkipLink } from "@medilink/ui";
 import type { ReactNode } from "react";
 
+import { useInDashboard } from "./DashboardContext";
 import { PublicFooter } from "./PublicFooter";
 import { PublicHeader } from "./PublicHeader";
 
@@ -15,6 +16,12 @@ export function PublicLayout({
   narrow?: boolean;
   showLogin?: boolean;
 }) {
+  // Inside the dashboard the shell already has the header, <main> and navigation
+  const inDashboard = useInDashboard();
+  if (inDashboard)
+    return (
+      <div className={cx("flex w-full flex-col", narrow && "mx-auto max-w-[40rem]")}>{children}</div>
+    );
   return (
     <div className="ml-soft flex min-h-dvh flex-col bg-page">
       <SkipLink />

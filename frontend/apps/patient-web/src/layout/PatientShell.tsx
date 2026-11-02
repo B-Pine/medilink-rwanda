@@ -40,7 +40,7 @@ import {
 /** The four destinations of the patient app (design 07 §2): bottom bar on phones, top bar above. */
 const NAV: { to: string; key: string; icon: Icon; end?: boolean }[] = [
   { to: "/home", key: "home", icon: House, end: true },
-  { to: "/care", key: "findCare", icon: MagnifyingGlass },
+  { to: "/find-care", key: "findCare", icon: MagnifyingGlass },
   { to: "/visits", key: "visits", icon: CalendarCheck },
   { to: "/support", key: "help", icon: Lifebuoy },
 ];

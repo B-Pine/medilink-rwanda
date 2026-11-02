@@ -36,8 +36,14 @@
     "login": "Injira",
     "home": "Ahabanza",
     "checkSymptoms": "Isuzume ibimenyetso",
-    "emergency": "Ubutabazi · 912",
-    "menu": "Ibikubiyemo"
+    "emergency": "Ubutabazi bwihuse",
+    "menu": "Ibikubiyemo",
+    "facilities": "Ibigo",
+    "doctors": "Abaganga",
+    "services": "Serivisi",
+    "howItWorks": "Uko bikora",
+    "emergencyShort": "Ubutabazi",
+    "closeMenu": "Funga ibikubiyemo"
   },
   "landing": {
     "search": {
@@ -88,21 +94,24 @@
     "body": "Jya ku ishami ry’ubutabazi bwihuse rikwegereye cyangwa uhamagare 912. MediLink si iy’ubutabazi bwihuse."
   },
   "footer": {
-    "privacy": "Itangazo ry’ibanga",
+    "privacy": "Politiki y’ibanga",
     "terms": "Amabwiriza yo gukoresha",
     "verify": "Genzura inyandiko",
     "forFacilities": "Ku bigo by’ubuvuzi",
     "help": "Ubufasha",
     "copyright": "© {{year}} MediLink Rwanda",
-    "about": "Ibyerekeye",
+    "about": "Ibyerekeye MediLink",
     "emergency": "Ibyihutirwa",
     "checkSymptoms": "Suzuma ibimenyetso",
     "groups": {
-      "care": "Ubuvuzi",
-      "medilink": "MediLink",
-      "trust": "Kwizerwa"
+      "explore": "Shakisha",
+      "information": "Amakuru",
+      "legal": "Amategeko"
     },
-    "emergencyLine": "Ubutabazi? Hamagara 912"
+    "tagline": "Duhuza abantu n’ibigo by’ubuvuzi mu Rwanda hose.",
+    "trust": "Shakisha udafite konti. Aho uri bikoreshwa mu gushakisha gusa kandi ntibibikwa.",
+    "contact": "Twandikire",
+    "accessibility": "Kugerwaho na bose"
   },
   "login": {
     "title": "Injira cyangwa ufungure konti",

@@ -1,0 +1,226 @@
+import type { FacilityResult, LocalisedItem, PublicFacility } from "@medilink/api-client";
+import {
+  Baby,
+  Eye,
+  FirstAidKit,
+  Heartbeat,
+  Scan,
+  Stethoscope,
+  TestTube,
+  Tooth,
+  type Icon,
+} from "@phosphor-icons/react";
+import { useInfiniteQuery, useQueries, useQuery } from "@tanstack/react-query";
+
+import { useApi } from "../../app/services";
+
+/**
+ * Public site data (upgrade 11 §10). Everything comes from public endpoints: the facility search
+ * (P1), facility profiles (P2), slots (P3), the service catalogue and help articles. Doctors have
+ * no directory endpoint yet (upgrade 11 §13), so they are read from the facility profiles.
+ */
+
+/** Same root as the facility page, so profiles fetched here are reused there (and pre-rendered). */
+const PUBLIC_QUERY_ROOT = "discovery";
+
+export const EMERGENCY = {
+  /** Rwanda's national ambulance (SAMU) number, configured here, not entered by a facility. */
+  number: "912",
+} as const;
+
+// ---- facilities ----
+
+/** Every live facility, page by page (the listing returns 20 at a time). */
+export function useAllFacilities() {
+  const api = useApi();
+  return useQuery({
+    queryKey: [PUBLIC_QUERY_ROOT, "site", "all-facilities"],
+    queryFn: async () => {
+      const first = await api.booking.search({ page: 1 });
+      const results = [...first.results];
+      const pages = Math.ceil(first.count / Math.max(first.results.length, 1));
+      for (let page = 2; page <= Math.min(pages, 10); page++) {
+        results.push(...(await api.booking.search({ page })).results);
+      }
+      return results;
+    },
+    staleTime: 60_000,
+  });
+}
+
+/** One page after another for the directory ("Load more"). */
+export function useFacilityPages(filters: {
+  service_code?: string;
+  district_code?: string;
+  open_now?: boolean;
+}) {
+  const api = useApi();
+  return useInfiniteQuery({
+    queryKey: [PUBLIC_QUERY_ROOT, "site", "directory", filters],
+    queryFn: ({ pageParam }) => api.booking.search({ ...filters, page: pageParam }),
+    initialPageParam: 1,
+    getNextPageParam: (last) => (last.page * 20 < last.count ? last.page + 1 : undefined),
+  });
+}
+
+/** Facility profiles for the given slugs (doctors and services live there). */
+export function useProfiles(slugs: string[]) {
+  const api = useApi();
+  return useQueries({
+    queries: slugs.map((slug) => ({
+      queryKey: [PUBLIC_QUERY_ROOT, "facility", slug],
+      queryFn: () => api.booking.facility(slug),
+      staleTime: 60_000,
+    })),
+    combine: (results) => ({
+      data: results.flatMap((r) => (r.data ? [r.data] : [])),
+      isPending: results.some((r) => r.isPending),
+      isError: results.length > 0 && results.every((r) => r.isError),
+      refetch: () => results.forEach((r) => void r.refetch()),
+    }),
+  });
+}
+
+// ---- doctors ----
+
+export interface PublicDoctor {
+  slug: string;
+  membershipId: string;
+  name: string;
+  days: number[];
+  facility: Pick<PublicFacility, "slug" | "name" | "district" | "type">;
+  services: { id: string; code: string; name: PublicFacility["services"][number]["name_i18n"] }[];
+}
+
+/** A doctor's public address: facility and membership, so one doctor at two places has two pages. */
+export const doctorSlug = (facility: string, membership: string) => `${facility}--${membership}`;
+
+export function parseDoctorSlug(slug: string): { facility: string; membership: string } | null {
+  const at = slug.lastIndexOf("--");
+  if (at <= 0) return null;
+  return { facility: slug.slice(0, at), membership: slug.slice(at + 2) };
+}
+
+export function doctorsOf(profile: PublicFacility): PublicDoctor[] {
+  return profile.doctors.map((doctor) => ({
+    slug: doctorSlug(profile.slug, doctor.membership_id),
+    membershipId: doctor.membership_id,
+    name: doctor.name,
+    days: doctor.days,
+    facility: {
+      slug: profile.slug,
+      name: profile.name,
+      district: profile.district,
+      type: profile.type,
+    },
+    services: profile.services
+      .filter((service) => doctor.service_ids.includes(service.id))
+      .map((service) => ({ id: service.id, code: service.code, name: service.name_i18n })),
+  }));
+}
+
+export function useDoctors() {
+  const facilities = useAllFacilities();
+  const profiles = useProfiles((facilities.data ?? []).map((f) => f.slug));
+  const doctors = profiles.data.flatMap(doctorsOf).sort((a, b) => a.name.localeCompare(b.name));
+  return {
+    doctors,
+    facilities: facilities.data ?? [],
+    isPending:
+      facilities.isPending || (facilities.isSuccess && profiles.isPending && !doctors.length),
+    isError: facilities.isError || profiles.isError,
+    refetch: () => {
+      void facilities.refetch();
+      profiles.refetch();
+    },
+  };
+}
+
+// ---- services ----
+
+export type ServiceCategory =
+  | "general"
+  | "maternalChild"
+  | "laboratory"
+  | "dental"
+  | "eye"
+  | "imaging"
+  | "specialist"
+  | "emergency";
+
+export const SERVICE_CATEGORIES: { key: ServiceCategory; icon: Icon }[] = [
+  { key: "general", icon: Stethoscope },
+  { key: "maternalChild", icon: Baby },
+  { key: "laboratory", icon: TestTube },
+  { key: "dental", icon: Tooth },
+  { key: "eye", icon: Eye },
+  { key: "imaging", icon: Scan },
+  { key: "specialist", icon: Heartbeat },
+  { key: "emergency", icon: FirstAidKit },
+];
+
+/** Catalogue code to its category; unknown codes fall under general healthcare. */
+export function categoryOf(code: string): ServiceCategory {
+  if (
+    /antenatal|paediatric|pediatric|vaccin|family_planning|gynae|gyne|matern|delivery|child/.test(
+      code,
+    )
+  )
+    return "maternalChild";
+  if (/lab|test|blood/.test(code)) return "laboratory";
+  if (/dental|tooth|teeth/.test(code)) return "dental";
+  if (/eye|ophthalm|optic/.test(code)) return "eye";
+  if (/imaging|x_ray|xray|ultrasound|scan|radiolog/.test(code)) return "imaging";
+  if (/emergency|trauma/.test(code)) return "emergency";
+  if (/internal|cardio|surgery|specialist|derma|ent|psych|ortho|neuro/.test(code))
+    return "specialist";
+  return "general";
+}
+
+export const categoryIcon = (category: ServiceCategory): Icon =>
+  SERVICE_CATEGORIES.find((c) => c.key === category)?.icon ?? Stethoscope;
+
+export const serviceSlug = (code: string) => code.replace(/_/g, "-");
+export const serviceCode = (slug: string) => slug.replace(/-/g, "_");
+
+export interface CatalogueService {
+  code: string;
+  name: string;
+  category: ServiceCategory;
+}
+
+/** The public service catalogue (master data), names in the request language. */
+export function useCatalogue(language: string) {
+  const api = useApi();
+  return useQuery({
+    queryKey: [PUBLIC_QUERY_ROOT, "site", "catalogue", language],
+    queryFn: async () => {
+      const page = await api.masterData.publicList<LocalisedItem>("service-catalogue-items", {
+        page_size: 200,
+      });
+      return page.results
+        .filter((item) => item.is_active !== false && item.code)
+        .map((item): CatalogueService => ({
+          code: item.code!,
+          name: item.name ?? item.code!,
+          category: categoryOf(item.code!),
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+    },
+    staleTime: 5 * 60_000,
+  });
+}
+
+/** Facilities whose listing row offers this service (one row per facility and service). */
+export function useFacilitiesOffering(code: string) {
+  const api = useApi();
+  return useQuery({
+    queryKey: [PUBLIC_QUERY_ROOT, "site", "offering", code],
+    queryFn: async (): Promise<FacilityResult[]> =>
+      (await api.booking.search({ service_code: code })).results,
+    enabled: code !== "",
+  });
+}
+
+/** A facility row looks like a hospital (interim emergency rule until `has_emergency_24h`). */
+export const isHospital = (type: string) => type.endsWith("hospital");

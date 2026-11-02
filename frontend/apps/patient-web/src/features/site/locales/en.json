@@ -1,0 +1,398 @@
+{
+  "breadcrumb": "Breadcrumb",
+  "loading": "Loading",
+  "error": "Something went wrong while loading.",
+  "retry": "Try again",
+  "open": "Open",
+  "closed": "Closed",
+  "noInsurers": "Insurance not listed",
+  "location": "Location",
+  "allRwanda": "All of Rwanda",
+  "searchLabel": "Search facilities, services or symptoms",
+  "searchPlaceholder": "Search services or facilities...",
+  "call": "Call {{number}}",
+  "devData": "Development data",
+  "toConfirm": "To confirm",
+  "lastUpdated": "Last updated {{date}}",
+  "draft": "Draft text awaiting legal review. Parts marked “To confirm” are not final.",
+  "home": {
+    "label": "MediLink Rwanda",
+    "title": "Healthcare, made easier.",
+    "lead": "Find healthcare facilities, check availability and plan your visit — all in one place.",
+    "how": "How MediLink works",
+    "reassure": "Explore healthcare services without creating an account.",
+    "searchTitle": "Find the care you need",
+    "searchLead": "Search for a healthcare service or facility near you.",
+    "nearTitle": "Healthcare facilities near you",
+    "nearEmpty": "No facilities to show here yet",
+    "viewAll": "View all facilities",
+    "emergencyTitle": "Need emergency care?",
+    "emergencyLead": "Find healthcare facilities with emergency services.",
+    "emergencyAction": "Find emergency facilities",
+    "howTitle": "How MediLink works",
+    "steps": {
+      "find": {
+        "title": "Find care",
+        "body": "Search facilities and services."
+      },
+      "check": {
+        "title": "Check availability",
+        "body": "Compare location, waiting time and insurance."
+      },
+      "join": {
+        "title": "Join or book",
+        "body": "Join today’s queue or reserve an available time."
+      },
+      "receive": {
+        "title": "Receive care",
+        "body": "Arrive, check in and follow your visit."
+      }
+    },
+    "accountTitle": "Your healthcare journey, in one place.",
+    "accountLead": "Create an account to manage appointments, follow your queue, access your visit documents and stay informed.",
+    "exploreFirst": "Explore healthcare first",
+    "readyTitle": "Ready to find healthcare?"
+  },
+  "care": {
+    "title": "Find healthcare",
+    "lead": "Search by facility, service, specialty or symptom.",
+    "results": "Results",
+    "emergencyFilter": "Emergency (hospitals)",
+    "checkSymptoms": "Check your symptoms instead"
+  },
+  "facilities": {
+    "title": "Healthcare facilities",
+    "lead": "Every verified facility on MediLink.",
+    "type": "Facility type",
+    "service": "Service",
+    "anyService": "All services",
+    "loadMore": "Load more",
+    "count_one": "{{count}} facility",
+    "count_other": "{{count}} facilities",
+    "none": "No facilities match these filters",
+    "clear": "Clear filters"
+  },
+  "facility": {
+    "notFound": "This facility is not on MediLink",
+    "back": "Back to facilities",
+    "verified": "Verified",
+    "directions": "Directions",
+    "call": "Call",
+    "today": "Today",
+    "hoursToday": "Hours today",
+    "closedToday": "Closed today",
+    "liveWait": "Live wait",
+    "waitUnknown": "Not published",
+    "queue": "Queue",
+    "booking": "Appointments",
+    "available": "Available",
+    "notAvailable": "Not offered",
+    "emergencyDept": "Hospital",
+    "emergencyNote": "Hospitals receive emergencies. Call {{number}} if life is at risk.",
+    "joinQueue": "Join Queue",
+    "bookAppointment": "Book Appointment",
+    "tabs": {
+      "label": "Facility information",
+      "overview": "Overview",
+      "services": "Services",
+      "doctors": "Doctors",
+      "insurance": "Insurance",
+      "hours": "Hours & Location"
+    },
+    "about": "About",
+    "noDescription": "The facility has not added a description yet.",
+    "contact": "Contact",
+    "address": "Address",
+    "phone": "Phone",
+    "notListed": "Not listed",
+    "walkIn": "Walk-in",
+    "appointment": "Appointment",
+    "remote": "Remote join",
+    "waitingNow": "{{count}} waiting",
+    "nextTime": "Next {{day}} {{time}}",
+    "noServices": "No services published yet",
+    "noDoctors": "No doctors published yet",
+    "doctorDays": "Here {{days}}",
+    "insuranceLead": "Insurers accepted at this facility. Amounts are only on your bill after the visit.",
+    "referral": "Mutuelle members need a transfer letter at this level of care.",
+    "week": "This week",
+    "closures": "Upcoming closures",
+    "noClosures": "No closures announced",
+    "bring": {
+      "title": "What to bring",
+      "insurance": "Your insurance card",
+      "id": "National ID or another identity document",
+      "referral": "Transfer letter (Mutuelle, at hospital level)",
+      "documents": "Previous results or prescriptions, if you have them"
+    },
+    "map": "Location on the map",
+    "insurance": "Insurance accepted"
+  },
+  "doctors": {
+    "title": "Doctors",
+    "lead": "Find a doctor by name, service or facility.",
+    "searchName": "Search by doctor name",
+    "specialty": "Service",
+    "anySpecialty": "All services",
+    "facility": "Facility",
+    "anyFacility": "All facilities",
+    "availability": "Availability",
+    "anyDay": "Any day",
+    "today": "Here today",
+    "count_one": "{{count}} doctor",
+    "count_other": "{{count}} doctors",
+    "none": "No doctors match these filters",
+    "viewProfile": "View profile",
+    "days": "Days",
+    "source": "Doctors are listed from facility profiles."
+  },
+  "doctor": {
+    "notFound": "This doctor is not listed",
+    "at": "At {{facility}}",
+    "worksIn": "Services",
+    "presentDays": "Days at this facility",
+    "availability": "Availability",
+    "free_one": "{{count}} free",
+    "free_other": "{{count}} free",
+    "full": "Full",
+    "away": "—",
+    "noTimes": "No free times this day",
+    "book": "Book with this doctor",
+    "pickDay": "Choose a day",
+    "privacy": "Only free times are shown, never who has booked."
+  },
+  "services": {
+    "title": "Explore healthcare services",
+    "lead": "Services offered by facilities on MediLink.",
+    "search": "Search services",
+    "none": "No services match your search",
+    "categories": {
+      "general": "General healthcare",
+      "maternalChild": "Maternal and child health",
+      "laboratory": "Laboratory services",
+      "dental": "Dental care",
+      "eye": "Eye care",
+      "imaging": "Imaging and diagnostics",
+      "specialist": "Specialist care",
+      "emergency": "Emergency services"
+    }
+  },
+  "service": {
+    "notFound": "This service is not in the catalogue",
+    "about": "About this service",
+    "aboutGeneric": "A service offered by facilities on MediLink. Ask the facility what the visit involves.",
+    "offering": "Facilities offering this service",
+    "noneOffering": "No facility lists this service yet",
+    "find": "Find facilities offering this service",
+    "doctors": "Doctors for this service",
+    "explain": {
+      "general_consultation": "A visit with a doctor or nurse for a new health problem or a check.",
+      "paediatric_consultation": "Care for babies and children up to 14 years.",
+      "antenatal_care": "Regular checks during pregnancy for the mother and the baby.",
+      "vaccination": "Vaccines for children and adults, following the national schedule.",
+      "dental_care": "Checks and treatment for teeth and gums.",
+      "eye_care": "Eye checks and treatment for eye problems.",
+      "internal_medicine": "Follow-up of long-term conditions in adults, such as diabetes or high blood pressure.",
+      "gynaecology": "Care for women’s reproductive health.",
+      "family_planning": "Advice and methods to plan when to have children.",
+      "laboratory_tests": "Blood, urine and other tests a clinician orders."
+    }
+  },
+  "how": {
+    "title": "How MediLink works",
+    "lead": "From searching to your visit, step by step.",
+    "steps": {
+      "search": {
+        "title": "Search for healthcare",
+        "body": "Search by service, facility or what you feel."
+      },
+      "select": {
+        "title": "Select a facility",
+        "body": "Compare distance, live waiting time and insurance."
+      },
+      "join": {
+        "title": "Join a queue or book",
+        "body": "Join today’s queue or pick an appointment time."
+      },
+      "confirm": {
+        "title": "Receive confirmation",
+        "body": "You get a ticket number or a booking code."
+      },
+      "arrive": {
+        "title": "Arrive and check in",
+        "body": "Reception confirms that you have arrived."
+      },
+      "follow": {
+        "title": "Follow your visit",
+        "body": "See your place in the queue and when to go in."
+      }
+    },
+    "goodTitle": "Good to know",
+    "good": {
+      "noAccount": "You can explore facilities, services and doctors without an account.",
+      "walkIn": "Walk-in patients can still be registered at the facility.",
+      "reception": "Reception confirms your physical arrival before you are called.",
+      "noPhone": "No smartphone? The facility gives you a printed ticket, shows your number on the screen and calls it out loud."
+    },
+    "start": "Find care now"
+  },
+  "emergency": {
+    "title": "Need emergency care?",
+    "lead": "If a life is in danger, do not wait for an appointment. Call for help or go to the nearest hospital now.",
+    "callNow": "Call {{number}} now",
+    "callNote": "National ambulance service (SAMU)",
+    "nearest": "Hospitals near you",
+    "nearestNote": "Hospitals receive emergencies. Use Near me to sort by distance.",
+    "nearMe": "Near me",
+    "none": "No hospitals listed for this area",
+    "signsTitle": "Go now if someone has",
+    "guidanceTitle": "Finding the nearest emergency department",
+    "guidance": {
+      "call": "Call {{number}} first if the person cannot travel safely.",
+      "nearest": "Go to the nearest hospital; health centres can refer you.",
+      "bring": "Bring the person’s ID and insurance card if you can, but do not wait for them."
+    }
+  },
+  "help": {
+    "title": "Help & Support",
+    "lead": "Answers to common questions.",
+    "search": "Search help",
+    "none": "No answers match your search",
+    "articles": "More help articles",
+    "contactTitle": "Still need help?",
+    "contactLead": "Send us a message and we will answer.",
+    "contactAction": "Contact support",
+    "categories": {
+      "finding": {
+        "title": "Finding healthcare",
+        "q1": "Do I need an account to search?",
+        "a1": "No. You can search facilities, services and doctors without an account.",
+        "q2": "How is the waiting time calculated?",
+        "a2": "From the people waiting now and how long recent visits took at that facility. It is an estimate, shown only when the facility publishes live data."
+      },
+      "queue": {
+        "title": "Joining a queue",
+        "q1": "Can I join a queue from home?",
+        "a1": "Yes, at facilities that allow it, before the daily cut-off time. Go when the app tells you to leave.",
+        "q2": "What happens if I am late?",
+        "a2": "Your place can move back a few places. Tell reception when you arrive."
+      },
+      "booking": {
+        "title": "Booking appointments",
+        "q1": "How do I book a time?",
+        "a1": "Open a facility, choose a service and a free time, then confirm. You need to sign in to book.",
+        "q2": "Can I cancel?",
+        "a2": "Yes, from your visits, until the facility’s cancellation deadline."
+      },
+      "arrival": {
+        "title": "Arrival and check-in",
+        "q1": "What do I do when I arrive?",
+        "a1": "Go to reception with your ticket number or booking code. Reception confirms your arrival.",
+        "q2": "I have no smartphone. Can I still be served?",
+        "a2": "Yes. Reception registers you and gives you a printed ticket; the screen shows and calls your number."
+      },
+      "insurance": {
+        "title": "Insurance",
+        "q1": "Which insurers are accepted?",
+        "a1": "Each facility page lists the insurers it accepts for each service.",
+        "q2": "Why are there no prices?",
+        "a2": "The cost depends on the illness, tests and medicines. Amounts appear on your bill after the visit."
+      },
+      "accounts": {
+        "title": "Patient accounts",
+        "q1": "Can I add my children?",
+        "a1": "Yes. Add family members in your profile and book for them.",
+        "q2": "How do I change my password?",
+        "a2": "Use “Forgot password” on the sign-in page to get a reset link by email."
+      },
+      "documents": {
+        "title": "Documents and records",
+        "q1": "Where are my prescriptions?",
+        "a1": "In Documents after you sign in. Each one has a code and QR that pharmacies can verify.",
+        "q2": "Can someone check my document is real?",
+        "a2": "Yes, with the code on the document at “Verify a document”."
+      },
+      "technical": {
+        "title": "Technical support",
+        "q1": "The site is slow on my phone.",
+        "a1": "Turn on data saver in settings; pages also work after a first visit with a weak connection.",
+        "q2": "I do not receive alerts.",
+        "a2": "Allow notifications for MediLink in your browser and turn alerts on in your settings."
+      }
+    }
+  },
+  "about": {
+    "title": "About MediLink",
+    "lead": "MediLink connects people in Rwanda with healthcare facilities, so care is easier to find and to plan.",
+    "sections": {
+      "what": {
+        "title": "What MediLink is",
+        "body": "A national platform where patients find facilities, services and doctors, see live waiting times and join a queue or book. Facilities use it to run the visit from check-in to pharmacy."
+      },
+      "problem": {
+        "title": "The problem it addresses",
+        "body": "People often travel to a facility without knowing if it is open, how long the wait is or whether it accepts their insurance. Facilities lack a clear view of who is waiting."
+      },
+      "how": {
+        "title": "How it connects patients and facilities",
+        "body": "Facilities publish their services, hours and live queue. Patients choose with real information and arrive at the right time; reception confirms every arrival."
+      },
+      "access": {
+        "title": "Accessible to everyone",
+        "body": "Search needs no account. MediLink works in Kinyarwanda, English and French, on small phones and slow connections, and people without a phone are served at the facility with printed tickets and spoken calls."
+      },
+      "privacy": {
+        "title": "Protecting patient information",
+        "body": "Health information is handled under Rwanda’s data protection law (Law 058/2021). Facilities see only what they need for your care, and every access to a record is logged."
+      }
+    }
+  },
+  "contact": {
+    "title": "Contact",
+    "lead": "Questions, problems or suggestions.",
+    "infoTitle": "Support",
+    "infoBody": "For a problem with a visit, contact the facility first. For MediLink itself, use this form.",
+    "emergency": "For emergencies call {{number}}. This form is not watched around the clock.",
+    "name": "Name",
+    "reach": "Email or phone",
+    "reachHint": "So we can answer you.",
+    "subject": "Subject",
+    "message": "Message",
+    "send": "Send message",
+    "sending": "Sending",
+    "sent": "Message sent. We will answer soon.",
+    "failed": "Your message could not be sent. Try again later.",
+    "errors": {
+      "name": "Enter your name",
+      "reach": "Enter an email address or a phone number",
+      "subject": "Enter a subject",
+      "message": "Write your message"
+    }
+  },
+  "accessibility": {
+    "title": "Accessibility statement",
+    "lead": "MediLink should be usable by everyone.",
+    "sections": {
+      "standard": {
+        "title": "Our standard",
+        "body": "We aim for WCAG 2.2 level AA on every public page and in the patient app."
+      },
+      "features": {
+        "title": "What we do",
+        "body": "Three languages, large touch targets, a text-size setting, keyboard access, visible focus, screen-reader labels, enough colour contrast, no information by colour alone, and reduced motion when your device asks for it."
+      },
+      "offline": {
+        "title": "Beyond the website",
+        "body": "Patients without a phone are served at the facility with printed tickets, a waiting-room screen and spoken calls."
+      },
+      "limits": {
+        "title": "Known limits",
+        "body": "Some translations are still being reviewed by native speakers. The map needs a pointer or touch; the list beside it offers the same information. [To confirm]"
+      },
+      "feedback": {
+        "title": "Tell us",
+        "body": "If something is hard to use, write to us through the contact page and we will answer."
+      }
+    }
+  }
+}

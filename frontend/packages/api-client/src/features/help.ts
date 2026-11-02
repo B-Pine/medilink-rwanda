@@ -166,6 +166,14 @@ export interface SupportTriage {
   version: number;
 }
 
+export interface PublicContactInput {
+  name: string;
+  /** Email address or phone number to answer to. */
+  reach: string;
+  subject: string;
+  message: string;
+}
+
 export interface ArticleListParams {
   q?: string;
   category?: HelpCategory;
@@ -211,6 +219,8 @@ export const helpPaths = {
   public: {
     articles: `${v1}/public/help-articles/`,
     article: (slug: string) => `${v1}/public/help-articles/${encodeURIComponent(slug)}/`,
+    /** Upgrade 11 §13: proposed, not built on the API yet. */
+    contact: `${v1}/public/contact/`,
   },
   patient: requestPaths(`${v1}/patient`),
   staff: {
@@ -246,6 +256,8 @@ export function createHelpApi(client: ApiClient) {
       articles: (params: ArticleListParams = {}) =>
         client.get<Page<HelpArticleSummary>>(helpPaths.public.articles + query({ ...params })),
       article: (slug: string) => client.get<HelpArticle>(helpPaths.public.article(slug)),
+      /** Public contact form (upgrade 11 §13, proposed endpoint). */
+      contact: (body: PublicContactInput) => client.post<void>(helpPaths.public.contact, body),
     },
     patient: {
       requests: (params: RequestListParams = {}) =>

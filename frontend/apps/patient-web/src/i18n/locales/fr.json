@@ -36,8 +36,14 @@
     "login": "Se connecter",
     "home": "Accueil",
     "checkSymptoms": "Vérifier mes symptômes",
-    "emergency": "Urgence · 912",
-    "menu": "Menu"
+    "emergency": "Aide d’urgence",
+    "menu": "Menu",
+    "facilities": "Établissements",
+    "doctors": "Médecins",
+    "services": "Services",
+    "howItWorks": "Comment ça marche",
+    "emergencyShort": "Urgence",
+    "closeMenu": "Fermer le menu"
   },
   "landing": {
     "search": {
@@ -88,21 +94,24 @@
     "body": "Rendez-vous au service d’urgence le plus proche ou appelez le 912. MediLink n’est pas fait pour les urgences."
   },
   "footer": {
-    "privacy": "Avis de confidentialité",
+    "privacy": "Politique de confidentialité",
     "terms": "Conditions d’utilisation",
     "verify": "Vérifier un document",
     "forFacilities": "Pour les établissements",
-    "help": "Aide",
+    "help": "Aide et assistance",
     "copyright": "© {{year}} MediLink Rwanda",
-    "about": "À propos",
+    "about": "À propos de MediLink",
     "emergency": "Urgence",
     "checkSymptoms": "Vérifier mes symptômes",
     "groups": {
-      "care": "Soins",
-      "medilink": "MediLink",
-      "trust": "Confiance"
+      "explore": "Explorer",
+      "information": "Informations",
+      "legal": "Mentions légales"
     },
-    "emergencyLine": "Urgence ? Appelez le 912"
+    "tagline": "Relier les personnes aux établissements de santé partout au Rwanda.",
+    "trust": "Cherchez sans compte. Votre position sert seulement à votre recherche et n’est jamais conservée.",
+    "contact": "Contact",
+    "accessibility": "Accessibilité"
   },
   "login": {
     "title": "Se connecter ou créer un compte",

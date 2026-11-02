@@ -1,24 +1,15 @@
 import { LoadingState } from "@medilink/ui";
 import type { ComponentType } from "react";
-import { redirect, type RouteObject } from "react-router";
+import type { RouteObject } from "react-router";
 
 import { RequirePatient } from "../auth/RequirePatient";
 import { PatientShell } from "../layout/PatientShell";
-import type { InfoSection } from "../pages/InfoPage";
 import { FEATURES } from "./features";
 
 // Pages are code-split per route: the landing page stays small on 3G (design 06 H4).
 const page =
   <K extends string>(load: () => Promise<Record<K, ComponentType>>, name: K) =>
   async () => ({ Component: (await load())[name] });
-
-const info = (path: string, section: InfoSection): RouteObject => ({
-  path,
-  lazy: async () => {
-    const { InfoPage } = await import("../pages/InfoPage");
-    return { element: <InfoPage section={section} /> };
-  },
-});
 
 /** Route table, shared by the browser router (main.tsx) and the memory router (tests). */
 export const routes: RouteObject[] = [
@@ -40,10 +31,7 @@ export const routes: RouteObject[] = [
         path: "/verify-email",
         lazy: page(() => import("../pages/VerifyEmailPage"), "VerifyEmailPage"),
       },
-      // upgrade 04 §1: signed-in patients use the public Find care page
-      { path: "/find-care", loader: () => redirect("/care") },
       // /verify is the S7b documents feature's public page
-      info("/help", "help"),
       {
         element: <RequirePatient />,
         children: [

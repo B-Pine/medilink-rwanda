@@ -38,8 +38,11 @@ test("hydration keeps the pre-rendered landing page as it is", async ({ page }) 
   await page.goto(PATIENT + "/");
   const heading = page.getByRole("heading", { level: 1 });
   await expect(heading).toHaveText(prerendered!.trim());
-  // interactive once hydrated: the language switch re-renders the page in English
-  await page.getByRole("combobox", { name: "Ururimi" }).selectOption("en");
-  await expect(heading).not.toHaveText(prerendered!.trim());
+  // interactive once hydrated: the language switch re-renders the page in English. A change
+  // made before React attaches is lost, so retry until hydration has taken over.
+  await expect(async () => {
+    await page.getByRole("combobox", { name: "Ururimi" }).first().selectOption("en");
+    await expect(heading).not.toHaveText(prerendered!.trim(), { timeout: 1_000 });
+  }).toPass({ timeout: 15_000 });
   expect(errors.filter((e) => /hydrat|did not match/i.test(e))).toEqual([]);
 });

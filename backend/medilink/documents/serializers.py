@@ -132,7 +132,7 @@ class NewShareLinkSerializer(ShareLinkSerializer):
 # ---- public -------------------------------------------------------------------------------------
 
 
-class VerificationSerializer(serializers.Serializer):
+class DocumentVerificationSerializer(serializers.Serializer):
     code = serializers.CharField()
     kind = serializers.ChoiceField(choices=DocumentKind.choices)
     number = serializers.CharField()
@@ -145,7 +145,7 @@ class VerificationSerializer(serializers.Serializer):
     version_no = serializers.IntegerField()
 
 
-class VerificationDetailsInputSerializer(StrictSerializer):
+class DocumentVerificationDetailsInputSerializer(StrictSerializer):
     date_of_birth = serializers.DateField()
 
 
@@ -154,7 +154,7 @@ class DetailSectionSerializer(serializers.Serializer):
     lines = serializers.ListField(child=serializers.CharField())
 
 
-class VerificationDetailsSerializer(VerificationSerializer):
+class DocumentVerificationDetailsSerializer(DocumentVerificationSerializer):
     patient_name = serializers.CharField()
     sections = DetailSectionSerializer(many=True)
 

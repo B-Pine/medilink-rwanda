@@ -320,7 +320,11 @@ class VerifyView(_VerifyBase):
     @extend_schema(
         operation_id="public_verify",
         tags=["public"],
-        responses={200: s.VerificationSerializer, 404: err("Unknown code"), 429: err("Too many")},
+        responses={
+            200: s.DocumentVerificationSerializer,
+            404: err("Unknown code"),
+            429: err("Too many"),
+        },
         summary="Check a document by the code under its QR code (V1); every attempt is logged",
     )
     def get(self, request: Request, code: str) -> Response:
@@ -330,16 +334,16 @@ class VerifyView(_VerifyBase):
         VerificationLog.objects.create(
             verification_record=found, client_hash=_client(request), result="valid"
         )
-        return self.no_store(Response(s.VerificationSerializer(_projection(found)).data))
+        return self.no_store(Response(s.DocumentVerificationSerializer(_projection(found)).data))
 
 
 class VerifyDetailsView(_VerifyBase):
     @extend_schema(
         operation_id="public_verify_details",
         tags=["public"],
-        request=s.VerificationDetailsInputSerializer,
+        request=s.DocumentVerificationDetailsInputSerializer,
         responses={
-            200: s.VerificationDetailsSerializer,
+            200: s.DocumentVerificationDetailsSerializer,
             404: err("Unknown code"),
             422: err("The date of birth does not match"),
             429: err("Too many"),
@@ -347,7 +351,7 @@ class VerifyDetailsView(_VerifyBase):
         summary="The document's content after a date-of-birth match (V1)",
     )
     def post(self, request: Request, code: str) -> Response:
-        body = s.VerificationDetailsInputSerializer(data=request.data)
+        body = s.DocumentVerificationDetailsInputSerializer(data=request.data)
         body.is_valid(raise_exception=True)
         found = self.record_for(code)
         if found is None:
@@ -375,7 +379,7 @@ class VerifyDetailsView(_VerifyBase):
             "patient_name": extra.get("patient_name", ""),
             "sections": extra.get("sections", []),
         }
-        return self.no_store(Response(s.VerificationDetailsSerializer(data).data))
+        return self.no_store(Response(s.DocumentVerificationDetailsSerializer(data).data))
 
 
 class SharedDocumentView(_VerifyBase):

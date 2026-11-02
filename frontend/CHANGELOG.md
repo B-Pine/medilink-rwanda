@@ -31,6 +31,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 - Playwright (`@playwright/test` 1.64.1): `pnpm e2e` runs the S4 walk-in journey (check-in, call,
   complete) and the pre-rendered pages' checks against the mock builds; new `e2e` CI job.
 - HeroIllustration uses brand tokens; a workspace test forbids raw hex colours in components.
+
 ### Sprint 7b · Documents (frontend, #123)
 
 - staff-web consultation: a Letters and requests section (referral letter, lab request, sick note)

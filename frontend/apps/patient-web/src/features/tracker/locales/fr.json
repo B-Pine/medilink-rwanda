@@ -53,5 +53,17 @@
     "history": "Visites précédentes",
     "historyEmpty": "Votre historique commence ici",
     "historyEmptyBody": "Après chaque visite, vous trouverez ici le résumé, vos médicaments, vos documents et le reçu."
-  }
+  },
+  "remote": {
+    "title": "Vous avez rejoint la file depuis chez vous",
+    "body": "Quand vous arrivez à l’établissement, touchez « Je suis là », puis montrez ce ticket à l’accueil.",
+    "here": "Je suis là",
+    "claimed": "En attente de la confirmation de l’accueil. Montrez ce ticket au guichet.",
+    "passOverTitle": "Vous approchez de votre tour",
+    "passOver": "Rendez-vous à l’établissement et présentez-vous à l’accueil bientôt. Si l’accueil ne vous a pas confirmé à votre tour, votre place recule.",
+    "passOverClaimed": "Montrez votre ticket à l’accueil maintenant. Tant qu’il n’a pas confirmé votre arrivée, votre place peut reculer.",
+    "changed": "Votre ticket a changé. Nous l’avons actualisé. Réessayez."
+  },
+  "aheadShort_one": "personne devant vous",
+  "aheadShort_other": "personnes devant vous"
 }

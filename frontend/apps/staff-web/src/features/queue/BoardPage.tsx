@@ -1,3 +1,4 @@
+import { formatTime } from "@medilink/ui/i18n";
 import type { PriorityClass, QueueGroup, TicketRow } from "@medilink/api-client";
 import { newIdempotencyKey } from "@medilink/api-client";
 import {
@@ -18,8 +19,6 @@ import {
   CalendarCheck,
   ClockCountdown,
   MegaphoneSimple,
-  Phone,
-  Plus,
   Star,
   UsersThree,
 } from "@phosphor-icons/react";
@@ -30,10 +29,12 @@ import { useSearchParams } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PhoneBookingPanel, type PhoneBookingMode } from "../bookings";
-import { PageHeader } from "../../components/PageHeader";
+import { PageHeading } from "../../components/PageHeading";
 import { PatientPicker } from "../patients";
 import { queueKeys, usePollInterval, useQueueSocket } from "./live";
-import { ExpectedList, MissedList } from "./ExpectedList";
+import { ExpectedList, MissedList, useTodayBookings } from "./ExpectedList";
+import { DeskBar, DeskFlow, ServiceFilter, ticketTone } from "./FrontDesk";
+import { RemoteList, useConfirmArrival } from "./RemoteList";
 import { LiveBadge } from "./LiveIndicator";
 import {
   actionError,
@@ -45,8 +46,39 @@ import {
   useTicketAction,
 } from "./shared";
 
-/** Keyboard shortcut for a new check-in (design 04 §3.1). */
-const SHORTCUT_NEW = "N";
+/** Keyboard shortcuts (design 04 §3.1): N new check-in, / find a patient to check in. */
+
+/** True while a dialog or side panel is open: board shortcuts must not fire behind it. */
+const dialogOpen = () => Boolean(document.querySelector('[role="dialog"], [role="alertdialog"]'));
+
+/**
+ * Rows whose ticket changed in the last update (new, or a new version), so the board can fade
+ * them in (design 04: a brief emerald-50 highlight that fades over 1.5 s). Nothing is marked on
+ * first load.
+ */
+function useChangedRows(rows: TicketRow[]): Set<string> {
+  const seen = useRef<Map<string, number> | null>(null);
+  const [changed, setChanged] = useState<Set<string>>(new Set());
+  const signature = rows.map((r) => `${r.id}:${r.version}`).join(",");
+  useEffect(() => {
+    const previous = seen.current;
+    seen.current = new Map(rows.map((r) => [r.id, r.version]));
+    if (!previous) return;
+    const fresh = rows.filter((r) => previous.get(r.id) !== r.version).map((r) => r.id);
+    // Every row "changed" at once is a reload (e.g. coming back to the page), not a live update,
+    // so it is not highlighted (a rare live update touching every row is not either). With
+    // nothing new, clear any highlight whose timer the previous run's cleanup cancelled.
+    if (!fresh.length || (fresh.length === rows.length && rows.length > 1)) {
+      setChanged((current) => (current.size ? new Set() : current));
+      return;
+    }
+    setChanged(new Set(fresh));
+    const timer = setTimeout(() => setChanged(new Set()), 1_500);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the signature covers `rows`
+  }, [signature]);
+  return changed;
+}
 const PRIORITIES: PriorityClass[] = ["elderly", "pregnant", "disability", "very_sick"];
 const REORDER_REASONS = ["clinical_urgency", "staff_error", "patient_request", "other"];
 const LEAVE_REASONS = ["patient_left", "patient_request", "duplicate", "other"];
@@ -86,7 +118,9 @@ export function BoardPage() {
       const typing =
         target?.isContentEditable ||
         ["INPUT", "TEXTAREA", "SELECT"].includes(target?.tagName ?? "");
-      if (!typing && !event.ctrlKey && !event.metaKey && (event.key === "n" || event.key === "N")) {
+      if (typing || event.ctrlKey || event.metaKey || event.altKey || dialogOpen()) return;
+      // "/" opens the check-in search (the patient search has focus)
+      if (event.key === "n" || event.key === "N" || event.key === "/") {
         event.preventDefault();
         setCheckingIn(true);
       }
@@ -99,90 +133,71 @@ export function BoardPage() {
   const byService = new Map<string, QueueGroup[]>();
   for (const q of queues) byService.set(q.service_id, [...(byService.get(q.service_id) ?? []), q]);
   const shown = queues.filter((q) => !filter || q.service_id === filter);
-  const waitingTotal = queues.reduce((n, q) => n + q.waiting.length, 0);
   const serving = queues.flatMap((q) => [...q.called, ...q.in_service]);
+  const changed = useChangedRows(queues.flatMap((q) => q.waiting));
+  const bookings = useTodayBookings();
 
   return (
     <div className="flex flex-col gap-5">
-      <PageHeader
-        title={t("queue.board.title")}
-        description={t("queue.board.intro")}
-        badges={<LiveBadge />}
-        actions={
-          <>
-            {canBook && (
-              <Button variant="secondary" onClick={() => setBooking({ kind: "new" })}>
-                <Phone aria-hidden="true" weight="bold" />
-                {t("bookings.phone.open")}
-              </Button>
-            )}
-            <Button onClick={() => setCheckingIn(true)} aria-keyshortcuts="N">
-              <Plus aria-hidden="true" weight="bold" />
-              {t("queue.board.checkIn")}
-              <kbd className="ml-1 rounded-sm border border-on-primary/40 px-1 font-sans text-caption">
-                {SHORTCUT_NEW}
-              </kbd>
-            </Button>
-          </>
-        }
-      />
-
-      <div
-        className="flex flex-wrap items-center gap-2"
-        role="group"
-        aria-label={t("queue.board.services")}
-      >
-        <button
-          type="button"
-          aria-pressed={filter === null}
-          onClick={() => setFilter(null)}
-          className="inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-full border border-border bg-surface px-3.5 text-body-sm font-semibold text-fg-secondary hover:text-fg aria-pressed:border-primary aria-pressed:bg-brand-subtle aria-pressed:text-on-brand-subtle"
-        >
-          {t("queue.board.allServices")}
-          <span className="tabular-nums opacity-80">{waitingTotal}</span>
-        </button>
-        {[...byService.entries()].map(([serviceId, groups]) => {
-          const waiting = groups.reduce((n, g) => n + g.waiting.length, 0);
-          return (
-            <button
-              key={serviceId}
-              type="button"
-              aria-pressed={filter === serviceId}
-              onClick={() => setFilter(serviceId)}
-              className="inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-full border border-border bg-surface px-3.5 text-body-sm font-semibold text-fg-secondary hover:text-fg aria-pressed:border-primary aria-pressed:bg-brand-subtle aria-pressed:text-on-brand-subtle"
-            >
-              {serviceName(serviceId)}
-              <span className="tabular-nums opacity-80">{waiting}</span>
-            </button>
-          );
-        })}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <PageHeading title={t("queue.board.title")}>{t("queue.board.title")}</PageHeading>
+        <LiveBadge />
+        <p className="m-0 basis-full text-fg-muted">{t("queue.board.intro")}</p>
       </div>
 
+      <DeskBar
+        onFind={() => setCheckingIn(true)}
+        onCheckIn={() => setCheckingIn(true)}
+        onBookByPhone={canBook ? () => setBooking({ kind: "new" }) : undefined}
+      />
+
+      <DeskFlow queues={queues} expected={bookings.data?.results} />
+
+      {byService.size > 1 && (
+        <ServiceFilter
+          services={[...byService.entries()].map(([id, groups]) => ({
+            id,
+            waiting: groups.reduce((n, g) => n + g.waiting.length, 0),
+          }))}
+          value={filter}
+          onChange={setFilter}
+          serviceName={serviceName}
+          label={t("queue.board.services")}
+          allLabel={t("queue.board.allServices")}
+        />
+      )}
+
       {serving.length > 0 && (
-        <section aria-labelledby="now-serving" className="flex flex-col gap-2">
-          <h2 id="now-serving" className="m-0 flex items-center gap-2 font-heading text-h3">
-            <MegaphoneSimple aria-hidden="true" className="size-5 text-warning" />
+        <section aria-labelledby="now-serving" className="flex flex-col gap-2.5">
+          <h2
+            id="now-serving"
+            className="m-0 flex items-center gap-2 text-caption font-semibold tracking-wide text-fg-muted uppercase"
+          >
+            <MegaphoneSimple aria-hidden="true" weight="bold" className="size-4 text-attention" />
             {t("queue.board.nowServing")}
           </h2>
-          <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
+          <ul className="m-0 flex list-none flex-wrap gap-2.5 p-0">
             {serving.map((ticket) => (
               <li key={ticket.id}>
                 <button
                   type="button"
                   onClick={() => setOpen(ticket)}
                   className={cx(
-                    "flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-2 text-left",
-                    ticket.state === "called"
-                      ? "border-warning/50 bg-warning-bg"
-                      : "border-border bg-surface",
+                    "flex cursor-pointer items-center gap-3 rounded-lg py-2 pr-4 pl-2 text-left shadow-card",
+                    "transition-transform duration-150 active:scale-[0.98]",
+                    ticket.state === "called" ? "bg-attention-bg" : "bg-surface",
                   )}
                 >
-                  <TicketNumber number={ticket.number} />
+                  <TicketNumber
+                    number={ticket.number}
+                    stub
+                    tone={ticket.state === "called" ? "attention" : "brand"}
+                  />
                   <span className="flex flex-col">
                     <span className="text-body-sm font-semibold">
                       {ticket.service_point ?? "—"}
                     </span>
-                    <span className="text-caption text-fg-secondary">
+                    <span className="text-caption text-fg-muted">
                       {t(`queue.states.${ticket.state}`)}
                     </span>
                   </span>
@@ -193,7 +208,7 @@ export function BoardPage() {
         </section>
       )}
 
-      <div className="grid gap-5 xl:grid-cols-[18rem_minmax(0,1fr)]">
+      <div className="grid gap-5 xl:grid-cols-[21rem_minmax(0,1fr)]">
         <section aria-labelledby="expected" className="flex flex-col gap-3 self-start">
           <h2 id="expected" className="m-0 flex items-center gap-2 font-heading text-h3">
             <CalendarCheck aria-hidden="true" className="size-5 text-fg-muted" />
@@ -203,15 +218,23 @@ export function BoardPage() {
             serviceId={filter}
             onNewTime={(b) => setBooking({ kind: "reschedule", booking: b })}
           />
+          <RemoteList queues={queues} serviceId={filter} />
           <MissedList serviceId={filter} />
         </section>
 
-        <section aria-labelledby="on-site" className="flex min-w-0 flex-col gap-4">
+        <section aria-labelledby="on-site" className="flex min-w-0 flex-col gap-3">
           <h2 id="on-site" className="m-0 flex items-center gap-2 font-heading text-h3">
             <UsersThree aria-hidden="true" className="size-5 text-fg-muted" />
             {t("queue.board.onSite")}
           </h2>
-          {board.isPending && <p className="m-0 text-fg-muted">{t("queue.loading")}</p>}
+          {board.isPending && (
+            <div aria-busy="true" className="flex flex-col gap-3">
+              <p className="m-0 text-fg-muted">{t("queue.loading")}</p>
+              {[0, 1].map((i) => (
+                <div key={i} className="h-36 animate-pulse rounded-lg bg-surface shadow-card" />
+              ))}
+            </div>
+          )}
           {board.isError && <Alert tone="danger">{t("queue.loadFailed")}</Alert>}
           {board.data && shown.length === 0 && (
             <EmptyState
@@ -229,6 +252,7 @@ export function BoardPage() {
               group={group}
               title={serviceName(group.service_id)}
               onOpen={setOpen}
+              changed={changed}
             />
           ))}
         </section>
@@ -257,23 +281,25 @@ function QueueTable({
   group,
   title,
   onOpen,
+  changed,
 }: {
   group: QueueGroup;
   title: string;
   onOpen: (t: TicketRow) => void;
+  changed: Set<string>;
 }) {
   const { t } = useTranslation();
   const est = group.estimate_next;
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-surface">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-subtle px-4 py-2.5">
-        <h3 className="m-0 font-heading text-h3">
+    <div className="overflow-hidden rounded-lg bg-surface shadow-card">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 pt-3.5 pb-2.5">
+        <h3 className="m-0 font-heading text-body font-bold">
           {title}{" "}
-          <span className="font-normal text-fg-secondary">
+          <span className="font-sans font-normal text-fg-muted">
             · {t(`queue.stages.${group.stage}`)}
           </span>
         </h3>
-        <div className="flex flex-wrap items-center gap-4 text-body-sm text-fg-secondary">
+        <div className="flex flex-wrap items-center gap-4 text-body-sm text-fg-muted">
           <span className="tabular-nums">
             {t("queue.board.waitingCount", { count: group.waiting.length })}
           </span>
@@ -290,7 +316,7 @@ function QueueTable({
       ) : (
         <table className="w-full border-collapse text-left">
           <caption className="sr-only">{`${title} · ${t(`queue.stages.${group.stage}`)}`}</caption>
-          <thead className="text-caption text-fg-muted">
+          <thead className="text-caption tracking-wide text-fg-muted uppercase">
             <tr>
               <th scope="col" className="w-12 px-4 py-2 font-semibold">
                 #
@@ -311,20 +337,29 @@ function QueueTable({
           </thead>
           <tbody>
             {group.waiting.map((ticket, index) => (
-              <tr key={ticket.id} className="border-t border-border hover:bg-subtle">
+              <tr
+                key={ticket.id}
+                className={cx(
+                  "border-t border-border transition-colors hover:bg-page",
+                  // on at once, then fade out over 1.5 s
+                  changed.has(ticket.id)
+                    ? "bg-brand-subtle"
+                    : "transition-colors duration-1500 motion-reduce:transition-none",
+                )}
+              >
                 <td className="px-4 py-2.5 text-body-sm text-fg-muted tabular-nums">{index + 1}</td>
                 <td className="px-2 py-2.5">
                   <button
                     type="button"
                     onClick={() => onOpen(ticket)}
-                    className="cursor-pointer text-link underline-offset-2 hover:underline"
+                    className="cursor-pointer rounded-md transition-transform duration-150 active:scale-[0.96]"
                   >
-                    <TicketNumber number={ticket.number} size="sm" />
+                    <TicketNumber number={ticket.number} stub tone={ticketTone(ticket, index)} />
                   </button>
                 </td>
                 <td className="px-2 py-2.5">
                   <span className="block font-semibold">{ticket.display_name}</span>
-                  <span className="text-body-sm text-fg-secondary">
+                  <span className="text-body-sm text-fg-muted">
                     {[
                       ticket.age_years !== null
                         ? t("queue.age", { count: ticket.age_years })
@@ -361,11 +396,12 @@ function TicketPanel({
   services: string[];
   board: QueueGroup[];
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const api = useApi();
   const serviceName = useServiceNames();
   const canOperate = useCan("queue.operate");
   const act = useTicketAction();
+  const confirmArrival = useConfirmArrival();
   const visit = useQuery({
     queryKey: queueKeys.visit(ticket.visit_id),
     queryFn: () => api.queue.visit(ticket.visit_id),
@@ -423,6 +459,27 @@ function TicketPanel({
           </div>
         </dl>
 
+        {canOperate && waiting && current.is_remote && !current.remote_arrival_confirmed_at && (
+          <div className="flex flex-col gap-2 rounded-md bg-info-bg p-3 text-body-sm">
+            <p className="m-0">
+              {current.remote_arrival_claimed_at
+                ? t("queue.panel.remoteClaimed")
+                : t("queue.panel.remoteNotArrived")}
+            </p>
+            <Button
+              className="self-start"
+              loading={confirmArrival.isPending}
+              onClick={() => confirmArrival.mutate(current)}
+            >
+              {t("queue.board.remoteConfirm")}
+            </Button>
+            {confirmArrival.isError && (
+              <Alert tone="danger" role="alert">
+                {actionError(confirmArrival.error, t("queue.board.remoteError"))}
+              </Alert>
+            )}
+          </div>
+        )}
         {canOperate && waiting && (
           <div className="flex flex-wrap gap-2">
             <Button variant="secondary" onClick={() => setDialog("priority")}>
@@ -472,10 +529,7 @@ function TicketPanel({
                   <span className="font-normal text-fg-muted">· {e.ticket_number}</span>
                 </p>
                 <p className="m-0 text-body-sm text-fg-secondary tabular-nums">
-                  {new Date(e.occurred_at).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  {formatTime(e.occurred_at, i18n.resolvedLanguage ?? "rw")}
                   {e.actor_name && ` · ${e.actor_name}`}
                   {e.reason_code &&
                     ` · ${t(`queue.reasons.${e.reason_code}`, { defaultValue: e.reason_code })}`}

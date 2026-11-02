@@ -20,7 +20,11 @@ import { notificationsMocks } from "./features/notifications";
 import { setupMocks } from "./features/setup";
 // [/S2 imports]
 // [S10 imports]
+import { helpMocks } from "./features/help";
 // [/S10 imports]
+// [PT imports]
+import { triageMocks } from "./features/triage";
+// [/PT imports]
 // [S4 imports]
 import { queueMocks } from "./features/queue";
 // [/S4 imports]
@@ -30,6 +34,10 @@ import { bookingMocks } from "./features/booking";
 // [S6 imports]
 import { clinicalMocks } from "./features/clinical";
 // [/S6 imports]
+// [S7 imports]
+import { documentsMocks } from "./features/documents";
+import { pharmacyMocks } from "./features/pharmacy";
+// [/S7 imports]
 
 /** A feature's MSW handlers, plus how to reset its in-memory state between tests. */
 export interface FeatureMock {
@@ -62,7 +70,11 @@ export const FEATURE_MOCKS: FeatureMockFactory[] = [
   setupMocks,
   // [/S2]
   // [S10]
+  helpMocks,
   // [/S10]
+  // [PT]
+  triageMocks,
+  // [/PT]
   // [S4]
   queueMocks,
   // [/S4]
@@ -72,4 +84,8 @@ export const FEATURE_MOCKS: FeatureMockFactory[] = [
   // [S6]
   clinicalMocks,
   // [/S6]
+  // [S7]
+  pharmacyMocks,
+  documentsMocks,
+  // [/S7]
 ];

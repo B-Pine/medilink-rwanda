@@ -109,7 +109,7 @@ export function StatTile({
       : deltaPct < 0 === Boolean(lowerIsBetter);
   const Arrow = !deltaPct ? Minus : deltaPct > 0 ? ArrowUpRight : ArrowDownRight;
   return (
-    <div className="flex min-w-0 flex-col gap-3 rounded-lg border border-border bg-surface p-4">
+    <div className="flex min-w-0 flex-col gap-3 rounded-lg bg-surface shadow-card p-4">
       <div className="flex items-center justify-between gap-2">
         <span className="text-body-sm font-semibold text-fg-secondary">{label}</span>
         {icon && <span className="text-fg-muted">{icon}</span>}

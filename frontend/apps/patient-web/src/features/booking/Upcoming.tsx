@@ -17,7 +17,7 @@ import {
   EmptyState,
   Skeleton,
 } from "@medilink/ui";
-import { dateFormat } from "@medilink/ui/i18n";
+import { formatDate } from "@medilink/ui/i18n";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -39,9 +39,7 @@ export function useUpcoming() {
 function DateTile({ iso }: { iso: string }) {
   const { i18n } = useTranslation();
   const lang = i18n.resolvedLanguage ?? "rw";
-  const date = new Date(iso);
-  const part = (o: Intl.DateTimeFormatOptions) =>
-    dateFormat(lang, { ...o, timeZone: "Africa/Kigali" }).format(date);
+  const part = (o: Intl.DateTimeFormatOptions) => formatDate(iso, lang, o);
   return (
     <span
       aria-hidden="true"
@@ -119,7 +117,7 @@ export function BookingCard({ booking }: { booking: Booking }) {
   return (
     <article
       aria-labelledby={`bk-${booking.id}`}
-      className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5 shadow-raised"
+      className="flex flex-col gap-4 rounded-lg bg-surface shadow-raised p-5 "
     >
       <div className="flex items-start gap-4">
         <DateTile iso={booking.starts_at} />

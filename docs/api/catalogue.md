@@ -15,10 +15,10 @@ Sprints and requirements follow the [backend](../roadmap/backend.md) and [fronte
 | [S4](#s4--visits-and-the-live-queue) | Visits and the live queue | Implemented: backend #73, frontend #74. The [contract](../architecture/contracts/sprint-04-queue.md) and the OpenAPI schema win over the rows below |
 | [S5](#s5--booking-remote-join-and-calendars) | Booking, remote join and calendars | S5a implemented (#80 and the Phase 1 PR); S5b planned. The [contract](../architecture/contracts/sprint-05-booking.md) and the OpenAPI schema win over the rows below |
 | [S6](#s6--clinical-record-and-history) | Clinical record and history | Planned |
-| [S7](#s7--pharmacy-and-documents) | Pharmacy and documents | Planned |
-| [S8](#s8--billing-and-payments) | Billing and payments | Planned |
+| [S7](#s7--pharmacy-and-documents) | Pharmacy and documents | S7a implemented (backend); S7b planned. The [contract](../architecture/contracts/sprint-07-pharmacy-documents.md) and the OpenAPI schema win over the rows below |
+| [S8](#s8--billing-and-payments) | Billing and payments | Backend implemented; frontend next |
 | [S9](#s9--notifications) | Notifications | Backend implemented (S9 pull request); the [contract](../architecture/contracts/sprint-09-notifications.md) §3.3 and the OpenAPI schema win over the rows below |
-| [S10](#s10--disputes-help-and-reports) | Disputes, help and reports | Planned |
+| [S10](#s10--disputes-help-and-reports) | Disputes, help and reports | Part 1 (help center, support requests) backend implemented; disputes and reports planned |
 | [S11](#s11--hardening-and-pilot-readiness) | Hardening and pilot readiness | Planned |
 | [—](#not-yet-scheduled) | Not yet scheduled | Planned |
 
@@ -373,13 +373,14 @@ Requirements: FR-SCH-01..15; FR-BIL-03; FR-AI-01.
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `GET` | `/api/v1/public/facilities/` | Search: location, service, insurance, open now/today, level of care, availability, type, ownership | Public | FR-SCH-01, FR-SCH-04, FR-BIL-03 | Live facilities only; distance, open status, accepts insurance, fee, estimated share, next slot, queue load, referral hint; RL: search | Planned |
-| `GET` | `/api/v1/public/facilities/{slug}/` | Facility profile | Public | FR-SCH-02, FR-SCH-03 | Pre-rendered by patient-web at build time | Planned |
+| `GET` | `/api/v1/public/facilities/` | Search: location, service, insurance, open now/today, level of care, availability, type, ownership | Public | FR-SCH-01, FR-SCH-04, FR-BIL-03 | Live facilities only; distance, open status, accepts insurance, fee, estimated share, next slot, queue load, live `waiting` and `wait_range`, accepted `insurers` (contract PT §2.1), referral hint; RL: search | Planned |
+| `GET` | `/api/v1/public/facilities/{slug}/` | Facility profile | Public | FR-SCH-02, FR-SCH-03 | Pre-rendered by patient-web at build time; each service carries the live `waiting` count and `wait_range` (contract PT §2.1) | Planned |
 | `GET` | `/api/v1/public/facilities/{slug}/services/` | Services with fees, insurers and estimated share | Public | FR-SCH-02, FR-BIL-03 | `?insurer=` for the share | Planned |
 | `GET` | `/api/v1/public/facilities/{slug}/doctors/` | Doctors: name, specialty, days present | Public | FR-SCH-02 | No other personal data | Planned |
 | `GET` | `/api/v1/public/facilities/{slug}/queue-load/` | Queue load (low/medium/high) and walk-in wait estimate | Public | FR-SCH-02 | Cached a few seconds | Planned |
 | `GET` | `/api/v1/public/facilities/{slug}/slots/` | Bookable slots for a service, doctor and date range | Public | FR-SCH-07 | Server recomputes at hold time | Planned |
 | `GET` | `/api/v1/public/symptoms/` | Structured symptom list | Public | FR-AI-01, FR-SCH-10 | rw/en/fr | Planned |
+| `POST` | `/api/v1/public/triage/` | Rules-based symptom triage: urgency, service, level of care | Public | FR-AI-04, FR-AI-05, FR-AI-06, FR-AI-07 | [Contract PT §2.2](../architecture/contracts/public-pages-and-triage.md); rules `2026.11-p1`, not signed off (#93); logged without personal data; 20/min | Implemented |
 | `GET` | `/api/v1/public/calendar-feeds/{token}/` | Private `.ics` subscription feed | Feed token | FR-SCH-11 | `text/calendar`; no clinical details; revocable; README §6 item 6 | Planned |
 
 ### Patient
@@ -442,8 +443,7 @@ Requirements: FR-CLN-01..09; FR-PAT-10..12; FR-SEC-03, 09. Prescription drafting
 | `GET` | `/api/v1/staff/consultations/{id}/` | Consultation with addenda | `clinical.write`; treatment relationship | FR-CLN-01, FR-SEC-03 | `403 access_reason_required` outside the relationship; Audit | Planned |
 | `PATCH` | `/api/v1/staff/consultations/{id}/` | Autosave the draft | `clinical.write` (author) | FR-CLN-02 | Ver; draft only | Planned |
 | `POST`, `DELETE` | `/api/v1/staff/consultations/{id}/diagnoses/` | Add or remove ICD-10 diagnoses (primary/secondary, provisional/confirmed) | `clinical.write` (author) | FR-CLN-06 | Draft only; code and display text snapshotted | Planned |
-| `POST` | `/api/v1/staff/consultations/{id}/prescription-items/` | Add a prescription item → safety alerts | `clinical.write` (author) | FR-CLN-07, FR-PHA-01 | Allergy, duplicate, dose and pregnancy checks; override needs a reason | Planned |
-| `PATCH`, `DELETE` | `/api/v1/staff/consultations/{id}/prescription-items/{item_id}/` | Edit or remove a draft item | `clinical.write` (author) | FR-PHA-01 | Draft only | Planned |
+| `POST` | `/api/v1/staff/consultations/{id}/prescription/items/` | Add a prescription item → safety alerts | `prescription.issue` (author) | FR-CLN-07, FR-PHA-01 | Moved to [S7](#s7--pharmacy-and-documents) (P2) | Implemented (S7a) |
 | `POST` | `/api/v1/staff/consultations/{id}/sign/` | Sign: re-enter PIN or password; lock; content hash | `clinical.sign` (author) | FR-CLN-02, FR-SEC-06 | Idem; late entry flagged after 24 h; issues prescriptions and documents (S7); Audit | Planned |
 | `POST` | `/api/v1/staff/consultations/{id}/addenda/` | Signed addendum with a reason | `clinical.sign` | FR-CLN-03 | Step-up; original never changes | Planned |
 | `POST` | `/api/v1/staff/consultations/{id}/entered-in-error/` | Mark entered in error with a reason | `clinical.sign` (author) | FR-CLN-04 | Step-up; hidden from normal views, never deleted | Planned |
@@ -488,83 +488,92 @@ Requirements: FR-PHA-01..05; FR-DOC-01..07. Visit summaries, prescriptions, sick
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `GET` | `/api/v1/staff/prescriptions/` | Pharmacy queue and prescription lists | `pharmacy.dispense`, `clinical.write` | FR-PHA-02 | Filter `status=ready_to_dispense` | Planned |
-| `GET` | `/api/v1/staff/prescriptions/{id}/` | Prescription, items, allergies, identity | `pharmacy.dispense`, `clinical.write` | FR-PHA-02 | Pharmacist serializer: no consultation notes | Planned |
-| `POST` | `/api/v1/staff/prescriptions/{id}/confirm-identity/` | Record the identity check (ticket + name + date of birth, or code) | `pharmacy.dispense` | FR-PHA-02 | Audit | Planned |
-| `POST` | `/api/v1/staff/prescriptions/{id}/dispense-records/` | Dispense per item: full, partial, generic substitution with reason, not available; signed | `pharmacy.dispense` | FR-PHA-02, FR-PHA-03 | Idem; quantities ≤ prescribed; `422` if unpaid and payment is required | Planned |
-| `POST` | `/api/v1/staff/prescriptions/{id}/queries/` | Send back to the doctor with a question | `pharmacy.dispense` | FR-PHA-02 | Doctor answers with an addendum | Planned |
-| `POST` | `/api/v1/staff/prescriptions/{id}/cancel/` | Cancel a prescription with a reason | `clinical.sign` (prescriber) | FR-PHA-01 | Only before dispensing | Planned |
-| `POST` | `/api/v1/staff/prescriptions/{id}/items/{item_id}/cancel/` | Cancel one item after signing (then add a new one by addendum) | `clinical.sign` (prescriber) | FR-PHA-01 | Both items stay visible with reasons | Planned |
-| `POST` | `/api/v1/staff/prescriptions/{id}/labels/` | Printable dosing labels (Kinyarwanda by default) | `pharmacy.dispense` | FR-PHA-05 | Returns a document link | Planned |
-| `GET` | `/api/v1/staff/dispense-records/` | Dispensing history | `pharmacy.dispense` | FR-PHA-03 | Filters `from`, `to` | Planned |
-| `GET` | `/api/v1/staff/drug-availabilities/` | Availability of catalogue drugs here | `pharmacy.dispense`, `clinical.write` | FR-PHA-04 | | Planned |
-| `PUT` | `/api/v1/staff/drug-availabilities/{drug_id}/` | Mark available or not available | `pharmacy.dispense` | FR-PHA-04 | | Planned |
-| `GET` | `/api/v1/staff/documents/` | Documents of a patient or visit | Role-specific | FR-DOC-01, FR-DOC-03 | Filters `patient`, `visit`, `kind`; restricted by role | Planned |
-| `POST` | `/api/v1/staff/documents/` | Upload a document (result, referral letter brought by the patient, scan) | `documents.upload` | FR-DOC-03 | `multipart`; results go to the results inbox | Planned |
-| `GET` | `/api/v1/staff/documents/{id}/` | Document metadata and versions | Role-specific | FR-DOC-02 | Superseded versions marked | Planned |
-| `POST` | `/api/v1/staff/documents/{id}/download-links/` | Short-lived signed link | Role-specific | FR-DOC-05 | 5 minutes on `files.medilink.rw`; Audit | Planned |
-| `POST` | `/api/v1/staff/documents/{id}/release/` | Mark released to the patient (printable by reception) | `clinical.sign` | FR-DOC-07 | | Planned |
-| `POST` | `/api/v1/staff/documents/{id}/prints/` | Print a released document for the patient | `queue.operate`, `billing.record_payment` | FR-DOC-07 | Returns a link; Audit `document.printed` | Planned |
+| `GET` | `/api/v1/staff/consultations/{id}/prescription/` | The consultation's prescription with items and alerts (P1) | `clinical.view`; Rel | FR-PHA-01, FR-CLN-07 | `404` when none; Audit (access history) | Implemented (S7a) |
+| `POST` | `/api/v1/staff/consultations/{id}/prescription/items/` | Add an item; creates the prescription on the first item (P2) | `prescription.issue` (author while draft) | FR-PHA-01, FR-CLN-07 | Catalogue drug or flagged free text; quantity default; after issue: Up and `replaces_item_id` | Implemented (S7a) |
+| `PATCH`, `DELETE` | `/api/v1/staff/prescription-items/{id}/` | Edit or remove a draft item (P3, P4) | `prescription.issue` (author) | FR-PHA-01 | Ver (`?version=` on delete); `422` after issue | Implemented (S7a) |
+| `POST` | `/api/v1/staff/prescription-items/{id}/cancel/` | Cancel an issued item with a reason (P5) | `prescription.issue` | FR-PHA-01 | Ver; `422` when dispensed; event | Implemented (S7a) |
+| `GET` | `/api/v1/staff/prescriptions/{id}/` | Prescription with dispense records and queries (P7) | `prescription.view` or `clinical.view` | FR-PHA-02 | Pharmacist: own facility, no Rel (D-5); doctor: Rel; no consultation text; Audit | Implemented (S7a) |
+| `POST` | `/api/v1/staff/prescriptions/{id}/cancel/` | Cancel the whole prescription with a reason (P6) | `prescription.issue` | FR-PHA-01 | Ver; `422` when anything was dispensed | Implemented (S7a) |
+| `GET` | `/api/v1/staff/pharmacy/queue/` | Pharmacy queue: ready, partly dispensed, queried (PQ1) | `pharmacy.dispense` | FR-PHA-02 | `status`, `q` (name, number or active ticket); oldest issue first; flags | Implemented (S7a) |
+| `POST` | `/api/v1/staff/prescriptions/{id}/dispense/` | Identity check and dispensing per item: full, partial, generic substitution, not available; signed (PD1) | `pharmacy.dispense` | FR-PHA-02, FR-PHA-03 | Ver; row lock; controlled confirmation; never more than prescribed; Audit | Implemented (S7a) |
+| `GET` | `/api/v1/staff/prescriptions/{id}/labels/` | Dosing labels for dispensed lines (PD2) | `pharmacy.dispense` | FR-PHA-05 | `?language=`; default `documents.label_language` (`rw`) | Implemented (S7a) |
+| `POST` | `/api/v1/staff/prescriptions/{id}/queries/` | Send back to the doctor with a question (PQ2) | `pharmacy.dispense` | FR-PHA-02 | One open at a time (`409`); message encrypted | Implemented (S7a) |
+| `POST` | `/api/v1/staff/prescription-queries/{id}/answer/` | Link the addendum that answers (PQ3) | `prescription.issue` | FR-PHA-02 | Addendum on the same consultation | Implemented (S7a) |
+| `POST` | `/api/v1/staff/prescription-queries/{id}/close/` | Close an answered question (PQ4) | `pharmacy.dispense` | FR-PHA-02 | | Implemented (S7a) |
+| `GET` | `/api/v1/staff/pharmacy/availability/` | Catalogue drugs with availability here (PA1) | `pharmacy.dispense` or `pharmacy.availability` | FR-PHA-04 | `q`, `available` | Implemented (S7a) |
+| `PUT` | `/api/v1/staff/pharmacy/availability/{drug_code}/` | Mark available or not (PA2) | `pharmacy.availability` | FR-PHA-04 | Audit | Implemented (S7a) |
+| `GET` | `/api/v1/staff/drugs/` | Drug search with "not in stock here" (PS1) | `prescription.issue` or `pharmacy.dispense` | FR-PHA-01, FR-PHA-04 | `q` ≥ 2 characters; 25 rows | Implemented (S7a) |
+| `GET`, `POST` | `/api/v1/staff/consultations/{id}/referrals/` · `…/lab-requests/` · `…/sick-notes/` | Letters and requests (CR1) | `clinical.view` read; `clinical.write` (author) write | FR-DOC-01 | Draft: signed with the consultation; after signing: signed at once (Up); reason encrypted | Implemented (S7b) |
+| `GET` | `/api/v1/staff/documents/` | Documents of a patient or visit (D1) | `clinical.view` (Rel) or `documents.print` (released) | FR-DOC-01, FR-DOC-07 | `facility_patient_id` or `visit_id`, `kind` (D-12) | Implemented (S7b) |
+| `GET` | `/api/v1/staff/documents/{id}/` | Metadata, verification code and versions (D1) | as above | FR-DOC-02 | Superseded versions kept | Implemented (S7b) |
+| `POST` | `/api/v1/staff/documents/{id}/download-link/` | Signed link to the current version (D2) | as above | FR-DOC-05 | 5 minutes; Audit `documents.downloaded` (access history) | Implemented (S7b) |
+| `POST` | `/api/v1/staff/documents/{id}/print/` | Print a released document (D3) | `documents.print` | FR-DOC-07 | Returns a link; Audit `documents.printed` | Implemented (S7b) |
 | `POST` | `/api/v1/staff/tickets/{id}/slips/` | Printable ticket slip (80 mm) | `queue.operate` | NFR-NET-06 | No names beyond what the patient needs | Planned |
 
 ### Patient
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `GET` | `/api/v1/patient/medicines/` | My medicines with dispensing status | Patient session | FR-PHA-03 | Filter `patient_id` | Planned |
-| `GET` | `/api/v1/patient/documents/` | My documents | Patient session | FR-DOC-06 | Filter `patient_id`, `kind` | Planned |
+| `GET` | `/api/v1/patient/prescriptions/` | My medicines: prescriptions of my profiles (M1) | Patient session | FR-PHA-03 | `patient_id`, `status=active\|past`; delegates don't see restricted consultations | Implemented (S7a) |
+| `GET` | `/api/v1/patient/prescriptions/{id}/` | One prescription with items and what was dispensed (M2) | Linked account | FR-PHA-03 | No alert overrides, no consultation text | Implemented (S7a) |
+| `GET` | `/api/v1/patient/documents/` | My documents (D4) | Patient session | FR-DOC-06 | `patient_id`, `kind`; delegates don't see restricted consultations | Implemented (S7b) |
+| `GET` | `/api/v1/patient/documents/{id}/` | Metadata, verification code, versions, my share links (D4) | Linked account | FR-DOC-06 | | Implemented (S7b) |
+| `POST` | `/api/v1/patient/documents/{id}/download-link/` | Signed link (D4) | Linked account | FR-DOC-05, FR-DOC-06 | Audit | Implemented (S7b) |
+| `POST` | `/api/v1/patient/documents/archive/` | All my documents as a ZIP (D4) | Patient session | FR-DOC-06 | 5-minute link, 100 documents at most (D-12) | Implemented (S7b) |
+| `POST` | `/api/v1/patient/documents/{id}/share-links/` | Expiring share link (D5) | Linked account | FR-DOC-06 | 1–30 days; token shown once, SHA-256 stored | Implemented (S7b) |
+| `DELETE` | `/api/v1/patient/documents/{id}/share-links/{link_id}/` | Stop a share link (D5) | Account that made it | FR-DOC-06 | | Implemented (S7b) |
 | `POST` | `/api/v1/patient/documents/` | Upload ID, insurance card, previous results, outside prescriptions | Linked account | FR-DOC-03 | `multipart`; RL: upload | Planned |
-| `GET` | `/api/v1/patient/documents/{id}/` | Document metadata | Linked account | FR-DOC-06 | | Planned |
 | `DELETE` | `/api/v1/patient/documents/{id}/` | Delete own non-clinical upload | Linked account (uploader) | FR-DOC-06 | Clinical documents can't be deleted | Planned |
-| `POST` | `/api/v1/patient/documents/{id}/download-links/` | Short-lived signed link | Linked account | FR-DOC-05, FR-DOC-06 | Audit | Planned |
-| `POST` | `/api/v1/patient/documents/{id}/share-links/` | Expiring share link for one document | Linked account | FR-DOC-06 | Token shown once | Planned |
-| `POST` | `/api/v1/patient/share-links/{id}/revoke/` | Revoke a share link | Linked account | FR-DOC-06 | | Planned |
-| `POST` | `/api/v1/patient/documents/{id}/facility-shares/` | Share an own upload with a facility | Linked account | FR-DOC-03 | Visible to that facility's clinicians | Planned |
-| `POST` | `/api/v1/patient/document-archives/` | Download all documents as a ZIP | Patient session | FR-DOC-06 | Step-up; Async | Planned |
+| `POST` | `/api/v1/patient/documents/{id}/facility-shares/` | Share an own upload with a facility | Linked account | FR-DOC-03 | D-13 | Planned |
 
 ### Public
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
 | `POST` | `/api/v1/public/document-verifications/` | Verify a document by code; details only with the patient's date of birth | Public | FR-DOC-04 | Minimal data; RL: verification; every check logged | Planned |
-| `GET` | `/api/v1/public/shared-documents/{token}/` | Open a document shared by a patient | Share token | FR-DOC-06 | Expiring; returns a signed link; README §6 item 6 | Planned |
+| `GET` | `/api/v1/public/verify/{code}/` | Check a document by the code under its QR code (V1) | Public | FR-DOC-04 | Minimal projection; every attempt logged (`documents_verification_log`); RL `verify` 30/min | Implemented (S7b) |
+| `POST` | `/api/v1/public/verify/{code}/details/` | The document's content after a date-of-birth match (V1) | Public | FR-DOC-04 | `{date_of_birth}`; `422` mismatch, logged | Implemented (S7b) |
+| `GET` | `/api/v1/public/shared-documents/{token}/` | Open a document shared by a patient (D5) | Share token | FR-DOC-06 | Expiring; returns a 5-minute link; counts opens | Implemented (S7b) |
 
 ---
 
 ## S8 · Billing and payments
 
-Requirements: FR-BIL-04..13. Tests: money invariants (no negative amounts, server-side totals, no self-approval).
+Requirements: FR-BIL-04..13. Tests: money invariants (no negative amounts, server-side totals, no self-approval). The [contract](../architecture/contracts/sprint-08-billing.md) and the OpenAPI schema win over the rows below.
 
 ### Staff
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `POST` | `/api/v1/staff/visits/{id}/insurance-verifications/` | Verify insurance for this visit, or reject with a reason | `queue.operate` | FR-BIL-04 | Referral letter check where required | Planned |
-| `GET` | `/api/v1/staff/bills/` | Bills awaiting payment and unpaid balances | `billing.record_payment` | FR-BIL-06, FR-BIL-12 | Filters `status`, `date` | Planned |
-| `GET` | `/api/v1/staff/bills/{id}/` | Bill with lines and insurer/patient split | `billing.record_payment` | FR-BIL-06 | Medicine lines only as needed for billing | Planned |
-| `POST` | `/api/v1/staff/bills/{id}/lines/` | Add a line from the tariff | `billing.record_payment` | FR-BIL-06 | Server prices and splits; Ver | Planned |
-| `DELETE` | `/api/v1/staff/bills/{id}/lines/{line_id}/` | Remove a line before any payment | `billing.record_payment` | FR-BIL-06 | Reason; logged | Planned |
-| `POST` | `/api/v1/staff/bills/{id}/payments/` | Record a payment (cash, MoMo, Airtel, card, insurance) → receipt | `billing.record_payment` | FR-BIL-07, FR-BIL-08, FR-BIL-13 | Idem; needs an open shift; partial allowed; optional EBM number | Planned |
-| `POST` | `/api/v1/staff/bills/{id}/exemptions/` | Apply an exemption or waiver | `billing.record_payment` | FR-BIL-11 | Reason code; above threshold → approval request | Planned |
-| `POST` | `/api/v1/staff/bills/{id}/void-requests/` | Request a void of a payment or receipt | `billing.record_payment` | FR-BIL-09 | Reason; needs approval | Planned |
-| `POST` | `/api/v1/staff/bills/{id}/refund-requests/` | Request a refund | `billing.record_payment` | FR-BIL-09 | Reason; needs approval → credit note | Planned |
-| `GET` | `/api/v1/staff/approval-requests/` | Approvals inbox: voids, refunds, waivers | `billing.approve` | FR-BIL-09, FR-BIL-11 | | Planned |
-| `POST` | `/api/v1/staff/approval-requests/{id}/approve/` | Approve | `billing.approve` | FR-BIL-09, FR-BIL-11 | Step-up; requester ≠ approver (one-person clinic: allowed and flagged); Audit | Planned |
-| `POST` | `/api/v1/staff/approval-requests/{id}/reject/` | Reject with a reason | `billing.approve` | FR-BIL-09 | Step-up | Planned |
-| `POST` | `/api/v1/staff/credit-notes/{id}/payouts/` | Record the refund payout (cash, MoMo reference) | `billing.record_payment` | FR-BIL-09 | Idem | Planned |
-| `GET` | `/api/v1/staff/receipts/{id}/` | Receipt with its gapless number | `billing.record_payment` | FR-BIL-08 | | Planned |
-| `POST` | `/api/v1/staff/receipts/{id}/send/` | Email the receipt to the patient | `billing.record_payment` | FR-BIL-08 | | Planned |
-| `GET`, `POST` | `/api/v1/staff/cash-shifts/` | Open a shift with the opening float; list shifts | `billing.record_payment` | FR-BIL-10 | One open shift per person | Planned |
-| `POST` | `/api/v1/staff/cash-shifts/{id}/close/` | Close: counted amounts per method, note | `billing.record_payment` (owner) | FR-BIL-10 | Shows expected vs counted | Planned |
-| `POST` | `/api/v1/staff/cash-shifts/{id}/review/` | Accept a closed shift | `billing.approve` | FR-BIL-10 | Audit | Planned |
-| `GET` | `/api/v1/staff/patients/{id}/balances/` | Unpaid balances of a patient at this facility | `billing.record_payment` | FR-BIL-12 | Never other facilities | Planned |
+| `GET` | `/api/v1/staff/visits/{id}/bill/` | The visit's bill, opened on first use (B1) | `billing.record_payment` or `billing.approve` | FR-BIL-06 | Lines, split, payments, corrections; Audit | Implemented (S8) |
+| `POST` | `/api/v1/staff/visits/{id}/insurance-verifications/` | Verify insurance for this visit, or reject with a reason (B6) | `patients.insurance_verify` | FR-BIL-04 | Referral letter where the rule needs it; after payment only if it lowers the patient share | Implemented (S8) |
+| `GET` | `/api/v1/staff/bills/` | Bills of a day, unpaid first (B2) | as B1 | FR-BIL-06, FR-BIL-12 | `status`, `has_balance`, `date`, `q` | Implemented (S8) |
+| `GET` | `/api/v1/staff/bills/{id}/` | Bill detail (B3) | as B1 | FR-BIL-06 | Audit | Implemented (S8) |
+| `POST` | `/api/v1/staff/bills/{id}/lines/` | Add a procedure or other charge from the tariff (B4) | `billing.record_payment` | FR-BIL-06 | Ver; server prices and splits | Implemented (S8) |
+| `POST` | `/api/v1/staff/bill-lines/{id}/remove/` | Remove a line with a reason (B5) | `billing.record_payment` | FR-BIL-06 | Ver; only before any payment (D-8) | Implemented (S8) |
+| `POST` | `/api/v1/staff/bills/{id}/payments/` | Record a payment → receipt (B7) | `billing.record_payment` | FR-BIL-07, FR-BIL-08, FR-BIL-13 | Idem; open shift; ≤ balance; reference for MoMo, Airtel, card; optional EBM number | Implemented (S8) |
+| `POST` | `/api/v1/staff/bills/{id}/exemptions/` | Apply an exemption or waiver (B8) | `billing.record_payment` | FR-BIL-11 | `allow_exemptions`; waiver above the threshold → approval request | Implemented (S8) |
+| `POST` | `/api/v1/staff/payments/{id}/void-requests/` | Request a void of a payment and its receipt (B9) | `billing.record_payment` | FR-BIL-09 | One pending per payment | Implemented (S8) |
+| `POST` | `/api/v1/staff/bills/{id}/refund-requests/` | Request a refund (B10) | `billing.record_payment` | FR-BIL-09 | Approval → credit note | Implemented (S8) |
+| `GET` | `/api/v1/staff/approval-requests/` | Approvals inbox: voids, refunds, waivers (B11) | `billing.approve` | FR-BIL-09, FR-BIL-11 | | Implemented (S8) |
+| `POST` | `/api/v1/staff/approval-requests/{id}/approve/` | Approve (B12) | `billing.approve` | FR-BIL-09, FR-BIL-11 | Step-up; requester ≠ approver (one-person clinic: allowed and flagged); Audit | Implemented (S8) |
+| `POST` | `/api/v1/staff/approval-requests/{id}/reject/` | Reject with a note (B13) | `billing.approve` | FR-BIL-09 | Step-up | Implemented (S8) |
+| `POST` | `/api/v1/staff/approval-requests/{id}/cancel/` | Cancel my pending request (B14) | `billing.record_payment` | FR-BIL-09 | Requester only | Implemented (S8) |
+| `POST` | `/api/v1/staff/credit-notes/{id}/payouts/` | Record the refund payout (B15) | `billing.record_payment` | FR-BIL-09 | Idem; cash needs an open shift | Implemented (S8) |
+| `GET` | `/api/v1/staff/receipts/{id}/` | Receipt for printing (B16) | as B1 | FR-BIL-08 | PDF with S7b | Implemented (S8) |
+| `POST` | `/api/v1/staff/receipts/{id}/send/` | Send the receipt to the patient again (B17) | `billing.record_payment` | FR-BIL-08 | S9 in-app and email | Implemented (S8) |
+| `GET`, `POST` | `/api/v1/staff/cash-shifts/` | List shifts; open my shift with a float (B18, B20) | `billing.record_payment` (own) or `billing.approve` (all) | FR-BIL-10 | One open shift per person | Implemented (S8) |
+| `GET` | `/api/v1/staff/cash-shifts/current/` | My open shift with running totals (B19) | `billing.record_payment` | FR-BIL-10 | | Implemented (S8) |
+| `POST` | `/api/v1/staff/cash-shifts/{id}/close/` | Close: counted per method, note (B21) | owner | FR-BIL-10 | Expected vs counted | Implemented (S8) |
+| `POST` | `/api/v1/staff/cash-shifts/{id}/review/` | Accept a closed shift (B22) | `billing.approve` | FR-BIL-10 | Not the owner unless one-person clinic; Audit | Implemented (S8) |
+| `GET` | `/api/v1/staff/billing/patients/{id}/balances/` | Unpaid balances of a patient at this facility (B23) | `billing.record_payment` | FR-BIL-12 | Never other facilities | Implemented (S8) |
 
 ### Patient
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `GET` | `/api/v1/patient/bills/` | Bills and unpaid balances | Patient session | FR-BIL-12 | Filter `patient_id` | Planned |
-| `GET` | `/api/v1/patient/bills/{id}/` | Bill with lines and receipts | Linked account | FR-BIL-06, FR-BIL-08 | | Planned |
+| `GET` | `/api/v1/patient/bills/` | Bills and unpaid balances (PB1) | Patient session | FR-BIL-12 | `patient_id`, `has_balance`; delegates don't see visits with a restricted consultation | Implemented (S8) |
+| `GET` | `/api/v1/patient/bills/{id}/` | Bill with lines and receipts (PB2) | Linked account | FR-BIL-06, FR-BIL-08 | | Implemented (S8) |
 
 ---
 
@@ -631,9 +640,9 @@ Requirements: FR-DSP-01..11; FR-RPT-01..05; FR-SEC-12, 13. Retention jobs (FR-SE
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `GET` | `/api/v1/public/help-articles/` | Help center articles | Public | FR-DSP-11 | rw/en/fr | Planned |
-| `GET` | `/api/v1/public/help-articles/{slug}/` | One article | Public | FR-DSP-11 | | Planned |
-| `POST` | `/api/v1/public/support-requests/` | Ask for help without logging in ("I can't log in") | Public | FR-DSP-11 | No clinical data; RL: auth | Planned |
+| `GET` | `/api/v1/public/help-articles/` | Help center articles (`?q`, `?category`) | Public | FR-DSP-11 | rw/en/fr; RL: burst | Implemented (S10 part 1 backend) |
+| `GET` | `/api/v1/public/help-articles/{slug}/` | One article | Public | FR-DSP-11 | Plain text, never HTML | Implemented (S10 part 1 backend) |
+| `POST` | `/api/v1/public/support-requests/` | Ask for help without logging in ("I can't log in") | Public | FR-DSP-11 | No clinical data; RL: auth | Deferred (sprint-10 S10-D2: needs a bot check) |
 
 ### Patient
 
@@ -647,7 +656,10 @@ Requirements: FR-DSP-01..11; FR-RPT-01..05; FR-SEC-12, 13. Retention jobs (FR-SE
 | `POST` | `/api/v1/patient/disputes/{id}/accept/` | Accept the resolution → closed | Linked account | FR-DSP-03 | | Planned |
 | `POST` | `/api/v1/patient/disputes/{id}/escalate/` | Disagree within 14 days → super admin | Linked account | FR-DSP-02, FR-DSP-03 | | Planned |
 | `POST` | `/api/v1/patient/disputes/{id}/reopen/` | Reopen with new evidence (within 30 days, once) | Linked account | FR-DSP-03 | | Planned |
-| `GET`, `POST` | `/api/v1/patient/support-requests/` | Support requests | Patient session | FR-DSP-11 | Clinical issues are redirected to the facility | Planned |
+| `GET`, `POST` | `/api/v1/patient/support-requests/` | Own support requests (`?status`); open one | Patient session | FR-DSP-11 | No clinical words; 5 open at most; RL: support_write | Implemented (S10 part 1 backend) |
+| `GET` | `/api/v1/patient/support-requests/{id}/` | One request with its messages | Patient session (own) | FR-DSP-11 | Support shown as "MediLink support" | Implemented (S10 part 1 backend) |
+| `POST` | `/api/v1/patient/support-requests/{id}/messages/` | Reply | Patient session (own) | FR-DSP-11 | 422 when closed | Implemented (S10 part 1 backend) |
+| `POST` | `/api/v1/patient/support-requests/{id}/close/` | Close (withdrawn) | Patient session (own) | FR-DSP-11 | 409 when closed | Implemented (S10 part 1 backend) |
 | `POST` | `/api/v1/patient/data-exports/` | Download all my data (PDF + machine-readable) | Patient session | FR-SEC-12 | Step-up; Async | Planned |
 | `GET` | `/api/v1/patient/data-exports/{id}/` | Export status and link | Patient session | FR-SEC-12 | Link valid 15 minutes | Planned |
 | `POST` | `/api/v1/patient/auth/close-account/` | Close the account after the retention explanation | Patient session | FR-SEC-12, FR-SEC-13 | Step-up; non-clinical data deleted after 30 days | Planned |
@@ -658,6 +670,10 @@ Rectification of personal details uses `PATCH /api/v1/patient/profiles/{patient_
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
+| `GET` | `/api/v1/staff/help-articles/`, `…/{slug}/` | Staff help articles | Any member | FR-DSP-11 | | Implemented (S10 part 1 backend) |
+| `GET`, `POST` | `/api/v1/staff/support-requests/` | Own requests, or the facility's with `?scope=facility`; open one | Member; facility scope needs `support.view_facility` | FR-DSP-11 | Carries the active facility | Implemented (S10 part 1 backend) |
+| `GET` | `/api/v1/staff/support-requests/{id}/` | One request | Own, or `support.view_facility` | FR-DSP-11 | Facility admin: read-only | Implemented (S10 part 1 backend) |
+| `POST` | `/api/v1/staff/support-requests/{id}/messages/`, `…/close/` | Reply; close | Own only | FR-DSP-11 | | Implemented (S10 part 1 backend) |
 | `GET` | `/api/v1/staff/disputes/` | Facility disputes by status, type, deadline | `disputes.handle`; others: assigned for comment | FR-DSP-02, FR-DSP-03 | Filter `overdue=true` | Planned |
 | `POST` | `/api/v1/staff/disputes/` | Raise a dispute at the counter for a patient | `queue.operate` | FR-DSP-09 | Marked "raised at the counter"; see note below | Planned |
 | `GET` | `/api/v1/staff/disputes/{id}/` | Dispute with thread and internal notes | `disputes.handle` | FR-DSP-04 | | Planned |
@@ -696,8 +712,13 @@ Note: the permission matrix in analysis 02 §3 gives the receptionist no "raise 
 | `POST` | `/api/v1/platform/disputes/{id}/messages/` | Ask the facility or patient for information | Platform admin | FR-DSP-04 | | Planned |
 | `POST` | `/api/v1/platform/disputes/{id}/final-decision/` | Final decision with written reasons | Platform admin | FR-DSP-02, FR-DSP-06 | Step-up; corrections are still made by the facility | Planned |
 | `POST` | `/api/v1/platform/facilities/{id}/warnings/` | Record a warning on a facility | Platform admin | FR-DSP-06 | | Planned |
-| `GET` | `/api/v1/platform/support-requests/` | Support queue | Platform admin | FR-DSP-11 | | Planned |
-| `POST` | `/api/v1/platform/support-requests/{id}/replies/` | Reply | Platform admin | FR-DSP-11 | | Planned |
+| `GET` | `/api/v1/platform/support-requests/` | Support queue (status, topic, audience, priority, facility, assigned, search) | Platform admin | FR-DSP-11 | High first, then oldest activity | Implemented (S10 part 1 backend) |
+| `GET`, `PATCH` | `/api/v1/platform/support-requests/{id}/` | Request with messages; triage (priority, topic, assignee) | Platform admin | FR-DSP-11 | 409 stale version, 422 closed | Implemented (S10 part 1 backend) |
+| `POST` | `/api/v1/platform/support-requests/{id}/close/` | Close with a reason and an optional message | Platform admin | FR-DSP-11 | | Implemented (S10 part 1 backend) |
+| `GET`, `POST` | `/api/v1/platform/help-articles/` | Help articles (all states); create a draft | Platform admin | FR-DSP-11 | rw/en/fr keys only | Implemented (S10 part 1 backend) |
+| `GET`, `PATCH` | `/api/v1/platform/help-articles/{id}/` | One article; edit | Platform admin | FR-DSP-11 | 409 stale version | Implemented (S10 part 1 backend) |
+| `POST` | `/api/v1/platform/help-articles/{id}/publish/`, `…/unpublish/` | Publish (all three languages, step-up) or back to draft | Platform admin | FR-DSP-11 | | Implemented (S10 part 1 backend) |
+| `POST` | `/api/v1/platform/support-requests/{id}/replies/` | Reply | Platform admin | FR-DSP-11 | Notifies the requester | Implemented (S10 part 1 backend) |
 | `POST` | `/api/v1/platform/support-requests/{id}/close/` | Close | Platform admin | FR-DSP-11 | | Planned |
 | `GET`, `POST` | `/api/v1/platform/help-articles/` | Help center content | Platform admin | FR-DSP-11 | | Planned |
 | `GET`, `PATCH` | `/api/v1/platform/help-articles/{id}/` | Edit an article | Platform admin | FR-DSP-11 | Ver | Planned |

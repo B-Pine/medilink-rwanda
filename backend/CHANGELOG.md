@@ -8,6 +8,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Public pages and symptom triage (contract public-pages-and-triage)
+
+- `medilink.triage`: `POST /public/triage/` turns structured answers (symptoms, how long, age group,
+  pregnancy) into an urgency, a service and a level of care. Rules version `2026.11-p1` (red flags
+  first, R2-R12, a safety layer that only raises urgency) are code with one test per rule and ship
+  `signed_off: false` until clinical sign-off (#93). Each answer is logged in the append-only
+  `triage_log` without account, IP or device. Throttle `triage` (20/min, `THROTTLE_RATE_TRIAGE`).
+- Public facility profile and search: each service carries `waiting` (people before the
+  consultation) and `wait_range` (the new-arrival estimate reception sees). The profile computes
+  them live; search reads the listing (refreshed every 10 minutes). Counts only, never a person.
+- Search results also list the accepted `insurers` codes, so the home page shows them per facility.
+
 
 ### Sprint 5b · Disruptions, follow-ups and the calendar feed
 
@@ -399,7 +411,62 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   `facility_isolation` policy, or is listed in `RLS_EXCEPTIONS` with the document that allows it;
   an exception that is no longer needed fails too (database design §1).
 
+### Sprint 8 · Billing, payments and insurance
+
+- Bills ([contract](../docs/architecture/contracts/sprint-08-billing.md)): one bill per visit,
+  opened at check-in (S4 `on_ticket_event`) or on first read; the consultation from the tariff,
+  procedures and other charges added by the cashier, medicines synced from the issued
+  prescription (tariff code = drug code). Each line is split between insurer and patient by the
+  S2 insurer rule (patient share, exclusions, service list, ceiling per visit) once the insurance
+  is verified for the visit; a rejection (with a reason) means self-pay.
+- Payments (cash, MTN MoMo, Airtel Money, card) with references and an optional EBM receipt
+  number, partial, never above the balance, idempotent, in the cashier's open shift; gapless
+  receipts (`RC-2026-000001`, prefix setting) sent to the patient through S9.
+- Exemptions with reasons and a waiver approval threshold; voids and refunds through approval
+  requests (step-up, decider other than the requester; a one-person clinic may self-approve,
+  flagged), credit notes (`CN-`) and payouts; cash shifts with expected and counted totals per
+  method, difference note and review; unpaid balances per patient at the facility; patient
+  My bills. When nothing is left to pay, prescriptions waiting for payment move to the pharmacy.
+- Eleven new `billing_*` tables with forced facility RLS; append-only events, verifications,
+  credit notes and payouts; triggers lock payments, receipts, exemptions, bill lines and bills;
+  SECURITY DEFINER `billing_patient_bills(uuid)`.
+
+### Sprint 7a · Prescriptions and pharmacy
+
+- New apps `medilink.pharmacy` and `medilink.documents` ([contract](../docs/architecture/contracts/sprint-07-pharmacy-documents.md)):
+  prescriptions and items (catalogue drug or flagged free text, default quantity, encrypted
+  instructions), issued in S6's signing transaction through the new `consultation_signed` signal
+  (number `RX-{year}-{000001}` from a gapless per-facility counter, expiry from
+  `documents.prescription_valid_days`, `awaiting_payment` with `billing.pay_before_dispensing`).
+  Signing is refused (`422 alert_override_required`) while an allergy alert has no override.
+- After issue: cancel an item or the whole prescription with a reason; change = cancel + new item
+  (step-up). Pharmacy queue, identity check, dispensing per item (full, partial, generic
+  substitution with the same ingredient and strength, not available), controlled-medicine
+  confirmation, signed immutable dispense records, dosing labels in rw/en/fr (Kinyarwanda by
+  default), queries answered by an S6 addendum, per-facility availability toggle
+  (`pharmacy.availability`) and drug search with "not in stock here".
+- Patient My medicines (`/patient/prescriptions/`): own and dependants' prescriptions; delegates
+  don't see restricted consultations; no alert overrides or consultation text.
+- Seven `pharmacy_*` tables and `documents_number_counter` with forced facility RLS; events,
+  dispense records and lines append-only; triggers lock issued prescriptions and items; SECURITY
+  DEFINER `pharmacy_patient_prescriptions(uuid)` and `pharmacy_expiry_facilities()`; hourly
+  `pharmacy.expire_prescriptions` job. `pharmacy` and `documents` join the CI coverage gate.
+- Follow-ups (#134): the pharmacy queue search `q` also matches the visit's active ticket number
+  (exact, any case); prescription items carry the catalogue `generic_name` and `strength` (blank off
+  catalogue) for the substitute search.
+
+
 ### Sprint 10 · Help center and support (part 1)
+
+- New app `medilink.support` (contract sprint-10): help articles for patients and staff (rw/en/fr
+  plain text, categories, search across languages, draft and publish with step-up and all three
+  languages) and support requests (patients and staff open, reply and close; platform admins
+  triage, reply and close with a reason; facility admins see their staff's requests read-only).
+- No clinical data: subjects and messages are checked against the S9 clinical-terms list; at most
+  5 open requests per account; `support_write` rate limit; messages are append-only.
+- S9 notifications for created, followed up, answered and closed requests; audit actions with IDs
+  and codes only; permission `support.view_facility`; `support_request` listed as an RLS
+  exception (platform queue, sprint-10 §2.5); `support` in the CI coverage gate; dev seed.
 
 ### Added
 

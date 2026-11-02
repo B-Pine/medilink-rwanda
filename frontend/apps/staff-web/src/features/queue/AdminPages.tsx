@@ -1,3 +1,4 @@
+import { formatDate, formatTime } from "@medilink/ui/i18n";
 import { Alert, Badge, Button, CheckboxField, Dialog, EmptyState, TextField } from "@medilink/ui";
 import { ArrowsDownUp, Copy, Monitor, Plus } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -7,13 +8,14 @@ import { useTranslation } from "react-i18next";
 
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
-import { NotFoundContent } from "../../pages/NotFoundPage";
+import { NoAccessContent } from "../../pages/NotFoundPage";
 import { queueKeys } from "./live";
 import { actionError, useCan, useServiceNames } from "./shared";
 
 /** /queue/reorders (FR-QUE-10): every manual reorder, with who, why, and a review mark. */
 export function ReordersPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.resolvedLanguage ?? "rw";
   const api = useApi();
   const queryClient = useQueryClient();
   const allowed = useCan("facility.configure");
@@ -27,7 +29,7 @@ export function ReordersPage() {
     mutationFn: (eventId: string) => api.queue.review(eventId),
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: queueKeys.reorders }),
   });
-  if (!allowed) return <NotFoundContent />;
+  if (!allowed) return <NoAccessContent />;
   const list = rows.data?.results ?? [];
   return (
     <div className="flex flex-col gap-5">
@@ -44,7 +46,7 @@ export function ReordersPage() {
           description={t("queue.reorders.empty")}
         />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-border bg-surface">
+        <div className="overflow-x-auto rounded-lg bg-surface shadow-card">
           <table className="w-full border-collapse text-left">
             <caption className="sr-only">{t("queue.reorders.title")}</caption>
             <thead className="bg-subtle text-body-sm text-fg-secondary">
@@ -60,10 +62,7 @@ export function ReordersPage() {
               {list.map((r) => (
                 <tr key={r.event_id} className="border-t border-border">
                   <td className="px-4 py-3 text-body-sm tabular-nums">
-                    {new Date(r.occurred_at).toLocaleString([], {
-                      dateStyle: "short",
-                      timeStyle: "short",
-                    })}
+                    {`${formatDate(r.occurred_at, lang)} ${formatTime(r.occurred_at, lang)}`}
                   </td>
                   <td className="px-4 py-3 font-heading font-bold tabular-nums">
                     {r.ticket_number}
@@ -106,7 +105,8 @@ export function ReordersPage() {
 
 /** /settings/displays: waiting-room screen links; the token is shown once (contract §3.1 Q9). */
 export function DisplaysPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.resolvedLanguage ?? "rw";
   const api = useApi();
   const queryClient = useQueryClient();
   const serviceName = useServiceNames();
@@ -121,7 +121,7 @@ export function DisplaysPage() {
     mutationFn: (id: string) => api.queue.revokeDisplayLink(id),
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: queueKeys.displays }),
   });
-  if (!allowed) return <NotFoundContent />;
+  if (!allowed) return <NoAccessContent />;
   const list = links.data?.results ?? [];
   return (
     <div className="flex flex-col gap-5">
@@ -145,10 +145,7 @@ export function DisplaysPage() {
       ) : (
         <ul className="m-0 grid list-none gap-3 p-0 md:grid-cols-2">
           {list.map((link) => (
-            <li
-              key={link.id}
-              className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-5"
-            >
+            <li key={link.id} className="flex flex-col gap-3 rounded-lg bg-surface shadow-card p-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <span className="inline-flex size-10 items-center justify-center rounded-md bg-forest text-on-forest-accent">
@@ -168,10 +165,7 @@ export function DisplaysPage() {
               <p className="m-0 text-body-sm text-fg-secondary">
                 {link.last_seen_at
                   ? t("queue.displays.lastSeen", {
-                      time: new Date(link.last_seen_at).toLocaleString([], {
-                        dateStyle: "short",
-                        timeStyle: "short",
-                      }),
+                      time: `${formatDate(link.last_seen_at, lang)} ${formatTime(link.last_seen_at, lang)}`,
                     })
                   : t("queue.displays.neverSeen")}
               </p>

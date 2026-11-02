@@ -1,6 +1,29 @@
-import { connectLive, queueSockets, socketUrl, type PatientVisit } from "@medilink/api-client";
-import { Alert, Button, cx, Dialog, ProgressDots, TextField, TicketNumber } from "@medilink/ui";
-import { CloudSlash, MegaphoneSimple, PersonSimpleWalk } from "@phosphor-icons/react";
+import {
+  connectLive,
+  isApiError,
+  queueSockets,
+  socketUrl,
+  type PatientVisit,
+} from "@medilink/api-client";
+import {
+  Alert,
+  Button,
+  cx,
+  Dialog,
+  ImigongoPattern,
+  ProgressDots,
+  TextField,
+  TicketNumber,
+} from "@medilink/ui";
+import { formatTime } from "@medilink/ui/i18n";
+import {
+  CaretRight,
+  Clock,
+  CloudSlash,
+  MapPin,
+  MegaphoneSimple,
+  PersonSimpleWalk,
+} from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -31,6 +54,11 @@ export function useActiveVisits() {
 }
 
 const STAGES = ["consultation", "payment", "pharmacy"] as const;
+/**
+ * `queue.pass_over_places` (contract sprint-05 §2.2): a remote ticket that reception has not
+ * confirmed moves back when it comes this close to the front.
+ */
+export const PASS_OVER_PLACES = 5;
 
 function useOnline() {
   const [online, setOnline] = useState(() => navigator.onLine);
@@ -70,8 +98,7 @@ function useWakeLock() {
   }, []);
 }
 
-const time = (iso: string, lang: string) =>
-  new Date(iso).toLocaleTimeString(lang, { hour: "2-digit", minute: "2-digit" });
+const time = (iso: string, lang: string) => formatTime(iso, lang);
 
 /** /visits/:visitId (design 07 §3.3): the signature screen. */
 export function TrackerPage() {
@@ -97,7 +124,7 @@ export function TrackerPage() {
       )}
       {visits.isPending && <p className="m-0 text-fg-secondary">{t("tracker.loading")}</p>}
       {visits.data && !visit && (
-        <div className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-5">
+        <div className="flex flex-col gap-3 rounded-lg bg-surface shadow-card p-5">
           <p className="m-0 font-heading text-h3">{t("tracker.noVisitTitle")}</p>
           <p className="m-0 text-fg-secondary">{t("tracker.noVisit")}</p>
           <Link to="/home" className="font-semibold">
@@ -128,7 +155,7 @@ function Tracker({ visit, lang }: { visit: PatientVisit; lang: string }) {
       )}
       <section
         aria-labelledby="ticket"
-        className="flex flex-col items-center gap-5 rounded-lg border border-border bg-surface px-5 py-7 text-center shadow-raised"
+        className="flex flex-col items-center gap-5 rounded-lg bg-surface shadow-raised px-5 py-7 text-center "
       >
         <p className="m-0 text-fg-secondary">
           {visit.facility_name} · {name}
@@ -140,7 +167,8 @@ function Tracker({ visit, lang }: { visit: PatientVisit; lang: string }) {
           <TicketNumber
             number={visit.ticket_number}
             size="display"
-            className="text-[3.5rem] leading-none text-fg"
+            stub
+            tone={visit.state === "called" ? "attention" : "brand"}
           />
           <span className="text-fg-secondary">{t("tracker.yourTicket")}</span>
         </div>
@@ -164,7 +192,11 @@ function Tracker({ visit, lang }: { visit: PatientVisit; lang: string }) {
         {visit.state === "waiting" && <WaitBlock visit={visit} lang={lang} />}
       </section>
 
-      <section aria-labelledby="stages" className="rounded-lg border border-border bg-surface p-5">
+      {visit.is_remote && !visit.remote_arrival_confirmed_at && visit.state === "waiting" && (
+        <RemoteArrival visit={visit} />
+      )}
+
+      <section aria-labelledby="stages" className="rounded-lg bg-surface shadow-card p-5">
         <h2 id="stages" className="m-0 mb-3 font-heading text-h3">
           {t("tracker.stagesTitle")}
         </h2>
@@ -254,6 +286,70 @@ function WaitBlock({ visit, lang }: { visit: PatientVisit; lang: string }) {
   );
 }
 
+/**
+ * Remote joiners (design 07 §3.3 "I'm here – check in"; decision 2026-10-31): "I'm here" only
+ * tells reception the patient says they arrived. Reception confirms the arrival; until then the
+ * pass-over rule applies, so the banner warns near the front of the queue.
+ */
+function RemoteArrival({ visit }: { visit: PatientVisit }) {
+  const { t } = useTranslation();
+  const api = useApi();
+  const queryClient = useQueryClient();
+  const claimed = Boolean(visit.remote_arrival_claimed_at);
+  const here = useMutation({
+    mutationFn: () => api.booking.arrived(visit.visit_id),
+    onSuccess: (updated) => {
+      queryClient.setQueryData<{ results: PatientVisit[] }>(trackerKey, (old) =>
+        old
+          ? { results: old.results.map((v) => (v.visit_id === updated.visit_id ? updated : v)) }
+          : old,
+      );
+      void queryClient.invalidateQueries({ queryKey: trackerKey });
+    },
+    onError: (error) => {
+      if (isApiError(error) && error.status === 409)
+        void queryClient.invalidateQueries({ queryKey: trackerKey });
+    },
+  });
+  const nearFront = visit.ahead <= PASS_OVER_PLACES;
+
+  return (
+    <section
+      aria-labelledby="remote-arrival"
+      className="flex flex-col gap-3 rounded-lg bg-surface shadow-card p-5"
+    >
+      <h2 id="remote-arrival" className="m-0 flex items-center gap-2 font-heading text-h3">
+        <MapPin aria-hidden="true" className="size-5 text-brand" />
+        {t("tracker.remote.title")}
+      </h2>
+      {nearFront && (
+        <Alert tone="warning" title={t("tracker.remote.passOverTitle")}>
+          {claimed ? t("tracker.remote.passOverClaimed") : t("tracker.remote.passOver")}
+        </Alert>
+      )}
+      {claimed ? (
+        <p className="m-0 text-fg-secondary" role="status">
+          {t("tracker.remote.claimed")}
+        </p>
+      ) : (
+        <>
+          <p className="m-0 text-fg-secondary">{t("tracker.remote.body")}</p>
+          <Button size="lg" fullWidth loading={here.isPending} onClick={() => here.mutate()}>
+            {t("tracker.remote.here")}
+          </Button>
+        </>
+      )}
+      {here.isError && (
+        <Alert tone="danger" role="alert">
+          {isApiError(here.error) && here.error.status === 409
+            ? t("tracker.remote.changed")
+            : t("tracker.failed")}
+        </Alert>
+      )}
+    </section>
+  );
+}
+
 function CancelVisit({ visit }: { visit: PatientVisit }) {
   const { t } = useTranslation();
   const api = useApi();
@@ -316,10 +412,12 @@ function CalledTakeover({
   const button = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     button.current?.focus();
+    // One AudioContext for the whole takeover (browsers limit how many a page may open)
+    let context: AudioContext | null = null;
     const alert = () => {
       navigator.vibrate?.([400, 150, 400]);
       try {
-        const context = new AudioContext();
+        context ??= new AudioContext();
         const osc = context.createOscillator();
         const gain = context.createGain();
         osc.frequency.value = 880;
@@ -334,7 +432,10 @@ function CalledTakeover({
     };
     alert();
     const timer = setInterval(alert, 30_000);
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+      void context?.close().catch(() => undefined);
+    };
   }, []);
   return (
     <div
@@ -383,34 +484,77 @@ export function ActiveVisitCard() {
       <h2 id="active-visits" className="sr-only">
         {t("tracker.homeTitle")}
       </h2>
-      {list.map((v) => (
-        <Link
-          key={v.visit_id}
-          to={`/visits/${v.visit_id}`}
-          className={cx(
-            "flex items-center gap-4 rounded-lg p-5 no-underline shadow-raised",
-            v.state === "called" ? "bg-primary text-on-primary" : "bg-forest text-on-forest",
-          )}
-        >
-          <TicketNumber number={v.ticket_number} size="lg" className="text-[2.25rem]" />
-          <span className="flex min-w-0 flex-1 flex-col">
-            <span className="font-semibold">{v.facility_name}</span>
-            <span className="opacity-90">
-              {v.state === "called"
-                ? t("tracker.calledTo", { room: v.service_point ?? "" })
-                : v.state === "waiting"
-                  ? `${t("tracker.ahead", { count: v.ahead })}${v.estimate.min !== null ? ` · ${t("tracker.wait", { min: v.estimate.min, max: v.estimate.max })}` : ""}`
-                  : t(`tracker.states.${v.state}`, { defaultValue: t("tracker.inService") })}
+      {list.map((v) => {
+        const called = v.state === "called";
+        return (
+          <Link
+            key={v.visit_id}
+            to={`/visits/${v.visit_id}`}
+            className={cx(
+              "group relative isolate flex flex-col gap-4 overflow-hidden rounded-xl p-5 no-underline shadow-raised sm:p-6",
+              "transition-transform duration-150 active:scale-[0.99]",
+              called ? "bg-attention-solid text-on-attention-solid" : "bg-forest text-on-forest",
+            )}
+          >
+            {!called && <ImigongoPattern opacity={0.06} className="-z-10 text-on-forest-accent" />}
+            <span className="flex items-center justify-between gap-3 text-body-sm font-semibold">
+              <span className="min-w-0 truncate">{v.facility_name}</span>
+              <span className="inline-flex shrink-0 items-center gap-1.5">
+                <span aria-hidden="true" className="ml-live-dot" />
+                {t("tracker.open")}
+                <CaretRight
+                  aria-hidden="true"
+                  weight="bold"
+                  className="size-4 transition-transform group-hover:translate-x-0.5"
+                />
+              </span>
             </span>
-            {v.leave_by && (
-              <span className="text-body-sm opacity-90">
-                {t("tracker.leaveBy", { time: time(v.leave_by, lang) })}
+            <span className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              <TicketNumber
+                number={v.ticket_number}
+                size="lg"
+                stub
+                tone={called ? "onSolid" : "onForest"}
+              />
+              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                {called ? (
+                  <span className="font-heading text-h2 font-bold">
+                    {t("tracker.calledTo", { room: v.service_point ?? "" })}
+                  </span>
+                ) : v.state === "waiting" ? (
+                  <>
+                    <span className="flex items-baseline gap-2">
+                      <span className="font-heading text-display leading-none font-extrabold tabular-nums">
+                        {v.ahead}
+                      </span>
+                      <span className="font-semibold">
+                        {t("tracker.aheadShort", { count: v.ahead })}
+                      </span>
+                    </span>
+                    {v.estimate.min !== null && (
+                      <span className="text-body-sm opacity-85">
+                        {t("tracker.wait", { min: v.estimate.min, max: v.estimate.max })}
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <span className="font-heading text-h2 font-bold">
+                    {t(`tracker.states.${v.state}`, { defaultValue: t("tracker.inService") })}
+                  </span>
+                )}
+              </span>
+            </span>
+            {v.leave_by && !called && (
+              <span className="flex items-center gap-3 rounded-lg bg-attention-bg px-4 py-3 text-attention">
+                <Clock aria-hidden="true" weight="bold" className="size-5 shrink-0" />
+                <span className="font-semibold text-fg">
+                  {t("tracker.leaveBy", { time: time(v.leave_by, lang) })}
+                </span>
               </span>
             )}
-          </span>
-          <span className="font-semibold underline underline-offset-4">{t("tracker.open")}</span>
-        </Link>
-      ))}
+          </Link>
+        );
+      })}
     </section>
   );
 }

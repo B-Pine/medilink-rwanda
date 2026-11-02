@@ -41,9 +41,9 @@ Built from the requirement tables in `docs/analysis/` (titles shortened; the ana
 | `FR-SCH` | [Discovery, calendars, scheduling, booking](../analysis/05-discovery-scheduling-and-booking.md) | 18 | 15 | 3 | 0 | 0 | 0 | 0 | 18 |
 | `FR-QUE` | [Visit lifecycle and live queue](../analysis/06-visit-lifecycle-and-queue.md) | 20 | 17 | 3 | 0 | 0 | 0 | 0 | 20 |
 | `FR-CLN` | [Clinical record](../analysis/07-clinical-documentation-and-pharmacy.md) | 10 | 9 | 1 | 0 | 0 | 0 | 8 | 2 |
-| `FR-PHA` | [Pharmacy](../analysis/07-clinical-documentation-and-pharmacy.md) | 7 | 5 | 2 | 0 | 0 | 0 | 0 | 7 |
+| `FR-PHA` | [Pharmacy](../analysis/07-clinical-documentation-and-pharmacy.md) | 7 | 5 | 2 | 0 | 0 | 0 | 5 | 2 |
 | `FR-DOC` | [Documents](../analysis/07-clinical-documentation-and-pharmacy.md) | 7 | 7 | 0 | 0 | 0 | 0 | 1 | 6 |
-| `FR-BIL` | [Billing, payments, insurance](../analysis/08-billing-payments-and-insurance.md) | 18 | 13 | 2 | 1 | 2 | 0 | 1 | 17 |
+| `FR-BIL` | [Billing, payments, insurance](../analysis/08-billing-payments-and-insurance.md) | 18 | 13 | 2 | 1 | 2 | 0 | 10 | 8 |
 | `FR-NOT` | [Notifications](../analysis/09-notifications-and-communication.md) | 14 | 12 | 0 | 1 | 1 | 0 | 12 | 2 |
 | `FR-DSP` | [Disputes, complaints, support](../analysis/10-disputes-complaints-and-support.md) | 14 | 11 | 3 | 0 | 0 | 0 | 0 | 14 |
 | `FR-AI` | [AI symptom checker](../analysis/11-ai-symptom-checker.md) | 13 | 2 | 5 | 3 | 3 | 1 | 0 | 12 |
@@ -55,7 +55,7 @@ Built from the requirement tables in `docs/analysis/` (titles shortened; the ana
 | `NFR-UX` | [Usability, accessibility, languages](../analysis/14-non-functional-requirements.md) | 7 | 7 | 0 | 0 | 0 | 1 | 4 | 2 |
 | `NFR-OPS` | [Maintainability and operations](../analysis/14-non-functional-requirements.md) | 8 | 8 | 0 | 0 | 0 | 4 | 4 | 0 |
 | `NFR-INT` | [Interoperability](../analysis/14-non-functional-requirements.md) | 3 | 1 | 0 | 2 | 0 | 0 | 0 | 3 |
-| **All** | | **220** | **179** | **26** | **7** | **8** | **16** | **46** | **158** |
+| **All** | | **220** | **179** | **26** | **7** | **8** | **16** | **60** | **144** |
 
 `NFR-INT-03` is phased "P3–P4" in the analysis and is counted under P3.
 
@@ -132,7 +132,7 @@ Source: [05 · Discovery, calendars, scheduling, booking](../analysis/05-discove
 | FR-SCH-06 | Doctor weekly templates and exceptions | P1 | S2, S5 | Both | API, CMP | In progress |
 | FR-SCH-07 | Slot generation: capacity, bookable share, walk-in reserve | P1 | S5 | Backend | BR | In progress |
 | FR-SCH-08 | Book, reschedule, cancel with atomic slot hold | P1 | S5 | Both | BR, E2E | In progress |
-| FR-SCH-09 | Remote queue join for today, with cut-off | P1 | S5 | Both | BR, E2E | In progress |
+| FR-SCH-09 | Remote queue join for today, with cut-off | P1 | S5 | Both | BR, E2E, CMP (frontend `s5.test.ts`, tracker test) | In progress |
 | FR-SCH-10 | Reason for visit with the structured symptom picker | P1 | S5 | Both | API, CMP | In progress |
 | FR-SCH-11 | Patient calendar with dependents; .ics export and feed | P1 | S5 | Both | API, E2E | In progress |
 | FR-SCH-12 | Reception and doctor calendars (day, week) | P1 | S5 | Both | CMP, E2E | In progress |
@@ -154,8 +154,8 @@ Source: [06 · Visit lifecycle and live queue](../analysis/06-visit-lifecycle-an
 | FR-QUE-03 | Check-in and walk-in produce one ticket (idempotent) | P1 | S4 (walk-ins), S5 (booked) | Backend | BR | In progress |
 | FR-QUE-04 | Configurable stages incl. payment and pharmacy | P1 | S4 | Both | BR | In progress |
 | FR-QUE-05 | Ordering rules: emergency, return, priority, ratio, FIFO | P1 | S4 | Backend | BR | In progress |
-| FR-QUE-06 | Grace window; late arrivals become walk-ins | P1 | S5 | Backend | BR | In progress (R4 #86) |
-| FR-QUE-07 | Remote joiners hold a place; pass-over rule | P1 | S5 | Backend | BR | In progress (R4 #86) |
+| FR-QUE-06 | Grace window; late arrivals become walk-ins | P1 | S5 | Both | BR, API (mocks `s5.test.ts`) | In progress (R4 #86, R5 #87) |
+| FR-QUE-07 | Remote joiners hold a place; pass-over rule | P1 | S5 | Both | BR, CMP (board and tracker tests) | In progress (R4 #86, R5 #87) |
 | FR-QUE-08 | Atomic Call next; versioned state changes | P1 | S4 | Backend | BR | In progress |
 | FR-QUE-09 | Ticket state machine with recorded transitions | P1 | S4 | Backend | BR | In progress |
 | FR-QUE-10 | Manual reorder only with reason; logged; reported | P1 | S4 | Both | BR, API | In progress |
@@ -193,11 +193,11 @@ Source: [07 · Pharmacy](../analysis/07-clinical-documentation-and-pharmacy.md)
 
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
-| FR-PHA-01 | Prescription items from the catalogue, with states | P1 | S7 | Both | BR | Not started |
-| FR-PHA-02 | Pharmacy queue, identity check, full/partial, substitution, not available | P1 | S7 | Both | BR, E2E | Not started |
-| FR-PHA-03 | Signed dispensing record; status visible to the patient | P1 | S7 | Both | API, E2E | Not started |
-| FR-PHA-04 | Drug availability toggle visible to prescribers | P1 | S7 | Both | API | Not started |
-| FR-PHA-05 | Dosing labels | P1 | S7 | Both | INS | Not started |
+| FR-PHA-01 | Prescription items from the catalogue, with states | P1 | S7 | Both | BR | In progress (backend and frontend on mocks; staging S7-I1 pending) |
+| FR-PHA-02 | Pharmacy queue, identity check, full/partial, substitution, not available | P1 | S7 | Both | BR, E2E | In progress (backend and frontend on mocks; staging S7-I1 pending) |
+| FR-PHA-03 | Signed dispensing record; status visible to the patient | P1 | S7 | Both | API, E2E | In progress (backend and frontend on mocks; staging S7-I1 pending) |
+| FR-PHA-04 | Drug availability toggle visible to prescribers | P1 | S7 | Both | API | In progress (backend and frontend on mocks; staging S7-I1 pending) |
+| FR-PHA-05 | Dosing labels | P1 | S7 | Both | INS | In progress (backend and frontend on mocks; staging S7-I1 pending) |
 | FR-PHA-06 | Simple stock (quantity, expiry) | P2 | — | Both | BR | Not started |
 | FR-PHA-07 | Controlled medicines register | P2 | — | Both | BR | Not started |
 
@@ -207,13 +207,13 @@ Source: [07 · Documents](../analysis/07-clinical-documentation-and-pharmacy.md)
 
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
-| FR-DOC-01 | Generated PDFs: letterhead, licence, number, QR, language | P1 | S7 | Backend | API, INS, PERF | Not started |
-| FR-DOC-02 | New version on amendment; superseded versions kept | P1 | S7 | Backend | BR | Not started |
+| FR-DOC-01 | Generated PDFs: letterhead, licence, number, QR, language | P1 | S7 | Backend | API, INS, PERF | In progress (S7b) |
+| FR-DOC-02 | New version on amendment; superseded versions kept | P1 | S7 | Backend | BR | In progress (S7b) |
 | FR-DOC-03 | Uploads: type, date, virus scan, fingerprint, compression | P1 | S1, S7 | Both | API, SEC | In progress |
-| FR-DOC-04 | Public verification page with minimal data; logged | P1 | S7 | Both | API, SEC | Not started |
-| FR-DOC-05 | Encrypted storage in Rwanda; signed links; access logged | P1 | S7 | Backend | SEC, INS | Not started |
-| FR-DOC-06 | Patient download (single / all) and expiring share link | P1 | S7 | Both | API, E2E | Not started |
-| FR-DOC-07 | Reception prints released documents | P1 | S7 | Both | E2E | Not started |
+| FR-DOC-04 | Public verification page with minimal data; logged | P1 | S7 | Both | API, SEC | In progress (S7b) |
+| FR-DOC-05 | Encrypted storage in Rwanda; signed links; access logged | P1 | S7 | Backend | SEC, INS | In progress (S7b) |
+| FR-DOC-06 | Patient download (single / all) and expiring share link | P1 | S7 | Both | API, E2E | In progress (S7b) |
+| FR-DOC-07 | Reception prints released documents | P1 | S7 | Both | E2E | In progress (S7b) |
 
 ## FR-BIL · Billing, payments, insurance
 
@@ -224,16 +224,16 @@ Source: [08 · Billing, payments, insurance](../analysis/08-billing-payments-and
 | FR-BIL-01 | Insurance profiles with card photos, validity, status | P1 | S3 | Both | API | In progress |
 | FR-BIL-02 | Facility insurer acceptance rules | P1 | S2, S8 | Both | BR | In progress |
 | FR-BIL-03 | Estimated patient share in discovery and booking | P1 | S5 | Both | BR | In progress |
-| FR-BIL-04 | Manual insurance verification per visit; rejection reason | P1 | S8 | Both | API | Not started |
+| FR-BIL-04 | Manual insurance verification per visit; rejection reason | P1 | S8 | Both | API | In progress |
 | FR-BIL-05 | Facility tariff with effective dates | P1 | S2, S8 | Both | BR | In progress |
-| FR-BIL-06 | One bill per visit with insurer / patient split | P1 | S8 | Both | BR | Not started |
-| FR-BIL-07 | Payment recording with references; partial payments | P1 | S8 | Both | BR, API | Not started |
-| FR-BIL-08 | Gapless receipts; to app, email and print | P1 | S8 | Both | BR | Not started |
-| FR-BIL-09 | Voids, refunds, credit notes with approval and separation of duties | P1 | S8 | Both | BR, AZ | Not started |
-| FR-BIL-10 | Shift open/close with expected vs counted totals | P1 | S8 | Both | BR | Not started |
-| FR-BIL-11 | Exemptions and waivers with approval thresholds | P1 | S8 | Both | BR | Not started |
-| FR-BIL-12 | Unpaid balances per patient per facility | P1 | S8 | Both | API, RLS | Not started |
-| FR-BIL-13 | Optional EBM receipt number on payments | P1 | S8 | Both | API | Not started |
+| FR-BIL-06 | One bill per visit with insurer / patient split | P1 | S8 | Both | BR | In progress |
+| FR-BIL-07 | Payment recording with references; partial payments | P1 | S8 | Both | BR, API | In progress |
+| FR-BIL-08 | Gapless receipts; to app, email and print | P1 | S8 | Both | BR | In progress |
+| FR-BIL-09 | Voids, refunds, credit notes with approval and separation of duties | P1 | S8 | Both | BR, AZ | In progress |
+| FR-BIL-10 | Shift open/close with expected vs counted totals | P1 | S8 | Both | BR | In progress |
+| FR-BIL-11 | Exemptions and waivers with approval thresholds | P1 | S8 | Both | BR | In progress |
+| FR-BIL-12 | Unpaid balances per patient per facility | P1 | S8 | Both | API, RLS | In progress |
+| FR-BIL-13 | Optional EBM receipt number on payments | P1 | S8 | Both | API | In progress |
 | FR-BIL-14 | Monthly insurance claim list with claim status | P2 | — | Both | API | Not started |
 | FR-BIL-15 | Platform subscriptions, invoices, grace and listing rules | P2 | — | Both | BR | Not started |
 | FR-BIL-16 | Mobile money payment requests and confirmation | P3 | — | Both | API, SEC | Not started |
@@ -277,7 +277,7 @@ Source: [10 · Disputes, complaints, support](../analysis/10-disputes-complaints
 | FR-DSP-08 | Conflict of interest; one-person facility to super admin | P1 | S10 | Backend | BR | Not started |
 | FR-DSP-09 | Disputes raised by guardians and at the counter | P1 | S10 | Both | AZ, API | Not started |
 | FR-DSP-10 | Abuse protection: limits, duplicates, flags | P1 | S10 | Backend | BR | Not started |
-| FR-DSP-11 | Help center and support requests | P1 | S10 | Both | API, E2E | Not started |
+| FR-DSP-11 | Help center and support requests | P1 | S10 (part 1) | Both | API, E2E | In progress |
 | FR-DSP-12 | Ratings with one reply, moderation, completed-visit rule | P2 | — | Both | BR | Not started |
 | FR-DSP-13 | Complaints flow | P2 | — | Both | API | Not started |
 | FR-DSP-14 | Facility quality score | P2 | — | Backend | UT | Not started |
@@ -291,10 +291,10 @@ Source: [11 · AI symptom checker](../analysis/11-ai-symptom-checker.md)
 | FR-AI-01 | Structured symptom list (3 languages) for reason for visit | P1 | S5 | Both | API, INS | In progress |
 | FR-AI-02 | Research consent separate from care consent | P1 | S0* | Both | API, E2E | Verified (S0, v0.1.0) |
 | FR-AI-03 | De-identified export of intake + diagnosis pairs | P2 | — | Backend | INS | Not started |
-| FR-AI-04 | Red-flag rules engine with clinician sign-off | P2 | — | Backend | BR, INS | Not started |
-| FR-AI-05 | Symptom → service → level-of-care routing | P2 | — | Both | BR | Not started |
-| FR-AI-06 | Safety layer: low confidence → safe default | P2 | — | Backend | BR | Not started |
-| FR-AI-07 | Prediction log with model version, inputs, outputs | P2 | — | Backend | API | Not started |
+| FR-AI-04 | Red-flag rules engine with clinician sign-off | P2 | PT | Backend | BR, INS | In progress (rules shipped, sign-off pending #93) |
+| FR-AI-05 | Symptom → service → level-of-care routing | P2 | PT | Both | BR | In progress |
+| FR-AI-06 | Safety layer: low confidence → safe default | P2 | PT | Backend | BR | In progress |
+| FR-AI-07 | Prediction log with model version, inputs, outputs | P2 | PT | Backend | API | In progress |
 | FR-AI-08 | ML model in shadow mode, doctors only | P3 | — | Both | AZ, INS | Not started |
 | FR-AI-09 | Vignette evaluation suite; under-triage release gate | P3 | — | Backend | INS | Not started |
 | FR-AI-10 | Model cards and model registry | P3 | — | Backend | INS | Not started |

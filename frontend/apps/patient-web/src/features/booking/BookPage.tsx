@@ -2,6 +2,7 @@ import {
   isApiError,
   type Booking,
   type Hold,
+  type PatientVisit,
   type PublicFacility,
   type PublicService,
   type PublicSlot,
@@ -32,7 +33,7 @@ import {
   SymptomPicker as SharedSymptomPicker,
   TextareaField,
 } from "@medilink/ui";
-import { dateFormat } from "@medilink/ui/i18n";
+import { dateFormat, kigaliDate } from "@medilink/ui/i18n";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -42,6 +43,7 @@ import { useApi } from "../../app/services";
 import { PageHeading } from "../../components/PageHeading";
 import { EmergencyNotice } from "../../layout/EmergencyNotice";
 import { useProfiles, useRelationshipLabel } from "../profile/ProfileLayout";
+import { trackerKey } from "../tracker/TrackerPage";
 import { day, isMorning, pick, rwf, time } from "./discovery";
 
 type Step = "who" | "what" | "when" | "reason" | "review";
@@ -166,12 +168,17 @@ function ChoiceCard({
 function WhenStep({
   facility,
   service,
+  doctor,
+  onAnyDoctor,
   onHeld,
   onJoinToday,
   joining,
 }: {
   facility: PublicFacility;
   service: PublicService;
+  /** "Book this doctor" from the facility page: only this doctor's times. */
+  doctor: { membership_id: string; name: string } | null;
+  onAnyDoctor: () => void;
   onHeld: (slot: PublicSlot, hold: Hold) => void;
   onJoinToday: () => void;
   joining: boolean;
@@ -181,12 +188,22 @@ function WhenStep({
   const api = useApi();
   const [start, setStart] = useState(0);
   const [now] = useState(() => Date.now());
-  const date = new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Kigali" }).format(
-    new Date(now + start * 86_400_000),
-  );
+  const date = kigaliDate(new Date(now + start * 86_400_000));
   const week = useQuery({
-    queryKey: ["discovery", "slots", facility.slug, service.id, date],
-    queryFn: () => api.booking.slots(facility.slug, { service_id: service.id, date }),
+    queryKey: [
+      "discovery",
+      "slots",
+      facility.slug,
+      service.id,
+      date,
+      doctor?.membership_id ?? null,
+    ],
+    queryFn: () =>
+      api.booking.slots(facility.slug, {
+        service_id: service.id,
+        date,
+        membership_id: doctor?.membership_id ?? null,
+      }),
   });
   const days = week.data?.days ?? [];
   const [chosenDay, setChosenDay] = useState<string | null>(null);
@@ -232,6 +249,18 @@ function WhenStep({
 
   return (
     <div className="flex flex-col gap-5">
+      {doctor && (
+        <p className="m-0 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg bg-brand-subtle px-4 py-3 text-on-brand-subtle">
+          <span className="font-semibold">{t("booking.flow.with", { doctor: doctor.name })}</span>
+          <button
+            type="button"
+            onClick={onAnyDoctor}
+            className="cursor-pointer font-semibold text-link underline underline-offset-4"
+          >
+            {t("booking.flow.anyDoctor")}
+          </button>
+        </p>
+      )}
       {service.remote_join && (
         <Card className="flex flex-col gap-3 border-2 border-brand sm:flex-row sm:items-center">
           <PersonSimpleWalk
@@ -444,7 +473,10 @@ function Success({ booking }: { booking: Booking }) {
  * Booking flow (design 07 §3.2): one decision per screen. Who → What (when the facility has more
  * than one service) → When (day strip and time chips, or join today's queue) → Reason (symptom
  * chips; a red flag shows the emergency notice) → Review (insurance, your share, cancellation
- * rule) → Success. Answers stay in memory when going back; the chosen time is held for 5 minutes.
+ * rule) → Success. The step, the person and the service are in the URL (`step`, `who`, `what`),
+ * so browser Back goes to the previous step and a refresh keeps the place; symptoms and the
+ * reason stay in memory only (health data never goes in a URL). The chosen time is held for 5
+ * minutes; without a hold (after a refresh) the flow returns to choosing a time.
  */
 export function BookPage() {
   const { t, i18n } = useTranslation();
@@ -453,7 +485,19 @@ export function BookPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { slug = "" } = useParams();
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
+  /** Update the draft in the URL; a new step is a new history entry, so Back works. */
+  const setDraft = (changes: Record<string, string | null>, push = false) =>
+    setParams(
+      (current) => {
+        const next = new URLSearchParams(current);
+        for (const [name, value] of Object.entries(changes))
+          if (value === null) next.delete(name);
+          else next.set(name, value);
+        return next;
+      },
+      { replace: !push },
+    );
   const facility = useQuery({
     queryKey: ["discovery", "facility", slug],
     queryFn: () => api.booking.facility(slug),
@@ -465,11 +509,16 @@ export function BookPage() {
   const profiles = useProfiles();
   const relationship = useRelationshipLabel();
   const own = (profiles.data?.results ?? []).filter((p) => p.relationship !== "delegate");
-  const [step, setStep] = useState<Step>("who");
-  const [chosenPatient, setPatientId] = useState<string | null>(null);
+  const requested = params.get("step") as Step | null;
+  const setStep = (next: Step) => setDraft({ step: next }, true);
+  const chosenPatient = own.some((p) => p.patient_id === params.get("who"))
+    ? params.get("who")
+    : null;
+  const setPatientId = (id: string) => setDraft({ who: id });
   // one profile: chosen for you (no extra tap)
   const patientId = chosenPatient ?? (own.length === 1 ? own[0]!.patient_id : null);
-  const [serviceId, setServiceId] = useState<string | null>(params.get("service"));
+  const serviceId = params.get("what") ?? params.get("service");
+  const setServiceId = (id: string) => setDraft({ what: id });
   const [slot, setSlot] = useState<PublicSlot | null>(null);
   const [hold, setHold] = useState<Hold | null>(null);
   const [expired, setExpired] = useState(false);
@@ -508,7 +557,14 @@ export function BookPage() {
         { facility_slug: slug, service_id: serviceId!, patient_id: patientId! },
         key.current,
       ),
-    onSuccess: (visit) => void navigate(`/visits/${visit.visit_id}`),
+    onSuccess: (visit) => {
+      // the tracker reads today's visits from the cache: add the new ticket before opening it
+      queryClient.setQueryData<{ results: PatientVisit[] }>(trackerKey, (old) => ({
+        results: [...(old?.results ?? []).filter((v) => v.visit_id !== visit.visit_id), visit],
+      }));
+      void queryClient.invalidateQueries({ queryKey: trackerKey });
+      void navigate(`/visits/${visit.visit_id}`);
+    },
   });
 
   if (facility.isPending || profiles.isPending) return <LoadingState className="min-h-[50vh]" />;
@@ -542,6 +598,20 @@ export function BookPage() {
     "reason",
     "review",
   ];
+  // a step whose earlier answers are missing (refresh, shared link) falls back to the first gap
+  const ready: Record<Step, boolean> = {
+    who: true,
+    what: Boolean(patientId),
+    when: Boolean(patientId && service),
+    reason: Boolean(patientId && service && hold),
+    review: Boolean(patientId && service && hold && chosen.size),
+  };
+  const wanted = requested && steps.includes(requested) ? requested : "who";
+  let step: Step = "who";
+  for (const s of steps.slice(0, steps.indexOf(wanted) + 1)) {
+    if (!ready[s]) break;
+    step = s;
+  }
   const index = steps.indexOf(step) + 1;
   const back = index > 1 ? () => setStep(steps[index - 2]!) : undefined;
   const patient = own.find((p) => p.patient_id === patientId);
@@ -549,9 +619,9 @@ export function BookPage() {
   const fee = service?.fee_rwf ?? null;
   const card = (insurances.data?.results ?? []).find((c) => c.id === insurance);
   const accepted = card ? service?.insurers.includes(card.insurer_code) : null;
-  const shareBp = card && accepted ? service?.insurer_shares[card.insurer_code] : undefined;
-  const yourShare =
-    fee === null ? null : shareBp === undefined ? fee : Math.round((fee * shareBp) / 10_000);
+  // R4 (#102): the server's share after exclusions and ceilings; no cover means the full fee
+  const covered = card && accepted ? service?.insurer_share_rwf[card.insurer_code] : undefined;
+  const yourShare = fee === null ? null : (covered ?? fee);
 
   const header = (
     <div className="flex flex-col gap-1">
@@ -644,6 +714,12 @@ export function BookPage() {
           <WhenStep
             facility={f}
             service={service}
+            doctor={f.doctors.find((d) => d.membership_id === params.get("doctor")) ?? null}
+            onAnyDoctor={() => {
+              const next = new URLSearchParams(params);
+              next.delete("doctor");
+              setParams(next, { replace: true });
+            }}
             joining={join.isPending}
             onJoinToday={() => join.mutate()}
             onHeld={(s, h) => {
@@ -683,10 +759,7 @@ export function BookPage() {
             <Skeleton height="10rem" className="rounded-lg" />
           )}
           {redFlag && (
-            <div
-              role="alert"
-              className="flex items-start gap-3 rounded-md border-l-4 border-danger bg-danger-bg p-4"
-            >
+            <div role="alert" className="flex items-start gap-3 rounded-md bg-danger-bg p-4">
               <Siren
                 aria-hidden="true"
                 weight="bold"

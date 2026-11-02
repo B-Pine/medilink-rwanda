@@ -164,6 +164,33 @@
           "a": "Yes. Ask at reception: they can register you and give you a ticket, and you keep your MediLink number."
         }
       }
+    },
+    "near": {
+      "eyebrow": "Near you",
+      "title": "Care near you",
+      "body": "Verified facilities around you, how busy they are right now, and the insurance they take.",
+      "ask": "Share your location to see the nearest facilities",
+      "usingLocation": "Showing facilities near you",
+      "private": "Used for this search only. We never store it.",
+      "orDistrict": "Or choose a district",
+      "chooseDistrict": "Choose a district",
+      "loading": "Finding facilities",
+      "none": "No verified facility here yet. Try another district.",
+      "all": "Search all facilities",
+      "wait_one": "{{count}} waiting · {{min}}–{{max}} min",
+      "wait_other": "{{count}} waiting · {{min}}–{{max}} min",
+      "insurers": "Insurance accepted",
+      "cashOnly": "Self-pay only"
+    },
+    "checker": {
+      "title": "Not sure where to go?",
+      "body": "Check your symptoms in a minute"
+    },
+    "insurersShort": {
+      "mutuelle": "Mutuelle",
+      "rama": "RAMA",
+      "mmi": "MMI",
+      "private": "Private"
     }
   },
   "emergency": {
@@ -177,7 +204,10 @@
     "verify": "Verify a document",
     "forFacilities": "For facilities",
     "help": "Help",
-    "copyright": "© {{year}} MediLink Rwanda"
+    "copyright": "© {{year}} MediLink Rwanda",
+    "about": "About",
+    "emergency": "Emergency",
+    "checkSymptoms": "Check symptoms"
   },
   "login": {
     "title": "Log in or create an account",
@@ -255,14 +285,11 @@
       "family": "Family members",
       "privacy": "Privacy and who saw my records",
       "settings": "Text size, language and theme"
-    }
+    },
+    "notSureBody": "Answer a few questions about how you feel, and we suggest where to go."
   },
   "info": {
     "back": "Back to the home page",
-    "verify": {
-      "title": "Verify a document",
-      "body": "Soon pharmacies and employers can check a prescription, receipt or sick note here with its code or QR."
-    },
     "forFacilities": {
       "title": "MediLink for health facilities",
       "body": "Facility registration opens in the next release. You will be able to apply online and go live after verification."

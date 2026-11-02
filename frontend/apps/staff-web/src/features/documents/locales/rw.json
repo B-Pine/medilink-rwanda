@@ -1,0 +1,64 @@
+{
+  "loading": "Turimo gushaka inyandiko",
+  "download": "Kuramo",
+  "print": "Gucapa",
+  "preparing": "Iracyategurwa",
+  "version": "verisiyo ya {{n}}",
+  "kind": {
+    "prescription": "Resept",
+    "referral": "Urwandiko rwohereza umurwayi",
+    "lab_request": "Gusaba ibizamini",
+    "sick_note": "Icyemezo cy'uburwayi"
+  },
+  "status": {
+    "active": "Iremewe",
+    "dispensed": "Yatanzwe",
+    "cancelled": "Yahagaritswe",
+    "expired": "Yarangiye"
+  },
+  "urgency": {
+    "routine": "Bisanzwe",
+    "urgent": "Byihutirwa",
+    "emergency": "Byihutirwa cyane"
+  },
+  "letters": {
+    "title": "Amabaruwa n'ibisabwa",
+    "draftHint": "Bisinywa hamwe n'isuzuma kandi bigacapwa bifite kode ya QR.",
+    "signedHint": "Igishya gisinywa iyo ukibitse; bazongera kugusaba ijambo ry'ibanga.",
+    "none": "Nta baruwa cyangwa icyasabwe kirahari.",
+    "add": {
+      "referral": "Urwandiko rwohereza",
+      "lab_request": "Gusaba ibizamini",
+      "sick_note": "Icyemezo cy'uburwayi"
+    },
+    "referralLine": "Kuri {{to}}, {{specialty}} · {{urgency}}",
+    "sickLine": "Kuruhuka kuva {{from}} kugeza {{to}}",
+    "signedAt": "Byasinywe {{time}}",
+    "signsWith": "Bizasinywa hamwe n'isuzuma",
+    "visitDocuments": "Inyandiko z'uru ruzinduko"
+  },
+  "form": {
+    "to": "Ohereza kuri (ivuriro)",
+    "specialty": "Ubuhanga",
+    "urgency": "Byihutirwa",
+    "reason": "Impamvu",
+    "tests": "Ibizamini",
+    "testsHint": "Kimwe ku murongo, cyangwa ubitandukanyishije akitso.",
+    "testsRequired": "Ongeraho nibura ikizamini kimwe.",
+    "from": "Umunsi wa mbere wo kuruhuka",
+    "until": "Umunsi wa nyuma wo kuruhuka",
+    "datesOrder": "Umunsi wa nyuma uri mbere y'uwa mbere.",
+    "showDiagnosis": "Erekana indwara ku cyemezo",
+    "showDiagnosisHint": "Ntibigaragara bisanzwe: umukoresha cyangwa ishuri bakeneye amatariki gusa.",
+    "required": "Uzuza aha.",
+    "save": "Ongeraho",
+    "signNow": "Sinya kandi wongereho",
+    "cancel": "Reka"
+  },
+  "patient": {
+    "title": "Inyandiko",
+    "clinicalHint": "Resept, amabaruwa n'ibisabwa byasinywe muri iri vuriro.",
+    "printHint": "Capa ibyo umurwayi asaba. Buri gucapa kurandikwa.",
+    "none": "Nta nyandiko irahari."
+  }
+}

@@ -100,7 +100,7 @@ export function TariffsPage() {
                     </button>
                   ))}
                 </div>
-                <div className="overflow-x-auto rounded-lg border border-border bg-surface">
+                <div className="overflow-x-auto rounded-lg bg-surface shadow-card">
                   <table className="w-full border-collapse text-left">
                     <caption className="sr-only">
                       {t("setup.settings.sections.tariffs.title")}
@@ -468,7 +468,7 @@ export function InsurersPage() {
                 {data.results.map((rule) => (
                   <li
                     key={rule.id}
-                    className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5"
+                    className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>

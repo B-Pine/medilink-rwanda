@@ -23,7 +23,7 @@ from medilink.masterdata.models import Location, LocationLevel
 from medilink.scheduling.booking import cover
 from medilink.scheduling.slots import bookable
 from medilink.tenancy.models import Facility, FacilityStatus, FacilityType
-from medilink.visits.models import DutyState, Ticket, TicketState
+from medilink.visits.models import DutyState, Stage, Ticket, TicketState
 from medilink.visits.services import doctors_for
 
 LEVEL_BY_TYPE: dict[str, str] = {
@@ -46,6 +46,70 @@ def queue_load(waiting: int, doctors: int) -> str:
         return "high"
     per_doctor = waiting / doctors
     return "low" if per_doctor < 4 else "medium" if per_doctor < 8 else "high"
+
+
+@dataclass(frozen=True)
+class LiveQueue:
+    """Public queue figures for one service: counts only, never a person (contract PT §2.1)."""
+
+    # None: the service has no queue to publish (no doctor on duty and nobody waiting)
+    waiting: int | None
+    wait_min: int | None
+    wait_max: int | None
+
+
+def _round5(value: float, up: bool) -> int:
+    return int((math.ceil if up else math.floor)(value / 5) * 5)
+
+
+def live_queue(facility_id: Any, services: list[Service]) -> dict[Any, LiveQueue]:
+    """People waiting before the consultation, and the wait a new arrival can expect (the same
+    rule as reception's estimate, S4 §2.4: waiting x average consultation / doctors on duty,
+    shown as -20 % to +25 %, rounded to 5 minutes). No doctor on duty: the range is unknown."""
+    today = timezone.localdate()
+    waiting: dict[Any, int] = {}
+    for service_id in Ticket.objects.filter(
+        facility_id=facility_id,
+        service_date=today,
+        state=TicketState.WAITING,
+        # PAYMENT is left out: it comes before and after the consultation (visits STAGE_ORDER), so
+        # a ticket there cannot be counted as still waiting for the doctor
+        stage__in=[Stage.RECEPTION, Stage.CONSULTATION],
+    ).values_list("service_id", flat=True):
+        waiting[service_id] = waiting.get(service_id, 0) + 1
+    result: dict[Any, LiveQueue] = {}
+    for service in services:
+        count = waiting.get(service.pk, 0)
+        doctors = doctors_for(facility_id, service.pk).filter(state=DutyState.ON_DUTY).count()
+        if not doctors:
+            # nobody on duty: publish the count only when people are already waiting
+            result[service.pk] = LiveQueue(count or None, None, None)
+            continue
+        done = Ticket.objects.filter(
+            facility_id=facility_id,
+            service_id=service.pk,
+            stage=Stage.CONSULTATION,
+            service_date=today,
+            started_at__isnull=False,
+            ended_at__isnull=False,
+        ).values_list("started_at", "ended_at")[:200]
+        durations = [(end - start).total_seconds() / 60 for start, end in done if start and end]
+        average = (
+            max(sum(durations) / len(durations), 1.0)
+            if len(durations) >= 3
+            else float(service.duration_minutes or 15)
+        )
+        minutes = count * average / doctors
+        result[service.pk] = LiveQueue(
+            count, _round5(minutes * 0.8, up=False), max(_round5(minutes * 1.25, up=True), 5)
+        )
+    return result
+
+
+def wait_range(value: LiveQueue | None) -> dict[str, int] | None:
+    if value is None or value.wait_min is None or value.wait_max is None:
+        return None
+    return {"min": value.wait_min, "max": value.wait_max}
 
 
 def _place(facility: Facility, profile: Profile | None) -> dict[str, str]:
@@ -93,13 +157,10 @@ def refresh(facility_id: Any) -> int:
     now = timezone.now()
     hours = _hours(facility_id, today)
     rules = list(InsurerRule.objects.filter(current_q(today), facility_id=facility_id))
-    waiting: dict[Any, int] = {}
-    for service_id in Ticket.objects.filter(
-        facility_id=facility_id, service_date=today, state=TicketState.WAITING
-    ).values_list("service_id", flat=True):
-        waiting[service_id] = waiting.get(service_id, 0) + 1
+    active = list(Service.objects.filter(facility_id=facility_id, is_active=True))
+    live = live_queue(facility_id, active)
     rows = []
-    for service in Service.objects.filter(facility_id=facility_id, is_active=True):
+    for service in active:
         item = price(facility_id, service_id=service.pk, on=today)
         fee = item.amount_rwf if item else None
         insurers: dict[str, dict[str, Any]] = {}
@@ -139,7 +200,10 @@ def refresh(facility_id: Any) -> int:
                 insurers=insurers,
                 hours=hours,
                 next_slot_at=next_slot,
-                queue_load=queue_load(waiting.get(service.pk, 0), doctors),
+                queue_load=queue_load(live[service.pk].waiting or 0, doctors),
+                waiting=live[service.pk].waiting,
+                wait_min=live[service.pk].wait_min,
+                wait_max=live[service.pk].wait_max,
                 updated_at=now,
                 **place,
             )
@@ -260,10 +324,13 @@ def search(query: Query) -> dict[str, Any]:
                 "service_code": row.service_code,
                 "service_name_i18n": row.service_name_i18n,
                 "accepts_insurance": _accepts(row, query.insurer_code),
+                "insurers": sorted(row.insurers or {}),
                 "fee_rwf": row.fee_rwf,
                 "patient_share_rwf": _share(row, query.insurer_code),
                 "next_slot_at": row.next_slot_at,
                 "queue_load": row.queue_load or None,
+                "waiting": row.waiting,
+                "wait_range": wait_range(LiveQueue(row.waiting, row.wait_min, row.wait_max)),
                 "allows_remote_join": row.allows_remote_join,
                 "referral_hint": query.insurer_code == MUTUELLE
                 and row.level_of_care in ("secondary", "tertiary"),

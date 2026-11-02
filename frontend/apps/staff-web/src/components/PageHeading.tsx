@@ -33,7 +33,10 @@ export function PageHeading({
     <h1
       ref={ref}
       tabIndex={-1}
-      className={cx("m-0 focus:outline-none", className ?? "text-h1 text-fg")}
+      className={cx(
+        "m-0 focus:outline-none",
+        className ?? "text-h1 font-bold tracking-tight text-fg",
+      )}
     >
       {children}
     </h1>

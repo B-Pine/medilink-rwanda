@@ -282,6 +282,62 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: rate_limited
+  /api/v1/patient/bills/:
+    get:
+      operationId: patient_bills
+      summary: Bills of my profiles, newest first (PB1)
+      parameters:
+      - in: query
+        name: has_balance
+        schema:
+          type: boolean
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: patient_id
+        schema:
+          type: string
+      tags:
+      - patient-bills
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPatientBillRowList'
+          description: ''
+  /api/v1/patient/bills/{bill_id}/:
+    get:
+      operationId: patient_bill_detail
+      summary: One bill with lines, payments and receipts (PB2)
+      parameters:
+      - in: path
+        name: bill_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-bills
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientBill'
+          description: ''
   /api/v1/patient/bookings/:
     get:
       operationId: patient_bookings
@@ -669,6 +725,168 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: age, limit or consent version
+  /api/v1/patient/documents/:
+    get:
+      operationId: patient_documents
+      summary: Documents of my profiles, newest first (D4)
+      parameters:
+      - in: query
+        name: kind
+        schema:
+          type: string
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: patient_id
+        schema:
+          type: string
+      tags:
+      - patient-documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocumentRow'
+          description: ''
+  /api/v1/patient/documents/{document_id}/:
+    get:
+      operationId: patient_document
+      summary: One document with its versions and my share links (D4)
+      parameters:
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientDocument'
+          description: ''
+  /api/v1/patient/documents/{document_id}/download-link/:
+    post:
+      operationId: patient_document_download_link
+      summary: Signed link to the current version, 5 minutes (D4)
+      parameters:
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Link'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Still rendering
+  /api/v1/patient/documents/{document_id}/share-links/:
+    post:
+      operationId: patient_document_share_link_create
+      summary: Expiring share link for one document; the token is shown once (D5)
+      parameters:
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-documents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShareLinkCreateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewShareLink'
+          description: ''
+  /api/v1/patient/documents/{document_id}/share-links/{link_id}/:
+    delete:
+      operationId: patient_document_share_link_revoke
+      summary: Revoke a share link I made (D5)
+      parameters:
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: link_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/patient/documents/archive/:
+    post:
+      operationId: patient_documents_archive
+      summary: 'All my documents as a ZIP: a 5-minute link (D4); 100 at most'
+      parameters:
+      - in: query
+        name: patient_id
+        schema:
+          type: string
+      tags:
+      - patient-documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Link'
+          description: ''
   /api/v1/patient/holds/{hold_id}/:
     delete:
       operationId: patient_hold_release
@@ -949,6 +1167,65 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UnreadCount'
+          description: ''
+  /api/v1/patient/prescriptions/:
+    get:
+      operationId: patient_prescriptions
+      summary: Prescriptions of my profiles, newest first (M1)
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: patient_id
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - active
+          - past
+      tags:
+      - patient-medicines
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPatientPrescriptionRowList'
+          description: ''
+  /api/v1/patient/prescriptions/{prescription_id}/:
+    get:
+      operationId: patient_prescription_detail
+      summary: One prescription with items and what was dispensed (M2)
+      parameters:
+      - in: path
+        name: prescription_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-medicines
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientPrescription'
           description: ''
   /api/v1/patient/profiles/:
     get:
@@ -1530,6 +1807,216 @@ paths:
               schema:
                 $ref: '#/components/schemas/SlotTaken'
           description: Taken or not bookable
+  /api/v1/patient/support-requests/:
+    get:
+      operationId: patient_support_requests_list
+      description: Shared by the patient and staff requester endpoints.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - active
+          - closed
+      tags:
+      - support
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSupportRequestListList'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Scope
+    post:
+      operationId: patient_support_requests_create
+      description: Shared by the patient and staff requester endpoints.
+      tags:
+      - support
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupportRequestCreateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportRequest'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid fields, or health details in the text
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Too many open requests
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Too many requests
+  /api/v1/patient/support-requests/{request_id}/:
+    get:
+      operationId: patient_support_request
+      description: Shared by the patient and staff requester endpoints.
+      parameters:
+      - in: path
+        name: request_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - support
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportRequest'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not visible
+  /api/v1/patient/support-requests/{request_id}/close/:
+    post:
+      operationId: patient_support_request_close
+      description: Shared by the patient and staff requester endpoints.
+      parameters:
+      - in: path
+        name: request_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - support
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportRequest'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Read-only
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not visible
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Already closed
+  /api/v1/patient/support-requests/{request_id}/messages/:
+    post:
+      operationId: patient_support_request_message
+      description: Shared by the patient and staff requester endpoints.
+      parameters:
+      - in: path
+        name: request_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - support
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageCreateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportRequest'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid text
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Read-only
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not visible
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Closed
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Too many requests
   /api/v1/patient/travel-times/{facility_id}/:
     get:
       operationId: patient_travel_time
@@ -3214,6 +3701,250 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Conflict
+  /api/v1/platform/help-articles/:
+    get:
+      operationId: platform_help_articles_list
+      parameters:
+      - in: query
+        name: audience
+        schema:
+          type: string
+          enum:
+          - patient
+          - staff
+      - in: query
+        name: category
+        schema:
+          type: string
+          enum:
+          - account_security
+          - booking_visits
+          - facility_work
+          - family_profile
+          - getting_started
+          - notifications
+          - other
+          - privacy
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: Search text, 2-100 characters
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - draft
+          - published
+      tags:
+      - help
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPlatformHelpArticleSummaryList'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Filter
+    post:
+      operationId: platform_help_articles_create
+      tags:
+      - help
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HelpArticleWriteRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformHelpArticle'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid fields
+  /api/v1/platform/help-articles/{article_id}/:
+    get:
+      operationId: platform_help_articles_retrieve
+      parameters:
+      - in: path
+        name: article_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - help
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformHelpArticle'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown
+    patch:
+      operationId: platform_help_articles_partial_update
+      parameters:
+      - in: path
+        name: article_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - help
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedHelpArticleWriteRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformHelpArticle'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid fields
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+  /api/v1/platform/help-articles/{article_id}/publish/:
+    post:
+      operationId: platform_help_articles_publish_create
+      parameters:
+      - in: path
+        name: article_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - help
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformHelpArticle'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Step-up required
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Missing languages
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Already in that state
+  /api/v1/platform/help-articles/{article_id}/unpublish/:
+    post:
+      operationId: platform_help_articles_unpublish_create
+      parameters:
+      - in: path
+        name: article_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - help
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformHelpArticle'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Already in that state
   /api/v1/platform/master-data/diagnosis-codes/:
     get:
       operationId: platform_master_data_diagnosis_codes_list
@@ -5734,6 +6465,262 @@ paths:
               schema:
                 $ref: '#/components/schemas/Overview'
           description: ''
+  /api/v1/platform/support-requests/:
+    get:
+      operationId: platform_support_requests_list
+      parameters:
+      - in: query
+        name: assigned
+        schema:
+          type: string
+          enum:
+          - me
+          - none
+      - in: query
+        name: audience
+        schema:
+          type: string
+          enum:
+          - patient
+          - staff
+      - in: query
+        name: facility_id
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: priority
+        schema:
+          type: string
+          enum:
+          - high
+          - normal
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: Reference or subject
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - active
+          - answered
+          - closed
+          - open
+      - in: query
+        name: topic
+        schema:
+          type: string
+          enum:
+          - account_access
+          - booking_visits
+          - facility_setup
+          - family_profile
+          - notifications
+          - other
+          - privacy
+          - technical
+      tags:
+      - support
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPlatformSupportRequestListList'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Filter
+  /api/v1/platform/support-requests/{request_id}/:
+    get:
+      operationId: platform_support_requests_retrieve
+      parameters:
+      - in: path
+        name: request_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - support
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSupportRequest'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown
+    patch:
+      operationId: platform_support_requests_partial_update
+      parameters:
+      - in: path
+        name: request_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - support
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTriageRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSupportRequest'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid fields
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Closed
+  /api/v1/platform/support-requests/{request_id}/close/:
+    post:
+      operationId: platform_support_requests_close_create
+      parameters:
+      - in: path
+        name: request_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - support
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupportCloseRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSupportRequest'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid reason
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Already closed
+  /api/v1/platform/support-requests/{request_id}/replies/:
+    post:
+      operationId: platform_support_requests_replies_create
+      parameters:
+      - in: path
+        name: request_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - support
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageCreateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformSupportRequest'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid text
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Closed
   /api/v1/public/facilities/{slug}/:
     get:
       operationId: public_facility_profile
@@ -6117,6 +7104,85 @@ paths:
       responses:
         '202':
           description: Always accepted (no enumeration)
+  /api/v1/public/help-articles/:
+    get:
+      operationId: public_help_articles_list
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: string
+          enum:
+          - account_security
+          - booking_visits
+          - facility_work
+          - family_profile
+          - getting_started
+          - notifications
+          - other
+          - privacy
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: Search text, 2-100 characters
+      tags:
+      - help
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedHelpArticleSummaryList'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad filter
+  /api/v1/public/help-articles/{slug}/:
+    get:
+      operationId: public_help_articles_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - help
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HelpArticle'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not published
   /api/v1/public/master-data/facility-types/:
     get:
       operationId: public_master_data_facility_types_list
@@ -6307,6 +7373,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedServiceCatalogueItemsItemList'
           description: ''
+  /api/v1/public/shared-documents/{token}/:
+    get:
+      operationId: public_shared_document
+      summary: 'A document a patient shared: metadata and a 5-minute link (D5)'
+      parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+      tags:
+      - public
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SharedDocument'
+          description: ''
+        '404':
+          description: Unknown, expired or revoked
   /api/v1/public/symptoms/:
     get:
       operationId: public_symptoms
@@ -6321,6 +7408,102 @@ paths:
                 items:
                   $ref: '#/components/schemas/Symptom'
           description: ''
+  /api/v1/public/triage/:
+    post:
+      operationId: public_triage
+      description: 'Rules-based care navigation, not a diagnosis (analysis 11): an
+        urgency, a service and a level of care. No account and no personal data; each
+        answer is logged de-identified.'
+      tags:
+      - public
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TriageRequestRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TriageResult'
+          description: ''
+  /api/v1/public/verify/{code}/:
+    get:
+      operationId: public_verify
+      summary: Check a document by the code under its QR code (V1); every attempt
+        is logged
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      tags:
+      - public
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Verification'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown code
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Too many
+  /api/v1/public/verify/{code}/details/:
+    post:
+      operationId: public_verify_details
+      summary: The document's content after a date-of-birth match (V1)
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      tags:
+      - public
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerificationDetailsInputRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationDetails'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown code
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: The date of birth does not match
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Too many
   /api/v1/public/web-push-key/:
     get:
       operationId: public_web_push_key_retrieve
@@ -6509,6 +7692,173 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Not published
+  /api/v1/staff/approval-requests/:
+    get:
+      operationId: staff_approval_requests
+      summary: 'Approvals inbox: voids, refunds and waivers (B11)'
+      parameters:
+      - in: query
+        name: kind
+        schema:
+          type: string
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - approved
+          - cancelled
+          - pending
+          - rejected
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedApprovalRequestList'
+          description: ''
+  /api/v1/staff/approval-requests/{approval_id}/approve/:
+    post:
+      operationId: staff_approval_approve
+      summary: Approve a void, refund or waiver (B12)
+      parameters:
+      - in: path
+        name: approval_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BillingDecisionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRequest'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Already decided, or your own request
+  /api/v1/staff/approval-requests/{approval_id}/cancel/:
+    post:
+      operationId: staff_approval_cancel
+      summary: Cancel your pending request (B14)
+      parameters:
+      - in: path
+        name: approval_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BillingVersionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRequest'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not yours or decided
+  /api/v1/staff/approval-requests/{approval_id}/reject/:
+    post:
+      operationId: staff_approval_reject
+      summary: Reject a request with a note (B13)
+      parameters:
+      - in: path
+        name: approval_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BillingDecisionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRequest'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: A note is needed
   /api/v1/staff/auth/active-facility/:
     post:
       operationId: staff_auth_active_facility
@@ -6944,6 +8294,304 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: PIN not set, PIN unlock off or temporarily blocked
+  /api/v1/staff/bill-lines/{line_id}/remove/:
+    post:
+      operationId: staff_bill_line_remove
+      summary: Remove a line with a reason, before any payment (B5)
+      parameters:
+      - in: path
+        name: line_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoveLineRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Something was paid already
+  /api/v1/staff/billing/patients/{facility_patient_id}/balances/:
+    get:
+      operationId: staff_patient_balances
+      summary: A patient's unpaid balances at this facility (B23)
+      parameters:
+      - in: path
+        name: facility_patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balances'
+          description: ''
+  /api/v1/staff/bills/:
+    get:
+      operationId: staff_bills
+      summary: Bills of a day, unpaid first (B2)
+      parameters:
+      - in: query
+        name: date
+        schema:
+          type: string
+        description: YYYY-MM-DD; today by default
+      - in: query
+        name: has_balance
+        schema:
+          type: boolean
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - credited
+          - open
+          - paid
+          - partly_paid
+          - voided
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBillRowList'
+          description: ''
+  /api/v1/staff/bills/{bill_id}/:
+    get:
+      operationId: staff_bill_detail
+      summary: A bill with lines, split, payments and corrections (B3)
+      parameters:
+      - in: path
+        name: bill_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+          description: ''
+  /api/v1/staff/bills/{bill_id}/exemptions/:
+    post:
+      operationId: staff_bill_exemption
+      summary: Apply an exemption; a waiver above the threshold waits for approval
+        (B8)
+      parameters:
+      - in: path
+        name: bill_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExemptionInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not allowed or above the balance
+  /api/v1/staff/bills/{bill_id}/lines/:
+    post:
+      operationId: staff_bill_line_add
+      summary: Add a procedure or other charge from the price list (B4)
+      parameters:
+      - in: path
+        name: bill_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddLineRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown item or a void bill
+  /api/v1/staff/bills/{bill_id}/payments/:
+    post:
+      operationId: staff_bill_payment
+      summary: Record a payment and issue its receipt (B7)
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+      - in: path
+        name: bill_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: shift_required, more than the balance, or a missing reference
+  /api/v1/staff/bills/{bill_id}/refund-requests/:
+    post:
+      operationId: staff_bill_refund_request
+      summary: Ask for a refund (B10)
+      parameters:
+      - in: path
+        name: bill_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefundRequestRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRequest'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: More than can be refunded
   /api/v1/staff/bookings/:
     get:
       operationId: staff_bookings
@@ -7129,6 +8777,170 @@ paths:
               schema:
                 $ref: '#/components/schemas/StaffCalendar'
           description: ''
+  /api/v1/staff/cash-shifts/:
+    get:
+      operationId: staff_cash_shifts
+      summary: 'Shifts: my own, or every shift for approvers (B18)'
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - closed
+          - open
+          - reviewed
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCashShiftList'
+          description: ''
+    post:
+      operationId: staff_cash_shift_open
+      summary: Open my shift with the opening float (B20)
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpenShiftRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CashShift'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: A shift is already open
+  /api/v1/staff/cash-shifts/{shift_id}/close/:
+    post:
+      operationId: staff_cash_shift_close
+      summary: Close my shift with the counted totals (B21)
+      parameters:
+      - in: path
+        name: shift_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloseShiftRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CashShift'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not yours, or a note
+  /api/v1/staff/cash-shifts/{shift_id}/review/:
+    post:
+      operationId: staff_cash_shift_review
+      summary: Accept a closed shift (B22)
+      parameters:
+      - in: path
+        name: shift_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BillingDecisionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CashShift'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not closed, or your own
+  /api/v1/staff/cash-shifts/current/:
+    get:
+      operationId: staff_cash_shift_current
+      summary: My open shift with running totals (B19)
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CashShift'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: No open shift
   /api/v1/staff/clinical/alerts/:
     post:
       operationId: staff_clinical_alerts
@@ -7538,6 +9350,281 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Not the author or already marked
+  /api/v1/staff/consultations/{consultation_id}/lab-requests/:
+    get:
+      operationId: staff_consultation_lab_requests
+      summary: The consultation's lab requests (CR1)
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LabRequest'
+          description: ''
+    post:
+      operationId: staff_consultation_lab_request_create
+      summary: 'Write a lab request: draft with the consultation, or signed at once
+        after it (CR1)'
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabRequestInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabRequest'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required after signing, or access_reason_required
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not the author, or the consultation was entered in error
+  /api/v1/staff/consultations/{consultation_id}/prescription/:
+    get:
+      operationId: staff_consultation_prescription
+      summary: The consultation's prescription with items and alerts (P1)
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason for this patient first'
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: None yet
+  /api/v1/staff/consultations/{consultation_id}/prescription/items/:
+    post:
+      operationId: staff_prescription_item_add
+      summary: Add an item; creates the prescription on the first item (P2)
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemCreateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required after issue, or access_reason_required
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not the author, unknown drug, or the prescription can't take
+            items
+  /api/v1/staff/consultations/{consultation_id}/referrals/:
+    get:
+      operationId: staff_consultation_referrals
+      summary: The consultation's referral letters (CR1)
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Referral'
+          description: ''
+    post:
+      operationId: staff_consultation_referral_create
+      summary: 'Write a referral letter: draft with the consultation, or signed at
+        once after it (CR1)'
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReferralInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Referral'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required after signing, or access_reason_required
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not the author, or the consultation was entered in error
+  /api/v1/staff/consultations/{consultation_id}/sick-notes/:
+    get:
+      operationId: staff_consultation_sick_notes
+      summary: The consultation's sick notes (CR1)
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SickNote'
+          description: ''
+    post:
+      operationId: staff_consultation_sick_note_create
+      summary: 'Write a sick note: draft with the consultation, or signed at once
+        after it (CR1)'
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SickNoteInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SickNote'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required after signing, or access_reason_required
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not the author, or the consultation was entered in error
   /api/v1/staff/consultations/{consultation_id}/sign/:
     post:
       operationId: staff_consultation_sign
@@ -7585,6 +9672,45 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: No primary diagnosis, not a draft or not the author
+  /api/v1/staff/credit-notes/{credit_note_id}/payouts/:
+    post:
+      operationId: staff_credit_note_payout
+      summary: Record the refund paid back to the patient (B15)
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+      - in: path
+        name: credit_note_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PayoutInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: More than the credit note, or no shift
   /api/v1/staff/departments/:
     get:
       operationId: staff_departments_list
@@ -7817,6 +9943,163 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Already resolved
+  /api/v1/staff/documents/:
+    get:
+      operationId: staff_documents
+      summary: Documents of a patient or a visit, newest first (D1)
+      parameters:
+      - in: query
+        name: facility_patient_id
+        schema:
+          type: string
+      - in: query
+        name: kind
+        schema:
+          type: string
+        description: prescription, referral, lab_request, sick_note
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: visit_id
+        schema:
+          type: string
+      tags:
+      - documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocumentRow'
+          description: ''
+  /api/v1/staff/documents/{document_id}/:
+    get:
+      operationId: staff_document
+      summary: Document metadata and versions (D1)
+      parameters:
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: access_reason_required
+  /api/v1/staff/documents/{document_id}/download-link/:
+    post:
+      operationId: staff_document_download_link
+      summary: Signed link to the current version, 5 minutes; audited (D2)
+      parameters:
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Link'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: access_reason_required
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Still rendering
+  /api/v1/staff/documents/{document_id}/print/:
+    post:
+      operationId: staff_document_print
+      summary: Print a document released to the patient; audited (D3)
+      parameters:
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Link'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found or not released
+  /api/v1/staff/drugs/:
+    get:
+      operationId: staff_drug_search
+      summary: Catalogue drugs by generic name, with availability here (PS1)
+      parameters:
+      - in: query
+        name: q
+        schema:
+          type: string
+        required: true
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DrugRow'
+          description: ''
   /api/v1/staff/duty-status/:
     get:
       operationId: staff_duty_status
@@ -8256,6 +10539,85 @@ paths:
               schema:
                 $ref: '#/components/schemas/Checklist'
           description: ''
+  /api/v1/staff/help-articles/:
+    get:
+      operationId: staff_help_articles_list
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: string
+          enum:
+          - account_security
+          - booking_visits
+          - facility_work
+          - family_profile
+          - getting_started
+          - notifications
+          - other
+          - privacy
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: Search text, 2-100 characters
+      tags:
+      - help
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedHelpArticleSummaryList'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad filter
+  /api/v1/staff/help-articles/{slug}/:
+    get:
+      operationId: staff_help_articles_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - help
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HelpArticle'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not published
   /api/v1/staff/insurer-rules/:
     get:
       operationId: staff_insurer_rules_list
@@ -9939,6 +12301,500 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: rate_limited
+  /api/v1/staff/payments/{payment_id}/void-requests/:
+    post:
+      operationId: staff_payment_void_request
+      summary: Ask for a payment to be voided (B9)
+      parameters:
+      - in: path
+        name: payment_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoidRequestRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRequest'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: A void is already pending
+  /api/v1/staff/pharmacy/availability/:
+    get:
+      operationId: staff_pharmacy_availability
+      summary: Catalogue drugs with their availability here (PA1)
+      parameters:
+      - in: query
+        name: available
+        schema:
+          type: boolean
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAvailabilityRowList'
+          description: ''
+  /api/v1/staff/pharmacy/availability/{drug_code}/:
+    put:
+      operationId: staff_pharmacy_availability_set
+      summary: Mark a catalogue drug available or not here (PA2)
+      parameters:
+      - in: path
+        name: drug_code
+        schema:
+          type: string
+        required: true
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvailabilityWriteRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailabilityRow'
+          description: ''
+  /api/v1/staff/pharmacy/queue/:
+    get:
+      operationId: staff_pharmacy_queue
+      summary: Prescriptions to dispense at my facility, oldest first (PQ1)
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - partly
+          - queried
+          - ready
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPharmacyQueueRowList'
+          description: ''
+  /api/v1/staff/prescription-items/{item_id}/:
+    patch:
+      operationId: staff_prescription_item_update
+      summary: Edit a draft item (P3)
+      parameters:
+      - in: path
+        name: item_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedItemUpdateRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Locked after issue or not the author
+    delete:
+      operationId: staff_prescription_item_delete
+      summary: Remove a draft item (P4)
+      parameters:
+      - in: path
+        name: item_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: version
+        schema:
+          type: integer
+        required: true
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Locked after issue or not the author
+  /api/v1/staff/prescription-items/{item_id}/cancel/:
+    post:
+      operationId: staff_prescription_item_cancel
+      summary: Cancel an issued item with a reason (P5)
+      parameters:
+      - in: path
+        name: item_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: A draft item, or already dispensed
+  /api/v1/staff/prescription-queries/{query_id}/answer/:
+    post:
+      operationId: staff_prescription_query_answer
+      summary: Link the addendum that answers the question (PQ3)
+      parameters:
+      - in: path
+        name: query_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryAnswerRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrescriptionQuery'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not open, or not this consultation
+  /api/v1/staff/prescription-queries/{query_id}/close/:
+    post:
+      operationId: staff_prescription_query_close
+      summary: Close an answered question (PQ4)
+      parameters:
+      - in: path
+        name: query_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrescriptionQuery'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not answered yet
+  /api/v1/staff/prescriptions/{prescription_id}/:
+    get:
+      operationId: staff_prescription_detail
+      summary: A prescription with dispense records and queries (P7)
+      parameters:
+      - in: path
+        name: prescription_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason for this patient first'
+  /api/v1/staff/prescriptions/{prescription_id}/cancel/:
+    post:
+      operationId: staff_prescription_cancel
+      summary: Cancel the whole prescription with a reason (P6)
+      parameters:
+      - in: path
+        name: prescription_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VersionReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Something was dispensed
+  /api/v1/staff/prescriptions/{prescription_id}/dispense/:
+    post:
+      operationId: staff_prescription_dispense
+      summary: Record and sign a dispensing (PD1)
+      parameters:
+      - in: path
+        name: prescription_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DispenseRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prescription'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Identity, substitution, quantity or controlled-medicine rule
+  /api/v1/staff/prescriptions/{prescription_id}/labels/:
+    get:
+      operationId: staff_prescription_labels
+      summary: Dosing labels for the dispensed lines (PD2)
+      parameters:
+      - in: query
+        name: language
+        schema:
+          type: string
+          enum:
+          - en
+          - fr
+          - rw
+      - in: path
+        name: prescription_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Labels'
+          description: ''
+  /api/v1/staff/prescriptions/{prescription_id}/queries/:
+    post:
+      operationId: staff_prescription_query_raise
+      summary: Send the prescription back to the doctor with a question (PQ2)
+      parameters:
+      - in: path
+        name: prescription_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryCreateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrescriptionQuery'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: A question is already open
   /api/v1/staff/queue/board/:
     get:
       operationId: staff_queue_board
@@ -10064,6 +12920,48 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Already reviewed
+  /api/v1/staff/receipts/{receipt_id}/:
+    get:
+      operationId: staff_receipt
+      summary: A receipt for printing (B16)
+      parameters:
+      - in: path
+        name: receipt_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Receipt'
+          description: ''
+  /api/v1/staff/receipts/{receipt_id}/send/:
+    post:
+      operationId: staff_receipt_send
+      summary: Send the receipt to the patient again (B17)
+      parameters:
+      - in: path
+        name: receipt_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '202':
+          description: No response body
   /api/v1/staff/reports/operations/:
     get:
       operationId: staff_reports_operations
@@ -10495,6 +13393,224 @@ paths:
               schema:
                 $ref: '#/components/schemas/SlotTaken'
           description: ''
+  /api/v1/staff/support-requests/:
+    get:
+      operationId: staff_support_requests_list
+      description: Shared by the patient and staff requester endpoints.
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: scope
+        schema:
+          type: string
+          enum:
+          - facility
+          - mine
+        description: Default mine
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - active
+          - closed
+      tags:
+      - support
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSupportRequestListList'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Scope
+    post:
+      operationId: staff_support_requests_create
+      description: Shared by the patient and staff requester endpoints.
+      tags:
+      - support
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SupportRequestCreateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportRequest'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid fields, or health details in the text
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Too many open requests
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Too many requests
+  /api/v1/staff/support-requests/{request_id}/:
+    get:
+      operationId: staff_support_request
+      description: Shared by the patient and staff requester endpoints.
+      parameters:
+      - in: path
+        name: request_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - support
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportRequest'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not visible
+  /api/v1/staff/support-requests/{request_id}/close/:
+    post:
+      operationId: staff_support_request_close
+      description: Shared by the patient and staff requester endpoints.
+      parameters:
+      - in: path
+        name: request_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - support
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportRequest'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Read-only
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not visible
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Already closed
+  /api/v1/staff/support-requests/{request_id}/messages/:
+    post:
+      operationId: staff_support_request_message
+      description: Shared by the patient and staff requester endpoints.
+      parameters:
+      - in: path
+        name: request_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - support
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageCreateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SupportRequest'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid text
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Read-only
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not visible
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Closed
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Too many requests
   /api/v1/staff/tariff-items/:
     get:
       operationId: staff_tariff_items_list
@@ -10760,6 +13876,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/VisitDetail'
           description: ''
+  /api/v1/staff/visits/{visit_id}/bill/:
+    get:
+      operationId: staff_visit_bill
+      summary: The visit's bill, opened on first use (B1)
+      parameters:
+      - in: path
+        name: visit_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+          description: ''
   /api/v1/staff/visits/{visit_id}/consultation/:
     post:
       operationId: staff_visit_consultation_open
@@ -10866,6 +14005,41 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: follow_up_exists
+  /api/v1/staff/visits/{visit_id}/insurance-verifications/:
+    post:
+      operationId: staff_visit_insurance_verification
+      summary: Verify the patient's insurance for this visit, or reject it (B6)
+      parameters:
+      - in: path
+        name: visit_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerificationInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown card, referral letter, or paid
   /api/v1/staff/visits/{visit_id}/vitals/:
     get:
       operationId: staff_visit_vitals
@@ -11187,6 +14361,25 @@ components:
       - care_consent
       - patient_ref
       - proof
+    AddLineRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        tariff_code:
+          type: string
+          minLength: 1
+          maxLength: 40
+        quantity:
+          type: integer
+          maximum: 1000
+          minimum: 1
+      required:
+      - quantity
+      - tariff_code
+      - version
     Addendum:
       type: object
       properties:
@@ -11259,6 +14452,20 @@ components:
         phone:
           type: string
           maxLength: 20
+    AgeGroupEnum:
+      enum:
+      - infant
+      - child
+      - teen
+      - adult
+      - older
+      type: string
+      description: |-
+        * `infant` - infant
+        * `child` - child
+        * `teen` - teen
+        * `adult` - adult
+        * `older` - older
     AgreementsBlock:
       type: object
       properties:
@@ -11344,6 +14551,32 @@ components:
         * `allergy` - allergy
         * `duplicate` - duplicate
         * `dose` - dose
+    AlertOverride:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        kind:
+          $ref: '#/components/schemas/AlertKindEnum'
+        reason:
+          type: string
+          maxLength: 300
+          minLength: 5
+      required:
+      - kind
+      - reason
+    AlertOverrideRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        kind:
+          $ref: '#/components/schemas/AlertKindEnum'
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 300
+      required:
+      - kind
+      - reason
     AlertResult:
       type: object
       properties:
@@ -11385,12 +14618,22 @@ components:
       - severity
       - substance
       - verification_status
+    AllergyInputCategoryEnum:
+      enum:
+      - drug
+      - food
+      - other
+      type: string
+      description: |-
+        * `drug` - Drug
+        * `food` - Food
+        * `other` - Other
     AllergyInputRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
       properties:
         category:
-          $ref: '#/components/schemas/CategoryEnum'
+          $ref: '#/components/schemas/AllergyInputCategoryEnum'
         substance_text:
           type: string
           minLength: 1
@@ -11866,6 +15109,89 @@ components:
       required:
       - action
       - id
+    ApprovalKindEnum:
+      enum:
+      - void_payment
+      - refund
+      - waiver
+      type: string
+      description: |-
+        * `void_payment` - Void a payment
+        * `refund` - Refund
+        * `waiver` - Waiver
+    ApprovalRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: '#/components/schemas/ApprovalKindEnum'
+        bill_id:
+          type: string
+          format: uuid
+        payment_id:
+          type: string
+          format: uuid
+          nullable: true
+        amount_rwf:
+          type: integer
+          nullable: true
+        reason_code:
+          type: string
+        reason_text:
+          type: string
+        requested_by_name:
+          type: string
+        requested_at:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/ApprovalStatusEnum'
+        decided_by_name:
+          type: string
+          nullable: true
+        decided_at:
+          type: string
+          format: date-time
+          nullable: true
+        decision_note:
+          type: string
+        is_self_approved:
+          type: boolean
+        patient_display_name:
+          type: string
+        version:
+          type: integer
+      required:
+      - amount_rwf
+      - bill_id
+      - decided_at
+      - decided_by_name
+      - decision_note
+      - id
+      - is_self_approved
+      - kind
+      - patient_display_name
+      - payment_id
+      - reason_code
+      - reason_text
+      - requested_at
+      - requested_by_name
+      - status
+      - version
+    ApprovalStatusEnum:
+      enum:
+      - pending
+      - approved
+      - rejected
+      - cancelled
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `approved` - Approved
+        * `rejected` - Rejected
+        * `cancelled` - Cancelled
     ApprovalsDigestEnum:
       enum:
       - immediate
@@ -11953,6 +15279,254 @@ components:
       required:
       - full_name
       - membership_id
+    AvailabilityRow:
+      type: object
+      properties:
+        drug_code:
+          type: string
+        display:
+          type: string
+        is_available:
+          type: boolean
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - display
+      - drug_code
+      - is_available
+      - updated_at
+    AvailabilityWriteRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        is_available:
+          type: boolean
+      required:
+      - is_available
+    Balances:
+      type: object
+      properties:
+        total_balance_rwf:
+          type: integer
+        bills:
+          type: array
+          items:
+            $ref: '#/components/schemas/BillRow'
+      required:
+      - bills
+      - total_balance_rwf
+    Bill:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        visit_id:
+          type: string
+          format: uuid
+        facility_patient_id:
+          type: string
+          format: uuid
+        patient_display_name:
+          type: string
+        service_date:
+          type: string
+          format: date
+        ticket_number:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/BillStatusEnum'
+        insurance:
+          $ref: '#/components/schemas/Insurance'
+        totals:
+          $ref: '#/components/schemas/Totals'
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/BillLine'
+        missing_prices:
+          type: array
+          items:
+            $ref: '#/components/schemas/MissingPrice'
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payment'
+        exemptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Exemption'
+        credit_notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditNote'
+        approval_requests:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApprovalRequest'
+        verifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Verification'
+        version:
+          type: integer
+      required:
+      - approval_requests
+      - credit_notes
+      - exemptions
+      - facility_patient_id
+      - id
+      - insurance
+      - lines
+      - missing_prices
+      - patient_display_name
+      - payments
+      - service_date
+      - status
+      - ticket_number
+      - totals
+      - verifications
+      - version
+      - visit_id
+    BillInsuranceStatusEnum:
+      enum:
+      - none
+      - unverified
+      - verified
+      - rejected
+      type: string
+      description: |-
+        * `none` - none
+        * `unverified` - unverified
+        * `verified` - verified
+        * `rejected` - rejected
+    BillLine:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: '#/components/schemas/TariffKindEnum'
+        code:
+          type: string
+        name:
+          type: string
+        unit_price_rwf:
+          type: integer
+        quantity:
+          type: integer
+        total_rwf:
+          type: integer
+        insurer_share_rwf:
+          type: integer
+        patient_share_rwf:
+          type: integer
+        is_covered:
+          type: boolean
+        is_medicine:
+          type: boolean
+        removed:
+          type: boolean
+        removed_reason:
+          type: string
+      required:
+      - code
+      - id
+      - insurer_share_rwf
+      - is_covered
+      - is_medicine
+      - kind
+      - name
+      - patient_share_rwf
+      - quantity
+      - removed
+      - removed_reason
+      - total_rwf
+      - unit_price_rwf
+    BillRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        visit_id:
+          type: string
+          format: uuid
+        patient_display_name:
+          type: string
+        service_date:
+          type: string
+          format: date
+        ticket_number:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/BillStatusEnum'
+        insurance_status:
+          $ref: '#/components/schemas/BillInsuranceStatusEnum'
+        total_rwf:
+          type: integer
+        patient_share_rwf:
+          type: integer
+        paid_rwf:
+          type: integer
+        balance_rwf:
+          type: integer
+        version:
+          type: integer
+      required:
+      - balance_rwf
+      - id
+      - insurance_status
+      - paid_rwf
+      - patient_display_name
+      - patient_share_rwf
+      - service_date
+      - status
+      - ticket_number
+      - total_rwf
+      - version
+      - visit_id
+    BillStatusEnum:
+      enum:
+      - open
+      - partly_paid
+      - paid
+      - voided
+      - credited
+      type: string
+      description: |-
+        * `open` - Open
+        * `partly_paid` - Partly paid
+        * `paid` - Paid
+        * `voided` - Voided
+        * `credited` - Credited
+    BillingDecisionRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        note:
+          type: string
+          default: ''
+          maxLength: 300
+      required:
+      - version
+    BillingVersionRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+      required:
+      - version
     BlankEnum:
       enum:
       - ''
@@ -12443,16 +16017,72 @@ components:
       required:
       - granted
       - version
-    CategoryEnum:
-      enum:
-      - drug
-      - food
-      - other
-      type: string
-      description: |-
-        * `drug` - Drug
-        * `food` - Food
-        * `other` - Other
+    CashShift:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        membership_id:
+          type: string
+          format: uuid
+        cashier_name:
+          type: string
+        status:
+          $ref: '#/components/schemas/ShiftStatusEnum'
+        opened_at:
+          type: string
+          format: date-time
+        opening_float_rwf:
+          type: integer
+        closed_at:
+          type: string
+          format: date-time
+          nullable: true
+        expected_totals:
+          $ref: '#/components/schemas/MethodTotals'
+        counted_totals:
+          allOf:
+          - $ref: '#/components/schemas/MethodTotals'
+          nullable: true
+        difference_rwf:
+          type: integer
+          nullable: true
+        note:
+          type: string
+        payment_count:
+          type: integer
+        reviewed_by_name:
+          type: string
+          nullable: true
+        reviewed_at:
+          type: string
+          format: date-time
+          nullable: true
+        review_note:
+          type: string
+        is_self_reviewed:
+          type: boolean
+        version:
+          type: integer
+      required:
+      - cashier_name
+      - closed_at
+      - counted_totals
+      - difference_rwf
+      - expected_totals
+      - id
+      - is_self_reviewed
+      - membership_id
+      - note
+      - opened_at
+      - opening_float_rwf
+      - payment_count
+      - review_note
+      - reviewed_at
+      - reviewed_by_name
+      - status
+      - version
     CertaintyEnum:
       enum:
       - provisional
@@ -12681,6 +16311,18 @@ components:
       required:
       - claim
       - profile
+    ClinicalDocumentKindEnum:
+      enum:
+      - prescription
+      - referral
+      - lab_request
+      - sick_note
+      type: string
+      description: |-
+        * `prescription` - Prescription
+        * `referral` - Referral letter
+        * `lab_request` - Lab or imaging request
+        * `sick_note` - Sick note
     ClinicalPatient:
       type: object
       properties:
@@ -12755,6 +16397,22 @@ components:
       required:
       - council
       - licence_number
+    CloseShiftRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        counted_totals:
+          $ref: '#/components/schemas/CountedRequest'
+        note:
+          type: string
+          default: ''
+          maxLength: 500
+      required:
+      - counted_totals
+      - version
     CodeRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -13089,6 +16747,59 @@ components:
         * `ncnm` - National Council of Nurses and Midwives
         * `npc` - National Pharmacy Council
         * `other` - Other council
+    CountedRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        cash:
+          type: integer
+          maximum: 100000000
+          minimum: 0
+          default: 0
+        mtn_momo:
+          type: integer
+          maximum: 100000000
+          minimum: 0
+          default: 0
+        airtel_money:
+          type: integer
+          maximum: 100000000
+          minimum: 0
+          default: 0
+        card:
+          type: integer
+          maximum: 100000000
+          minimum: 0
+          default: 0
+    CreditNote:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        number:
+          type: string
+        amount_rwf:
+          type: integer
+        paid_out_rwf:
+          type: integer
+        reason:
+          type: string
+        issued_at:
+          type: string
+          format: date-time
+        payouts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payout'
+      required:
+      - amount_rwf
+      - id
+      - issued_at
+      - number
+      - paid_out_rwf
+      - payouts
+      - reason
     CsrfToken:
       type: object
       properties:
@@ -13460,6 +17171,18 @@ components:
           type: string
       required:
       - detail
+    DetailSection:
+      type: object
+      properties:
+        heading:
+          type: string
+        lines:
+          type: array
+          items:
+            type: string
+      required:
+      - heading
+      - lines
     Diagnosis:
       type: object
       properties:
@@ -13637,6 +17360,119 @@ components:
       description: |-
         * `primary` - Primary
         * `secondary` - Secondary
+    DispenseLineInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        item_id:
+          type: string
+          format: uuid
+        outcome:
+          $ref: '#/components/schemas/DispenseOutcomeEnum'
+        quantity:
+          type: integer
+          maximum: 10000
+          minimum: 0
+          nullable: true
+        substitute_drug_code:
+          type: string
+          default: ''
+          maxLength: 40
+        substitution_reason:
+          type: string
+          default: ''
+          maxLength: 300
+      required:
+      - item_id
+      - outcome
+    DispenseLineOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        item_id:
+          type: string
+          format: uuid
+        outcome:
+          $ref: '#/components/schemas/DispenseOutcomeEnum'
+        quantity:
+          type: integer
+        substitute_display:
+          type: string
+        substitution_reason:
+          type: string
+      required:
+      - id
+      - item_id
+      - outcome
+      - quantity
+      - substitute_display
+      - substitution_reason
+    DispenseOutcomeEnum:
+      enum:
+      - full
+      - partial
+      - substituted
+      - not_available
+      type: string
+      description: |-
+        * `full` - Dispensed in full
+        * `partial` - Dispensed in part
+        * `substituted` - Generic substitution
+        * `not_available` - Not available
+    DispenseRecord:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        pharmacist_name:
+          type: string
+        identity_check_method:
+          $ref: '#/components/schemas/IdentityCheckMethodEnum'
+        controlled_confirmed:
+          type: boolean
+        signed_at:
+          type: string
+          format: date-time
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/DispenseLineOut'
+      required:
+      - controlled_confirmed
+      - id
+      - identity_check_method
+      - lines
+      - pharmacist_name
+      - signed_at
+    DispenseRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        identity_check_method:
+          $ref: '#/components/schemas/IdentityCheckMethodEnum'
+        verification_code:
+          type: string
+          default: ''
+          maxLength: 24
+        controlled_confirmed:
+          type: boolean
+          default: false
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/DispenseLineInputRequest'
+          maxItems: 50
+          minItems: 1
+      required:
+      - identity_check_method
+      - lines
+      - version
     Display:
       type: object
       properties:
@@ -14057,6 +17893,54 @@ components:
       - district_code
       - facilities
       - province
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: '#/components/schemas/ClinicalDocumentKindEnum'
+        number:
+          type: string
+        document_date:
+          type: string
+          format: date
+        patient_id:
+          type: string
+          format: uuid
+        facility_name:
+          type: string
+        author_name:
+          type: string
+        status:
+          $ref: '#/components/schemas/VerificationStatusEnum'
+        version_no:
+          type: integer
+          description: 0 while the first version is rendering
+        released_at:
+          type: string
+          format: date-time
+          nullable: true
+        verification_code:
+          type: string
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Version'
+      required:
+      - author_name
+      - document_date
+      - facility_name
+      - id
+      - kind
+      - number
+      - patient_id
+      - released_at
+      - status
+      - verification_code
+      - version_no
+      - versions
     DocumentInputRequest:
       type: object
       properties:
@@ -14116,6 +18000,91 @@ components:
       description: |-
         * `accepted` - accepted
         * `needs_change` - needs_change
+    DocumentRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: '#/components/schemas/ClinicalDocumentKindEnum'
+        number:
+          type: string
+        document_date:
+          type: string
+          format: date
+        patient_id:
+          type: string
+          format: uuid
+        facility_name:
+          type: string
+        author_name:
+          type: string
+        status:
+          $ref: '#/components/schemas/VerificationStatusEnum'
+        version_no:
+          type: integer
+          description: 0 while the first version is rendering
+        released_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - author_name
+      - document_date
+      - facility_name
+      - id
+      - kind
+      - number
+      - patient_id
+      - released_at
+      - status
+      - version_no
+    DosingLabel:
+      type: object
+      properties:
+        line_id:
+          type: string
+          format: uuid
+        language:
+          $ref: '#/components/schemas/LanguageEnum'
+        drug:
+          type: string
+        quantity:
+          type: integer
+        dose:
+          type: string
+        frequency:
+          type: string
+        route:
+          type: string
+        duration:
+          type: string
+        instructions:
+          type: string
+        patient_name:
+          type: string
+        dispensed_on:
+          type: string
+          format: date
+        facility_name:
+          type: string
+        prescription_number:
+          type: string
+      required:
+      - dispensed_on
+      - dose
+      - drug
+      - duration
+      - facility_name
+      - frequency
+      - instructions
+      - language
+      - line_id
+      - patient_name
+      - prescription_number
+      - quantity
+      - route
     DownloadLink:
       type: object
       properties:
@@ -14149,6 +18118,31 @@ components:
 
             * `inline` - inline
             * `attachment` - attachment
+    DrugRow:
+      type: object
+      properties:
+        code:
+          type: string
+        display:
+          type: string
+        generic_name:
+          type: string
+        strength:
+          type: string
+        form:
+          type: string
+        is_controlled:
+          type: boolean
+        available_here:
+          type: boolean
+      required:
+      - available_here
+      - code
+      - display
+      - form
+      - generic_name
+      - is_controlled
+      - strength
     DrugsItem:
       type: object
       properties:
@@ -14422,6 +18416,16 @@ components:
         * `exact_identifier` - exact_identifier
         * `strong` - strong
         * `possible` - possible
+    DurationEnum:
+      enum:
+      - today
+      - days
+      - week
+      type: string
+      description: |-
+        * `today` - today
+        * `days` - days
+        * `week` - week
     DutyRow:
       type: object
       properties:
@@ -14704,6 +18708,69 @@ components:
       required:
       - exception
       - warnings
+    Exemption:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        reason_code:
+          $ref: '#/components/schemas/ExemptionReasonEnum'
+        reason_text:
+          type: string
+        amount_rwf:
+          type: integer
+        applied_by_name:
+          type: string
+        applied_at:
+          type: string
+          format: date-time
+          nullable: true
+        is_pending:
+          type: boolean
+      required:
+      - amount_rwf
+      - applied_at
+      - applied_by_name
+      - id
+      - is_pending
+      - reason_code
+      - reason_text
+    ExemptionInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        reason_code:
+          $ref: '#/components/schemas/ExemptionReasonEnum'
+        reason_text:
+          type: string
+          default: ''
+          maxLength: 300
+        amount_rwf:
+          type: integer
+          maximum: 100000000
+          minimum: 1
+      required:
+      - amount_rwf
+      - reason_code
+      - version
+    ExemptionReasonEnum:
+      enum:
+      - indigent
+      - staff
+      - public_programme
+      - waiver
+      - other
+      type: string
+      description: |-
+        * `indigent` - Indigent
+        * `staff` - Staff
+        * `public_programme` - Public programme
+        * `waiver` - Waiver
+        * `other` - Other
     ExternalMatch:
       type: object
       properties:
@@ -15099,6 +19166,10 @@ components:
             type: string
         accepts_insurance:
           $ref: '#/components/schemas/AcceptsInsuranceEnum'
+        insurers:
+          type: array
+          items:
+            type: string
         fee_rwf:
           type: integer
           nullable: true
@@ -15114,6 +19185,13 @@ components:
           oneOf:
           - $ref: '#/components/schemas/QueueLoadEnum'
           - $ref: '#/components/schemas/NullEnum'
+        waiting:
+          type: integer
+          nullable: true
+        wait_range:
+          allOf:
+          - $ref: '#/components/schemas/WaitRange'
+          nullable: true
         allows_remote_join:
           type: boolean
         referral_hint:
@@ -15132,6 +19210,7 @@ components:
       - distance_km
       - district
       - fee_rwf
+      - insurers
       - lat
       - level_of_care
       - lng
@@ -15147,6 +19226,8 @@ components:
       - service_name_i18n
       - slug
       - type
+      - wait_range
+      - waiting
     FacilityStatusEnum:
       enum:
       - draft
@@ -15434,6 +19515,24 @@ components:
         * `no_slot` - No open slot
         * `done` - Done
         * `cancelled` - Cancelled
+    FrequencyCodeEnum:
+      enum:
+      - once
+      - od
+      - bd
+      - tds
+      - qds
+      - nocte
+      - prn
+      type: string
+      description: |-
+        * `once` - Once
+        * `od` - Once a day
+        * `bd` - Twice a day
+        * `tds` - Three times a day
+        * `qds` - Four times a day
+        * `nocte` - At night
+        * `prn` - When needed
     GoLiveRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -15585,6 +19684,143 @@ components:
       - count
       - hour
       - weekday
+    HelpArticle:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        slug:
+          type: string
+          maxLength: 80
+        audience:
+          $ref: '#/components/schemas/HelpAudienceEnum'
+        category:
+          $ref: '#/components/schemas/HelpArticleCategoryEnum'
+        title_i18n:
+          $ref: '#/components/schemas/I18nTitle'
+        summary_i18n:
+          $ref: '#/components/schemas/I18nSummary'
+        sort_order:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        body_i18n:
+          $ref: '#/components/schemas/I18nBody'
+      required:
+      - audience
+      - body_i18n
+      - category
+      - id
+      - slug
+      - summary_i18n
+      - title_i18n
+      - updated_at
+    HelpArticleCategoryEnum:
+      enum:
+      - getting_started
+      - account_security
+      - booking_visits
+      - family_profile
+      - notifications
+      - privacy
+      - facility_work
+      - other
+      type: string
+      description: |-
+        * `getting_started` - Getting started
+        * `account_security` - Account and sign-in
+        * `booking_visits` - Bookings and visits
+        * `family_profile` - Family and profile
+        * `notifications` - Notifications
+        * `privacy` - Privacy
+        * `facility_work` - Working at the facility
+        * `other` - Other
+    HelpArticleStatusEnum:
+      enum:
+      - draft
+      - published
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `published` - Published
+    HelpArticleSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        slug:
+          type: string
+          maxLength: 80
+        audience:
+          $ref: '#/components/schemas/HelpAudienceEnum'
+        category:
+          $ref: '#/components/schemas/HelpArticleCategoryEnum'
+        title_i18n:
+          $ref: '#/components/schemas/I18nTitle'
+        summary_i18n:
+          $ref: '#/components/schemas/I18nSummary'
+        sort_order:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - audience
+      - category
+      - id
+      - slug
+      - summary_i18n
+      - title_i18n
+      - updated_at
+    HelpArticleWriteRequest:
+      type: object
+      properties:
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 80
+          pattern: ^[a-z0-9]+(-[a-z0-9]+)*$
+        audience:
+          $ref: '#/components/schemas/HelpAudienceEnum'
+        category:
+          $ref: '#/components/schemas/HelpArticleCategoryEnum'
+        title_i18n:
+          $ref: '#/components/schemas/I18nTitleRequest'
+        summary_i18n:
+          $ref: '#/components/schemas/I18nSummaryRequest'
+        body_i18n:
+          $ref: '#/components/schemas/I18nBodyRequest'
+        sort_order:
+          type: integer
+          maximum: 999
+          minimum: 0
+        version:
+          type: integer
+          minimum: 1
+      required:
+      - audience
+      - category
+      - slug
+      - title_i18n
+    HelpAudienceEnum:
+      enum:
+      - patient
+      - staff
+      type: string
+      description: |-
+        * `patient` - Patient
+        * `staff` - Staff
     HistoryDiagnosis:
       type: object
       properties:
@@ -15707,6 +19943,54 @@ components:
       - days
       - service_id
       - version
+    I18nBody:
+      type: object
+      properties:
+        rw:
+          type: string
+          maxLength: 8000
+        en:
+          type: string
+          maxLength: 8000
+        fr:
+          type: string
+          maxLength: 8000
+    I18nBodyRequest:
+      type: object
+      properties:
+        rw:
+          type: string
+          maxLength: 8000
+        en:
+          type: string
+          maxLength: 8000
+        fr:
+          type: string
+          maxLength: 8000
+    I18nSummary:
+      type: object
+      properties:
+        rw:
+          type: string
+          maxLength: 300
+        en:
+          type: string
+          maxLength: 300
+        fr:
+          type: string
+          maxLength: 300
+    I18nSummaryRequest:
+      type: object
+      properties:
+        rw:
+          type: string
+          maxLength: 300
+        en:
+          type: string
+          maxLength: 300
+        fr:
+          type: string
+          maxLength: 300
     I18nTextRequest:
       type: object
       properties:
@@ -15716,6 +20000,30 @@ components:
           type: string
         fr:
           type: string
+    I18nTitle:
+      type: object
+      properties:
+        rw:
+          type: string
+          maxLength: 120
+        en:
+          type: string
+          maxLength: 120
+        fr:
+          type: string
+          maxLength: 120
+    I18nTitleRequest:
+      type: object
+      properties:
+        rw:
+          type: string
+          maxLength: 120
+        en:
+          type: string
+          maxLength: 120
+        fr:
+          type: string
+          maxLength: 120
     Identifier:
       type: object
       properties:
@@ -15780,6 +20088,14 @@ components:
             $ref: '#/components/schemas/Identifier'
       required:
       - results
+    IdentityCheckMethodEnum:
+      enum:
+      - ticket_name_dob
+      - verification_code
+      type: string
+      description: |-
+        * `ticket_name_dob` - Ticket, name and date of birth
+        * `verification_code` - Prescription code
     ImportCreateRequest:
       type: object
       properties:
@@ -15859,6 +20175,37 @@ components:
       - rows
       - unchanged
       - update
+    Insurance:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/BillInsuranceStatusEnum'
+        insurance_profile_id:
+          type: string
+          format: uuid
+          nullable: true
+        insurer_code:
+          type: string
+        insurer_display:
+          type: string
+        member_number:
+          type: string
+        is_accepted:
+          type: boolean
+        patient_share_bp:
+          type: integer
+          nullable: true
+        requires_referral:
+          type: boolean
+      required:
+      - insurance_profile_id
+      - insurer_code
+      - insurer_display
+      - is_accepted
+      - member_number
+      - patient_share_bp
+      - requires_referral
+      - status
     InsuranceBadge:
       type: object
       properties:
@@ -16421,6 +20768,135 @@ components:
       required:
       - comment
       - target
+    ItemCreateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        drug_code:
+          type: string
+          default: ''
+          maxLength: 40
+        free_text_drug:
+          type: string
+          default: ''
+          maxLength: 120
+        dose:
+          type: string
+          minLength: 1
+          maxLength: 60
+        frequency_code:
+          $ref: '#/components/schemas/FrequencyCodeEnum'
+        route:
+          $ref: '#/components/schemas/RouteEnum'
+        duration_days:
+          type: integer
+          maximum: 365
+          minimum: 1
+          nullable: true
+        quantity:
+          type: integer
+          maximum: 10000
+          minimum: 1
+          nullable: true
+        instructions:
+          type: string
+          default: ''
+          maxLength: 500
+        substitution_allowed:
+          type: boolean
+          default: true
+        alert_overrides:
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertOverrideRequest'
+        replaces_item_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - dose
+      - frequency_code
+      - route
+    LabRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        author_name:
+          type: string
+        signed_at:
+          type: string
+          format: date-time
+          nullable: true
+        document_id:
+          type: string
+          format: uuid
+          nullable: true
+        tests:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabTest'
+        reason:
+          type: string
+      required:
+      - author_name
+      - document_id
+      - id
+      - reason
+      - signed_at
+      - tests
+    LabRequestInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        tests:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabTestRequest'
+          maxItems: 20
+          minItems: 1
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - reason
+      - tests
+    LabTest:
+      type: object
+      properties:
+        code:
+          type: string
+          default: ''
+          maxLength: 20
+        name:
+          type: string
+          maxLength: 120
+      required:
+      - name
+    LabTestRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          default: ''
+          maxLength: 20
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+      required:
+      - name
+    Labels:
+      type: object
+      properties:
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/DosingLabel'
+      required:
+      - labels
     LanguageEnum:
       enum:
       - rw
@@ -16540,6 +21016,18 @@ components:
         * `expiring` - expiring
         * `expired` - expired
         * `missing` - missing
+    Link:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - expires_at
+      - url
     LocationBlock:
       type: object
       properties:
@@ -17036,11 +21524,36 @@ components:
         * `cancelled` - Cancelled
         * `executed` - Executed
         * `undone` - Undone
+    MessageCreateRequest:
+      type: object
+      properties:
+        body:
+          type: string
+          minLength: 1
+          maxLength: 4000
+      required:
+      - body
     MethodEnum:
       enum:
       - password_totp
       type: string
       description: '* `password_totp` - password_totp'
+    MethodTotals:
+      type: object
+      properties:
+        cash:
+          type: integer
+        mtn_momo:
+          type: integer
+        airtel_money:
+          type: integer
+        card:
+          type: integer
+      required:
+      - airtel_money
+      - card
+      - cash
+      - mtn_momo
     MfaCodeRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -17127,6 +21640,27 @@ components:
         * `rw` - rw
         * `en` - en
         * `fr` - fr
+    MissingPrice:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/MissingPriceKindEnum'
+        code:
+          type: string
+        name:
+          type: string
+      required:
+      - code
+      - kind
+      - name
+    MissingPriceKindEnum:
+      enum:
+      - service
+      - medicine
+      type: string
+      description: |-
+        * `service` - service
+        * `medicine` - medicine
     ModeEnum:
       enum:
       - upsert
@@ -17179,6 +21713,39 @@ components:
       - expires_on
       - kind
       - number
+    NewShareLink:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        expires_at:
+          type: string
+          format: date-time
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+        access_count:
+          type: integer
+        last_accessed_at:
+          type: string
+          format: date-time
+          nullable: true
+        token:
+          type: string
+          description: Shown once; only its SHA-256 is stored
+        url:
+          type: string
+          format: uri
+      required:
+      - access_count
+      - expires_at
+      - id
+      - last_accessed_at
+      - revoked_at
+      - token
+      - url
     NoteInputRequest:
       type: object
       properties:
@@ -17349,6 +21916,16 @@ components:
     NullEnum:
       enum:
       - null
+    OpenShiftRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        opening_float_rwf:
+          type: integer
+          maximum: 100000000
+          minimum: 0
+      required:
+      - opening_float_rwf
     Operations:
       type: object
       properties:
@@ -17499,6 +22076,94 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ApplicationSummary'
+    PaginatedApprovalRequestList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApprovalRequest'
+      required:
+      - count
+      - next
+      - previous
+      - results
+    PaginatedAvailabilityRowList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AvailabilityRow'
+      required:
+      - count
+      - next
+      - previous
+      - results
+    PaginatedBillRowList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BillRow'
+      required:
+      - count
+      - next
+      - previous
+      - results
+    PaginatedCashShiftList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CashShift'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedConsultationRowList:
       type: object
       properties:
@@ -17659,6 +22324,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FacilityTypesPlatformItem'
+    PaginatedHelpArticleSummaryList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/HelpArticleSummary'
     PaginatedHistoryItemList:
       type: object
       properties:
@@ -17796,6 +22484,50 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MasterDataChange'
+    PaginatedPatientBillRowList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientBillRow'
+      required:
+      - count
+      - next
+      - previous
+      - results
+    PaginatedPatientPrescriptionRowList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientPrescriptionRow'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedPatientRecordRowList:
       type: object
       properties:
@@ -17813,6 +22545,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PatientRecordRow'
+      required:
+      - count
+      - next
+      - previous
+      - results
+    PaginatedPharmacyQueueRowList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/QueueRow'
       required:
       - count
       - next
@@ -17841,6 +22595,29 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PlatformFacility'
+    PaginatedPlatformHelpArticleSummaryList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformHelpArticleSummary'
     PaginatedPlatformMergeRequestList:
       type: object
       properties:
@@ -17863,6 +22640,29 @@ components:
       - next
       - previous
       - results
+    PaginatedPlatformSupportRequestListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformSupportRequestList'
     PaginatedPublicHolidaysItemList:
       type: object
       required:
@@ -18023,6 +22823,29 @@ components:
       - next
       - previous
       - results
+    PaginatedSupportRequestListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupportRequestList'
     PaginatedSymptomsItemList:
       type: object
       required:
@@ -18399,6 +23222,31 @@ components:
           type: string
           minLength: 1
           maxLength: 300
+    PatchedHelpArticleWriteRequest:
+      type: object
+      properties:
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 80
+          pattern: ^[a-z0-9]+(-[a-z0-9]+)*$
+        audience:
+          $ref: '#/components/schemas/HelpAudienceEnum'
+        category:
+          $ref: '#/components/schemas/HelpArticleCategoryEnum'
+        title_i18n:
+          $ref: '#/components/schemas/I18nTitleRequest'
+        summary_i18n:
+          $ref: '#/components/schemas/I18nSummaryRequest'
+        body_i18n:
+          $ref: '#/components/schemas/I18nBodyRequest'
+        sort_order:
+          type: integer
+          maximum: 999
+          minimum: 0
+        version:
+          type: integer
+          minimum: 1
     PatchedInsuranceUpdateRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -18490,6 +23338,50 @@ components:
           type: integer
           maximum: 2147483647
           minimum: -2147483648
+    PatchedItemUpdateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        drug_code:
+          type: string
+          default: ''
+          maxLength: 40
+        free_text_drug:
+          type: string
+          default: ''
+          maxLength: 120
+        dose:
+          type: string
+          minLength: 1
+          maxLength: 60
+        frequency_code:
+          $ref: '#/components/schemas/FrequencyCodeEnum'
+        route:
+          $ref: '#/components/schemas/RouteEnum'
+        duration_days:
+          type: integer
+          maximum: 365
+          minimum: 1
+          nullable: true
+        quantity:
+          type: integer
+          maximum: 10000
+          minimum: 1
+          nullable: true
+        instructions:
+          type: string
+          default: ''
+          maxLength: 500
+        substitution_allowed:
+          type: boolean
+          default: true
+        alert_overrides:
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertOverrideRequest'
+        version:
+          type: integer
+          minimum: 1
     PatchedLicencePatchInputRequest:
       type: object
       properties:
@@ -18926,6 +23818,20 @@ components:
           type: integer
           maximum: 100
           minimum: 0
+    PatchedTriageRequest:
+      type: object
+      properties:
+        priority:
+          $ref: '#/components/schemas/SupportPriorityEnum'
+        topic:
+          $ref: '#/components/schemas/SupportTopicEnum'
+        assigned_to_id:
+          type: string
+          format: uuid
+          nullable: true
+        version:
+          type: integer
+          minimum: 1
     PatientAddendum:
       type: object
       properties:
@@ -18943,6 +23849,134 @@ components:
       - body
       - reason
       - signed_at
+    PatientBill:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        facility_name:
+          type: string
+        service_date:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/BillStatusEnum'
+        total_rwf:
+          type: integer
+        patient_share_rwf:
+          type: integer
+        paid_rwf:
+          type: integer
+        balance_rwf:
+          type: integer
+        insurer_share_rwf:
+          type: integer
+        exempted_rwf:
+          type: integer
+        credited_rwf:
+          type: integer
+        refunded_rwf:
+          type: integer
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientBillLine'
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientPayment'
+        credit_notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientCreditNote'
+      required:
+      - balance_rwf
+      - credit_notes
+      - credited_rwf
+      - exempted_rwf
+      - facility_name
+      - id
+      - insurer_share_rwf
+      - lines
+      - paid_rwf
+      - patient_id
+      - patient_share_rwf
+      - payments
+      - refunded_rwf
+      - service_date
+      - status
+      - total_rwf
+    PatientBillLine:
+      type: object
+      properties:
+        name:
+          type: string
+        quantity:
+          type: integer
+        total_rwf:
+          type: integer
+        insurer_share_rwf:
+          type: integer
+        patient_share_rwf:
+          type: integer
+      required:
+      - insurer_share_rwf
+      - name
+      - patient_share_rwf
+      - quantity
+      - total_rwf
+    PatientBillRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        facility_name:
+          type: string
+        service_date:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/BillStatusEnum'
+        total_rwf:
+          type: integer
+        patient_share_rwf:
+          type: integer
+        paid_rwf:
+          type: integer
+        balance_rwf:
+          type: integer
+      required:
+      - balance_rwf
+      - facility_name
+      - id
+      - paid_rwf
+      - patient_id
+      - patient_share_rwf
+      - service_date
+      - status
+      - total_rwf
+    PatientCreditNote:
+      type: object
+      properties:
+        number:
+          type: string
+        amount_rwf:
+          type: integer
+        issued_at:
+          type: string
+          format: date-time
+      required:
+      - amount_rwf
+      - issued_at
+      - number
     PatientDiagnosis:
       type: object
       properties:
@@ -18962,6 +23996,98 @@ components:
       - display
       - plain_language
       - rank
+    PatientDocument:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: '#/components/schemas/ClinicalDocumentKindEnum'
+        number:
+          type: string
+        document_date:
+          type: string
+          format: date
+        patient_id:
+          type: string
+          format: uuid
+        facility_name:
+          type: string
+        author_name:
+          type: string
+        status:
+          $ref: '#/components/schemas/VerificationStatusEnum'
+        version_no:
+          type: integer
+          description: 0 while the first version is rendering
+        released_at:
+          type: string
+          format: date-time
+          nullable: true
+        verification_code:
+          type: string
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Version'
+        share_links:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShareLink'
+      required:
+      - author_name
+      - document_date
+      - facility_name
+      - id
+      - kind
+      - number
+      - patient_id
+      - released_at
+      - share_links
+      - status
+      - verification_code
+      - version_no
+      - versions
+    PatientItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        drug_display:
+          type: string
+        dose:
+          type: string
+        frequency_code:
+          $ref: '#/components/schemas/FrequencyCodeEnum'
+        route:
+          $ref: '#/components/schemas/RouteEnum'
+        duration_days:
+          type: integer
+          nullable: true
+        quantity:
+          type: integer
+        dispensed_quantity:
+          type: integer
+        instructions:
+          type: string
+        status:
+          $ref: '#/components/schemas/PrescriptionItemStatusEnum'
+        substitute_display:
+          type: string
+      required:
+      - dispensed_quantity
+      - dose
+      - drug_display
+      - duration_days
+      - frequency_code
+      - id
+      - instructions
+      - quantity
+      - route
+      - status
+      - substitute_display
     PatientLoginRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -19005,6 +24131,27 @@ components:
       - id
       - preferred_language
       - profiles
+    PatientPayment:
+      type: object
+      properties:
+        method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        amount_rwf:
+          type: integer
+        received_at:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/PaymentStatusEnum'
+        receipt_number:
+          type: string
+          nullable: true
+      required:
+      - amount_rwf
+      - method
+      - receipt_number
+      - received_at
+      - status
     PatientPreferences:
       type: object
       properties:
@@ -19044,6 +24191,81 @@ components:
       - quiet_hours
       - reminder_offsets_minutes
       - version
+    PatientPrescription:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        number:
+          type: string
+        facility_name:
+          type: string
+        prescriber_name:
+          type: string
+        status:
+          $ref: '#/components/schemas/PrescriptionStatusEnum'
+        issued_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        item_count:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientItem'
+      required:
+      - expires_at
+      - facility_name
+      - id
+      - issued_at
+      - item_count
+      - items
+      - number
+      - patient_id
+      - prescriber_name
+      - status
+    PatientPrescriptionRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        number:
+          type: string
+        facility_name:
+          type: string
+        prescriber_name:
+          type: string
+        status:
+          $ref: '#/components/schemas/PrescriptionStatusEnum'
+        issued_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        item_count:
+          type: integer
+      required:
+      - expires_at
+      - facility_name
+      - id
+      - issued_at
+      - item_count
+      - number
+      - patient_id
+      - prescriber_name
+      - status
     PatientProfile:
       type: object
       properties:
@@ -19458,6 +24680,124 @@ components:
       - systolic_mmhg
       - temperature_c
       - weight_kg
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        amount_rwf:
+          type: integer
+        reference:
+          type: string
+        ebm_receipt_number:
+          type: string
+        received_by_name:
+          type: string
+        received_at:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/PaymentStatusEnum'
+        receipt:
+          allOf:
+          - $ref: '#/components/schemas/ReceiptRef'
+          nullable: true
+      required:
+      - amount_rwf
+      - ebm_receipt_number
+      - id
+      - method
+      - receipt
+      - received_at
+      - received_by_name
+      - reference
+      - status
+    PaymentInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        amount_rwf:
+          type: integer
+          maximum: 100000000
+          minimum: 1
+        reference:
+          type: string
+          default: ''
+          maxLength: 60
+        ebm_receipt_number:
+          type: string
+          default: ''
+          maxLength: 40
+      required:
+      - amount_rwf
+      - method
+      - version
+    PaymentMethodEnum:
+      enum:
+      - cash
+      - mtn_momo
+      - airtel_money
+      - card
+      type: string
+      description: |-
+        * `cash` - Cash
+        * `mtn_momo` - MTN MoMo
+        * `airtel_money` - Airtel Money
+        * `card` - Card
+    PaymentStatusEnum:
+      enum:
+      - recorded
+      - voided
+      type: string
+      description: |-
+        * `recorded` - Recorded
+        * `voided` - Voided
+    Payout:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        reference:
+          type: string
+        amount_rwf:
+          type: integer
+        paid_at:
+          type: string
+          format: date-time
+      required:
+      - amount_rwf
+      - id
+      - method
+      - paid_at
+      - reference
+    PayoutInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        amount_rwf:
+          type: integer
+          maximum: 100000000
+          minimum: 1
+        reference:
+          type: string
+          default: ''
+          maxLength: 60
+      required:
+      - amount_rwf
+      - method
     PendingInvite:
       type: object
       properties:
@@ -19721,6 +25061,593 @@ components:
       - slug
       - status
       - version
+    PlatformHelpArticle:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        slug:
+          type: string
+          maxLength: 80
+        audience:
+          $ref: '#/components/schemas/HelpAudienceEnum'
+        category:
+          $ref: '#/components/schemas/HelpArticleCategoryEnum'
+        title_i18n:
+          $ref: '#/components/schemas/I18nTitle'
+        summary_i18n:
+          $ref: '#/components/schemas/I18nSummary'
+        sort_order:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/HelpArticleStatusEnum'
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        missing_languages:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        created_by:
+          allOf:
+          - $ref: '#/components/schemas/SupportPerson'
+          readOnly: true
+        updated_by:
+          allOf:
+          - $ref: '#/components/schemas/SupportPerson'
+          readOnly: true
+        version:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        body_i18n:
+          $ref: '#/components/schemas/I18nBody'
+      required:
+      - audience
+      - body_i18n
+      - category
+      - created_at
+      - created_by
+      - id
+      - missing_languages
+      - slug
+      - summary_i18n
+      - title_i18n
+      - updated_at
+      - updated_by
+    PlatformHelpArticleSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        slug:
+          type: string
+          maxLength: 80
+        audience:
+          $ref: '#/components/schemas/HelpAudienceEnum'
+        category:
+          $ref: '#/components/schemas/HelpArticleCategoryEnum'
+        title_i18n:
+          $ref: '#/components/schemas/I18nTitle'
+        summary_i18n:
+          $ref: '#/components/schemas/I18nSummary'
+        sort_order:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/HelpArticleStatusEnum'
+        published_at:
+          type: string
+          format: date-time
+          nullable: true
+        missing_languages:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        created_by:
+          allOf:
+          - $ref: '#/components/schemas/SupportPerson'
+          readOnly: true
+        updated_by:
+          allOf:
+          - $ref: '#/components/schemas/SupportPerson'
+          readOnly: true
+        version:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - audience
+      - category
+      - created_at
+      - created_by
+      - id
+      - missing_languages
+      - slug
+      - summary_i18n
+      - title_i18n
+      - updated_at
+      - updated_by
+    PlatformSupportMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        author_kind:
+          $ref: '#/components/schemas/SupportAuthorKindEnum'
+        author_name:
+          type: string
+          readOnly: true
+        body:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author_kind
+      - author_name
+      - body
+      - created_at
+      - id
+    PlatformSupportRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        reference:
+          type: string
+          maxLength: 12
+        topic:
+          $ref: '#/components/schemas/SupportTopicEnum'
+        subject:
+          type: string
+          maxLength: 120
+        status:
+          $ref: '#/components/schemas/SupportRequestStatusEnum'
+        close_reason:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/SupportCloseReasonEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        facility:
+          allOf:
+          - $ref: '#/components/schemas/SupportFacilityRef'
+          readOnly: true
+          nullable: true
+        requester:
+          allOf:
+          - $ref: '#/components/schemas/SupportPerson'
+          readOnly: true
+        message_count:
+          type: integer
+          readOnly: true
+        last_message_at:
+          type: string
+          format: date-time
+        closed_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        version:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        requester_audience:
+          $ref: '#/components/schemas/HelpAudienceEnum'
+        priority:
+          $ref: '#/components/schemas/SupportPriorityEnum'
+        assigned_to:
+          allOf:
+          - $ref: '#/components/schemas/SupportPerson'
+          readOnly: true
+          nullable: true
+        language:
+          type: string
+          maxLength: 2
+        client_label:
+          type: string
+          maxLength: 60
+        client_path:
+          type: string
+          maxLength: 200
+        closed_by:
+          allOf:
+          - $ref: '#/components/schemas/SupportPerson'
+          readOnly: true
+          nullable: true
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformSupportMessage'
+          readOnly: true
+      required:
+      - assigned_to
+      - closed_by
+      - created_at
+      - facility
+      - id
+      - last_message_at
+      - message_count
+      - messages
+      - reference
+      - requester
+      - requester_audience
+      - subject
+      - topic
+    PlatformSupportRequestList:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        reference:
+          type: string
+          maxLength: 12
+        topic:
+          $ref: '#/components/schemas/SupportTopicEnum'
+        subject:
+          type: string
+          maxLength: 120
+        status:
+          $ref: '#/components/schemas/SupportRequestStatusEnum'
+        close_reason:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/SupportCloseReasonEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        facility:
+          allOf:
+          - $ref: '#/components/schemas/SupportFacilityRef'
+          readOnly: true
+          nullable: true
+        requester:
+          allOf:
+          - $ref: '#/components/schemas/SupportPerson'
+          readOnly: true
+        message_count:
+          type: integer
+          readOnly: true
+        last_message_at:
+          type: string
+          format: date-time
+        closed_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        version:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        requester_audience:
+          $ref: '#/components/schemas/HelpAudienceEnum'
+        priority:
+          $ref: '#/components/schemas/SupportPriorityEnum'
+        assigned_to:
+          allOf:
+          - $ref: '#/components/schemas/SupportPerson'
+          readOnly: true
+          nullable: true
+        language:
+          type: string
+          maxLength: 2
+        client_label:
+          type: string
+          maxLength: 60
+        client_path:
+          type: string
+          maxLength: 200
+        closed_by:
+          allOf:
+          - $ref: '#/components/schemas/SupportPerson'
+          readOnly: true
+          nullable: true
+      required:
+      - assigned_to
+      - closed_by
+      - created_at
+      - facility
+      - id
+      - last_message_at
+      - message_count
+      - reference
+      - requester
+      - requester_audience
+      - subject
+      - topic
+    Prescription:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        consultation_id:
+          type: string
+          format: uuid
+        visit_id:
+          type: string
+          format: uuid
+        facility_patient_id:
+          type: string
+          format: uuid
+        patient_display_name:
+          type: string
+        prescriber_name:
+          type: string
+        status:
+          $ref: '#/components/schemas/PrescriptionStatusEnum'
+        number:
+          type: string
+          nullable: true
+        issued_at:
+          type: string
+          format: date-time
+          nullable: true
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        cancelled_reason:
+          type: string
+        version:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrescriptionItem'
+        alerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrescriptionAlert'
+        dispense_records:
+          type: array
+          items:
+            $ref: '#/components/schemas/DispenseRecord'
+        queries:
+          type: array
+          items:
+            $ref: '#/components/schemas/PrescriptionQuery'
+      required:
+      - alerts
+      - cancelled_reason
+      - consultation_id
+      - dispense_records
+      - expires_at
+      - facility_patient_id
+      - id
+      - issued_at
+      - items
+      - number
+      - patient_display_name
+      - prescriber_name
+      - queries
+      - status
+      - version
+      - visit_id
+    PrescriptionAlert:
+      type: object
+      properties:
+        drug_code:
+          type: string
+        kind:
+          $ref: '#/components/schemas/AlertKindEnum'
+        severity:
+          $ref: '#/components/schemas/AlertSeverityEnum'
+        allergy_id:
+          type: string
+          format: uuid
+          nullable: true
+        substance:
+          type: string
+          nullable: true
+        verification_status:
+          type: string
+          nullable: true
+        max_usual_quantity:
+          type: integer
+          nullable: true
+        item_id:
+          type: string
+          format: uuid
+        overridden:
+          type: boolean
+      required:
+      - allergy_id
+      - drug_code
+      - item_id
+      - kind
+      - max_usual_quantity
+      - overridden
+      - severity
+      - substance
+      - verification_status
+    PrescriptionItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        drug_code:
+          type: string
+        drug_display:
+          type: string
+        generic_name:
+          type: string
+        strength:
+          type: string
+        is_off_catalogue:
+          type: boolean
+        is_controlled:
+          type: boolean
+        available_here:
+          type: boolean
+        dose:
+          type: string
+        frequency_code:
+          $ref: '#/components/schemas/FrequencyCodeEnum'
+        route:
+          $ref: '#/components/schemas/RouteEnum'
+        duration_days:
+          type: integer
+          nullable: true
+        quantity:
+          type: integer
+        dispensed_quantity:
+          type: integer
+        instructions:
+          type: string
+        substitution_allowed:
+          type: boolean
+        status:
+          $ref: '#/components/schemas/PrescriptionItemStatusEnum'
+        alert_overrides:
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertOverride'
+        replaces_item_id:
+          type: string
+          format: uuid
+          nullable: true
+        cancelled_reason:
+          type: string
+      required:
+      - alert_overrides
+      - available_here
+      - cancelled_reason
+      - dispensed_quantity
+      - dose
+      - drug_code
+      - drug_display
+      - duration_days
+      - frequency_code
+      - generic_name
+      - id
+      - instructions
+      - is_controlled
+      - is_off_catalogue
+      - quantity
+      - replaces_item_id
+      - route
+      - status
+      - strength
+      - substitution_allowed
+    PrescriptionItemStatusEnum:
+      enum:
+      - draft
+      - issued
+      - partly_dispensed
+      - dispensed
+      - not_available
+      - cancelled
+      - expired
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `issued` - Issued
+        * `partly_dispensed` - Partly dispensed
+        * `dispensed` - Dispensed
+        * `not_available` - Not available
+        * `cancelled` - Cancelled
+        * `expired` - Expired
+    PrescriptionQuery:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/SupportRequestStatusEnum'
+        message:
+          type: string
+        raised_by_name:
+          type: string
+        raised_at:
+          type: string
+          format: date-time
+        answered_by_addendum_id:
+          type: string
+          format: uuid
+          nullable: true
+        answered_at:
+          type: string
+          format: date-time
+          nullable: true
+        closed_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - answered_at
+      - answered_by_addendum_id
+      - closed_at
+      - id
+      - message
+      - raised_at
+      - raised_by_name
+      - status
+    PrescriptionStatusEnum:
+      enum:
+      - draft
+      - issued
+      - awaiting_payment
+      - ready_to_dispense
+      - partly_dispensed
+      - dispensed
+      - not_available
+      - cancelled
+      - expired
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `issued` - Issued
+        * `awaiting_payment` - Awaiting payment
+        * `ready_to_dispense` - Ready to dispense
+        * `partly_dispensed` - Partly dispensed
+        * `dispensed` - Dispensed
+        * `not_available` - Not available
+        * `cancelled` - Cancelled
+        * `expired` - Expired
     PrincipalRelationshipEnum:
       enum:
       - spouse
@@ -19965,6 +25892,13 @@ components:
         queue_load:
           type: string
           nullable: true
+        waiting:
+          type: integer
+          nullable: true
+        wait_range:
+          allOf:
+          - $ref: '#/components/schemas/WaitRange'
+          nullable: true
         next_slot_at:
           type: string
           format: date-time
@@ -19989,6 +25923,8 @@ components:
       - next_slot_at
       - queue_load
       - remote_join
+      - wait_range
+      - waiting
       - walk_in
     PublicHolidaysItem:
       type: object
@@ -20181,6 +26117,25 @@ components:
       required:
       - endpoint
       - keys
+    QueryAnswerRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        addendum_id:
+          type: string
+          format: uuid
+      required:
+      - addendum_id
+    QueryCreateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+      - message
     QueueGroup:
       type: object
       properties:
@@ -20224,6 +26179,54 @@ components:
         * `low` - low
         * `medium` - medium
         * `high` - high
+    QueueRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        number:
+          type: string
+        status:
+          $ref: '#/components/schemas/PrescriptionStatusEnum'
+        patient_display_name:
+          type: string
+        patient_age:
+          type: integer
+          nullable: true
+        ticket_number:
+          type: string
+          nullable: true
+        issued_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        item_count:
+          type: integer
+        has_controlled:
+          type: boolean
+        has_open_query:
+          type: boolean
+        has_unavailable:
+          type: boolean
+        version:
+          type: integer
+      required:
+      - expires_at
+      - has_controlled
+      - has_open_query
+      - has_unavailable
+      - id
+      - issued_at
+      - item_count
+      - number
+      - patient_age
+      - patient_display_name
+      - status
+      - ticket_number
+      - version
     QuietHours:
       type: object
       properties:
@@ -20421,6 +26424,80 @@ components:
           maxLength: 300
       required:
       - reason
+    Receipt:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        number:
+          type: string
+        status:
+          $ref: '#/components/schemas/ReceiptStatusEnum'
+        issued_at:
+          type: string
+          format: date-time
+        facility_name:
+          type: string
+        patient_display_name:
+          type: string
+        method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        amount_rwf:
+          type: integer
+        reference:
+          type: string
+        ebm_receipt_number:
+          type: string
+        received_by_name:
+          type: string
+        bill_id:
+          type: string
+          format: uuid
+        bill_total_rwf:
+          type: integer
+        bill_patient_share_rwf:
+          type: integer
+        balance_after_rwf:
+          type: integer
+      required:
+      - amount_rwf
+      - balance_after_rwf
+      - bill_id
+      - bill_patient_share_rwf
+      - bill_total_rwf
+      - ebm_receipt_number
+      - facility_name
+      - id
+      - issued_at
+      - method
+      - number
+      - patient_display_name
+      - received_by_name
+      - reference
+      - status
+    ReceiptRef:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        number:
+          type: string
+        status:
+          $ref: '#/components/schemas/ReceiptStatusEnum'
+      required:
+      - id
+      - number
+      - status
+    ReceiptStatusEnum:
+      enum:
+      - issued
+      - voided
+      type: string
+      description: |-
+        * `issued` - Issued
+        * `voided` - Voided
     RecentDiagnosis:
       type: object
       properties:
@@ -20464,6 +26541,26 @@ components:
       - method
       - reference
       - status
+    RefundRequestRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        reason_code:
+          type: string
+          minLength: 1
+          default: other
+          maxLength: 40
+        reason_text:
+          type: string
+          minLength: 5
+          maxLength: 300
+        amount_rwf:
+          type: integer
+          maximum: 100000000
+          minimum: 1
+      required:
+      - amount_rwf
+      - reason_text
     RegisterRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -20564,6 +26661,20 @@ components:
       - facility_slug
       - patient_id
       - service_id
+    RemoveLineRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 300
+      required:
+      - reason
+      - version
     ReorderRow:
       type: object
       properties:
@@ -20705,6 +26816,28 @@ components:
         * `receptionist` - Receptionist
         * `doctor` - Doctor / clinician
         * `pharmacist` - Pharmacist
+    RouteEnum:
+      enum:
+      - oral
+      - topical
+      - inhaled
+      - rectal
+      - vaginal
+      - eye
+      - ear
+      - nasal
+      - injection
+      type: string
+      description: |-
+        * `oral` - Oral
+        * `topical` - On the skin
+        * `inhaled` - Inhaled
+        * `rectal` - Rectal
+        * `vaginal` - Vaginal
+        * `eye` - In the eye
+        * `ear` - In the ear
+        * `nasal` - In the nose
+        * `injection` - Injection
     ScheduleExceptionKindEnum:
       enum:
       - leave
@@ -21256,6 +27389,16 @@ components:
         * `female` - Female
         * `male` - Male
         * `other` - Other
+    ShiftStatusEnum:
+      enum:
+      - open
+      - closed
+      - reviewed
+      type: string
+      description: |-
+        * `open` - Open
+        * `closed` - Closed
+        * `reviewed` - Reviewed
     SideEnum:
       enum:
       - front
@@ -21943,6 +28086,286 @@ components:
       - display
       - id
       - verification_status
+    SupportAuthorKindEnum:
+      enum:
+      - requester
+      - support
+      type: string
+      description: |-
+        * `requester` - Requester
+        * `support` - Support
+    SupportCloseReasonEnum:
+      enum:
+      - resolved
+      - no_response
+      - duplicate
+      - redirected_to_facility
+      - withdrawn
+      type: string
+      description: |-
+        * `resolved` - Resolved
+        * `no_response` - No response
+        * `duplicate` - Duplicate
+        * `redirected_to_facility` - Sent to the facility
+        * `withdrawn` - Withdrawn by the requester
+    SupportCloseRequest:
+      type: object
+      properties:
+        reason:
+          $ref: '#/components/schemas/SupportStaffCloseReasonEnum'
+        body:
+          type: string
+          default: ''
+          maxLength: 4000
+      required:
+      - reason
+    SupportFacilityRef:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+      required:
+      - id
+      - name
+    SupportMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        author_kind:
+          $ref: '#/components/schemas/SupportAuthorKindEnum'
+        author_name:
+          type: string
+          readOnly: true
+        body:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author_kind
+      - author_name
+      - body
+      - created_at
+      - id
+    SupportPerson:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        full_name:
+          type: string
+          maxLength: 150
+      required:
+      - full_name
+      - id
+    SupportPriorityEnum:
+      enum:
+      - normal
+      - high
+      type: string
+      description: |-
+        * `normal` - Normal
+        * `high` - High
+    SupportRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        reference:
+          type: string
+          maxLength: 12
+        topic:
+          $ref: '#/components/schemas/SupportTopicEnum'
+        subject:
+          type: string
+          maxLength: 120
+        status:
+          $ref: '#/components/schemas/SupportRequestStatusEnum'
+        close_reason:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/SupportCloseReasonEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        facility:
+          allOf:
+          - $ref: '#/components/schemas/SupportFacilityRef'
+          readOnly: true
+          nullable: true
+        requester:
+          allOf:
+          - $ref: '#/components/schemas/SupportPerson'
+          readOnly: true
+        message_count:
+          type: integer
+          readOnly: true
+        last_message_at:
+          type: string
+          format: date-time
+        closed_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        version:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/SupportMessage'
+          readOnly: true
+      required:
+      - created_at
+      - facility
+      - id
+      - last_message_at
+      - message_count
+      - messages
+      - reference
+      - requester
+      - subject
+      - topic
+    SupportRequestCreateRequest:
+      type: object
+      properties:
+        topic:
+          $ref: '#/components/schemas/SupportTopicEnum'
+        subject:
+          type: string
+          minLength: 3
+          maxLength: 120
+        body:
+          type: string
+          minLength: 10
+          maxLength: 4000
+        client_path:
+          type: string
+          minLength: 1
+          default: ''
+          maxLength: 200
+          pattern: ^/[A-Za-z0-9/_-]*$
+      required:
+      - body
+      - subject
+      - topic
+    SupportRequestList:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        reference:
+          type: string
+          maxLength: 12
+        topic:
+          $ref: '#/components/schemas/SupportTopicEnum'
+        subject:
+          type: string
+          maxLength: 120
+        status:
+          $ref: '#/components/schemas/SupportRequestStatusEnum'
+        close_reason:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/SupportCloseReasonEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        facility:
+          allOf:
+          - $ref: '#/components/schemas/SupportFacilityRef'
+          readOnly: true
+          nullable: true
+        requester:
+          allOf:
+          - $ref: '#/components/schemas/SupportPerson'
+          readOnly: true
+        message_count:
+          type: integer
+          readOnly: true
+        last_message_at:
+          type: string
+          format: date-time
+        closed_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        version:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+      required:
+      - created_at
+      - facility
+      - id
+      - last_message_at
+      - message_count
+      - reference
+      - requester
+      - subject
+      - topic
+    SupportRequestStatusEnum:
+      enum:
+      - open
+      - answered
+      - closed
+      type: string
+      description: |-
+        * `open` - Open
+        * `answered` - Answered
+        * `closed` - Closed
+    SupportStaffCloseReasonEnum:
+      enum:
+      - resolved
+      - no_response
+      - duplicate
+      - redirected_to_facility
+      type: string
+      description: |-
+        * `resolved` - resolved
+        * `no_response` - no_response
+        * `duplicate` - duplicate
+        * `redirected_to_facility` - redirected_to_facility
+    SupportTopicEnum:
+      enum:
+      - account_access
+      - booking_visits
+      - family_profile
+      - notifications
+      - privacy
+      - facility_setup
+      - technical
+      - other
+      type: string
+      description: |-
+        * `account_access` - Account and sign-in
+        * `booking_visits` - Bookings and visits
+        * `family_profile` - Family and profile
+        * `notifications` - Notifications
+        * `privacy` - Privacy
+        * `facility_setup` - Facility setup
+        * `technical` - Something doesn't work
+        * `other` - Other
     Symptom:
       type: object
       properties:
@@ -22584,6 +29007,43 @@ components:
           maxLength: 200
       required:
       - token
+    Totals:
+      type: object
+      properties:
+        total_rwf:
+          type: integer
+        insurer_share_rwf:
+          type: integer
+        patient_share_rwf:
+          type: integer
+        exempted_rwf:
+          type: integer
+        credited_rwf:
+          type: integer
+        due_rwf:
+          type: integer
+        paid_rwf:
+          type: integer
+        refunded_rwf:
+          type: integer
+        balance_rwf:
+          type: integer
+        owed_to_patient_rwf:
+          type: integer
+        refundable_rwf:
+          type: integer
+      required:
+      - balance_rwf
+      - credited_rwf
+      - due_rwf
+      - exempted_rwf
+      - insurer_share_rwf
+      - owed_to_patient_rwf
+      - paid_rwf
+      - patient_share_rwf
+      - refundable_rwf
+      - refunded_rwf
+      - total_rwf
     TravelTime:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -22604,6 +29064,57 @@ components:
           minimum: 0
       required:
       - minutes
+    TriageRequestRequest:
+      type: object
+      properties:
+        symptoms:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 40
+          maxItems: 8
+          minItems: 1
+        duration:
+          $ref: '#/components/schemas/DurationEnum'
+        age_group:
+          $ref: '#/components/schemas/AgeGroupEnum'
+        pregnant:
+          type: boolean
+          default: false
+      required:
+      - age_group
+      - duration
+      - symptoms
+    TriageResult:
+      type: object
+      properties:
+        urgency:
+          $ref: '#/components/schemas/UrgencyEnum'
+        service_code:
+          type: string
+        level_of_care:
+          type: string
+        red_flags:
+          type: array
+          items:
+            type: string
+        reasons:
+          type: array
+          items:
+            type: string
+        rules_version:
+          type: string
+        signed_off:
+          type: boolean
+      required:
+      - level_of_care
+      - reasons
+      - red_flags
+      - rules_version
+      - service_code
+      - signed_off
+      - urgency
     UndoRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -22736,6 +29247,101 @@ components:
         * `infected` - Infected
         * `rejected` - Rejected
         * `failed` - Failed
+    UrgencyEnum:
+      enum:
+      - self_care
+      - soon
+      - today
+      - emergency
+      type: string
+      description: |-
+        * `self_care` - self_care
+        * `soon` - soon
+        * `today` - today
+        * `emergency` - emergency
+    Verification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        insurance_profile_id:
+          type: string
+          format: uuid
+        insurer_code:
+          type: string
+        result:
+          $ref: '#/components/schemas/VerificationResultEnum'
+        reason_code:
+          type: string
+        reason_text:
+          type: string
+        referral_letter_seen:
+          type: boolean
+          nullable: true
+        verified_by_name:
+          type: string
+        verified_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - insurance_profile_id
+      - insurer_code
+      - reason_code
+      - reason_text
+      - referral_letter_seen
+      - result
+      - verified_at
+      - verified_by_name
+    VerificationInputReasonCodeEnum:
+      enum:
+      - expired
+      - not_a_member
+      - not_accepted
+      - referral_missing
+      - card_unreadable
+      - other
+      type: string
+      description: |-
+        * `expired` - expired
+        * `not_a_member` - not_a_member
+        * `not_accepted` - not_accepted
+        * `referral_missing` - referral_missing
+        * `card_unreadable` - card_unreadable
+        * `other` - other
+    VerificationInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        insurance_profile_id:
+          type: string
+          format: uuid
+        result:
+          $ref: '#/components/schemas/VerificationResultEnum'
+        reason_code:
+          default: ''
+          oneOf:
+          - $ref: '#/components/schemas/VerificationInputReasonCodeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        reason_text:
+          type: string
+          default: ''
+          maxLength: 300
+        referral_letter_seen:
+          type: boolean
+          nullable: true
+      required:
+      - insurance_profile_id
+      - result
+    VerificationResultEnum:
+      enum:
+      - verified
+      - rejected
+      type: string
+      description: |-
+        * `verified` - Verified
+        * `rejected` - Rejected
     VerifyEmailRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -22746,12 +29352,45 @@ components:
           maxLength: 512
       required:
       - token
+    Version:
+      type: object
+      properties:
+        version_no:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        superseded_at:
+          type: string
+          format: date-time
+          nullable: true
+        size_bytes:
+          type: integer
+      required:
+      - created_at
+      - size_bytes
+      - superseded_at
+      - version_no
     VersionInputRequest:
       type: object
       properties:
         version:
           type: integer
       required:
+      - version
+    VersionReasonRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 300
+      required:
+      - reason
       - version
     VersionRequest:
       type: object
@@ -22957,6 +29596,31 @@ components:
             $ref: '#/components/schemas/Vitals'
       required:
       - results
+    VoidRequestRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        reason_code:
+          type: string
+          minLength: 1
+          default: other
+          maxLength: 40
+        reason_text:
+          type: string
+          minLength: 5
+          maxLength: 300
+      required:
+      - reason_text
+    WaitRange:
+      type: object
+      properties:
+        min:
+          type: integer
+        max:
+          type: integer
+      required:
+      - max
+      - min
     Warning:
       type: object
       properties:

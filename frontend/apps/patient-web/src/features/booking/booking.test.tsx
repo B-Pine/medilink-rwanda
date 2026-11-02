@@ -93,6 +93,33 @@ describe("booking flow (S5-F3)", () => {
   });
 });
 
+describe("booking draft in the URL (S5-F3)", () => {
+  it("browser Back returns to the previous step; a refresh without a hold returns to the times", async () => {
+    const { user, router } = await signIn("/book/kigali-clinic");
+    const main = await screen.findByRole("main");
+    await user.click(await within(main).findByRole("button", { name: /Mukamana Jeanne/ }));
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+    await user.click(await screen.findByRole("button", { name: /General consultation/ }));
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+    expect(await screen.findByText("Step 3 of 5")).toBeInTheDocument();
+    const search = new URLSearchParams(router.state.location.search);
+    expect(search.get("step")).toBe("when");
+    // no health data in the URL
+    expect([...search.keys()].sort()).toEqual(["step", "what", "who"]);
+
+    await router.navigate(-1);
+    expect(await screen.findByText("Step 2 of 5")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /General consultation/ })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+
+    search.set("step", "review");
+    await router.navigate(`/book/kigali-clinic?${search.toString()}`);
+    expect(await screen.findByText("Step 3 of 5")).toBeInTheDocument();
+  });
+});
+
 describe("upcoming visits (S5-F5)", () => {
   it("lists the upcoming booking and cancels it after a confirmation", async () => {
     const { user } = await signIn("/visits");

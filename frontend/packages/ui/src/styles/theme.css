@@ -29,6 +29,10 @@
   --color-focus: var(--ml-focus-ring);
   --color-accent: var(--ml-accent);
   --color-on-accent: var(--ml-accent-text);
+  --color-attention: var(--ml-attention-text);
+  --color-attention-bg: var(--ml-attention-bg);
+  --color-attention-solid: var(--ml-attention-solid);
+  --color-on-attention-solid: var(--ml-attention-solid-text);
 
   --color-success: var(--ml-success-text);
   --color-success-bg: var(--ml-success-bg);
@@ -84,6 +88,7 @@
   --spacing-sidebar: 15.5rem; /* 248px, design 04 §2 / 03 §4 */
   --spacing-sidebar-collapsed: 4rem; /* 64px, design 03 §4 */
 
+  --shadow-card: var(--ml-shadow-card);
   --shadow-raised: var(--ml-shadow-raised);
 
   --breakpoint-xs: 22.5rem; /* 360px small Android */

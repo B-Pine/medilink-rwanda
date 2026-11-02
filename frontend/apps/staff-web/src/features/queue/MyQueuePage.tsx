@@ -1,9 +1,11 @@
+import { formatTime } from "@medilink/ui/i18n";
 import type { DutyState, TicketRow } from "@medilink/api-client";
 import {
   Alert,
   Button,
   cx,
   EmptyState,
+  ImigongoPattern,
   QueueStateBadge,
   SelectField,
   TicketNumber,
@@ -24,7 +26,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useApi } from "../../app/services";
-import { PageHeader } from "../../components/PageHeader";
+import { PageHeading } from "../../components/PageHeading";
 import { FollowUpAction } from "../bookings";
 import { queueKeys, usePollInterval, useQueueSocket } from "./live";
 import { LiveBadge } from "./LiveIndicator";
@@ -37,7 +39,7 @@ const DUTY: DutyState[] = ["on_duty", "break", "emergency", "off"];
  * the waiting list in calling order.
  */
 export function MyQueuePage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const api = useApi();
   const queryClient = useQueryClient();
   const serviceName = useServiceNames();
@@ -82,7 +84,8 @@ export function MyQueuePage() {
       const typing =
         target?.isContentEditable ||
         ["INPUT", "TEXTAREA", "SELECT", "BUTTON"].includes(target?.tagName ?? "");
-      if (event.code === "Space" && !typing && canCall) {
+      const dialogOpen = Boolean(document.querySelector('[role="dialog"], [role="alertdialog"]'));
+      if (event.code === "Space" && !typing && !event.repeat && !dialogOpen && canCall) {
         event.preventDefault();
         callNext.mutate();
       }
@@ -97,79 +100,101 @@ export function MyQueuePage() {
     body?: Parameters<typeof act.mutate>[0]["body"],
   ) => act.mutate({ ticket, action, body });
 
+  const next = data?.waiting[0];
+
   return (
     <div className="flex flex-col gap-5">
-      <PageHeader
-        title={t("queue.mine.title")}
-        description={serviceId ? serviceName(serviceId) : undefined}
-        badges={<LiveBadge />}
-      />
-
-      <section
-        aria-labelledby="duty"
-        className="flex flex-wrap items-end gap-3 rounded-lg border border-border bg-surface p-4"
-      >
-        <h2 id="duty" className="sr-only">
-          {t("queue.mine.duty")}
-        </h2>
-        <div role="group" aria-label={t("queue.mine.duty")} className="flex flex-wrap gap-2">
-          {DUTY.map((state) => (
-            <button
-              key={state}
-              type="button"
-              aria-pressed={duty?.state === state}
-              onClick={() =>
-                setDuty.mutate({
-                  state,
-                  service_point_id:
-                    state === "on_duty"
-                      ? (duty?.service_point_id ?? points.data?.results[0]?.id ?? null)
-                      : undefined,
-                  until_at:
-                    state === "break" ? new Date(Date.now() + 30 * 60_000).toISOString() : null,
-                })
-              }
-              className={cx(
-                "inline-flex min-h-target cursor-pointer items-center gap-2 rounded-md border px-3 font-semibold",
-                duty?.state === state
-                  ? "border-primary bg-brand-subtle text-on-brand-subtle"
-                  : "border-border text-fg-secondary hover:text-fg",
-              )}
-            >
-              {state === "break" && <Coffee aria-hidden="true" />}
-              {t(`queue.duty.${state}`)}
-            </button>
-          ))}
+      <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+        <div className="flex min-w-0 flex-col gap-1">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <PageHeading title={t("queue.mine.title")}>{t("queue.mine.title")}</PageHeading>
+            <LiveBadge />
+          </div>
+          {serviceId && <p className="m-0 text-fg-muted">{serviceName(serviceId)}</p>}
         </div>
-        {onDuty && (
-          <SelectField
-            label={t("queue.mine.room")}
-            value={duty?.service_point_id ?? ""}
-            onChange={(e) => setDuty.mutate({ state: "on_duty", service_point_id: e.target.value })}
-            className="w-48"
-          >
-            {(points.data?.results ?? [])
-              .filter((p) => p.is_active !== false)
-              .map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-          </SelectField>
-        )}
-        {duty?.state === "break" && duty.until_at && (
-          <p className="m-0 text-body-sm text-fg-secondary">
-            {t("queue.mine.breakUntil", {
-              time: new Date(duty.until_at).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              }),
-            })}
-          </p>
-        )}
-      </section>
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_22rem]">
+        <section aria-labelledby="duty" className="flex flex-wrap items-center gap-3">
+          <h2 id="duty" className="sr-only">
+            {t("queue.mine.duty")}
+          </h2>
+          <div
+            role="group"
+            aria-label={t("queue.mine.duty")}
+            className="inline-flex flex-wrap gap-0.5 rounded-lg bg-subtle p-1"
+          >
+            {DUTY.map((state) => {
+              const active = duty?.state === state;
+              return (
+                <button
+                  key={state}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() =>
+                    setDuty.mutate({
+                      state,
+                      service_point_id:
+                        state === "on_duty"
+                          ? (duty?.service_point_id ?? points.data?.results[0]?.id ?? null)
+                          : undefined,
+                      until_at:
+                        state === "break" ? new Date(Date.now() + 30 * 60_000).toISOString() : null,
+                    })
+                  }
+                  className={cx(
+                    "inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-md px-3 text-body-sm font-semibold",
+                    "transition-[background-color,color,box-shadow] duration-150",
+                    active ? "bg-surface text-fg shadow-card" : "text-fg-secondary hover:text-fg",
+                  )}
+                >
+                  <span
+                    aria-hidden="true"
+                    className={cx(
+                      "size-2 rounded-full",
+                      !active
+                        ? "bg-border-input"
+                        : state === "on_duty"
+                          ? "bg-success"
+                          : state === "emergency"
+                            ? "bg-danger"
+                            : "bg-attention-solid",
+                    )}
+                  />
+                  {state === "break" && <Coffee aria-hidden="true" />}
+                  {t(`queue.duty.${state}`)}
+                </button>
+              );
+            })}
+          </div>
+          {onDuty && (
+            <SelectField
+              label={t("queue.mine.room")}
+              hideLabel
+              value={duty?.service_point_id ?? ""}
+              onChange={(e) =>
+                setDuty.mutate({ state: "on_duty", service_point_id: e.target.value })
+              }
+              className="w-44"
+            >
+              {(points.data?.results ?? [])
+                .filter((p) => p.is_active !== false)
+                .map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+            </SelectField>
+          )}
+          {duty?.state === "break" && duty.until_at && (
+            <p className="m-0 text-body-sm text-fg-muted">
+              {t("queue.mine.breakUntil", {
+                time: formatTime(duty.until_at, i18n.resolvedLanguage ?? "rw"),
+              })}
+            </p>
+          )}
+        </section>
+      </header>
+
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_24rem]">
         <section aria-labelledby="current" className="flex flex-col gap-4">
           <h2 id="current" className="sr-only">
             {t("queue.mine.current")}
@@ -177,47 +202,50 @@ export function MyQueuePage() {
           {current ? (
             <div
               className={cx(
-                "flex flex-col gap-5 rounded-lg border-2 p-6",
-                current.state === "called"
-                  ? "border-warning bg-warning-bg/40"
-                  : "border-primary bg-surface",
+                "flex flex-col gap-5 rounded-xl p-6 shadow-card sm:p-7",
+                current.state === "called" ? "bg-attention-bg" : "bg-surface",
               )}
             >
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <TicketNumber number={current.number} size="display" />
-                <QueueStateBadge state={current.state}>
-                  {t(`queue.states.${current.state}`)}
-                </QueueStateBadge>
-              </div>
-              <div>
-                <p className="m-0 font-heading text-h2">{current.display_name}</p>
-                <p className="m-0 text-fg-secondary">
-                  {[
-                    current.age_years !== null
-                      ? t("queue.age", { count: current.age_years })
-                      : null,
-                    current.sex ? t(`queue.sex.${current.sex}`) : null,
-                    current.service_point,
-                  ]
-                    .filter(Boolean)
-                    .join(" · ")}
-                </p>
-                <div className="mt-2">
-                  <Flags ticket={current} />
+              <div className="flex flex-wrap items-center gap-5">
+                <TicketNumber
+                  number={current.number}
+                  size="lg"
+                  stub
+                  tone={current.state === "called" ? "attention" : "brand"}
+                />
+                <div className="flex min-w-0 flex-1 flex-col items-start gap-1">
+                  <QueueStateBadge state={current.state}>
+                    {t(`queue.states.${current.state}`)}
+                  </QueueStateBadge>
+                  <p className="m-0 font-heading text-h1 font-bold tracking-tight break-words">
+                    {current.display_name}
+                  </p>
+                  <p className="m-0 text-fg-muted">
+                    {[
+                      current.age_years !== null
+                        ? t("queue.age", { count: current.age_years })
+                        : null,
+                      current.sex ? t(`queue.sex.${current.sex}`) : null,
+                      current.service_point,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </p>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <Flags ticket={current} />
+              <div className="flex flex-wrap gap-2 border-t border-border pt-5">
                 {current.state === "called" ? (
                   <>
                     <Button size="lg" onClick={() => run(current, "start")}>
                       <Play aria-hidden="true" weight="fill" />
                       {t("queue.mine.start")}
                     </Button>
-                    <Button variant="secondary" onClick={() => run(current, "recall")}>
+                    <Button variant="secondary" size="lg" onClick={() => run(current, "recall")}>
                       <SpeakerHigh aria-hidden="true" />
                       {t("queue.mine.recall")}
                     </Button>
-                    <Button variant="ghost" onClick={() => run(current, "no-response")}>
+                    <Button variant="ghost" size="lg" onClick={() => run(current, "no-response")}>
                       <UserMinus aria-hidden="true" />
                       {t("queue.mine.noResponse")}
                     </Button>
@@ -253,19 +281,41 @@ export function MyQueuePage() {
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-4 rounded-lg border border-dashed border-border bg-surface px-6 py-10 text-center">
-              <Button
+            <div className="relative isolate flex flex-col items-center gap-5 overflow-hidden rounded-xl bg-forest px-6 py-12 text-center text-on-forest">
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 -z-10 text-on-forest-accent"
+                style={{ maskImage: "radial-gradient(circle at 50% 40%, black, transparent 70%)" }}
+              >
+                <ImigongoPattern opacity={0.07} />
+              </div>
+              {next && onDuty && (
+                <p className="m-0 flex items-center gap-2 text-body-sm text-on-forest-muted">
+                  <span className="font-semibold text-on-forest">{t("queue.mine.nextUp")}</span>
+                  <span className="font-heading font-bold tracking-wider text-on-forest-accent tabular-nums">
+                    {next.number}
+                  </span>
+                  <span aria-hidden="true">·</span>
+                  {next.display_name}
+                </p>
+              )}
+              <button
                 ref={callButton}
-                size="lg"
+                type="button"
                 disabled={!canCall}
                 onClick={() => callNext.mutate()}
                 aria-keyshortcuts="Space"
-                className="min-h-16 px-10 text-h3"
+                className={cx(
+                  "inline-flex min-h-16 cursor-pointer items-center gap-3 rounded-xl px-10 font-heading text-h2 font-bold",
+                  "bg-on-forest-accent text-forest shadow-raised transition-[transform,filter] duration-150",
+                  "enabled:hover:brightness-105 enabled:active:scale-[0.97]",
+                  "disabled:cursor-not-allowed disabled:opacity-50",
+                )}
               >
-                <MegaphoneSimple aria-hidden="true" weight="fill" className="size-6" />
+                <MegaphoneSimple aria-hidden="true" weight="fill" className="size-7" />
                 {t("queue.mine.callNext")}
-              </Button>
-              <p className="m-0 text-body-sm text-fg-secondary">
+              </button>
+              <p className="m-0 text-body-sm text-on-forest-muted">
                 {!onDuty
                   ? t("queue.mine.setOnDuty")
                   : empty
@@ -283,37 +333,51 @@ export function MyQueuePage() {
 
         <section
           aria-labelledby="waiting"
-          className="flex flex-col gap-3 self-start rounded-lg border border-border bg-surface p-4"
+          className="flex flex-col self-start overflow-hidden rounded-lg bg-surface shadow-card"
         >
-          <h2 id="waiting" className="m-0 flex items-center justify-between font-heading text-h3">
+          <h2
+            id="waiting"
+            className="m-0 flex items-center justify-between px-4 pt-4 pb-2 font-heading text-body font-bold"
+          >
             {t("queue.mine.waiting")}
-            <span className="text-body-sm font-normal text-fg-secondary tabular-nums">
+            <span className="rounded-full bg-subtle px-2 py-0.5 text-caption font-semibold text-fg-secondary tabular-nums">
               {data?.waiting.length ?? 0}
             </span>
           </h2>
           {data && data.waiting.length === 0 ? (
-            <EmptyState
-              size="inline"
-              icon={UsersThree}
-              title={t("queue.mine.nobodyTitle")}
-              description={t("queue.mine.nobody")}
-            />
+            <div className="px-4 pb-4">
+              <EmptyState
+                size="inline"
+                icon={UsersThree}
+                title={t("queue.mine.nobodyTitle")}
+                description={t("queue.mine.nobody")}
+              />
+            </div>
           ) : (
-            <ol className="m-0 flex list-none flex-col gap-1 p-0">
+            <ol className="m-0 flex list-none flex-col p-0">
               {(data?.waiting ?? []).map((ticket, index) => (
                 <li
                   key={ticket.id}
-                  className={cx(
-                    "flex items-center gap-3 rounded-md px-2 py-2",
-                    index === 0 && "bg-brand-subtle",
-                  )}
+                  className="flex items-center gap-3 border-t border-border px-4 py-2.5"
                 >
-                  <TicketNumber number={ticket.number} size="sm" className="w-16" />
-                  <span className="flex min-w-0 flex-1 flex-col">
+                  <TicketNumber
+                    number={ticket.number}
+                    size="sm"
+                    stub
+                    tone={
+                      ticket.flags.includes("emergency")
+                        ? "danger"
+                        : index === 0
+                          ? "attention"
+                          : "brand"
+                    }
+                    className="shrink-0"
+                  />
+                  <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                     <span className="truncate font-semibold">{ticket.display_name}</span>
                     <Flags ticket={ticket} />
                   </span>
-                  <span className="text-caption text-fg-secondary tabular-nums">
+                  <span className="text-caption text-fg-muted tabular-nums">
                     {t("queue.minutes", { count: minutesSince(ticket.arrival_at) })}
                   </span>
                 </li>

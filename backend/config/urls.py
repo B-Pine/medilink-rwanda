@@ -51,7 +51,14 @@ api_v1: list[URLPattern | URLResolver] = [
     path("platform/memberships/", include("medilink.facilities.urls.platform")),
     # [/S2]
     # [S10]
+    path("public/", include("medilink.support.urls.public")),
+    path("patient/", include("medilink.support.urls.patient")),
+    path("staff/", include("medilink.support.urls.staff")),
+    path("platform/", include("medilink.support.urls.platform")),
     # [/S10]
+    # [PT]
+    path("public/", include("medilink.triage.urls")),
+    # [/PT]
     # [S4]
     path("staff/", include("medilink.visits.urls.staff")),
     path("display/", include("medilink.visits.urls.display")),
@@ -67,6 +74,17 @@ api_v1: list[URLPattern | URLResolver] = [
     path("staff/", include("medilink.clinical.urls.staff")),
     path("patient/records/", include("medilink.clinical.urls.patient")),
     # [/S6]
+    # [S7]
+    path("staff/", include("medilink.pharmacy.urls.staff")),
+    path("patient/prescriptions/", include("medilink.pharmacy.urls.patient")),
+    path("staff/", include("medilink.documents.urls.staff")),
+    path("patient/documents/", include("medilink.documents.urls.patient")),
+    path("public/", include("medilink.documents.urls.public")),
+    # [/S7]
+    # [S8]
+    path("staff/", include("medilink.billing.urls.staff")),
+    path("patient/bills/", include("medilink.billing.urls.patient")),
+    # [/S8]
 ]
 
 if settings.SCHEMA_ENABLED:  # non-production only (architecture 02 §7)

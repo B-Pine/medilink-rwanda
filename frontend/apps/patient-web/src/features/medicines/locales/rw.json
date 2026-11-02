@@ -1,0 +1,69 @@
+{
+  "title": "Imiti yanjye",
+  "intro": "Resept zo mu ngendo zawe n'ibyo farumasi yatanze. Erekana kode kuri farumasi iyo ari yo yose.",
+  "whose": "Imiti ya nde",
+  "everyone": "Bose",
+  "which": "Resept zihe",
+  "tab": {
+    "active": "Iziriho",
+    "past": "Izashize"
+  },
+  "failed": "Ntitwashoboye kuzana imiti yawe.",
+  "empty": {
+    "active": "Nta resept iriho.",
+    "past": "Nta resept yashize."
+  },
+  "emptyBody": "Iyo muganga akwandikiye umuti, ugaragara hano.",
+  "seeAll": "Reba byose",
+  "count_one": "Umuti {{count}}",
+  "count_other": "Imiti {{count}}",
+  "issued": "yanditswe {{date}}",
+  "byDoctor": "Dr {{name}}",
+  "back": "Imiti yanjye",
+  "notFound": "Ntitwabonye iyi resept.",
+  "codeLabel": "Kode ya resept",
+  "codeHint": "Yerekane kuri farumasi. Ifite agaciro kugeza {{date}}.",
+  "days_one": "umunsi {{count}}",
+  "days_other": "iminsi {{count}}",
+  "status": {
+    "draft": "Iracyandikwa",
+    "issued": "Yanditswe",
+    "awaiting_payment": "Banza wishyure, hanyuma ufate",
+    "ready_to_dispense": "Yiteguye kuri farumasi",
+    "partly_dispensed": "Yatanzwe igice",
+    "dispensed": "Yatanzwe",
+    "not_available": "Ntiboneka hano",
+    "cancelled": "Yahagaritswe",
+    "expired": "Yarengeje igihe"
+  },
+  "item": {
+    "draft": "Uracyandikwa",
+    "issued": "Witeguye kuri farumasi",
+    "partly": "Watanzwe igice: {{given}} kuri {{total}}",
+    "dispensed": "Watanzwe",
+    "not_available": "Ntuboneka hano: ugure hanze mbere ya {{date}}",
+    "cancelled": "Wahagaritswe na muganga",
+    "expired": "Warengeje igihe",
+    "givenAs": "Watanzwe nka {{name}} (umuti umwe)"
+  },
+  "frequency": {
+    "once": "Rimwe",
+    "od": "Rimwe ku munsi",
+    "bd": "Kabiri ku munsi",
+    "tds": "Gatatu ku munsi",
+    "qds": "Kane ku munsi",
+    "nocte": "Nijoro",
+    "prn": "Igihe bikenewe"
+  },
+  "route": {
+    "oral": "Kunywa",
+    "topical": "Gusiga ku ruhu",
+    "inhaled": "Guhumeka",
+    "rectal": "Mu kibuno",
+    "vaginal": "Mu gitsina",
+    "eye": "Mu jisho",
+    "ear": "Mu gutwi",
+    "nasal": "Mu zuru",
+    "injection": "Urushinge"
+  }
+}

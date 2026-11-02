@@ -114,7 +114,7 @@ export function WeekGrid({
       </div>
 
       {view === "grid" ? (
-        <div className="overflow-x-auto rounded-lg border border-border bg-surface">
+        <div className="overflow-x-auto rounded-lg bg-surface shadow-card">
           <div className="grid min-w-[44rem] grid-cols-[3.5rem_repeat(7,minmax(0,1fr))]">
             <div className="border-b border-border" />
             {dayLabels.map((day, weekday) => (
@@ -230,7 +230,7 @@ export function WeekGrid({
           </div>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-border bg-surface">
+        <div className="overflow-x-auto rounded-lg bg-surface shadow-card">
           <table className="w-full border-collapse text-left">
             <caption className="sr-only">{labels.caption}</caption>
             <thead className="bg-subtle text-body-sm text-fg-secondary">

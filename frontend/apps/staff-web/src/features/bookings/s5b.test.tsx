@@ -46,7 +46,7 @@ describe("reception calendar (R9)", () => {
       await user.click(screen.getByRole("button", { name: "Next" }));
     }
     const sessions = await screen.findAllByRole("article");
-    expect(sessions.some((s) => within(s).queryByText(/Dr Keza Umutoni/))).toBe(true);
+    expect(sessions.some((s) => within(s).queryByText(/Dr Uwimana Keza/))).toBe(true);
     expect(within(sessions[0]!).getByText(/of \d+ booked/)).toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });

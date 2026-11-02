@@ -4,6 +4,7 @@
  */
 import type { ApiClient } from "../client";
 import type { Uuid } from "../types";
+import type { SymptomInput } from "./booking";
 
 export type Stage = "reception" | "payment" | "consultation" | "pharmacy";
 export type TicketState =
@@ -32,6 +33,8 @@ export type TicketAction =
   | "left"
   | "step-out"
   | "priority"
+  /** S5 (R4 #102): reception confirms a remote joiner is on site; `{version}`. */
+  | "confirm-arrival"
   | "reorder";
 
 export interface TicketRow {
@@ -45,6 +48,10 @@ export interface TicketRow {
   age_years: number | null;
   sex: string | null;
   /** `emergency`, `priority:<class>`, `return`, `stepped_out`, `no_response`. */
+  /**
+   * `emergency`, `priority:<class>`, `return`, `stepped_out`, `no_response`; S5 adds `late`,
+   * `remote` and `remote_claimed` (remote joiner not confirmed, with or without "I'm here").
+   */
   flags: string[];
   priority_rank: number;
   arrival_at: string;
@@ -53,6 +60,16 @@ export interface TicketRow {
   service_point: string | null;
   step_out_until: string | null;
   position: number | null;
+  /** S5: slot time of a booked ticket in its grace window; null for walk-ins and late arrivals. */
+  slot_starts_at: string | null;
+  /** S5: a booked patient who arrived after the grace window; queued as a walk-in. */
+  late: boolean;
+  /** S5: joined today's queue from the phone (FR-SCH-09). */
+  is_remote: boolean;
+  /** S5: the patient tapped "I'm here" (intent only, reception confirms). */
+  remote_arrival_claimed_at: string | null;
+  /** S5: reception confirmed the remote patient is on site. */
+  remote_arrival_confirmed_at: string | null;
   version: number;
 }
 
@@ -105,11 +122,15 @@ export interface CheckInInput {
   priority_reason_code?: string | null;
   reason_text?: string | null;
   insurance_profile_id?: Uuid | null;
+  /** S5 (R4): optional symptoms at check-in (`captured_at_stage = check_in`). */
+  symptoms?: SymptomInput[];
 }
 
 export interface CheckInResult {
   visit_id: Uuid;
   created: boolean;
+  /** S5: a booking checked in after the grace window: queued as a walk-in ("offer a new time"). */
+  late: boolean;
   ticket: TicketRow;
 }
 
@@ -197,6 +218,10 @@ export interface PatientVisit {
   estimate: Estimate;
   leave_by: string | null;
   travel_minutes: number | null;
+  /** S5: joined from the phone; "I'm here" applies until reception confirms the arrival. */
+  is_remote: boolean;
+  remote_arrival_claimed_at: string | null;
+  remote_arrival_confirmed_at: string | null;
   version: number;
   updated_at: string;
 }
@@ -267,6 +292,14 @@ export function createQueueApi(client: ApiClient) {
     checkIn: (body: CheckInInput, idempotencyKey?: string) =>
       client.post<CheckInResult>(queuePaths.checkIn, body, idem(idempotencyKey)),
     visit: (id: Uuid) => client.get<VisitDetail>(queuePaths.visit(id)),
+    /**
+     * S5 (R4 #102): reception confirms a remote joiner is on site. `422` when the ticket is not
+     * remote or the arrival is already confirmed; `409` on a stale version.
+     */
+    confirmArrival: (ticket: Pick<TicketRow, "id" | "version">) =>
+      client.post<TicketRow>(queuePaths.ticket(ticket.id, "confirm-arrival"), {
+        version: ticket.version,
+      }),
     board: () => client.get<QueueBoard>(queuePaths.board),
     mine: () => client.get<MyQueue>(queuePaths.mine),
     /** `null` when nobody is waiting (204). */

@@ -88,17 +88,42 @@ export function QueueFlagChip({ flag, children }: { flag: QueueFlag; children: R
   );
 }
 
+/** `onForest` and `onSolid` sit on the deep-forest band and on a solid ochre card. */
+export type TicketTone = "brand" | "attention" | "danger" | "neutral" | "onForest" | "onSolid";
+
+const TICKET_TONES: Record<TicketTone, string> = {
+  brand: "bg-brand-subtle text-on-brand-subtle",
+  attention: "bg-attention-bg text-attention",
+  danger: "bg-danger-bg text-danger",
+  neutral: "bg-subtle text-fg-secondary",
+  onForest: "bg-on-forest/10 text-on-forest",
+  onSolid: "bg-surface text-fg",
+};
+
+const STUB_SIZES = {
+  sm: "min-w-14 px-2 py-1 text-body-sm [--ml-notch:0.3125rem]",
+  md: "min-w-16 px-2.5 py-1.5 text-body [--ml-notch:0.4375rem]",
+  lg: "min-w-32 px-4 py-3 text-h1 [--ml-notch:0.6875rem]",
+  display: "min-w-48 px-7 py-5 text-display [--ml-notch:0.875rem]",
+} as const;
+
 /**
- * Ticket number (design 03 §1): large, bold, letter-spaced, tabular; Figtree's zero is open, so 0
- * and O don't mix.
+ * Ticket number (design 03 §1): bold, letter-spaced, tabular; Figtree's zero is open, so 0 and O
+ * don't mix. `stub` draws the notched ticket (design 03 §1a), the shape a patient holds, tinted by
+ * `tone`: brand by default, attention for "your turn" or next up, danger for emergencies,
+ * neutral for someone not yet arrived.
  */
 export function TicketNumber({
   number,
   size = "md",
+  stub = false,
+  tone = "brand",
   className,
 }: {
   number: string;
   size?: "sm" | "md" | "lg" | "display";
+  stub?: boolean;
+  tone?: TicketTone;
   className?: string;
 }) {
   const sizes = {
@@ -107,6 +132,21 @@ export function TicketNumber({
     lg: "text-h1 font-bold",
     display: "text-display font-extrabold",
   } as const;
+  if (stub) {
+    return (
+      <span
+        className={cx(
+          "ml-ticket-stub inline-grid place-items-center rounded-md font-heading font-extrabold",
+          "leading-none tracking-wider whitespace-nowrap tabular-nums",
+          STUB_SIZES[size],
+          TICKET_TONES[tone],
+          className,
+        )}
+      >
+        {number}
+      </span>
+    );
+  }
   return (
     <span
       className={cx(

@@ -76,21 +76,21 @@ describe("design tokens (F2): values equal design research 02", () => {
     expect(hex(light["--ml-action-primary"])).toBe("#047857");
     expect(hex(light["--ml-action-primary-hover"])).toBe("#065f46");
     expect(hex(light["--ml-action-primary-text"])).toBe("#ffffff");
-    expect(hex(light["--ml-text-muted"])).toBe("#475569");
-    expect(hex(light["--ml-border-input"])).toBe("#7c8a9d");
-    expect(hex(light["--ml-bg-page"])).toBe("#f6f8f7");
-    expect(hex(light["--ml-text-primary"])).toBe("#0f172a");
+    expect(hex(light["--ml-text-muted"])).toBe("#55665e");
+    expect(hex(light["--ml-border-input"])).toBe("#7b8a83");
+    expect(hex(light["--ml-bg-page"])).toBe("#f2f5f3");
+    expect(hex(light["--ml-text-primary"])).toBe("#0e1f18");
     expect(hex(light["--ml-focus-ring"])).toBe("#059669");
     expect(hex(light["--ml-forest"])).toBe("#022c22");
   });
 
   it("dark theme spot checks", () => {
-    expect(hex(dark["--ml-bg-page"])).toBe("#0b1411");
-    expect(hex(dark["--ml-bg-surface"])).toBe("#111c18");
+    expect(hex(dark["--ml-bg-page"])).toBe("#0a1310");
+    expect(hex(dark["--ml-bg-surface"])).toBe("#101c17");
     expect(hex(dark["--ml-action-primary"])).toBe("#34d399");
     expect(hex(dark["--ml-action-primary-text"])).toBe("#022c22");
     expect(hex(dark["--ml-border-input"])).toBe("#5b6e66");
-    expect(hex(dark["--ml-text-muted"])).toBe("#94a3b8");
+    expect(hex(dark["--ml-text-muted"])).toBe("#8fa198");
   });
 
   it("system-dark and explicit-dark blocks are identical", () => {
@@ -169,14 +169,14 @@ describe("contrast of text tokens (F8), both themes", () => {
   });
 
   it("matches the measured ratios of design 02 (±0.05)", () => {
-    expect(contrast(light["--ml-text-primary"]!, "#ffffff")).toBeCloseTo(17.85, 1);
-    expect(contrast(light["--ml-text-muted"]!, "#ffffff")).toBeCloseTo(7.58, 1);
+    expect(contrast(light["--ml-text-primary"]!, "#ffffff")).toBeCloseTo(17.1, 1);
+    expect(contrast(light["--ml-text-muted"]!, "#ffffff")).toBeCloseTo(6.09, 1);
     expect(contrast(light["--ml-action-primary"]!, "#ffffff")).toBeCloseTo(5.48, 1);
     expect(contrast(dark["--ml-action-primary-text"]!, dark["--ml-action-primary"]!)).toBeCloseTo(
       7.88,
       1,
     );
-    expect(contrast(light["--ml-border-input"]!, "#ffffff")).toBeCloseTo(3.51, 1);
+    expect(contrast(light["--ml-border-input"]!, "#ffffff")).toBeCloseTo(3.62, 1);
   });
 
   it("queue violet (design 02 §4): #6D28D9 on #F5F3FF, priority solid with white text 7.10:1", () => {

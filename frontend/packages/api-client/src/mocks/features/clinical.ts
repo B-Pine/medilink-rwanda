@@ -45,6 +45,8 @@ export const MOCK_CLINICAL_FP = "5c3d2e1f-3333-4000-8000-000000000001";
 export const MOCK_STAFF_PATIENT_FP = "5c3d2e1f-3333-4000-8000-000000000003";
 export const MOCK_NO_CARE_FP = "5c3d2e1f-3333-4000-8000-000000000005";
 export const MOCK_CLINICAL_VISIT_ID = "7c000000-0000-4000-8000-000000000001";
+/** Mukamana's signed blood-pressure consultation; its prescription has an open pharmacist question. */
+export const MOCK_PRESSURE_CONSULTATION = "7c000000-0000-4000-8000-000000000020";
 export const MOCK_PRIVATE_NOTE = "Consider typhoid if the fever lasts";
 
 const DOCTOR = { membership_id: SETUP_IDS.mKeza, full_name: "Uwimana Keza" };
@@ -273,6 +275,7 @@ function seed(): Store {
     diagnoses: [diagnosis("B54", "primary", "confirmed")],
   });
   const pressure = signed(20, {
+    id: MOCK_PRESSURE_CONSULTATION,
     history_text: "Headaches in the morning.",
     plan_text: "Amlodipine 5 mg once a day.",
     patient_instructions_text:
@@ -414,9 +417,34 @@ const rowOf = ({
   ...row
 }: PatientRecord): PatientRecordRow => row;
 
+// [S7]
+type SignHook = (c: Consultation, lang: LanguageCode) => Response | null;
+const signHooks = new Map<string, SignHook>();
+/**
+ * S7 contract D-1: the pharmacy mock issues the prescription on sign, or refuses (a Response);
+ * the documents mock signs the draft letters and requests. One hook per key.
+ */
+export function setConsultationSignHook(hook: SignHook, key = "pharmacy"): void {
+  signHooks.set(key, hook);
+}
+const consultationSignHook: SignHook = (c, lang) => {
+  for (const hook of signHooks.values()) {
+    const refused = hook(c, lang);
+    if (refused) return refused;
+  }
+  return null;
+};
+let liveConsultations: () => Consultation[] = () => [];
+/** S7b: the documents mock reads the consultation (status, author, patient). */
+export function mockConsultation(id: string): Consultation | undefined {
+  return liveConsultations().find((c) => c.id === id);
+}
+// [/S7]
+
 export const clinicalMocks: FeatureMockFactory = (context) => {
   const { api } = context;
   let db = seed();
+  liveConsultations = () => db.consultations; // [S7]
   const S = `${api}/staff`;
 
   const msg = (key: keyof typeof MESSAGES, lang: LanguageCode) => MESSAGES[key][lang];
@@ -570,6 +598,10 @@ export const clinicalMocks: FeatureMockFactory = (context) => {
           return context.errorResponse(422, "business_rule_violation", msg("locked", ok.lang));
         if (!c.diagnoses.some((d) => d.rank === "primary"))
           return context.errorResponse(422, "business_rule_violation", msg("needPrimary", ok.lang));
+        // [S7]
+        const refused = consultationSignHook(c, ok.lang);
+        if (refused) return refused;
+        // [/S7]
         c.status = "signed";
         c.signed_at = now();
         c.is_late_entry = Date.now() - Date.parse(c.started_at) > 86_400_000;

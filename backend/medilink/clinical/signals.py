@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import Any
 
 from django.db.models.signals import pre_save
-from django.dispatch import receiver
+from django.dispatch import Signal, receiver
 from django.utils.translation import gettext_lazy as _
 
 from medilink.core.exceptions import BusinessRuleViolation
@@ -33,3 +33,10 @@ def refuse_close_with_draft(
         visit_id=instance.visit_id, status=ConsultationStatus.DRAFT
     ).exists():
         raise BusinessRuleViolation(UNSIGNED)
+
+
+# [S7] Sent by services.sign() inside its transaction, after the record is locked
+# (contract sprint-07 D-1): kwargs `consultation`, `request`. A receiver that raises rolls the
+# signing back, so S7 issues the prescription atomically with the signature.
+consultation_signed = Signal()
+# [/S7]

@@ -60,8 +60,9 @@ function Option({
 }
 
 /**
- * Find care (design 07 §2, §3.2). Today a patient joins the queue at reception and follows the
- * ticket here; booking a time and describing symptoms open with online booking (roadmap S5, P2).
+ * Find care (design 07 §2, §3.2; contract S5 §6.1): how to get care. "Visit today" explains
+ * walking in and checking in at reception; "Book a time" opens the facility search, where the
+ * patient books a time or joins today's queue (S5a).
  */
 export function FindCarePage() {
   const { t } = useTranslation();

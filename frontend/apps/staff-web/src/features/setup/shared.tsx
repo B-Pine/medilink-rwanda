@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useStaffMe } from "../../auth/queries";
-import { NotFoundContent } from "../../pages/NotFoundPage";
+import { NoAccessContent } from "../../pages/NotFoundPage";
 import { isStepUpCancelled } from "../lock";
 
 export const setupKeys = {
@@ -37,7 +37,7 @@ export function useCan(...codes: string[]): boolean {
 
 /** Pages behind a permission: everyone else gets the shell's "not found" (no greyed screens). */
 export function SetupGate({ codes, children }: { codes: string[]; children: ReactNode }) {
-  return useCan(...codes) ? <>{children}</> : <NotFoundContent />;
+  return useCan(...codes) ? <>{children}</> : <NoAccessContent />;
 }
 
 export function useLocale(): string {

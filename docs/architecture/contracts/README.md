@@ -15,7 +15,11 @@ A sprint contract is the agreement a sprint is built and verified against: scope
 | S4 · Visits and the live queue | [sprint-04-queue.md](sprint-04-queue.md) | 3 | Implemented: backend #73, frontend #74 ([acceptance](../../qa/sprint-4-acceptance.md)); real-API checks wait for #17 |
 | S5 · Discovery, booking and calendars | [sprint-05-booking.md](sprint-05-booking.md) | 4 | S5a implemented: backend and patient frontend #80, reception side (Expected list, booked check-in, no-show reversal, phone booking, new times) in the Phase 1 PR ([acceptance](../../qa/sprint-5-acceptance.md)); S5b (disruptions, follow-ups, calendar feed, calendars) not started |
 | S6 · Clinical record and history | [sprint-06-clinical.md](sprint-06-clinical.md) | Phase 4 | Contracted (v0.1); S6a consultation and history, then S6b results inbox, legacy import and break-glass |
+| S7 · Pharmacy and documents | [sprint-07-pharmacy-documents.md](sprint-07-pharmacy-documents.md) | 5 | Contracted (v0.1); S7a prescribing and dispensing in progress, S7b documents and verification next |
+| S8 · Billing, payments and insurance | [sprint-08-billing.md](sprint-08-billing.md) | 5 | Contracted (v0.1); backend then frontend |
 | S9 · Notification engine | [sprint-09-notifications.md](sprint-09-notifications.md) | 1 | Backend implemented (S9 pull request); frontend in progress ([acceptance](../../qa/sprint-9-acceptance.md)) |
+| S10 · Help center and support (part 1) | [sprint-10-help-support.md](sprint-10-help-support.md) | 3 | Backend and frontend implemented ([acceptance](../../qa/sprint-10-acceptance.md)); real-API checks wait for #17; disputes and reports are part 2 |
+| Public pages and symptom triage | [public-pages-and-triage.md](public-pages-and-triage.md) | — | Backend implemented (live public queue, rules-based triage); public pages follow |
 
 Acceptance checks are named per sprint: `S1-B1`, `S1-F1`, `S3-B1`, `S9-F4`, and so on (B = backend, F = frontend, I = integration).
 

@@ -37,13 +37,21 @@ import { createBookingApi } from "./features/booking";
 // [S6 imports]
 import { createClinicalApi } from "./features/clinical";
 // [/S6 imports]
+// [S7 imports]
+import { createDocumentsApi } from "./features/documents";
+import { createPharmacyApi } from "./features/pharmacy";
+// [/S7 imports]
 // [S9 imports]
 import { createNotificationsApi } from "./features/notifications";
 // [/S9 imports]
 // [S2 imports]
 // [/S2 imports]
 // [S10 imports]
+import { createHelpApi } from "./features/help";
 // [/S10 imports]
+// [PT imports]
+import { createTriageApi } from "./features/triage";
+// [/PT imports]
 
 /** Every Sprint 0 endpoint (docs/architecture/03-sprint-0-contract.md §2), typed. */
 export const paths = {
@@ -147,7 +155,11 @@ export function createMediLinkApi(client: ApiClient) {
     setup: createSetupApi(client),
     // [/S2]
     // [S10]
+    help: createHelpApi(client),
     // [/S10]
+    // [PT]
+    triage: createTriageApi(client),
+    // [/PT]
     // [S4]
     queue: createQueueApi(client),
     // [/S4]
@@ -157,6 +169,10 @@ export function createMediLinkApi(client: ApiClient) {
     // [S6]
     clinical: createClinicalApi(client),
     // [/S6]
+    // [S7]
+    pharmacy: createPharmacyApi(client),
+    documents: createDocumentsApi(client),
+    // [/S7]
   };
 }
 

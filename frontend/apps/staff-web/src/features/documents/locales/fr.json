@@ -1,0 +1,64 @@
+{
+  "loading": "Chargement des documents",
+  "download": "Télécharger",
+  "print": "Imprimer",
+  "preparing": "En préparation",
+  "version": "version {{n}}",
+  "kind": {
+    "prescription": "Ordonnance",
+    "referral": "Lettre de référence",
+    "lab_request": "Demande d'analyses ou d'imagerie",
+    "sick_note": "Certificat d'arrêt maladie"
+  },
+  "status": {
+    "active": "Valide",
+    "dispensed": "Délivrée",
+    "cancelled": "Annulée",
+    "expired": "Expirée"
+  },
+  "urgency": {
+    "routine": "Normale",
+    "urgent": "Urgente",
+    "emergency": "Extrême urgence"
+  },
+  "letters": {
+    "title": "Lettres et demandes",
+    "draftHint": "Elles sont signées avec la consultation et imprimées avec un code QR.",
+    "signedHint": "Une nouvelle est signée à l'enregistrement ; votre mot de passe est redemandé.",
+    "none": "Aucune lettre ni demande pour l'instant.",
+    "add": {
+      "referral": "Lettre de référence",
+      "lab_request": "Demande d'analyses",
+      "sick_note": "Arrêt maladie"
+    },
+    "referralLine": "Vers {{to}}, {{specialty}} · {{urgency}}",
+    "sickLine": "Repos du {{from}} au {{to}}",
+    "signedAt": "Signé {{time}}",
+    "signsWith": "Signé avec la consultation",
+    "visitDocuments": "Documents de cette visite"
+  },
+  "form": {
+    "to": "Référer vers (établissement)",
+    "specialty": "Spécialité",
+    "urgency": "Urgence",
+    "reason": "Motif",
+    "tests": "Examens",
+    "testsHint": "Un par ligne, ou séparés par des virgules.",
+    "testsRequired": "Ajoutez au moins un examen.",
+    "from": "Premier jour de repos",
+    "until": "Dernier jour de repos",
+    "datesOrder": "Le dernier jour est avant le premier.",
+    "showDiagnosis": "Afficher le diagnostic sur l'arrêt maladie",
+    "showDiagnosisHint": "Désactivé par défaut : un employeur ou une école n'a besoin que des dates.",
+    "required": "Remplissez ce champ.",
+    "save": "Ajouter",
+    "signNow": "Signer et ajouter",
+    "cancel": "Annuler"
+  },
+  "patient": {
+    "title": "Documents",
+    "clinicalHint": "Ordonnances, lettres et demandes signées dans cet établissement.",
+    "printHint": "Imprimez ce que le patient demande. Chaque impression est enregistrée.",
+    "none": "Aucun document pour l'instant."
+  }
+}

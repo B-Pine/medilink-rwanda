@@ -14,7 +14,11 @@ import { notificationsFeature } from "../features/notifications";
 // [S2 imports]
 // [/S2 imports]
 // [S10 imports]
+import { helpFeature } from "../features/help";
 // [/S10 imports]
+// [PT imports]
+import { publicFeature } from "../features/public";
+// [/PT imports]
 // [S4 imports]
 import { trackerFeature } from "../features/tracker";
 // [/S4 imports]
@@ -24,6 +28,10 @@ import { bookingFeature } from "../features/booking";
 // [S6 imports]
 import { recordsFeature } from "../features/records";
 // [/S6 imports]
+// [S7 imports]
+import { documentsFeature } from "../features/documents";
+import { medicinesFeature } from "../features/medicines";
+// [/S7 imports]
 
 /** What a feature module contributes (each feature lives in `src/features/<feature>/`). */
 export interface FeatureRoutes {
@@ -67,7 +75,11 @@ export const FEATURES: FeatureRoutes[] = [
   // [S2]
   // [/S2]
   // [S10]
+  helpFeature,
   // [/S10]
+  // [PT]
+  publicFeature,
+  // [/PT]
   // [S4]
   trackerFeature,
   // [/S4]
@@ -77,4 +89,8 @@ export const FEATURES: FeatureRoutes[] = [
   // [S6]
   recordsFeature,
   // [/S6]
+  // [S7]
+  medicinesFeature,
+  documentsFeature,
+  // [/S7]
 ];

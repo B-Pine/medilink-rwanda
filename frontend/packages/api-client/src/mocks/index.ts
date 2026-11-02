@@ -31,6 +31,7 @@ export { MOCK_DISPLAY_TOKEN } from "./features/queue";
 export {
   MOCK_CLINICAL_FP,
   MOCK_CLINICAL_VISIT_ID,
+  MOCK_PRESSURE_CONSULTATION,
   MOCK_NO_CARE_FP,
   MOCK_PRIVATE_NOTE,
   MOCK_STAFF_PATIENT_FP,
@@ -49,3 +50,22 @@ export {
 } from "./features/notifications";
 export type { EmitMockNotificationInput } from "./features/notifications";
 // [/S9]
+// [S10]
+export { MOCK_HELP } from "./features/help";
+// [/S10]
+// [S7]
+export {
+  MOCK_RX_CONTROLLED,
+  MOCK_RX_PARTLY,
+  MOCK_RX_PAST,
+  MOCK_RX_QUERIED,
+  MOCK_RX_READY,
+} from "./features/pharmacy";
+export {
+  MOCK_DOCUMENT_RX,
+  MOCK_DOCUMENT_SICK,
+  MOCK_SHARE_TOKEN,
+  MOCK_VERIFY_CODE,
+  MOCK_VERIFY_DOB,
+} from "./features/documents";
+// [/S7]

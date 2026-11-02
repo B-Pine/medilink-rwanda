@@ -52,14 +52,25 @@ export interface FacilityResult {
   service_code: string;
   service_name_i18n: I18n;
   accepts_insurance: "yes" | "no" | "unknown";
+  /** Accepted insurer codes, sorted (public-pages contract §2.1). */
+  insurers: string[];
   fee_rwf: number | null;
   patient_share_rwf: number | null;
   next_slot_at: string | null;
   queue_load: QueueLoad | null;
+  /** People waiting now and the wait for a new arrival (public-pages contract §2.1). */
+  waiting: number | null;
+  wait_range: WaitRange | null;
   allows_remote_join: boolean;
   referral_hint: boolean;
   lat: number | null;
   lng: number | null;
+}
+
+/** Minutes a new arrival can expect to wait. */
+export interface WaitRange {
+  min: number;
+  max: number;
 }
 
 export interface FacilitySearchPage {
@@ -76,10 +87,18 @@ export interface PublicService {
   insurers: string[];
   /** Patient share per insurer, in basis points of the fee. */
   insurer_shares: Record<string, number>;
+  /**
+   * R4 (#102): the patient's share in RWF per accepted insurer, after exclusions and ceilings;
+   * `null` when the insurer does not cover this service. Use this, not `insurer_shares`.
+   */
+  insurer_share_rwf: Record<string, number | null>;
   bookable: boolean;
   remote_join: boolean;
   walk_in: boolean;
   queue_load: QueueLoad | null;
+  /** Live, counts only (public-pages contract §2.1); null when the queue is not published. */
+  waiting: number | null;
+  wait_range: WaitRange | null;
   next_slot_at: string | null;
   min_age_months: number | null;
   max_age_months: number | null;
@@ -438,15 +457,22 @@ export function createBookingApi(client: ApiClient) {
     bookings: (when: "upcoming" | "past" = "upcoming") =>
       client.get<{ results: Booking[] }>(`${bookingPaths.bookings}?when=${when}`),
     booking: (id: Uuid) => client.get<Booking>(bookingPaths.booking(id)),
-    icsUrl: (id: Uuid) => bookingPaths.ics(id),
+    /** Absolute URL of the `.ics` file (served by the API host, with the session cookie). */
+    icsUrl: (id: Uuid) => `${client.baseUrl}${bookingPaths.ics(id)}`,
     cancel: (id: Uuid, version: number) =>
       client.post<Booking>(bookingPaths.cancel(id), { version }),
     reschedule: (id: Uuid, version: number, holdId: Uuid) =>
       client.post<Booking>(bookingPaths.reschedule(id), { version, hold_id: holdId }),
     remoteJoin: (
-      body: { facility_slug: string; service_id: Uuid; patient_id: Uuid },
+      body: {
+        facility_slug: string;
+        service_id: Uuid;
+        patient_id: Uuid;
+        symptoms?: SymptomInput[];
+      },
       idempotencyKey?: string,
     ) => client.post<PatientVisit>(bookingPaths.remoteJoin, body, idem(idempotencyKey)),
+    /** "I'm here" (B9): records the patient's claim; reception confirms the arrival. */
     arrived: (visitId: Uuid) => client.post<PatientVisit>(bookingPaths.arrived(visitId), {}),
     /** B10 (S5b): answer a disruption offer; with `hold_id` the result is the new booking. */
     respond: (id: Uuid, body: RespondInput) => client.post<Booking>(bookingPaths.respond(id), body),
@@ -457,6 +483,7 @@ export function createBookingApi(client: ApiClient) {
       revoke: () => client.request<void>("DELETE", bookingPaths.calendarFeed),
     },
     staff: {
+      /** R1. The Expected list is `{ date: today, status: "confirmed" }`; `no_show` lists no-shows. */
       bookings: (p: { date?: string; service_id?: Uuid; status?: string } = {}) =>
         client.get<{ count: number; results: StaffBooking[] }>(
           bookingPaths.staffBookings + query(p),

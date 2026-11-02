@@ -27,7 +27,7 @@ import { useParams, useSearchParams } from "react-router";
 import { useApi } from "../../app/services";
 import { useStaffMe } from "../../auth/queries";
 import { PageHeader } from "../../components/PageHeader";
-import { NotFoundContent } from "../../pages/NotFoundPage";
+import { NoAccessContent } from "../../pages/NotFoundPage";
 import { useStepUp } from "../lock";
 import { AccessReasonPrompt } from "./AccessGate";
 import { DiagnosisPicker, type PickedDiagnosis } from "./DiagnosisPicker";
@@ -41,6 +41,10 @@ import {
   useWhen,
 } from "./shared";
 import { VitalsPanel } from "./VitalsPanel";
+// [S7 imports]
+import { LettersSection } from "../documents";
+import { PrescriptionSection } from "../pharmacy";
+// [/S7 imports]
 
 const AUTOSAVE_MS = 1500;
 
@@ -92,7 +96,7 @@ function Section({
       id={id}
       tabIndex={-1}
       aria-labelledby={`${id}-title`}
-      className="flex scroll-mt-24 flex-col gap-3 rounded-lg border border-border bg-surface p-4"
+      className="flex scroll-mt-24 flex-col gap-3 rounded-lg bg-surface shadow-card p-4"
     >
       <h2 id={`${id}-title`} className="m-0 text-h3">
         {title}
@@ -565,7 +569,7 @@ export function ConsultationPage() {
     queryFn: () => api.clinical.get(consultationId),
     enabled: allowed,
   });
-  if (!allowed) return <NotFoundContent />;
+  if (!allowed) return <NoAccessContent />;
   if (consultation.isPending) return <LoadingState label={t("clinical.loading")} />;
   if (consultation.isError) {
     const fp = search.get("fp");
@@ -597,6 +601,14 @@ export function ConsultationPage() {
     { id: "examination", label: t("clinical.sections.examination") },
     { id: "diagnosis", label: t("clinical.sections.diagnosis") },
     { id: "plan", label: t("clinical.sections.plan") },
+    // [S7]
+    ...(c.status === "entered_in_error"
+      ? []
+      : [
+          { id: "prescription", label: t("pharmacy.prescription.title") },
+          { id: "letters", label: t("documents.letters.title") },
+        ]),
+    // [/S7]
     { id: "instructions", label: t("clinical.sections.instructions") },
     { id: "private-notes", label: t("clinical.sections.private-notes") },
     ...(isDraft ? [] : [{ id: "addenda", label: t("clinical.sections.addenda") }]),
@@ -636,6 +648,10 @@ export function ConsultationPage() {
       />
       <SectionAnchors sections={sections} label={t("clinical.sections.nav")} />
       {isDraft && c.can_edit ? <DraftEditor key={c.id} c={c} /> : <SignedView c={c} />}
+      {/* [S7] */}
+      <PrescriptionSection consultation={c} />
+      <LettersSection consultation={c} />
+      {/* [/S7] */}
       <HistoryDrawer
         fpId={c.facility_patient_id}
         open={historyOpen}

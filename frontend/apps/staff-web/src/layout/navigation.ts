@@ -29,6 +29,7 @@ import { Megaphone, MegaphoneSimple } from "@phosphor-icons/react";
 import { CalendarDots, ClipboardText } from "@phosphor-icons/react";
 // [/S2 imports]
 // [S10 imports]
+import { Article, Headset, Lifebuoy } from "@phosphor-icons/react";
 // [/S10 imports]
 // [S4 imports]
 import { ArrowsDownUp } from "@phosphor-icons/react";
@@ -39,6 +40,9 @@ import { CalendarX } from "@phosphor-icons/react";
 // [S6 imports]
 import { Notepad, Signature } from "@phosphor-icons/react";
 // [/S6 imports]
+// [S7 imports]
+import { Storefront } from "@phosphor-icons/react";
+// [/S7 imports]
 
 /** Sections of the Sprint 0 shell (labels in `shell.nav.<key>`). Features use their own keys. */
 export type CoreNavKey =
@@ -253,6 +257,31 @@ export const NAV_ITEMS: readonly NavItem[] = [
   },
   // [/S2]
   // [S10]
+  {
+    key: "help",
+    path: "/support",
+    icon: Lifebuoy,
+    group: "facility",
+    labelKey: "help.nav.help",
+    // every member of the active facility (S10-D6)
+    visible: (me: StaffMe) => Boolean(me.active_facility_id),
+  },
+  {
+    key: "platformSupport",
+    path: "/platform/support",
+    icon: Headset,
+    group: "platform",
+    labelKey: "help.nav.platformSupport",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
+  {
+    key: "platformHelpArticles",
+    path: "/platform/help-articles",
+    icon: Article,
+    group: "platform",
+    labelKey: "help.nav.platformHelpArticles",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
   // [/S10]
   // [S4]
   {
@@ -292,16 +321,97 @@ export const NAV_ITEMS: readonly NavItem[] = [
     visible: hasAny("clinical.unsigned_list"),
   },
   // [/S6]
+  // [S7]
+  {
+    key: "pharmacyAvailability",
+    path: "/pharmacy/availability",
+    icon: Storefront,
+    group: "facility",
+    labelKey: "pharmacy.nav.availability",
+    visible: hasAny("pharmacy.availability"),
+  },
+  // [/S7]
 ];
 
 /** Translation key of a nav item's label. */
 export const navLabelKey = (item: Pick<NavItem, "key" | "labelKey">) =>
   item.labelKey ?? `shell.nav.${item.key}`;
 
-export function visibleNavItems(me: StaffMe): NavItem[] {
+/**
+ * Menu sections (design 04 §2): what the person does all day comes first, running the facility
+ * second, help last. Items not listed here are daily work.
+ */
+export type NavSection = "work" | "manage" | "help";
+const MANAGE_KEYS = new Set<string>([
+  "approvals",
+  "reports",
+  "staff",
+  "setup",
+  "settings",
+  "doctorSchedules",
+  "queueReorders",
+  "disruptions",
+  "announcements",
+  "patientMerges",
+  "audit",
+]);
+export const navSection = (item: Pick<NavItem, "key">): NavSection =>
+  item.key === "help" ? "help" : MANAGE_KEYS.has(item.key) ? "manage" : "work";
+
+/** Reached from the queue with a patient, never on its own, so not in the menu. */
+const NOT_IN_MENU = new Set<string>(["clinicalConsultation"]);
+
+/** Menu order; keys not listed keep their place after the listed ones. */
+const ORDER = [
+  "today",
+  "queue",
+  "calendar",
+  "patients",
+  "clinicalUnsigned",
+  "mySchedule",
+  "pharmacy",
+  // [S7]
+  "pharmacyAvailability",
+  // [/S7]
+  "payments",
+  "reports",
+  "approvals",
+  "staff",
+  "doctorSchedules",
+  "setup",
+  "settings",
+  "queueReorders",
+  "disruptions",
+  "announcements",
+  "patientMerges",
+  "audit",
+  "help",
+  "platformOverview",
+  "platformApplications",
+  "platformFacilities",
+  "platformSupport",
+  "platformMasterData",
+  "platformAnnouncements",
+  "platformHelpArticles",
+  "platformMerges",
+  "platformFeatureFlags",
+];
+const rank = (key: string) => {
+  const index = ORDER.indexOf(key);
+  return index === -1 ? ORDER.length : index;
+};
+
+/**
+ * The menu for this person: permitted (analysis 02 §3), needing a facility when it is a facility
+ * page, and built. `built` is the set of paths that have a real page; sections that would only
+ * open a placeholder stay out of the menu (design 04 §2: no dead ends).
+ */
+export function visibleNavItems(me: StaffMe, built?: ReadonlySet<string>): NavItem[] {
   return NAV_ITEMS.filter(
     (item) =>
-      (item.group === "facility" && item.key !== "today" ? hasFacility(me) : true) &&
+      !NOT_IN_MENU.has(item.key) &&
+      (item.group === "facility" ? hasFacility(me) : true) &&
+      (built === undefined || item.key === "today" || built.has(item.path)) &&
       item.visible(me),
-  );
+  ).sort((a, b) => rank(a.key) - rank(b.key));
 }

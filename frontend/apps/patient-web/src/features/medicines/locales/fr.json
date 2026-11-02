@@ -1,0 +1,69 @@
+{
+  "title": "Mes médicaments",
+  "intro": "Les ordonnances de vos visites et ce que la pharmacie a délivré. Montrez le code dans n'importe quelle pharmacie.",
+  "whose": "Médicaments de",
+  "everyone": "Tout le monde",
+  "which": "Quelles ordonnances",
+  "tab": {
+    "active": "En cours",
+    "past": "Passées"
+  },
+  "failed": "Impossible de charger vos médicaments.",
+  "empty": {
+    "active": "Aucune ordonnance en cours.",
+    "past": "Aucune ordonnance passée."
+  },
+  "emptyBody": "Quand un médecin prescrit quelque chose, cela apparaît ici.",
+  "seeAll": "Tout voir",
+  "count_one": "{{count}} médicament",
+  "count_other": "{{count}} médicaments",
+  "issued": "prescrit le {{date}}",
+  "byDoctor": "Dr {{name}}",
+  "back": "Mes médicaments",
+  "notFound": "Ordonnance introuvable.",
+  "codeLabel": "Code de l'ordonnance",
+  "codeHint": "Montrez-le à la pharmacie. Valable jusqu'au {{date}}.",
+  "days_one": "pendant {{count}} jour",
+  "days_other": "pendant {{count}} jours",
+  "status": {
+    "draft": "En cours de rédaction",
+    "issued": "Prescrite",
+    "awaiting_payment": "Payez d'abord, puis retirez",
+    "ready_to_dispense": "Prête à la pharmacie",
+    "partly_dispensed": "Partiellement délivrée",
+    "dispensed": "Délivrée",
+    "not_available": "Non disponible ici",
+    "cancelled": "Annulée",
+    "expired": "Expirée"
+  },
+  "item": {
+    "draft": "En cours de rédaction",
+    "issued": "Prêt à la pharmacie",
+    "partly": "Partiellement délivré : {{given}} sur {{total}}",
+    "dispensed": "Délivré",
+    "not_available": "Non disponible ici : à acheter ailleurs avant le {{date}}",
+    "cancelled": "Annulé par le médecin",
+    "expired": "Expiré",
+    "givenAs": "Délivré comme {{name}} (même médicament)"
+  },
+  "frequency": {
+    "once": "une fois",
+    "od": "une fois par jour",
+    "bd": "deux fois par jour",
+    "tds": "trois fois par jour",
+    "qds": "quatre fois par jour",
+    "nocte": "le soir",
+    "prn": "si besoin"
+  },
+  "route": {
+    "oral": "Par la bouche",
+    "topical": "Sur la peau",
+    "inhaled": "Inhalé",
+    "rectal": "Rectal",
+    "vaginal": "Vaginal",
+    "eye": "Dans l'œil",
+    "ear": "Dans l'oreille",
+    "nasal": "Dans le nez",
+    "injection": "Injection"
+  }
+}

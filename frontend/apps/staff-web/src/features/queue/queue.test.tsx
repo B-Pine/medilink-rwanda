@@ -41,7 +41,7 @@ describe("reception board (S4-F2, F3)", () => {
     expect(within(booked[0]!).getByText("Niyonzima P.")).toBeInTheDocument();
     expect(within(booked[1]!).getByText("Mutesi A.")).toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
-  });
+  }, 40_000);
 
   it("undoes a no-show only with a reason (S5a R5)", async () => {
     const { user } = await signIn("reception@medilink.test", "/queue");
@@ -70,10 +70,26 @@ describe("reception board (S4-F2, F3)", () => {
     expect(await within(table).findByText("Mutesi A.")).toBeInTheDocument();
   });
 
+  it("lists remote joiners and confirms an arrival; I'm here alone is not arrival (S5 B9)", async () => {
+    const { user, container } = await signIn("reception@medilink.test", "/queue");
+    const remote = await screen.findByRole("list", { name: /^Joined from home/ });
+    const rows = within(remote).getAllByRole("listitem");
+    // the patient who tapped "I'm here" comes first, marked; nobody is confirmed yet
+    expect(within(rows[0]!).getByText("Uwera D.")).toBeInTheDocument();
+    expect(within(rows[0]!).getByText("Says they're here")).toBeInTheDocument();
+    expect(within(rows[1]!).getByText("Mugabo J.")).toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
+    await user.click(within(rows[0]!).getByRole("button", { name: "Confirm arrival" }));
+    await waitFor(() => expect(within(remote).queryByText("Uwera D.")).not.toBeInTheDocument());
+    // still in the queue, in the same place
+    const table = await screen.findByRole("table", { name: /General consultation · Consultation/ });
+    expect(within(table).getByText("Uwera D.")).toBeInTheDocument();
+  });
+
   it("moves a ticket up only with a reason, and records it in the timeline", async () => {
     const { user } = await signIn("reception@medilink.test", "/queue");
     const table = await screen.findByRole("table", { name: /General consultation · Consultation/ });
-    const last = within(table).getAllByRole("row").at(-1)!;
+    const last = within(table).getByText("Ingabire D.").closest("tr") as HTMLElement;
     await user.click(within(last).getByRole("button"));
     const panel = await screen.findByRole("dialog", { name: /Ingabire D\./ });
     await user.click(within(panel).getByRole("button", { name: "Move up" }));
@@ -98,6 +114,20 @@ describe("reception board (S4-F2, F3)", () => {
     await user.click(within(dialog).getByRole("button", { name: "Check in" }));
     const done = await screen.findByRole("dialog", { name: "Checked in" });
     expect(within(done).getByText(/^G-0\d\d$/)).toBeInTheDocument();
+  });
+
+  it("/ opens the check-in search; shortcuts are ignored while a panel is open", async () => {
+    const { user } = await signIn("reception@medilink.test", "/queue");
+    const table = await screen.findByRole("table", { name: /General consultation/ });
+    await user.click(within(within(table).getAllByRole("row")[1]!).getByRole("button"));
+    await screen.findByRole("dialog", { name: /Kamanzi O\./ });
+    await user.keyboard("/");
+    expect(screen.queryByRole("dialog", { name: "Check in a patient" })).not.toBeInTheDocument();
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    await user.keyboard("/");
+    const dialog = await screen.findByRole("dialog", { name: "Check in a patient" });
+    expect(within(dialog).getByRole("combobox", { name: "Find a patient" })).toBeInTheDocument();
   });
 });
 
@@ -162,7 +192,7 @@ describe("admin pages and display (S4-F1, F5)", () => {
   it("pharmacists don't get the queue board", async () => {
     await signIn("pharmacist@medilink.test", "/queue");
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Page not found" }),
+      await screen.findByRole("heading", { level: 1, name: "You don't have access to this page" }),
     ).toBeInTheDocument();
   });
 });

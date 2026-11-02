@@ -215,7 +215,7 @@ function WeekForm({
         e.preventDefault();
         if (valid) save.mutate();
       }}
-      className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-5"
+      className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="m-0 font-heading text-h3">{t("setup.hours.week")}</h2>
@@ -331,7 +331,7 @@ function CalendarPreview({ serviceId }: { serviceId: string | null }) {
   return (
     <section
       aria-labelledby="preview"
-      className="flex flex-col gap-3 self-start rounded-lg border border-border bg-surface p-5"
+      className="flex flex-col gap-3 self-start rounded-lg bg-surface shadow-card p-5"
     >
       <h2 id="preview" className="m-0 font-heading text-h3">
         {t("setup.hours.preview")}
@@ -456,7 +456,7 @@ function EventsSection() {
               className="rounded-lg border border-dashed border-border"
             />
           ) : (
-            <ul className="m-0 list-none overflow-hidden rounded-lg border border-border bg-surface p-0">
+            <ul className="m-0 list-none overflow-hidden rounded-lg bg-surface shadow-card p-0">
               {data.results.map((e) => (
                 <li
                   key={e.id}

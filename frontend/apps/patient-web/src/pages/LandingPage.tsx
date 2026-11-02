@@ -4,6 +4,7 @@ import {
   CalendarCheck,
   Clock,
   MagnifyingGlass,
+  Stethoscope,
   type Icon,
 } from "@phosphor-icons/react";
 import { Button, buttonClassName, Card, ImigongoPattern, SelectField } from "@medilink/ui";
@@ -22,6 +23,7 @@ import {
 } from "../features/booking/discovery";
 import { HeroIllustration } from "./HeroIllustration";
 import { FaqSection, RecordsSection, TrackerShowcase, TrustSection } from "./LandingSections";
+import { NearYou } from "./NearYou";
 
 const SERVICES = SERVICE_KEYS;
 const DISTRICTS = DISTRICT_KEYS;
@@ -154,8 +156,26 @@ export function LandingPage() {
               </ul>
             </div>
           </Card>
+          <Link
+            to="/check-symptoms"
+            className="group inline-flex items-center gap-3 self-start rounded-full bg-on-forest/10 py-2 pr-4 pl-2 text-on-forest no-underline ring-1 ring-on-forest/20 hover:bg-on-forest/15"
+          >
+            <span className="grid size-9 place-items-center rounded-full bg-attention-solid text-on-attention-solid">
+              <Stethoscope aria-hidden="true" weight="bold" className="size-5" />
+            </span>
+            <span className="flex flex-col leading-tight">
+              <span className="font-semibold">{t("landing.checker.title")}</span>
+              <span className="text-body-sm text-on-forest-muted">{t("landing.checker.body")}</span>
+            </span>
+            <ArrowRight
+              aria-hidden="true"
+              className="size-icon transition-transform group-hover:translate-x-0.5"
+            />
+          </Link>
         </div>
       </section>
+
+      <NearYou />
 
       <section aria-labelledby="how-title" id="how-it-works" className="scroll-mt-4">
         <div className="mx-auto flex max-w-[70rem] flex-col gap-8 px-4 py-12 sm:px-6 lg:py-16">

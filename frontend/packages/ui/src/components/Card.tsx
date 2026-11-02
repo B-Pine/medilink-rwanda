@@ -12,7 +12,10 @@ type CardProps<T extends ElementType> = {
 
 const PADDING = { none: "", md: "p-4", lg: "p-6" } as const;
 
-/** Surface with a subtle border (elevation is mostly borders, design 03 §4). */
+/**
+ * Surface that lifts off the page with a 1px ring and soft depth (design 03 §4), so structure
+ * reads without hard borders. Dark mode keeps only the ring.
+ */
 export function Card<T extends ElementType = "div">({
   as,
   children,
@@ -23,11 +26,7 @@ export function Card<T extends ElementType = "div">({
   const Component: ElementType = as ?? "div";
   return (
     <Component
-      className={cx(
-        "rounded-card border border-border bg-surface text-fg",
-        PADDING[padding],
-        className,
-      )}
+      className={cx("rounded-card bg-surface text-fg shadow-card", PADDING[padding], className)}
       {...props}
     >
       {children}

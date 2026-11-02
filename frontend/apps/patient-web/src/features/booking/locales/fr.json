@@ -65,7 +65,16 @@
     "closed": "Fermé",
     "closures": "Fermé le {{list}}",
     "contact": "Adresse et contact",
-    "directions": "Itinéraire"
+    "directions": "Itinéraire",
+    "queueNow": "La file maintenant",
+    "queueLive": "En direct",
+    "queueWait": "{{min}}–{{max}} min",
+    "queueWaiting_one": "{{count}} personne en attente",
+    "queueWaiting_other": "{{count}} personnes en attente",
+    "queueNoDoctor_one": "{{count}} en attente · aucun médecin de garde pour l'instant",
+    "queueNoDoctor_other": "{{count}} en attente · aucun médecin de garde pour l'instant",
+    "queueEmpty": "Personne en attente",
+    "bookShort": "Réserver"
   },
   "flow": {
     "title": "Réserver une visite",
@@ -119,7 +128,8 @@
     "addToCalendar": "Ajouter à mon agenda",
     "directions": "Établissement et itinéraire",
     "toVisits": "Voir mes visites",
-    "with": "avec {{doctor}}"
+    "with": "avec {{doctor}}",
+    "anyDoctor": "N'importe quel médecin"
   },
   "body": {
     "general": "Général",

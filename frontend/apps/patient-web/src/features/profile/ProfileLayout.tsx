@@ -59,7 +59,8 @@ export function ProfileLayout({
           <House aria-hidden="true" className="size-icon" />
           {t("profile.home")}
         </Link>
-        {back && (
+        {/* The home link already covers a "back to Home" */}
+        {back && back.to !== "/home" && (
           <Link to={back.to} className={buttonClassName({ variant: "ghost" })}>
             {back.label}
           </Link>

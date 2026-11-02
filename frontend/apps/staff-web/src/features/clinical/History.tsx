@@ -17,7 +17,7 @@ import { Link, useParams } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
-import { NotFoundContent } from "../../pages/NotFoundPage";
+import { NoAccessContent } from "../../pages/NotFoundPage";
 import { AccessGate, AccessReasonPrompt } from "./AccessGate";
 import {
   clinicalKeys,
@@ -304,7 +304,7 @@ export function HistoryPage() {
   const { t } = useTranslation();
   const { fpId = "" } = useParams();
   const allowed = useCan("clinical.view");
-  if (!allowed) return <NotFoundContent />;
+  if (!allowed) return <NoAccessContent />;
   return (
     <div className="flex max-w-5xl flex-col gap-5">
       <PageHeader

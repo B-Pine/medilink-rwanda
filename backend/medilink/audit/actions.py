@@ -75,6 +75,9 @@ from medilink.facilities import audit_actions as _s2  # noqa: E402
 extend_actions(_s2.ACTIONS)
 # [/S2]
 # [S10]
+from medilink.support import audit_actions as _s10  # noqa: E402
+
+extend_actions(_s10.ACTIONS)
 # [/S10]
 # [S4]
 from medilink.visits import audit_actions as _s4  # noqa: E402
@@ -91,3 +94,15 @@ from medilink.clinical import audit_actions as _s6  # noqa: E402
 
 extend_actions(_s6.ACTIONS)
 # [/S6]
+# [S7]
+from medilink.documents import audit_actions as _s7b  # noqa: E402
+from medilink.pharmacy import audit_actions as _s7  # noqa: E402
+
+extend_actions(_s7.ACTIONS)
+extend_actions(_s7b.ACTIONS)
+# [/S7]
+# [S8]
+from medilink.billing import audit_actions as _s8  # noqa: E402
+
+extend_actions(_s8.ACTIONS)
+# [/S8]

@@ -37,7 +37,7 @@ import { useApi } from "../../app/services";
 import { useStaffMe } from "../../auth/queries";
 import { PageHeader } from "../../components/PageHeader";
 import { describeApiError } from "../../forms/api-errors";
-import { NotFoundContent } from "../../pages/NotFoundPage";
+import { NoAccessContent, NotFoundContent } from "../../pages/NotFoundPage";
 import { notificationKeys } from "./live";
 import {
   isConflict,
@@ -72,7 +72,9 @@ function Guard({ scope, children }: { scope: AnnouncementScope; children: ReactN
   const { data: me } = useStaffMe();
   const canManage = useCan("announcements.manage");
   const allowed = scope === "platform" ? Boolean(me?.is_platform_admin) : canManage;
-  return allowed ? <>{children}</> : <NotFoundContent />;
+  if (allowed) return <>{children}</>;
+  // Platform pages stay hidden from facility staff (S1 §6.1); facility pages say "no access".
+  return scope === "platform" ? <NotFoundContent /> : <NoAccessContent />;
 }
 
 function textIn(texts: AnnouncementText, lang: string): string {
@@ -141,7 +143,7 @@ function AnnouncementsList({ scope }: { scope: AnnouncementScope }) {
           }
         />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-border bg-surface">
+        <div className="overflow-x-auto rounded-lg bg-surface shadow-card">
           <table className="w-full border-collapse text-left">
             <caption className="sr-only">{t(`notifications.announcements.${scope}Title`)}</caption>
             <thead className="bg-subtle text-body-sm text-fg-secondary">

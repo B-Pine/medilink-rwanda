@@ -29,11 +29,13 @@ export function ProfileSwitcher({ profiles, currentId, onSelect, label }: Profil
     <Menu>
       <MenuTrigger
         aria-label={`${label}: ${current.name}`}
-        className="inline-flex min-h-12 max-w-full min-w-0 items-center gap-2 rounded-md border border-border bg-surface px-3 text-body text-fg"
+        className="inline-flex min-h-11 max-w-full min-w-0 items-center gap-2 rounded-full bg-surface px-3 text-body-sm text-fg shadow-card"
       >
-        <UserCircle aria-hidden="true" size={24} />
+        <UserCircle aria-hidden="true" size={22} className="shrink-0" />
         <span className="truncate font-medium whitespace-nowrap">{current.name}</span>
-        <Badge tone="neutral">{current.relationship}</Badge>
+        <span className="hidden sm:inline">
+          <Badge tone="neutral">{current.relationship}</Badge>
+        </span>
         <CaretDown aria-hidden="true" />
       </MenuTrigger>
       <MenuContent align="start">

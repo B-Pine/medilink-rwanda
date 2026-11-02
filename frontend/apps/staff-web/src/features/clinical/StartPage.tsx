@@ -15,7 +15,7 @@ import { Link, useNavigate, useParams } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
-import { NotFoundContent } from "../../pages/NotFoundPage";
+import { NoAccessContent } from "../../pages/NotFoundPage";
 import { errorText, isReasonRequired, useCan } from "./shared";
 
 /** Opens (or returns) my draft for a visit (C1) and goes to it. */
@@ -42,7 +42,7 @@ export function StartPage() {
     enabled: allowed,
   });
   const open = useOpen();
-  if (!allowed) return <NotFoundContent />;
+  if (!allowed) return <NoAccessContent />;
   const current = mine.data?.current ?? null;
   return (
     <div className="flex max-w-3xl flex-col gap-5">
@@ -56,7 +56,7 @@ export function StartPage() {
       ) : current ? (
         <section
           aria-labelledby="current-patient"
-          className="flex flex-wrap items-center gap-4 rounded-lg border border-border bg-surface p-5"
+          className="flex flex-wrap items-center gap-4 rounded-lg bg-surface shadow-card p-5"
         >
           <TicketNumber number={current.number} />
           <div className="flex min-w-0 flex-1 flex-col gap-1">
@@ -111,7 +111,7 @@ export function OpenForVisitPage() {
       open.mutate(visitId);
     }
   }, [allowed, open, visitId]);
-  if (!allowed) return <NotFoundContent />;
+  if (!allowed) return <NoAccessContent />;
   if (open.isError)
     return (
       <Alert tone={isReasonRequired(open.error) ? "warning" : "danger"} role="alert">

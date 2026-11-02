@@ -6,7 +6,7 @@ import { Link } from "react-router";
 import { PageHeading } from "../components/PageHeading";
 import { PublicLayout } from "../layout/PublicLayout";
 
-export type InfoSection = "verify" | "forFacilities" | "terms" | "privacy" | "help";
+export type InfoSection = "forFacilities" | "terms" | "privacy" | "help";
 
 /** Placeholder public pages linked from the landing page and footer (filled in later sprints). */
 export function InfoPage({ section }: { section: InfoSection }) {

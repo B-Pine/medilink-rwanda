@@ -25,7 +25,7 @@ tzdata
 pillow>=11.0
 pillow-heif>=1.0
 pypdf>=5.0
-boto3>=1.43.121
+boto3>=1.43.122
 # [/S1]
 # [S3]
 # Patient identifier encryption (contract §2.4): AES-256-GCM field encryption and HKDF for
@@ -41,3 +41,8 @@ pywebpush>=2.0
 # [/S2]
 # [S10]
 # [/S10]
+# [S7]
+# Generated documents (contract sprint-07 §1, D-8): PDF drawing and its built-in QR code widget.
+# Pure drawing API, no HTML or URL fetching, no system libraries (WeasyPrint needs Pango).
+reportlab>=4.2
+# [/S7]

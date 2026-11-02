@@ -25,6 +25,9 @@ import setupFr from "../features/setup/locales/fr.json";
 import setupRw from "../features/setup/locales/rw.json";
 // [/S2 imports]
 // [S10 imports]
+import helpEn from "../features/help/locales/en.json";
+import helpFr from "../features/help/locales/fr.json";
+import helpRw from "../features/help/locales/rw.json";
 // [/S10 imports]
 // [S4 imports]
 import queueEn from "../features/queue/locales/en.json";
@@ -41,6 +44,14 @@ import clinicalEn from "../features/clinical/locales/en.json";
 import clinicalFr from "../features/clinical/locales/fr.json";
 import clinicalRw from "../features/clinical/locales/rw.json";
 // [/S6 imports]
+// [S7 imports]
+import pharmacyEn from "../features/pharmacy/locales/en.json";
+import pharmacyFr from "../features/pharmacy/locales/fr.json";
+import pharmacyRw from "../features/pharmacy/locales/rw.json";
+import documentsEn from "../features/documents/locales/en.json";
+import documentsFr from "../features/documents/locales/fr.json";
+import documentsRw from "../features/documents/locales/rw.json";
+// [/S7 imports]
 
 /**
  * Feature translation namespaces: `<feature>` -> `src/features/<feature>/locales/{rw,en,fr}.json`.
@@ -61,6 +72,7 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   setup: { rw: setupRw, en: setupEn, fr: setupFr },
   // [/S2]
   // [S10]
+  help: { rw: helpRw, en: helpEn, fr: helpFr },
   // [/S10]
   // [S4]
   queue: { rw: queueRw, en: queueEn, fr: queueFr },
@@ -71,4 +83,8 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   // [S6]
   clinical: { rw: clinicalRw, en: clinicalEn, fr: clinicalFr },
   // [/S6]
+  // [S7]
+  pharmacy: { rw: pharmacyRw, en: pharmacyEn, fr: pharmacyFr },
+  documents: { rw: documentsRw, en: documentsEn, fr: documentsFr },
+  // [/S7]
 };

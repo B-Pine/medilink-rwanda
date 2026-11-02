@@ -164,6 +164,33 @@
           "a": "Oui. Demandez à l’accueil : on vous enregistre et vous donne un ticket, et vous gardez votre numéro MediLink."
         }
       }
+    },
+    "near": {
+      "eyebrow": "Près de vous",
+      "title": "Des soins près de vous",
+      "body": "Les établissements vérifiés autour de vous, leur affluence en ce moment et les assurances acceptées.",
+      "ask": "Partagez votre position pour voir les établissements les plus proches",
+      "usingLocation": "Établissements près de vous",
+      "private": "Utilisée pour cette recherche uniquement. Jamais enregistrée.",
+      "orDistrict": "Ou choisissez un district",
+      "chooseDistrict": "Choisir un district",
+      "loading": "Recherche des établissements",
+      "none": "Aucun établissement vérifié ici pour l'instant. Essayez un autre district.",
+      "all": "Voir tous les établissements",
+      "wait_one": "{{count}} en attente · {{min}}–{{max}} min",
+      "wait_other": "{{count}} en attente · {{min}}–{{max}} min",
+      "insurers": "Assurances acceptées",
+      "cashOnly": "Paiement direct uniquement"
+    },
+    "checker": {
+      "title": "Vous ne savez pas où aller ?",
+      "body": "Vérifiez vos symptômes en une minute"
+    },
+    "insurersShort": {
+      "mutuelle": "Mutuelle",
+      "rama": "RAMA",
+      "mmi": "MMI",
+      "private": "Privée"
     }
   },
   "emergency": {
@@ -177,7 +204,10 @@
     "verify": "Vérifier un document",
     "forFacilities": "Pour les établissements",
     "help": "Aide",
-    "copyright": "© {{year}} MediLink Rwanda"
+    "copyright": "© {{year}} MediLink Rwanda",
+    "about": "À propos",
+    "emergency": "Urgence",
+    "checkSymptoms": "Vérifier mes symptômes"
   },
   "login": {
     "title": "Se connecter ou créer un compte",
@@ -255,14 +285,11 @@
       "family": "Membres de la famille",
       "privacy": "Confidentialité et accès à mon dossier",
       "settings": "Taille du texte, langue et thème"
-    }
+    },
+    "notSureBody": "Répondez à quelques questions sur ce que vous ressentez, nous vous suggérons où aller."
   },
   "info": {
     "back": "Retour à l’accueil",
-    "verify": {
-      "title": "Vérifier un document",
-      "body": "Bientôt, pharmacies et employeurs pourront vérifier ici une ordonnance, un reçu ou un certificat médical grâce à son code ou son QR."
-    },
     "forFacilities": {
       "title": "MediLink pour les établissements de santé",
       "body": "L’inscription des établissements ouvre dans la prochaine version. Vous pourrez postuler en ligne et démarrer après vérification."

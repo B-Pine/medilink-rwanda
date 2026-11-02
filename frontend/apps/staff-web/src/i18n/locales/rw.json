@@ -131,7 +131,7 @@
       "staff": "Abakozi",
       "settings": "Igenamiterere",
       "audit": "Igitabo cy’ibikorwa",
-      "platformFacilities": "Ubusabe bw’ibigo"
+      "platformFacilities": "Ibigo"
     },
     "connection": {
       "label": "Murandasi",
@@ -160,7 +160,10 @@
       "shortcut": "Ctrl K"
     },
     "collapse": "Gabanya menyu",
-    "expand": "Agura menyu"
+    "expand": "Agura menyu",
+    "section": {
+      "manage": "Gucunga ikigo"
+    }
   },
   "today": {
     "title": "Uyu munsi",
@@ -182,7 +185,7 @@
   "notFound": {
     "title": "Iyi paji ntibonetse",
     "body": "Reba aderesi, cyangwa usubire kuri paji y’Uyu munsi.",
-    "home": "Jya ku Uyu munsi"
+    "home": "Jya ku ipaji yanjye ibanza"
   },
   "forgot": {
     "title": "Hindura ijambo ry’ibanga",
@@ -202,5 +205,10 @@
     "doneBody": "Ijambo ry’ibanga ryahinduwe kandi wasohowe ahantu hose. Injira ukoresheje ijambo ry’ibanga rishya.",
     "invalidLink": "Iri huriro ntiryuzuye. Ongera ufungure ihuriro riri muri imeyili, cyangwa usabe irindi.",
     "toLogin": "Jya ku kwinjira"
+  },
+  "noAccess": {
+    "title": "Nta burenganzira ufite kuri iyi paji",
+    "body": "Inshingano zawe muri iki kigo ntizirimo iyi paji. Niba uyikeneye, baza umuyobozi w'ikigo.",
+    "home": "Subira ku kazi kanjye"
   }
 }

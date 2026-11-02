@@ -42,19 +42,13 @@ describe("staff login → MFA verify → facility picker → shell", () => {
     expect(router.state.location.pathname).toBe("/today");
     expect(screen.getByText("You are working at Remera Health Center.")).toBeInTheDocument();
     const nav = screen.getByRole("navigation", { name: "Main menu" });
-    for (const name of [
-      "Today",
-      "Queue",
-      "Patients",
-      "Approvals",
-      "Reports",
-      "Staff",
-      "Settings",
-      "Audit log",
-    ]) {
+    for (const name of ["Today", "Queue", "Patients", "Reports", "Staff", "Settings"]) {
       expect(within(nav).getByRole("link", { name })).toBeInTheDocument();
     }
-    expect(within(nav).queryByRole("link", { name: "Pharmacy" })).not.toBeInTheDocument();
+    // Sections without a built page stay out of the menu (design 04 §2: no dead ends)
+    for (const name of ["Pharmacy", "Approvals", "Payments", "Audit log"]) {
+      expect(within(nav).queryByRole("link", { name })).not.toBeInTheDocument();
+    }
     expect(within(nav).getByRole("link", { name: "Today" })).toHaveAttribute(
       "aria-current",
       "page",
@@ -98,8 +92,9 @@ describe("staff login → MFA verify → facility picker → shell", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("You are working at Kigali Clinic.")).toBeInTheDocument();
     const nav = screen.getByRole("navigation", { name: "Main menu" });
-    expect(within(nav).getByRole("link", { name: "Payments" })).toBeInTheDocument();
+    expect(within(nav).getByRole("link", { name: "Queue" })).toBeInTheDocument();
     expect(within(nav).queryByRole("link", { name: "Pharmacy" })).not.toBeInTheDocument();
+    expect(within(nav).queryByRole("link", { name: "Payments" })).not.toBeInTheDocument();
     // No facility switcher for a single membership.
     expect(screen.queryByRole("button", { name: /Current facility/ })).not.toBeInTheDocument();
   });
@@ -111,9 +106,10 @@ describe("staff login → MFA verify → facility picker → shell", () => {
     await user.click(screen.getByRole("button", { name: "Verify and log in" }));
     await screen.findByRole("heading", { level: 1, name: /^Good (morning|afternoon|evening)/ });
 
+    // [S7] /pharmacy is built now: a built section the role cannot use says so (S1 §6.1)
     await router.navigate("/pharmacy");
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Page not found" }),
+      await screen.findByRole("heading", { level: 1, name: "You don't have access to this page" }),
     ).toBeInTheDocument();
     await router.navigate("/queue");
     expect(await screen.findByRole("heading", { level: 1, name: "Queue" })).toBeInTheDocument();
@@ -297,27 +293,25 @@ describe("shell: user menu, language, theme, logout", () => {
     await logIn(user, "admin@medilink.test", MOCK_PASSWORD);
     await user.type(await screen.findByLabelText("6-digit code"), MOCK_TOTP_CODE);
     await user.click(screen.getByRole("button", { name: "Verify and log in" }));
+    // No facility, so the day starts on the platform overview, not an empty Today
     expect(
-      await screen.findByRole("heading", { level: 1, name: /^Good (morning|afternoon|evening)/ }),
+      await screen.findByRole("heading", { level: 1, name: "Platform overview" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("You are signed in as a platform admin.")).toBeInTheDocument();
     const nav = screen.getByRole("navigation", { name: "Main menu" });
     expect(
       within(nav)
         .getAllByRole("link")
         .map((link) => link.textContent),
     ).toEqual([
-      "Today",
-      "Facility applications",
-      // S1 platform console
       "Platform overview",
-      "Review applications",
+      "Facility applications",
+      "Facilities",
+      "Support queue",
       "Master data",
-      "Feature flags",
-      // S3 patients
-      "Patient merges",
-      // S9 notifications (super admins only)
       "Platform announcements",
+      "Help articles",
+      "Patient merges",
+      "Feature flags",
     ]);
   });
 
@@ -344,7 +338,7 @@ describe("other pages", () => {
     expect(
       await screen.findByRole("heading", { level: 1, name: "Page not found" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Go to Today" })).toHaveAttribute("href", "/today");
+    expect(screen.getByRole("link", { name: "Go to my start page" })).toHaveAttribute("href", "/");
   });
 
   it("MFA pages without a pending login go back to login", async () => {

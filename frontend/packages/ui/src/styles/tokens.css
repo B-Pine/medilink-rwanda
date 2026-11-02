@@ -30,16 +30,16 @@
   --ml-emerald-900: #064e3b;
   --ml-emerald-950: #022c22;
 
-  /* Neutrals (design 02 §2) */
-  --ml-bg-page: #f6f8f7;
+  /* Neutrals (design 02 §2): leaning toward the forest green, so structure and brand share a hue */
+  --ml-bg-page: #f2f5f3;
   --ml-bg-surface: #ffffff;
   --ml-bg-raised: #ffffff;
-  --ml-bg-subtle: #f1f5f9;
-  --ml-text-primary: #0f172a;
-  --ml-text-secondary: #334155;
-  --ml-text-muted: #475569;
-  --ml-border-subtle: #e2e8f0;
-  --ml-border-input: #7c8a9d;
+  --ml-bg-subtle: #eaefec;
+  --ml-text-primary: #0e1f18;
+  --ml-text-secondary: #3c4e46;
+  --ml-text-muted: #55665e;
+  --ml-border-subtle: #dfe6e2;
+  --ml-border-input: #7b8a83;
 
   /* Semantic (design 02 §3) */
   --ml-brand: #047857;
@@ -52,6 +52,13 @@
   --ml-focus-ring: #059669;
   --ml-accent: #fbbf24;
   --ml-accent-text: #0f172a;
+
+  /* Attention (design 02 §3a): the one ochre, only for "your turn" and work that needs someone.
+     Text 5.23:1 on its background; primary text 4.69:1 on the solid. */
+  --ml-attention-bg: #fbf0d8;
+  --ml-attention-text: #8a5a05;
+  --ml-attention-solid: #b7790a;
+  --ml-attention-solid-text: #0e1f18;
 
   /* Status (design 02 §3): always shown with an icon and a label */
   --ml-success-text: #15803d;
@@ -101,8 +108,12 @@
   --ml-seq-4: #065f46;
   --ml-chart-grid: #e2e8f0;
 
-  /* Elevation: mostly borders; shadows only for floating layers (design 03 §4) */
-  --ml-shadow-raised: 0 8px 24px rgb(15 23 42 / 0.12), 0 2px 6px rgb(15 23 42 / 0.08);
+  /* Elevation (design 03 §4): cards lift with a 1px ring and two soft depths, no hard borders;
+     floating layers (menus, dialogs, panels) use the raised shadow. Dark mode keeps only the ring. */
+  --ml-shadow-card:
+    0 0 0 1px rgb(14 31 24 / 0.06), 0 1px 2px -1px rgb(14 31 24 / 0.07),
+    0 2px 6px rgb(14 31 24 / 0.04);
+  --ml-shadow-raised: 0 0 0 1px rgb(14 31 24 / 0.06), 0 12px 32px -8px rgb(14 31 24 / 0.18);
 
   /* Typography (design 03 §1-2) */
   --ml-font-heading: "Figtree Variable", "Figtree", ui-sans-serif, system-ui, sans-serif;
@@ -174,14 +185,14 @@
     --ml-seq-3: #10b981;
     --ml-seq-4: #34d399;
     --ml-chart-grid: #24332d;
-    --ml-bg-page: #0b1411;
-    --ml-bg-surface: #111c18;
-    --ml-bg-raised: #16231e;
-    --ml-bg-subtle: #16231e;
-    --ml-text-primary: #f1f5f9;
-    --ml-text-secondary: #cbd5e1;
-    --ml-text-muted: #94a3b8;
-    --ml-border-subtle: #24332d;
+    --ml-bg-page: #0a1310;
+    --ml-bg-surface: #101c17;
+    --ml-bg-raised: #14221c;
+    --ml-bg-subtle: #14221c;
+    --ml-text-primary: #e6efea;
+    --ml-text-secondary: #b3c3bb;
+    --ml-text-muted: #8fa198;
+    --ml-border-subtle: #22312b;
     --ml-border-input: #5b6e66;
     --ml-brand: #34d399;
     --ml-action-primary: #34d399;
@@ -193,14 +204,18 @@
     --ml-focus-ring: #34d399;
     --ml-accent: #fbbf24;
     --ml-accent-text: #0f172a;
+    --ml-attention-bg: color-mix(in srgb, #f0b443 14%, #101c17);
+    --ml-attention-text: #f6c66c;
+    --ml-attention-solid: #f0b443;
+    --ml-attention-solid-text: #1b1405;
     --ml-success-text: #4ade80;
-    --ml-success-bg: color-mix(in srgb, #4ade80 14%, #111c18);
+    --ml-success-bg: color-mix(in srgb, #4ade80 14%, #101c17);
     --ml-warning-text: #fbbf24;
-    --ml-warning-bg: color-mix(in srgb, #fbbf24 14%, #111c18);
+    --ml-warning-bg: color-mix(in srgb, #fbbf24 14%, #101c17);
     --ml-danger-text: #f87171;
-    --ml-danger-bg: color-mix(in srgb, #f87171 14%, #111c18);
+    --ml-danger-bg: color-mix(in srgb, #f87171 14%, #101c17);
     --ml-info-text: #60a5fa;
-    --ml-info-bg: color-mix(in srgb, #60a5fa 14%, #111c18);
+    --ml-info-bg: color-mix(in srgb, #60a5fa 14%, #101c17);
     --ml-danger-solid: #f87171;
     --ml-danger-solid-text: #0f172a;
     --ml-violet-text: #c4b5fd;
@@ -225,14 +240,14 @@
   --ml-seq-3: #10b981;
   --ml-seq-4: #34d399;
   --ml-chart-grid: #24332d;
-  --ml-bg-page: #0b1411;
-  --ml-bg-surface: #111c18;
-  --ml-bg-raised: #16231e;
-  --ml-bg-subtle: #16231e;
-  --ml-text-primary: #f1f5f9;
-  --ml-text-secondary: #cbd5e1;
-  --ml-text-muted: #94a3b8;
-  --ml-border-subtle: #24332d;
+  --ml-bg-page: #0a1310;
+  --ml-bg-surface: #101c17;
+  --ml-bg-raised: #14221c;
+  --ml-bg-subtle: #14221c;
+  --ml-text-primary: #e6efea;
+  --ml-text-secondary: #b3c3bb;
+  --ml-text-muted: #8fa198;
+  --ml-border-subtle: #22312b;
   --ml-border-input: #5b6e66;
   --ml-brand: #34d399;
   --ml-action-primary: #34d399;
@@ -244,14 +259,18 @@
   --ml-focus-ring: #34d399;
   --ml-accent: #fbbf24;
   --ml-accent-text: #0f172a;
+  --ml-attention-bg: color-mix(in srgb, #f0b443 14%, #101c17);
+  --ml-attention-text: #f6c66c;
+  --ml-attention-solid: #f0b443;
+  --ml-attention-solid-text: #1b1405;
   --ml-success-text: #4ade80;
-  --ml-success-bg: color-mix(in srgb, #4ade80 14%, #111c18);
+  --ml-success-bg: color-mix(in srgb, #4ade80 14%, #101c17);
   --ml-warning-text: #fbbf24;
-  --ml-warning-bg: color-mix(in srgb, #fbbf24 14%, #111c18);
+  --ml-warning-bg: color-mix(in srgb, #fbbf24 14%, #101c17);
   --ml-danger-text: #f87171;
-  --ml-danger-bg: color-mix(in srgb, #f87171 14%, #111c18);
+  --ml-danger-bg: color-mix(in srgb, #f87171 14%, #101c17);
   --ml-info-text: #60a5fa;
-  --ml-info-bg: color-mix(in srgb, #60a5fa 14%, #111c18);
+  --ml-info-bg: color-mix(in srgb, #60a5fa 14%, #101c17);
   --ml-danger-solid: #f87171;
   --ml-danger-solid-text: #0f172a;
   --ml-violet-text: #c4b5fd;

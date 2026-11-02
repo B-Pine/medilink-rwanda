@@ -18,6 +18,7 @@ import { notificationsFeature } from "../features/notifications";
 import { setupFeature } from "../features/setup";
 // [/S2 imports]
 // [S10 imports]
+import { helpFeature } from "../features/help";
 // [/S10 imports]
 // [S4 imports]
 import { queueFeature } from "../features/queue";
@@ -28,6 +29,10 @@ import { bookingsFeature } from "../features/bookings";
 // [S6 imports]
 import { clinicalFeature } from "../features/clinical";
 // [/S6 imports]
+// [S7 imports]
+import { documentsFeature } from "../features/documents";
+import { pharmacyFeature } from "../features/pharmacy";
+// [/S7 imports]
 
 /** What a feature module contributes (each feature lives in `src/features/<feature>/`). */
 export interface FeatureRoutes {
@@ -53,6 +58,13 @@ export const FEATURE_COMMANDS = (): CommandProvider[] =>
   FEATURES.flatMap((feature) => feature.commands ?? []);
 export const FEATURE_SHELL_OVERLAYS = (): ComponentType[] =>
   FEATURES.flatMap((feature) => feature.shellOverlays ?? []);
+/** Shell paths that have a real page (the rest open a placeholder and stay out of the menu). */
+export const BUILT_PATHS = (): ReadonlySet<string> =>
+  new Set(
+    FEATURES.flatMap((feature) => feature.shell ?? []).flatMap((route) =>
+      route.path ? [route.path] : [],
+    ),
+  );
 
 /**
  * Feature registry. Shared-file protocol (docs/architecture/contracts/README.md): each sprint
@@ -73,6 +85,7 @@ export const FEATURES: FeatureRoutes[] = [
   setupFeature,
   // [/S2]
   // [S10]
+  helpFeature,
   // [/S10]
   // [S4]
   queueFeature,
@@ -83,4 +96,8 @@ export const FEATURES: FeatureRoutes[] = [
   // [S6]
   clinicalFeature,
   // [/S6]
+  // [S7]
+  pharmacyFeature,
+  documentsFeature,
+  // [/S7]
 ];

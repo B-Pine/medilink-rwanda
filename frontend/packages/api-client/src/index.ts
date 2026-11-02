@@ -24,7 +24,11 @@ export * from "./features/notifications";
 export * from "./features/setup";
 // [/S2]
 // [S10]
+export * from "./features/help";
 // [/S10]
+// [PT]
+export * from "./features/triage";
+// [/PT]
 // [S4]
 export * from "./features/queue";
 export * from "./realtime";
@@ -35,3 +39,7 @@ export * from "./features/booking";
 // [S6]
 export * from "./features/clinical";
 // [/S6]
+// [S7]
+export * from "./features/documents";
+export * from "./features/pharmacy";
+// [/S7]

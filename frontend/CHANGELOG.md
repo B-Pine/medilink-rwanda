@@ -31,6 +31,113 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 - Playwright (`@playwright/test` 1.64.1): `pnpm e2e` runs the S4 walk-in journey (check-in, call,
   complete) and the pre-rendered pages' checks against the mock builds; new `e2e` CI job.
 - HeroIllustration uses brand tokens; a workspace test forbids raw hex colours in components.
+### Sprint 7b · Documents (frontend, #123)
+
+- staff-web consultation: a Letters and requests section (referral letter, lab request, sick note)
+  signed with the consultation, or at once after it; the visit's documents with Download.
+- staff-web patient record: a Documents tab; clinicians download, reception and the pharmacy print.
+- patient-web `/documents` and a Home card: my documents with Download, a ZIP of all of them, the
+  verification code, and share links shown once that can be stopped.
+- patient-web public `/verify` (replaces the placeholder) and `/verify/:code`: genuine or not, then
+  the content after the patient's date of birth; `/shared/:token` opens a shared document.
+
+### Sprint 7a · Pharmacy (frontend, #123)
+
+- staff-web consultation: a Prescription section (anchor) to add medicines from the catalogue with
+  "Not in stock here", dose, how often, route, days and the calculated quantity; S6 alerts sit on
+  the item and an allergy needs a reason before Sign. After signing, items are read-only with
+  Change (cancel + new item, step-up) and Cancel with a reason.
+- staff-web `/pharmacy`: the queue in three tabs (Ready, Partly given, Questions) with search by
+  name, prescription number or ticket and flags; `/pharmacy/prescriptions/:id` confirms who is at the counter
+  first, then an outcome per item (give all, part, a same-ingredient substitute with a reason, not
+  available), the controlled-medicine confirmation and one signature; a question to the doctor;
+  `/pharmacy/prescriptions/:id/labels` prints 62 mm dosing labels (Kinyarwanda by default);
+  `/pharmacy/availability` switches stock on and off.
+- Follow-ups (#134): the doctor answers a pharmacist's question on the consultation's Prescription
+  section with a new or an existing addendum (PQ3); a substitute can cover part of what is left;
+  substitutes are looked up by the item's generic name and strength.
+- patient-web `/medicines` and a Home card: active and past prescriptions with plain-language
+  states ("Ready at the pharmacy", "Partly given: 10 of 21", "Not available here: buy outside
+  before …") and the prescription code to show at any pharmacy.
+- api-client `pharmacy` module and MSW mocks for §3.1–3.2 (409, 422, step-up, issue on sign);
+  `pharmacy` and `medicines` namespaces in rw/en/fr.
+
+### Public pages and symptom checker (contract public-pages-and-triage, #131)
+
+- Home: "Care near you" asks for the location in a card (or a district), then shows the six nearest
+  verified facilities with open status, the live queue (people waiting and the wait range) and the
+  insurers they accept. The location stays in memory and goes in the POST body only. The hero links
+  to the symptom checker.
+- Facility page: "Queue right now" per service (counts and a wait range, never a person) and a
+  "Book" button per doctor that opens the booking flow with that doctor chosen ("Any doctor" undoes
+  it).
+- `/check-symptoms`: danger signs first (straight to 912 and the emergency page), then who it is
+  for, what they feel and how long; the answer is an urgency, the kind of care and a search for
+  places nearby. It says the rules are not yet signed off and that it is guidance, not a diagnosis.
+- New `/about` and `/emergency`; `/privacy` and `/terms` are rewritten as plain drafts. Facts not yet
+  confirmed (operator, address, contacts, retention) show a visible "To confirm" tag. The footer
+  links About, Check symptoms and Emergency.
+- api-client: `triage` feature and mock (the backend rules ported), `waiting`, `wait_range` and
+  `insurers` on search results.
+
+### Redesign · Patient app (#129)
+
+- patient-web: on phones the four destinations are a real bottom tab bar (the header's backdrop
+  blur had pinned the "fixed" bar under the header); tablets and up keep them in the header. The
+  header stays one row on phones (language moves to Settings; the profile switcher drops its badge).
+- Home: the live ticket leads as a deep-forest card (notched ticket, people ahead, wait, "leave home
+  by" in the attention tint); the alerts prompt moves below; find care is a search field on the
+  forest card with "Not sure? Describe your symptoms" beside it; account shortcuts are one list.
+- Tracker: the large notched ticket; the page no longer shows "Home" twice at the top.
+
+### Redesign · Facility admin and card polish (#127)
+
+- staff-web Today (facility admin): the patient-flow strip and a plain-language callout of the slow
+  step ("Waiting for a doctor is the slow step right now. 8 people, up to 31 min.") above the
+  figures; "Needs your attention" items are tinted rows.
+- Every card in staff-web and patient-web lifts with `shadow-card` instead of a hard border, and
+  coloured side-bar accents are gone: `Alert`, the leave card, platform overview tiles and the
+  emergency notices use tinted surfaces.
+- Fixed: the operations card showed the raw key `queue.ops.liveSummary` (the plural needed
+  `count`); the platform menu says "Facility applications" like the page.
+- Test: "moves an expected booking" no longer depends on the weekday.
+
+### Redesign · Doctor (#124)
+
+- staff-web My queue: the patient in the room is the focal card (large ticket stub, name, state,
+  actions behind a quiet divider); the duty switch is a segmented control with a coloured dot for
+  the current state and the room picker beside it; with nobody in the room, Call next sits on the
+  deep-forest band and names who is next; Up next uses ticket stubs (emergency red, next ochre).
+
+### Redesign · Front desk (#121)
+
+- staff-web queue board: a check-in bar on the deep-forest band (find a patient `/`, check in `N`,
+  book by phone), the live patient-flow strip (expected, waiting, with a doctor, payment, pharmacy;
+  the slowest stage over 15 minutes is highlighted), a segmented service filter, ticket stubs
+  tinted by state (emergency red, next up ochre, remote not yet seen grey), skeleton loading, and
+  softer Expected, remote-joiner and missed lists with compact actions.
+- staff-web Today: a quiet greeting with role chips, the most-used actions as one row of pills
+  (utilities like the inbox stay in their own places), and the patient flow as the focal card.
+- ui: `Button` presses (scale 0.97), a softer secondary style and a new `sm` size.
+- A full reload no longer flashes every queue row as "changed".
+
+### Redesign · Foundation (#119)
+
+- Design system: neutrals lean toward the forest green (re-measured, WCAG AA in both themes); new
+  ochre `attention-*` tokens for "your turn" and work waiting for someone; cards lift with
+  `shadow-card` instead of a border. Recorded in `.interface-design/system.md`.
+- ui: `TicketNumber` gains the notched `stub` variant with `brand`, `attention`, `danger` and
+  `neutral` tones; new `FlowStrip` (patient flow by stage, bottleneck highlighted).
+- staff-web: the sidebar sits on the page colour and groups daily work, "Manage", the MediLink
+  platform and help; only permitted sections with a built page appear (no placeholder dead ends,
+  also in the command palette and Today shortcuts). `/platform/facilities` is labelled
+  "Facilities" (it was "Facility applications", a duplicate).
+- staff-web: a platform admin without a facility starts on the platform overview; one `homePath`
+  rule serves login, the facility picker and `/`.
+- staff-web: a facility page outside the person's role says "You don't have access to this page"
+  instead of "Page not found"; platform pages stay hidden from facility staff (S1 §6.1).
+- Mocks: one cast for Kigali Clinic (Dr Uwimana Keza, Dr Niyonsenga Paul) across booking, setup
+  and queue; "open now" follows the mock opening hours instead of always being true.
 
 ### Remediation R1 · Security core (#83)
 
@@ -172,6 +279,46 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   check-in and phone booking.
 - api-client: booking module and mocks; `staff.reschedule()`, `NO_SHOW_REVERSAL_REASONS`; mocks
   honour the slots `date` and enforce the reversal rules.
+- S0–S5 audit, R5 ([#87](https://github.com/B-Pine/medilink-rwanda/issues/87)), following the
+  2026-10-31 decisions (S5 D-10):
+  - Remote joiners: the tracker shows "I'm here", which only tells reception the patient says
+    they arrived, and a pass-over warning near the front. The board lists remote joiners not yet
+    confirmed (those who tapped "I'm here" first) with Confirm arrival, also in the ticket panel.
+  - A booked patient checked in after the grace window is queued as a walk-in: the board says so
+    and offers a new time. Ticket rows show the booked slot time, "Late: walk-in" and remote
+    status.
+  - Booking flow: the step, person and service are in the URL, so browser Back and refresh keep
+    the place; symptoms and the reason never go in the URL.
+  - Board: `/` opens the check-in search, shortcuts are ignored while a dialog is open, and
+    changed rows highlight briefly (design 04 §5).
+  - Tracker: one AudioContext per call alert, closed when it ends.
+  - ui: shared `formatTime`, `formatDate`, `formatMoney`, `kigaliDate`, `kigaliHour` (24-hour,
+    Africa/Kigali) replace ad-hoc formatters.
+  - api-client, matching R4 ([#102](https://github.com/B-Pine/medilink-rwanda/pull/102)): field
+    names `is_remote`, `remote_arrival_claimed_at`, `remote_arrival_confirmed_at`,
+    `slot_starts_at`, `late`; flags `late`, `remote`, `remote_claimed`;
+    `queue.confirmArrival(ticket)` (ticket action `confirm-arrival` with `version`);
+    `booking.arrived(visitId, version)`; optional `symptoms` at check-in and remote join; the
+    booking review uses the server's `insurer_share_rwf`. Mocks: remote join, "I'm here", confirm arrival,
+    `calendar.ics`, Idempotency-Key replay for bookings, reschedule checks in the backend's
+    order, and a delegate gets `403` on remote join and "I'm here".
+
+### Sprint 10 · Help center and support (part 1)
+
+- api-client `help`: articles (public, staff, platform), support requests (patient, staff,
+  platform triage, replies and closing), `pickText()` (UI language, then rw → en → fr) and
+  `articleBlocks()` (plain text to paragraphs and lists); MSW mocks for every contract §3.2
+  endpoint (sessions, CSRF, `support.view_facility`, the open limit, clinical words, the state
+  machine, 409 and step-up on publish).
+- patient-web: the Help tab's `[S10]` block replaces the static questions with searchable articles
+  (category chips, fallback-language note) and a "Still need help?" card; article pages render
+  text only, never HTML; Contact support with topic cards where "My health or treatment" sends
+  nothing and points to the facility; My requests and the thread (reply, close, open a new one).
+- staff-web: Help and support (Guides, My requests, Facility requests with
+  `support.view_facility`, read-only colleague view, the "facility admin can see this" notice);
+  the platform support queue (status tabs, filters, search) and request page (details, triage
+  with assign to me, reply, close with a reason); the help article editor (rw/en/fr tabs with
+  counters, missing languages, preview, save, publish with step-up, unpublish).
 
 ### Sprint 5b · Disruptions, follow-ups and the calendar feed
 
@@ -213,8 +360,6 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   showed English names; all UI dates now go through `dateFormat()` in `@medilink/ui/i18n`.
 - Tests: React 19 builds `new FormData(form)` on submit; the test setup's Node FormData now
   accepts a form (removes an unhandled error that failed the suite).
-
-### Sprint 10 · Help center and support (part 1)
 
 ## [0.1.0] - 2026-10-17
 

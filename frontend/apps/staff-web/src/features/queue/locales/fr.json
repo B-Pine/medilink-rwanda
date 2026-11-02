@@ -45,7 +45,10 @@
     "priority": "Prioritaire",
     "return": "Retour d’examens",
     "stepped_out": "Sorti un moment",
-    "no_response": "Appel manqué"
+    "no_response": "Appel manqué",
+    "booked": "Rendez-vous {{time}}",
+    "lateWalkIn": "En retard : sans rendez-vous",
+    "remote": "À distance, pas encore là"
   },
   "priority": {
     "elderly": "Personne âgée",
@@ -92,7 +95,11 @@
     "step_out_expired": "Revenu",
     "priority": "Priorité modifiée",
     "reorder": "Déplacé dans la file",
-    "end_of_day": "Clôturé en fin de journée"
+    "end_of_day": "Clôturé en fin de journée",
+    "remote_join": "Inscrit depuis chez lui",
+    "remote_arrival_claimed": "Dit être arrivé",
+    "remote_arrival_confirmed": "Arrivée confirmée",
+    "pass_over": "Reculé (pas arrivé)"
   },
   "columns": {
     "ticket": "Ticket",
@@ -134,7 +141,16 @@
     "missedHint": "Marqués absents. Annulez si le patient était là ou si le retard venait de nous ; la pénalité est retirée.",
     "undoNoShow": "Annuler l’absence",
     "undoNoShowHelp": "La réservation est clôturée et la pénalité du patient est retirée.",
-    "undoNoShowError": "Impossible d’annuler cette absence."
+    "undoNoShowError": "Impossible d’annuler cette absence.",
+    "remote_one": "Inscrit depuis chez lui ({{count}})",
+    "remote_other": "Inscrits depuis chez eux ({{count}})",
+    "remoteHint": "Confirmez quand le patient est au guichet. D’ici là, sa place recule près du début de la file.",
+    "remoteClaimed": "Dit être arrivé",
+    "remoteConfirm": "Confirmer l’arrivée",
+    "remoteError": "Impossible de confirmer l’arrivée.",
+    "expectedCheckedIn": "{{name}} enregistré : {{ticket}}",
+    "expectedLateWalkIn": "Arrivé après le délai de grâce : placé comme sans rendez-vous. Proposez un autre horaire s’il le préfère.",
+    "findPatient": "Trouver un patient : nom, téléphone, carte d'identité ou numéro de dossier"
   },
   "panel": {
     "service": "Service",
@@ -152,7 +168,9 @@
     "transferHint": "Le patient garde son heure d’arrivée dans la nouvelle file.",
     "stepOut": "Sorti 15 min",
     "left": "Marquer comme parti",
-    "timeline": "Historique"
+    "timeline": "Historique",
+    "remoteClaimed": "Le patient a touché « Je suis là ». Vérifiez qu’il est au guichet, puis confirmez.",
+    "remoteNotArrived": "Inscrit depuis chez lui et pas encore confirmé. Confirmez quand le patient est au guichet."
   },
   "checkIn": {
     "title": "Enregistrer un patient",
@@ -184,7 +202,8 @@
     "toPharmacy": "Envoyer à la pharmacie",
     "toPayment": "Envoyer au paiement",
     "hold": "Attendre les résultats",
-    "waiting": "En attente"
+    "waiting": "En attente",
+    "nextUp": "Ensuite"
   },
   "reorders": {
     "title": "Contrôle de la file",
@@ -284,5 +303,30 @@
     "avgConsult": "Consultation moyenne aujourd’hui",
     "leftRate": "Partis sans consultation aujourd’hui",
     "emergencies": "Urgences, 14 jours"
+  },
+  "flow": {
+    "label": "Patients à chaque étape",
+    "expected": "Attendus",
+    "waiting": "En attente",
+    "withDoctor": "Chez le médecin",
+    "payment": "Paiement",
+    "pharmacy": "Pharmacie",
+    "none": "Personne",
+    "booked": "Rendez-vous, pas encore arrivés",
+    "late_one": "{{count}} en retard",
+    "late_other": "{{count}} en retard",
+    "median_one": "Médiane {{count}} min",
+    "median_other": "Médiane {{count}} min",
+    "called_one": "{{count}} appelé",
+    "called_other": "{{count}} appelés",
+    "slow": {
+      "waiting": "L'attente du médecin est l'étape la plus lente en ce moment.",
+      "payment": "Le paiement est l'étape la plus lente en ce moment.",
+      "pharmacy": "La pharmacie est l'étape la plus lente en ce moment."
+    },
+    "slowDetail_one": "{{count}} personne, médiane {{minutes}} min depuis l'arrivée.",
+    "slowDetail_other": "{{count}} personnes, médiane {{minutes}} min depuis l'arrivée.",
+    "people_one": "{{count}} personne",
+    "people_other": "{{count}} personnes"
   }
 }

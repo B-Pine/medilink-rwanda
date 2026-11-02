@@ -53,4 +53,25 @@ describe("live tracker", () => {
     });
     expect(screen.queryByRole("link", { name: /G-020/ })).not.toBeInTheDocument();
   });
+
+  it("remote joiners: I'm here records the claim; reception confirms (S5 B8, B9)", async () => {
+    const { user, router, container } = await signIn();
+    await router.navigate("/book/remera-health-center");
+    const main = await screen.findByRole("main");
+    await user.click(await within(main).findByRole("button", { name: /Mukamana Jeanne/ }));
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+    await user.click(await screen.findByRole("button", { name: /General consultation/ }));
+    await user.click(screen.getByRole("button", { name: "Continue" }));
+    await user.click(await screen.findByRole("button", { name: "Join today's queue" }));
+
+    const remote = await screen.findByRole("region", { name: "You joined from home" });
+    // first in an empty queue: within the pass-over places, so the warning shows
+    expect(within(remote).getByText("You're near the front")).toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
+    await user.click(within(remote).getByRole("button", { name: "I'm here" }));
+    expect(await within(remote).findByRole("status")).toHaveTextContent(
+      /Waiting for reception to confirm you're here/,
+    );
+    expect(within(remote).queryByRole("button", { name: "I'm here" })).not.toBeInTheDocument();
+  }, 60_000);
 });

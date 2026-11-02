@@ -1,4 +1,4 @@
-import type { NoShowReversalReason, StaffBooking } from "@medilink/api-client";
+import type { CheckInResult, NoShowReversalReason, StaffBooking } from "@medilink/api-client";
 import { newIdempotencyKey, NO_SHOW_REVERSAL_REASONS } from "@medilink/api-client";
 import { Alert, Badge, Button, EmptyState } from "@medilink/ui";
 import { CalendarCheck } from "@phosphor-icons/react";
@@ -14,7 +14,7 @@ import { actionError, ReasonDialog, useCan, useServiceNames } from "./shared";
 export const expectedKey = ["queue", "expected"] as const;
 
 /** Today's confirmed and no-show bookings in one request, shared by Expected and Missed today. */
-function useTodayBookings(enabled = true) {
+export function useTodayBookings(enabled = true) {
   const api = useApi();
   const refetchInterval = usePollInterval();
   const today = kigaliToday();
@@ -45,10 +45,12 @@ export function ExpectedList({
   const canCheckIn = useCan("queue.operate");
   const language = i18n.resolvedLanguage ?? "en";
   const bookings = useTodayBookings();
+  const [checkedIn, setCheckedIn] = useState<{ booking: StaffBooking; result: CheckInResult }>();
 
   const checkIn = useMutation({
     mutationFn: (booking: StaffBooking) =>
       api.queue.checkIn({ booking_id: booking.id }, newIdempotencyKey()),
+    onSuccess: (result, booking) => setCheckedIn({ booking, result }),
     onSettled: () => {
       void queryClient.invalidateQueries({ queryKey: expectedKey });
       void queryClient.invalidateQueries({ queryKey: queueKeys.board });
@@ -72,20 +74,46 @@ export function ExpectedList({
     (booking) => booking.status === "confirmed" && (!serviceId || booking.service_id === serviceId),
   );
 
+  const done = checkedIn && (
+    <Alert
+      tone={checkedIn.result.late ? "warning" : "success"}
+      role="status"
+      title={t("queue.board.expectedCheckedIn", {
+        name: checkedIn.booking.display_name,
+        ticket: checkedIn.result.ticket.number,
+      })}
+    >
+      {checkedIn.result.late && (
+        <span className="flex flex-col items-start gap-2">
+          {t("queue.board.expectedLateWalkIn")}
+          {onNewTime && (
+            <Button variant="secondary" onClick={() => onNewTime(checkedIn.booking)}>
+              {t("bookings.expected.newTime")}
+            </Button>
+          )}
+        </span>
+      )}
+    </Alert>
+  );
+
   if (bookings.isSuccess && rows.length === 0) {
     return (
-      <EmptyState
-        size="inline"
-        icon={CalendarCheck}
-        title={t("queue.board.expectedEmptyTitle")}
-        description={t("queue.board.expectedEmpty")}
-        className="rounded-lg border border-dashed border-border"
-      />
+      <div className="flex flex-col gap-3">
+        {done}
+        <EmptyState
+          size="inline"
+          icon={CalendarCheck}
+          title={t("queue.board.expectedEmptyTitle")}
+          description={t("queue.board.expectedEmpty")}
+          className="rounded-lg border border-dashed border-border"
+        />
+      </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-3">
+      {done}
       {checkIn.isError && (
         <Alert tone="danger">
           {actionError(checkIn.error, t("queue.board.expectedCheckInError"))}
@@ -94,23 +122,21 @@ export function ExpectedList({
       <ul
         aria-label={t("queue.board.expected")}
         aria-busy={bookings.isPending}
-        className="m-0 flex list-none flex-col divide-y divide-border rounded-lg border border-border bg-surface p-0"
+        className="m-0 flex list-none flex-col divide-y divide-border overflow-hidden rounded-lg bg-surface p-0 shadow-card"
       >
         {rows.map((booking) => (
           <li key={booking.id} className="flex flex-col gap-2.5 px-3 py-3">
             <div className="flex items-start gap-3">
               <time
                 dateTime={booking.starts_at}
-                className="shrink-0 font-semibold tabular-nums leading-6"
+                className="w-12 shrink-0 font-heading font-bold tabular-nums leading-6"
               >
                 {slotTime(booking.starts_at, language)}
               </time>
               <span className="flex min-w-0 flex-1 flex-col">
                 <span className="font-semibold leading-6 break-words">{booking.display_name}</span>
                 <span className="text-body-sm text-fg-muted break-words">
-                  {serviceName(booking.service_id)}
-                </span>
-                <span className="text-body-sm text-fg-muted break-words">
+                  {serviceName(booking.service_id)} ·{" "}
                   {booking.doctor ?? t("queue.board.expectedAnyDoctor")}
                 </span>
                 {booking.symptoms.length > 0 && (
@@ -126,10 +152,10 @@ export function ExpectedList({
               )}
             </div>
             {canCheckIn && (
-              <div className="flex gap-2">
+              <div className="flex gap-2 pl-15">
                 <Button
                   variant="secondary"
-                  className="flex-1"
+                  size="sm"
                   loading={checkIn.isPending && checkIn.variables?.id === booking.id}
                   disabled={checkIn.isPending}
                   onClick={() => checkIn.mutate(booking)}
@@ -137,7 +163,7 @@ export function ExpectedList({
                   {t("queue.board.expectedCheckIn")}
                 </Button>
                 {onNewTime && (
-                  <Button variant="ghost" onClick={() => onNewTime(booking)}>
+                  <Button variant="ghost" size="sm" onClick={() => onNewTime(booking)}>
                     {t("bookings.expected.newTime")}
                   </Button>
                 )}
@@ -190,7 +216,7 @@ export function MissedList({ serviceId }: { serviceId: string | null }) {
       <p className="m-0 text-body-sm text-fg-muted">{t("queue.board.missedHint")}</p>
       <ul
         aria-labelledby="missed-today"
-        className="m-0 flex list-none flex-col divide-y divide-border rounded-lg border border-dashed border-border p-0"
+        className="m-0 flex list-none flex-col divide-y divide-border overflow-hidden rounded-lg bg-surface/60 p-0 shadow-card"
       >
         {rows.map((booking) => (
           <li key={booking.id} className="flex flex-col gap-2 px-3 py-3">
@@ -208,7 +234,12 @@ export function MissedList({ serviceId }: { serviceId: string | null }) {
                 </span>
               </span>
             </div>
-            <Button variant="ghost" className="self-start" onClick={() => setUndoing(booking)}>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="self-start"
+              onClick={() => setUndoing(booking)}
+            >
               {t("queue.board.undoNoShow")}
             </Button>
           </li>

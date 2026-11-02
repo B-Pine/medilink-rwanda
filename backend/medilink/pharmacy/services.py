@@ -16,6 +16,8 @@ from medilink.audit.services import record
 from medilink.clinical import alerts as clinical_alerts
 from medilink.clinical.models import Consultation, ConsultationStatus
 from medilink.core.exceptions import BusinessRuleViolation, Conflict
+from medilink.documents import services as documents
+from medilink.documents.models import VerificationRecord
 from medilink.documents.numbers import next_number
 from medilink.facilities.models import Settings
 from medilink.facilities.settings_schema import with_defaults
@@ -122,6 +124,8 @@ def _locked(prescription_id: Any, version: Any = None) -> Prescription:
 def _bump(prescription: Prescription) -> None:
     prescription.version += 1
     prescription.save(update_fields=["version", "status", "updated_at"])
+    # S7b: the prescription document follows (new version, verification status)
+    documents.source_changed("prescription", prescription.pk)
 
 
 # ---- instructions ---------------------------------------------------------------------------
@@ -407,6 +411,7 @@ def issue(consultation: Consultation, *, request: Any) -> Prescription | None:
         item_count=len(items),
         status=prescription.status,
     )
+    documents.for_prescription(prescription, request=request)  # S7b: PDF with a QR code
     return prescription
 
 
@@ -523,6 +528,7 @@ def cancel_prescription(
         prescription.cancelled_reason = reason
         prescription.version += 1
         prescription.save(update_fields=["status", "cancelled_reason", "version", "updated_at"])
+        documents.source_changed("prescription", prescription.pk)  # S7b: verification status
         _event(
             prescription,
             from_status=before,
@@ -572,11 +578,19 @@ def dispense(
             raise BusinessRuleViolation(NOT_DISPENSABLE)
         if prescription.expires_at and prescription.expires_at <= timezone.now():
             raise BusinessRuleViolation(NOT_DISPENSABLE)
-        # S7a: the prescription number; S7b: the verification code (contract D-7)
-        if identity_check_method == IdentityMethod.VERIFICATION_CODE and (
-            verification_code or ""
-        ).strip().upper() != (prescription.number or ""):
-            raise FieldRule("verification_code", WRONG_CODE)
+        # the verification code printed under the QR code (contract D-7); the prescription
+        # number, printed beside it, is still accepted
+        if identity_check_method == IdentityMethod.VERIFICATION_CODE:
+            given = documents.normalise_code(verification_code or "")
+            accepted = {documents.normalise_code(prescription.number or "")}
+            accepted |= {
+                documents.normalise_code(code)
+                for code in VerificationRecord.objects.filter(
+                    kind="prescription", document__source_id=prescription.pk
+                ).values_list("code", flat=True)
+            }
+            if not given or given not in accepted:
+                raise FieldRule("verification_code", WRONG_CODE)
         rows = prescription.items.select_for_update(of=("self",)).select_related("drug")
         items = {str(i.pk): i for i in rows}
         seen: set[str] = set()

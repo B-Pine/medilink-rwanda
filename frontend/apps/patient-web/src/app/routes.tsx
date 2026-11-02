@@ -40,7 +40,7 @@ export const routes: RouteObject[] = [
         path: "/verify-email",
         lazy: page(() => import("../pages/VerifyEmailPage"), "VerifyEmailPage"),
       },
-      info("/verify", "verify"),
+      // /verify is the S7b documents feature's public page
       info("/help", "help"),
       {
         element: <RequirePatient />,

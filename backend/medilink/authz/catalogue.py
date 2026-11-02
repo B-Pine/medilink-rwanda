@@ -161,7 +161,9 @@ from medilink.clinical import permissions as _s6  # noqa: E402
 extend(_s6.PERMISSIONS, _s6.ROLE_GRANTS)
 # [/S6]
 # [S7]
+from medilink.documents import permissions as _s7b  # noqa: E402
 from medilink.pharmacy import permissions as _s7  # noqa: E402
 
 extend(_s7.PERMISSIONS, _s7.ROLE_GRANTS)
+extend(_s7b.PERMISSIONS, _s7b.ROLE_GRANTS)
 # [/S7]

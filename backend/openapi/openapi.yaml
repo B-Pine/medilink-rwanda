@@ -669,6 +669,168 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: age, limit or consent version
+  /api/v1/patient/documents/:
+    get:
+      operationId: patient_documents
+      summary: Documents of my profiles, newest first (D4)
+      parameters:
+      - in: query
+        name: kind
+        schema:
+          type: string
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: patient_id
+        schema:
+          type: string
+      tags:
+      - patient-documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocumentRow'
+          description: ''
+  /api/v1/patient/documents/{document_id}/:
+    get:
+      operationId: patient_document
+      summary: One document with its versions and my share links (D4)
+      parameters:
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientDocument'
+          description: ''
+  /api/v1/patient/documents/{document_id}/download-link/:
+    post:
+      operationId: patient_document_download_link
+      summary: Signed link to the current version, 5 minutes (D4)
+      parameters:
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Link'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Still rendering
+  /api/v1/patient/documents/{document_id}/share-links/:
+    post:
+      operationId: patient_document_share_link_create
+      summary: Expiring share link for one document; the token is shown once (D5)
+      parameters:
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-documents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShareLinkCreateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewShareLink'
+          description: ''
+  /api/v1/patient/documents/{document_id}/share-links/{link_id}/:
+    delete:
+      operationId: patient_document_share_link_revoke
+      summary: Revoke a share link I made (D5)
+      parameters:
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: link_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/patient/documents/archive/:
+    post:
+      operationId: patient_documents_archive
+      summary: 'All my documents as a ZIP: a 5-minute link (D4); 100 at most'
+      parameters:
+      - in: query
+        name: patient_id
+        schema:
+          type: string
+      tags:
+      - patient-documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Link'
+          description: ''
   /api/v1/patient/holds/{hold_id}/:
     delete:
       operationId: patient_hold_release
@@ -7155,6 +7317,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedServiceCatalogueItemsItemList'
           description: ''
+  /api/v1/public/shared-documents/{token}/:
+    get:
+      operationId: public_shared_document
+      summary: 'A document a patient shared: metadata and a 5-minute link (D5)'
+      parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+      tags:
+      - public
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SharedDocument'
+          description: ''
+        '404':
+          description: Unknown, expired or revoked
   /api/v1/public/symptoms/:
     get:
       operationId: public_symptoms
@@ -7190,6 +7373,81 @@ paths:
               schema:
                 $ref: '#/components/schemas/TriageResult'
           description: ''
+  /api/v1/public/verify/{code}/:
+    get:
+      operationId: public_verify
+      summary: Check a document by the code under its QR code (V1); every attempt
+        is logged
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      tags:
+      - public
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Verification'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown code
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Too many
+  /api/v1/public/verify/{code}/details/:
+    post:
+      operationId: public_verify_details
+      summary: The document's content after a date-of-birth match (V1)
+      parameters:
+      - in: path
+        name: code
+        schema:
+          type: string
+        required: true
+      tags:
+      - public
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerificationDetailsInputRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationDetails'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown code
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: The date of birth does not match
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Too many
   /api/v1/public/web-push-key/:
     get:
       operationId: public_web_push_key_retrieve
@@ -8407,6 +8665,72 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Not the author or already marked
+  /api/v1/staff/consultations/{consultation_id}/lab-requests/:
+    get:
+      operationId: staff_consultation_lab_requests
+      summary: The consultation's lab requests (CR1)
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LabRequest'
+          description: ''
+    post:
+      operationId: staff_consultation_lab_request_create
+      summary: 'Write a lab request: draft with the consultation, or signed at once
+        after it (CR1)'
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabRequestInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabRequest'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required after signing, or access_reason_required
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not the author, or the consultation was entered in error
   /api/v1/staff/consultations/{consultation_id}/prescription/:
     get:
       operationId: staff_consultation_prescription
@@ -8484,6 +8808,138 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: Not the author, unknown drug, or the prescription can't take
             items
+  /api/v1/staff/consultations/{consultation_id}/referrals/:
+    get:
+      operationId: staff_consultation_referrals
+      summary: The consultation's referral letters (CR1)
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Referral'
+          description: ''
+    post:
+      operationId: staff_consultation_referral_create
+      summary: 'Write a referral letter: draft with the consultation, or signed at
+        once after it (CR1)'
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReferralInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Referral'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required after signing, or access_reason_required
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not the author, or the consultation was entered in error
+  /api/v1/staff/consultations/{consultation_id}/sick-notes/:
+    get:
+      operationId: staff_consultation_sick_notes
+      summary: The consultation's sick notes (CR1)
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SickNote'
+          description: ''
+    post:
+      operationId: staff_consultation_sick_note_create
+      summary: 'Write a sick note: draft with the consultation, or signed at once
+        after it (CR1)'
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SickNoteInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SickNote'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required after signing, or access_reason_required
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not the author, or the consultation was entered in error
   /api/v1/staff/consultations/{consultation_id}/sign/:
     post:
       operationId: staff_consultation_sign
@@ -8763,6 +9219,139 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Already resolved
+  /api/v1/staff/documents/:
+    get:
+      operationId: staff_documents
+      summary: Documents of a patient or a visit, newest first (D1)
+      parameters:
+      - in: query
+        name: facility_patient_id
+        schema:
+          type: string
+      - in: query
+        name: kind
+        schema:
+          type: string
+        description: prescription, referral, lab_request, sick_note
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: visit_id
+        schema:
+          type: string
+      tags:
+      - documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DocumentRow'
+          description: ''
+  /api/v1/staff/documents/{document_id}/:
+    get:
+      operationId: staff_document
+      summary: Document metadata and versions (D1)
+      parameters:
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: access_reason_required
+  /api/v1/staff/documents/{document_id}/download-link/:
+    post:
+      operationId: staff_document_download_link
+      summary: Signed link to the current version, 5 minutes; audited (D2)
+      parameters:
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Link'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: access_reason_required
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Still rendering
+  /api/v1/staff/documents/{document_id}/print/:
+    post:
+      operationId: staff_document_print
+      summary: Print a document released to the patient; audited (D3)
+      parameters:
+      - in: path
+        name: document_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - documents
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Link'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found or not released
   /api/v1/staff/drugs/:
     get:
       operationId: staff_drug_search
@@ -14473,6 +15062,18 @@ components:
       required:
       - claim
       - profile
+    ClinicalDocumentKindEnum:
+      enum:
+      - prescription
+      - referral
+      - lab_request
+      - sick_note
+      type: string
+      description: |-
+        * `prescription` - Prescription
+        * `referral` - Referral letter
+        * `lab_request` - Lab or imaging request
+        * `sick_note` - Sick note
     ClinicalPatient:
       type: object
       properties:
@@ -15252,6 +15853,18 @@ components:
           type: string
       required:
       - detail
+    DetailSection:
+      type: object
+      properties:
+        heading:
+          type: string
+        lines:
+          type: array
+          items:
+            type: string
+      required:
+      - heading
+      - lines
     Diagnosis:
       type: object
       properties:
@@ -15962,6 +16575,54 @@ components:
       - district_code
       - facilities
       - province
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: '#/components/schemas/ClinicalDocumentKindEnum'
+        number:
+          type: string
+        document_date:
+          type: string
+          format: date
+        patient_id:
+          type: string
+          format: uuid
+        facility_name:
+          type: string
+        author_name:
+          type: string
+        status:
+          $ref: '#/components/schemas/VerificationStatusEnum'
+        version_no:
+          type: integer
+          description: 0 while the first version is rendering
+        released_at:
+          type: string
+          format: date-time
+          nullable: true
+        verification_code:
+          type: string
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Version'
+      required:
+      - author_name
+      - document_date
+      - facility_name
+      - id
+      - kind
+      - number
+      - patient_id
+      - released_at
+      - status
+      - verification_code
+      - version_no
+      - versions
     DocumentInputRequest:
       type: object
       properties:
@@ -16021,6 +16682,46 @@ components:
       description: |-
         * `accepted` - accepted
         * `needs_change` - needs_change
+    DocumentRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: '#/components/schemas/ClinicalDocumentKindEnum'
+        number:
+          type: string
+        document_date:
+          type: string
+          format: date
+        patient_id:
+          type: string
+          format: uuid
+        facility_name:
+          type: string
+        author_name:
+          type: string
+        status:
+          $ref: '#/components/schemas/VerificationStatusEnum'
+        version_no:
+          type: integer
+          description: 0 while the first version is rendering
+        released_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - author_name
+      - document_date
+      - facility_name
+      - id
+      - kind
+      - number
+      - patient_id
+      - released_at
+      - status
+      - version_no
     DosingLabel:
       type: object
       properties:
@@ -18704,6 +19405,77 @@ components:
       - dose
       - frequency_code
       - route
+    LabRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        author_name:
+          type: string
+        signed_at:
+          type: string
+          format: date-time
+          nullable: true
+        document_id:
+          type: string
+          format: uuid
+          nullable: true
+        tests:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabTest'
+        reason:
+          type: string
+      required:
+      - author_name
+      - document_id
+      - id
+      - reason
+      - signed_at
+      - tests
+    LabRequestInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        tests:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabTestRequest'
+          maxItems: 20
+          minItems: 1
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - reason
+      - tests
+    LabTest:
+      type: object
+      properties:
+        code:
+          type: string
+          default: ''
+          maxLength: 20
+        name:
+          type: string
+          maxLength: 120
+      required:
+      - name
+    LabTestRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          default: ''
+          maxLength: 20
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+      required:
+      - name
     Labels:
       type: object
       properties:
@@ -18832,6 +19604,18 @@ components:
         * `expiring` - expiring
         * `expired` - expired
         * `missing` - missing
+    Link:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - expires_at
+      - url
     LocationBlock:
       type: object
       properties:
@@ -19480,6 +20264,39 @@ components:
       - expires_on
       - kind
       - number
+    NewShareLink:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        expires_at:
+          type: string
+          format: date-time
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+        access_count:
+          type: integer
+        last_accessed_at:
+          type: string
+          format: date-time
+          nullable: true
+        token:
+          type: string
+          description: Shown once; only its SHA-256 is stored
+        url:
+          type: string
+          format: uri
+      required:
+      - access_count
+      - expires_at
+      - id
+      - last_accessed_at
+      - revoked_at
+      - token
+      - url
     NoteInputRequest:
       type: object
       properties:
@@ -21504,6 +22321,59 @@ components:
       - display
       - plain_language
       - rank
+    PatientDocument:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: '#/components/schemas/ClinicalDocumentKindEnum'
+        number:
+          type: string
+        document_date:
+          type: string
+          format: date
+        patient_id:
+          type: string
+          format: uuid
+        facility_name:
+          type: string
+        author_name:
+          type: string
+        status:
+          $ref: '#/components/schemas/VerificationStatusEnum'
+        version_no:
+          type: integer
+          description: 0 while the first version is rendering
+        released_at:
+          type: string
+          format: date-time
+          nullable: true
+        verification_code:
+          type: string
+        versions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Version'
+        share_links:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShareLink'
+      required:
+      - author_name
+      - document_date
+      - facility_name
+      - id
+      - kind
+      - number
+      - patient_id
+      - released_at
+      - share_links
+      - status
+      - verification_code
+      - version_no
+      - versions
     PatientItem:
       type: object
       properties:
@@ -23783,6 +24653,73 @@ components:
       - method
       - reference
       - status
+    Referral:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        author_name:
+          type: string
+        signed_at:
+          type: string
+          format: date-time
+          nullable: true
+        document_id:
+          type: string
+          format: uuid
+          nullable: true
+        to_facility_name:
+          type: string
+        specialty:
+          type: string
+        reason:
+          type: string
+        urgency:
+          $ref: '#/components/schemas/ReferralUrgencyEnum'
+      required:
+      - author_name
+      - document_id
+      - id
+      - reason
+      - signed_at
+      - specialty
+      - to_facility_name
+      - urgency
+    ReferralInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        to_facility_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        specialty:
+          type: string
+          minLength: 1
+          maxLength: 100
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        urgency:
+          allOf:
+          - $ref: '#/components/schemas/ReferralUrgencyEnum'
+          default: routine
+      required:
+      - reason
+      - specialty
+      - to_facility_name
+    ReferralUrgencyEnum:
+      enum:
+      - routine
+      - urgent
+      - emergency
+      type: string
+      description: |-
+        * `routine` - Routine
+        * `urgent` - Urgent
+        * `emergency` - Emergency
     RegisterRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -24597,6 +25534,114 @@ components:
         * `female` - Female
         * `male` - Male
         * `other` - Other
+    ShareLink:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        expires_at:
+          type: string
+          format: date-time
+        revoked_at:
+          type: string
+          format: date-time
+          nullable: true
+        access_count:
+          type: integer
+        last_accessed_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - access_count
+      - expires_at
+      - id
+      - last_accessed_at
+      - revoked_at
+    ShareLinkCreateRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        expires_in_days:
+          type: integer
+          maximum: 30
+          minimum: 1
+      required:
+      - expires_in_days
+    SharedDocument:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/ClinicalDocumentKindEnum'
+        number:
+          type: string
+        document_date:
+          type: string
+          format: date
+        facility_name:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+          description: When the share link stops working
+        download:
+          $ref: '#/components/schemas/Link'
+      required:
+      - document_date
+      - download
+      - expires_at
+      - facility_name
+      - kind
+      - number
+    SickNote:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        author_name:
+          type: string
+        signed_at:
+          type: string
+          format: date-time
+          nullable: true
+        document_id:
+          type: string
+          format: uuid
+          nullable: true
+        rest_from:
+          type: string
+          format: date
+        rest_to:
+          type: string
+          format: date
+        show_diagnosis:
+          type: boolean
+      required:
+      - author_name
+      - document_id
+      - id
+      - rest_from
+      - rest_to
+      - show_diagnosis
+      - signed_at
+    SickNoteInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        rest_from:
+          type: string
+          format: date
+        rest_to:
+          type: string
+          format: date
+        show_diagnosis:
+          type: boolean
+          default: false
+      required:
+      - rest_from
+      - rest_to
     SideEnum:
       enum:
       - front
@@ -26420,6 +27465,109 @@ components:
         * `soon` - soon
         * `today` - today
         * `emergency` - emergency
+    Verification:
+      type: object
+      properties:
+        code:
+          type: string
+        kind:
+          $ref: '#/components/schemas/ClinicalDocumentKindEnum'
+        number:
+          type: string
+        status:
+          $ref: '#/components/schemas/VerificationStatusEnum'
+        issued_at:
+          type: string
+          format: date-time
+        valid_until:
+          type: string
+          format: date-time
+          nullable: true
+        facility_name:
+          type: string
+        author_name:
+          type: string
+        author_licence:
+          type: string
+        version_no:
+          type: integer
+      required:
+      - author_licence
+      - author_name
+      - code
+      - facility_name
+      - issued_at
+      - kind
+      - number
+      - status
+      - valid_until
+      - version_no
+    VerificationDetails:
+      type: object
+      properties:
+        code:
+          type: string
+        kind:
+          $ref: '#/components/schemas/ClinicalDocumentKindEnum'
+        number:
+          type: string
+        status:
+          $ref: '#/components/schemas/VerificationStatusEnum'
+        issued_at:
+          type: string
+          format: date-time
+        valid_until:
+          type: string
+          format: date-time
+          nullable: true
+        facility_name:
+          type: string
+        author_name:
+          type: string
+        author_licence:
+          type: string
+        version_no:
+          type: integer
+        patient_name:
+          type: string
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/DetailSection'
+      required:
+      - author_licence
+      - author_name
+      - code
+      - facility_name
+      - issued_at
+      - kind
+      - number
+      - patient_name
+      - sections
+      - status
+      - valid_until
+      - version_no
+    VerificationDetailsInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        date_of_birth:
+          type: string
+          format: date
+      required:
+      - date_of_birth
+    VerificationStatusEnum:
+      enum:
+      - active
+      - dispensed
+      - cancelled
+      - expired
+      type: string
+      description: |-
+        * `active` - Active
+        * `dispensed` - Dispensed
+        * `cancelled` - Cancelled
+        * `expired` - Expired
     VerifyEmailRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -26430,6 +27578,25 @@ components:
           maxLength: 512
       required:
       - token
+    Version:
+      type: object
+      properties:
+        version_no:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        superseded_at:
+          type: string
+          format: date-time
+          nullable: true
+        size_bytes:
+          type: integer
+      required:
+      - created_at
+      - size_bytes
+      - superseded_at
+      - version_no
     VersionInputRequest:
       type: object
       properties:

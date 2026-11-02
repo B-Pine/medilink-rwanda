@@ -48,6 +48,9 @@ import clinicalRw from "../features/clinical/locales/rw.json";
 import pharmacyEn from "../features/pharmacy/locales/en.json";
 import pharmacyFr from "../features/pharmacy/locales/fr.json";
 import pharmacyRw from "../features/pharmacy/locales/rw.json";
+import documentsEn from "../features/documents/locales/en.json";
+import documentsFr from "../features/documents/locales/fr.json";
+import documentsRw from "../features/documents/locales/rw.json";
 // [/S7 imports]
 
 /**
@@ -82,5 +85,6 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   // [/S6]
   // [S7]
   pharmacy: { rw: pharmacyRw, en: pharmacyEn, fr: pharmacyFr },
+  documents: { rw: documentsRw, en: documentsEn, fr: documentsFr },
   // [/S7]
 };

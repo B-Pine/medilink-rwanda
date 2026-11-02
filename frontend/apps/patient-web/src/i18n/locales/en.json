@@ -290,10 +290,6 @@
   },
   "info": {
     "back": "Back to the home page",
-    "verify": {
-      "title": "Verify a document",
-      "body": "Soon pharmacies and employers can check a prescription, receipt or sick note here with its code or QR."
-    },
     "forFacilities": {
       "title": "MediLink for health facilities",
       "body": "Facility registration opens in the next release. You will be able to apply online and go live after verification."

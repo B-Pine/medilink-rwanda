@@ -419,16 +419,32 @@ const rowOf = ({
 
 // [S7]
 type SignHook = (c: Consultation, lang: LanguageCode) => Response | null;
-let consultationSignHook: SignHook = () => null;
-/** S7 contract D-1: the pharmacy mock issues the prescription on sign, or refuses (a Response). */
-export function setConsultationSignHook(hook: SignHook): void {
-  consultationSignHook = hook;
+const signHooks = new Map<string, SignHook>();
+/**
+ * S7 contract D-1: the pharmacy mock issues the prescription on sign, or refuses (a Response);
+ * the documents mock signs the draft letters and requests. One hook per key.
+ */
+export function setConsultationSignHook(hook: SignHook, key = "pharmacy"): void {
+  signHooks.set(key, hook);
+}
+const consultationSignHook: SignHook = (c, lang) => {
+  for (const hook of signHooks.values()) {
+    const refused = hook(c, lang);
+    if (refused) return refused;
+  }
+  return null;
+};
+let liveConsultations: () => Consultation[] = () => [];
+/** S7b: the documents mock reads the consultation (status, author, patient). */
+export function mockConsultation(id: string): Consultation | undefined {
+  return liveConsultations().find((c) => c.id === id);
 }
 // [/S7]
 
 export const clinicalMocks: FeatureMockFactory = (context) => {
   const { api } = context;
   let db = seed();
+  liveConsultations = () => db.consultations; // [S7]
   const S = `${api}/staff`;
 
   const msg = (key: keyof typeof MESSAGES, lang: LanguageCode) => MESSAGES[key][lang];

@@ -1,8 +1,8 @@
-# Sprint 7 acceptance record: Pharmacy and documents (S7a)
+# Sprint 7 acceptance record: Pharmacy and documents
 
 Contract: [sprint-07-pharmacy-documents.md](../architecture/contracts/sprint-07-pharmacy-documents.md) §9 · Pull requests: contract and S7a backend on the S7 branch · Releases: none yet
 
-Status: **Open**. The S7a backend is implemented. The S7a frontend (F1–F6), the S7b checks (B15–B22, F7) and the real-API checks (I1, I2) are not started.
+Status: **Open**. S7a and S7b are implemented against the mocks and the API tests. The real-API checks on staging (I1, I2) are not started.
 
 Evidence collected on 2026-11-01 on PostgreSQL 16, suite run as the runtime role. Backend tests: `backend/tests/s7/test_pharmacy.py`, `backend/tests/s7/test_access_and_patient.py`. A verifier who did not write the code fills **Verified by**, **Date** and **Result** ([QA README](README.md) §4).
 
@@ -24,7 +24,14 @@ Evidence collected on 2026-11-01 on PostgreSQL 16, suite run as the runtime role
 | S7-B12 | My medicines: statuses, no overrides or notes, delegates and restricted | `test_patient_reads_own_prescriptions`, `test_delegates_do_not_see_restricted_and_strangers_see_nothing`, `test_patient_schemas_carry_no_overrides_or_consultation_text` | | | Pending |
 | S7-B13 | Expiry job; `mark_covered` | `test_expiry_job`, `test_issue_numbers_expiry_and_payment_first` | | | Pending |
 | S7-B14 | Forced RLS; append-only; audit IDs only; migrations reverse; coverage ≥ 90 % | `test_every_pharmacy_table_has_forced_rls`, `tests/test_rls_coverage.py`, the append-only and lock assertions above, `test_audit_entries_carry_ids_only`; `migrate pharmacy zero` / `documents zero` and back; coverage on the full suite: `pharmacy` 97 %, `documents` 100 % | | | Pending |
-| S7-B15..B22 | (S7b) documents | Not started | | | Not in S7a |
+| S7-B15 | Generation in the documents worker; nothing fetched | `test_issue_generates_the_prescription_pdf_with_a_qr_code` (PDF bytes, QR, record); reportlab draws from a content dict (D-8); `render_document` on queue `documents` | | | Pending |
+| S7-B16 | Numbering without gaps per prefix | `test_letters_sign_with_the_consultation_and_after_it` (`REF-`, `LAB-`, `SN-`); prescriptions keep `RX-` | | | Pending |
+| S7-B17 | Versions; superseded kept; append-only | `test_item_change_after_issue_supersedes_the_version` (v1 superseded, v2 current, trigger refuses updates) | | | Pending |
+| S7-B18 | Verification projection, DOB details, logging, rate limit | `test_public_verification_projection_details_and_log`, `test_verification_is_rate_limited_and_logged`, `test_dispense_accepts_the_verification_code` | | | Pending |
+| S7-B19 | Signed links and access history | `test_staff_links_print_and_access_rules` (`documents.downloaded` with the patient) | | | Pending |
+| S7-B20 | Share links: token once, SHA-256 stored, revoke, purge | `test_patient_documents_archive_and_share_links`, `test_share_link_purge_and_rls` | | | Pending |
+| S7-B21 | Print by reception, released only | `test_staff_links_print_and_access_rules` (reception prints, doctor `403`, other facility `404`) | | | Pending |
+| S7-B22 | Referral, lab request, sick note: author only, signed with the consultation or at once (Up), locked, encrypted reason | `test_letters_sign_with_the_consultation_and_after_it` | | | Pending |
 
 ## Frontend checks
 
@@ -36,7 +43,7 @@ Evidence collected on 2026-11-01 on PostgreSQL 16, suite run as the runtime role
 | S7-F4 | Availability switches; dosing label print view | `pharmacy.test.tsx` "availability switches…", labels in Kinyarwanda after dispensing | Pass (mocks) |
 | S7-F5 | Patient My medicines and detail, plain-language statuses | `medicines.test.tsx` (home card, list, detail, past; axe clean) | Pass (mocks) |
 | S7-F6 | MSW mocks for every S7a endpoint; `pharmacy` and `medicines` in rw/en/fr; dates through `dateFormat()` | `mocks/features/pharmacy.ts`; i18n parity test; `i18n-review.md` regenerated | Pass |
-| S7-F7 | (S7b) documents | Not started | Not in S7a |
+| S7-F7 | Documents lists, download, share links, verification page, print | staff-web `documents.test.tsx` (letters signed with the consultation, download; axe clean); patient-web `documents.test.tsx` (list, ZIP, download, share link once, stop it, verify projection then DOB, unknown code, shared link; axe clean); api-client `s7b.test.ts` (reception prints, doctor `403`) | Pass (mocks) |
 
 ## Integration checks
 

@@ -290,10 +290,6 @@
   },
   "info": {
     "back": "Retour à l’accueil",
-    "verify": {
-      "title": "Vérifier un document",
-      "body": "Bientôt, pharmacies et employeurs pourront vérifier ici une ordonnance, un reçu ou un certificat médical grâce à son code ou son QR."
-    },
     "forFacilities": {
       "title": "MediLink pour les établissements de santé",
       "body": "L’inscription des établissements ouvre dans la prochaine version. Vous pourrez postuler en ligne et démarrer après vérification."

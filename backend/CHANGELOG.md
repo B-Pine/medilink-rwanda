@@ -411,6 +411,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   `facility_isolation` policy, or is listed in `RLS_EXCEPTIONS` with the document that allows it;
   an exception that is no longer needed fails too (database design §1).
 
+### Sprint 7b · Documents (#123)
+
+- `medilink.documents`: referral letters, lab requests and sick notes written in the consultation
+  (signed with it, or at once after it with recent authentication; reason encrypted; locked after
+  signing). Every signed prescription, letter, request and sick note becomes a PDF (reportlab,
+  contract D-8) with letterhead, author and licence, number (`REF-`, `LAB-`, `SN-`, prescriptions
+  keep `RX-`) and a QR code, rendered on the `documents` queue. A change of content adds a version;
+  the old one is kept as superseded.
+- Public verification: `GET /public/verify/{code}/` shows a minimal projection; the content only
+  after a date-of-birth match; every attempt (also rate-limited ones) is logged. Dispensing with
+  the verification code now checks this code (S7a D-7).
+- Staff documents list, 5-minute download links (access history) and printing for reception and
+  the pharmacy (`documents.print`). Patients list, download, get a ZIP and make share links (1–30
+  days, token shown once, SHA-256 stored); a daily job purges old links.
+- New dependency: `reportlab` (PDF and QR drawing; no HTML, no network).
+
 ### Sprint 7a · Prescriptions and pharmacy
 
 - New apps `medilink.pharmacy` and `medilink.documents` ([contract](../docs/architecture/contracts/sprint-07-pharmacy-documents.md)):

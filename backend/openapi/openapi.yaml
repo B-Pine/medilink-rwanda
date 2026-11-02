@@ -725,6 +725,282 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: age, limit or consent version
+  /api/v1/patient/disputes/:
+    get:
+      operationId: patient_disputes
+      summary: Disputes of my profiles, newest first (P1)
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: patient_id
+        schema:
+          type: string
+      tags:
+      - disputes
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DisputeRow'
+          description: ''
+    post:
+      operationId: patient_dispute_raise
+      summary: Raise a dispute from what went wrong (P1)
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RaiseRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientDispute'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not your subject
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: A dispute about this is already open
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 5 open disputes
+  /api/v1/patient/disputes/{dispute_id}/:
+    get:
+      operationId: patient_dispute
+      summary: Dispute thread and deadlines (P2); no internal notes
+      parameters:
+      - in: path
+        name: dispute_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientDispute'
+          description: ''
+  /api/v1/patient/disputes/{dispute_id}/accept/:
+    post:
+      operationId: patient_dispute_accept
+      summary: Accept the decision (P4)
+      parameters:
+      - in: path
+        name: dispute_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisputeVersionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientDispute'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not now
+  /api/v1/patient/disputes/{dispute_id}/disagreement/:
+    post:
+      operationId: patient_dispute_statement
+      summary: My disagreement statement, attached to the record (P5, FR-DSP-07)
+      parameters:
+      - in: path
+        name: dispute_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatementRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientDispute'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Only after a refused correction
+  /api/v1/patient/disputes/{dispute_id}/escalate/:
+    post:
+      operationId: patient_dispute_escalate
+      summary: 'Disagree within 14 days: MediLink decides (P4)'
+      parameters:
+      - in: path
+        name: dispute_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisputeVersionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientDispute'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not now
+  /api/v1/patient/disputes/{dispute_id}/messages/:
+    post:
+      operationId: patient_dispute_message
+      summary: Reply in the thread (P3)
+      parameters:
+      - in: path
+        name: dispute_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientDispute'
+          description: ''
+  /api/v1/patient/disputes/{dispute_id}/reopen/:
+    post:
+      operationId: patient_dispute_reopen
+      summary: Reopen once within 30 days with new facts (P4)
+      parameters:
+      - in: path
+        name: dispute_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisputeVersionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientDispute'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not now
   /api/v1/patient/documents/:
     get:
       operationId: patient_documents
@@ -2605,6 +2881,122 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Your own session or reviewed
+  /api/v1/platform/disputes/:
+    get:
+      operationId: platform_disputes
+      summary: Escalated and platform-level disputes (PL1)
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+      tags:
+      - disputes
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StaffDisputeRow'
+          description: ''
+  /api/v1/platform/disputes/{dispute_id}/:
+    get:
+      operationId: platform_dispute
+      summary: An escalated dispute with its evidence (PL1)
+      parameters:
+      - in: path
+        name: dispute_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffDispute'
+          description: ''
+  /api/v1/platform/disputes/{dispute_id}/final-decision/:
+    post:
+      operationId: platform_dispute_final_decision
+      summary: Final decision on an escalated dispute (PL2); step-up
+      parameters:
+      - in: path
+        name: dispute_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResolveRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffDispute'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+  /api/v1/platform/disputes/{dispute_id}/messages/:
+    post:
+      operationId: platform_dispute_message
+      summary: Write to the patient or an internal note (PL2)
+      parameters:
+      - in: path
+        name: dispute_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffMessageInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffDispute'
+          description: ''
   /api/v1/platform/facilities/:
     get:
       operationId: platform_facilities_list
@@ -10232,6 +10624,303 @@ paths:
               schema:
                 $ref: '#/components/schemas/DisplayLink'
           description: ''
+  /api/v1/staff/disputes/:
+    get:
+      operationId: staff_disputes
+      summary: The facility's disputes, oldest deadline first (S1)
+      parameters:
+      - in: query
+        name: overdue
+        schema:
+          type: boolean
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+      tags:
+      - disputes
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StaffDisputeRow'
+          description: ''
+    post:
+      operationId: staff_dispute_raise
+      summary: Raise a dispute at the counter for a patient (S2, FR-DSP-09)
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CounterRaiseRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffDisputeRow'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Already open
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Limit
+  /api/v1/staff/disputes/{dispute_id}/:
+    get:
+      operationId: staff_dispute
+      summary: Dispute with thread, notes, comments, evidence and actions (S3)
+      parameters:
+      - in: path
+        name: dispute_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffDispute'
+          description: ''
+  /api/v1/staff/disputes/{dispute_id}/acknowledge/:
+    post:
+      operationId: staff_dispute_acknowledge
+      summary: 'Acknowledge: the decision deadline starts (S4)'
+      parameters:
+      - in: path
+        name: dispute_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DisputeVersionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffDispute'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not now or involved
+  /api/v1/staff/disputes/{dispute_id}/comment-requests/:
+    post:
+      operationId: staff_dispute_comment_request
+      summary: Ask a staff member for a comment (S6)
+      parameters:
+      - in: path
+        name: dispute_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentRequestInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffDispute'
+          description: ''
+  /api/v1/staff/disputes/{dispute_id}/comments/:
+    post:
+      operationId: staff_dispute_comment
+      summary: Answer a comment request (S7); involved staff comment, never decide
+      parameters:
+      - in: path
+        name: dispute_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffDispute'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not asked
+  /api/v1/staff/disputes/{dispute_id}/messages/:
+    post:
+      operationId: staff_dispute_message
+      summary: Write to the patient, or an internal note (S5)
+      parameters:
+      - in: path
+        name: dispute_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffMessageInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffDispute'
+          description: ''
+  /api/v1/staff/disputes/{dispute_id}/request-info/:
+    post:
+      operationId: staff_dispute_request_info
+      summary: Ask the patient for more information (S4)
+      parameters:
+      - in: path
+        name: dispute_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestInfoRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffDispute'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+  /api/v1/staff/disputes/{dispute_id}/resolve/:
+    post:
+      operationId: staff_dispute_resolve
+      summary: Decide and create the outcome's actions (S8)
+      parameters:
+      - in: path
+        name: dispute_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - disputes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResolveRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffDispute'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Involved, or outcome
   /api/v1/staff/disruptions/:
     get:
       operationId: staff_disruptions
@@ -14780,6 +15469,33 @@ components:
       - has_relationship
       - is_staff_member
       - reason_required
+    Action:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        outcome:
+          $ref: '#/components/schemas/DisputeOutcomeEnum'
+        linked_object_type:
+          type: string
+        linked_object_id:
+          type: string
+          format: uuid
+          nullable: true
+        status:
+          $ref: '#/components/schemas/DisputeActionStatusEnum'
+        done_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - done_at
+      - id
+      - linked_object_id
+      - linked_object_type
+      - outcome
+      - status
     ActionEnum:
       enum:
       - create
@@ -17115,6 +17831,35 @@ components:
           maxLength: 20
       required:
       - code
+    CommentRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        member_name:
+          type: string
+        membership_id:
+          type: string
+          format: uuid
+        responded_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - id
+      - member_name
+      - membership_id
+      - responded_at
+    CommentRequestInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        membership_id:
+          type: string
+          format: uuid
+      required:
+      - membership_id
     Completion:
       type: object
       properties:
@@ -17466,6 +18211,27 @@ components:
           maximum: 100000000
           minimum: 0
           default: 0
+    CounterRaiseRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        facility_patient_id:
+          type: string
+          format: uuid
+        subject_type:
+          $ref: '#/components/schemas/DisputeSubjectTypeEnum'
+        subject_id:
+          type: string
+          format: uuid
+        description:
+          type: string
+          minLength: 10
+          maxLength: 3000
+      required:
+      - description
+      - facility_patient_id
+      - subject_id
+      - subject_type
     CreditNote:
       type: object
       properties:
@@ -18274,6 +19040,193 @@ components:
       description: |-
         * `inline` - inline
         * `attachment` - attachment
+    DisputeActionStatusEnum:
+      enum:
+      - pending
+      - done
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `done` - Done
+    DisputeAuthorRoleEnum:
+      enum:
+      - patient
+      - handler
+      - staff
+      - platform
+      type: string
+      description: |-
+        * `patient` - Patient
+        * `handler` - Handler
+        * `staff` - Staff
+        * `platform` - Platform
+    DisputeChannelEnum:
+      enum:
+      - app
+      - counter
+      type: string
+      description: |-
+        * `app` - App
+        * `counter` - Counter
+    DisputeHandlerLevelEnum:
+      enum:
+      - facility
+      - platform
+      type: string
+      description: |-
+        * `facility` - Facility
+        * `platform` - Platform
+    DisputeOutcomeEnum:
+      enum:
+      - no_show_reversed
+      - record_corrected
+      - correction_refused
+      - refund
+      - bill_correction
+      - rebooking
+      - rejected
+      type: string
+      description: |-
+        * `no_show_reversed` - Missed visit reversed
+        * `record_corrected` - Record to be corrected
+        * `correction_refused` - Correction refused
+        * `refund` - Refund
+        * `bill_correction` - Bill correction
+        * `rebooking` - Rebooking
+        * `rejected` - Rejected
+    DisputeRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        patient_display_name:
+          type: string
+        facility_name:
+          type: string
+        channel:
+          $ref: '#/components/schemas/DisputeChannelEnum'
+        type:
+          $ref: '#/components/schemas/DisputeTypeEnum'
+        subject_type:
+          $ref: '#/components/schemas/DisputeSubjectTypeEnum'
+        subject_id:
+          type: string
+          format: uuid
+        subject_snapshot:
+          type: object
+          additionalProperties: {}
+        status:
+          $ref: '#/components/schemas/DisputeStatusEnum'
+        handler_level:
+          $ref: '#/components/schemas/DisputeHandlerLevelEnum'
+        acknowledge_by:
+          type: string
+          format: date-time
+        decide_by:
+          type: string
+          format: date-time
+          nullable: true
+        is_overdue:
+          type: boolean
+        outcome:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+      required:
+      - acknowledge_by
+      - channel
+      - created_at
+      - decide_by
+      - facility_name
+      - handler_level
+      - id
+      - is_overdue
+      - outcome
+      - patient_display_name
+      - patient_id
+      - status
+      - subject_id
+      - subject_snapshot
+      - subject_type
+      - type
+      - version
+    DisputeStatusEnum:
+      enum:
+      - open
+      - acknowledged
+      - under_review
+      - info_requested
+      - resolved
+      - escalated
+      - final_decision
+      - closed
+      - reopened
+      type: string
+      description: |-
+        * `open` - Open
+        * `acknowledged` - Acknowledged
+        * `under_review` - Under review
+        * `info_requested` - Information requested
+        * `resolved` - Resolved
+        * `escalated` - Escalated
+        * `final_decision` - Final decision
+        * `closed` - Closed
+        * `reopened` - Reopened
+    DisputeSubjectTypeEnum:
+      enum:
+      - visit
+      - ticket
+      - booking
+      - no_show_strike
+      - prescription
+      - bill
+      - document
+      type: string
+      description: |-
+        * `visit` - Visit
+        * `ticket` - Ticket
+        * `booking` - Booking
+        * `no_show_strike` - Missed-visit strike
+        * `prescription` - Prescription
+        * `bill` - Bill
+        * `document` - Document
+    DisputeTypeEnum:
+      enum:
+      - billing
+      - medication
+      - queue_booking
+      - record_correction
+      type: string
+      description: |-
+        * `billing` - Billing
+        * `medication` - Medication
+        * `queue_booking` - Queue or booking
+        * `record_correction` - Record correction
+    DisputeVersionRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+      required:
+      - version
+    DisputeVisibilityEnum:
+      enum:
+      - thread
+      - internal
+      - staff_comment
+      type: string
+      description: |-
+        * `thread` - Thread
+        * `internal` - Internal note
+        * `staff_comment` - Staff comment
     Disruption:
       type: object
       properties:
@@ -19417,6 +20370,40 @@ components:
       - min
       - status
       - until
+    Event:
+      type: object
+      properties:
+        from_status:
+          type: string
+        to_status:
+          type: string
+        actor_name:
+          type: string
+        reason:
+          type: string
+        occurred_at:
+          type: string
+          format: date-time
+      required:
+      - actor_name
+      - from_status
+      - occurred_at
+      - reason
+      - to_status
+    EvidenceEntry:
+      type: object
+      properties:
+        action:
+          type: string
+        at:
+          type: string
+          format: date-time
+        actor_name:
+          type: string
+      required:
+      - action
+      - actor_name
+      - at
     Exception:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -22472,6 +23459,30 @@ components:
         * `cancelled` - Cancelled
         * `executed` - Executed
         * `undone` - Undone
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        author_name:
+          type: string
+        author_role:
+          $ref: '#/components/schemas/DisputeAuthorRoleEnum'
+        visibility:
+          $ref: '#/components/schemas/DisputeVisibilityEnum'
+        body:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - author_name
+      - author_role
+      - body
+      - created_at
+      - id
+      - visibility
     MessageCreateRequest:
       type: object
       properties:
@@ -22479,6 +23490,16 @@ components:
           type: string
           minLength: 1
           maxLength: 4000
+      required:
+      - body
+    MessageInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        body:
+          type: string
+          minLength: 2
+          maxLength: 3000
       required:
       - body
     MethodEnum:
@@ -24988,6 +26009,110 @@ components:
       - display
       - plain_language
       - rank
+    PatientDispute:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        patient_display_name:
+          type: string
+        facility_name:
+          type: string
+        channel:
+          $ref: '#/components/schemas/DisputeChannelEnum'
+        type:
+          $ref: '#/components/schemas/DisputeTypeEnum'
+        subject_type:
+          $ref: '#/components/schemas/DisputeSubjectTypeEnum'
+        subject_id:
+          type: string
+          format: uuid
+        subject_snapshot:
+          type: object
+          additionalProperties: {}
+        status:
+          $ref: '#/components/schemas/DisputeStatusEnum'
+        handler_level:
+          $ref: '#/components/schemas/DisputeHandlerLevelEnum'
+        acknowledge_by:
+          type: string
+          format: date-time
+        decide_by:
+          type: string
+          format: date-time
+          nullable: true
+        is_overdue:
+          type: boolean
+        outcome:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+        description:
+          type: string
+        decision_reason:
+          type: string
+        resolved_at:
+          type: string
+          format: date-time
+          nullable: true
+        closed_at:
+          type: string
+          format: date-time
+          nullable: true
+        can_accept:
+          type: boolean
+        can_escalate:
+          type: boolean
+        can_reopen:
+          type: boolean
+        can_add_statement:
+          type: boolean
+        statement:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/Event'
+      required:
+      - acknowledge_by
+      - can_accept
+      - can_add_statement
+      - can_escalate
+      - can_reopen
+      - channel
+      - closed_at
+      - created_at
+      - decide_by
+      - decision_reason
+      - description
+      - events
+      - facility_name
+      - handler_level
+      - id
+      - is_overdue
+      - messages
+      - outcome
+      - patient_display_name
+      - patient_id
+      - resolved_at
+      - statement
+      - status
+      - subject_id
+      - subject_snapshot
+      - subject_type
+      - type
+      - version
     PatientDocument:
       type: object
       properties:
@@ -27281,6 +28406,27 @@ components:
       - end
       - is_enabled
       - start
+    RaiseRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        patient_id:
+          type: string
+          format: uuid
+        subject_type:
+          $ref: '#/components/schemas/DisputeSubjectTypeEnum'
+        subject_id:
+          type: string
+          format: uuid
+        description:
+          type: string
+          minLength: 10
+          maxLength: 3000
+      required:
+      - description
+      - patient_id
+      - subject_id
+      - subject_type
     ReadAllRequest:
       type: object
       properties:
@@ -27817,6 +28963,19 @@ components:
       required:
       - items
       - version
+    RequestInfoRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+        body:
+          type: string
+          minLength: 2
+          maxLength: 3000
+      required:
+      - body
+      - version
     RescheduleRequest:
       type: object
       properties:
@@ -27828,6 +28987,22 @@ components:
           format: uuid
       required:
       - hold_id
+      - version
+    ResolveRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+        outcome:
+          $ref: '#/components/schemas/DisputeOutcomeEnum'
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 1000
+      required:
+      - outcome
+      - reason
       - version
     RespondRequest:
       type: object
@@ -29102,6 +30277,183 @@ components:
       - kind
       - script_read
       - version
+    StaffDispute:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        patient_display_name:
+          type: string
+        facility_name:
+          type: string
+        channel:
+          $ref: '#/components/schemas/DisputeChannelEnum'
+        type:
+          $ref: '#/components/schemas/DisputeTypeEnum'
+        subject_type:
+          $ref: '#/components/schemas/DisputeSubjectTypeEnum'
+        subject_id:
+          type: string
+          format: uuid
+        subject_snapshot:
+          type: object
+          additionalProperties: {}
+        status:
+          $ref: '#/components/schemas/DisputeStatusEnum'
+        handler_level:
+          $ref: '#/components/schemas/DisputeHandlerLevelEnum'
+        acknowledge_by:
+          type: string
+          format: date-time
+        decide_by:
+          type: string
+          format: date-time
+          nullable: true
+        is_overdue:
+          type: boolean
+        outcome:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+        flagged:
+          type: boolean
+          description: 3 or more rejected disputes (review, never block)
+        description:
+          type: string
+        decision_reason:
+          type: string
+        resolved_at:
+          type: string
+          format: date-time
+          nullable: true
+        statement:
+          type: string
+        can_decide:
+          type: boolean
+          description: False for an involved handler (FR-DSP-08)
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/Event'
+        evidence:
+          type: array
+          items:
+            $ref: '#/components/schemas/EvidenceEntry'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Action'
+        comment_requests:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommentRequest'
+      required:
+      - acknowledge_by
+      - actions
+      - can_decide
+      - channel
+      - comment_requests
+      - created_at
+      - decide_by
+      - decision_reason
+      - description
+      - events
+      - evidence
+      - facility_name
+      - flagged
+      - handler_level
+      - id
+      - is_overdue
+      - messages
+      - outcome
+      - patient_display_name
+      - patient_id
+      - resolved_at
+      - statement
+      - status
+      - subject_id
+      - subject_snapshot
+      - subject_type
+      - type
+      - version
+    StaffDisputeRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        patient_display_name:
+          type: string
+        facility_name:
+          type: string
+        channel:
+          $ref: '#/components/schemas/DisputeChannelEnum'
+        type:
+          $ref: '#/components/schemas/DisputeTypeEnum'
+        subject_type:
+          $ref: '#/components/schemas/DisputeSubjectTypeEnum'
+        subject_id:
+          type: string
+          format: uuid
+        subject_snapshot:
+          type: object
+          additionalProperties: {}
+        status:
+          $ref: '#/components/schemas/DisputeStatusEnum'
+        handler_level:
+          $ref: '#/components/schemas/DisputeHandlerLevelEnum'
+        acknowledge_by:
+          type: string
+          format: date-time
+        decide_by:
+          type: string
+          format: date-time
+          nullable: true
+        is_overdue:
+          type: boolean
+        outcome:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+        flagged:
+          type: boolean
+          description: 3 or more rejected disputes (review, never block)
+      required:
+      - acknowledge_by
+      - channel
+      - created_at
+      - decide_by
+      - facility_name
+      - flagged
+      - handler_level
+      - id
+      - is_overdue
+      - outcome
+      - patient_display_name
+      - patient_id
+      - status
+      - subject_id
+      - subject_snapshot
+      - subject_type
+      - type
+      - version
     StaffIdentifierRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -29267,6 +30619,27 @@ components:
       - next
       - previous
       - results
+    StaffMessageInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        body:
+          type: string
+          minLength: 2
+          maxLength: 3000
+        visibility:
+          $ref: '#/components/schemas/StaffMessageInputVisibilityEnum'
+      required:
+      - body
+      - visibility
+    StaffMessageInputVisibilityEnum:
+      enum:
+      - thread
+      - internal
+      type: string
+      description: |-
+        * `thread` - Thread
+        * `internal` - Internal note
     StaffPreferences:
       type: object
       properties:
@@ -29346,6 +30719,16 @@ components:
       required:
       - applicant
       - facility_name
+    StatementRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        statement:
+          type: string
+          minLength: 10
+          maxLength: 3000
+      required:
+      - statement
     StatusEvent:
       type: object
       properties:
@@ -30638,97 +32021,6 @@ components:
         * `not_pregnant` - not_pregnant
         * `pregnant` - pregnant
         * `unknown` - unknown
-    Verification:
-      type: object
-      properties:
-        code:
-          type: string
-        kind:
-          $ref: '#/components/schemas/ClinicalDocumentKindEnum'
-        number:
-          type: string
-        status:
-          $ref: '#/components/schemas/VerificationStatusEnum'
-        issued_at:
-          type: string
-          format: date-time
-        valid_until:
-          type: string
-          format: date-time
-          nullable: true
-        facility_name:
-          type: string
-        author_name:
-          type: string
-        author_licence:
-          type: string
-        version_no:
-          type: integer
-      required:
-      - author_licence
-      - author_name
-      - code
-      - facility_name
-      - issued_at
-      - kind
-      - number
-      - status
-      - valid_until
-      - version_no
-    VerificationDetails:
-      type: object
-      properties:
-        code:
-          type: string
-        kind:
-          $ref: '#/components/schemas/ClinicalDocumentKindEnum'
-        number:
-          type: string
-        status:
-          $ref: '#/components/schemas/VerificationStatusEnum'
-        issued_at:
-          type: string
-          format: date-time
-        valid_until:
-          type: string
-          format: date-time
-          nullable: true
-        facility_name:
-          type: string
-        author_name:
-          type: string
-        author_licence:
-          type: string
-        version_no:
-          type: integer
-        patient_name:
-          type: string
-        sections:
-          type: array
-          items:
-            $ref: '#/components/schemas/DetailSection'
-      required:
-      - author_licence
-      - author_name
-      - code
-      - facility_name
-      - issued_at
-      - kind
-      - number
-      - patient_name
-      - sections
-      - status
-      - valid_until
-      - version_no
-    VerificationDetailsInputRequest:
-      type: object
-      description: Rejects unknown fields instead of silently ignoring them.
-      properties:
-        date_of_birth:
-          type: string
-          format: date
-      required:
-      - date_of_birth
     VerificationInputReasonCodeEnum:
       enum:
       - expired

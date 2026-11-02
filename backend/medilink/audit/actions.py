@@ -75,9 +75,11 @@ from medilink.facilities import audit_actions as _s2  # noqa: E402
 extend_actions(_s2.ACTIONS)
 # [/S2]
 # [S10]
+from medilink.disputes import audit_actions as _s10b  # noqa: E402
 from medilink.support import audit_actions as _s10  # noqa: E402
 
 extend_actions(_s10.ACTIONS)
+extend_actions(_s10b.ACTIONS)
 # [/S10]
 # [S4]
 from medilink.visits import audit_actions as _s4  # noqa: E402

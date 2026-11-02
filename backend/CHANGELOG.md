@@ -20,6 +20,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   `query_raised`), `documents.services.document_generated`, `patients.merge_requests.merge_requested`;
   S1's `dispatch()` also notifies platform admins in-app when an application is submitted (S1-I6).
 
+### Sprint 10 part 2a · Disputes (contract sprint-10b)
+
+- `medilink.disputes`: patients, guardians and reception (at the counter) raise a dispute from a
+  visit, ticket, booking, missed-visit strike, prescription, bill or document. The subject's
+  snapshot and its audit trail are frozen as evidence. Thread, internal notes, comment requests
+  and staff comments; acknowledge (72 h) and decide (10 days) deadlines escalate to the platform
+  on their own (hourly job); one-person facilities go straight to the platform; involved staff
+  comment but never decide. Outcomes create actions: a missed-visit strike is reversed at once;
+  refunds, bill corrections, record corrections and rebookings are recorded as pending actions.
+  Patients accept, disagree within 14 days or reopen once within 30 days, and file a
+  disagreement statement after a refused correction. Platform final decision with step-up.
+- Text encrypted at rest; forced RLS on all seven tables; S9 notices without dispute text.
+
 ### Public pages and symptom triage (contract public-pages-and-triage)
 
 - `medilink.triage`: `POST /public/triage/` turns structured answers (symptoms, how long, age group,

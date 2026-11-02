@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     # [/S2]
     # [S10] help center and support requests (part 1)
     "medilink.support",
+    "medilink.disputes",  # part 2a
     # [/S10]
     # [PT] public pages and rules-based symptom triage
     "medilink.triage",
@@ -458,6 +459,15 @@ SPECTACULAR_SETTINGS = {
         "SupportCloseReasonEnum": "medilink.support.models.CloseReason",
         "SupportStaffCloseReasonEnum": "medilink.support.serializers.SUPPORT_CLOSE_REASONS",
         "SupportAuthorKindEnum": "medilink.support.models.AuthorKind",
+        "DisputeOutcomeEnum": "medilink.disputes.models.Outcome",
+        "DisputeStatusEnum": "medilink.disputes.models.DisputeStatus",
+        "DisputeTypeEnum": "medilink.disputes.models.DisputeType",
+        "DisputeSubjectTypeEnum": "medilink.disputes.models.SubjectType",
+        "DisputeChannelEnum": "medilink.disputes.models.Channel",
+        "DisputeActionStatusEnum": "medilink.disputes.models.ActionStatus",
+        "DisputeAuthorRoleEnum": "medilink.disputes.models.AuthorRole",
+        "DisputeVisibilityEnum": "medilink.disputes.models.Visibility",
+        "DisputeHandlerLevelEnum": "medilink.disputes.models.HandlerLevel",
         # [/S10]
         # [S4]
         "TicketStateEnum": "medilink.visits.models.TicketState",

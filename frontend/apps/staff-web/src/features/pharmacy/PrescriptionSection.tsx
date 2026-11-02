@@ -34,7 +34,7 @@ import {
   WarningOctagon,
 } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useDeferredValue, useId, useState, type FormEvent } from "react";
+import { useDeferredValue, useId, useRef, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useApi } from "../../app/services";
@@ -662,16 +662,21 @@ function QueryAnswer({
   const [reason, setReason] = useState("");
   const [body, setBody] = useState("");
   const [tried, setTried] = useState(false);
+  // the addendum written here, kept so a retry after a failed link never signs a second one
+  const created = useRef<string | null>(null);
   const answer = useMutation({
     mutationFn: async () => {
-      const addendumId =
-        pick === NEW
-          ? (
-              await withStepUp(() =>
-                api.clinical.addAddendum(c.id, { reason: reason.trim(), body: body.trim() }),
-              )
-            ).id
-          : pick;
+      let addendumId = pick;
+      if (pick === NEW) {
+        if (!created.current) {
+          const addendum = await withStepUp(() =>
+            api.clinical.addAddendum(c.id, { reason: reason.trim(), body: body.trim() }),
+          );
+          created.current = addendum.id;
+          void queryClient.invalidateQueries({ queryKey: ["clinical"] });
+        }
+        addendumId = created.current;
+      }
       return api.pharmacy.answerQuery(query.id, addendumId);
     },
     // the consultation (new addendum) and its prescription both live under `clinical`

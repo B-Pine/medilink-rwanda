@@ -27,10 +27,10 @@ Evidence collected on 2026-11-01 on PostgreSQL 16, suite run as the runtime role
 | S6-B15 | Patient read by relationship | `test_patient_reads_own_records_without_private_notes`, `test_guardian_delegate_and_other_accounts` | | | Pending |
 | S6-B16 | Text stored encrypted | `test_sign_needs_step_up_and_primary_and_stores_hash`, `test_addenda_by_author_and_other_doctor` | | | Pending |
 | S6-B17 | Migrations reversible; suites green; coverage ≥ 90 % | `migrate clinical zero` and back on the dev database; `makemigrations --check` clean; full suite and coverage in the Evidence log below | | | Pending |
-| S6-B18 | (S6b) Results inbox | Not started | | | Not in S6a |
+| S6-B18 | (S6b) Results inbox | `test_outside_result_goes_to_the_uploading_doctor_and_is_reviewed`, `test_result_uploaded_by_reception_goes_to_the_last_doctor` (assignment, review, per-doctor inbox, lock trigger) | | | Pending |
 | S6-B19 | (S6b) Legacy import | Not started | | | Not in S6a |
-| S6-B20 | (S6b) Scans and back-entry | Not started | | | Not in S6a |
-| S6-B21 | (S6b) Break-glass | Not started | | | Not in S6a |
+| S6-B20 | (S6b) Scans and back-entry | `test_scan_rules_timeline_and_audited_download`, `test_history_back_entry_labelled_historical`, `test_back_entry_can_cite_its_scan`, `test_blood_group_and_pregnancy_flag` (health attributes) | | | Pending |
+| S6-B21 | (S6b) Break-glass | `test_break_glass_open_read_review` (super admin only, step-up, reason, read-only read, own-session refused, review by another, lock trigger, access history), `test_break_glass_window_expires_and_reminder` | | | Pending |
 
 ## Frontend checks
 

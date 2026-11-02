@@ -222,6 +222,18 @@ class EnteredInErrorInfoSerializer(serializers.Serializer):
     by_name = serializers.CharField(allow_null=True)
 
 
+class PregnancySerializer(serializers.Serializer):
+    status = serializers.ChoiceField(choices=["pregnant", "not_pregnant", "unknown"])
+    due_date = serializers.DateField(allow_null=True)
+    recorded_at = serializers.DateTimeField()
+    is_active = serializers.BooleanField()
+
+
+class HealthAttributesSerializer(serializers.Serializer):
+    blood_group = serializers.CharField(allow_null=True)
+    pregnancy = PregnancySerializer(allow_null=True)
+
+
 class ConsultationSerializer(serializers.Serializer):
     """Staff clinical view (doctors with clinical.view who pass the access rule)."""
 
@@ -246,6 +258,7 @@ class ConsultationSerializer(serializers.Serializer):
     addenda = AddendumSerializer(many=True)
     allergies = AllergySerializer(many=True)
     no_known_allergies = serializers.BooleanField(allow_null=True)
+    health_attributes = HealthAttributesSerializer()
     content_hash = serializers.CharField(allow_null=True)
     integrity = serializers.ChoiceField(choices=["ok", "mismatch"], allow_null=True)
     entered_in_error = EnteredInErrorInfoSerializer(allow_null=True)
@@ -275,11 +288,33 @@ class HistoryDiagnosisSerializer(serializers.Serializer):
     rank = serializers.CharField()
 
 
+class LegacyEntrySerializer(serializers.Serializer):
+    entry_kind = serializers.ChoiceField(
+        choices=["diagnosis", "condition", "allergy", "medication", "procedure"]
+    )
+    code = serializers.CharField(allow_blank=True)
+    display = serializers.CharField()
+    note = serializers.CharField(allow_blank=True)
+    occurred_on = serializers.DateField(allow_null=True)
+    entered_at = serializers.DateTimeField()
+    source_scan_id = serializers.UUIDField(allow_null=True)
+
+
+class ScanItemSerializer(serializers.Serializer):
+    document_type = serializers.ChoiceField(
+        choices=["outside_result", "legacy_record", "referral_letter", "other"]
+    )
+    document_date = serializers.DateField()
+    description = serializers.CharField(allow_blank=True)
+    content_type = serializers.CharField()
+    uploaded_at = serializers.DateTimeField()
+
+
 class HistoryItemSerializer(serializers.Serializer):
-    kind = serializers.ChoiceField(choices=["consultation", "vitals"])
+    kind = serializers.ChoiceField(choices=["consultation", "vitals", "legacy", "scan"])
     id = serializers.UUIDField()
     occurred_at = serializers.DateTimeField()
-    visit_id = serializers.UUIDField()
+    visit_id = serializers.UUIDField(allow_null=True)
     service_name_i18n = serializers.DictField(child=serializers.CharField())
     author_name = serializers.CharField(allow_null=True)
     status = serializers.CharField(allow_null=True)
@@ -288,6 +323,8 @@ class HistoryItemSerializer(serializers.Serializer):
     diagnoses = HistoryDiagnosisSerializer(many=True)
     addenda_count = serializers.IntegerField()
     vitals = VitalsSerializer(allow_null=True)
+    legacy = LegacyEntrySerializer(allow_null=True)
+    scan = ScanItemSerializer(allow_null=True)
 
 
 class SummaryItemSerializer(serializers.Serializer):
@@ -311,6 +348,7 @@ class ProblemSummarySerializer(serializers.Serializer):
     medications = SummaryItemSerializer(many=True)
     recent_diagnoses = RecentDiagnosisSerializer(many=True)
     is_staff_member = serializers.BooleanField()
+    health_attributes = HealthAttributesSerializer()
 
 
 class AccessStateSerializer(serializers.Serializer):

@@ -82,6 +82,12 @@ def vitals_data(row: Vitals) -> dict[str, Any]:
     }
 
 
+def _attributes(patient_id: Any) -> dict[str, Any]:
+    from medilink.clinical.records import attributes_data
+
+    return attributes_data(patient_id)
+
+
 def allergy_data(patient: Any) -> list[dict[str, Any]]:
     return [
         {
@@ -161,6 +167,7 @@ def consultation_data(c: Consultation, principal: Any) -> dict[str, Any]:
         "addenda": [addendum_data(a) for a in addenda],
         "allergies": allergy_data(patient),
         "no_known_allergies": patient.no_known_allergies,
+        "health_attributes": _attributes(patient.pk),
         "content_hash": bytes(c.content_hash).hex() if c.content_hash else None,
         "integrity": services.integrity(c),
         "entered_in_error": (
@@ -524,6 +531,77 @@ def _signed_or_mine(rows: QuerySet[Consultation], membership: Any) -> QuerySet[C
     )
 
 
+def _on_day(day: dt.date) -> dt.datetime:
+    return timezone.make_aware(dt.datetime.combine(day, dt.time(12)))
+
+
+def legacy_items(record: FacilityPatient, kind: Any, code: str) -> list[dict[str, Any]]:
+    """S6b: back-entered history (`legacy`) and scanned documents (`scan`), labelled historical."""
+    from medilink.clinical import records
+    from medilink.clinical.models import ClinicalScan, HistoryEntry
+
+    out: list[dict[str, Any]] = []
+    base: dict[str, Any] = {
+        "visit_id": None,
+        "service_name_i18n": {},
+        "status": None,
+        "is_restricted": False,
+        "is_late_entry": False,
+        "diagnoses": [],
+        "addenda_count": 0,
+        "vitals": None,
+        "legacy": None,
+        "scan": None,
+    }
+    if kind in (None, "", "legacy"):
+        entries = HistoryEntry.objects.filter(
+            facility_id=record.facility_id, patient_id=record.patient_id
+        ).select_related("entered_by_membership__user")
+        if code:
+            entries = entries.filter(code__startswith=code)
+        for e in entries:
+            out.append(
+                {
+                    **base,
+                    "kind": "legacy",
+                    "id": e.pk,
+                    "occurred_at": _on_day(e.occurred_on) if e.occurred_on else e.created_at,
+                    "author_name": e.entered_by_membership.user.full_name,
+                    "legacy": {
+                        "entry_kind": e.kind,
+                        "code": e.code,
+                        "display": e.display,
+                        "note": records.history_note(e),
+                        "occurred_on": e.occurred_on,
+                        "entered_at": e.created_at,
+                        "source_scan_id": e.source_scan_id,
+                    },
+                }
+            )
+    if kind in (None, "", "scan") and not code:
+        scans = ClinicalScan.objects.filter(
+            facility_id=record.facility_id, patient_id=record.patient_id
+        ).select_related("uploaded_by_membership__user", "upload")
+        for sc in scans:
+            out.append(
+                {
+                    **base,
+                    "kind": "scan",
+                    "id": sc.pk,
+                    "occurred_at": _on_day(sc.document_date),
+                    "author_name": sc.uploaded_by_membership.user.full_name,
+                    "scan": {
+                        "document_type": sc.document_type,
+                        "document_date": sc.document_date,
+                        "description": sc.description,
+                        "content_type": sc.upload.content_type,
+                        "uploaded_at": sc.created_at,
+                    },
+                }
+            )
+    return out
+
+
 def history_items(
     record: FacilityPatient, membership: Any, params: dict[str, Any]
 ) -> list[dict[str, Any]]:
@@ -575,6 +653,8 @@ def history_items(
                     ],
                     "addenda_count": c.addenda_total,
                     "vitals": None,
+                    "legacy": None,
+                    "scan": None,
                 }
             )
     if kind in (None, "", "vitals") and not code:
@@ -598,8 +678,11 @@ def history_items(
                     "diagnoses": [],
                     "addenda_count": 0,
                     "vitals": vitals_data(v),
+                    "legacy": None,
+                    "scan": None,
                 }
             )
+    items.extend(legacy_items(record, kind, code))
     tz = timezone.get_current_timezone()
     if start:
         items = [i for i in items if i["occurred_at"].astimezone(tz).date() >= start]
@@ -616,7 +699,7 @@ class HistoryView(ClinicalView):
         operation_id="staff_patient_history",
         tags=TAGS,
         parameters=[
-            OpenApiParameter("type", str, enum=["consultation", "vitals"]),
+            OpenApiParameter("type", str, enum=["consultation", "vitals", "legacy", "scan"]),
             OpenApiParameter("code", str, description="ICD-10 code prefix"),
             OpenApiParameter("from", dt.date),
             OpenApiParameter("to", dt.date),
@@ -633,8 +716,10 @@ class HistoryView(ClinicalView):
         record = self.facility_patient(facility_patient_id)
         access.require_access(self.principal(), record)
         kind = request.query_params.get("type")
-        if kind not in (None, "", "consultation", "vitals"):
-            raise exceptions.ValidationError({"type": ["Use consultation or vitals."]})
+        if kind not in (None, "", "consultation", "vitals", "legacy", "scan"):
+            raise exceptions.ValidationError(
+                {"type": ["Use consultation, vitals, legacy or scan."]}
+            )
         params = {
             "type": kind,
             "code": request.query_params.get("code"),
@@ -706,6 +791,7 @@ def problem_summary(record: FacilityPatient, membership: Any) -> dict[str, Any]:
         ],
         "recent_diagnoses": list(recent.values()),
         "is_staff_member": record.is_staff_member,
+        "health_attributes": _attributes(patient.pk),
     }
 
 

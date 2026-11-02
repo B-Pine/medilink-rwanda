@@ -487,6 +487,13 @@ SPECTACULAR_SETTINGS = {
         "DiagnosisRankEnum": "medilink.clinical.models.DiagnosisRank",
         "CertaintyEnum": "medilink.clinical.models.Certainty",
         # AccessReasonCodeEnum and ReasonCodeEnum: named in the [S3] block (same codes)
+        # S6b
+        "BreakGlassReasonEnum": "medilink.clinical.models.BreakGlassReason",
+        "HistoryEntryKindEnum": "medilink.clinical.models.HistoryKind",
+        "HealthAttributeKindEnum": "medilink.clinical.models.AttributeKind",
+        "ClinicalDocumentTypeEnum": "medilink.clinical.models.DocumentType",
+        "ResultStatusEnum": "medilink.clinical.models.ResultStatus",
+        "BreakGlassReviewOutcomeEnum": "medilink.clinical.models.ReviewOutcome",
         # [/S6]
         # [S7]
         "PrescriptionStatusEnum": "medilink.pharmacy.models.PrescriptionStatus",

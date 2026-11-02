@@ -2438,6 +2438,173 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Not published
+  /api/v1/platform/break-glass/:
+    get:
+      operationId: platform_break_glass_sessions
+      summary: Break-glass sessions; the weekly review list (G1)
+      parameters:
+      - in: query
+        name: needs_review
+        schema:
+          type: boolean
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      tags:
+      - platform-break-glass
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBreakGlassSessionList'
+          description: ''
+    post:
+      operationId: platform_break_glass_open
+      summary: Open 60 minutes of read-only emergency access to one patient (G1)
+      tags:
+      - platform-break-glass
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BreakGlassInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BreakGlassSession'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: A session is already open
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: No record at that facility
+  /api/v1/platform/break-glass/{session_id}/end/:
+    post:
+      operationId: platform_break_glass_end
+      summary: End my session before the 60 minutes are up
+      parameters:
+      - in: path
+        name: session_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-break-glass
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BreakGlassSession'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not yours or already ended
+  /api/v1/platform/break-glass/{session_id}/patients/{patient_id}/history/:
+    get:
+      operationId: platform_break_glass_history
+      summary: Read-only timeline and summary during an open session (G2)
+      parameters:
+      - in: path
+        name: patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: session_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-break-glass
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BreakGlassHistory'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: No open session for this patient
+  /api/v1/platform/break-glass/{session_id}/review/:
+    post:
+      operationId: platform_break_glass_review
+      summary: Review another super admin's session (G1)
+      parameters:
+      - in: path
+        name: session_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-break-glass
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BreakGlassReviewRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BreakGlassSession'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Your own session or reviewed
   /api/v1/platform/facilities/:
     get:
       operationId: platform_facilities_list
@@ -9028,6 +9195,69 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Text needed for other
+  /api/v1/staff/clinical/patients/{facility_patient_id}/health-attributes/:
+    get:
+      operationId: staff_patient_health_attributes
+      summary: Blood group and pregnancy status
+      parameters:
+      - in: path
+        name: facility_patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthAttributes'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason for this patient first'
+    post:
+      operationId: staff_patient_health_attribute_record
+      summary: Record blood group or pregnancy status (latest wins)
+      parameters:
+      - in: path
+        name: facility_patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttributeInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthAttributes'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Value or due date
   /api/v1/staff/clinical/patients/{facility_patient_id}/history/:
     get:
       operationId: staff_patient_history
@@ -9068,6 +9298,8 @@ paths:
           type: string
           enum:
           - consultation
+          - legacy
+          - scan
           - vitals
       tags:
       - clinical
@@ -9088,6 +9320,78 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: 'access_reason_required: give a reason for this patient first
             (A1)'
+  /api/v1/staff/clinical/patients/{facility_patient_id}/history-entries/:
+    get:
+      operationId: staff_patient_history_entries
+      summary: Back-entered history of a patient here, labelled historical (L3)
+      parameters:
+      - in: path
+        name: facility_patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HistoryEntry'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason for this patient first'
+    post:
+      operationId: staff_patient_history_entry_add
+      summary: Back-enter a past diagnosis, allergy, condition, medicine or procedure
+        (L3)
+      parameters:
+      - in: path
+        name: facility_patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HistoryEntryInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoryEntry'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason for this patient first'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown code
   /api/v1/staff/clinical/patients/{facility_patient_id}/problem-summary/:
     get:
       operationId: staff_patient_problem_summary
@@ -9118,6 +9422,100 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: 'access_reason_required: give a reason for this patient first
             (A1)'
+  /api/v1/staff/clinical/patients/{facility_patient_id}/scans/:
+    get:
+      operationId: staff_patient_scans
+      summary: Scanned documents and outside results of a patient here (L2)
+      parameters:
+      - in: path
+        name: facility_patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Scan'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason for this patient first'
+    post:
+      operationId: staff_patient_scan_add
+      summary: Attach an uploaded scan or outside result to the patient (L2)
+      parameters:
+      - in: path
+        name: facility_patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScanInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scan'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown upload, future date, or no reviewer
+  /api/v1/staff/clinical/scans/{scan_id}/download-link/:
+    post:
+      operationId: staff_scan_download_link
+      summary: 5-minute download link to a scan, audited in the access history
+      parameters:
+      - in: path
+        name: scan_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadLink'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason for this patient first'
   /api/v1/staff/clinician-profile/:
     get:
       operationId: staff_clinician_profile_retrieve
@@ -12979,6 +13377,79 @@ paths:
               schema:
                 $ref: '#/components/schemas/Operations'
           description: ''
+  /api/v1/staff/results-inbox/:
+    get:
+      operationId: staff_results_inbox
+      summary: Outside results assigned to me, oldest first (R1)
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - pending
+          - reviewed
+      tags:
+      - clinical
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResultReviewList'
+          description: ''
+  /api/v1/staff/results-inbox/{review_id}/review/:
+    post:
+      operationId: staff_result_review
+      summary: Mark an outside result reviewed, with an optional comment (R1)
+      parameters:
+      - in: path
+        name: review_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResultReview'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Already reviewed or assigned to another doctor
   /api/v1/staff/roles/:
     get:
       operationId: staff_roles_list
@@ -15268,6 +15739,21 @@ components:
       - queued_at
       - sent_at
       - status
+    AttributeInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        kind:
+          $ref: '#/components/schemas/HealthAttributeKindEnum'
+        value:
+          $ref: '#/components/schemas/ValueEnum'
+        due_date:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - kind
+      - value
     Author:
       type: object
       properties:
@@ -15838,6 +16324,165 @@ components:
       - logo_upload_id
       - stamp_upload_id
       - version
+    BreakGlassHistory:
+      type: object
+      properties:
+        session_id:
+          type: string
+          format: uuid
+        expires_at:
+          type: string
+          format: date-time
+        patient:
+          $ref: '#/components/schemas/BreakGlassPatient'
+        facility_patient_id:
+          type: string
+          format: uuid
+        summary:
+          $ref: '#/components/schemas/ProblemSummary'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/HistoryItem'
+      required:
+      - expires_at
+      - facility_patient_id
+      - items
+      - patient
+      - session_id
+      - summary
+    BreakGlassInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        patient_id:
+          type: string
+          format: uuid
+        facility_id:
+          type: string
+          format: uuid
+        reason_code:
+          $ref: '#/components/schemas/BreakGlassReasonEnum'
+        reason_text:
+          type: string
+          minLength: 20
+          maxLength: 500
+      required:
+      - facility_id
+      - patient_id
+      - reason_code
+      - reason_text
+    BreakGlassPatient:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        sex:
+          type: string
+          nullable: true
+      required:
+      - date_of_birth
+      - display_name
+      - id
+      - sex
+    BreakGlassReasonEnum:
+      enum:
+      - patient_safety
+      - legal_request
+      - incident
+      - other
+      type: string
+      description: |-
+        * `patient_safety` - Patient safety emergency
+        * `legal_request` - Legal or regulatory request
+        * `incident` - Security or data incident
+        * `other` - Other
+    BreakGlassReviewOutcomeEnum:
+      enum:
+      - appropriate
+      - inappropriate
+      type: string
+      description: |-
+        * `appropriate` - Appropriate
+        * `inappropriate` - Inappropriate
+    BreakGlassReviewRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        outcome:
+          $ref: '#/components/schemas/BreakGlassReviewOutcomeEnum'
+        note:
+          type: string
+          default: ''
+          maxLength: 500
+      required:
+      - outcome
+    BreakGlassSession:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_name:
+          type: string
+        patient_id:
+          type: string
+          format: uuid
+        facility_id:
+          type: string
+          format: uuid
+        facility_name:
+          type: string
+        reason_code:
+          $ref: '#/components/schemas/BreakGlassReasonEnum'
+        reason_text:
+          type: string
+        starts_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        ended_at:
+          type: string
+          format: date-time
+          nullable: true
+        is_open:
+          type: boolean
+        reviewed_by_name:
+          type: string
+          nullable: true
+        reviewed_at:
+          type: string
+          format: date-time
+          nullable: true
+        review_outcome:
+          type: string
+        review_note:
+          type: string
+      required:
+      - ended_at
+      - expires_at
+      - facility_id
+      - facility_name
+      - id
+      - is_open
+      - patient_id
+      - reason_code
+      - reason_text
+      - review_note
+      - review_outcome
+      - reviewed_at
+      - reviewed_by_name
+      - starts_at
+      - user_name
     ByEnum:
       enum:
       - auto
@@ -16358,6 +17003,18 @@ components:
         * `referral` - Referral letter
         * `lab_request` - Lab or imaging request
         * `sick_note` - Sick note
+    ClinicalDocumentTypeEnum:
+      enum:
+      - outside_result
+      - legacy_record
+      - referral_letter
+      - other
+      type: string
+      description: |-
+        * `outside_result` - Outside lab or imaging result
+        * `legacy_record` - Paper record
+        * `referral_letter` - Referral letter
+        * `other` - Other
     ClinicalPatient:
       type: object
       properties:
@@ -16657,6 +17314,8 @@ components:
         no_known_allergies:
           type: boolean
           nullable: true
+        health_attributes:
+          $ref: '#/components/schemas/HealthAttributes'
         content_hash:
           type: string
           nullable: true
@@ -16686,6 +17345,7 @@ components:
       - entered_in_error
       - examination_text
       - facility_patient_id
+      - health_attributes
       - history_text
       - id
       - integrity
@@ -18685,6 +19345,20 @@ components:
       required:
       - reason
       - version
+    EntryKindEnum:
+      enum:
+      - diagnosis
+      - condition
+      - allergy
+      - medication
+      - procedure
+      type: string
+      description: |-
+        * `diagnosis` - diagnosis
+        * `condition` - condition
+        * `allergy` - allergy
+        * `medication` - medication
+        * `procedure` - procedure
     Error:
       type: object
       properties:
@@ -19680,6 +20354,27 @@ components:
       required:
       - status
       - version
+    HealthAttributeKindEnum:
+      enum:
+      - blood_group
+      - pregnancy
+      type: string
+      description: |-
+        * `blood_group` - Blood group
+        * `pregnancy` - Pregnancy
+    HealthAttributes:
+      type: object
+      properties:
+        blood_group:
+          type: string
+          nullable: true
+        pregnancy:
+          allOf:
+          - $ref: '#/components/schemas/Pregnancy'
+          nullable: true
+      required:
+      - blood_group
+      - pregnancy
     HealthItem:
       type: object
       properties:
@@ -19963,6 +20658,88 @@ components:
       - code
       - display
       - rank
+    HistoryEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: '#/components/schemas/HistoryEntryKindEnum'
+        code:
+          type: string
+        display:
+          type: string
+        note:
+          type: string
+        occurred_on:
+          type: string
+          format: date
+          nullable: true
+        source_scan_id:
+          type: string
+          format: uuid
+          nullable: true
+        entered_by_name:
+          type: string
+        entered_at:
+          type: string
+          format: date-time
+        is_historical:
+          type: boolean
+      required:
+      - code
+      - display
+      - entered_at
+      - entered_by_name
+      - id
+      - is_historical
+      - kind
+      - note
+      - occurred_on
+      - source_scan_id
+    HistoryEntryInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        kind:
+          $ref: '#/components/schemas/HistoryEntryKindEnum'
+        code:
+          type: string
+          default: ''
+          maxLength: 10
+        display:
+          type: string
+          default: ''
+          maxLength: 200
+        note:
+          type: string
+          default: ''
+          maxLength: 1000
+        occurred_on:
+          type: string
+          format: date
+          nullable: true
+        source_scan_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - kind
+    HistoryEntryKindEnum:
+      enum:
+      - diagnosis
+      - condition
+      - allergy
+      - medication
+      - procedure
+      type: string
+      description: |-
+        * `diagnosis` - Diagnosis
+        * `condition` - Condition
+        * `allergy` - Allergy
+        * `medication` - Medicine
+        * `procedure` - Procedure
     HistoryItem:
       type: object
       properties:
@@ -19977,6 +20754,7 @@ components:
         visit_id:
           type: string
           format: uuid
+          nullable: true
         service_name_i18n:
           type: object
           additionalProperties:
@@ -20001,6 +20779,14 @@ components:
           allOf:
           - $ref: '#/components/schemas/Vitals'
           nullable: true
+        legacy:
+          allOf:
+          - $ref: '#/components/schemas/LegacyEntry'
+          nullable: true
+        scan:
+          allOf:
+          - $ref: '#/components/schemas/ScanItem'
+          nullable: true
       required:
       - addenda_count
       - author_name
@@ -20009,7 +20795,9 @@ components:
       - is_late_entry
       - is_restricted
       - kind
+      - legacy
       - occurred_at
+      - scan
       - service_name_i18n
       - status
       - visit_id
@@ -20018,10 +20806,14 @@ components:
       enum:
       - consultation
       - vitals
+      - legacy
+      - scan
       type: string
       description: |-
         * `consultation` - consultation
         * `vitals` - vitals
+        * `legacy` - legacy
+        * `scan` - scan
     Hold:
       type: object
       properties:
@@ -21033,6 +21825,36 @@ components:
         * `rw` - Kinyarwanda
         * `en` - English
         * `fr` - Français
+    LegacyEntry:
+      type: object
+      properties:
+        entry_kind:
+          $ref: '#/components/schemas/EntryKindEnum'
+        code:
+          type: string
+        display:
+          type: string
+        note:
+          type: string
+        occurred_on:
+          type: string
+          format: date
+          nullable: true
+        entered_at:
+          type: string
+          format: date-time
+        source_scan_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - code
+      - display
+      - entered_at
+      - entry_kind
+      - note
+      - occurred_on
+      - source_scan_id
     LevelOfCareEnum:
       enum:
       - primary
@@ -22268,6 +23090,28 @@ components:
       - next
       - previous
       - results
+    PaginatedBreakGlassSessionList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BreakGlassSession'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedCashShiftList:
       type: object
       properties:
@@ -22881,6 +23725,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ReasonCodesPlatformItem'
+    PaginatedResultReviewList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResultReview'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedServiceCatalogueItemsItemList:
       type: object
       required:
@@ -25522,6 +26388,35 @@ components:
       - requester_audience
       - subject
       - topic
+    Pregnancy:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/PregnancyStatusEnum'
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        recorded_at:
+          type: string
+          format: date-time
+        is_active:
+          type: boolean
+      required:
+      - due_date
+      - is_active
+      - recorded_at
+      - status
+    PregnancyStatusEnum:
+      enum:
+      - pregnant
+      - not_pregnant
+      - unknown
+      type: string
+      description: |-
+        * `pregnant` - pregnant
+        * `not_pregnant` - not_pregnant
+        * `unknown` - unknown
     Prescription:
       type: object
       properties:
@@ -25822,9 +26717,12 @@ components:
             $ref: '#/components/schemas/RecentDiagnosis'
         is_staff_member:
           type: boolean
+        health_attributes:
+          $ref: '#/components/schemas/HealthAttributes'
       required:
       - allergies
       - conditions
+      - health_attributes
       - is_staff_member
       - medications
       - no_known_allergies
@@ -26951,6 +27849,57 @@ components:
       description: |-
         * `accept` - accept
         * `cancel` - cancel
+    ResultReview:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/ResultStatusEnum'
+        scan:
+          $ref: '#/components/schemas/Scan'
+        patient_display_name:
+          type: string
+        facility_patient_id:
+          type: string
+          format: uuid
+        assigned_to_name:
+          type: string
+        comment:
+          type: string
+        reviewed_by_name:
+          type: string
+          nullable: true
+        reviewed_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+      required:
+      - assigned_to_name
+      - comment
+      - created_at
+      - facility_patient_id
+      - id
+      - patient_display_name
+      - reviewed_at
+      - reviewed_by_name
+      - scan
+      - status
+      - version
+    ResultStatusEnum:
+      enum:
+      - pending
+      - reviewed
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `reviewed` - Reviewed
     Reveal:
       type: object
       properties:
@@ -26973,6 +27922,19 @@ components:
           maxLength: 300
       required:
       - reason_code
+      - version
+    ReviewInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        comment:
+          type: string
+          default: ''
+          maxLength: 1000
+      required:
       - version
     ReviewRequest:
       type: object
@@ -27031,6 +27993,96 @@ components:
         * `ear` - In the ear
         * `nasal` - In the nose
         * `injection` - Injection
+    Scan:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        facility_patient_id:
+          type: string
+          format: uuid
+        document_type:
+          $ref: '#/components/schemas/ClinicalDocumentTypeEnum'
+        document_date:
+          type: string
+          format: date
+        description:
+          type: string
+        content_type:
+          type: string
+        uploaded_by_name:
+          type: string
+        uploaded_at:
+          type: string
+          format: date-time
+        review_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - content_type
+      - description
+      - document_date
+      - document_type
+      - facility_patient_id
+      - id
+      - review_id
+      - uploaded_at
+      - uploaded_by_name
+    ScanInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        upload_id:
+          type: string
+          format: uuid
+        document_type:
+          $ref: '#/components/schemas/ClinicalDocumentTypeEnum'
+        document_date:
+          type: string
+          format: date
+        description:
+          type: string
+          default: ''
+          maxLength: 200
+      required:
+      - document_date
+      - document_type
+      - upload_id
+    ScanItem:
+      type: object
+      properties:
+        document_type:
+          $ref: '#/components/schemas/ScanItemDocumentTypeEnum'
+        document_date:
+          type: string
+          format: date
+        description:
+          type: string
+        content_type:
+          type: string
+        uploaded_at:
+          type: string
+          format: date-time
+      required:
+      - content_type
+      - description
+      - document_date
+      - document_type
+      - uploaded_at
+    ScanItemDocumentTypeEnum:
+      enum:
+      - outside_result
+      - legacy_record
+      - referral_letter
+      - other
+      type: string
+      description: |-
+        * `outside_result` - outside_result
+        * `legacy_record` - legacy_record
+        * `referral_letter` - referral_letter
+        * `other` - other
     ScheduleExceptionKindEnum:
       enum:
       - leave
@@ -29560,6 +30612,32 @@ components:
         * `soon` - soon
         * `today` - today
         * `emergency` - emergency
+    ValueEnum:
+      enum:
+      - A+
+      - A-
+      - AB+
+      - AB-
+      - B+
+      - B-
+      - O+
+      - O-
+      - not_pregnant
+      - pregnant
+      - unknown
+      type: string
+      description: |-
+        * `A+` - A+
+        * `A-` - A-
+        * `AB+` - AB+
+        * `AB-` - AB-
+        * `B+` - B+
+        * `B-` - B-
+        * `O+` - O+
+        * `O-` - O-
+        * `not_pregnant` - not_pregnant
+        * `pregnant` - pregnant
+        * `unknown` - unknown
     Verification:
       type: object
       properties:

@@ -35,19 +35,19 @@ Built from the requirement tables in `docs/analysis/` (titles shortened; the ana
 
 | Prefix | Module | Total | P1 | P2 | P3 | P4 | Verified | In progress | Not started |
 |---|---|---|---|---|---|---|---|---|---|
-| `FR-ACC` | [Users, roles, access](../analysis/02-users-roles-and-permissions.md) | 10 | 9 | 1 | 0 | 0 | 5 | 3 | 2 |
+| `FR-ACC` | [Users, roles, access](../analysis/02-users-roles-and-permissions.md) | 10 | 9 | 1 | 0 | 0 | 5 | 4 | 1 |
 | `FR-ONB` | [Tenancy, onboarding, master data](../analysis/03-tenancy-onboarding-and-master-data.md) | 11 | 10 | 1 | 0 | 0 | 0 | 5 | 6 |
-| `FR-PAT` | [Patient identity and medical history](../analysis/04-patient-identity-and-medical-history.md) | 17 | 14 | 2 | 0 | 1 | 0 | 11 | 6 |
+| `FR-PAT` | [Patient identity and medical history](../analysis/04-patient-identity-and-medical-history.md) | 17 | 14 | 2 | 0 | 1 | 0 | 13 | 4 |
 | `FR-SCH` | [Discovery, calendars, scheduling, booking](../analysis/05-discovery-scheduling-and-booking.md) | 18 | 15 | 3 | 0 | 0 | 0 | 0 | 18 |
 | `FR-QUE` | [Visit lifecycle and live queue](../analysis/06-visit-lifecycle-and-queue.md) | 20 | 17 | 3 | 0 | 0 | 0 | 0 | 20 |
-| `FR-CLN` | [Clinical record](../analysis/07-clinical-documentation-and-pharmacy.md) | 10 | 9 | 1 | 0 | 0 | 0 | 8 | 2 |
+| `FR-CLN` | [Clinical record](../analysis/07-clinical-documentation-and-pharmacy.md) | 10 | 9 | 1 | 0 | 0 | 0 | 9 | 1 |
 | `FR-PHA` | [Pharmacy](../analysis/07-clinical-documentation-and-pharmacy.md) | 7 | 5 | 2 | 0 | 0 | 0 | 5 | 2 |
 | `FR-DOC` | [Documents](../analysis/07-clinical-documentation-and-pharmacy.md) | 7 | 7 | 0 | 0 | 0 | 0 | 1 | 6 |
 | `FR-BIL` | [Billing, payments, insurance](../analysis/08-billing-payments-and-insurance.md) | 18 | 13 | 2 | 1 | 2 | 0 | 10 | 8 |
 | `FR-NOT` | [Notifications](../analysis/09-notifications-and-communication.md) | 14 | 12 | 0 | 1 | 1 | 0 | 12 | 2 |
 | `FR-DSP` | [Disputes, complaints, support](../analysis/10-disputes-complaints-and-support.md) | 14 | 11 | 3 | 0 | 0 | 0 | 0 | 14 |
 | `FR-AI` | [AI symptom checker](../analysis/11-ai-symptom-checker.md) | 13 | 2 | 5 | 3 | 3 | 1 | 0 | 12 |
-| `FR-SEC` | [Security, privacy, compliance](../analysis/12-security-privacy-and-compliance.md) | 17 | 16 | 1 | 0 | 0 | 5 | 4 | 8 |
+| `FR-SEC` | [Security, privacy, compliance](../analysis/12-security-privacy-and-compliance.md) | 17 | 16 | 1 | 0 | 0 | 5 | 5 | 7 |
 | `FR-RPT` | [Reporting and analytics](../analysis/13-reporting-and-analytics.md) | 8 | 5 | 2 | 0 | 1 | 0 | 0 | 8 |
 | `NFR-PERF` | [Performance and capacity](../analysis/14-non-functional-requirements.md) | 7 | 7 | 0 | 0 | 0 | 0 | 0 | 7 |
 | `NFR-REL` | [Availability and reliability](../analysis/14-non-functional-requirements.md) | 5 | 5 | 0 | 0 | 0 | 0 | 1 | 4 |
@@ -55,7 +55,7 @@ Built from the requirement tables in `docs/analysis/` (titles shortened; the ana
 | `NFR-UX` | [Usability, accessibility, languages](../analysis/14-non-functional-requirements.md) | 7 | 7 | 0 | 0 | 0 | 1 | 4 | 2 |
 | `NFR-OPS` | [Maintainability and operations](../analysis/14-non-functional-requirements.md) | 8 | 8 | 0 | 0 | 0 | 4 | 4 | 0 |
 | `NFR-INT` | [Interoperability](../analysis/14-non-functional-requirements.md) | 3 | 1 | 0 | 2 | 0 | 0 | 0 | 3 |
-| **All** | | **220** | **179** | **26** | **7** | **8** | **16** | **60** | **144** |
+| **All** | | **220** | **179** | **26** | **7** | **8** | **16** | **65** | **139** |
 
 `NFR-INT-03` is phased "P3–P4" in the analysis and is counted under P3.
 
@@ -73,7 +73,7 @@ Source: [02 · Users, roles, access](../analysis/02-users-roles-and-permissions.
 | FR-ACC-06 | Deactivation removes access and ends sessions at once | P1 | S0, S2 | Both | API, E2E | In progress |
 | FR-ACC-07 | Clinician licence number; admin attests the check | P1 | S0, S2 | Both | API, CMP | In progress |
 | FR-ACC-08 | Server-side, logged permission checks on patient data | P1 | S0 | Backend | AZ, API | Verified (S0, v0.1.0) |
-| FR-ACC-09 | Super admin emergency access with reason, logged, reviewable | P1 | S6b | Both | AZ, API | Not started |
+| FR-ACC-09 | Super admin emergency access with reason, logged, reviewable | P1 | S6b | Both | AZ, API | In progress |
 | FR-ACC-10 | New roles without changing existing roles | P2 | — | Backend | AZ, INS | Not started |
 
 ## FR-ONB · Tenancy, onboarding, master data
@@ -110,8 +110,8 @@ Source: [04 · Patient identity and medical history](../analysis/04-patient-iden
 | FR-PAT-08 | Health profile with verified / unverified status | P1 | S3 | Both | API, CMP | In progress |
 | FR-PAT-09 | History timeline, filters, problem summary, search | P1 | S3, S6* | Both | API, PERF, E2E | In progress |
 | FR-PAT-10 | Legacy register import: preview, validation, duplicates, rollback | P1 | S6b | Both | BR, API, E2E | Not started |
-| FR-PAT-11 | Scanned legacy records attached to patients | P1 | S6b | Both | API | Not started |
-| FR-PAT-12 | Structured back-entry labelled as historical | P1 | S6b | Both | API, CMP | Not started |
+| FR-PAT-11 | Scanned legacy records attached to patients | P1 | S6b | Both | API | In progress |
+| FR-PAT-12 | Structured back-entry labelled as historical | P1 | S6b | Both | API, CMP | In progress |
 | FR-PAT-13 | Patient sees own and dependents' records except private notes | P1 | S3, S6* | Both | AZ, E2E | In progress |
 | FR-PAT-14 | Patient access history | P1 | S3 | Both | API, E2E | In progress |
 | FR-PAT-15 | Cross-facility sharing, emergency access, revocation | P2 | — | Both | AZ, E2E | Not started |
@@ -184,7 +184,7 @@ Source: [07 · Clinical record](../analysis/07-clinical-documentation-and-pharma
 | FR-CLN-06 | ICD-10 diagnoses, provisional or confirmed | P1 | S6 | Both | API, CMP | In progress |
 | FR-CLN-07 | Allergy, duplicate, dose alerts; override with reason | P1 | S6 | Both | BR, CMP | In progress |
 | FR-CLN-08 | Restricted (sensitive) records | P1 | S6 | Both | AZ | In progress |
-| FR-CLN-09 | Results inbox with review sign-off | P1 | S6b | Both | API, E2E | Not started |
+| FR-CLN-09 | Results inbox with review sign-off | P1 | S6b | Both | API, E2E | In progress |
 | FR-CLN-10 | Consultation templates per service | P2 | — | Both | CMP | Not started |
 
 ## FR-PHA · Pharmacy
@@ -316,7 +316,7 @@ Source: [12 · Security, privacy, compliance](../analysis/12-security-privacy-an
 | FR-SEC-06 | Staff 2FA; re-authentication to sign; idle lock with PIN | P1 | S0 (MFA), S1 (PIN lock, step-up) | Both | API, E2E, SEC | In progress |
 | FR-SEC-07 | Append-only, hash-chained audit log | P1 | S0 | Backend | API, SEC | Verified (S0, v0.1.0) |
 | FR-SEC-08 | Patient access history in plain language | P1 | S3 | Both | API, E2E | In progress |
-| FR-SEC-09 | Break-glass with reason, time limit, review, patient visibility | P1 | S6b | Both | AZ, API | Not started |
+| FR-SEC-09 | Break-glass with reason, time limit, review, patient visibility | P1 | S6b | Both | AZ, API | In progress |
 | FR-SEC-10 | Encryption in transit and at rest; field-level encryption | P1 | S3, R1 #83 (TOTP secrets, Transit keystore) | Backend | UT, INS | In progress |
 | FR-SEC-11 | Patient data processed and stored in Rwanda | P1 | S11* | Ops | INS | Not started |
 | FR-SEC-12 | Data subject rights: access, download, rectification, erasure, portability | P1 | S10 | Both | API, E2E | Not started |

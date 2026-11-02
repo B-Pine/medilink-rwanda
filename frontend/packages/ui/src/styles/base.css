@@ -152,3 +152,53 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 22%, transparent);
   animation: ml-live-pulse 2s ease-in-out infinite;
 }
+
+/* Map pins (upgrade 02 §3 FacilityMap): shape by type, colour by wait, ring when selected. */
+.ml-pin {
+  display: block;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin: 0.1875rem;
+  border: 2px solid var(--color-surface);
+  border-radius: 999px;
+  background: var(--color-fg-muted);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
+}
+.ml-pin--hospital {
+  border-radius: 0.25rem;
+}
+.ml-pin--clinic {
+  border-radius: 0.125rem;
+  transform: rotate(45deg) scale(0.85);
+}
+.ml-pin--post {
+  width: 0.875rem;
+  height: 0.875rem;
+  margin: 0.3125rem;
+}
+.ml-pin--low {
+  background: var(--color-success);
+}
+.ml-pin--medium {
+  background: var(--color-warning);
+}
+.ml-pin--high {
+  background: var(--color-attention-solid);
+}
+.ml-pin--selected {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 1px;
+}
+.ml-pin-you {
+  display: block;
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 3px solid #fff;
+  border-radius: 999px;
+  background: #2563eb;
+  box-shadow: 0 0 0 4px rgb(37 99 235 / 0.25);
+}
+.leaflet-marker-icon:focus-visible .ml-pin {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 1px;
+}

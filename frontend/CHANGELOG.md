@@ -9,6 +9,20 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Home with list and map (U-04, upgrade 03 §1–2)
+
+- Changed: `/` leads with "What are you feeling?" (symptom words go to the checker, service words
+  filter), chips, district · insurance · type · open now · Near me, then the live list
+  (`FacilityRow`) with a map (`@medilink/ui/map`, Leaflet, lazy) beside it on desktop and a
+  List | Map toggle on phones; sort soonest seen · nearest · A–Z. Then Emergency 24h, By service,
+  Recent places, alerts (install, turn on alerts), Verify a document and For facilities. The hero,
+  how-it-works, trust, tracker, records and FAQ sections are removed.
+- Changed: public header is Find care · Check symptoms · For facilities · language · Sign in, with
+  "Emergency · 912" always visible.
+- Added: `VITE_MAP_TILES_URL` (tile origin added to `img-src`; provider is open decision OD-3,
+  OpenStreetMap default for development only). District and insurer choice and recent places are
+  remembered on the device through the UI preferences store.
+
 ### Upgrade U2 · No prices in discovery or booking (U-01, contract sprint-05 D-14)
 
 - Changed: search results, facility services, the booking flow and booking cards no longer show a

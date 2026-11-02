@@ -22,7 +22,7 @@ import {
 } from "@medilink/ui";
 import { dateFormat, kigaliDate } from "@medilink/ui/i18n";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams, useSearchParams } from "react-router";
 
@@ -30,6 +30,7 @@ import { useApi } from "../../app/services";
 import { PageHeading } from "../../components/PageHeading";
 import { PublicLayout } from "../../layout/PublicLayout";
 import { day, pick, time } from "./discovery";
+import { rememberPlace } from "./recent";
 import { LoadBadge } from "./SearchPage";
 
 const WEEKDAYS = [0, 1, 2, 3, 4, 5, 6];
@@ -168,6 +169,10 @@ export function FacilityPage() {
     queryKey: ["discovery", "facility", slug],
     queryFn: () => api.booking.facility(slug),
   });
+  const name = facility.data?.name;
+  useEffect(() => {
+    if (name) rememberPlace({ slug, name });
+  }, [slug, name]);
 
   if (facility.isPending)
     return (

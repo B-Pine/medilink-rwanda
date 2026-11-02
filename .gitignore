@@ -46,3 +46,6 @@ docker-compose.override.yml
 .codex/
 .agents/
 .todo
+
+# Training datasets (large, licensed separately; never committed)
+datasets/

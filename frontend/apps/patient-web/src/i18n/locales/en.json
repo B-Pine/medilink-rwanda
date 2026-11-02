@@ -32,15 +32,13 @@
   "nav": {
     "label": "Main",
     "findCare": "Find care",
-    "howItWorks": "How it works",
     "forFacilities": "For facilities",
-    "login": "Log in",
-    "home": "Home"
+    "login": "Sign in",
+    "home": "Home",
+    "checkSymptoms": "Check symptoms",
+    "emergency": "Emergency · 912"
   },
   "landing": {
-    "title": "Find care in Rwanda",
-    "heroTitle": "Know before you go.",
-    "heroBody": "Find a health facility that accepts your insurance, book, and arrive when it is your turn.",
     "search": {
       "title": "Find care",
       "service": "What do you need?",
@@ -57,7 +55,10 @@
       "pediatrics": "Pediatrics",
       "dental": "Dental care",
       "antenatal": "Antenatal care",
-      "eye": "Eye care"
+      "eye": "Eye care",
+      "women": "Women’s health",
+      "chronic": "Chronic care",
+      "vaccination": "Vaccination"
     },
     "districts": {
       "gasabo": "Gasabo",
@@ -73,118 +74,6 @@
       "mmi": "MMI",
       "private": "Private insurance",
       "none": "No insurance (I pay)"
-    },
-    "how": {
-      "title": "How it works",
-      "step1Title": "Find",
-      "step1Body": "Search by service, place and insurance. See which facilities accept your insurance.",
-      "step2Title": "Book or join the queue",
-      "step2Body": "Choose a time, or join today’s queue from your phone.",
-      "step3Title": "Arrive on time",
-      "step3Body": "Follow your place in the queue. We tell you when to leave home."
-    },
-    "trust": {
-      "title": "Your data stays in Rwanda",
-      "body": "Your information is encrypted, stored in Rwanda, and shared only with the facilities that care for you.",
-      "points": {
-        "rwanda": {
-          "title": "Stored in Rwanda",
-          "body": "Your information never leaves the country."
-        },
-        "encrypted": {
-          "title": "Encrypted",
-          "body": "Only the staff caring for you can open your record, and you see who did."
-        },
-        "verified": {
-          "title": "Verified facilities only",
-          "body": "Every facility is checked against its Ministry of Health licence."
-        }
-      }
-    },
-    "facilities": {
-      "title": "For health facilities",
-      "body": "Run your queue, records and billing in one place, and let patients find you.",
-      "cta": "Register your facility"
-    },
-    "tracker": {
-      "title": "Wait at home, not in the corridor",
-      "body": "After you book or join the queue, your phone shows your place and when to leave. It keeps working on a weak network.",
-      "points": {
-        "ahead": "How many people are ahead of you, updated live",
-        "leave": "When to leave home, from your travel time",
-        "called": "A clear alert with sound when it is your turn"
-      },
-      "mockFacility": "Kigali Clinic · General",
-      "mockTicket": "Your ticket number",
-      "mockAhead": "4 people ahead",
-      "mockWait": "About 25–35 min",
-      "mockLeave": "Leave home by 09:20",
-      "mockCheckIn": "I’m here – check in",
-      "caption": "Example of the queue tracker on a phone: ticket G-023, 4 people ahead, about 25 to 35 minutes."
-    },
-    "records": {
-      "title": "Your records in one place",
-      "body": "Everything from your visits stays with you, for you and the family members you care for.",
-      "items": {
-        "prescriptions": {
-          "title": "Prescriptions",
-          "body": "Show them at any pharmacy, even on paper."
-        },
-        "receipts": {
-          "title": "Receipts",
-          "body": "What you paid and what insurance covered."
-        },
-        "notes": {
-          "title": "Sick notes and results",
-          "body": "Ready to share with your employer or school."
-        },
-        "qr": {
-          "title": "Checkable by QR",
-          "body": "Anyone can check a document is real, without seeing your health data."
-        }
-      }
-    },
-    "faq": {
-      "title": "Questions",
-      "items": {
-        "insurance": {
-          "q": "Does it work with Mutuelle de Santé?",
-          "a": "Yes. Search by your insurance to see which facilities accept it and what you will pay."
-        },
-        "cost": {
-          "q": "Does MediLink cost anything for patients?",
-          "a": "No. Booking, the queue tracker and your records are free for patients."
-        },
-        "privacy": {
-          "q": "Who can see my health information?",
-          "a": "Only the staff caring for you. You can see every time your record was opened."
-        },
-        "smartphone": {
-          "q": "I don’t have a smartphone. Can I still use it?",
-          "a": "Yes. Ask at reception: they can register you and give you a ticket, and you keep your MediLink number."
-        }
-      }
-    },
-    "near": {
-      "eyebrow": "Near you",
-      "title": "Care near you",
-      "body": "Verified facilities around you, how busy they are right now, and the insurance they take.",
-      "ask": "Share your location to see the nearest facilities",
-      "usingLocation": "Showing facilities near you",
-      "private": "Used for this search only. We never store it.",
-      "orDistrict": "Or choose a district",
-      "chooseDistrict": "Choose a district",
-      "loading": "Finding facilities",
-      "none": "No verified facility here yet. Try another district.",
-      "all": "Search all facilities",
-      "wait_one": "{{count}} waiting · {{min}}–{{max}} min",
-      "wait_other": "{{count}} waiting · {{min}}–{{max}} min",
-      "insurers": "Insurance accepted",
-      "cashOnly": "Self-pay only"
-    },
-    "checker": {
-      "title": "Not sure where to go?",
-      "body": "Check your symptoms in a minute"
     },
     "insurersShort": {
       "mutuelle": "Mutuelle",
@@ -266,27 +155,92 @@
     "signUpAgain": "Sign up again"
   },
   "home": {
-    "title": "Home",
-    "findCare": "Find care",
-    "nextVisitTitle": "Your next visit",
-    "nextVisitEmpty": "No visits yet. When you book or join a queue, it will show here.",
-    "verifyEmailTitle": "Confirm your email",
-    "verifyEmailBody": "We sent a link to {{email}}. Confirm your email before you can see your health records.",
-    "greeting_morning": "Good morning, {{name}}",
-    "greeting_afternoon": "Good afternoon, {{name}}",
-    "greeting_evening": "Good evening, {{name}}",
-    "findCareTitle": "Need to see a doctor?",
-    "findCareBody": "Join today's queue at a MediLink facility and follow your turn from here, so you wait less in the waiting room.",
-    "notSure": "Not sure? Describe your symptoms",
-    "nextVisitEmptyTitle": "No upcoming visits",
-    "shortcuts": "Shortcuts",
-    "links": {
-      "profile": "My profile and insurance",
-      "family": "Family members",
-      "privacy": "Privacy and who saw my records",
-      "settings": "Text size, language and theme"
+    "description": "Find care near you in Rwanda: live waits, open now, your insurance. Join the queue or book.",
+    "ask": "What are you feeling?",
+    "placeholder": "e.g. child has fever, dentist, pregnancy check",
+    "search": "Search",
+    "chipsLabel": "Common needs",
+    "chips": {
+      "sick": "Sick today",
+      "child": "Child",
+      "pregnancy": "Pregnancy",
+      "teeth": "Teeth",
+      "eyes": "Eyes",
+      "chronic": "Chronic care",
+      "unsure": "Not sure"
     },
-    "notSureBody": "Answer a few questions about how you feel, and we suggest where to go."
+    "keywords": {
+      "general": "general|doctor|consultation",
+      "pediatrics": "child|children|baby|paediatric|pediatric",
+      "dental": "dentist|dental|teeth|tooth",
+      "antenatal": "pregnan|antenatal|prenatal",
+      "eye": "eye|eyes|vision",
+      "women": "gynaecolog|gynecolog|women",
+      "chronic": "chronic",
+      "vaccination": "vaccin|immuni"
+    },
+    "district": "District",
+    "anyDistrict": "All districts",
+    "insurance": "Insurance",
+    "anyInsurance": "Any insurance",
+    "type": "Type",
+    "anyType": "All types",
+    "openNow": "Open now",
+    "nearMe": "Near me",
+    "nearYou": "Near you",
+    "locationDenied": "Location unavailable · Pick a district",
+    "places": "Places",
+    "count_one": "{{count}} place",
+    "count_other": "{{count}} places",
+    "sort": {
+      "label": "Sort",
+      "soonest": "Soonest seen",
+      "nearest": "Nearest",
+      "name": "A–Z"
+    },
+    "view": {
+      "label": "View",
+      "list": "List",
+      "map": "Map"
+    },
+    "columns": {
+      "name": "Place",
+      "type": "Type",
+      "distance": "Distance",
+      "status": "Status",
+      "wait": "Wait"
+    },
+    "open": "Open",
+    "closed": "Closed",
+    "wait_one": "{{count}} waiting · {{min}}–{{max}} min",
+    "wait_other": "{{count}} waiting · {{min}}–{{max}} min",
+    "waiting_one": "{{count}} waiting",
+    "waiting_other": "{{count}} waiting",
+    "noWait": "No wait",
+    "next": "Next {{time}}",
+    "join": "Join",
+    "book": "Book",
+    "viewLink": "View",
+    "empty": "No places match",
+    "clear": "Clear filters",
+    "failed": "Couldn't load places",
+    "retry": "Retry",
+    "mapLabel": "Map of places",
+    "mapAttribution": "© OpenStreetMap contributors",
+    "emergency": "Emergency 24h",
+    "call912": "Call 912",
+    "directions": "Directions",
+    "byService": "By service",
+    "recent": "Recent places",
+    "alerts": "Alerts for your turn",
+    "install": "Install the app",
+    "turnOnAlerts": "Turn on alerts",
+    "verify": "Verify a document",
+    "verifyCode": "Document code",
+    "check": "Check",
+    "scan": "Scan QR",
+    "forFacilities": "For facilities",
+    "register": "Register"
   },
   "info": {
     "back": "Back to the home page",

@@ -32,15 +32,13 @@
   "nav": {
     "label": "Principal",
     "findCare": "Trouver des soins",
-    "howItWorks": "Comment ça marche",
     "forFacilities": "Pour les établissements",
     "login": "Se connecter",
-    "home": "Accueil"
+    "home": "Accueil",
+    "checkSymptoms": "Vérifier mes symptômes",
+    "emergency": "Urgence · 912"
   },
   "landing": {
-    "title": "Trouver des soins au Rwanda",
-    "heroTitle": "Sachez avant de partir.",
-    "heroBody": "Trouvez un établissement de santé qui accepte votre assurance, réservez et arrivez quand c’est votre tour.",
     "search": {
       "title": "Trouver des soins",
       "service": "De quoi avez-vous besoin ?",
@@ -57,7 +55,10 @@
       "pediatrics": "Pédiatrie",
       "dental": "Soins dentaires",
       "antenatal": "Consultation prénatale",
-      "eye": "Soins des yeux"
+      "eye": "Soins des yeux",
+      "women": "Santé des femmes",
+      "chronic": "Maladies chroniques",
+      "vaccination": "Vaccination"
     },
     "districts": {
       "gasabo": "Gasabo",
@@ -73,118 +74,6 @@
       "mmi": "MMI",
       "private": "Assurance privée",
       "none": "Sans assurance (je paie)"
-    },
-    "how": {
-      "title": "Comment ça marche",
-      "step1Title": "Trouver",
-      "step1Body": "Cherchez par service, lieu et assurance. Voyez quels établissements acceptent votre assurance.",
-      "step2Title": "Réserver ou rejoindre la file",
-      "step2Body": "Choisissez une heure, ou rejoignez la file du jour depuis votre téléphone.",
-      "step3Title": "Arriver à l’heure",
-      "step3Body": "Suivez votre place dans la file. Nous vous disons quand partir de chez vous."
-    },
-    "trust": {
-      "title": "Vos données restent au Rwanda",
-      "body": "Vos informations sont chiffrées, conservées au Rwanda et partagées uniquement avec les établissements qui vous soignent.",
-      "points": {
-        "rwanda": {
-          "title": "Stockées au Rwanda",
-          "body": "Vos informations ne quittent jamais le pays."
-        },
-        "encrypted": {
-          "title": "Chiffrées",
-          "body": "Seul le personnel qui vous soigne peut ouvrir votre dossier, et vous voyez qui l’a fait."
-        },
-        "verified": {
-          "title": "Établissements vérifiés",
-          "body": "Chaque établissement est vérifié avec sa licence du ministère de la Santé."
-        }
-      }
-    },
-    "facilities": {
-      "title": "Pour les établissements de santé",
-      "body": "Gérez votre file d’attente, vos dossiers et votre facturation au même endroit, et laissez les patients vous trouver.",
-      "cta": "Inscrire votre établissement"
-    },
-    "tracker": {
-      "title": "Attendez chez vous, pas dans le couloir",
-      "body": "Après une réservation ou l’entrée dans la file, votre téléphone montre votre place et l’heure de départ. Il fonctionne même avec un réseau faible.",
-      "points": {
-        "ahead": "Le nombre de personnes devant vous, en direct",
-        "leave": "L’heure de départ, selon votre temps de trajet",
-        "called": "Une alerte claire avec son quand c’est votre tour"
-      },
-      "mockFacility": "Kigali Clinic · Général",
-      "mockTicket": "Votre numéro de ticket",
-      "mockAhead": "4 personnes devant vous",
-      "mockWait": "Environ 25–35 min",
-      "mockLeave": "Partez vers 09:20",
-      "mockCheckIn": "Je suis arrivé – m’enregistrer",
-      "caption": "Exemple du suivi de file sur un téléphone : ticket G-023, 4 personnes devant, environ 25 à 35 minutes."
-    },
-    "records": {
-      "title": "Vos documents au même endroit",
-      "body": "Tout ce qui vient de vos visites reste avec vous, pour vous et les proches dont vous vous occupez.",
-      "items": {
-        "prescriptions": {
-          "title": "Ordonnances",
-          "body": "À montrer dans n’importe quelle pharmacie, même sur papier."
-        },
-        "receipts": {
-          "title": "Reçus",
-          "body": "Ce que vous avez payé et ce que l’assurance a couvert."
-        },
-        "notes": {
-          "title": "Certificats et résultats",
-          "body": "Prêts à partager avec votre employeur ou l’école."
-        },
-        "qr": {
-          "title": "Vérifiables par QR",
-          "body": "Chacun peut vérifier qu’un document est authentique, sans voir vos données de santé."
-        }
-      }
-    },
-    "faq": {
-      "title": "Questions",
-      "items": {
-        "insurance": {
-          "q": "Est-ce compatible avec la Mutuelle de Santé ?",
-          "a": "Oui. Recherchez par assurance pour voir les établissements qui l’acceptent et ce que vous paierez."
-        },
-        "cost": {
-          "q": "MediLink est-il payant pour les patients ?",
-          "a": "Non. La réservation, le suivi de file et vos documents sont gratuits pour les patients."
-        },
-        "privacy": {
-          "q": "Qui peut voir mes informations de santé ?",
-          "a": "Seul le personnel qui vous soigne. Vous voyez chaque ouverture de votre dossier."
-        },
-        "smartphone": {
-          "q": "Je n’ai pas de smartphone. Puis-je l’utiliser ?",
-          "a": "Oui. Demandez à l’accueil : on vous enregistre et vous donne un ticket, et vous gardez votre numéro MediLink."
-        }
-      }
-    },
-    "near": {
-      "eyebrow": "Près de vous",
-      "title": "Des soins près de vous",
-      "body": "Les établissements vérifiés autour de vous, leur affluence en ce moment et les assurances acceptées.",
-      "ask": "Partagez votre position pour voir les établissements les plus proches",
-      "usingLocation": "Établissements près de vous",
-      "private": "Utilisée pour cette recherche uniquement. Jamais enregistrée.",
-      "orDistrict": "Ou choisissez un district",
-      "chooseDistrict": "Choisir un district",
-      "loading": "Recherche des établissements",
-      "none": "Aucun établissement vérifié ici pour l'instant. Essayez un autre district.",
-      "all": "Voir tous les établissements",
-      "wait_one": "{{count}} en attente · {{min}}–{{max}} min",
-      "wait_other": "{{count}} en attente · {{min}}–{{max}} min",
-      "insurers": "Assurances acceptées",
-      "cashOnly": "Paiement direct uniquement"
-    },
-    "checker": {
-      "title": "Vous ne savez pas où aller ?",
-      "body": "Vérifiez vos symptômes en une minute"
     },
     "insurersShort": {
       "mutuelle": "Mutuelle",
@@ -266,27 +155,92 @@
     "signUpAgain": "S’inscrire à nouveau"
   },
   "home": {
-    "title": "Accueil",
-    "findCare": "Trouver des soins",
-    "nextVisitTitle": "Votre prochaine visite",
-    "nextVisitEmpty": "Pas encore de visite. Quand vous réservez ou rejoignez une file, elle s’affichera ici.",
-    "verifyEmailTitle": "Confirmez votre e-mail",
-    "verifyEmailBody": "Nous avons envoyé un lien à {{email}}. Confirmez votre e-mail avant de pouvoir consulter votre dossier de santé.",
-    "greeting_morning": "Bonjour, {{name}}",
-    "greeting_afternoon": "Bon après-midi, {{name}}",
-    "greeting_evening": "Bonsoir, {{name}}",
-    "findCareTitle": "Besoin de voir un médecin ?",
-    "findCareBody": "Rejoignez la file du jour dans un établissement MediLink et suivez votre tour d’ici, pour attendre moins en salle d’attente.",
-    "notSure": "Pas sûr ? Décrivez vos symptômes",
-    "nextVisitEmptyTitle": "Aucune visite à venir",
-    "shortcuts": "Raccourcis",
-    "links": {
-      "profile": "Mon profil et mon assurance",
-      "family": "Membres de la famille",
-      "privacy": "Confidentialité et accès à mon dossier",
-      "settings": "Taille du texte, langue et thème"
+    "description": "Trouvez des soins près de chez vous au Rwanda : attente en direct, ouvert maintenant, votre assurance. Rejoignez la file ou réservez.",
+    "ask": "Que ressentez-vous ?",
+    "placeholder": "ex. enfant avec fièvre, dentiste, suivi de grossesse",
+    "search": "Rechercher",
+    "chipsLabel": "Besoins courants",
+    "chips": {
+      "sick": "Malade aujourd’hui",
+      "child": "Enfant",
+      "pregnancy": "Grossesse",
+      "teeth": "Dents",
+      "eyes": "Yeux",
+      "chronic": "Maladie chronique",
+      "unsure": "Je ne sais pas"
     },
-    "notSureBody": "Répondez à quelques questions sur ce que vous ressentez, nous vous suggérons où aller."
+    "keywords": {
+      "general": "médecin|consultation|généraliste",
+      "pediatrics": "enfant|bébé|pédiatr",
+      "dental": "dentiste|dent",
+      "antenatal": "grossesse|enceinte|prénatal",
+      "eye": "yeux|œil|oeil|vue",
+      "women": "gynéco|femme",
+      "chronic": "chronique",
+      "vaccination": "vaccin"
+    },
+    "district": "District",
+    "anyDistrict": "Tous les districts",
+    "insurance": "Assurance",
+    "anyInsurance": "Toute assurance",
+    "type": "Type",
+    "anyType": "Tous les types",
+    "openNow": "Ouvert maintenant",
+    "nearMe": "Près de moi",
+    "nearYou": "Près de vous",
+    "locationDenied": "Position indisponible · Choisissez un district",
+    "places": "Lieux de soins",
+    "count_one": "{{count}} lieu",
+    "count_other": "{{count}} lieux",
+    "sort": {
+      "label": "Trier",
+      "soonest": "Vu le plus tôt",
+      "nearest": "Le plus proche",
+      "name": "A–Z"
+    },
+    "view": {
+      "label": "Affichage",
+      "list": "Liste",
+      "map": "Carte"
+    },
+    "columns": {
+      "name": "Lieu",
+      "type": "Type",
+      "distance": "Distance",
+      "status": "Statut",
+      "wait": "Attente"
+    },
+    "open": "Ouvert",
+    "closed": "Fermé",
+    "wait_one": "{{count}} en attente · {{min}}–{{max}} min",
+    "wait_other": "{{count}} en attente · {{min}}–{{max}} min",
+    "waiting_one": "{{count}} en attente",
+    "waiting_other": "{{count}} en attente",
+    "noWait": "Pas d’attente",
+    "next": "Prochain {{time}}",
+    "join": "Rejoindre",
+    "book": "Réserver",
+    "viewLink": "Voir",
+    "empty": "Aucun lieu ne correspond",
+    "clear": "Effacer les filtres",
+    "failed": "Impossible de charger les lieux",
+    "retry": "Réessayer",
+    "mapLabel": "Carte des lieux de soins",
+    "mapAttribution": "© contributeurs OpenStreetMap",
+    "emergency": "Urgences 24h/24",
+    "call912": "Appeler le 912",
+    "directions": "Itinéraire",
+    "byService": "Par service",
+    "recent": "Lieux récents",
+    "alerts": "Alertes pour votre tour",
+    "install": "Installer l’application",
+    "turnOnAlerts": "Activer les alertes",
+    "verify": "Vérifier un document",
+    "verifyCode": "Code du document",
+    "check": "Vérifier",
+    "scan": "Scanner le QR",
+    "forFacilities": "Pour les établissements",
+    "register": "S’inscrire"
   },
   "info": {
     "back": "Retour à l’accueil",

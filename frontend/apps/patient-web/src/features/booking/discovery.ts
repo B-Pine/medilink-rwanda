@@ -12,6 +12,10 @@ export const SERVICE_CODES = {
   dental: "dental_care",
   antenatal: "antenatal_care",
   eye: "eye_care",
+  // upgrade 03 §2 "By service": catalogue services added with the new home
+  women: "gynaecology",
+  chronic: "internal_medicine",
+  vaccination: "vaccination",
 } as const;
 export type ServiceKey = keyof typeof SERVICE_CODES;
 export const SERVICE_KEYS = Object.keys(SERVICE_CODES) as ServiceKey[];
@@ -69,4 +73,17 @@ export function isMorning(iso: string): boolean {
 export function field(form: HTMLFormElement, name: string): string {
   const element = form.elements.namedItem(name);
   return element && "value" in element ? String(element.value) : "";
+}
+
+/** Facility type (S1) to the map pin shape (upgrade 02 §3). */
+export function pinKind(type: string): "post" | "centre" | "hospital" | "clinic" {
+  if (type === "health_post") return "post";
+  if (type === "health_center") return "centre";
+  if (type.endsWith("hospital")) return "hospital";
+  return "clinic";
+}
+
+/** Directions open the device's maps app; MediLink does not route (upgrade 03 §2 "Distance"). */
+export function directionsUrl(lat: number, lng: number): string {
+  return `https://www.openstreetmap.org/directions?to=${lat}%2C${lng}`;
 }

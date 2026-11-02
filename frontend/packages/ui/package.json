@@ -10,6 +10,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./i18n": "./src/i18n/index.ts",
+    "./map": "./src/map/FacilityMap.tsx",
     "./styles.css": "./src/styles/index.css",
     "./tokens.css": "./src/styles/tokens.css"
   },
@@ -26,6 +27,7 @@
     "@radix-ui/react-switch": "catalog:",
     "@radix-ui/react-tabs": "catalog:",
     "@tanstack/react-table": "catalog:",
+    "leaflet": "catalog:",
     "pdfjs-dist": "catalog:"
   },
   "peerDependencies": {
@@ -40,6 +42,7 @@
     "@testing-library/jest-dom": "catalog:",
     "@testing-library/react": "catalog:",
     "@testing-library/user-event": "catalog:",
+    "@types/leaflet": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",

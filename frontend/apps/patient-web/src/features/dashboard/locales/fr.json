@@ -181,6 +181,8 @@
     "subtitle": "Gérez vos visites à venir et passées.",
     "book": "Prendre rendez-vous",
     "views": "Quels rendez-vous",
+    "count_one": "{{count}} rendez-vous",
+    "count_other": "{{count}} rendez-vous",
     "tabs": {
       "upcoming": "À venir",
       "past": "Passés",

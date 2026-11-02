@@ -181,6 +181,8 @@
     "subtitle": "Manage your upcoming and previous healthcare visits.",
     "book": "Book appointment",
     "views": "Which appointments",
+    "count_one": "{{count}} appointment",
+    "count_other": "{{count}} appointments",
     "tabs": {
       "upcoming": "Upcoming",
       "past": "Past",

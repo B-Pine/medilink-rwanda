@@ -345,7 +345,7 @@ def test_email_is_localised_text_and_escaped_html(django_capture_on_commit_callb
     assert email.subject == "Ubutumwa bwo kugerageza" and not email.attachments
     html = email.alternatives[0][0]
     assert 'lang="rw"' in html and "<img" not in html
-    assert "http://localhost:5174/notifications/" in email.body
+    assert "http://localhost:5174/dashboard/notifications/" in email.body
 
 
 # ---- B18 jobs ---------------------------------------------------------------------------------

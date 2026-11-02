@@ -181,6 +181,8 @@
     "subtitle": "Genzura gahunda zitegerejwe n'izashize.",
     "book": "Fata gahunda",
     "views": "Gahunda zihe",
+    "count_one": "Gahunda {{count}}",
+    "count_other": "Gahunda {{count}}",
     "tabs": {
       "upcoming": "Zitegerejwe",
       "past": "Izashize",

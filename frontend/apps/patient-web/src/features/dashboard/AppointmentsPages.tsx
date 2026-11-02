@@ -5,6 +5,8 @@ import {
   CalendarPlus,
   CaretLeft,
   CaretRight,
+  Check,
+  CheckCircle,
   Clock,
   DotsThree,
   IdentificationBadge,
@@ -12,6 +14,7 @@ import {
   NavigationArrow,
   Phone,
   Stethoscope,
+  Ticket,
   type Icon,
 } from "@phosphor-icons/react";
 import {
@@ -49,7 +52,7 @@ import {
   ErrorBlock,
   isCancelled,
   PageHeader,
-  Panel,
+  panelClass,
   RowLink,
   RowList,
   RowsSkeleton,
@@ -489,7 +492,37 @@ export function AppointmentRow({ booking, showWho }: { booking: Booking; showWho
 
 // ---- list page -------------------------------------------------------------------------------
 
-/** My appointments (upgrade 12 §6): Upcoming, Past and Cancelled, each a list of rows. */
+interface MonthGroup {
+  key: string;
+  label: string;
+  rows: Booking[];
+}
+
+/** Rows under a heading per month ("November 2026"), keeping the list's order. */
+function useByMonth(rows: Booking[]): MonthGroup[] {
+  const { i18n } = useTranslation();
+  const lang = i18n.resolvedLanguage ?? "rw";
+  const groups: MonthGroup[] = [];
+  for (const booking of rows) {
+    const key = kigaliDate(new Date(booking.starts_at)).slice(0, 7);
+    let group = groups.find((g) => g.key === key);
+    if (!group) {
+      group = {
+        key,
+        label: formatDate(booking.starts_at, lang, { month: "long", year: "numeric" }),
+        rows: [],
+      };
+      groups.push(group);
+    }
+    group.rows.push(booking);
+  }
+  return groups;
+}
+
+/**
+ * My appointments (upgrade 12 §6, redesign 2026-11-02): Upcoming, Past and Cancelled with the
+ * count beside them; the rows in one card, under a heading per month.
+ */
 export function AppointmentsPage() {
   const { t } = useTranslation();
   const [tab, setTab] = useState<Tab>("upcoming");
@@ -510,6 +543,7 @@ export function AppointmentsPage() {
     .sort((a, b) => b.starts_at.localeCompare(a.starts_at));
 
   const rows = tab === "upcoming" ? upcomingRows : tab === "past" ? pastRows : cancelledRows;
+  const months = useByMonth(rows);
   // Cancelled ones can be in either list, so that view waits for both
   const sources = tab === "upcoming" ? [upcoming] : tab === "past" ? [past] : [upcoming, past];
   const loading = sources.some((source) => source.isPending);
@@ -521,26 +555,36 @@ export function AppointmentsPage() {
         title={t("dashboard.appointments.title")}
         subtitle={t("dashboard.appointments.subtitle")}
         actions={
-          <Link to={`${paths.findCare}?mode=booking`} className={buttonClassName({})}>
-            <CalendarPlus aria-hidden="true" className="size-icon" />
+          <Link
+            to={`${paths.findCare}?mode=booking`}
+            className={buttonClassName({ className: "shadow-card" })}
+          >
+            <CalendarPlus aria-hidden="true" weight="bold" className="size-4" />
             {t("dashboard.appointments.book")}
           </Link>
         }
       />
-      <SegmentedTabs
-        label={t("dashboard.appointments.views")}
-        value={tab}
-        onChange={setTab}
-        options={[
-          {
-            value: "upcoming",
-            label: t("dashboard.appointments.tabs.upcoming"),
-            count: upcoming.data ? upcomingRows.length : undefined,
-          },
-          { value: "past", label: t("dashboard.appointments.tabs.past") },
-          { value: "cancelled", label: t("dashboard.appointments.tabs.cancelled") },
-        ]}
-      />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <SegmentedTabs
+          label={t("dashboard.appointments.views")}
+          value={tab}
+          onChange={setTab}
+          options={[
+            {
+              value: "upcoming",
+              label: t("dashboard.appointments.tabs.upcoming"),
+              count: upcoming.data ? upcomingRows.length : undefined,
+            },
+            { value: "past", label: t("dashboard.appointments.tabs.past") },
+            { value: "cancelled", label: t("dashboard.appointments.tabs.cancelled") },
+          ]}
+        />
+        {!loading && !failed && (
+          <p className="m-0 text-body-sm text-fg-muted tabular-nums">
+            {t("dashboard.appointments.count", { count: rows.length })}
+          </p>
+        )}
+      </div>
       <div aria-live="polite" className="flex flex-col gap-6">
         {loading ? (
           <RowsSkeleton rows={3} />
@@ -553,11 +597,28 @@ export function AppointmentsPage() {
             }}
           />
         ) : rows.length ? (
-          <RowList label={t(`dashboard.appointments.tabs.${tab}`)}>
-            {rows.map((b) => (
-              <AppointmentRow key={b.id} booking={b} showWho={showWho} />
+          <div className={cx(panelClass, "flex flex-col divide-y divide-border overflow-hidden")}>
+            {months.map((month) => (
+              <section key={month.key} aria-labelledby={`month-${month.key}`}>
+                <div className="flex items-center justify-between gap-3 border-b border-border bg-subtle/60 px-4 py-2 sm:px-5">
+                  <h2
+                    id={`month-${month.key}`}
+                    className="m-0 text-caption font-semibold tracking-wide text-fg-secondary uppercase"
+                  >
+                    {month.label}
+                  </h2>
+                  <span aria-hidden="true" className="text-caption text-fg-muted tabular-nums">
+                    {month.rows.length}
+                  </span>
+                </div>
+                <RowList bare label={month.label}>
+                  {month.rows.map((b) => (
+                    <AppointmentRow key={b.id} booking={b} showWho={showWho} />
+                  ))}
+                </RowList>
+              </section>
             ))}
-          </RowList>
+          </div>
         ) : (
           <EmptyState
             icon={CalendarBlank}
@@ -580,6 +641,7 @@ export function AppointmentsPage() {
 
 // ---- detail page -----------------------------------------------------------------------------
 
+/** One fact tile: icon tile and caption over the value (same tile as the facility page). */
 function Fact({
   icon: FactIcon,
   label,
@@ -590,21 +652,43 @@ function Fact({
   children: ReactNode;
 }) {
   return (
-    <div className="flex items-start gap-3">
-      <FactIcon aria-hidden="true" weight="duotone" className="mt-0.5 size-5 shrink-0 text-brand" />
-      <div className="flex min-w-0 flex-col">
-        <dt className="text-body-sm text-fg-muted">{label}</dt>
-        <dd className="m-0 font-semibold text-fg">{children}</dd>
-      </div>
+    <div className="flex flex-col gap-1 bg-surface px-5 py-4">
+      <dt className="flex flex-col gap-2 text-caption font-semibold text-fg-muted">
+        <span
+          aria-hidden="true"
+          className="grid size-8 place-items-center rounded-lg bg-brand-subtle text-brand"
+        >
+          <FactIcon weight="duotone" className="size-[1.125rem]" />
+        </span>
+        {label}
+      </dt>
+      <dd className="m-0 min-w-0 font-semibold break-words text-fg">{children}</dd>
     </div>
   );
 }
 
-function PanelTitle({ id, children }: { id: string; children: ReactNode }) {
+/** A card with a title row, then its body flush to the edges (fact grids, lists). */
+function DetailCard({
+  id,
+  title,
+  action,
+  children,
+}: {
+  id: string;
+  title: string;
+  action?: ReactNode;
+  children: ReactNode;
+}) {
   return (
-    <h2 id={id} className="m-0 mb-4 font-heading text-h3 font-bold text-fg">
+    <section aria-labelledby={id} className={cx(panelClass, "overflow-hidden")}>
+      <div className="flex min-h-14 items-center justify-between gap-3 border-b border-border px-5">
+        <h2 id={id} className="m-0 font-heading text-body font-bold tracking-tight text-fg">
+          {title}
+        </h2>
+        {action}
+      </div>
       {children}
-    </h2>
+    </section>
   );
 }
 
@@ -616,7 +700,11 @@ const TIMELINE_END: Partial<Record<Booking["status"], string>> = {
   superseded: "rescheduled",
 };
 
-/** /dashboard/appointments/:id (upgrade 12 §6): details on the left, reference and actions right. */
+/**
+ * /dashboard/appointments/:id (upgrade 12 §6, redesign 2026-11-02): when and where first (date
+ * tile, time, place, the change deadline), then the facts, the facility, what happened so far and
+ * what to bring; the booking code on a ticket and the actions beside.
+ */
 export function AppointmentDetailPage() {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage ?? "rw";
@@ -660,6 +748,21 @@ export function AppointmentDetailPage() {
     { key: "day", done: end === "checkedIn" || end === "missed", date: b.starts_at },
     ...(end ? [{ key: end, done: true }] : []),
   ];
+  const live = !isCancelled(b) && b.status !== "superseded";
+  const deadline =
+    b.status === "confirmed"
+      ? b.can_change
+        ? t("dashboard.appointments.changeUntil", {
+            time: `${day(b.change_until, lang, "short")} ${time(b.change_until, lang)}`,
+          })
+        : t("dashboard.appointments.changeClosed")
+      : t(`dashboard.status.${b.status === "superseded" ? "rescheduled" : b.status}`);
+  const bring = [
+    t("dashboard.appointments.bringItems.id"),
+    b.cost.insurer_code ? t("dashboard.appointments.bringItems.insurance") : null,
+    t("dashboard.appointments.bringItems.code", { code: b.booking_code }),
+    t("dashboard.appointments.bringItems.papers"),
+  ].filter((item): item is string => Boolean(item));
 
   return (
     <div className="flex flex-col gap-6">
@@ -673,54 +776,100 @@ export function AppointmentDetailPage() {
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <div className="flex min-w-0 flex-col gap-6">
-          <Panel as="section" aria-labelledby="appt-info">
-            <PanelTitle id="appt-info">{t("dashboard.appointments.info")}</PanelTitle>
-            <dl className="m-0 grid gap-5 sm:grid-cols-2">
-              <Fact icon={CalendarBlank} label={t("dashboard.appointments.date")}>
-                {day(b.starts_at, lang)}
-              </Fact>
-              <Fact icon={Clock} label={t("dashboard.appointments.time")}>
-                <span className="tabular-nums text-attention">
+          {/* when and where: what the patient opens this page for */}
+          <section
+            aria-labelledby="appt-when"
+            className={cx(panelClass, "overflow-hidden shadow-card")}
+          >
+            <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:p-6">
+              <DateBlock iso={b.starts_at} size="lg" />
+              <div className="flex min-w-0 flex-1 flex-col gap-2">
+                <h2
+                  id="appt-when"
+                  className="m-0 font-heading text-h2 font-bold text-fg first-letter:uppercase"
+                >
+                  {day(b.starts_at, lang)}
+                </h2>
+                <p className="m-0 inline-flex items-center gap-2 self-start rounded-full bg-attention-bg px-3 py-1 font-semibold text-attention tabular-nums">
+                  <Clock aria-hidden="true" weight="bold" className="size-4" />
                   {time(b.starts_at, lang)}
                   {b.ends_at ? ` – ${time(b.ends_at, lang)}` : ""}
-                </span>
+                </p>
+                <p className="m-0 flex flex-wrap items-center gap-x-4 gap-y-1 text-body-sm text-fg-secondary">
+                  <span className="inline-flex items-center gap-1.5">
+                    <MapPin aria-hidden="true" className="size-4 text-fg-muted" />
+                    {b.facility_name}
+                  </span>
+                  {b.doctor && (
+                    <span className="inline-flex items-center gap-1.5">
+                      <Stethoscope aria-hidden="true" className="size-4 text-fg-muted" />
+                      {b.doctor}
+                    </span>
+                  )}
+                </p>
+              </div>
+            </div>
+            <p className="m-0 border-t border-border bg-subtle/60 px-5 py-3 text-body-sm text-fg-secondary sm:px-6">
+              {deadline}
+            </p>
+          </section>
+
+          <DetailCard id="appt-info" title={t("dashboard.appointments.info")}>
+            <dl className="m-0 grid gap-px bg-border sm:grid-cols-2">
+              <Fact icon={IdentificationBadge} label={t("dashboard.appointments.patient")}>
+                {b.patient_display_name}
               </Fact>
               {b.doctor && (
                 <Fact icon={Stethoscope} label={t("dashboard.appointments.doctor")}>
                   {b.doctor}
                 </Fact>
               )}
-              <Fact icon={IdentificationBadge} label={t("dashboard.appointments.patient")}>
-                {b.patient_display_name}
-              </Fact>
               {b.service_point && (
                 <Fact icon={MapPin} label={t("dashboard.appointments.room")}>
                   {b.service_point}
                 </Fact>
               )}
+              <Fact icon={Ticket} label={t("dashboard.appointments.reference")}>
+                <span className="font-mono tracking-wider">{b.booking_code}</span>
+              </Fact>
             </dl>
             {b.symptoms.length > 0 && (
-              <div className="mt-5 border-t border-border pt-4">
-                <p className="m-0 mb-2 text-body-sm text-fg-muted">
+              <div className="border-t border-border px-5 py-4">
+                <p className="m-0 mb-2 text-caption font-semibold text-fg-muted">
                   {t("dashboard.appointments.reason")}
                 </p>
                 <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
                   {b.symptoms.map((s) => (
-                    <li key={s.code} className="rounded-full bg-subtle px-3 py-1 text-body-sm">
+                    <li
+                      key={s.code}
+                      className="rounded-full bg-subtle px-3 py-1 text-body-sm font-semibold text-fg-secondary"
+                    >
                       {s.label}
                     </li>
                   ))}
                 </ul>
               </div>
             )}
-          </Panel>
+          </DetailCard>
 
-          <Panel as="section" aria-labelledby="appt-facility">
-            <PanelTitle id="appt-facility">{t("dashboard.appointments.facility")}</PanelTitle>
+          <DetailCard
+            id="appt-facility"
+            title={t("dashboard.appointments.facility")}
+            action={
+              <Link
+                to={paths.facility(b.facility_slug)}
+                className="text-body-sm font-semibold text-link no-underline hover:underline"
+              >
+                {t("dashboard.appointments.facilityPage")}
+              </Link>
+            }
+          >
             {facility.isPending ? (
-              <Skeleton height="4rem" />
+              <div className="p-5">
+                <Skeleton height="4rem" />
+              </div>
             ) : f ? (
-              <dl className="m-0 grid gap-5 sm:grid-cols-2">
+              <dl className="m-0 grid gap-px bg-border sm:grid-cols-2">
                 <Fact icon={MapPin} label={f.name}>
                   <span className="font-normal text-fg-secondary">
                     {[f.address, f.sector, f.district].filter(Boolean).join(", ")}
@@ -735,90 +884,95 @@ export function AppointmentDetailPage() {
                 )}
                 {f.phone && (
                   <Fact icon={Phone} label={t("dashboard.appointments.phone")}>
-                    <a href={`tel:${f.phone}`} className="tabular-nums text-link">
+                    <a href={`tel:${f.phone}`} className="text-link tabular-nums">
                       {f.phone}
                     </a>
                   </Fact>
                 )}
               </dl>
             ) : (
-              <p className="m-0 text-fg-secondary">{b.facility_name}</p>
+              <p className="m-0 p-5 text-fg-secondary">{b.facility_name}</p>
             )}
-            <Link
-              to={paths.facility(b.facility_slug)}
-              className="mt-4 inline-flex text-body-sm font-semibold text-link"
-            >
-              {t("dashboard.appointments.facilityPage")}
-            </Link>
-          </Panel>
+          </DetailCard>
 
-          <Panel as="section" aria-labelledby="appt-timeline">
-            <PanelTitle id="appt-timeline">{t("dashboard.appointments.timeline")}</PanelTitle>
-            <ol className="m-0 flex list-none flex-col p-0">
-              {steps.map((step, index) => (
-                <li key={step.key} className="relative flex gap-3 pb-5 last:pb-0">
-                  {index < steps.length - 1 && (
+          <div className="grid gap-6 md:grid-cols-2">
+            <DetailCard id="appt-timeline" title={t("dashboard.appointments.timeline")}>
+              <ol className="m-0 flex list-none flex-col p-5">
+                {steps.map((step, index) => (
+                  <li key={step.key} className="relative flex gap-3 pb-5 last:pb-0">
+                    {index < steps.length - 1 && (
+                      <span
+                        aria-hidden="true"
+                        className={cx(
+                          "absolute top-6 left-[0.6875rem] h-[calc(100%-1rem)] w-px",
+                          step.done ? "bg-primary" : "bg-border",
+                        )}
+                      />
+                    )}
                     <span
                       aria-hidden="true"
-                      className="absolute top-5 left-[0.6875rem] h-full w-px bg-border"
-                    />
-                  )}
-                  <span
-                    aria-hidden="true"
-                    className={cx(
-                      "relative mt-0.5 size-6 shrink-0 rounded-full border-2",
-                      step.done ? "border-brand bg-brand" : "border-border bg-surface",
-                    )}
-                  />
-                  <span className="flex flex-col">
-                    <span className="font-semibold">
-                      {t(`dashboard.appointments.steps.${step.key}`)}
+                      className={cx(
+                        "relative grid size-6 shrink-0 place-items-center rounded-full border-2",
+                        step.done
+                          ? "border-primary bg-primary text-on-primary"
+                          : "border-border bg-surface",
+                      )}
+                    >
+                      {step.done && <Check weight="bold" className="size-3.5" />}
                     </span>
-                    {"date" in step && step.date && (
-                      <span className="text-body-sm tabular-nums text-fg-secondary">
-                        {day(step.date, lang)} · {time(step.date, lang)}
+                    <span className="flex flex-col">
+                      <span className="font-semibold">
+                        {t(`dashboard.appointments.steps.${step.key}`)}
                       </span>
-                    )}
-                  </span>
-                </li>
-              ))}
-            </ol>
-          </Panel>
+                      {"date" in step && step.date && (
+                        <span className="text-body-sm text-fg-secondary tabular-nums">
+                          {day(step.date, lang)} · {time(step.date, lang)}
+                        </span>
+                      )}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </DetailCard>
 
-          <Panel as="section" aria-labelledby="appt-bring">
-            <PanelTitle id="appt-bring">{t("dashboard.appointments.bring")}</PanelTitle>
-            <ul className="m-0 flex flex-col gap-2 pl-5 text-fg-secondary">
-              <li>{t("dashboard.appointments.bringItems.id")}</li>
-              {b.cost.insurer_code && <li>{t("dashboard.appointments.bringItems.insurance")}</li>}
-              <li>{t("dashboard.appointments.bringItems.code", { code: b.booking_code })}</li>
-              <li>{t("dashboard.appointments.bringItems.papers")}</li>
-            </ul>
-          </Panel>
+            <DetailCard id="appt-bring" title={t("dashboard.appointments.bring")}>
+              <ul className="m-0 flex list-none flex-col gap-3 p-5 text-body-sm text-fg-secondary">
+                {bring.map((item) => (
+                  <li key={item} className="flex items-start gap-2.5">
+                    <CheckCircle
+                      aria-hidden="true"
+                      weight="fill"
+                      className="mt-0.5 size-4 shrink-0 text-primary"
+                    />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </DetailCard>
+          </div>
         </div>
 
         <aside className="flex flex-col gap-4 lg:sticky lg:top-24">
-          <Panel className="flex flex-col items-center gap-2 text-center">
-            <span className="text-caption font-semibold tracking-[0.14em] text-fg-muted uppercase">
+          {/* the code the patient shows at reception, on the same ticket shape as queue tickets */}
+          <div className="ml-ticket-stub flex flex-col items-center gap-1.5 rounded-2xl border border-brand/30 bg-brand-subtle px-5 py-6 text-center">
+            <span className="text-caption font-semibold tracking-[0.14em] text-on-brand-subtle uppercase">
               {t("dashboard.appointments.reference")}
             </span>
-            <span className="font-mono text-h1 font-bold tracking-[0.2em] tabular-nums text-fg">
+            <span className="font-mono text-h1 font-bold tracking-[0.2em] text-fg tabular-nums">
               {b.booking_code}
             </span>
             <span className="text-body-sm text-fg-secondary">
               {t("dashboard.appointments.showCode")}
             </span>
-          </Panel>
+          </div>
 
-          <Panel className="flex flex-col gap-3">
-            <p className="m-0 text-body-sm text-fg-secondary">
-              {b.status === "confirmed"
-                ? b.can_change
-                  ? t("dashboard.appointments.changeUntil", {
-                      time: `${day(b.change_until, lang, "short")} ${time(b.change_until, lang)}`,
-                    })
-                  : t("dashboard.appointments.changeClosed")
-                : t(`dashboard.status.${b.status === "superseded" ? "rescheduled" : b.status}`)}
-            </p>
+          <div className={cx(panelClass, "flex flex-col gap-2.5 p-4")}>
+            {canReschedule(b) && (
+              <Button fullWidth onClick={() => setDialog("reschedule")}>
+                <CalendarBlank aria-hidden="true" className="size-4" />
+                {t("dashboard.appointments.reschedule")}
+              </Button>
+            )}
             {f?.lat != null && f.lng != null ? (
               <a
                 href={directionsUrl(f.lat, f.lng)}
@@ -826,25 +980,20 @@ export function AppointmentDetailPage() {
                 rel="noreferrer"
                 className={buttonClassName({ variant: "secondary", fullWidth: true })}
               >
-                <NavigationArrow aria-hidden="true" className="size-icon" />
+                <NavigationArrow aria-hidden="true" className="size-4" />
                 {t("dashboard.appointments.directions")}
                 <ArrowSquareOut aria-hidden="true" className="size-4" />
               </a>
             ) : null}
-            {!isCancelled(b) && b.status !== "superseded" && (
+            {live && (
               <a
                 href={api.booking.icsUrl(b.id)}
                 download
                 className={buttonClassName({ variant: "secondary", fullWidth: true })}
               >
-                <CalendarPlus aria-hidden="true" className="size-icon" />
+                <CalendarPlus aria-hidden="true" className="size-4" />
                 {t("booking.flow.addToCalendar")}
               </a>
-            )}
-            {canReschedule(b) && (
-              <Button fullWidth onClick={() => setDialog("reschedule")}>
-                {t("dashboard.appointments.reschedule")}
-              </Button>
             )}
             {canCancel(b) && (
               <Button
@@ -856,7 +1005,7 @@ export function AppointmentDetailPage() {
                 {t("dashboard.appointments.cancel")}
               </Button>
             )}
-          </Panel>
+          </div>
         </aside>
       </div>
 

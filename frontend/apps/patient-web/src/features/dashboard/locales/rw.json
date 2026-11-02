@@ -1,0 +1,383 @@
+{
+  "close": "Funga",
+  "cancel": "Reka",
+  "retry": "Ongera ugerageze",
+  "findCare": "Shaka ubuvuzi",
+  "viewAll": "Reba byose",
+  "viewDetails": "Reba ibisobanuro",
+  "toast": {
+    "close": "Funga ubutumwa"
+  },
+  "nav": {
+    "label": "MediLink",
+    "portal": "Urubuga rw'umurwayi",
+    "main": "Menyu nyamukuru",
+    "account": "Menyu ya konti",
+    "breadcrumb": "Uri hano",
+    "details": "Ibisobanuro",
+    "expand": "Fungura menyu",
+    "collapse": "Gabanya menyu",
+    "more": "Ibindi",
+    "language": "Ururimi",
+    "groups": {
+      "care": "Ubuvuzi",
+      "account": "Konti"
+    },
+    "overview": "Ahabanza",
+    "findCare": "Shaka ubuvuzi",
+    "appointments": "Gahunda",
+    "queue": "Umurongo wanjye",
+    "family": "Umuryango wanjye",
+    "records": "Amadosiye y'ubuzima",
+    "medications": "Imiti",
+    "documents": "Inyandiko",
+    "notifications": "Ubutumwa",
+    "help": "Ubufasha",
+    "settings": "Igenamiterere",
+    "short": {
+      "overview": "Ahabanza",
+      "findCare": "Ubuvuzi",
+      "appointments": "Gahunda",
+      "records": "Amadosiye"
+    }
+  },
+  "account": {
+    "label": "Menyu ya konti ya {{name}}",
+    "subtitle": "Konti y'umurwayi",
+    "profile": "Umwirondoro wanjye",
+    "family": "Umuryango wanjye",
+    "privacy": "Ibanga n'uburenganzira",
+    "settings": "Igenamiterere",
+    "viewProfile": "Reba umwirondoro wanjye"
+  },
+  "search": {
+    "open": "Shakisha",
+    "title": "Shakisha muri MediLink",
+    "placeholder": "Shakisha ubuvuzi, gahunda, inyandiko",
+    "shortcut": "Ctrl K",
+    "empty": "Nta cyabonetse. Gerageza ikigo, umuganga cyangwa serivisi.",
+    "hints": "↑ ↓ kwimuka · Enter gufungura · Esc gufunga",
+    "findCare": "Shaka ubuvuzi bwa “{{query}}”",
+    "groups": {
+      "find": "Gushakisha",
+      "pages": "Impapuro",
+      "appointments": "Gahunda zanjye",
+      "documents": "Inyandiko zanjye",
+      "facilities": "Ibigo by'ubuvuzi",
+      "doctors": "Abaganga"
+    }
+  },
+  "bell": {
+    "title": "Ubutumwa",
+    "markAll": "Byose byasomwe",
+    "viewAll": "Reba ubutumwa bwose",
+    "empty": "Nta butumwa bushya.",
+    "failed": "Ntitwashoboye kubona ubutumwa bwawe.",
+    "unread": "butarasomwa"
+  },
+  "status": {
+    "confirmed": "Byemejwe",
+    "checked_in": "Yakiriwe",
+    "cancelled": "Byahagaritswe",
+    "late_cancelled": "Byahagaritswe bitinze",
+    "no_show": "Ntiyaje",
+    "rescheduled": "Byimuwe",
+    "answer": "Bitegereje igisubizo cyawe"
+  },
+  "overview": {
+    "greeting_morning": "Mwaramutse, {{name}}",
+    "greeting_afternoon": "Mwiriwe, {{name}}",
+    "greeting_evening": "Mwiriwe, {{name}}",
+    "subtitle": "Dore incamake y'ubuvuzi bwawe.",
+    "verifyTitle": "Emeza imeyili yawe",
+    "verifyBody": "Twohereje umurongo kuri {{email}}. Uwufungure kugira ngo konti yawe irindwe.",
+    "nextAppointment": "Gahunda ikurikira",
+    "currentVisit": "Uruzinduko rwa none",
+    "viewDetails": "Reba ibisobanuro",
+    "allTickets": "Umurongo wanjye",
+    "moreTickets_one": "Indi tike {{count}} uyu munsi",
+    "moreTickets_other": "Izindi tike {{count}} uyu munsi",
+    "startTitle": "Ubuvuzi bwawe butangirira hano.",
+    "startBody": "Shaka ikigo cy'ubuvuzi, urebe serivisi zihari cyangwa ufate gahunda y'uruzinduko rukurikira.",
+    "explore": "Reba ibigo by'ubuvuzi",
+    "quick": "Ibikorwa byihuse",
+    "actions": {
+      "findCare": "Shaka ubuvuzi",
+      "findCareBody": "Ibigo biri hafi yawe",
+      "book": "Fata gahunda",
+      "bookBody": "Hitamo isaha",
+      "records": "Amadosiye yanjye",
+      "recordsBody": "Ingendo n'ibisubizo",
+      "family": "Umuryango wanjye",
+      "familyBody": "Abo witaho",
+      "documents": "Inyandiko",
+      "documentsBody": "Amabaruwa na raporo"
+    },
+    "upcoming": "Gahunda zitegerejwe",
+    "activity": "Ibiheruka",
+    "activityFailed": "Ntitwashoboye kubona ibiheruka.",
+    "activityEmpty": "Nta kirakorwa",
+    "activityEmptyBody": "Gahunda, ibisubizo n'inyandiko bizagaragara hano.",
+    "aside": "Ubuzima bwawe n'umuryango",
+    "family": "Umuryango",
+    "manage": "Genzura",
+    "familyEmpty": "Ongeraho umwana cyangwa undi muntu witaho.",
+    "attention": {
+      "title": "Ibikeneye ko ubyitaho",
+      "allSet": "Nta kibazo",
+      "allSetBody": "Nta kintu gikeneye igisubizo cyawe ubu."
+    },
+    "glance": {
+      "label": "Muri make",
+      "upcoming": "Gahunda ziri imbere",
+      "next": "Ikurikira: {{when}}",
+      "upcomingNone": "Nta gahunda wafashe",
+      "medicines": "Imiti urimo gufata",
+      "from": "Yatanzwe na {{facility}}",
+      "medicinesNone": "Nta miti ubu",
+      "records": "Amakuru y'ubuvuzi",
+      "lastVisit": "Uheruka kwivuza {{date}}",
+      "recordsNone": "Nta gusura kwabayeho",
+      "unread": "Ubutumwa butarasomwa",
+      "unreadHint": "Mu butumwa bwawe",
+      "unreadNone": "Wasomye byose"
+    },
+    "visits": {
+      "title": "Uheruka kwivuza",
+      "empty": "Nta gusura kwabayeho",
+      "emptyBody": "Nyuma yo kwivuza, incamake yasinywe na muganga igaragara hano."
+    },
+    "vitals": {
+      "title": "Ibipimo biheruka",
+      "recorded": "Byafashwe ku wa {{date}} kuri {{facility}}.",
+      "note": "Muganga wawe ashobora kugusobanurira icyo bisobanura.",
+      "empty": "Nta bipimo biraboneka",
+      "emptyBody": "Ibipimo bifatwa iyo wivuje bigaragara hano.",
+      "bp": "Umuvuduko w'amaraso",
+      "pulse": "Gutera k'umutima",
+      "temperature": "Ubushyuhe",
+      "spo2": "Umwuka mu maraso",
+      "weight": "Ibiro",
+      "respiratory": "Guhumeka"
+    },
+    "medicines": {
+      "title": "Imiti urimo gufata",
+      "items_one": "Umuti {{count}}",
+      "items_other": "Imiti {{count}}",
+      "until": "Igeza ku wa {{date}}",
+      "empty": "Nta miti urimo gufata"
+    }
+  },
+  "reminders": {
+    "title": "Ibyibutswa",
+    "answer": "Ikigo cyagusabye isaha nshya ya {{service}}",
+    "reply": "Subiza",
+    "soon": "{{service}} iregereje",
+    "arrive": "Bwira abakira abarwayi ko wahageze (tike {{ticket}})",
+    "open": "Fungura tike"
+  },
+  "appointments": {
+    "title": "Gahunda zanjye",
+    "subtitle": "Genzura gahunda zitegerejwe n'izashize.",
+    "book": "Fata gahunda",
+    "views": "Gahunda zihe",
+    "tabs": {
+      "upcoming": "Zitegerejwe",
+      "past": "Izashize",
+      "cancelled": "Izahagaritswe"
+    },
+    "failed": "Ntitwashoboye kubona gahunda zawe.",
+    "empty": {
+      "upcoming": "Nta gahunda itegerejwe ufite.",
+      "past": "Nta gahunda yashize iraboneka.",
+      "cancelled": "Nta gahunda yahagaritswe."
+    },
+    "emptyBody": "Shaka ikigo ufate isaha ikunogeye.",
+    "for": "ya {{name}}",
+    "view": "Reba gahunda",
+    "more": "Ibindi bikorwa kuri {{service}}",
+    "manage": "Genzura",
+    "facilityPage": "Urupapuro rw'ikigo",
+    "reschedule": "Hindura isaha",
+    "cancel": "Hagarika gahunda",
+    "cancelled": "Gahunda yawe yahagaritswe.",
+    "rescheduled": "Gahunda yawe yimuriwe ku yindi saha.",
+    "actionFailed": "Ntitwashoboye guhindura gahunda yawe. Ongera ugerageze.",
+    "back": "Gahunda zose",
+    "notFound": "Gahunda ntiyabonetse",
+    "notFoundBody": "Ntitwashoboye kubona iyi gahunda. Ishobora kuba ari iya konti indi.",
+    "info": "Gahunda",
+    "date": "Itariki",
+    "time": "Isaha",
+    "doctor": "Umuganga",
+    "patient": "Umurwayi",
+    "room": "Icyumba",
+    "reason": "Ibyo watubwiye",
+    "facility": "Ikigo",
+    "hoursToday": "Gikora uyu munsi",
+    "phone": "Telefoni",
+    "timeline": "Intambwe",
+    "steps": {
+      "booked": "Gahunda yafashwe",
+      "day": "Umunsi w'uruzinduko",
+      "checkedIn": "Wakiriwe ku kwakira abarwayi",
+      "cancelled": "Yahagaritswe",
+      "missed": "Ntiwaje",
+      "rescheduled": "Yimuriwe ku yindi saha"
+    },
+    "bring": "Icyo uzitwaza",
+    "bringItems": {
+      "id": "Indangamuntu yawe cyangwa nimero ya MediLink",
+      "insurance": "Ikarita y'ubwishingizi bwawe",
+      "code": "Kode ya gahunda yawe {{code}}",
+      "papers": "Ibisubizo, impapuro z'imiti cyangwa amabaruwa yo kohereza biheruka"
+    },
+    "reference": "Kode ya gahunda",
+    "showCode": "Erekana iyi kode ku kwakira abarwayi.",
+    "changeUntil": "Ushobora guhindura cyangwa guhagarika kugeza {{time}}.",
+    "changeClosed": "Igihe cyo guhindura cyarangiye. Guhagarika ubu bibarwa nko guhagarika bitinze.",
+    "directions": "Inzira ijyayo"
+  },
+  "reschedule": {
+    "title": "Hitamo isaha nshya",
+    "body": "Amasaha ari ubusa ya {{service}} kuri {{facility}}.",
+    "reviewTitle": "Suzuma isaha nshya",
+    "earlier": "Mbere",
+    "later": "Nyuma",
+    "days": "Iminsi ifite amasaha ari ubusa",
+    "times": "Amasaha ari ubusa",
+    "none": "Nta saha iri ubusa iki cyumweru. Gerageza icyumweru gikurikira.",
+    "loadFailed": "Ntitwashoboye kubona amasaha ari ubusa.",
+    "from": "Isaha ufite ubu",
+    "to": "Isaha nshya",
+    "held": "Iyi saha turayikubikiye mu gihe cya",
+    "expired": "Igihe twari tuyikubikiye cyarangiye. Ongera uhitemo isaha.",
+    "oldFreed": "Isaha ufite ubu irekurwa gusa iyo inshya yemejwe.",
+    "otherTime": "Hitamo indi saha",
+    "confirm": "Emeza isaha nshya"
+  },
+  "queue": {
+    "title": "Umurongo wanjye",
+    "subtitle": "Kurikirana tike z'uyu munsi n'aho ugeze ku murongo.",
+    "join": "Jya ku murongo",
+    "today": "Uyu munsi",
+    "failed": "Ntitwashoboye kubona tike zawe.",
+    "none": "Nturi ku murongo ubu.",
+    "noneBody": "Jya ku murongo w'ikigo kibyemera, cyangwa wiyandikishe ku kwakira abarwayi.",
+    "remoteNote": "Kujya ku murongo ukoresheje telefoni si kimwe no kwakirwa. Abakira abarwayi bemeza ko wahageze iyo uhageze.",
+    "previous": "Ingendo zabanje",
+    "previousTitle": "Tike zabanje ntiziragaragara hano",
+    "previousBody": "Nyuma y'uruzinduko, dosiye umuganga yasinye igaragara mu Madosiye y'ubuzima.",
+    "back": "Umurongo wanjye",
+    "ticket": "Tike",
+    "ahead": "Abakuri imbere",
+    "estimate": "Igihe cyo gutegereza",
+    "wait": "Iminota {{min}}–{{max}}",
+    "noEstimate": {
+      "break": "Umuganga ari mu kiruhuko gito",
+      "emergency": "Byahagaze kubera ubutabazi",
+      "none_on_duty": "Nta muganga uri ku kazi",
+      "none": "Ntibiraboneka"
+    },
+    "updated": "Byavuguruwe saa {{time}}",
+    "arrival": {
+      "confirmed": "Wakiriwe",
+      "claimed": "Bitegereje kwemezwa n'abakira abarwayi",
+      "notYet": "Ntiwarakirwa"
+    },
+    "viewLive": "Kurikirana umurongo",
+    "state": {
+      "waiting": "Utegereje",
+      "called": "Igihe cyawe kirageze",
+      "in_service": "Uri kwa muganga",
+      "no_response": "Wahamagawe ntiwitaba",
+      "on_hold": "Byahagaze",
+      "moved_to_next_stage": "Intambwe ikurikira",
+      "transferred": "Woherejwe ahandi",
+      "cancelled": "Byahagaritswe",
+      "left_without_service": "Wagiye",
+      "completed": "Byarangiye"
+    }
+  },
+  "family": {
+    "title": "Umuryango wanjye",
+    "subtitle": "Genzura ubuvuzi bw'abantu bahujwe na konti yawe.",
+    "add": "Ongeraho umuntu",
+    "you": "Wowe",
+    "age_one": "Umwaka {{count}}",
+    "age_other": "Imyaka {{count}}",
+    "access": {
+      "guardian": "Umurera",
+      "delegate": "Wahawe uburenganzira"
+    },
+    "viewing": "Urareba umwirondoro wa {{name}}",
+    "accessHint": {
+      "guardian": "Ugenzura uyu mwirondoro nk'umurera.",
+      "delegate": "{{name}} yaguhaye uburenganzira bwo kumufasha mu buvuzi."
+    },
+    "careFor": "Ubuvuzi bwa {{name}}",
+    "links": {
+      "appointments": "Gahunda zitegerejwe",
+      "records": "Ingendo zabanje",
+      "medications": "Impapuro z'imiti",
+      "documents": "Amabaruwa na raporo"
+    }
+  },
+  "records": {
+    "search": "Shakisha ukoresheje ikigo, umuganga cyangwa indwara",
+    "signed": "Yasinywe",
+    "noMatch": "Nta dosiye ihuye n'ibyo washatse.",
+    "emptyBody": "Amadosiye yawe y'ubuzima azagaragara hano igihe azaba abonetse."
+  },
+  "medications": {
+    "title": "Imiti yanjye"
+  },
+  "documents": {
+    "kinds": "Ubwoko bw'inyandiko",
+    "all": "Zose"
+  },
+  "help": {
+    "title": "Ubufasha",
+    "subtitle": "Bona ibisubizo, vugana n'abatanga ubufasha kandi ukurikirane ibyo wasabye."
+  },
+  "settings": {
+    "subtitle": "Amakuru yawe, ururimi, ibanga, umutekano n'ubutumwa.",
+    "sections": "Ibice by'igenamiterere",
+    "personal": {
+      "title": "Amakuru bwite",
+      "body": "Izina ryawe, aho ubarizwa n'ibikuranga biri ku mwirondoro wawe.",
+      "name": "Izina",
+      "email": "Imeyili",
+      "verified": "Yemejwe",
+      "unverified": "Ntiyemejwe",
+      "edit": "Hindura umwirondoro wanjye"
+    },
+    "display": {
+      "title": "Ururimi n'imigaragarire",
+      "body": "Bihita bikora kandi bigumaho kuri iki gikoresho."
+    },
+    "privacy": {
+      "title": "Ibanga n'uburenganzira",
+      "body": "Hitamo abashobora kubona amadosiye yawe kandi urebe abayafunguye.",
+      "consent": "Ibanga n'uburenganzira",
+      "delegates": "Abafite uburenganzira"
+    },
+    "security": {
+      "title": "Umutekano",
+      "body": "Rinda konti yawe.",
+      "password": "Kugira ngo uhindure ijambo ry'ibanga, tukoherereza umurongo wizewe kuri imeyili, kugira ngo ari wowe wenyine urishyiraho.",
+      "change": "Hindura ijambo ry'ibanga",
+      "later": "Ibikoresho winjiriyemo no kwinjira mu ntambwe ebyiri bizongerwa hano."
+    },
+    "alerts": {
+      "title": "Ubutumwa wifuza",
+      "body": "Ubutumwa wakira, aho bukugeraho n'amasaha yo gutuza.",
+      "open": "Igenamiterere ry'ubutumwa"
+    },
+    "account": {
+      "title": "Konti",
+      "body": "Sohoka kuri iki gikoresho cyangwa udusabe gufunga konti yawe.",
+      "close": "Saba gufunga konti yanjye"
+    }
+  }
+}

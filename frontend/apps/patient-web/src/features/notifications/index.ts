@@ -1,10 +1,10 @@
 import type { ComponentType } from "react";
 
 import type { FeatureRoutes } from "../../app/features";
-import { NotificationBellLink } from "./NotificationBellLink";
-import { PushOffBanner } from "./PushOptIn";
+import { paths } from "../../app/paths";
+import { NotificationMenu } from "./NotificationMenu";
 
-/** For S5: mount after a booking ("tell me when to leave"). */
+/** For S5: mount after a booking ("tell me when to leave"); the overview shows the banner. */
 export { PushOffBanner, PushOptIn } from "./PushOptIn";
 export { createFakePushClient, setPushClient } from "./pushClient";
 export type { PushClient } from "./pushClient";
@@ -18,14 +18,13 @@ const inbox = () => import("./InboxPage");
 /** S9 `notifications`: bell, inbox, detail, preferences and push opt-in (contract §6.2). */
 export const notificationsFeature: FeatureRoutes = {
   patient: [
-    { path: "/notifications", lazy: lazy(inbox, "InboxPage") },
+    { path: paths.notifications, lazy: lazy(inbox, "InboxPage") },
     {
-      path: "/notifications/settings",
+      path: paths.notificationSettings,
       lazy: lazy(() => import("./SettingsPage"), "SettingsPage"),
     },
-    { path: "/notifications/:id", lazy: lazy(inbox, "NotificationDetailPage") },
+    { path: `${paths.notifications}/:id`, lazy: lazy(inbox, "NotificationDetailPage") },
   ],
-  headerItems: [NotificationBellLink],
-  // Under the main content: a live ticket must lead the home page (design 07 §3.1)
-  homeMain: [PushOffBanner],
+  // upgrade 12 §2B: the bell opens the latest items
+  headerItems: [NotificationMenu],
 };

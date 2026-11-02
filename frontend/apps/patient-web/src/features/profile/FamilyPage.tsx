@@ -14,11 +14,27 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router";
 
+import { paths } from "../../app/paths";
 import { useApi } from "../../app/services";
+import { Avatar, RowLink, RowList } from "../dashboard/kit";
 import { can, ProfileLayout, useProfiles, useRelationshipLabel } from "./ProfileLayout";
 import { CONSENT_VERSION, errorText, fieldErrors, formatDateTime, useLocale } from "./shared";
+
+/** Whole years since a date of birth (YYYY-MM-DD), or null. */
+function ageYears(dateOfBirth: string | null): number | null {
+  if (!dateOfBirth) return null;
+  const born = new Date(`${dateOfBirth}T12:00:00Z`);
+  if (Number.isNaN(born.getTime())) return null;
+  const now = new Date();
+  let years = now.getUTCFullYear() - born.getUTCFullYear();
+  if (
+    now.getUTCMonth() < born.getUTCMonth() ||
+    (now.getUTCMonth() === born.getUTCMonth() && now.getUTCDate() < born.getUTCDate())
+  )
+    years -= 1;
+  return years;
+}
 
 /** /family: dependents, invites given and received, accept a code, revoke (FR-PAT-03). */
 export function FamilyPage() {
@@ -45,20 +61,42 @@ export function FamilyPage() {
   });
   const d = delegations.data;
   return (
-    <ProfileLayout title={t("profile.family.title")}>
-      <Card as="section" aria-labelledby="profiles" padding="md" className="flex flex-col gap-2">
-        <h2 id="profiles" className="m-0 text-h3">
+    <ProfileLayout title={t("dashboard.family.title")} subtitle={t("dashboard.family.subtitle")}>
+      <section aria-labelledby="profiles" className="flex flex-col gap-3">
+        <h2 id="profiles" className="m-0 font-heading text-h3 font-bold">
           {t("profile.family.profiles")}
         </h2>
-        <ul className="m-0 flex list-none flex-col gap-2 p-0">
+        <RowList label={t("profile.family.profiles")}>
           {(profiles.data?.results ?? []).map((p) => (
-            <li key={p.patient_id} className="flex flex-wrap items-center gap-2">
-              <Link to={`/profile/${p.patient_id}`}>{p.display_name}</Link>
-              <Badge tone="neutral">{label(p.relationship)}</Badge>
-            </li>
+            <RowLink
+              key={p.patient_id}
+              to={
+                p.relationship === "self"
+                  ? paths.profileOf(p.patient_id)
+                  : paths.member(p.patient_id)
+              }
+              leading={<Avatar name={p.display_name} size="lg" />}
+              title={p.display_name}
+              meta={[
+                label(p.relationship),
+                ageYears(p.date_of_birth) !== null
+                  ? t("dashboard.family.age", { count: ageYears(p.date_of_birth)! })
+                  : null,
+                p.medilink_number,
+              ]
+                .filter(Boolean)
+                .join(" · ")}
+              trailing={
+                <Badge tone={p.relationship === "self" ? "brand" : "neutral"}>
+                  {p.relationship === "self"
+                    ? t("dashboard.family.you")
+                    : t(`dashboard.family.access.${p.relationship}`)}
+                </Badge>
+              }
+            />
           ))}
-        </ul>
-      </Card>
+        </RowList>
+      </section>
       <AddDependent onDone={refresh} />
       <Invite />
       <AcceptCode onDone={refresh} />

@@ -54,6 +54,8 @@ function ToastCard({ toast, dismiss }: { toast: ToastItem; dismiss: (id: number)
     return () => window.clearTimeout(timer.current);
   }, [start]);
   return (
+    // Pointer and focus only pause the timer; the link and close button inside are the controls.
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <li
       onMouseEnter={stop}
       onMouseLeave={start}
@@ -61,7 +63,11 @@ function ToastCard({ toast, dismiss }: { toast: ToastItem; dismiss: (id: number)
       onBlur={start}
       className="pointer-events-auto flex w-full items-start gap-3 rounded-2xl border border-border bg-raised p-4 text-fg shadow-raised animate-rise"
     >
-      <ToneIcon aria-hidden="true" weight="fill" className={cx("mt-0.5 size-6 shrink-0", ICON_CLASS[tone])} />
+      <ToneIcon
+        aria-hidden="true"
+        weight="fill"
+        className={cx("mt-0.5 size-6 shrink-0", ICON_CLASS[tone])}
+      />
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <p className="m-0 font-semibold">{toast.title}</p>
         {toast.description && (

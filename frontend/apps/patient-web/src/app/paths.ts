@@ -9,6 +9,7 @@ export const DASHBOARD = "/dashboard";
 export const paths = {
   overview: DASHBOARD,
   findCare: `${DASHBOARD}/find-care`,
+  facilities: `${DASHBOARD}/facilities`,
   facility: (slug: string) => `${DASHBOARD}/facilities/${slug}`,
   book: (slug: string) => `${DASHBOARD}/book/${slug}`,
   appointments: `${DASHBOARD}/appointments`,

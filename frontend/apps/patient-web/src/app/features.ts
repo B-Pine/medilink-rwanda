@@ -35,6 +35,9 @@ import { recordsFeature } from "../features/records";
 import { documentsFeature } from "../features/documents";
 import { medicinesFeature } from "../features/medicines";
 // [/S7 imports]
+// [Upgrade U12 imports]
+import { dashboardFeature } from "../features/dashboard";
+// [/Upgrade U12 imports]
 
 /** What a feature module contributes (each feature lives in `src/features/<feature>/`). */
 export interface FeatureRoutes {
@@ -42,24 +45,13 @@ export interface FeatureRoutes {
   public?: RouteObject[];
   /** Routes that need a logged-in patient. */
   patient?: RouteObject[];
-  /** Items in the logged-in header, before the log-out button (e.g. the notification bell). */
+  /** Items in the dashboard top bar, before the language and account (e.g. the notification bell). */
   headerItems?: ComponentType[];
-  /** The top of the patient home page, above everything else (design 07 §3.1: the live tracker). */
-  homeTop?: ComponentType[];
-  /** Main column of the patient home page, after "Find care" (S5: the next visit). */
-  homeMain?: ComponentType[];
-  /** Cards on the patient home page, after "Find care" (e.g. "Family"). */
-  homeCards?: ComponentType[];
 }
 
+// upgrade 12: the overview (/dashboard) composes its sections itself, so the old home slots are gone
 export const FEATURE_HEADER_ITEMS = (): ComponentType[] =>
   FEATURES.flatMap((feature) => feature.headerItems ?? []);
-export const FEATURE_HOME_TOP = (): ComponentType[] =>
-  FEATURES.flatMap((feature) => feature.homeTop ?? []);
-export const FEATURE_HOME_MAIN = (): ComponentType[] =>
-  FEATURES.flatMap((feature) => feature.homeMain ?? []);
-export const FEATURE_HOME_CARDS = (): ComponentType[] =>
-  FEATURES.flatMap((feature) => feature.homeCards ?? []);
 
 /**
  * Feature registry. Shared-file protocol (docs/architecture/contracts/README.md): each sprint
@@ -99,4 +91,7 @@ export const FEATURES: FeatureRoutes[] = [
   medicinesFeature,
   documentsFeature,
   // [/S7]
+  // [Upgrade U12]
+  dashboardFeature,
+  // [/Upgrade U12]
 ];

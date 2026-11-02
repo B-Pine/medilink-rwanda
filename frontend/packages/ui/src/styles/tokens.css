@@ -173,7 +173,37 @@
   --ml-icon-size: 1.5rem; /* 24px */
 }
 
-/* ---- Dark theme: system preference (unless the user picked light) ---- */
+/*
+ * Signed-in patient app (product owner, 2026-11-02: "they are big"): the dashboard is dense with
+ * cards, so it uses a calmer scale between staff and patient density: body 16px, targets 44px.
+ * Set on <html> while the dashboard shell is mounted (menus and drawers render in portals).
+ * Text size Large / Extra large still scale it, as every size is in rem.
+ */
+:root[data-density="patient"][data-surface="app"] {
+  --ml-font-size-display: 2rem; /* 32px */
+  --ml-line-height-display: 2.5rem; /* 40px */
+  --ml-font-size-h1: 1.625rem; /* 26px */
+  --ml-line-height-h1: 2.125rem; /* 34px */
+  --ml-font-size-h2: 1.25rem; /* 20px */
+  --ml-line-height-h2: 1.75rem; /* 28px */
+  --ml-font-size-h3: 1.0625rem; /* 17px */
+  --ml-line-height-h3: 1.5rem; /* 24px */
+  --ml-font-size-body: 1rem; /* 16px */
+  --ml-line-height-body: 1.5rem; /* 24px */
+  --ml-font-size-body-sm: 0.875rem; /* 14px */
+  --ml-line-height-body-sm: 1.25rem; /* 20px */
+  --ml-font-size-caption: 0.8125rem; /* 13px */
+  --ml-line-height-caption: 1.125rem; /* 18px */
+  --ml-control-height: 2.75rem; /* 44px */
+  --ml-control-height-primary: 3rem; /* 48px */
+  --ml-target-min: 2.75rem; /* 44px */
+  --ml-icon-size: 1.25rem; /* 20px */
+}
+
+/* ---- Dark theme: system preference (unless the user picked light) ----
+   Softer dark (product owner, 2026-11-02): charcoal green instead of near-black, off-white text
+   (11.5:1 on raised, not ~16:1), a muted emerald #5fc59a instead of neon #34d399, and hairlines
+   that read. Every pair still passes the ratios checked in tokens.test.ts. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --ml-chart-1: #059669;
@@ -186,42 +216,42 @@
     --ml-seq-2: #047857;
     --ml-seq-3: #10b981;
     --ml-seq-4: #34d399;
-    --ml-chart-grid: #24332d;
-    --ml-bg-page: #0a1310;
-    --ml-bg-surface: #101c17;
-    --ml-bg-raised: #14221c;
-    --ml-bg-subtle: #14221c;
-    --ml-text-primary: #e6efea;
-    --ml-text-secondary: #b3c3bb;
-    --ml-text-muted: #8fa198;
-    --ml-border-subtle: #22312b;
-    --ml-border-input: #5b6e66;
-    --ml-brand: #34d399;
-    --ml-action-primary: #34d399;
-    --ml-action-primary-hover: #6ee7b7;
-    --ml-action-primary-text: #022c22;
-    --ml-brand-subtle-bg: #0f2a22;
-    --ml-brand-subtle-text: #6ee7b7;
-    --ml-link: #34d399;
-    --ml-focus-ring: #34d399;
+    --ml-chart-grid: #2c3631;
+    --ml-bg-page: #141a17;
+    --ml-bg-surface: #1b221e;
+    --ml-bg-raised: #212924;
+    --ml-bg-subtle: #212924;
+    --ml-text-primary: #dce4df;
+    --ml-text-secondary: #aab6af;
+    --ml-text-muted: #8c9891;
+    --ml-border-subtle: #2c3631;
+    --ml-border-input: #66756d;
+    --ml-brand: #5fc59a;
+    --ml-action-primary: #5fc59a;
+    --ml-action-primary-hover: #7fd3ae;
+    --ml-action-primary-text: #0e2219;
+    --ml-brand-subtle-bg: #1c2e25;
+    --ml-brand-subtle-text: #8fdbb8;
+    --ml-link: #5fc59a;
+    --ml-focus-ring: #5fc59a;
     --ml-accent: #fbbf24;
     --ml-accent-text: #0f172a;
-    --ml-attention-bg: color-mix(in srgb, #f0b443 14%, #101c17);
+    --ml-attention-bg: color-mix(in srgb, #f0b443 14%, #1b221e);
     --ml-attention-text: #f6c66c;
     --ml-attention-solid: #f0b443;
     --ml-attention-solid-text: #1b1405;
     --ml-success-text: #4ade80;
-    --ml-success-bg: color-mix(in srgb, #4ade80 14%, #101c17);
+    --ml-success-bg: color-mix(in srgb, #4ade80 14%, #1b221e);
     --ml-warning-text: #fbbf24;
-    --ml-warning-bg: color-mix(in srgb, #fbbf24 14%, #101c17);
+    --ml-warning-bg: color-mix(in srgb, #fbbf24 14%, #1b221e);
     --ml-danger-text: #f87171;
-    --ml-danger-bg: color-mix(in srgb, #f87171 14%, #101c17);
+    --ml-danger-bg: color-mix(in srgb, #f87171 14%, #1b221e);
     --ml-info-text: #60a5fa;
-    --ml-info-bg: color-mix(in srgb, #60a5fa 14%, #101c17);
+    --ml-info-bg: color-mix(in srgb, #60a5fa 14%, #1b221e);
     --ml-danger-solid: #f87171;
     --ml-danger-solid-text: #0f172a;
     --ml-violet-text: #c4b5fd;
-    --ml-violet-bg: color-mix(in srgb, #a78bfa 14%, #111c18);
+    --ml-violet-bg: color-mix(in srgb, #a78bfa 14%, #1b221e);
     --ml-violet-solid: #a78bfa;
     --ml-violet-solid-text: #0f172a;
     --ml-shadow-raised: 0 8px 24px rgb(0 0 0 / 0.5), 0 2px 6px rgb(0 0 0 / 0.4);
@@ -241,42 +271,42 @@
   --ml-seq-2: #047857;
   --ml-seq-3: #10b981;
   --ml-seq-4: #34d399;
-  --ml-chart-grid: #24332d;
-  --ml-bg-page: #0a1310;
-  --ml-bg-surface: #101c17;
-  --ml-bg-raised: #14221c;
-  --ml-bg-subtle: #14221c;
-  --ml-text-primary: #e6efea;
-  --ml-text-secondary: #b3c3bb;
-  --ml-text-muted: #8fa198;
-  --ml-border-subtle: #22312b;
-  --ml-border-input: #5b6e66;
-  --ml-brand: #34d399;
-  --ml-action-primary: #34d399;
-  --ml-action-primary-hover: #6ee7b7;
-  --ml-action-primary-text: #022c22;
-  --ml-brand-subtle-bg: #0f2a22;
-  --ml-brand-subtle-text: #6ee7b7;
-  --ml-link: #34d399;
-  --ml-focus-ring: #34d399;
+  --ml-chart-grid: #2c3631;
+  --ml-bg-page: #141a17;
+  --ml-bg-surface: #1b221e;
+  --ml-bg-raised: #212924;
+  --ml-bg-subtle: #212924;
+  --ml-text-primary: #dce4df;
+  --ml-text-secondary: #aab6af;
+  --ml-text-muted: #8c9891;
+  --ml-border-subtle: #2c3631;
+  --ml-border-input: #66756d;
+  --ml-brand: #5fc59a;
+  --ml-action-primary: #5fc59a;
+  --ml-action-primary-hover: #7fd3ae;
+  --ml-action-primary-text: #0e2219;
+  --ml-brand-subtle-bg: #1c2e25;
+  --ml-brand-subtle-text: #8fdbb8;
+  --ml-link: #5fc59a;
+  --ml-focus-ring: #5fc59a;
   --ml-accent: #fbbf24;
   --ml-accent-text: #0f172a;
-  --ml-attention-bg: color-mix(in srgb, #f0b443 14%, #101c17);
+  --ml-attention-bg: color-mix(in srgb, #f0b443 14%, #1b221e);
   --ml-attention-text: #f6c66c;
   --ml-attention-solid: #f0b443;
   --ml-attention-solid-text: #1b1405;
   --ml-success-text: #4ade80;
-  --ml-success-bg: color-mix(in srgb, #4ade80 14%, #101c17);
+  --ml-success-bg: color-mix(in srgb, #4ade80 14%, #1b221e);
   --ml-warning-text: #fbbf24;
-  --ml-warning-bg: color-mix(in srgb, #fbbf24 14%, #101c17);
+  --ml-warning-bg: color-mix(in srgb, #fbbf24 14%, #1b221e);
   --ml-danger-text: #f87171;
-  --ml-danger-bg: color-mix(in srgb, #f87171 14%, #101c17);
+  --ml-danger-bg: color-mix(in srgb, #f87171 14%, #1b221e);
   --ml-info-text: #60a5fa;
-  --ml-info-bg: color-mix(in srgb, #60a5fa 14%, #101c17);
+  --ml-info-bg: color-mix(in srgb, #60a5fa 14%, #1b221e);
   --ml-danger-solid: #f87171;
   --ml-danger-solid-text: #0f172a;
   --ml-violet-text: #c4b5fd;
-  --ml-violet-bg: color-mix(in srgb, #a78bfa 14%, #111c18);
+  --ml-violet-bg: color-mix(in srgb, #a78bfa 14%, #1b221e);
   --ml-violet-solid: #a78bfa;
   --ml-violet-solid-text: #0f172a;
   --ml-shadow-raised: 0 8px 24px rgb(0 0 0 / 0.5), 0 2px 6px rgb(0 0 0 / 0.4);

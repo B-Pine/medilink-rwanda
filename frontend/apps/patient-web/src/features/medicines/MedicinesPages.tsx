@@ -8,14 +8,24 @@ import {
   Skeleton,
   type BadgeTone,
 } from "@medilink/ui";
-import { ArrowLeft, CaretRight, Pill } from "@phosphor-icons/react";
+import { ArrowLeft, Pill } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router";
 
+import { paths } from "../../app/paths";
 import { useApi } from "../../app/services";
 import { PageHeading } from "../../components/PageHeading";
+import {
+  ErrorBlock,
+  PageHeader,
+  RowIcon,
+  RowLink,
+  RowList,
+  RowsSkeleton,
+  SegmentedTabs,
+} from "../dashboard/kit";
 import { useProfiles } from "../profile/ProfileLayout";
 import { useDate } from "../records/RecordsPages";
 import { medicinesKeys, STATUS_TONE } from "./shared";
@@ -37,14 +47,14 @@ export function MedicinesPage() {
   const people = profiles.data?.results ?? [];
   const nameOf = (id: string) => people.find((p) => p.patient_id === id)?.display_name;
   return (
-    <div className="mx-auto flex w-full max-w-[40rem] flex-col gap-6">
-      <PageHeading title={t("medicines.title")}>{t("medicines.title")}</PageHeading>
-      <p className="m-0 text-fg-secondary">{t("medicines.intro")}</p>
+    <div className="flex flex-col gap-6">
+      <PageHeader title={t("dashboard.medications.title")} subtitle={t("medicines.intro")} />
       {people.length > 1 && (
         <SelectField
           label={t("medicines.whose")}
           value={patientId}
           onChange={(e) => setPatientId(e.target.value)}
+          className="sm:w-72"
         >
           <option value="">{t("medicines.everyone")}</option>
           {people.map((p) => (
@@ -54,34 +64,29 @@ export function MedicinesPage() {
           ))}
         </SelectField>
       )}
-      <div role="group" aria-label={t("medicines.which")} className="flex gap-2">
-        {(["active", "past"] as const).map((key) => (
-          <button
-            key={key}
-            type="button"
-            aria-pressed={tab === key}
-            onClick={() => setTab(key)}
-            className="inline-flex min-h-target cursor-pointer items-center rounded-full border border-border-input bg-surface px-4 font-semibold text-fg aria-pressed:border-primary aria-pressed:bg-brand-subtle aria-pressed:text-on-brand-subtle"
-          >
-            {t(`medicines.tab.${key}`)}
-          </button>
-        ))}
-      </div>
+      <SegmentedTabs
+        label={t("medicines.which")}
+        value={tab}
+        onChange={setTab}
+        options={(["active", "past"] as const).map((key) => ({
+          value: key,
+          label: t(`medicines.tab.${key}`),
+        }))}
+      />
       {list.isPending ? (
-        <Skeleton height="5rem" className="rounded-lg" />
+        <RowsSkeleton />
       ) : list.isError ? (
-        <Alert tone="danger">{t("medicines.failed")}</Alert>
+        <ErrorBlock message={t("medicines.failed")} onRetry={() => void list.refetch()} />
       ) : list.data.results.length ? (
-        <ul className="m-0 flex list-none flex-col gap-3 p-0">
+        <RowList label={t(`medicines.tab.${tab}`)}>
           {list.data.results.map((row) => (
-            <li key={row.id}>
-              <PrescriptionCard
-                row={row}
-                who={people.length > 1 ? nameOf(row.patient_id) : undefined}
-              />
-            </li>
+            <PrescriptionRow
+              key={row.id}
+              row={row}
+              who={people.length > 1 ? nameOf(row.patient_id) : undefined}
+            />
           ))}
-        </ul>
+        </RowList>
       ) : (
         <EmptyState
           icon={Pill}
@@ -93,34 +98,23 @@ export function MedicinesPage() {
   );
 }
 
-function PrescriptionCard({ row, who }: { row: PatientPrescriptionRow; who?: string | undefined }) {
+function PrescriptionRow({ row, who }: { row: PatientPrescriptionRow; who?: string | undefined }) {
   const { t } = useTranslation();
   const date = useDate();
   return (
-    <Link
-      to={`/medicines/${row.id}`}
-      className="flex items-center gap-4 rounded-xl bg-surface p-4 text-fg no-underline shadow-card hover:shadow-raised"
-    >
-      <span className="grid size-12 shrink-0 place-items-center rounded-full bg-brand-subtle text-on-brand-subtle">
-        <Pill aria-hidden="true" weight="duotone" className="size-6" />
-      </span>
-      <span className="flex min-w-0 flex-1 flex-col gap-1">
-        <span className="flex flex-wrap items-center gap-2">
-          <span className="font-semibold">{row.facility_name}</span>
-          <Badge tone={STATUS_TONE[row.status]}>{t(`medicines.status.${row.status}`)}</Badge>
-        </span>
-        <span className="text-body-sm text-fg-muted">
-          {[
-            who,
-            t("medicines.count", { count: row.item_count }),
-            t("medicines.issued", { date: date(row.issued_at) }),
-          ]
-            .filter(Boolean)
-            .join(" · ")}
-        </span>
-      </span>
-      <CaretRight aria-hidden="true" className="size-icon text-fg-muted" />
-    </Link>
+    <RowLink
+      to={paths.medication(row.id)}
+      leading={<RowIcon icon={Pill} />}
+      title={row.facility_name}
+      meta={[
+        who,
+        t("medicines.count", { count: row.item_count }),
+        t("medicines.issued", { date: date(row.issued_at) }),
+      ]
+        .filter(Boolean)
+        .join(" · ")}
+      trailing={<Badge tone={STATUS_TONE[row.status]}>{t(`medicines.status.${row.status}`)}</Badge>}
+    />
   );
 }
 
@@ -136,7 +130,10 @@ export function MedicineDetailPage() {
   });
   return (
     <div className="mx-auto flex w-full max-w-[40rem] flex-col gap-6">
-      <Link to="/medicines" className="inline-flex items-center gap-2 self-start font-semibold">
+      <Link
+        to={paths.medications}
+        className="inline-flex items-center gap-2 self-start font-semibold"
+      >
         <ArrowLeft aria-hidden="true" className="size-icon" />
         {t("medicines.back")}
       </Link>

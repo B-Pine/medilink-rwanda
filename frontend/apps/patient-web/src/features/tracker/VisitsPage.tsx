@@ -1,66 +1,79 @@
-import { CalendarCheck, ClockCounterClockwise, MagnifyingGlass } from "@phosphor-icons/react";
-import { Alert, Button, buttonClassName, Card, EmptyState, Skeleton } from "@medilink/ui";
+import { ClockCounterClockwise, Info, MagnifyingGlass, Ticket } from "@phosphor-icons/react";
+import { buttonClassName, EmptyState, Skeleton } from "@medilink/ui";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
-import { PageHeading } from "../../components/PageHeading";
-import { UpcomingSection } from "../booking/Upcoming";
-import { ActiveVisitCard, useActiveVisits } from "./TrackerPage";
+import { paths } from "../../app/paths";
+import { EmptyRow, ErrorBlock, PageHeader, Section } from "../dashboard/kit";
+import { QueueTicketCard } from "../dashboard/visits";
+import { useActiveVisits } from "./TrackerPage";
 
 /**
- * My visits (design 07 §3.4): today's live visits first; the history timeline with summaries,
- * medicines, documents and receipts fills in as those records arrive.
+ * My queue (upgrade 12 §8): today's live tickets first, each one tap from the live view. Earlier
+ * visits have no ticket history endpoint yet; their signed records are in Medical records.
  */
-export function VisitsPage() {
+export function QueuePage() {
   const { t } = useTranslation();
   const visits = useActiveVisits();
   const active = visits.data?.results ?? [];
+  const remote = active.some((v) => v.is_remote && !v.remote_arrival_confirmed_at);
   return (
-    <div className="mx-auto flex w-full max-w-[40rem] flex-col gap-6">
-      <PageHeading title={t("tracker.visits.title")}>{t("tracker.visits.title")}</PageHeading>
+    <div className="flex flex-col gap-8">
+      <PageHeader
+        title={t("dashboard.queue.title")}
+        subtitle={t("dashboard.queue.subtitle")}
+        actions={
+          <Link to={`${paths.findCare}?remote=1`} className={buttonClassName({})}>
+            <MagnifyingGlass aria-hidden="true" className="size-icon" />
+            {t("dashboard.queue.join")}
+          </Link>
+        }
+      />
 
-      <section aria-labelledby="visits-today" className="flex flex-col gap-3">
-        <h2 id="visits-today" className="m-0 text-h3">
-          {t("tracker.visits.today")}
-        </h2>
+      <Section id="queue-active" title={t("dashboard.queue.today")}>
         {visits.isPending ? (
-          <Skeleton height="7rem" className="rounded-lg" />
+          <Skeleton height="13rem" className="rounded-[20px]" />
         ) : visits.isError ? (
-          <Alert tone="danger" role="alert" title={t("tracker.visits.loadFailed")}>
-            <Button variant="secondary" onClick={() => void visits.refetch()}>
-              {t("common.retry")}
-            </Button>
-          </Alert>
+          <ErrorBlock message={t("dashboard.queue.failed")} onRetry={() => void visits.refetch()} />
         ) : active.length ? (
-          <ActiveVisitCard />
+          <div className="flex flex-col gap-4">
+            {active.map((visit) => (
+              <QueueTicketCard key={visit.visit_id} visit={visit} />
+            ))}
+            {remote && (
+              <p className="m-0 flex items-start gap-2 text-body-sm text-fg-secondary">
+                <Info aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-info" />
+                {t("dashboard.queue.remoteNote")}
+              </p>
+            )}
+          </div>
         ) : (
           <EmptyState
-            icon={CalendarCheck}
-            title={t("tracker.visits.noneToday")}
-            description={t("tracker.visits.noneTodayBody")}
+            icon={Ticket}
+            title={t("dashboard.queue.none")}
+            description={t("dashboard.queue.noneBody")}
             action={
-              <Link to="/find-care" className={buttonClassName({ size: "lg" })}>
+              <Link to={paths.findCare} className={buttonClassName({})}>
                 <MagnifyingGlass aria-hidden="true" className="size-icon" />
-                {t("tracker.visits.findCare")}
+                {t("dashboard.findCare")}
               </Link>
             }
           />
         )}
-      </section>
+      </Section>
 
-      <UpcomingSection />
-
-      <Card as="section" aria-labelledby="visits-history" className="flex flex-col gap-2">
-        <h2 id="visits-history" className="m-0 text-h3">
-          {t("tracker.visits.history")}
-        </h2>
-        <EmptyState
-          size="inline"
+      <Section id="queue-previous" title={t("dashboard.queue.previous")}>
+        <EmptyRow
           icon={ClockCounterClockwise}
-          title={t("tracker.visits.historyEmpty")}
-          description={t("tracker.visits.historyEmptyBody")}
+          title={t("dashboard.queue.previousTitle")}
+          body={t("dashboard.queue.previousBody")}
+          action={
+            <Link to={paths.records} className={buttonClassName({ variant: "secondary" })}>
+              {t("dashboard.nav.records")}
+            </Link>
+          }
         />
-      </Card>
+      </Section>
     </div>
   );
 }

@@ -1,5 +1,5 @@
-import { List, Siren, X } from "@phosphor-icons/react";
-import { buttonClassName, LanguageSwitcher, Logo } from "@medilink/ui";
+import { ArrowRight, List, MagnifyingGlass, Siren, X } from "@phosphor-icons/react";
+import { buttonClassName, LanguageSwitcher, Logo, ThemeSwitch } from "@medilink/ui";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, NavLink, useLocation, useNavigation } from "react-router";
@@ -10,14 +10,14 @@ export const PUBLIC_NAV = [
   { to: "/facilities", key: "nav.facilities", end: false },
   { to: "/doctors", key: "nav.doctors", end: false },
   { to: "/services", key: "nav.services", end: false },
-  { to: "/how-it-works", key: "nav.howItWorks", end: false },
 ] as const;
 
 /**
- * Public navbar (upgrade 11 §3): logo left; Home · Find Care · Facilities · Doctors · Services ·
- * How It Works in the centre with a sliding emerald indicator; Emergency, language, Sign In and a
- * primary Find Care button on the right. White, 80 px, sticky, a subtle line that becomes a soft
- * shadow on scroll. Below 1024 px a menu button opens a slide-down panel that locks the page
+ * Public navbar (upgrade 11 §3): logo left; Home · Find Care · Facilities · Doctors · Services in
+ * the centre, in a segmented track with a raised sliding indicator (How It Works lives in the
+ * footer); Emergency (live dot), a language chip, a light/dark switch, Sign In and a primary Find
+ * Care button on the right. Frosted
+ * surface, 80 px, sticky, a subtle line that becomes a soft shadow on scroll. Below 1024 px a menu button opens a slide-down panel that locks the page
  * behind it and closes on navigation or Escape.
  */
 export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
@@ -44,53 +44,80 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
   }, [open, pathname]);
 
   return (
-    <header className="ml-site-header sticky top-0 z-30 border-b border-border/70 bg-surface print:hidden">
+    <header className="ml-site-header sticky top-0 z-30 border-b border-border/60 print:hidden">
+      {/* frosted backdrop on its own layer: a filter on the header would trap the fixed menu overlay */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 -z-10 bg-surface/85 backdrop-blur-xl backdrop-saturate-150"
+      />
       {/* route loading: a thin emerald bar while the next page's code or data loads */}
       <div
         aria-hidden="true"
         data-loading={navigation.state !== "idle"}
         className="ml-route-progress absolute inset-x-0 top-0 h-0.5 origin-left bg-primary"
       />
-      <div className="mx-auto flex h-20 max-w-[80rem] items-center gap-6 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-20 max-w-[84rem] items-center gap-4 px-4 sm:px-6 lg:px-8 xl:gap-6">
         <Link
           to="/"
           viewTransition
           className="inline-flex min-h-target shrink-0 items-center rounded-sm pr-2 no-underline"
         >
-          <Logo className="h-10" />
+          <Logo className="h-9 xl:h-10" />
         </Link>
         <SlidingNav />
-        <div className="ml-auto flex items-center gap-1 sm:gap-2">
+        <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
           <Link
             to="/emergency"
             viewTransition
             aria-label={t("nav.emergency")}
-            className="inline-flex min-h-target items-center gap-1.5 rounded-full px-3 text-body-sm font-semibold whitespace-nowrap text-danger no-underline transition-colors duration-150 ease-out-quint hover:bg-danger-bg"
+            className="group inline-flex h-10 items-center gap-2 rounded-full border border-danger/25 bg-danger-bg/60 px-3 text-body-sm font-semibold whitespace-nowrap text-danger no-underline transition-colors duration-150 ease-out-quint hover:border-danger/50 hover:bg-danger-bg"
           >
-            <Siren aria-hidden="true" weight="bold" className="size-4" />
-            <span aria-hidden="true" className="hidden xl:inline">
+            {/* a live dot: the emergency line is always open */}
+            <span aria-hidden="true" className="relative flex size-2">
+              <span className="absolute inset-0 animate-ping rounded-full bg-danger-solid opacity-60 motion-reduce:hidden" />
+              <span className="relative size-2 rounded-full bg-danger-solid" />
+            </span>
+            <Siren aria-hidden="true" weight="bold" className="size-4 2xl:hidden" />
+            <span aria-hidden="true" className="hidden 2xl:inline">
               {t("nav.emergencyShort")}
             </span>
           </Link>
-          <span className="hidden lg:block">
-            <LanguageSwitcher compact />
-          </span>
+          <LanguageSwitcher pill className="hidden xl:inline-flex" />
+          <ThemeSwitch className="hidden lg:inline-flex" />
           {showLogin && (
-            <Link
-              to="/login"
-              viewTransition
-              className="hidden min-h-target items-center rounded-full px-3 text-body-sm font-semibold text-fg no-underline transition-colors duration-150 ease-out-quint hover:bg-subtle lg:inline-flex"
-            >
-              {t("nav.login")}
-            </Link>
+            <>
+              <span aria-hidden="true" className="mx-1 hidden h-6 w-px bg-border lg:block" />
+              <Link
+                to="/login"
+                viewTransition
+                className="hidden h-10 items-center rounded-full px-3.5 text-body-sm font-semibold whitespace-nowrap text-fg no-underline transition-colors duration-150 ease-out-quint hover:bg-subtle lg:inline-flex"
+              >
+                {t("nav.login")}
+              </Link>
+            </>
           )}
           <span className="hidden sm:block">
             <Link
               to="/find-care"
               viewTransition
-              className={buttonClassName({ size: "sm", pill: true, className: "min-h-10 px-5" })}
+              className={buttonClassName({
+                size: "sm",
+                pill: true,
+                className:
+                  "group min-h-10 gap-2 px-5 whitespace-nowrap shadow-card transition-[background-color,box-shadow,transform] hover:shadow-raised active:scale-[0.97] motion-reduce:active:scale-100",
+              })}
             >
+              <MagnifyingGlass
+                aria-hidden="true"
+                weight="bold"
+                className="hidden size-4 xl:block"
+              />
               {t("nav.findCare")}
+              <ArrowRight
+                aria-hidden="true"
+                weight="bold"
+                className="hidden size-3.5 transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5 motion-reduce:transition-none xl:block"
+              />
             </Link>
           </span>
           <button
@@ -160,7 +187,10 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
               )}
             </div>
             <div className="mt-5 flex items-center justify-between gap-3">
-              <LanguageSwitcher compact />
+              <span className="flex items-center gap-2">
+                <LanguageSwitcher pill />
+                <ThemeSwitch />
+              </span>
               <Link
                 to="/emergency"
                 viewTransition
@@ -202,29 +232,30 @@ function SlidingNav() {
   const back = () => movePill(pill.current, currentLink(list.current));
 
   return (
-    <nav aria-label={t("nav.label")} className="mx-auto hidden lg:block">
+    <nav aria-label={t("nav.label")} className="mx-auto hidden min-w-0 lg:block">
       {/* Leaving the list only returns the decorative indicator; the links stay the controls. */}
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <ul
         ref={list}
         onMouseLeave={back}
         onBlur={back}
-        className="relative m-0 flex list-none items-center p-0"
+        className="relative m-0 flex list-none items-center rounded-full border border-border/60 bg-subtle/70 p-1"
       >
         <span
           ref={pill}
           aria-hidden="true"
-          className="absolute top-1/2 left-0 h-10 -translate-y-1/2 rounded-full bg-brand-subtle opacity-0 transition-[translate,width,opacity] duration-300 ease-out-quint motion-reduce:transition-none"
+          className="absolute top-1/2 left-0 h-9 -translate-y-1/2 rounded-full border border-border/60 bg-surface opacity-0 shadow-card transition-[translate,width,opacity] duration-300 ease-out-quint motion-reduce:transition-none"
         />
         {PUBLIC_NAV.map((item) => (
-          <li key={item.to} className="relative">
+          // the list, not the item, is the links' offset parent so the indicator can slide
+          <li key={item.to}>
             <NavLink
               to={item.to}
               end={item.end}
               viewTransition
               onMouseEnter={(event) => movePill(pill.current, event.currentTarget)}
               onFocus={(event) => movePill(pill.current, event.currentTarget)}
-              className="inline-flex min-h-10 items-center rounded-full px-3.5 text-body-sm font-semibold whitespace-nowrap text-fg-secondary no-underline transition-colors duration-150 ease-out-quint hover:text-fg aria-[current=page]:text-on-brand-subtle xl:px-4"
+              className="relative inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-body-sm font-semibold whitespace-nowrap text-fg-secondary no-underline transition-colors duration-150 ease-out-quint hover:text-fg aria-[current=page]:text-fg xl:px-4"
             >
               {t(item.key)}
             </NavLink>

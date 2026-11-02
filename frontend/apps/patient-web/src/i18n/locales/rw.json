@@ -111,7 +111,35 @@
     "tagline": "Duhuza abantu n’ibigo by’ubuvuzi mu Rwanda hose.",
     "trust": "Shakisha udafite konti. Aho uri bikoreshwa mu gushakisha gusa kandi ntibibikwa.",
     "contact": "Twandikire",
-    "accessibility": "Kugerwaho na bose"
+    "accessibility": "Kugerwaho na bose",
+    "label": "Imiyoboro y’urubuga",
+    "hotlineNote": "Umurongo w’imbangukiragutabara ni ubuntu, amasaha 24",
+    "cta": {
+      "title": "Ukeneye kuvurwa uyu munsi?",
+      "body": "Shaka ikigo cy’ubuvuzi gifunguye hafi yawe, urebe uko cyuzuye kandi ufate umwanya mbere yo kuva mu rugo.",
+      "symptoms": "Ntuzi aho wajya?",
+      "call": "Ibyihutirwa · hamagara 912"
+    }
+  },
+  "authAside": {
+    "eyebrow": "Konti yawe ya MediLink",
+    "title": "Tegereza igihe gito, ubone umwanya wo gukira.",
+    "lead": "Konti imwe yawe n’umuryango wawe, mu kigo cyose kiri kuri MediLink.",
+    "points": {
+      "book": {
+        "title": "Fata umwanya mbere",
+        "body": "Hitamo ikigo, serivisi n’igihe kikubereye."
+      },
+      "queue": {
+        "title": "Kurikirana umwanya wawe ku murongo",
+        "body": "Va mu rugo igihe cyawe cyegereje, aho kujya amasaha menshi mbere."
+      },
+      "records": {
+        "title": "Amakuru yawe y’ubuzima ahantu hamwe",
+        "body": "Imiti wandikiwe, ibisubizo n’inyandiko ushobora gusangiza mu mutekano."
+      }
+    },
+    "trust": "Amakuru yawe y’ubuzima arinzwe n’itegeko ry’u Rwanda rirengera amakuru bwite, kandi asangizwa gusa ubyemeye."
   },
   "login": {
     "title": "Injira cyangwa ufungure konti",
@@ -368,6 +396,7 @@
   "care": {
     "title": "Shaka ubuvuzi",
     "filters": "Muyunguruzi",
+    "quick": "Muyunguruzi yihuse",
     "filtersCount_one": "Muyunguruzi · {{count}}",
     "filtersCount_other": "Muyunguruzi · {{count}}",
     "active": "Ibyatoranyijwe",

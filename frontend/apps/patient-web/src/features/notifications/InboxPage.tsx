@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router";
 
+import { paths } from "../../app/paths";
 import { useApi } from "../../app/services";
 import { PageHeading } from "../../components/PageHeading";
 import { useOnline } from "../../layout/PatientShell";
@@ -53,7 +54,7 @@ function Card({ item }: { item: AppNotification }) {
   return (
     <li>
       <Link
-        to={`/notifications/${item.id}`}
+        to={paths.notification(item.id)}
         className={cx(
           "flex min-h-target flex-col gap-2 rounded-lg border p-4 text-fg no-underline hover:border-brand",
           item.is_read ? "border-border bg-surface" : "border-brand bg-brand-subtle/40",
@@ -136,7 +137,7 @@ export function InboxPage() {
         <PageHeading title={t("notifications.inbox.title")}>
           {t("notifications.inbox.title")}
         </PageHeading>
-        <Link to="/notifications/settings" className={buttonClassName({ variant: "ghost" })}>
+        <Link to={paths.notificationSettings} className={buttonClassName({ variant: "ghost" })}>
           <GearSix aria-hidden="true" className="size-icon" />
           {t("notifications.settings.link")}
         </Link>
@@ -233,7 +234,7 @@ export function NotificationDetailPage() {
   const title = data?.title ?? t("notifications.inbox.title");
   return (
     <div className="mx-auto flex w-full max-w-[40rem] flex-col gap-5">
-      <Link to="/notifications" className="self-start font-semibold text-link">
+      <Link to={paths.notifications} className="self-start font-semibold text-link">
         {t("notifications.inbox.back")}
       </Link>
       {notFound ? (
@@ -257,7 +258,7 @@ export function NotificationDetailPage() {
                 {data.facility ? ` · ${data.facility.name}` : ""}
               </p>
               <p className="m-0 whitespace-pre-line text-body text-fg">{data.body}</p>
-              {path && path !== `/notifications/${data.id}` && (
+              {path && path !== paths.notification(data.id) && (
                 <Link to={path} className={cx(buttonClassName({ size: "lg" }), "self-start")}>
                   {t("notifications.detail.open")}
                 </Link>

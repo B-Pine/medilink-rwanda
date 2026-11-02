@@ -1,5 +1,12 @@
 import type { Booking } from "@medilink/api-client";
-import { ArrowLeft, ArrowRight, CaretRight, WarningCircle, type Icon } from "@phosphor-icons/react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  CaretRight,
+  WarningCircle,
+  type Icon,
+} from "@phosphor-icons/react";
 import { Badge, Button, cx, Skeleton, type BadgeTone } from "@medilink/ui";
 import { formatDate } from "@medilink/ui/i18n";
 import { useQuery } from "@tanstack/react-query";
@@ -117,7 +124,7 @@ export function Section({
   return (
     <section aria-labelledby={id} className={cx("flex flex-col gap-3", className)}>
       <div className="flex min-h-target items-center justify-between gap-3">
-        <h2 id={id} className="m-0 font-heading text-h3 font-bold text-fg">
+        <h2 id={id} className="m-0 font-heading text-h3 font-bold tracking-tight text-fg">
           {title}
         </h2>
         {action && (
@@ -155,12 +162,179 @@ export function Panel({
   );
 }
 
-/** Rows that belong together, split by hairlines inside one surface. */
-export function RowList({ children, label }: { children: ReactNode; label?: string }) {
+/**
+ * Segmented switch for a list's views (Upcoming / Past, Active / Past). Pressed buttons, not a
+ * tablist: the list below is one region whose rows change.
+ */
+export function SegmentedTabs<T extends string>({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  value: T;
+  onChange: (value: T) => void;
+  options: { value: T; label: string; count?: number | undefined }[];
+}) {
+  return (
+    <div className="-mx-1 max-w-full overflow-x-auto px-1">
+      <div
+        role="group"
+        aria-label={label}
+        className="inline-flex gap-1 rounded-xl border border-border bg-subtle p-1"
+      >
+        {options.map((option) => (
+          <button
+            key={option.value}
+            type="button"
+            aria-pressed={value === option.value}
+            onClick={() => onChange(option.value)}
+            className={cx(
+              "inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-[10px] px-4 text-body-sm font-semibold whitespace-nowrap",
+              "text-fg-secondary transition-[background-color,color,box-shadow] duration-200 hover:text-fg",
+              "aria-pressed:bg-surface aria-pressed:text-fg aria-pressed:shadow-card",
+            )}
+          >
+            {option.label}
+            {option.count !== undefined && option.count > 0 && (
+              <span className="rounded-full bg-brand-subtle px-1.5 text-caption tabular-nums text-on-brand-subtle">
+                {option.count}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Overview card (patient overview, 2026-11-02): one surface with its own title row (h2 and an
+ * optional "View all") above the body, so a widget reads as one object.
+ */
+export function WidgetCard({
+  id,
+  title,
+  action,
+  children,
+  className,
+}: {
+  id: string;
+  title: string;
+  action?: { to: string; label: string } | undefined;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <section
+      aria-labelledby={id}
+      className={cx(panelClass, "flex flex-col overflow-hidden", className)}
+    >
+      <div className="flex min-h-14 items-center justify-between gap-3 border-b border-border px-4 sm:px-5">
+        <h2 id={id} className="m-0 font-heading text-body font-bold tracking-tight text-fg">
+          {title}
+        </h2>
+        {action && (
+          <Link
+            to={action.to}
+            className="group inline-flex min-h-target items-center gap-1 text-body-sm font-semibold text-link no-underline hover:underline"
+          >
+            {action.label}
+            <ArrowRight
+              aria-hidden="true"
+              className="size-4 transition-transform duration-150 group-hover:translate-x-0.5"
+            />
+          </Link>
+        )}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+export type StatTone = "brand" | "violet" | "info" | "attention";
+
+const STAT_TONE: Record<StatTone, string> = {
+  brand: "bg-brand-subtle text-brand",
+  violet: "bg-violet-bg text-violet",
+  info: "bg-info-bg text-info",
+  attention: "bg-attention-bg text-attention",
+};
+
+/** At-a-glance figure: a real count from the server, its place, and one line of context. */
+export function StatCard({
+  to,
+  icon: IconComponent,
+  label,
+  value,
+  hint,
+  tone = "brand",
+}: {
+  to: string;
+  icon: Icon;
+  label: string;
+  /** Undefined while loading; null when the count could not be loaded (shown as a dash). */
+  value: number | null | undefined;
+  hint: string;
+  tone?: StatTone;
+}) {
+  return (
+    <Link
+      to={to}
+      className={cx(
+        panelClass,
+        "group relative flex h-full flex-col gap-4 p-4 text-fg no-underline sm:p-5",
+        "transition-[border-color,box-shadow] duration-200 ease-out-quint hover:border-brand/40 hover:shadow-card",
+      )}
+    >
+      <span className="flex items-center gap-2.5 pr-5">
+        <span
+          aria-hidden="true"
+          className={cx("grid size-8 shrink-0 place-items-center rounded-lg", STAT_TONE[tone])}
+        >
+          <IconComponent weight="duotone" className="size-[1.125rem]" />
+        </span>
+        <span className="min-w-0 truncate text-body-sm font-semibold text-fg-secondary">
+          {label}
+        </span>
+      </span>
+      <span className="flex flex-col gap-1">
+        {value === undefined ? (
+          <Skeleton height="2.25rem" width="3rem" />
+        ) : (
+          <span className="font-heading text-h1 leading-none font-bold tracking-tight tabular-nums">
+            {value ?? "—"}
+          </span>
+        )}
+        <span className="truncate text-caption text-fg-muted">{hint}</span>
+      </span>
+      <ArrowUpRight
+        aria-hidden="true"
+        weight="bold"
+        className="absolute top-4 right-4 size-4 text-fg-muted opacity-0 transition-[opacity,translate] duration-200 ease-out-quint group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100 motion-reduce:transition-none sm:top-5 sm:right-5"
+      />
+    </Link>
+  );
+}
+
+/** Rows that belong together, split by hairlines inside one surface (`bare`: inside a card). */
+export function RowList({
+  children,
+  label,
+  bare = false,
+}: {
+  children: ReactNode;
+  label?: string;
+  bare?: boolean;
+}) {
   return (
     <ul
       aria-label={label}
-      className={cx(panelClass, "m-0 flex list-none flex-col divide-y divide-border overflow-hidden p-0")}
+      className={cx(
+        !bare && panelClass,
+        "m-0 flex list-none flex-col divide-y divide-border overflow-hidden p-0",
+      )}
     >
       {children}
     </ul>
@@ -179,6 +353,7 @@ export function RowLink({
   trailing,
   after,
   unread = false,
+  onClick,
 }: {
   to: string;
   leading: ReactNode;
@@ -187,14 +362,19 @@ export function RowLink({
   trailing?: ReactNode;
   after?: ReactNode;
   unread?: boolean;
+  onClick?: () => void;
 }) {
   return (
     <li className="relative flex items-center">
       {unread && (
-        <span aria-hidden="true" className="absolute top-1/2 left-1.5 size-2 -translate-y-1/2 rounded-full bg-brand" />
+        <span
+          aria-hidden="true"
+          className="absolute top-1/2 left-1.5 size-2 -translate-y-1/2 rounded-full bg-brand"
+        />
       )}
       <Link
         to={to}
+        onClick={onClick}
         className="group flex min-h-16 min-w-0 flex-1 items-center gap-4 px-4 py-3 text-fg no-underline transition-colors duration-150 hover:bg-subtle/70 sm:px-5"
       >
         {leading}
@@ -214,7 +394,13 @@ export function RowLink({
 }
 
 /** Leading icon of a row: soft square, brand icon. */
-export function RowIcon({ icon: IconComponent, tone = "brand" }: { icon: Icon; tone?: "brand" | "neutral" }) {
+export function RowIcon({
+  icon: IconComponent,
+  tone = "brand",
+}: {
+  icon: Icon;
+  tone?: "brand" | "neutral";
+}) {
   return (
     <span
       aria-hidden="true"
@@ -241,7 +427,9 @@ export function DateBlock({ iso, size = "md" }: { iso: string; size?: "md" | "lg
         size === "md" ? "w-14 py-1.5" : "w-20 py-3",
       )}
     >
-      <span className="text-caption font-semibold tracking-wide uppercase">{part({ month: "short" })}</span>
+      <span className="text-caption font-semibold tracking-wide uppercase">
+        {part({ month: "short" })}
+      </span>
       <span
         className={cx(
           "font-heading leading-none font-extrabold tabular-nums text-fg",
@@ -339,19 +527,22 @@ export function EmptyRow({
   body?: string;
   action?: ReactNode;
 }) {
+  // laid out by its own width, not the window's: a narrow side column stacks it
   return (
-    <div className={cx(panelClass, "flex flex-col items-start gap-3 p-5 sm:flex-row sm:items-center")}>
-      <RowIcon icon={IconComponent} tone="neutral" />
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <p className="m-0 font-semibold text-fg">{title}</p>
-        {body && <p className="m-0 text-body-sm text-fg-secondary">{body}</p>}
+    <div className={cx(panelClass, "@container")}>
+      <div className="flex flex-col items-start gap-3 p-5 @md:flex-row @md:items-center">
+        <RowIcon icon={IconComponent} tone="neutral" />
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <p className="m-0 font-semibold text-pretty text-fg">{title}</p>
+          {body && <p className="m-0 text-body-sm text-fg-secondary">{body}</p>}
+        </div>
+        {action}
       </div>
-      {action}
     </div>
   );
 }
 
-/** Quick action tile: same size everywhere, white, one icon. */
+/** Quick action tile: compact, icon beside the words, an arrow on hover; same size everywhere. */
 export function QuickActionTile({
   to,
   icon: IconComponent,
@@ -368,17 +559,22 @@ export function QuickActionTile({
       to={to}
       className={cx(
         panelClass,
-        "group flex h-full min-h-28 flex-col gap-3 p-4 text-fg no-underline",
-        "transition-[border-color,box-shadow] duration-200 hover:border-brand/40 hover:shadow-card",
+        "group relative flex h-full items-center gap-3 p-3.5 pr-9 text-fg no-underline",
+        "transition-[border-color,box-shadow,transform] duration-200 ease-out-quint hover:border-brand/40 hover:shadow-card active:scale-[0.98] motion-reduce:active:scale-100",
       )}
     >
-      <span className="grid size-10 place-items-center rounded-xl bg-brand-subtle text-brand transition-transform duration-200 group-hover:-translate-y-0.5">
-        <IconComponent aria-hidden="true" weight="duotone" className="size-6" />
+      <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-subtle text-brand transition-colors duration-200 group-hover:bg-primary group-hover:text-on-primary">
+        <IconComponent aria-hidden="true" weight="duotone" className="size-5" />
       </span>
-      <span className="flex flex-col gap-0.5">
-        <span className="font-semibold">{title}</span>
-        <span className="text-body-sm text-fg-secondary">{description}</span>
+      <span className="flex min-w-0 flex-col">
+        <span className="truncate text-body-sm font-semibold">{title}</span>
+        <span className="truncate text-caption text-fg-muted">{description}</span>
       </span>
+      <ArrowUpRight
+        aria-hidden="true"
+        weight="bold"
+        className="absolute top-3 right-3 size-3.5 text-fg-muted opacity-0 transition-[opacity,translate] duration-200 ease-out-quint group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100 motion-reduce:transition-none"
+      />
     </Link>
   );
 }

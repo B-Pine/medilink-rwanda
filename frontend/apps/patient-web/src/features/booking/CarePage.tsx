@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router";
 
 import { useApi } from "../../app/services";
+import { useInDashboard } from "../../layout/DashboardContext";
 import { PublicLayout } from "../../layout/PublicLayout";
 import { isHospital } from "../site/data";
 import { EmptyState, PageContainer, PageHeader, SearchBar } from "../site/kit";
@@ -35,6 +36,7 @@ type Availability = (typeof AVAILABILITY)[number];
 export function CarePage() {
   const { t } = useTranslation();
   const api = useApi();
+  const inDashboard = useInDashboard();
   const [params, setParams] = useSearchParams();
   const [sort, setSort] = useState<Sort>("soonest");
   const { near, setNear, locating, locate } = useNearMe(() => setSort("nearest"));
@@ -250,6 +252,21 @@ export function CarePage() {
     </div>
   );
 
+  const search = (className: string) => (
+    <SearchBar
+      id="care-search"
+      label={t("site.searchLabel")}
+      value={draft ?? q}
+      onChange={setDraft}
+      placeholder={t("site.searchPlaceholder")}
+      className={className}
+      onSubmit={() => {
+        set("q", (draft ?? q).trim());
+        setDraft(null);
+      }}
+    />
+  );
+
   return (
     <PublicLayout>
       <PageContainer>
@@ -258,29 +275,85 @@ export function CarePage() {
           title={t("site.care.title")}
           lead={t("site.care.lead")}
         />
-        <SearchBar
-          id="care-search"
-          label={t("site.searchLabel")}
-          value={draft ?? q}
-          onChange={setDraft}
-          placeholder={t("site.searchPlaceholder")}
-          className="max-w-2xl"
-          onSubmit={() => {
-            set("q", (draft ?? q).trim());
-            setDraft(null);
-          }}
-        />
+        {inDashboard ? (
+          // Dashboard: one search card (search, near me, filters, then the one-tap filters),
+          // since the sidebar leaves no room for a filter column (upgrade 12 §7)
+          <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-3 sm:p-4">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              {search("flex-1")}
+              <div className="flex shrink-0 gap-2">
+                {!near && (
+                  <Button
+                    variant="secondary"
+                    pill
+                    onClick={locate}
+                    loading={locating === "busy"}
+                    iconStart={<Crosshair aria-hidden="true" className="size-4" />}
+                  >
+                    {t("home.nearMe")}
+                  </Button>
+                )}
+                <Button
+                  variant="secondary"
+                  pill
+                  onClick={() => setPanel(true)}
+                  iconStart={<Faders aria-hidden="true" className="size-4" />}
+                >
+                  {chips.length
+                    ? t("care.filtersCount", { count: chips.length })
+                    : t("care.filters")}
+                </Button>
+              </div>
+            </div>
+            <div
+              role="group"
+              aria-label={t("care.quick")}
+              className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-0.5 [scrollbar-width:none]"
+            >
+              <Toggle on={openNow} onChange={(on) => set("open", on ? "1" : "")}>
+                {t("home.openNow")}
+              </Toggle>
+              <Toggle on={emergency} onChange={(on) => set("emergency", on ? "1" : "")}>
+                {t("site.care.emergencyFilter")}
+              </Toggle>
+              <Toggle on={today} onChange={(on) => set("today", on ? "1" : "")}>
+                {t("care.availability.today")}
+              </Toggle>
+              <Toggle on={remote} onChange={(on) => set("remote", on ? "1" : "")}>
+                {t("care.availability.remote")}
+              </Toggle>
+            </div>
+            {locating === "denied" && (
+              <p role="status" className="m-0 text-body-sm text-fg-secondary">
+                {t("home.locationDenied")}
+              </p>
+            )}
+          </div>
+        ) : (
+          search("max-w-2xl")
+        )}
       </PageContainer>
-      <div className="ml-stagger mx-auto grid max-w-[80rem] gap-6 px-4 pt-6 pb-16 sm:px-6 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-8 lg:px-8">
-        <aside
-          aria-labelledby="filters"
-          className="hidden self-start rounded-3xl bg-surface p-6 shadow-card lg:sticky lg:top-4 lg:block"
-        >
-          <h2 id="filters" className="mt-0 mb-4 text-h3">
-            {t("care.filters")}
-          </h2>
-          {filters}
-        </aside>
+      <div
+        className={cx(
+          "ml-stagger grid gap-6",
+          // Inside the dashboard the sidebar takes the width a filter column would need:
+          // filters open in the drawer instead (upgrade 12 §7)
+          inDashboard
+            ? "pt-6"
+            : "mx-auto max-w-[80rem] px-4 pt-6 pb-16 sm:px-6 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-8 lg:px-8",
+        )}
+      >
+        {!inDashboard && (
+          <aside
+            aria-labelledby="filters"
+            className="hidden self-start rounded-3xl bg-surface p-6 shadow-card lg:sticky lg:top-4 lg:block"
+          >
+            <h2 id="filters" className="mt-0 mb-4 text-h3">
+              {t("care.filters")}
+            </h2>
+            {filters}
+          </aside>
+        )}
 
         <div className="flex min-w-0 flex-col gap-3">
           {chips.length > 0 && (
@@ -323,19 +396,22 @@ export function CarePage() {
             sort={sort}
             onSort={setSort}
             toolbar={
-              <span className="lg:hidden">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  pill
-                  onClick={() => setPanel(true)}
-                  iconStart={<Faders aria-hidden="true" className="size-4" />}
-                >
-                  {chips.length
-                    ? t("care.filtersCount", { count: chips.length })
-                    : t("care.filters")}
-                </Button>
-              </span>
+              // the dashboard has the Filters button in its search card
+              !inDashboard && (
+                <span className="lg:hidden">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    pill
+                    onClick={() => setPanel(true)}
+                    iconStart={<Faders aria-hidden="true" className="size-4" />}
+                  >
+                    {chips.length
+                      ? t("care.filtersCount", { count: chips.length })
+                      : t("care.filters")}
+                  </Button>
+                </span>
+              )
             }
             empty={<NoMatch service={activeService} query={q} onClear={clearAll} />}
           />
@@ -377,7 +453,7 @@ function Toggle({
       type="button"
       aria-pressed={on}
       onClick={() => onChange(!on)}
-      className={cx(FILTER, "inline-flex items-center text-left")}
+      className={cx(FILTER, "inline-flex shrink-0 items-center text-left whitespace-nowrap")}
     >
       {children}
     </button>

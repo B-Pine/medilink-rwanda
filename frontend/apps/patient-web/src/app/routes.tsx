@@ -5,6 +5,7 @@ import type { RouteObject } from "react-router";
 import { RequirePatient } from "../auth/RequirePatient";
 import { PatientShell } from "../layout/PatientShell";
 import { FEATURES } from "./features";
+import { legacyRoutes, paths } from "./paths";
 
 // Pages are code-split per route: the landing page stays small on 3G (design 06 H4).
 const page =
@@ -36,13 +37,13 @@ export const routes: RouteObject[] = [
         element: <RequirePatient />,
         children: [
           {
-            // Header, the four destinations and the offline banner (design 07 §2)
+            // Sidebar, top bar, phone tab bar and the offline banner (upgrade 12 §2)
             element: <PatientShell />,
             children: [
-              { path: "/home", lazy: page(() => import("../pages/HomePage"), "HomePage") },
-              { path: "/support", lazy: page(() => import("../pages/SupportPage"), "SupportPage") },
+              { path: paths.overview, lazy: page(() => import("../pages/HomePage"), "HomePage") },
+              { path: paths.help, lazy: page(() => import("../pages/SupportPage"), "SupportPage") },
               {
-                path: "/settings",
+                path: paths.settings,
                 lazy: page(() => import("../pages/SettingsPage"), "SettingsPage"),
               },
               ...FEATURES.flatMap((feature) => feature.patient ?? []),
@@ -50,6 +51,8 @@ export const routes: RouteObject[] = [
           },
         ],
       },
+      // design 07 addresses, still in emails, push messages and bookmarks
+      ...legacyRoutes,
       ...FEATURES.flatMap((feature) => feature.public ?? []),
       { path: "*", lazy: page(() => import("../pages/NotFoundPage"), "NotFoundPage") },
     ],

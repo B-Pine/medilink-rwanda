@@ -10,14 +10,15 @@ import {
 } from "@medilink/api-client";
 import {
   ArrowLeft,
+  Buildings,
   CalendarCheck,
   CalendarPlus,
+  Check,
   Clock,
   NavigationArrow,
   PersonSimpleWalk,
   Siren,
   Timer,
-  UserCircle,
 } from "@phosphor-icons/react";
 import {
   Alert,
@@ -39,9 +40,11 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 
+import { paths } from "../../app/paths";
 import { useApi } from "../../app/services";
 import { PageHeading } from "../../components/PageHeading";
 import { EmergencyNotice } from "../../layout/EmergencyNotice";
+import { Avatar } from "../dashboard/kit";
 import { useProfiles, useRelationshipLabel } from "../profile/ProfileLayout";
 import { trackerKey } from "../tracker/TrackerPage";
 import { day, isMorning, pick, time } from "./discovery";
@@ -89,15 +92,65 @@ function HoldTimer({ hold, onExpired }: { hold: Hold; onExpired: () => void }) {
   );
 }
 
+/** Labelled stepper: done steps show a check, the current one is filled; words, not colour alone. */
+function Stepper({ steps, step }: { steps: Step[]; step: number }) {
+  const { t } = useTranslation();
+  return (
+    <ol
+      aria-label={t("booking.flow.steps.label")}
+      className="m-0 flex list-none items-center gap-1 overflow-x-auto p-0 [scrollbar-width:none]"
+    >
+      {steps.map((key, i) => {
+        const n = i + 1;
+        const state = n < step ? "done" : n === step ? "current" : "next";
+        return (
+          <li
+            key={key}
+            aria-current={state === "current" ? "step" : undefined}
+            className="flex shrink-0 items-center gap-1"
+          >
+            {i > 0 && (
+              <span
+                aria-hidden="true"
+                className={cx("h-px w-4 sm:w-8", n <= step ? "bg-primary" : "bg-border")}
+              />
+            )}
+            <span
+              className={cx(
+                "inline-flex items-center gap-2 rounded-full py-1 pr-3 pl-1 text-body-sm font-semibold whitespace-nowrap",
+                state === "current" ? "bg-brand-subtle text-on-brand-subtle" : "text-fg-muted",
+                state === "done" && "text-fg-secondary",
+              )}
+            >
+              <span
+                aria-hidden="true"
+                className={cx(
+                  "grid size-6 place-items-center rounded-full text-caption font-bold tabular-nums",
+                  state === "next"
+                    ? "border border-border bg-surface"
+                    : "bg-primary text-on-primary",
+                )}
+              >
+                {state === "done" ? <Check weight="bold" className="size-3.5" /> : n}
+              </span>
+              {t(`booking.flow.steps.${key}`)}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
 function StepFrame({
+  steps,
   step,
-  total,
   title,
   onBack,
   children,
 }: {
+  steps: Step[];
   step: number;
-  total: number;
   title: string;
   onBack?: () => void;
   children: React.ReactNode;
@@ -109,35 +162,80 @@ function StepFrame({
   }, [title]);
   return (
     <section aria-labelledby="book-step" className="flex flex-col gap-5">
-      <div className="flex items-center justify-between gap-3">
-        {onBack ? (
-          <Button
-            variant="ghost"
-            onClick={onBack}
-            iconStart={<ArrowLeft aria-hidden="true" className="size-icon" />}
-          >
-            {t("common.back")}
-          </Button>
-        ) : (
-          <span />
-        )}
-        <span className="text-body-sm font-semibold text-fg-muted">
-          {t("booking.flow.step", { step, total })}
+      <Stepper steps={steps} step={step} />
+      <div className="flex flex-col gap-5 rounded-2xl border border-border bg-surface p-5 sm:p-6">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex flex-col gap-1">
+            <span className="text-caption font-semibold text-fg-muted">
+              {t("booking.flow.step", { step, total: steps.length })}
+            </span>
+            <h2 id="book-step" ref={heading} tabIndex={-1} className="m-0 text-h2 outline-none">
+              {title}
+            </h2>
+          </div>
+          {onBack && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onBack}
+              iconStart={<ArrowLeft aria-hidden="true" className="size-4" />}
+            >
+              {t("common.back")}
+            </Button>
+          )}
+        </div>
+        {children}
+      </div>
+    </section>
+  );
+}
+
+/** Wide screens: what has been chosen so far, beside the step (filled in as the person goes). */
+function Summary({
+  facility,
+  rows,
+}: {
+  facility: PublicFacility;
+  rows: [label: string, value: string | null][];
+}) {
+  const { t } = useTranslation();
+  const place = [facility.sector, facility.district].filter(Boolean).join(", ");
+  return (
+    <aside
+      aria-labelledby="book-summary"
+      className="hidden self-start overflow-hidden rounded-2xl border border-border bg-surface lg:sticky lg:top-24 lg:block"
+    >
+      <div className="flex items-center gap-3 border-b border-border px-5 py-4">
+        <span
+          aria-hidden="true"
+          className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-subtle text-brand"
+        >
+          <Buildings weight="duotone" className="size-5" />
+        </span>
+        <span className="flex min-w-0 flex-col">
+          <span className="truncate font-semibold text-fg">{facility.name}</span>
+          {place && <span className="truncate text-caption text-fg-muted">{place}</span>}
         </span>
       </div>
-      <div aria-hidden="true" className="flex gap-1.5">
-        {Array.from({ length: total }, (_, i) => (
-          <span
-            key={i}
-            className={cx("h-1.5 flex-1 rounded-full", i < step ? "bg-brand" : "bg-subtle")}
-          />
-        ))}
-      </div>
-      <h2 id="book-step" ref={heading} tabIndex={-1} className="m-0 text-h2 outline-none">
-        {title}
+      <h2 id="book-summary" className="sr-only">
+        {t("booking.flow.summary")}
       </h2>
-      {children}
-    </section>
+      <dl className="m-0 flex flex-col divide-y divide-border">
+        {rows.map(([label, value]) => (
+          <div key={label} className="flex flex-col gap-0.5 px-5 py-3">
+            <dt className="text-caption font-semibold text-fg-muted">{label}</dt>
+            <dd
+              className={cx(
+                "m-0 text-body-sm first-letter:uppercase",
+                value ? "font-semibold text-fg" : "text-fg-muted",
+              )}
+            >
+              {value ?? t("booking.flow.notChosen")}
+            </dd>
+          </div>
+        ))}
+      </dl>
+    </aside>
   );
 }
 
@@ -156,11 +254,23 @@ function ChoiceCard({
       aria-pressed={selected}
       onClick={onClick}
       className={cx(
-        "flex min-h-16 w-full cursor-pointer items-center gap-4 rounded-lg border-2 bg-surface p-4 text-left text-fg",
-        selected ? "border-brand bg-brand-subtle" : "border-border hover:border-border-input",
+        "flex min-h-16 w-full cursor-pointer items-center gap-4 rounded-xl border bg-surface p-4 text-left text-fg",
+        "transition-[border-color,background-color,box-shadow] duration-150 ease-out-quint",
+        selected
+          ? "border-primary bg-brand-subtle shadow-[inset_0_0_0_1px_var(--color-primary)]"
+          : "border-border hover:border-border-input hover:bg-subtle/50",
       )}
     >
       {children}
+      <span
+        aria-hidden="true"
+        className={cx(
+          "ml-auto grid size-6 shrink-0 place-items-center rounded-full border transition-colors duration-150",
+          selected ? "border-primary bg-primary text-on-primary" : "border-border-input",
+        )}
+      >
+        {selected && <Check weight="bold" className="size-3.5" />}
+      </span>
     </button>
   );
 }
@@ -455,14 +565,17 @@ function Success({ booking }: { booking: Booking }) {
           {t("booking.flow.addToCalendar")}
         </a>
         <Link
-          to={`/facilities/${booking.facility_slug}`}
+          to={paths.facility(booking.facility_slug)}
           className={buttonClassName({ variant: "ghost", fullWidth: true })}
         >
           <NavigationArrow aria-hidden="true" className="size-icon" />
           {t("booking.flow.directions")}
         </Link>
-        <Link to="/visits" className={buttonClassName({ size: "lg", fullWidth: true })}>
-          {t("booking.flow.toVisits")}
+        <Link
+          to={paths.appointment(booking.id)}
+          className={buttonClassName({ size: "lg", fullWidth: true })}
+        >
+          {t("dashboard.appointments.view")}
         </Link>
       </div>
     </div>
@@ -563,7 +676,7 @@ export function BookPage() {
         results: [...(old?.results ?? []).filter((v) => v.visit_id !== visit.visit_id), visit],
       }));
       void queryClient.invalidateQueries({ queryKey: trackerKey });
-      void navigate(`/visits/${visit.visit_id}`);
+      void navigate(paths.ticket(visit.visit_id));
     },
   });
 
@@ -626,217 +739,231 @@ export function BookPage() {
       <PageHeading title={t("booking.flow.title")}>{t("booking.flow.title")}</PageHeading>
     </div>
   );
+  const summary: [string, string | null][] = [
+    [t("booking.flow.forWho"), patient?.display_name ?? null],
+    [t("booking.flow.service"), service ? pick(service.name_i18n, lang) : null],
+    [
+      t("booking.flow.whenLabel"),
+      slot ? `${day(slot.starts_at, lang)} · ${time(slot.starts_at, lang)}` : null,
+    ],
+    ...(slot?.doctor ? [[t("booking.flow.doctor"), slot.doctor] as [string, string]] : []),
+  ];
 
   return (
-    <div className="mx-auto flex w-full max-w-[40rem] flex-col gap-6">
-      {header}
-      {hold && step !== "when" && !expired && (
-        <HoldTimer hold={hold} onExpired={() => setExpired(true)} />
-      )}
-      {expired && (
-        <Alert tone="warning" role="alert" title={t("booking.flow.expiredTitle")}>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              setExpired(false);
-              setHold(null);
-              setSlot(null);
-              setStep("when");
-            }}
-          >
-            {t("booking.flow.chooseAgain")}
-          </Button>
-        </Alert>
-      )}
+    // the steps, with what has been chosen beside them on wide screens
+    <div className="mx-auto grid w-full max-w-[64rem] items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+      <div className="flex min-w-0 flex-col gap-6">
+        {header}
+        {hold && step !== "when" && !expired && (
+          <HoldTimer hold={hold} onExpired={() => setExpired(true)} />
+        )}
+        {expired && (
+          <Alert tone="warning" role="alert" title={t("booking.flow.expiredTitle")}>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setExpired(false);
+                setHold(null);
+                setSlot(null);
+                setStep("when");
+              }}
+            >
+              {t("booking.flow.chooseAgain")}
+            </Button>
+          </Alert>
+        )}
 
-      {step === "who" && (
-        <StepFrame step={index} total={steps.length} title={t("booking.flow.who")}>
-          <ul className="m-0 flex list-none flex-col gap-3 p-0">
-            {own.map((p) => (
-              <li key={p.patient_id}>
-                <ChoiceCard
-                  selected={patientId === p.patient_id}
-                  onClick={() => setPatientId(p.patient_id)}
-                >
-                  <UserCircle
-                    aria-hidden="true"
-                    weight="duotone"
-                    className="size-10 shrink-0 text-brand"
-                  />
-                  <span className="flex flex-col">
-                    <span className="font-semibold">{p.display_name}</span>
-                    <span className="text-body-sm text-fg-muted">
-                      {relationship(p.relationship)}
+        {step === "who" && (
+          <StepFrame steps={steps} step={index} title={t("booking.flow.who")}>
+            <ul className="m-0 flex list-none flex-col gap-3 p-0">
+              {own.map((p) => (
+                <li key={p.patient_id}>
+                  <ChoiceCard
+                    selected={patientId === p.patient_id}
+                    onClick={() => setPatientId(p.patient_id)}
+                  >
+                    <Avatar name={p.display_name} />
+                    <span className="flex flex-col">
+                      <span className="font-semibold">{p.display_name}</span>
+                      <span className="text-body-sm text-fg-muted">
+                        {relationship(p.relationship)}
+                      </span>
                     </span>
-                  </span>
-                </ChoiceCard>
-              </li>
-            ))}
-          </ul>
-          <Link to="/family" className="font-semibold">
-            {t("booking.flow.addPerson")}
-          </Link>
-          <Button size="lg" fullWidth disabled={!patientId} onClick={() => setStep(steps[index]!)}>
-            {t("common.continue")}
-          </Button>
-        </StepFrame>
-      )}
-
-      {step === "what" && (
-        <StepFrame step={index} total={steps.length} title={t("booking.flow.what")} onBack={back}>
-          <ul className="m-0 flex list-none flex-col gap-3 p-0">
-            {bookable.map((s) => (
-              <li key={s.id}>
-                <ChoiceCard selected={serviceId === s.id} onClick={() => setServiceId(s.id)}>
-                  <span className="flex flex-1 flex-col">
-                    <span className="font-semibold">{pick(s.name_i18n, lang)}</span>
-                  </span>
-                </ChoiceCard>
-              </li>
-            ))}
-          </ul>
-          <Button size="lg" fullWidth disabled={!service} onClick={() => setStep("when")}>
-            {t("common.continue")}
-          </Button>
-        </StepFrame>
-      )}
-
-      {step === "when" && service && (
-        <StepFrame step={index} total={steps.length} title={t("booking.flow.when")} onBack={back}>
-          <WhenStep
-            facility={f}
-            service={service}
-            doctor={f.doctors.find((d) => d.membership_id === params.get("doctor")) ?? null}
-            onAnyDoctor={() => {
-              const next = new URLSearchParams(params);
-              next.delete("doctor");
-              setParams(next, { replace: true });
-            }}
-            joining={join.isPending}
-            onJoinToday={() => join.mutate()}
-            onHeld={(s, h) => {
-              if (hold && hold.hold_id !== h.hold_id)
-                void api.booking.release(hold.hold_id).catch(() => undefined);
-              setSlot(s);
-              setHold(h);
-              setExpired(false);
-              setStep("reason");
-            }}
-          />
-          {join.isError && (
-            <Alert tone="danger" role="alert">
-              {isApiError(join.error) ? join.error.message : t("booking.flow.failed")}
-            </Alert>
-          )}
-        </StepFrame>
-      )}
-
-      {step === "reason" && (
-        <StepFrame step={index} total={steps.length} title={t("booking.flow.reason")} onBack={back}>
-          <p className="m-0 text-fg-secondary">{t("booking.flow.reasonHint")}</p>
-          {symptoms.data ? (
-            <SymptomPicker
-              symptoms={symptoms.data}
-              chosen={chosen}
-              onToggle={(code) =>
-                setChosen((current) => {
-                  const next = new Set(current);
-                  if (next.has(code)) next.delete(code);
-                  else if (next.size < 5) next.add(code);
-                  return next;
-                })
-              }
-            />
-          ) : (
-            <Skeleton height="10rem" className="rounded-lg" />
-          )}
-          {redFlag && (
-            <div role="alert" className="flex items-start gap-3 rounded-md bg-danger-bg p-4">
-              <Siren
-                aria-hidden="true"
-                weight="bold"
-                className="mt-0.5 size-6 shrink-0 text-danger"
-              />
-              <p className="m-0">
-                <strong className="text-danger">{t("booking.flow.redFlagTitle")}</strong>{" "}
-                {t("booking.flow.redFlagBody")}
-              </p>
-            </div>
-          )}
-          <TextareaField
-            label={t("booking.flow.more")}
-            hint={t("booking.flow.moreHint")}
-            maxLength={500}
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-          />
-          <Button
-            size="lg"
-            fullWidth
-            disabled={chosen.size === 0}
-            onClick={() => setStep("review")}
-          >
-            {t("common.continue")}
-          </Button>
-        </StepFrame>
-      )}
-
-      {step === "review" && slot && service && (
-        <StepFrame step={index} total={steps.length} title={t("booking.flow.review")} onBack={back}>
-          <Card className="flex flex-col gap-0 divide-y divide-border p-0">
-            {[
-              [t("booking.flow.forWho"), patient?.display_name ?? ""],
-              [t("booking.flow.where"), f.name],
-              [t("booking.flow.service"), pick(service.name_i18n, lang)],
-              [
-                t("booking.flow.whenLabel"),
-                `${day(slot.starts_at, lang)} · ${time(slot.starts_at, lang)}`,
-              ],
-              ...(slot.doctor ? [[t("booking.flow.doctor"), slot.doctor]] : []),
-            ].map(([label, value]) => (
-              <div key={label} className="flex flex-wrap justify-between gap-2 px-5 py-3">
-                <span className="text-fg-secondary">{label}</span>
-                <span className="font-semibold first-letter:uppercase">{value}</span>
-              </div>
-            ))}
-          </Card>
-          <SelectField
-            label={t("booking.flow.insurance")}
-            value={insurance}
-            onChange={(e) => setInsurance(e.target.value)}
-          >
-            <option value="">{t("booking.flow.noInsurance")}</option>
-            {(insurances.data?.results ?? [])
-              .filter((c) => c.is_active)
-              .map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.insurer_display}
-                </option>
+                  </ChoiceCard>
+                </li>
               ))}
-          </SelectField>
-          {card && accepted === false && (
-            <Alert tone="warning">
-              {t("booking.flow.notAccepted", { insurer: card.insurer_display })}
-            </Alert>
-          )}
-          <p className="m-0 text-body-sm text-fg-secondary">{t("booking.flow.cancelRule")}</p>
-          {book.isError && (
-            <Alert tone="danger" role="alert" title={t("booking.flow.failed")}>
-              {isApiError(book.error) ? book.error.message : null}
-            </Alert>
-          )}
-          <Button
-            size="lg"
-            fullWidth
-            loading={book.isPending}
-            disabled={expired}
-            onClick={() => book.mutate()}
-          >
-            {t("booking.flow.confirm")}
-          </Button>
-          <EmergencyNotice />
-        </StepFrame>
-      )}
+            </ul>
+            <Link to={paths.family} className="font-semibold">
+              {t("booking.flow.addPerson")}
+            </Link>
+            <Button
+              size="lg"
+              fullWidth
+              disabled={!patientId}
+              onClick={() => setStep(steps[index]!)}
+            >
+              {t("common.continue")}
+            </Button>
+          </StepFrame>
+        )}
+
+        {step === "what" && (
+          <StepFrame steps={steps} step={index} title={t("booking.flow.what")} onBack={back}>
+            <ul className="m-0 flex list-none flex-col gap-3 p-0">
+              {bookable.map((s) => (
+                <li key={s.id}>
+                  <ChoiceCard selected={serviceId === s.id} onClick={() => setServiceId(s.id)}>
+                    <span className="flex flex-1 flex-col">
+                      <span className="font-semibold">{pick(s.name_i18n, lang)}</span>
+                    </span>
+                  </ChoiceCard>
+                </li>
+              ))}
+            </ul>
+            <Button size="lg" fullWidth disabled={!service} onClick={() => setStep("when")}>
+              {t("common.continue")}
+            </Button>
+          </StepFrame>
+        )}
+
+        {step === "when" && service && (
+          <StepFrame steps={steps} step={index} title={t("booking.flow.when")} onBack={back}>
+            <WhenStep
+              facility={f}
+              service={service}
+              doctor={f.doctors.find((d) => d.membership_id === params.get("doctor")) ?? null}
+              onAnyDoctor={() => {
+                const next = new URLSearchParams(params);
+                next.delete("doctor");
+                setParams(next, { replace: true });
+              }}
+              joining={join.isPending}
+              onJoinToday={() => join.mutate()}
+              onHeld={(s, h) => {
+                if (hold && hold.hold_id !== h.hold_id)
+                  void api.booking.release(hold.hold_id).catch(() => undefined);
+                setSlot(s);
+                setHold(h);
+                setExpired(false);
+                setStep("reason");
+              }}
+            />
+            {join.isError && (
+              <Alert tone="danger" role="alert">
+                {isApiError(join.error) ? join.error.message : t("booking.flow.failed")}
+              </Alert>
+            )}
+          </StepFrame>
+        )}
+
+        {step === "reason" && (
+          <StepFrame steps={steps} step={index} title={t("booking.flow.reason")} onBack={back}>
+            <p className="m-0 text-fg-secondary">{t("booking.flow.reasonHint")}</p>
+            {symptoms.data ? (
+              <SymptomPicker
+                symptoms={symptoms.data}
+                chosen={chosen}
+                onToggle={(code) =>
+                  setChosen((current) => {
+                    const next = new Set(current);
+                    if (next.has(code)) next.delete(code);
+                    else if (next.size < 5) next.add(code);
+                    return next;
+                  })
+                }
+              />
+            ) : (
+              <Skeleton height="10rem" className="rounded-lg" />
+            )}
+            {redFlag && (
+              <div role="alert" className="flex items-start gap-3 rounded-md bg-danger-bg p-4">
+                <Siren
+                  aria-hidden="true"
+                  weight="bold"
+                  className="mt-0.5 size-6 shrink-0 text-danger"
+                />
+                <p className="m-0">
+                  <strong className="text-danger">{t("booking.flow.redFlagTitle")}</strong>{" "}
+                  {t("booking.flow.redFlagBody")}
+                </p>
+              </div>
+            )}
+            <TextareaField
+              label={t("booking.flow.more")}
+              hint={t("booking.flow.moreHint")}
+              maxLength={500}
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+            />
+            <Button
+              size="lg"
+              fullWidth
+              disabled={chosen.size === 0}
+              onClick={() => setStep("review")}
+            >
+              {t("common.continue")}
+            </Button>
+          </StepFrame>
+        )}
+
+        {step === "review" && slot && service && (
+          <StepFrame steps={steps} step={index} title={t("booking.flow.review")} onBack={back}>
+            <Card className="flex flex-col gap-0 divide-y divide-border p-0">
+              {[
+                [t("booking.flow.forWho"), patient?.display_name ?? ""],
+                [t("booking.flow.where"), f.name],
+                [t("booking.flow.service"), pick(service.name_i18n, lang)],
+                [
+                  t("booking.flow.whenLabel"),
+                  `${day(slot.starts_at, lang)} · ${time(slot.starts_at, lang)}`,
+                ],
+                ...(slot.doctor ? [[t("booking.flow.doctor"), slot.doctor]] : []),
+              ].map(([label, value]) => (
+                <div key={label} className="flex flex-wrap justify-between gap-2 px-5 py-3">
+                  <span className="text-fg-secondary">{label}</span>
+                  <span className="font-semibold first-letter:uppercase">{value}</span>
+                </div>
+              ))}
+            </Card>
+            <SelectField
+              label={t("booking.flow.insurance")}
+              value={insurance}
+              onChange={(e) => setInsurance(e.target.value)}
+            >
+              <option value="">{t("booking.flow.noInsurance")}</option>
+              {(insurances.data?.results ?? [])
+                .filter((c) => c.is_active)
+                .map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.insurer_display}
+                  </option>
+                ))}
+            </SelectField>
+            {card && accepted === false && (
+              <Alert tone="warning">
+                {t("booking.flow.notAccepted", { insurer: card.insurer_display })}
+              </Alert>
+            )}
+            <p className="m-0 text-body-sm text-fg-secondary">{t("booking.flow.cancelRule")}</p>
+            {book.isError && (
+              <Alert tone="danger" role="alert" title={t("booking.flow.failed")}>
+                {isApiError(book.error) ? book.error.message : null}
+              </Alert>
+            )}
+            <Button
+              size="lg"
+              fullWidth
+              loading={book.isPending}
+              disabled={expired}
+              onClick={() => book.mutate()}
+            >
+              {t("booking.flow.confirm")}
+            </Button>
+            <EmergencyNotice />
+          </StepFrame>
+        )}
+      </div>
+      <Summary facility={f} rows={summary} />
     </div>
   );
 }

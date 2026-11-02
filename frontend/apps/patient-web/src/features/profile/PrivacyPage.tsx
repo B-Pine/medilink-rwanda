@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
+import { paths } from "../../app/paths";
 import { useApi } from "../../app/services";
 import { can, ProfileLayout, useProfiles, useRelationshipLabel } from "./ProfileLayout";
 import { CONSENT_VERSION, errorText } from "./shared";
@@ -78,7 +79,7 @@ export function PrivacyPage() {
             ))}
           </Card>
           {self && (
-            <Link to={`/profile/${self.patient_id}/access-history`}>
+            <Link to={`${paths.profileOf(self.patient_id)}/access-history`}>
               {t("profile.privacy.history")}
             </Link>
           )}

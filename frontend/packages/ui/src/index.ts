@@ -35,7 +35,7 @@ export { MAIN_CONTENT_ID, SkipLink } from "./components/SkipLink";
 export { LoadingState, Spinner } from "./components/Spinner";
 export { TextField } from "./components/TextField";
 export type { TextFieldProps } from "./components/TextField";
-export { ThemeToggle } from "./components/ThemeToggle";
+export { ThemeSwitch, ThemeToggle } from "./components/ThemeToggle";
 export { VisuallyHidden } from "./components/VisuallyHidden";
 export { errorSummaryItems, fieldErrorMessage, SERVER_ERROR_TYPE } from "./forms/errors";
 export type { FormFieldError } from "./forms/errors";

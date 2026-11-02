@@ -51,6 +51,11 @@ import siteEn from "../features/site/locales/en.json";
 import siteFr from "../features/site/locales/fr.json";
 import siteRw from "../features/site/locales/rw.json";
 // [/Upgrade U2 imports]
+// [Upgrade U12 imports]
+import dashboardEn from "../features/dashboard/locales/en.json";
+import dashboardFr from "../features/dashboard/locales/fr.json";
+import dashboardRw from "../features/dashboard/locales/rw.json";
+// [/Upgrade U12 imports]
 // [PT imports]
 import publicEn from "../features/public/locales/en.json";
 import publicFr from "../features/public/locales/fr.json";
@@ -99,4 +104,7 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   // [PT]
   public: { rw: publicRw, en: publicEn, fr: publicFr },
   // [/PT]
+  // [Upgrade U12]
+  dashboard: { rw: dashboardRw, en: dashboardEn, fr: dashboardFr },
+  // [/Upgrade U12]
 };

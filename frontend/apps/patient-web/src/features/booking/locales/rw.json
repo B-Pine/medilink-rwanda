@@ -77,6 +77,16 @@
   "flow": {
     "title": "Fata gahunda",
     "step": "Intambwe {{step}} kuri {{total}}",
+    "steps": {
+      "label": "Intambwe zo gufata gahunda",
+      "who": "Uwo ari we",
+      "what": "Serivisi",
+      "when": "Igihe",
+      "reason": "Impamvu",
+      "review": "Kugenzura"
+    },
+    "summary": "Gahunda yawe",
+    "notChosen": "Ntibirahitwamo",
     "who": "Gahunda ni iy’uwuhe?",
     "addPerson": "Ongeraho uwo mu muryango",
     "what": "Ukeneye iki?",

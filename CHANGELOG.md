@@ -10,6 +10,8 @@ This root changelog covers documentation and repository-wide changes (CI, toolin
 
 - `docs/upgrade/`: the system upgrade specification (product direction U-01…U-12, design system, public site, patient app, staff workspaces, new roles, symptom checker and AI, patients without a phone, audit method, implementation plan).
 
+- Upgrade 12 (`docs/upgrade/12-patient-dashboard.md`): the signed-in patient dashboard under `/dashboard`, its shell, pages, surfaces, safety rules and open backend items; traceability rows FR-PAT-03, FR-SCH-08 and FR-QUE-11 updated.
+
 ### Changed
 
 - Upgrade 11: the product owner's public website brief (`docs/upgrade/11-public-website.md`) supersedes 03 for routes, navigation, home, footer and palette; 02 and 03 point to it.

@@ -14,6 +14,7 @@ import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
+import { paths } from "../../app/paths";
 import { useApi } from "../../app/services";
 import { FallbackNote, helpKeys, LocalText } from "./shared";
 
@@ -109,7 +110,7 @@ export function HelpCenter() {
               {rows.map((a) => (
                 <li key={a.id}>
                   <Link
-                    to={`/support/articles/${a.slug}`}
+                    to={paths.article(a.slug)}
                     className="flex min-h-target items-center gap-3 rounded-md border border-border p-3 text-fg no-underline hover:bg-subtle"
                   >
                     <span className="flex min-w-0 flex-1 flex-col gap-1">
@@ -148,10 +149,10 @@ export function ContactCard({ openCount = 0 }: { openCount?: number }) {
           <p className="m-0 text-fg-secondary">{t("help.contact.body")}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Link to="/support/requests/new" className={buttonClassName({})}>
+          <Link to={paths.newRequest} className={buttonClassName({})}>
             {t("help.contact.contact")}
           </Link>
-          <Link to="/support/requests" className={buttonClassName({ variant: "secondary" })}>
+          <Link to={paths.requests} className={buttonClassName({ variant: "secondary" })}>
             {t("help.contact.requests")}
             {openCount > 0 && (
               <span className="text-body-sm font-normal">

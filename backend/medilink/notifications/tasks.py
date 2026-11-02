@@ -44,6 +44,12 @@ def app_url(audience: str) -> str:
     return str(base).rstrip("/")
 
 
+def inbox_url(audience: str, notification_id: Any) -> str:
+    """Link to one inbox item; the patient app keeps it under /dashboard (upgrade 12 §2)."""
+    inbox = "/notifications" if audience == "staff" else "/dashboard/notifications"
+    return f"{app_url(audience)}{inbox}/{notification_id}"
+
+
 def _log(attempt: DeliveryAttempt, event_type: str) -> None:
     logger.info(
         "notifications.attempt",
@@ -141,7 +147,7 @@ def send_attempt(attempt_id: str) -> None:
             body=body,
             priority=notification.priority,
             language=notification.language,
-            url=f"{app_url(notification.audience)}/notifications/{notification.pk}",
+            url=inbox_url(notification.audience, notification.pk),
             ttl_seconds=ttl,
             topic=topic(notification.dedupe_key),
         )

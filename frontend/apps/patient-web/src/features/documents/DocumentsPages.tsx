@@ -17,7 +17,6 @@ import {
 } from "@medilink/ui";
 import {
   ArrowLeft,
-  CaretRight,
   Copy,
   DownloadSimple,
   FileText,
@@ -29,8 +28,18 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router";
 
+import { paths } from "../../app/paths";
 import { useApi } from "../../app/services";
 import { PageHeading } from "../../components/PageHeading";
+import {
+  ErrorBlock,
+  PageHeader,
+  RowIcon,
+  RowLink,
+  RowList,
+  RowsSkeleton,
+  SegmentedTabs,
+} from "../dashboard/kit";
 import { useProfiles } from "../profile/ProfileLayout";
 import { useDate } from "../records/RecordsPages";
 
@@ -72,18 +81,47 @@ export function DocumentsPage() {
   });
   const people = profiles.data?.results ?? [];
   const nameOf = (id: string) => people.find((p) => p.patient_id === id)?.display_name;
-  const rows = list.data?.results ?? [];
+  const [kind, setKind] = useState<ClinicalDocumentKind | "all">("all");
+  const all = list.data?.results ?? [];
+  // Only the kinds this person actually has (upgrade 12 §12)
+  const kinds = [...new Set(all.map((row) => row.kind))];
+  const rows = kind === "all" ? all : all.filter((row) => row.kind === kind);
   return (
-    <div className="mx-auto flex w-full max-w-[40rem] flex-col gap-6">
-      <PageHeading title={t("documents.title")}>{t("documents.title")}</PageHeading>
-      <p className="m-0 text-fg-secondary">{t("documents.intro")}</p>
+    <div className="flex flex-col gap-6">
+      <PageHeader
+        title={t("documents.title")}
+        subtitle={t("documents.intro")}
+        actions={
+          all.length > 0 && (
+            <Button
+              variant="secondary"
+              loading={archive.isPending}
+              onClick={() => archive.mutate()}
+            >
+              <FolderSimple aria-hidden="true" className="size-icon" />
+              {t("documents.downloadAll")}
+            </Button>
+          )
+        }
+      />
+      {kinds.length > 1 && (
+        <SegmentedTabs
+          label={t("dashboard.documents.kinds")}
+          value={kind}
+          onChange={setKind}
+          options={[
+            { value: "all" as const, label: t("dashboard.documents.all") },
+            ...kinds.map((k) => ({ value: k, label: t(`documents.kind.${k}`) })),
+          ]}
+        />
+      )}
       <div className="flex flex-wrap items-end gap-3">
         {people.length > 1 && (
           <SelectField
             label={t("documents.whose")}
             value={patientId}
             onChange={(e) => setPatientId(e.target.value)}
-            className="min-w-56 flex-1"
+            className="sm:w-72"
           >
             <option value="">{t("documents.everyone")}</option>
             {people.map((p) => (
@@ -93,12 +131,6 @@ export function DocumentsPage() {
             ))}
           </SelectField>
         )}
-        {rows.length > 0 && (
-          <Button variant="secondary" loading={archive.isPending} onClick={() => archive.mutate()}>
-            <FolderSimple aria-hidden="true" className="size-icon" />
-            {t("documents.downloadAll")}
-          </Button>
-        )}
       </div>
       {archive.isError && (
         <Alert tone="danger" role="alert">
@@ -106,20 +138,19 @@ export function DocumentsPage() {
         </Alert>
       )}
       {list.isPending ? (
-        <Skeleton height="5rem" className="rounded-lg" />
+        <RowsSkeleton rows={4} />
       ) : list.isError ? (
-        <Alert tone="danger">{t("documents.failed")}</Alert>
+        <ErrorBlock message={t("documents.failed")} onRetry={() => void list.refetch()} />
       ) : rows.length ? (
-        <ul className="m-0 flex list-none flex-col gap-3 p-0">
+        <RowList label={t("documents.title")}>
           {rows.map((row) => (
-            <li key={row.id}>
-              <DocumentCard
-                row={row}
-                who={people.length > 1 ? nameOf(row.patient_id) : undefined}
-              />
-            </li>
+            <DocumentListRow
+              key={row.id}
+              row={row}
+              who={people.length > 1 ? nameOf(row.patient_id) : undefined}
+            />
           ))}
-        </ul>
+        </RowList>
       ) : (
         <EmptyState
           icon={FileText}
@@ -131,30 +162,17 @@ export function DocumentsPage() {
   );
 }
 
-function DocumentCard({ row, who }: { row: DocumentRow; who?: string | undefined }) {
+function DocumentListRow({ row, who }: { row: DocumentRow; who?: string | undefined }) {
   const { t } = useTranslation();
   const date = useDate();
   return (
-    <Link
-      to={`/documents/${row.id}`}
-      className="flex items-center gap-4 rounded-xl bg-surface p-4 text-fg no-underline shadow-card hover:shadow-raised"
-    >
-      <span className="grid size-12 shrink-0 place-items-center rounded-full bg-brand-subtle text-on-brand-subtle">
-        <FileText aria-hidden="true" weight="duotone" className="size-6" />
-      </span>
-      <span className="flex min-w-0 flex-1 flex-col gap-1">
-        <span className="flex flex-wrap items-center gap-2">
-          <span className="font-semibold">{t(`documents.kind.${row.kind}`)}</span>
-          {row.status !== "active" && (
-            <Badge tone={STATUS_TONE[row.status]}>{t(`documents.status.${row.status}`)}</Badge>
-          )}
-        </span>
-        <span className="text-body-sm text-fg-muted">
-          {[who, row.facility_name, date(row.document_date)].filter(Boolean).join(" · ")}
-        </span>
-      </span>
-      <CaretRight aria-hidden="true" className="size-icon text-fg-muted" />
-    </Link>
+    <RowLink
+      to={paths.document(row.id)}
+      leading={<RowIcon icon={FileText} />}
+      title={t(`documents.kind.${row.kind}`)}
+      meta={[who, row.facility_name, date(row.document_date)].filter(Boolean).join(" · ")}
+      trailing={<Badge tone={STATUS_TONE[row.status]}>{t(`documents.status.${row.status}`)}</Badge>}
+    />
   );
 }
 
@@ -204,7 +222,10 @@ export function DocumentDetailPage() {
   );
   return (
     <div className="mx-auto flex w-full max-w-[40rem] flex-col gap-6">
-      <Link to="/documents" className="inline-flex items-center gap-2 self-start font-semibold">
+      <Link
+        to={paths.documents}
+        className="inline-flex items-center gap-2 self-start font-semibold"
+      >
         <ArrowLeft aria-hidden="true" className="size-icon" />
         {t("documents.back")}
       </Link>

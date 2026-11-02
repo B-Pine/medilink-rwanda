@@ -27,6 +27,7 @@ Sprints S0–S10 delivered most of the M1 scope, but three things came out of a 
 | 09 | [Audit method](09-audit-method.md) | How the current system is checked against this folder and against professional standards |
 | 10 | [Implementation plan](10-implementation-plan.md) | Phases, order of work, the older documents to update, and the definition of done |
 | 11 | [Public website](11-public-website.md) | The product owner's brief for every public page (2026-11-02); supersedes 03 where they differ |
+| 12 | [Patient dashboard](12-patient-dashboard.md) | The signed-in patient app under `/dashboard`: shell, overview, pages, surfaces and open backend items; supersedes 04 for layout and addresses |
 | — | [audit/](audit/) | Audit reports, one file per audit run |
 
 ## Order of work
@@ -59,6 +60,6 @@ flowchart LR
 | Upgrade documents | Draft written 2026-11-02 |
 | Audit | Skipped for this round (decision 2026-11-02, see below) |
 | Cleaning | Done inside each implementation change |
-| Implementation | Public site (U2) **completed** 2026-11-02 to [11](11-public-website.md) (#149–#153); open backend items in 11 §13; staff dashboards next |
+| Implementation | Public site (U2) **completed** 2026-11-02 to [11](11-public-website.md) (#149–#153); open backend items in 11 §13. Patient dashboard (U12) implemented 2026-11-02 to [12](12-patient-dashboard.md); open items in 12 §7; staff dashboards next |
 
 **Decision 2026-11-02 — no up-front audit.** The full audit of [09](09-audit-method.md) costs more time than it saves at this stage. Instead, each implementation change cleans the screens and code it touches against [02](02-design-system.md) and updates the older documents it makes outdated, in the same pull request. Tests for the upgraded screens are written in a follow-up pass once the screens are settled; CI stays the gate for merging. The audit method stays for release checks.

@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { PageHeading } from "../../components/PageHeading";
+import { useInDashboard } from "../../layout/DashboardContext";
 import { DISTRICT_KEYS, type DistrictKey } from "../booking/discovery";
 import { insurerNames } from "../booking/Places";
 import { EmptyIllustration } from "./illustrations";
@@ -25,10 +26,12 @@ export function PageContainer({
   narrow?: boolean;
   className?: string;
 }) {
+  // The dashboard shell already sets the width and gutters
+  const inDashboard = useInDashboard();
   return (
     <div
       className={cx(
-        "mx-auto w-full px-4 sm:px-6 lg:px-8",
+        inDashboard ? "w-full" : "mx-auto w-full px-4 sm:px-6 lg:px-8",
         narrow ? "max-w-[48rem]" : "max-w-[80rem]",
         className,
       )}
@@ -86,9 +89,13 @@ export function PageHeader({
   eyebrow?: string;
 }) {
   const { t } = useTranslation();
+  // Inside the dashboard the shell shows the breadcrumb and the top spacing
+  const inDashboard = useInDashboard();
   return (
-    <div className="flex flex-col gap-3 pt-8 pb-6 sm:pt-10">
-      {crumbs && <Breadcrumbs items={[{ to: "/", label: t("nav.home") }, ...crumbs]} />}
+    <div className={cx("flex flex-col gap-3", inDashboard ? "pb-5" : "pt-8 pb-6 sm:pt-10")}>
+      {crumbs && !inDashboard && (
+        <Breadcrumbs items={[{ to: "/", label: t("nav.home") }, ...crumbs]} />
+      )}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex max-w-[44rem] flex-col gap-2">
           {eyebrow && (
@@ -119,8 +126,17 @@ export function Panel({
   as?: "section" | "div" | "aside";
   "aria-labelledby"?: string;
 }) {
+  // inside the dashboard, the dashboard's surfaces: a hairline border instead of a shadow
+  const inDashboard = useInDashboard();
   return (
-    <Tag className={cx("rounded-2xl bg-surface shadow-card", className)} {...rest}>
+    <Tag
+      className={cx(
+        "rounded-2xl bg-surface",
+        inDashboard ? "border border-border" : "shadow-card",
+        className,
+      )}
+      {...rest}
+    >
       {children}
     </Tag>
   );

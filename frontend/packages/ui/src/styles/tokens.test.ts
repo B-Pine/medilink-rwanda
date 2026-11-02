@@ -86,12 +86,13 @@ describe("design tokens (F2): values equal design research 02", () => {
   });
 
   it("dark theme spot checks", () => {
-    expect(hex(dark["--ml-bg-page"])).toBe("#0a1310");
-    expect(hex(dark["--ml-bg-surface"])).toBe("#101c17");
-    expect(hex(dark["--ml-action-primary"])).toBe("#34d399");
-    expect(hex(dark["--ml-action-primary-text"])).toBe("#022c22");
-    expect(hex(dark["--ml-border-input"])).toBe("#5b6e66");
-    expect(hex(dark["--ml-text-muted"])).toBe("#8fa198");
+    // Softer dark (product owner, 2026-11-02): charcoal green, off-white text, muted emerald
+    expect(hex(dark["--ml-bg-page"])).toBe("#141a17");
+    expect(hex(dark["--ml-bg-surface"])).toBe("#1b221e");
+    expect(hex(dark["--ml-action-primary"])).toBe("#5fc59a");
+    expect(hex(dark["--ml-action-primary-text"])).toBe("#0e2219");
+    expect(hex(dark["--ml-border-input"])).toBe("#66756d");
+    expect(hex(dark["--ml-text-muted"])).toBe("#8c9891");
   });
 
   it("system-dark and explicit-dark blocks are identical", () => {
@@ -120,6 +121,14 @@ describe("density (F7)", () => {
     expect(px(patient["--ml-target-min"])).toBeGreaterThanOrEqual(48);
     expect(px(patient["--ml-control-height-primary"])).toBe(56);
     expect(px(patient["--ml-font-size-caption"])).toBeGreaterThanOrEqual(14);
+  });
+
+  it("signed-in patient app: body 16px, targets >= 44px, captions >= 13px", () => {
+    const app = vars(block(/^:root\[data-density="patient"\]\[data-surface="app"\]\s*\{/m));
+    expect(px(app["--ml-font-size-body"])).toBe(16);
+    expect(px(app["--ml-target-min"])).toBeGreaterThanOrEqual(44);
+    expect(px(app["--ml-control-height"])).toBeGreaterThanOrEqual(44);
+    expect(px(app["--ml-font-size-caption"])).toBeGreaterThanOrEqual(13);
   });
 });
 
@@ -173,10 +182,10 @@ describe("contrast of text tokens (F8), both themes", () => {
     expect(contrast(light["--ml-text-primary"]!, "#ffffff")).toBeCloseTo(16.22, 1);
     expect(contrast(light["--ml-text-muted"]!, "#ffffff")).toBeCloseTo(5.67, 1);
     expect(contrast(light["--ml-action-primary"]!, "#ffffff")).toBeCloseTo(4.72, 1);
-    expect(contrast(dark["--ml-action-primary-text"]!, dark["--ml-action-primary"]!)).toBeCloseTo(
-      7.88,
-      1,
-    );
+    // softer dark palette (2026-11-02): the button keeps a comfortable margin above AA
+    expect(
+      contrast(dark["--ml-action-primary-text"]!, dark["--ml-action-primary"]!),
+    ).toBeGreaterThanOrEqual(7);
     expect(contrast(light["--ml-border-input"]!, "#ffffff")).toBeCloseTo(3.62, 1);
   });
 

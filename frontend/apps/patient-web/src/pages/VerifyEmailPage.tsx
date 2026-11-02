@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useSearchParams } from "react-router";
 
+import { paths } from "../app/paths";
 import { useApi } from "../app/services";
 import { patientMeKey } from "../auth/queries";
 import { describeApiError } from "../forms/api-errors";
@@ -31,7 +32,7 @@ export function VerifyEmailPage() {
       .verifyEmail({ token })
       .then(async (me) => {
         queryClient.setQueryData(patientMeKey, me);
-        await navigate("/home", { replace: true });
+        await navigate(paths.overview, { replace: true });
       })
       .catch((caught: unknown) => {
         setError(

@@ -1,14 +1,23 @@
 import type { PatientRecordDiagnosis } from "@medilink/api-client";
-import { Alert, Button, Card, EmptyState, SelectField, Skeleton } from "@medilink/ui";
+import { Badge, Card, EmptyState, SelectField, Skeleton, TextField } from "@medilink/ui";
 import { dateFormat } from "@medilink/ui/i18n";
-import { ArrowLeft, CaretRight, FileText } from "@phosphor-icons/react";
+import { ArrowLeft, FileText, SealCheck } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router";
 
+import { paths } from "../../app/paths";
 import { useApi } from "../../app/services";
 import { PageHeading } from "../../components/PageHeading";
+import {
+  DateBlock,
+  ErrorBlock,
+  PageHeader,
+  RowLink,
+  RowList,
+  RowsSkeleton,
+} from "../dashboard/kit";
 import { useProfiles } from "../profile/ProfileLayout";
 
 export const recordsKeys = {
@@ -60,69 +69,84 @@ export function RecordsPage() {
     queryKey: recordsKeys.list(patientId),
     queryFn: () => api.clinical.patient.records(patientId ? { patient_id: patientId } : {}),
   });
+  const [query, setQuery] = useState("");
   const people = profiles.data?.results ?? [];
   const nameOf = (id: string) => people.find((p) => p.patient_id === id)?.display_name;
+  const q = query.trim().toLocaleLowerCase();
+  const rows = (list.data?.results ?? []).filter(
+    (r) =>
+      !q ||
+      [r.facility_name, r.doctor_name, ...r.diagnoses.map((d) => d.plain_language || d.display)]
+        .filter(Boolean)
+        .some((text) => text.toLocaleLowerCase().includes(q)),
+  );
   return (
-    <div className="mx-auto flex w-full max-w-[40rem] flex-col gap-6">
-      <PageHeading title={t("records.title")}>{t("records.title")}</PageHeading>
-      <p className="m-0 text-fg-secondary">{t("records.intro")}</p>
-      {people.length > 1 && (
-        <SelectField
-          label={t("records.whose")}
-          value={patientId}
-          onChange={(e) => setPatientId(e.target.value)}
-        >
-          <option value="">{t("records.everyone")}</option>
-          {people.map((p) => (
-            <option key={p.patient_id} value={p.patient_id}>
-              {p.display_name}
-            </option>
-          ))}
-        </SelectField>
-      )}
+    <div className="flex flex-col gap-6">
+      <PageHeader title={t("records.title")} subtitle={t("records.intro")} />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+        <TextField
+          type="search"
+          label={t("dashboard.records.search")}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="flex-1"
+        />
+        {people.length > 1 && (
+          <SelectField
+            label={t("records.whose")}
+            value={patientId}
+            onChange={(e) => setPatientId(e.target.value)}
+            className="sm:w-64"
+          >
+            <option value="">{t("records.everyone")}</option>
+            {people.map((p) => (
+              <option key={p.patient_id} value={p.patient_id}>
+                {p.display_name}
+              </option>
+            ))}
+          </SelectField>
+        )}
+      </div>
       {list.isPending ? (
-        <Skeleton height="7rem" className="rounded-lg" />
+        <RowsSkeleton rows={4} />
       ) : list.isError ? (
-        <Alert tone="danger" role="alert" title={t("records.loadFailed")}>
-          <Button variant="secondary" onClick={() => void list.refetch()}>
-            {t("common.retry")}
-          </Button>
-        </Alert>
-      ) : list.data.results.length ? (
-        <ul aria-label={t("records.title")} className="m-0 flex list-none flex-col gap-3 p-0">
-          {list.data.results.map((r) => (
-            <li key={r.id}>
-              <Link
-                to={`/records/${r.id}`}
-                className="flex min-h-target items-center gap-3 rounded-lg bg-surface shadow-card p-4 text-fg no-underline hover:bg-subtle"
-              >
-                <FileText
-                  aria-hidden="true"
-                  weight="duotone"
-                  className="size-6 shrink-0 text-brand"
-                />
-                <span className="flex min-w-0 flex-1 flex-col gap-1">
-                  <span className="text-body-sm text-fg-muted">
-                    {date(r.service_date)} · {r.facility_name}
-                    {people.length > 1 && nameOf(r.patient_id) ? ` · ${nameOf(r.patient_id)}` : ""}
-                  </span>
-                  {r.diagnoses.map((d) => (
-                    <DiagnosisLine key={d.code} d={d} />
-                  ))}
-                  <span className="text-body-sm text-fg-muted">
-                    {t("records.doctor", { name: r.doctor_name })}
-                  </span>
-                </span>
-                <CaretRight aria-hidden="true" className="size-icon shrink-0 text-fg-muted" />
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <ErrorBlock message={t("records.loadFailed")} onRetry={() => void list.refetch()} />
+      ) : rows.length ? (
+        <RowList label={t("records.title")}>
+          {rows.map((r) => {
+            const main = r.diagnoses[0];
+            return (
+              <RowLink
+                key={r.id}
+                to={paths.record(r.id)}
+                leading={<DateBlock iso={r.service_date} />}
+                title={
+                  main
+                    ? main.plain_language || main.display
+                    : t("records.visitOn", { date: date(r.service_date) })
+                }
+                meta={[
+                  r.facility_name,
+                  t("records.doctor", { name: r.doctor_name }),
+                  people.length > 1 ? nameOf(r.patient_id) : null,
+                  main?.certainty === "provisional" ? t("records.provisional") : null,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+                trailing={
+                  <Badge tone="success" icon={SealCheck}>
+                    {t("dashboard.records.signed")}
+                  </Badge>
+                }
+              />
+            );
+          })}
+        </RowList>
       ) : (
         <EmptyState
           icon={FileText}
-          title={t("records.empty")}
-          description={t("records.emptyBody")}
+          title={q ? t("dashboard.records.noMatch") : t("records.empty")}
+          description={q ? undefined : t("dashboard.records.emptyBody")}
         />
       )}
     </div>
@@ -141,7 +165,7 @@ export function RecordDetailPage() {
   });
   const back = (
     <Link
-      to="/records"
+      to={paths.records}
       className="inline-flex items-center gap-1.5 self-start font-semibold text-link"
     >
       <ArrowLeft aria-hidden="true" className="size-icon" />

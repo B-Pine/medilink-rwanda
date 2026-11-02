@@ -102,7 +102,7 @@ Source: [04 · Patient identity and medical history](../analysis/04-patient-iden
 |---|---|---|---|---|---|---|
 | FR-PAT-01 | Account, patient and facility patient record are separate | P1 | S3 | Backend | UT, API | In progress |
 | FR-PAT-02 | Patient self sign-up (email/password; phone OTP in P3) | P1 | S0, S3, R1 #83 (verify-email, no enumeration) | Both | API, E2E | In progress |
-| FR-PAT-03 | Dependents, delegated access, profile switching | P1 | S3 | Both | AZ, E2E | In progress |
+| FR-PAT-03 | Dependents, delegated access, profile switching | P1 | S3, U12 (dashboard: family rows, "whose profile" banner, switcher in the top bar and More drawer) | Both | AZ, E2E | In progress |
 | FR-PAT-04 | Walk-in registration in under one minute | P1 | S3 | Both | API, USA | In progress |
 | FR-PAT-05 | Duplicate detection; reversible merge with approval | P1 | S3 | Both | BR, API | In progress |
 | FR-PAT-06 | Claim an existing record with proof | P1 | S3 | Both | API, SEC | In progress |
@@ -131,7 +131,7 @@ Source: [05 · Discovery, calendars, scheduling, booking](../analysis/05-discove
 | FR-SCH-05 | Facility calendar: hours, closures, holidays, Umuganda | P1 | S2, S5 | Both | UT, API | In progress |
 | FR-SCH-06 | Doctor weekly templates and exceptions | P1 | S2, S5 | Both | API, CMP | In progress |
 | FR-SCH-07 | Slot generation: capacity, bookable share, walk-in reserve | P1 | S5 | Backend | BR | In progress |
-| FR-SCH-08 | Book, reschedule, cancel with atomic slot hold | P1 | S5 | Both | BR, E2E | In progress |
+| FR-SCH-08 | Book, reschedule, cancel with atomic slot hold | P1 | S5, U12 (patient reschedule with held-slot countdown, cancel dialog, `/dashboard/appointments`) | Both | BR, E2E, CMP (`shell.test.tsx`) | In progress |
 | FR-SCH-09 | Remote queue join for today, with cut-off | P1 | S5 | Both | BR, E2E, CMP (frontend `s5.test.ts`, tracker test) | In progress |
 | FR-SCH-10 | Reason for visit with the structured symptom picker | P1 | S5 | Both | API, CMP | In progress |
 | FR-SCH-11 | Patient calendar with dependents; .ics export and feed | P1 | S5 | Both | API, E2E | In progress |
@@ -159,7 +159,7 @@ Source: [06 · Visit lifecycle and live queue](../analysis/06-visit-lifecycle-an
 | FR-QUE-08 | Atomic Call next; versioned state changes | P1 | S4 | Backend | BR | In progress |
 | FR-QUE-09 | Ticket state machine with recorded transitions | P1 | S4 | Backend | BR | In progress |
 | FR-QUE-10 | Manual reorder only with reason; logged; reported | P1 | S4 | Both | BR, API | In progress |
-| FR-QUE-11 | Wait estimate as a range; status messages; time to leave | P1 | S4 | Both | UT, CMP | In progress |
+| FR-QUE-11 | Wait estimate as a range; status messages; time to leave | P1 | S4, U12 (ticket card shows the server range or its status, never a made-up number, with "Updated hh:mm") | Both | UT, CMP | In progress |
 | FR-QUE-12 | Real-time updates to boards, trackers, display (< 2 s) | P1 | S4 | Both | PERF, E2E | In progress |
 | FR-QUE-13 | Waiting-room display: ticket numbers only, chime | P1 | S4 | Both | E2E, INS | In progress |
 | FR-QUE-14 | Doctor status: on duty, break, emergency, off | P1 | S4 | Both | API | In progress |

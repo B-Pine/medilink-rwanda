@@ -8,12 +8,16 @@ import {
   type Sex,
 } from "@medilink/api-client";
 import {
+  CalendarCheck,
   CaretRight,
   CheckCircle,
   Circle,
   Eye,
+  Files,
+  FileText,
   Heartbeat,
   IdentificationCard,
+  Pill,
   ShieldCheck,
   UserCircle,
   type Icon,
@@ -37,7 +41,9 @@ import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, Navigate, useParams } from "react-router";
 
+import { paths } from "../../app/paths";
 import { useApi } from "../../app/services";
+import { Avatar, QuickActionTile } from "../dashboard/kit";
 import { can, ProfileLayout, rememberedProfile, useProfiles } from "./ProfileLayout";
 import { errorText, fieldErrors, formatDateTime, useLocale } from "./shared";
 
@@ -45,7 +51,7 @@ const COMPLETION_STEPS: { key: keyof ProfileCompletion; to: string }[] = [
   { key: "details", to: "details" },
   { key: "identifier", to: "identifiers" },
   { key: "emergency_contact", to: "details" },
-  { key: "care_consent", to: "/privacy/settings" },
+  { key: "care_consent", to: paths.privacy },
   { key: "insurance", to: "insurance" },
   { key: "allergies_reviewed", to: "health" },
 ];
@@ -66,9 +72,9 @@ export function ProfileRedirect() {
   const remembered = rememberedProfile();
   const target = list.find((p) => p.patient_id === remembered) ?? list[0];
   return target ? (
-    <Navigate to={`/profile/${target.patient_id}`} replace />
+    <Navigate to={paths.profileOf(target.patient_id)} replace />
   ) : (
-    <Navigate to="/home" replace />
+    <Navigate to={paths.overview} replace />
   );
 }
 
@@ -91,7 +97,8 @@ function Hub({ profile }: { profile: PatientProfileDetail }) {
   const { t } = useTranslation();
   const next = COMPLETION_STEPS.find((step) => !profile.completion[step.key]);
   const done = COMPLETION_STEPS.filter((step) => profile.completion[step.key]).length;
-  const href = (to: string) => (to.startsWith("/") ? to : `/profile/${profile.patient_id}/${to}`);
+  const href = (to: string) =>
+    to.startsWith("/") ? to : `${paths.profileOf(profile.patient_id)}/${to}`;
   const sections: { to: string; icon: Icon }[] = [
     { to: "details", icon: UserCircle },
     { to: "identifiers", icon: IdentificationCard },
@@ -100,8 +107,47 @@ function Hub({ profile }: { profile: PatientProfileDetail }) {
     ...(can.history(profile.relationship) ? [{ to: "access-history", icon: Eye }] : []),
   ];
   const sectionKey = (to: string) => (to === "access-history" ? "history" : to);
+  const name = profile.preferred_name ?? profile.full_name;
   return (
     <>
+      {profile.relationship !== "self" && (
+        // upgrade 12 §9: it must be unmistakable whose information is on screen
+        <section
+          aria-labelledby="whose"
+          className="flex flex-col gap-3 rounded-2xl border border-brand/25 bg-brand-subtle p-4 sm:flex-row sm:items-center"
+        >
+          <Avatar name={name} size="lg" />
+          <div className="flex min-w-0 flex-1 flex-col">
+            <h2 id="whose" className="m-0 text-body font-bold text-on-brand-subtle">
+              {t("dashboard.family.viewing", { name })}
+            </h2>
+            <p className="m-0 text-body-sm text-on-brand-subtle">
+              {t(`dashboard.family.accessHint.${profile.relationship}`, { name })}
+            </p>
+          </div>
+        </section>
+      )}
+      {profile.relationship !== "self" && (
+        <nav aria-label={t("dashboard.family.careFor", { name })}>
+          <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 sm:grid-cols-4">
+            {[
+              { to: paths.appointments, key: "appointments", icon: CalendarCheck },
+              { to: paths.records, key: "records", icon: FileText },
+              { to: paths.medications, key: "medications", icon: Pill },
+              { to: paths.documents, key: "documents", icon: Files },
+            ].map((link) => (
+              <li key={link.key}>
+                <QuickActionTile
+                  to={link.to}
+                  icon={link.icon}
+                  title={t(`dashboard.nav.${link.key}`)}
+                  description={t(`dashboard.family.links.${link.key}`)}
+                />
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
       <section
         aria-label={t("profile.medilinkNumber")}
         className="relative overflow-hidden rounded-lg bg-forest p-5 text-on-forest shadow-raised"
@@ -198,7 +244,7 @@ function Hub({ profile }: { profile: PatientProfileDetail }) {
 function useBack() {
   const { t } = useTranslation();
   const { patientId = "" } = useParams();
-  return { to: `/profile/${patientId}`, label: t("profile.backToProfile") };
+  return { to: paths.profileOf(patientId), label: t("profile.backToProfile") };
 }
 
 /** /profile/:patientId/details */
@@ -445,7 +491,7 @@ export function IdentifiersPage() {
           {taken && (
             <Alert tone="info" role="alert">
               {errorText(add.error, t("profile.error"))}{" "}
-              <Link to="/claim">{t("profile.identifiers.claim")}</Link>
+              <Link to={paths.claim}>{t("profile.identifiers.claim")}</Link>
             </Alert>
           )}
           {add.isError && !taken && !fieldErrors(add.error).value && (

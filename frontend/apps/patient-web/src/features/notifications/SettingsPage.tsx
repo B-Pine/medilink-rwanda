@@ -13,6 +13,7 @@ import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
+import { paths } from "../../app/paths";
 import { useApi } from "../../app/services";
 import { PageHeading } from "../../components/PageHeading";
 import { notificationKeys, usePreferences, usePush } from "./api";
@@ -371,7 +372,7 @@ export function SettingsPage() {
   const pushAvailable = usePush().state !== "disabled";
   return (
     <div className="mx-auto flex w-full max-w-[44rem] flex-col gap-5">
-      <Link to="/notifications" className="self-start font-semibold text-link">
+      <Link to={paths.notifications} className="self-start font-semibold text-link">
         {t("notifications.inbox.back")}
       </Link>
       <PageHeading title={t("notifications.settings.title")}>

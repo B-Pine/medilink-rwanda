@@ -8,6 +8,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U12 · Patient dashboard links (upgrade 12 §2)
+
+- Changed: patient notification targets follow the `/dashboard` app: bookings open
+  `/dashboard/appointments/{booking_id}` (was `/visits`), tickets `/dashboard/queue/{visit_id}`,
+  prescriptions `/dashboard/medications/{prescription_id}`, documents
+  `/dashboard/documents/{document_id}`. Email and push links to a patient inbox item use
+  `/dashboard/notifications/{id}` (`notifications.tasks.inbox_url`); staff links are unchanged.
+  Older links already sent keep working through the frontend redirects. No API or schema change.
+
 ### Upgrade U2 · No prices in discovery or booking (U-01, contract sprint-05 D-14)
 
 - Changed: P1 search results drop `fee_rwf` and `patient_share_rwf`; P2 profile services drop

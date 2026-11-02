@@ -38,6 +38,11 @@ import recordsEn from "../features/records/locales/en.json";
 import recordsFr from "../features/records/locales/fr.json";
 import recordsRw from "../features/records/locales/rw.json";
 // [/S6 imports]
+// [PT imports]
+import publicEn from "../features/public/locales/en.json";
+import publicFr from "../features/public/locales/fr.json";
+import publicRw from "../features/public/locales/rw.json";
+// [/PT imports]
 
 /**
  * Feature translation namespaces: `<feature>` -> `src/features/<feature>/locales/{rw,en,fr}.json`.
@@ -71,4 +76,7 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   // [S6]
   records: { rw: recordsRw, en: recordsEn, fr: recordsFr },
   // [/S6]
+  // [PT]
+  public: { rw: publicRw, en: publicEn, fr: publicFr },
+  // [/PT]
 };

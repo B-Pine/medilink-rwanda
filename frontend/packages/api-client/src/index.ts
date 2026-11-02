@@ -26,6 +26,9 @@ export * from "./features/setup";
 // [S10]
 export * from "./features/help";
 // [/S10]
+// [PT]
+export * from "./features/triage";
+// [/PT]
 // [S4]
 export * from "./features/queue";
 export * from "./realtime";

@@ -97,6 +97,65 @@ function ServiceRow({ slug, service }: { slug: string; service: PublicService })
 }
 
 /**
+ * The queue right now (contract public-pages-and-triage §2.1): per service, how many people wait
+ * and the wait for someone who joins now. Counts only, never a person or a ticket number.
+ */
+function QueueNow({ services }: { services: PublicService[] }) {
+  const { t, i18n } = useTranslation();
+  const lang = i18n.resolvedLanguage ?? "rw";
+  const live = services.filter((s) => s.waiting !== null && s.waiting !== undefined);
+  if (!live.length) return null;
+  return (
+    <Card as="section" aria-labelledby="fac-queue" className="flex flex-col gap-1">
+      <div className="flex items-center justify-between gap-3">
+        <h2 id="fac-queue" className="m-0 text-h2">
+          {t("booking.facility.queueNow")}
+        </h2>
+        <span className="inline-flex items-center gap-2 text-body-sm font-semibold text-success">
+          <span aria-hidden="true" className="ml-live-dot" />
+          {t("booking.facility.queueLive")}
+        </span>
+      </div>
+      <ul className="m-0 flex list-none flex-col divide-y divide-border p-0">
+        {live.map((s) => {
+          const waiting = s.waiting ?? 0;
+          return (
+            <li key={s.id} className="flex flex-col gap-2 py-3.5">
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="font-semibold">{pick(s.name_i18n, lang)}</span>
+                <span className="font-heading text-h3 font-bold tabular-nums">
+                  {s.wait_range
+                    ? t("booking.facility.queueWait", {
+                        min: s.wait_range.min,
+                        max: s.wait_range.max,
+                      })
+                    : "—"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span aria-hidden="true" className="flex flex-wrap gap-1">
+                  {Array.from({ length: Math.min(waiting, 12) }, (_, i) => (
+                    <span key={i} className="size-2.5 rounded-[3px] bg-brand" />
+                  ))}
+                  {waiting === 0 && <span className="size-2.5 rounded-[3px] bg-subtle" />}
+                </span>
+                <span className="text-body-sm text-fg-muted">
+                  {waiting === 0
+                    ? t("booking.facility.queueEmpty")
+                    : s.wait_range
+                      ? t("booking.facility.queueWaiting", { count: waiting })
+                      : t("booking.facility.queueNoDoctor", { count: waiting })}
+                </span>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </Card>
+  );
+}
+
+/**
  * Facility profile (design 06 §4, FR-SCH-02, 03): verified header with open now and the two
  * actions, services with fees, insurers, queue load and next time, doctors and their days, this
  * week's hours and closures, the address with a directions link. Public; no account needed.
@@ -228,6 +287,7 @@ export function FacilityPage() {
               {t("booking.referralHint")}
             </Alert>
           )}
+          <QueueNow services={services} />
           <Card as="section" aria-labelledby="fac-services" className="flex flex-col">
             <h2 id="fac-services" className="m-0 text-h2">
               {t("booking.facility.services")}
@@ -254,7 +314,7 @@ export function FacilityPage() {
                       weight="duotone"
                       className="size-7 shrink-0 text-brand"
                     />
-                    <div className="flex min-w-0 flex-col gap-1">
+                    <div className="flex min-w-0 flex-1 flex-col gap-1">
                       <span className="font-semibold">{d.name}</span>
                       <span
                         className="flex flex-wrap gap-1"
@@ -269,6 +329,21 @@ export function FacilityPage() {
                           </span>
                         ))}
                       </span>
+                      {services.some((sv) => sv.bookable && d.service_ids.includes(sv.id)) && (
+                        <Link
+                          to={`/book/${f.slug}?service=${
+                            services.find((sv) => sv.bookable && d.service_ids.includes(sv.id))!.id
+                          }&doctor=${d.membership_id}`}
+                          className={cx(
+                            buttonClassName({ size: "sm", variant: "secondary" }),
+                            "mt-1 self-start whitespace-nowrap",
+                          )}
+                        >
+                          <CalendarPlus aria-hidden="true" className="size-icon" />
+                          {t("booking.facility.bookShort")}
+                          <span className="sr-only"> {d.name}</span>
+                        </Link>
+                      )}
                     </div>
                   </li>
                 ))}

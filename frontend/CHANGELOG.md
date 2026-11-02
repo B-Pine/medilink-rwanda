@@ -9,6 +9,24 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Public pages and symptom checker (contract public-pages-and-triage, #131)
+
+- Home: "Care near you" asks for the location in a card (or a district), then shows the six nearest
+  verified facilities with open status, the live queue (people waiting and the wait range) and the
+  insurers they accept. The location stays in memory and goes in the POST body only. The hero links
+  to the symptom checker.
+- Facility page: "Queue right now" per service (counts and a wait range, never a person) and a
+  "Book" button per doctor that opens the booking flow with that doctor chosen ("Any doctor" undoes
+  it).
+- `/check-symptoms`: danger signs first (straight to 912 and the emergency page), then who it is
+  for, what they feel and how long; the answer is an urgency, the kind of care and a search for
+  places nearby. It says the rules are not yet signed off and that it is guidance, not a diagnosis.
+- New `/about` and `/emergency`; `/privacy` and `/terms` are rewritten as plain drafts. Facts not yet
+  confirmed (operator, address, contacts, retention) show a visible "To confirm" tag. The footer
+  links About, Check symptoms and Emergency.
+- api-client: `triage` feature and mock (the backend rules ported), `waiting`, `wait_range` and
+  `insurers` on search results.
+
 ### Redesign · Patient app (#129)
 
 - patient-web: on phones the four destinations are a real bottom tab bar (the header's backdrop

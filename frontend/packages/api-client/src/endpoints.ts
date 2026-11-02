@@ -45,6 +45,9 @@ import { createNotificationsApi } from "./features/notifications";
 // [S10 imports]
 import { createHelpApi } from "./features/help";
 // [/S10 imports]
+// [PT imports]
+import { createTriageApi } from "./features/triage";
+// [/PT imports]
 
 /** Every Sprint 0 endpoint (docs/architecture/03-sprint-0-contract.md §2), typed. */
 export const paths = {
@@ -150,6 +153,9 @@ export function createMediLinkApi(client: ApiClient) {
     // [S10]
     help: createHelpApi(client),
     // [/S10]
+    // [PT]
+    triage: createTriageApi(client),
+    // [/PT]
     // [S4]
     queue: createQueueApi(client),
     // [/S4]

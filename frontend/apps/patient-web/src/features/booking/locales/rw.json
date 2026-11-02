@@ -65,7 +65,16 @@
     "closed": "Gifunze",
     "closures": "Gifunze ku wa {{list}}",
     "contact": "Aderesi n’aho wahamagara",
-    "directions": "Inzira"
+    "directions": "Inzira",
+    "queueNow": "Umurongo ubu",
+    "queueLive": "Ubu",
+    "queueWait": "Iminota {{min}}–{{max}}",
+    "queueWaiting_one": "Umuntu {{count}} ategereje",
+    "queueWaiting_other": "Abantu {{count}} bategereje",
+    "queueNoDoctor_one": "{{count}} ategereje · nta muganga uri ku kazi",
+    "queueNoDoctor_other": "{{count}} bategereje · nta muganga uri ku kazi",
+    "queueEmpty": "Nta muntu utegereje",
+    "bookShort": "Fata gahunda"
   },
   "flow": {
     "title": "Fata gahunda",
@@ -119,7 +128,8 @@
     "addToCalendar": "Shyira ku ngengabihe yanjye",
     "directions": "Ikigo n’inzira",
     "toVisits": "Reba gahunda zanjye",
-    "with": "na {{doctor}}"
+    "with": "na {{doctor}}",
+    "anyDoctor": "Umuganga uwo ari we wese"
   },
   "body": {
     "general": "Rusange",

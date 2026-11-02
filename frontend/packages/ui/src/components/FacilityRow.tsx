@@ -41,7 +41,7 @@ export function FacilityList({
       <div
         aria-hidden="true"
         className={cx(
-          "hidden gap-x-6 border-b border-border px-4 pb-2 text-caption font-semibold text-fg-muted lg:grid",
+          "hidden gap-x-6 border-b border-border/50 px-5 pt-4 pb-3 text-caption font-semibold text-fg-muted lg:grid",
           COLUMNS,
         )}
       >
@@ -99,7 +99,7 @@ export function FacilityRow({
       onMouseEnter={onActivate}
       onFocus={onActivate}
       className={cx(
-        "relative grid gap-x-6 gap-y-2 border-b border-border px-4 py-4 last:border-b-0",
+        "relative grid gap-x-6 gap-y-2 border-b border-border/50 px-5 py-4 last:border-b-0",
         "transition-[background-color,box-shadow] duration-200 ease-out-quint hover:bg-subtle/50",
         COLUMNS,
         // the selected place (pin or row): a tint and an emerald edge, no layout shift

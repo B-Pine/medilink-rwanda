@@ -16,7 +16,7 @@ export function PublicLayout({
   showLogin?: boolean;
 }) {
   return (
-    <div className="flex min-h-dvh flex-col bg-page">
+    <div className="ml-soft flex min-h-dvh flex-col bg-page">
       <SkipLink />
       <PublicHeader showLogin={showLogin} />
       <main

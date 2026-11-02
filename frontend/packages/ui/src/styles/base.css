@@ -212,6 +212,32 @@
   }
 }
 
+/*
+ * Soft public look (product owner, 2026-11-02): wide, diffuse shadows tinted toward the brand
+ * green instead of rings and hard edges, and a faint emerald light at the top of the page.
+ * Applied on the public layouts only; staff screens keep the denser default.
+ */
+.ml-soft {
+  --ml-shadow-card: 0 1px 2px rgb(14 31 24 / 0.04), 0 10px 30px -14px rgb(6 78 59 / 0.22);
+  --ml-shadow-raised: 0 2px 6px rgb(14 31 24 / 0.05), 0 28px 56px -20px rgb(6 78 59 / 0.32);
+  background-image: radial-gradient(
+    70rem 30rem at 50% -10rem,
+    color-mix(in srgb, var(--color-primary) 10%, transparent),
+    transparent 70%
+  );
+  background-repeat: no-repeat;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .ml-soft {
+    --ml-shadow-card: 0 0 0 1px rgb(255 255 255 / 0.05), 0 12px 28px -12px rgb(0 0 0 / 0.6);
+    --ml-shadow-raised: 0 0 0 1px rgb(255 255 255 / 0.06), 0 28px 56px -20px rgb(0 0 0 / 0.75);
+  }
+}
+:root[data-theme="dark"] .ml-soft {
+  --ml-shadow-card: 0 0 0 1px rgb(255 255 255 / 0.05), 0 12px 28px -12px rgb(0 0 0 / 0.6);
+  --ml-shadow-raised: 0 0 0 1px rgb(255 255 255 / 0.06), 0 28px 56px -20px rgb(0 0 0 / 0.75);
+}
+
 /* Logo: the colour version on light surfaces, the white version on dark ones. */
 .ml-logo-for-dark {
   display: none;

@@ -9,6 +9,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Soft public look
+
+- Changed: public pages use `.ml-soft`: wide, diffuse shadows tinted toward the brand green (a
+  dark-theme variant too) and a faint emerald light at the top of the page. Cards and the list
+  are 24 px round, the hero is a forest gradient with a pill search bar, filters and the main
+  buttons are pills, hairlines are lighter and sections have more space. `Button` gains `pill`.
+
 ### Upgrade U2 · Header and page transitions
 
 - Changed: the public header is sticky (64 px) and lifts with a shadow once the page scrolls

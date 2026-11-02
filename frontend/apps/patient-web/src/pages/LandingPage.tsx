@@ -134,10 +134,10 @@ export function LandingPage() {
 
   return (
     <PublicLayout>
-      <div className="ml-stagger mx-auto flex max-w-[80rem] flex-col gap-8 px-4 py-6 sm:px-6 lg:gap-10 lg:py-10">
+      <div className="ml-stagger mx-auto flex max-w-[80rem] flex-col gap-10 px-4 py-6 sm:px-6 lg:gap-14 lg:py-10">
         <section
           aria-labelledby="ask"
-          className="relative isolate grid gap-8 overflow-hidden rounded-[1.25rem] bg-forest p-5 text-on-forest sm:p-8 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-center lg:gap-10 lg:p-10"
+          className="relative isolate grid gap-8 overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,var(--color-forest)_0%,var(--color-forest-raised)_100%)] p-5 text-on-forest sm:p-8 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-center lg:gap-10 lg:p-10"
         >
           <ImigongoPattern opacity={0.06} className="-z-10" />
           <div className="flex min-w-0 flex-col gap-5">
@@ -145,7 +145,7 @@ export function LandingPage() {
               <h1 id="ask" className="m-0 text-display leading-tight tracking-tight text-on-forest">
                 {t("home.ask")}
               </h1>
-              <div className="flex items-center gap-2 rounded-xl border border-transparent bg-surface p-1.5 pl-4 text-fg shadow-raised transition-[border-color,box-shadow] duration-200 ease-out-quint focus-within:border-primary focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_18%,transparent)]">
+              <div className="flex items-center gap-2 rounded-full border border-transparent bg-surface p-1.5 pl-5 text-fg shadow-raised transition-[border-color,box-shadow] duration-200 ease-out-quint focus-within:border-primary focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_18%,transparent)]">
                 <MagnifyingGlass aria-hidden="true" className="size-5 shrink-0 text-fg-muted" />
                 <input
                   id="ask-input"
@@ -158,7 +158,7 @@ export function LandingPage() {
                   autoComplete="off"
                   className="min-h-12 min-w-0 flex-1 border-0 bg-transparent text-body text-fg outline-none placeholder:text-fg-muted"
                 />
-                <Button type="submit" size="lg">
+                <Button type="submit" size="lg" pill>
                   {t("home.search")}
                 </Button>
               </div>
@@ -303,7 +303,7 @@ export function LandingPage() {
                     pickService(key);
                     document.getElementById("places")?.scrollIntoView({ block: "start" });
                   }}
-                  className="flex min-h-14 w-full cursor-pointer items-center rounded-xl bg-surface px-4 text-left font-semibold text-fg shadow-card transition-[box-shadow,transform] duration-200 ease-out-quint hover:shadow-raised active:scale-[0.98] motion-reduce:active:scale-100"
+                  className="flex min-h-14 w-full cursor-pointer items-center rounded-2xl bg-surface px-5 text-left font-semibold text-fg shadow-card transition-[box-shadow,transform] duration-200 ease-out-quint hover:shadow-raised active:scale-[0.98] motion-reduce:active:scale-100"
                 >
                   {t(`landing.services.${key}`)}
                 </button>
@@ -319,7 +319,7 @@ export function LandingPage() {
           <VerifyBlock />
           <section
             aria-labelledby="for-facilities"
-            className="flex flex-col items-start justify-between gap-4 rounded-2xl bg-surface p-5 shadow-card"
+            className="flex flex-col items-start justify-between gap-4 rounded-3xl bg-surface p-6 shadow-card"
           >
             <h2 id="for-facilities" className="m-0 text-h3">
               {t("home.forFacilities")}
@@ -349,7 +349,7 @@ function EmergencyRow({ near }: { near: { lat: number; lng: number } | null }) {
   return (
     <section
       aria-labelledby="emergency-24h"
-      className="flex flex-col gap-3 rounded-2xl bg-danger-bg p-4 sm:flex-row sm:items-center sm:gap-6 sm:px-5"
+      className="flex flex-col gap-3 rounded-3xl bg-danger-bg p-5 sm:flex-row sm:items-center sm:gap-6 sm:px-5"
     >
       <div className="flex items-center gap-3 sm:w-56">
         <h2 id="emergency-24h" className="m-0 text-h3 text-danger">
@@ -426,7 +426,7 @@ function AlertsBand() {
   return (
     <section
       aria-labelledby="alerts"
-      className="flex flex-col items-start justify-between gap-4 rounded-2xl bg-surface p-5 shadow-card"
+      className="flex flex-col items-start justify-between gap-4 rounded-3xl bg-surface p-6 shadow-card"
     >
       <h2 id="alerts" className="m-0 text-h3">
         {t("home.alerts")}
@@ -452,7 +452,7 @@ function VerifyBlock() {
   return (
     <section
       aria-labelledby="verify"
-      className="flex flex-col gap-4 rounded-2xl bg-surface p-5 shadow-card"
+      className="flex flex-col gap-4 rounded-3xl bg-surface p-6 shadow-card"
     >
       <h2 id="verify" className="m-0 text-h3">
         {t("home.verify")}

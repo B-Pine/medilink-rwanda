@@ -141,7 +141,7 @@ export default function FacilityMap({
   return (
     <div
       className={cx(
-        "relative isolate overflow-hidden rounded-2xl bg-subtle shadow-card",
+        "relative isolate overflow-hidden rounded-3xl bg-subtle shadow-card",
         className,
       )}
     >
@@ -150,7 +150,7 @@ export default function FacilityMap({
         // keyed by the place, so each newly selected card rises into view (upgrade 02 §6)
         <div
           key={selectedId}
-          className="absolute inset-x-3 bottom-3 z-[1000] animate-rise rounded-lg bg-surface p-4 shadow-raised"
+          className="absolute inset-x-3 bottom-3 z-[1000] animate-rise rounded-2xl bg-surface p-4 shadow-raised"
         >
           {card}
         </div>

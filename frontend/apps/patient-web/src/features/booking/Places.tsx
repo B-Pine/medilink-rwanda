@@ -28,7 +28,7 @@ export const CHIP =
 
 /** Compact filter control (select or toggle) with the same height and border as inputs. */
 export const FILTER =
-  "min-h-target cursor-pointer rounded-md border border-border-input bg-surface px-3 text-body-sm font-semibold text-fg " +
+  "min-h-target cursor-pointer rounded-full border border-border-input bg-surface px-4 text-body-sm font-semibold text-fg " +
   "transition-[border-color,background-color,color] duration-150 ease-out-quint hover:border-fg-muted " +
   "aria-pressed:border-primary aria-pressed:bg-brand-subtle aria-pressed:text-on-brand-subtle";
 
@@ -300,7 +300,7 @@ export function PlacesView({
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_26rem]">
         <div
           className={cx(
-            "min-w-0 overflow-hidden rounded-2xl bg-surface shadow-card",
+            "min-w-0 overflow-hidden rounded-3xl bg-surface shadow-card",
             "transition-opacity duration-200 ease-out-quint",
             busy && "opacity-60",
             !wide && view === "map" && "hidden",
@@ -309,7 +309,7 @@ export function PlacesView({
           {state === "pending" ? (
             <div className="flex flex-col gap-3 p-4">
               {[0, 1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-14" />
+                <Skeleton key={i} className="h-14 rounded-2xl" />
               ))}
             </div>
           ) : state === "error" ? (

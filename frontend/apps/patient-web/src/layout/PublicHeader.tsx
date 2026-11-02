@@ -1,5 +1,5 @@
 import { List, Phone, SignIn, X } from "@phosphor-icons/react";
-import { buttonClassName, cx, LanguageSwitcher, Logo } from "@medilink/ui";
+import { buttonClassName, LanguageSwitcher, Logo } from "@medilink/ui";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, NavLink, useLocation, useNavigation } from "react-router";
@@ -35,7 +35,7 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
   }, [open, pathname]);
 
   return (
-    <header className="ml-site-header sticky top-0 z-30 border-b border-border bg-surface print:hidden">
+    <header className="ml-site-header sticky top-0 z-30 border-b border-border/60 bg-surface print:hidden">
       {/* route loading: a thin emerald bar while the next page's code or data loads */}
       <div
         aria-hidden="true"
@@ -60,19 +60,20 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
             <span className="hidden sm:inline">{t("nav.emergency")}</span>
             <span className="sm:hidden">912</span>
           </a>
-          <LanguageSwitcher compact className="hidden md:flex" />
+          <span className="hidden md:block">
+            <LanguageSwitcher compact />
+          </span>
           {showLogin && (
-            <Link
-              to="/login"
-              viewTransition
-              className={cx(
-                buttonClassName({ size: "sm" }),
-                "hidden rounded-full px-4 md:inline-flex",
-              )}
-            >
-              <SignIn aria-hidden="true" className="size-4" />
-              {t("nav.login")}
-            </Link>
+            <span className="hidden md:block">
+              <Link
+                to="/login"
+                viewTransition
+                className={buttonClassName({ size: "sm", pill: true, className: "px-4" })}
+              >
+                <SignIn aria-hidden="true" className="size-4" />
+                {t("nav.login")}
+              </Link>
+            </span>
           )}
           <button
             type="button"
@@ -113,7 +114,7 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
           <div className="mt-4 flex items-center justify-between gap-3">
             <LanguageSwitcher compact />
             {showLogin && (
-              <Link to="/login" viewTransition className={buttonClassName({})}>
+              <Link to="/login" viewTransition className={buttonClassName({ pill: true })}>
                 <SignIn aria-hidden="true" className="size-icon" />
                 {t("nav.login")}
               </Link>

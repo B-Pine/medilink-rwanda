@@ -37,7 +37,7 @@ const GROUPS = [
 export function PublicFooter() {
   const { t } = useTranslation();
   return (
-    <footer className="mt-auto border-t border-border bg-surface print:hidden">
+    <footer className="mt-auto border-t border-border/60 bg-surface print:hidden">
       <div className="mx-auto flex max-w-[80rem] flex-col gap-10 px-4 pt-10 pb-8 sm:px-6">
         <div className="grid gap-8 sm:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))]">
           <div className="flex flex-col items-start gap-4">
@@ -74,7 +74,7 @@ export function PublicFooter() {
             </nav>
           ))}
         </div>
-        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border/60 pt-6">
           <p className="m-0 text-body-sm text-fg-muted">
             {t("footer.copyright", { year: new Date().getFullYear() })}
           </p>

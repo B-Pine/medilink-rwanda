@@ -226,7 +226,7 @@ export function CarePage() {
       <div className="ml-stagger mx-auto grid max-w-[80rem] gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-8 lg:py-10">
         <aside
           aria-labelledby="filters"
-          className="hidden self-start rounded-2xl bg-surface p-5 shadow-card lg:sticky lg:top-4 lg:block"
+          className="hidden self-start rounded-3xl bg-surface p-6 shadow-card lg:sticky lg:top-4 lg:block"
         >
           <h2 id="filters" className="mt-0 mb-4 text-h3">
             {t("care.filters")}

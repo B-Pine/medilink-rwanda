@@ -270,6 +270,12 @@
     "previous": "Ingendo zabanje",
     "previousTitle": "Tike zabanje ntiziragaragara hano",
     "previousBody": "Nyuma y'uruzinduko, dosiye umuganga yasinye igaragara mu Madosiye y'ubuzima.",
+    "how": {
+      "title": "Uko umurongo ukora",
+      "join": "Jya ku murongo ukoresheje telefoni aho ikigo kibyemera, cyangwa ufate tike kuri resepsiyo.",
+      "follow": "Kurikira hano abantu bakuri imbere n'igihe ikigo kigereranya ko uzategereza.",
+      "called": "Iyo igihe cyawe kigeze, iyi paji ikubwira aho ujya, ikanumvikanisha ijwi."
+    },
     "back": "Umurongo wanjye",
     "ticket": "Tike",
     "ahead": "Abakuri imbere",

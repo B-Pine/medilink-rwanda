@@ -270,6 +270,12 @@
     "previous": "Previous visits",
     "previousTitle": "Past tickets aren't listed here yet",
     "previousBody": "After a visit, the doctor's signed record appears in Medical records.",
+    "how": {
+      "title": "How the queue works",
+      "join": "Join from your phone where the facility allows it, or take a ticket at reception.",
+      "follow": "Follow the people ahead of you and the facility's own wait estimate here.",
+      "called": "When it's your turn, this page tells you where to go, with a sound."
+    },
     "back": "My queue",
     "ticket": "Ticket",
     "ahead": "People ahead",

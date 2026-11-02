@@ -270,6 +270,12 @@
     "previous": "Visites précédentes",
     "previousTitle": "Les anciens tickets ne sont pas encore listés ici",
     "previousBody": "Après une visite, le compte rendu signé du médecin apparaît dans le dossier médical.",
+    "how": {
+      "title": "Comment fonctionne la file",
+      "join": "Rejoignez la file depuis votre téléphone si l’établissement le permet, ou prenez un ticket à l’accueil.",
+      "follow": "Suivez ici le nombre de personnes devant vous et l’estimation d’attente de l’établissement.",
+      "called": "Quand c’est votre tour, cette page vous indique où aller, avec un son."
+    },
     "back": "Ma file d'attente",
     "ticket": "Ticket",
     "ahead": "Personnes avant vous",

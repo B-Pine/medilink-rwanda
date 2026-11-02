@@ -55,6 +55,9 @@ api_v1: list[URLPattern | URLResolver] = [
     path("patient/", include("medilink.support.urls.patient")),
     path("staff/", include("medilink.support.urls.staff")),
     path("platform/", include("medilink.support.urls.platform")),
+    path("patient/disputes/", include("medilink.disputes.urls.patient")),
+    path("staff/disputes/", include("medilink.disputes.urls.staff")),
+    path("platform/disputes/", include("medilink.disputes.urls.platform")),
     # [/S10]
     # [PT]
     path("public/", include("medilink.triage.urls")),

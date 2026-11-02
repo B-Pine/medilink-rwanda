@@ -212,7 +212,7 @@ class ApprovalRequestSerializer(serializers.Serializer):
     version = serializers.IntegerField()
 
 
-class VerificationSerializer(serializers.Serializer):
+class BillVerificationSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     insurance_profile_id = serializers.UUIDField()
     insurer_code = serializers.CharField()
@@ -265,7 +265,7 @@ class BillSerializer(serializers.Serializer):
     exemptions = ExemptionSerializer(many=True)
     credit_notes = CreditNoteSerializer(many=True)
     approval_requests = ApprovalRequestSerializer(many=True)
-    verifications = VerificationSerializer(many=True)
+    verifications = BillVerificationSerializer(many=True)
     version = serializers.IntegerField()
 
 

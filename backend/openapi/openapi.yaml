@@ -15370,7 +15370,7 @@ components:
         verifications:
           type: array
           items:
-            $ref: '#/components/schemas/Verification'
+            $ref: '#/components/schemas/BillVerification'
         version:
           type: integer
       required:
@@ -15505,6 +15505,41 @@ components:
         * `paid` - Paid
         * `voided` - Voided
         * `credited` - Credited
+    BillVerification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        insurance_profile_id:
+          type: string
+          format: uuid
+        insurer_code:
+          type: string
+        result:
+          $ref: '#/components/schemas/VerificationResultEnum'
+        reason_code:
+          type: string
+        reason_text:
+          type: string
+        referral_letter_seen:
+          type: boolean
+          nullable: true
+        verified_by_name:
+          type: string
+        verified_at:
+          type: string
+          format: date-time
+      required:
+      - id
+      - insurance_profile_id
+      - insurer_code
+      - reason_code
+      - reason_text
+      - referral_letter_seen
+      - result
+      - verified_at
+      - verified_by_name
     BillingDecisionRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -29528,38 +29563,94 @@ components:
     Verification:
       type: object
       properties:
-        id:
+        code:
           type: string
-          format: uuid
-        insurance_profile_id:
+        kind:
+          $ref: '#/components/schemas/ClinicalDocumentKindEnum'
+        number:
           type: string
-          format: uuid
-        insurer_code:
-          type: string
-        result:
-          $ref: '#/components/schemas/VerificationResultEnum'
-        reason_code:
-          type: string
-        reason_text:
-          type: string
-        referral_letter_seen:
-          type: boolean
-          nullable: true
-        verified_by_name:
-          type: string
-        verified_at:
+        status:
+          $ref: '#/components/schemas/VerificationStatusEnum'
+        issued_at:
           type: string
           format: date-time
+        valid_until:
+          type: string
+          format: date-time
+          nullable: true
+        facility_name:
+          type: string
+        author_name:
+          type: string
+        author_licence:
+          type: string
+        version_no:
+          type: integer
       required:
-      - id
-      - insurance_profile_id
-      - insurer_code
-      - reason_code
-      - reason_text
-      - referral_letter_seen
-      - result
-      - verified_at
-      - verified_by_name
+      - author_licence
+      - author_name
+      - code
+      - facility_name
+      - issued_at
+      - kind
+      - number
+      - status
+      - valid_until
+      - version_no
+    VerificationDetails:
+      type: object
+      properties:
+        code:
+          type: string
+        kind:
+          $ref: '#/components/schemas/ClinicalDocumentKindEnum'
+        number:
+          type: string
+        status:
+          $ref: '#/components/schemas/VerificationStatusEnum'
+        issued_at:
+          type: string
+          format: date-time
+        valid_until:
+          type: string
+          format: date-time
+          nullable: true
+        facility_name:
+          type: string
+        author_name:
+          type: string
+        author_licence:
+          type: string
+        version_no:
+          type: integer
+        patient_name:
+          type: string
+        sections:
+          type: array
+          items:
+            $ref: '#/components/schemas/DetailSection'
+      required:
+      - author_licence
+      - author_name
+      - code
+      - facility_name
+      - issued_at
+      - kind
+      - number
+      - patient_name
+      - sections
+      - status
+      - valid_until
+      - version_no
+    VerificationDetailsInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        date_of_birth:
+          type: string
+          format: date
+      required:
+      - date_of_birth
     VerificationInputReasonCodeEnum:
       enum:
       - expired

@@ -307,6 +307,7 @@ describe("shell: user menu, language, theme, logout", () => {
       "Facility applications",
       "Facilities",
       "Support queue",
+      "Escalated disputes",
       "Master data",
       "Platform announcements",
       "Help articles",

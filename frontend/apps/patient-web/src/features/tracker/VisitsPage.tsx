@@ -39,7 +39,7 @@ export function VisitsPage() {
             title={t("tracker.visits.noneToday")}
             description={t("tracker.visits.noneTodayBody")}
             action={
-              <Link to="/find-care" className={buttonClassName({ size: "lg" })}>
+              <Link to="/care" className={buttonClassName({ size: "lg" })}>
                 <MagnifyingGlass aria-hidden="true" className="size-icon" />
                 {t("tracker.visits.findCare")}
               </Link>

@@ -9,6 +9,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Find care `/care` (upgrade 03 §3)
+
+- Added: `/care` with the same list and map at full width and every filter in a panel (a dialog
+  on phones): service, insurance, district, type, level of care (Mutuelle transfer hint), open
+  now, free time today, join remotely, distance after Near me. Active filters are removable chips
+  with "Clear all" and the count; choices live in the URL, never the location. No results: one
+  line, the nearest place offering the service, and Clear all.
+- Changed: `/search` and `/find-care` redirect to `/care`; links, the header and the patient menu
+  point there. The "how to get care" explainer page (with a "Coming soon" card) and the old search
+  cards are removed. The list and map are one shared module (`features/booking/Places.tsx`) used
+  by Home and Find care.
+
 ### Upgrade U2 · Home with list and map (U-04, upgrade 03 §1–2)
 
 - Changed: `/` leads with "What are you feeling?" (symptom words go to the checker, service words

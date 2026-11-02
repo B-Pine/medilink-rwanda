@@ -233,7 +233,7 @@ export function EmergencyPage() {
         <div className="grid gap-4 sm:grid-cols-2">
           <Point icon={MapPin} title={t("public.emergency.goTitle")}>
             {t("public.emergency.goBody")}{" "}
-            <Link to="/search" className="font-semibold">
+            <Link to="/care" className="font-semibold">
               {t("public.emergency.findNearest")}
             </Link>
           </Point>

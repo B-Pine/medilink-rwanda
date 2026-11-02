@@ -303,29 +303,6 @@
       "settings": "Igenamiterere"
     }
   },
-  "findCare": {
-    "title": "Shaka ubuvuzi",
-    "intro": "Uko wabonana na muganga ukoresheje MediLink uyu munsi.",
-    "walkIn": {
-      "title": "Ngwino uyu munsi",
-      "body": "Jya ku kigo gikoresha MediLink mu masaha y’akazi. Ntukeneye gufata gahunda mbere.",
-      "steps": {
-        "reception": "Bwira abakira abarwayi izina ryawe cyangwa nimero ya MediLink.",
-        "ticket": "Uhabwa nimero ya tike, urugero G-023.",
-        "track": "Kurikirana igihe cyawe muri Gahunda zanjye. Tukumenyesha igihe ugiye kugerwaho."
-      },
-      "note": "Tike yawe igaragara no kuri ecran yo mu cyumba cyo gutegereza."
-    },
-    "book": {
-      "title": "Fata gahunda",
-      "body": "Hitamo ikigo, umunsi n’isaha, urebe n’uruhare rwawe ku kiguzi mbere yo gufata gahunda.",
-      "action": "Shaka ikigo"
-    },
-    "symptoms": {
-      "title": "Ntuzi icyo ukeneye?",
-      "body": "Vuba uzashobora gusobanura uko wiyumva tukakwereka serivisi ikwiye. Ibi ntibizasimbura muganga."
-    }
-  },
   "support": {
     "title": "Ubufasha",
     "faqTitle": "Ibibazo bikunze kubazwa",
@@ -365,5 +342,37 @@
     "travelBody": "Iyo ufite tike, tubwire igihe bigutwara kugera ku kigo. Tukifashisha tukubwira igihe cyo kuva mu rugo.",
     "alertsTitle": "Imenyesha",
     "alertsBody": "Vuba uzashobora guhitamo uko tukugeraho: kuri iyi telefoni, kuri SMS cyangwa kuri imeri."
+  },
+  "care": {
+    "title": "Shaka ubuvuzi",
+    "filters": "Muyunguruzi",
+    "filtersCount_one": "Muyunguruzi · {{count}}",
+    "filtersCount_other": "Muyunguruzi · {{count}}",
+    "active": "Ibyatoranyijwe",
+    "remove": "Kuraho {{label}}",
+    "clearAll": "Kuraho byose",
+    "show_one": "Erekana ahantu {{count}}",
+    "show_other": "Erekana ahantu {{count}}",
+    "service": "Serivisi",
+    "anyService": "Serivisi yose",
+    "level": "Urwego rw’ubuvuzi",
+    "anyLevel": "Urwego urwo ari rwo rwose",
+    "levels": {
+      "primary": "Ibanze",
+      "secondary": "Akarere",
+      "tertiary": "Ibitaro bikuru"
+    },
+    "transferHint": "Mutuelle: zana urupapuro rwo kohereza",
+    "when": "Igihe",
+    "availability": {
+      "today": "Igihe kiboneka uyu munsi",
+      "remote": "Jya ku murongo uri kure"
+    },
+    "distance": "Intera",
+    "km": "km {{km}}",
+    "withinKm": "Muri km {{km}}",
+    "none": "Nta hantu hahuye n’ibi byatoranyijwe",
+    "tryInstead": "Hafi cyane: {{name}}",
+    "close": "Funga"
   }
 }

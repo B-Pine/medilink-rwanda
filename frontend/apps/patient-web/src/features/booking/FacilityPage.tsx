@@ -1,7 +1,8 @@
-import type { PublicService } from "@medilink/api-client";
+import type { PublicService, QueueLoad } from "@medilink/api-client";
 import {
   ArrowLeft,
   CalendarPlus,
+  Gauge,
   Clock,
   Info,
   MapPin,
@@ -31,7 +32,23 @@ import { PageHeading } from "../../components/PageHeading";
 import { PublicLayout } from "../../layout/PublicLayout";
 import { day, pick, time } from "./discovery";
 import { rememberPlace } from "./recent";
-import { LoadBadge } from "./SearchPage";
+
+const LOAD_TONE: Record<QueueLoad, string> = {
+  low: "text-success",
+  medium: "text-warning",
+  high: "text-danger",
+};
+
+function LoadBadge({ load }: { load: QueueLoad | null }) {
+  const { t } = useTranslation();
+  if (!load) return null;
+  return (
+    <span className={cx("inline-flex items-center gap-1.5 font-semibold", LOAD_TONE[load])}>
+      <Gauge aria-hidden="true" weight="bold" className="size-5" />
+      {t(`booking.load.${load}`)}
+    </span>
+  );
+}
 
 const WEEKDAYS = [0, 1, 2, 3, 4, 5, 6];
 
@@ -188,7 +205,7 @@ export function FacilityPage() {
           title={t("booking.facility.notFound")}
           description={t("booking.facility.notFoundBody")}
           action={
-            <Link to="/search" className={buttonClassName({})}>
+            <Link to="/care" className={buttonClassName({})}>
               {t("booking.facility.backToSearch")}
             </Link>
           }
@@ -219,7 +236,7 @@ export function FacilityPage() {
         <ImigongoPattern opacity={0.06} className="-z-10" />
         <div className="mx-auto flex max-w-[70rem] flex-col gap-4 px-4 py-8 sm:px-6 sm:py-10">
           <Link
-            to="/search"
+            to="/care"
             className="inline-flex w-fit items-center gap-2 rounded-sm font-semibold text-on-forest-accent no-underline hover:underline"
           >
             <ArrowLeft aria-hidden="true" className="size-icon" />

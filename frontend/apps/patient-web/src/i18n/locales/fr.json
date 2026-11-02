@@ -303,29 +303,6 @@
       "settings": "Paramètres"
     }
   },
-  "findCare": {
-    "title": "Trouver des soins",
-    "intro": "Comment voir un médecin avec MediLink aujourd’hui.",
-    "walkIn": {
-      "title": "Venir aujourd’hui",
-      "body": "Rendez-vous dans un établissement MediLink pendant les heures d’ouverture. Pas besoin de rendez-vous.",
-      "steps": {
-        "reception": "Donnez votre nom ou votre numéro MediLink à l’accueil.",
-        "ticket": "Vous recevez un numéro de ticket, par exemple G-023.",
-        "track": "Suivez votre tour dans Mes visites. Nous vous prévenons quand c’est bientôt à vous."
-      },
-      "note": "Votre ticket s’affiche aussi sur l’écran de la salle d’attente."
-    },
-    "book": {
-      "title": "Réserver un créneau",
-      "body": "Choisissez un établissement, un jour et une heure, et voyez votre part du coût avant de réserver.",
-      "action": "Trouver un établissement"
-    },
-    "symptoms": {
-      "title": "Vous ne savez pas de quoi vous avez besoin ?",
-      "body": "Bientôt, vous pourrez décrire vos symptômes et nous vous proposerons le bon service. Cela ne remplacera jamais un médecin."
-    }
-  },
   "support": {
     "title": "Aide",
     "faqTitle": "Questions fréquentes",
@@ -365,5 +342,37 @@
     "travelBody": "Quand vous avez un ticket, indiquez le temps qu’il vous faut pour rejoindre l’établissement. Nous l’utilisons pour vous dire quand partir.",
     "alertsTitle": "Alertes",
     "alertsBody": "Bientôt, vous pourrez choisir comment nous vous joignons : sur ce téléphone, par SMS ou par e-mail."
+  },
+  "care": {
+    "title": "Trouver des soins",
+    "filters": "Filtres",
+    "filtersCount_one": "Filtres · {{count}}",
+    "filtersCount_other": "Filtres · {{count}}",
+    "active": "Filtres actifs",
+    "remove": "Retirer {{label}}",
+    "clearAll": "Tout effacer",
+    "show_one": "Voir {{count}} lieu",
+    "show_other": "Voir {{count}} lieux",
+    "service": "Service",
+    "anyService": "Tout service",
+    "level": "Niveau de soins",
+    "anyLevel": "Tout niveau",
+    "levels": {
+      "primary": "Primaire",
+      "secondary": "District",
+      "tertiary": "Référence"
+    },
+    "transferHint": "Mutuelle : apportez une lettre de transfert",
+    "when": "Quand",
+    "availability": {
+      "today": "Créneau libre aujourd’hui",
+      "remote": "File à distance"
+    },
+    "distance": "Distance",
+    "km": "{{km}} km",
+    "withinKm": "À moins de {{km}} km",
+    "none": "Aucun lieu ne correspond à ces filtres",
+    "tryInstead": "Le plus proche : {{name}}",
+    "close": "Fermer"
   }
 }

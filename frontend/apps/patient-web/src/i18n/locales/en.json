@@ -303,29 +303,6 @@
       "settings": "Settings"
     }
   },
-  "findCare": {
-    "title": "Find care",
-    "intro": "How you can see a doctor with MediLink today.",
-    "walkIn": {
-      "title": "Visit today",
-      "body": "Go to a MediLink facility during opening hours. You don't need an appointment.",
-      "steps": {
-        "reception": "Tell reception your name or MediLink number.",
-        "ticket": "You get a ticket number, for example G-023.",
-        "track": "Follow your turn on My visits. We tell you when you're next."
-      },
-      "note": "Your ticket also shows on the screen in the waiting room."
-    },
-    "book": {
-      "title": "Book a time",
-      "body": "Choose a facility, a day and a time, and see your share of the cost before you book.",
-      "action": "Find a facility"
-    },
-    "symptoms": {
-      "title": "Not sure what you need?",
-      "body": "Soon you can describe your symptoms and we'll suggest the right service. This will never replace a doctor."
-    }
-  },
   "support": {
     "title": "Help",
     "faqTitle": "Common questions",
@@ -365,5 +342,37 @@
     "travelBody": "When you have a ticket, tell us how long it takes you to reach the facility. We use it to tell you when to leave home.",
     "alertsTitle": "Alerts",
     "alertsBody": "Soon you can choose how we reach you: on this phone, by SMS or by email."
+  },
+  "care": {
+    "title": "Find care",
+    "filters": "Filters",
+    "filtersCount_one": "Filters · {{count}}",
+    "filtersCount_other": "Filters · {{count}}",
+    "active": "Active filters",
+    "remove": "Remove {{label}}",
+    "clearAll": "Clear all",
+    "show_one": "Show {{count}} place",
+    "show_other": "Show {{count}} places",
+    "service": "Service",
+    "anyService": "Any service",
+    "level": "Level of care",
+    "anyLevel": "Any level",
+    "levels": {
+      "primary": "Primary",
+      "secondary": "District",
+      "tertiary": "Referral"
+    },
+    "transferHint": "Mutuelle: bring a transfer letter",
+    "when": "When",
+    "availability": {
+      "today": "Free time today",
+      "remote": "Join remotely"
+    },
+    "distance": "Distance",
+    "km": "{{km}} km",
+    "withinKm": "Within {{km}} km",
+    "none": "No places match these filters",
+    "tryInstead": "Nearest: {{name}}",
+    "close": "Close"
   }
 }

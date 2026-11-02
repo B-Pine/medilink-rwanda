@@ -1,6 +1,6 @@
 import { LoadingState } from "@medilink/ui";
 import type { ComponentType } from "react";
-import type { RouteObject } from "react-router";
+import { redirect, type RouteObject } from "react-router";
 
 import { RequirePatient } from "../auth/RequirePatient";
 import { PatientShell } from "../layout/PatientShell";
@@ -40,6 +40,8 @@ export const routes: RouteObject[] = [
         path: "/verify-email",
         lazy: page(() => import("../pages/VerifyEmailPage"), "VerifyEmailPage"),
       },
+      // upgrade 04 §1: signed-in patients use the public Find care page
+      { path: "/find-care", loader: () => redirect("/care") },
       // /verify is the S7b documents feature's public page
       info("/help", "help"),
       {
@@ -50,10 +52,6 @@ export const routes: RouteObject[] = [
             element: <PatientShell />,
             children: [
               { path: "/home", lazy: page(() => import("../pages/HomePage"), "HomePage") },
-              {
-                path: "/find-care",
-                lazy: page(() => import("../pages/FindCarePage"), "FindCarePage"),
-              },
               { path: "/support", lazy: page(() => import("../pages/SupportPage"), "SupportPage") },
               {
                 path: "/settings",

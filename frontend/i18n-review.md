@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 3711.
+Keys: 3724.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -472,19 +472,6 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `shell.account.family` | Umuryango | Family | needs native-speaker review |
 | `shell.account.privacy` | Ibanga | Privacy | needs native-speaker review |
 | `shell.account.settings` | Igenamiterere | Settings | needs native-speaker review |
-| `findCare.title` | Shaka ubuvuzi | Find care | needs native-speaker review |
-| `findCare.intro` | Uko wabonana na muganga ukoresheje MediLink uyu munsi. | How you can see a doctor with MediLink today. | needs native-speaker review |
-| `findCare.walkIn.title` | Ngwino uyu munsi | Visit today | needs native-speaker review |
-| `findCare.walkIn.body` | Jya ku kigo gikoresha MediLink mu masaha y’akazi. Ntukeneye gufata gahunda mbere. | Go to a MediLink facility during opening hours. You don't need an appointment. | needs native-speaker review |
-| `findCare.walkIn.steps.reception` | Bwira abakira abarwayi izina ryawe cyangwa nimero ya MediLink. | Tell reception your name or MediLink number. | needs native-speaker review |
-| `findCare.walkIn.steps.ticket` | Uhabwa nimero ya tike, urugero G-023. | You get a ticket number, for example G-023. | needs native-speaker review |
-| `findCare.walkIn.steps.track` | Kurikirana igihe cyawe muri Gahunda zanjye. Tukumenyesha igihe ugiye kugerwaho. | Follow your turn on My visits. We tell you when you're next. | needs native-speaker review |
-| `findCare.walkIn.note` | Tike yawe igaragara no kuri ecran yo mu cyumba cyo gutegereza. | Your ticket also shows on the screen in the waiting room. | needs native-speaker review |
-| `findCare.book.title` | Fata gahunda | Book a time | needs native-speaker review |
-| `findCare.book.body` | Hitamo ikigo, umunsi n’isaha, urebe n’uruhare rwawe ku kiguzi mbere yo gufata gahunda. | Choose a facility, a day and a time, and see your share of the cost before you book. | needs native-speaker review |
-| `findCare.book.action` | Shaka ikigo | Find a facility | needs native-speaker review |
-| `findCare.symptoms.title` | Ntuzi icyo ukeneye? | Not sure what you need? | needs native-speaker review |
-| `findCare.symptoms.body` | Vuba uzashobora gusobanura uko wiyumva tukakwereka serivisi ikwiye. Ibi ntibizasimbura muganga. | Soon you can describe your symptoms and we'll suggest the right service. This will never replace a doctor. | needs native-speaker review |
 | `support.title` | Ubufasha | Help | needs native-speaker review |
 | `support.faqTitle` | Ibibazo bikunze kubazwa | Common questions | needs native-speaker review |
 | `support.faq.ticket.q` | Nakurikirana nte igihe cyanjye? | How do I follow my turn? | needs native-speaker review |
@@ -511,6 +498,32 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `settings.travelBody` | Iyo ufite tike, tubwire igihe bigutwara kugera ku kigo. Tukifashisha tukubwira igihe cyo kuva mu rugo. | When you have a ticket, tell us how long it takes you to reach the facility. We use it to tell you when to leave home. | needs native-speaker review |
 | `settings.alertsTitle` | Imenyesha | Alerts | needs native-speaker review |
 | `settings.alertsBody` | Vuba uzashobora guhitamo uko tukugeraho: kuri iyi telefoni, kuri SMS cyangwa kuri imeri. | Soon you can choose how we reach you: on this phone, by SMS or by email. | needs native-speaker review |
+| `care.title` | Shaka ubuvuzi | Find care | needs native-speaker review |
+| `care.filters` | Muyunguruzi | Filters | needs native-speaker review |
+| `care.filtersCount_one` | Muyunguruzi · {{count}} | Filters · {{count}} | needs native-speaker review |
+| `care.filtersCount_other` | Muyunguruzi · {{count}} | Filters · {{count}} | needs native-speaker review |
+| `care.active` | Ibyatoranyijwe | Active filters | needs native-speaker review |
+| `care.remove` | Kuraho {{label}} | Remove {{label}} | needs native-speaker review |
+| `care.clearAll` | Kuraho byose | Clear all | needs native-speaker review |
+| `care.show_one` | Erekana ahantu {{count}} | Show {{count}} place | needs native-speaker review |
+| `care.show_other` | Erekana ahantu {{count}} | Show {{count}} places | needs native-speaker review |
+| `care.service` | Serivisi | Service | needs native-speaker review |
+| `care.anyService` | Serivisi yose | Any service | needs native-speaker review |
+| `care.level` | Urwego rw’ubuvuzi | Level of care | needs native-speaker review |
+| `care.anyLevel` | Urwego urwo ari rwo rwose | Any level | needs native-speaker review |
+| `care.levels.primary` | Ibanze | Primary | needs native-speaker review |
+| `care.levels.secondary` | Akarere | District | needs native-speaker review |
+| `care.levels.tertiary` | Ibitaro bikuru | Referral | needs native-speaker review |
+| `care.transferHint` | Mutuelle: zana urupapuro rwo kohereza | Mutuelle: bring a transfer letter | needs native-speaker review |
+| `care.when` | Igihe | When | needs native-speaker review |
+| `care.availability.today` | Igihe kiboneka uyu munsi | Free time today | needs native-speaker review |
+| `care.availability.remote` | Jya ku murongo uri kure | Join remotely | needs native-speaker review |
+| `care.distance` | Intera | Distance | needs native-speaker review |
+| `care.km` | km {{km}} | {{km}} km | needs native-speaker review |
+| `care.withinKm` | Muri km {{km}} | Within {{km}} km | needs native-speaker review |
+| `care.none` | Nta hantu hahuye n’ibi byatoranyijwe | No places match these filters | needs native-speaker review |
+| `care.tryInstead` | Hafi cyane: {{name}} | Nearest: {{name}} | needs native-speaker review |
+| `care.close` | Funga | Close | needs native-speaker review |
 
 ## staff-web feature: bookings (namespace bookings)
 

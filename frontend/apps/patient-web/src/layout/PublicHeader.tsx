@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Link, NavLink } from "react-router";
 
 const NAV = [
-  { to: "/", key: "nav.findCare" },
+  { to: "/care", key: "nav.findCare" },
   { to: "/check-symptoms", key: "nav.checkSymptoms" },
   { to: "/for-facilities", key: "nav.forFacilities" },
 ] as const;

@@ -1,0 +1,82 @@
+{
+  "nav": {
+    "period": "Rapport de période",
+    "platformReports": "Rapport du réseau",
+    "platformAudit": "Journal d'audit"
+  },
+  "title": "Rapport de période",
+  "description": "Visites, attentes, rendez-vous, médecins, argent et litiges pour les jours choisis (92 au plus). Des chiffres seulement, jamais de noms de patients.",
+  "from": "Du",
+  "to": "Au",
+  "export": "Exporter en CSV",
+  "loading": "Chargement du rapport",
+  "patients": "Patients",
+  "medianWait": "Attente médiane",
+  "minutes": "min",
+  "noShows": "Rendez-vous manqués",
+  "ofBooked_one": "sur {{count}} rendez-vous",
+  "ofBooked_other": "sur {{count}} rendez-vous",
+  "collected": "Part patient encaissée",
+  "ofPatientShare": "sur {{amount}} RWF",
+  "waitTrend": "Attente de l'arrivée au premier appel",
+  "median": "Médiane",
+  "p90": "9 sur 10 ont attendu moins de",
+  "money": "Argent (RWF)",
+  "item": "Élément",
+  "amount": "Montant",
+  "count": "Nombre",
+  "finance": {
+    "billed": "Facturé",
+    "insurer": "Part assureur",
+    "patient": "Part patient",
+    "paid": "Payé",
+    "exempted": "Exonéré",
+    "refunded": "Remboursé",
+    "balance": "Reste à payer"
+  },
+  "bookingsTitle": "Rendez-vous",
+  "bookings": {
+    "booked": "Réservés",
+    "checked_in": "Venus",
+    "no_show": "Manqués",
+    "cancelled": "Annulés",
+    "late_cancelled": "Annulés tard"
+  },
+  "doctorsTitle": "Médecins",
+  "doctor": "Médecin",
+  "signed": "Signées",
+  "unsigned": "Non signées",
+  "late": "Signées en retard",
+  "noDoctors": "Aucune consultation sur la période.",
+  "disputesTitle": "Litiges",
+  "disputes": {
+    "raised": "Ouverts sur la période",
+    "open": "Ouverts maintenant",
+    "overdue": "En retard maintenant"
+  },
+  "audit": {
+    "title": "Journal d'audit",
+    "platformTitle": "Journal d'audit (tous les établissements)",
+    "description": "Chaque connexion, dossier ouvert, paiement, délivrance et modification, du plus récent au plus ancien. Des identifiants, jamais de texte clinique.",
+    "filter": "Action",
+    "filterHint": "Une action, ou son début suivi d'un point, p. ex. pharmacy.",
+    "when": "Quand",
+    "who": "Qui",
+    "action": "Action",
+    "object": "Sur",
+    "system": "Système",
+    "none": "Aucune entrée ne correspond."
+  },
+  "platform": {
+    "title": "Rapport du réseau",
+    "description": "Adoption et qualité dans les établissements sur les 30 derniers jours. Des chiffres seulement.",
+    "live": "Établissements actifs",
+    "visits": "Visites",
+    "bookings": "Rendez-vous",
+    "disputes": "Litiges",
+    "disputesPer1000": "Litiges pour 1 000 visites",
+    "escalation": "Litiges transmis",
+    "byFacility": "Par établissement",
+    "facility": "Établissement"
+  }
+}

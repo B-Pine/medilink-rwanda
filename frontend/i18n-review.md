@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 3889.
+Keys: 3963.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -2450,6 +2450,81 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `flow.people_one` | Umuntu {{count}} | {{count}} person | needs native-speaker review |
 | `flow.people_other` | Abantu {{count}} | {{count}} people | needs native-speaker review |
 
+## staff-web feature: reports (namespace reports)
+
+File: `apps/staff-web/src/features/reports/locales/rw.json`
+
+| Key | Kinyarwanda (draft) | English source | Status |
+|---|---|---|---|
+| `nav.period` | Raporo y'igihe | Period report | needs native-speaker review |
+| `nav.platformReports` | Raporo y'urusobe | Network report | needs native-speaker review |
+| `nav.platformAudit` | Igitabo cy'ibikorwa | Audit log | needs native-speaker review |
+| `title` | Raporo y'igihe | Period report | needs native-speaker review |
+| `description` | Ingendo, gutegereza, gahunda, abaganga, amafaranga n'ibirego mu minsi uhitamo (92 gusa). Imibare gusa, nta mazina y'abarwayi. | Visits, waits, bookings, doctors, money and disputes for the days you choose (92 at most). Counts only, never patient names. | needs native-speaker review |
+| `from` | Kuva | From | needs native-speaker review |
+| `to` | Kugeza | To | needs native-speaker review |
+| `export` | Kuramo CSV | Export CSV | needs native-speaker review |
+| `loading` | Turimo gutegura raporo | Loading the report | needs native-speaker review |
+| `patients` | Abarwayi | Patients | needs native-speaker review |
+| `medianWait` | Igihe cyo gutegereza (hagati) | Median wait | needs native-speaker review |
+| `minutes` | min | min | needs native-speaker review |
+| `noShows` | Gahunda zitubahirijwe | Missed bookings | needs native-speaker review |
+| `ofBooked_one` | kuri gahunda {{count}} | of {{count}} booking | needs native-speaker review |
+| `ofBooked_other` | kuri gahunda {{count}} | of {{count}} bookings | needs native-speaker review |
+| `collected` | Uruhare rw'umurwayi rwishyuwe | Patient share collected | needs native-speaker review |
+| `ofPatientShare` | kuri {{amount}} RWF | of {{amount}} RWF | needs native-speaker review |
+| `waitTrend` | Gutegereza kuva ugeze kugeza uhamagawe | Wait from check-in to first call | needs native-speaker review |
+| `median` | Hagati | Median | needs native-speaker review |
+| `p90` | 9 kuri 10 bategereje munsi ya | 9 in 10 waited less than | needs native-speaker review |
+| `money` | Amafaranga (RWF) | Money (RWF) | needs native-speaker review |
+| `item` | Ikintu | Item | needs native-speaker review |
+| `amount` | Amafaranga | Amount | needs native-speaker review |
+| `count` | Umubare | Count | needs native-speaker review |
+| `finance.billed` | Ayishyuzwa | Billed | needs native-speaker review |
+| `finance.insurer` | Uruhare rw'ubwishingizi | Insurer share | needs native-speaker review |
+| `finance.patient` | Uruhare rw'umurwayi | Patient share | needs native-speaker review |
+| `finance.paid` | Ayishyuwe | Paid | needs native-speaker review |
+| `finance.exempted` | Ayasonewe | Exempted | needs native-speaker review |
+| `finance.refunded` | Ayasubijwe | Refunded | needs native-speaker review |
+| `finance.balance` | Asigaye kwishyurwa | Still to pay | needs native-speaker review |
+| `bookingsTitle` | Gahunda | Bookings | needs native-speaker review |
+| `bookings.booked` | Zafashwe | Booked | needs native-speaker review |
+| `bookings.checked_in` | Baje | Came | needs native-speaker review |
+| `bookings.no_show` | Ntibaje | Missed | needs native-speaker review |
+| `bookings.cancelled` | Zahagaritswe | Cancelled | needs native-speaker review |
+| `bookings.late_cancelled` | Zahagaritswe bitinze | Cancelled late | needs native-speaker review |
+| `doctorsTitle` | Abaganga | Doctors | needs native-speaker review |
+| `doctor` | Muganga | Doctor | needs native-speaker review |
+| `signed` | Zasinywe | Signed | needs native-speaker review |
+| `unsigned` | Zitasinywe | Unsigned | needs native-speaker review |
+| `late` | Zasinywe bitinze | Signed late | needs native-speaker review |
+| `noDoctors` | Nta suzuma ryabaye muri iki gihe. | No consultations in this period. | needs native-speaker review |
+| `disputesTitle` | Ibirego | Disputes | needs native-speaker review |
+| `disputes.raised` | Byatanzwe muri iki gihe | Raised in the period | needs native-speaker review |
+| `disputes.open` | Bifunguye ubu | Open now | needs native-speaker review |
+| `disputes.overdue` | Byarengeje igihe ubu | Overdue now | needs native-speaker review |
+| `audit.title` | Igitabo cy'ibikorwa | Audit log | needs native-speaker review |
+| `audit.platformTitle` | Igitabo cy'ibikorwa (amavuriro yose) | Audit log (all facilities) | needs native-speaker review |
+| `audit.description` | Buri kwinjira, idosiye ifunguwe, kwishyura, gutanga imiti n'impinduka, guhera ku bya vuba. Nimero gusa, nta nyandiko z'ubuvuzi. | Every sign-in, record opened, payment, dispensing and change, newest first. Entries hold IDs, never clinical text. | needs native-speaker review |
+| `audit.filter` | Igikorwa | Action | needs native-speaker review |
+| `audit.filterHint` | Igikorwa, cyangwa intangiriro yacyo n'akadomo, urugero pharmacy. | An action, or its start followed by a dot, e.g. pharmacy. | needs native-speaker review |
+| `audit.when` | Igihe | When | needs native-speaker review |
+| `audit.who` | Nde | Who | needs native-speaker review |
+| `audit.action` | Igikorwa | Action | needs native-speaker review |
+| `audit.object` | Kuri | On | needs native-speaker review |
+| `audit.system` | Sisitemu | System | needs native-speaker review |
+| `audit.none` | Nta na kimwe gihuye. | No entries match. | needs native-speaker review |
+| `platform.title` | Raporo y'urusobe | Network report | needs native-speaker review |
+| `platform.description` | Ikoreshwa n'ubwiza mu mavuriro mu minsi 30 ishize. Imibare gusa. | Adoption and quality across facilities in the last 30 days. Counts only. | needs native-speaker review |
+| `platform.live` | Amavuriro akora | Facilities live | needs native-speaker review |
+| `platform.visits` | Ingendo | Visits | needs native-speaker review |
+| `platform.bookings` | Gahunda | Bookings | needs native-speaker review |
+| `platform.disputes` | Ibirego | Disputes | needs native-speaker review |
+| `platform.disputesPer1000` | Ibirego kuri ingendo 1.000 | Disputes per 1,000 visits | needs native-speaker review |
+| `platform.escalation` | Ibirego byazamuwe | Disputes escalated | needs native-speaker review |
+| `platform.byFacility` | Ku ivuriro | By facility | needs native-speaker review |
+| `platform.facility` | Ivuriro | Facility | needs native-speaker review |
+
 ## staff-web feature: setup (namespace setup)
 
 File: `apps/staff-web/src/features/setup/locales/rw.json`
@@ -3080,6 +3155,12 @@ File: `apps/patient-web/src/features/disputes/locales/rw.json`
 
 | Key | Kinyarwanda (draft) | English source | Status |
 |---|---|---|---|
+| `myData.title` | Amakuru yanjye | My data | needs native-speaker review |
+| `myData.body` | Kuramo ibyo MediLink ibika byose kuri wowe n'abo mu muryango wawe: amadosiye, imiti, fagitire, inyandiko n'ibirego, muri dosiye imwe. Kugira ngo ukosore ikintu, gifungure uhitemo Tanga ikibazo. | Download everything MediLink holds about you and your family profiles: records, medicines, bills, documents and disputes, in one file. To correct something, open it and choose Report a problem. | needs native-speaker review |
+| `myData.password` | Ijambo ry'ibanga ryawe | Your password | needs native-speaker review |
+| `myData.wrong` | Iryo jambo ry'ibanga si ryo. | That password is not right. | needs native-speaker review |
+| `myData.download` | Kuramo amakuru yanjye | Download my data | needs native-speaker review |
+| `myData.done` | Dosiye yawe yakuweho. Yibike ahantu hizewe: irimo amakuru y'ubuzima bwawe. | Your file was downloaded. Keep it somewhere safe: it has your health information. | needs native-speaker review |
 | `title` | Ibirego byanjye | My disputes | needs native-speaker review |
 | `intro` | Iyo hari icyanditswe cyangwa cyakozwe nabi (amafaranga, imiti wahawe, kutaza kwanditswe), ivuriro risuzuma inyandiko rigafata icyemezo mu minsi 10. | When something recorded or done was wrong (a charge, the medicines you got, a missed-visit strike), the facility checks the records and decides within 10 days. | needs native-speaker review |
 | `failed` | Ntibyakunze. Ongera ugerageze. | That didn't work. Try again. | needs native-speaker review |

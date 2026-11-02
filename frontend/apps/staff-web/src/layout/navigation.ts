@@ -29,7 +29,7 @@ import { Megaphone, MegaphoneSimple } from "@phosphor-icons/react";
 import { CalendarDots, ClipboardText } from "@phosphor-icons/react";
 // [/S2 imports]
 // [S10 imports]
-import { Article, Headset, Lifebuoy, Scales } from "@phosphor-icons/react";
+import { Article, ChartLineUp, Headset, Lifebuoy, Scales } from "@phosphor-icons/react";
 // [/S10 imports]
 // [S4 imports]
 import { ArrowsDownUp } from "@phosphor-icons/react";
@@ -298,6 +298,30 @@ export const NAV_ITEMS: readonly NavItem[] = [
     labelKey: "disputes.nav.platformDisputes",
     visible: (me: StaffMe) => me.is_platform_admin,
   },
+  {
+    key: "reportsPeriod",
+    path: "/reports/period",
+    icon: ChartLineUp,
+    group: "facility",
+    labelKey: "reports.nav.period",
+    visible: hasAny("reports.view"),
+  },
+  {
+    key: "platformReports",
+    path: "/platform/reports",
+    icon: ChartLineUp,
+    group: "platform",
+    labelKey: "reports.nav.platformReports",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
+  {
+    key: "platformAudit",
+    path: "/platform/audit",
+    icon: ClockCounterClockwise,
+    group: "platform",
+    labelKey: "reports.nav.platformAudit",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
   // [/S10]
   // [S4]
   {
@@ -362,6 +386,7 @@ const MANAGE_KEYS = new Set<string>([
   "approvals",
   "disputes",
   "reports",
+  "reportsPeriod",
   "staff",
   "setup",
   "settings",
@@ -392,6 +417,7 @@ const ORDER = [
   // [/S7]
   "payments",
   "reports",
+  "reportsPeriod",
   "approvals",
   "disputes",
   "staff",
@@ -409,6 +435,8 @@ const ORDER = [
   "platformFacilities",
   "platformSupport",
   "platformDisputes",
+  "platformReports",
+  "platformAudit",
   "platformMasterData",
   "platformAnnouncements",
   "platformHelpArticles",

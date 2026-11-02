@@ -20,6 +20,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   `query_raised`), `documents.services.document_generated`, `patients.merge_requests.merge_requested`;
   S1's `dispatch()` also notifies platform admins in-app when an application is submitted (S1-I6).
 
+### Sprint 10 part 2b · Reports, audit log and my data (contract sprint-10c)
+
+- `medilink.reports`:
+  - `GET /staff/reports/period/` covers up to 92 days: visits and waits, bookings, doctors, money and disputes. Counts only.
+  - `GET /staff/reports/period/export/` returns the same as CSV. It needs step-up, is audited and is safe against CSV injection.
+- Audit log: `GET /staff/audit-entries/` (`audit.view`, the active facility only) and `GET /platform/audit-entries/`.
+- `GET /platform/reports/` gives per-facility counts through `reports_platform_figures()`.
+- `POST /patient/data-export/` returns all the patient's data as JSON after the password (FR-SEC-12).
+
 ### Sprint 10 part 2a · Disputes (contract sprint-10b)
 
 - `medilink.disputes`: patients, guardians and reception (at the counter) raise a dispute from a

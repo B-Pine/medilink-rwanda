@@ -10,6 +10,7 @@ from medilink.accounts.urls import (
     staff_auth_urlpatterns,
 )
 from medilink.core.views import CsrfTokenView, HealthView
+from medilink.reports import urls as reports_urls  # [S10]
 
 api_v1: list[URLPattern | URLResolver] = [
     path("health/", HealthView.as_view(), name="health"),
@@ -58,6 +59,9 @@ api_v1: list[URLPattern | URLResolver] = [
     path("patient/disputes/", include("medilink.disputes.urls.patient")),
     path("staff/disputes/", include("medilink.disputes.urls.staff")),
     path("platform/disputes/", include("medilink.disputes.urls.platform")),
+    path("staff/", include(reports_urls.staff)),
+    path("platform/", include(reports_urls.platform)),
+    path("patient/", include(reports_urls.patient)),
     # [/S10]
     # [PT]
     path("public/", include("medilink.triage.urls")),

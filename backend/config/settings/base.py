@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     # [S10] help center and support requests (part 1)
     "medilink.support",
     "medilink.disputes",  # part 2a
+    "medilink.reports",  # part 2b
     # [/S10]
     # [PT] public pages and rules-based symptom triage
     "medilink.triage",

@@ -9,6 +9,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Sprint 10 part 2b · Reports, audit log and my data (frontend)
+
+- staff-web:
+  - `/reports/period`: a period picker; headline tiles for patients, median wait, missed bookings and patient share collected; a wait trend; tables for money, bookings, doctors and disputes; Export CSV (step-up).
+  - `/audit` and `/platform/audit`: the audit log, filtered by action.
+  - `/platform/reports`: network tiles and a per-facility table.
+- patient-web: a My data card in Settings downloads everything after the password.
+
 ### Sprint 10 part 2a · Disputes (frontend)
 
 - patient-web `/disputes`: my disputes with their state and what happens next; "Report a problem"

@@ -1,4 +1,12 @@
 {
+  "myData": {
+    "title": "Amakuru yanjye",
+    "body": "Kuramo ibyo MediLink ibika byose kuri wowe n'abo mu muryango wawe: amadosiye, imiti, fagitire, inyandiko n'ibirego, muri dosiye imwe. Kugira ngo ukosore ikintu, gifungure uhitemo Tanga ikibazo.",
+    "password": "Ijambo ry'ibanga ryawe",
+    "wrong": "Iryo jambo ry'ibanga si ryo.",
+    "download": "Kuramo amakuru yanjye",
+    "done": "Dosiye yawe yakuweho. Yibike ahantu hizewe: irimo amakuru y'ubuzima bwawe."
+  },
   "title": "Ibirego byanjye",
   "intro": "Iyo hari icyanditswe cyangwa cyakozwe nabi (amafaranga, imiti wahawe, kutaza kwanditswe), ivuriro risuzuma inyandiko rigafata icyemezo mu minsi 10.",
   "failed": "Ntibyakunze. Ongera ugerageze.",

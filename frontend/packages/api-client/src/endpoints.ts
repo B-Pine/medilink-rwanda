@@ -49,6 +49,7 @@ import { createNotificationsApi } from "./features/notifications";
 // [S10 imports]
 import { createDisputesApi } from "./features/disputes";
 import { createHelpApi } from "./features/help";
+import { createReportsApi } from "./features/reports";
 // [/S10 imports]
 // [PT imports]
 import { createTriageApi } from "./features/triage";
@@ -158,6 +159,7 @@ export function createMediLinkApi(client: ApiClient) {
     // [S10]
     help: createHelpApi(client),
     disputes: createDisputesApi(client),
+    reports: createReportsApi(client),
     // [/S10]
     // [PT]
     triage: createTriageApi(client),

@@ -312,6 +312,7 @@
     "subtitle": "Gérez les soins des personnes liées à votre compte.",
     "add": "Ajouter un membre",
     "you": "Vous",
+    "open": "Ouvrir le profil",
     "age_one": "{{count}} an",
     "age_other": "{{count}} ans",
     "access": {

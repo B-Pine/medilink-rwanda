@@ -312,6 +312,7 @@
     "subtitle": "Manage healthcare for the people connected to your account.",
     "add": "Add family member",
     "you": "You",
+    "open": "Open profile",
     "age_one": "{{count}} year",
     "age_other": "{{count}} years",
     "access": {

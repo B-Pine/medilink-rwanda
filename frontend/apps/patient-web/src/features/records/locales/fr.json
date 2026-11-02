@@ -27,5 +27,10 @@
     "weight": "Poids",
     "height": "Taille"
   },
-  "addenda": "Ajouté plus tard par le médecin"
+  "addenda": "Ajouté plus tard par le médecin",
+  "about": "À propos de cette visite",
+  "date": "Date",
+  "facility": "Établissement",
+  "doctorLabel": "Médecin",
+  "signedOn": "Signé"
 }

@@ -27,5 +27,10 @@
     "weight": "Weight",
     "height": "Height"
   },
-  "addenda": "Added later by the doctor"
+  "addenda": "Added later by the doctor",
+  "about": "About this visit",
+  "date": "Date",
+  "facility": "Facility",
+  "doctorLabel": "Doctor",
+  "signedOn": "Signed"
 }

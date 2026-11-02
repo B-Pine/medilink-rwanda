@@ -1,0 +1,82 @@
+{
+  "nav": {
+    "period": "Raporo y'igihe",
+    "platformReports": "Raporo y'urusobe",
+    "platformAudit": "Igitabo cy'ibikorwa"
+  },
+  "title": "Raporo y'igihe",
+  "description": "Ingendo, gutegereza, gahunda, abaganga, amafaranga n'ibirego mu minsi uhitamo (92 gusa). Imibare gusa, nta mazina y'abarwayi.",
+  "from": "Kuva",
+  "to": "Kugeza",
+  "export": "Kuramo CSV",
+  "loading": "Turimo gutegura raporo",
+  "patients": "Abarwayi",
+  "medianWait": "Igihe cyo gutegereza (hagati)",
+  "minutes": "min",
+  "noShows": "Gahunda zitubahirijwe",
+  "ofBooked_one": "kuri gahunda {{count}}",
+  "ofBooked_other": "kuri gahunda {{count}}",
+  "collected": "Uruhare rw'umurwayi rwishyuwe",
+  "ofPatientShare": "kuri {{amount}} RWF",
+  "waitTrend": "Gutegereza kuva ugeze kugeza uhamagawe",
+  "median": "Hagati",
+  "p90": "9 kuri 10 bategereje munsi ya",
+  "money": "Amafaranga (RWF)",
+  "item": "Ikintu",
+  "amount": "Amafaranga",
+  "count": "Umubare",
+  "finance": {
+    "billed": "Ayishyuzwa",
+    "insurer": "Uruhare rw'ubwishingizi",
+    "patient": "Uruhare rw'umurwayi",
+    "paid": "Ayishyuwe",
+    "exempted": "Ayasonewe",
+    "refunded": "Ayasubijwe",
+    "balance": "Asigaye kwishyurwa"
+  },
+  "bookingsTitle": "Gahunda",
+  "bookings": {
+    "booked": "Zafashwe",
+    "checked_in": "Baje",
+    "no_show": "Ntibaje",
+    "cancelled": "Zahagaritswe",
+    "late_cancelled": "Zahagaritswe bitinze"
+  },
+  "doctorsTitle": "Abaganga",
+  "doctor": "Muganga",
+  "signed": "Zasinywe",
+  "unsigned": "Zitasinywe",
+  "late": "Zasinywe bitinze",
+  "noDoctors": "Nta suzuma ryabaye muri iki gihe.",
+  "disputesTitle": "Ibirego",
+  "disputes": {
+    "raised": "Byatanzwe muri iki gihe",
+    "open": "Bifunguye ubu",
+    "overdue": "Byarengeje igihe ubu"
+  },
+  "audit": {
+    "title": "Igitabo cy'ibikorwa",
+    "platformTitle": "Igitabo cy'ibikorwa (amavuriro yose)",
+    "description": "Buri kwinjira, idosiye ifunguwe, kwishyura, gutanga imiti n'impinduka, guhera ku bya vuba. Nimero gusa, nta nyandiko z'ubuvuzi.",
+    "filter": "Igikorwa",
+    "filterHint": "Igikorwa, cyangwa intangiriro yacyo n'akadomo, urugero pharmacy.",
+    "when": "Igihe",
+    "who": "Nde",
+    "action": "Igikorwa",
+    "object": "Kuri",
+    "system": "Sisitemu",
+    "none": "Nta na kimwe gihuye."
+  },
+  "platform": {
+    "title": "Raporo y'urusobe",
+    "description": "Ikoreshwa n'ubwiza mu mavuriro mu minsi 30 ishize. Imibare gusa.",
+    "live": "Amavuriro akora",
+    "visits": "Ingendo",
+    "bookings": "Gahunda",
+    "disputes": "Ibirego",
+    "disputesPer1000": "Ibirego kuri ingendo 1.000",
+    "escalation": "Ibirego byazamuwe",
+    "byFacility": "Ku ivuriro",
+    "facility": "Ivuriro"
+  }
+}

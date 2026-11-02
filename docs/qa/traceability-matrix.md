@@ -319,7 +319,7 @@ Source: [12 · Security, privacy, compliance](../analysis/12-security-privacy-an
 | FR-SEC-09 | Break-glass with reason, time limit, review, patient visibility | P1 | S6b | Both | AZ, API | In progress |
 | FR-SEC-10 | Encryption in transit and at rest; field-level encryption | P1 | S3, R1 #83 (TOTP secrets, Transit keystore) | Backend | UT, INS | In progress |
 | FR-SEC-11 | Patient data processed and stored in Rwanda | P1 | S11* | Ops | INS | Not started |
-| FR-SEC-12 | Data subject rights: access, download, rectification, erasure, portability | P1 | S10 | Both | API, E2E | Not started |
+| FR-SEC-12 | Data subject rights: access, download, rectification, erasure, portability | P1 | S10 | Both | API, E2E | In progress (S10c) |
 | FR-SEC-13 | Retention rules per data type | P1 | S10 | Backend | UT, INS | Not started |
 | FR-SEC-14 | Encrypted backups, point-in-time recovery, tested restores | P1 | S11 | Ops | DRL | Not started |
 | FR-SEC-15 | Incident response and breach notification procedure | P1 | S11 | Ops | DRL, INS | Not started |
@@ -332,11 +332,11 @@ Source: [13 · Reporting and analytics](../analysis/13-reporting-and-analytics.m
 
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
-| FR-RPT-01 | Metric definitions from event timestamps | P1 | S10 | Backend | UT | Not started |
+| FR-RPT-01 | Metric definitions from event timestamps | P1 | S10 | Backend | UT | In progress (S10c) |
 | FR-RPT-02 | Live operations board | P1 | S10 | Both | API, E2E | Not started |
-| FR-RPT-03 | Facility reports (daily, waits, doctors, bookings, finance, staff) | P1 | S10 | Both | API, CMP | Not started |
-| FR-RPT-04 | Export to Excel and PDF | P1 | S10 | Both | API, SEC | Not started |
-| FR-RPT-05 | Platform network, adoption, quality and system reports | P1 | S10 | Both | API | Not started |
+| FR-RPT-03 | Facility reports (daily, waits, doctors, bookings, finance, staff) | P1 | S10 | Both | API, CMP | In progress (S10c) |
+| FR-RPT-04 | Export to Excel and PDF | P1 | S10 | Both | API, SEC | In progress (S10c) |
+| FR-RPT-05 | Platform network, adoption, quality and system reports | P1 | S10 | Both | API | In progress (S10c) |
 | FR-RPT-06 | Peak-hours heat map, diagnoses and pharmacy reports | P2 | — | Both | API | Not started |
 | FR-RPT-07 | Pilot impact report support | P2 | — | Both | INS | Not started |
 | FR-RPT-08 | Aggregated Ministry / district analytics | P4 | — | Both | INS | Not started |

@@ -45,7 +45,8 @@ describe("My disputes (S10b-F1)", () => {
       "I was charged twice for the consultation.",
     );
     await user.click(screen.getByRole("button", { name: "Send" }));
-    expect(await screen.findByText(/charged twice/)).toBeInTheDocument();
+    // the detail page loads lazily after the redirect
+    expect(await screen.findByText(/charged twice/, {}, { timeout: 5000 })).toBeInTheDocument();
     expect(screen.getByText("The facility answers within 3 days.")).toBeInTheDocument();
   });
 

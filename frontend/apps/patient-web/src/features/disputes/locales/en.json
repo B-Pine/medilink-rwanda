@@ -1,4 +1,12 @@
 {
+  "myData": {
+    "title": "My data",
+    "body": "Download everything MediLink holds about you and your family profiles: records, medicines, bills, documents and disputes, in one file. To correct something, open it and choose Report a problem.",
+    "password": "Your password",
+    "wrong": "That password is not right.",
+    "download": "Download my data",
+    "done": "Your file was downloaded. Keep it somewhere safe: it has your health information."
+  },
   "title": "My disputes",
   "intro": "When something recorded or done was wrong (a charge, the medicines you got, a missed-visit strike), the facility checks the records and decides within 10 days.",
   "failed": "That didn't work. Try again.",

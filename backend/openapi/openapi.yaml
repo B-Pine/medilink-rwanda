@@ -624,6 +624,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ConsentRecord'
           description: ''
+  /api/v1/patient/data-export/:
+    post:
+      operationId: patient_data_export
+      summary: Download all my data as JSON (DX1, FR-SEC-12); password again, audited
+      tags:
+      - patient-privacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DataExportRequestRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+                format: binary
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Wrong password
   /api/v1/patient/delegations/:
     get:
       operationId: patient_delegations_list
@@ -2714,6 +2743,56 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Not published
+  /api/v1/platform/audit-entries/:
+    get:
+      operationId: platform_audit_entries
+      summary: The whole audit log, newest first (A2)
+      parameters:
+      - in: query
+        name: action
+        schema:
+          type: string
+        description: Action, or a prefix ending in '.'
+      - in: query
+        name: actor_id
+        schema:
+          type: string
+      - in: query
+        name: facility_id
+        schema:
+          type: string
+      - in: query
+        name: from
+        schema:
+          type: string
+          format: date
+        description: 'First day (default: 29 days ago)'
+      - in: query
+        name: object_id
+        schema:
+          type: string
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: to
+        schema:
+          type: string
+          format: date
+        description: 'Last day (default: today)'
+      tags:
+      - reports
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAuditEntryRowList'
+          description: ''
   /api/v1/platform/break-glass/:
     get:
       operationId: platform_break_glass_sessions
@@ -7024,6 +7103,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/Overview'
           description: ''
+  /api/v1/platform/reports/:
+    get:
+      operationId: platform_report
+      summary: Network, adoption and quality figures per facility (PR1); counts only
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+          format: date
+        description: 'First day (default: 29 days ago)'
+      - in: query
+        name: to
+        schema:
+          type: string
+          format: date
+        description: 'Last day (default: today)'
+      tags:
+      - reports
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformReport'
+          description: ''
   /api/v1/platform/support-requests/:
     get:
       operationId: platform_support_requests_list
@@ -8418,6 +8526,55 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: A note is needed
+  /api/v1/staff/audit-entries/:
+    get:
+      operationId: staff_audit_entries
+      description: |-
+        The audit log has no RLS yet (database design §1, decision D2): the facility filter here
+        is the only scope, so every read goes through it.
+      summary: The facility's audit log, newest first (A1)
+      parameters:
+      - in: query
+        name: action
+        schema:
+          type: string
+        description: Action, or a prefix ending in '.'
+      - in: query
+        name: actor_id
+        schema:
+          type: string
+      - in: query
+        name: from
+        schema:
+          type: string
+          format: date
+        description: 'First day (default: 29 days ago)'
+      - in: query
+        name: object_id
+        schema:
+          type: string
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: to
+        schema:
+          type: string
+          format: date
+        description: 'Last day (default: today)'
+      tags:
+      - reports
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAuditEntryRowList'
+          description: ''
   /api/v1/staff/auth/active-facility/:
     post:
       operationId: staff_auth_active_facility
@@ -14066,6 +14223,78 @@ paths:
               schema:
                 $ref: '#/components/schemas/Operations'
           description: ''
+  /api/v1/staff/reports/period/:
+    get:
+      operationId: staff_report_period
+      summary: 'Facility report for a period: visits, waits, bookings, doctors, money
+        (R1)'
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+          format: date
+        description: 'First day (default: 29 days ago)'
+      - in: query
+        name: to
+        schema:
+          type: string
+          format: date
+        description: 'Last day (default: today)'
+      tags:
+      - reports
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityPeriodReport'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad dates
+  /api/v1/staff/reports/period/export/:
+    get:
+      operationId: staff_report_period_export
+      summary: The period report as a CSV file (R2); step-up, audited, formula-safe
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+          format: date
+        description: 'First day (default: 29 days ago)'
+      - in: query
+        name: to
+        schema:
+          type: string
+          format: date
+        description: 'Last day (default: today)'
+      tags:
+      - reports
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required
   /api/v1/staff/results-inbox/:
     get:
       operationId: staff_results_inbox
@@ -16470,6 +16699,40 @@ components:
       required:
       - kind
       - value
+    AuditEntryRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        occurred_at:
+          type: string
+          format: date-time
+        actor_name:
+          type: string
+        actor_role:
+          type: string
+        action:
+          type: string
+        object_type:
+          type: string
+        object_id:
+          type: string
+        reason:
+          type: string
+        metadata:
+          type: object
+          additionalProperties: {}
+      required:
+      - action
+      - actor_name
+      - actor_role
+      - id
+      - metadata
+      - object_id
+      - object_type
+      - occurred_at
+      - reason
     Author:
       type: object
       properties:
@@ -18268,6 +18531,14 @@ components:
           type: string
       required:
       - csrf_token
+    DataExportRequestRequest:
+      type: object
+      properties:
+        current_password:
+          type: string
+          minLength: 1
+      required:
+      - current_password
     Day:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -20796,6 +21067,48 @@ components:
       - reception_notes
       - sex
       - version
+    FacilityPeriodReport:
+      type: object
+      properties:
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+        totals:
+          type: object
+          additionalProperties: {}
+        days:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        bookings:
+          type: object
+          additionalProperties:
+            type: integer
+        doctors:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        finance:
+          type: object
+          additionalProperties:
+            type: integer
+        disputes:
+          type: object
+          additionalProperties: {}
+      required:
+      - bookings
+      - days
+      - disputes
+      - doctors
+      - finance
+      - from
+      - to
+      - totals
     FacilityProfile:
       type: object
       properties:
@@ -24067,6 +24380,28 @@ components:
       - next
       - previous
       - results
+    PaginatedAuditEntryRowList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditEntryRow'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedAvailabilityRowList:
       type: object
       properties:
@@ -27311,6 +27646,28 @@ components:
       - title_i18n
       - updated_at
       - updated_by
+    PlatformReport:
+      type: object
+      properties:
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+        totals:
+          type: object
+          additionalProperties: {}
+        facilities:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - facilities
+      - from
+      - to
+      - totals
     PlatformSupportMessage:
       type: object
       properties:

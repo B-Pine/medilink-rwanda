@@ -3,6 +3,9 @@ import { Badge, Card, LanguageSwitcher, TextSizeToggle, ThemeToggle } from "@med
 import { useTranslation } from "react-i18next";
 
 import { PageHeading } from "../components/PageHeading";
+// [S10 imports]
+import { MyDataCard } from "../features/disputes/MyDataCard";
+// [/S10 imports]
 
 /**
  * Settings (design 07 §3.5): language, text size and theme apply at once and stay on this device.
@@ -56,6 +59,9 @@ export function SettingsPage() {
           <p className="m-0 text-fg-secondary">{t("settings.alertsBody")}</p>
         </div>
       </Card>
+      {/* [S10] */}
+      <MyDataCard />
+      {/* [/S10] */}
     </div>
   );
 }

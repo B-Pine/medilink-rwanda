@@ -31,6 +31,9 @@ import helpRw from "../features/help/locales/rw.json";
 import disputesEn from "../features/disputes/locales/en.json";
 import disputesFr from "../features/disputes/locales/fr.json";
 import disputesRw from "../features/disputes/locales/rw.json";
+import reportsEn from "../features/reports/locales/en.json";
+import reportsFr from "../features/reports/locales/fr.json";
+import reportsRw from "../features/reports/locales/rw.json";
 // [/S10 imports]
 // [S4 imports]
 import queueEn from "../features/queue/locales/en.json";
@@ -77,6 +80,7 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   // [S10]
   help: { rw: helpRw, en: helpEn, fr: helpFr },
   disputes: { rw: disputesRw, en: disputesEn, fr: disputesFr },
+  reports: { rw: reportsRw, en: reportsEn, fr: reportsFr },
   // [/S10]
   // [S4]
   queue: { rw: queueRw, en: queueEn, fr: queueFr },

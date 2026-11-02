@@ -20,6 +20,7 @@ import { setupFeature } from "../features/setup";
 // [S10 imports]
 import { disputesFeature } from "../features/disputes";
 import { helpFeature } from "../features/help";
+import { reportsFeature } from "../features/reports";
 // [/S10 imports]
 // [S4 imports]
 import { queueFeature } from "../features/queue";
@@ -88,6 +89,7 @@ export const FEATURES: FeatureRoutes[] = [
   // [S10]
   helpFeature,
   disputesFeature,
+  reportsFeature,
   // [/S10]
   // [S4]
   queueFeature,

@@ -1,4 +1,12 @@
 {
+  "myData": {
+    "title": "Mes données",
+    "body": "Téléchargez tout ce que MediLink détient sur vous et vos profils familiaux : dossiers, médicaments, factures, documents et litiges, en un seul fichier. Pour corriger quelque chose, ouvrez-le et choisissez Signaler un problème.",
+    "password": "Votre mot de passe",
+    "wrong": "Ce mot de passe n'est pas correct.",
+    "download": "Télécharger mes données",
+    "done": "Votre fichier a été téléchargé. Gardez-le en lieu sûr : il contient vos informations de santé."
+  },
   "title": "Mes litiges",
   "intro": "Quand quelque chose d'enregistré ou de fait était faux (un paiement, les médicaments reçus, une absence enregistrée), l'établissement vérifie les dossiers et décide sous 10 jours.",
   "failed": "Cela n'a pas marché. Réessayez.",

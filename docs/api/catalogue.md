@@ -664,8 +664,7 @@ Requirements: FR-DSP-01..11; FR-RPT-01..05; FR-SEC-12, 13. Retention jobs (FR-SE
 | `GET` | `/api/v1/patient/support-requests/{id}/` | One request with its messages | Patient session (own) | FR-DSP-11 | Support shown as "MediLink support" | Implemented (S10 part 1 backend) |
 | `POST` | `/api/v1/patient/support-requests/{id}/messages/` | Reply | Patient session (own) | FR-DSP-11 | 422 when closed | Implemented (S10 part 1 backend) |
 | `POST` | `/api/v1/patient/support-requests/{id}/close/` | Close (withdrawn) | Patient session (own) | FR-DSP-11 | 409 when closed | Implemented (S10 part 1 backend) |
-| `POST` | `/api/v1/patient/data-exports/` | Download all my data (PDF + machine-readable) | Patient session | FR-SEC-12 | Step-up; Async | Planned |
-| `GET` | `/api/v1/patient/data-exports/{id}/` | Export status and link | Patient session | FR-SEC-12 | Link valid 15 minutes | Planned |
+| `POST` | `/api/v1/patient/data-export/` | Download all my data (JSON) | Patient session | FR-SEC-12 | `{current_password}`; synchronous JSON attachment; Audit (sprint-10c D-3; PDF later) | Implemented (S10c) |
 | `POST` | `/api/v1/patient/auth/close-account/` | Close the account after the retention explanation | Patient session | FR-SEC-12, FR-SEC-13 | Step-up; non-clinical data deleted after 30 days | Planned |
 
 Rectification of personal details uses `PATCH /api/v1/patient/profiles/{patient_id}/` (S3). Clinical corrections and privacy requests are disputes of type `record_correction` and `privacy`.
@@ -701,7 +700,9 @@ Rectification of personal details uses `PATCH /api/v1/patient/profiles/{patient_
 | `GET` | `/api/v1/staff/reports/my-activity/` | Own shift or own activity | `reports.view_own` | FR-RPT-03 | | Planned |
 | `POST` | `/api/v1/staff/report-exports/` | Export a report to Excel or PDF | `reports.view` | FR-RPT-04 | Step-up; watermark; CSV-injection safe; Async; Audit | Planned |
 | `GET` | `/api/v1/staff/report-exports/{id}/` | Export status and link | `reports.view` (requester) | FR-RPT-04 | Link valid 15 minutes | Planned |
-| `GET` | `/api/v1/staff/audit-entries/` | Facility audit log | `audit.view` | FR-SEC-07 | Filters actor, object, action, dates | Planned |
+| `GET` | `/api/v1/staff/reports/period/` | Period report: visits, waits, bookings, doctors, money, disputes | `reports.view` | FR-RPT-01, FR-RPT-03 | Up to 92 days; counts only (sprint-10c D-1 replaces the per-topic rows above) | Implemented (S10c) |
+| `GET` | `/api/v1/staff/reports/period/export/` | The period report as CSV | `reports.view` | FR-RPT-04 | Step-up; CSV-injection safe; Audit (sprint-10c D-2) | Implemented (S10c) |
+| `GET` | `/api/v1/staff/audit-entries/` | Facility audit log | `audit.view` | FR-SEC-07 | Filters actor, object, action (prefix with `.`), dates | Implemented (S10c) |
 | `GET` | `/api/v1/staff/access-reviews/` | Weekly unusual-access reports | `audit.view` | FR-SEC-07 | Security 08 §4 | Planned |
 | `POST` | `/api/v1/staff/access-reviews/{id}/sign-off/` | Sign off the weekly review | `audit.view` | FR-SEC-07 | Audit | Planned |
 
@@ -731,7 +732,8 @@ Note: the permission matrix in analysis 02 §3 gives the receptionist no "raise 
 | `GET` | `/api/v1/platform/reports/quality/` | Disputes per 1,000 visits, escalation rate, estimate accuracy | Platform admin | FR-RPT-05 | Aggregated only | Planned |
 | `GET` | `/api/v1/platform/reports/system/` | Usage, errors, notification delivery, push opt-in | Platform admin | FR-RPT-05 | | Planned |
 | `POST` | `/api/v1/platform/report-exports/` | Export a platform report | Platform admin | FR-RPT-04 | Step-up; watermark; Async | Planned |
-| `GET` | `/api/v1/platform/audit-entries/` | Platform audit log | Platform admin | FR-SEC-07 | | Planned |
+| `GET` | `/api/v1/platform/reports/` | Per-facility visits, bookings, disputes, escalations | Platform admin | FR-RPT-05 | Aggregated only (sprint-10c PR1) | Implemented (S10c) |
+| `GET` | `/api/v1/platform/audit-entries/` | Platform audit log | Platform admin | FR-SEC-07 | Filter `facility_id` | Implemented (S10c) |
 
 ---
 

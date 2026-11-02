@@ -25,6 +25,12 @@
   "codeHint": "Yerekane kuri farumasi. Ifite agaciro kugeza {{date}}.",
   "days_one": "umunsi {{count}}",
   "days_other": "iminsi {{count}}",
+  "facts": {
+    "dose": "Ingano",
+    "often": "Inshuro",
+    "long": "Igihe bimara",
+    "how": "Uko ufata umuti"
+  },
   "status": {
     "draft": "Iracyandikwa",
     "issued": "Yanditswe",

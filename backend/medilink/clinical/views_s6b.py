@@ -299,11 +299,7 @@ class ScanLinkView(ClinicalView):
             raise exceptions.NotFound()
         access.require_access(self.principal(), scan.facility_patient)
         link = records.scan_link(scan, request=request)
-        return Response(
-            DownloadLinkSerializer(
-                {"url": link.url, "expires_at": link.expires_at, "disposition": link.disposition}
-            ).data
-        )
+        return Response(DownloadLinkSerializer(link).data)
 
 
 class ResultsInboxView(ClinicalView):

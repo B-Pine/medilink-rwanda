@@ -113,6 +113,12 @@ Requirements: FR-ONB-01..03, 07, 08, 10; FR-DOC-03, 05 (uploads); FR-SEC-06 (loc
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
 | `GET` | `/api/v1/platform/overview/` | Console overview | Platform admin | FR-ONB-02 | | Implemented (#47) |
+| `GET` | `/api/v1/platform/command-center/` | Command centre: map points, live facilities, people waiting, needs-action counts, security summary, recent activity | Platform admin | Upgrade 05 §6 | Aggregates only; memberships and disputes read per facility under RLS | Implemented (#154) |
+| `GET` | `/api/v1/platform/users/` | Every account: kind (platform, staff, patient), facilities and roles, MFA, status, last sign-in (`?q`, `kind`, `status`, `mfa`) | Platform admin | Upgrade 05 §6 | Patients as accounts only, never health data | Implemented (#154) |
+| `GET` | `/api/v1/platform/users/{id}/` | Account profile with sessions (short non-secret refs) and recent security events | Platform admin | Upgrade 05 §6 | Audit `platform.user.viewed` | Implemented (#154) |
+| `POST` | `/api/v1/platform/users/{id}/lock/`, `unlock/`, `reset-mfa/`, `revoke-sessions/` | Account actions | Platform admin | Upgrade 05 §6 | Up; `{reason}` ≥ 5; never on yourself (`422`); audit `platform.user.*` | Implemented (#154) |
+| `GET` | `/api/v1/platform/security-events/` | Security log (auth, account actions, MFA resets) (`?q`, `action`, `outcome=failure`) | Platform admin | Upgrade 05 §6, FR-SEC | Read-only view of the audit chain | Implemented (#154) |
+| `GET` | `/api/v1/platform/access-events/` | Record access log (records opened, access reasons, break-glass) | Platform admin | Upgrade 05 §6 | Record shown by short reference only | Implemented (#154) |
 | `GET` | `/api/v1/platform/facility-applications/` | Applications pipeline | Platform admin | FR-ONB-02 | Filters `status`, `district`, `facility_type`, `q` | Implemented (#47) |
 | `POST` | `/api/v1/platform/facility-applications/` | Create an application on behalf of a facility | Platform admin | FR-ONB-01 | Audit | Implemented (#47) |
 | `GET`, `PATCH` | `/api/v1/platform/facility-applications/{id}/` | Application, documents, checks; edit on behalf of the facility | Platform admin | FR-ONB-02 | Ver | Implemented (#47) |

@@ -247,6 +247,8 @@
     "nowServing": "En cours · Ubu turi kwakira",
     "next": "Suivants · Abakurikira",
     "enableSound": "Activer le son",
+    "spoken": "Ticket {{number}}",
+    "spokenRoom": "Ticket {{number}}, veuillez vous rendre à {{room}}",
     "invalid": "Ce lien d’écran n’est pas valide. Demandez-en un nouveau.",
     "footer": "Écoutez votre numéro. Réservez en ligne : medilink.rw"
   },

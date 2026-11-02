@@ -281,7 +281,7 @@ export function MyQueuePage() {
               </div>
             </div>
           ) : (
-            <div className="relative isolate flex flex-col items-center gap-5 overflow-hidden rounded-xl bg-forest px-6 py-12 text-center text-on-forest">
+            <div className="relative isolate flex animate-rise flex-col items-center gap-5 overflow-hidden rounded-3xl bg-[linear-gradient(135deg,var(--color-forest)_0%,var(--color-forest-raised)_100%)] px-6 py-14 text-center text-on-forest shadow-raised">
               <div
                 aria-hidden="true"
                 className="absolute inset-0 -z-10 text-on-forest-accent"
@@ -306,7 +306,7 @@ export function MyQueuePage() {
                 onClick={() => callNext.mutate()}
                 aria-keyshortcuts="Space"
                 className={cx(
-                  "inline-flex min-h-16 cursor-pointer items-center gap-3 rounded-xl px-10 font-heading text-h2 font-bold",
+                  "inline-flex min-h-16 cursor-pointer items-center gap-3 rounded-full px-10 font-heading text-h2 font-bold",
                   "bg-on-forest-accent text-forest shadow-raised transition-[transform,filter] duration-150",
                   "enabled:hover:brightness-105 enabled:active:scale-[0.97]",
                   "disabled:cursor-not-allowed disabled:opacity-50",
@@ -358,7 +358,7 @@ export function MyQueuePage() {
               {(data?.waiting ?? []).map((ticket, index) => (
                 <li
                   key={ticket.id}
-                  className="flex items-center gap-3 border-t border-border px-4 py-2.5"
+                  className="flex animate-enter items-center gap-3 border-t border-border/60 px-4 py-3 transition-colors duration-200 ease-out-quint hover:bg-subtle/50"
                 >
                   <TicketNumber
                     number={ticket.number}

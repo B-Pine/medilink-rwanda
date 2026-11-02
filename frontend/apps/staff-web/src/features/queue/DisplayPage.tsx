@@ -35,6 +35,23 @@ function chime(context: AudioContext) {
   }
 }
 
+/**
+ * Spoken call (upgrade 08, proposed FR-QUE-21): the number and room read aloud after the chime with
+ * the browser's own voice for the display language. Recorded Kinyarwanda voice files are open
+ * decision OD-4; where no voice exists the chime alone plays.
+ */
+function speak(number: string, room: string | null, language: string, template: string) {
+  if (!("speechSynthesis" in window)) return;
+  const spelled = number.replace("-", " ").split("").join(" ");
+  const utterance = new SpeechSynthesisUtterance(
+    template.replace("{{number}}", spelled).replace("{{room}}", room ?? ""),
+  );
+  utterance.lang = language === "rw" ? "rw-RW" : language === "fr" ? "fr-FR" : "en-GB";
+  utterance.rate = 0.9;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utterance);
+}
+
 function useClock() {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
@@ -86,13 +103,22 @@ export function DisplayPage() {
       const fresh = called.find((n) => !seen.current!.has(n));
       if (fresh) {
         setFlash(fresh);
-        if (soundOn && audio.current) chime(audio.current);
+        if (soundOn && audio.current) {
+          chime(audio.current);
+          const room =
+            data.services.flatMap((s) => s.now_serving).find((n) => n.number === fresh)
+              ?.service_point ?? null;
+          const template = t(room ? "queue.display.spokenRoom" : "queue.display.spoken");
+          setTimeout(() => speak(fresh, room, lang, template), 900);
+        }
         const timer = setTimeout(() => setFlash(null), 1500);
         seen.current = new Set(called);
         return () => clearTimeout(timer);
       }
     }
     seen.current = new Set(called);
+    // t and lang only shape the spoken sentence; a language change must not replay a call
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [board.data, soundOn]);
 
   const enableSound = () => {
@@ -126,7 +152,7 @@ export function DisplayPage() {
             <button
               type="button"
               onClick={enableSound}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-md bg-forest-raised px-4 py-2 font-semibold text-on-forest"
+              className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-on-forest/10 px-5 py-2.5 font-semibold text-on-forest ring-1 ring-on-forest/20 transition-colors duration-200 ease-out-quint hover:bg-on-forest/20"
             >
               <SpeakerHigh aria-hidden="true" />
               {t("queue.display.enableSound")}
@@ -149,20 +175,30 @@ export function DisplayPage() {
             {(data?.services ?? [])
               .flatMap((s) => s.now_serving)
               .slice(0, 4)
-              .map((n) => (
+              .map((n, index) => (
                 <li
                   key={n.number}
                   className={cx(
-                    "flex items-center justify-between gap-[2vw] rounded-lg px-[2vw] py-[1.5vh] transition-colors duration-700 motion-reduce:transition-none",
-                    flash === n.number ? "bg-on-forest-accent text-forest" : "bg-forest-raised",
+                    "flex animate-rise items-center justify-between gap-[2vw] rounded-[2.5vh] px-[2.4vw] transition-colors duration-700 motion-reduce:transition-none",
+                    index === 0 ? "py-[2.6vh] shadow-raised" : "py-[1.4vh]",
+                    flash === n.number
+                      ? "bg-on-forest-accent text-forest"
+                      : index === 0
+                        ? "bg-on-forest/12 ring-1 ring-on-forest/20"
+                        : "bg-on-forest/6",
                   )}
                 >
                   <TicketNumber
                     number={n.number}
                     size="display"
-                    className="text-[10vh] leading-none"
+                    className={cx("leading-none", index === 0 ? "text-[13vh]" : "text-[8vh]")}
                   />
-                  <span className="flex items-center gap-[1vw] font-heading text-[5vh] font-bold">
+                  <span
+                    className={cx(
+                      "flex items-center gap-[1vw] font-heading font-bold",
+                      index === 0 ? "text-[6vh]" : "text-[4vh]",
+                    )}
+                  >
                     <ArrowRight aria-hidden="true" weight="bold" />
                     {n.service_point ?? "—"}
                   </span>
@@ -186,7 +222,7 @@ export function DisplayPage() {
                 {s.next.map((number) => (
                   <li
                     key={number}
-                    className="rounded-md border border-forest-raised px-[1.2vw] py-[0.6vh]"
+                    className="animate-enter rounded-full bg-on-forest/8 px-[1.6vw] py-[0.6vh] ring-1 ring-on-forest/15"
                   >
                     <TicketNumber number={number} className="text-[4.5vh]" />
                   </li>

@@ -247,6 +247,8 @@
     "nowServing": "Ubu turi kwakira · Now serving",
     "next": "Abakurikira · Next",
     "enableSound": "Fungura ijwi",
+    "spoken": "Itike {{number}}",
+    "spokenRoom": "Itike {{number}}, mwinjire muri {{room}}",
     "invalid": "Iyi link ya televiziyo ntikora. Saba ikigo indi nshya.",
     "footer": "Tega amatwi nimero yawe. Fata gahunda kuri interineti: medilink.rw"
   },

@@ -51,7 +51,7 @@ function BookingRows({ rows }: { rows: StaffBooking[] }) {
       {rows.map((b) => (
         <li
           key={b.id}
-          className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border border-border px-3 py-2"
+          className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-2xl border border-border/60 px-3 py-2"
         >
           <span className="font-semibold tabular-nums">{slotTime(b.starts_at, lang)}</span>
           <span className="min-w-0 flex-1">{b.display_name}</span>
@@ -87,7 +87,7 @@ function DayView({ data }: { data: StaffCalendar }) {
               <article
                 key={`${block.service_id}-${block.membership_id}-${block.starts_at}`}
                 aria-label={`${block.doctor ?? service(block.service_id)} ${slotTime(block.starts_at, lang)}`}
-                className="flex flex-col gap-2 rounded-lg bg-surface shadow-card p-4"
+                className="flex flex-col gap-2 rounded-2xl bg-surface shadow-card p-4"
               >
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <h3 className="m-0 text-h4">
@@ -278,7 +278,7 @@ function Calendar() {
         </Alert>
       )}
       {calendar.isPending ? (
-        <Skeleton height="24rem" className="rounded-lg" />
+        <Skeleton height="24rem" className="rounded-2xl" />
       ) : calendar.isError || !data ? (
         <Alert tone="danger" role="alert" title={t("bookings.calendar.failed")}>
           <Button variant="secondary" onClick={() => void calendar.refetch()}>

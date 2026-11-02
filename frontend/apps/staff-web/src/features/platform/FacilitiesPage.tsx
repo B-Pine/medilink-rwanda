@@ -93,7 +93,15 @@ function Facilities() {
         enableSorting: false,
         cell: ({ row }) => <StatusBadge kind="facility" value={row.original.status} />,
       },
-      { accessorKey: "facility_type", header: t("platform.review.type"), enableSorting: false },
+      {
+        accessorKey: "facility_type",
+        header: t("platform.review.type"),
+        enableSorting: false,
+        cell: ({ row }) =>
+          t(`facility.types.${row.original.facility_type}`, {
+            defaultValue: row.original.facility_type,
+          }),
+      },
       {
         id: "district",
         header: t("platform.facilities.district"),
@@ -169,7 +177,7 @@ function Facilities() {
         rowActions={(row) => (
           <Link
             to={`/platform/facilities/${row.id}`}
-            className={buttonClassName({ variant: "secondary" })}
+            className={buttonClassName({ variant: "ghost", size: "sm", pill: true })}
             aria-label={`${t("platform.table.open")}: ${row.name}`}
           >
             {t("platform.table.open")}
@@ -238,7 +246,9 @@ function FacilityDetail() {
             <dt className="text-fg-muted">{t("platform.facilities.address")}</dt>
             <dd className="m-0">{data.slug}</dd>
             <dt className="text-fg-muted">{t("platform.review.type")}</dt>
-            <dd className="m-0">{data.facility_type}</dd>
+            <dd className="m-0">
+              {t(`facility.types.${data.facility_type}`, { defaultValue: data.facility_type })}
+            </dd>
             <dt className="text-fg-muted">{t("platform.facilities.district")}</dt>
             <dd className="m-0">{data.district?.name ?? "—"}</dd>
             <dt className="text-fg-muted">{t("platform.facilities.licence")}</dt>

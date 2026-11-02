@@ -47,7 +47,7 @@ export function FacilitySwitcher({ me }: { me: StaffMe }) {
           aria-label={t("facility.switcherLabel", {
             name: active?.name ?? t("facility.noFacility"),
           })}
-          className="inline-flex min-h-target max-w-full min-w-0 cursor-pointer items-center gap-2 rounded-md border border-border-input bg-surface px-3 text-fg hover:bg-subtle"
+          className="inline-flex min-h-target max-w-full min-w-0 cursor-pointer items-center gap-2 rounded-xl border border-border-input bg-surface px-3 text-fg hover:bg-subtle"
         >
           {label}
           <CaretUpDown aria-hidden="true" className="size-4 shrink-0 text-fg-muted" />

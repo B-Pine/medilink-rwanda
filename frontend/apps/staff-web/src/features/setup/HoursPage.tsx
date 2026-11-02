@@ -215,7 +215,7 @@ function WeekForm({
         e.preventDefault();
         if (valid) save.mutate();
       }}
-      className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5"
+      className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="m-0 font-heading text-h3">{t("setup.hours.week")}</h2>
@@ -228,7 +228,7 @@ function WeekForm({
         <p className="m-0 text-body-sm text-fg-secondary">{t("setup.hours.inherits")}</p>
       )}
       {isConflict(save.error) && <ConflictNotice onReload={onReload} />}
-      <ul className="m-0 flex list-none flex-col divide-y divide-border p-0">
+      <ul className="m-0 flex list-none flex-col divide-y divide-border/60 p-0">
         {days.map((day, weekday) => {
           const breakInside =
             !day.hasBreak ||
@@ -306,7 +306,7 @@ function WeekForm({
           {t("setup.saved")}
         </Alert>
       )}
-      <div className="flex justify-end border-t border-border pt-4">
+      <div className="flex justify-end border-t border-border/60 pt-4">
         <Button type="submit" disabled={!valid || save.isPending}>
           {t("setup.hours.save")}
         </Button>
@@ -331,7 +331,7 @@ function CalendarPreview({ serviceId }: { serviceId: string | null }) {
   return (
     <section
       aria-labelledby="preview"
-      className="flex flex-col gap-3 self-start rounded-lg bg-surface shadow-card p-5"
+      className="flex flex-col gap-3 self-start rounded-2xl bg-surface shadow-card p-5"
     >
       <h2 id="preview" className="m-0 font-heading text-h3">
         {t("setup.hours.preview")}
@@ -453,14 +453,14 @@ function EventsSection() {
               icon={CalendarX}
               title={t("setup.hours.noEventsTitle")}
               description={t("setup.hours.noEvents")}
-              className="rounded-lg border border-dashed border-border"
+              className="rounded-2xl border border-dashed border-border"
             />
           ) : (
-            <ul className="m-0 list-none overflow-hidden rounded-lg bg-surface shadow-card p-0">
+            <ul className="m-0 list-none overflow-hidden rounded-2xl bg-surface shadow-card p-0">
               {data.results.map((e) => (
                 <li
                   key={e.id}
-                  className="flex flex-wrap items-center gap-3 border-b border-border px-4 py-3 last:border-0"
+                  className="flex flex-wrap items-center gap-3 border-b border-border/60 px-4 py-3 last:border-0"
                 >
                   <Badge tone={e.kind === "closure" ? "warning" : "info"}>
                     {t(`setup.hours.kinds.${e.kind}`)}

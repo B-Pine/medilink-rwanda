@@ -353,7 +353,7 @@ function Editor({
             return (
               <fieldset
                 key={field}
-                className="flex flex-col gap-2 rounded-md border border-border p-3"
+                className="flex flex-col gap-2 rounded-2xl border border-border/60 p-3"
               >
                 <legend className="px-1 font-semibold">
                   {t(`platform.masterData.fields.${field}`, { defaultValue: field })}
@@ -647,7 +647,7 @@ function ImportPreview() {
           {data.status === "applied" && (
             <Link
               to={`/platform/master-data/${kind}`}
-              className={buttonClassName({ variant: "secondary" })}
+              className={buttonClassName({ variant: "ghost", size: "sm", pill: true })}
             >
               {t("platform.masterData.back")}
             </Link>

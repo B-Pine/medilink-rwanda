@@ -163,7 +163,7 @@ function Guides() {
             <li key={a.id}>
               <Link
                 to={`/support/articles/${a.slug}`}
-                className="flex h-full flex-col gap-1 rounded-lg bg-surface shadow-card p-4 text-fg no-underline hover:bg-subtle"
+                className="flex h-full flex-col gap-1 rounded-2xl bg-surface shadow-card p-4 text-fg no-underline hover:bg-subtle"
               >
                 <span className="font-semibold">
                   <LocalText text={a.title_i18n} />
@@ -212,7 +212,7 @@ function Requests({ scope }: { scope: "mine" | "facility" }) {
         <li key={r.id}>
           <Link
             to={`/support/requests/${r.id}`}
-            className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-lg bg-surface shadow-card p-3 text-fg no-underline hover:bg-subtle"
+            className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-2xl bg-surface shadow-card p-3 text-fg no-underline hover:bg-subtle"
           >
             <span className="font-mono text-body-sm text-fg-secondary">{r.reference}</span>
             <span className="min-w-0 flex-1 font-semibold">{r.subject}</span>
@@ -501,7 +501,7 @@ export function RequestPage() {
               <div
                 role="group"
                 aria-label={t("help.thread.close")}
-                className="flex flex-col gap-2 rounded-md border border-border p-3"
+                className="flex flex-col gap-2 rounded-2xl border border-border/60 p-3"
               >
                 <p className="m-0">{t("help.thread.closeConfirm")}</p>
                 {close.isError && (

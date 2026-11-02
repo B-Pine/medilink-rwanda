@@ -108,7 +108,7 @@ export function StaffPage() {
           {stats.map((s) => (
             <li
               key={s.label}
-              className="flex flex-col gap-1 rounded-lg bg-surface shadow-card px-4 py-3"
+              className="flex flex-col gap-1 rounded-2xl bg-surface shadow-card px-4 py-3"
             >
               <span className="text-body-sm font-semibold text-fg-secondary">{s.label}</span>
               <span className="font-heading text-h1 tabular-nums">{s.value}</span>
@@ -165,7 +165,7 @@ export function StaffPage() {
                       description={t("setup.staff.none")}
                     />
                   ) : (
-                    <div className="overflow-x-auto rounded-lg bg-surface shadow-card">
+                    <div className="overflow-x-auto rounded-2xl bg-surface shadow-card">
                       <table className="w-full border-collapse text-left">
                         <caption className="sr-only">{t("setup.staff.members")}</caption>
                         <thead className="bg-subtle text-body-sm text-fg-secondary">
@@ -182,7 +182,7 @@ export function StaffPage() {
                             <tr
                               key={m.id}
                               className={cx(
-                                "border-t border-border hover:bg-subtle",
+                                "border-t border-border/60 hover:bg-subtle",
                                 !m.is_active && "text-fg-muted",
                               )}
                             >
@@ -300,11 +300,11 @@ function InvitationList({ invitations }: { invitations: Invitation[] }) {
     );
   return (
     <>
-      <ul className="m-0 list-none overflow-hidden rounded-lg bg-surface shadow-card p-0">
+      <ul className="m-0 list-none overflow-hidden rounded-2xl bg-surface shadow-card p-0">
         {invitations.map((i) => (
           <li
             key={i.id}
-            className="flex flex-wrap items-center gap-3 border-b border-border px-4 py-3 last:border-0"
+            className="flex flex-wrap items-center gap-3 border-b border-border/60 px-4 py-3 last:border-0"
           >
             <EnvelopeSimple aria-hidden="true" className="size-5 text-fg-muted" />
             <div className="flex min-w-0 flex-1 flex-col">
@@ -600,7 +600,7 @@ function MemberPanel({
           <PointChecks points={points} value={assigned} onChange={setAssigned} />
         </form>
         {member.clinician && (
-          <section className="flex flex-col gap-2 rounded-md border border-border p-4">
+          <section className="flex flex-col gap-2 rounded-2xl border border-border/60 p-4">
             <h3 className="m-0 font-heading text-h3">{t("setup.staff.licence")}</h3>
             <p className="m-0 text-body-sm text-fg-secondary">
               {t(`setup.councils.${member.clinician.council}`, {
@@ -626,7 +626,7 @@ function MemberPanel({
             )}
           </section>
         )}
-        <section className="flex flex-col gap-3 rounded-md border border-danger/30 p-4">
+        <section className="flex flex-col gap-3 rounded-xl border border-danger/30 p-4">
           <h3 className="m-0 font-heading text-h3">{t("setup.staff.account")}</h3>
           <div className="flex flex-wrap gap-2">
             {!isSelf && member.mfa_enabled && (
@@ -751,7 +751,7 @@ function ClinicianForm({ profile }: { profile: ClinicianProfile }) {
         e.preventDefault();
         save.mutate();
       }}
-      className="flex flex-col gap-5 rounded-lg bg-surface shadow-card p-5"
+      className="flex flex-col gap-5 rounded-2xl bg-surface shadow-card p-5"
     >
       <SelectField
         label={t("setup.clinician.council")}

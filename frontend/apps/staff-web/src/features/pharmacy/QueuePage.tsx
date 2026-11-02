@@ -129,14 +129,14 @@ function QueueItem({ row }: { row: PharmacyQueueRow }) {
       {row.ticket_number ? (
         <TicketNumber number={row.ticket_number} size="sm" stub tone="brand" />
       ) : (
-        <span className="grid size-12 shrink-0 place-items-center rounded-lg bg-subtle text-fg-muted">
+        <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-subtle text-fg-muted">
           <Pill aria-hidden="true" weight="duotone" className="size-6" />
         </span>
       )}
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <Link
           to={`/pharmacy/prescriptions/${row.id}`}
-          className="font-heading text-h3 font-bold text-fg no-underline after:absolute after:inset-0 after:rounded-lg group-hover:underline"
+          className="font-heading text-h3 font-bold text-fg no-underline after:absolute after:inset-0 after:rounded-2xl group-hover:underline"
         >
           {row.patient_display_name}
         </Link>

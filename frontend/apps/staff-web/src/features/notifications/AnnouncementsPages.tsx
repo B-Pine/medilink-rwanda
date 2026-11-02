@@ -143,7 +143,7 @@ function AnnouncementsList({ scope }: { scope: AnnouncementScope }) {
           }
         />
       ) : (
-        <div className="overflow-x-auto rounded-lg bg-surface shadow-card">
+        <div className="overflow-x-auto rounded-2xl bg-surface shadow-card">
           <table className="w-full border-collapse text-left">
             <caption className="sr-only">{t(`notifications.announcements.${scope}Title`)}</caption>
             <thead className="bg-subtle text-body-sm text-fg-secondary">
@@ -157,7 +157,7 @@ function AnnouncementsList({ scope }: { scope: AnnouncementScope }) {
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={row.id} className="border-t border-border">
+                <tr key={row.id} className="border-t border-border/60">
                   <td className="px-4 py-3">
                     <Link to={`${base}/${row.id}`} className="font-semibold text-link">
                       {textIn(row.title_i18n, lang)}
@@ -280,7 +280,7 @@ function RadioGroup<T extends string>({
         <label
           key={option.value}
           className={cx(
-            "flex min-h-target cursor-pointer items-start gap-3 rounded-md border border-border p-3",
+            "flex min-h-target cursor-pointer items-start gap-3 rounded-2xl border border-border/60 p-3",
             value === option.value && "border-primary bg-brand-subtle/40",
             disabled && "cursor-not-allowed opacity-70",
           )}
@@ -667,7 +667,7 @@ function Composer({ scope, row }: { scope: AnnouncementScope; row: Announcement 
             <div
               role="group"
               aria-labelledby="announcement-confirm-title"
-              className="flex flex-col gap-3 rounded-lg border border-warning bg-warning-bg p-4"
+              className="flex flex-col gap-3 rounded-2xl border border-warning bg-warning-bg p-4"
             >
               <p id="announcement-confirm-title" className="m-0 font-semibold text-fg">
                 {confirm === "publish"

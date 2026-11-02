@@ -62,7 +62,7 @@ export function UnsignedPage() {
             {list.data.results.map((row) => (
               <li
                 key={row.id}
-                className="flex flex-wrap items-center gap-3 rounded-md border border-border bg-surface p-3"
+                className="flex flex-wrap items-center gap-3 rounded-2xl border border-border/60 bg-surface p-3"
               >
                 <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                   <span className="font-semibold">{row.patient_display_name}</span>

@@ -86,7 +86,7 @@ export function SlotStep({
         type="button"
         onClick={() => hold.mutate(slot)}
         disabled={hold.isPending}
-        className="flex min-h-control min-w-20 cursor-pointer flex-col items-center justify-center rounded-md border border-border-input bg-surface px-3 py-1 font-semibold tabular-nums text-fg transition-colors duration-150 hover:border-brand hover:bg-brand-subtle disabled:cursor-wait disabled:opacity-60 motion-reduce:transition-none"
+        className="flex min-h-control min-w-20 cursor-pointer flex-col items-center justify-center rounded-xl border border-border-input bg-surface px-3 py-1 font-semibold tabular-nums text-fg transition-colors duration-150 hover:border-brand hover:bg-brand-subtle disabled:cursor-wait disabled:opacity-60 motion-reduce:transition-none"
       >
         {slotTime(slot.starts_at, language)}
         {slot.doctor && !doctor && doctors.size > 1 && (
@@ -142,7 +142,7 @@ export function SlotStep({
                   aria-pressed={on}
                   onClick={() => setChosenDay(day.date)}
                   className={cx(
-                    "flex w-full cursor-pointer flex-col items-center rounded-md border px-1 py-1.5 text-caption transition-colors duration-150 motion-reduce:transition-none",
+                    "flex w-full cursor-pointer flex-col items-center rounded-xl border px-1 py-1.5 text-caption transition-colors duration-150 motion-reduce:transition-none",
                     on
                       ? "border-brand bg-brand-subtle font-semibold text-on-brand-subtle"
                       : "border-border bg-surface text-fg-secondary hover:bg-subtle",

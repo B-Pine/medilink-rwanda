@@ -36,7 +36,7 @@ export function FacilityPickerPage() {
   return (
     <div className="min-h-dvh bg-page">
       <SkipLink />
-      <header className="border-b border-border bg-surface px-4 py-3 sm:px-8">
+      <header className="border-b border-border/60 bg-surface px-4 py-3 sm:px-8">
         <Logo className="h-9" />
       </header>
       <main
@@ -64,7 +64,7 @@ export function FacilityPickerPage() {
                   className="flex h-full flex-col gap-4"
                 >
                   <div className="flex items-start gap-3">
-                    <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-md bg-brand-subtle text-on-brand-subtle">
+                    <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-subtle text-on-brand-subtle">
                       <Buildings aria-hidden="true" className="size-6" />
                     </span>
                     <div className="flex min-w-0 flex-col">

@@ -238,7 +238,7 @@ export function PhoneBookingPanel({
         )}
 
         {patient && view !== "patient" && view !== "done" && (
-          <div className="flex items-center justify-between gap-3 rounded-md bg-subtle px-3 py-2">
+          <div className="flex items-center justify-between gap-3 rounded-xl bg-subtle px-3 py-2">
             <span className="font-semibold">{patient.name}</span>
             {!moving && (
               <Button variant="ghost" onClick={() => setStep("patient")}>
@@ -417,7 +417,7 @@ export function PhoneBookingPanel({
               {slotDay(kigaliDate(new Date(save.data.starts_at)), language, "full")} ·{" "}
               <span className="tabular-nums">{slotTime(save.data.starts_at, language)}</span>
             </p>
-            <div className="flex flex-col items-center gap-1 rounded-lg border-2 border-dashed border-brand px-8 py-4">
+            <div className="flex flex-col items-center gap-1 rounded-2xl border-2 border-dashed border-brand px-8 py-4">
               <span className="text-body-sm font-semibold text-fg-muted">
                 {t("bookings.done.code")}
               </span>

@@ -140,7 +140,7 @@ function Checklist() {
             ) : (
               <section
                 aria-labelledby="go-live"
-                className="flex flex-wrap items-center justify-between gap-4 rounded-lg bg-surface shadow-card p-5"
+                className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-surface shadow-card p-5"
               >
                 <div className="flex max-w-xl flex-col gap-1">
                   <h2 id="go-live" className="m-0 font-heading text-h3">
@@ -175,13 +175,13 @@ function Checklist() {
                 )}
               </Alert>
             )}
-            <ol className="m-0 flex list-none flex-col overflow-hidden rounded-lg bg-surface shadow-card p-0">
+            <ol className="m-0 flex list-none flex-col overflow-hidden rounded-2xl bg-surface shadow-card p-0">
               {data.items.map((item) => {
                 const ItemIcon = CHECKLIST_ICONS[item.code];
                 return (
                   <li
                     key={item.code}
-                    className="flex flex-wrap items-center gap-4 border-b border-border px-4 py-3.5 last:border-0 sm:flex-nowrap"
+                    className="flex flex-wrap items-center gap-4 border-b border-border/60 px-4 py-3.5 last:border-0 sm:flex-nowrap"
                   >
                     <span
                       className={cx(
@@ -231,7 +231,7 @@ function ChecklistSummary({ data }: { data: SetupChecklist }) {
   return (
     <section
       aria-label={t("setup.checklist.progress", { done, total: data.items.length })}
-      className="relative flex flex-wrap items-center gap-5 overflow-hidden rounded-lg bg-forest p-5 text-on-forest"
+      className="relative flex flex-wrap items-center gap-5 overflow-hidden rounded-2xl bg-forest p-5 text-on-forest"
     >
       <div className="text-on-forest-accent">
         <ProgressRing done={done} total={data.items.length} size={84} />
@@ -249,7 +249,7 @@ function ChecklistSummary({ data }: { data: SetupChecklist }) {
       {next && (
         <Link
           to={next.link}
-          className="inline-flex min-h-target items-center gap-2 rounded-md bg-on-forest px-4 font-semibold text-forest no-underline hover:bg-on-forest-muted"
+          className="inline-flex min-h-target items-center gap-2 rounded-xl bg-on-forest px-4 font-semibold text-forest no-underline hover:bg-on-forest-muted"
         >
           {t("setup.checklist.continue")}
           <CaretRight aria-hidden="true" weight="bold" />
@@ -271,7 +271,7 @@ export function SetupTodayCard() {
   return (
     <section
       aria-labelledby="today-setup"
-      className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5 lg:col-span-2"
+      className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5 lg:col-span-2"
     >
       <div className="flex items-center gap-4">
         <div className="text-primary">
@@ -297,7 +297,7 @@ export function SetupTodayCard() {
               <li key={item.code}>
                 <Link
                   to={item.link}
-                  className="flex min-h-target items-center gap-3 rounded-md border border-border px-3 py-2 text-fg no-underline hover:border-border-input hover:bg-subtle"
+                  className="flex min-h-target items-center gap-3 rounded-2xl border border-border/60 px-3 py-2 text-fg no-underline hover:border-border-input hover:bg-subtle"
                 >
                   <ItemIcon aria-hidden="true" className="size-5 shrink-0 text-warning" />
                   <span className="flex-1 font-medium">

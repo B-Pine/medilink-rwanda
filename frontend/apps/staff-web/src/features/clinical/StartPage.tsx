@@ -56,7 +56,7 @@ export function StartPage() {
       ) : current ? (
         <section
           aria-labelledby="current-patient"
-          className="flex flex-wrap items-center gap-4 rounded-lg bg-surface shadow-card p-5"
+          className="flex flex-wrap items-center gap-4 rounded-2xl bg-surface shadow-card p-5"
         >
           <TicketNumber number={current.number} />
           <div className="flex min-w-0 flex-1 flex-col gap-1">

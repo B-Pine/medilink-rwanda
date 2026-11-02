@@ -88,9 +88,9 @@ export function SettingsHomePage() {
             <li key={key} className="flex">
               <Link
                 to={to}
-                className="group flex flex-1 items-start gap-4 rounded-lg bg-surface shadow-card p-4 text-fg no-underline transition-colors hover:border-border-input hover:bg-raised"
+                className="group flex flex-1 items-start gap-4 rounded-2xl bg-surface shadow-card p-4 text-fg no-underline transition-colors hover:border-border-input hover:bg-raised"
               >
-                <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-md bg-brand-subtle text-on-brand-subtle">
+                <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-subtle text-on-brand-subtle">
                   <SectionIcon aria-hidden="true" weight="duotone" className="size-6" />
                 </span>
                 <span className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -223,7 +223,7 @@ function ProfileForm({ profile, onReload }: { profile: FacilityProfile; onReload
   return (
     <form onSubmit={submit} noValidate className="flex flex-col gap-6">
       {isConflict(save.error) && <ConflictNotice onReload={onReload} />}
-      <section className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5">
+      <section className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5">
         <h2 className="m-0 font-heading text-h3">{t("setup.profile.identity")}</h2>
         <dl className="m-0 grid gap-3 sm:grid-cols-3">
           {(
@@ -247,7 +247,7 @@ function ProfileForm({ profile, onReload }: { profile: FacilityProfile; onReload
         <p className="m-0 text-body-sm text-fg-muted">{t("setup.profile.platformManaged")}</p>
       </section>
 
-      <section className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5">
+      <section className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5">
         <h2 className="m-0 font-heading text-h3">{t("setup.profile.contact")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <TextField
@@ -284,7 +284,7 @@ function ProfileForm({ profile, onReload }: { profile: FacilityProfile; onReload
         </div>
       </section>
 
-      <section className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5">
+      <section className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5">
         <h2 className="m-0 font-heading text-h3">{t("setup.profile.location")}</h2>
         <div className="flex flex-wrap items-end gap-3">
           <TextField
@@ -317,7 +317,7 @@ function ProfileForm({ profile, onReload }: { profile: FacilityProfile; onReload
         )}
       </section>
 
-      <section className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5">
+      <section className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5">
         <h2 className="m-0 font-heading text-h3">{t("setup.profile.description")}</h2>
         <p className="m-0 -mt-2 text-body-sm text-fg-secondary">
           {t("setup.profile.descriptionHint")}
@@ -348,7 +348,7 @@ function ProfileForm({ profile, onReload }: { profile: FacilityProfile; onReload
           {t("setup.saved")}
         </Alert>
       )}
-      <div className="flex justify-end border-t border-border pt-5">
+      <div className="flex justify-end border-t border-border/60 pt-5">
         <Button type="submit" size="lg" disabled={save.isPending || outside}>
           {t("setup.save")}
         </Button>
@@ -371,7 +371,7 @@ function Photos({ profile }: { profile: FacilityProfile }) {
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: setupKeys.facility }),
   });
   return (
-    <section className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5">
+    <section className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="m-0 font-heading text-h3">{t("setup.profile.photos")}</h2>
@@ -379,7 +379,7 @@ function Photos({ profile }: { profile: FacilityProfile }) {
             {t("setup.profile.photosHint", { count: profile.photos.length })}
           </p>
         </div>
-        <label className="inline-flex min-h-target cursor-pointer items-center gap-2 rounded-md border border-border-input px-4 font-semibold hover:bg-subtle has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-60">
+        <label className="inline-flex min-h-target cursor-pointer items-center gap-2 rounded-xl border border-border-input px-4 font-semibold hover:bg-subtle has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-60">
           <UploadSimple aria-hidden="true" className="size-5" />
           {t("setup.profile.addPhoto")}
           <input
@@ -400,7 +400,7 @@ function Photos({ profile }: { profile: FacilityProfile }) {
           {profile.photos.map((photo, index) => (
             <li
               key={photo}
-              className="flex aspect-[4/3] flex-col justify-between rounded-md border border-border bg-subtle p-2"
+              className="flex aspect-[4/3] flex-col justify-between rounded-2xl border border-border/60 bg-subtle p-2"
             >
               <span className="text-body-sm text-fg-secondary">
                 {t("setup.profile.photoN", { n: index + 1 })}
@@ -524,13 +524,13 @@ function SectionForm({
         e.preventDefault();
         save.mutate();
       }}
-      className="mt-4 flex flex-col gap-5 rounded-lg bg-surface shadow-card p-5"
+      className="mt-4 flex flex-col gap-5 rounded-2xl bg-surface shadow-card p-5"
     >
       {isConflict(save.error) && <ConflictNotice onReload={onReload} />}
       {section === "billing" && (
         <p className="m-0 text-body-sm text-fg-secondary">{t("setup.rules.billingStepUp")}</p>
       )}
-      <div className="flex flex-col divide-y divide-border">
+      <div className="flex flex-col divide-y divide-border/60">
         {fields.map(([name, spec]) => {
           const value = values[name] ?? spec.default;
           const set = (next: boolean | number | string) => {
@@ -624,7 +624,7 @@ function BrandingForm() {
             e.preventDefault();
             save.mutate();
           }}
-          className="mt-4 flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5"
+          className="mt-4 flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5"
         >
           <p className="m-0 text-body-sm text-fg-secondary">{t("setup.rules.brandingHint")}</p>
           <TextareaField
@@ -710,7 +710,7 @@ export function HistoryPage() {
                 description={t("setup.history.empty")}
               />
             ) : (
-              <div className="overflow-x-auto rounded-lg bg-surface shadow-card">
+              <div className="overflow-x-auto rounded-2xl bg-surface shadow-card">
                 <table className="w-full border-collapse text-left text-body-sm">
                   <caption className="sr-only">
                     {t("setup.settings.sections.history.title")}
@@ -726,7 +726,7 @@ export function HistoryPage() {
                   </thead>
                   <tbody>
                     {data.results.map((row) => (
-                      <tr key={row.id} className="border-t border-border align-top">
+                      <tr key={row.id} className="border-t border-border/60 align-top">
                         <td className="px-3 py-2.5 whitespace-nowrap tabular-nums">
                           {formatDate(row.changed_at, locale, true)}
                         </td>
@@ -750,7 +750,7 @@ export function HistoryPage() {
                     ))}
                   </tbody>
                 </table>
-                <div className="flex items-center justify-between gap-3 border-t border-border px-3 py-2">
+                <div className="flex items-center justify-between gap-3 border-t border-border/60 px-3 py-2">
                   <span className="text-body-sm text-fg-secondary tabular-nums">
                     {t("setup.history.count", { count: data.count })}
                   </span>

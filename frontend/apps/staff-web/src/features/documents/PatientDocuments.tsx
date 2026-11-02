@@ -36,7 +36,7 @@ export function PatientDocuments({ fpId }: { fpId: string }) {
           {errorText(list.error, t("errors.generic"))}
         </Alert>
       ) : rows.length ? (
-        <ul className="m-0 flex list-none flex-col divide-y divide-border rounded-lg bg-surface px-4 shadow-card">
+        <ul className="m-0 flex list-none flex-col divide-y divide-border/60 rounded-2xl bg-surface px-4 shadow-card">
           {rows.map((d) => (
             <DocumentLine key={d.id} document={d} mode={clinical ? "download" : "print"} />
           ))}

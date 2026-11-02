@@ -42,10 +42,21 @@ function columnLabel<T>(column: Column<T, unknown>): string {
 
 export type Density = "compact" | "default" | "comfortable";
 const DENSITY_ROW: Record<Density, string> = {
-  compact: "h-8",
-  default: "h-10",
-  comfortable: "h-12",
+  compact: "h-11",
+  default: "h-14",
+  comfortable: "h-16",
 };
+
+/**
+ * Filter selects passed in `toolbar` sit inline: a small muted label left of a compact pill, so
+ * the toolbar reads as one row (staff redesign 2026-11-02).
+ */
+const TOOLBAR = cx(
+  "flex flex-wrap items-center gap-3",
+  "[&_div:has(>select)]:flex-row [&_div:has(>select)]:items-center [&_div:has(>select)]:gap-2",
+  "[&_div:has(>select)>label]:text-body-sm [&_div:has(>select)>label]:font-medium [&_div:has(>select)>label]:whitespace-nowrap [&_div:has(>select)>label]:text-fg-muted",
+  "[&_select]:min-h-10 [&_select]:w-auto [&_select]:rounded-full [&_select]:py-1.5 [&_select]:text-body-sm",
+);
 export const PAGE_SIZES = [25, 50, 100] as const;
 
 export interface FilterChip {
@@ -179,17 +190,20 @@ export function DataTable<T>({
   const emptyState = filtered ? labels.noResults : labels.empty;
 
   return (
-    <div className={cx("flex flex-col gap-3", className)}>
-      <div className="flex flex-wrap items-end gap-3">
+    <div
+      className={cx("flex flex-col overflow-hidden rounded-2xl bg-surface shadow-card", className)}
+    >
+      <div className="flex flex-wrap items-center gap-3 px-5 pt-5 pb-4">
         {onSearchChange && (
           <form
             role="search"
-            className="flex min-w-64 flex-1 items-center gap-2"
+            className="group flex min-h-10 min-w-64 flex-1 items-center gap-2 rounded-full border border-border bg-page pr-1.5 pl-4 transition-[border-color,box-shadow] duration-150 ease-out-quint focus-within:border-primary focus-within:bg-surface focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_18%,transparent)] md:max-w-md"
             onSubmit={(event) => {
               event.preventDefault();
               onSearchChange(searchText.trim());
             }}
           >
+            <MagnifyingGlass aria-hidden="true" className="size-4 shrink-0 text-fg-muted" />
             <label className="sr-only" htmlFor={searchId}>
               {labels.search}
             </label>
@@ -199,35 +213,40 @@ export function DataTable<T>({
               value={searchText}
               placeholder={labels.search}
               onChange={(event) => setSearchText(event.target.value)}
-              className="block min-h-control w-full rounded-sm border border-border-input bg-surface px-3 py-2 text-body text-fg"
+              className="min-h-9 w-full min-w-0 border-0 bg-transparent text-body-sm text-fg outline-none placeholder:text-fg-muted"
             />
-            <Button type="submit" variant="secondary" aria-label={labels.search} className="px-3">
-              <MagnifyingGlass aria-hidden="true" weight="bold" />
-            </Button>
+            <button type="submit" className="sr-only">
+              {labels.search}
+            </button>
           </form>
         )}
-        {toolbar}
-        <label className="flex items-center gap-2 text-body-sm text-fg-secondary">
-          {labels.density}
-          <select
-            value={density}
-            onChange={(event) => chooseDensity(event.target.value as Density)}
-            className="min-h-control rounded-sm border border-border-input bg-surface px-2"
-          >
-            {(Object.keys(DENSITY_ROW) as Density[]).map((d) => (
-              <option key={d} value={d}>
-                {labels.densities[d]}
-              </option>
-            ))}
-          </select>
-        </label>
+        {toolbar && <div className={TOOLBAR}>{toolbar}</div>}
+        <div className="ml-auto flex items-center gap-3">
+          <p className="m-0 text-body-sm text-fg-muted tabular-nums" aria-live="polite">
+            {loading ? "" : labels.results(total)}
+          </p>
+          <label className="flex items-center gap-2 text-body-sm text-fg-muted">
+            <span className="sr-only sm:not-sr-only">{labels.density}</span>
+            <select
+              value={density}
+              onChange={(event) => chooseDensity(event.target.value as Density)}
+              className="min-h-9 cursor-pointer rounded-full border border-border bg-surface px-3 text-body-sm text-fg transition-colors duration-150 ease-out-quint hover:border-fg-muted"
+            >
+              {(Object.keys(DENSITY_ROW) as Density[]).map((d) => (
+                <option key={d} value={d}>
+                  {labels.densities[d]}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
       </div>
 
       {filters.length > 0 && (
-        <ul className="m-0 flex list-none flex-wrap items-center gap-2 p-0">
+        <ul className="m-0 flex list-none flex-wrap items-center gap-2 px-5 pb-4">
           {filters.map((chip) => (
-            <li key={chip.id}>
-              <span className="inline-flex items-center gap-1 rounded-full border border-border bg-subtle py-0.5 pr-1 pl-3 text-body-sm">
+            <li key={chip.id} className="animate-enter">
+              <span className="inline-flex items-center gap-1 rounded-full bg-brand-subtle py-0.5 pr-1 pl-3 text-body-sm font-semibold text-on-brand-subtle">
                 {chip.label}
                 <button
                   type="button"
@@ -250,12 +269,8 @@ export function DataTable<T>({
         </ul>
       )}
 
-      <p className="m-0 text-body-sm text-fg-secondary" aria-live="polite">
-        {loading ? "" : labels.results(total)}
-      </p>
-
       {error ? (
-        <Alert tone="danger">
+        <Alert tone="danger" className="mx-5 mb-5">
           <div className="flex flex-wrap items-center gap-3">
             <span>{labels.error}</span>
             {onRetry && (
@@ -268,10 +283,10 @@ export function DataTable<T>({
       ) : (
         <>
           {/* Table (640 px and wider) */}
-          <div className="hidden overflow-x-auto rounded-md border border-border sm:block">
-            <table className="w-full border-collapse text-left text-body">
+          <div className="hidden overflow-x-auto sm:block">
+            <table className="w-full border-collapse text-left text-body-sm">
               <caption className="sr-only">{caption}</caption>
-              <thead className="sticky top-0 z-10 bg-subtle">
+              <thead className="sticky top-0 z-10 bg-page/80">
                 <tr>
                   {headers.map((header) => {
                     const sorted = header.column.getIsSorted();
@@ -290,7 +305,7 @@ export function DataTable<T>({
                                 : undefined
                         }
                         className={cx(
-                          "border-b border-border px-4 py-2 font-semibold whitespace-nowrap",
+                          "border-y border-border/60 px-5 py-3 text-caption font-semibold tracking-wider whitespace-nowrap text-fg-muted uppercase",
                           alignClass(header.column),
                         )}
                       >
@@ -298,7 +313,7 @@ export function DataTable<T>({
                           <button
                             type="button"
                             onClick={header.column.getToggleSortingHandler()}
-                            className="inline-flex cursor-pointer items-center gap-1 border-0 bg-transparent p-0 font-semibold text-fg"
+                            className="inline-flex cursor-pointer items-center gap-1 border-0 bg-transparent p-0 font-semibold tracking-wider text-fg-muted uppercase transition-colors duration-150 hover:text-fg"
                           >
                             {flexRender(header.column.columnDef.header, header.getContext())}
                             {sorted === "asc" ? (
@@ -316,7 +331,7 @@ export function DataTable<T>({
                     );
                   })}
                   {rowActions && (
-                    <th scope="col" className="border-b border-border px-4 py-2 font-semibold">
+                    <th scope="col" className="border-y border-border/60 px-5 py-3">
                       <span className="sr-only">{labels.actions}</span>
                     </th>
                   )}
@@ -327,11 +342,11 @@ export function DataTable<T>({
                   ? Array.from({ length: 5 }, (_, index) => (
                       <tr key={`skeleton-${index}`} className={DENSITY_ROW[density]}>
                         {headers.map((header) => (
-                          <td key={header.id} className="border-b border-border px-4">
-                            <Skeleton className="h-4 w-full" />
+                          <td key={header.id} className="border-b border-border/50 px-5">
+                            <Skeleton className="h-4 w-full rounded-md" />
                           </td>
                         ))}
-                        {rowActions && <td className="border-b border-border" />}
+                        {rowActions && <td className="border-b border-border/50" />}
                       </tr>
                     ))
                   : rows.map((row) => (
@@ -339,7 +354,8 @@ export function DataTable<T>({
                         key={row.id}
                         className={cx(
                           DENSITY_ROW[density],
-                          onRowClick && "cursor-pointer hover:bg-subtle",
+                          "group/row transition-colors duration-150 ease-out-quint hover:bg-subtle/50 [&:last-child>td]:border-b-0",
+                          onRowClick && "cursor-pointer",
                         )}
                         onClick={onRowClick ? () => onRowClick(row.original) : undefined}
                       >
@@ -347,7 +363,8 @@ export function DataTable<T>({
                           <td
                             key={cell.id}
                             className={cx(
-                              "border-b border-border px-4 py-2 align-middle",
+                              "border-b border-border/50 px-5 py-2 align-middle text-fg-secondary",
+                              index === 0 && "font-semibold text-fg",
                               alignClass(cell.column),
                             )}
                           >
@@ -369,7 +386,7 @@ export function DataTable<T>({
                         ))}
                         {rowActions && (
                           <td
-                            className="border-b border-border px-4 py-2 text-right whitespace-nowrap"
+                            className="border-b border-border/50 px-5 py-2 text-right whitespace-nowrap [&_a]:min-h-9 [&_a]:rounded-full [&_a]:px-4 [&_a]:text-body-sm [&_button]:min-h-9 [&_button]:rounded-full [&_button]:px-4 [&_button]:text-body-sm"
                             onClick={(event) => event.stopPropagation()}
                           >
                             {rowActions(row.original)}
@@ -382,9 +399,9 @@ export function DataTable<T>({
           </div>
 
           {/* Card list (under 640 px) */}
-          <ul className="m-0 flex list-none flex-col gap-2 p-0 sm:hidden">
+          <ul className="m-0 flex list-none flex-col gap-2 px-4 pb-4 sm:hidden">
             {rows.map((row) => (
-              <li key={row.id} className="rounded-md border border-border bg-surface p-3">
+              <li key={row.id} className="rounded-xl border border-border/60 bg-surface p-4">
                 {renderCard ? (
                   renderCard(row.original)
                 ) : (
@@ -412,24 +429,22 @@ export function DataTable<T>({
           </ul>
 
           {!loading && rows.length === 0 && (
-            <div className="rounded-md border border-dashed border-border px-4 py-8 text-center text-fg-secondary">
-              {emptyState}
-            </div>
+            <div className="px-5 py-14 text-center text-fg-secondary">{emptyState}</div>
           )}
         </>
       )}
 
       <nav
-        className="flex flex-wrap items-center justify-between gap-3"
+        className="flex flex-wrap items-center justify-between gap-3 border-t border-border/60 px-5 py-3"
         aria-label={labels.page(page, pages)}
       >
         {onPageSizeChange && (
-          <label className="flex items-center gap-2 text-body-sm text-fg-secondary">
+          <label className="flex items-center gap-2 text-body-sm text-fg-muted">
             {labels.rowsPerPage}
             <select
               value={pageSize}
               onChange={(event) => onPageSizeChange(Number(event.target.value))}
-              className="min-h-control rounded-sm border border-border-input bg-surface px-2"
+              className="min-h-9 cursor-pointer rounded-full border border-border bg-surface px-3 text-body-sm text-fg"
             >
               {PAGE_SIZES.map((size) => (
                 <option key={size} value={size}>
@@ -439,13 +454,23 @@ export function DataTable<T>({
             </select>
           </label>
         )}
-        <div className="flex items-center gap-2">
-          <Button variant="secondary" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
-            {labels.previous}
-          </Button>
-          <span className="text-body-sm text-fg-secondary">{labels.page(page, pages)}</span>
+        <div className="ml-auto flex items-center gap-2">
           <Button
             variant="secondary"
+            size="sm"
+            pill
+            disabled={page <= 1}
+            onClick={() => onPageChange(page - 1)}
+          >
+            {labels.previous}
+          </Button>
+          <span className="px-1 text-body-sm text-fg-muted tabular-nums">
+            {labels.page(page, pages)}
+          </span>
+          <Button
+            variant="secondary"
+            size="sm"
+            pill
             disabled={page >= pages}
             onClick={() => onPageChange(page + 1)}
           >

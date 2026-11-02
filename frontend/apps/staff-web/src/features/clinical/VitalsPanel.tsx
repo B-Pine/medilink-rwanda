@@ -94,7 +94,7 @@ export function VitalsPanel({ visitId, onRecorded }: { visitId: string; onRecord
           {rows.map((v) => (
             <li
               key={v.id}
-              className="flex flex-wrap items-center gap-3 rounded-md border border-border p-3"
+              className="flex flex-wrap items-center gap-3 rounded-2xl border border-border/60 p-3"
             >
               <span className="font-semibold tabular-nums">{line(v)}</span>
               <span className="text-body-sm text-fg-muted">

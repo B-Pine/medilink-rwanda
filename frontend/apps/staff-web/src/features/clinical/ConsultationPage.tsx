@@ -96,7 +96,7 @@ function Section({
       id={id}
       tabIndex={-1}
       aria-labelledby={`${id}-title`}
-      className="flex scroll-mt-24 flex-col gap-3 rounded-lg bg-surface shadow-card p-4"
+      className="flex scroll-mt-24 flex-col gap-3 rounded-2xl bg-surface shadow-card p-4"
     >
       <h2 id={`${id}-title`} className="m-0 text-h3">
         {title}
@@ -252,7 +252,7 @@ function DraftEditor({ c }: { c: Consultation }) {
 
   return (
     <>
-      <div className="sticky top-0 z-10 flex flex-wrap items-center gap-3 border-b border-border bg-bg py-3">
+      <div className="sticky top-0 z-10 flex flex-wrap items-center gap-3 border-b border-border/60 bg-bg py-3">
         <AutosaveStatus
           state={draft.state}
           label={status}
@@ -476,7 +476,7 @@ function SignedView({ c }: { c: Consultation }) {
         {c.addenda.length ? (
           <ol className="m-0 flex list-none flex-col gap-3 p-0">
             {c.addenda.map((a) => (
-              <li key={a.id} className="rounded-md border border-border p-3">
+              <li key={a.id} className="rounded-2xl border border-border/60 p-3">
                 <p className="m-0 text-body-sm text-fg-muted">
                   {t("clinical.addendum.by", {
                     name: a.author_name,

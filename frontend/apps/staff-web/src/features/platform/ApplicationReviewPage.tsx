@@ -200,7 +200,10 @@ function Review() {
           )}
           <ul className="m-0 flex list-none flex-col gap-3 p-0">
             {data.documents.map((doc) => (
-              <li key={doc.id} className="flex flex-col gap-2 rounded-md border border-border p-3">
+              <li
+                key={doc.id}
+                className="flex flex-col gap-2 rounded-2xl border border-border/60 p-3"
+              >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="font-semibold">{t(`platform.documentKind.${doc.kind}`)}</span>
                   <Badge
@@ -471,7 +474,10 @@ function RequestChangesDialog({ app, open, onClose, onDone }: DialogProps) {
           rows={3}
         />
         {items.map((item, index) => (
-          <fieldset key={index} className="flex flex-col gap-2 rounded-md border border-border p-3">
+          <fieldset
+            key={index}
+            className="flex flex-col gap-2 rounded-2xl border border-border/60 p-3"
+          >
             <legend className="px-1 font-semibold">
               {t("platform.review.item", { n: index + 1 })}
             </legend>

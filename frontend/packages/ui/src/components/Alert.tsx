@@ -53,7 +53,7 @@ export function Alert({
       id={id}
       role={role}
       tabIndex={tabIndex}
-      className={cx("flex gap-3 rounded-md p-4", toneClass, className)}
+      className={cx("flex animate-enter gap-3 rounded-2xl px-5 py-4", toneClass, className)}
     >
       <ToneIcon
         aria-hidden="true"

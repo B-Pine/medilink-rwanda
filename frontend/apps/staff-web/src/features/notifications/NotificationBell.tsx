@@ -151,7 +151,7 @@ export function NotificationBell() {
       <Menu open={open} onOpenChange={setOpen}>
         <MenuTrigger
           aria-label={label}
-          className="relative inline-flex min-h-target min-w-target cursor-pointer items-center justify-center rounded-md text-fg hover:bg-subtle"
+          className="relative inline-flex min-h-target min-w-target cursor-pointer items-center justify-center rounded-xl text-fg hover:bg-subtle"
         >
           {unread > 0 ? (
             <BellRinging aria-hidden="true" className="size-icon" />

@@ -24,7 +24,8 @@ export interface ButtonProps extends ComponentPropsWithRef<"button"> {
 
 const VARIANTS: Record<ButtonVariant, string> = {
   primary: "bg-primary text-on-primary hover:bg-primary-hover border border-transparent",
-  secondary: "bg-surface text-fg border border-border-input hover:bg-subtle",
+  secondary:
+    "bg-surface text-fg border border-border shadow-card hover:border-fg-muted hover:bg-subtle/60",
   ghost: "bg-transparent text-fg border border-transparent hover:bg-subtle",
   danger: "bg-danger-solid text-on-danger-solid border border-transparent hover:bg-danger-solid/90",
 };
@@ -45,7 +46,7 @@ export function buttonClassName({
   return cx(
     // Text may wrap to two lines (long Kinyarwanda labels, design 03 §2); no fixed widths.
     "inline-flex items-center justify-center gap-2 text-center font-semibold no-underline",
-    pill ? "rounded-full" : "rounded-md",
+    pill ? "rounded-full" : "rounded-xl",
     "transition-[background-color,color,box-shadow,transform] duration-150 ease-out cursor-pointer select-none",
     "enabled:active:scale-[0.97] motion-reduce:enabled:active:scale-100",
     "aria-disabled:cursor-not-allowed aria-disabled:opacity-70 disabled:cursor-not-allowed disabled:opacity-70",

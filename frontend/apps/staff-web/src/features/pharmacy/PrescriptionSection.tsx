@@ -100,7 +100,7 @@ export function PrescriptionSection({ consultation: c }: { consultation: Consult
       id="prescription"
       tabIndex={-1}
       aria-labelledby="prescription-title"
-      className="flex scroll-mt-24 flex-col gap-3 rounded-lg bg-surface p-4 shadow-card"
+      className="flex scroll-mt-24 flex-col gap-3 rounded-2xl bg-surface p-4 shadow-card"
     >
       <div className="flex flex-wrap items-center gap-3">
         <h2 id="prescription-title" className="m-0 text-h3">
@@ -242,7 +242,7 @@ function ItemRow({
 }) {
   const { t } = useTranslation();
   return (
-    <li className="flex flex-col gap-2 rounded-md border border-border p-3">
+    <li className="flex flex-col gap-2 rounded-2xl border border-border/60 p-3">
       <div className="flex flex-wrap items-start gap-3">
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <span className="font-semibold">{item.drug_display}</span>
@@ -347,7 +347,7 @@ function AlertLine({
     <div
       role={allergy && !alert.overridden ? "alert" : undefined}
       className={cx(
-        "flex flex-col gap-2 rounded-md p-3",
+        "flex flex-col gap-2 rounded-xl p-3",
         allergy ? "bg-danger-bg" : "bg-attention-bg",
       )}
     >
@@ -474,7 +474,7 @@ function AddItem({
           ? t("pharmacy.prescription.replace", { name: replaces.drug_display })
           : t("pharmacy.prescription.add")
       }
-      className="flex flex-col gap-3 rounded-md bg-subtle p-4"
+      className="flex flex-col gap-3 rounded-xl bg-subtle p-4"
     >
       {replaces && (
         <p className="m-0 font-semibold">
@@ -482,7 +482,7 @@ function AddItem({
         </p>
       )}
       {picked ? (
-        <div className="flex flex-wrap items-center gap-3 rounded-md bg-surface p-3">
+        <div className="flex flex-wrap items-center gap-3 rounded-xl bg-surface p-3">
           <span className="font-semibold">{picked.display}</span>
           {!picked.available_here && (
             <Badge tone="danger" icon={Storefront}>
@@ -518,7 +518,7 @@ function AddItem({
                       <button
                         type="button"
                         onClick={() => setPicked(d)}
-                        className="flex min-h-target w-full cursor-pointer flex-wrap items-center gap-2 rounded-md border border-border bg-surface px-3 py-2 text-start hover:bg-brand-subtle"
+                        className="flex min-h-target w-full cursor-pointer flex-wrap items-center gap-2 rounded-2xl border border-border/60 bg-surface px-3 py-2 text-start hover:bg-brand-subtle"
                       >
                         <span className="font-semibold">{d.display}</span>
                         {d.is_controlled && (
@@ -536,7 +536,7 @@ function AddItem({
                     <button
                       type="button"
                       onClick={() => setFreeText(true)}
-                      className="min-h-target w-full cursor-pointer rounded-md px-3 py-2 text-start text-body-sm font-semibold text-link hover:underline"
+                      className="min-h-target w-full cursor-pointer rounded-xl px-3 py-2 text-start text-body-sm font-semibold text-link hover:underline"
                     >
                       {t("pharmacy.prescription.useTyped", { name: q })}
                     </button>
@@ -693,7 +693,7 @@ function QueryAnswer({
     <div
       role="group"
       aria-labelledby={`query-${query.id}`}
-      className="flex flex-col gap-3 rounded-md border border-border bg-subtle p-3"
+      className="flex flex-col gap-3 rounded-2xl border border-border/60 bg-subtle p-3"
     >
       <p id={`query-${query.id}`} className="m-0 flex flex-wrap items-center gap-2 font-semibold">
         <ChatCircleText aria-hidden="true" weight="bold" className="size-icon text-warning" />

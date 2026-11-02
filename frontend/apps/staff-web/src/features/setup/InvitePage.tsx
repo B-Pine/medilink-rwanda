@@ -50,9 +50,9 @@ function Invitation({ token, invitation }: { token: string; invitation: Invitati
   const signedIn = queryClient.getQueryData<StaffMe>(staffMeKey);
   return (
     <>
-      <section className="flex flex-col gap-3 rounded-lg border border-border bg-subtle p-4">
+      <section className="flex flex-col gap-3 rounded-2xl border border-border/60 bg-subtle p-4">
         <div className="flex items-center gap-3">
-          <span className="inline-flex size-10 items-center justify-center rounded-md bg-brand-subtle text-on-brand-subtle">
+          <span className="inline-flex size-10 items-center justify-center rounded-xl bg-brand-subtle text-on-brand-subtle">
             <Buildings aria-hidden="true" weight="duotone" className="size-6" />
           </span>
           <div className="flex flex-col">
@@ -86,7 +86,7 @@ function Invitation({ token, invitation }: { token: string; invitation: Invitati
             <Link
               to="/login"
               state={{ from: `/invite/${token}` }}
-              className="inline-flex min-h-control-primary items-center justify-center rounded-md bg-primary px-5 font-semibold text-on-primary no-underline hover:bg-primary-hover"
+              className="inline-flex min-h-control-primary items-center justify-center rounded-xl bg-primary px-5 font-semibold text-on-primary no-underline hover:bg-primary-hover"
             >
               {t("setup.invite.logInToAccept")}
             </Link>

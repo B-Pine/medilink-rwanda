@@ -120,7 +120,7 @@ export function MyQueuePage() {
           <div
             role="group"
             aria-label={t("queue.mine.duty")}
-            className="inline-flex flex-wrap gap-0.5 rounded-lg bg-subtle p-1"
+            className="inline-flex flex-wrap gap-0.5 rounded-2xl bg-subtle p-1"
           >
             {DUTY.map((state) => {
               const active = duty?.state === state;
@@ -141,7 +141,7 @@ export function MyQueuePage() {
                     })
                   }
                   className={cx(
-                    "inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-md px-3 text-body-sm font-semibold",
+                    "inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-xl px-3 text-body-sm font-semibold",
                     "transition-[background-color,color,box-shadow] duration-150",
                     active ? "bg-surface text-fg shadow-card" : "text-fg-secondary hover:text-fg",
                   )}
@@ -234,7 +234,7 @@ export function MyQueuePage() {
                 </div>
               </div>
               <Flags ticket={current} />
-              <div className="flex flex-wrap gap-2 border-t border-border pt-5">
+              <div className="flex flex-wrap gap-2 border-t border-border/60 pt-5">
                 {current.state === "called" ? (
                   <>
                     <Button size="lg" onClick={() => run(current, "start")}>
@@ -333,7 +333,7 @@ export function MyQueuePage() {
 
         <section
           aria-labelledby="waiting"
-          className="flex flex-col self-start overflow-hidden rounded-lg bg-surface shadow-card"
+          className="flex flex-col self-start overflow-hidden rounded-2xl bg-surface shadow-card"
         >
           <h2
             id="waiting"

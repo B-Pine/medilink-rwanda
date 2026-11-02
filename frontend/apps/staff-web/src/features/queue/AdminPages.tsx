@@ -46,7 +46,7 @@ export function ReordersPage() {
           description={t("queue.reorders.empty")}
         />
       ) : (
-        <div className="overflow-x-auto rounded-lg bg-surface shadow-card">
+        <div className="overflow-x-auto rounded-2xl bg-surface shadow-card">
           <table className="w-full border-collapse text-left">
             <caption className="sr-only">{t("queue.reorders.title")}</caption>
             <thead className="bg-subtle text-body-sm text-fg-secondary">
@@ -60,7 +60,7 @@ export function ReordersPage() {
             </thead>
             <tbody>
               {list.map((r) => (
-                <tr key={r.event_id} className="border-t border-border">
+                <tr key={r.event_id} className="border-t border-border/60">
                   <td className="px-4 py-3 text-body-sm tabular-nums">
                     {`${formatDate(r.occurred_at, lang)} ${formatTime(r.occurred_at, lang)}`}
                   </td>
@@ -145,10 +145,13 @@ export function DisplaysPage() {
       ) : (
         <ul className="m-0 grid list-none gap-3 p-0 md:grid-cols-2">
           {list.map((link) => (
-            <li key={link.id} className="flex flex-col gap-3 rounded-lg bg-surface shadow-card p-5">
+            <li
+              key={link.id}
+              className="flex flex-col gap-3 rounded-2xl bg-surface shadow-card p-5"
+            >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <span className="inline-flex size-10 items-center justify-center rounded-md bg-forest text-on-forest-accent">
+                  <span className="inline-flex size-10 items-center justify-center rounded-xl bg-forest text-on-forest-accent">
                     <Monitor aria-hidden="true" weight="duotone" className="size-5" />
                   </span>
                   <div>
@@ -231,7 +234,7 @@ function CreateDisplay({ onClose }: { onClose: () => void }) {
     >
       {create.data ? (
         <div className="flex flex-col items-center gap-4">
-          <div className="rounded-md bg-qr-bg p-3">
+          <div className="rounded-xl bg-qr-bg p-3">
             <QRCodeSVG
               value={url}
               size={176}
@@ -240,7 +243,7 @@ function CreateDisplay({ onClose }: { onClose: () => void }) {
               className="text-qr-fg"
             />
           </div>
-          <code className="w-full rounded-md bg-subtle px-3 py-2 text-caption break-all">
+          <code className="w-full rounded-xl bg-subtle px-3 py-2 text-caption break-all">
             {url}
           </code>
           <Button

@@ -29,7 +29,7 @@ function Tile({
       <Link
         to={to}
         className={cx(
-          "group flex flex-1 flex-col gap-2 rounded-lg p-4 no-underline shadow-card",
+          "group flex flex-1 flex-col gap-2 rounded-2xl p-4 no-underline shadow-card",
           "transition-[background-color,transform] duration-150 active:scale-[0.98]",
           flagged
             ? attention === "danger"
@@ -69,7 +69,7 @@ function Pipeline({ counts }: { counts: PlatformOverview["applications"] }) {
   return (
     <section
       aria-labelledby="ov-apps"
-      className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5"
+      className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5"
     >
       <h2 id="ov-apps" className="m-0 font-heading text-h3">
         {t("platform.overview.applications")}
@@ -90,7 +90,7 @@ function Pipeline({ counts }: { counts: PlatformOverview["applications"] }) {
           <li key={s} className="flex">
             <Link
               to={`/platform/applications?status=${s}`}
-              className="group flex flex-1 flex-col gap-1 rounded-md p-3 no-underline hover:bg-subtle"
+              className="group flex flex-1 flex-col gap-1 rounded-xl p-3 no-underline hover:bg-subtle"
             >
               <span className="flex items-center gap-2 text-body-sm font-semibold text-fg-secondary group-hover:text-fg">
                 <span
@@ -129,7 +129,7 @@ function Network({ rows }: { rows: PlatformOverview["facilities_by_district"] })
   return (
     <section
       aria-labelledby="ov-network"
-      className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5"
+      className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5"
     >
       <h2 id="ov-network" className="m-0 flex items-center gap-2 font-heading text-h3">
         <MapPin aria-hidden="true" weight="duotone" className="size-6 text-brand" />

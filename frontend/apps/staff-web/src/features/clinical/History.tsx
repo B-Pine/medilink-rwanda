@@ -66,7 +66,7 @@ export function ProblemSummaryCard({ fpId }: { fpId: string }) {
   return (
     <section
       aria-labelledby={headingId}
-      className="flex flex-col gap-3 rounded-lg border border-border p-4"
+      className="flex flex-col gap-3 rounded-2xl border border-border/60 p-4"
     >
       <h3 id={headingId} className="m-0 text-h4">
         {t("clinical.summary.title")}

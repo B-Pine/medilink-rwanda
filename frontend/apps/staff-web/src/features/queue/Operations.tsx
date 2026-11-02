@@ -120,7 +120,7 @@ function LiveByService({ data }: { data: Operations }) {
   return (
     <section
       aria-labelledby="ops-live"
-      className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5"
+      className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id="ops-live" className="m-0 font-heading text-h3">
@@ -194,7 +194,7 @@ function Attention({ data }: { data: Operations }) {
   return (
     <section
       aria-labelledby="ops-attention"
-      className="flex flex-col gap-3 rounded-lg bg-surface shadow-card p-5"
+      className="flex flex-col gap-3 rounded-2xl bg-surface shadow-card p-5"
     >
       <h2 id="ops-attention" className="m-0 font-heading text-h3">
         {t("queue.ops.attention")}
@@ -207,7 +207,7 @@ function Attention({ data }: { data: Operations }) {
             <li key={to}>
               <Link
                 to={to}
-                className="flex min-h-target items-center gap-3 rounded-md bg-attention-bg px-3 py-2.5 text-fg no-underline transition-colors hover:brightness-[0.98]"
+                className="flex min-h-target items-center gap-3 rounded-xl bg-attention-bg px-3 py-2.5 text-fg no-underline transition-colors hover:brightness-[0.98]"
               >
                 <Icon aria-hidden="true" weight="bold" className="size-5 shrink-0 text-attention" />
                 <span className="flex-1 font-semibold">{label}</span>
@@ -226,10 +226,10 @@ function DashboardSkeleton() {
     <div className="flex flex-col gap-4" aria-busy="true">
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {[0, 1, 2, 3].map((i) => (
-          <Skeleton key={i} height="9rem" className="rounded-lg" />
+          <Skeleton key={i} height="9rem" className="rounded-2xl" />
         ))}
       </div>
-      <Skeleton height="12rem" className="rounded-lg" />
+      <Skeleton height="12rem" className="rounded-2xl" />
     </div>
   );
 }
@@ -323,7 +323,7 @@ export function ReportsPage() {
         <>
           <KpiRow data={data} />
           <div className="grid gap-4 xl:grid-cols-2">
-            <div className="rounded-lg bg-surface shadow-card p-5">
+            <div className="rounded-2xl bg-surface shadow-card p-5">
               <TrendChart
                 title={t("queue.reports.patientsPerDay")}
                 labels={days.map((d) => label(d.date))}
@@ -332,7 +332,7 @@ export function ReportsPage() {
                 ]}
               />
             </div>
-            <div className="rounded-lg bg-surface shadow-card p-5">
+            <div className="rounded-2xl bg-surface shadow-card p-5">
               <TrendChart
                 title={t("queue.reports.waitToBeSeen")}
                 labels={days.map((d) => label(d.date))}
@@ -345,7 +345,7 @@ export function ReportsPage() {
             </div>
           </div>
           <div className="grid gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-            <div className="rounded-lg bg-surface shadow-card p-5">
+            <div className="rounded-2xl bg-surface shadow-card p-5">
               <HeatMap
                 title={t("queue.reports.arrivals")}
                 rows={weekdays}
@@ -371,7 +371,7 @@ export function ReportsPage() {
               ].map(([k, v]) => (
                 <div
                   key={String(k)}
-                  className={cx("flex flex-col gap-1 rounded-lg bg-surface shadow-card p-4")}
+                  className={cx("flex flex-col gap-1 rounded-2xl bg-surface shadow-card p-4")}
                 >
                   <dt className="text-body-sm font-semibold text-fg-secondary">{k}</dt>
                   <dd className="m-0 font-heading text-h1 tabular-nums">{v}</dd>

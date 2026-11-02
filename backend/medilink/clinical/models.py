@@ -477,3 +477,89 @@ class BreakGlassSession(TimeStampedModel):
                 name="authz_break_glass_window",
             ),
         ]
+
+
+class ImportStatus(models.TextChoices):
+    UPLOADED = "uploaded", "Uploaded"
+    PREVIEWED = "previewed", "Previewed"
+    CONFIRMED = "confirmed", "Confirmed"
+    ROLLED_BACK = "rolled_back", "Rolled back"
+    FAILED = "failed", "Failed"
+
+
+class ImportRowStatus(models.TextChoices):
+    PENDING = "pending", "Not checked yet"
+    VALID = "valid", "Ready to import"
+    ERROR = "error", "Has errors"
+    DUPLICATE = "duplicate", "Likely duplicate"
+    CREATED = "created", "Imported"
+    ROLLED_BACK = "rolled_back", "Rolled back"
+
+
+class ImportBatch(TimeStampedModel):
+    """A legacy patient register imported from CSV (FR-PAT-10, contract sprint-06 §2.2)."""
+
+    facility = models.ForeignKey("tenancy.Facility", on_delete=models.PROTECT, related_name="+")
+    version = models.PositiveIntegerField(default=1)
+    upload = models.OneToOneField(
+        "uploads.UploadedFile", on_delete=models.PROTECT, related_name="+"
+    )
+    status = models.CharField(
+        max_length=12, choices=ImportStatus.choices, default=ImportStatus.UPLOADED
+    )
+    headers = models.JSONField(default=list)
+    column_mapping = models.JSONField(default=dict, blank=True)
+    row_count = models.PositiveIntegerField(default=0)
+    valid_count = models.PositiveIntegerField(default=0)
+    error_count = models.PositiveIntegerField(default=0)
+    duplicate_count = models.PositiveIntegerField(default=0)
+    created_count = models.PositiveIntegerField(default=0)
+    created_by_membership = models.ForeignKey(
+        "tenancy.FacilityMembership", on_delete=models.PROTECT, related_name="+"
+    )
+    confirmed_by_membership = models.ForeignKey(
+        "tenancy.FacilityMembership",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+    confirmed_at = models.DateTimeField(null=True, blank=True)
+    rollback_until = models.DateTimeField(null=True, blank=True)
+    rolled_back_at = models.DateTimeField(null=True, blank=True)
+    purged_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = "patients_import_batch"
+        ordering: ClassVar[list[str]] = ["-created_at"]
+
+
+class ImportRow(TimeStampedModel):
+    facility = models.ForeignKey("tenancy.Facility", on_delete=models.PROTECT, related_name="+")
+    batch = models.ForeignKey(ImportBatch, on_delete=models.PROTECT, related_name="rows")
+    row_number = models.PositiveIntegerField()
+    raw_enc = models.BinaryField(null=True, blank=True)  # may hold national IDs (C3)
+    normalized = models.JSONField(default=dict, blank=True)  # never a national ID
+    status = models.CharField(
+        max_length=12, choices=ImportRowStatus.choices, default=ImportRowStatus.PENDING
+    )
+    errors = models.JSONField(default=list, blank=True)
+    matched_patient = models.ForeignKey(
+        "patients.Patient", on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    created_facility_patient = models.ForeignKey(
+        "patients.FacilityPatient",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+
+    class Meta:
+        db_table = "patients_import_row"
+        ordering: ClassVar[list[str]] = ["row_number"]
+        constraints: ClassVar[list[Any]] = [
+            models.UniqueConstraint(
+                fields=["batch", "row_number"], name="patients_import_row_uniq"
+            ),
+        ]

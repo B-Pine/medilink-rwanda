@@ -460,10 +460,12 @@ Requirements: FR-CLN-01..09; FR-PAT-10..12; FR-SEC-03, 09. Prescription drafting
 | `GET`, `POST` | `/api/v1/staff/clinical/patients/{id}/health-attributes/` | Blood group and pregnancy status | `GET`: `clinical.view` · `POST`: `clinical.write` | FR-CLN-07 | Latest wins; pregnancy flag in the consultation and problem summary | Implemented (S6b) |
 | `GET` | `/api/v1/staff/results-inbox/` | Results inbox: items assigned to me (R1) | `clinical.view` | FR-CLN-09 | `status` | Implemented (S6b) |
 | `POST` | `/api/v1/staff/results-inbox/{id}/review/` | Mark reviewed with an optional comment (R1) | `clinical.view` (assigned doctor) | FR-CLN-09 | Ver; comment encrypted; locked after review | Implemented (S6b) |
-| `GET`, `POST` | `/api/v1/staff/import-batches/` | Upload a patient register (CSV/Excel) → preview | `records.import` | FR-PAT-10 | Step-up; `multipart`; Async | Planned |
-| `GET`, `PATCH` | `/api/v1/staff/import-batches/{id}/` | Preview: column mapping, validation errors, likely duplicates | `records.import` | FR-PAT-10 | Ver | Planned |
-| `POST` | `/api/v1/staff/import-batches/{id}/confirm/` | Import the previewed rows | `records.import` | FR-PAT-10 | Idem; Audit | Planned |
-| `POST` | `/api/v1/staff/import-batches/{id}/rollback/` | Roll back within 7 days if no visits are attached | `records.import` | FR-PAT-10 | Step-up; Audit | Planned |
+| `GET`, `POST` | `/api/v1/staff/patient-imports/` | List imports; start one from an uploaded CSV with a suggested column mapping (L1) | `records.import` | FR-PAT-10 | S1 upload (`patient_import`, CSV ≤ 5 MB, ≤ 5,000 rows); raw rows encrypted | Implemented (S6b) |
+| `GET` | `/api/v1/staff/patient-imports/{id}/` | Import with its counts (L1) | `records.import` | FR-PAT-10 | | Implemented (S6b) |
+| `PUT` | `/api/v1/staff/patient-imports/{id}/mapping/` | Map columns → preview: validation errors and likely duplicates (L1) | `records.import` | FR-PAT-10 | Ver; nothing saved before confirm; S3 matching | Implemented (S6b) |
+| `GET` | `/api/v1/staff/patient-imports/{id}/rows/` | Preview rows with problems and matches (L1) | `records.import` | FR-PAT-10 | `status` | Implemented (S6b) |
+| `POST` | `/api/v1/staff/patient-imports/{id}/confirm/` | Create patients and facility records for the valid rows (L1) | `records.import` | FR-PAT-10 | Step-up; Ver; one transaction; no patient notified; Audit | Implemented (S6b) |
+| `POST` | `/api/v1/staff/patient-imports/{id}/rollback/` | Roll back within 7 days if no visit is attached (L1) | `records.import` | FR-PAT-10 | Step-up; Ver; Audit; raw rows purged daily after the window | Implemented (S6b) |
 
 ### Patient
 

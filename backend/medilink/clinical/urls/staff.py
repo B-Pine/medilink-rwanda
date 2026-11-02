@@ -3,6 +3,7 @@
 from django.urls import path
 
 from medilink.clinical import views as v
+from medilink.clinical import views_import as imp
 from medilink.clinical import views_s6b as b
 
 urlpatterns = [
@@ -85,5 +86,31 @@ urlpatterns = [
         "clinical/patients/<uuid:facility_patient_id>/health-attributes/",
         b.HealthAttributesView.as_view(),
         name="staff-patient-health-attributes",
+    ),
+    path("patient-imports/", imp.ImportsView.as_view(), name="staff-patient-imports"),
+    path(
+        "patient-imports/<uuid:batch_id>/",
+        imp.ImportDetailView.as_view(),
+        name="staff-patient-import",
+    ),
+    path(
+        "patient-imports/<uuid:batch_id>/mapping/",
+        imp.ImportMappingView.as_view(),
+        name="staff-patient-import-mapping",
+    ),
+    path(
+        "patient-imports/<uuid:batch_id>/rows/",
+        imp.ImportRowsView.as_view(),
+        name="staff-patient-import-rows",
+    ),
+    path(
+        "patient-imports/<uuid:batch_id>/confirm/",
+        imp.ImportConfirmView.as_view(),
+        name="staff-patient-import-confirm",
+    ),
+    path(
+        "patient-imports/<uuid:batch_id>/rollback/",
+        imp.ImportRollbackView.as_view(),
+        name="staff-patient-import-rollback",
     ),
 ]

@@ -21,5 +21,9 @@ ACTIONS: frozenset[str] = frozenset(
         "authz.break_glass.viewed",
         "authz.break_glass.ended",
         "authz.break_glass.reviewed",
+        "patients.import.uploaded",
+        "patients.import.previewed",
+        "patients.import.confirmed",
+        "patients.import.rolled_back",
     }
 )

@@ -37,7 +37,7 @@ Built from the requirement tables in `docs/analysis/` (titles shortened; the ana
 |---|---|---|---|---|---|---|---|---|---|
 | `FR-ACC` | [Users, roles, access](../analysis/02-users-roles-and-permissions.md) | 10 | 9 | 1 | 0 | 0 | 5 | 4 | 1 |
 | `FR-ONB` | [Tenancy, onboarding, master data](../analysis/03-tenancy-onboarding-and-master-data.md) | 11 | 10 | 1 | 0 | 0 | 0 | 5 | 6 |
-| `FR-PAT` | [Patient identity and medical history](../analysis/04-patient-identity-and-medical-history.md) | 17 | 14 | 2 | 0 | 1 | 0 | 13 | 4 |
+| `FR-PAT` | [Patient identity and medical history](../analysis/04-patient-identity-and-medical-history.md) | 17 | 14 | 2 | 0 | 1 | 0 | 14 | 3 |
 | `FR-SCH` | [Discovery, calendars, scheduling, booking](../analysis/05-discovery-scheduling-and-booking.md) | 18 | 15 | 3 | 0 | 0 | 0 | 0 | 18 |
 | `FR-QUE` | [Visit lifecycle and live queue](../analysis/06-visit-lifecycle-and-queue.md) | 20 | 17 | 3 | 0 | 0 | 0 | 0 | 20 |
 | `FR-CLN` | [Clinical record](../analysis/07-clinical-documentation-and-pharmacy.md) | 10 | 9 | 1 | 0 | 0 | 0 | 9 | 1 |
@@ -55,7 +55,7 @@ Built from the requirement tables in `docs/analysis/` (titles shortened; the ana
 | `NFR-UX` | [Usability, accessibility, languages](../analysis/14-non-functional-requirements.md) | 7 | 7 | 0 | 0 | 0 | 1 | 4 | 2 |
 | `NFR-OPS` | [Maintainability and operations](../analysis/14-non-functional-requirements.md) | 8 | 8 | 0 | 0 | 0 | 4 | 4 | 0 |
 | `NFR-INT` | [Interoperability](../analysis/14-non-functional-requirements.md) | 3 | 1 | 0 | 2 | 0 | 0 | 0 | 3 |
-| **All** | | **220** | **179** | **26** | **7** | **8** | **16** | **65** | **139** |
+| **All** | | **220** | **179** | **26** | **7** | **8** | **16** | **66** | **138** |
 
 `NFR-INT-03` is phased "P3–P4" in the analysis and is counted under P3.
 
@@ -109,7 +109,7 @@ Source: [04 · Patient identity and medical history](../analysis/04-patient-iden
 | FR-PAT-07 | Identifiers: national ID, passport, insurance, file no., MediLink no. | P1 | S3 | Backend | UT, API | In progress |
 | FR-PAT-08 | Health profile with verified / unverified status | P1 | S3 | Both | API, CMP | In progress |
 | FR-PAT-09 | History timeline, filters, problem summary, search | P1 | S3, S6* | Both | API, PERF, E2E | In progress |
-| FR-PAT-10 | Legacy register import: preview, validation, duplicates, rollback | P1 | S6b | Both | BR, API, E2E | Not started |
+| FR-PAT-10 | Legacy register import: preview, validation, duplicates, rollback | P1 | S6b | Both | BR, API, E2E | In progress |
 | FR-PAT-11 | Scanned legacy records attached to patients | P1 | S6b | Both | API | In progress |
 | FR-PAT-12 | Structured back-entry labelled as historical | P1 | S6b | Both | API, CMP | In progress |
 | FR-PAT-13 | Patient sees own and dependents' records except private notes | P1 | S3, S6* | Both | AZ, E2E | In progress |

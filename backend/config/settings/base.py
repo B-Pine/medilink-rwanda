@@ -494,6 +494,8 @@ SPECTACULAR_SETTINGS = {
         "ClinicalDocumentTypeEnum": "medilink.clinical.models.DocumentType",
         "ResultStatusEnum": "medilink.clinical.models.ResultStatus",
         "BreakGlassReviewOutcomeEnum": "medilink.clinical.models.ReviewOutcome",
+        "PatientImportStatusEnum": "medilink.clinical.models.ImportStatus",
+        "PatientImportRowStatusEnum": "medilink.clinical.models.ImportRowStatus",
         # [/S6]
         # [S7]
         "PrescriptionStatusEnum": "medilink.pharmacy.models.PrescriptionStatus",

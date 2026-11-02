@@ -1,6 +1,6 @@
 # 11 · Public website (design and implementation brief)
 
-Status: Adopted 2026-11-02 · Owner: product owner · Part of the [system upgrade](README.md) · **Supersedes [03](03-public-site.md) where they differ**
+Status: **Implemented 2026-11-02** ([#153](https://github.com/B-Pine/medilink-rwanda/pull/153); open backend items in §13) · Owner: product owner · Part of the [system upgrade](README.md) · **Supersedes [03](03-public-site.md) where they differ**
 
 This is the product owner's brief for every public page of `medilink.rw`. It refines [03 · Public site](03-public-site.md): where the two disagree (home structure, route names, navigation, footer, palette), this document wins and 03 points here. The rules of [01](01-product-direction.md) still apply: no prices (U-01), nothing invented, everyone served.
 

@@ -59,6 +59,6 @@ flowchart LR
 | Upgrade documents | Draft written 2026-11-02 |
 | Audit | Skipped for this round (decision 2026-11-02, see below) |
 | Cleaning | Done inside each implementation change |
-| Implementation | Started 2026-11-02: public site (U2) built to [11](11-public-website.md); staff dashboards next |
+| Implementation | Public site (U2) **completed** 2026-11-02 to [11](11-public-website.md) (#149–#153); open backend items in 11 §13; staff dashboards next |
 
 **Decision 2026-11-02 — no up-front audit.** The full audit of [09](09-audit-method.md) costs more time than it saves at this stage. Instead, each implementation change cleans the screens and code it touches against [02](02-design-system.md) and updates the older documents it makes outdated, in the same pull request. Tests for the upgraded screens are written in a follow-up pass once the screens are settled; CI stays the gate for merging. The audit method stays for release checks.

@@ -9,7 +9,24 @@ const lazy =
 /** S1 `platform`: the super admin console (contract §6.1). */
 export const platformFeature: FeatureRoutes = {
   shell: [
-    { path: "/platform", lazy: lazy(() => import("./OverviewPage"), "OverviewPage") },
+    // upgrade 2026-11-02: the command centre replaces the S1 overview
+    {
+      path: "/platform",
+      lazy: lazy(() => import("../console/CommandCenter"), "CommandCenterPage"),
+    },
+    { path: "/platform/users", lazy: lazy(() => import("../console/UsersPage"), "UsersPage") },
+    {
+      path: "/platform/security-log",
+      lazy: lazy(() => import("../console/LogsPage"), "SecurityLogPage"),
+    },
+    {
+      path: "/platform/access-log",
+      lazy: lazy(() => import("../console/LogsPage"), "AccessLogPage"),
+    },
+    {
+      path: "/platform/break-glass",
+      lazy: lazy(() => import("../console/BreakGlassPage"), "BreakGlassPage"),
+    },
     {
       path: "/platform/applications",
       lazy: lazy(() => import("./ApplicationsPage"), "ApplicationsPage"),

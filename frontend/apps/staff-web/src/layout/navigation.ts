@@ -43,6 +43,9 @@ import { Notepad, Signature } from "@phosphor-icons/react";
 // [S7 imports]
 import { Storefront } from "@phosphor-icons/react";
 // [/S7 imports]
+// [S11 imports]
+import { Fingerprint, ShieldCheck, Siren, UsersThree } from "@phosphor-icons/react";
+// [/S11 imports]
 
 /** Sections of the Sprint 0 shell (labels in `shell.nav.<key>`). Features use their own keys. */
 export type CoreNavKey =
@@ -331,6 +334,40 @@ export const NAV_ITEMS: readonly NavItem[] = [
     visible: hasAny("pharmacy.availability"),
   },
   // [/S7]
+  // [S11]
+  {
+    key: "platformUsers",
+    path: "/platform/users",
+    icon: UsersThree,
+    group: "platform",
+    labelKey: "console.nav.users",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
+  {
+    key: "platformBreakGlass",
+    path: "/platform/break-glass",
+    icon: Siren,
+    group: "platform",
+    labelKey: "console.nav.breakGlass",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
+  {
+    key: "platformSecurityLog",
+    path: "/platform/security-log",
+    icon: ShieldCheck,
+    group: "platform",
+    labelKey: "console.nav.securityLog",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
+  {
+    key: "platformAccessLog",
+    path: "/platform/access-log",
+    icon: Fingerprint,
+    group: "platform",
+    labelKey: "console.nav.accessLog",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
+  // [/S11]
 ];
 
 /** Translation key of a nav item's label. */
@@ -389,6 +426,10 @@ const ORDER = [
   "platformOverview",
   "platformApplications",
   "platformFacilities",
+  "platformUsers",
+  "platformBreakGlass",
+  "platformSecurityLog",
+  "platformAccessLog",
   "platformSupport",
   "platformMasterData",
   "platformAnnouncements",

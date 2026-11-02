@@ -111,6 +111,12 @@
     transform: translateY(12px) scale(0.98);
   }
 }
+@keyframes ml-panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
 @keyframes ml-fade {
   from {
     opacity: 0;
@@ -345,4 +351,21 @@
 .leaflet-marker-icon:focus-visible .ml-pin {
   outline: 3px solid var(--color-focus);
   outline-offset: 1px;
+}
+
+/* Dark theme: the street tiles are light images, so only the tile layer is inverted and muted;
+   pins, the "you" dot and the controls keep their real colours. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .leaflet-tile-pane {
+    filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.85) saturate(0.4);
+  }
+  :root:not([data-theme="light"]) .leaflet-container {
+    background: var(--color-subtle);
+  }
+}
+:root[data-theme="dark"] .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.85) saturate(0.4);
+}
+:root[data-theme="dark"] .leaflet-container {
+  background: var(--color-subtle);
 }

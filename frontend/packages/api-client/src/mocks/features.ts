@@ -41,6 +41,9 @@ import { pharmacyMocks } from "./features/pharmacy";
 // [S8 imports]
 import { billingMocks } from "./features/billing";
 // [/S8 imports]
+// [S11 imports]
+import { consoleMocks } from "./features/console";
+// [/S11 imports]
 
 /** A feature's MSW handlers, plus how to reset its in-memory state between tests. */
 export interface FeatureMock {
@@ -94,4 +97,7 @@ export const FEATURE_MOCKS: FeatureMockFactory[] = [
   // [S8]
   billingMocks,
   // [/S8]
+  // [S11]
+  consoleMocks,
+  // [/S11]
 ];

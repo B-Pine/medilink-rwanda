@@ -1,0 +1,203 @@
+{
+  "nav": {
+    "users": "Utilisateurs",
+    "breakGlass": "Revues bris de glace",
+    "securityLog": "Journal de sécurité",
+    "accessLog": "Journal d’accès aux dossiers"
+  },
+  "failed": "Chargement impossible. Réessayez.",
+  "refresh": "Actualiser",
+  "open": "Ouvrir",
+  "close": "Fermer",
+  "all": "Tous",
+  "empty": "Rien pour l’instant",
+  "system": "Système",
+  "kind": {
+    "all": "Tous",
+    "platform": "Équipe plateforme",
+    "staff": "Personnel",
+    "patient": "Patients"
+  },
+  "audience": {
+    "staff": "Staff app",
+    "patient": "Patient app",
+    "platform": "Console"
+  },
+  "actions": {
+    "auth_login_success": "Signed in",
+    "auth_login_failure": "Sign-in failed",
+    "auth_mfa_success": "Second factor passed",
+    "auth_mfa_failure": "Second factor failed",
+    "auth_mfa_enrolled": "Second factor set up",
+    "auth_logout": "Signed out",
+    "auth_step_up_success": "Re-confirmed identity",
+    "auth_step_up_failure": "Re-confirmation failed",
+    "auth_account_locked": "Account locked after failures",
+    "auth_password_reset_requested": "Password reset requested",
+    "auth_password_reset_completed": "Password reset",
+    "auth_session_locked": "Screen locked",
+    "auth_session_unlocked": "Screen unlocked",
+    "platform_user_locked": "Account locked by admin",
+    "platform_user_unlocked": "Account unlocked by admin",
+    "platform_user_mfa_reset": "Second factor reset by admin",
+    "platform_user_sessions_revoked": "Sessions ended by admin",
+    "platform_user_viewed": "Profile viewed by admin",
+    "staff_mfa_reset": "Second factor reset",
+    "patients_record_viewed": "Record opened",
+    "clinical_access_reason_given": "Reason given to open a record",
+    "patients_access_reason_given": "Reason given to open a record",
+    "authz_break_glass_opened": "Break-glass access opened",
+    "authz_break_glass_ended": "Break-glass access ended",
+    "authz_break_glass_reviewed": "Break-glass reviewed",
+    "authz_break_glass_viewed": "Record read under break-glass"
+  },
+  "cc": {
+    "title": "Centre de pilotage",
+    "updated": "En direct · mis à jour {{time}}",
+    "live": "Établissements actifs",
+    "liveDetail": "{{setup}} en configuration",
+    "waiting": "Personnes en attente",
+    "waitingDetail": "Dans toutes les files actives",
+    "mfa": "Personnel avec double authentification",
+    "mfaDetail": "{{with}} sur {{total}}",
+    "failed": "Connexions échouées · 24 h",
+    "failedDetail": "{{ok}} connexions réussies",
+    "map": "Carte du réseau",
+    "waitingCount_one": "{{count}} waiting",
+    "waitingCount_other": "{{count}} waiting",
+    "legend": {
+      "low": "Calme",
+      "medium": "Chargé",
+      "high": "Très chargé",
+      "stale": "Pas de données en direct"
+    },
+    "inbox": "Actions requises",
+    "items": {
+      "breakGlass_one": "Break-glass access to review",
+      "breakGlass_other": "Break-glass accesses to review",
+      "disputes_one": "Escalated dispute",
+      "disputes_other": "Escalated disputes",
+      "licencesExpired_one": "Licence expired",
+      "licencesExpired_other": "Licences expired",
+      "applications_one": "Application waiting",
+      "applications_other": "Applications waiting",
+      "licencesExpiring_one": "Licence expiring in 30 days",
+      "licencesExpiring_other": "Licences expiring in 30 days",
+      "stale_one": "Facility with stale live data",
+      "stale_other": "Facilities with stale live data",
+      "locked_one": "Locked account",
+      "locked_other": "Locked accounts"
+    },
+    "pipeline": "Demandes d’établissements",
+    "oldest": "La plus ancienne demande attend depuis plus de 5 jours.",
+    "districts": "Établissements par district",
+    "activity": "Activité récente"
+  },
+  "users": {
+    "title": "Utilisateurs",
+    "noun": "users",
+    "person": "Personne",
+    "kind": "Type",
+    "facilities": "Établissements et rôles",
+    "mfa": "Double authentification",
+    "mfaOn": "Activée",
+    "mfaOff": "Désactivée",
+    "status": "Statut",
+    "active": "Actif",
+    "locked": "Bloqué",
+    "inactive": "Inactive",
+    "lastLogin": "Dernière connexion",
+    "profile": "Compte",
+    "verified": "Verified",
+    "unverified": "Not verified",
+    "facts": {
+      "lastLogin": "Last sign-in",
+      "since": "Member since",
+      "mfa": "Two-step login",
+      "email": "Email"
+    },
+    "sessions_one": "{{count}} active session",
+    "sessions_other": "{{count}} active sessions",
+    "noSessions": "No active session",
+    "started": "Started {{time}}",
+    "events": "Événements de sécurité récents",
+    "reason": "Motif",
+    "reasonHint": "Inscrit au journal d’audit. 5 caractères minimum.",
+    "actions": {
+      "lock": "Bloquer le compte",
+      "unlock": "Débloquer le compte",
+      "reset-mfa": "Réinitialiser la double authentification",
+      "revoke-sessions": "Déconnecter partout"
+    },
+    "confirm": {
+      "lock": "{{name}} can't sign in until the account is unlocked. Every session ends now.",
+      "unlock": "{{name}} can sign in again.",
+      "reset-mfa": "{{name}} sets up two-step login again at the next sign-in. Every session ends now.",
+      "revoke-sessions": "{{name}} is signed out on every device."
+    }
+  },
+  "logs": {
+    "event": "Événement",
+    "who": "Qui",
+    "device": "Appareil et IP",
+    "record": "Dossier",
+    "when": "Quand",
+    "type": "Type",
+    "failures": "Échecs uniquement",
+    "immutable": "Les entrées sont chaînées et ne peuvent être ni modifiées ni supprimées.",
+    "fields": {
+      "when": "When",
+      "who": "Who",
+      "role": "Role",
+      "facility": "Facility",
+      "record": "Record",
+      "reason": "Reason",
+      "ip": "IP address",
+      "device": "Device"
+    },
+    "prefix": {
+      "auth_login": "Sign-ins",
+      "auth_mfa": "Two-step login",
+      "auth_step_up": "Re-confirmation",
+      "auth_password_reset": "Password resets",
+      "auth_account": "Lockouts",
+      "platform_user": "Admin actions on accounts",
+      "patients_record": "Records opened",
+      "clinical_access_reason": "Access reasons (clinical)",
+      "patients_access_reason": "Access reasons (patients)",
+      "authz_break_glass": "Break-glass"
+    },
+    "security": {
+      "title": "Journal de sécurité",
+      "lead": "Sign-ins, two-step login, lockouts and admin actions on accounts.",
+      "noun": "events"
+    },
+    "access": {
+      "title": "Journal d’accès aux dossiers",
+      "lead": "Who opened which record, with the reason given. Records are shown by reference only.",
+      "noun": "accesses"
+    }
+  },
+  "bg": {
+    "title": "Revues bris de glace",
+    "lead": "Accès d’urgence aux dossiers, revus par un second administrateur.",
+    "tab": {
+      "review": "À revoir",
+      "all": "Tous"
+    },
+    "none": "Aucun accès d’urgence à revoir",
+    "duration": "{{minutes}} min",
+    "note": "Note de revue",
+    "appropriate": "Approprié",
+    "inappropriate": "Non approprié",
+    "reason": {
+      "emergency": "Emergency",
+      "continuity": "Continuity of care",
+      "other": "Other"
+    },
+    "outcome": {
+      "appropriate": "Judged appropriate",
+      "inappropriate": "Judged not appropriate"
+    }
+  }
+}

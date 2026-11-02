@@ -119,6 +119,7 @@
     "openMenu": "Ouvrir le menu",
     "closeMenu": "Fermer le menu",
     "platformAdmin": "Administrateur de la plateforme",
+    "theme": { "toLight": "Passer en mode clair", "toDark": "Passer en mode sombre" },
     "nav": {
       "today": "Aujourd’hui",
       "queue": "File d’attente",
@@ -162,6 +163,7 @@
     "collapse": "Réduire le menu",
     "expand": "Développer le menu",
     "section": {
+      "work": "Travail du jour",
       "manage": "Gestion"
     }
   },

@@ -57,7 +57,7 @@ Columns follow the [database design](../04-database-design.md) §5.6 key columns
 | Confirm | Needs an unexpired hold by the same account (or staff member), then turns the hold into a booking in one transaction: `held_count −1`, `booked_count +1`. Checks: patient is `self` or `guardian` for the account (S3 link rights); service age and sex rule (S1 catalogue); not more than `booking.max_active` (3) future confirmed bookings across all facilities (`scheduling_active_booking_count`); one confirmed booking per patient, service and day; strike limit (below). `Idempotency-Key` is stored on the booking, so a double submit returns the same booking |
 | Booking code | 6 characters from `23456789ABCDEFGHJKMNPQRSTUVWXYZ`, unique per facility |
 | Reason for visit | 1–5 symptoms from the master list (required), plus optional text ≤ 500 characters (encrypted). Saved as `visits_reason_symptom` rows (`captured_at_stage = booking`) and copied to the visit at check-in |
-| Cost estimate | Fee = the S2 tariff of the service on the slot date. Patient share: one rule (`booking.cover`, R4) for search, profile and booking: no insurance, an insurer the facility does not accept, a rule that does not cover the service, or an excluded tariff code → the full fee; else fee × `patient_share_bp` / 10 000, and the insurer pays at most `ceiling_per_visit_rwf`. Both are stored on the booking as a snapshot. When the facility doesn't accept the insurer, the booking warns and shows the full fee, and still allows booking |
+| Insurance check | **Changed by D-14 (U-01).** Search, profile and booking show only which insurers accept the service (`insurers`, `accepts_insurance`) and the referral hint; **no fee or patient share is published**. The booking keeps `insurer_code` and `insurer_accepted`; when the facility does not accept the insurer, the booking warns and still allows booking. Amounts appear only on the bill (S8). The internal estimate columns (`estimated_fee_rwf`, `estimated_patient_share_rwf`) stay in the database but are not in any response |
 | Referral hint | Mutuelle insurance with a facility whose level of care is above primary → the `referral_hint` flag in search results, the profile and the review step. It informs and never blocks |
 | Cancel | Patient: until `booking.cancel_until_hours` before the slot → `cancelled`, later → `late_cancelled` (recorded, no strike). Reception: any time, with a reason code. Either way, `booked_count −1` |
 | Reschedule | One transaction: confirm the new hold, then the old booking → `superseded` with `rescheduled_to_id`. Counts as one active booking |
@@ -85,7 +85,7 @@ New settings fields:
 
 - facility slug, name, type, ownership, level of care, district, sector, latitude, longitude
 - service code and name in three languages, bookable, remote join allowed
-- fee in RWF, accepted insurer codes, open hours this week
+- accepted insurer codes, open hours this week (the fee column stays internal and is never published, D-14)
 - next open slot (time only), queue load (`low`/`medium`/`high`, computed as in the S4 dashboard), `updated_at`
 
 It is rebuilt for one facility when that facility's services, tariffs, insurer rules, hours, calendar or status change (signals), and every 10 minutes for next slot and queue load. Search reads only this table, never a facility table. Profiles add the facility's public C0 configuration (description, photos, doctors' names, specialties and days) through public serializers in that facility's RLS context, resolved from the slug of a live facility.
@@ -102,8 +102,8 @@ All under `/api/v1`. **Ver** = `version` in the body; **Idem** = `Idempotency-Ke
 
 | # | Method and path | Request → response | Notes |
 |---|---|---|---|
-| P1 | `POST /public/facilities/search/` | `{service_code?, district_code?, sector_code?, near?: {lat, lng}, insurer_code?, open_now?, level_of_care?, available_today?, page?}` → `{results: [{slug, name, type, level_of_care, district, distance_km?, open_now, accepts_insurance: yes\|no\|unknown, fee_rwf, patient_share_rwf?, next_slot_at?, queue_load?, referral_hint, lat, lng}], count}` | **POST** so that location is never in a URL or an access log; coordinates are not stored. FR-SCH-01 |
-| P2 | `GET /public/facilities/{slug}/` | → `{facility, services: [{code, name, fee_rwf, insurers, bookable, remote_join}], hours, closures (next 30 days), doctors: [{name, specialty, days}], queue_load}` | Live facilities only, else `404`. `Cache-Control: public, max-age=60`. FR-SCH-02, 03 |
+| P1 | `POST /public/facilities/search/` | `{service_code?, district_code?, sector_code?, near?: {lat, lng}, insurer_code?, open_now?, level_of_care?, available_today?, page?}` → `{results: [{slug, name, type, level_of_care, district, distance_km?, open_now, accepts_insurance: yes\|no\|unknown, insurers, next_slot_at?, queue_load?, waiting?, wait_range?, referral_hint, lat, lng}], count}` | **POST** so that location is never in a URL or an access log; coordinates are not stored. FR-SCH-01 |
+| P2 | `GET /public/facilities/{slug}/` | → `{facility, services: [{code, name, insurers, bookable, remote_join, waiting?, wait_range?}], hours, closures (next 30 days), doctors: [{name, specialty, days}], queue_load}` | Live facilities only, else `404`. `Cache-Control: public, max-age=60`. FR-SCH-02, 03 |
 | P3 | `GET /public/facilities/{slug}/slots/` | `?service_code=&date=&doctor=` → `{days: [{date, slots: [{id, starts_at, doctor?, open_places}]}]}` (7 days from `date`) | Counts only, never other patients |
 | P4 | `GET /public/symptoms/` | → master data symptoms (code, label in 3 languages, body area, `is_red_flag`) | Red-flag symptoms show the emergency notice |
 
@@ -115,7 +115,7 @@ All under `/api/v1`. **Ver** = `version` in the body; **Idem** = `Idempotency-Ke
 | B2 | `DELETE /patient/holds/{id}/` | → `204` | |
 | B3 | `POST /patient/bookings/` | `{hold_id, patient_id, insurance_profile_id?, symptoms: [{code, duration_days?, severity?}], reason_text?}` → `201 Booking` | Idem. Errors: `422` with `code` (`age_rule`, `sex_rule`, `limit_active`, `limit_strikes`, `same_day_service`, `hold_expired`) |
 | B4 | `GET /patient/bookings/` | `?when=upcoming\|past` → paginated `Booking` for the account's profiles | Through `scheduling_patient_bookings(account)` (D-1) |
-| B5 | `GET /patient/bookings/{id}/` · `GET …/calendar.ics` | → `Booking` with cost snapshot and cancellation rule · `text/calendar` | |
+| B5 | `GET /patient/bookings/{id}/` · `GET …/calendar.ics` | → `Booking` with the insurance check and cancellation rule · `text/calendar` | |
 | B6 | `POST /patient/bookings/{id}/cancel/` | `{version}` → `200 Booking` | `cancelled` or `late_cancelled` |
 | B7 | `POST /patient/bookings/{id}/reschedule/` | `{version, hold_id}` → `200 Booking` (new) | |
 | B8 | `POST /patient/visits/remote-join/` | `{facility_slug, service_id, patient_id, symptoms?: [{code, duration_days?, severity?}]}` → `201` PT1 row | Idem. FR-SCH-09, FR-QUE-07. A delegate gets `403` |
@@ -123,7 +123,7 @@ All under `/api/v1`. **Ver** = `version` in the body; **Idem** = `Idempotency-Ke
 | B10 | `POST /patient/bookings/{id}/respond/` (S5b) | `{response: accept\|cancel}` or `{hold_id}` for another time | Disruption offer |
 | B11 | `GET`, `POST`, `DELETE /patient/calendar-feed/` (S5b) | `POST` → `{url}` shown once | `GET /calendar/{token}.ics` is public with the token |
 
-`Booking`: `id, booking_code, status, patient {id, display_name}, facility {slug, name}, service {code, name}, doctor?, starts_at, service_point?, cost {fee_rwf, patient_share_rwf, insurer_code?, insurer_accepted}, symptoms, can_cancel_until, pending_change?, version`.
+`Booking`: `id, booking_code, status, patient {id, display_name}, facility {slug, name}, service {code, name}, doctor?, starts_at, service_point?, cost {insurer_code?, insurer_accepted} (no amounts, D-14), symptoms, can_cancel_until, pending_change?, version`.
 
 ### 3.3 Staff (`/staff/…`)
 
@@ -298,3 +298,4 @@ Shared files: S5 adds `[S5]` blocks next to the existing markers:
 | D-11 | Strike threshold (analysis 05 §4 "configurable at platform level") | Platform settings, not the S2 facility setting `booking.no_show_strikes`: strikes count across facilities, so one facility must not loosen or tighten them for others. Defaults: warning at 3 strikes in 90 days, limit (1 active booking) at 4 for 30 days. Platform settings endpoint: catalogue `GET, PATCH /platform/settings/`. Code change: R4 (#86) |
 | D-12 | Red-flag symptoms (analysis 11 §3: rules "written and signed off by clinicians", FR-AI-04 P2) | **Deviation:** S5a ships a provisional P1 list of three red flags (`chest_pain`, `shortness_of_breath`, `bleeding`, seeded by `masterdata.0003_s5`), which only show the emergency notice and never block or triage. The list has no clinical sign-off yet; the clinical lead must sign it off and version it before the pilot (analysis 17 Q13, [#93](https://github.com/B-Pine/medilink-rwanda/issues/93)). The field is `is_red_flag` in the API (P4), not `red_flag` |
 | D-13 | Audit remediation R4 (#86, decisions 2026-10-31) | Late booked arrivals check in as walk-ins all day and a booking is a no-show only after closing; "I'm here" is a claim and reception confirms (R10), self check-in stays P2 (FR-QUE-18); the strike policy is platform-wide; pass-over warns `pass_over_warning_minutes` before each step; manual queue places use `visits_ticket.order_at` so `arrival_at` stays the real arrival |
+| D-14 | No prices in discovery or booking (upgrade decision U-01, 2026-11-02, [upgrade 01](../../upgrade/01-product-direction.md)) | P1 drops `fee_rwf` and `patient_share_rwf`; P2 services drop `fee_rwf`, `insurer_shares` and `insurer_share_rwf`; the `Booking.cost` object drops `fee_rwf` and `patient_share_rwf`. Kept: `insurers`, `accepts_insurance`, `referral_hint`, `insurer_code`, `insurer_accepted`. Reason: the cost of a visit depends on the illness, tests and medicines, so an amount before the visit is wrong most of the time and creates disputes. Tariffs and insurer rules stay for billing (S8); FR-BIL-03 is reworded in analysis 08 |

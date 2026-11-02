@@ -125,7 +125,7 @@ Source: [05 · Discovery, calendars, scheduling, booking](../analysis/05-discove
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
 | FR-SCH-01 | Facility search with filters; list and map | P1 | S5 | Both | API, E2E | In progress |
-| FR-SCH-02 | Facility profile: services, fees, share, insurers, hours, doctors, load | P1 | S5 | Both | API, E2E | In progress |
+| FR-SCH-02 | Facility profile: services, insurers, hours, doctors, load (no fees, U-01) | P1 | S5 | Both | API, E2E | In progress |
 | FR-SCH-03 | Public facility pages indexable by search engines | P1 | S5 | Frontend | INS, E2E | In progress (R8: pre-rendered at build time, ADR 0008) |
 | FR-SCH-04 | Referral pathway hint for Mutuelle patients | P1 | S5 | Both | BR, CMP | In progress |
 | FR-SCH-05 | Facility calendar: hours, closures, holidays, Umuganda | P1 | S2, S5 | Both | UT, API | In progress |
@@ -223,7 +223,7 @@ Source: [08 · Billing, payments, insurance](../analysis/08-billing-payments-and
 |---|---|---|---|---|---|---|
 | FR-BIL-01 | Insurance profiles with card photos, validity, status | P1 | S3 | Both | API | In progress |
 | FR-BIL-02 | Facility insurer acceptance rules | P1 | S2, S8 | Both | BR | In progress |
-| FR-BIL-03 | Estimated patient share in discovery and booking | P1 | S5 | Both | BR | In progress |
+| FR-BIL-03 | Insurers accepted and referral need in discovery and booking; no amounts (U-01) | P1 | S5 | Both | BR | In progress |
 | FR-BIL-04 | Manual insurance verification per visit; rejection reason | P1 | S8 | Both | API | In progress |
 | FR-BIL-05 | Facility tariff with effective dates | P1 | S2, S8 | Both | BR | In progress |
 | FR-BIL-06 | One bill per visit with insurer / patient split | P1 | S8 | Both | BR | In progress |

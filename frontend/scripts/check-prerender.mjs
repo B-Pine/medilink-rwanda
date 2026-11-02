@@ -46,11 +46,11 @@ function checkPage(file, path) {
         query.queryKey?.[0] === PUBLIC_QUERY_ROOT,
         `${name}: non-public query in the data block: ${JSON.stringify(query.queryKey)}`,
       );
-      // ADR 0008: live data (fees, queue load, next free time) never goes into a snapshot
+      // ADR 0008: live data (queue load, next free time) never goes into a snapshot; U-01: no fees
       for (const service of query.state?.data?.services ?? []) {
         check(
-          service.fee_rwf === null && service.queue_load === null && service.next_slot_at === null,
-          `${name}: live data (fee, queue load or next time) in a pre-rendered facility page`,
+          !("fee_rwf" in service) && service.queue_load === null && service.next_slot_at === null,
+          `${name}: a fee or live data (queue load or next time) in a pre-rendered facility page`,
         );
       }
     }

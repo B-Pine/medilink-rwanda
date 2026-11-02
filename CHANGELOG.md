@@ -6,6 +6,14 @@ This root changelog covers documentation and repository-wide changes (CI, toolin
 
 ## [Unreleased]
 
+### Added
+
+- `docs/upgrade/`: the system upgrade specification (product direction U-01…U-12, design system, public site, patient app, staff workspaces, new roles, symptom checker and AI, patients without a phone, audit method, implementation plan).
+
+### Changed
+
+- U-01: no prices in discovery or booking. Sprint 5 contract D-14; FR-BIL-03 and FR-SCH-02 reworded in analysis 05 and 08; the public pages contract and the traceability matrix follow.
+
 ### Changed
 
 - Backend CI: mypy is blocking; the coverage gate requires ≥ 95 % for `authz` and ≥ 90 % for `core` and every other app, and reports all apps before failing.

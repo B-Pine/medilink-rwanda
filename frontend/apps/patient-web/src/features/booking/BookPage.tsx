@@ -44,7 +44,7 @@ import { PageHeading } from "../../components/PageHeading";
 import { EmergencyNotice } from "../../layout/EmergencyNotice";
 import { useProfiles, useRelationshipLabel } from "../profile/ProfileLayout";
 import { trackerKey } from "../tracker/TrackerPage";
-import { day, isMorning, pick, rwf, time } from "./discovery";
+import { day, isMorning, pick, time } from "./discovery";
 
 type Step = "who" | "what" | "when" | "reason" | "review";
 export const bookingsKey = ["booking", "mine"] as const;
@@ -616,12 +616,9 @@ export function BookPage() {
   const back = index > 1 ? () => setStep(steps[index - 2]!) : undefined;
   const patient = own.find((p) => p.patient_id === patientId);
   const redFlag = (symptoms.data ?? []).some((s) => s.is_red_flag && chosen.has(s.code));
-  const fee = service?.fee_rwf ?? null;
   const card = (insurances.data?.results ?? []).find((c) => c.id === insurance);
+  // U-01: only whether the insurer is accepted; amounts appear on the bill after the visit
   const accepted = card ? service?.insurers.includes(card.insurer_code) : null;
-  // R4 (#102): the server's share after exclusions and ceilings; no cover means the full fee
-  const covered = card && accepted ? service?.insurer_share_rwf[card.insurer_code] : undefined;
-  const yourShare = fee === null ? null : (covered ?? fee);
 
   const header = (
     <div className="flex flex-col gap-1">
@@ -693,11 +690,6 @@ export function BookPage() {
                 <ChoiceCard selected={serviceId === s.id} onClick={() => setServiceId(s.id)}>
                   <span className="flex flex-1 flex-col">
                     <span className="font-semibold">{pick(s.name_i18n, lang)}</span>
-                    {s.fee_rwf !== null && (
-                      <span className="text-body-sm text-fg-muted tabular-nums">
-                        {rwf(s.fee_rwf, lang)}
-                      </span>
-                    )}
                   </span>
                 </ChoiceCard>
               </li>
@@ -826,26 +818,6 @@ export function BookPage() {
             <Alert tone="warning">
               {t("booking.flow.notAccepted", { insurer: card.insurer_display })}
             </Alert>
-          )}
-          {fee !== null && (
-            <div className="flex items-end justify-between gap-3 rounded-lg bg-forest p-5 text-on-forest">
-              <div className="flex flex-col">
-                <span className="text-on-forest-muted">{t("booking.flow.estimate")}</span>
-                <span className="text-body-sm text-on-forest-muted">
-                  {t("booking.flow.estimateHint")}
-                </span>
-              </div>
-              <span className="flex flex-col items-end">
-                <span className="font-heading text-display tabular-nums">
-                  {rwf(yourShare, lang)}
-                </span>
-                {yourShare !== fee && (
-                  <span className="text-body-sm text-on-forest-muted line-through tabular-nums">
-                    {rwf(fee, lang)}
-                  </span>
-                )}
-              </span>
-            </div>
           )}
           <p className="m-0 text-body-sm text-fg-secondary">{t("booking.flow.cancelRule")}</p>
           {book.isError && (

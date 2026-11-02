@@ -245,37 +245,10 @@ def is_open(hours: list[list[Any]], now: dt.datetime) -> bool:
     return any(d == day and a <= time < b for d, a, b in hours)
 
 
-def insurer_bp(row: PublicListing) -> dict[str, int]:
-    """Patient share per accepted insurer in basis points of the fee."""
-    return {
-        code: int(value["bp"] if isinstance(value, dict) else value)
-        for code, value in (row.insurers or {}).items()
-    }
-
-
-def insurer_share_rwf(row: PublicListing) -> dict[str, int | None]:
-    """Patient share per accepted insurer in RWF, ceiling included (`booking.cover`)."""
-    out: dict[str, int | None] = {}
-    for code, value in (row.insurers or {}).items():
-        if isinstance(value, dict):
-            out[code] = value.get("share_rwf")
-        else:  # a row built before R4: no ceiling known
-            out[code] = None if row.fee_rwf is None else round(row.fee_rwf * int(value) / 10_000)
-    return out
-
-
 def _accepts(row: PublicListing, insurer_code: str | None) -> str:
     if not insurer_code:
         return "unknown"
     return "yes" if insurer_code in (row.insurers or {}) else "no"
-
-
-def _share(row: PublicListing, insurer_code: str | None) -> int | None:
-    if row.fee_rwf is None:
-        return None
-    if not insurer_code or insurer_code not in (row.insurers or {}):
-        return row.fee_rwf
-    return insurer_share_rwf(row)[insurer_code]
 
 
 def search(query: Query) -> dict[str, Any]:
@@ -324,9 +297,8 @@ def search(query: Query) -> dict[str, Any]:
                 "service_code": row.service_code,
                 "service_name_i18n": row.service_name_i18n,
                 "accepts_insurance": _accepts(row, query.insurer_code),
+                # U-01 (S5 D-14): accepted insurers only, never an amount
                 "insurers": sorted(row.insurers or {}),
-                "fee_rwf": row.fee_rwf,
-                "patient_share_rwf": _share(row, query.insurer_code),
                 "next_slot_at": row.next_slot_at,
                 "queue_load": row.queue_load or None,
                 "waiting": row.waiting,

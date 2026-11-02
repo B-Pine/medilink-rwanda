@@ -2,8 +2,6 @@
   "verified": "Verified",
   "openNow": "Open now",
   "closedNow": "Closed now",
-  "fee": "Fee",
-  "yourShare": "You pay",
   "referralTitle": "Mutuelle and referrals",
   "referralHint": "Mutuelle may not cover a visit here without a transfer from a health centre. You can still book.",
   "load": {
@@ -99,8 +97,6 @@
     "insurance": "Insurance",
     "noInsurance": "I'll pay myself",
     "notAccepted": "{{insurer}} is not accepted here. You can still book and pay yourself.",
-    "estimate": "Your estimated share",
-    "estimateHint": "The facility confirms the amount at the visit.",
     "cancelRule": "You can cancel or change the time for free until 2 hours before.",
     "confirm": "Book this visit",
     "failed": "We couldn't book this visit.",

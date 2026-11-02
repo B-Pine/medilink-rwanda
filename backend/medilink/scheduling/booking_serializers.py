@@ -57,8 +57,6 @@ class FacilitySearchResultSerializer(serializers.Serializer):
     accepts_insurance = serializers.ChoiceField(choices=["yes", "no", "unknown"])
     # contract PT §2.1: accepted insurer codes, for the home page cards
     insurers = serializers.ListField(child=serializers.CharField())
-    fee_rwf = serializers.IntegerField(allow_null=True)
-    patient_share_rwf = serializers.IntegerField(allow_null=True)
     next_slot_at = serializers.DateTimeField(allow_null=True)
     queue_load = serializers.ChoiceField(choices=["low", "medium", "high"], allow_null=True)
     # contract PT §2.1: people waiting now and the wait for a new arrival (counts only)
@@ -80,12 +78,8 @@ class PublicFacilityServiceSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     code = serializers.CharField()
     name_i18n = I18nField()
-    fee_rwf = serializers.IntegerField(allow_null=True)
+    # U-01 (S5 D-14): insurers that accept this service; no fee or share is published
     insurers = serializers.ListField(child=serializers.CharField())
-    # patient share per insurer, in basis points of the fee (FR-BIL-03)
-    insurer_shares = serializers.DictField(child=serializers.IntegerField())
-    # R4: patient share per insurer in RWF (ceiling and exclusions applied, as at booking)
-    insurer_share_rwf = serializers.DictField(child=serializers.IntegerField(allow_null=True))
     bookable = serializers.BooleanField()
     remote_join = serializers.BooleanField()
     walk_in = serializers.BooleanField()
@@ -225,8 +219,6 @@ class RemoteJoinSerializer(serializers.Serializer):
 
 
 class CostSerializer(serializers.Serializer):
-    fee_rwf = serializers.IntegerField(allow_null=True)
-    patient_share_rwf = serializers.IntegerField(allow_null=True)
     insurer_code = serializers.CharField(allow_null=True)
     insurer_accepted = serializers.BooleanField(allow_null=True)
 

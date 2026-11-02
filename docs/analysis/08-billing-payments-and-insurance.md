@@ -42,7 +42,7 @@ For each insurer the facility accepts, the facility admin sets:
 | Excluded items | Some medicines or procedures |
 | Ceiling per visit (if any) | Amount |
 
-Patients see "accepts your insurance: yes / no / for some services" and their **estimated share** before booking.
+Patients see "accepts your insurance: yes / no / for some services" and whether a transfer letter is required before booking. **No amount is shown before the visit** (upgrade decision U-01, 2026-11-02): the cost depends on the illness, tests and medicines, so amounts appear only on the bill. The settings above drive the bill.
 
 ### 1.4 Verification at the counter
 
@@ -143,7 +143,7 @@ Rwanda Revenue Authority requires electronic billing machine (EBM) receipts for 
 |---|---|---|
 | FR-BIL-01 | Patient insurance profiles with card photos, validity and verification status | P1 |
 | FR-BIL-02 | Facility insurer acceptance rules (services, patient share, referral required, exclusions, ceiling) | P1 |
-| FR-BIL-03 | Estimated patient share shown in discovery and booking | P1 |
+| FR-BIL-03 | Discovery and booking show the insurers accepted for a service and whether a referral is required; no amounts (changed by U-01, 2026-11-02) | P1 |
 | FR-BIL-04 | Manual insurance verification per visit; rejection with reason | P1 |
 | FR-BIL-05 | Facility tariff with effective dates | P1 |
 | FR-BIL-06 | One bill per visit with insurer / patient split, lines from tariff and prescriptions | P1 |

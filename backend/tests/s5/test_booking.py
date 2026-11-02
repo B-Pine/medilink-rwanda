@@ -77,11 +77,10 @@ def test_public_search_profile_and_slots_show_only_public_data(
     assert found.status_code == 200, found.content
     [row] = found.json()["results"]
     assert row["slug"] == clinic.slug and row["accepts_insurance"] == "yes"
-    assert row["fee_rwf"] == 5000 and row["patient_share_rwf"] == 500
+    assert "rama" in row["insurers"] and "fee_rwf" not in row  # U-01: no amounts
     assert row["next_slot_at"] is not None and row["referral_hint"] is False
     other = api.post(f"{PUB}facilities/search/", {"insurer_code": "mutuelle"}, format="json")
     assert other.json()["results"][0]["accepts_insurance"] == "no"
-    assert other.json()["results"][0]["patient_share_rwf"] == 5000
     # coordinates outside Rwanda are rejected; nothing is stored about the caller
     bad = api.post(f"{PUB}facilities/search/", {"near": {"lat": 48.8, "lng": 2.3}}, format="json")
     assert bad.status_code == 400
@@ -89,7 +88,7 @@ def test_public_search_profile_and_slots_show_only_public_data(
     profile = api.get(f"{PUB}facilities/{clinic.slug}/")
     assert profile.status_code == 200
     body = profile.json()
-    assert body["services"][0]["fee_rwf"] == 5000
+    assert "rama" in body["services"][0]["insurers"] and "fee_rwf" not in body["services"][0]
     assert [d["days"] for d in body["doctors"]] == [[0, 1, 2, 3, 4]]
     week = api.get(
         f"{PUB}facilities/{clinic.slug}/slots/?service_id={bookable['service_id']}"
@@ -132,8 +131,6 @@ def test_hold_book_idempotent_cancel_and_counters(
     booking = made.json()
     assert booking["status"] == "confirmed" and len(booking["booking_code"]) == 6
     assert booking["cost"] == {
-        "fee_rwf": 5000,
-        "patient_share_rwf": 5000,
         "insurer_code": None,
         "insurer_accepted": None,
     }

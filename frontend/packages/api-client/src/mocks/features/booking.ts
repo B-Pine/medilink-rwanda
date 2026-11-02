@@ -65,16 +65,12 @@ const svc = (
   en: string,
   rw: string,
   fr: string,
-  fee: number,
   extra: Partial<MockService> = {},
 ): MockService => ({
   id: id(),
   code,
   name_i18n: { en, rw, fr },
-  fee_rwf: fee,
   insurers: [],
-  insurer_shares: {},
-  insurer_share_rwf: {},
   bookable: true,
   remote_join: false,
   walk_in: true,
@@ -117,14 +113,13 @@ function facilities(): MockFacility[] {
       load: "medium",
       description: "Private clinic with general and children's consultations.",
       services: [
-        { ...svc(...GENERAL, 8000, { remote_join: true }), id: SETUP_IDS.sGen },
+        { ...svc(...GENERAL, { remote_join: true }), id: SETUP_IDS.sGen },
         {
           ...svc(
             "paediatric_consultation",
             "Paediatric consultation",
             "Ubuvuzi bw'abana",
             "Consultation pédiatrique",
-            10000,
             {
               doctor: "Dr Niyonsenga Paul",
               membership_id: SETUP_IDS.mPaul,
@@ -153,12 +148,12 @@ function facilities(): MockFacility[] {
       load: "high",
       description: "Public health centre. Mutuelle accepted.",
       services: [
-        svc(...GENERAL, 2000, {
+        svc(...GENERAL, {
           doctor: "Dr Alice Mukamana",
           membership_id: id(),
           remote_join: true,
         }),
-        svc("antenatal_care", "Antenatal care", "Kwita ku babyeyi", "Soins prénatals", 1000, {
+        svc("antenatal_care", "Antenatal care", "Kwita ku babyeyi", "Soins prénatals", {
           doctor: "Midwife Grace Uwera",
           membership_id: id(),
           weekdays: [1, 3],
@@ -180,14 +175,14 @@ function facilities(): MockFacility[] {
       load: "low",
       description: "Polyclinic with dental and eye care.",
       services: [
-        svc(...GENERAL, 7000, { doctor: "Dr Eric Habimana", membership_id: id() }),
-        svc("dental_care", "Dental care", "Kuvura amenyo", "Soins dentaires", 15000, {
+        svc(...GENERAL, { doctor: "Dr Eric Habimana", membership_id: id() }),
+        svc("dental_care", "Dental care", "Kuvura amenyo", "Soins dentaires", {
           doctor: "Dr Diane Keza",
           membership_id: id(),
           weekdays: [0, 2, 4],
           from: 9,
         }),
-        svc("eye_care", "Eye care", "Kuvura amaso", "Soins des yeux", 12000, {
+        svc("eye_care", "Eye care", "Kuvura amaso", "Soins des yeux", {
           doctor: "Dr Jean Mugabo",
           membership_id: id(),
           weekdays: [1, 4],
@@ -211,12 +206,12 @@ function facilities(): MockFacility[] {
       load: "medium",
       description: "Public health centre with maternal care.",
       services: [
-        svc(...GENERAL, 2000, {
+        svc(...GENERAL, {
           doctor: "Dr Claude Ndayisaba",
           membership_id: id(),
           remote_join: true,
         }),
-        svc("antenatal_care", "Antenatal care", "Kwita ku babyeyi", "Soins prénatals", 1000, {
+        svc("antenatal_care", "Antenatal care", "Kwita ku babyeyi", "Soins prénatals", {
           doctor: "Midwife Ange Mutesi",
           membership_id: id(),
         }),
@@ -237,18 +232,11 @@ function facilities(): MockFacility[] {
       load: "high",
       description: "District hospital. Mutuelle patients need a transfer from a health centre.",
       services: [
-        svc(
-          "internal_medicine",
-          "Internal medicine",
-          "Indwara zo mu mubiri",
-          "Médecine interne",
-          5000,
-          {
-            doctor: "Dr Patrick Nshimiyimana",
-            membership_id: id(),
-          },
-        ),
-        svc(...GENERAL, 3000, { doctor: "Dr Solange Uwimana", membership_id: id() }),
+        svc("internal_medicine", "Internal medicine", "Indwara zo mu mubiri", "Médecine interne", {
+          doctor: "Dr Patrick Nshimiyimana",
+          membership_id: id(),
+        }),
+        svc(...GENERAL, { doctor: "Dr Solange Uwimana", membership_id: id() }),
       ],
     },
     {
@@ -265,7 +253,7 @@ function facilities(): MockFacility[] {
       insurers: { mutuelle: 1000 },
       load: "low",
       description: "Faith-based health centre in Musanze town.",
-      services: [svc(...GENERAL, 1500, { doctor: "Dr Jean Bosco Habimana", membership_id: id() })],
+      services: [svc(...GENERAL, { doctor: "Dr Jean Bosco Habimana", membership_id: id() })],
     },
   ];
 }
@@ -431,9 +419,6 @@ function seed() {
   };
 }
 
-const share = (fee: number | null, bp: number | undefined) =>
-  fee === null ? null : bp === undefined ? fee : Math.round((fee * bp) / 10_000);
-
 export const bookingMocks: FeatureMockFactory = (context) => {
   const { api } = context;
   let db = seed();
@@ -480,8 +465,6 @@ export const bookingMocks: FeatureMockFactory = (context) => {
       ends_at: slot.ends_at,
       service_point: f.slug === FACILITIES.kigaliClinic.slug ? "Room 1" : null,
       cost: {
-        fee_rwf: s.fee_rwf,
-        patient_share_rwf: share(s.fee_rwf, insurer && accepted ? f.insurers[insurer] : undefined),
         insurer_code: insurer,
         insurer_accepted: accepted,
       },
@@ -924,8 +907,6 @@ export const bookingMocks: FeatureMockFactory = (context) => {
             service_name_i18n: s.name_i18n,
             accepts_insurance: insurer ? (insurer in f.insurers ? "yes" : "no") : "unknown",
             insurers: Object.keys(f.insurers).sort(),
-            fee_rwf: s.fee_rwf,
-            patient_share_rwf: share(s.fee_rwf, insurer ? f.insurers[insurer] : undefined),
             next_slot_at: s.bookable ? nextSlot(f.slug, s.id) : null,
             queue_load: f.load,
             ...liveQueue(f.load),
@@ -1007,10 +988,6 @@ export const bookingMocks: FeatureMockFactory = (context) => {
             }) => ({
               ...s,
               insurers: Object.keys(f.insurers),
-              insurer_shares: f.insurers,
-              insurer_share_rwf: Object.fromEntries(
-                Object.entries(f.insurers).map(([code, bp]) => [code, share(s.fee_rwf, bp)]),
-              ),
               queue_load: f.load,
               ...liveQueue(f.load),
               next_slot_at: nextSlot(f.slug, s.id),

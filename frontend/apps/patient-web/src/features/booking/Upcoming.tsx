@@ -25,7 +25,7 @@ import { Link } from "react-router";
 
 import { useApi } from "../../app/services";
 import { bookingsKey } from "./BookPage";
-import { day, pick, rwf, time } from "./discovery";
+import { day, pick, time } from "./discovery";
 import { CalendarFeedCard, OfferBanner } from "./Offer";
 
 export function useUpcoming() {
@@ -113,7 +113,6 @@ export function BookingCard({ booking }: { booking: Booking }) {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage ?? "rw";
   const api = useApi();
-  const pay = booking.cost.patient_share_rwf;
   return (
     <article
       aria-labelledby={`bk-${booking.id}`}
@@ -143,7 +142,6 @@ export function BookingCard({ booking }: { booking: Booking }) {
               {t("booking.flow.code")}:{" "}
               <span className="font-mono font-semibold text-fg">{booking.booking_code}</span>
             </span>
-            {pay !== null && <span className="text-fg-muted">· {rwf(pay, lang)}</span>}
           </p>
         </div>
       </div>

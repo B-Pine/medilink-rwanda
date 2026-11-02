@@ -39,8 +39,6 @@ export function staticFacility(facility: PublicFacility): PublicFacility {
     ...facility,
     services: facility.services.map((service) => ({
       ...service,
-      fee_rwf: null,
-      insurer_shares: {},
       queue_load: null,
       next_slot_at: null,
     })),

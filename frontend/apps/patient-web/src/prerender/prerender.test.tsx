@@ -53,9 +53,9 @@ describe("prerender (build time)", () => {
     const query = data.queries.queries.find((q) => q.queryKey[1] === "facility");
     const facilityData = query?.state.data as PublicFacility;
     const name = facilityData.name;
-    // ADR 0008: no fees, queue load or next free time in a build-time snapshot
+    // ADR 0008: no queue load or next free time in a build-time snapshot (U-01: no fees at all)
     for (const service of facilityData.services) {
-      expect(service).toMatchObject({ fee_rwf: null, queue_load: null, next_slot_at: null });
+      expect(service).toMatchObject({ queue_load: null, next_slot_at: null });
     }
     expect(result!.html).not.toMatch(/\d RWF/);
     expect(result!.html).toContain(name);

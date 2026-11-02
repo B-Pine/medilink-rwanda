@@ -14,8 +14,8 @@ Reserved names: backend app `medilink.triage`; patient-web feature `public`; api
   - Public facility profile (P2) and search (P1) carry the **live waiting count** and a **wait range** per service, aggregates only (never ticket numbers or names).
   - `POST /public/triage/` (P5): rules-based triage from structured answers (symptoms, how long, age group, pregnancy) to an urgency, a service and a level of care. Rules are versioned data; every answer is logged without personal data (FR-AI-07).
 - **Frontend (patient-web, public)**
-  - Home: location-aware "care near you" (distance, open now, your insurer, your share, waiting now, next slot), search, "Not sure where to go?" entry, how it works, for facilities, emergency notice.
-  - Facility page: live queue per service, doctors with "Book this doctor", services and your price, hours, directions.
+  - Home: location-aware "care near you" (distance, open now, your insurer accepted, waiting now, next slot), search, "Not sure where to go?" entry, how it works, for facilities, emergency notice.
+  - Facility page: live queue per service, doctors with "Book this doctor", services and accepted insurers, hours, directions.
   - Symptom checker `/check-symptoms`: emergency check first, then a few questions, then the suggestion and places nearby.
   - Information pages: About `/about`, Emergency `/emergency`, Privacy `/privacy`, Terms `/terms`. Privacy, Terms and the About facts are drafts marked "[To confirm]" until reviewed (no invented facts).
 
@@ -122,8 +122,8 @@ One row per answer: `symptoms`, `duration`, `age_group`, `pregnant`, `urgency`, 
 | Route | Leads with | Notes |
 |---|---|---|
 | `/` | "Care near you": asks for location in a friendly card; without it, district search | Never stores the location; POST search only (S5 P1) |
-| `/search` | Results list, filters as chips | Each card: distance, open now, your insurer accepted, your share, waiting now, next slot |
-| `/facilities/:slug` | Name, verified, open now, Join today's queue / Book | Live queue per service (count and range), doctors with "Book this doctor" (pre-selects the doctor), services and your price, hours, directions link |
+| `/search` | Results list, filters as chips | Each card: distance, open now, your insurer accepted, waiting now, next slot |
+| `/facilities/:slug` | Name, verified, open now, Join today's queue / Book | Live queue per service (count and range), doctors with "Book this doctor" (pre-selects the doctor), services and accepted insurers (no prices, S5 D-14), hours, directions link |
 | `/check-symptoms` | Emergency check first (red flags, call 912) | Then symptoms, how long, who it is for; result with urgency, service, plain reason, "guidance, not a diagnosis", and places nearby for that service |
 | `/about` | What MediLink is, who it serves, how facilities are verified, data stays in Rwanda | Organisation facts marked "[To confirm]" |
 | `/emergency` | Call 912, danger signs, nearest emergency departments | Always reachable from every page footer |

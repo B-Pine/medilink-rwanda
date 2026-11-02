@@ -31,7 +31,6 @@ def test_queue_load_and_public_share_rules() -> None:
     assert listing.queue_load(4, 1) == "medium"
     assert listing.queue_load(16, 2) == "high"
     row = PublicListing(fee_rwf=None, insurers={"rama": 1000})
-    assert listing._share(row, "rama") is None  # no tariff: no price is shown
     assert listing._accepts(row, None) == "unknown"
     assert listing._accepts(row, "rama") == "yes"
 

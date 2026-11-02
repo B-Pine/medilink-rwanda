@@ -282,6 +282,62 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: rate_limited
+  /api/v1/patient/bills/:
+    get:
+      operationId: patient_bills
+      summary: Bills of my profiles, newest first (PB1)
+      parameters:
+      - in: query
+        name: has_balance
+        schema:
+          type: boolean
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: patient_id
+        schema:
+          type: string
+      tags:
+      - patient-bills
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPatientBillRowList'
+          description: ''
+  /api/v1/patient/bills/{bill_id}/:
+    get:
+      operationId: patient_bill_detail
+      summary: One bill with lines, payments and receipts (PB2)
+      parameters:
+      - in: path
+        name: bill_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-bills
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientBill'
+          description: ''
   /api/v1/patient/bookings/:
     get:
       operationId: patient_bookings
@@ -7636,6 +7692,173 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Not published
+  /api/v1/staff/approval-requests/:
+    get:
+      operationId: staff_approval_requests
+      summary: 'Approvals inbox: voids, refunds and waivers (B11)'
+      parameters:
+      - in: query
+        name: kind
+        schema:
+          type: string
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - approved
+          - cancelled
+          - pending
+          - rejected
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedApprovalRequestList'
+          description: ''
+  /api/v1/staff/approval-requests/{approval_id}/approve/:
+    post:
+      operationId: staff_approval_approve
+      summary: Approve a void, refund or waiver (B12)
+      parameters:
+      - in: path
+        name: approval_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BillingDecisionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRequest'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Already decided, or your own request
+  /api/v1/staff/approval-requests/{approval_id}/cancel/:
+    post:
+      operationId: staff_approval_cancel
+      summary: Cancel your pending request (B14)
+      parameters:
+      - in: path
+        name: approval_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BillingVersionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRequest'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not yours or decided
+  /api/v1/staff/approval-requests/{approval_id}/reject/:
+    post:
+      operationId: staff_approval_reject
+      summary: Reject a request with a note (B13)
+      parameters:
+      - in: path
+        name: approval_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BillingDecisionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRequest'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: A note is needed
   /api/v1/staff/auth/active-facility/:
     post:
       operationId: staff_auth_active_facility
@@ -8071,6 +8294,304 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: PIN not set, PIN unlock off or temporarily blocked
+  /api/v1/staff/bill-lines/{line_id}/remove/:
+    post:
+      operationId: staff_bill_line_remove
+      summary: Remove a line with a reason, before any payment (B5)
+      parameters:
+      - in: path
+        name: line_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoveLineRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Something was paid already
+  /api/v1/staff/billing/patients/{facility_patient_id}/balances/:
+    get:
+      operationId: staff_patient_balances
+      summary: A patient's unpaid balances at this facility (B23)
+      parameters:
+      - in: path
+        name: facility_patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balances'
+          description: ''
+  /api/v1/staff/bills/:
+    get:
+      operationId: staff_bills
+      summary: Bills of a day, unpaid first (B2)
+      parameters:
+      - in: query
+        name: date
+        schema:
+          type: string
+        description: YYYY-MM-DD; today by default
+      - in: query
+        name: has_balance
+        schema:
+          type: boolean
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - credited
+          - open
+          - paid
+          - partly_paid
+          - voided
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBillRowList'
+          description: ''
+  /api/v1/staff/bills/{bill_id}/:
+    get:
+      operationId: staff_bill_detail
+      summary: A bill with lines, split, payments and corrections (B3)
+      parameters:
+      - in: path
+        name: bill_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+          description: ''
+  /api/v1/staff/bills/{bill_id}/exemptions/:
+    post:
+      operationId: staff_bill_exemption
+      summary: Apply an exemption; a waiver above the threshold waits for approval
+        (B8)
+      parameters:
+      - in: path
+        name: bill_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExemptionInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not allowed or above the balance
+  /api/v1/staff/bills/{bill_id}/lines/:
+    post:
+      operationId: staff_bill_line_add
+      summary: Add a procedure or other charge from the price list (B4)
+      parameters:
+      - in: path
+        name: bill_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddLineRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown item or a void bill
+  /api/v1/staff/bills/{bill_id}/payments/:
+    post:
+      operationId: staff_bill_payment
+      summary: Record a payment and issue its receipt (B7)
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+      - in: path
+        name: bill_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: shift_required, more than the balance, or a missing reference
+  /api/v1/staff/bills/{bill_id}/refund-requests/:
+    post:
+      operationId: staff_bill_refund_request
+      summary: Ask for a refund (B10)
+      parameters:
+      - in: path
+        name: bill_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefundRequestRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRequest'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: More than can be refunded
   /api/v1/staff/bookings/:
     get:
       operationId: staff_bookings
@@ -8256,6 +8777,170 @@ paths:
               schema:
                 $ref: '#/components/schemas/StaffCalendar'
           description: ''
+  /api/v1/staff/cash-shifts/:
+    get:
+      operationId: staff_cash_shifts
+      summary: 'Shifts: my own, or every shift for approvers (B18)'
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - closed
+          - open
+          - reviewed
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCashShiftList'
+          description: ''
+    post:
+      operationId: staff_cash_shift_open
+      summary: Open my shift with the opening float (B20)
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpenShiftRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CashShift'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: A shift is already open
+  /api/v1/staff/cash-shifts/{shift_id}/close/:
+    post:
+      operationId: staff_cash_shift_close
+      summary: Close my shift with the counted totals (B21)
+      parameters:
+      - in: path
+        name: shift_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloseShiftRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CashShift'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not yours, or a note
+  /api/v1/staff/cash-shifts/{shift_id}/review/:
+    post:
+      operationId: staff_cash_shift_review
+      summary: Accept a closed shift (B22)
+      parameters:
+      - in: path
+        name: shift_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BillingDecisionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CashShift'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not closed, or your own
+  /api/v1/staff/cash-shifts/current/:
+    get:
+      operationId: staff_cash_shift_current
+      summary: My open shift with running totals (B19)
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CashShift'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: No open shift
   /api/v1/staff/clinical/alerts/:
     post:
       operationId: staff_clinical_alerts
@@ -8987,6 +9672,45 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: No primary diagnosis, not a draft or not the author
+  /api/v1/staff/credit-notes/{credit_note_id}/payouts/:
+    post:
+      operationId: staff_credit_note_payout
+      summary: Record the refund paid back to the patient (B15)
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+      - in: path
+        name: credit_note_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PayoutInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: More than the credit note, or no shift
   /api/v1/staff/departments/:
     get:
       operationId: staff_departments_list
@@ -11577,6 +12301,41 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: rate_limited
+  /api/v1/staff/payments/{payment_id}/void-requests/:
+    post:
+      operationId: staff_payment_void_request
+      summary: Ask for a payment to be voided (B9)
+      parameters:
+      - in: path
+        name: payment_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoidRequestRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalRequest'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: A void is already pending
   /api/v1/staff/pharmacy/availability/:
     get:
       operationId: staff_pharmacy_availability
@@ -12161,6 +12920,48 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Already reviewed
+  /api/v1/staff/receipts/{receipt_id}/:
+    get:
+      operationId: staff_receipt
+      summary: A receipt for printing (B16)
+      parameters:
+      - in: path
+        name: receipt_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Receipt'
+          description: ''
+  /api/v1/staff/receipts/{receipt_id}/send/:
+    post:
+      operationId: staff_receipt_send
+      summary: Send the receipt to the patient again (B17)
+      parameters:
+      - in: path
+        name: receipt_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '202':
+          description: No response body
   /api/v1/staff/reports/operations/:
     get:
       operationId: staff_reports_operations
@@ -13075,6 +13876,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/VisitDetail'
           description: ''
+  /api/v1/staff/visits/{visit_id}/bill/:
+    get:
+      operationId: staff_visit_bill
+      summary: The visit's bill, opened on first use (B1)
+      parameters:
+      - in: path
+        name: visit_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+          description: ''
   /api/v1/staff/visits/{visit_id}/consultation/:
     post:
       operationId: staff_visit_consultation_open
@@ -13181,6 +14005,41 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: follow_up_exists
+  /api/v1/staff/visits/{visit_id}/insurance-verifications/:
+    post:
+      operationId: staff_visit_insurance_verification
+      summary: Verify the patient's insurance for this visit, or reject it (B6)
+      parameters:
+      - in: path
+        name: visit_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerificationInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown card, referral letter, or paid
   /api/v1/staff/visits/{visit_id}/vitals/:
     get:
       operationId: staff_visit_vitals
@@ -13502,6 +14361,25 @@ components:
       - care_consent
       - patient_ref
       - proof
+    AddLineRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        tariff_code:
+          type: string
+          minLength: 1
+          maxLength: 40
+        quantity:
+          type: integer
+          maximum: 1000
+          minimum: 1
+      required:
+      - quantity
+      - tariff_code
+      - version
     Addendum:
       type: object
       properties:
@@ -14231,6 +15109,89 @@ components:
       required:
       - action
       - id
+    ApprovalKindEnum:
+      enum:
+      - void_payment
+      - refund
+      - waiver
+      type: string
+      description: |-
+        * `void_payment` - Void a payment
+        * `refund` - Refund
+        * `waiver` - Waiver
+    ApprovalRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: '#/components/schemas/ApprovalKindEnum'
+        bill_id:
+          type: string
+          format: uuid
+        payment_id:
+          type: string
+          format: uuid
+          nullable: true
+        amount_rwf:
+          type: integer
+          nullable: true
+        reason_code:
+          type: string
+        reason_text:
+          type: string
+        requested_by_name:
+          type: string
+        requested_at:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/ApprovalStatusEnum'
+        decided_by_name:
+          type: string
+          nullable: true
+        decided_at:
+          type: string
+          format: date-time
+          nullable: true
+        decision_note:
+          type: string
+        is_self_approved:
+          type: boolean
+        patient_display_name:
+          type: string
+        version:
+          type: integer
+      required:
+      - amount_rwf
+      - bill_id
+      - decided_at
+      - decided_by_name
+      - decision_note
+      - id
+      - is_self_approved
+      - kind
+      - patient_display_name
+      - payment_id
+      - reason_code
+      - reason_text
+      - requested_at
+      - requested_by_name
+      - status
+      - version
+    ApprovalStatusEnum:
+      enum:
+      - pending
+      - approved
+      - rejected
+      - cancelled
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `approved` - Approved
+        * `rejected` - Rejected
+        * `cancelled` - Cancelled
     ApprovalsDigestEnum:
       enum:
       - immediate
@@ -14344,6 +15305,228 @@ components:
           type: boolean
       required:
       - is_available
+    Balances:
+      type: object
+      properties:
+        total_balance_rwf:
+          type: integer
+        bills:
+          type: array
+          items:
+            $ref: '#/components/schemas/BillRow'
+      required:
+      - bills
+      - total_balance_rwf
+    Bill:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        visit_id:
+          type: string
+          format: uuid
+        facility_patient_id:
+          type: string
+          format: uuid
+        patient_display_name:
+          type: string
+        service_date:
+          type: string
+          format: date
+        ticket_number:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/BillStatusEnum'
+        insurance:
+          $ref: '#/components/schemas/Insurance'
+        totals:
+          $ref: '#/components/schemas/Totals'
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/BillLine'
+        missing_prices:
+          type: array
+          items:
+            $ref: '#/components/schemas/MissingPrice'
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payment'
+        exemptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Exemption'
+        credit_notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditNote'
+        approval_requests:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApprovalRequest'
+        verifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Verification'
+        version:
+          type: integer
+      required:
+      - approval_requests
+      - credit_notes
+      - exemptions
+      - facility_patient_id
+      - id
+      - insurance
+      - lines
+      - missing_prices
+      - patient_display_name
+      - payments
+      - service_date
+      - status
+      - ticket_number
+      - totals
+      - verifications
+      - version
+      - visit_id
+    BillInsuranceStatusEnum:
+      enum:
+      - none
+      - unverified
+      - verified
+      - rejected
+      type: string
+      description: |-
+        * `none` - none
+        * `unverified` - unverified
+        * `verified` - verified
+        * `rejected` - rejected
+    BillLine:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: '#/components/schemas/TariffKindEnum'
+        code:
+          type: string
+        name:
+          type: string
+        unit_price_rwf:
+          type: integer
+        quantity:
+          type: integer
+        total_rwf:
+          type: integer
+        insurer_share_rwf:
+          type: integer
+        patient_share_rwf:
+          type: integer
+        is_covered:
+          type: boolean
+        is_medicine:
+          type: boolean
+        removed:
+          type: boolean
+        removed_reason:
+          type: string
+      required:
+      - code
+      - id
+      - insurer_share_rwf
+      - is_covered
+      - is_medicine
+      - kind
+      - name
+      - patient_share_rwf
+      - quantity
+      - removed
+      - removed_reason
+      - total_rwf
+      - unit_price_rwf
+    BillRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        visit_id:
+          type: string
+          format: uuid
+        patient_display_name:
+          type: string
+        service_date:
+          type: string
+          format: date
+        ticket_number:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/BillStatusEnum'
+        insurance_status:
+          $ref: '#/components/schemas/BillInsuranceStatusEnum'
+        total_rwf:
+          type: integer
+        patient_share_rwf:
+          type: integer
+        paid_rwf:
+          type: integer
+        balance_rwf:
+          type: integer
+        version:
+          type: integer
+      required:
+      - balance_rwf
+      - id
+      - insurance_status
+      - paid_rwf
+      - patient_display_name
+      - patient_share_rwf
+      - service_date
+      - status
+      - ticket_number
+      - total_rwf
+      - version
+      - visit_id
+    BillStatusEnum:
+      enum:
+      - open
+      - partly_paid
+      - paid
+      - voided
+      - credited
+      type: string
+      description: |-
+        * `open` - Open
+        * `partly_paid` - Partly paid
+        * `paid` - Paid
+        * `voided` - Voided
+        * `credited` - Credited
+    BillingDecisionRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        note:
+          type: string
+          default: ''
+          maxLength: 300
+      required:
+      - version
+    BillingVersionRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+      required:
+      - version
     BlankEnum:
       enum:
       - ''
@@ -14834,6 +16017,72 @@ components:
       required:
       - granted
       - version
+    CashShift:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        membership_id:
+          type: string
+          format: uuid
+        cashier_name:
+          type: string
+        status:
+          $ref: '#/components/schemas/ShiftStatusEnum'
+        opened_at:
+          type: string
+          format: date-time
+        opening_float_rwf:
+          type: integer
+        closed_at:
+          type: string
+          format: date-time
+          nullable: true
+        expected_totals:
+          $ref: '#/components/schemas/MethodTotals'
+        counted_totals:
+          allOf:
+          - $ref: '#/components/schemas/MethodTotals'
+          nullable: true
+        difference_rwf:
+          type: integer
+          nullable: true
+        note:
+          type: string
+        payment_count:
+          type: integer
+        reviewed_by_name:
+          type: string
+          nullable: true
+        reviewed_at:
+          type: string
+          format: date-time
+          nullable: true
+        review_note:
+          type: string
+        is_self_reviewed:
+          type: boolean
+        version:
+          type: integer
+      required:
+      - cashier_name
+      - closed_at
+      - counted_totals
+      - difference_rwf
+      - expected_totals
+      - id
+      - is_self_reviewed
+      - membership_id
+      - note
+      - opened_at
+      - opening_float_rwf
+      - payment_count
+      - review_note
+      - reviewed_at
+      - reviewed_by_name
+      - status
+      - version
     CertaintyEnum:
       enum:
       - provisional
@@ -15148,6 +16397,22 @@ components:
       required:
       - council
       - licence_number
+    CloseShiftRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        counted_totals:
+          $ref: '#/components/schemas/CountedRequest'
+        note:
+          type: string
+          default: ''
+          maxLength: 500
+      required:
+      - counted_totals
+      - version
     CodeRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -15482,6 +16747,59 @@ components:
         * `ncnm` - National Council of Nurses and Midwives
         * `npc` - National Pharmacy Council
         * `other` - Other council
+    CountedRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        cash:
+          type: integer
+          maximum: 100000000
+          minimum: 0
+          default: 0
+        mtn_momo:
+          type: integer
+          maximum: 100000000
+          minimum: 0
+          default: 0
+        airtel_money:
+          type: integer
+          maximum: 100000000
+          minimum: 0
+          default: 0
+        card:
+          type: integer
+          maximum: 100000000
+          minimum: 0
+          default: 0
+    CreditNote:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        number:
+          type: string
+        amount_rwf:
+          type: integer
+        paid_out_rwf:
+          type: integer
+        reason:
+          type: string
+        issued_at:
+          type: string
+          format: date-time
+        payouts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payout'
+      required:
+      - amount_rwf
+      - id
+      - issued_at
+      - number
+      - paid_out_rwf
+      - payouts
+      - reason
     CsrfToken:
       type: object
       properties:
@@ -17390,6 +18708,69 @@ components:
       required:
       - exception
       - warnings
+    Exemption:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        reason_code:
+          $ref: '#/components/schemas/ExemptionReasonEnum'
+        reason_text:
+          type: string
+        amount_rwf:
+          type: integer
+        applied_by_name:
+          type: string
+        applied_at:
+          type: string
+          format: date-time
+          nullable: true
+        is_pending:
+          type: boolean
+      required:
+      - amount_rwf
+      - applied_at
+      - applied_by_name
+      - id
+      - is_pending
+      - reason_code
+      - reason_text
+    ExemptionInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        reason_code:
+          $ref: '#/components/schemas/ExemptionReasonEnum'
+        reason_text:
+          type: string
+          default: ''
+          maxLength: 300
+        amount_rwf:
+          type: integer
+          maximum: 100000000
+          minimum: 1
+      required:
+      - amount_rwf
+      - reason_code
+      - version
+    ExemptionReasonEnum:
+      enum:
+      - indigent
+      - staff
+      - public_programme
+      - waiver
+      - other
+      type: string
+      description: |-
+        * `indigent` - Indigent
+        * `staff` - Staff
+        * `public_programme` - Public programme
+        * `waiver` - Waiver
+        * `other` - Other
     ExternalMatch:
       type: object
       properties:
@@ -18794,6 +20175,37 @@ components:
       - rows
       - unchanged
       - update
+    Insurance:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/BillInsuranceStatusEnum'
+        insurance_profile_id:
+          type: string
+          format: uuid
+          nullable: true
+        insurer_code:
+          type: string
+        insurer_display:
+          type: string
+        member_number:
+          type: string
+        is_accepted:
+          type: boolean
+        patient_share_bp:
+          type: integer
+          nullable: true
+        requires_referral:
+          type: boolean
+      required:
+      - insurance_profile_id
+      - insurer_code
+      - insurer_display
+      - is_accepted
+      - member_number
+      - patient_share_bp
+      - requires_referral
+      - status
     InsuranceBadge:
       type: object
       properties:
@@ -20126,6 +21538,22 @@ components:
       - password_totp
       type: string
       description: '* `password_totp` - password_totp'
+    MethodTotals:
+      type: object
+      properties:
+        cash:
+          type: integer
+        mtn_momo:
+          type: integer
+        airtel_money:
+          type: integer
+        card:
+          type: integer
+      required:
+      - airtel_money
+      - card
+      - cash
+      - mtn_momo
     MfaCodeRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -20212,6 +21640,27 @@ components:
         * `rw` - rw
         * `en` - en
         * `fr` - fr
+    MissingPrice:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/MissingPriceKindEnum'
+        code:
+          type: string
+        name:
+          type: string
+      required:
+      - code
+      - kind
+      - name
+    MissingPriceKindEnum:
+      enum:
+      - service
+      - medicine
+      type: string
+      description: |-
+        * `service` - service
+        * `medicine` - medicine
     ModeEnum:
       enum:
       - upsert
@@ -20467,6 +21916,16 @@ components:
     NullEnum:
       enum:
       - null
+    OpenShiftRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        opening_float_rwf:
+          type: integer
+          maximum: 100000000
+          minimum: 0
+      required:
+      - opening_float_rwf
     Operations:
       type: object
       properties:
@@ -20617,6 +22076,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ApplicationSummary'
+    PaginatedApprovalRequestList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApprovalRequest'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedAvailabilityRowList:
       type: object
       properties:
@@ -20634,6 +22115,50 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AvailabilityRow'
+      required:
+      - count
+      - next
+      - previous
+      - results
+    PaginatedBillRowList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BillRow'
+      required:
+      - count
+      - next
+      - previous
+      - results
+    PaginatedCashShiftList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CashShift'
       required:
       - count
       - next
@@ -20959,6 +22484,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MasterDataChange'
+    PaginatedPatientBillRowList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientBillRow'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedPatientPrescriptionRowList:
       type: object
       properties:
@@ -22302,6 +23849,134 @@ components:
       - body
       - reason
       - signed_at
+    PatientBill:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        facility_name:
+          type: string
+        service_date:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/BillStatusEnum'
+        total_rwf:
+          type: integer
+        patient_share_rwf:
+          type: integer
+        paid_rwf:
+          type: integer
+        balance_rwf:
+          type: integer
+        insurer_share_rwf:
+          type: integer
+        exempted_rwf:
+          type: integer
+        credited_rwf:
+          type: integer
+        refunded_rwf:
+          type: integer
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientBillLine'
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientPayment'
+        credit_notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/PatientCreditNote'
+      required:
+      - balance_rwf
+      - credit_notes
+      - credited_rwf
+      - exempted_rwf
+      - facility_name
+      - id
+      - insurer_share_rwf
+      - lines
+      - paid_rwf
+      - patient_id
+      - patient_share_rwf
+      - payments
+      - refunded_rwf
+      - service_date
+      - status
+      - total_rwf
+    PatientBillLine:
+      type: object
+      properties:
+        name:
+          type: string
+        quantity:
+          type: integer
+        total_rwf:
+          type: integer
+        insurer_share_rwf:
+          type: integer
+        patient_share_rwf:
+          type: integer
+      required:
+      - insurer_share_rwf
+      - name
+      - patient_share_rwf
+      - quantity
+      - total_rwf
+    PatientBillRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        facility_name:
+          type: string
+        service_date:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/BillStatusEnum'
+        total_rwf:
+          type: integer
+        patient_share_rwf:
+          type: integer
+        paid_rwf:
+          type: integer
+        balance_rwf:
+          type: integer
+      required:
+      - balance_rwf
+      - facility_name
+      - id
+      - paid_rwf
+      - patient_id
+      - patient_share_rwf
+      - service_date
+      - status
+      - total_rwf
+    PatientCreditNote:
+      type: object
+      properties:
+        number:
+          type: string
+        amount_rwf:
+          type: integer
+        issued_at:
+          type: string
+          format: date-time
+      required:
+      - amount_rwf
+      - issued_at
+      - number
     PatientDiagnosis:
       type: object
       properties:
@@ -22456,6 +24131,27 @@ components:
       - id
       - preferred_language
       - profiles
+    PatientPayment:
+      type: object
+      properties:
+        method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        amount_rwf:
+          type: integer
+        received_at:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/PaymentStatusEnum'
+        receipt_number:
+          type: string
+          nullable: true
+      required:
+      - amount_rwf
+      - method
+      - receipt_number
+      - received_at
+      - status
     PatientPreferences:
       type: object
       properties:
@@ -22984,6 +24680,124 @@ components:
       - systolic_mmhg
       - temperature_c
       - weight_kg
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        amount_rwf:
+          type: integer
+        reference:
+          type: string
+        ebm_receipt_number:
+          type: string
+        received_by_name:
+          type: string
+        received_at:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/PaymentStatusEnum'
+        receipt:
+          allOf:
+          - $ref: '#/components/schemas/ReceiptRef'
+          nullable: true
+      required:
+      - amount_rwf
+      - ebm_receipt_number
+      - id
+      - method
+      - receipt
+      - received_at
+      - received_by_name
+      - reference
+      - status
+    PaymentInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        amount_rwf:
+          type: integer
+          maximum: 100000000
+          minimum: 1
+        reference:
+          type: string
+          default: ''
+          maxLength: 60
+        ebm_receipt_number:
+          type: string
+          default: ''
+          maxLength: 40
+      required:
+      - amount_rwf
+      - method
+      - version
+    PaymentMethodEnum:
+      enum:
+      - cash
+      - mtn_momo
+      - airtel_money
+      - card
+      type: string
+      description: |-
+        * `cash` - Cash
+        * `mtn_momo` - MTN MoMo
+        * `airtel_money` - Airtel Money
+        * `card` - Card
+    PaymentStatusEnum:
+      enum:
+      - recorded
+      - voided
+      type: string
+      description: |-
+        * `recorded` - Recorded
+        * `voided` - Voided
+    Payout:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        reference:
+          type: string
+        amount_rwf:
+          type: integer
+        paid_at:
+          type: string
+          format: date-time
+      required:
+      - amount_rwf
+      - id
+      - method
+      - paid_at
+      - reference
+    PayoutInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        amount_rwf:
+          type: integer
+          maximum: 100000000
+          minimum: 1
+        reference:
+          type: string
+          default: ''
+          maxLength: 60
+      required:
+      - amount_rwf
+      - method
     PendingInvite:
       type: object
       properties:
@@ -24610,6 +26424,80 @@ components:
           maxLength: 300
       required:
       - reason
+    Receipt:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        number:
+          type: string
+        status:
+          $ref: '#/components/schemas/ReceiptStatusEnum'
+        issued_at:
+          type: string
+          format: date-time
+        facility_name:
+          type: string
+        patient_display_name:
+          type: string
+        method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        amount_rwf:
+          type: integer
+        reference:
+          type: string
+        ebm_receipt_number:
+          type: string
+        received_by_name:
+          type: string
+        bill_id:
+          type: string
+          format: uuid
+        bill_total_rwf:
+          type: integer
+        bill_patient_share_rwf:
+          type: integer
+        balance_after_rwf:
+          type: integer
+      required:
+      - amount_rwf
+      - balance_after_rwf
+      - bill_id
+      - bill_patient_share_rwf
+      - bill_total_rwf
+      - ebm_receipt_number
+      - facility_name
+      - id
+      - issued_at
+      - method
+      - number
+      - patient_display_name
+      - received_by_name
+      - reference
+      - status
+    ReceiptRef:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        number:
+          type: string
+        status:
+          $ref: '#/components/schemas/ReceiptStatusEnum'
+      required:
+      - id
+      - number
+      - status
+    ReceiptStatusEnum:
+      enum:
+      - issued
+      - voided
+      type: string
+      description: |-
+        * `issued` - Issued
+        * `voided` - Voided
     RecentDiagnosis:
       type: object
       properties:
@@ -24653,73 +26541,26 @@ components:
       - method
       - reference
       - status
-    Referral:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        author_name:
-          type: string
-        signed_at:
-          type: string
-          format: date-time
-          nullable: true
-        document_id:
-          type: string
-          format: uuid
-          nullable: true
-        to_facility_name:
-          type: string
-        specialty:
-          type: string
-        reason:
-          type: string
-        urgency:
-          $ref: '#/components/schemas/ReferralUrgencyEnum'
-      required:
-      - author_name
-      - document_id
-      - id
-      - reason
-      - signed_at
-      - specialty
-      - to_facility_name
-      - urgency
-    ReferralInputRequest:
+    RefundRequestRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
       properties:
-        to_facility_name:
+        reason_code:
           type: string
           minLength: 1
-          maxLength: 200
-        specialty:
+          default: other
+          maxLength: 40
+        reason_text:
           type: string
-          minLength: 1
-          maxLength: 100
-        reason:
-          type: string
-          minLength: 1
-          maxLength: 2000
-        urgency:
-          allOf:
-          - $ref: '#/components/schemas/ReferralUrgencyEnum'
-          default: routine
+          minLength: 5
+          maxLength: 300
+        amount_rwf:
+          type: integer
+          maximum: 100000000
+          minimum: 1
       required:
-      - reason
-      - specialty
-      - to_facility_name
-    ReferralUrgencyEnum:
-      enum:
-      - routine
-      - urgent
-      - emergency
-      type: string
-      description: |-
-        * `routine` - Routine
-        * `urgent` - Urgent
-        * `emergency` - Emergency
+      - amount_rwf
+      - reason_text
     RegisterRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -24820,6 +26661,20 @@ components:
       - facility_slug
       - patient_id
       - service_id
+    RemoveLineRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 300
+      required:
+      - reason
+      - version
     ReorderRow:
       type: object
       properties:
@@ -25534,114 +27389,16 @@ components:
         * `female` - Female
         * `male` - Male
         * `other` - Other
-    ShareLink:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        expires_at:
-          type: string
-          format: date-time
-        revoked_at:
-          type: string
-          format: date-time
-          nullable: true
-        access_count:
-          type: integer
-        last_accessed_at:
-          type: string
-          format: date-time
-          nullable: true
-      required:
-      - access_count
-      - expires_at
-      - id
-      - last_accessed_at
-      - revoked_at
-    ShareLinkCreateRequest:
-      type: object
-      description: Rejects unknown fields instead of silently ignoring them.
-      properties:
-        expires_in_days:
-          type: integer
-          maximum: 30
-          minimum: 1
-      required:
-      - expires_in_days
-    SharedDocument:
-      type: object
-      properties:
-        kind:
-          $ref: '#/components/schemas/ClinicalDocumentKindEnum'
-        number:
-          type: string
-        document_date:
-          type: string
-          format: date
-        facility_name:
-          type: string
-        expires_at:
-          type: string
-          format: date-time
-          description: When the share link stops working
-        download:
-          $ref: '#/components/schemas/Link'
-      required:
-      - document_date
-      - download
-      - expires_at
-      - facility_name
-      - kind
-      - number
-    SickNote:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        author_name:
-          type: string
-        signed_at:
-          type: string
-          format: date-time
-          nullable: true
-        document_id:
-          type: string
-          format: uuid
-          nullable: true
-        rest_from:
-          type: string
-          format: date
-        rest_to:
-          type: string
-          format: date
-        show_diagnosis:
-          type: boolean
-      required:
-      - author_name
-      - document_id
-      - id
-      - rest_from
-      - rest_to
-      - show_diagnosis
-      - signed_at
-    SickNoteInputRequest:
-      type: object
-      description: Rejects unknown fields instead of silently ignoring them.
-      properties:
-        rest_from:
-          type: string
-          format: date
-        rest_to:
-          type: string
-          format: date
-        show_diagnosis:
-          type: boolean
-          default: false
-      required:
-      - rest_from
-      - rest_to
+    ShiftStatusEnum:
+      enum:
+      - open
+      - closed
+      - reviewed
+      type: string
+      description: |-
+        * `open` - Open
+        * `closed` - Closed
+        * `reviewed` - Reviewed
     SideEnum:
       enum:
       - front
@@ -27250,6 +29007,43 @@ components:
           maxLength: 200
       required:
       - token
+    Totals:
+      type: object
+      properties:
+        total_rwf:
+          type: integer
+        insurer_share_rwf:
+          type: integer
+        patient_share_rwf:
+          type: integer
+        exempted_rwf:
+          type: integer
+        credited_rwf:
+          type: integer
+        due_rwf:
+          type: integer
+        paid_rwf:
+          type: integer
+        refunded_rwf:
+          type: integer
+        balance_rwf:
+          type: integer
+        owed_to_patient_rwf:
+          type: integer
+        refundable_rwf:
+          type: integer
+      required:
+      - balance_rwf
+      - credited_rwf
+      - due_rwf
+      - exempted_rwf
+      - insurer_share_rwf
+      - owed_to_patient_rwf
+      - paid_rwf
+      - patient_share_rwf
+      - refundable_rwf
+      - refunded_rwf
+      - total_rwf
     TravelTime:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -27468,106 +29262,86 @@ components:
     Verification:
       type: object
       properties:
-        code:
+        id:
           type: string
-        kind:
-          $ref: '#/components/schemas/ClinicalDocumentKindEnum'
-        number:
+          format: uuid
+        insurance_profile_id:
           type: string
-        status:
-          $ref: '#/components/schemas/VerificationStatusEnum'
-        issued_at:
+          format: uuid
+        insurer_code:
           type: string
-          format: date-time
-        valid_until:
+        result:
+          $ref: '#/components/schemas/VerificationResultEnum'
+        reason_code:
           type: string
-          format: date-time
+        reason_text:
+          type: string
+        referral_letter_seen:
+          type: boolean
           nullable: true
-        facility_name:
+        verified_by_name:
           type: string
-        author_name:
-          type: string
-        author_licence:
-          type: string
-        version_no:
-          type: integer
-      required:
-      - author_licence
-      - author_name
-      - code
-      - facility_name
-      - issued_at
-      - kind
-      - number
-      - status
-      - valid_until
-      - version_no
-    VerificationDetails:
-      type: object
-      properties:
-        code:
-          type: string
-        kind:
-          $ref: '#/components/schemas/ClinicalDocumentKindEnum'
-        number:
-          type: string
-        status:
-          $ref: '#/components/schemas/VerificationStatusEnum'
-        issued_at:
+        verified_at:
           type: string
           format: date-time
-        valid_until:
-          type: string
-          format: date-time
-          nullable: true
-        facility_name:
-          type: string
-        author_name:
-          type: string
-        author_licence:
-          type: string
-        version_no:
-          type: integer
-        patient_name:
-          type: string
-        sections:
-          type: array
-          items:
-            $ref: '#/components/schemas/DetailSection'
       required:
-      - author_licence
-      - author_name
-      - code
-      - facility_name
-      - issued_at
-      - kind
-      - number
-      - patient_name
-      - sections
-      - status
-      - valid_until
-      - version_no
-    VerificationDetailsInputRequest:
+      - id
+      - insurance_profile_id
+      - insurer_code
+      - reason_code
+      - reason_text
+      - referral_letter_seen
+      - result
+      - verified_at
+      - verified_by_name
+    VerificationInputReasonCodeEnum:
+      enum:
+      - expired
+      - not_a_member
+      - not_accepted
+      - referral_missing
+      - card_unreadable
+      - other
+      type: string
+      description: |-
+        * `expired` - expired
+        * `not_a_member` - not_a_member
+        * `not_accepted` - not_accepted
+        * `referral_missing` - referral_missing
+        * `card_unreadable` - card_unreadable
+        * `other` - other
+    VerificationInputRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
       properties:
-        date_of_birth:
+        insurance_profile_id:
           type: string
-          format: date
+          format: uuid
+        result:
+          $ref: '#/components/schemas/VerificationResultEnum'
+        reason_code:
+          default: ''
+          oneOf:
+          - $ref: '#/components/schemas/VerificationInputReasonCodeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        reason_text:
+          type: string
+          default: ''
+          maxLength: 300
+        referral_letter_seen:
+          type: boolean
+          nullable: true
       required:
-      - date_of_birth
-    VerificationStatusEnum:
+      - insurance_profile_id
+      - result
+    VerificationResultEnum:
       enum:
-      - active
-      - dispensed
-      - cancelled
-      - expired
+      - verified
+      - rejected
       type: string
       description: |-
-        * `active` - Active
-        * `dispensed` - Dispensed
-        * `cancelled` - Cancelled
-        * `expired` - Expired
+        * `verified` - Verified
+        * `rejected` - Rejected
     VerifyEmailRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -27822,6 +29596,21 @@ components:
             $ref: '#/components/schemas/Vitals'
       required:
       - results
+    VoidRequestRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        reason_code:
+          type: string
+          minLength: 1
+          default: other
+          maxLength: 40
+        reason_text:
+          type: string
+          minLength: 5
+          maxLength: 300
+      required:
+      - reason_text
     WaitRange:
       type: object
       properties:

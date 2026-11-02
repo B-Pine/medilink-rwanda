@@ -505,6 +505,25 @@ SPECTACULAR_SETTINGS = {
         "AlertKindEnum": [("allergy", "allergy"), ("duplicate", "duplicate"), ("dose", "dose")],
         "AlertSeverityEnum": [("high", "high"), ("medium", "medium")],
         # [/S7]
+        # [S8]
+        "BillStatusEnum": "medilink.billing.models.BillStatus",
+        "PaymentMethodEnum": "medilink.billing.models.PaymentMethod",
+        "PaymentStatusEnum": "medilink.billing.models.PaymentStatus",
+        "ReceiptStatusEnum": "medilink.billing.models.ReceiptStatus",
+        "ShiftStatusEnum": "medilink.billing.models.ShiftStatus",
+        "ApprovalKindEnum": "medilink.billing.models.ApprovalKind",
+        "ExemptionReasonEnum": "medilink.billing.models.ExemptionReason",
+        "VerificationResultEnum": "medilink.billing.models.VerificationResult",
+        "ApprovalStatusEnum": "medilink.billing.models.ApprovalStatus",
+        # S8 adds `method` fields: pin the S1 step-up enum to its existing name
+        "MethodEnum": [("password_totp", "password_totp")],
+        "BillInsuranceStatusEnum": [
+            ("none", "none"),
+            ("unverified", "unverified"),
+            ("verified", "verified"),
+            ("rejected", "rejected"),
+        ],
+        # [/S8]
     },
 }
 

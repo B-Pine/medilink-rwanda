@@ -411,21 +411,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   `facility_isolation` policy, or is listed in `RLS_EXCEPTIONS` with the document that allows it;
   an exception that is no longer needed fails too (database design §1).
 
-### Sprint 7b · Documents (#123)
+### Sprint 8 · Billing, payments and insurance
 
-- `medilink.documents`: referral letters, lab requests and sick notes written in the consultation
-  (signed with it, or at once after it with recent authentication; reason encrypted; locked after
-  signing). Every signed prescription, letter, request and sick note becomes a PDF (reportlab,
-  contract D-8) with letterhead, author and licence, number (`REF-`, `LAB-`, `SN-`, prescriptions
-  keep `RX-`) and a QR code, rendered on the `documents` queue. A change of content adds a version;
-  the old one is kept as superseded.
-- Public verification: `GET /public/verify/{code}/` shows a minimal projection; the content only
-  after a date-of-birth match; every attempt (also rate-limited ones) is logged. Dispensing with
-  the verification code now checks this code (S7a D-7).
-- Staff documents list, 5-minute download links (access history) and printing for reception and
-  the pharmacy (`documents.print`). Patients list, download, get a ZIP and make share links (1–30
-  days, token shown once, SHA-256 stored); a daily job purges old links.
-- New dependency: `reportlab` (PDF and QR drawing; no HTML, no network).
+- Bills ([contract](../docs/architecture/contracts/sprint-08-billing.md)): one bill per visit,
+  opened at check-in (S4 `on_ticket_event`) or on first read; the consultation from the tariff,
+  procedures and other charges added by the cashier, medicines synced from the issued
+  prescription (tariff code = drug code). Each line is split between insurer and patient by the
+  S2 insurer rule (patient share, exclusions, service list, ceiling per visit) once the insurance
+  is verified for the visit; a rejection (with a reason) means self-pay.
+- Payments (cash, MTN MoMo, Airtel Money, card) with references and an optional EBM receipt
+  number, partial, never above the balance, idempotent, in the cashier's open shift; gapless
+  receipts (`RC-2026-000001`, prefix setting) sent to the patient through S9.
+- Exemptions with reasons and a waiver approval threshold; voids and refunds through approval
+  requests (step-up, decider other than the requester; a one-person clinic may self-approve,
+  flagged), credit notes (`CN-`) and payouts; cash shifts with expected and counted totals per
+  method, difference note and review; unpaid balances per patient at the facility; patient
+  My bills. When nothing is left to pay, prescriptions waiting for payment move to the pharmacy.
+- Eleven new `billing_*` tables with forced facility RLS; append-only events, verifications,
+  credit notes and payouts; triggers lock payments, receipts, exemptions, bill lines and bills;
+  SECURITY DEFINER `billing_patient_bills(uuid)`.
 
 ### Sprint 7a · Prescriptions and pharmacy
 

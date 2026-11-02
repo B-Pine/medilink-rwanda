@@ -16,7 +16,7 @@ Sprints and requirements follow the [backend](../roadmap/backend.md) and [fronte
 | [S5](#s5--booking-remote-join-and-calendars) | Booking, remote join and calendars | S5a implemented (#80 and the Phase 1 PR); S5b planned. The [contract](../architecture/contracts/sprint-05-booking.md) and the OpenAPI schema win over the rows below |
 | [S6](#s6--clinical-record-and-history) | Clinical record and history | Planned |
 | [S7](#s7--pharmacy-and-documents) | Pharmacy and documents | S7a implemented (backend); S7b planned. The [contract](../architecture/contracts/sprint-07-pharmacy-documents.md) and the OpenAPI schema win over the rows below |
-| [S8](#s8--billing-and-payments) | Billing and payments | Planned |
+| [S8](#s8--billing-and-payments) | Billing and payments | Backend implemented; frontend next |
 | [S9](#s9--notifications) | Notifications | Backend implemented (S9 pull request); the [contract](../architecture/contracts/sprint-09-notifications.md) §3.3 and the OpenAPI schema win over the rows below |
 | [S10](#s10--disputes-help-and-reports) | Disputes, help and reports | Part 1 (help center, support requests) backend implemented; disputes and reports planned |
 | [S11](#s11--hardening-and-pilot-readiness) | Hardening and pilot readiness | Planned |
@@ -539,38 +539,41 @@ Requirements: FR-PHA-01..05; FR-DOC-01..07. Visit summaries, prescriptions, sick
 
 ## S8 · Billing and payments
 
-Requirements: FR-BIL-04..13. Tests: money invariants (no negative amounts, server-side totals, no self-approval).
+Requirements: FR-BIL-04..13. Tests: money invariants (no negative amounts, server-side totals, no self-approval). The [contract](../architecture/contracts/sprint-08-billing.md) and the OpenAPI schema win over the rows below.
 
 ### Staff
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `POST` | `/api/v1/staff/visits/{id}/insurance-verifications/` | Verify insurance for this visit, or reject with a reason | `queue.operate` | FR-BIL-04 | Referral letter check where required | Planned |
-| `GET` | `/api/v1/staff/bills/` | Bills awaiting payment and unpaid balances | `billing.record_payment` | FR-BIL-06, FR-BIL-12 | Filters `status`, `date` | Planned |
-| `GET` | `/api/v1/staff/bills/{id}/` | Bill with lines and insurer/patient split | `billing.record_payment` | FR-BIL-06 | Medicine lines only as needed for billing | Planned |
-| `POST` | `/api/v1/staff/bills/{id}/lines/` | Add a line from the tariff | `billing.record_payment` | FR-BIL-06 | Server prices and splits; Ver | Planned |
-| `DELETE` | `/api/v1/staff/bills/{id}/lines/{line_id}/` | Remove a line before any payment | `billing.record_payment` | FR-BIL-06 | Reason; logged | Planned |
-| `POST` | `/api/v1/staff/bills/{id}/payments/` | Record a payment (cash, MoMo, Airtel, card, insurance) → receipt | `billing.record_payment` | FR-BIL-07, FR-BIL-08, FR-BIL-13 | Idem; needs an open shift; partial allowed; optional EBM number | Planned |
-| `POST` | `/api/v1/staff/bills/{id}/exemptions/` | Apply an exemption or waiver | `billing.record_payment` | FR-BIL-11 | Reason code; above threshold → approval request | Planned |
-| `POST` | `/api/v1/staff/bills/{id}/void-requests/` | Request a void of a payment or receipt | `billing.record_payment` | FR-BIL-09 | Reason; needs approval | Planned |
-| `POST` | `/api/v1/staff/bills/{id}/refund-requests/` | Request a refund | `billing.record_payment` | FR-BIL-09 | Reason; needs approval → credit note | Planned |
-| `GET` | `/api/v1/staff/approval-requests/` | Approvals inbox: voids, refunds, waivers | `billing.approve` | FR-BIL-09, FR-BIL-11 | | Planned |
-| `POST` | `/api/v1/staff/approval-requests/{id}/approve/` | Approve | `billing.approve` | FR-BIL-09, FR-BIL-11 | Step-up; requester ≠ approver (one-person clinic: allowed and flagged); Audit | Planned |
-| `POST` | `/api/v1/staff/approval-requests/{id}/reject/` | Reject with a reason | `billing.approve` | FR-BIL-09 | Step-up | Planned |
-| `POST` | `/api/v1/staff/credit-notes/{id}/payouts/` | Record the refund payout (cash, MoMo reference) | `billing.record_payment` | FR-BIL-09 | Idem | Planned |
-| `GET` | `/api/v1/staff/receipts/{id}/` | Receipt with its gapless number | `billing.record_payment` | FR-BIL-08 | | Planned |
-| `POST` | `/api/v1/staff/receipts/{id}/send/` | Email the receipt to the patient | `billing.record_payment` | FR-BIL-08 | | Planned |
-| `GET`, `POST` | `/api/v1/staff/cash-shifts/` | Open a shift with the opening float; list shifts | `billing.record_payment` | FR-BIL-10 | One open shift per person | Planned |
-| `POST` | `/api/v1/staff/cash-shifts/{id}/close/` | Close: counted amounts per method, note | `billing.record_payment` (owner) | FR-BIL-10 | Shows expected vs counted | Planned |
-| `POST` | `/api/v1/staff/cash-shifts/{id}/review/` | Accept a closed shift | `billing.approve` | FR-BIL-10 | Audit | Planned |
-| `GET` | `/api/v1/staff/patients/{id}/balances/` | Unpaid balances of a patient at this facility | `billing.record_payment` | FR-BIL-12 | Never other facilities | Planned |
+| `GET` | `/api/v1/staff/visits/{id}/bill/` | The visit's bill, opened on first use (B1) | `billing.record_payment` or `billing.approve` | FR-BIL-06 | Lines, split, payments, corrections; Audit | Implemented (S8) |
+| `POST` | `/api/v1/staff/visits/{id}/insurance-verifications/` | Verify insurance for this visit, or reject with a reason (B6) | `patients.insurance_verify` | FR-BIL-04 | Referral letter where the rule needs it; after payment only if it lowers the patient share | Implemented (S8) |
+| `GET` | `/api/v1/staff/bills/` | Bills of a day, unpaid first (B2) | as B1 | FR-BIL-06, FR-BIL-12 | `status`, `has_balance`, `date`, `q` | Implemented (S8) |
+| `GET` | `/api/v1/staff/bills/{id}/` | Bill detail (B3) | as B1 | FR-BIL-06 | Audit | Implemented (S8) |
+| `POST` | `/api/v1/staff/bills/{id}/lines/` | Add a procedure or other charge from the tariff (B4) | `billing.record_payment` | FR-BIL-06 | Ver; server prices and splits | Implemented (S8) |
+| `POST` | `/api/v1/staff/bill-lines/{id}/remove/` | Remove a line with a reason (B5) | `billing.record_payment` | FR-BIL-06 | Ver; only before any payment (D-8) | Implemented (S8) |
+| `POST` | `/api/v1/staff/bills/{id}/payments/` | Record a payment → receipt (B7) | `billing.record_payment` | FR-BIL-07, FR-BIL-08, FR-BIL-13 | Idem; open shift; ≤ balance; reference for MoMo, Airtel, card; optional EBM number | Implemented (S8) |
+| `POST` | `/api/v1/staff/bills/{id}/exemptions/` | Apply an exemption or waiver (B8) | `billing.record_payment` | FR-BIL-11 | `allow_exemptions`; waiver above the threshold → approval request | Implemented (S8) |
+| `POST` | `/api/v1/staff/payments/{id}/void-requests/` | Request a void of a payment and its receipt (B9) | `billing.record_payment` | FR-BIL-09 | One pending per payment | Implemented (S8) |
+| `POST` | `/api/v1/staff/bills/{id}/refund-requests/` | Request a refund (B10) | `billing.record_payment` | FR-BIL-09 | Approval → credit note | Implemented (S8) |
+| `GET` | `/api/v1/staff/approval-requests/` | Approvals inbox: voids, refunds, waivers (B11) | `billing.approve` | FR-BIL-09, FR-BIL-11 | | Implemented (S8) |
+| `POST` | `/api/v1/staff/approval-requests/{id}/approve/` | Approve (B12) | `billing.approve` | FR-BIL-09, FR-BIL-11 | Step-up; requester ≠ approver (one-person clinic: allowed and flagged); Audit | Implemented (S8) |
+| `POST` | `/api/v1/staff/approval-requests/{id}/reject/` | Reject with a note (B13) | `billing.approve` | FR-BIL-09 | Step-up | Implemented (S8) |
+| `POST` | `/api/v1/staff/approval-requests/{id}/cancel/` | Cancel my pending request (B14) | `billing.record_payment` | FR-BIL-09 | Requester only | Implemented (S8) |
+| `POST` | `/api/v1/staff/credit-notes/{id}/payouts/` | Record the refund payout (B15) | `billing.record_payment` | FR-BIL-09 | Idem; cash needs an open shift | Implemented (S8) |
+| `GET` | `/api/v1/staff/receipts/{id}/` | Receipt for printing (B16) | as B1 | FR-BIL-08 | PDF with S7b | Implemented (S8) |
+| `POST` | `/api/v1/staff/receipts/{id}/send/` | Send the receipt to the patient again (B17) | `billing.record_payment` | FR-BIL-08 | S9 in-app and email | Implemented (S8) |
+| `GET`, `POST` | `/api/v1/staff/cash-shifts/` | List shifts; open my shift with a float (B18, B20) | `billing.record_payment` (own) or `billing.approve` (all) | FR-BIL-10 | One open shift per person | Implemented (S8) |
+| `GET` | `/api/v1/staff/cash-shifts/current/` | My open shift with running totals (B19) | `billing.record_payment` | FR-BIL-10 | | Implemented (S8) |
+| `POST` | `/api/v1/staff/cash-shifts/{id}/close/` | Close: counted per method, note (B21) | owner | FR-BIL-10 | Expected vs counted | Implemented (S8) |
+| `POST` | `/api/v1/staff/cash-shifts/{id}/review/` | Accept a closed shift (B22) | `billing.approve` | FR-BIL-10 | Not the owner unless one-person clinic; Audit | Implemented (S8) |
+| `GET` | `/api/v1/staff/billing/patients/{id}/balances/` | Unpaid balances of a patient at this facility (B23) | `billing.record_payment` | FR-BIL-12 | Never other facilities | Implemented (S8) |
 
 ### Patient
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `GET` | `/api/v1/patient/bills/` | Bills and unpaid balances | Patient session | FR-BIL-12 | Filter `patient_id` | Planned |
-| `GET` | `/api/v1/patient/bills/{id}/` | Bill with lines and receipts | Linked account | FR-BIL-06, FR-BIL-08 | | Planned |
+| `GET` | `/api/v1/patient/bills/` | Bills and unpaid balances (PB1) | Patient session | FR-BIL-12 | `patient_id`, `has_balance`; delegates don't see visits with a restricted consultation | Implemented (S8) |
+| `GET` | `/api/v1/patient/bills/{id}/` | Bill with lines and receipts (PB2) | Linked account | FR-BIL-06, FR-BIL-08 | | Implemented (S8) |
 
 ---
 

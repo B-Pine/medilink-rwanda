@@ -3,16 +3,42 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
+  type Column,
   type ColumnDef,
+  type RowData,
   type SortingState,
 } from "@tanstack/react-table";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useId, useState, type ReactNode } from "react";
 
 import { readPreference, writePreference } from "../preferences/storage";
 import { cx } from "../utils/cx";
 import { Alert } from "./Alert";
 import { Button } from "./Button";
 import { Skeleton } from "./Skeleton";
+
+/**
+ * Column meta read by the table (design 08 §2): `align: "right"` for numbers, money and durations
+ * (tabular figures); `label` names the column where the header is not plain text (card list under
+ * 640 px).
+ */
+declare module "@tanstack/react-table" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TData and TValue must match TanStack's declaration
+  interface ColumnMeta<TData extends RowData, TValue> {
+    align?: "left" | "right" | "center";
+    label?: string;
+  }
+}
+
+const ALIGN = { left: "text-left", right: "text-right tabular-nums", center: "text-center" };
+
+function alignClass<T>(column: Column<T, unknown>): string {
+  return ALIGN[column.columnDef.meta?.align ?? "left"];
+}
+
+function columnLabel<T>(column: Column<T, unknown>): string {
+  const { meta, header } = column.columnDef;
+  return meta?.label ?? (typeof header === "string" ? header : column.id);
+}
 
 export type Density = "compact" | "default" | "comfortable";
 const DENSITY_ROW: Record<Density, string> = {
@@ -121,6 +147,7 @@ export function DataTable<T>({
   filtered = false,
   className,
 }: DataTableProps<T>) {
+  const searchId = useId();
   const [density, setDensity] = useState<Density>(storedDensity);
   const [searchText, setSearchText] = useState(search ?? "");
   useEffect(() => setSearchText(search ?? ""), [search]);
@@ -163,11 +190,11 @@ export function DataTable<T>({
               onSearchChange(searchText.trim());
             }}
           >
-            <label className="sr-only" htmlFor={`${caption}-search`}>
+            <label className="sr-only" htmlFor={searchId}>
               {labels.search}
             </label>
             <input
-              id={`${caption}-search`}
+              id={searchId}
               type="search"
               value={searchText}
               placeholder={labels.search}
@@ -262,7 +289,10 @@ export function DataTable<T>({
                                 ? "none"
                                 : undefined
                         }
-                        className="border-b border-border px-3 py-2 font-semibold whitespace-nowrap"
+                        className={cx(
+                          "border-b border-border px-4 py-2 font-semibold whitespace-nowrap",
+                          alignClass(header.column),
+                        )}
                       >
                         {canSort ? (
                           <button
@@ -286,7 +316,7 @@ export function DataTable<T>({
                     );
                   })}
                   {rowActions && (
-                    <th scope="col" className="border-b border-border px-3 py-2 font-semibold">
+                    <th scope="col" className="border-b border-border px-4 py-2 font-semibold">
                       <span className="sr-only">{labels.actions}</span>
                     </th>
                   )}
@@ -297,7 +327,7 @@ export function DataTable<T>({
                   ? Array.from({ length: 5 }, (_, index) => (
                       <tr key={`skeleton-${index}`} className={DENSITY_ROW[density]}>
                         {headers.map((header) => (
-                          <td key={header.id} className="border-b border-border px-3">
+                          <td key={header.id} className="border-b border-border px-4">
                             <Skeleton className="h-4 w-full" />
                           </td>
                         ))}
@@ -316,7 +346,10 @@ export function DataTable<T>({
                         {row.getVisibleCells().map((cell, index) => (
                           <td
                             key={cell.id}
-                            className="border-b border-border px-3 py-1 align-middle"
+                            className={cx(
+                              "border-b border-border px-4 py-2 align-middle",
+                              alignClass(cell.column),
+                            )}
                           >
                             {index === 0 && onRowClick ? (
                               <button
@@ -336,7 +369,7 @@ export function DataTable<T>({
                         ))}
                         {rowActions && (
                           <td
-                            className="border-b border-border px-3 py-1 text-right whitespace-nowrap"
+                            className="border-b border-border px-4 py-2 text-right whitespace-nowrap"
                             onClick={(event) => event.stopPropagation()}
                           >
                             {rowActions(row.original)}
@@ -358,11 +391,7 @@ export function DataTable<T>({
                   <dl className="m-0 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
                     {row.getVisibleCells().map((cell) => (
                       <div key={cell.id} className="contents">
-                        <dt className="text-body-sm text-fg-muted">
-                          {typeof cell.column.columnDef.header === "string"
-                            ? cell.column.columnDef.header
-                            : cell.column.id}
-                        </dt>
+                        <dt className="text-body-sm text-fg-muted">{columnLabel(cell.column)}</dt>
                         <dd className="m-0">
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </dd>

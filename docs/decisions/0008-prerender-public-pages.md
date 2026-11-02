@@ -19,7 +19,11 @@ Options considered:
 - `patient-web` pre-renders these routes at build time with a Vite prerender plugin: `/`, `/for-facilities`, and `/facilities/:slug` for every live facility (the slug list comes from the public API at build time).
 - Pre-rendered HTML holds only public (C0) content: page text, the facility's name, type, services and address. Live data (next free slot, queue load, fees) loads on the client after hydration, so a stale build never shows a wrong time or price.
 - The patient app behind sign-in is not pre-rendered.
-- The plugin, its version and the build step are named in this ADR by the pull request that builds it (R8).
+- Built in R8 with [`vite-prerender-plugin`](https://github.com/preactjs/vite-prerender-plugin) **0.5.14** (exact version in `apps/patient-web/package.json`), in the normal `vite build`:
+  - `src/prerender/prerender.tsx` renders each route with React Router's static handler in Kinyarwanda, and lists the facility slugs from `POST /api/v1/public/facilities/search/` (none when the API is unreachable; `PRERENDER_STRICT=1` makes that fail a release build). Mock builds use the contract mocks.
+  - Facility snapshots drop fees, queue load and next free times; the browser replaces them with live data. Static pages hydrate.
+  - `app-shell.html` (the unrendered `index.html`) is the service-worker navigation fallback and must be the host's fallback for paths without a pre-rendered file.
+  - `scripts/check-prerender.mjs` runs after `pnpm build`: pages present, one `<h1>`, only public discovery data, no live data, no email address or national ID. A Playwright test checks the HTML without JavaScript and that hydration keeps the content.
 
 ## Consequences
 

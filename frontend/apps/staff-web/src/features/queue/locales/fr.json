@@ -109,6 +109,7 @@
   },
   "live": {
     "live": "En direct · il y a {{seconds}} s",
+    "connected": "En direct",
     "reconnecting": "Reconnexion",
     "offline_one": "Hors ligne · {{count}} action en attente",
     "offline_other": "Hors ligne · {{count}} actions en attente"

@@ -18,6 +18,8 @@ export interface LiveConnection {
 export interface LiveOptions {
   onMessage: (message: LiveMessage) => void;
   onStatus?: (status: LiveStatus) => void;
+  /** Any sign of life from the server (open, message or pong): freshness for "updated 3 s ago". */
+  onAlive?: () => void;
   /** For tests: a WebSocket constructor. */
   WebSocketImpl?: typeof WebSocket;
   pingMs?: number;
@@ -71,6 +73,7 @@ export function connectLive(url: string, options: LiveOptions): LiveConnection {
     socket.onopen = () => {
       attempt = 0;
       status("live");
+      options.onAlive?.();
       pingTimer = setInterval(() => {
         if (socket?.readyState === 1) socket.send(JSON.stringify({ type: "ping" }));
       }, ping);
@@ -78,6 +81,7 @@ export function connectLive(url: string, options: LiveOptions): LiveConnection {
     socket.onmessage = (event: MessageEvent) => {
       try {
         const message = JSON.parse(String(event.data)) as LiveMessage;
+        options.onAlive?.();
         if (message && typeof message.type === "string" && message.type !== "pong") {
           options.onMessage(message);
         }

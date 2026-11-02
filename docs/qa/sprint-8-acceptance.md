@@ -44,3 +44,4 @@ Evidence collected on 2026-11-02 on PostgreSQL 16, suite run as the runtime role
 |---|---|---|
 | 2026-11-02 | `ruff check`, `ruff format --check`, `mypy .`, `makemigrations --check`, `spectacular --validate --fail-on-warn` | Clean |
 | 2026-11-02 | `pytest tests/s8` with coverage | 27 passed |
+| 2026-11-02 | Full backend suite with coverage, per-app gate | 822 passed; `billing` 97 %, every other app at or above its floor |

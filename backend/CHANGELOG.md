@@ -411,6 +411,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   `facility_isolation` policy, or is listed in `RLS_EXCEPTIONS` with the document that allows it;
   an exception that is no longer needed fails too (database design §1).
 
+### Sprint 8 · Billing, payments and insurance
+
+- Bills ([contract](../docs/architecture/contracts/sprint-08-billing.md)): one bill per visit,
+  opened at check-in (S4 `on_ticket_event`) or on first read; the consultation from the tariff,
+  procedures and other charges added by the cashier, medicines synced from the issued
+  prescription (tariff code = drug code). Each line is split between insurer and patient by the
+  S2 insurer rule (patient share, exclusions, service list, ceiling per visit) once the insurance
+  is verified for the visit; a rejection (with a reason) means self-pay.
+- Payments (cash, MTN MoMo, Airtel Money, card) with references and an optional EBM receipt
+  number, partial, never above the balance, idempotent, in the cashier's open shift; gapless
+  receipts (`RC-2026-000001`, prefix setting) sent to the patient through S9.
+- Exemptions with reasons and a waiver approval threshold; voids and refunds through approval
+  requests (step-up, decider other than the requester; a one-person clinic may self-approve,
+  flagged), credit notes (`CN-`) and payouts; cash shifts with expected and counted totals per
+  method, difference note and review; unpaid balances per patient at the facility; patient
+  My bills. When nothing is left to pay, prescriptions waiting for payment move to the pharmacy.
+- Eleven new `billing_*` tables with forced facility RLS; append-only events, verifications,
+  credit notes and payouts; triggers lock payments, receipts, exemptions, bill lines and bills;
+  SECURITY DEFINER `billing_patient_bills(uuid)`.
+
 ### Sprint 7a · Prescriptions and pharmacy
 
 - New apps `medilink.pharmacy` and `medilink.documents` ([contract](../docs/architecture/contracts/sprint-07-pharmacy-documents.md)):

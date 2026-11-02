@@ -102,6 +102,26 @@
     "approve": "Emeza",
     "reject": "Anga",
     "rejectNote": "Kuki wanze?",
-    "viewBill": "Reba fagitire"
+    "viewBill": "Reba fagitire",
+    "intro": "Ibyifuzo by'abakozi n'amasanduku yafunzwe. Icyemezo cyose kirandikwa.",
+    "tabs": {
+      "requests": "Ibyifuzo",
+      "shifts": "Amasanduku"
+    },
+    "shifts": {
+      "empty": "Nta sanduku yafunzwe ikeneye kugenzurwa",
+      "payments_one": "Ubwishyu {{count}}",
+      "payments_other": "Ubwishyu {{count}}",
+      "balanced": "Biringaniye",
+      "short": "Habuze {{amount}}",
+      "over": "Harenze {{amount}}",
+      "method": "Uburyo",
+      "expected": "Byari byitezwe",
+      "counted": "Byabaruwe",
+      "float": "Amafaranga yitezwe arimo ayo gutangiza angana na {{amount}}.",
+      "cashierNote": "Icyo umubitsi yanditse",
+      "reviewNote": "Icyo ugenzura yanditse (gikenewe iyo isanduku itaringaniye)",
+      "accept": "Emeza isanduku"
+    }
   }
 }

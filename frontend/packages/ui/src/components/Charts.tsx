@@ -85,6 +85,8 @@ export interface StatTileProps {
   trend?: (number | null)[];
   /** Shown instead of a value when the metric is not available yet. */
   note?: string;
+  /** Secondary line under the value when there is no change to show, e.g. "27 payments". */
+  caption?: string;
   icon?: ReactNode;
 }
 
@@ -101,6 +103,7 @@ export function StatTile({
   lowerIsBetter,
   trend,
   note,
+  caption,
   icon,
 }: StatTileProps) {
   const good =
@@ -143,6 +146,9 @@ export function StatTile({
                 {deltaLabel ? ` ${deltaLabel}` : ""}
               </span>
             </p>
+          )}
+          {(deltaPct === undefined || deltaPct === null) && caption && (
+            <p className="m-0 text-body-sm text-fg-secondary tabular-nums">{caption}</p>
           )}
         </>
       )}

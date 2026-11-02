@@ -259,7 +259,7 @@
     "waiting": "barategereje"
   },
   "ops": {
-    "title": "Ibikorwa by’uyu munsi",
+    "title": "Ishusho y'ikigo",
     "allReports": "Raporo zose",
     "vsLast": "ugereranyije na {{day}} ishize",
     "patientsToday": "Abarwayi uyu munsi",
@@ -287,7 +287,58 @@
     "noDoctor_one": "Umurwayi {{count}} ategereje nta muganga uri mu kazi",
     "noDoctor_other": "Abarwayi {{count}} bategereje nta muganga uri mu kazi",
     "liveSummary_one": "{{waiting}} barategereje · umuganga {{count}} uri mu kazi",
-    "liveSummary_other": "{{waiting}} barategereje · abaganga {{count}} bari mu kazi"
+    "liveSummary_other": "{{waiting}} barategereje · abaganga {{count}} bari mu kazi",
+    "subtitle": "Urujya n'uruza rw'abarwayi, amafaranga n'abakozi b'uyu munsi.",
+    "updated": "Byavuguruwe saa {{time}}",
+    "noShowsCaption": "{{count}} kuri {{expected}} bafashe gahunda",
+    "noBookings": "Nta gahunda z'uyu munsi",
+    "paymentsCaption_one": "Ubwishyu {{count}} bwanditswe",
+    "paymentsCaption_other": "Ubwishyu {{count}} bwanditswe",
+    "rwf": "RWF",
+    "approvalsPending_one": "Icyifuzo {{count}} gitegereje kwemezwa",
+    "approvalsPending_other": "Ibyifuzo {{count}} bitegereje kwemezwa",
+    "shiftsToReview_one": "Isanduku {{count}} yafunzwe ikeneye kugenzurwa",
+    "shiftsToReview_other": "Amasanduku {{count}} yafunzwe akeneye kugenzurwa",
+    "unsignedRecords_one": "Isuzuma {{count}} ritarasinywa",
+    "unsignedRecords_other": "Amasuzuma {{count}} atarasinywa",
+    "disputesOpen_one": "Ikirego {{count}} gifunguye",
+    "disputesOpen_other": "Ibirego {{count}} bifunguye",
+    "invitationsPending_one": "Ubutumire {{count}} butaremerwa",
+    "invitationsPending_other": "Ubutumire {{count}} butaremerwa",
+    "staffWithoutMfa_one": "Umukozi {{count}} udakoresha kwinjira mu ntambwe ebyiri",
+    "staffWithoutMfa_other": "Abakozi {{count}} badakoresha kwinjira mu ntambwe ebyiri",
+    "licenceExpiring_one": "Uruhushya rurangira mu munsi {{count}}",
+    "licenceExpiring_other": "Uruhushya rurangira mu minsi {{count}}",
+    "licenceExpired": "Uruhushya rw'ikigo rwararangiye",
+    "urgent": "Byihutirwa",
+    "review": "Kugenzura",
+    "bookings": {
+      "title": "Gahunda z'uyu munsi",
+      "expected": "Bategerejwe",
+      "arrived": "Bahageze",
+      "noShow": "Ntibaje",
+      "toCome": "Bataraza",
+      "empty": "Nta gahunda z'uyu munsi.",
+      "open": "Fungura kalendari"
+    },
+    "money": {
+      "title": "Amafaranga y'uyu munsi",
+      "collected": "Yakiriwe",
+      "bills": "Fagitire zafunguwe",
+      "open": "Ayasigaye kwishyurwa",
+      "view": "Fungura ubwishyu"
+    },
+    "team": {
+      "title": "Abakozi bari mu kazi",
+      "empty": "Nta n'umwe uratangira akazi.",
+      "manage": "Gucunga abakozi",
+      "state": {
+        "on_duty": "Ari mu kazi",
+        "break": "Ari mu karuhuko",
+        "emergency": "Ubutabazi",
+        "off": "Ntari mu kazi"
+      }
+    }
   },
   "reports": {
     "title": "Raporo",

@@ -41,7 +41,7 @@ import {
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useParams } from "react-router";
+import { Link, useParams, useSearchParams } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
@@ -53,6 +53,7 @@ const keys = {
   bill: (id: string) => ["billing", "bill", id] as const,
   shift: ["billing", "shift"] as const,
   approvals: ["billing", "approvals"] as const,
+  shiftsToReview: ["billing", "shifts", "closed"] as const,
   receipt: (id: string) => ["billing", "receipt", id] as const,
 };
 
@@ -882,32 +883,203 @@ export function ReceiptPage() {
 
 // ---- /approvals ------------------------------------------------------------------------------
 
-/** Approvals inbox (contract §6.1): voids, refunds and waivers; approve or reject with step-up. */
+/**
+ * Approvals inbox (contract §6.1): voids, refunds and waivers, then closed cash shifts to accept
+ * (B22). Every decision asks for step-up.
+ */
 export function ApprovalsPage() {
   const { t } = useTranslation();
   const api = useApi();
+  const [search, setSearch] = useSearchParams();
+  const tab = search.get("tab") === "shifts" ? "shifts" : "requests";
   const approvals = useQuery({
     queryKey: keys.approvals,
     queryFn: () => api.billing.approvals({ status: "pending" }),
   });
+  const shifts = useQuery({
+    queryKey: keys.shiftsToReview,
+    queryFn: () => api.billing.shifts({ status: "closed" }),
+  });
   const rows = approvals.data?.results ?? [];
+  const closed = shifts.data?.results ?? [];
+  const count = (n: number | undefined) =>
+    n ? (
+      <span className="grid min-w-5 place-items-center rounded-full bg-attention-bg px-1.5 text-caption font-bold text-attention tabular-nums">
+        {n}
+      </span>
+    ) : null;
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title={t("billing.approvals.title")} />
-      {approvals.isPending ? (
+      <PageHeader title={t("billing.approvals.title")} description={t("billing.approvals.intro")} />
+      <Tabs
+        value={tab}
+        onValueChange={(value) => setSearch(value === "shifts" ? { tab: "shifts" } : {})}
+      >
+        <TabsList aria-label={t("billing.approvals.title")}>
+          <TabsTrigger value="requests">
+            <SealCheck aria-hidden="true" />
+            {t("billing.approvals.tabs.requests")}
+            {count(approvals.data?.count)}
+          </TabsTrigger>
+          <TabsTrigger value="shifts">
+            <CashRegister aria-hidden="true" />
+            {t("billing.approvals.tabs.shifts")}
+            {count(shifts.data?.count)}
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+      {tab === "requests" ? (
+        approvals.isPending ? (
+          <LoadingState />
+        ) : approvals.isError ? (
+          <Alert tone="danger">{errorText(approvals.error, t("billing.failed"))}</Alert>
+        ) : rows.length === 0 ? (
+          <EmptyState icon={SealCheck} title={t("billing.approvals.empty")} />
+        ) : (
+          <ul className="ml-stagger m-0 flex list-none flex-col gap-4 p-0">
+            {rows.map((r) => (
+              <ApprovalItem key={r.id} request={r} />
+            ))}
+          </ul>
+        )
+      ) : shifts.isPending ? (
         <LoadingState />
-      ) : approvals.isError ? (
-        <Alert tone="danger">{errorText(approvals.error, t("billing.failed"))}</Alert>
-      ) : rows.length === 0 ? (
-        <EmptyState icon={SealCheck} title={t("billing.approvals.empty")} />
+      ) : shifts.isError ? (
+        <Alert tone="danger">{errorText(shifts.error, t("billing.failed"))}</Alert>
+      ) : closed.length === 0 ? (
+        <EmptyState icon={CashRegister} title={t("billing.approvals.shifts.empty")} />
       ) : (
-        <ul className="m-0 flex list-none flex-col gap-4 p-0">
-          {rows.map((r) => (
-            <ApprovalItem key={r.id} request={r} />
+        <ul className="ml-stagger m-0 grid list-none gap-4 p-0 xl:grid-cols-2">
+          {closed.map((s) => (
+            <ShiftReviewItem key={s.id} shift={s} />
           ))}
         </ul>
       )}
     </div>
+  );
+}
+
+/** A closed shift (B22): expected against counted per method, the gap, then accept. */
+function ShiftReviewItem({ shift }: { shift: CashShift }) {
+  const { t, i18n } = useTranslation();
+  const api = useApi();
+  const money = useMoney();
+  const queryClient = useQueryClient();
+  const { withStepUp } = useStepUp();
+  const [note, setNote] = useState("");
+  const review = useMutation({
+    mutationFn: () =>
+      withStepUp(() =>
+        api.billing.reviewShift(shift.id, { version: shift.version, note: note.trim() }),
+      ),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: keys.all }),
+  });
+  const time = (iso: string | null) =>
+    iso
+      ? new Intl.DateTimeFormat(i18n.resolvedLanguage === "rw" ? "en" : i18n.resolvedLanguage, {
+          weekday: "short",
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZone: "Africa/Kigali",
+        }).format(new Date(iso))
+      : "—";
+  const diff = shift.difference_rwf ?? 0;
+  const counted = shift.counted_totals;
+  return (
+    <li className="flex flex-col gap-4 rounded-2xl bg-surface p-5 shadow-card">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-subtle text-on-brand-subtle">
+            <CashRegister aria-hidden="true" weight="bold" className="size-5" />
+          </span>
+          <span className="flex min-w-0 flex-col">
+            <span className="truncate font-semibold">{shift.cashier_name}</span>
+            <span className="text-body-sm text-fg-secondary tabular-nums">
+              {time(shift.opened_at)} – {time(shift.closed_at)} ·{" "}
+              {t("billing.approvals.shifts.payments", { count: shift.payment_count })}
+            </span>
+          </span>
+        </div>
+        <Badge tone={diff === 0 ? "success" : diff < 0 ? "danger" : "warning"}>
+          {diff === 0
+            ? t("billing.approvals.shifts.balanced")
+            : diff < 0
+              ? t("billing.approvals.shifts.short", { amount: money(-diff) })
+              : t("billing.approvals.shifts.over", { amount: money(diff) })}
+        </Badge>
+      </div>
+      <div className="overflow-hidden rounded-xl ring-1 ring-border">
+        <table className="w-full border-collapse text-body-sm">
+          <thead className="bg-subtle text-left text-caption font-semibold tracking-wide text-fg-secondary uppercase">
+            <tr>
+              <th scope="col" className="px-3 py-2">
+                {t("billing.approvals.shifts.method")}
+              </th>
+              <th scope="col" className="px-3 py-2 text-right">
+                {t("billing.approvals.shifts.expected")}
+              </th>
+              <th scope="col" className="px-3 py-2 text-right">
+                {t("billing.approvals.shifts.counted")}
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {PAYMENT_METHODS.map((m) => {
+              const expected =
+                shift.expected_totals[m] + (m === "cash" ? shift.opening_float_rwf : 0);
+              const got = counted?.[m] ?? null;
+              return (
+                <tr key={m}>
+                  <th scope="row" className="px-3 py-2 text-left font-medium">
+                    {t(`billing.method.${m}`)}
+                  </th>
+                  <td className="px-3 py-2 text-right tabular-nums">{money(expected)}</td>
+                  <td
+                    className={cx(
+                      "px-3 py-2 text-right font-semibold tabular-nums",
+                      got !== null && got !== expected && "text-danger",
+                    )}
+                  >
+                    {got === null ? "—" : money(got)}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p className="m-0 text-caption text-fg-muted">
+        {t("billing.approvals.shifts.float", { amount: money(shift.opening_float_rwf) })}
+      </p>
+      {shift.note && (
+        <blockquote className="m-0 rounded-xl bg-subtle px-4 py-3 text-body-sm text-fg">
+          <span className="block text-caption font-semibold text-fg-secondary">
+            {t("billing.approvals.shifts.cashierNote")}
+          </span>
+          {shift.note}
+        </blockquote>
+      )}
+      {review.isError && (
+        <Alert tone="danger">{errorText(review.error, t("billing.failed"))}</Alert>
+      )}
+      <div className="flex flex-wrap items-end gap-3">
+        <TextField
+          label={t("billing.approvals.shifts.reviewNote")}
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          className="min-w-0 flex-1"
+        />
+        <Button
+          pill
+          loading={review.isPending}
+          disabled={diff !== 0 && note.trim().length < 3}
+          onClick={() => review.mutate()}
+        >
+          <CheckCircle aria-hidden="true" weight="bold" />
+          {t("billing.approvals.shifts.accept")}
+        </Button>
+      </div>
+    </li>
   );
 }
 

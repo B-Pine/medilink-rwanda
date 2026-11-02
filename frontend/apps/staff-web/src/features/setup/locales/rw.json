@@ -475,7 +475,8 @@
       "roles": "Inshingano",
       "mfa": "Intambwe ebyiri",
       "licence": "Uruhushya",
-      "status": "Imiterere"
+      "status": "Imiterere",
+      "lastActive": "Aheruka gukora"
     },
     "mfaOn": "Irakora",
     "mfaOff": "Ntiraterwa",
@@ -516,7 +517,11 @@
       "reactivate": "Yasubijweho.",
       "attest-licence": "Uruhushya rwemejwe.",
       "mfa-reset": "Kwinjira mu ntambwe ebyiri byasubiwemo. Azabitegura ubutaha yinjiye."
-    }
+    },
+    "neverSignedIn": "Ntarigera yinjira",
+    "mfaGapTitle_one": "Umukozi {{count}} ukora ntakoresha kwinjira mu ntambwe ebyiri",
+    "mfaGapTitle_other": "Abakozi {{count}} bakora badakoresha kwinjira mu ntambwe ebyiri",
+    "mfaGapBody": "Amakuru y'ubuzima asaba intambwe ya kabiri. Fungura umukozi umusabe kuyishyiraho ubutaha yinjiye, cyangwa uyisubizeho niba yarataye telefone."
   },
   "clinician": {
     "title": "Uruhushya rwanjye rw'umwuga",

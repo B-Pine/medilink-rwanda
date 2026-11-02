@@ -200,7 +200,7 @@ Requirements: FR-ONB-04..07, 09; FR-SCH-05..06; FR-BIL-02, 05; FR-ACC-05..07.
 | `GET`, `POST` | `/api/v1/staff/insurer-rules/` | Accepted insurers: services, patient share, referral required, exclusions, ceiling | `facility.configure` | FR-BIL-02 | Step-up | Planned |
 | `GET`, `PATCH` | `/api/v1/staff/insurer-rules/{id}/` | Change a rule from a date | `facility.configure` | FR-BIL-02 | Step-up; versioned with `valid_from` | Planned |
 | `GET` | `/api/v1/staff/roles/` | Roles and their permissions | Any staff | FR-ACC-03 | Seeded data | Planned |
-| `GET` | `/api/v1/staff/memberships/` | Staff list | `staff.manage` | FR-ACC-01 | Paginated | Implemented (#85) |
+| `GET` | `/api/v1/staff/memberships/` | Staff list with two-step status and `last_login` | `staff.manage` | FR-ACC-01 | Paginated | Implemented (#85, upgrade 05 §5) |
 | `GET`, `PATCH` | `/api/v1/staff/memberships/{id}/` | Roles and service points of a member | `staff.manage` | FR-ACC-01, FR-ACC-03 | Step-up; rotates the member's sessions; Audit | Planned |
 | `POST` | `/api/v1/staff/memberships/{id}/deactivate/` | Remove access now | `staff.manage` | FR-ACC-06 | Ends sessions, closes sockets; Audit | Planned |
 | `POST` | `/api/v1/staff/memberships/{id}/attest-licence/` | Attest that the clinician licence was checked | `staff.manage` | FR-ACC-07 | Required before a clinician can sign; Audit | Planned |
@@ -698,7 +698,7 @@ Rectification of personal details uses `PATCH /api/v1/patient/profiles/{patient_
 | `POST` | `/api/v1/staff/disputes/{id}/request-info/` | Ask the patient for more information | `disputes.handle` | FR-DSP-03 | | Implemented (S10b backend) |
 | `POST` | `/api/v1/staff/disputes/{id}/resolve/` | Decide and create linked actions (refund, bill correction, addendum request, strike removal, rebooking, disagreement statement) | `disputes.handle` | FR-DSP-06, FR-DSP-07, FR-DSP-08 | Step-up; conflict-of-interest check; Audit | Implemented (S10b backend) |
 | `POST` | `/api/v1/staff/platform-disputes/` | Facility raises a dispute against the platform | `facility.configure` | FR-DSP-02 | Verification, suspension, subscription | Planned |
-| `GET` | `/api/v1/staff/reports/operations-today/` | Live operations board | `reports.view` | FR-RPT-02 | Polled or pushed via the queue socket | Planned |
+| `GET` | `/api/v1/staff/reports/operations/` | Facility command centre: today vs same day last week, 14-day trend, live load by service, arrivals heatmap; `attention` (approvals, closed shifts, queue moves, unsigned records, open disputes, pending invitations, staff without two-step sign-in, licence days left), `finance` (collected today, payments, bills, open balances), `bookings` (expected, arrived, no-shows, rate) and `on_duty` (staff names, state, room) | `reports.view` + `facility.configure` | FR-RPT-02 | Aggregates only, never a patient name; polled or pushed via the queue socket | Implemented (S4, upgrade 05 §5) |
 | `GET` | `/api/v1/staff/reports/daily-summary/` | Visits by source and service, waits (median, p90), no-shows, left without service | `reports.view` | FR-RPT-01, FR-RPT-03 | Filters date range, service, doctor | Planned |
 | `GET` | `/api/v1/staff/reports/wait-times/` | Wait trends and estimate accuracy | `reports.view` | FR-RPT-01, FR-RPT-03 | | Planned |
 | `GET` | `/api/v1/staff/reports/doctor-activity/` | Patients seen, consultation time, unsigned and late records | `reports.view` | FR-RPT-03 | | Planned |

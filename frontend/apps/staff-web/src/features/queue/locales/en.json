@@ -259,7 +259,7 @@
     "waiting": "waiting"
   },
   "ops": {
-    "title": "Operations today",
+    "title": "Facility command centre",
     "allReports": "All reports",
     "vsLast": "vs last {{day}}",
     "patientsToday": "Patients today",
@@ -287,7 +287,58 @@
     "noDoctor_one": "{{count}} patient waiting with no doctor on duty",
     "noDoctor_other": "{{count}} patients waiting with no doctor on duty",
     "liveSummary_one": "{{waiting}} waiting · {{count}} doctor on duty",
-    "liveSummary_other": "{{waiting}} waiting · {{count}} doctors on duty"
+    "liveSummary_other": "{{waiting}} waiting · {{count}} doctors on duty",
+    "subtitle": "Live patient flow, money and team for today.",
+    "updated": "Updated {{time}}",
+    "noShowsCaption": "{{count}} of {{expected}} booked",
+    "noBookings": "No bookings today",
+    "paymentsCaption_one": "{{count}} payment recorded",
+    "paymentsCaption_other": "{{count}} payments recorded",
+    "rwf": "RWF",
+    "approvalsPending_one": "{{count}} request waits for your approval",
+    "approvalsPending_other": "{{count}} requests wait for your approval",
+    "shiftsToReview_one": "{{count}} closed cash shift to review",
+    "shiftsToReview_other": "{{count}} closed cash shifts to review",
+    "unsignedRecords_one": "{{count}} consultation not signed yet",
+    "unsignedRecords_other": "{{count}} consultations not signed yet",
+    "disputesOpen_one": "{{count}} open dispute",
+    "disputesOpen_other": "{{count}} open disputes",
+    "invitationsPending_one": "{{count}} invitation not accepted yet",
+    "invitationsPending_other": "{{count}} invitations not accepted yet",
+    "staffWithoutMfa_one": "{{count}} staff member without two-step sign-in",
+    "staffWithoutMfa_other": "{{count}} staff members without two-step sign-in",
+    "licenceExpiring_one": "Facility licence expires in {{count}} day",
+    "licenceExpiring_other": "Facility licence expires in {{count}} days",
+    "licenceExpired": "Facility licence has expired",
+    "urgent": "Urgent",
+    "review": "Review",
+    "bookings": {
+      "title": "Bookings today",
+      "expected": "Expected",
+      "arrived": "Arrived",
+      "noShow": "No-show",
+      "toCome": "Still to come",
+      "empty": "No bookings for today.",
+      "open": "Open calendar"
+    },
+    "money": {
+      "title": "Money today",
+      "collected": "Collected",
+      "bills": "Bills opened",
+      "open": "Open balances",
+      "view": "Open payments"
+    },
+    "team": {
+      "title": "Team on duty",
+      "empty": "No one has started duty yet.",
+      "manage": "Manage staff",
+      "state": {
+        "on_duty": "On duty",
+        "break": "On break",
+        "emergency": "Emergency",
+        "off": "Off"
+      }
+    }
   },
   "reports": {
     "title": "Reports",

@@ -475,7 +475,8 @@
       "roles": "Roles",
       "mfa": "Two-step",
       "licence": "Licence",
-      "status": "Status"
+      "status": "Status",
+      "lastActive": "Last active"
     },
     "mfaOn": "On",
     "mfaOff": "Not set up",
@@ -516,7 +517,11 @@
       "reactivate": "Reactivated.",
       "attest-licence": "Licence attested.",
       "mfa-reset": "Two-step sign-in reset. They set it up again at their next login."
-    }
+    },
+    "neverSignedIn": "Never signed in",
+    "mfaGapTitle_one": "{{count}} active member has no two-step sign-in",
+    "mfaGapTitle_other": "{{count}} active members have no two-step sign-in",
+    "mfaGapBody": "Health records need a second factor. Open the person and ask them to set it up at their next sign-in, or reset it if their phone was lost."
   },
   "clinician": {
     "title": "My professional licence",

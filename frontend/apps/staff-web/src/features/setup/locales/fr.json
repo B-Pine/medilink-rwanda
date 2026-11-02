@@ -475,7 +475,8 @@
       "roles": "Rôles",
       "mfa": "Deux étapes",
       "licence": "Licence",
-      "status": "Statut"
+      "status": "Statut",
+      "lastActive": "Dernière activité"
     },
     "mfaOn": "Activée",
     "mfaOff": "Pas configurée",
@@ -516,7 +517,11 @@
       "reactivate": "Réactivé.",
       "attest-licence": "Licence attestée.",
       "mfa-reset": "Connexion en deux étapes réinitialisée. À configurer à la prochaine connexion."
-    }
+    },
+    "neverSignedIn": "Jamais connecté",
+    "mfaGapTitle_one": "{{count}} membre actif sans connexion en deux étapes",
+    "mfaGapTitle_other": "{{count}} membres actifs sans connexion en deux étapes",
+    "mfaGapBody": "Les dossiers de santé exigent un second facteur. Ouvrez la fiche et demandez à la personne de l’activer à sa prochaine connexion, ou réinitialisez-le si son téléphone est perdu."
   },
   "clinician": {
     "title": "Ma licence professionnelle",

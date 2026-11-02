@@ -68,7 +68,7 @@ describe("public verification (S7-F7, V1)", () => {
   it("shows the minimal projection, then the content after the date of birth", async () => {
     const { user, container } = renderApp("/verify");
     await user.type(
-      await screen.findByLabelText("Verification code", {}, { timeout: 5000 }),
+      await screen.findByLabelText("Verification code"),
       MOCK_VERIFY_CODE.toLowerCase(),
     );
     await user.click(screen.getByRole("button", { name: "Check" }));

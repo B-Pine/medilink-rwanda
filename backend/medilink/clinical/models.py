@@ -288,3 +288,192 @@ class AccessReason(UUIDModel):
 
     def __str__(self) -> str:
         return f"access reason {self.pk}"
+
+
+# ---- S6b (contract sprint-06 §2.1, §3.3) ----------------------------------------------------
+
+
+class DocumentType(models.TextChoices):
+    OUTSIDE_RESULT = "outside_result", "Outside lab or imaging result"
+    LEGACY_RECORD = "legacy_record", "Paper record"
+    REFERRAL_LETTER = "referral_letter", "Referral letter"
+    OTHER = "other", "Other"
+
+
+class ClinicalScan(TimeStampedModel):
+    """A scanned or uploaded document attached to a patient at the facility (FR-PAT-11). Outside
+    results also open a results inbox item (FR-CLN-09)."""
+
+    facility = models.ForeignKey("tenancy.Facility", on_delete=models.PROTECT, related_name="+")
+    patient = models.ForeignKey("patients.Patient", on_delete=models.PROTECT, related_name="+")
+    facility_patient = models.ForeignKey(
+        "patients.FacilityPatient", on_delete=models.PROTECT, related_name="+"
+    )
+    upload = models.OneToOneField(
+        "uploads.UploadedFile", on_delete=models.PROTECT, related_name="+"
+    )
+    document_type = models.CharField(max_length=20, choices=DocumentType.choices)
+    document_date = models.DateField()
+    description = models.CharField(max_length=200, blank=True)
+    uploaded_by_membership = models.ForeignKey(
+        "tenancy.FacilityMembership", on_delete=models.PROTECT, related_name="+"
+    )
+
+    class Meta:
+        db_table = "clinical_scan"
+        ordering: ClassVar[list[str]] = ["-document_date", "-created_at"]
+
+
+class ResultStatus(models.TextChoices):
+    PENDING = "pending", "Pending"
+    REVIEWED = "reviewed", "Reviewed"
+
+
+class ResultReview(TimeStampedModel):
+    facility = models.ForeignKey("tenancy.Facility", on_delete=models.PROTECT, related_name="+")
+    version = models.PositiveIntegerField(default=1)
+    scan = models.OneToOneField(ClinicalScan, on_delete=models.PROTECT, related_name="review")
+    patient = models.ForeignKey("patients.Patient", on_delete=models.PROTECT, related_name="+")
+    facility_patient = models.ForeignKey(
+        "patients.FacilityPatient", on_delete=models.PROTECT, related_name="+"
+    )
+    assigned_membership = models.ForeignKey(
+        "tenancy.FacilityMembership", on_delete=models.PROTECT, related_name="+"
+    )
+    status = models.CharField(
+        max_length=10, choices=ResultStatus.choices, default=ResultStatus.PENDING
+    )
+    comment_enc = models.BinaryField(null=True, blank=True)
+    reviewed_by_membership = models.ForeignKey(
+        "tenancy.FacilityMembership",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = "clinical_result_review"
+        ordering: ClassVar[list[str]] = ["created_at"]
+        indexes: ClassVar[list[Any]] = [
+            models.Index(
+                fields=["facility", "assigned_membership"],
+                condition=Q(status="pending"),
+                name="clinical_result_inbox",
+            ),
+        ]
+
+
+class HistoryKind(models.TextChoices):
+    DIAGNOSIS = "diagnosis", "Diagnosis"
+    CONDITION = "condition", "Condition"
+    ALLERGY = "allergy", "Allergy"
+    MEDICATION = "medication", "Medicine"
+    PROCEDURE = "procedure", "Procedure"
+
+
+class HistoryEntry(TimeStampedModel):
+    """Structured back-entry from paper records, always labelled "Historical" (FR-PAT-12)."""
+
+    facility = models.ForeignKey("tenancy.Facility", on_delete=models.PROTECT, related_name="+")
+    patient = models.ForeignKey("patients.Patient", on_delete=models.PROTECT, related_name="+")
+    facility_patient = models.ForeignKey(
+        "patients.FacilityPatient", on_delete=models.PROTECT, related_name="+"
+    )
+    kind = models.CharField(max_length=12, choices=HistoryKind.choices)
+    code = models.CharField(max_length=10, blank=True)  # ICD-10 for diagnoses
+    display = models.CharField(max_length=200)
+    note_enc = models.BinaryField(null=True, blank=True)
+    occurred_on = models.DateField(null=True, blank=True)
+    source_scan = models.ForeignKey(
+        ClinicalScan, on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    entered_by_membership = models.ForeignKey(
+        "tenancy.FacilityMembership", on_delete=models.PROTECT, related_name="+"
+    )
+
+    class Meta:
+        db_table = "clinical_history_entry"
+        ordering: ClassVar[list[str]] = ["-occurred_on", "-created_at"]
+
+
+class AttributeKind(models.TextChoices):
+    BLOOD_GROUP = "blood_group", "Blood group"
+    PREGNANCY = "pregnancy", "Pregnancy"
+
+
+BLOOD_GROUPS = ("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-", "unknown")
+PREGNANCY_VALUES = ("pregnant", "not_pregnant", "unknown")
+
+
+class HealthAttribute(TimeStampedModel):
+    """Blood group and pregnancy status (database design §5.5, contract D-13): patient-level,
+    append-only; the latest row per kind wins."""
+
+    patient = models.ForeignKey("patients.Patient", on_delete=models.PROTECT, related_name="+")
+    kind = models.CharField(max_length=12, choices=AttributeKind.choices)
+    value = models.CharField(max_length=20)
+    due_date = models.DateField(null=True, blank=True)
+    source = models.CharField(max_length=10, default="clinician")
+    recorded_by_membership = models.ForeignKey(
+        "tenancy.FacilityMembership",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+    recorded_at = models.DateTimeField()
+
+    class Meta:
+        db_table = "patients_health_attribute"
+        ordering: ClassVar[list[str]] = ["-recorded_at"]
+        indexes: ClassVar[list[Any]] = [
+            models.Index(fields=["patient", "kind", "-recorded_at"], name="patients_attr_latest"),
+        ]
+
+
+class BreakGlassReason(models.TextChoices):
+    PATIENT_SAFETY = "patient_safety", "Patient safety emergency"
+    LEGAL_REQUEST = "legal_request", "Legal or regulatory request"
+    INCIDENT = "incident", "Security or data incident"
+    OTHER = "other", "Other"
+
+
+class ReviewOutcome(models.TextChoices):
+    APPROPRIATE = "appropriate", "Appropriate"
+    INAPPROPRIATE = "inappropriate", "Inappropriate"
+
+
+class BreakGlassSession(TimeStampedModel):
+    """Super admin emergency read access to one patient at one facility (FR-ACC-09, FR-SEC-09):
+    60 minutes, read-only, reviewed by another super admin. Platform table (no facility RLS)."""
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+")
+    patient = models.ForeignKey("patients.Patient", on_delete=models.PROTECT, related_name="+")
+    facility = models.ForeignKey("tenancy.Facility", on_delete=models.PROTECT, related_name="+")
+    reason_code = models.CharField(max_length=20, choices=BreakGlassReason.choices)
+    reason_text = models.CharField(max_length=500)
+    starts_at = models.DateTimeField()
+    expires_at = models.DateTimeField()
+    ended_at = models.DateTimeField(null=True, blank=True)
+    reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    review_outcome = models.CharField(max_length=14, choices=ReviewOutcome.choices, blank=True)
+    review_note = models.CharField(max_length=500, blank=True)
+
+    class Meta:
+        db_table = "authz_break_glass_session"
+        ordering: ClassVar[list[str]] = ["-starts_at"]
+        constraints: ClassVar[list[Any]] = [
+            models.CheckConstraint(
+                condition=Q(reviewed_by__isnull=True) | ~Q(reviewed_by=models.F("user")),
+                name="authz_break_glass_other_reviewer",
+            ),
+            models.CheckConstraint(
+                condition=Q(expires_at__gt=models.F("starts_at")),
+                name="authz_break_glass_window",
+            ),
+        ]

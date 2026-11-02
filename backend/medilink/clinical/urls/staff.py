@@ -3,6 +3,7 @@
 from django.urls import path
 
 from medilink.clinical import views as v
+from medilink.clinical import views_s6b as b
 
 urlpatterns = [
     path(
@@ -58,4 +59,31 @@ urlpatterns = [
         name="staff-patient-access",
     ),
     path("clinical/alerts/", v.AlertsView.as_view(), name="staff-clinical-alerts"),
+    # S6b (contract §3.3)
+    path("results-inbox/", b.ResultsInboxView.as_view(), name="staff-results-inbox"),
+    path(
+        "results-inbox/<uuid:review_id>/review/",
+        b.ResultReviewView.as_view(),
+        name="staff-result-review",
+    ),
+    path(
+        "clinical/patients/<uuid:facility_patient_id>/scans/",
+        b.ScansView.as_view(),
+        name="staff-patient-scans",
+    ),
+    path(
+        "clinical/scans/<uuid:scan_id>/download-link/",
+        b.ScanLinkView.as_view(),
+        name="staff-scan-download-link",
+    ),
+    path(
+        "clinical/patients/<uuid:facility_patient_id>/history-entries/",
+        b.HistoryEntriesView.as_view(),
+        name="staff-patient-history-entries",
+    ),
+    path(
+        "clinical/patients/<uuid:facility_patient_id>/health-attributes/",
+        b.HealthAttributesView.as_view(),
+        name="staff-patient-health-attributes",
+    ),
 ]

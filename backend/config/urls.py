@@ -73,6 +73,7 @@ api_v1: list[URLPattern | URLResolver] = [
     # [S6]
     path("staff/", include("medilink.clinical.urls.staff")),
     path("patient/records/", include("medilink.clinical.urls.patient")),
+    path("platform/break-glass/", include("medilink.clinical.urls.platform")),
     # [/S6]
     # [S7]
     path("staff/", include("medilink.pharmacy.urls.staff")),

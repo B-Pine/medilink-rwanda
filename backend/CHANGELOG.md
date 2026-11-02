@@ -375,6 +375,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - No-show job with strikes; jobs and the dev seed; `booking_concurrency_check` (DEBUG only).
 - `TIME_ZONE` is `Africa/Kigali` (was UTC; contract D-8).
 
+### Sprint 6b · Results inbox, scans, back-entry and break-glass (part 1)
+
+- Scans and outside results (contract sprint-06 §3.3 L2, R1): staff attach a `clinical_document`
+  upload with a type and document date; an outside result opens a results inbox item for the
+  uploading doctor (or the doctor of the patient's latest consultation), reviewed once with an
+  encrypted comment. Scans download through an audited 5-minute link under the relationship rule.
+- Back-entry (L3): past diagnoses (ICD-10), conditions, allergies, medicines and procedures from
+  paper, always labelled historical; a back-entered allergy also becomes an unverified allergy for
+  the prescribing alerts. Scans and back-entries appear in the history timeline (`scan`, `legacy`).
+- Blood group and pregnancy status (`patients_health_attribute`, latest wins) in the consultation
+  and the problem summary.
+- Break-glass (G1, G2): a super admin gives a reason and re-authenticates for 60 minutes of
+  read-only access to one patient at one facility; every opening and read is in the patient's
+  access history; another super admin reviews it; a weekly S9 reminder counts sessions to review.
+- New tables `clinical_scan`, `clinical_result_review`, `clinical_history_entry` (forced RLS),
+  `patients_health_attribute` and `authz_break_glass_session` (platform, RLS exception); append-only
+  and lock triggers.
+
 ### Sprint 6a · Consultation and history
 
 - New app `medilink.clinical` ([contract](../docs/architecture/contracts/sprint-06-clinical.md)):

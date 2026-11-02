@@ -454,10 +454,12 @@ Requirements: FR-CLN-01..09; FR-PAT-10..12; FR-SEC-03, 09. Prescription drafting
 | `POST` | `/api/v1/staff/access-reasons/` | State a reason for opening a record outside the treatment relationship | `clinical.write` | FR-SEC-03 | Time-limited grant; feeds snooping analytics; Audit | Planned |
 | `GET` | `/api/v1/staff/patients/{id}/history/` | History timeline with filters (type, diagnosis, dates) | `clinical.write`; treatment relationship | FR-PAT-09, FR-SEC-03 | < 2 s for 200 visits (NFR-PERF-05); Audit | Planned |
 | `GET` | `/api/v1/staff/patients/{id}/problem-summary/` | Active diagnoses, conditions, allergies, current medicines | `clinical.write`; pharmacist: allergies only | FR-PAT-09 | | Planned |
-| `POST` | `/api/v1/staff/patients/{id}/history-entries/` | Structured back-entry from paper, labelled historical | `clinical.write` | FR-PAT-12 | Shows "entered from paper by … on …" | Planned |
-| `POST` | `/api/v1/staff/patients/{id}/legacy-scans/` | Attach scanned paper records with document date and type | `documents.upload` | FR-PAT-11 | `multipart`; upload pipeline | Planned |
-| `GET` | `/api/v1/staff/result-reviews/` | Results inbox | `clinical.write` | FR-CLN-09 | Filter `status=pending` | Planned |
-| `POST` | `/api/v1/staff/result-reviews/{id}/sign-off/` | Review and sign off an uploaded result | `clinical.sign` | FR-CLN-09 | Comment optional | Planned |
+| `GET`, `POST` | `/api/v1/staff/clinical/patients/{id}/history-entries/` | Structured back-entry from paper, labelled historical (L3) | `GET`: `clinical.view` · `POST`: `records.import_clinical` | FR-PAT-12 | Relationship rule; in the timeline as `legacy`; a back-entered allergy also becomes an unverified allergy | Implemented (S6b) |
+| `GET`, `POST` | `/api/v1/staff/clinical/patients/{id}/scans/` | Attach an uploaded scan or outside result with type and document date (L2) | `GET`: `clinical.view` · `POST`: `documents.upload` or `records.import_clinical` | FR-PAT-11, FR-CLN-09 | S1 upload (`clinical_document`); outside results open an inbox item; in the timeline as `scan` | Implemented (S6b) |
+| `POST` | `/api/v1/staff/clinical/scans/{id}/download-link/` | 5-minute link to a scan | `clinical.view`; relationship rule | FR-PAT-11 | Audit (access history) | Implemented (S6b) |
+| `GET`, `POST` | `/api/v1/staff/clinical/patients/{id}/health-attributes/` | Blood group and pregnancy status | `GET`: `clinical.view` · `POST`: `clinical.write` | FR-CLN-07 | Latest wins; pregnancy flag in the consultation and problem summary | Implemented (S6b) |
+| `GET` | `/api/v1/staff/results-inbox/` | Results inbox: items assigned to me (R1) | `clinical.view` | FR-CLN-09 | `status` | Implemented (S6b) |
+| `POST` | `/api/v1/staff/results-inbox/{id}/review/` | Mark reviewed with an optional comment (R1) | `clinical.view` (assigned doctor) | FR-CLN-09 | Ver; comment encrypted; locked after review | Implemented (S6b) |
 | `GET`, `POST` | `/api/v1/staff/import-batches/` | Upload a patient register (CSV/Excel) → preview | `records.import` | FR-PAT-10 | Step-up; `multipart`; Async | Planned |
 | `GET`, `PATCH` | `/api/v1/staff/import-batches/{id}/` | Preview: column mapping, validation errors, likely duplicates | `records.import` | FR-PAT-10 | Ver | Planned |
 | `POST` | `/api/v1/staff/import-batches/{id}/confirm/` | Import the previewed rows | `records.import` | FR-PAT-10 | Idem; Audit | Planned |
@@ -474,9 +476,11 @@ Requirements: FR-CLN-01..09; FR-PAT-10..12; FR-SEC-03, 09. Prescription drafting
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `POST` | `/api/v1/platform/break-glass-sessions/` | Emergency access to one patient's records with a reason | Platform admin | FR-ACC-09, FR-SEC-09 | Step-up; read-only; 60 minutes; Audit; notified for review | Planned |
-| `GET` | `/api/v1/platform/break-glass-sessions/` | Break-glass log for weekly review | Platform admin | FR-SEC-09 | | Planned |
-| `POST` | `/api/v1/platform/break-glass-sessions/{id}/review/` | Record the review outcome | Platform admin (not the user) | FR-SEC-09 | Reviewer ≠ user | Planned |
+| `POST` | `/api/v1/platform/break-glass/` | Emergency access to one patient at one facility with a reason (G1) | Platform admin | FR-ACC-09, FR-SEC-09 | Step-up; read-only; 60 minutes; access history | Implemented (S6b) |
+| `GET` | `/api/v1/platform/break-glass/{id}/patients/{patient_id}/history/` | Read-only timeline and summary during the session (G2) | Platform admin (session owner) | FR-ACC-09 | Each read in the access history | Implemented (S6b) |
+| `POST` | `/api/v1/platform/break-glass/{id}/end/` | End my session early | Platform admin (session owner) | FR-SEC-09 | | Implemented (S6b) |
+| `GET` | `/api/v1/platform/break-glass/` | Break-glass log; weekly review list (G1) | Platform admin | FR-SEC-09 | `needs_review`; weekly S9 reminder (counts) | Implemented (S6b) |
+| `POST` | `/api/v1/platform/break-glass/{id}/review/` | Record the review outcome (G1) | Platform admin (not the user) | FR-SEC-09 | Step-up; reviewer ≠ user | Implemented (S6b) |
 
 ---
 

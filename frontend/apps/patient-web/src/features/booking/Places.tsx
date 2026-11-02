@@ -127,11 +127,16 @@ export function RowActions({ result }: { result: FacilityResult }) {
   return (
     <>
       {(join || result.next_slot_at) && (
-        <Link to={`/book/${result.slug}`} className={buttonClassName({ size: "sm" })}>
+        <Link
+          to={`/book/${result.slug}`}
+          viewTransition
+          className={buttonClassName({ size: "sm" })}
+        >
           {join ? t("home.join") : t("home.book")}
         </Link>
       )}
       <Link
+        viewTransition
         to={`/facilities/${result.slug}`}
         className={buttonClassName({ variant: "ghost", size: "sm" })}
       >
@@ -332,6 +337,7 @@ export function PlacesView({
                   key={r.slug}
                   title={
                     <Link
+                      viewTransition
                       to={`/facilities/${r.slug}`}
                       className="text-fg no-underline hover:underline"
                     >

@@ -9,6 +9,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Header and page transitions
+
+- Changed: the public header is sticky (64 px) and lifts with a shadow once the page scrolls
+  (scroll-driven animation where supported). A pill slides between Find care, Check symptoms and
+  For facilities under the pointer or focus and rests on the current page. Emergency · 912 is a red
+  pill; Sign in is a primary pill. On phones the links open in a panel (Escape and navigation
+  close it).
+- Added: page changes from header, footer and list links cross-fade with view transitions while
+  the header stays still (no animation where unsupported or with reduced motion); a thin emerald
+  bar shows while the next page loads.
+
 ### Upgrade U2 · Sign-in and sign-up shell
 
 - Changed: log in, sign up, check email, forgot and reset password and email verification use one

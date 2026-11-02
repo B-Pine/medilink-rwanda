@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 3732.
+Keys: 3733.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -263,6 +263,7 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `nav.home` | Ahabanza | Home | needs native-speaker review |
 | `nav.checkSymptoms` | Isuzume ibimenyetso | Check symptoms | needs native-speaker review |
 | `nav.emergency` | Ubutabazi · 912 | Emergency · 912 | needs native-speaker review |
+| `nav.menu` | Ibikubiyemo | Menu | needs native-speaker review |
 | `landing.search.title` | Shaka ubuvuzi | Find care | needs native-speaker review |
 | `landing.search.service` | Ukeneye iki? | What do you need? | needs native-speaker review |
 | `landing.search.serviceAny` | Serivisi zose | Any service | needs native-speaker review |

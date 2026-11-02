@@ -141,6 +141,77 @@
   animation: none;
 }
 
+/*
+ * Public header (upgrade 03 §1): stays still while pages cross-fade (view transitions), lifts with
+ * a shadow once the page scrolls (scroll-driven where supported; otherwise the hairline stays).
+ */
+.ml-site-header {
+  view-transition-name: site-header;
+}
+@supports (animation-timeline: scroll()) {
+  .ml-site-header {
+    animation: ml-header-lift linear both;
+    animation-timeline: scroll();
+    animation-range: 0 4rem;
+  }
+}
+@keyframes ml-header-lift {
+  to {
+    border-bottom-color: transparent;
+    box-shadow: var(--ml-shadow-raised);
+  }
+}
+
+/* Route loading bar: grows while the next page loads, fades out when it is shown. */
+.ml-route-progress {
+  opacity: 0;
+  transform: scaleX(0);
+  transition:
+    opacity 300ms var(--ease-out-quint),
+    transform 300ms var(--ease-out-quint);
+  &[data-loading="true"] {
+    opacity: 1;
+    animation: ml-progress 2.5s var(--ease-out-quint) forwards;
+  }
+  &[data-loading="false"] {
+    transform: scaleX(1);
+  }
+}
+@keyframes ml-progress {
+  from {
+    transform: scaleX(0.05);
+  }
+  to {
+    transform: scaleX(0.85);
+  }
+}
+
+/* Page changes (React Router `viewTransition` links): the old page fades, the new one lifts in. */
+::view-transition-old(root) {
+  animation: ml-vt-out 160ms var(--ease-out-quint) both;
+}
+::view-transition-new(root) {
+  animation: ml-vt-in 240ms var(--ease-out-quint) both;
+}
+@keyframes ml-vt-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes ml-vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
 /* Logo: the colour version on light surfaces, the white version on dark ones. */
 .ml-logo-for-dark {
   display: none;

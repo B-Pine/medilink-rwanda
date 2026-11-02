@@ -36,7 +36,8 @@
     "login": "Se connecter",
     "home": "Accueil",
     "checkSymptoms": "Vérifier mes symptômes",
-    "emergency": "Urgence · 912"
+    "emergency": "Urgence · 912",
+    "menu": "Menu"
   },
   "landing": {
     "search": {

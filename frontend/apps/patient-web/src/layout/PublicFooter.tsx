@@ -62,6 +62,7 @@ export function PublicFooter() {
                 {group.links.map((link) => (
                   <li key={link.to}>
                     <Link
+                      viewTransition
                       to={link.to}
                       className="inline-flex min-h-target items-center text-body-sm text-fg-secondary no-underline transition-colors duration-150 ease-out-quint hover:text-fg hover:underline"
                     >

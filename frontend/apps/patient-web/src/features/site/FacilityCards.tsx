@@ -95,8 +95,11 @@ export function FacilityCard({
   selected = false,
   onActivate,
   onShowOnMap,
+  dense = false,
 }: {
   result: FacilityResult;
+  /** Beside filters and a map (Find Care): a slim cover, so the list stays short. */
+  dense?: boolean;
   /** Its pin is selected on the map beside. */
   selected?: boolean;
   /** Pointer or focus on the card: the map highlights the pin. */
@@ -129,7 +132,8 @@ export function FacilityCard({
       <div
         aria-hidden="true"
         className={cx(
-          "relative flex aspect-[16/6] items-end overflow-hidden bg-gradient-to-br p-4",
+          "relative flex items-end overflow-hidden bg-gradient-to-br p-4",
+          dense ? "aspect-[16/4]" : "aspect-[16/6]",
           KIND_MEDIA[kind],
         )}
       >
@@ -295,6 +299,7 @@ export function FacilityCardGrid({
             selected={selected === result.slug}
             onActivate={onSelect && (() => onSelect(result.slug))}
             onShowOnMap={onShowOnMap && (() => onShowOnMap(result.slug))}
+            dense={compact}
           />
         </li>
       ))}

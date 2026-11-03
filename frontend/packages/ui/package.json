@@ -11,6 +11,7 @@
     ".": "./src/index.ts",
     "./i18n": "./src/i18n/index.ts",
     "./map": "./src/map/FacilityMap.tsx",
+    "./map-picker": "./src/map/LocationPicker.tsx",
     "./styles.css": "./src/styles/index.css",
     "./tokens.css": "./src/styles/tokens.css"
   },

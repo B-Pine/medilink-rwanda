@@ -14,6 +14,8 @@ export type DocumentKind =
   | "tin_certificate"
   | "accreditation"
   | "insurer_contract"
+  /** Up to 6 images; they become the facility profile's photos at approval. */
+  | "facility_photo"
   | "other";
 export type ReviewStatus = "pending" | "accepted" | "needs_change";
 export type FacilityStatus = "approved" | "setup" | "live" | "suspended" | "deactivated";
@@ -54,6 +56,10 @@ export interface ApplicantApplication {
     level_of_care: string;
     ownership: Ownership | "";
     organization_name: string;
+    /** Ministry of Health facility code (FOSA ID), when known. */
+    moh_facility_code: string;
+    /** RRA tax number, 9 digits, when known. */
+    tin: string;
     phone: string;
     email: string;
   };
@@ -136,6 +142,8 @@ export interface PlatformFacility {
   facility_type: string;
   level_of_care: string;
   ownership: string;
+  moh_facility_code: string;
+  tin: string;
   status: FacilityStatus;
   district: { code: string; name: string } | null;
   application_id: Uuid | null;
@@ -430,6 +438,9 @@ export function createOnboardingApi(client: ApiClient) {
       facilities: (params?: ListParams) =>
         client.get<Page<PlatformFacility>>(onboardingPaths.facilities + query(params)),
       facility: (id: Uuid) => client.get<PlatformFacilityDetail>(onboardingPaths.facility(id)),
+      /** Set the MoH facility code (FOSA ID) and TIN (step-up). */
+      updateFacilityIdentifiers: (id: Uuid, body: { moh_facility_code?: string; tin?: string }) =>
+        client.request<PlatformFacilityDetail>("PATCH", onboardingPaths.facility(id), { body }),
       statusEvents: (id: Uuid) =>
         client.get<StatusEvent[]>(onboardingPaths.facilityAction(id, "status-events")),
       facilityAction: (

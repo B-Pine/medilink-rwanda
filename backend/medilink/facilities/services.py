@@ -31,6 +31,7 @@ from medilink.tenancy.models import Facility, FacilityStatus
 STALE = _("Someone else changed this. Reload and try again.")
 DEACTIVATED = _("This facility is closed and can't be configured.")
 PREFIX_TAKEN = _("Another active service uses this ticket prefix.")
+MAX_PROFILE_PHOTOS = 6
 DEPARTMENT_IN_USE = _("Retire or move the department's active services first.")
 OUTSIDE_FACILITY = _("Service hours must lie inside the facility's opening hours.")
 PAST_EVENT = _("Past calendar events can't be changed.")
@@ -171,6 +172,52 @@ def update_profile(
             "facility",
             facility.pk,
             fields=changed,
+        )
+    return profile
+
+
+def adopt_application_photos(facility: Facility, application: Any) -> Profile:
+    """At approval: the application's accepted facility photos become the profile's (up to 6).
+    Each file changes from an application document (C2, no facility) to a facility photo (C0,
+    owned by the facility), so the facility admin manages it like any other photo. Logged as a
+    config change by the reviewer. The caller sets the facility's RLS context."""
+    from medilink.onboarding.models import ApplicationDocument, DocumentKind, DocumentReview
+    from medilink.uploads.models import OwnerKind, UploadedFile
+
+    profile = Profile.objects.select_for_update().get(pk=profile_of(facility).pk)
+    before = list(profile.photo_file_ids)
+    ids = list(before)
+    photos = (
+        ApplicationDocument.objects.current()
+        .filter(
+            application=application,
+            kind=DocumentKind.FACILITY_PHOTO,
+            review_status=DocumentReview.ACCEPTED,
+        )
+        .order_by("created_at")
+    )
+    for document in photos:
+        if document.file_id in ids or len(ids) >= MAX_PROFILE_PHOTOS:
+            continue
+        UploadedFile.objects.filter(pk=document.file_id, facility_id__isnull=True).update(
+            purpose="facility_photo",
+            owner_kind=OwnerKind.FACILITY,
+            owner_id=facility.pk,
+            facility_id=facility.pk,
+            data_class="C0",
+        )
+        ids.append(document.file_id)
+    if ids != before:
+        profile.photo_file_ids = ids
+        profile.version += 1
+        profile.save(update_fields=["photo_file_ids", "version", "updated_at"])
+        log_changes(
+            facility_id=facility.pk,
+            entity="profile",
+            entity_id=facility.pk,
+            before={"photo_file_ids": before},
+            after={"photo_file_ids": ids},
+            actor=application.reviewer,
         )
     return profile
 

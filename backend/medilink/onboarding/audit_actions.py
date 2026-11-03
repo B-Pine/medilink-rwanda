@@ -19,6 +19,7 @@ ACTIONS: frozenset[str] = frozenset(
         "facility_application.purged",
         # Facilities
         "facility.status_changed",
+        "facility.identifiers_updated",
         "facility.licence.recorded",
         "facility.licence.updated",
         "facility.licence.renewed",

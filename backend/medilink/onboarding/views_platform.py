@@ -545,6 +545,8 @@ class FacilitiesView(GenericAPIView):
 
 
 class FacilityView(_Platform):
+    permission_classes = [PlatformAdmin, RecentAuthRequired(methods=("PATCH",))]
+
     @extend_schema(
         tags=TAG,
         operation_id="platform_facility_retrieve",
@@ -552,6 +554,37 @@ class FacilityView(_Platform):
     )
     def get(self, request: Request, facility_id: Any) -> Response:
         return Response(s.facility_data(_facility(facility_id), detail=True))
+
+    @extend_schema(
+        tags=TAG,
+        operation_id="platform_facility_identifiers_update",
+        request=s.FacilityIdentifiersInput,
+        responses={
+            200: s.PlatformFacilityDetailSerializer,
+            400: _err("Invalid input"),
+            403: _err("step_up_required"),
+            404: _err("Not found"),
+        },
+        summary="Set the facility's MoH facility code (FOSA ID) and TIN; audit-logged",
+    )
+    def patch(self, request: Request, facility_id: Any) -> Response:
+        body = s.FacilityIdentifiersInput(data=request.data)
+        body.is_valid(raise_exception=True)
+        facility = _facility(facility_id)
+        changed = [k for k, v in body.validated_data.items() if getattr(facility, k) != v]
+        if changed:
+            for name in changed:
+                setattr(facility, name, body.validated_data[name])
+            facility.save(update_fields=[*changed, "updated_at"])
+            record(
+                "facility.identifiers_updated",
+                request=request,
+                facility_id=facility.pk,
+                object_type="facility",
+                object_id=facility.pk,
+                metadata={"fields": changed},
+            )
+        return Response(s.facility_data(facility, detail=True))
 
 
 class StatusEventsView(_Platform):

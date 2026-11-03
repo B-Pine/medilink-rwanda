@@ -76,6 +76,10 @@ class Facility(TimeStampedModel):
     status = models.CharField(
         max_length=24, choices=FacilityStatus.choices, default=FacilityStatus.DRAFT
     )
+    # Government identifiers (C0), platform-managed: the Ministry of Health facility code (the
+    # national master facility list's FOSA ID) and the RRA tax number. Blank until known.
+    moh_facility_code = models.CharField(max_length=20, blank=True)
+    tin = models.CharField(max_length=9, blank=True)
 
     class Meta:
         ordering = ["name"]

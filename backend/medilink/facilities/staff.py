@@ -572,7 +572,7 @@ def on_application_approved(
 ) -> None:
     """Copy the application into the facility profile, invite the proposed facility admin (with
     their name, phone and language) and move the facility to setup (contract §2.2). Idempotent."""
-    from medilink.facilities.services import seed_profile
+    from medilink.facilities.services import adopt_application_photos, seed_profile
     from medilink.onboarding.models import Application
     from medilink.onboarding.services import change_facility_status, facility_version
     from medilink.tenancy.models import FacilityStatus
@@ -584,6 +584,7 @@ def on_application_approved(
         facility = Facility.objects.get(pk=facility_id)
         actor = application.reviewer
         seed_profile(facility, application)
+        adopt_application_photos(facility, application)
         if (
             not Invitation.objects.filter(
                 facility=facility,

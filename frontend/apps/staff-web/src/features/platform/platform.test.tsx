@@ -107,6 +107,29 @@ describe("platform console", () => {
     expect(await screen.findByRole("button", { name: "Use the default" })).toBeInTheDocument();
   });
 
+  it("sets the facility's government identifiers", async () => {
+    const { user } = await signIn("admin@medilink.test", "/platform/facilities");
+    await user.click(
+      await screen.findAllByRole("link", { name: "Open: Kigali Clinic" }).then((l) => l[0]!),
+    );
+    await screen.findByRole("heading", { level: 1, name: "Kigali Clinic" });
+    expect(screen.getByRole("heading", { name: "Government identifiers" })).toBeInTheDocument();
+    const code = screen.getByLabelText("MoH facility code (FOSA ID)");
+    expect(code).toHaveValue("RW-0217");
+    const tin = screen.getByLabelText("TIN");
+    await user.clear(tin);
+    await user.type(tin, "12AB");
+    await user.click(screen.getByRole("button", { name: "Save" }));
+    expect(await screen.findByText("A TIN has 9 digits.")).toBeInTheDocument();
+    await user.clear(tin);
+    await user.type(tin, "102345679");
+    await user.clear(code);
+    await user.type(code, "RW-0218");
+    await user.click(screen.getByRole("button", { name: "Save" }));
+    expect(await screen.findByText("Saved.")).toBeInTheDocument();
+    expect(screen.getAllByText("RW-0218").length).toBeGreaterThan(0);
+  });
+
   it("master data: kinds, table, editor with translations and retire", async () => {
     const { user, router } = await signIn("admin@medilink.test", "/platform/master-data");
     await user.click(await screen.findByRole("link", { name: "Insurers" }));

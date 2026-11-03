@@ -381,7 +381,8 @@
     "alerts": {
       "title": "Notification preferences",
       "body": "Which alerts you get, on which channel, and quiet hours.",
-      "open": "Notification preferences"
+      "open": "Notification preferences",
+      "openShort": "Open"
     },
     "account": {
       "title": "Account",

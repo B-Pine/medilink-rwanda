@@ -381,7 +381,8 @@
     "alerts": {
       "title": "Préférences de notification",
       "body": "Quelles alertes, sur quel canal, et les heures calmes.",
-      "open": "Préférences de notification"
+      "open": "Préférences de notification",
+      "openShort": "Ouvrir"
     },
     "account": {
       "title": "Compte",

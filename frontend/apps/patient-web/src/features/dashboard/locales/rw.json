@@ -381,7 +381,8 @@
     "alerts": {
       "title": "Ubutumwa wifuza",
       "body": "Ubutumwa wakira, aho bukugeraho n'amasaha yo gutuza.",
-      "open": "Igenamiterere ry'ubutumwa"
+      "open": "Igenamiterere ry'ubutumwa",
+      "openShort": "Fungura"
     },
     "account": {
       "title": "Konti",

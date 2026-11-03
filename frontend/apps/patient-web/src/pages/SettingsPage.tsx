@@ -1,5 +1,6 @@
 import {
   Bell,
+  CaretRight,
   IdentificationCard,
   Key,
   Palette,
@@ -12,6 +13,7 @@ import {
   Badge,
   Button,
   buttonClassName,
+  cx,
   LanguageSwitcher,
   SectionAnchors,
   TextSizeToggle,
@@ -23,7 +25,7 @@ import { Link, useNavigate } from "react-router";
 
 import { paths } from "../app/paths";
 import { useLogout, usePatientMe } from "../auth/queries";
-import { PageHeader, Panel } from "../features/dashboard/kit";
+import { Avatar, PageHeader, panelClass } from "../features/dashboard/kit";
 
 const SECTIONS = ["personal", "display", "privacy", "security", "alerts", "account"] as const;
 const ICON: Record<(typeof SECTIONS)[number], Icon> = {
@@ -39,28 +41,50 @@ function SettingsSection({ id, children }: { id: (typeof SECTIONS)[number]; chil
   const { t } = useTranslation();
   const SectionIcon = ICON[id];
   return (
-    <Panel
-      as="section"
+    <section
       id={`settings-${id}`}
       aria-labelledby={`settings-${id}-title`}
-      className="scroll-mt-24"
+      className={cx(panelClass, "scroll-mt-24 overflow-hidden")}
     >
-      <div className="mb-4 flex items-start gap-3">
+      <div className="flex items-start gap-3 border-b border-border px-5 py-4">
         <span
           aria-hidden="true"
-          className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-subtle text-brand"
+          className="grid size-9 shrink-0 place-items-center rounded-lg bg-brand-subtle text-brand"
         >
-          <SectionIcon weight="duotone" className="size-6" />
+          <SectionIcon weight="duotone" className="size-5" />
         </span>
         <div className="flex flex-col gap-0.5">
-          <h2 id={`settings-${id}-title`} className="m-0 font-heading text-h3 font-bold">
+          <h2 id={`settings-${id}-title`} className="m-0 font-heading text-body font-bold">
             {t(`dashboard.settings.${id}.title`)}
           </h2>
           <p className="m-0 text-body-sm text-fg-secondary">{t(`dashboard.settings.${id}.body`)}</p>
         </div>
       </div>
-      <div className="flex flex-col gap-4">{children}</div>
-    </Panel>
+      <div className="flex flex-col divide-y divide-border">{children}</div>
+    </section>
+  );
+}
+
+/** One setting: what it is on the left, its control or link on the right (stacked on phones). */
+function SettingRow({
+  label,
+  hint,
+  children,
+}: {
+  label?: string;
+  hint?: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+      {(label || hint) && (
+        <div className="flex min-w-0 flex-col gap-0.5">
+          {label && <p className="m-0 font-semibold text-fg">{label}</p>}
+          {hint && <div className="m-0 text-body-sm text-fg-secondary">{hint}</div>}
+        </div>
+      )}
+      <div className="flex shrink-0 flex-wrap items-center gap-2">{children}</div>
+    </div>
   );
 }
 
@@ -89,86 +113,102 @@ export function SettingsPage() {
         <div className="flex min-w-0 max-w-[44rem] flex-col gap-6">
           <SettingsSection id="personal">
             {me && (
-              <dl className="m-0 grid gap-3 sm:grid-cols-2">
-                <div>
-                  <dt className="text-body-sm text-fg-muted">
-                    {t("dashboard.settings.personal.name")}
-                  </dt>
-                  <dd className="m-0 font-semibold">{me.full_name}</dd>
-                </div>
-                <div>
-                  <dt className="text-body-sm text-fg-muted">
-                    {t("dashboard.settings.personal.email")}
-                  </dt>
-                  <dd className="m-0 font-semibold break-all">
-                    {me.email}{" "}
+              <div className="flex items-center gap-4 px-5 py-4">
+                <Avatar name={me.full_name} size="lg" />
+                <div className="flex min-w-0 flex-col gap-1">
+                  <p className="m-0 font-heading text-h3 font-bold text-fg">{me.full_name}</p>
+                  <p className="m-0 flex flex-wrap items-center gap-2 text-body-sm break-all text-fg-secondary">
+                    <span className="sr-only">{t("dashboard.settings.personal.email")}: </span>
+                    {me.email}
                     {me.email_verified ? (
                       <Badge tone="success">{t("dashboard.settings.personal.verified")}</Badge>
                     ) : (
                       <Badge tone="warning">{t("dashboard.settings.personal.unverified")}</Badge>
                     )}
-                  </dd>
+                  </p>
                 </div>
-              </dl>
+              </div>
             )}
-            <Link to={paths.profile} className={buttonClassName({ variant: "secondary" })}>
-              {t("dashboard.settings.personal.edit")}
-            </Link>
+            <SettingRow label={t("dashboard.settings.personal.name")}>
+              <Link
+                to={paths.profile}
+                className={buttonClassName({ variant: "secondary", size: "sm" })}
+              >
+                {t("dashboard.settings.personal.edit")}
+                <CaretRight aria-hidden="true" className="size-4" />
+              </Link>
+            </SettingRow>
           </SettingsSection>
 
           <SettingsSection id="display">
-            <LanguageSwitcher />
-            <div className="flex flex-col gap-2">
+            <SettingRow label={t("dashboard.nav.language")}>
+              <LanguageSwitcher pill />
+            </SettingRow>
+            <div className="flex flex-col gap-2 px-5 py-4">
               <TextSizeToggle />
               <p className="m-0 text-body-sm text-fg-muted">{t("settings.textSizeHint")}</p>
             </div>
-            <ThemeToggle />
-          </SettingsSection>
-
-          <SettingsSection id="privacy">
-            <div className="flex flex-wrap gap-2">
-              <Link to={paths.privacy} className={buttonClassName({ variant: "secondary" })}>
-                {t("dashboard.settings.privacy.consent")}
-              </Link>
-              <Link to={paths.family} className={buttonClassName({ variant: "ghost" })}>
-                {t("dashboard.settings.privacy.delegates")}
-              </Link>
+            <div className="px-5 py-4">
+              <ThemeToggle />
             </div>
           </SettingsSection>
 
+          <SettingsSection id="privacy">
+            <SettingRow label={t("dashboard.settings.privacy.consent")}>
+              <Link
+                to={paths.privacy}
+                className={buttonClassName({ variant: "secondary", size: "sm" })}
+              >
+                {t("dashboard.settings.alerts.openShort")}
+                <CaretRight aria-hidden="true" className="size-4" />
+              </Link>
+            </SettingRow>
+            <SettingRow label={t("dashboard.settings.privacy.delegates")}>
+              <Link
+                to={paths.family}
+                className={buttonClassName({ variant: "secondary", size: "sm" })}
+              >
+                {t("dashboard.settings.alerts.openShort")}
+                <CaretRight aria-hidden="true" className="size-4" />
+              </Link>
+            </SettingRow>
+          </SettingsSection>
+
           <SettingsSection id="security">
-            <p className="m-0 text-body-sm text-fg-secondary">
-              {t("dashboard.settings.security.password")}
-            </p>
-            <Link
-              to="/forgot-password"
-              state={{ email: me?.email }}
-              className={buttonClassName({ variant: "secondary" })}
-            >
-              {t("dashboard.settings.security.change")}
-            </Link>
-            <p className="m-0 flex flex-wrap items-center gap-2 text-body-sm text-fg-muted">
+            <SettingRow hint={t("dashboard.settings.security.password")}>
+              <Link
+                to="/forgot-password"
+                state={{ email: me?.email }}
+                className={buttonClassName({ variant: "secondary", size: "sm" })}
+              >
+                {t("dashboard.settings.security.change")}
+              </Link>
+            </SettingRow>
+            <p className="m-0 flex flex-wrap items-center gap-2 px-5 py-4 text-body-sm text-fg-muted">
               <Badge tone="neutral">{t("common.comingSoon")}</Badge>
               {t("dashboard.settings.security.later")}
             </p>
           </SettingsSection>
 
           <SettingsSection id="alerts">
-            <Link
-              to={paths.notificationSettings}
-              className={buttonClassName({ variant: "secondary" })}
-            >
-              {t("dashboard.settings.alerts.open")}
-            </Link>
-            <p className="m-0 text-body-sm text-fg-muted">{t("settings.travelBody")}</p>
+            <SettingRow hint={t("settings.travelBody")}>
+              <Link
+                to={paths.notificationSettings}
+                className={buttonClassName({ variant: "secondary", size: "sm" })}
+              >
+                {t("dashboard.settings.alerts.open")}
+                <CaretRight aria-hidden="true" className="size-4" />
+              </Link>
+            </SettingRow>
           </SettingsSection>
 
           <SettingsSection id="account">
-            <div className="flex flex-wrap gap-2">
+            <SettingRow>
               <Button
                 variant="secondary"
+                size="sm"
                 loading={logout.isPending}
-                iconStart={<SignOut aria-hidden="true" className="size-icon" />}
+                iconStart={<SignOut aria-hidden="true" className="size-4" />}
                 onClick={() =>
                   logout.mutate(undefined, {
                     onSettled: () => void navigate("/login", { replace: true }),
@@ -177,10 +217,17 @@ export function SettingsPage() {
               >
                 {t("common.logout")}
               </Button>
-              <Link to={paths.newRequest} className={buttonClassName({ variant: "ghost" })}>
+              <Link
+                to={paths.newRequest}
+                className={buttonClassName({
+                  variant: "ghost",
+                  size: "sm",
+                  className: "text-danger",
+                })}
+              >
                 {t("dashboard.settings.account.close")}
               </Link>
-            </div>
+            </SettingRow>
           </SettingsSection>
         </div>
       </div>

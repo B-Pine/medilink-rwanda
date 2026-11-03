@@ -8,6 +8,11 @@ urlpatterns = [
     path("facilities/search/", v.SearchView.as_view(), name="public-facility-search"),
     path("facilities/<slug:slug>/", v.FacilityProfileView.as_view(), name="public-facility"),
     path(
+        "facilities/<slug:slug>/photos/<uuid:upload_id>/",
+        v.FacilityPhotoView.as_view(),
+        name="public-facility-photo",
+    ),
+    path(
         "facilities/<slug:slug>/slots/", v.FacilitySlotsView.as_view(), name="public-facility-slots"
     ),
     path("symptoms/", v.SymptomsView.as_view(), name="public-symptoms"),

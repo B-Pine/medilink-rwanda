@@ -158,7 +158,7 @@
     "name": "Nom",
     "type": "Type",
     "status": "Statut",
-    "platformManaged": "Le nom et le type viennent de votre demande approuvée. Contactez le support MediLink pour les changer.",
+    "platformManaged": "Le nom, le type et le niveau de soins viennent de votre demande approuvée. Demandez au support MediLink pour les changer.",
     "contact": "Contact",
     "phone": "Téléphone",
     "email": "E-mail",
@@ -173,11 +173,21 @@
     "description": "Description",
     "descriptionHint": "Quelques phrases par langue : ce que vous soignez et comment vous trouver.",
     "photos": "Photos",
-    "photosHint_one": "{{count}} photo sur 6. JPEG, PNG ou WebP.",
-    "photosHint_other": "{{count}} photos sur 6. JPEG, PNG ou WebP.",
+    "photosHint_one": "{{count}} photo sur 6. JPEG, PNG ou WebP. La première sert de couverture sur votre page publique.",
+    "photosHint_other": "{{count}} photos sur 6. JPEG, PNG ou WebP. La première sert de couverture sur votre page publique.",
     "addPhoto": "Ajouter une photo",
     "photoN": "Photo {{n}}",
-    "removePhotoN": "Supprimer la photo {{n}}"
+    "removePhotoN": "Supprimer la photo {{n}}",
+    "viewPublic": "Voir la page publique",
+    "newTab": "(s’ouvre dans un nouvel onglet)",
+    "levelOfCare": "Niveau de soins",
+    "levels": {
+      "primary": "Soins primaires",
+      "secondary": "Soins secondaires",
+      "tertiary": "Soins tertiaires"
+    },
+    "levelUnknown": "Non défini",
+    "cover": "Couverture"
   },
   "catalogue": {
     "intro": "Les services sont ce que les patients réservent ou attendent. Chacun a un préfixe de ticket, comme G pour G-023.",

@@ -7595,6 +7595,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Not a live facility
+  /api/v1/public/facilities/{slug}/photos/{upload_id}/:
+    get:
+      operationId: public_facility_photo
+      description: |-
+        A short-lived signed link to one of the facility's public photos.
+
+        Photos are C0 (the admin publishes them), so no download audit entry per view; the URL in the
+        profile stays stable while the link it redirects to expires.
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: upload_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - booking
+      responses:
+        '302':
+          description: Redirect to the image
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: No photo
   /api/v1/public/facilities/{slug}/slots/:
     get:
       operationId: public_facility_slots
@@ -29477,6 +29508,15 @@ components:
           type: string
         phone:
           type: string
+        email:
+          type: string
+        website:
+          type: string
+        photos:
+          type: array
+          items:
+            type: string
+            format: uri
         district:
           type: string
         sector:
@@ -29515,6 +29555,7 @@ components:
       - description_i18n
       - district
       - doctors
+      - email
       - hours
       - lat
       - level_of_care
@@ -29523,11 +29564,13 @@ components:
       - open_now
       - ownership
       - phone
+      - photos
       - sector
       - services
       - slug
       - type
       - verified
+      - website
     PublicFacilityDoctor:
       type: object
       properties:

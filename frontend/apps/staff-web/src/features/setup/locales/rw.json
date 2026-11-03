@@ -158,7 +158,7 @@
     "name": "Izina",
     "type": "Ubwoko",
     "status": "Imiterere",
-    "platformManaged": "Izina n'ubwoko biva mu busabe bwemejwe. Saba ubufasha bwa MediLink kubihindura.",
+    "platformManaged": "Izina, ubwoko n'urwego rw'ubuvuzi biva ku busabe bwanyu bwemejwe. Saba ubufasha bwa MediLink kubihindura.",
     "contact": "Aho mubarizwa",
     "phone": "Telefoni",
     "email": "Imeyili",
@@ -173,11 +173,21 @@
     "description": "Ibisobanuro",
     "descriptionHint": "Interuro nke muri buri rurimi: ibyo muvura n'uko babageraho.",
     "photos": "Amafoto",
-    "photosHint_one": "Ifoto {{count}} kuri 6. JPEG, PNG cyangwa WebP.",
-    "photosHint_other": "Amafoto {{count}} kuri 6. JPEG, PNG cyangwa WebP.",
+    "photosHint_one": "Ifoto {{count}} kuri 6. JPEG, PNG cyangwa WebP. Iya mbere ni yo igaragara mbere ku rupapuro rwanyu.",
+    "photosHint_other": "Amafoto {{count}} kuri 6. JPEG, PNG cyangwa WebP. Iya mbere ni yo igaragara mbere ku rupapuro rwanyu.",
     "addPhoto": "Ongeraho ifoto",
     "photoN": "Ifoto ya {{n}}",
-    "removePhotoN": "Kuraho ifoto ya {{n}}"
+    "removePhotoN": "Kuraho ifoto ya {{n}}",
+    "viewPublic": "Reba urupapuro rubonwa na bose",
+    "newTab": "(rifunguka mu idirishya rishya)",
+    "levelOfCare": "Urwego rw'ubuvuzi",
+    "levels": {
+      "primary": "Ubuvuzi bw'ibanze",
+      "secondary": "Ubuvuzi bwisumbuye",
+      "tertiary": "Ubuvuzi bwo ku rwego rwo hejuru"
+    },
+    "levelUnknown": "Ntibyashyizweho",
+    "cover": "Ifoto nyamukuru"
   },
   "catalogue": {
     "intro": "Serivisi ni byo abarwayi bafatira gahunda cyangwa bategerereza. Buri imwe igira inyuguti ya tike, nka G kuri G-023.",

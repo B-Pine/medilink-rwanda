@@ -22,6 +22,7 @@ import {
   TextField,
 } from "@medilink/ui";
 import {
+  ArrowSquareOut,
   Buildings,
   CalendarBlank,
   CaretRight,
@@ -29,6 +30,7 @@ import {
   ClockCounterClockwise,
   Clock,
   FirstAidKit,
+  ImageSquare,
   Monitor,
   Crosshair,
   Receipt,
@@ -45,6 +47,7 @@ import { Link } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
+import { env } from "../../env";
 import { useStepUp } from "../lock";
 import { useChecklist } from "./ChecklistPage";
 import {
@@ -180,6 +183,20 @@ export function ProfilePage() {
           title={t("setup.settings.sections.profile.title")}
           description={t("setup.profile.intro")}
           back={back(t)}
+          actions={
+            facility.data?.status === "live" && (
+              <a
+                href={`${env.patientWebUrl}/facilities/${facility.data.slug}`}
+                target="_blank"
+                rel="noreferrer"
+                className={buttonClassName({ variant: "secondary" })}
+              >
+                <ArrowSquareOut aria-hidden="true" />
+                {t("setup.profile.viewPublic")}
+                <span className="sr-only"> {t("setup.profile.newTab")}</span>
+              </a>
+            )
+          }
         />
         <QueryState query={facility}>
           {(data) => (
@@ -270,7 +287,7 @@ function ProfileForm({ profile, onReload }: { profile: FacilityProfile; onReload
       {isConflict(save.error) && <ConflictNotice onReload={onReload} />}
       <section className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5">
         <h2 className="m-0 font-heading text-h3">{t("setup.profile.identity")}</h2>
-        <dl className="m-0 grid gap-3 sm:grid-cols-3">
+        <dl className="m-0 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {(
             [
               ["name", profile.name],
@@ -281,6 +298,14 @@ function ProfileForm({ profile, onReload }: { profile: FacilityProfile; onReload
                 }),
               ],
               ["status", t(`setup.status.${profile.status}`, { defaultValue: profile.status })],
+              [
+                "levelOfCare",
+                profile.level_of_care
+                  ? t(`setup.profile.levels.${profile.level_of_care}`, {
+                      defaultValue: profile.level_of_care,
+                    })
+                  : t("setup.profile.levelUnknown"),
+              ],
             ] as const
           ).map(([key, value]) => (
             <div key={key} className="flex flex-col gap-0.5">
@@ -445,16 +470,18 @@ function Photos({ profile }: { profile: FacilityProfile }) {
           {profile.photos.map((photo, index) => (
             <li
               key={photo}
-              className="flex aspect-[4/3] flex-col justify-between rounded-2xl border border-border/60 bg-subtle p-2"
+              className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border/60 bg-subtle"
             >
-              <span className="text-body-sm text-fg-secondary">
-                {t("setup.profile.photoN", { n: index + 1 })}
+              <PhotoThumb id={photo} label={t("setup.profile.photoN", { n: index + 1 })} />
+              <span className="absolute top-2 left-2 rounded-full bg-surface/90 px-2 py-0.5 text-caption font-semibold shadow-sm">
+                {index === 0 ? t("setup.profile.cover") : index + 1}
               </span>
               <Button
-                variant="ghost"
+                variant="secondary"
+                size="sm"
                 onClick={() => remove.mutate(photo)}
                 aria-label={t("setup.profile.removePhotoN", { n: index + 1 })}
-                className="self-end"
+                className="absolute right-2 bottom-2 shadow-sm"
               >
                 <Trash aria-hidden="true" />
               </Button>
@@ -468,6 +495,35 @@ function Photos({ profile }: { profile: FacilityProfile }) {
         </Alert>
       )}
     </section>
+  );
+}
+
+/** A fresh short-lived link per view; a placeholder while it loads or when it can't. */
+function PhotoThumb({ id, label }: { id: string; label: string }) {
+  const api = useApi();
+  const [broken, setBroken] = useState(false);
+  const link = useQuery({
+    queryKey: [...setupKeys.facility, "photo", id],
+    queryFn: () => api.uploads.staff.downloadLink(id),
+    staleTime: 4 * 60_000,
+    retry: false,
+  });
+  if (!link.data || broken)
+    return (
+      <span className="grid size-full place-items-center text-fg-muted">
+        <ImageSquare aria-hidden="true" className="size-8" />
+        <span className="sr-only">{label}</span>
+      </span>
+    );
+  return (
+    <img
+      src={link.data.url}
+      alt={label}
+      loading="lazy"
+      decoding="async"
+      onError={() => setBroken(true)}
+      className="block size-full object-cover"
+    />
   );
 }
 

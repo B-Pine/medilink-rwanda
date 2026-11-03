@@ -105,6 +105,11 @@ export interface PublicFacility {
   description_i18n: I18n;
   address: string;
   phone: string;
+  /** Set by the facility admin; empty when not given. */
+  email: string;
+  website: string;
+  /** Stable public URLs of the admin's photos (each redirects to the image). */
+  photos: string[];
   district: string;
   sector: string;
   lat: number | null;

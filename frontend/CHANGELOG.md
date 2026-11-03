@@ -9,6 +9,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Public facility page ↔ facility admin
+
+- Added: the public facility page shows the admin's photos (first one large, each opens full
+  size), email and website.
+- Changed: Settings › Facility profile shows real photo thumbnails (the first marked as cover),
+  the level of care, and a "View public page" link once live (`VITE_PATIENT_WEB_URL`).
+
 ### Upgrade U2 · Pharmacist (upgrade 05 §4)
 
 - Added: Pharmacy counter on Today (numbers and the next prescriptions to give), Dispensing

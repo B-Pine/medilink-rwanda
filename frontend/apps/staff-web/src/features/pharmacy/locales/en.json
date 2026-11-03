@@ -1,7 +1,9 @@
 {
   "loading": "Loading",
   "nav": {
-    "availability": "Medicine availability"
+    "availability": "Medicine availability",
+    "history": "Dispensing history",
+    "verify": "Verify a prescription"
   },
   "age_one": "{{count}} year",
   "age_other": "{{count}} years",
@@ -241,5 +243,72 @@
   },
   "pages": "Pages",
   "previous": "Previous",
-  "next": "Next"
+  "next": "Next",
+  "today": {
+    "title": "Pharmacy counter",
+    "openQueue": "Open the pharmacy queue",
+    "numbers": "Today at the pharmacy",
+    "ready": "Ready to give",
+    "partly": "Partly given",
+    "questions_one": "Questions to doctors ({{count}} answered)",
+    "questions_other": "Questions to doctors ({{count}} answered)",
+    "dispensed_one": "Dispensed today ({{count}} by me)",
+    "dispensed_other": "Dispensed today ({{count}} by me)",
+    "outOfStock": "Medicines out of stock",
+    "next": "Next to give",
+    "nothing": "No prescription waits. New ones appear here as doctors sign.",
+    "items_one": "{{count}} medicine",
+    "items_other": "{{count}} medicines"
+  },
+  "history": {
+    "title": "Dispensing history",
+    "intro": "What was given at this pharmacy, by whom and when. Open a line for the full prescription.",
+    "period": "Period",
+    "days": {
+      "1": "Today",
+      "7": "7 days",
+      "30": "30 days"
+    },
+    "mine": "Only mine",
+    "search": "Prescription number or name",
+    "empty": "Nothing dispensed in this period",
+    "emptyBody": "Dispensings appear here once signed.",
+    "columns": {
+      "when": "When",
+      "patient": "Patient",
+      "medicines": "Medicines",
+      "by": "Given by"
+    },
+    "controlled": "Controlled medicine confirmed",
+    "outcome": {
+      "full": "Given in full",
+      "partial": "Given in part",
+      "substituted": "Substituted",
+      "not_available": "Not available"
+    }
+  },
+  "verify": {
+    "title": "Verify a prescription",
+    "intro": "A prescription from another facility: check the code, then open the medicines with the patient's date of birth.",
+    "code": "Verification code",
+    "codeHint": "Printed under the QR code on the prescription",
+    "check": "Check",
+    "notFound": "No document with this code. Check it with the patient.",
+    "status": {
+      "active": "Valid",
+      "dispensed": "Already dispensed",
+      "cancelled": "Cancelled",
+      "expired": "Expired"
+    },
+    "notPrescription": "Not a prescription",
+    "facility": "Issued by",
+    "author": "Prescriber",
+    "issued": "Issued on",
+    "validUntil": "Valid until",
+    "born": "Patient's date of birth",
+    "bornHint": "Opens the medicines; protects the patient's privacy.",
+    "open": "Show medicines",
+    "bornWrong": "The date of birth does not match."
+  },
+  "failed": "Could not load. Try again."
 }

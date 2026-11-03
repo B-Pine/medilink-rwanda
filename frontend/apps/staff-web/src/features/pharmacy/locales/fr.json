@@ -1,7 +1,9 @@
 {
   "loading": "Chargement",
   "nav": {
-    "availability": "Disponibilité des médicaments"
+    "availability": "Disponibilité des médicaments",
+    "history": "Historique de délivrance",
+    "verify": "Vérifier une ordonnance"
   },
   "age_one": "{{count}} an",
   "age_other": "{{count}} ans",
@@ -241,5 +243,72 @@
   },
   "pages": "Pages",
   "previous": "Précédent",
-  "next": "Suivant"
+  "next": "Suivant",
+  "today": {
+    "title": "Comptoir de la pharmacie",
+    "openQueue": "Ouvrir la file de la pharmacie",
+    "numbers": "Aujourd’hui à la pharmacie",
+    "ready": "Prêtes à délivrer",
+    "partly": "Délivrées en partie",
+    "questions_one": "Questions aux médecins ({{count}} répondue)",
+    "questions_other": "Questions aux médecins ({{count}} répondues)",
+    "dispensed_one": "Délivrées aujourd’hui ({{count}} par moi)",
+    "dispensed_other": "Délivrées aujourd’hui ({{count}} par moi)",
+    "outOfStock": "Médicaments en rupture",
+    "next": "Prochaines à délivrer",
+    "nothing": "Aucune ordonnance en attente. Les nouvelles arrivent ici dès que les médecins signent.",
+    "items_one": "{{count}} médicament",
+    "items_other": "{{count}} médicaments"
+  },
+  "history": {
+    "title": "Historique de délivrance",
+    "intro": "Ce qui a été délivré dans cette pharmacie, par qui et quand. Ouvrez une ligne pour l’ordonnance complète.",
+    "period": "Période",
+    "days": {
+      "1": "Aujourd’hui",
+      "7": "7 jours",
+      "30": "30 jours"
+    },
+    "mine": "Seulement les miennes",
+    "search": "Numéro d’ordonnance ou nom",
+    "empty": "Rien de délivré sur cette période",
+    "emptyBody": "Les délivrances apparaissent ici une fois signées.",
+    "columns": {
+      "when": "Quand",
+      "patient": "Patient",
+      "medicines": "Médicaments",
+      "by": "Délivré par"
+    },
+    "controlled": "Médicament contrôlé confirmé",
+    "outcome": {
+      "full": "Délivré en entier",
+      "partial": "Délivré en partie",
+      "substituted": "Substitué",
+      "not_available": "Indisponible"
+    }
+  },
+  "verify": {
+    "title": "Vérifier une ordonnance",
+    "intro": "Une ordonnance d’un autre établissement : vérifiez le code, puis ouvrez les médicaments avec la date de naissance du patient.",
+    "code": "Code de vérification",
+    "codeHint": "Imprimé sous le QR code de l’ordonnance",
+    "check": "Vérifier",
+    "notFound": "Aucun document avec ce code. Vérifiez-le avec le patient.",
+    "status": {
+      "active": "Valide",
+      "dispensed": "Déjà délivrée",
+      "cancelled": "Annulée",
+      "expired": "Expirée"
+    },
+    "notPrescription": "Pas une ordonnance",
+    "facility": "Émise par",
+    "author": "Prescripteur",
+    "issued": "Émise le",
+    "validUntil": "Valide jusqu’au",
+    "born": "Date de naissance du patient",
+    "bornHint": "Ouvre les médicaments ; protège la vie privée du patient.",
+    "open": "Voir les médicaments",
+    "bornWrong": "La date de naissance ne correspond pas."
+  },
+  "failed": "Chargement impossible. Réessayez."
 }

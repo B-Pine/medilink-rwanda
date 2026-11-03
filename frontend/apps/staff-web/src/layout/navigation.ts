@@ -8,6 +8,7 @@ import {
   IdentificationBadge,
   ListNumbers,
   Pill,
+  QrCode,
   Receipt,
   SealCheck,
   UserList,
@@ -374,6 +375,22 @@ export const NAV_ITEMS: readonly NavItem[] = [
   // [/S6]
   // [S7]
   {
+    key: "pharmacyHistory",
+    path: "/pharmacy/history",
+    icon: ClockCounterClockwise,
+    group: "facility",
+    labelKey: "pharmacy.nav.history",
+    visible: hasAny("pharmacy.dispense"),
+  },
+  {
+    key: "pharmacyVerify",
+    path: "/pharmacy/verify",
+    icon: QrCode,
+    group: "facility",
+    labelKey: "pharmacy.nav.verify",
+    visible: hasAny("pharmacy.dispense"),
+  },
+  {
     key: "pharmacyAvailability",
     path: "/pharmacy/availability",
     icon: Storefront,
@@ -466,6 +483,8 @@ const ORDER = [
   "clinicalFollowUps",
   "mySchedule",
   "pharmacy",
+  "pharmacyHistory",
+  "pharmacyVerify",
   // [S7]
   "pharmacyAvailability",
   // [/S7]

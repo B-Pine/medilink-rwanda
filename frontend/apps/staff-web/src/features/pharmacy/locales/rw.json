@@ -1,7 +1,9 @@
 {
   "loading": "Biratangira",
   "nav": {
-    "availability": "Imiti iboneka"
+    "availability": "Imiti iboneka",
+    "history": "Amateka yo gutanga imiti",
+    "verify": "Genzura urupapuro rw'imiti"
   },
   "age_one": "Umwaka {{count}}",
   "age_other": "Imyaka {{count}}",
@@ -241,5 +243,72 @@
   },
   "pages": "Amapaji",
   "previous": "Ibibanza",
-  "next": "Ibikurikira"
+  "next": "Ibikurikira",
+  "today": {
+    "title": "Farumasi",
+    "openQueue": "Fungura umurongo wa farumasi",
+    "numbers": "Uyu munsi kuri farumasi",
+    "ready": "Biteguye gutangwa",
+    "partly": "Byatanzwe igice",
+    "questions_one": "Ibibazo ku baganga ({{count}} byasubijwe)",
+    "questions_other": "Ibibazo ku baganga ({{count}} byasubijwe)",
+    "dispensed_one": "Byatanzwe uyu munsi ({{count}} nanjye)",
+    "dispensed_other": "Byatanzwe uyu munsi ({{count}} nanjye)",
+    "outOfStock": "Imiti itabonetse",
+    "next": "Ibikurikira gutangwa",
+    "nothing": "Nta rupapuro rw'imiti rutegereje. Inshya ziza hano abaganga bamaze gusinya.",
+    "items_one": "Umuti {{count}}",
+    "items_other": "Imiti {{count}}"
+  },
+  "history": {
+    "title": "Amateka yo gutanga imiti",
+    "intro": "Imiti yatanzwe kuri iyi farumasi, uwayitanze n'igihe. Fungura umurongo ubone urupapuro rwose.",
+    "period": "Igihe",
+    "days": {
+      "1": "Uyu munsi",
+      "7": "Iminsi 7",
+      "30": "Iminsi 30"
+    },
+    "mine": "Ibyanjye gusa",
+    "search": "Nimero y'urupapuro cyangwa izina",
+    "empty": "Nta muti watanzwe muri iki gihe",
+    "emptyBody": "Ibyatanzwe biza hano bimaze gusinywa.",
+    "columns": {
+      "when": "Igihe",
+      "patient": "Umurwayi",
+      "medicines": "Imiti",
+      "by": "Uwatanze"
+    },
+    "controlled": "Umuti ugenzurwa wemejwe",
+    "outcome": {
+      "full": "Yatanzwe yose",
+      "partial": "Yatanzwe igice",
+      "substituted": "Yasimbujwe",
+      "not_available": "Ntabonetse"
+    }
+  },
+  "verify": {
+    "title": "Genzura urupapuro rw'imiti",
+    "intro": "Urupapuro rw'imiti ruvuye ahandi: genzura kode, hanyuma ufungure imiti ukoresheje itariki y'amavuko y'umurwayi.",
+    "code": "Kode yo kugenzura",
+    "codeHint": "Yanditse munsi ya QR ku rupapuro",
+    "check": "Genzura",
+    "notFound": "Nta nyandiko ifite iyi kode. Yigenzure n'umurwayi.",
+    "status": {
+      "active": "Rwemewe",
+      "dispensed": "Rwamaze gutangirwa imiti",
+      "cancelled": "Rwahagaritswe",
+      "expired": "Rwarangiye"
+    },
+    "notPrescription": "Si urupapuro rw'imiti",
+    "facility": "Rwatanzwe na",
+    "author": "Muganga warwanditse",
+    "issued": "Rwatanzwe ku wa",
+    "validUntil": "Rugifite agaciro kugeza",
+    "born": "Itariki y'amavuko y'umurwayi",
+    "bornHint": "Ifungura imiti; irinda ubuzima bwite bw'umurwayi.",
+    "open": "Erekana imiti",
+    "bornWrong": "Itariki y'amavuko ntihuye."
+  },
+  "failed": "Ntibyashobotse. Ongera ugerageze."
 }

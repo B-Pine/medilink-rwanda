@@ -6,12 +6,14 @@ import {
   OPEN_ITEM_STATUSES,
   type AlertOverride,
   type AvailabilityRow,
+  type DispenseHistoryRow,
   type DispenseLineInput,
   type DosingLabel,
   type DrugRoute,
   type DrugRow,
   type FrequencyCode,
   type PatientPrescription,
+  type PharmacyDay,
   type PharmacyQueueRow,
   type Prescription,
   type PrescriptionAlert,
@@ -642,6 +644,75 @@ export const pharmacyMocks: FeatureMockFactory = (context) => {
         r.cancelled_reason = (body.reason ?? "").trim();
         r.version += 1;
         return HttpResponse.json(view(r));
+      }),
+
+      // ---- upgrade 05 §4: Pharmacist Today and the dispensing history
+      http.get(`${S}/pharmacy/my-day/`, async ({ request }) => {
+        await context.settle();
+        const ok = staff(request, ["pharmacy.dispense"]);
+        if ("error" in ok) return ok.error;
+        const today = now().slice(0, 10);
+        const records = db.prescriptions.flatMap((r) =>
+          r.dispense_records.filter((d) => d.signed_at.slice(0, 10) === today),
+        );
+        const lines = records.flatMap((d) => d.lines);
+        const queries = db.prescriptions.flatMap((r) => r.queries);
+        const body: PharmacyDay = {
+          date: today,
+          ready: db.prescriptions.filter((r) => r.status === "ready_to_dispense").length,
+          partly: db.prescriptions.filter((r) => r.status === "partly_dispensed").length,
+          questions_open: queries.filter((q) => q.status === "open").length,
+          questions_answered: queries.filter((q) => q.status === "answered").length,
+          dispensed_today: records.length,
+          dispensed_by_me: records.filter((d) => d.pharmacist_name === ok.me.full_name).length,
+          not_available_today: lines.filter((l) => l.outcome === "not_available").length,
+          substituted_today: lines.filter((l) => l.outcome === "substituted").length,
+          out_of_stock: db.unavailable.size,
+          updated_at: now(),
+        };
+        return HttpResponse.json(body);
+      }),
+      http.get(`${S}/pharmacy/history/`, async ({ request }) => {
+        await context.settle();
+        const ok = staff(request, ["pharmacy.dispense"]);
+        if ("error" in ok) return ok.error;
+        const url = new URL(request.url);
+        const days = Number(url.searchParams.get("days") ?? 7) || 7;
+        const mine = url.searchParams.get("mine") === "true";
+        const q = (url.searchParams.get("q") ?? "").trim().toLowerCase();
+        const since = Date.now() - days * 86_400_000;
+        const rows: DispenseHistoryRow[] = db.prescriptions
+          .flatMap((r) =>
+            r.dispense_records.map((d) => ({
+              id: d.id,
+              prescription_id: r.id,
+              prescription_number: r.number ?? "",
+              patient_display_name: r.patient_display_name,
+              pharmacist_name: d.pharmacist_name,
+              signed_at: d.signed_at,
+              identity_check_method: d.identity_check_method,
+              controlled_confirmed: d.controlled_confirmed,
+              lines: d.lines.map((l) => ({
+                drug:
+                  l.substitute_display ||
+                  r.items.find((i) => i.id === l.item_id)?.drug_display ||
+                  "",
+                outcome: l.outcome,
+                quantity: l.quantity,
+              })),
+              status: r.status,
+            })),
+          )
+          .filter((row) => Date.parse(row.signed_at) >= since)
+          .filter((row) => !mine || row.pharmacist_name === ok.me.full_name)
+          .filter(
+            (row) =>
+              !q ||
+              row.prescription_number.toLowerCase().includes(q) ||
+              row.patient_display_name.toLowerCase().includes(q),
+          )
+          .sort((a, b) => b.signed_at.localeCompare(a.signed_at));
+        return HttpResponse.json(rows);
       }),
 
       // ---- PQ1, PD1, PD2: the pharmacy

@@ -8,6 +8,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Pharmacist (upgrade 05 §4)
+
+- Added: `GET /staff/pharmacy/my-day/` (ready, partly given, questions, dispensed, out of stock)
+  and `GET /staff/pharmacy/history/?days=1|7|30&mine=&q=` (dispensings with line outcomes).
+
 ### Upgrade U2 · Reception (upgrade 05 §2)
 
 - Added: `GET /staff/bookings/?code=` (check-in by booking code); ticket action `emergency`

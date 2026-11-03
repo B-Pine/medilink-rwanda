@@ -48,7 +48,11 @@
     "no_response": "Ntiyitabye",
     "booked": "Yafashe gahunda {{time}}",
     "lateWalkIn": "Yakererewe: nk'utafashe gahunda",
-    "remote": "Ari kure, ntarahagera"
+    "remote": "Ari kure, ntarahagera",
+    "redFlag": "Ikimenyetso cy'akaga",
+    "unpaid": "Ntiyishyuye",
+    "insurance": "Ubwishingizi bwo kugenzura",
+    "noPhone": "Nta telefone"
   },
   "priority": {
     "elderly": "Umusaza/Umukecuru",
@@ -150,7 +154,9 @@
     "remoteError": "Ntibyakunze kwemeza ko yahageze.",
     "expectedCheckedIn": "{{name}} yanditswe: {{ticket}}",
     "expectedLateWalkIn": "Yahageze igihe cyo gutegereza cyarenze, ashyirwa ku murongo nk'utafashe gahunda. Mumuhe ikindi gihe niba abishaka.",
-    "findPatient": "Shaka umurwayi: izina, telefoni, indangamuntu cyangwa nimero ya dosiye"
+    "findPatient": "Shaka umurwayi: izina, telefoni, indangamuntu cyangwa nimero ya dosiye",
+    "intakeDone": "Impamvu yatanzwe",
+    "intakeMissing": "Nta mpamvu"
   },
   "panel": {
     "service": "Serivisi",
@@ -170,7 +176,10 @@
     "left": "Yagiye",
     "timeline": "Ibyabaye",
     "remoteClaimed": "Umurwayi yakanze \"Nahageze\". Reba ko ari ku biro, hanyuma wemeze.",
-    "remoteNotArrived": "Yiyandikishije ari mu rugo kandi ntaremezwa. Emeza igihe umurwayi ageze ku biro."
+    "remoteNotArrived": "Yiyandikishije ari mu rugo kandi ntaremezwa. Emeza igihe umurwayi ageze ku biro.",
+    "patientWords": "Uko umurwayi abivuga",
+    "raiseEmergency": "Shyira mu byihutirwa",
+    "raiseEmergencyHint": "Umurwayi ajya imbere ku murongo ubu. Vuga icyo wabonye, urugero \"ububabare mu gatuza, ahumeka nabi\"."
   },
   "checkIn": {
     "title": "Andika umurwayi",

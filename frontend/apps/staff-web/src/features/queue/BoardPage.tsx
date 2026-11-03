@@ -19,6 +19,7 @@ import {
   CalendarCheck,
   ClockCountdown,
   MegaphoneSimple,
+  Siren,
   Star,
   UsersThree,
 } from "@phosphor-icons/react";
@@ -225,11 +226,12 @@ export function BoardPage() {
             <CalendarCheck aria-hidden="true" className="size-5 text-fg-muted" />
             {t("queue.board.expected")}
           </h2>
+          {/* "I'm here" claims first: those patients are already at the door */}
+          <RemoteList queues={queues} serviceId={filter} />
           <ExpectedList
             serviceId={filter}
             onNewTime={(b) => setBooking({ kind: "reschedule", booking: b })}
           />
-          <RemoteList queues={queues} serviceId={filter} />
           <MissedList serviceId={filter} />
         </section>
 
@@ -368,8 +370,19 @@ function QueueTable({
                     <TicketNumber number={ticket.number} stub tone={ticketTone(ticket, index)} />
                   </button>
                 </td>
-                <td className="px-2 py-2.5">
+                <td className="max-w-[22rem] px-2 py-2.5">
                   <span className="block font-semibold">{ticket.display_name}</span>
+                  {(ticket.reason_text || ticket.symptoms.length > 0) && (
+                    <span
+                      className={cx(
+                        "block truncate text-body-sm",
+                        ticket.flags.includes("red_flag") ? "text-danger" : "text-fg-secondary",
+                      )}
+                      title={ticket.reason_text || ticket.symptoms.join(", ")}
+                    >
+                      “{ticket.reason_text || ticket.symptoms.join(", ")}”
+                    </span>
+                  )}
                   <span className="text-body-sm text-fg-muted">
                     {[
                       ticket.age_years !== null
@@ -425,7 +438,9 @@ function TicketPanel({
     board
       .find((q) => q.service_id === current.service_id && q.stage === current.stage)
       ?.waiting.filter((r) => r.id !== current.id) ?? [];
-  const [dialog, setDialog] = useState<"priority" | "reorder" | "leave" | "transfer" | null>(null);
+  const [dialog, setDialog] = useState<
+    "priority" | "emergency" | "reorder" | "leave" | "transfer" | null
+  >(null);
   const run = (
     action: Parameters<typeof act.mutate>[0]["action"],
     body?: Parameters<typeof act.mutate>[0]["body"],
@@ -470,6 +485,34 @@ function TicketPanel({
           </div>
         </dl>
 
+        {(current.reason_text || current.symptoms.length > 0) && (
+          <section
+            aria-labelledby="patient-words"
+            className={cx(
+              "flex flex-col gap-1.5 rounded-xl p-3",
+              current.flags.includes("red_flag") ? "bg-danger-bg" : "bg-subtle",
+            )}
+          >
+            <h3 id="patient-words" className="m-0 text-caption font-semibold text-fg-secondary">
+              {t("queue.panel.patientWords")}
+            </h3>
+            {current.reason_text && <p className="m-0">“{current.reason_text}”</p>}
+            {current.symptoms.length > 0 && (
+              <p className="m-0 text-body-sm text-fg-secondary">{current.symptoms.join(" · ")}</p>
+            )}
+          </section>
+        )}
+        {canOperate && waiting && !current.flags.includes("emergency") && (
+          <Button
+            variant="danger"
+            pill
+            className="self-start"
+            onClick={() => setDialog("emergency")}
+          >
+            <Siren aria-hidden="true" weight="bold" />
+            {t("queue.panel.raiseEmergency")}
+          </Button>
+        )}
         {canOperate && waiting && current.is_remote && !current.remote_arrival_confirmed_at && (
           <div className="flex flex-col gap-2 rounded-xl bg-info-bg p-3 text-body-sm">
             <p className="m-0">
@@ -565,6 +608,19 @@ function TicketPanel({
             run("priority", { priority_class: choice as PriorityClass, reason_code: reason })
           }
           freeReason
+        />
+      )}
+      {dialog === "emergency" && (
+        <ReasonDialog
+          title={t("queue.panel.raiseEmergency")}
+          description={t("queue.panel.raiseEmergencyHint")}
+          onClose={() => setDialog(null)}
+          busy={act.isPending}
+          choice={null}
+          reasons={null}
+          onSubmit={(_choice, reason) => run("emergency", { reason_text: reason })}
+          freeReason
+          danger
         />
       )}
       {dialog === "reorder" && (

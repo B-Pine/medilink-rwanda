@@ -33,6 +33,8 @@ export type TicketAction =
   | "left"
   | "step-out"
   | "priority"
+  /** upgrade 05 §2: reception raises a patient to emergency; a reason is required. */
+  | "emergency"
   /** S5 (R4 #102): reception confirms a remote joiner is on site; `{version}`. */
   | "confirm-arrival"
   | "reorder";
@@ -70,6 +72,9 @@ export interface TicketRow {
   remote_arrival_claimed_at: string | null;
   /** S5: reception confirmed the remote patient is on site. */
   remote_arrival_confirmed_at: string | null;
+  /** upgrade 05 §2: the patient's own words at booking or check-in, and their symptoms. */
+  reason_text: string;
+  symptoms: string[];
   version: number;
 }
 

@@ -17,7 +17,8 @@ from medilink.triage import assistant, llm, matcher
 from medilink.triage.models import AppendOnlyError, AssistantLog
 
 URL = "/api/v1/public/assistant/"
-ON = {"ASSISTANT_ENABLED": True, "NVIDIA_API_KEY": "test-key"}
+ON = {"ASSISTANT_ENABLED": True, "NVIDIA_API_KEY": "test-key", "NVIDIA_DISABLE_THINKING": True}
+OFF = {"ASSISTANT_ENABLED": False, "NVIDIA_API_KEY": ""}
 
 
 @pytest.fixture(autouse=True)
@@ -160,6 +161,7 @@ def test_a_no_removes_the_symptom_and_state_from_the_client_is_cleaned(
 
 
 @pytest.mark.django_db
+@override_settings(**OFF)
 def test_switched_off_the_endpoint_says_unavailable() -> None:
     response = APIClient().post(URL, {"message": "fever", "language": "en"}, format="json")
     assert response.status_code == 503
@@ -248,6 +250,7 @@ def test_the_client_sends_the_key_and_model_and_reads_the_reply(
     body = json.loads(request.data)
     assert body["model"] == "meta/llama-3.1-70b-instruct"
     assert body["response_format"] == {"type": "json_object"}
+    assert body["chat_template_kwargs"] == {"enable_thinking": False}
 
 
 @override_settings(**ON)
@@ -277,6 +280,7 @@ def test_a_network_failure_is_an_error(monkeypatch: pytest.MonkeyPatch) -> None:
         llm.chat([{"role": "user", "content": "hi"}])
 
 
+@override_settings(**OFF)
 def test_switched_off_the_client_never_calls_out() -> None:
     with pytest.raises(llm.LLMError):
         llm.chat([{"role": "user", "content": "hi"}])
@@ -311,3 +315,19 @@ def test_the_command_rejects_a_missing_file(tmp_path: Any) -> None:
 
     with pytest.raises(CommandError):
         call_command("train_symptom_matcher", str(tmp_path / "missing.csv"))
+
+
+@override_settings(**ON)
+@pytest.mark.parametrize(
+    ("reply", "has_it"), [("yego", True), ("Oui, un peu", True), ("oya", False)]
+)
+def test_a_plain_yes_or_no_answers_the_question_asked(
+    monkeypatch: pytest.MonkeyPatch, reply: str, has_it: bool
+) -> None:
+    # the model guesses another symptom; the code trusts the question that was asked
+    monkeypatch.setattr(matcher, "load", tiny)
+    monkeypatch.setattr(llm, "chat", FakeModel(["toothache"]))
+    state = {"present": ["fever"], "asked": ["cough"], "pending": "cough"}
+    turn = assistant.respond(reply, "rw", state)
+    assert ("cough" in turn.state.present) is has_it
+    assert ("cough" in turn.state.absent) is not has_it

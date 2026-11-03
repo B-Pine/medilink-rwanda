@@ -48,6 +48,10 @@ def chat(
     }
     if json_mode:
         body["response_format"] = {"type": "json_object"}
+    if settings.NVIDIA_DISABLE_THINKING:
+        # reasoning models (Nemotron 3.x) otherwise spend the whole budget thinking and answer
+        # nothing; off, they answer in about 2 s (measured 2026-11-03)
+        body["chat_template_kwargs"] = {"enable_thinking": False}
     request = urllib.request.Request(  # noqa: S310 (fixed https endpoint from settings)
         f"{str(settings.NVIDIA_API_BASE).rstrip('/')}/chat/completions",
         data=json.dumps(body).encode(),
@@ -63,6 +67,10 @@ def chat(
             request, timeout=settings.NVIDIA_TIMEOUT_SECONDS
         ) as response:
             payload = json.load(response)
+    except urllib.error.HTTPError as error:
+        # the provider's own message (never the key), so a retired model or a bad request shows
+        detail = error.read(300).decode("utf-8", "replace")
+        raise LLMError(f"Model request failed: HTTP {error.code} {detail}") from error
     except (urllib.error.URLError, TimeoutError, ValueError) as error:
         raise LLMError(f"Model request failed: {type(error).__name__}") from error
     try:

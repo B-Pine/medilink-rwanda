@@ -634,5 +634,7 @@ LOGGING = {
 ASSISTANT_ENABLED = env.bool("ASSISTANT_ENABLED", default=False)
 NVIDIA_API_KEY = env("NVIDIA_API_KEY", default="")
 NVIDIA_API_BASE = env("NVIDIA_API_BASE", default="https://integrate.api.nvidia.com/v1")
-NVIDIA_MODEL = env("NVIDIA_MODEL", default="meta/llama-3.1-70b-instruct")
+# meta/llama-3.1-70b-instruct was retired on 2026-08-26; this one answers in about 2 s
+NVIDIA_MODEL = env("NVIDIA_MODEL", default="nvidia/nemotron-3.5-lightning-30b-a3b")
+NVIDIA_DISABLE_THINKING = env.bool("NVIDIA_DISABLE_THINKING", default=True)
 NVIDIA_TIMEOUT_SECONDS = env.int("NVIDIA_TIMEOUT_SECONDS", default=30)

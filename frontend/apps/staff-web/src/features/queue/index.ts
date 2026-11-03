@@ -5,6 +5,7 @@ import type { ComponentType } from "react";
 import type { FeatureRoutes } from "../../app/features";
 import { QueueHeaderLive } from "./LiveIndicator";
 import { OperationsTodayCard } from "./Operations";
+import { ReceptionTodayCard } from "./ReceptionToday";
 import { OnSiteTodayCard } from "./TodayCard";
 
 const lazy =
@@ -24,7 +25,7 @@ export const queueFeature: FeatureRoutes = {
     { path: "/settings/displays", lazy: lazy(admin, "DisplaysPage") },
   ],
   headerItems: [QueueHeaderLive],
-  todayCards: [OperationsTodayCard, OnSiteTodayCard],
+  todayCards: [OperationsTodayCard, ReceptionTodayCard, OnSiteTodayCard],
   commands: [
     {
       actions: (me, t) =>

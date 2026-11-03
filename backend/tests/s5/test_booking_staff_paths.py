@@ -95,6 +95,13 @@ def test_reception_moves_and_cancels_a_phone_booking(
     empty = client.get(f"{S}bookings/?date={day + dt.timedelta(days=1)}").json()
     assert empty == {"count": 0, "results": []}
 
+    # check-in by code (upgrade 05 §2): the code finds it whatever the date, spaces and case ignored
+    code = booking["booking_code"]
+    spaced = f"{code[:3]} {code[3:]}".lower()
+    by_code = client.get(f"{S}bookings/", {"code": spaced}).json()
+    assert [r["id"] for r in by_code["results"]] == [booking["id"]]
+    assert client.get(f"{S}bookings/?code=ZZZZZZ").json() == {"count": 0, "results": []}
+
     # reception moves it to another day: insurance and the reason for visit go along
     later = first_slot(clinic, service_id, after=clock.now + dt.timedelta(days=2))
     moved = client.post(

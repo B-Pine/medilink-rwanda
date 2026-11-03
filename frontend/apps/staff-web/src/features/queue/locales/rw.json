@@ -387,5 +387,39 @@
     "slowDetail_other": "Abantu {{count}}, hagati: iminota {{minutes}} kuva bahageze.",
     "people_one": "Umuntu {{count}}",
     "people_other": "Abantu {{count}}"
+  },
+  "code": {
+    "title": "Kwakira hakoreshejwe kode ya gahunda",
+    "label": "Kode ya gahunda",
+    "placeholder": "urugero K03M7Q",
+    "find": "Shaka",
+    "notFound": "Nta gahunda ifite iyi kode hano uyu munsi cyangwa nyuma. Genzura kode n'umurwayi, cyangwa umushake ku izina.",
+    "onDay": "Gahunda yo ku wa {{date}}",
+    "notToday": "Si uyu munsi",
+    "status": {
+      "checked_in": "Yamaze kwakirwa",
+      "cancelled": "Yahagaritswe",
+      "late_cancelled": "Yahagaritswe atinze",
+      "no_show": "Ntiyaje",
+      "superseded": "Yahinduwe"
+    }
+  },
+  "reception": {
+    "title": "Kwakira abarwayi",
+    "openBoard": "Fungura ikibaho cy'umurongo",
+    "numbers": "Uyu munsi ku kwakira",
+    "waiting": "Bategereje ubu",
+    "expected": "Bagitegerejwe",
+    "claims": "\"Ndahari\" byo kwemeza",
+    "missed": "Abataje uyu munsi",
+    "late_one": "Gahunda {{count}} yatinze",
+    "late_other": "Gahunda {{count}} zatinze",
+    "collected": "Ayakiriwe mu isanduku yanjye (RWF)",
+    "noShift": "Nta sanduku ifunguye",
+    "noClaims": "Nta bahageze bo kwemeza.",
+    "openShift": "Fungura isanduku yawe mbere yo kwakira amafaranga",
+    "next": "Abakurikira kuza",
+    "more_one": "Abandi {{count}} ku kibaho",
+    "more_other": "Abandi {{count}} ku kibaho"
   }
 }

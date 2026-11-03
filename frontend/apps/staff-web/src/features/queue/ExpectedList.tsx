@@ -33,8 +33,11 @@ export function useTodayBookings(enabled = true) {
 export function ExpectedList({
   serviceId,
   onNewTime,
+  limit,
 }: {
   serviceId: string | null;
+  /** Show only the next few (Reception Today). */
+  limit?: number;
   /** Offer another time (contract S5 §6.2 "Late: offer a new time", R4). */
   onNewTime?: (booking: StaffBooking) => void;
 }) {
@@ -70,9 +73,12 @@ export function ExpectedList({
     );
   }
 
-  const rows = (bookings.data?.results ?? []).filter(
-    (booking) => booking.status === "confirmed" && (!serviceId || booking.service_id === serviceId),
-  );
+  const rows = (bookings.data?.results ?? [])
+    .filter(
+      (booking) =>
+        booking.status === "confirmed" && (!serviceId || booking.service_id === serviceId),
+    )
+    .slice(0, limit);
 
   const done = checkedIn && (
     <Alert

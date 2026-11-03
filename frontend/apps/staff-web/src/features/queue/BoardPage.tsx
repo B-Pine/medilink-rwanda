@@ -32,6 +32,7 @@ import { PhoneBookingPanel, type PhoneBookingMode } from "../bookings";
 import { PageHeading } from "../../components/PageHeading";
 import { PatientPicker } from "../patients";
 import { queueKeys, usePollInterval, useQueueSocket } from "./live";
+import { CodeCheckIn } from "./CodeCheckIn";
 import { ExpectedList, MissedList, useTodayBookings } from "./ExpectedList";
 import { DeskBar, DeskFlow, ServiceFilter, ticketTone } from "./FrontDesk";
 import { RemoteList, useConfirmArrival } from "./RemoteList";
@@ -97,9 +98,18 @@ export function BoardPage() {
   const board = useBoard();
   const [filter, setFilter] = useState<string | null>(null);
   const [open, setOpen] = useState<TicketRow | null>(null);
-  const [checkingIn, setCheckingIn] = useState(false);
   const canBook = useCan("queue.operate");
   const [params, setParams] = useSearchParams();
+  // Reception Today links here with ?find=1 to open the check-in search at once
+  const [checkingIn, setCheckingInState] = useState(() => params.get("find") === "1");
+  const setCheckingIn = (value: boolean) => {
+    setCheckingInState(value);
+    if (!value && params.has("find")) {
+      const next = new URLSearchParams(params);
+      next.delete("find");
+      setParams(next, { replace: true });
+    }
+  };
   const [booking, setBooking] = useState<PhoneBookingMode | null>(null);
   const bookingMode: PhoneBookingMode | null =
     booking ?? (canBook && params.get("book") === "new" ? { kind: "new" } : null);
@@ -122,7 +132,7 @@ export function BoardPage() {
       // "/" opens the check-in search (the patient search has focus)
       if (event.key === "n" || event.key === "N" || event.key === "/") {
         event.preventDefault();
-        setCheckingIn(true);
+        setCheckingInState(true);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -210,6 +220,7 @@ export function BoardPage() {
 
       <div className="grid gap-5 xl:grid-cols-[21rem_minmax(0,1fr)]">
         <section aria-labelledby="expected" className="flex flex-col gap-3 self-start">
+          {canBook && <CodeCheckIn />}
           <h2 id="expected" className="m-0 flex items-center gap-2 font-heading text-h3">
             <CalendarCheck aria-hidden="true" className="size-5 text-fg-muted" />
             {t("queue.board.expected")}

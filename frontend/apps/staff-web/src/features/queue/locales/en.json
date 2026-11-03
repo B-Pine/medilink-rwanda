@@ -387,5 +387,39 @@
     "slowDetail_other": "{{count}} people, median {{minutes}} min since arriving.",
     "people_one": "{{count}} person",
     "people_other": "{{count}} people"
+  },
+  "code": {
+    "title": "Check in by booking code",
+    "label": "Booking code",
+    "placeholder": "e.g. K03M7Q",
+    "find": "Find",
+    "notFound": "No booking with this code here for today or later. Check the code with the patient, or find them by name.",
+    "onDay": "Booked for {{date}}",
+    "notToday": "Not today",
+    "status": {
+      "checked_in": "Already checked in",
+      "cancelled": "Cancelled",
+      "late_cancelled": "Cancelled late",
+      "no_show": "Missed",
+      "superseded": "Changed"
+    }
+  },
+  "reception": {
+    "title": "Front desk",
+    "openBoard": "Open the queue board",
+    "numbers": "Today at the front desk",
+    "waiting": "Waiting now",
+    "expected": "Still expected",
+    "claims": "\"I'm here\" to confirm",
+    "missed": "Missed today",
+    "late_one": "{{count}} booking running late",
+    "late_other": "{{count}} bookings running late",
+    "collected": "Collected in my shift (RWF)",
+    "noShift": "No cash shift open",
+    "noClaims": "No arrivals to confirm.",
+    "openShift": "Open your cash shift before taking payments",
+    "next": "Next arrivals",
+    "more_one": "{{count}} more on the board",
+    "more_other": "{{count}} more on the board"
   }
 }

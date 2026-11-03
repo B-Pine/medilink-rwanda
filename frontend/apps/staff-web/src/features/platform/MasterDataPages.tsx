@@ -134,7 +134,9 @@ function KindTable() {
   const q = params.get("q") ?? "";
   const active = params.get("is_active") ?? "";
   const missing = params.get("missing_language") ?? "";
+  const level = params.get("level") ?? "";
   const page = Number(params.get("page") ?? 1);
+  const isLocations = kind === "locations";
   const [editing, setEditing] = useState<PlatformItem | "new" | null>(null);
   const [importing, setImporting] = useState(false);
   const labels = useTableLabels(t(`platform.masterData.kinds.${kind}`));
@@ -148,12 +150,13 @@ function KindTable() {
     setParams(next, { replace: true });
   };
   const list = useQuery({
-    queryKey: ["platform", "md", kind, q, active, missing, page],
+    queryKey: ["platform", "md", kind, q, active, missing, level, page],
     queryFn: () =>
       api.masterData.platform.list(kind, {
         q,
         is_active: active,
         missing_language: missing,
+        ...(isLocations && level ? { level } : {}),
         page,
         page_size: 50,
       }),
@@ -173,6 +176,23 @@ function KindTable() {
         enableSorting: false,
         cell: ({ row }) => rowTitle(row.original, locale),
       },
+      // locations: 17,380 rows across five levels (NISR), so where each sits matters
+      ...(isLocations
+        ? ([
+            {
+              id: "level",
+              header: t("platform.masterData.level"),
+              enableSorting: false,
+              cell: ({ row }) => t(`platform.form.levels.${text(row.original.level)}`),
+            },
+            {
+              id: "parent",
+              header: t("platform.masterData.parent"),
+              enableSorting: false,
+              cell: ({ row }) => text(row.original.parent_code) || "—",
+            },
+          ] as ColumnDef<PlatformItem, unknown>[])
+        : []),
       {
         id: "state",
         header: t("platform.applications.status"),
@@ -200,7 +220,7 @@ function KindTable() {
           ),
       },
     ],
-    [t, locale],
+    [t, locale, isLocations],
   );
   return (
     <div className="flex flex-col gap-5">
@@ -232,6 +252,20 @@ function KindTable() {
         onSearchChange={(value) => update({ q: value })}
         toolbar={
           <>
+            {isLocations && (
+              <SelectField
+                label={t("platform.masterData.level")}
+                value={level}
+                onChange={(e) => update({ level: e.target.value })}
+              >
+                <option value="">{t("platform.applications.all")}</option>
+                {(["province", "district", "sector", "cell", "village"] as const).map((l) => (
+                  <option key={l} value={l}>
+                    {t(`platform.form.levels.${l}`)}
+                  </option>
+                ))}
+              </SelectField>
+            )}
             <SelectField
               label={t("platform.applications.status")}
               value={active}
@@ -259,7 +293,7 @@ function KindTable() {
         loading={list.isPending}
         error={list.isError}
         onRetry={() => void list.refetch()}
-        filtered={Boolean(q || active || missing)}
+        filtered={Boolean(q || active || missing || level)}
       />
       {editing && (
         <Editor

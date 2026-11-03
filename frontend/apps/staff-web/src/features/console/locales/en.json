@@ -18,7 +18,11 @@
     "staff": "Facility staff",
     "patient": "Patients"
   },
-  "audience": { "staff": "Staff app", "patient": "Patient app", "platform": "Console" },
+  "audience": {
+    "staff": "Staff app",
+    "patient": "Patient app",
+    "platform": "Console"
+  },
   "actions": {
     "auth_login_success": "Signed in",
     "auth_login_failure": "Sign-in failed",
@@ -61,7 +65,12 @@
     "map": "Network map",
     "waitingCount_one": "{{count}} waiting",
     "waitingCount_other": "{{count}} waiting",
-    "legend": { "low": "Calm", "medium": "Busy", "high": "Very busy", "stale": "No live data" },
+    "legend": {
+      "low": "Calm",
+      "medium": "Busy",
+      "high": "Very busy",
+      "stale": "No live data"
+    },
     "inbox": "Needs your action",
     "items": {
       "breakGlass_one": "Break-glass access to review",
@@ -125,7 +134,8 @@
       "unlock": "{{name}} can sign in again.",
       "reset-mfa": "{{name}} sets up two-step login again at the next sign-in. Every session ends now.",
       "revoke-sessions": "{{name}} is signed out on every device."
-    }
+    },
+    "clinician": "Clinician"
   },
   "logs": {
     "event": "Event",
@@ -172,13 +182,23 @@
   "bg": {
     "title": "Break-glass reviews",
     "lead": "Emergency access to records, reviewed by a second admin.",
-    "tab": { "review": "To review", "all": "All" },
+    "tab": {
+      "review": "To review",
+      "all": "All"
+    },
     "none": "No break-glass access to review",
     "duration": "{{minutes}} min",
     "note": "Review note",
     "appropriate": "Appropriate",
     "inappropriate": "Not appropriate",
-    "reason": { "emergency": "Emergency", "continuity": "Continuity of care", "other": "Other" },
-    "outcome": { "appropriate": "Judged appropriate", "inappropriate": "Judged not appropriate" }
+    "reason": {
+      "emergency": "Emergency",
+      "continuity": "Continuity of care",
+      "other": "Other"
+    },
+    "outcome": {
+      "appropriate": "Judged appropriate",
+      "inappropriate": "Judged not appropriate"
+    }
   }
 }

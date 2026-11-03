@@ -134,7 +134,8 @@
       "unlock": "{{name}} can sign in again.",
       "reset-mfa": "{{name}} sets up two-step login again at the next sign-in. Every session ends now.",
       "revoke-sessions": "{{name}} is signed out on every device."
-    }
+    },
+    "clinician": "Umuvuzi"
   },
   "logs": {
     "event": "Event",

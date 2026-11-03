@@ -38,6 +38,7 @@ applications = [
 
 facilities = [
     path("", v.FacilitiesView.as_view(), name="platform-facilities"),
+    path("export/", v.FacilitiesExportView.as_view(), name="platform-facilities-export"),
     path(FAC, v.FacilityView.as_view(), name="platform-facility"),
     path(FAC + "status-events/", v.StatusEventsView.as_view(), name="platform-facility-events"),
     path(FAC + "start-setup/", v.StartSetupView.as_view(), name="platform-facility-start-setup"),

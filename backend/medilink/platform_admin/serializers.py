@@ -25,6 +25,9 @@ class UserRowSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     full_name = serializers.CharField()
     email = serializers.CharField()
+    phone = serializers.CharField(allow_blank=True)
+    profession = serializers.CharField(allow_blank=True)
+    licence_state = serializers.CharField(allow_null=True)
     kind = serializers.ChoiceField(choices=USER_KINDS)  # enum: UserKindEnum
     is_active = serializers.BooleanField()
     mfa_enabled = serializers.BooleanField()

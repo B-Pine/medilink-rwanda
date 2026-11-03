@@ -32,8 +32,16 @@ export const platformFeature: FeatureRoutes = {
       lazy: lazy(() => import("./ApplicationsPage"), "ApplicationsPage"),
     },
     {
+      path: "/platform/applications/new",
+      lazy: lazy(() => import("./ApplicationFormPage"), "ApplicationNewPage"),
+    },
+    {
       path: "/platform/applications/:id",
       lazy: lazy(() => import("./ApplicationReviewPage"), "ApplicationReviewPage"),
+    },
+    {
+      path: "/platform/applications/:id/edit",
+      lazy: lazy(() => import("./ApplicationFormPage"), "ApplicationEditPage"),
     },
     {
       path: "/platform/facilities",

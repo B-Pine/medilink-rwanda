@@ -1,34 +1,25 @@
 import type { ApplicationStatus, ApplicationSummary } from "@medilink/api-client";
 import {
-  Alert,
   Button,
   CheckboxField,
   DataTable,
-  Dialog,
   SidePanel,
   Tabs,
   TabsList,
   TabsTrigger,
-  TextField,
   buttonClassName,
   type ColumnDef,
   type SortingState,
 } from "@medilink/ui";
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState, type FormEvent } from "react";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useSearchParams } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
-import {
-  actionError,
-  formatDate,
-  PlatformOnly,
-  StatusBadge,
-  useLocale,
-  useTableLabels,
-} from "./shared";
+import { facilityTypeLabel } from "../../facility/labels";
+import { formatDate, PlatformOnly, StatusBadge, useLocale, useTableLabels } from "./shared";
 
 const TABS: (ApplicationStatus | "all")[] = [
   "submitted",
@@ -62,7 +53,6 @@ function Applications() {
   const pageSize = Number(params.get("page_size") ?? 50);
   const [sorting, setSorting] = useState<SortingState>([{ id: "submitted_at", desc: false }]);
   const [preview, setPreview] = useState<ApplicationSummary | null>(null);
-  const [creating, setCreating] = useState(false);
   const labels = useTableLabels(t("platform.applications.noun"));
 
   const update = (changes: Record<string, string | null>) => {
@@ -104,9 +94,49 @@ function Applications() {
         cell: ({ row }) => <StatusBadge kind="application" value={row.original.status} />,
       },
       {
+        accessorKey: "facility_type",
+        header: t("platform.review.type"),
+        enableSorting: false,
+        cell: ({ row }) =>
+          row.original.facility_type ? facilityTypeLabel(row.original.facility_type, t) : "—",
+      },
+      {
+        accessorKey: "district_name",
+        header: t("platform.facilities.district"),
+        enableSorting: false,
+        cell: ({ row }) => row.original.district_name || "—",
+      },
+      {
         accessorKey: "applicant_name",
         header: t("platform.applications.applicant"),
         enableSorting: false,
+        cell: ({ row }) => (
+          <span className="flex flex-col">
+            <span>{row.original.applicant_name}</span>
+            {row.original.proposed_admin_name && (
+              <span className="text-body-sm text-fg-muted">
+                {t("platform.applications.adminIs", { name: row.original.proposed_admin_name })}
+              </span>
+            )}
+          </span>
+        ),
+      },
+      {
+        id: "progress",
+        header: t("platform.applications.progress"),
+        enableSorting: false,
+        cell: ({ row }) => (
+          <span className="flex flex-col text-body-sm">
+            <span>
+              {t("platform.applications.documents", { count: row.original.documents_count })}
+            </span>
+            {row.original.missing_count > 0 && (
+              <span className="text-attention">
+                {t("platform.applications.missing", { count: row.original.missing_count })}
+              </span>
+            )}
+          </span>
+        ),
       },
       {
         accessorKey: "submitted_at",
@@ -127,7 +157,9 @@ function Applications() {
       <PageHeader
         title={t("platform.applications.title")}
         actions={
-          <Button onClick={() => setCreating(true)}>{t("platform.applications.create")}</Button>
+          <Link to="/platform/applications/new" className={buttonClassName({})}>
+            {t("platform.applications.create")}
+          </Link>
         }
       />
       <Tabs value={status} onValueChange={(value) => update({ status: value })}>
@@ -218,94 +250,6 @@ function Applications() {
           </dl>
         )}
       </SidePanel>
-      <CreateDialog open={creating} onOpenChange={setCreating} />
     </div>
-  );
-}
-
-function CreateDialog({
-  open,
-  onOpenChange,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}) {
-  const { t } = useTranslation();
-  const api = useApi();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const [values, setValues] = useState({ facility: "", name: "", email: "", sendLink: true });
-  const [error, setError] = useState<string | undefined>();
-  const create = useMutation({
-    mutationFn: () =>
-      api.onboarding.platform.create({
-        applicant: { name: values.name.trim(), email: values.email.trim() },
-        facility: { name: values.facility.trim() },
-        send_link: values.sendLink,
-      }),
-    onSuccess: (app) => {
-      void queryClient.invalidateQueries({ queryKey: ["platform"] });
-      onOpenChange(false);
-      void navigate(`/platform/applications/${app.id}`);
-    },
-    onError: (failure) => setError(actionError(failure, t("errors.generic"))),
-  });
-
-  function submit(event: FormEvent) {
-    event.preventDefault();
-    if (!values.facility.trim() || !values.name.trim() || !values.email.includes("@")) {
-      setError(t("platform.applications.createRequired"));
-      return;
-    }
-    create.mutate();
-  }
-
-  return (
-    <Dialog
-      open={open}
-      onOpenChange={onOpenChange}
-      title={t("platform.applications.create")}
-      description={t("platform.applications.createHint")}
-      closeLabel={t("lock.close")}
-      footer={
-        <>
-          <Button variant="secondary" onClick={() => onOpenChange(false)}>
-            {t("lock.cancel")}
-          </Button>
-          <Button type="submit" form="create-application" loading={create.isPending}>
-            {t("platform.applications.createSubmit")}
-          </Button>
-        </>
-      }
-    >
-      <form id="create-application" onSubmit={submit} className="flex flex-col gap-4" noValidate>
-        <TextField
-          label={t("platform.applications.facility")}
-          value={values.facility}
-          onChange={(e) => setValues((v) => ({ ...v, facility: e.target.value }))}
-        />
-        <TextField
-          label={t("platform.applications.applicant")}
-          value={values.name}
-          onChange={(e) => setValues((v) => ({ ...v, name: e.target.value }))}
-        />
-        <TextField
-          label={t("platform.applications.applicantEmail")}
-          type="email"
-          value={values.email}
-          onChange={(e) => setValues((v) => ({ ...v, email: e.target.value }))}
-        />
-        <CheckboxField
-          label={t("platform.applications.sendLink")}
-          checked={values.sendLink}
-          onChange={(e) => setValues((v) => ({ ...v, sendLink: e.target.checked }))}
-        />
-        {error && (
-          <Alert tone="danger" role="alert">
-            {error}
-          </Alert>
-        )}
-      </form>
-    </Dialog>
   );
 }

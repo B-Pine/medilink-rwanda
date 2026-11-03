@@ -94,6 +94,11 @@ export function UsersPage() {
               <span className="truncate text-caption font-normal text-fg-muted">
                 {row.original.email}
               </span>
+              {row.original.phone && (
+                <span className="truncate text-caption font-normal text-fg-muted">
+                  {row.original.phone}
+                </span>
+              )}
             </span>
           </span>
         ),
@@ -118,6 +123,27 @@ export function UsersPage() {
                 {first.roles.map((r) => roleLabel(r as RoleCode, t)).join(" · ")}
                 {row.original.facilities.length > 1 && ` · +${row.original.facilities.length - 1}`}
               </span>
+              {row.original.licence_state && (
+                <span className="text-caption">
+                  <span className="text-fg-secondary">
+                    {t(`setup.professions.${row.original.profession}`, {
+                      defaultValue: t("console.users.clinician"),
+                    })}
+                  </span>
+                  {" · "}
+                  <span
+                    className={
+                      row.original.licence_state === "valid"
+                        ? "text-success"
+                        : row.original.licence_state === "expiring"
+                          ? "text-attention"
+                          : "text-danger"
+                    }
+                  >
+                    {t(`setup.licenceState.${row.original.licence_state}`)}
+                  </span>
+                </span>
+              )}
             </span>
           );
         },

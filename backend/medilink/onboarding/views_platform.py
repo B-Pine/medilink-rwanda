@@ -501,6 +501,10 @@ class FacilitiesView(GenericAPIView):
             qs = qs.filter(status=params["status"])
         if params.get("facility_type"):
             qs = qs.filter(facility_type=params["facility_type"])
+        if params.get("ownership"):
+            qs = qs.filter(ownership=params["ownership"])
+        if params.get("missing_code") == "true":  # no MoH facility code yet
+            qs = qs.filter(moh_facility_code="")
         if params.get("district"):
             ids = Application.objects.filter(district_code=params["district"]).values("facility_id")
             qs = qs.filter(pk__in=ids)
@@ -512,12 +516,25 @@ class FacilitiesView(GenericAPIView):
             ordering if ordering in {"name", "-name", "created_at", "-created_at"} else "name"
         )
 
+    def rows(self, request: Request) -> list[dict[str, Any]]:
+        rows = [s.facility_data(f) for f in self.get_queryset()]
+        state = request.query_params.get("licence_state")
+        if state:
+            rows = [r for r in rows if r["licence_state"] == state]
+        if request.query_params.get("ordering") == "next_licence_expiry":
+            rows.sort(
+                key=lambda r: (r["next_licence_expiry"] is None, r["next_licence_expiry"] or "")
+            )
+        return rows
+
     @extend_schema(
         tags=TAG,
         operation_id="platform_facilities_list",
         parameters=[
             OpenApiParameter("status", str),
             OpenApiParameter("facility_type", str),
+            OpenApiParameter("ownership", str),
+            OpenApiParameter("missing_code", bool, description="Only facilities without a FOSA ID"),
             OpenApiParameter("district", str),
             OpenApiParameter(
                 "licence_state", str, enum=["valid", "expiring", "expired", "missing"]
@@ -532,16 +549,49 @@ class FacilitiesView(GenericAPIView):
         responses={200: s.PlatformFacilitySerializer(many=True)},
     )
     def get(self, request: Request) -> Response:
-        rows = [s.facility_data(f) for f in self.get_queryset()]
-        state = request.query_params.get("licence_state")
-        if state:
-            rows = [r for r in rows if r["licence_state"] == state]
-        if request.query_params.get("ordering") == "next_licence_expiry":
-            rows.sort(
-                key=lambda r: (r["next_licence_expiry"] is None, r["next_licence_expiry"] or "")
-            )
-        page = self.paginate_queryset(rows)
+        page = self.paginate_queryset(self.rows(request))
         return self.get_paginated_response(page)
+
+
+class FacilitiesExportView(FacilitiesView):
+    """The facility list for the Ministry of Health, as CSV, with the list's filters."""
+
+    pagination_class = None  # type: ignore[assignment]
+
+    @extend_schema(
+        tags=TAG,
+        operation_id="platform_facilities_export",
+        parameters=[
+            OpenApiParameter("status", str),
+            OpenApiParameter("facility_type", str),
+            OpenApiParameter("ownership", str),
+            OpenApiParameter("district", str),
+            OpenApiParameter(
+                "licence_state", str, enum=["valid", "expiring", "expired", "missing"]
+            ),
+            OpenApiParameter("q", str),
+        ],
+        responses={(200, "text/csv"): OpenApiResponse(description="One row per facility")},
+        summary="Export the facility list (CSV, UTF-8); audit-logged",
+    )
+    def get(self, request: Request) -> Response:
+        from django.http import HttpResponse
+        from django.utils import timezone
+
+        from medilink.onboarding.facility_report import export_csv
+
+        rows = self.rows(request)
+        record(
+            "facility.list_exported",
+            request=request,
+            object_type="facility",
+            metadata={"rows": len(rows)},
+        )
+        response = HttpResponse(export_csv(rows), content_type="text/csv; charset=utf-8")
+        name = f"medilink-facilities-{timezone.localdate().isoformat()}.csv"
+        response["Content-Disposition"] = f'attachment; filename="{name}"'
+        response["Cache-Control"] = "no-store"
+        return response  # type: ignore[return-value]
 
 
 class FacilityView(_Platform):

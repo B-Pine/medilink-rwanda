@@ -79,11 +79,30 @@ def _kind(user: Any, memberships: dict[Any, list[dict[str, Any]]]) -> str:
     return "staff" if user.pk in memberships else "patient"
 
 
-def _row(user: Any, memberships: dict[Any, list[dict[str, Any]]], mfa: set[Any]) -> dict[str, Any]:
+def _clinicians(user_ids: list[Any]) -> dict[Any, Any]:
+    """The clinician profiles of these users (profession and licence for the list)."""
+    from medilink.accounts.models import ClinicianProfile
+
+    return {c.user_id: c for c in ClinicianProfile.objects.filter(user_id__in=user_ids)}
+
+
+def _row(
+    user: Any,
+    memberships: dict[Any, list[dict[str, Any]]],
+    mfa: set[Any],
+    clinicians: dict[Any, Any] | None = None,
+) -> dict[str, Any]:
+    from medilink.facilities.clinician import licence_state
+
+    clinician = (clinicians or {}).get(user.pk)
     return {
         "id": user.pk,
         "full_name": user.full_name,
         "email": user.email,
+        "phone": user.phone,
+        # staff who are clinicians: what the facility admins check
+        "profession": clinician.profession if clinician else "",
+        "licence_state": licence_state(clinician) if clinician else None,
         "kind": _kind(user, memberships),
         "is_active": user.is_active,
         "mfa_enabled": user.pk in mfa,
@@ -207,7 +226,9 @@ class _Action(_Platform):
     def done(self, request: Request, user: Any) -> Response:
         memberships = _memberships()
         user.refresh_from_db()
-        return Response(s.UserRowSerializer(_row(user, memberships, _mfa_users())).data)
+        return Response(
+            s.UserRowSerializer(_row(user, memberships, _mfa_users(), _clinicians([user.pk]))).data
+        )
 
 
 # ---- command centre ----------------------------------------------------------------------------
@@ -340,7 +361,9 @@ class UsersView(_Platform):
             users = users.filter(is_active=False)
         memberships = _memberships()
         mfa = _mfa_users()
-        rows = [_row(u, memberships, mfa) for u in users]
+        listed = list(users)
+        clinicians = _clinicians([u.pk for u in listed])
+        rows = [_row(u, memberships, mfa, clinicians) for u in listed]
         if params.get("kind") in s.USER_KINDS:
             rows = [r for r in rows if r["kind"] == params["kind"]]
         if params.get("mfa") in ("on", "off"):
@@ -358,7 +381,7 @@ class UserView(_Platform):
             raise Http404
         memberships = _memberships()
         now = timezone.now()
-        data = _row(user, memberships, _mfa_users())
+        data = _row(user, memberships, _mfa_users(), _clinicians([user.pk]))
         data["email_verified"] = user.email_verified_at is not None
         data["sessions"] = [
             {

@@ -53,6 +53,8 @@ export function useFacilityPages(filters: {
   service_code?: string;
   district_code?: string;
   open_now?: boolean;
+  /** The visitor's position: results carry the distance and come nearest first. */
+  near?: { lat: number; lng: number } | null;
 }) {
   const api = useApi();
   return useInfiniteQuery({

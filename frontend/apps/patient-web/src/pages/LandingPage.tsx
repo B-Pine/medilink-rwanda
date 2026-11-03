@@ -5,46 +5,26 @@ import {
   Crosshair,
   FirstAid,
   MagnifyingGlass,
-  MapTrifold,
   Phone,
   Siren,
-  SquaresFour,
   Ticket,
   type Icon,
 } from "@phosphor-icons/react";
-import {
-  Button,
-  buttonClassName,
-  cx,
-  ImigongoPattern,
-  Skeleton,
-  type MapPoint,
-} from "@medilink/ui";
+import { Button, buttonClassName, cx, ImigongoPattern } from "@medilink/ui";
 import { useQuery } from "@tanstack/react-query";
-import { lazy, Suspense, useMemo, useRef, useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 
 import { useApi } from "../app/services";
 import { PageHeading } from "../components/PageHeading";
-import { env } from "../env";
-import { DISTRICT_CODES, pinKind, type DistrictKey } from "../features/booking/discovery";
-import {
-  FILTER,
-  MapCard,
-  sortResults,
-  useNearMe,
-  useWide,
-  type Sort,
-} from "../features/booking/Places";
+import { DISTRICT_CODES, type DistrictKey } from "../features/booking/discovery";
+import { FILTER, sortResults, useNearMe, type Sort } from "../features/booking/Places";
 import { EMERGENCY } from "../features/site/data";
-import { FacilityCardGrid } from "../features/site/FacilityCards";
+import { FacilityExplorer } from "../features/site/FacilityCards";
 import { HeroIllustration } from "../features/site/illustrations";
 import { LocationSelector, PageContainer, SearchBar } from "../features/site/kit";
 import { PublicLayout } from "../layout/PublicLayout";
-
-// Leaflet and the tiles load only when the map is on screen (upgrade 03 §2, < 100 KB JS budget)
-const FacilityMap = lazy(() => import("@medilink/ui/map"));
 
 const STEPS: { key: string; icon: Icon }[] = [
   { key: "find", icon: MagnifyingGlass },
@@ -78,26 +58,6 @@ export function LandingPage() {
     () => sortResults(results.data?.results ?? [], sort).slice(0, 6),
     [results.data, sort],
   );
-  const [view, setView] = useState<"list" | "map">("list");
-  const [selected, setSelected] = useState<string | null>(null);
-  const map = useRef<HTMLDivElement>(null);
-  // false while the pre-rendered page hydrates (Leaflet needs the browser), then true
-  const inBrowser = useWide("all");
-  const points: MapPoint[] = rows.flatMap((r) =>
-    r.lat !== null && r.lng !== null
-      ? [
-          {
-            id: r.slug,
-            lat: r.lat,
-            lng: r.lng,
-            kind: pinKind(r.type),
-            load: r.queue_load,
-            label: r.name,
-          },
-        ]
-      : [],
-  );
-  const chosen = rows.find((r) => r.slug === selected);
 
   const onSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -228,97 +188,18 @@ export function LandingPage() {
               </Link>
             </div>
           </div>
-          {results.isError ? (
-            <p
-              role="alert"
-              className="m-0 flex items-center gap-3 rounded-2xl bg-surface p-5 shadow-card"
-            >
-              {t("home.failed")}
-              <Button variant="secondary" size="sm" onClick={() => void results.refetch()}>
-                {t("home.retry")}
-              </Button>
-            </p>
-          ) : !results.isPending && rows.length === 0 ? (
-            <p className="m-0 rounded-2xl bg-surface p-8 text-center text-fg-secondary shadow-card">
-              {t("site.home.nearEmpty")}
-            </p>
-          ) : (
-            <>
-              {/* phones and tablets: one view at a time */}
-              <div
-                role="group"
-                aria-label={t("home.view.label")}
-                className="flex self-start rounded-full bg-subtle p-1 lg:hidden"
-              >
-                {(["list", "map"] as const).map((key) => (
-                  <button
-                    key={key}
-                    type="button"
-                    aria-pressed={view === key}
-                    onClick={() => setView(key)}
-                    className="inline-flex min-h-10 cursor-pointer items-center gap-1.5 rounded-full px-4 text-body-sm font-semibold text-fg-secondary transition-[background-color,color,box-shadow] duration-200 aria-pressed:bg-surface aria-pressed:text-fg aria-pressed:shadow-card"
-                  >
-                    {key === "list" ? (
-                      <SquaresFour aria-hidden="true" className="size-4" />
-                    ) : (
-                      <MapTrifold aria-hidden="true" className="size-4" />
-                    )}
-                    {t(`site.home.view.${key}`)}
-                  </button>
-                ))}
-              </div>
-              {/* wide screens: the cards beside a map that stays in view */}
-              <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] xl:grid-cols-[minmax(0,1fr)_minmax(0,30rem)]">
-                <div
-                  className={cx(
-                    "min-w-0 transition-opacity duration-200 ease-out-quint",
-                    results.isFetching && !results.isPending && "opacity-60",
-                    view === "map" && "hidden lg:block",
-                  )}
-                >
-                  <FacilityCardGrid
-                    label={t("site.home.nearTitle")}
-                    rows={rows}
-                    loading={results.isPending}
-                    selected={selected}
-                    onSelect={setSelected}
-                    onShowOnMap={(slug) => {
-                      setSelected(slug);
-                      setView("map");
-                      map.current?.scrollIntoView({ block: "nearest" });
-                    }}
-                  />
-                </div>
-                <div
-                  ref={map}
-                  className={cx(
-                    "scroll-mt-24 lg:sticky lg:top-24",
-                    view === "list" && "hidden lg:block",
-                  )}
-                >
-                  {inBrowser ? (
-                    <Suspense
-                      fallback={<Skeleton className="h-[28rem] rounded-3xl lg:h-[34rem]" />}
-                    >
-                      <FacilityMap
-                        points={points}
-                        selectedId={selected}
-                        onSelect={setSelected}
-                        you={near}
-                        tilesUrl={env.mapTilesUrl}
-                        attribution={t("home.mapAttribution")}
-                        label={t("home.mapLabel")}
-                        className="h-[28rem] lg:h-[34rem]"
-                        card={chosen ? <MapCard result={chosen} /> : undefined}
-                      />
-                    </Suspense>
-                  ) : (
-                    <Skeleton className="h-[28rem] rounded-3xl lg:h-[34rem]" />
-                  )}
-                </div>
-              </div>
-            </>
-          )}
+          <FacilityExplorer
+            label={t("site.home.nearTitle")}
+            rows={rows}
+            loading={results.isPending}
+            fetching={results.isFetching}
+            failed={results.isError}
+            onRetry={() => void results.refetch()}
+            near={near}
+            empty={
+              <p className="m-0 p-8 text-center text-fg-secondary">{t("site.home.nearEmpty")}</p>
+            }
+          />
         </section>
 
         {/* 4 · Emergency */}

@@ -183,7 +183,8 @@
       "imaging": "Imagerie et diagnostic",
       "specialist": "Soins spécialisés",
       "emergency": "Urgences"
-    }
+    },
+    "jump": "Aller à une catégorie"
   },
   "service": {
     "notFound": "Ce service n’est pas au catalogue",

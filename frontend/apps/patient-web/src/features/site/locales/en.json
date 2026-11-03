@@ -183,7 +183,8 @@
       "imaging": "Imaging and diagnostics",
       "specialist": "Specialist care",
       "emergency": "Emergency services"
-    }
+    },
+    "jump": "Jump to a category"
   },
   "service": {
     "notFound": "This service is not in the catalogue",

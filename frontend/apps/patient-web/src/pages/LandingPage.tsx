@@ -35,18 +35,59 @@ import {
 import { FILTER, sortResults, useNearMe, type Sort } from "../features/booking/Places";
 import { useAllFacilities } from "../features/site/data";
 import { FacilityExplorer } from "../features/site/FacilityCards";
-import { HeroIllustration } from "../features/site/illustrations";
 import { LocationSelector, PageContainer, SearchBar } from "../features/site/kit";
 import { PublicLayout } from "../layout/PublicLayout";
 
-/**
- * Home photography (redesign: real Rwandan care settings, 4:4.4, green duotone). Until the
- * commissioned photo is in `public/photos/`, the illustration fills the same frame.
- */
 /** The example ticket on the "arrive" phone screen (a sample, not a real patient). */
 const DEMO_TICKET = "G-014";
 
-const HERO_PHOTO: { src: string; alt: string } | null = null;
+/**
+ * Hero photography (product owner, 2026-11-03): only on the home hero. WebP with a JPEG fallback,
+ * sizes set so nothing shifts; the main photo is the page's largest image, so it loads first.
+ */
+const HERO_PHOTOS = {
+  main: { name: "care-guide", width: 900, height: 1350, altKey: "site.home2.photos.main" },
+  hillside: {
+    name: "clinic-hillside",
+    width: 800,
+    height: 450,
+    altKey: "site.home2.photos.hillside",
+  },
+  entrance: {
+    name: "clinic-entrance",
+    width: 800,
+    height: 450,
+    altKey: "site.home2.photos.entrance",
+  },
+} as const;
+
+function HeroPhoto({
+  photo,
+  priority = false,
+  className,
+}: {
+  photo: (typeof HERO_PHOTOS)[keyof typeof HERO_PHOTOS];
+  priority?: boolean;
+  className?: string;
+}) {
+  const { t } = useTranslation();
+  const base = `${import.meta.env.BASE_URL}photos/home/${photo.name}`;
+  return (
+    <picture className={cx("block overflow-hidden bg-brand-subtle", className)}>
+      <source srcSet={`${base}.webp`} type="image/webp" />
+      <img
+        src={`${base}.jpg`}
+        alt={t(photo.altKey)}
+        width={photo.width}
+        height={photo.height}
+        loading={priority ? "eager" : "lazy"}
+        decoding="async"
+        {...(priority ? { fetchPriority: "high" as const } : {})}
+        className="size-full object-cover"
+      />
+    </picture>
+  );
+}
 
 const POPULAR: { key: string; to: string }[] = [
   { key: "general", to: "/find-care?service=general" },
@@ -266,19 +307,22 @@ export function LandingPage() {
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-[28rem] pb-6 lg:pb-0">
-            <div className="aspect-[4/4.4] overflow-hidden rounded-[28px] bg-gradient-to-br from-brand-subtle to-[#d5ebe0]">
-              {HERO_PHOTO ? (
-                <img
-                  src={HERO_PHOTO.src}
-                  alt={HERO_PHOTO.alt}
-                  width={560}
-                  height={616}
-                  className="size-full object-cover"
-                />
-              ) : (
-                <HeroIllustration className="size-full p-8" />
-              )}
+          <div className="relative mx-auto w-full max-w-[34rem] pb-6 lg:pb-0">
+            {/* one collage: the person-to-person moment first, two places of care beside it */}
+            <div className="grid grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] gap-3">
+              <HeroPhoto
+                photo={HERO_PHOTOS.main}
+                priority
+                className="row-span-2 aspect-[4/5.4] rounded-[28px]"
+              />
+              <HeroPhoto
+                photo={HERO_PHOTOS.entrance}
+                className="aspect-[4/3.4] self-end rounded-[22px]"
+              />
+              <HeroPhoto
+                photo={HERO_PHOTOS.hillside}
+                className="aspect-[4/3.4] self-start rounded-[22px]"
+              />
             </div>
             <FloatCard icon={Ticket} className="-left-2 top-8 sm:-left-8">
               {t("site.home2.float.queue")}

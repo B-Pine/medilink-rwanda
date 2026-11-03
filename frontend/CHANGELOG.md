@@ -9,6 +9,23 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Public site · Facilities as products (#180)
+
+- Changed: facility cards are product cards (tinted cover with the facility's monogram, type and
+  24-hour emergency badges, insurer chips, the whole card clickable, one action row with a map
+  icon button). The facility profile opens with its photo gallery under the name.
+- Added: public site motion and surface tokens (`--ml-motion-*`, `--ml-ease-*`, `--ml-glass-*`,
+  `--ml-hero-mesh`, `--ml-band-mesh`) and utilities (`.ml-glass`, `.ml-nav-indicator`, `.ml-lift`,
+  `.ml-float`, `.ml-hero-seq`, `.ml-band`); all off with reduced motion or data saver.
+- Changed: frosted public header; nav links with hover pills and an active underline that glides
+  between pages (view transition); compact EN / RW / FR select. Navbar pages open on a branded
+  header band (mesh and Imigongo pattern). Landing: mesh hero, staged entrance, drifting live
+  cards, a raised search, a divided trust strip, cards and tiles that lift on hover.
+- Fixed: home service tiles no longer show "0 facilities".
+- Fixed: sign-in, sign-up and password screens use the public site's palette (the button green
+  matches the site), the logo no longer squashes on phones, and the top bar fits 360 px (the
+  theme switch moves to wider screens; the theme follows the system on phones).
+
 ### Upgrade U2 · Cashier role (upgrade 06 §4)
 
 - Added: Cashier in the staff invite roles; Cash desk on Today (shift, bills to pay, partly

@@ -197,6 +197,9 @@ export function FacilityPage() {
           }
         />
 
+        {/* the facility shown like a product: its photos first, under the name */}
+        <Photos name={f.name} photos={f.photos} />
+
         <div className="ml-stagger grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="flex min-w-0 flex-col gap-6">
             {/* Today: the most important part of the page; the four facts first, as tiles */}
@@ -293,7 +296,6 @@ export function FacilityPage() {
                   <p className="m-0 mt-2 text-fg-secondary">
                     {pick(f.description_i18n, lang) || t("site.facility.noDescription")}
                   </p>
-                  <Photos name={f.name} photos={f.photos} />
                 </Panel>
               </TabsContent>
 
@@ -592,27 +594,33 @@ function webLink(value: string): { href: string; host: string } | null {
   }
 }
 
-/** The admin's photos: the first one large, the rest beside it. Each opens full size. */
+/**
+ * The admin's photos as the profile's hero gallery: the first one large, up to four beside it,
+ * like a product page. Each opens full size.
+ */
 function Photos({ name, photos }: { name: string; photos: string[] }) {
   const { t } = useTranslation();
   if (photos.length === 0) return null;
   return (
-    <section aria-labelledby="photos" className="mt-6">
-      <h3 id="photos" className="sr-only">
+    <section aria-labelledby="photos" className="mb-6">
+      <h2 id="photos" className="sr-only">
         {t("site.facility.photos")}
-      </h3>
+      </h2>
       <ul
         className={cx(
-          "m-0 grid list-none gap-2 p-0",
-          photos.length > 1 && "grid-cols-2 sm:grid-cols-3",
+          "m-0 grid list-none gap-2 overflow-hidden rounded-3xl p-0",
+          photos.length > 1 && "grid-cols-2 sm:grid-cols-4",
         )}
       >
-        {photos.map((src, index) => (
+        {photos.slice(0, 5).map((src, index) => (
           <li
             key={src}
             className={cx(
               photos.length > 1 && index === 0 && "col-span-2 row-span-2",
-              "overflow-hidden rounded-xl bg-subtle",
+              // two photos share the row; with three or more the first holds half the width
+              photos.length === 2 && "sm:col-span-2",
+              photos.length === 3 && index > 0 && "sm:col-span-2",
+              "overflow-hidden bg-subtle",
             )}
           >
             <a href={src} target="_blank" rel="noreferrer" className="block h-full">
@@ -623,9 +631,10 @@ function Photos({ name, photos }: { name: string; photos: string[] }) {
                 decoding="async"
                 className={cx(
                   "block size-full object-cover transition-transform duration-300 ease-out-quint hover:scale-[1.03]",
-                  photos.length === 1 ? "aspect-video" : "aspect-[4/3]",
+                  photos.length === 1 ? "aspect-[21/9]" : "aspect-[4/3]",
                   // the large first photo fills both rows beside the small ones
                   photos.length > 2 && index === 0 && "sm:aspect-auto",
+                  photos.length === 3 && index > 0 && "sm:aspect-[16/7]",
                 )}
               />
               <span className="sr-only"> {t("common.opensInNewTab")}</span>

@@ -6,6 +6,8 @@ import {
   MapPin,
   MapTrifold,
   NavigationArrow,
+  ShieldCheck,
+  Siren,
   SquaresFour,
   Stethoscope,
   type Icon,
@@ -25,6 +27,18 @@ const KIND_ICON: Record<ReturnType<typeof pinKind>, Icon> = {
   hospital: Hospital,
   clinic: Stethoscope,
 };
+
+/** Two letters for the card's mark, from the words of the name that are not the type. */
+function monogram(name: string): string {
+  const generic = /^(health|centre|center|clinic|hospital|district|polyclinic|post|de|du|la|le)$/i;
+  const words = name.split(/\s+/).filter(Boolean);
+  const own = words.filter((w) => !generic.test(w));
+  const pickFrom = own.length > 0 ? own : words;
+  return pickFrom
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? "")
+    .join("");
+}
 
 /** How many insurer chips a card shows before "+N". */
 const INSURERS_SHOWN = 3;
@@ -107,30 +121,43 @@ export function FacilityCard({
       onMouseEnter={onActivate}
       onFocus={onActivate}
       className={cx(
-        "group flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-surface transition-[box-shadow,border-color] duration-200 ease-out-quint hover:border-primary/40 hover:shadow-raised",
+        "ml-lift group relative flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-surface hover:border-primary/40",
         selected && "border-primary shadow-[0_0_0_1px_var(--color-primary)]",
       )}
     >
+      {/* product media: the type's illustration with the facility's monogram, type and badges */}
       <div
         aria-hidden="true"
         className={cx(
-          "relative flex aspect-[16/7] items-center justify-center bg-gradient-to-br",
+          "relative flex aspect-[16/6] items-end overflow-hidden bg-gradient-to-br p-4",
           KIND_MEDIA[kind],
         )}
       >
-        <KindIcon weight="duotone" className="size-14 text-primary/70" />
+        <KindIcon
+          weight="duotone"
+          className="absolute -right-3 -bottom-5 size-32 text-primary/15 transition-transform duration-300 ease-out-quint group-hover:scale-105"
+        />
+        <span className="relative grid size-12 place-items-center rounded-2xl bg-surface text-body font-bold tracking-tight text-primary shadow-card">
+          {monogram(result.name)}
+        </span>
         <span className="absolute top-3 left-3 rounded-full bg-surface/90 px-2.5 py-1 text-caption font-semibold text-fg">
           {t(`booking.types.${result.type}`, { defaultValue: result.type })}
         </span>
+        {result.emergency_department && (
+          <span className="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-danger-bg px-2.5 py-1 text-caption font-semibold text-danger">
+            <Siren weight="bold" className="size-3" />
+            {t("site.emergency.department")}
+          </span>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col gap-3 p-5">
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-0.5">
           <h3 id={`card-${result.slug}`} className="m-0 text-h3 leading-snug">
             <Link
               to={`/facilities/${result.slug}`}
               viewTransition
-              className="inline-flex min-h-target items-center text-fg no-underline hover:text-primary"
+              className="inline-flex min-h-target items-center text-fg no-underline after:absolute after:inset-0 after:content-[''] hover:text-primary"
             >
               {result.name}
             </Link>
@@ -151,24 +178,37 @@ export function FacilityCard({
           )}
         </div>
 
-        <p className="m-0 text-body-sm text-fg-secondary">
+        <div className="flex flex-wrap items-center gap-1.5 text-body-sm">
           {insurers.length > 0 ? (
             <>
-              <span className="font-semibold text-fg">{t("site.card.accepted")}</span>{" "}
-              {insurers.slice(0, INSURERS_SHOWN).join(" · ")}
-              {insurers.length > INSURERS_SHOWN && ` +${insurers.length - INSURERS_SHOWN}`}
+              <span className="sr-only">{t("site.card.accepted")}</span>
+              <ShieldCheck aria-hidden="true" weight="bold" className="size-4 text-primary" />
+              {insurers.slice(0, INSURERS_SHOWN).map((name) => (
+                <span
+                  key={name}
+                  className="rounded-md border border-border px-2 py-0.5 text-caption font-semibold text-fg"
+                >
+                  {name}
+                </span>
+              ))}
+              {insurers.length > INSURERS_SHOWN && (
+                <span className="text-caption font-semibold text-fg-secondary">
+                  +{insurers.length - INSURERS_SHOWN}
+                </span>
+              )}
             </>
           ) : (
-            t("site.card.noInsurance")
+            <span className="text-fg-secondary">{t("site.card.noInsurance")}</span>
           )}
-        </p>
+        </div>
 
-        <div className="mt-auto flex flex-wrap items-center gap-2 pt-2">
+        {/* the controls sit above the card-wide name link (relative z-10) */}
+        <div className="relative z-10 mt-auto flex items-center gap-2 border-t border-border/60 pt-4">
           {join || book ? (
             <Link
               to={`/book/${result.slug}`}
               viewTransition
-              className={buttonClassName({ pill: true })}
+              className={buttonClassName({ pill: true, className: "flex-1" })}
             >
               {join ? t("home.join") : t("home.book")}
             </Link>
@@ -178,8 +218,9 @@ export function FacilityCard({
             viewTransition
             aria-label={`${t("site.card.details")}: ${result.name}`}
             className={buttonClassName({
-              variant: join || book ? "ghost" : "secondary",
+              variant: "secondary",
               pill: true,
+              className: join || book ? undefined : "flex-1",
             })}
           >
             {t("site.card.details")}
@@ -188,10 +229,11 @@ export function FacilityCard({
             <button
               type="button"
               onClick={onShowOnMap}
-              className="ml-auto inline-flex min-h-target cursor-pointer items-center gap-1.5 rounded-full px-3 text-body-sm font-semibold text-link transition-colors duration-150 hover:bg-brand-subtle"
+              aria-label={t("site.home.showOnMap")}
+              title={t("site.home.showOnMap")}
+              className="inline-flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border text-link transition-colors duration-150 hover:border-primary hover:bg-brand-subtle"
             >
-              <MapTrifold aria-hidden="true" className="size-4" />
-              {t("site.home.showOnMap")}
+              <MapTrifold aria-hidden="true" className="size-5" />
             </button>
           )}
         </div>

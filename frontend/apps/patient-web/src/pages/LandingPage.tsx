@@ -125,7 +125,7 @@ function FloatCard({
     <div
       aria-hidden="true"
       className={cx(
-        "absolute flex items-center gap-2.5 rounded-2xl border border-border bg-surface px-3.5 py-2.5 text-body-sm font-semibold text-fg shadow-raised",
+        "ml-float absolute flex items-center gap-2.5 rounded-2xl border border-border/70 bg-surface/95 px-3.5 py-2.5 text-body-sm font-semibold text-fg shadow-raised",
         className,
       )}
     >
@@ -242,9 +242,9 @@ export function LandingPage() {
   return (
     <PublicLayout>
       {/* 1 · Hero: search first, photo with live UI cards beside */}
-      <section aria-labelledby="hero-title" className="border-b border-border bg-surface">
+      <section aria-labelledby="hero-title" className="ml-hero-mesh border-b border-border">
         <PageContainer className="grid items-center gap-10 pt-10 pb-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-14 lg:pt-14 lg:pb-20">
-          <div className="flex min-w-0 animate-enter flex-col items-start gap-5">
+          <div className="ml-hero-seq flex min-w-0 flex-col items-start gap-5">
             <p className="m-0 inline-flex items-center gap-2 rounded-full bg-brand-subtle px-3 py-1.5 text-body-sm font-semibold text-on-brand-subtle">
               <span aria-hidden="true" className="ml-live-dot" />
               {t("site.home2.tag")}
@@ -262,7 +262,7 @@ export function LandingPage() {
             <form
               onSubmit={onSearch}
               role="search"
-              className="grid w-full gap-2 rounded-3xl border border-border bg-page p-2 md:grid-cols-[minmax(0,1fr)_12rem_auto]"
+              className="grid w-full gap-2 rounded-3xl border border-border/70 bg-surface p-2 shadow-raised md:grid-cols-[minmax(0,1fr)_12rem_auto]"
             >
               <SearchBar
                 id="home-search"
@@ -343,14 +343,12 @@ export function LandingPage() {
         className="border-b border-border bg-surface"
       >
         <PageContainer>
-          <ul className="m-0 grid list-none grid-cols-2 gap-px p-0 md:grid-cols-4">
+          <ul className="m-0 grid list-none grid-cols-2 p-0 md:grid-cols-4 md:divide-x md:divide-border">
             {trust.map(({ icon: TrustIcon, value, label }) => (
-              <li key={label} className="flex items-center gap-3 py-5">
-                <TrustIcon
-                  aria-hidden="true"
-                  weight="duotone"
-                  className="size-7 shrink-0 text-primary"
-                />
+              <li key={label} className="flex items-center gap-3 py-5 md:px-6 md:first:pl-0">
+                <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-subtle text-primary">
+                  <TrustIcon aria-hidden="true" weight="duotone" className="size-6" />
+                </span>
                 <span className="flex flex-col">
                   <span className="font-heading text-h3 leading-tight font-extrabold text-fg tabular-nums">
                     {value}
@@ -378,7 +376,7 @@ export function LandingPage() {
                 <Link
                   to={`/find-care?service=${key}`}
                   viewTransition
-                  className="group flex min-h-20 items-center gap-4 rounded-2xl border border-border bg-surface p-4 text-fg no-underline transition-[border-color,box-shadow] duration-200 ease-out-quint hover:border-primary/50 hover:shadow-card"
+                  className="ml-lift group flex min-h-20 items-center gap-4 rounded-2xl border border-border bg-surface p-4 text-fg no-underline hover:border-primary/50"
                 >
                   <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-brand-subtle text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-on-primary">
                     <TileIcon aria-hidden="true" weight="duotone" className="size-6" />
@@ -386,7 +384,10 @@ export function LandingPage() {
                   <span className="flex min-w-0 flex-1 flex-col">
                     <span className="font-semibold">{t(`landing.services.${key}`)}</span>
                     <span className="text-body-sm text-fg-secondary tabular-nums">
-                      {all.data ? t("site.home2.facilityCount", { count: countFor(key) }) : " "}
+                      {/* a zero reads as an empty shelf: only real counts are shown */}
+                      {all.data && countFor(key) > 0
+                        ? t("site.home2.facilityCount", { count: countFor(key) })
+                        : " "}
                     </span>
                   </span>
                   <ArrowRight

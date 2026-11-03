@@ -2,8 +2,6 @@
   "verified": "Vérifié",
   "openNow": "Ouvert",
   "closedNow": "Fermé",
-  "fee": "Tarif",
-  "yourShare": "Vous payez",
   "referralTitle": "Mutuelle et transferts",
   "referralHint": "La Mutuelle peut ne pas couvrir une visite ici sans transfert d’un centre de santé. Vous pouvez quand même réserver.",
   "load": {
@@ -99,8 +97,6 @@
     "insurance": "Assurance",
     "noInsurance": "Je paie moi-même",
     "notAccepted": "{{insurer}} n’est pas acceptée ici. Vous pouvez réserver et payer vous-même.",
-    "estimate": "Votre part estimée",
-    "estimateHint": "L’établissement confirme le montant lors de la visite.",
     "cancelRule": "Annulation ou changement d’heure gratuits jusqu’à 2 heures avant.",
     "confirm": "Réserver cette visite",
     "failed": "Impossible de réserver cette visite.",

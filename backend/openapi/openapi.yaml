@@ -18158,12 +18158,6 @@ components:
     Cost:
       type: object
       properties:
-        fee_rwf:
-          type: integer
-          nullable: true
-        patient_share_rwf:
-          type: integer
-          nullable: true
         insurer_code:
           type: string
           nullable: true
@@ -18171,10 +18165,8 @@ components:
           type: boolean
           nullable: true
       required:
-      - fee_rwf
       - insurer_accepted
       - insurer_code
-      - patient_share_rwf
     CouncilEnum:
       enum:
       - rmdc
@@ -20957,12 +20949,6 @@ components:
           type: array
           items:
             type: string
-        fee_rwf:
-          type: integer
-          nullable: true
-        patient_share_rwf:
-          type: integer
-          nullable: true
         next_slot_at:
           type: string
           format: date-time
@@ -20996,7 +20982,6 @@ components:
       - allows_remote_join
       - distance_km
       - district
-      - fee_rwf
       - insurers
       - lat
       - level_of_care
@@ -21005,7 +20990,6 @@ components:
       - next_slot_at
       - open_now
       - ownership
-      - patient_share_rwf
       - queue_load
       - referral_hint
       - sector
@@ -28016,22 +28000,10 @@ components:
           type: object
           additionalProperties:
             type: string
-        fee_rwf:
-          type: integer
-          nullable: true
         insurers:
           type: array
           items:
             type: string
-        insurer_shares:
-          type: object
-          additionalProperties:
-            type: integer
-        insurer_share_rwf:
-          type: object
-          additionalProperties:
-            type: integer
-            nullable: true
         bookable:
           type: boolean
         remote_join:
@@ -28061,10 +28033,7 @@ components:
       required:
       - bookable
       - code
-      - fee_rwf
       - id
-      - insurer_share_rwf
-      - insurer_shares
       - insurers
       - max_age_months
       - min_age_months

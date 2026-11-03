@@ -2,8 +2,6 @@
   "verified": "Cyemejwe",
   "openNow": "Kirakora ubu",
   "closedNow": "Gifunze ubu",
-  "fee": "Igiciro",
-  "yourShare": "Wishyura",
   "referralTitle": "Mituweli n’iyoherezwa",
   "referralHint": "Mituweli ishobora kutishyura isura hano utoherejwe n’ikigo nderabuzima. Ushobora gufata gahunda uko byagenda kose.",
   "load": {
@@ -99,8 +97,6 @@
     "insurance": "Ubwishingizi",
     "noInsurance": "Nziyishyurira",
     "notAccepted": "{{insurer}} ntiyakirwa hano. Ushobora gufata gahunda ukiyishyurira.",
-    "estimate": "Uruhare rwawe ruteganyijwe",
-    "estimateHint": "Ikigo cyemeza amafaranga ku munsi w’isura.",
     "cancelRule": "Ushobora gusiba cyangwa guhindura isaha ku buntu kugeza amasaha 2 mbere.",
     "confirm": "Emeza gahunda",
     "failed": "Ntitwashoboye gufata iyi gahunda.",

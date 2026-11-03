@@ -29,7 +29,7 @@ import { Link, useParams, useSearchParams } from "react-router";
 import { useApi } from "../../app/services";
 import { PageHeading } from "../../components/PageHeading";
 import { PublicLayout } from "../../layout/PublicLayout";
-import { day, pick, rwf, time } from "./discovery";
+import { day, pick, time } from "./discovery";
 import { LoadBadge } from "./SearchPage";
 
 const WEEKDAYS = [0, 1, 2, 3, 4, 5, 6];
@@ -49,9 +49,6 @@ function ServiceRow({ slug, service }: { slug: string; service: PublicService })
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <h3 className="m-0 text-h3">{pick(service.name_i18n, lang)}</h3>
         <p className="m-0 flex flex-wrap items-center gap-x-4 gap-y-1 text-body-sm text-fg-secondary">
-          {service.fee_rwf !== null && (
-            <span className="font-semibold text-fg tabular-nums">{rwf(service.fee_rwf, lang)}</span>
-          )}
           <LoadBadge load={service.queue_load} />
           {service.next_slot_at && (
             <span>

@@ -267,8 +267,6 @@ def test_patient_refusals_released_holds_and_insurer_estimates(
     )
     assert made.status_code == 201, made.content
     assert made.json()["cost"] == {
-        "fee_rwf": 5000,
-        "patient_share_rwf": 5000,
         "insurer_code": "mmi",
         "insurer_accepted": False,
     }

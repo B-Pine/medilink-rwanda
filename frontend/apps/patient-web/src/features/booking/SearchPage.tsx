@@ -39,7 +39,6 @@ import {
   INSURER_CODES,
   INSURER_KEYS,
   pick,
-  rwf,
   SERVICE_CODES,
   SERVICE_KEYS,
   field,
@@ -93,10 +92,6 @@ export function FacilityCard({
 }) {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage ?? "rw";
-  const share =
-    result.patient_share_rwf !== null && result.patient_share_rwf !== result.fee_rwf
-      ? result.patient_share_rwf
-      : null;
   return (
     <article
       aria-labelledby={`fac-${result.slug}`}
@@ -144,23 +139,6 @@ export function FacilityCard({
         )}
       </div>
       <div className="flex shrink-0 flex-col justify-between gap-3 border-t border-border pt-4 sm:w-56 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-5">
-        <div className="flex flex-col gap-0.5">
-          {result.fee_rwf !== null && (
-            <>
-              <span className="text-body-sm text-fg-muted">
-                {share !== null ? t("booking.yourShare") : t("booking.fee")}
-              </span>
-              <span className="font-heading text-h2 tabular-nums">
-                {rwf(share ?? result.fee_rwf, lang)}
-              </span>
-              {share !== null && (
-                <span className="text-body-sm text-fg-muted line-through tabular-nums">
-                  {rwf(result.fee_rwf, lang)}
-                </span>
-              )}
-            </>
-          )}
-        </div>
         {result.next_slot_at ? (
           <p className="m-0 flex items-center gap-1.5 text-body-sm font-semibold text-fg">
             <CalendarCheck aria-hidden="true" className="size-5 text-brand" />

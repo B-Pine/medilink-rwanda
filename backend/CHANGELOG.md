@@ -8,6 +8,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · No prices in discovery or booking (U-01, contract sprint-05 D-14)
+
+- Changed: P1 search results drop `fee_rwf` and `patient_share_rwf`; P2 profile services drop
+  `fee_rwf`, `insurer_shares` and `insurer_share_rwf`; `Booking.cost` keeps only `insurer_code`
+  and `insurer_accepted`. Tariffs and insurer rules still drive the bill (S8).
+
 ### Sprint 9b · Catalogue wiring (contract sprint-09 §11)
 
 - `medilink.notifications.wiring`: domain signals now reach patients and staff through

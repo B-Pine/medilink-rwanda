@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 3723.
+Keys: 3719.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -2795,8 +2795,6 @@ File: `apps/patient-web/src/features/booking/locales/rw.json`
 | `verified` | Cyemejwe | Verified | needs native-speaker review |
 | `openNow` | Kirakora ubu | Open now | needs native-speaker review |
 | `closedNow` | Gifunze ubu | Closed now | needs native-speaker review |
-| `fee` | Igiciro | Fee | needs native-speaker review |
-| `yourShare` | Wishyura | You pay | needs native-speaker review |
 | `referralTitle` | Mituweli n’iyoherezwa | Mutuelle and referrals | needs native-speaker review |
 | `referralHint` | Mituweli ishobora kutishyura isura hano utoherejwe n’ikigo nderabuzima. Ushobora gufata gahunda uko byagenda kose. | Mutuelle may not cover a visit here without a transfer from a health centre. You can still book. | needs native-speaker review |
 | `load.low` | Gutegereza bike | Short wait | needs native-speaker review |
@@ -2879,8 +2877,6 @@ File: `apps/patient-web/src/features/booking/locales/rw.json`
 | `flow.insurance` | Ubwishingizi | Insurance | needs native-speaker review |
 | `flow.noInsurance` | Nziyishyurira | I'll pay myself | needs native-speaker review |
 | `flow.notAccepted` | {{insurer}} ntiyakirwa hano. Ushobora gufata gahunda ukiyishyurira. | {{insurer}} is not accepted here. You can still book and pay yourself. | needs native-speaker review |
-| `flow.estimate` | Uruhare rwawe ruteganyijwe | Your estimated share | needs native-speaker review |
-| `flow.estimateHint` | Ikigo cyemeza amafaranga ku munsi w’isura. | The facility confirms the amount at the visit. | needs native-speaker review |
 | `flow.cancelRule` | Ushobora gusiba cyangwa guhindura isaha ku buntu kugeza amasaha 2 mbere. | You can cancel or change the time for free until 2 hours before. | needs native-speaker review |
 | `flow.confirm` | Emeza gahunda | Book this visit | needs native-speaker review |
 | `flow.failed` | Ntitwashoboye gufata iyi gahunda. | We couldn't book this visit. | needs native-speaker review |

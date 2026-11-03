@@ -177,11 +177,11 @@ describe("reception: remote arrival and booked check-in", () => {
 });
 
 describe("public facility profile (P2, R4 #102)", () => {
-  it("gives the patient share in RWF per insurer", async () => {
+  it("lists accepted insurers and no amounts (U-01)", async () => {
     const facility = await api.booking.facility(FACILITIES.kigaliClinic.slug);
     const general = facility.services.find((s) => s.code === "general_consultation")!;
-    expect(general.fee_rwf).toBe(8000);
-    expect(general.insurer_share_rwf).toEqual({ rama: 1200, mmi: 800 });
+    expect(general.insurers).toEqual(["rama", "mmi"]);
+    expect(general).not.toHaveProperty("fee_rwf");
   });
 });
 

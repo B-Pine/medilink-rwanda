@@ -9,6 +9,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · No prices in discovery or booking (U-01, contract sprint-05 D-14)
+
+- Changed: search results, facility services, the booking flow and booking cards no longer show a
+  fee or patient share; the review keeps the "insurer not accepted" warning. API types and mocks
+  follow the contract; the unused `rwf` helper and price strings are removed.
+
 ### Remediation R8 · UI kit, charts, pre-rendering and Playwright (#91)
 
 - ui: violet queue tokens (`#6D28D9` on `#F5F3FF`; priority solid, 7.10:1) and `Badge`

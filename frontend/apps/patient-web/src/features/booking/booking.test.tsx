@@ -57,11 +57,11 @@ describe("booking flow (S5-F3)", () => {
     await user.click(screen.getByRole("button", { name: "Fever" }));
     await user.click(screen.getByRole("button", { name: "Continue" }));
 
-    // design 07 §3.2: facility, time, insurance, your estimated share, cancellation rule
+    // design 07 §3.2: facility, time, insurance, cancellation rule; no amounts (U-01)
     expect(await screen.findByText("Step 5 of 5")).toBeInTheDocument();
     expect(screen.getAllByText("Kigali Clinic").length).toBeGreaterThan(0);
     expect(screen.getByLabelText("Insurance")).toBeInTheDocument();
-    expect(screen.getByText("Your estimated share")).toBeInTheDocument();
+    expect(screen.queryByText(/RWF/)).not.toBeInTheDocument();
     expect(screen.getByText(/cancel or change the time for free/)).toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
     await user.click(screen.getByRole("button", { name: "Book this visit" }));

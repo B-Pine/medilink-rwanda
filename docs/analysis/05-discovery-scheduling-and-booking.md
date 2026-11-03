@@ -20,7 +20,6 @@ Results appear as a **list and a map**. Each result shows:
 - distance
 - open or closed status
 - accepts your insurance: yes / no / unknown
-- consultation fee and **your estimated share**
 - next available slot
 - current queue load: low / medium / high, plus the estimated wait for walk-ins
 
@@ -29,7 +28,7 @@ Results appear as a **list and a map**. Each result shows:
 Shows:
 - description, photos, address, map, directions link
 - hours and upcoming closures
-- services, with fees and insurers accepted per service
+- services, with insurers accepted per service (no fees: U-01)
 - doctors (name, specialty, days present)
 - current queue load
 - ratings (P2)
@@ -135,7 +134,7 @@ sequenceDiagram
 | Booking by reception (phone call) | Allowed, also for patients without an account (contact by phone call) |
 | Reason for visit | Required: pick from symptom list + optional free text (**feeds the AI training data**, see [11](11-ai-symptom-checker.md)) |
 | Insurance | Patient selects the insurance to use; the system warns if the facility doesn't accept it |
-| Cost estimate | Fee and estimated patient share shown before confirming |
+| Insurance check | Whether the facility accepts the patient's insurer and whether a transfer letter is needed; no amounts before the visit (U-01) |
 
 ### No-show policy
 
@@ -182,7 +181,7 @@ Disruptions include a doctor absent, a facility closure, or a schedule change.
 | ID | Requirement | Phase |
 |---|---|---|
 | FR-SCH-01 | Search facilities by location, service, insurance, open status, level of care and availability; list and map | P1 |
-| FR-SCH-02 | Facility profile with services, fees, estimated patient share, insurers, hours, doctors, queue load | P1 |
+| FR-SCH-02 | Facility profile with services, insurers, hours, doctors, queue load (no fees: U-01) | P1 |
 | FR-SCH-03 | Public facility pages that search engines can index | P1 |
 | FR-SCH-04 | Referral pathway hint for Mutuelle patients choosing higher-level facilities | P1 |
 | FR-SCH-05 | Facility calendar with hours, closures, holidays, Umuganda | P1 |

@@ -160,9 +160,8 @@ def booking_data(b: Booking) -> dict[str, Any]:
         "starts_at": b.starts_at,
         "ends_at": slot.ends_at if slot else None,
         "service_point": point.name if point else None,
+        # U-01 (S5 D-14): which insurer and whether it is accepted, never an amount
         "cost": {
-            "fee_rwf": b.estimated_fee_rwf,
-            "patient_share_rwf": b.estimated_patient_share_rwf,
             "insurer_code": b.insurer_code,
             "insurer_accepted": b.insurer_accepted,
         },
@@ -328,14 +327,9 @@ class FacilityProfileView(PublicView):
                         "id": sv.pk,
                         "code": sv.catalogue_item_code,
                         "name_i18n": sv.name_i18n,
-                        "fee_rwf": rows[sv.pk].fee_rwf if sv.pk in rows else None,
                         "insurers": sorted((rows[sv.pk].insurers or {}).keys())
                         if sv.pk in rows
                         else [],
-                        "insurer_shares": listing.insurer_bp(rows[sv.pk]) if sv.pk in rows else {},
-                        "insurer_share_rwf": listing.insurer_share_rwf(rows[sv.pk])
-                        if sv.pk in rows
-                        else {},
                         "bookable": sv.is_bookable,
                         "remote_join": sv.allows_remote_join,
                         "walk_in": sv.allows_walk_in,

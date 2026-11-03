@@ -1,5 +1,5 @@
 import type { I18n } from "@medilink/api-client";
-import { formatDate, formatMoney, formatTime, kigaliHour } from "@medilink/ui/i18n";
+import { formatDate, formatTime, kigaliHour } from "@medilink/ui/i18n";
 
 /**
  * Discovery choices shared by the landing hero, Find care and search (design 06 §2 H1). Service
@@ -48,11 +48,6 @@ export function searchUrl(choice: { service?: string; district?: string; insurer
 export function pick(value: I18n | undefined, language: string): string {
   if (!value) return "";
   return value[language as keyof I18n] ?? value.en ?? Object.values(value)[0] ?? "";
-}
-
-export function rwf(amount: number | null | undefined, language: string): string {
-  if (amount === null || amount === undefined) return "";
-  return formatMoney(amount, language);
 }
 
 export const time = (iso: string, language: string): string => formatTime(iso, language);

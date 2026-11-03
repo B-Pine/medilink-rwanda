@@ -52,10 +52,8 @@ export interface FacilityResult {
   service_code: string;
   service_name_i18n: I18n;
   accepts_insurance: "yes" | "no" | "unknown";
-  /** Accepted insurer codes, sorted (public-pages contract §2.1). */
+  /** Accepted insurer codes, sorted (public-pages contract §2.1). No amounts (U-01, S5 D-14). */
   insurers: string[];
-  fee_rwf: number | null;
-  patient_share_rwf: number | null;
   next_slot_at: string | null;
   queue_load: QueueLoad | null;
   /** People waiting now and the wait for a new arrival (public-pages contract §2.1). */
@@ -83,15 +81,8 @@ export interface PublicService {
   id: Uuid;
   code: string;
   name_i18n: I18n;
-  fee_rwf: number | null;
+  /** Insurers that accept this service. No fee or share is published (U-01, S5 D-14). */
   insurers: string[];
-  /** Patient share per insurer, in basis points of the fee. */
-  insurer_shares: Record<string, number>;
-  /**
-   * R4 (#102): the patient's share in RWF per accepted insurer, after exclusions and ceilings;
-   * `null` when the insurer does not cover this service. Use this, not `insurer_shares`.
-   */
-  insurer_share_rwf: Record<string, number | null>;
   bookable: boolean;
   remote_join: boolean;
   walk_in: boolean;
@@ -188,9 +179,8 @@ export interface Booking {
   starts_at: string;
   ends_at: string | null;
   service_point: string | null;
+  /** Which insurer and whether the facility accepts it; amounts appear only on the bill. */
   cost: {
-    fee_rwf: number | null;
-    patient_share_rwf: number | null;
     insurer_code: string | null;
     insurer_accepted: boolean | null;
   };

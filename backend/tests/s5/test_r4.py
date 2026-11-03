@@ -454,20 +454,18 @@ def test_patient_share_is_one_rule_for_listing_profile_and_booking(
         excluded = svc.estimate(clinic.pk, bookable["service_id"], on, "sanlam")
         assert (excluded.patient_share_rwf, excluded.insurer_accepted) == (5000, False)
     api = APIClient()
-    for code, share, accepts in (
-        ("mmi", 2000, "yes"),
-        ("sanlam", 5000, "no"),
-        ("rama", 500, "yes"),
-    ):
+    for code, accepts in (("mmi", "yes"), ("sanlam", "no"), ("rama", "yes")):
         [row] = api.post(
             f"{PUB}facilities/search/",
             {"service_code": "general_consultation", "insurer_code": code},
             format="json",
         ).json()["results"]
-        assert (row["patient_share_rwf"], row["accepts_insurance"]) == (share, accepts), code
+        assert row["accepts_insurance"] == accepts, code
+        # U-01 (S5 D-14): no amount is published
+        assert "patient_share_rwf" not in row and "fee_rwf" not in row
     service = api.get(f"{PUB}facilities/{clinic.slug}/").json()["services"][0]
-    assert service["insurer_share_rwf"] == {"mmi": 2000, "rama": 500}
-    assert service["insurer_shares"] == {"mmi": 2000, "rama": 1000}
+    assert service["insurers"] == ["mmi", "rama"]
+    assert not {"fee_rwf", "insurer_shares", "insurer_share_rwf"} & service.keys()
 
 
 # ---- ordering -----------------------------------------------------------------------------------

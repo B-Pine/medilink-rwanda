@@ -13,6 +13,8 @@ export const publicFeature: FeatureRoutes = {
       path: "/check-symptoms",
       lazy: lazy(() => import("./SymptomCheckerPage"), "SymptomCheckerPage"),
     },
+    // AI symptom assistant, test phase (issue #159)
+    { path: "/assistant", lazy: lazy(() => import("./AssistantPage"), "AssistantPage") },
     // about, emergency, privacy and terms moved to the `site` feature (upgrade 11 §5)
   ],
 };

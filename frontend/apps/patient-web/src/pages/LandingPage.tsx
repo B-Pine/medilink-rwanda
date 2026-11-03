@@ -2,14 +2,11 @@ import type { FacilitySearchInput } from "@medilink/api-client";
 import {
   ArrowRight,
   Baby,
-  Buildings,
   ChartLineUp,
   CheckCircle,
   Crosshair,
   Eye,
-  Globe,
   MagnifyingGlass,
-  ShieldCheck,
   Stethoscope,
   Syringe,
   Ticket,
@@ -182,7 +179,6 @@ export function LandingPage() {
       .slice(0, 6);
   }, [results.data, sort]);
   // real numbers only: facilities and per-service counts from the live listing
-  const facilityCount = new Set((all.data ?? []).map((r) => r.slug)).size;
   const countFor = (key: ServiceKey) =>
     new Set(
       (all.data ?? []).filter((r) => r.service_code === SERVICE_CODES[key]).map((r) => r.slug),
@@ -197,31 +193,12 @@ export function LandingPage() {
     void navigate(query ? `/find-care?${query}` : "/find-care", { viewTransition: true });
   };
 
-  const trust = [
-    {
-      icon: Buildings,
-      value: all.data ? String(facilityCount) : "—",
-      label: t("site.home2.trust.facilities"),
-    },
-    { icon: Globe, value: "30", label: t("site.home2.trust.districts") },
-    { icon: ShieldCheck, value: "3", label: t("site.home2.trust.languages") },
-    {
-      icon: UserCircle,
-      value: t("site.home2.trust.noAccountValue"),
-      label: t("site.home2.trust.noAccount"),
-    },
-  ];
-
   return (
     <PublicLayout>
       {/* 1 · Hero: search first, photo with live UI cards beside */}
       <section aria-labelledby="hero-title" className="ml-hero-mesh border-b border-border">
         <PageContainer className="grid items-center gap-10 pt-10 pb-14 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:gap-12 lg:pt-14 lg:pb-20">
           <div className="ml-hero-seq flex min-w-0 flex-col items-start gap-5">
-            <p className="m-0 inline-flex items-center gap-2 rounded-full bg-brand-subtle px-3 py-1.5 text-body-sm font-semibold text-on-brand-subtle">
-              <span aria-hidden="true" className="ml-live-dot" />
-              {t("site.home2.tag")}
-            </p>
             <PageHeading
               id="hero-title"
               title={t("site.home2.title")}
@@ -298,30 +275,6 @@ export function LandingPage() {
               />
             </div>
           </div>
-        </PageContainer>
-      </section>
-
-      {/* 2 · Trust strip: only real numbers */}
-      <section
-        aria-label={t("site.home2.trust.label")}
-        className="border-b border-border bg-surface"
-      >
-        <PageContainer>
-          <ul className="m-0 grid list-none grid-cols-2 p-0 md:grid-cols-4 md:divide-x md:divide-border">
-            {trust.map(({ icon: TrustIcon, value, label }) => (
-              <li key={label} className="flex items-center gap-3 py-5 md:px-6 md:first:pl-0">
-                <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-subtle text-primary">
-                  <TrustIcon aria-hidden="true" weight="duotone" className="size-6" />
-                </span>
-                <span className="flex flex-col">
-                  <span className="font-heading text-h3 leading-tight font-extrabold text-fg tabular-nums">
-                    {value}
-                  </span>
-                  <span className="text-body-sm text-fg-secondary">{label}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
         </PageContainer>
       </section>
 

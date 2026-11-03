@@ -41,6 +41,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   with a plain header row (type icon, type, emergency) instead of an illustrated cover.
 - Changed: public pages use more of wide screens (container 1200 → 1408 px, header, footer and
   Find Care aligned to it); Find Care keeps one card per row until 1792 px so actions never clip.
+- Removed: the landing page's "Live waiting times at verified facilities" tag and the trust strip
+  (verified facilities, districts, languages, free) under the hero.
 - Fixed: home service tiles no longer show "0 facilities".
 - Fixed: sign-in, sign-up and password screens use the public site's palette (the button green
   matches the site), the logo no longer squashes on phones, and the top bar fits 360 px (the

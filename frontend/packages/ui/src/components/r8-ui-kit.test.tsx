@@ -201,11 +201,11 @@ describe("DataTable (design 08 §2)", () => {
     expect(search.id).not.toContain("Bills");
     expect(screen.getByRole("columnheader", { name: "Amount (RWF)" })).toHaveClass(
       "text-right",
-      "px-4",
+      "px-5",
     );
     const cells = screen.getAllByRole("cell");
-    expect(cells[1]).toHaveClass("text-right", "tabular-nums", "px-4");
-    expect(cells[0]).toHaveClass("px-4");
+    expect(cells[1]).toHaveClass("text-right", "tabular-nums", "px-5");
+    expect(cells[0]).toHaveClass("px-5");
     // card list (under 640 px) names the column from meta.label
     expect(screen.getByText("Amount (RWF)", { selector: "dt" })).toBeInTheDocument();
   });

@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5044.
+Keys: 5109.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -1968,6 +1968,12 @@ File: `apps/staff-web/src/features/patients/locales/rw.json`
 | `insurance.rejectConsequences` | Ikarita izagaragara nk'iyanzwe kugeza yongeye kugenzurwa. | The card will show as rejected until someone checks it again. | needs native-speaker review |
 | `insurance.reason` | Impamvu | Reason | needs native-speaker review |
 | `insurance.add` | Ongeraho ikarita | Add a card | needs native-speaker review |
+| `insurance.card.front` | Imbere y'ikarita | Card front | needs native-speaker review |
+| `insurance.card.back` | Inyuma y'ikarita | Card back | needs native-speaker review |
+| `insurance.card.added` | Ifoto yongeweho | Photo added | needs native-speaker review |
+| `insurance.card.missing` | Nta foto iriho | No photo yet | needs native-speaker review |
+| `insurance.card.add` | Ongeraho ifoto | Add photo | needs native-speaker review |
+| `insurance.card.view` | Reba | View | needs native-speaker review |
 | `health.noKnownAllergies` | Nta allergie izwi | No known allergies | needs native-speaker review |
 | `health.allergies` | Allergie | Allergies | needs native-speaker review |
 | `health.conditions` | Indwara | Conditions | needs native-speaker review |
@@ -2050,6 +2056,13 @@ File: `apps/staff-web/src/features/patients/locales/rw.json`
 | `accessReason.reasons.other` | Ikindi | Other | needs native-speaker review |
 | `accessReason.reasonText` | Sobanura impamvu | Explain the reason | needs native-speaker review |
 | `accessReason.open` | Fungura dosiye | Open record | needs native-speaker review |
+| `contact.title` | Uwo kuvugisha | Contact person | needs native-speaker review |
+| `contact.hint` | Ku murwayi udafite telefone: umuvandimwe cyangwa umujyanama w'ubuzima uhabwa ubutumwa bwo kwibutsa, umurwayi abyemeye. | For a patient without a phone: a relative or a community health worker who gets reminders and alerts, with the patient's consent. | needs native-speaker review |
+| `contact.name` | Izina | Name | needs native-speaker review |
+| `contact.phone` | Telefone | Phone | needs native-speaker review |
+| `contact.newPhone` | Telefone nshya (siga ubusa ngo igume) | New phone (leave empty to keep it) | needs native-speaker review |
+| `contact.relationship` | Isano | Relationship | needs native-speaker review |
+| `contact.relationshipHint` | Urugero: umukobwa, umuturanyi, umujyanama w'ubuzima | For example: daughter, neighbour, community health worker | needs native-speaker review |
 
 ## staff-web feature: pharmacy (namespace pharmacy)
 
@@ -2626,6 +2639,10 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `flags.booked` | Yafashe gahunda {{time}} | Booked {{time}} | needs native-speaker review |
 | `flags.lateWalkIn` | Yakererewe: nk'utafashe gahunda | Late: walk-in | needs native-speaker review |
 | `flags.remote` | Ari kure, ntarahagera | Remote, not here yet | needs native-speaker review |
+| `flags.redFlag` | Ikimenyetso cy'akaga | Danger sign | needs native-speaker review |
+| `flags.unpaid` | Ntiyishyuye | Not paid | needs native-speaker review |
+| `flags.insurance` | Ubwishingizi bwo kugenzura | Insurance to verify | needs native-speaker review |
+| `flags.noPhone` | Nta telefone | No phone | needs native-speaker review |
 | `priority.elderly` | Umusaza/Umukecuru | Elderly | needs native-speaker review |
 | `priority.pregnant` | Atwite | Pregnant | needs native-speaker review |
 | `priority.disability` | Ufite ubumuga | Disability | needs native-speaker review |
@@ -2712,6 +2729,8 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `board.expectedCheckedIn` | {{name}} yanditswe: {{ticket}} | {{name}} checked in: {{ticket}} | needs native-speaker review |
 | `board.expectedLateWalkIn` | Yahageze igihe cyo gutegereza cyarenze, ashyirwa ku murongo nk'utafashe gahunda. Mumuhe ikindi gihe niba abishaka. | Arrived after the grace time, so queued as a walk-in. Offer a new time if they prefer. | needs native-speaker review |
 | `board.findPatient` | Shaka umurwayi: izina, telefoni, indangamuntu cyangwa nimero ya dosiye | Find a patient: name, phone, national ID or file number | needs native-speaker review |
+| `board.intakeDone` | Impamvu yatanzwe | Intake done | needs native-speaker review |
+| `board.intakeMissing` | Nta mpamvu | No intake | needs native-speaker review |
 | `panel.service` | Serivisi | Service | needs native-speaker review |
 | `panel.stage` | Intambwe | Stage | needs native-speaker review |
 | `panel.position` | Umwanya | Place | needs native-speaker review |
@@ -2730,6 +2749,10 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `panel.timeline` | Ibyabaye | What happened | needs native-speaker review |
 | `panel.remoteClaimed` | Umurwayi yakanze "Nahageze". Reba ko ari ku biro, hanyuma wemeze. | The patient tapped "I'm here". Check they are at the desk, then confirm. | needs native-speaker review |
 | `panel.remoteNotArrived` | Yiyandikishije ari mu rugo kandi ntaremezwa. Emeza igihe umurwayi ageze ku biro. | Joined from home and not confirmed yet. Confirm when the patient is at the desk. | needs native-speaker review |
+| `panel.patientWords` | Uko umurwayi abivuga | In the patient's words | needs native-speaker review |
+| `panel.raiseEmergency` | Shyira mu byihutirwa | Raise to emergency | needs native-speaker review |
+| `panel.raiseEmergencyHint` | Umurwayi ajya imbere ku murongo ubu. Vuga icyo wabonye, urugero "ububabare mu gatuza, ahumeka nabi". | The patient goes to the top of the queue now. Say what you saw, for example "chest pain, struggling to breathe". | needs native-speaker review |
+| `panel.checkInsurance` | Genzura ubwishingizi: fotora ikarita, hanyuma wemeze | Check insurance: photo of the card, then verify | needs native-speaker review |
 | `checkIn.title` | Andika umurwayi | Check in a patient | needs native-speaker review |
 | `checkIn.back` | Subira inyuma | Back | needs native-speaker review |
 | `checkIn.submit` | Andika | Check in | needs native-speaker review |
@@ -2912,6 +2935,45 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `flow.slowDetail_other` | Abantu {{count}}, hagati: iminota {{minutes}} kuva bahageze. | {{count}} people, median {{minutes}} min since arriving. | needs native-speaker review |
 | `flow.people_one` | Umuntu {{count}} | {{count}} person | needs native-speaker review |
 | `flow.people_other` | Abantu {{count}} | {{count}} people | needs native-speaker review |
+| `code.title` | Kwakira hakoreshejwe kode ya gahunda | Check in by booking code | needs native-speaker review |
+| `code.label` | Kode ya gahunda | Booking code | needs native-speaker review |
+| `code.placeholder` | urugero K03M7Q | e.g. K03M7Q | needs native-speaker review |
+| `code.find` | Shaka | Find | needs native-speaker review |
+| `code.notFound` | Nta gahunda ifite iyi kode hano uyu munsi cyangwa nyuma. Genzura kode n'umurwayi, cyangwa umushake ku izina. | No booking with this code here for today or later. Check the code with the patient, or find them by name. | needs native-speaker review |
+| `code.onDay` | Gahunda yo ku wa {{date}} | Booked for {{date}} | needs native-speaker review |
+| `code.notToday` | Si uyu munsi | Not today | needs native-speaker review |
+| `code.status.checked_in` | Yamaze kwakirwa | Already checked in | needs native-speaker review |
+| `code.status.cancelled` | Yahagaritswe | Cancelled | needs native-speaker review |
+| `code.status.late_cancelled` | Yahagaritswe atinze | Cancelled late | needs native-speaker review |
+| `code.status.no_show` | Ntiyaje | Missed | needs native-speaker review |
+| `code.status.superseded` | Yahinduwe | Changed | needs native-speaker review |
+| `reception.title` | Kwakira abarwayi | Front desk | needs native-speaker review |
+| `reception.openBoard` | Fungura ikibaho cy'umurongo | Open the queue board | needs native-speaker review |
+| `reception.numbers` | Uyu munsi ku kwakira | Today at the front desk | needs native-speaker review |
+| `reception.waiting` | Bategereje ubu | Waiting now | needs native-speaker review |
+| `reception.expected` | Bagitegerejwe | Still expected | needs native-speaker review |
+| `reception.claims` | "Ndahari" byo kwemeza | "I'm here" to confirm | needs native-speaker review |
+| `reception.missed` | Abataje uyu munsi | Missed today | needs native-speaker review |
+| `reception.late_one` | Gahunda {{count}} yatinze | {{count}} booking running late | needs native-speaker review |
+| `reception.late_other` | Gahunda {{count}} zatinze | {{count}} bookings running late | needs native-speaker review |
+| `reception.collected` | Ayakiriwe mu isanduku yanjye (RWF) | Collected in my shift (RWF) | needs native-speaker review |
+| `reception.noShift` | Nta sanduku ifunguye | No cash shift open | needs native-speaker review |
+| `reception.noClaims` | Nta bahageze bo kwemeza. | No arrivals to confirm. | needs native-speaker review |
+| `reception.openShift` | Fungura isanduku yawe mbere yo kwakira amafaranga | Open your cash shift before taking payments | needs native-speaker review |
+| `reception.next` | Abakurikira kuza | Next arrivals | needs native-speaker review |
+| `reception.more_one` | Abandi {{count}} ku kibaho | {{count}} more on the board | needs native-speaker review |
+| `reception.more_other` | Abandi {{count}} ku kibaho | {{count}} more on the board | needs native-speaker review |
+| `print.print` | Capa | Print | needs native-speaker review |
+| `print.hint` | Imashini ya 80 mm; uyihitemo mu idirishya ryo gucapa. | 80 mm thermal printer; choose it in the print window. | needs native-speaker review |
+| `print.noTicket` | Uru ruzinduko nta tike rufite. | This visit has no ticket. | needs native-speaker review |
+| `print.yourNumber` | Nimero yawe | Your number | needs native-speaker review |
+| `print.wait` | Igihe cyo gutegereza: iminota {{min}}–{{max}} | Expected wait: {{min}}–{{max}} min | needs native-speaker review |
+| `print.watch` | Reba kuri ekarani kandi wumve nimero yawe. | Watch the screen and listen for your number. | needs native-speaker review |
+| `print.appointment` | Gahunda yawe itaha | Your next visit | needs native-speaker review |
+| `print.code` | Kode ya gahunda | Booking code | needs native-speaker review |
+| `print.bring` | Uzane iyi karita, ikarita y'ubwishingizi n'imiti yawe. | Bring this card, your insurance card and your medicines. | needs native-speaker review |
+| `print.slip` | Capa itike | Print ticket slip | needs native-speaker review |
+| `print.card` | Capa ikarita ya gahunda | Print appointment card | needs native-speaker review |
 
 ## staff-web feature: setup (namespace setup)
 
@@ -5192,6 +5254,9 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `home2.dash.wait` | Igihe cyo gutegereza | Average wait | needs native-speaker review |
 | `home2.dash.seen` | Bakiriwe uyu munsi | Seen today | needs native-speaker review |
 | `home2.dash.note` | Abaje ku isaha | Arrivals by hour | needs native-speaker review |
+| `home2.photos.main` | Umukozi w'ubuzima wambaye umwambaro w'icyatsi yereka umugore uko akoresha porogaramu kuri telefone ye, ku kwakira kw'ikigo nderabuzima. | A health worker in a green uniform shows a woman how to use an app on her phone at a health centre desk. | needs native-speaker review |
+| `home2.photos.entrance` | Umuryango w'ikigo nderabuzima utwikiriye, abarwayi bategereje bicaye ku ntebe. | The covered entrance of a health centre, with patients waiting on benches. | needs native-speaker review |
+| `home2.photos.hillside` | Ikigo nderabuzima cyubakishije amatafari gifite igisenge cy'icyatsi, hagati y'insina n'imisozi itoshye. | A brick health centre with a green roof among banana trees and green hills. | needs native-speaker review |
 
 ## patient-web feature: tracker (namespace tracker)
 

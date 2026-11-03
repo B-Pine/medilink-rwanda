@@ -79,10 +79,11 @@ def _kind(user: Any, memberships: dict[Any, list[dict[str, Any]]]) -> str:
     return "staff" if user.pk in memberships else "patient"
 
 
-def _clinicians() -> dict[Any, Any]:
+def _clinicians(user_ids: list[Any]) -> dict[Any, Any]:
+    """The clinician profiles of these users (profession and licence for the list)."""
     from medilink.accounts.models import ClinicianProfile
 
-    return {c.user_id: c for c in ClinicianProfile.objects.all()}
+    return {c.user_id: c for c in ClinicianProfile.objects.filter(user_id__in=user_ids)}
 
 
 def _row(
@@ -226,7 +227,7 @@ class _Action(_Platform):
         memberships = _memberships()
         user.refresh_from_db()
         return Response(
-            s.UserRowSerializer(_row(user, memberships, _mfa_users(), _clinicians())).data
+            s.UserRowSerializer(_row(user, memberships, _mfa_users(), _clinicians([user.pk]))).data
         )
 
 
@@ -360,8 +361,9 @@ class UsersView(_Platform):
             users = users.filter(is_active=False)
         memberships = _memberships()
         mfa = _mfa_users()
-        clinicians = _clinicians()
-        rows = [_row(u, memberships, mfa, clinicians) for u in users]
+        listed = list(users)
+        clinicians = _clinicians([u.pk for u in listed])
+        rows = [_row(u, memberships, mfa, clinicians) for u in listed]
         if params.get("kind") in s.USER_KINDS:
             rows = [r for r in rows if r["kind"] == params["kind"]]
         if params.get("mfa") in ("on", "off"):
@@ -379,7 +381,7 @@ class UserView(_Platform):
             raise Http404
         memberships = _memberships()
         now = timezone.now()
-        data = _row(user, memberships, _mfa_users(), _clinicians())
+        data = _row(user, memberships, _mfa_users(), _clinicians([user.pk]))
         data["email_verified"] = user.email_verified_at is not None
         data["sessions"] = [
             {

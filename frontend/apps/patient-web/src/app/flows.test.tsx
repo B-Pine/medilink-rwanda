@@ -10,7 +10,10 @@ describe("landing page", () => {
   it("has one h1 and a search that opens Find care", async () => {
     const { user } = renderApp("/");
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Find the right care, without the long wait." }),
+      await screen.findByRole("heading", {
+        level: 1,
+        name: "Find the right care, without the long wait.",
+      }),
     ).toBeInTheDocument();
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
 
@@ -48,12 +51,18 @@ describe("landing page", () => {
   it("is in Kinyarwanda by default and the language switch updates <html lang>", async () => {
     const { user } = renderApp("/", { language: "rw" });
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Bona ubuvuzi bukwiye, udategereje igihe kirekire." }),
+      await screen.findByRole("heading", {
+        level: 1,
+        name: "Bona ubuvuzi bukwiye, udategereje igihe kirekire.",
+      }),
     ).toBeInTheDocument();
     expect(document.documentElement.lang).toBe("rw");
     await user.selectOptions(screen.getAllByLabelText("Ururimi")[0]!, "fr");
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Trouvez les bons soins, sans longue attente." }),
+      await screen.findByRole("heading", {
+        level: 1,
+        name: "Trouvez les bons soins, sans longue attente.",
+      }),
     ).toBeInTheDocument();
     expect(document.documentElement.lang).toBe("fr");
   });

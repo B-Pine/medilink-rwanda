@@ -9,13 +9,19 @@ import { renderApp } from "../test/render";
 describe("accessibility (axe)", () => {
   it("landing page", async () => {
     const { container } = renderApp("/");
-    await screen.findByRole("heading", { level: 1, name: "Find the right care, without the long wait." });
+    await screen.findByRole("heading", {
+      level: 1,
+      name: "Find the right care, without the long wait.",
+    });
     expect(await axe(container)).toHaveNoViolations();
   });
 
   it("landing page in Kinyarwanda", async () => {
     const { container } = renderApp("/", { language: "rw" });
-    await screen.findByRole("heading", { level: 1, name: "Bona ubuvuzi bukwiye, udategereje igihe kirekire." });
+    await screen.findByRole("heading", {
+      level: 1,
+      name: "Bona ubuvuzi bukwiye, udategereje igihe kirekire.",
+    });
     expect(await axe(container)).toHaveNoViolations();
   });
 
@@ -68,7 +74,10 @@ describe("accessibility (axe)", () => {
 describe("keyboard (F5)", () => {
   it("skip link first, then the header controls", async () => {
     const { user } = renderApp("/");
-    await screen.findByRole("heading", { level: 1, name: "Find the right care, without the long wait." });
+    await screen.findByRole("heading", {
+      level: 1,
+      name: "Find the right care, without the long wait.",
+    });
     await user.tab();
     expect(screen.getByRole("link", { name: "Skip to main content" })).toHaveFocus();
     // the emergency strip comes before the header: calling 912 is the first stop

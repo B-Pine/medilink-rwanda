@@ -53,6 +53,7 @@ class RoleCode(models.TextChoices):
     RECEPTIONIST = "receptionist", "Receptionist"
     DOCTOR = "doctor", "Doctor / clinician"
     PHARMACIST = "pharmacist", "Pharmacist"
+    CASHIER = "cashier", "Cashier"
 
 
 class Organization(TimeStampedModel):

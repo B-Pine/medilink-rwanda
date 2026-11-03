@@ -123,5 +123,19 @@
       "reviewNote": "Icyo ugenzura yanditse (gikenewe iyo isanduku itaringaniye)",
       "accept": "Emeza isanduku"
     }
+  },
+  "today": {
+    "title": "Aho bishyurira",
+    "openPayments": "Fungura ubwishyu",
+    "openShift": "Fungura igihe cy'akazi",
+    "shiftSince_one": "Ubwishyu {{count}} bwakiriwe muri iki gihe",
+    "shiftSince_other": "Ubwishyu {{count}} bwakiriwe muri iki gihe",
+    "numbers": "Uyu munsi aho bishyurira",
+    "toPay": "Inyemezabuguzi zo kwishyura",
+    "partly": "Zishyuwe igice",
+    "payments": "Ubwishyu bw'iki gihe",
+    "collected": "Ayakiriwe muri iki gihe",
+    "next": "Izikurikira kwishyurwa",
+    "nothing": "Nta nyemezabuguzi itegereje kwishyurwa. Inshya ziza hano nyuma yo kwivuza."
   }
 }

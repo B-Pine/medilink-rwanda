@@ -353,10 +353,12 @@ export const billingMocks: FeatureMockFactory = (context) => {
       if ("error" in ok) return ok.error;
       const url = new URL(request.url);
       const status = url.searchParams.get("status");
+      const hasBalance = url.searchParams.get("has_balance") === "true";
       const q = (url.searchParams.get("q") ?? "").toLowerCase();
       const rows = db.bills
         .map((b) => b.bill)
         .filter((b) => !status || b.status === status)
+        .filter((b) => !hasBalance || b.totals.balance_rwf > 0)
         .filter(
           (b) =>
             !q ||

@@ -123,5 +123,19 @@
       "reviewNote": "Review note (needed when the drawer does not balance)",
       "accept": "Accept shift"
     }
+  },
+  "today": {
+    "title": "Cash desk",
+    "openPayments": "Open Payments",
+    "openShift": "Open your shift",
+    "shiftSince_one": "{{count}} payment taken in this shift",
+    "shiftSince_other": "{{count}} payments taken in this shift",
+    "numbers": "Today at the cash desk",
+    "toPay": "Bills to pay",
+    "partly": "Partly paid",
+    "payments": "Payments this shift",
+    "collected": "Collected this shift",
+    "next": "Next to pay",
+    "nothing": "No bill waits for payment. New bills appear here after the visit."
   }
 }

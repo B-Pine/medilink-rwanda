@@ -111,7 +111,8 @@
       "facility_admin": "Administrateur de l’établissement",
       "receptionist": "Réceptionniste",
       "doctor": "Médecin",
-      "pharmacist": "Pharmacien"
+      "pharmacist": "Pharmacien",
+      "cashier": "Caissier"
     }
   },
   "shell": {

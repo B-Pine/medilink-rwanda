@@ -111,7 +111,8 @@
       "facility_admin": "Facility admin",
       "receptionist": "Receptionist",
       "doctor": "Doctor",
-      "pharmacist": "Pharmacist"
+      "pharmacist": "Pharmacist",
+      "cashier": "Cashier"
     }
   },
   "shell": {

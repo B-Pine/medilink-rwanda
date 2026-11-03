@@ -79,6 +79,8 @@ export const ROLE_PERMISSIONS: Record<RoleCode, PermissionCode[]> = {
     "vitals.record",
   ],
   pharmacist: ["disputes.comment", "pharmacy.dispense", "prescription.view", "reports.view_own"],
+  // upgrade 06 §4: payments only
+  cashier: ["billing.record_payment", "disputes.comment", "reports.view_own"],
 };
 
 /**
@@ -167,6 +169,15 @@ export const STAFF_USERS: MockStaffUser[] = [
     is_platform_admin: false,
     mfa_enabled: true,
     memberships: [{ facility: FACILITIES.kigaliClinic, roles: ["pharmacist"] }],
+  },
+  {
+    id: "7a1e0b2c-0000-4000-8000-000000000009",
+    email: "cashier@medilink.test",
+    full_name: "Iradukunda Claudine",
+    preferred_language: "en",
+    is_platform_admin: false,
+    mfa_enabled: true,
+    memberships: [{ facility: FACILITIES.kigaliClinic, roles: ["cashier"] }],
   },
   {
     id: "7a1e0b2c-0000-4000-8000-000000000005",

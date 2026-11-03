@@ -111,7 +111,8 @@
       "facility_admin": "Umuyobozi w’ikigo",
       "receptionist": "Ushinzwe kwakira abarwayi",
       "doctor": "Muganga",
-      "pharmacist": "Umufarumasiye"
+      "pharmacist": "Umufarumasiye",
+      "cashier": "Ushinzwe kwishyuza"
     }
   },
   "shell": {

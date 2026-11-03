@@ -9,6 +9,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Cashier role (upgrade 06 §4)
+
+- Added: Cashier in the staff invite roles; Cash desk on Today (shift, bills to pay, partly
+  paid, payments and amount collected this shift, next bills to pay). The cashier sees Payments,
+  not the queue or approvals.
+
 ### Upgrade U2 · Emergency department flag
 
 - Added: "24-hour emergency department" switch in Settings › Facility profile.

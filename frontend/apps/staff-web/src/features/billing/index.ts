@@ -9,6 +9,7 @@ const lazy =
   async () => ({ Component: (await load())[name] });
 
 const pages = () => import("./BillingPages");
+import { CashierTodayCard } from "./CashierToday";
 
 /**
  * S8 `billing` (contract sprint-08 §6.1): today's bills with the cash shift, the bill of a visit
@@ -22,6 +23,8 @@ export const billingFeature: FeatureRoutes = {
     { path: "/payments/receipts/:receiptId", lazy: lazy(pages, "ReceiptPage") },
     { path: "/approvals", lazy: lazy(pages, "ApprovalsPage") },
   ],
+  // upgrade 06 §4: the cashier's day
+  todayCards: [CashierTodayCard],
   commands: [
     {
       actions: (me, t) => [

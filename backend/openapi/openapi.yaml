@@ -31119,12 +31119,14 @@ components:
       - receptionist
       - doctor
       - pharmacist
+      - cashier
       type: string
       description: |-
         * `facility_admin` - Facility admin
         * `receptionist` - Receptionist
         * `doctor` - Doctor / clinician
         * `pharmacist` - Pharmacist
+        * `cashier` - Cashier
     RouteEnum:
       enum:
       - oral

@@ -179,7 +179,8 @@
     "remoteNotArrived": "Yiyandikishije ari mu rugo kandi ntaremezwa. Emeza igihe umurwayi ageze ku biro.",
     "patientWords": "Uko umurwayi abivuga",
     "raiseEmergency": "Shyira mu byihutirwa",
-    "raiseEmergencyHint": "Umurwayi ajya imbere ku murongo ubu. Vuga icyo wabonye, urugero \"ububabare mu gatuza, ahumeka nabi\"."
+    "raiseEmergencyHint": "Umurwayi ajya imbere ku murongo ubu. Vuga icyo wabonye, urugero \"ububabare mu gatuza, ahumeka nabi\".",
+    "checkInsurance": "Genzura ubwishingizi: fotora ikarita, hanyuma wemeze"
   },
   "checkIn": {
     "title": "Andika umurwayi",
@@ -430,5 +431,18 @@
     "next": "Abakurikira kuza",
     "more_one": "Abandi {{count}} ku kibaho",
     "more_other": "Abandi {{count}} ku kibaho"
+  },
+  "print": {
+    "print": "Capa",
+    "hint": "Imashini ya 80 mm; uyihitemo mu idirishya ryo gucapa.",
+    "noTicket": "Uru ruzinduko nta tike rufite.",
+    "yourNumber": "Nimero yawe",
+    "wait": "Igihe cyo gutegereza: iminota {{min}}–{{max}}",
+    "watch": "Reba kuri ekarani kandi wumve nimero yawe.",
+    "appointment": "Gahunda yawe itaha",
+    "code": "Kode ya gahunda",
+    "bring": "Uzane iyi karita, ikarita y'ubwishingizi n'imiti yawe.",
+    "slip": "Capa itike",
+    "card": "Capa ikarita ya gahunda"
   }
 }

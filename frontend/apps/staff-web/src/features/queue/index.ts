@@ -20,6 +20,15 @@ export const queueFeature: FeatureRoutes = {
   shell: [
     { path: "/queue", lazy: lazy(() => import("./QueuePage"), "QueuePage") },
     { path: "/queue/mine", lazy: lazy(() => import("./MyQueuePage"), "MyQueuePage") },
+    // upgrade 08 §3: thermal prints for patients without a phone
+    {
+      path: "/queue/visits/:visitId/slip",
+      lazy: lazy(() => import("./PrintPages"), "TicketSlipPage"),
+    },
+    {
+      path: "/bookings/card/:code",
+      lazy: lazy(() => import("./PrintPages"), "AppointmentCardPage"),
+    },
     { path: "/queue/reorders", lazy: lazy(admin, "ReordersPage") },
     { path: "/reports", lazy: lazy(() => import("./Operations"), "ReportsPage") },
     { path: "/settings/displays", lazy: lazy(admin, "DisplaysPage") },

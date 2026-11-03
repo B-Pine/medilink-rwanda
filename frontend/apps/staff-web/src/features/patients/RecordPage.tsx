@@ -25,11 +25,13 @@ import {
   TextareaField,
   TextField,
   toE164,
+  cx,
 } from "@medilink/ui";
+import { Camera, CheckCircle } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
@@ -70,6 +72,7 @@ function useRecord(fpId: string) {
 }
 
 function Record() {
+  const [search] = useSearchParams();
   const { t } = useTranslation();
   const { fpId = "" } = useParams();
   const record = useRecord(fpId);
@@ -121,7 +124,8 @@ function Record() {
           </Link>
         </Alert>
       )}
-      <Tabs defaultValue="details">
+      {/* ?tab=insurance opens that tab (the queue board's "Check insurance") */}
+      <Tabs defaultValue={TABS.has(search.get("tab") ?? "") ? search.get("tab")! : "details"}>
         <TabsList aria-label={t("patients.record.sections")}>
           <TabsTrigger value="details">{t("patients.record.tabs.details")}</TabsTrigger>
           <TabsTrigger value="identifiers">{t("patients.record.tabs.identifiers")}</TabsTrigger>
@@ -180,6 +184,9 @@ function Details({ record }: { record: FacilityPatientDetail }) {
     email: record.email ?? "",
     file_number: record.file_number ?? "",
     reception_notes: record.reception_notes ?? "",
+    contact_name: record.emergency_contact?.name ?? "",
+    contact_phone: "",
+    contact_relationship: record.emergency_contact?.relationship ?? "",
   });
   const save = useMutation({
     mutationFn: () => {
@@ -193,6 +200,18 @@ function Details({ record }: { record: FacilityPatientDetail }) {
         file_number: form.file_number || null,
         reception_notes: form.reception_notes || null,
         ...(form.phone ? { phone_e164: phone || form.phone } : {}),
+        // FR-PAT-18 (upgrade 08): a contact person for reminders when the patient has no phone
+        ...(form.contact_name.trim() && (form.contact_phone || record.emergency_contact)
+          ? {
+              emergency_contact: {
+                name: form.contact_name.trim(),
+                phone_e164: form.contact_phone
+                  ? toE164(form.contact_phone) || form.contact_phone
+                  : record.emergency_contact!.phone_e164,
+                relationship: form.contact_relationship.trim() || "other",
+              },
+            }
+          : {}),
       });
     },
     onSuccess: (data) => {
@@ -278,6 +297,33 @@ function Details({ record }: { record: FacilityPatientDetail }) {
         onChange={(e) => setForm({ ...form, file_number: e.target.value })}
         error={errors.file_number}
       />
+      <fieldset className="m-0 flex flex-col gap-3 rounded-xl border border-border p-3">
+        <legend className="px-1 font-semibold">{t("patients.contact.title")}</legend>
+        <p className="m-0 text-body-sm text-fg-secondary">{t("patients.contact.hint")}</p>
+        <TextField
+          label={t("patients.contact.name")}
+          optional
+          value={form.contact_name}
+          onChange={(e) => setForm({ ...form, contact_name: e.target.value })}
+          error={errors["emergency_contact.name"]}
+        />
+        <PhoneField
+          label={
+            record.emergency_contact ? t("patients.contact.newPhone") : t("patients.contact.phone")
+          }
+          optional
+          value={form.contact_phone}
+          onChange={(e) => setForm({ ...form, contact_phone: e.target.value })}
+          error={errors["emergency_contact.phone_e164"]}
+        />
+        <TextField
+          label={t("patients.contact.relationship")}
+          hint={t("patients.contact.relationshipHint")}
+          optional
+          value={form.contact_relationship}
+          onChange={(e) => setForm({ ...form, contact_relationship: e.target.value })}
+        />
+      </fieldset>
       <TextareaField
         label={t("patients.fields.notes")}
         optional
@@ -581,6 +627,114 @@ function Identifiers({ record }: { record: FacilityPatientDetail }) {
   );
 }
 
+/**
+ * Insurance card photos (upgrade 05 §2): front and back, taken with the desk camera or a phone,
+ * so the facility can check the card before verifying. Opened through a 5-minute link.
+ */
+function CardPhotos({
+  record,
+  profile,
+  onChanged,
+}: {
+  record: FacilityPatientDetail;
+  profile: InsuranceProfile;
+  onChanged: () => void;
+}) {
+  const { t } = useTranslation();
+  const api = useApi();
+  const upload = useMutation({
+    mutationFn: ({ side, file }: { side: "front" | "back"; file: File }) =>
+      api.patients.uploadCard(record.facility_patient_id, profile.id, side, file),
+    onSuccess: onChanged,
+  });
+  const open = useMutation({
+    mutationFn: (side: "front" | "back") =>
+      api.patients.cardLink(record.facility_patient_id, profile.id, side),
+    onSuccess: (link) => window.open(link.url, "_blank", "noopener,noreferrer"),
+  });
+  const images = profile.card_images;
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="grid gap-2 sm:grid-cols-2">
+        {(["front", "back"] as const).map((side) => {
+          const image = images[side];
+          const inputId = `card-${profile.id}-${side}`;
+          return (
+            <div
+              key={side}
+              className={cx(
+                "flex items-center gap-3 rounded-xl border p-3",
+                image ? "border-border bg-subtle/60" : "border-dashed border-border-input",
+              )}
+            >
+              <span
+                className={cx(
+                  "grid size-10 shrink-0 place-items-center rounded-lg",
+                  image ? "bg-success-bg text-success" : "bg-subtle text-fg-muted",
+                )}
+              >
+                {image ? (
+                  <CheckCircle aria-hidden="true" weight="fill" className="size-5" />
+                ) : (
+                  <Camera aria-hidden="true" weight="bold" className="size-5" />
+                )}
+              </span>
+              <span className="flex min-w-0 flex-1 flex-col">
+                <span className="text-body-sm font-semibold">
+                  {t(`patients.insurance.card.${side}`)}
+                </span>
+                <span className="text-caption text-fg-secondary">
+                  {image
+                    ? t("patients.insurance.card.added")
+                    : t("patients.insurance.card.missing")}
+                </span>
+              </span>
+              {image ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  pill
+                  loading={open.isPending && open.variables === side}
+                  onClick={() => open.mutate(side)}
+                  aria-label={`${t("patients.insurance.card.view")}: ${t(`patients.insurance.card.${side}`)}`}
+                >
+                  {t("patients.insurance.card.view")}
+                </Button>
+              ) : (
+                images.can_upload && (
+                  <label
+                    htmlFor={inputId}
+                    className="inline-flex min-h-9 cursor-pointer items-center rounded-full px-3 text-body-sm font-semibold text-link hover:bg-brand-subtle"
+                  >
+                    {t("patients.insurance.card.add")}
+                    <input
+                      id={inputId}
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      className="sr-only"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) upload.mutate({ side, file });
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                )
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {(upload.isError || open.isError) && (
+        <Alert tone="danger" role="alert">
+          {actionError(upload.error ?? open.error, t("errors.generic"))}
+        </Alert>
+      )}
+    </div>
+  );
+}
+
 function Insurance({ record }: { record: FacilityPatientDetail }) {
   const { t } = useTranslation();
   const api = useApi();
@@ -647,10 +801,11 @@ function Insurance({ record }: { record: FacilityPatientDetail }) {
             </p>
           )}
           {profile.status_reason && <p className="m-0 text-body-sm">{profile.status_reason}</p>}
+          <CardPhotos record={record} profile={profile} onChanged={refresh} />
           {canVerify && profile.is_active && (
             <div className="flex flex-wrap gap-2">
               <Button
-                variant="secondary"
+                pill
                 onClick={() => verify.mutate({ profile, outcome: "verified" })}
                 disabled={verify.isPending}
               >
@@ -721,6 +876,8 @@ function Insurance({ record }: { record: FacilityPatientDetail }) {
     </div>
   );
 }
+
+const TABS = new Set(["details", "identifiers", "insurance", "health"]);
 
 const KINDS: HealthKind[] = ["allergies", "conditions", "medications"];
 

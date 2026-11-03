@@ -179,7 +179,8 @@
     "remoteNotArrived": "Joined from home and not confirmed yet. Confirm when the patient is at the desk.",
     "patientWords": "In the patient's words",
     "raiseEmergency": "Raise to emergency",
-    "raiseEmergencyHint": "The patient goes to the top of the queue now. Say what you saw, for example \"chest pain, struggling to breathe\"."
+    "raiseEmergencyHint": "The patient goes to the top of the queue now. Say what you saw, for example \"chest pain, struggling to breathe\".",
+    "checkInsurance": "Check insurance: photo of the card, then verify"
   },
   "checkIn": {
     "title": "Check in a patient",
@@ -430,5 +431,18 @@
     "next": "Next arrivals",
     "more_one": "{{count}} more on the board",
     "more_other": "{{count}} more on the board"
+  },
+  "print": {
+    "print": "Print",
+    "hint": "80 mm thermal printer; choose it in the print window.",
+    "noTicket": "This visit has no ticket.",
+    "yourNumber": "Your number",
+    "wait": "Expected wait: {{min}}–{{max}} min",
+    "watch": "Watch the screen and listen for your number.",
+    "appointment": "Your next visit",
+    "code": "Booking code",
+    "bring": "Bring this card, your insurance card and your medicines.",
+    "slip": "Print ticket slip",
+    "card": "Print appointment card"
   }
 }

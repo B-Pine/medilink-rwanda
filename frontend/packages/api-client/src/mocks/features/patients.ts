@@ -859,6 +859,7 @@ export const patientsMocks: FeatureMockFactory = (context) => {
       http.post(
         `${base}/:fp/insurance-profiles/:profile/card-images/:side/download-links/`,
         async ({ request }) => {
+          await context.settle();
           const auth = staff(context, request, ["patients.view"]);
           if ("error" in auth) return auth.error;
           return HttpResponse.json({

@@ -414,6 +414,7 @@ export function CarePage() {
               )
             }
             empty={<NoMatch service={activeService} query={q} onClear={clearAll} />}
+            cards
           />
         </div>
       </div>

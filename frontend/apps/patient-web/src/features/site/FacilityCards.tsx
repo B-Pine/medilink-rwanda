@@ -169,6 +169,7 @@ export function FacilityCardGrid({
   selected,
   onSelect,
   onShowOnMap,
+  compact = false,
 }: {
   label: string;
   rows: FacilityResult[];
@@ -176,17 +177,20 @@ export function FacilityCardGrid({
   selected?: string | null;
   onSelect?: (slug: string) => void;
   onShowOnMap?: (slug: string) => void;
+  /** Beside a filter column and a map: one card per row until the screen is very wide. */
+  compact?: boolean;
 }) {
+  const cols = compact ? "sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2" : "sm:grid-cols-2";
   if (loading)
     return (
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className={cx("grid gap-4", cols)}>
         {Array.from({ length: 4 }, (_, i) => (
           <Skeleton key={i} className="h-64 rounded-3xl" />
         ))}
       </div>
     );
   return (
-    <ul aria-label={label} className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2">
+    <ul aria-label={label} className={cx("m-0 grid list-none gap-4 p-0", cols)}>
       {rows.map((result, index) => (
         <li
           key={result.slug}

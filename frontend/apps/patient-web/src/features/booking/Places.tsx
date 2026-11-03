@@ -16,6 +16,7 @@ import { Link } from "react-router";
 
 import { env } from "../../env";
 import { useInDashboard } from "../../layout/DashboardContext";
+import { FacilityCardGrid } from "../site/FacilityCards";
 import { EmptyState } from "../site/kit";
 import { INSURER_CODES, INSURER_KEYS, pinKind, time, type InsurerKey } from "./discovery";
 
@@ -219,6 +220,7 @@ export function PlacesView({
   onSort,
   empty,
   toolbar,
+  cards = false,
 }: {
   heading: string;
   headingId: string;
@@ -235,6 +237,8 @@ export function PlacesView({
   empty: ReactNode;
   /** Extra controls in the title row (e.g. the Filters button). */
   toolbar?: ReactNode;
+  /** Cards instead of table rows (Find care, product owner 2026-11-03). */
+  cards?: boolean;
 }) {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage ?? "rw";
@@ -327,8 +331,11 @@ export function PlacesView({
       >
         <div
           className={cx(
-            "min-w-0 overflow-hidden bg-surface",
-            inDashboard ? "rounded-2xl border border-border" : "rounded-3xl shadow-card",
+            "min-w-0",
+            // cards carry their own surface; the table rows sit on one
+            !cards && "overflow-hidden bg-surface",
+            !cards &&
+              (inDashboard ? "rounded-2xl border border-border" : "rounded-3xl shadow-card"),
             "transition-opacity duration-200 ease-out-quint",
             busy && "opacity-60",
             !wide && view === "map" && "hidden",
@@ -353,6 +360,19 @@ export function PlacesView({
             ) : (
               empty
             )
+          ) : cards ? (
+            <FacilityCardGrid
+              label={heading}
+              rows={rows}
+              loading={false}
+              compact
+              selected={selected}
+              onSelect={setSelected}
+              onShowOnMap={(slug) => {
+                setSelected(slug);
+                setView("map");
+              }}
+            />
           ) : (
             <FacilityList
               labels={{

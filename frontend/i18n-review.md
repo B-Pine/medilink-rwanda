@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5258.
+Keys: 5271.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -154,6 +154,7 @@ File: `apps/staff-web/src/i18n/locales/rw.json`
 | `facility.roles.receptionist` | Ushinzwe kwakira abarwayi | Receptionist | needs native-speaker review |
 | `facility.roles.doctor` | Muganga | Doctor | needs native-speaker review |
 | `facility.roles.pharmacist` | Umufarumasiye | Pharmacist | needs native-speaker review |
+| `facility.roles.cashier` | Ushinzwe kwishyuza | Cashier | needs native-speaker review |
 | `shell.navLabel` | Menu nyamukuru | Main menu | needs native-speaker review |
 | `shell.openMenu` | Fungura menu | Open menu | needs native-speaker review |
 | `shell.closeMenu` | Funga menu | Close menu | needs native-speaker review |
@@ -682,6 +683,18 @@ File: `apps/staff-web/src/features/billing/locales/rw.json`
 | `approvals.shifts.cashierNote` | Icyo umubitsi yanditse | Cashier's note | needs native-speaker review |
 | `approvals.shifts.reviewNote` | Icyo ugenzura yanditse (gikenewe iyo isanduku itaringaniye) | Review note (needed when the drawer does not balance) | needs native-speaker review |
 | `approvals.shifts.accept` | Emeza isanduku | Accept shift | needs native-speaker review |
+| `today.title` | Aho bishyurira | Cash desk | needs native-speaker review |
+| `today.openPayments` | Fungura ubwishyu | Open Payments | needs native-speaker review |
+| `today.openShift` | Fungura igihe cy'akazi | Open your shift | needs native-speaker review |
+| `today.shiftSince_one` | Ubwishyu {{count}} bwakiriwe muri iki gihe | {{count}} payment taken in this shift | needs native-speaker review |
+| `today.shiftSince_other` | Ubwishyu {{count}} bwakiriwe muri iki gihe | {{count}} payments taken in this shift | needs native-speaker review |
+| `today.numbers` | Uyu munsi aho bishyurira | Today at the cash desk | needs native-speaker review |
+| `today.toPay` | Inyemezabuguzi zo kwishyura | Bills to pay | needs native-speaker review |
+| `today.partly` | Zishyuwe igice | Partly paid | needs native-speaker review |
+| `today.payments` | Ubwishyu bw'iki gihe | Payments this shift | needs native-speaker review |
+| `today.collected` | Ayakiriwe muri iki gihe | Collected this shift | needs native-speaker review |
+| `today.next` | Izikurikira kwishyurwa | Next to pay | needs native-speaker review |
+| `today.nothing` | Nta nyemezabuguzi itegereje kwishyurwa. Inshya ziza hano nyuma yo kwivuza. | No bill waits for payment. New bills appear here after the visit. | needs native-speaker review |
 
 ## staff-web feature: bookings (namespace bookings)
 

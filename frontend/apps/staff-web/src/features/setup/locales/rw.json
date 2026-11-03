@@ -187,7 +187,10 @@
       "tertiary": "Ubuvuzi bwo ku rwego rwo hejuru"
     },
     "levelUnknown": "Ntibyashyizweho",
-    "cover": "Ifoto nyamukuru"
+    "cover": "Ifoto nyamukuru",
+    "emergencyTitle": "Ubutabazi bwihuse",
+    "emergency": "Serivisi y'ubutabazi bwihuse amasaha 24",
+    "emergencyHint": "Bikore gusa niba mwakira indembe ku manywa na nijoro. Ivuriro ryanyu rizagaragara mbere ku rupapuro rw'ubutabazi."
   },
   "catalogue": {
     "intro": "Serivisi ni byo abarwayi bafatira gahunda cyangwa bategerereza. Buri imwe igira inyuguti ya tike, nka G kuri G-023.",

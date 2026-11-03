@@ -69,6 +69,11 @@ describe("information pages (PT-F4, PT-F5)", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Chest pain or pressure")).toBeInTheDocument();
     expect(screen.getAllByText(/912/).length).toBeGreaterThan(0);
+    // a facility whose admin declares a 24-hour emergency department is badged and comes first
+    const first = (await screen.findAllByText("24-hour emergency"))[0]!;
+    expect(first.closest("li")).toBe(
+      screen.getAllByRole("listitem").find((li) => li.querySelector("a[href^='/facilities/']")),
+    );
   });
 
   it("privacy and terms show their sections and no draft markers", async () => {

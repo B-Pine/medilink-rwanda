@@ -57,6 +57,7 @@ def profile_data(facility: Any) -> dict[str, Any]:
             "longitude": profile.longitude,
             "photos": profile.photo_file_ids,
             "level_of_care": profile.level_of_care,
+            "emergency_department": profile.emergency_department,
             "version": profile.version,
             "status_version": facility_version(facility),
         }

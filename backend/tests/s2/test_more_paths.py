@@ -60,13 +60,20 @@ def test_photos_and_branding(
     version = admin_client.get(F).json()["version"]
     patched = admin_client.patch(
         F,
-        {"version": version, "email": "desk@remera.example", "website": "https://remera.example"},
+        {
+            "version": version,
+            "email": "desk@remera.example",
+            "website": "https://remera.example",
+            "emergency_department": True,
+        },
         format="json",
     )
     assert patched.status_code == 200, patched.content
     public = APIClient().get("/api/v1/public/facilities/remera-test/").json()
     assert public["email"] == "desk@remera.example"
     assert public["website"] == "https://remera.example"
+    assert patched.json()["emergency_department"] is True
+    assert public["emergency_department"] is True
     assert public["photos"] == [
         f"http://testserver/api/v1/public/facilities/remera-test/photos/{photo_id}/"
     ]

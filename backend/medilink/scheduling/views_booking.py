@@ -280,6 +280,7 @@ class SearchView(PublicView):
             open_now=data["open_now"],
             level_of_care=data.get("level_of_care") or None,
             available_today=data["available_today"],
+            emergency=data["emergency"],
             page=data["page"],
         )
         response = Response(listing.search(query))
@@ -346,6 +347,7 @@ class FacilityProfileView(PublicView):
                 "ownership": facility.ownership,
                 "level_of_care": place.level_of_care if place else "",
                 "verified": True,
+                "emergency_department": bool(profile and profile.emergency_department),
                 "description_i18n": (profile.description_i18n if profile else {}) or {},
                 "address": profile.address if profile else "",
                 "phone": profile.phone if profile else "",

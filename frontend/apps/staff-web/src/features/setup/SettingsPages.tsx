@@ -227,6 +227,7 @@ function ProfileForm({ profile, onReload }: { profile: FacilityProfile; onReload
     description_rw: profile.description_i18n.rw ?? "",
     description_fr: profile.description_i18n.fr ?? "",
   });
+  const [emergency, setEmergency] = useState(profile.emergency_department);
   const [locError, setLocError] = useState<string>();
   const [saved, setSaved] = useState(false);
   const set = (key: keyof typeof form, value: string) => {
@@ -248,6 +249,7 @@ function ProfileForm({ profile, onReload }: { profile: FacilityProfile; onReload
         email: form.email,
         website: form.website,
         address: form.address,
+        emergency_department: emergency,
         latitude: form.latitude || null,
         longitude: form.longitude || null,
         description_i18n: {
@@ -352,6 +354,19 @@ function ProfileForm({ profile, onReload }: { profile: FacilityProfile; onReload
             optional
           />
         </div>
+      </section>
+
+      <section className="flex flex-col gap-3 rounded-2xl bg-surface shadow-card p-5">
+        <h2 className="m-0 font-heading text-h3">{t("setup.profile.emergencyTitle")}</h2>
+        <SwitchField
+          label={t("setup.profile.emergency")}
+          hint={t("setup.profile.emergencyHint")}
+          checked={emergency}
+          onCheckedChange={(on) => {
+            setSaved(false);
+            setEmergency(on);
+          }}
+        />
       </section>
 
       <section className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5">

@@ -16,21 +16,14 @@ async function signIn(email = "admin@medilink.test", path = "/platform") {
 }
 
 describe("platform console", () => {
-  it("overview shows counts and links (and is accessible)", async () => {
+  // /platform opens the command centre (upgrade 2026-11-02), which replaced the S1 overview
+  it("the platform home is the command centre (and is accessible)", async () => {
     const { container } = await signIn();
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Platform overview" }),
+      await screen.findByRole("heading", { level: 1, name: "Command centre" }),
     ).toBeInTheDocument();
-    const apps = await screen.findByRole("heading", { name: "Applications" });
-    expect(
-      within(apps.parentElement!).getByRole("link", { name: /^Submitted/ }),
-    ).toBeInTheDocument();
-    expect(
-      within(apps.parentElement!).getByRole("link", { name: /^Approved/ }),
-    ).toBeInTheDocument();
-    const network = screen.getByRole("region", { name: "Facilities by district" });
-    expect(within(network).getByText("Nyarugenge")).toBeInTheDocument();
-    expect(within(network).getByText("3 facilities")).toBeInTheDocument();
+    expect(await screen.findByText("Live facilities")).toBeInTheDocument();
+    expect(screen.getByText("People waiting now")).toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });
 

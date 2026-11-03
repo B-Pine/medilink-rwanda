@@ -53,6 +53,8 @@
   --ml-link: #11744a;
   --ml-focus-ring: #059669;
   --ml-accent: #fbbf24;
+  /* public illustrations: the one skin tone of the drawn people (same in both themes) */
+  --ml-illustration-skin: #c98f63;
   --ml-accent-text: #0f172a;
 
   /* Attention (design 02 §3a): the one ochre, only for "your turn" and work that needs someone.

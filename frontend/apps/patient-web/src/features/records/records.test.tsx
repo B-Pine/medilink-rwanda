@@ -21,12 +21,13 @@ async function signIn(next = "/home") {
 }
 
 describe("my health records", () => {
-  it("Home shows the latest signed record, one tap from the list", async () => {
+  it("the overview shows the latest signed visits, one tap from the list", async () => {
     await signIn();
-    const card = await screen.findByRole("region", { name: "Health records" });
-    expect(await within(card).findByRole("link", { name: "See all" })).toHaveAttribute(
+    const card = await screen.findByRole("region", { name: "Recent visits" });
+    expect(await within(card).findByRole("link", { name: /Malaria/ })).toBeInTheDocument();
+    expect(within(card).getByRole("link", { name: /View all/ })).toHaveAttribute(
       "href",
-      "/records",
+      "/dashboard/records",
     );
   });
 
@@ -35,8 +36,7 @@ describe("my health records", () => {
     expect(
       await screen.findByRole("heading", { level: 1, name: "My health records" }),
     ).toBeInTheDocument();
-    const list = await screen.findByRole("list", { name: "My health records" });
-    const malaria = await within(list).findByRole("link", { name: /Malaria/ });
+    const malaria = await screen.findByRole("link", { name: /Malaria/ });
     expect(await axe(container)).toHaveNoViolations();
 
     await user.click(malaria);

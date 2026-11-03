@@ -36,7 +36,6 @@ import {
   Avatar,
   DateBlock,
   ErrorBlock,
-  firstName,
   isCancelled,
   panelClass,
   RowIcon,
@@ -854,7 +853,7 @@ export function HomePage() {
             title={t("dashboard.nav.overview")}
             className="font-heading text-h1 font-bold tracking-tight text-balance text-fg"
           >
-            {t(`dashboard.overview.greeting_${partOfDay(now)}`, { name: firstName(me.full_name) })}
+            {t(`dashboard.overview.greeting_${partOfDay(now)}`, { name: me.full_name })}
           </PageHeading>
           <p className="m-0 text-fg-secondary">{t("dashboard.overview.subtitle")}</p>
         </div>

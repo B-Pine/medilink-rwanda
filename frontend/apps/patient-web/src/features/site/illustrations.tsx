@@ -14,6 +14,7 @@ const C = {
   line: "var(--color-border)",
   ochre: "var(--color-attention-solid)",
   ink: "var(--color-fg)",
+  skin: "var(--ml-illustration-skin)",
 };
 
 /**
@@ -95,11 +96,11 @@ export function HeroIllustration({ className }: { className?: string }) {
       <g>
         <path d="M74 400c0-58 22-96 58-96s58 38 58 96" fill={C.forest} />
         <circle cx="132" cy="262" r="30" fill={C.ink} opacity="0.85" />
-        <circle cx="132" cy="268" r="26" fill="#c98f63" />
+        <circle cx="132" cy="268" r="26" fill={C.skin} />
         <path d="M106 262c2-20 14-30 28-30s26 10 26 26c-10-8-24-10-54 4z" fill={C.ink} />
         <path
           d="M168 334c18-6 30-14 36-28"
-          stroke="#c98f63"
+          stroke={C.skin}
           strokeWidth="14"
           strokeLinecap="round"
         />
@@ -164,7 +165,7 @@ export function EmergencyIllustration({ className }: { className?: string }) {
       />
       <rect x="92" y="88" width="36" height="36" rx="4" fill={C.forest} opacity="0.85" />
       <circle cx="110" cy="62" r="14" fill="var(--color-danger-solid)" />
-      <path d="M110 54v16M102 62h16" stroke="#fff" strokeWidth="4" strokeLinecap="round" />
+      <path d="M110 54v16M102 62h16" stroke="var(--color-on-danger-solid)" strokeWidth="4" strokeLinecap="round" />
       <path
         d="M20 150c40-10 60-24 90-26s60 14 90 26"
         stroke={C.line}

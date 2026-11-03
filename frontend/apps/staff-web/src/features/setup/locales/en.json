@@ -187,7 +187,10 @@
       "tertiary": "Tertiary care"
     },
     "levelUnknown": "Not set",
-    "cover": "Cover"
+    "cover": "Cover",
+    "emergencyTitle": "Emergency care",
+    "emergency": "24-hour emergency department",
+    "emergencyHint": "Turn on only if you receive emergencies day and night. Your facility is then listed first on the public Emergency page."
   },
   "catalogue": {
     "intro": "Services are what patients book or queue for. Each has a ticket prefix, such as G for G-023.",

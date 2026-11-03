@@ -138,7 +138,8 @@
       "documents": "Previous results or prescriptions, if you have them"
     },
     "map": "Location on the map",
-    "insurance": "Insurance accepted"
+    "insurance": "Insurance accepted",
+    "emergencyOpen": "Emergency department open day and night. Call {{number}} if life is at risk."
   },
   "doctors": {
     "title": "Doctors",
@@ -265,7 +266,7 @@
     "callNow": "Call {{number}} now",
     "callNote": "National ambulance service (SAMU)",
     "nearest": "Hospitals near you",
-    "nearestNote": "Hospitals receive emergencies. Use Near me to sort by distance.",
+    "nearestNote": "Places that receive emergencies come first. Use Near me to sort by distance.",
     "nearMe": "Near me",
     "none": "No hospitals listed for this area",
     "signsTitle": "Go now if someone has",
@@ -276,7 +277,8 @@
       "bring": "Bring the person’s ID and insurance card if you can, but do not wait for them."
     },
     "loadFailed": "Couldn't load nearby hospitals. Call {{number}} or try again.",
-    "referral": "Referral hospitals"
+    "referral": "Referral hospitals",
+    "department": "24-hour emergency"
   },
   "help": {
     "title": "Help & Support",

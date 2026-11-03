@@ -187,7 +187,10 @@
       "tertiary": "Soins tertiaires"
     },
     "levelUnknown": "Non défini",
-    "cover": "Couverture"
+    "cover": "Couverture",
+    "emergencyTitle": "Urgences",
+    "emergency": "Service d’urgences 24 h/24",
+    "emergencyHint": "Activez seulement si vous recevez les urgences jour et nuit. Votre établissement apparaît alors en premier sur la page publique Urgences."
   },
   "catalogue": {
     "intro": "Les services sont ce que les patients réservent ou attendent. Chacun a un préfixe de ticket, comme G pour G-023.",

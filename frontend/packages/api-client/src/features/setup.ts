@@ -32,6 +32,8 @@ export interface FacilityProfile {
   longitude: string | null;
   photos: Uuid[];
   level_of_care: string;
+  /** Declared by the admin: shown on the public pages and first on /emergency. */
+  emergency_department: boolean;
   /** Profile version: send it back with profile updates. */
   version: number;
   /** Status version: send it back with go-live (F13). */
@@ -50,6 +52,7 @@ export type FacilityProfileUpdate = Partial<
     | "latitude"
     | "longitude"
     | "level_of_care"
+    | "emergency_department"
   >
 > & { version: number };
 

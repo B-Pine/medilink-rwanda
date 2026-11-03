@@ -21971,6 +21971,8 @@ components:
             format: uuid
         level_of_care:
           type: string
+        emergency_department:
+          type: boolean
         version:
           type: integer
           description: 'Profile version: send it back with PATCH.'
@@ -21981,6 +21983,7 @@ components:
       - address
       - description_i18n
       - email
+      - emergency_department
       - facility_type
       - id
       - latitude
@@ -22050,6 +22053,9 @@ components:
         available_today:
           type: boolean
           default: false
+        emergency:
+          type: boolean
+          default: false
         page:
           type: integer
           maximum: 50
@@ -22068,6 +22074,8 @@ components:
           type: string
         level_of_care:
           type: string
+        emergency_department:
+          type: boolean
         district:
           type: string
         sector:
@@ -22123,6 +22131,7 @@ components:
       - allows_remote_join
       - distance_km
       - district
+      - emergency_department
       - insurers
       - lat
       - level_of_care
@@ -26912,6 +26921,8 @@ components:
         level_of_care:
           type: string
           maxLength: 40
+        emergency_department:
+          type: boolean
     PatchedFacilityTypesPlatformItemRequest:
       type: object
       properties:
@@ -29831,6 +29842,8 @@ components:
           type: string
         verified:
           type: boolean
+        emergency_department:
+          type: boolean
         description_i18n:
           type: object
           additionalProperties:
@@ -29887,6 +29900,7 @@ components:
       - district
       - doctors
       - email
+      - emergency_department
       - hours
       - lat
       - level_of_care

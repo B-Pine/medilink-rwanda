@@ -153,6 +153,12 @@ export function FacilityPage() {
                 </span>
               )}
               <FacilityStatus open={f.open_now} />
+              {f.emergency_department && (
+                <span className="inline-flex items-center gap-1 font-semibold text-danger">
+                  <Siren aria-hidden="true" weight="bold" className="size-4" />
+                  {t("site.emergency.department")}
+                </span>
+              )}
               {f.verified && (
                 <span className="inline-flex items-center gap-1 font-semibold text-primary">
                   <SealCheck aria-hidden="true" weight="fill" className="size-4" />
@@ -250,14 +256,16 @@ export function FacilityPage() {
                   </h3>
                   <InsuranceList codes={insurers} />
                 </div>
-                {hospital && (
+                {(hospital || f.emergency_department) && (
                   <p className="m-0 flex items-start gap-2 rounded-xl bg-danger-bg p-4 text-body-sm text-fg">
                     <Siren
                       aria-hidden="true"
                       weight="bold"
                       className="mt-0.5 size-4 shrink-0 text-danger"
                     />
-                    {t("site.facility.emergencyNote", { number: EMERGENCY.number })}
+                    {f.emergency_department
+                      ? t("site.facility.emergencyOpen", { number: EMERGENCY.number })
+                      : t("site.facility.emergencyNote", { number: EMERGENCY.number })}
                   </p>
                 )}
               </div>

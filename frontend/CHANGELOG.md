@@ -9,6 +9,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Emergency department flag
+
+- Added: "24-hour emergency department" switch in Settings › Facility profile.
+- Changed: /emergency lists declared emergency departments first with a "24-hour emergency"
+  badge, then other hospitals; the facility page shows the badge and an open-day-and-night note.
+
 ### Upgrade U2 · Service descriptions in master data
 
 - Added: platform admins write a public description per service in Master data (optional, in

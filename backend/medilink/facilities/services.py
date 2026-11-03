@@ -46,6 +46,7 @@ PROFILE_FIELDS = (
     "latitude",
     "longitude",
     "level_of_care",
+    "emergency_department",
 )
 SERVICE_FIELDS = (
     "department_id",

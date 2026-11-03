@@ -381,7 +381,7 @@ Requirements: FR-SCH-01..15; FR-BIL-03; FR-AI-01.
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `GET` | `/api/v1/public/facilities/` | Search: location, service, insurance, open now/today, level of care, availability, type, ownership | Public | FR-SCH-01, FR-SCH-04, FR-BIL-03 | Live facilities only; distance, open status, accepts insurance, fee, estimated share, next slot, queue load, live `waiting` and `wait_range`, accepted `insurers` (contract PT §2.1), referral hint; RL: search | Planned |
+| `GET` | `/api/v1/public/facilities/` | Search: location, service, insurance, open now/today, level of care, availability, type, ownership, declared 24-hour emergency department (`emergency`) | Public | FR-SCH-01, FR-SCH-04, FR-BIL-03 | Live facilities only; distance, open status, accepts insurance, fee, estimated share, next slot, queue load, live `waiting` and `wait_range`, accepted `insurers` (contract PT §2.1), referral hint; RL: search | Planned |
 | `GET` | `/api/v1/public/facilities/{slug}/` | Facility profile | Public | FR-SCH-02, FR-SCH-03 | Pre-rendered by patient-web at build time; each service carries the live `waiting` count and `wait_range` (contract PT §2.1) | Planned |
 | `GET` | `/api/v1/public/facilities/{slug}/photos/{upload_id}/` | One of the facility's public photos | Public | FR-SCH-02 | 302 to a short-lived signed link; only clean photos the admin still lists. The profile also carries `email`, `website` and `photos` | Built |
 | `GET` | `/api/v1/public/facilities/{slug}/services/` | Services with fees, insurers and estimated share | Public | FR-SCH-02, FR-BIL-03 | `?insurer=` for the share | Planned |

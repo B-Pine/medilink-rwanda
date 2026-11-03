@@ -200,34 +200,9 @@
   --ml-lift-distance: -3px;
   --ml-glass-bg: color-mix(in srgb, var(--ml-bg-surface) 82%, transparent);
   --ml-glass-blur: 14px;
-  --ml-hero-mesh:
-    radial-gradient(
-      48rem 28rem at 12% -8%,
-      color-mix(in srgb, var(--ml-brand) 14%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      36rem 24rem at 92% 8%,
-      color-mix(in srgb, var(--ml-attention-bg) 70%, transparent),
-      transparent 70%
-    ),
-    linear-gradient(
-      180deg,
-      var(--ml-bg-surface),
-      color-mix(in srgb, var(--ml-bg-page) 60%, var(--ml-bg-surface))
-    );
-  --ml-band-mesh:
-    radial-gradient(
-      40rem 18rem at 0% 0%,
-      color-mix(in srgb, var(--ml-brand) 12%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      28rem 16rem at 100% 100%,
-      color-mix(in srgb, var(--ml-brand) 7%, transparent),
-      transparent 70%
-    ),
-    var(--ml-bg-surface);
+  /* flat, printed-paper surfaces (product owner, 2026-11-03: "must not look AI-made") */
+  --ml-hero-mesh: var(--ml-bg-surface);
+  --ml-band-mesh: transparent;
 }
 
 :root[data-density="patient"] {

@@ -28,28 +28,8 @@ const KIND_ICON: Record<ReturnType<typeof pinKind>, Icon> = {
   clinic: Stethoscope,
 };
 
-/** Two letters for the card's mark, from the words of the name that are not the type. */
-function monogram(name: string): string {
-  const generic = /^(health|centre|center|clinic|hospital|district|polyclinic|post|de|du|la|le)$/i;
-  const words = name.split(/\s+/).filter(Boolean);
-  const own = words.filter((w) => !generic.test(w));
-  const pickFrom = own.length > 0 ? own : words;
-  return pickFrom
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase() ?? "")
-    .join("");
-}
-
 /** How many insurer chips a card shows before "+N". */
 const INSURERS_SHOWN = 3;
-
-/** The tint and icon of a facility type's illustrated header, until the facility adds a photo. */
-const KIND_MEDIA: Record<ReturnType<typeof pinKind>, string> = {
-  post: "from-[#e7f3ed] to-[#d5ebe0]",
-  centre: "from-[#e8f1f4] to-[#d3e5ec]",
-  hospital: "from-[#eef0f5] to-[#dce1ee]",
-  clinic: "from-[#f1efe8] to-[#e5e0d1]",
-};
 
 /** Open, busy or closed: a tinted tag with a word, never colour alone. */
 function StatusTag({ result, wait }: { result: FacilityResult; wait: string }) {
@@ -95,11 +75,8 @@ export function FacilityCard({
   selected = false,
   onActivate,
   onShowOnMap,
-  dense = false,
 }: {
   result: FacilityResult;
-  /** Beside filters and a map (Find Care): a slim cover, so the list stays short. */
-  dense?: boolean;
   /** Its pin is selected on the map beside. */
   selected?: boolean;
   /** Pointer or focus on the card: the map highlights the pin. */
@@ -128,28 +105,17 @@ export function FacilityCard({
         selected && "border-primary shadow-[0_0_0_1px_var(--color-primary)]",
       )}
     >
-      {/* product media: the type's illustration with the facility's monogram, type and badges */}
-      <div
-        aria-hidden="true"
-        className={cx(
-          "relative flex items-end overflow-hidden bg-gradient-to-br p-4",
-          dense ? "aspect-[16/4]" : "aspect-[16/6]",
-          KIND_MEDIA[kind],
-        )}
-      >
-        <KindIcon
-          weight="duotone"
-          className="absolute -right-3 -bottom-5 size-32 text-primary/15 transition-transform duration-300 ease-out-quint group-hover:scale-105"
-        />
-        <span className="relative grid size-12 place-items-center rounded-2xl bg-surface text-body font-bold tracking-tight text-primary shadow-card">
-          {monogram(result.name)}
+      {/* a plain header row: the facility's mark, its type, and the emergency badge when declared */}
+      <div aria-hidden="true" className="flex items-center gap-3 border-b border-border px-5 py-3">
+        <span className="grid size-9 shrink-0 place-items-center rounded-md bg-brand-subtle text-body-sm font-bold text-primary">
+          <KindIcon weight="bold" className="size-4" />
         </span>
-        <span className="absolute top-3 left-3 rounded-full bg-surface/90 px-2.5 py-1 text-caption font-semibold text-fg">
+        <span className="text-caption font-semibold tracking-wide text-fg-secondary uppercase">
           {t(`booking.types.${result.type}`, { defaultValue: result.type })}
         </span>
         {result.emergency_department && (
-          <span className="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-danger-bg px-2.5 py-1 text-caption font-semibold text-danger">
-            <Siren weight="bold" className="size-3" />
+          <span className="ml-auto inline-flex items-center gap-1 text-caption font-semibold text-danger">
+            <Siren weight="bold" className="size-3.5" />
             {t("site.emergency.department")}
           </span>
         )}
@@ -299,7 +265,6 @@ export function FacilityCardGrid({
             selected={selected === result.slug}
             onActivate={onSelect && (() => onSelect(result.slug))}
             onShowOnMap={onShowOnMap && (() => onShowOnMap(result.slug))}
-            dense={compact}
           />
         </li>
       ))}

@@ -458,26 +458,6 @@ html:has(.ml-soft) {
   }
 }
 
-/* The hero's live cards drift slowly, each on its own beat. */
-@media (prefers-reduced-motion: no-preference) {
-  :root:not([data-data-saver="on"]) .ml-float {
-    animation: ml-float 6s ease-in-out infinite;
-  }
-  :root:not([data-data-saver="on"]) .ml-float:nth-of-type(2n) {
-    animation-duration: 7s;
-    animation-delay: -2s;
-  }
-  :root:not([data-data-saver="on"]) .ml-float:nth-of-type(3n) {
-    animation-duration: 8s;
-    animation-delay: -4s;
-  }
-}
-@keyframes ml-float {
-  50% {
-    transform: translateY(-6px);
-  }
-}
-
 /* Hero entrance: the copy, then the search, then the chips (one sequence, once). */
 @media (prefers-reduced-motion: no-preference) {
   :root:not([data-data-saver="on"]) .ml-hero-seq > * {
@@ -514,4 +494,20 @@ html:has(.ml-soft) {
     padding-right: 0;
     opacity: 0;
   }
+}
+
+/*
+ * Firmer public look (product owner, 2026-11-03: the site must not look AI-made). Smaller corners,
+ * hairline borders instead of glowing shadows, no tinted glow behind the page. Tailwind's rounded-xl
+ * / 2xl / 3xl read these variables, so every public page follows without a markup change.
+ */
+:root[data-surface="site"] {
+  --radius-xl: 0.5rem;
+  --radius-2xl: 0.5rem;
+  --radius-3xl: 0.625rem;
+}
+:root[data-surface="site"] .ml-soft {
+  --ml-shadow-card: 0 0 0 0 transparent;
+  --ml-shadow-raised: 0 1px 2px rgb(14 31 24 / 0.06), 0 6px 16px -8px rgb(14 31 24 / 0.16);
+  background-image: none;
 }

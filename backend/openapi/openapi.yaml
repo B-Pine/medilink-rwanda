@@ -14077,6 +14077,59 @@ paths:
               schema:
                 $ref: '#/components/schemas/AvailabilityRow'
           description: ''
+  /api/v1/staff/pharmacy/history/:
+    get:
+      operationId: staff_pharmacy_history
+      summary: Dispensing history at my facility, newest first (upgrade 05 §4)
+      parameters:
+      - in: query
+        name: days
+        schema:
+          type: integer
+          enum:
+          - 1
+          - 30
+          - 7
+      - in: query
+        name: mine
+        schema:
+          type: boolean
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: Prescription number or patient name
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HistoryRow'
+          description: ''
+  /api/v1/staff/pharmacy/my-day/:
+    get:
+      operationId: staff_pharmacy_my_day
+      summary: 'Pharmacist Today: ready, partly given, questions, dispensed, out of
+        stock'
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PharmacyDay'
+          description: ''
   /api/v1/staff/pharmacy/queue/:
     get:
       operationId: staff_pharmacy_queue
@@ -22622,6 +22675,58 @@ components:
         * `vitals` - vitals
         * `legacy` - legacy
         * `scan` - scan
+    HistoryLine:
+      type: object
+      properties:
+        drug:
+          type: string
+        outcome:
+          type: string
+        quantity:
+          type: integer
+      required:
+      - drug
+      - outcome
+      - quantity
+    HistoryRow:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        prescription_id:
+          type: string
+          format: uuid
+        prescription_number:
+          type: string
+        patient_display_name:
+          type: string
+        pharmacist_name:
+          type: string
+        signed_at:
+          type: string
+          format: date-time
+        identity_check_method:
+          type: string
+        controlled_confirmed:
+          type: boolean
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/HistoryLine'
+        status:
+          type: string
+      required:
+      - controlled_confirmed
+      - id
+      - identity_check_method
+      - lines
+      - patient_display_name
+      - pharmacist_name
+      - prescription_id
+      - prescription_number
+      - signed_at
+      - status
     Hold:
       type: object
       properties:
@@ -28243,6 +28348,45 @@ components:
       required:
       - full_name
       - id
+    PharmacyDay:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        ready:
+          type: integer
+        partly:
+          type: integer
+        questions_open:
+          type: integer
+        questions_answered:
+          type: integer
+        dispensed_today:
+          type: integer
+        dispensed_by_me:
+          type: integer
+        not_available_today:
+          type: integer
+        substituted_today:
+          type: integer
+        out_of_stock:
+          type: integer
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - date
+      - dispensed_by_me
+      - dispensed_today
+      - not_available_today
+      - out_of_stock
+      - partly
+      - questions_answered
+      - questions_open
+      - ready
+      - substituted_today
+      - updated_at
     PharmacyQuestion:
       type: object
       properties:

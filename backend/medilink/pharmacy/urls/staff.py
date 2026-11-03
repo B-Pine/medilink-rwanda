@@ -61,6 +61,8 @@ urlpatterns = [
         name="staff-prescription-query-close",
     ),
     path("pharmacy/queue/", v.QueueView.as_view(), name="staff-pharmacy-queue"),
+    path("pharmacy/my-day/", v.PharmacyDayView.as_view(), name="staff-pharmacy-my-day"),
+    path("pharmacy/history/", v.DispenseHistoryView.as_view(), name="staff-pharmacy-history"),
     path(
         "pharmacy/availability/",
         v.AvailabilityListView.as_view(),

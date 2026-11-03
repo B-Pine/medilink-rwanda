@@ -9,6 +9,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Public site: a landing page for a public service (2026-11-04)
+
+- Changed: the home page's first view is the question and the answer: the heading, one search and
+  the common needs as links on the left; on the right the places open near the visitor, live
+  (status, wait, type, district, accepted insurance) with Near me and "View all facilities".
+- Changed: "What care do you need?" is an index of service links with real facility counts (no
+  icon tiles); the three steps are a numbered list in words (no phone mock-ups); facilities get
+  one quiet row with a link (the dark band and its sample dashboard numbers are gone).
+- Removed: the illustrated hero and its unused strings (`site.home2.tag`, `float`, `trust`,
+  `phone`, `dash`, `photos`, `popular`). Added `site.home2.allServices`.
+
 ### Public site: facilities as a directory, not products (2026-11-04)
 
 - Changed: **Facilities**, **Find care**, the home page list and the assistant's suggestions show

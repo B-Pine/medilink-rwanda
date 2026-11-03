@@ -433,12 +433,10 @@
     "details": "Détails"
   },
   "home2": {
-    "tag": "Temps d’attente en direct dans des établissements vérifiés",
     "title": "Trouvez les bons soins, sans longue attente.",
     "lead": "Comparez les cliniques et hôpitaux proches, voyez qui est ouvert et l’attente, puis rejoignez la file ou réservez.",
     "searchPlaceholder": "Service, établissement ou symptôme",
     "search": "Rechercher",
-    "popular": "Populaire",
     "chips": {
       "general": "Consultation générale",
       "maternal": "Soins maternels",
@@ -446,21 +444,9 @@
       "dental": "Dentaire",
       "symptoms": "Pas sûr ? Vérifiez vos symptômes"
     },
-    "float": {
-      "queue": "Vous êtes 3e dans la file · environ 12 min",
-      "insurance": "Acceptées ici : Mutuelle · RAMA · MMI",
-      "open": "Ouvert · ferme à 18:00"
-    },
-    "trust": {
-      "label": "MediLink en chiffres",
-      "facilities": "établissements vérifiés",
-      "districts": "districts consultables",
-      "languages": "langues : kinyarwanda, anglais, français",
-      "noAccountValue": "Gratuit",
-      "noAccount": "sans compte pour chercher"
-    },
     "careTitle": "De quels soins avez-vous besoin ?",
     "careLead": "Choisissez un service pour voir les lieux qui l’offrent.",
+    "allServices": "Tous les services",
     "facilityCount_one": "{{count}} établissement",
     "facilityCount_other": "{{count}} établissements",
     "nearTitle": "Ouverts près de vous",
@@ -481,32 +467,8 @@
         "body": "Suivez votre place en direct et venez quand vous approchez."
       }
     },
-    "phone": {
-      "search": "Dentiste près de moi",
-      "place1": "Centre de santé de Kacyiru",
-      "wait1": "Ouvert · ~15 min",
-      "place2": "Clinique de Remera",
-      "wait2": "Chargé · ~45 min",
-      "service": "Consultation générale",
-      "slot": "Aujourd’hui · 6 en attente",
-      "joinButton": "Rejoindre la file",
-      "ticket": "Votre ticket"
-    },
     "facilitiesTitle": "Une salle d’attente plus calme.",
     "facilitiesLead": "Les patients voient votre attente avant de venir. Vous voyez la file, le flux et la journée sur un tableau de bord.",
-    "facilitiesAction": "MediLink pour les établissements",
-    "dash": {
-      "title": "Aujourd’hui",
-      "live": "En direct",
-      "queue": "En file",
-      "wait": "Attente moyenne",
-      "seen": "Vus aujourd’hui",
-      "note": "Arrivées par heure"
-    },
-    "photos": {
-      "main": "Une agente de santé en tenue verte montre à une femme comment utiliser une application sur son téléphone, à l’accueil d’un centre de santé.",
-      "entrance": "L’entrée couverte d’un centre de santé, avec des patients qui attendent sur des bancs.",
-      "hillside": "Un centre de santé en briques au toit vert, entre bananiers et collines verdoyantes."
-    }
+    "facilitiesAction": "MediLink pour les établissements"
   }
 }

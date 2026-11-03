@@ -9,6 +9,10 @@ BEAT_SCHEDULE = {
         "task": "medilink.facilities.tasks.expire_invitations",
         "schedule": crontab(hour=2, minute=30),  # Kigali time (CELERY_TIMEZONE)
     },
+    "facilities.check_clinician_licences": {
+        "task": "medilink.facilities.tasks.check_clinician_licences",
+        "schedule": crontab(hour=6, minute=0),  # Kigali time: reminders arrive in the morning
+    },
 }
 FUNCTIONS = ("tenancy_find_invitation(bytea)", "scheduling_busy_ranges(uuid, uuid)")
 APPEND_ONLY = ("facilities_config_change",)
@@ -22,7 +26,7 @@ class FacilitiesConfig(AppConfig):
 
     def ready(self) -> None:
         from config.celery import app
-        from medilink.facilities import checklist, db, staff
+        from medilink.facilities import checklist, clinician, db, staff
         from medilink.onboarding import golive
         from medilink.onboarding.services import application_approved
         from medilink.uploads.purposes import UploadPurpose, get_purpose, register
@@ -31,6 +35,7 @@ class FacilitiesConfig(AppConfig):
         app.conf.beat_schedule = {**(app.conf.beat_schedule or {}), **BEAT_SCHEDULE}
         application_approved.connect(staff.on_application_approved, dispatch_uid="s2-approval-hook")
         golive.register("setup.checklist_complete", checklist.checklist_complete)
+        clinician.register_purposes()
         for code in ("facility_photo", "facility_branding"):
             if get_purpose(code) is None:
                 register(

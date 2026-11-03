@@ -41,7 +41,8 @@
     "rmdc": "Conseil des médecins et dentistes (RMDC)",
     "ncnm": "Conseil des infirmiers et sages-femmes (NCNM)",
     "npc": "Conseil des pharmaciens (NPC)",
-    "other": "Autre conseil"
+    "other": "Autre conseil",
+    "rahpc": "Conseil des professions paramédicales (RAHPC)"
   },
   "today": {
     "title": "Terminez la mise en service",
@@ -535,7 +536,8 @@
       "deactivate": "Désactivé.",
       "reactivate": "Réactivé.",
       "attest-licence": "Licence attestée.",
-      "mfa-reset": "Connexion en deux étapes réinitialisée. À configurer à la prochaine connexion."
+      "mfa-reset": "Connexion en deux étapes réinitialisée. À configurer à la prochaine connexion.",
+      "refuse-licence": "Attestation retirée ; la personne a été informée."
     },
     "neverSignedIn": "Jamais connecté",
     "mfaGapTitle_one": "{{count}} membre actif sans connexion en deux étapes",
@@ -544,16 +546,53 @@
     "inviteName": "Ses noms",
     "invitePhone": "Téléphone professionnel",
     "optional": "Facultatif : pré-remplit son nouveau compte",
-    "noPhone": "Aucun téléphone indiqué"
+    "noPhone": "Aucun téléphone indiqué",
+    "openScan": "Ouvrir le scan de la licence",
+    "noScan": "Pas encore de scan de la licence.",
+    "checkFirst": "Vérifiez le scan et la date de fin dans le registre du conseil, puis attestez.",
+    "refuse": "Impossible de confirmer",
+    "withdraw": "Retirer l’attestation",
+    "refuseTitle": "Impossible de confirmer la licence de {{name}}",
+    "refuseHint": "La personne ne peut être ni planifiée ni signer avant une nouvelle vérification. Elle reçoit votre raison par e-mail.",
+    "refusedBecause": "Non confirmée : {{reason}}",
+    "cannotAttest": {
+      "missing": "Demandez-lui d’ajouter la date de fin et le scan de la licence.",
+      "expired": "La licence a expiré. Demandez-lui de la renouveler."
+    },
+    "work": "Travail dans cet établissement",
+    "department": "Service",
+    "noDepartment": "Aucun service",
+    "employment": "Contrat",
+    "notSet": "Non renseigné",
+    "saveWork": "Enregistrer"
   },
   "clinician": {
-    "title": "Ma licence professionnelle",
-    "intro": "Votre conseil et votre numéro de licence figurent sur les ordonnances et dossiers que vous signez.",
+    "title": "Mon profil professionnel",
+    "intro": "Votre profession, votre licence et vos diplômes. L’administrateur de votre établissement vérifie votre licence avant que vous puissiez être planifié ou signer ; le Ministère de la Santé compte le personnel par profession.",
     "council": "Conseil",
     "licence": "Numéro de licence",
     "specialty": "Spécialité",
-    "reattest": "Changer de conseil ou de numéro de licence demande une nouvelle attestation par l’administrateur.",
-    "licenceTitle": "Licence professionnelle"
+    "reattest": "Un nouveau conseil, numéro ou scan de licence doit être vérifié à nouveau par l’administrateur.",
+    "licenceTitle": "Licence d’exercice",
+    "professionTitle": "Profession",
+    "profession": "Profession",
+    "sex": "Sexe",
+    "female": "Femme",
+    "male": "Homme",
+    "validUntil": "Valable jusqu’au",
+    "validUntilHint": "La date de fin indiquée sur votre certificat d’exercice.",
+    "validUntilNow": "Actuellement : jusqu’au {{date}}",
+    "scan": "Scan ou photo de la licence",
+    "scanHint": "PDF, JPEG, PNG ou HEIC, jusqu’à 10 Mo. L’administrateur l’ouvre pour vérifier.",
+    "qualifications": "Diplômes",
+    "degree": "Diplôme",
+    "institution": "École ou université",
+    "year": "Année",
+    "addQualification": "Ajouter un diplôme",
+    "removeQualification": "Retirer {{degree}}",
+    "photo": "Photo",
+    "photoLabel": "Votre photo",
+    "photoHint": "Une photo nette de votre visage, JPEG, PNG ou HEIC, jusqu’à 5 Mo."
   },
   "invite": {
     "title": "Rejoindre un établissement sur MediLink",
@@ -604,5 +643,73 @@
     "language": "Langue",
     "save": "Enregistrer",
     "saved": "Enregistré."
+  },
+  "licenceState": {
+    "valid": "Licence valide",
+    "expiring": "Licence bientôt expirée",
+    "expired": "Licence expirée",
+    "missing": "Informations de licence manquantes"
+  },
+  "employment": {
+    "full_time": "Temps plein",
+    "part_time": "Temps partiel",
+    "visiting": "Visiteur",
+    "locum": "Remplaçant"
+  },
+  "upload": {
+    "drop": "Déposez un fichier ici, ou",
+    "browse": "Choisir un fichier",
+    "camera": "Prendre une photo",
+    "retry": "Réessayer",
+    "remove": "Retirer",
+    "tooLarge": "Ce fichier est trop volumineux.",
+    "wrongType": "Ce type de fichier n’est pas accepté.",
+    "status": {
+      "uploading": "Envoi en cours",
+      "pending": "Vérification antivirus",
+      "clean": "Prêt",
+      "infected": "Virus détecté",
+      "rejected": "Refusé",
+      "failed": "Vérification échouée",
+      "error": "Non envoyé"
+    }
+  },
+  "professions": {
+    "medical_doctor": "Médecin",
+    "dentist": "Dentiste",
+    "nurse": "Infirmier ou infirmière",
+    "midwife": "Sage-femme",
+    "pharmacist": "Pharmacien",
+    "lab_technologist": "Technicien de laboratoire",
+    "radiographer": "Manipulateur en radiologie",
+    "anaesthetist": "Anesthésiste",
+    "physiotherapist": "Kinésithérapeute",
+    "clinical_psychologist": "Psychologue clinicien",
+    "nutritionist": "Nutritionniste",
+    "optometrist": "Optométriste",
+    "other": "Autre"
+  },
+  "specialties": {
+    "general_practice": "Médecine générale",
+    "family_medicine": "Médecine de famille",
+    "internal_medicine": "Médecine interne",
+    "paediatrics": "Pédiatrie",
+    "obstetrics_gynaecology": "Gynécologie-obstétrique",
+    "general_surgery": "Chirurgie générale",
+    "orthopaedics": "Orthopédie",
+    "anaesthesiology": "Anesthésiologie",
+    "emergency_medicine": "Médecine d’urgence",
+    "psychiatry": "Psychiatrie",
+    "dermatology": "Dermatologie",
+    "ophthalmology": "Ophtalmologie",
+    "ent": "ORL",
+    "cardiology": "Cardiologie",
+    "neurology": "Neurologie",
+    "radiology": "Radiologie",
+    "pathology": "Anatomopathologie",
+    "urology": "Urologie",
+    "dentistry": "Dentisterie",
+    "public_health": "Santé publique",
+    "other": "Autre"
   }
 }

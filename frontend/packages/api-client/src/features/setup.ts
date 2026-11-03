@@ -314,7 +314,69 @@ export interface StaffRole {
   permissions: string[];
 }
 
-export type Council = "rmdc" | "ncnm" | "npc" | "other";
+export type Council = "rmdc" | "ncnm" | "npc" | "rahpc" | "other";
+
+/** The cadre a clinician is registered in (the government counts staff by these). */
+export const PROFESSIONS = [
+  "medical_doctor",
+  "dentist",
+  "nurse",
+  "midwife",
+  "pharmacist",
+  "lab_technologist",
+  "radiographer",
+  "anaesthetist",
+  "physiotherapist",
+  "clinical_psychologist",
+  "nutritionist",
+  "optometrist",
+  "other",
+] as const;
+export type Profession = (typeof PROFESSIONS)[number];
+
+/** The fixed specialty list (`specialty` keeps the English name for letters and pages). */
+export const SPECIALTY_CODES = [
+  "general_practice",
+  "family_medicine",
+  "internal_medicine",
+  "paediatrics",
+  "obstetrics_gynaecology",
+  "general_surgery",
+  "orthopaedics",
+  "anaesthesiology",
+  "emergency_medicine",
+  "psychiatry",
+  "dermatology",
+  "ophthalmology",
+  "ent",
+  "cardiology",
+  "neurology",
+  "radiology",
+  "pathology",
+  "urology",
+  "dentistry",
+  "public_health",
+  "other",
+] as const;
+export type SpecialtyCode = (typeof SPECIALTY_CODES)[number];
+
+export const EMPLOYMENT_TYPES = ["full_time", "part_time", "visiting", "locum"] as const;
+export type EmploymentType = (typeof EMPLOYMENT_TYPES)[number];
+
+/** valid, expiring (60 days or less), expired, or missing (no end date or no scan). */
+export type ClinicianLicenceState = "valid" | "expiring" | "expired" | "missing";
+
+export interface FileRef {
+  id: Uuid;
+  original_filename: string;
+  status: string;
+}
+
+export interface Qualification {
+  degree: string;
+  institution: string;
+  year: number;
+}
 
 export interface StaffMembership {
   id: Uuid;
@@ -334,9 +396,22 @@ export interface StaffMembership {
     licence_number: string;
     specialty: string;
     attested_at: string | null;
+    profession: Profession | "";
+    specialty_code: SpecialtyCode | "";
+    licence_valid_until: string | null;
+    licence_state: ClinicianLicenceState;
+    /** The scan the facility admin checks before attesting. */
+    licence_file: FileRef | null;
+    /** Why this facility could not confirm the licence (empty when attested or not refused). */
+    refused_reason: string;
+    sex: "female" | "male" | "";
+    qualifications: Qualification[];
   } | null;
   joined_at: string;
   deactivation_reason: string;
+  /** A department of this facility, or null. */
+  department_id: Uuid | null;
+  employment_type: EmploymentType | "";
   version: number;
 }
 
@@ -360,7 +435,25 @@ export interface ClinicianProfile {
   council: Council;
   licence_number: string;
   specialty?: string;
+  profession?: Profession | "";
+  specialty_code?: SpecialtyCode | "";
+  licence_valid_until?: string | null;
+  sex?: "female" | "male" | "";
+  qualifications?: Qualification[];
+  // read only
+  licence_state?: ClinicianLicenceState;
+  licence_file?: FileRef | null;
+  photo_file?: FileRef | null;
 }
+
+/** PATCH body: an upload id (purpose clinician_licence / clinician_photo) attaches the file. */
+export type ClinicianProfileInput = Omit<
+  ClinicianProfile,
+  "licence_state" | "licence_file" | "photo_file"
+> & {
+  licence_upload_id?: Uuid | null;
+  photo_upload_id?: Uuid | null;
+};
 
 /** What patients read on my public doctor page (upgrade 05 §3); never the licence. */
 export interface ClinicianPublicProfile {
@@ -419,7 +512,7 @@ export const setupPaths = {
   membership: (id: Uuid) => `${S}/memberships/${id}/`,
   membershipAction: (
     id: Uuid,
-    action: "deactivate" | "reactivate" | "attest-licence" | "mfa-reset",
+    action: "deactivate" | "reactivate" | "attest-licence" | "refuse-licence" | "mfa-reset",
   ) => `${S}/memberships/${id}/${action}/`,
   invitations: `${S}/invitations/`,
   invitation: (id: Uuid, action: "resend" | "revoke") => `${S}/invitations/${id}/${action}/`,
@@ -568,11 +661,17 @@ export function createSetupApi(client: ApiClient) {
     membership: (id: Uuid) => client.get<StaffMembership>(setupPaths.membership(id)),
     updateMembership: (
       id: Uuid,
-      body: { version: number; role_codes?: string[]; service_point_ids?: Uuid[] },
+      body: {
+        version: number;
+        role_codes?: string[];
+        service_point_ids?: Uuid[];
+        department_id?: Uuid | null;
+        employment_type?: EmploymentType | "";
+      },
     ) => patch<StaffMembership>(setupPaths.membership(id), body),
     membershipAction: (
       id: Uuid,
-      action: "deactivate" | "reactivate" | "attest-licence" | "mfa-reset",
+      action: "deactivate" | "reactivate" | "attest-licence" | "refuse-licence" | "mfa-reset",
       reason?: string,
     ) =>
       client.post<StaffMembership>(
@@ -593,7 +692,7 @@ export function createSetupApi(client: ApiClient) {
     invitationAction: (id: Uuid, action: "resend" | "revoke") =>
       client.post<Invitation>(setupPaths.invitation(id, action), {}),
     clinicianProfile: () => client.get<ClinicianProfile>(setupPaths.clinician),
-    updateClinicianProfile: (body: Partial<ClinicianProfile>) =>
+    updateClinicianProfile: (body: Partial<ClinicianProfileInput>) =>
       patch<ClinicianProfile>(setupPaths.clinician, body),
     clinicianPublicProfile: () => client.get<ClinicianPublicProfile>(setupPaths.clinicianPublic),
     updateClinicianPublicProfile: (body: Omit<ClinicianPublicProfile, "specialty">) =>

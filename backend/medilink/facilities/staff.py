@@ -18,7 +18,7 @@ from rest_framework import exceptions
 from medilink.audit.services import record
 from medilink.core.exceptions import BusinessRuleViolation, Conflict
 from medilink.facilities.changelog import log_changes
-from medilink.facilities.models import ServicePoint
+from medilink.facilities.models import Department, ServicePoint
 from medilink.facilities.services import ensure_configurable
 from medilink.tenancy.context import rls_context
 from medilink.tenancy.models import (
@@ -39,6 +39,10 @@ WRONG_ACCOUNT = _("Sign in with the email address the invitation was sent to.")
 ALREADY_MEMBER = _("This person is already an active member of the facility.")
 NOT_YOURSELF = _("You can't do this to your own account.")
 NO_PROFILE = _("The member has no clinician profile yet.")
+UNKNOWN_DEPARTMENT = _("Choose one of this facility's departments.")
+NO_LICENCE_SCAN = _("Ask the clinician to upload the scan of their practising licence first.")
+NO_LICENCE_DATE = _("Ask the clinician to add the date their licence ends first.")
+LICENCE_EXPIRED = _("This licence has ended. Ask the clinician to renew it and upload the new one.")
 STALE = _("Someone else changed this. Reload and try again.")
 
 
@@ -395,6 +399,8 @@ def update_membership(
         "service_point_ids": sorted(
             str(p) for p in membership.service_points.values_list("service_point_id", flat=True)
         ),
+        "department_id": str(membership.department_id or ""),
+        "employment_type": membership.employment_type,
     }
     if "role_codes" in data:
         roles = _check_roles(data["role_codes"])
@@ -415,13 +421,27 @@ def update_membership(
                 for p in points
             ]
         )
+    if "department_id" in data:
+        department = data["department_id"]
+        if (
+            department is not None
+            and not Department.objects.filter(
+                pk=department, facility_id=membership.facility_id, is_active=True
+            ).exists()
+        ):
+            raise exceptions.ValidationError({"department_id": [str(UNKNOWN_DEPARTMENT)]})
+        membership.department_id = department
+    if "employment_type" in data:
+        membership.employment_type = data["employment_type"]
     membership.version += 1
-    membership.save(update_fields=["version", "updated_at"])
+    membership.save(update_fields=["version", "department_id", "employment_type", "updated_at"])
     after = {
         "role_codes": sorted(membership.roles.values_list("code", flat=True)),
         "service_point_ids": sorted(
             str(p) for p in membership.service_points.values_list("service_point_id", flat=True)
         ),
+        "department_id": str(membership.department_id or ""),
+        "employment_type": membership.employment_type,
     }
     changed = log_changes(
         facility_id=membership.facility_id,
@@ -513,11 +533,22 @@ def attest_licence(
 ) -> FacilityMembership:
     from medilink.accounts.models import ClinicianProfile
 
+    """The facility admin checked the licence scan and its end date against the council's
+    register (2026-11-03: both must be there, and the licence still valid)."""
     ensure_configurable(membership.facility)
-    if not ClinicianProfile.objects.filter(user_id=membership.user_id).exists():
+    profile = ClinicianProfile.objects.filter(user_id=membership.user_id).first()
+    if profile is None:
         raise BusinessRuleViolation(NO_PROFILE)
+    if profile.licence_file_id is None:
+        raise BusinessRuleViolation(NO_LICENCE_SCAN)
+    if profile.licence_valid_until is None:
+        raise BusinessRuleViolation(NO_LICENCE_DATE)
+    if profile.licence_valid_until < timezone.localdate():
+        raise BusinessRuleViolation(LICENCE_EXPIRED)
     membership.licence_attested_at = timezone.now()
     membership.licence_attested_by = actor
+    membership.licence_refused_reason = ""
+    membership.licence_refused_at = None
     membership.version += 1
     membership.save()
     record(
@@ -526,6 +557,44 @@ def attest_licence(
         facility_id=membership.facility_id,
         object_type="membership",
         object_id=membership.pk,
+    )
+    return membership
+
+
+def refuse_licence(
+    membership: FacilityMembership, *, reason: str, actor: Any, request: Any
+) -> FacilityMembership:
+    """The licence could not be confirmed: the attestation is removed (the clinician can't be
+    scheduled or sign) and the clinician is told why by email."""
+    ensure_configurable(membership.facility)
+    membership.licence_attested_at = None
+    membership.licence_attested_by = None
+    membership.licence_refused_reason = reason.strip()
+    membership.licence_refused_at = timezone.now()
+    membership.version += 1
+    membership.save()
+    record(
+        "staff.membership.licence_refused",
+        request=request,
+        facility_id=membership.facility_id,
+        object_type="membership",
+        object_id=membership.pk,
+    )
+    email, facility_name, text = membership.user.email, membership.facility.name, reason.strip()
+    transaction.on_commit(
+        lambda: send_mail(
+            subject=str(_("Your licence could not be confirmed")),
+            message=str(
+                _(
+                    "%(facility)s could not confirm your practising licence on MediLink: "
+                    "%(reason)s\n\nUpdate it under My clinician profile, then ask them to check "
+                    "it again."
+                )
+                % {"facility": facility_name, "reason": text}
+            ),
+            from_email=None,
+            recipient_list=[email],
+        )
     )
     return membership
 

@@ -104,6 +104,17 @@ def _check_membership(facility_id: Any, membership_id: Any) -> FacilityMembershi
         from medilink.facilities.errors import FieldRule
 
         raise FieldRule("membership_id", NOT_ATTESTED)
+    from medilink.accounts.models import ClinicianProfile
+
+    until = (
+        ClinicianProfile.objects.filter(user_id=membership.user_id)
+        .values_list("licence_valid_until", flat=True)
+        .first()
+    )
+    if until is not None and until < timezone.localdate():  # the daily job clears it too
+        from medilink.facilities.errors import FieldRule
+
+        raise FieldRule("membership_id", NOT_ATTESTED)
     return membership
 
 

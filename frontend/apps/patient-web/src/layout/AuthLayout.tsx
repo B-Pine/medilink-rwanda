@@ -15,7 +15,7 @@ import {
   SkipLink,
   ThemeSwitch,
 } from "@medilink/ui";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
@@ -46,6 +46,14 @@ export function AuthLayout({
   wide?: boolean;
 }) {
   const { t } = useTranslation();
+  // the sign-in screens wear the public site's "clinical calm" palette too (tokens.css)
+  useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.surface = "site";
+    return () => {
+      if (root.dataset.surface === "site") delete root.dataset.surface;
+    };
+  }, []);
   return (
     <div className="grid min-h-dvh bg-surface text-fg lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
       <SkipLink />
@@ -102,11 +110,12 @@ export function AuthLayout({
           <Link
             to="/"
             viewTransition
-            className="inline-flex min-h-target items-center rounded-sm no-underline lg:hidden"
+            aria-label={t("nav.homeLabel")}
+            className="inline-flex min-h-target shrink-0 items-center rounded-sm no-underline lg:hidden"
           >
-            <Logo className="h-8" />
+            <Logo className="h-8 w-auto" />
           </Link>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex min-w-0 items-center gap-2">
             <a
               href="tel:912"
               className="inline-flex h-10 items-center gap-2 rounded-full border border-danger/25 bg-danger-bg/60 px-3 text-body-sm font-semibold whitespace-nowrap text-danger no-underline transition-colors duration-150 ease-out-quint hover:border-danger/50 hover:bg-danger-bg"
@@ -115,8 +124,12 @@ export function AuthLayout({
               <span className="hidden sm:inline">{t("nav.emergency")}</span>
               <span className="sm:hidden">912</span>
             </a>
-            <LanguageSwitcher pill />
-            <ThemeSwitch />
+            {/* phones: no globe in the select, so the bar fits 360 px */}
+            <LanguageSwitcher pill className="max-sm:[&_select]:pl-4 max-sm:[&>svg]:hidden" />
+            {/* phones keep 912 and the language; the theme follows the system there */}
+            <span className="hidden sm:inline-flex">
+              <ThemeSwitch />
+            </span>
           </div>
         </header>
         <main

@@ -15,6 +15,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   24-hour emergency badges, insurer chips, the whole card clickable, one action row with a map
   icon button). The facility profile opens with its photo gallery under the name.
 - Fixed: home service tiles no longer show "0 facilities".
+- Fixed: sign-in, sign-up and password screens use the public site's palette (the button green
+  matches the site), the logo no longer squashes on phones, and the top bar fits 360 px (the
+  theme switch moves to wider screens; the theme follows the system on phones).
 
 ### Upgrade U2 · Cashier role (upgrade 06 §4)
 

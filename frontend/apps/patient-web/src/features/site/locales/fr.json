@@ -138,7 +138,8 @@
       "documents": "Résultats ou ordonnances précédents, si vous en avez"
     },
     "map": "Emplacement sur la carte",
-    "insurance": "Assurances acceptées"
+    "insurance": "Assurances acceptées",
+    "emergencyOpen": "Service d’urgences ouvert jour et nuit. Appelez le {{number}} si une vie est en danger."
   },
   "doctors": {
     "title": "Médecins",
@@ -265,7 +266,7 @@
     "callNow": "Appeler le {{number}}",
     "callNote": "Service national d’ambulance (SAMU)",
     "nearest": "Hôpitaux près de vous",
-    "nearestNote": "Les hôpitaux reçoivent les urgences. Utilisez « Près de moi » pour trier par distance.",
+    "nearestNote": "Les lieux qui reçoivent les urgences d’abord. Utilisez Près de moi pour trier par distance.",
     "nearMe": "Près de moi",
     "none": "Aucun hôpital listé pour cette zone",
     "signsTitle": "Partez maintenant si quelqu’un a",
@@ -276,7 +277,8 @@
       "bring": "Apportez la pièce d’identité et la carte d’assurance si possible, sans les attendre."
     },
     "loadFailed": "Impossible de charger les hôpitaux proches. Appelez le {{number}} ou réessayez.",
-    "referral": "Hôpitaux de référence"
+    "referral": "Hôpitaux de référence",
+    "department": "Urgences 24 h/24"
   },
   "help": {
     "title": "Aide et assistance",

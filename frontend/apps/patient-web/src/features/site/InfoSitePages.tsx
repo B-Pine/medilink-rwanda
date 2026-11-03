@@ -254,9 +254,9 @@ function ReferralFallback({ failed, onRetry }: { failed: boolean; onRetry: () =>
 }
 
 /**
- * Emergency (upgrade 11 §5): call first, then the nearest hospitals with directions. Only the
- * configured national number is shown; hospitals are listed as hospitals, without claims about an
- * emergency department until listings carry that flag (upgrade 11 §13).
+ * Emergency (upgrade 11 §5): call first, then the nearest places with directions. Facilities whose
+ * admin declares a 24-hour emergency department come first, with a badge; other hospitals follow,
+ * listed as hospitals only. Only the configured national number is shown.
  */
 export function EmergencyPage() {
   const { t } = useTranslation();
@@ -265,11 +265,17 @@ export function EmergencyPage() {
   const hospitals = useQuery({
     queryKey: ["discovery", "emergency-page", near],
     queryFn: () => api.booking.search({ near }),
-    select: (page) =>
-      sortResults(
-        page.results.filter((r) => isHospital(r.type)),
+    select: (page) => {
+      const sorted = sortResults(
+        page.results.filter((r) => r.emergency_department || isHospital(r.type)),
         near ? "nearest" : "name",
-      ),
+      );
+      // a declared emergency department first; the order within each group is kept
+      return [
+        ...sorted.filter((r) => r.emergency_department),
+        ...sorted.filter((r) => !r.emergency_department),
+      ];
+    },
   });
   return (
     <PublicLayout>
@@ -348,6 +354,12 @@ export function EmergencyPage() {
                         <span className="block text-body-sm font-normal text-fg-secondary">
                           {t(`booking.types.${h.type}`, { defaultValue: h.type })} · {h.district}
                         </span>
+                        {h.emergency_department && (
+                          <span className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-danger-bg px-2.5 py-0.5 text-caption font-semibold text-danger">
+                            <Siren aria-hidden="true" weight="bold" className="size-3.5" />
+                            {t("site.emergency.department")}
+                          </span>
+                        )}
                       </Link>
                       {h.distance_km !== null && (
                         <span className="text-body-sm font-semibold tabular-nums">

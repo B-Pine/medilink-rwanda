@@ -96,6 +96,15 @@ def test_search_filters_by_place_level_distance_and_opening(
     clock.at(18, 0)
     assert search(open_now=True) == []
     assert search()[0]["open_now"] is False
+    # upgrade U2: only facilities whose admin declares a 24-hour emergency department
+    assert search(emergency=True) == [] and search()[0]["emergency_department"] is False
+    with rls_context(facility_id=clinic.pk):
+        Profile.objects.filter(facility=clinic).update(emergency_department=True)
+        listing.refresh(clinic.pk)
+    [emergency] = search(emergency=True)
+    assert emergency["emergency_department"] is True
+    profile = api.get(f"{PUB}facilities/{clinic.slug}/").json()
+    assert profile["emergency_department"] is True
 
 
 @pytest.mark.acceptance("S5-B3")

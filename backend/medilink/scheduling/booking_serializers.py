@@ -34,6 +34,8 @@ class FacilitySearchSerializer(serializers.Serializer):
         choices=LevelOfCare.choices, required=False, allow_blank=True
     )
     available_today = serializers.BooleanField(required=False, default=False)
+    # only facilities whose admin declares a 24-hour emergency department
+    emergency = serializers.BooleanField(required=False, default=False)
     page = serializers.IntegerField(required=False, min_value=1, max_value=50, default=1)
 
 
@@ -48,6 +50,7 @@ class FacilitySearchResultSerializer(serializers.Serializer):
     type = serializers.CharField()
     ownership = serializers.CharField()
     level_of_care = serializers.CharField()
+    emergency_department = serializers.BooleanField()
     district = serializers.CharField()
     sector = serializers.CharField()
     distance_km = serializers.FloatField(allow_null=True)
@@ -115,6 +118,7 @@ class PublicFacilitySerializer(serializers.Serializer):
     ownership = serializers.CharField()
     level_of_care = serializers.CharField()
     verified = serializers.BooleanField()
+    emergency_department = serializers.BooleanField()
     description_i18n = I18nField()
     address = serializers.CharField()
     phone = serializers.CharField()

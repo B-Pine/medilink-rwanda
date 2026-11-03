@@ -37,6 +37,8 @@ class Profile(models.Model):
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     photo_file_ids = ArrayField(models.UUIDField(), default=list, blank=True)
     level_of_care = models.CharField(max_length=40, blank=True)
+    # set by the facility admin: shown on the public pages and first on /emergency
+    emergency_department = models.BooleanField(default=False)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -265,6 +267,7 @@ class PublicListing(UUIDModel):
     facility_type = models.CharField(max_length=32)
     ownership = models.CharField(max_length=16)
     level_of_care = models.CharField(max_length=40, blank=True)
+    emergency_department = models.BooleanField(default=False)
     district_code = models.CharField(max_length=20, blank=True)
     district = models.CharField(max_length=120, blank=True)
     sector_code = models.CharField(max_length=20, blank=True)

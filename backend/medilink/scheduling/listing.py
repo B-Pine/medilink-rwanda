@@ -188,6 +188,7 @@ def refresh(facility_id: Any) -> int:
                 ownership=facility.ownership,
                 level_of_care=(profile.level_of_care if profile else "")
                 or LEVEL_BY_TYPE.get(str(facility.facility_type), ""),
+                emergency_department=bool(profile and profile.emergency_department),
                 latitude=profile.latitude if profile else None,
                 longitude=profile.longitude if profile else None,
                 service_id=service.pk,
@@ -227,6 +228,7 @@ class Query:
     open_now: bool = False
     level_of_care: str | None = None
     available_today: bool = False
+    emergency: bool = False
     page: int = 1
 
 
@@ -263,6 +265,8 @@ def search(query: Query) -> dict[str, Any]:
         rows = rows.filter(sector_code=query.sector_code)
     if query.level_of_care:
         rows = rows.filter(level_of_care=query.level_of_care)
+    if query.emergency:
+        rows = rows.filter(emergency_department=True)
     now = timezone.now()
     if query.available_today:
         end_of_day = dt.datetime.combine(
@@ -290,6 +294,7 @@ def search(query: Query) -> dict[str, Any]:
                 "type": row.facility_type,
                 "ownership": row.ownership,
                 "level_of_care": row.level_of_care,
+                "emergency_department": row.emergency_department,
                 "district": row.district,
                 "sector": row.sector,
                 "distance_km": distance,

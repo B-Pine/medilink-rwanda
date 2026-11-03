@@ -138,7 +138,8 @@
       "documents": "Ibisubizo cyangwa impapuro z’imiti byabanje, niba ubifite"
     },
     "map": "Aho biri ku ikarita",
-    "insurance": "Ubwishingizi bwemewe"
+    "insurance": "Ubwishingizi bwemewe",
+    "emergencyOpen": "Serivisi y'ubutabazi ikora ku manywa na nijoro. Hamagara {{number}} niba ubuzima buri mu kaga."
   },
   "doctors": {
     "title": "Abaganga",
@@ -265,7 +266,7 @@
     "callNow": "Hamagara {{number}} ubu",
     "callNote": "Serivisi y’imbangukiragutabara y’igihugu (SAMU)",
     "nearest": "Ibitaro biri hafi yawe",
-    "nearestNote": "Ibitaro byakira ubutabazi bwihuse. Kanda “Hafi yanjye” kugira ngo bitondekwe ukurikije intera.",
+    "nearestNote": "Ahakira indembe haza mbere. Koresha Hafi yanjye kugira ngo utondeke ukurikije intera.",
     "nearMe": "Hafi yanjye",
     "none": "Nta bitaro byanditswe aha",
     "signsTitle": "Genda ubu niba umuntu afite",
@@ -276,7 +277,8 @@
       "bring": "Zana indangamuntu n’ikarita y’ubwishingizi niba bishoboka, ariko ntubitegereze."
     },
     "loadFailed": "Ntibyashobotse kubona ibitaro biri hafi. Hamagara {{number}} cyangwa wongere ugerageze.",
-    "referral": "Ibitaro byoherezwamo abarwayi"
+    "referral": "Ibitaro byoherezwamo abarwayi",
+    "department": "Ubutabazi amasaha 24"
   },
   "help": {
     "title": "Ubufasha",

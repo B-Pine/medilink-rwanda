@@ -56,6 +56,7 @@ class FacilityProfileSerializer(serializers.Serializer):
     longitude = serializers.DecimalField(max_digits=9, decimal_places=6, allow_null=True)
     photos = serializers.ListField(child=serializers.UUIDField())
     level_of_care = serializers.CharField()
+    emergency_department = serializers.BooleanField()
     version = serializers.IntegerField(help_text="Profile version: send it back with PATCH.")
     status_version = serializers.IntegerField(
         help_text="Status version: send it back with go-live (F13)."
@@ -77,6 +78,7 @@ class FacilityProfileUpdateSerializer(StrictSerializer):
         max_digits=9, decimal_places=6, required=False, allow_null=True
     )
     level_of_care = serializers.CharField(max_length=40, required=False, allow_blank=True)
+    emergency_department = serializers.BooleanField(required=False)
 
     def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
         lat, lng = attrs.get("latitude"), attrs.get("longitude")

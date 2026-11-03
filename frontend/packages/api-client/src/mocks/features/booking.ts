@@ -43,6 +43,9 @@ interface MockService extends PublicService {
   minutes: number;
 }
 
+/** In the mocks, hospitals declare a 24-hour emergency department (as their admin would). */
+const hasEmergency = (f: { type: string }) => f.type.endsWith("hospital");
+
 interface MockFacility {
   slug: string;
   name: string;
@@ -881,11 +884,13 @@ export const bookingMocks: FeatureMockFactory = (context) => {
         const district = str(body.district_code);
         const insurer = str(body.insurer_code);
         const level = str(body.level_of_care);
+        const emergency = body.emergency === true;
         const near = body.near as { lat: number; lng: number } | null | undefined;
         const results: FacilityResult[] = [];
         for (const f of db.all) {
           if (district && f.district_code !== district) continue;
           if (level && f.level_of_care !== level) continue;
+          if (emergency && !hasEmergency(f)) continue;
           const s = service ? f.services.find((x) => x.code === service) : f.services[0];
           if (!s) continue;
           const km = near
@@ -899,6 +904,7 @@ export const bookingMocks: FeatureMockFactory = (context) => {
             type: f.type,
             ownership: f.ownership,
             level_of_care: f.level_of_care,
+            emergency_department: hasEmergency(f),
             district: f.district,
             sector: f.sector,
             distance_km: km,
@@ -966,6 +972,7 @@ export const bookingMocks: FeatureMockFactory = (context) => {
           ownership: f.ownership,
           level_of_care: f.level_of_care,
           verified: true,
+          emergency_department: hasEmergency(f),
           description_i18n: { en: f.description },
           address: `${f.sector}, ${f.district}`,
           phone: "+250788000000",

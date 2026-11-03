@@ -157,6 +157,7 @@ function seed() {
     longitude: "30.100000",
     photos: [],
     level_of_care: "primary",
+    emergency_department: false,
     version: 3,
     status_version: 2,
   };

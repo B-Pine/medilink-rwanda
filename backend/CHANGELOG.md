@@ -15,6 +15,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Added: `GET /public/facilities/{slug}/photos/{upload_id}/` redirects to a short-lived signed
   link to one public photo (C0; 404 once the admin removes it).
 
+### Upgrade U2 · Emergency department flag
+
+- Added: `emergency_department` on the facility profile (admin PATCH), the public listing, search
+  results and the public profile; `POST /public/facilities/search/` takes `emergency: true`
+  (migration `facilities/0005`).
+
 ### Upgrade U2 · Service descriptions in master data
 
 - Added: optional `description_i18n` on service catalogue items (migration `masterdata/0005`);

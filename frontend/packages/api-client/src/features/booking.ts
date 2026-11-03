@@ -36,6 +36,8 @@ export interface FacilitySearchInput {
   open_now?: boolean;
   level_of_care?: LevelOfCare | "";
   available_today?: boolean;
+  /** Only facilities whose admin declares a 24-hour emergency department. */
+  emergency?: boolean;
   page?: number;
 }
 
@@ -45,6 +47,8 @@ export interface FacilityResult {
   type: string;
   ownership: string;
   level_of_care: string;
+  /** Declared by the facility admin (24-hour emergency department). */
+  emergency_department: boolean;
   district: string;
   sector: string;
   distance_km: number | null;
@@ -102,6 +106,7 @@ export interface PublicFacility {
   ownership: string;
   level_of_care: string;
   verified: boolean;
+  emergency_department: boolean;
   description_i18n: I18n;
   address: string;
   phone: string;

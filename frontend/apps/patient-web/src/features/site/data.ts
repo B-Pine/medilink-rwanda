@@ -28,6 +28,28 @@ export const EMERGENCY = {
   number: "912",
 } as const;
 
+/**
+ * Referral hospitals shown on /emergency when the live list cannot load (redesign: "works with the
+ * API down"). Names and districts only: a phone number is added here only once it is confirmed with
+ * the hospital, because a wrong number on this page is worse than none. 912 stays the call action.
+ */
+export const REFERRAL_HOSPITALS: { name: string; district: string; phone?: string }[] = [
+  { name: "University Teaching Hospital of Kigali (CHUK)", district: "Nyarugenge" },
+  { name: "King Faisal Hospital", district: "Gasabo" },
+  { name: "Rwanda Military Hospital", district: "Kicukiro" },
+  { name: "Kibagabaga Hospital", district: "Gasabo" },
+  { name: "Masaka Hospital", district: "Kicukiro" },
+  { name: "Muhima Hospital", district: "Nyarugenge" },
+  { name: "University Teaching Hospital of Butare (CHUB)", district: "Huye" },
+  { name: "Ruhengeri Referral Hospital", district: "Musanze" },
+  { name: "Rwamagana Provincial Hospital", district: "Rwamagana" },
+  { name: "Kibuye Referral Hospital", district: "Karongi" },
+];
+
+/** A map search for a place by name (no coordinates needed). */
+export const mapSearchUrl = (name: string) =>
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${name}, Rwanda`)}`;
+
 // ---- facilities ----
 
 /** Every live facility, page by page (the listing returns 20 at a time). */

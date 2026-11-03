@@ -268,7 +268,9 @@
       "call": "Call {{number}} first if the person cannot travel safely.",
       "nearest": "Go to the nearest hospital; health centres can refer you.",
       "bring": "Bring the person’s ID and insurance card if you can, but do not wait for them."
-    }
+    },
+    "loadFailed": "Couldn't load nearby hospitals. Call {{number}} or try again.",
+    "referral": "Referral hospitals"
   },
   "help": {
     "title": "Help & Support",

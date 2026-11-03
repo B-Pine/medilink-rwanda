@@ -28,11 +28,10 @@ import { useApi } from "../../app/services";
 import { PublicLayout } from "../../layout/PublicLayout";
 import { directionsUrl, pick } from "../booking/discovery";
 import { sortResults, useNearMe } from "../booking/Places";
-import { EMERGENCY, isHospital } from "./data";
+import { EMERGENCY, isHospital, mapSearchUrl, REFERRAL_HOSPITALS } from "./data";
 import { EmergencyIllustration } from "./illustrations";
 import {
   EmptyState,
-  ErrorState,
   Faq,
   LinkRow,
   LoadingRows,
@@ -45,22 +44,17 @@ import {
 /** Date shown on the legal and information documents (upgrade 11 §5). */
 const DOCS_UPDATED = "2026-11-02";
 
-/** "[To confirm]" in a text becomes a visible tag, never a fact (analysis 12 §8). */
+/**
+ * Legal text still carries "[To confirm]" markers for the legal review in the locale files; the
+ * public page never shows draft markers (redesign: no draft content on public pages).
+ */
 function Confirm({ children }: { children: string }) {
-  const { t } = useTranslation();
-  const parts = children.split("[To confirm]");
   return (
     <>
-      {parts.map((part, i) => (
-        <span key={i}>
-          {part}
-          {i < parts.length - 1 && (
-            <span className="mx-1 inline-flex rounded-full bg-attention-bg px-2 py-0.5 text-caption font-semibold text-attention">
-              {t("site.toConfirm")}
-            </span>
-          )}
-        </span>
-      ))}
+      {children
+        .replaceAll("[To confirm]", "")
+        .replace(/\s{2,}/g, " ")
+        .trim()}
     </>
   );
 }
@@ -203,6 +197,61 @@ const SIGNS = [
   "injury",
 ] as const;
 
+/** The static referral list: shown when live hospitals fail to load or none are listed yet. */
+function ReferralFallback({ failed, onRetry }: { failed: boolean; onRetry: () => void }) {
+  const { t } = useTranslation();
+  return (
+    <div className="flex flex-col">
+      {failed && (
+        <div
+          role="status"
+          className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 bg-attention-bg/50 px-5 py-3 text-body-sm"
+        >
+          <span>{t("site.emergency.loadFailed", { number: EMERGENCY.number })}</span>
+          <Button variant="ghost" size="sm" pill onClick={onRetry}>
+            {t("site.retry")}
+          </Button>
+        </div>
+      )}
+      <p className="m-0 px-5 pt-4 text-caption font-semibold tracking-wide text-fg-secondary uppercase">
+        {t("site.emergency.referral")}
+      </p>
+      <ul className="m-0 list-none p-0">
+        {REFERRAL_HOSPITALS.map((h) => (
+          <li
+            key={h.name}
+            className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-border/50 px-5 py-3.5 last:border-b-0"
+          >
+            <span className="min-w-0 flex-1 font-semibold text-fg">
+              {h.name}
+              <span className="block text-body-sm font-normal text-fg-secondary">{h.district}</span>
+            </span>
+            {h.phone && (
+              <a
+                href={`tel:${h.phone.replace(/\s/g, "")}`}
+                className={buttonClassName({ variant: "secondary", size: "sm", pill: true })}
+              >
+                <Phone aria-hidden="true" className="size-4" />
+                {h.phone}
+              </a>
+            )}
+            <a
+              href={mapSearchUrl(h.name)}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={`${t("site.facility.directions")}: ${h.name}`}
+              className={buttonClassName({ variant: "secondary", size: "sm", pill: true })}
+            >
+              <NavigationArrow aria-hidden="true" className="size-4" />
+              {t("site.facility.directions")}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 /**
  * Emergency (upgrade 11 §5): call first, then the nearest hospitals with directions. Only the
  * configured national number is shown; hospitals are listed as hospitals, without claims about an
@@ -277,10 +326,11 @@ export function EmergencyPage() {
               </div>
               {hospitals.isPending ? (
                 <LoadingRows rows={3} />
-              ) : hospitals.isError ? (
-                <ErrorState onRetry={() => void hospitals.refetch()} />
-              ) : !hospitals.data?.length ? (
-                <EmptyState title={t("site.emergency.none")} />
+              ) : hospitals.isError || !hospitals.data?.length ? (
+                <ReferralFallback
+                  failed={hospitals.isError}
+                  onRetry={() => void hospitals.refetch()}
+                />
               ) : (
                 <ul className="m-0 list-none p-0">
                   {hospitals.data.map((h) => (
@@ -750,7 +800,11 @@ function LegalPage({ doc }: { doc: "privacy" | "terms" }) {
   return (
     <PublicLayout>
       <PageContainer className="pb-20">
-        <PageHeader crumbs={[{ label: t(`footer.${doc}`) }]} title={t(`public.${doc}.title`)} />
+        {/* the breadcrumb always matches the H1 */}
+        <PageHeader
+          crumbs={[{ label: t(`public.${doc}.title`) }]}
+          title={t(`public.${doc}.title`)}
+        />
         {/* the text beside a contents list that stays in view on wide screens */}
         <div className="grid items-start gap-8 lg:grid-cols-[15rem_minmax(0,1fr)]">
           <nav
@@ -776,9 +830,6 @@ function LegalPage({ doc }: { doc: "privacy" | "terms" }) {
           <div className="mx-auto w-full max-w-[48rem]">
             <Document>
               <Updated />
-              <p className="m-0 rounded-2xl bg-attention-bg p-4 text-body-sm text-fg">
-                {t("site.draft")}
-              </p>
               <DocSection title={t("public.legal.summaryTitle")}>
                 <p className="m-0">
                   <Confirm>{t(`public.${doc}.summary`)}</Confirm>

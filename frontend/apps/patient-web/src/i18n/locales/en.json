@@ -43,7 +43,15 @@
     "services": "Services",
     "howItWorks": "How It Works",
     "emergencyShort": "Emergency",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "homeLabel": "MediLink Rwanda home",
+    "strip": {
+      "long": "Life-threatening emergency?",
+      "short": "Emergency?",
+      "call": "Call 912",
+      "free": "SAMU · free, 24 hours",
+      "guide": "Emergency guide"
+    }
   },
   "landing": {
     "search": {

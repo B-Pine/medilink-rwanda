@@ -8,7 +8,7 @@
     "dangerTitle": "First: is any of this happening now?",
     "dangerIntro": "Choose any that apply. If none do, go on.",
     "unconscious": "Fainting, a fit, or not waking up",
-    "noneOfThese": "None of these",
+    "noneOfThese": "None of these, continue",
     "whoTitle": "Who is this for?",
     "age": {
       "infant": "A baby (under 1 year)",
@@ -66,7 +66,8 @@
     "disclaimer": "This is guidance, not a diagnosis. If you feel very unwell, go to the nearest emergency department or call 912.",
     "emergencyTitle": "Get help now",
     "emergencyBody": "Call {{number}} or go to the nearest emergency department. Do not wait for a booking.",
-    "emergencyMore": "What to do in an emergency"
+    "emergencyMore": "What to do in an emergency",
+    "callNumber": "Call {{number}}"
   },
   "about": {
     "eyebrow": "About MediLink",

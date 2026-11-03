@@ -8,7 +8,7 @@
     "dangerTitle": "D'abord : l'un de ces signes est-il présent maintenant ?",
     "dangerIntro": "Choisissez ceux qui s'appliquent. Sinon, continuez.",
     "unconscious": "Évanouissement, convulsions ou impossible à réveiller",
-    "noneOfThese": "Aucun de ces signes",
+    "noneOfThese": "Aucun de ces signes, continuer",
     "whoTitle": "Pour qui ?",
     "age": {
       "infant": "Un bébé (moins d'un an)",
@@ -66,7 +66,8 @@
     "disclaimer": "Ceci est un conseil, pas un diagnostic. Si vous vous sentez très mal, allez aux urgences les plus proches ou appelez le 912.",
     "emergencyTitle": "Obtenez de l'aide maintenant",
     "emergencyBody": "Appelez le {{number}} ou allez aux urgences les plus proches. N'attendez pas un rendez-vous.",
-    "emergencyMore": "Que faire en cas d'urgence"
+    "emergencyMore": "Que faire en cas d'urgence",
+    "callNumber": "Appeler le {{number}}"
   },
   "about": {
     "eyebrow": "À propos de MediLink",

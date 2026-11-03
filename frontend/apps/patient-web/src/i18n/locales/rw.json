@@ -43,7 +43,15 @@
     "services": "Serivisi",
     "howItWorks": "Uko bikora",
     "emergencyShort": "Ubutabazi",
-    "closeMenu": "Funga ibikubiyemo"
+    "closeMenu": "Funga ibikubiyemo",
+    "homeLabel": "Ahabanza ha MediLink Rwanda",
+    "strip": {
+      "long": "Ubuzima buri mu kaga?",
+      "short": "Byihutirwa?",
+      "call": "Hamagara 912",
+      "free": "SAMU · ni ubuntu, amasaha 24",
+      "guide": "Icyo wakora mu byihutirwa"
+    }
   },
   "landing": {
     "search": {

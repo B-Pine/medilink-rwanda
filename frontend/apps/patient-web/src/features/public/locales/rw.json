@@ -8,7 +8,7 @@
     "dangerTitle": "Mbere na mbere: hari kimwe muri ibi kiri kuba ubu?",
     "dangerIntro": "Hitamo ibihari. Niba ntacyo, komeza.",
     "unconscious": "Guta ubwenge, kugagara, cyangwa kudakanguka",
-    "noneOfThese": "Nta na kimwe",
+    "noneOfThese": "Nta na kimwe, komeza",
     "whoTitle": "Ni nde urwaye?",
     "age": {
       "infant": "Uruhinja (munsi y'umwaka)",
@@ -66,7 +66,8 @@
     "disclaimer": "Iyi ni inama, si isuzuma rya muganga. Niba urembye cyane, jya ku bitaro byihutirwa bikwegereye cyangwa uhamagare 912.",
     "emergencyTitle": "Shaka ubufasha ubu",
     "emergencyBody": "Hamagara {{number}} cyangwa ujye ku bitaro byihutirwa bikwegereye. Ntutegereze gahunda.",
-    "emergencyMore": "Icyo wakora mu gihe cy'ibyihutirwa"
+    "emergencyMore": "Icyo wakora mu gihe cy'ibyihutirwa",
+    "callNumber": "Hamagara {{number}}"
   },
   "about": {
     "eyebrow": "Ibyerekeye MediLink",

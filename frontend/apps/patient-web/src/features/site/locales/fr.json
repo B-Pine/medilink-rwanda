@@ -268,7 +268,9 @@
       "call": "Appelez d’abord le {{number}} si la personne ne peut pas se déplacer en sécurité.",
       "nearest": "Allez à l’hôpital le plus proche ; les centres de santé peuvent vous y orienter.",
       "bring": "Apportez la pièce d’identité et la carte d’assurance si possible, sans les attendre."
-    }
+    },
+    "loadFailed": "Impossible de charger les hôpitaux proches. Appelez le {{number}} ou réessayez.",
+    "referral": "Hôpitaux de référence"
   },
   "help": {
     "title": "Aide et assistance",

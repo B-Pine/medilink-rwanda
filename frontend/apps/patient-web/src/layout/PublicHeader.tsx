@@ -1,283 +1,258 @@
-import { ArrowRight, List, MagnifyingGlass, Siren, X } from "@phosphor-icons/react";
-import { buttonClassName, LanguageSwitcher, Logo, ThemeSwitch } from "@medilink/ui";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ArrowRight, Globe, List, Phone, Siren, SignIn, X } from "@phosphor-icons/react";
+import { cx, Logo, ThemeSwitch } from "@medilink/ui";
+import { SUPPORTED_LANGUAGES } from "@medilink/ui/i18n";
+import { useEffect, useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, NavLink, useLocation, useNavigation } from "react-router";
 
 export const PUBLIC_NAV = [
-  { to: "/", key: "nav.home", end: true },
   { to: "/find-care", key: "nav.findCare", end: false },
   { to: "/facilities", key: "nav.facilities", end: false },
   { to: "/doctors", key: "nav.doctors", end: false },
   { to: "/services", key: "nav.services", end: false },
+  { to: "/for-facilities", key: "nav.forFacilities", end: false },
 ] as const;
 
+/** Compact EN / RW / FR select (44 px target); the full names stay in the options. */
+function LanguageSelect({ className }: { className?: string }) {
+  const { t, i18n } = useTranslation("ui");
+  const id = `site-language-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
+  const current = i18n.resolvedLanguage ?? i18n.language;
+  return (
+    <div className={cx("relative inline-flex items-center", className)}>
+      <label htmlFor={id} className="sr-only">
+        {t("language.label")}
+      </label>
+      <Globe
+        aria-hidden="true"
+        className="pointer-events-none absolute left-3 size-4 text-fg-secondary"
+      />
+      <select
+        id={id}
+        value={current}
+        onChange={(event) => void i18n.changeLanguage(event.target.value)}
+        className="h-11 cursor-pointer appearance-none rounded-full border border-border bg-surface pr-3 pl-9 text-body-sm font-semibold text-fg uppercase transition-colors duration-150 ease-out-quint hover:border-border-input"
+      >
+        {SUPPORTED_LANGUAGES.map((language) => (
+          <option key={language} value={language} lang={language}>
+            {language.toUpperCase()} · {t(`language.names.${language}`)}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
 /**
- * Public navbar (upgrade 11 §3): logo left; Home · Find Care · Facilities · Doctors · Services in
- * the centre, in a segmented track with a raised sliding indicator (How It Works lives in the
- * footer); Emergency (live dot), a language chip, a light/dark switch, Sign In and a primary Find
- * Care button on the right. Frosted
- * surface, 80 px, sticky, a subtle line that becomes a soft shadow on scroll. Below 1024 px a menu button opens a slide-down panel that locks the page
- * behind it and closes on navigation or Escape.
+ * Emergency strip (redesign §Header): the one red on the page, above the header and never sticky.
+ * Calling 912 is one tap on a phone.
+ */
+function EmergencyStrip() {
+  const { t } = useTranslation();
+  return (
+    <div className="border-b border-danger/15 bg-danger-bg print:hidden">
+      <div className="mx-auto flex min-h-10 max-w-[75rem] flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-1.5 text-body-sm sm:px-6">
+        <p className="m-0 flex items-center gap-2 text-fg">
+          <Siren aria-hidden="true" weight="bold" className="size-4 shrink-0 text-danger" />
+          <span className="hidden sm:inline">{t("nav.strip.long")}</span>
+          <span className="sm:hidden">{t("nav.strip.short")}</span>
+          <a
+            href="tel:912"
+            className="inline-flex min-h-target items-center gap-1 font-bold text-danger underline-offset-4 hover:underline"
+          >
+            <Phone aria-hidden="true" weight="bold" className="size-3.5" />
+            {t("nav.strip.call")}
+          </a>
+          <span className="hidden text-fg-secondary md:inline">{t("nav.strip.free")}</span>
+        </p>
+        <Link
+          to="/emergency"
+          viewTransition
+          className="inline-flex min-h-target items-center gap-1 font-semibold text-danger no-underline hover:underline"
+        >
+          {t("nav.strip.guide")}
+          <ArrowRight aria-hidden="true" weight="bold" className="size-3.5" />
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Public header (redesign "clinical calm"): an emergency strip, then one solid 72 px bar with the
+ * logo, five links, a compact language select and Sign in. Below 1200 px the bar keeps the logo,
+ * an emergency icon and the menu button; everything else lives in a slide-out sheet of 48 px rows.
+ * The active page is brand text with a 2 px underline. The theme switch lives in the sheet and the
+ * footer.
  */
 export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const navigation = useNavigation();
   const [menu, setMenu] = useState<{ open: boolean; at: string }>({ open: false, at: pathname });
-  // the menu closes on every navigation
-  const open = menu.open && menu.at === pathname;
+  const open = menu.open && menu.at === pathname; // the sheet closes on every navigation
+  const button = useRef<HTMLButtonElement>(null);
+  const sheet = useRef<HTMLElement>(null);
+  const close = () => setMenu({ open: false, at: pathname });
 
   useEffect(() => {
     if (!open) return;
     const root = document.documentElement;
     const previous = root.style.overflow;
     root.style.overflow = "hidden";
-    const close = (event: KeyboardEvent) => {
+    sheet.current?.querySelector<HTMLElement>("a, button")?.focus();
+    const trigger = button.current;
+    const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") setMenu({ open: false, at: pathname });
     };
-    window.addEventListener("keydown", close);
+    window.addEventListener("keydown", onKey);
     return () => {
       root.style.overflow = previous;
-      window.removeEventListener("keydown", close);
+      window.removeEventListener("keydown", onKey);
+      trigger?.focus();
     };
   }, [open, pathname]);
 
   return (
-    <header className="ml-site-header sticky top-0 z-30 border-b border-border/60 print:hidden">
-      {/* frosted backdrop on its own layer: a filter on the header would trap the fixed menu overlay */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 -z-10 bg-surface/85 backdrop-blur-xl backdrop-saturate-150"
-      />
-      {/* route loading: a thin emerald bar while the next page's code or data loads */}
-      <div
-        aria-hidden="true"
-        data-loading={navigation.state !== "idle"}
-        className="ml-route-progress absolute inset-x-0 top-0 h-0.5 origin-left bg-primary"
-      />
-      <div className="mx-auto flex h-20 max-w-[84rem] items-center gap-4 px-4 sm:px-6 lg:px-8 xl:gap-6">
-        <Link
-          to="/"
-          viewTransition
-          className="inline-flex min-h-target shrink-0 items-center rounded-sm pr-2 no-underline"
-        >
-          <Logo className="h-9 xl:h-10" />
-        </Link>
-        <SlidingNav />
-        <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+    <>
+      <EmergencyStrip />
+      <header className="ml-site-header sticky top-0 z-30 border-b border-border bg-surface/[0.96] print:hidden">
+        {/* route loading: a thin bar while the next page's code or data loads */}
+        <div
+          aria-hidden="true"
+          data-loading={navigation.state !== "idle"}
+          className="ml-route-progress absolute inset-x-0 top-0 h-0.5 origin-left bg-primary"
+        />
+        <div className="mx-auto flex h-[4.5rem] max-w-[75rem] items-center gap-6 px-4 sm:px-6">
           <Link
-            to="/emergency"
+            to="/"
             viewTransition
-            aria-label={t("nav.emergency")}
-            className="group inline-flex h-10 items-center gap-2 rounded-full border border-danger/25 bg-danger-bg/60 px-3 text-body-sm font-semibold whitespace-nowrap text-danger no-underline transition-colors duration-150 ease-out-quint hover:border-danger/50 hover:bg-danger-bg"
+            aria-label={t("nav.homeLabel")}
+            className="inline-flex min-h-target shrink-0 items-center rounded-sm no-underline"
           >
-            {/* a live dot: the emergency line is always open */}
-            <span aria-hidden="true" className="relative flex size-2">
-              <span className="absolute inset-0 animate-ping rounded-full bg-danger-solid opacity-60 motion-reduce:hidden" />
-              <span className="relative size-2 rounded-full bg-danger-solid" />
-            </span>
-            <Siren aria-hidden="true" weight="bold" className="size-4 2xl:hidden" />
-            <span aria-hidden="true" className="hidden 2xl:inline">
-              {t("nav.emergencyShort")}
-            </span>
+            <Logo className="h-9" />
           </Link>
-          <LanguageSwitcher pill className="hidden xl:inline-flex" />
-          <ThemeSwitch className="hidden lg:inline-flex" />
-          {showLogin && (
-            <>
-              <span aria-hidden="true" className="mx-1 hidden h-6 w-px bg-border lg:block" />
-              <Link
-                to="/login"
-                viewTransition
-                className="hidden h-10 items-center rounded-full px-3.5 text-body-sm font-semibold whitespace-nowrap text-fg no-underline transition-colors duration-150 ease-out-quint hover:bg-subtle lg:inline-flex"
-              >
-                {t("nav.login")}
-              </Link>
-            </>
-          )}
-          <span className="hidden sm:block">
-            <Link
-              to="/find-care"
-              viewTransition
-              className={buttonClassName({
-                size: "sm",
-                pill: true,
-                className:
-                  "group min-h-10 gap-2 px-5 whitespace-nowrap shadow-card transition-[background-color,box-shadow,transform] hover:shadow-raised active:scale-[0.97] motion-reduce:active:scale-100",
-              })}
-            >
-              <MagnifyingGlass
-                aria-hidden="true"
-                weight="bold"
-                className="hidden size-4 xl:block"
-              />
-              {t("nav.findCare")}
-              <ArrowRight
-                aria-hidden="true"
-                weight="bold"
-                className="hidden size-3.5 transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5 motion-reduce:transition-none xl:block"
-              />
-            </Link>
-          </span>
-          <button
-            type="button"
-            aria-expanded={open}
-            aria-controls="site-menu"
-            aria-label={open ? t("nav.closeMenu") : t("nav.menu")}
-            onClick={() => setMenu({ open: !open, at: pathname })}
-            className="inline-flex size-11 cursor-pointer items-center justify-center rounded-full text-fg transition-[background-color,transform] duration-150 ease-out-quint hover:bg-subtle active:scale-[0.94] motion-reduce:active:scale-100 lg:hidden"
-          >
-            {open ? (
-              <X aria-hidden="true" className="size-6" />
-            ) : (
-              <List aria-hidden="true" className="size-6" />
-            )}
-          </button>
-        </div>
-      </div>
-
-      {open && (
-        <>
-          <div
-            aria-hidden="true"
-            onClick={() => setMenu({ open: false, at: pathname })}
-            className="fixed inset-x-0 top-20 bottom-0 animate-fade bg-fg/30 lg:hidden"
-          />
-          <nav
-            id="site-menu"
-            aria-label={t("nav.label")}
-            className="absolute inset-x-0 top-full max-h-[calc(100dvh-5rem)] animate-rise overflow-y-auto border-b border-border bg-surface px-4 pt-2 pb-6 shadow-raised sm:px-6 lg:hidden"
-          >
-            <ul className="m-0 flex list-none flex-col p-0">
+          <nav aria-label={t("nav.label")} className="hidden min-w-0 xl:block">
+            <ul className="m-0 flex list-none items-center gap-1 p-0">
               {PUBLIC_NAV.map((item) => (
-                <li key={item.to} className="border-b border-border/70 last:border-b-0">
+                <li key={item.to}>
                   <NavLink
                     to={item.to}
                     end={item.end}
                     viewTransition
-                    className="flex min-h-14 items-center justify-between text-h3 font-semibold text-fg no-underline aria-[current=page]:text-primary"
+                    className={cx(
+                      "relative inline-flex h-11 items-center px-3 text-body-sm font-semibold whitespace-nowrap text-fg-secondary no-underline",
+                      "transition-colors duration-150 ease-out-quint hover:text-fg",
+                      "after:absolute after:inset-x-3 after:bottom-1.5 after:h-0.5 after:rounded-full after:bg-primary after:opacity-0 after:transition-opacity after:duration-150",
+                      "aria-[current=page]:text-primary aria-[current=page]:after:opacity-100",
+                    )}
                   >
                     {t(item.key)}
                   </NavLink>
                 </li>
               ))}
             </ul>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          </nav>
+          <div className="ml-auto flex shrink-0 items-center gap-2">
+            <LanguageSelect className="hidden xl:inline-flex" />
+            {showLogin && (
               <Link
-                to="/find-care"
+                to="/login"
                 viewTransition
-                className={buttonClassName({ size: "lg", pill: true, fullWidth: true })}
+                className="hidden h-11 items-center gap-2 rounded-full border border-border px-4 text-body-sm font-semibold whitespace-nowrap text-fg no-underline transition-colors duration-150 ease-out-quint hover:border-primary hover:text-primary xl:inline-flex"
               >
-                {t("nav.findCare")}
+                <SignIn aria-hidden="true" weight="bold" className="size-4" />
+                {t("nav.login")}
               </Link>
+            )}
+            <Link
+              to="/emergency"
+              viewTransition
+              aria-label={t("nav.emergency")}
+              className="inline-flex size-11 items-center justify-center rounded-full bg-danger-bg text-danger no-underline transition-colors duration-150 hover:bg-danger/15 xl:hidden"
+            >
+              <Siren aria-hidden="true" weight="bold" className="size-5" />
+            </Link>
+            <button
+              ref={button}
+              type="button"
+              aria-expanded={open}
+              aria-controls="site-menu"
+              aria-label={open ? t("nav.closeMenu") : t("nav.menu")}
+              onClick={() => setMenu({ open: !open, at: pathname })}
+              className="inline-flex size-11 cursor-pointer items-center justify-center rounded-full text-fg transition-colors duration-150 ease-out-quint hover:bg-subtle xl:hidden"
+            >
+              <List aria-hidden="true" className="size-6" />
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {open && (
+        <div className="fixed inset-0 z-40 xl:hidden">
+          <div
+            aria-hidden="true"
+            onClick={close}
+            className="absolute inset-0 animate-fade bg-fg/35"
+          />
+          <nav
+            ref={sheet}
+            id="site-menu"
+            aria-label={t("nav.label")}
+            className="absolute inset-y-0 right-0 flex w-[min(22rem,100%)] animate-enter flex-col overflow-y-auto bg-surface shadow-raised"
+          >
+            <div className="flex h-[4.5rem] shrink-0 items-center justify-between border-b border-border px-4">
+              <Logo className="h-8" />
+              <button
+                type="button"
+                onClick={close}
+                aria-label={t("nav.closeMenu")}
+                className="inline-flex size-11 cursor-pointer items-center justify-center rounded-full text-fg hover:bg-subtle"
+              >
+                <X aria-hidden="true" className="size-6" />
+              </button>
+            </div>
+            <ul className="m-0 flex list-none flex-col p-2">
+              {[{ to: "/", key: "nav.home", end: true }, ...PUBLIC_NAV].map((item) => (
+                <li key={item.to}>
+                  <NavLink
+                    to={item.to}
+                    end={item.end}
+                    viewTransition
+                    className="flex min-h-12 items-center rounded-xl px-3 text-body font-semibold text-fg no-underline hover:bg-subtle aria-[current=page]:bg-brand-subtle aria-[current=page]:text-primary"
+                  >
+                    {t(item.key)}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-auto flex flex-col gap-3 border-t border-border p-4">
               {showLogin && (
                 <Link
                   to="/login"
                   viewTransition
-                  className={buttonClassName({
-                    variant: "secondary",
-                    size: "lg",
-                    pill: true,
-                    fullWidth: true,
-                  })}
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-border px-4 font-semibold text-fg no-underline hover:border-primary hover:text-primary"
                 >
+                  <SignIn aria-hidden="true" weight="bold" className="size-4" />
                   {t("nav.login")}
                 </Link>
               )}
-            </div>
-            <div className="mt-5 flex items-center justify-between gap-3">
-              <span className="flex items-center gap-2">
-                <LanguageSwitcher pill />
+              <div className="flex min-h-12 items-center justify-between gap-3">
+                <LanguageSelect />
                 <ThemeSwitch />
-              </span>
+              </div>
               <Link
                 to="/emergency"
                 viewTransition
-                className="inline-flex min-h-target items-center gap-1.5 font-semibold text-danger"
+                className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-danger-bg px-3 font-semibold text-danger no-underline"
               >
-                <Siren aria-hidden="true" weight="bold" className="size-4" />
-                {t("nav.emergency")}
+                <Siren aria-hidden="true" weight="bold" className="size-5" />
+                {t("nav.strip.guide")}
               </Link>
             </div>
           </nav>
-        </>
+        </div>
       )}
-    </header>
+    </>
   );
-}
-
-/**
- * Desktop links with one indicator behind them: it rests on the current page and slides to the
- * link under the pointer or keyboard focus. Positioned by writing styles from handlers and a
- * layout effect, so moving it never re-renders the header.
- */
-function SlidingNav() {
-  const { t } = useTranslation();
-  const { pathname } = useLocation();
-  const list = useRef<HTMLUListElement>(null);
-  const pill = useRef<HTMLSpanElement>(null);
-
-  useLayoutEffect(() => {
-    const element = list.current;
-    if (!element) return;
-    const settle = () => movePill(pill.current, currentLink(element));
-    settle();
-    // fonts loading or the language changing resize the links
-    const observer = new ResizeObserver(settle);
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, [pathname]);
-
-  const back = () => movePill(pill.current, currentLink(list.current));
-
-  return (
-    <nav aria-label={t("nav.label")} className="mx-auto hidden min-w-0 lg:block">
-      {/* Leaving the list only returns the decorative indicator; the links stay the controls. */}
-      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
-      <ul
-        ref={list}
-        onMouseLeave={back}
-        onBlur={back}
-        className="relative m-0 flex list-none items-center rounded-full border border-border/60 bg-subtle/70 p-1"
-      >
-        <span
-          ref={pill}
-          aria-hidden="true"
-          className="absolute top-1/2 left-0 h-9 -translate-y-1/2 rounded-full border border-border/60 bg-surface opacity-0 shadow-card transition-[translate,width,opacity] duration-300 ease-out-quint motion-reduce:transition-none"
-        />
-        {PUBLIC_NAV.map((item) => (
-          // the list, not the item, is the links' offset parent so the indicator can slide
-          <li key={item.to}>
-            <NavLink
-              to={item.to}
-              end={item.end}
-              viewTransition
-              onMouseEnter={(event) => movePill(pill.current, event.currentTarget)}
-              onFocus={(event) => movePill(pill.current, event.currentTarget)}
-              className="relative inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-body-sm font-semibold whitespace-nowrap text-fg-secondary no-underline transition-colors duration-150 ease-out-quint hover:text-fg aria-[current=page]:text-fg xl:px-4"
-            >
-              {t(item.key)}
-            </NavLink>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  );
-}
-
-function currentLink(list: HTMLElement | null): HTMLElement | null {
-  return list?.querySelector<HTMLElement>('a[aria-current="page"]') ?? null;
-}
-
-function movePill(pill: HTMLElement | null, target: HTMLElement | null) {
-  if (!pill) return;
-  if (!target) {
-    pill.style.opacity = "0";
-    return;
-  }
-  // `translate` composes with the -50% vertical centring of the Tailwind class
-  pill.style.opacity = "1";
-  pill.style.translate = `${target.offsetLeft}px -50%`;
-  pill.style.width = `${target.offsetWidth}px`;
 }

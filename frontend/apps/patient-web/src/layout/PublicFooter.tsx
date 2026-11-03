@@ -95,7 +95,12 @@ export function PublicFooter() {
 
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,2fr)] lg:gap-16">
           <div className="flex max-w-sm flex-col items-start gap-5">
-            <Link to="/" viewTransition className="inline-flex rounded-sm no-underline">
+            <Link
+              to="/"
+              viewTransition
+              aria-label={t("nav.homeLabel")}
+              className="inline-flex min-h-target items-center rounded-sm no-underline"
+            >
               <Logo tone="onDark" className="h-10" />
             </Link>
             <p className="m-0 text-body-sm leading-relaxed text-on-forest-muted">

@@ -268,7 +268,9 @@
       "call": "Banza uhamagare {{number}} niba umuntu adashobora kugenda neza.",
       "nearest": "Jya ku bitaro bikwegereye; ibigo nderabuzima bishobora kukohereza.",
       "bring": "Zana indangamuntu n’ikarita y’ubwishingizi niba bishoboka, ariko ntubitegereze."
-    }
+    },
+    "loadFailed": "Ntibyashobotse kubona ibitaro biri hafi. Hamagara {{number}} cyangwa wongere ugerageze.",
+    "referral": "Ibitaro byoherezwamo abarwayi"
   },
   "help": {
     "title": "Ubufasha",

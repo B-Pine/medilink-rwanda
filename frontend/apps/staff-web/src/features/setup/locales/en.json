@@ -144,6 +144,12 @@
         "title": "Waiting-room screens",
         "description": "Links for the TV that shows ticket numbers."
       }
+    },
+    "groups": {
+      "facility": "Your facility",
+      "care": "Care and scheduling",
+      "money": "Prices and insurance",
+      "policy": "Rules and history"
     }
   },
   "profile": {

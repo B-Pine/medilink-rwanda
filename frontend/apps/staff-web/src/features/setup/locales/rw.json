@@ -144,6 +144,12 @@
         "title": "Televiziyo z’aho bategerereza",
         "description": "Link za televiziyo yerekana nimero za tike."
       }
+    },
+    "groups": {
+      "facility": "Ikigo cyawe",
+      "care": "Ubuvuzi na gahunda",
+      "money": "Ibiciro n'ubwishingizi",
+      "policy": "Amategeko n'amateka"
     }
   },
   "profile": {

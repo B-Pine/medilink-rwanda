@@ -144,6 +144,12 @@
         "title": "Écrans de la salle d’attente",
         "description": "Liens pour la télévision qui affiche les numéros."
       }
+    },
+    "groups": {
+      "facility": "Votre établissement",
+      "care": "Soins et planning",
+      "money": "Tarifs et assurances",
+      "policy": "Règles et historique"
     }
   },
   "profile": {

@@ -1,30 +1,15 @@
-import {
-  CalendarCheck,
-  FolderOpen,
-  Phone,
-  ShieldCheck,
-  Timer,
-  type Icon,
-} from "@phosphor-icons/react";
-import {
-  cx,
-  ImigongoPattern,
-  LanguageSwitcher,
-  Logo,
-  MAIN_CONTENT_ID,
-  SkipLink,
-  ThemeSwitch,
-} from "@medilink/ui";
+import { Phone, ShieldCheck } from "@phosphor-icons/react";
+import { cx, LanguageSwitcher, Logo, MAIN_CONTENT_ID, SkipLink, ThemeSwitch } from "@medilink/ui";
 import { useEffect, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { PageHeading } from "../components/PageHeading";
 
-const POINTS: readonly { key: "book" | "queue" | "records"; icon: Icon }[] = [
-  { key: "book", icon: CalendarCheck },
-  { key: "queue", icon: Timer },
-  { key: "records", icon: FolderOpen },
+const POINTS: readonly { key: "book" | "queue" | "records" }[] = [
+  { key: "book" },
+  { key: "queue" },
+  { key: "records" },
 ];
 
 /**
@@ -55,15 +40,9 @@ export function AuthLayout({
     };
   }, []);
   return (
-    <div className="grid min-h-dvh bg-surface text-fg lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+    <div className="grid min-h-dvh bg-surface text-fg lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)]">
       <SkipLink />
       <div className="relative isolate hidden overflow-hidden bg-forest text-on-forest lg:flex lg:flex-col lg:justify-between lg:p-10 xl:p-14 print:hidden">
-        <ImigongoPattern opacity={0.07} className="-z-10 text-on-forest-accent" />
-        {/* a soft emerald light low in the panel, so the band is not flat */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -bottom-48 -left-32 -z-10 size-[36rem] rounded-full bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--color-on-forest-accent)_18%,transparent),transparent)]"
-        />
         <Link
           to="/"
           viewTransition
@@ -81,19 +60,15 @@ export function AuthLayout({
             </p>
             <p className="m-0 text-on-forest-muted">{t("authAside.lead")}</p>
           </div>
-          <ul className="m-0 flex list-none flex-col gap-4 p-0">
-            {POINTS.map(({ key, icon: PointIcon }) => (
-              <li key={key} className="flex items-start gap-4">
-                <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-on-forest/10 bg-forest-raised text-on-forest-accent">
-                  <PointIcon aria-hidden="true" weight="duotone" className="size-5" />
+          {/* three plain lines, divided by hairlines: no icon tiles */}
+          <ul className="m-0 flex list-none flex-col divide-y divide-on-forest/10 border-y border-on-forest/10 p-0">
+            {POINTS.map(({ key }) => (
+              <li key={key} className="flex flex-col gap-0.5 py-4">
+                <span className="font-semibold text-on-forest">
+                  {t(`authAside.points.${key}.title`)}
                 </span>
-                <span className="flex flex-col gap-0.5 pt-0.5">
-                  <span className="font-semibold text-on-forest">
-                    {t(`authAside.points.${key}.title`)}
-                  </span>
-                  <span className="text-body-sm text-on-forest-muted">
-                    {t(`authAside.points.${key}.body`)}
-                  </span>
+                <span className="text-body-sm text-on-forest-muted">
+                  {t(`authAside.points.${key}.body`)}
                 </span>
               </li>
             ))}

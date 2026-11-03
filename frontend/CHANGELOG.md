@@ -43,6 +43,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   Find Care aligned to it); Find Care keeps one card per row until 1792 px so actions never clip.
 - Removed: the landing page's "Live waiting times at verified facilities" tag and the trust strip
   (verified facilities, districts, languages, free) under the hero.
+- Changed: a cleaner sign-in side panel: no pattern or glow, the three benefits as plain lines
+  between hairlines instead of icon tiles, and a narrower panel so the form leads.
 - Fixed: home service tiles no longer show "0 facilities".
 - Fixed: sign-in, sign-up and password screens use the public site's palette (the button green
   matches the site), the logo no longer squashes on phones, and the top bar fits 360 px (the

@@ -124,6 +124,7 @@ export function Sidebar({
   const active = activePath(items, pathname);
   const facility = items.filter((item) => item.group === "facility");
   const work = facility.filter((item) => navSection(item) === "work");
+  const practice = facility.filter((item) => navSection(item) === "practice");
   const manage = facility.filter((item) => navSection(item) === "manage");
   const help = facility.filter((item) => navSection(item) === "help");
   const platform = items.filter((item) => item.group === "platform");
@@ -171,6 +172,17 @@ export function Sidebar({
           <div className="flex flex-col">
             <SectionLabel collapsed={collapsed}>{t("shell.section.work")}</SectionLabel>
             <NavList items={work} active={active} collapsed={collapsed} onNavigate={onNavigate} />
+          </div>
+        )}
+        {practice.length > 0 && (
+          <div className="flex flex-col">
+            <SectionLabel collapsed={collapsed}>{t("shell.section.practice")}</SectionLabel>
+            <NavList
+              items={practice}
+              active={active}
+              collapsed={collapsed}
+              onNavigate={onNavigate}
+            />
           </div>
         )}
         {manage.length > 0 && (

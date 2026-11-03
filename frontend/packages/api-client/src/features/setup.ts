@@ -354,6 +354,14 @@ export interface ClinicianProfile {
   specialty?: string;
 }
 
+/** What patients read on my public doctor page (upgrade 05 §3); never the licence. */
+export interface ClinicianPublicProfile {
+  bio_i18n: Partial<Record<"rw" | "en" | "fr", string>>;
+  languages: ("rw" | "en" | "fr" | "sw")[];
+  is_public: boolean;
+  specialty: string;
+}
+
 export interface InvitationLookup {
   facility_name: string;
   invited_by: string | null;
@@ -406,6 +414,7 @@ export const setupPaths = {
   invitations: `${S}/invitations/`,
   invitation: (id: Uuid, action: "resend" | "revoke") => `${S}/invitations/${id}/${action}/`,
   clinician: `${S}/clinician-profile/`,
+  clinicianPublic: `${S}/clinician-profile/public/`,
   invitationLookup: `${S}/auth/invitations/lookup/`,
   invitationAccept: `${S}/auth/invitations/accept/`,
   platformMfaReset: (id: Uuid) => `/api/v1/platform/memberships/${id}/mfa-reset/`,
@@ -570,6 +579,9 @@ export function createSetupApi(client: ApiClient) {
     clinicianProfile: () => client.get<ClinicianProfile>(setupPaths.clinician),
     updateClinicianProfile: (body: Partial<ClinicianProfile>) =>
       patch<ClinicianProfile>(setupPaths.clinician, body),
+    clinicianPublicProfile: () => client.get<ClinicianPublicProfile>(setupPaths.clinicianPublic),
+    updateClinicianPublicProfile: (body: Omit<ClinicianPublicProfile, "specialty">) =>
+      patch<ClinicianPublicProfile>(setupPaths.clinicianPublic, body),
     lookupInvitation: (token: string) =>
       client.post<InvitationLookup>(setupPaths.invitationLookup, { token }),
     /** New account: `{token, full_name, password}` → `LoginResult` (`mfa_setup_required`). */

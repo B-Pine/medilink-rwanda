@@ -2,6 +2,7 @@ import { http, HttpResponse } from "msw";
 
 import type {
   CalendarDay,
+  ClinicianPublicProfile,
   CalendarEvent,
   ChecklistItem,
   ConfigChange,
@@ -426,6 +427,14 @@ function seed() {
       licence_number: "RMDC/1234",
       specialty: "General practice",
     },
+    clinicianPublic: {
+      bio_i18n: {
+        en: "Family doctor with ten years in Kigali. I look after adults and children, and follow people with high blood pressure and diabetes.",
+        rw: "Muganga w'umuryango umaze imyaka icumi i Kigali. Nita ku bantu bakuru n'abana.",
+      },
+      languages: ["rw", "en", "fr"],
+      is_public: true,
+    } as Omit<ClinicianPublicProfile, "specialty">,
   };
 }
 
@@ -1511,6 +1520,27 @@ export const setupMocks: FeatureMockFactory = (context) => {
         const m = db.memberships.find((x) => x.id === own);
         if (m?.clinician) m.clinician = { ...m.clinician, ...(data as object), attested_at: null };
         return HttpResponse.json(db.clinician);
+      }),
+      http.get(`${api}/staff/clinician-profile/public/`, async ({ request }) => {
+        await context.settle();
+        const ok = guard(request);
+        if (ok instanceof Response) return ok;
+        return HttpResponse.json({ ...db.clinicianPublic, specialty: db.clinician.specialty });
+      }),
+      http.patch(`${api}/staff/clinician-profile/public/`, async ({ request }) => {
+        await context.settle();
+        const ok = guard(request);
+        if (ok instanceof Response) return ok;
+        const data = (await body(request)) as Partial<ClinicianPublicProfile>;
+        const bio: ClinicianPublicProfile["bio_i18n"] = {};
+        for (const [k, v] of Object.entries(data.bio_i18n ?? {}))
+          if (String(v).trim()) bio[k as keyof typeof bio] = String(v).trim();
+        db.clinicianPublic = {
+          bio_i18n: bio,
+          languages: [...new Set(data.languages ?? [])].sort(),
+          is_public: data.is_public ?? true,
+        };
+        return HttpResponse.json({ ...db.clinicianPublic, specialty: db.clinician.specialty });
       }),
       http.post(`${api}/staff/auth/invitations/lookup/`, async ({ request }) => {
         await context.settle();

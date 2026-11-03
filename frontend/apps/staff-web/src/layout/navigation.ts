@@ -38,7 +38,15 @@ import { ArrowsDownUp } from "@phosphor-icons/react";
 import { CalendarX } from "@phosphor-icons/react";
 // [/S5 imports]
 // [S6 imports]
-import { Flask, Notepad, Signature } from "@phosphor-icons/react";
+import {
+  CalendarCheck,
+  ChartLineUp,
+  ChatCircleDots,
+  Flask,
+  Notebook,
+  Notepad,
+  Signature,
+} from "@phosphor-icons/react";
 // [/S6 imports]
 // [S7 imports]
 import { Storefront } from "@phosphor-icons/react";
@@ -331,6 +339,38 @@ export const NAV_ITEMS: readonly NavItem[] = [
     labelKey: "clinical.nav.results",
     visible: hasAny("clinical.write"),
   },
+  {
+    key: "clinicalQuestions",
+    path: "/clinical/questions",
+    icon: ChatCircleDots,
+    group: "facility",
+    labelKey: "clinical.nav.questions",
+    visible: hasAny("prescription.issue"),
+  },
+  {
+    key: "clinicalFollowUps",
+    path: "/clinical/follow-ups",
+    icon: CalendarCheck,
+    group: "facility",
+    labelKey: "clinical.nav.followUps",
+    visible: hasAny("clinical.write"),
+  },
+  {
+    key: "clinicalActivity",
+    path: "/clinical/activity",
+    icon: ChartLineUp,
+    group: "facility",
+    labelKey: "clinical.nav.activity",
+    visible: hasAny("clinical.write"),
+  },
+  {
+    key: "clinicalTemplates",
+    path: "/clinical/templates",
+    icon: Notebook,
+    group: "facility",
+    labelKey: "clinical.nav.templates",
+    visible: hasAny("clinical.write"),
+  },
   // [/S6]
   // [S7]
   {
@@ -386,7 +426,9 @@ export const navLabelKey = (item: Pick<NavItem, "key" | "labelKey">) =>
  * Menu sections (design 04 §2): what the person does all day comes first, running the facility
  * second, help last. Items not listed here are daily work.
  */
-export type NavSection = "work" | "manage" | "help";
+export type NavSection = "work" | "practice" | "manage" | "help";
+/** upgrade 05 §3: a clinician's own tools, apart from the daily work. */
+const PRACTICE_KEYS = new Set<string>(["clinicalActivity", "clinicalTemplates"]);
 const MANAGE_KEYS = new Set<string>([
   "approvals",
   "reports",
@@ -401,7 +443,13 @@ const MANAGE_KEYS = new Set<string>([
   "audit",
 ]);
 export const navSection = (item: Pick<NavItem, "key">): NavSection =>
-  item.key === "help" ? "help" : MANAGE_KEYS.has(item.key) ? "manage" : "work";
+  item.key === "help"
+    ? "help"
+    : MANAGE_KEYS.has(item.key)
+      ? "manage"
+      : PRACTICE_KEYS.has(item.key)
+        ? "practice"
+        : "work";
 
 /** Reached from the queue with a patient, never on its own, so not in the menu. */
 const NOT_IN_MENU = new Set<string>(["clinicalConsultation"]);
@@ -414,6 +462,8 @@ const ORDER = [
   "patients",
   "clinicalUnsigned",
   "clinicalResults",
+  "clinicalQuestions",
+  "clinicalFollowUps",
   "mySchedule",
   "pharmacy",
   // [S7]

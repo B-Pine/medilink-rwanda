@@ -2,7 +2,12 @@
   "nav": {
     "consultation": "Consultation",
     "unsigned": "Dossiers non signés",
-    "results": "Résultats"
+    "results": "Résultats",
+    "questions": "Questions de la pharmacie",
+    "followUps": "Suivis",
+    "activity": "Mon activité",
+    "templates": "Modèles",
+    "profile": "Mon profil de médecin"
   },
   "title": "Consultation",
   "headerTitle": "Consultation · {{name}}",
@@ -337,5 +342,118 @@
       "referral_letter": "Lettre de référence",
       "other": "Document"
     }
+  },
+  "questions": {
+    "title": "Questions de la pharmacie",
+    "intro": "Questions de la pharmacie sur vos ordonnances. Votre réponse est ajoutée au dossier en note signée.",
+    "tabs": {
+      "open": "En attente",
+      "answered": "Répondues"
+    },
+    "status": {
+      "open": "En attente",
+      "answered": "Répondue",
+      "closed": "Close"
+    },
+    "from": "De {{name}} · {{time}}",
+    "medicines": "Médicaments de cette ordonnance",
+    "answer": "Votre réponse",
+    "answerHint": "Claire et courte. Elle devient une note signée du dossier.",
+    "answerRequired": "Écrivez d’abord une réponse.",
+    "send": "Envoyer la réponse",
+    "openRecord": "Ouvrir le dossier",
+    "answeredAt": "Répondu {{time}}",
+    "empty": {
+      "open": "Aucune question en attente",
+      "answered": "Aucune question répondue"
+    },
+    "emptyBody": "Quand la pharmacie pose une question sur une de vos ordonnances, elle apparaît ici."
+  },
+  "followUps": {
+    "title": "Suivis",
+    "intro": "Les patients que vous avez fait revenir. Les absents ont besoin d’un appel de l’accueil ou d’un nouveau rendez-vous.",
+    "state": {
+      "missed": "Manqués",
+      "today": "Aujourd’hui",
+      "upcoming": "14 prochains jours",
+      "attended": "Revenus"
+    },
+    "columns": {
+      "patient": "Patient",
+      "service": "Service",
+      "due": "Prévu",
+      "how": "Comment",
+      "action": "Action"
+    },
+    "mode": {
+      "booking": "Rendez-vous",
+      "reminder": "Rappel"
+    },
+    "history": "Historique",
+    "empty": {
+      "missed": "Aucun suivi manqué",
+      "today": "Aucun suivi aujourd’hui",
+      "upcoming": "Rien de prévu dans les 14 prochains jours",
+      "attended": "Personne n’est encore revenu"
+    },
+    "emptyBody": "Programmez un suivi depuis Ma file en terminant avec un patient."
+  },
+  "activity": {
+    "title": "Mon activité",
+    "intro": "Vos propres chiffres, pour vous. Aucun nom de patient ici.",
+    "period": "Période",
+    "days_one": "{{count}} jour",
+    "days_other": "{{count}} jours",
+    "seen": "Patients vus",
+    "signed": "Dossiers signés",
+    "perDay": "{{value}} par jour",
+    "late_one": "{{count}} signé après 24 h",
+    "late_other": "{{count}} signés après 24 h",
+    "avg": "Consultation moyenne",
+    "avgCaption": "Du début à la fin",
+    "followUps": "Suivis programmés",
+    "unsignedNow_one": "{{count}} dossier non signé",
+    "unsignedNow_other": "{{count}} dossiers non signés",
+    "chart": "Vus et signés par jour",
+    "topDiagnoses": "Diagnostics les plus fréquents",
+    "noDiagnoses": "Aucun diagnostic sur cette période.",
+    "privacy": "Vous seul voyez cette page. L’établissement voit des totaux, jamais la liste d’un médecin."
+  },
+  "templates": {
+    "title": "Modèles",
+    "intro": "Vos notes, diagnostics et ordonnances habituelles pour les visites courantes. Un clic remplit la consultation.",
+    "new": "Nouveau modèle",
+    "edit": "Modifier le modèle",
+    "delete": "Supprimer",
+    "deleteTitle": "Supprimer « {{name}} » ?",
+    "deleteBody": "Les dossiers déjà écrits avec ne changent pas.",
+    "used_one": "Utilisé {{count}} fois",
+    "used_other": "Utilisé {{count}} fois",
+    "name": "Nom",
+    "nameHint": "Par exemple : Fièvre (adulte), Consultation prénatale, Suivi de l’hypertension",
+    "nameRequired": "Donnez un nom au modèle.",
+    "sections": {
+      "history_text": "Anamnèse",
+      "examination_text": "Examen",
+      "plan_text": "Conduite à tenir",
+      "patient_instructions_text": "Consignes au patient"
+    },
+    "codes": "Codes diagnostiques (CIM-10)",
+    "codesHint": "Séparés par des virgules, par exemple B54, J06.9",
+    "medicines": "Ordonnance habituelle",
+    "drug": "Médicament",
+    "drugHint": "Cherchez dans le catalogue, ou tapez un nom",
+    "drugRequired": "Choisissez ou tapez un médicament.",
+    "change": "Changer",
+    "addMedicine": "Ajouter le médicament",
+    "remove": "Retirer",
+    "save": "Enregistrer le modèle",
+    "duplicate": "Vous avez déjà un modèle de ce nom.",
+    "emptyTitle": "Aucun modèle",
+    "empty": "Créez-en un ici, ou enregistrez une consultation comme modèle pendant que vous l’écrivez.",
+    "use": "Utiliser un modèle",
+    "useHint": "Le texte va dans les sections vides ou après ce que vous avez écrit. Les diagnostics sont ajoutés comme provisoires ; les médicaments vont dans l’ordonnance.",
+    "saveAs": "Enregistrer comme modèle",
+    "itemsFailed": "Ces médicaments demandent votre attention dans l’ordonnance : {{names}}"
   }
 }

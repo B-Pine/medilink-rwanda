@@ -2,7 +2,12 @@
   "nav": {
     "consultation": "Isuzuma",
     "unsigned": "Dosiye zitarasinywa",
-    "results": "Ibisubizo"
+    "results": "Ibisubizo",
+    "questions": "Ibibazo bya farumasi",
+    "followUps": "Gusubira kwa muganga",
+    "activity": "Ibikorwa byanjye",
+    "templates": "Inyandiko ngenderwaho",
+    "profile": "Umwirondoro wanjye wa muganga"
   },
   "title": "Isuzuma",
   "headerTitle": "Isuzuma · {{name}}",
@@ -337,5 +342,118 @@
       "referral_letter": "Ibaruwa yo kohereza",
       "other": "Inyandiko"
     }
+  },
+  "questions": {
+    "title": "Ibibazo bya farumasi",
+    "intro": "Ibibazo farumasi ibaza ku mpapuro z'imiti wanditse. Igisubizo cyawe cyongerwa muri dosiye nk'inyandiko isinywe.",
+    "tabs": {
+      "open": "Bigutegereje",
+      "answered": "Byasubijwe"
+    },
+    "status": {
+      "open": "Gitegereje",
+      "answered": "Cyasubijwe",
+      "closed": "Cyafunzwe"
+    },
+    "from": "Kivuye kuri {{name}} · {{time}}",
+    "medicines": "Imiti iri kuri uru rupapuro",
+    "answer": "Igisubizo cyawe",
+    "answerHint": "Gisobanutse kandi kigufi. Kiba inyandiko isinywe muri dosiye.",
+    "answerRequired": "Banza wandike igisubizo.",
+    "send": "Ohereza igisubizo",
+    "openRecord": "Fungura dosiye",
+    "answeredAt": "Cyasubijwe {{time}}",
+    "empty": {
+      "open": "Nta kibazo gitegereje",
+      "answered": "Nta kibazo cyasubijwe"
+    },
+    "emptyBody": "Iyo farumasi ibajije ku rupapuro rw'imiti wanditse, kiza hano."
+  },
+  "followUps": {
+    "title": "Gusubira kwa muganga",
+    "intro": "Abarwayi wasabye kugaruka. Abatagarutse bakeneye guhamagarwa n'ababakira cyangwa gahunda nshya.",
+    "state": {
+      "missed": "Ntibagarutse",
+      "today": "Uyu munsi",
+      "upcoming": "Iminsi 14 iri imbere",
+      "attended": "Bagarutse"
+    },
+    "columns": {
+      "patient": "Umurwayi",
+      "service": "Serivisi",
+      "due": "Itariki",
+      "how": "Uburyo",
+      "action": "Igikorwa"
+    },
+    "mode": {
+      "booking": "Gahunda",
+      "reminder": "Kwibutsa"
+    },
+    "history": "Amateka",
+    "empty": {
+      "missed": "Nta watagarutse",
+      "today": "Nta usubira kwa muganga uyu munsi",
+      "upcoming": "Nta giteganyijwe mu minsi 14",
+      "attended": "Nta muntu uragaruka"
+    },
+    "emptyBody": "Shyiraho isubiramo uvuye ku Murongo wanjye urangije n'umurwayi."
+  },
+  "activity": {
+    "title": "Ibikorwa byanjye",
+    "intro": "Imibare yawe bwite, kuri wowe. Nta mazina y'abarwayi ari hano.",
+    "period": "Igihe",
+    "days_one": "Umunsi {{count}}",
+    "days_other": "Iminsi {{count}}",
+    "seen": "Abarwayi wakiriye",
+    "signed": "Dosiye wasinye",
+    "perDay": "{{value}} ku munsi",
+    "late_one": "{{count}} yasinywe nyuma y'amasaha 24",
+    "late_other": "{{count}} zasinywe nyuma y'amasaha 24",
+    "avg": "Igihe cyo gusuzuma (hagati)",
+    "avgCaption": "Kuva utangiye kugeza urangije",
+    "followUps": "Amasubiramo washyizeho",
+    "unsignedNow_one": "Dosiye {{count}} idasinywe ubu",
+    "unsignedNow_other": "Dosiye {{count}} zidasinywe ubu",
+    "chart": "Abakiriwe n'izasinywe ku munsi",
+    "topDiagnoses": "Indwara zigaruka kenshi",
+    "noDiagnoses": "Nta suzuma muri iki gihe.",
+    "privacy": "Ni wowe wenyine ubona iyi paji. Ikigo kibona imibare rusange, ntikibona urutonde rw'umuganga umwe."
+  },
+  "templates": {
+    "title": "Inyandiko ngenderwaho",
+    "intro": "Inyandiko zawe, amasuzuma n'imiti usanzwe utanga ku nshuro zisanzwe. Gukanda rimwe byuzuza isuzuma.",
+    "new": "Inyandiko nshya",
+    "edit": "Hindura inyandiko",
+    "delete": "Siba",
+    "deleteTitle": "Gusiba “{{name}}”?",
+    "deleteBody": "Dosiye zanditswe n'iyi nyandiko ntizihinduka.",
+    "used_one": "Yakoreshejwe inshuro {{count}}",
+    "used_other": "Yakoreshejwe inshuro {{count}}",
+    "name": "Izina",
+    "nameHint": "Urugero: Umuriro (umuntu mukuru), Gusuzuma umubyeyi utwite, Gukurikirana umuvuduko w'amaraso",
+    "nameRequired": "Ha izina iyi nyandiko.",
+    "sections": {
+      "history_text": "Amateka",
+      "examination_text": "Isuzuma",
+      "plan_text": "Gahunda",
+      "patient_instructions_text": "Amabwiriza ku murwayi"
+    },
+    "codes": "Kode z'indwara (ICD-10)",
+    "codesHint": "Zitandukanywa n'akitso, urugero B54, J06.9",
+    "medicines": "Imiti usanzwe utanga",
+    "drug": "Umuti",
+    "drugHint": "Shakira mu rutonde, cyangwa wandike izina",
+    "drugRequired": "Hitamo cyangwa wandike umuti.",
+    "change": "Hindura",
+    "addMedicine": "Ongeraho umuti",
+    "remove": "Kuramo",
+    "save": "Bika inyandiko",
+    "duplicate": "Usanzwe ufite inyandiko ifite iri zina.",
+    "emptyTitle": "Nta nyandiko ngenderwaho uragira",
+    "empty": "Yikore hano, cyangwa ubike isuzuma nk'inyandiko ngenderwaho uri kuryandika.",
+    "use": "Koresha inyandiko ngenderwaho",
+    "useHint": "Inyandiko ijya mu bice birimo ubusa cyangwa nyuma y'ibyo wanditse. Amasuzuma yongerwamo nk'ay'agateganyo; imiti ijya ku rupapuro rw'imiti.",
+    "saveAs": "Bika nk'inyandiko ngenderwaho",
+    "itemsFailed": "Iyi miti ikeneye ko uyireba ku rupapuro rw'imiti: {{names}}"
   }
 }

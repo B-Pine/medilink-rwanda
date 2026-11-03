@@ -91,6 +91,8 @@ class SexRestriction(models.TextChoices):
 class ServiceCatalogueItem(CodedModel):
     name_i18n = models.JSONField(default=dict)
     synonyms_i18n = models.JSONField(default=dict)
+    # what the service is, in plain words, for the public service page (optional)
+    description_i18n = models.JSONField(default=dict, blank=True)
     min_age_months = models.PositiveIntegerField(null=True, blank=True)
     max_age_months = models.PositiveIntegerField(null=True, blank=True)
     sex_restriction = models.CharField(  # noqa: DJ001 (NULL = no restriction)

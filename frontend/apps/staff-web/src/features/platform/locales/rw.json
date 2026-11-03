@@ -338,7 +338,8 @@
       "min_age_months": "Imyaka ntoya (amezi)",
       "max_age_months": "Imyaka nini (amezi)",
       "sex_restriction": "Igitsina",
-      "code_system": "Uburyo bwa kode"
+      "code_system": "Uburyo bwa kode",
+      "description_i18n": "Ibisobanuro bibonwa na bose"
     },
     "import": "Injiza CSV",
     "importHint": "Ohereza CSV ya UTF-8. Ubona impinduka mbere y'uko zikorwa.",
@@ -372,7 +373,8 @@
     "errorsTitle": "Kosora iyi mirongo wongere wohereze dosiye",
     "errorLine": "Umurongo {{line}} ({{field}}): {{message}}",
     "samples": "Ingero z'impinduka",
-    "confirm": "Kora impinduka"
+    "confirm": "Kora impinduka",
+    "descriptionHint": "Icyo iyi serivisi ari cyo, mu magambo yoroshye. Bigaragara ku rupapuro rwa serivisi."
   },
   "upload": {
     "drop": "Kurura dosiye hano, cyangwa",

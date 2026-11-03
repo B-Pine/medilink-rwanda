@@ -17,7 +17,14 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from medilink.masterdata import models as m
-from medilink.masterdata.kinds import KINDS, LANGUAGES, Kind, localise, missing_languages
+from medilink.masterdata.kinds import (
+    KINDS,
+    LANGUAGES,
+    OPTIONAL_I18N,
+    Kind,
+    localise,
+    missing_languages,
+)
 from medilink.uploads.serializers import UploadSerializer
 
 REQUIRED_LANGUAGES = _("Kinyarwanda, English and French are required.")
@@ -91,7 +98,7 @@ def platform_serializer(slug: str) -> type[serializers.ModelSerializer]:
         if name == "synonyms_i18n":
             attrs[name] = I18nListField(required=False)
         else:
-            attrs[name] = I18nTextField(required=name != "plain_language_i18n")
+            attrs[name] = I18nTextField(required=name not in OPTIONAL_I18N)
     if "parent_code" in kind.fields:
         attrs["parent_code"] = serializers.CharField(
             max_length=20, allow_null=True, required=False, source="parent.code"
@@ -106,12 +113,14 @@ def platform_serializer(slug: str) -> type[serializers.ModelSerializer]:
             if "parent" in data:
                 errors["parent_code"] = [str(IMMUTABLE)]
         for name in kind.i18n_fields:
-            if name == "synonyms_i18n" or (name not in data and self.instance is not None):
+            if name == "synonyms_i18n" or name in OPTIONAL_I18N:
+                continue
+            if name not in data and self.instance is not None:
                 continue
             value = data.get(name) or {}
             if kind.all_languages and any(not value.get(code) for code in LANGUAGES):
                 errors[name] = [str(REQUIRED_LANGUAGES)]
-            elif name != "plain_language_i18n" and not value:
+            elif not value:
                 errors[name] = [str(ONE_LANGUAGE)]
         if slug == "locations" and self.instance is None and not self.context.get("import"):
             parent_code = (data.get("parent") or {}).get("code")

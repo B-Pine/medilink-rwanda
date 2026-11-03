@@ -338,7 +338,8 @@
       "min_age_months": "Âge minimum (mois)",
       "max_age_months": "Âge maximum (mois)",
       "sex_restriction": "Restriction de sexe",
-      "code_system": "Système de codes"
+      "code_system": "Système de codes",
+      "description_i18n": "Description publique"
     },
     "import": "Importer un CSV",
     "importHint": "Envoyez un CSV en UTF-8. Vous voyez un aperçu des changements avant toute application.",
@@ -372,7 +373,8 @@
     "errorsTitle": "Corrigez ces lignes et renvoyez le fichier",
     "errorLine": "Ligne {{line}} ({{field}}) : {{message}}",
     "samples": "Exemples de changements",
-    "confirm": "Appliquer les changements"
+    "confirm": "Appliquer les changements",
+    "descriptionHint": "Ce qu’est le service, en mots simples. Affichée sur la page publique du service."
   },
   "upload": {
     "drop": "Glissez un fichier ici, ou",

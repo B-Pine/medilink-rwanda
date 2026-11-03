@@ -9,6 +9,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Service descriptions in master data
+
+- Added: platform admins write a public description per service in Master data (optional, in
+  each language); the public service page shows it before the built-in text.
+
 ### Upgrade U2 · Public Contact page inbox (upgrade 11 §13)
 
 - Fixed: the public Contact form now reaches the MediLink team (it posted to an endpoint that did

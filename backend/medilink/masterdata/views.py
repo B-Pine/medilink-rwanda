@@ -89,7 +89,8 @@ def _search(kind: Kind, qs: QuerySet[Any], q: str, rank: bool) -> QuerySet[Any]:
         )
         qs = qs.annotate(similarity=TrigramSimilarity(target, q))
         return qs.filter(condition | Q(similarity__gt=0.3)).order_by("-similarity", *kind.ordering)
-    return qs.filter(condition)
+    # ordered, so pages are stable (an unordered queryset may repeat or skip rows across pages)
+    return qs.filter(condition).order_by(*kind.ordering)
 
 
 def _filtered(kind: Kind, request: Request, qs: QuerySet[Any], rank: bool = False) -> QuerySet[Any]:

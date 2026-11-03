@@ -15,6 +15,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Added: `GET /public/facilities/{slug}/photos/{upload_id}/` redirects to a short-lived signed
   link to one public photo (C0; 404 once the admin removes it).
 
+### Upgrade U2 · Service descriptions in master data
+
+- Added: optional `description_i18n` on service catalogue items (migration `masterdata/0005`);
+  public reads return it as `description`, and it never counts as a missing language.
+- Fixed: master data search without trigram ranking is ordered, so pages no longer repeat or
+  skip rows.
+
 ### Upgrade U2 · Public Contact page inbox (upgrade 11 §13)
 
 - Added: `POST /public/contact/` stores a visitor's message (10/h per IP, health details refused)

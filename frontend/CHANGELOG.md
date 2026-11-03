@@ -20,10 +20,44 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 - Added: My doctor profile in the user menu: licence plus a public bio in rw/en/fr, languages
   and visibility; public doctor pages show specialty, bio and languages.
 
-### Upgrade U2 · Patient dashboard (upgrade 12, #156)
+### Upgrade U12 · Patient dashboard (upgrade 12)
 
-- Changed: the signed-in patient app lives under `/dashboard` with a staff-style shell and a
-  real-data overview.
+- Changed: every signed-in patient page moves under `/dashboard` (`app/paths.ts`); the old
+  addresses (`/home`, `/visits`, `/records`, `/medicines`, `/documents`, `/family`, `/profile`,
+  `/privacy/settings`, `/claim`, `/notifications`, `/support`, `/settings`, `/book`) redirect with
+  the rest of the path and the query. Sign-in and email verification land on `/dashboard`.
+- Changed: new patient shell: fixed sidebar from 1024 px (collapsible, remembered), icon rail on
+  tablets, compact header with a five-tab bar and a More drawer on phones; top bar with
+  breadcrumb, profile switcher, search, notification menu, language and account menu; toasts.
+- Added: global search (Ctrl/Cmd + K or `/`) over pages, own appointments and documents, public
+  facilities and doctors; the bell opens the five latest notifications with "Mark all as read".
+- Added: overview with the active journey (live ticket, next appointment or welcome), quick
+  actions, upcoming appointments, recent activity, reminders from real booking and queue data,
+  family and the emergency notice.
+- Added: My appointments (Upcoming, Past, Cancelled) and appointment detail with reschedule
+  (held time with countdown, confirmed by the server) and cancel; My queue with ticket cards.
+- Changed: records, medications, documents, family, settings and help use the shared dashboard
+  surfaces (`features/dashboard/kit.tsx`); records gain search; documents gain a type switch;
+  family members get a "whose profile" banner; settings is sectioned.
+- Changed: Find care and facility pages render inside the shell at `/dashboard/find-care`,
+  `/dashboard/facilities` and `/dashboard/facilities/:slug` (`InDashboardContext`).
+- Removed: the home-page feature slots (`homeTop`, `homeMain`, `homeCards`) and their cards.
+- Changed (redesign 2026-11-02): the patient sidebar and top bar follow the staff shell (identity
+  card, Care / Account sections, icon-tile items with an accent bar, Help and collapse at the
+  foot; centred search, theme switch, alerts, account menu with the language).
+- Changed: the signed-in app uses a calmer type scale (`data-surface="app"` in `tokens.css`: body
+  16 px, targets 44 px); public pages keep patient density.
+- Changed: overview rebuilt from real data only: the journey beside "Needs your attention", four
+  counts at a glance, upcoming appointments, recent visits, latest measurements (as recorded,
+  never judged), current medicines and family (`WidgetCard`, `StatCard`). Recent activity and the
+  quick-action tiles are gone (the bell and the sidebar cover them).
+- Changed: Find care in the dashboard has one search card with quick filters; `FacilityRow`
+  columns follow the list's width (container query); the facility page has a Today strip and a
+  location card; the booking flow has a labelled stepper and a "Your booking" summary.
+- Changed: public header (segmented nav, live emergency pill, theme switch; How it works moved to
+  the footer), footer (call-to-action card, tap-to-call 912, all site links) and the sign-in shell
+  (split screen with the brand panel).
+- Added: `ThemeSwitch` (`@medilink/ui`, `outline` / `ghost`) and `LanguageSwitcher` `pill`.
 
 ### Upgrade U2 · Doctor workspace (upgrade 05 §3)
 

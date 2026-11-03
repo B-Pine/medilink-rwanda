@@ -18,6 +18,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   audit `staff.clinician_profile.public_updated`). Public facility profiles show specialty, bio and
   languages of doctors who opted in; never the licence.
 
+### Upgrade U12 · Patient dashboard links (upgrade 12 §2)
+
+- Changed: patient notification targets follow the `/dashboard` app: bookings open
+  `/dashboard/appointments/{booking_id}` (was `/visits`), tickets `/dashboard/queue/{visit_id}`,
+  prescriptions `/dashboard/medications/{prescription_id}`, documents
+  `/dashboard/documents/{document_id}`. Email and push links to a patient inbox item use
+  `/dashboard/notifications/{id}` (`notifications.tasks.inbox_url`); staff links are unchanged.
+  Older links already sent keep working through the frontend redirects. No API or schema change.
 ### Upgrade U2 · Doctor workspace (upgrade 05 §3)
 
 - Added: `GET /staff/clinical/my-day/`: the clinician's own day (patients seen with a 7-day

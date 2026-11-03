@@ -68,6 +68,9 @@ class TicketRowSerializer(serializers.Serializer):
     is_remote = serializers.BooleanField()
     remote_arrival_claimed_at = serializers.DateTimeField(allow_null=True)
     remote_arrival_confirmed_at = serializers.DateTimeField(allow_null=True)
+    # upgrade 05 §2: the patient's own words and symptoms, for the front desk and the doctor
+    reason_text = serializers.CharField(allow_blank=True)
+    symptoms = serializers.ListField(child=serializers.CharField())
     version = serializers.IntegerField()
 
 

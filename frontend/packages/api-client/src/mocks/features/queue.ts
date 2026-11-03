@@ -90,6 +90,8 @@ function seed() {
       is_remote: false,
       remote_arrival_claimed_at: null,
       remote_arrival_confirmed_at: null,
+      reason_text: "",
+      symptoms: [],
       version: 1,
       started_at: null,
       facility_id: FACILITIES.kigaliClinic.id,
@@ -107,15 +109,24 @@ function seed() {
       assigned_membership_id: SETUP_IDS.mKeza,
       service_point: "Room 1",
     }),
-    make(SETUP_IDS.sGen, "Habimana Eric", 41, "male", 62),
+    make(SETUP_IDS.sGen, "Habimana Eric", 41, "male", 62, {
+      flags: ["unpaid"],
+      reason_text: "Cough for a week, worse at night.",
+      symptoms: ["Cough", "Fever"],
+    }),
     make(SETUP_IDS.sGen, "Nshimiyimana Patrick", 72, "male", 55, {
       flags: ["priority:elderly"],
       priority_rank: 2,
     }),
     make(SETUP_IDS.sGen, "Mukamana Jeanne", 42, "female", 40, { patient_id: MOCK_PATIENT_ID }),
-    make(SETUP_IDS.sGen, "Ingabire Divine", 25, "female", 31),
+    make(SETUP_IDS.sGen, "Ingabire Divine", 25, "female", 31, {
+      flags: ["insurance_unverified", "no_phone"],
+      symptoms: ["Headache"],
+    }),
     make(SETUP_IDS.sGen, "Kamanzi Olivier", 19, "male", 8, {
-      flags: ["emergency"],
+      flags: ["emergency", "red_flag"],
+      reason_text: "Chest pain since this morning, hard to breathe.",
+      symptoms: ["Chest pain", "Difficulty breathing"],
       priority_rank: 0,
     }),
     make(SETUP_IDS.sPed, "Keza Aline", 6, "female", 35, {
@@ -541,6 +552,7 @@ export const queueMocks: FeatureMockFactory = (context) => {
           "left",
           "step-out",
           "priority",
+          "emergency",
           "reorder",
           "confirm-arrival",
         ].includes(action);
@@ -659,6 +671,15 @@ export const queueMocks: FeatureMockFactory = (context) => {
             } else if (t.priority_rank === 2) t.priority_rank = 3;
             break;
           }
+          case "emergency": {
+            if (!reason && !str(body.reason_text ?? "").trim())
+              return context.errorResponse(422, "business_rule_violation", "Give a reason.", {
+                fields: { reason_code: ["Give a reason."] },
+              });
+            t.flags = [...new Set(["emergency", ...t.flags])];
+            t.priority_rank = 0;
+            break;
+          }
           case "reorder": {
             const target = db.tickets.find((x) => x.id === body.before_ticket_id);
             if (!reason)
@@ -747,6 +768,8 @@ export const queueMocks: FeatureMockFactory = (context) => {
           is_remote: false,
           remote_arrival_claimed_at: null,
           remote_arrival_confirmed_at: null,
+          reason_text: "",
+          symptoms: [],
           version: 1,
           started_at: null,
           facility_id: FACILITIES.kigaliClinic.id,
@@ -1001,6 +1024,8 @@ export const queueMocks: FeatureMockFactory = (context) => {
           is_remote: true,
           remote_arrival_claimed_at: null,
           remote_arrival_confirmed_at: null,
+          reason_text: "",
+          symptoms: [],
           version: 1,
           started_at: null,
           facility_id: service.facility_id,

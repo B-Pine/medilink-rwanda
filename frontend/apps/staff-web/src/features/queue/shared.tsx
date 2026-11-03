@@ -17,6 +17,13 @@ import {
   TextField,
   type QueueFlag,
 } from "@medilink/ui";
+import {
+  CurrencyCircleDollar,
+  PhoneSlash,
+  ShieldWarning,
+  WarningOctagon,
+  type Icon,
+} from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -52,10 +59,18 @@ export function minutesSince(iso: string | null | undefined, now = Date.now()): 
 }
 
 /** S5 flags (R4 #102) shown as badges; the S4 flags keep their chips (design 04 §3.1). */
-const S5_FLAGS: Record<string, { tone: "warning" | "info"; key: string }> = {
+const S5_FLAGS: Record<
+  string,
+  { tone: "warning" | "info" | "danger" | "neutral"; key: string; icon?: Icon }
+> = {
   late: { tone: "warning", key: "queue.flags.lateWalkIn" },
   remote: { tone: "info", key: "queue.flags.remote" },
   remote_claimed: { tone: "info", key: "queue.board.remoteClaimed" },
+  // upgrade 05 §2: what the front desk acts on, each a word and an icon (never colour alone)
+  red_flag: { tone: "danger", key: "queue.flags.redFlag", icon: WarningOctagon },
+  unpaid: { tone: "warning", key: "queue.flags.unpaid", icon: CurrencyCircleDollar },
+  insurance_unverified: { tone: "warning", key: "queue.flags.insurance", icon: ShieldWarning },
+  no_phone: { tone: "neutral", key: "queue.flags.noPhone", icon: PhoneSlash },
 };
 
 export function Flags({ ticket }: { ticket: TicketRow }) {
@@ -74,7 +89,7 @@ export function Flags({ ticket }: { ticket: TicketRow }) {
         const s5 = S5_FLAGS[flag];
         if (s5)
           return (
-            <Badge key={flag} tone={s5.tone}>
+            <Badge key={flag} tone={s5.tone} {...(s5.icon ? { icon: s5.icon } : {})}>
               {t(s5.key)}
             </Badge>
           );

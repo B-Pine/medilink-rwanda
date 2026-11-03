@@ -9,6 +9,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Reception (upgrade 05 §2)
+
+- Added: Reception Today (desk bar, flow, today's numbers, check-in by code, arrivals to confirm,
+  next arrivals); check-in by booking code on Today and the board.
+- Changed: the board shows the patient's words and Danger sign / Not paid / Insurance to verify /
+  No phone chips, "Raise to emergency" with a reason, "I'm here" claims above Expected, and intake
+  done or missing on each expected booking.
+
 ### AI symptom assistant, test phase (issue #159)
 
 - Added: `/assistant`, a chat where the person describes symptoms in their own words. It asks

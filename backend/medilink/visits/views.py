@@ -58,6 +58,7 @@ OPERATE_ACTIONS = (
     "left",
     "step-out",
     "priority",
+    "emergency",
     "reorder",
     "confirm-arrival",
 )
@@ -101,10 +102,12 @@ def ticket_rows(
             pk__in={t.service_point_id for t in tickets if t.service_point_id}
         )
     }
+    extras = _front_desk_extras(tickets)
     rows = []
     for t in tickets:
         visit = t.visit
         patient = visit.patient
+        extra = extras.get(t.visit_id, {})
         flags = []
         if visit.is_emergency:
             flags.append("emergency")
@@ -120,6 +123,15 @@ def ticket_rows(
             flags.append("late")
         if t.is_remote and t.remote_arrival_confirmed_at is None:
             flags.append("remote_claimed" if t.remote_arrival_claimed_at else "remote")
+        # upgrade 05 §2: what the front desk must act on, each shown with a word
+        if extra.get("red_flag"):
+            flags.append("red_flag")
+        if extra.get("unpaid"):
+            flags.append("unpaid")
+        if extra.get("insurance_unverified"):
+            flags.append("insurance_unverified")
+        if not patient.phone_e164:
+            flags.append("no_phone")
         if positions is not None:
             place = positions.get(t.pk)
         else:
@@ -148,10 +160,55 @@ def ticket_rows(
                 "is_remote": t.is_remote,
                 "remote_arrival_claimed_at": t.remote_arrival_claimed_at,
                 "remote_arrival_confirmed_at": t.remote_arrival_confirmed_at,
+                "reason_text": extra.get("reason_text", ""),
+                "symptoms": extra.get("symptoms", []),
                 "version": t.version,
             }
         )
     return rows
+
+
+def _front_desk_extras(tickets: list[Ticket]) -> dict[Any, dict[str, Any]]:
+    """Per visit, in a few queries: the patient's own words and symptoms (with any red flag), an
+    open balance and an unverified insurance (upgrade 05 §2)."""
+    from medilink.billing.models import Bill
+    from medilink.masterdata.models import Symptom
+    from medilink.patients.crypto.fields import decrypt
+    from medilink.patients.models import InsuranceProfile, InsuranceStatus
+    from medilink.visits.models import ReasonSymptom
+
+    visits = {t.visit_id: t.visit for t in tickets}
+    if not visits:
+        return {}
+    out: dict[Any, dict[str, Any]] = {vid: {"symptoms": []} for vid in visits}
+    red = set(Symptom.objects.filter(is_red_flag=True).values_list("code", flat=True))
+    for vid, code, label in ReasonSymptom.objects.filter(visit_id__in=visits).values_list(
+        "visit_id", "symptom_code", "symptom_label"
+    ):
+        out[vid]["symptoms"].append(label)
+        if code in red:
+            out[vid]["red_flag"] = True
+    for vid in Bill.objects.filter(visit_id__in=visits, balance_rwf__gt=0).values_list(
+        "visit_id", flat=True
+    ):
+        out[vid]["unpaid"] = True
+    covers = {v.insurance_profile_id for v in visits.values() if v.insurance_profile_id}
+    unverified = set(
+        InsuranceProfile.objects.filter(pk__in=covers)
+        .exclude(status=InsuranceStatus.VERIFIED)
+        .values_list("pk", flat=True)
+    )
+    for vid, visit in visits.items():
+        if visit.insurance_profile_id in unverified:
+            out[vid]["insurance_unverified"] = True
+        if visit.reason_encrypted:
+            out[vid]["reason_text"] = decrypt(
+                bytes(visit.reason_encrypted),
+                table="visits_visit",
+                column="reason_encrypted",
+                row_id=visit.pk,
+            )
+    return out
 
 
 def duty_rows(facility_id: Any) -> list[dict[str, Any]]:

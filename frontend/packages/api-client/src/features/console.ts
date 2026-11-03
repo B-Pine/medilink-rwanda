@@ -19,6 +19,12 @@ export interface ConsoleUser {
   id: Uuid;
   full_name: string;
   email: string;
+  /** Staff work phone (E.164); empty for patients and when not given. */
+  phone: string;
+  /** For clinicians: their profession code, else empty. */
+  profession: string;
+  /** For clinicians: valid, expiring, expired or missing; null for everyone else. */
+  licence_state: "valid" | "expiring" | "expired" | "missing" | null;
   kind: UserKind;
   is_active: boolean;
   mfa_enabled: boolean;

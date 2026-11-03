@@ -9,6 +9,20 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Super admin pages show what MediLink holds (2026-11-03)
+
+- Added: **Register a facility** (`/platform/applications/new`) replaces the three-field dialog:
+  facility, identifiers, province-to-village picker, map pin, applicant, facility admin and
+  insurers. `/platform/applications/:id/edit` completes a draft; the review page has **Edit
+  details** and adds documents for the facility while editable.
+- Changed: the applications table shows type, district, the proposed admin and progress; the
+  facilities table shows the FOSA ID, ownership, place, who is in charge and staff, with type,
+  ownership, licence and "without a FOSA ID" filters and **Export CSV**; the facility page shows
+  identity, contact and place, the people in charge and staff by profession.
+- Changed: users show phone, profession and licence; master data Locations shows level and parent
+  with a level filter.
+- Fixed: badges break between words only, never inside one (they split as "Liv e" in tables).
+
 ### Clinician profile: full professional details (2026-11-03)
 
 - Changed: **My clinician profile** (`/profile/clinician`) holds profession, specialty (list), sex,

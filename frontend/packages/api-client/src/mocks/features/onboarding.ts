@@ -394,6 +394,27 @@ export const onboardingMocks: FeatureMockFactory = (context: MockContext) => {
         ownership: "private",
         moh_facility_code: "RW-0217",
         tin: "102345671",
+        organization_name: "Kigali Clinic Ltd",
+        phone: "+250788300100",
+        email: "info@kigaliclinic.example",
+        address: "KG 9 Ave 12, Kimironko",
+        latitude: -1.9441,
+        longitude: 30.1235,
+        photo_count: 3,
+        location: {
+          province: "Umujyi wa Kigali",
+          district: "Gasabo",
+          sector: "Kimironko",
+          cell: "Bibare",
+          village: "Abatuje",
+        },
+        admins: [
+          { name: "Mutesi Diane", email: "facility.admin@medilink.test", phone: "+250788300101" },
+        ],
+        staff_count: 6,
+        doctor_count: 2,
+        doctors_attested: 1,
+        staff_by_profession: { medical_doctor: 2, nurse: 2, pharmacist: 1 },
         status: "live",
         district: { code: "12", name: "Gasabo" },
         application_id: null,
@@ -695,7 +716,11 @@ export const onboardingMocks: FeatureMockFactory = (context: MockContext) => {
           facility_name: a.facility.name,
           facility_type: a.facility.facility_type,
           district_code: a.location.village_code ? "12" : "",
+          district_name: a.location.village_code ? "Gasabo" : "",
           applicant_name: a.applicant.name,
+          proposed_admin_name: a.proposed_admin.name,
+          documents_count: a.documents.length,
+          missing_count: EDITABLE.includes(a.status) ? missingFor(a).length : 0,
           created_by_platform: a.created_by_platform,
           submitted_at: a.submitted_at,
           last_activity_at: a.last_activity_at,
@@ -738,6 +763,14 @@ export const onboardingMocks: FeatureMockFactory = (context: MockContext) => {
         events: [],
         keys: new Set(),
       };
+      const invalid = identifierErrors(
+        body.facility as Record<string, unknown> | undefined,
+        "facility.",
+      );
+      if (Object.keys(invalid).length) return fieldError(context, l, invalid);
+      // everything known so far (by phone or visit), like the API's create_by_platform
+      applyPatch(entry, body);
+      entry.app.missing_for_submit = missingFor(entry.app);
       entry.app.created_by_platform = true;
       event(entry, "status_change", {
         to_status: "draft",
@@ -954,6 +987,25 @@ export const onboardingMocks: FeatureMockFactory = (context: MockContext) => {
               ownership: str(body.ownership),
               moh_facility_code: entry.app.facility.moh_facility_code,
               tin: entry.app.facility.tin,
+              organization_name: str(body.organization_name),
+              phone: entry.app.facility.phone,
+              email: entry.app.facility.email,
+              address: entry.app.location.address,
+              latitude: entry.app.location.latitude,
+              longitude: entry.app.location.longitude,
+              photo_count: entry.app.documents.filter((d) => d.kind === "facility_photo").length,
+              location: {
+                province: "Umujyi wa Kigali",
+                district: "Gasabo",
+                sector: "",
+                cell: "",
+                village: entry.app.location.path.at(-1)?.name ?? "",
+              },
+              admins: [],
+              staff_count: 0,
+              doctor_count: 0,
+              doctors_attested: 0,
+              staff_by_profession: {},
               status: "approved",
               district: { code: "12", name: "Gasabo" },
               application_id: entry.app.id,

@@ -8,6 +8,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Super admin pages show what MediLink holds (2026-11-03)
+
+- Changed: `POST /platform/facility-applications/` also takes `proposed_admin` and
+  `claimed_insurer_codes`, so an application created on a facility's behalf holds everything known.
+- Changed: application rows carry `district_name`, `proposed_admin_name`, `documents_count` and
+  `missing_count`.
+- Changed: facility rows and detail carry the profile (phone, email, address, map pin, photo count,
+  level of care), the place (province to village), the facility admins, staff, doctor and
+  attested-doctor counts, and staff by profession. New filters `ownership` and `missing_code`.
+- Added: `GET /api/v1/platform/facilities/export/`: the facility list as CSV for the Ministry of
+  Health (same filters, UTF-8 with BOM, formula-safe; audit `facility.list_exported`).
+- Changed: platform user rows carry `phone`, `profession` and `licence_state`.
+
 ### Clinician profile: full professional details (2026-11-03)
 
 - Added: on `ClinicianProfile`, `profession` (13 cadres), `specialty_code` (a fixed list of 21; `specialty`

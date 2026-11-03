@@ -136,6 +136,7 @@ Requirements: FR-ONB-01..03, 07, 08, 10; FR-DOC-03, 05 (uploads); FR-SEC-06 (loc
 | `GET` | `/api/v1/platform/facilities/` | Facilities by status, type, district, licence state | Platform admin | FR-ONB-02 | No clinical data | Implemented (#47) |
 | `GET` | `/api/v1/platform/facilities/{id}/` | Facility profile, status, licences | Platform admin | FR-ONB-02 | | Implemented (#47) |
 | `PATCH` | `/api/v1/platform/facilities/{id}/` | Set the MoH facility code (FOSA ID) and TIN | Platform admin | FR-ONB-09 | Step-up; Audit `facility.identifiers_updated`; the list and detail return both | Implemented (onboarding, 2026-11-03) |
+| `GET` | `/api/v1/platform/facilities/export/` | The facility list as CSV for the Ministry of Health (FOSA ID, place, contacts, licence, admins, staff) | Platform admin | FR-ONB-09 | Same filters as the list; formula-safe; Audit `facility.list_exported` | Implemented (2026-11-03) |
 | `GET` | `/api/v1/platform/facilities/{id}/status-events/` | Status history | Platform admin | FR-ONB-07 | | Implemented (#47) |
 | `POST` | `/api/v1/platform/facilities/{id}/start-setup/` | `approved` → `setup` | Platform admin | FR-ONB-03 | Audit | Implemented (#47) |
 | `POST` | `/api/v1/platform/facilities/{id}/go-live/` | `setup` → `live` when the checks pass | Platform admin | FR-ONB-03 | Step-up; Idem; failing checks in `fields` | Implemented (#47) |

@@ -54,7 +54,8 @@ describe("Badge (design 03 §2)", () => {
     );
     const badge = screen.getByText(/Ibitaro/).parentElement!;
     expect(badge).not.toHaveClass("whitespace-nowrap");
-    expect(badge).toHaveClass("max-w-full", "[overflow-wrap:anywhere]");
+    // breaks between words; a single word longer than the line still breaks, so nothing clips
+    expect(badge).toHaveClass("max-w-full", "[overflow-wrap:break-word]");
     expect(badge.querySelector("svg")).toHaveClass("shrink-0");
   });
 });

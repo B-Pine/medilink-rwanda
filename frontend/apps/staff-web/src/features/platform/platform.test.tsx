@@ -168,3 +168,60 @@ describe("platform console", () => {
     expect(await screen.findByText("Applied", {}, { timeout: 6000 })).toBeInTheDocument();
   }, 45_000);
 });
+
+describe("platform admin data (2026-11-03)", () => {
+  it("registers a facility with everything known, then lands on its review page", async () => {
+    const { user } = await signIn("admin@medilink.test", "/platform/applications");
+    await user.click(await screen.findByRole("link", { name: "Register a facility" }));
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "Register a facility" }),
+    ).toBeInTheDocument();
+    await user.type(screen.getByLabelText("Facility name"), "Ivuriro Clinic");
+    await user.type(screen.getByLabelText(/^TIN/), "12");
+    await user.click(screen.getByRole("button", { name: "Create the application" }));
+    expect(await screen.findByText("A TIN has 9 digits.")).toBeInTheDocument();
+    await user.clear(screen.getByLabelText(/^TIN/));
+    await user.type(screen.getByLabelText(/^TIN/), "102345678");
+    await user.type(screen.getByLabelText(/^MoH facility code/), "FOSA-901");
+    await user.type(screen.getByLabelText("Latitude"), "-1.95");
+    await user.type(screen.getByLabelText("Longitude"), "30.06");
+    const names = screen.getAllByLabelText("Full name");
+    await user.type(names[0]!, "Mukamana Jeanne");
+    await user.type(screen.getAllByLabelText("Email")[1]!, "jeanne@ivuriro.example");
+    await user.type(names[1]!, "Habimana Eric");
+    await user.click(screen.getByRole("button", { name: "Create the application" }));
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "Ivuriro Clinic" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("FOSA-901")).toBeInTheDocument();
+    expect(screen.getByText(/Habimana Eric/)).toBeInTheDocument();
+    // a draft: the admin can still edit it and add documents
+    expect(screen.getByRole("link", { name: "Edit details" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Add a document for the facility" }),
+    ).toBeInTheDocument();
+  }, 45_000);
+
+  it("the facility list shows identifiers, people and staff, and exports CSV", async () => {
+    const { user } = await signIn("admin@medilink.test", "/platform/facilities");
+    const table = await screen.findByRole("table", { name: "Facilities" });
+    expect(await within(table).findByText("FOSA RW-0217")).toBeInTheDocument();
+    expect(within(table).getByText("Mutesi Diane")).toBeInTheDocument();
+    expect(within(table).getByText("Kimironko")).toBeInTheDocument();
+    expect(within(table).getByText("6 active staff")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Export CSV" })).toBeInTheDocument();
+    await user.click(within(table).getAllByRole("link", { name: "Open: Kigali Clinic" })[0]!);
+    expect(await screen.findByRole("heading", { name: "In charge" })).toBeInTheDocument();
+    expect(screen.getByText("info@kigaliclinic.example")).toBeInTheDocument();
+    expect(
+      screen.getByText("Abatuje, Bibare, Kimironko, Gasabo, Umujyi wa Kigali"),
+    ).toBeInTheDocument();
+  }, 45_000);
+
+  it("users show phone, profession and licence", async () => {
+    await signIn("admin@medilink.test", "/platform/users");
+    const table = await screen.findByRole("table");
+    expect((await within(table).findAllByText("Medical doctor")).length).toBeGreaterThan(0);
+    expect(within(table).getAllByText("Licence valid").length).toBeGreaterThan(0);
+  }, 45_000);
+});

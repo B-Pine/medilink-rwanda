@@ -3155,6 +3155,11 @@ paths:
           - missing
           - valid
       - in: query
+        name: missing_code
+        schema:
+          type: boolean
+        description: Only facilities without a FOSA ID
+      - in: query
         name: ordering
         schema:
           type: string
@@ -3164,6 +3169,10 @@ paths:
           - created_at
           - name
           - next_licence_expiry
+      - in: query
+        name: ownership
+        schema:
+          type: string
       - name: page
         required: false
         in: query
@@ -3789,6 +3798,50 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Status or failing go-live checks
+  /api/v1/platform/facilities/export/:
+    get:
+      operationId: platform_facilities_export
+      description: The facility list for the Ministry of Health, as CSV, with the
+        list's filters.
+      summary: Export the facility list (CSV, UTF-8); audit-logged
+      parameters:
+      - in: query
+        name: district
+        schema:
+          type: string
+      - in: query
+        name: facility_type
+        schema:
+          type: string
+      - in: query
+        name: licence_state
+        schema:
+          type: string
+          enum:
+          - expired
+          - expiring
+          - missing
+          - valid
+      - in: query
+        name: ownership
+        schema:
+          type: string
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+      tags:
+      - platform
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          description: One row per facility
   /api/v1/platform/facility-applications/:
     get:
       operationId: platform_facility_applications_list
@@ -17125,8 +17178,16 @@ components:
           type: string
         district_code:
           type: string
+        district_name:
+          type: string
         applicant_name:
           type: string
+        proposed_admin_name:
+          type: string
+        documents_count:
+          type: integer
+        missing_count:
+          type: integer
         created_by_platform:
           type: boolean
         submitted_at:
@@ -17145,10 +17206,14 @@ components:
       - applicant_name
       - created_by_platform
       - district_code
+      - district_name
+      - documents_count
       - facility_name
       - facility_type
       - id
       - last_activity_at
+      - missing_count
+      - proposed_admin_name
       - reviewer
       - status
       - submitted_at
@@ -21812,6 +21877,19 @@ components:
       - ownership
       - phone
       - tin
+    FacilityContact:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+      required:
+      - email
+      - name
+      - phone
     FacilityFeatureFlag:
       type: object
       properties:
@@ -22012,6 +22090,25 @@ components:
       - reception_notes
       - sex
       - version
+    FacilityPlace:
+      type: object
+      properties:
+        province:
+          type: string
+        district:
+          type: string
+        sector:
+          type: string
+        cell:
+          type: string
+        village:
+          type: string
+      required:
+      - cell
+      - district
+      - province
+      - sector
+      - village
     FacilityProfile:
       type: object
       properties:
@@ -29098,6 +29195,9 @@ components:
         * `handled` - Handled
     PlatformCreateInputRequest:
       type: object
+      description: |-
+        The super admin onboards a facility by phone or visit: everything known so far, then the
+        applicant gets a link to check, add the documents and submit (2026-11-03: all groups).
       properties:
         applicant:
           $ref: '#/components/schemas/ApplicantInputRequest'
@@ -29105,6 +29205,15 @@ components:
           $ref: '#/components/schemas/FacilityInputRequest'
         location:
           $ref: '#/components/schemas/LocationInputRequest'
+        proposed_admin:
+          $ref: '#/components/schemas/AdminInputRequest'
+        claimed_insurer_codes:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 40
+          maxItems: 20
         send_link:
           type: boolean
           default: false
@@ -29131,6 +29240,40 @@ components:
           type: string
         tin:
           type: string
+        organization_name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        address:
+          type: string
+        latitude:
+          type: number
+          format: double
+          nullable: true
+        longitude:
+          type: number
+          format: double
+          nullable: true
+        photo_count:
+          type: integer
+        location:
+          $ref: '#/components/schemas/FacilityPlace'
+        admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/FacilityContact'
+        staff_count:
+          type: integer
+        doctor_count:
+          type: integer
+        doctors_attested:
+          type: integer
+        staff_by_profession:
+          type: object
+          additionalProperties:
+            type: integer
         status:
           $ref: '#/components/schemas/FacilityStatusEnum'
         district:
@@ -29153,18 +29296,31 @@ components:
         version:
           type: integer
       required:
+      - address
+      - admins
       - application_id
       - created_at
       - district
+      - doctor_count
+      - doctors_attested
+      - email
       - facility_type
       - id
+      - latitude
       - level_of_care
       - licence_state
+      - location
+      - longitude
       - moh_facility_code
       - name
       - next_licence_expiry
+      - organization_name
       - ownership
+      - phone
+      - photo_count
       - slug
+      - staff_by_profession
+      - staff_count
       - status
       - tin
       - version
@@ -29188,6 +29344,40 @@ components:
           type: string
         tin:
           type: string
+        organization_name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        address:
+          type: string
+        latitude:
+          type: number
+          format: double
+          nullable: true
+        longitude:
+          type: number
+          format: double
+          nullable: true
+        photo_count:
+          type: integer
+        location:
+          $ref: '#/components/schemas/FacilityPlace'
+        admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/FacilityContact'
+        staff_count:
+          type: integer
+        doctor_count:
+          type: integer
+        doctors_attested:
+          type: integer
+        staff_by_profession:
+          type: object
+          additionalProperties:
+            type: integer
         status:
           $ref: '#/components/schemas/FacilityStatusEnum'
         district:
@@ -29218,20 +29408,33 @@ components:
           items:
             $ref: '#/components/schemas/Licence'
       required:
+      - address
+      - admins
       - application
       - application_id
       - created_at
       - district
+      - doctor_count
+      - doctors_attested
+      - email
       - facility_type
       - id
+      - latitude
       - level_of_care
       - licence_state
       - licences
+      - location
+      - longitude
       - moh_facility_code
       - name
       - next_licence_expiry
+      - organization_name
       - ownership
+      - phone
+      - photo_count
       - slug
+      - staff_by_profession
+      - staff_count
       - status
       - tin
       - version
@@ -34372,6 +34575,13 @@ components:
           type: string
         email:
           type: string
+        phone:
+          type: string
+        profession:
+          type: string
+        licence_state:
+          type: string
+          nullable: true
         kind:
           $ref: '#/components/schemas/UserKindEnum'
         is_active:
@@ -34410,7 +34620,10 @@ components:
       - is_active
       - kind
       - last_login
+      - licence_state
       - mfa_enabled
+      - phone
+      - profession
       - sessions
     UserKindEnum:
       enum:
@@ -34432,6 +34645,13 @@ components:
           type: string
         email:
           type: string
+        phone:
+          type: string
+        profession:
+          type: string
+        licence_state:
+          type: string
+          nullable: true
         kind:
           $ref: '#/components/schemas/UserKindEnum'
         is_active:
@@ -34458,7 +34678,10 @@ components:
       - is_active
       - kind
       - last_login
+      - licence_state
       - mfa_enabled
+      - phone
+      - profession
     ValueEnum:
       enum:
       - A+

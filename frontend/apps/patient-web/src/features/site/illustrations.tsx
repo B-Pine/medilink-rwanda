@@ -165,7 +165,12 @@ export function EmergencyIllustration({ className }: { className?: string }) {
       />
       <rect x="92" y="88" width="36" height="36" rx="4" fill={C.forest} opacity="0.85" />
       <circle cx="110" cy="62" r="14" fill="var(--color-danger-solid)" />
-      <path d="M110 54v16M102 62h16" stroke="var(--color-on-danger-solid)" strokeWidth="4" strokeLinecap="round" />
+      <path
+        d="M110 54v16M102 62h16"
+        stroke="var(--color-on-danger-solid)"
+        strokeWidth="4"
+        strokeLinecap="round"
+      />
       <path
         d="M20 150c40-10 60-24 90-26s60 14 90 26"
         stroke={C.line}

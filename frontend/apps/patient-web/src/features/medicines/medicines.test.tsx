@@ -42,9 +42,7 @@ describe("My medicines (S7-F5)", () => {
     expect(await screen.findByText("RX-2026-000101")).toBeInTheDocument();
     // dose, how often and how long, each under its own label
     const facts = screen.getAllByRole("definition").map((d) => d.textContent);
-    expect(facts).toEqual(
-      expect.arrayContaining(["2 tablets", "three times a day", "for 5 days"]),
-    );
+    expect(facts).toEqual(expect.arrayContaining(["2 tablets", "three times a day", "for 5 days"]));
     expect(screen.getByText("After food")).toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
 

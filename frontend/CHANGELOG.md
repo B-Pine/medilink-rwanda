@@ -28,6 +28,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   slip (`/queue/visits/:visitId/slip`) and appointment card (`/bookings/card/:code`), 80 mm,
   from check-in, the ticket panel and phone booking (upgrade 08 §3).
 
+### Facility onboarding: staff contact details (2026-11-03)
+
+- Added: staff-web **My details** (`/account`, from the user menu): my name, work phone and
+  language (also switches the app language).
+- Changed: the invite dialog takes optional names and work phone; the invitation list shows the
+  name; the member panel shows email and phone as links. The invitation accept page prefills
+  the name the inviter gave (for a new facility, the application's proposed admin).
+- Added: `api.staffAuth.updateMe()`, `phone` on `StaffMe` and `StaffMembership`, `full_name` and
+  `phone` on `Invitation`, `suggested_name` on `InvitationLookup`, and the matching mocks.
+
 ### AI symptom assistant, test phase (issue #159)
 
 - Added: `/assistant`, a chat where the person describes symptoms in their own words. It asks

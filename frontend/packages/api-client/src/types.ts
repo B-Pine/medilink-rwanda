@@ -87,6 +87,8 @@ export interface StaffMe {
   id: Uuid;
   email: string;
   full_name: string;
+  /** Work phone, E.164 (+2507…); empty when not given. */
+  phone: string;
   preferred_language: LanguageCode;
   is_platform_admin: boolean;
   mfa_enabled: boolean;

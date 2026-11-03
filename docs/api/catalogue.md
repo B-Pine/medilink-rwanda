@@ -58,6 +58,7 @@ Copied from the [Sprint 0 contract](../architecture/03-sprint-0-contract.md) §2
 | `POST` | `/api/v1/staff/auth/mfa/verify/` | Second factor at login (code or recovery code) | `mfa_required` state | FR-ACC-04, FR-SEC-06 | RL: auth; rotates session; Audit `auth.mfa.*` | Implemented (backend-v0.1.0) |
 | `POST` | `/api/v1/staff/auth/logout/` | Log out | Staff session | FR-SEC-06 | `204`; deletes the staff session only; Audit `auth.logout` | Implemented (backend-v0.1.0) |
 | `GET` | `/api/v1/staff/auth/me/` | Current user, memberships, permissions for the active facility | Staff session | FR-ACC-01, FR-ACC-02, FR-ACC-03 | `StaffMe` | Implemented (backend-v0.1.0) |
+| `PATCH` | `/api/v1/staff/auth/me/` | Update my own name, work phone (Rwandan mobile, stored E.164) and language | Staff session | FR-ACC-01 | Answers `StaffMe` (now with `phone`); Audit `staff.account.updated` | Implemented (onboarding carry-over, 2026-11-03) |
 | `POST` | `/api/v1/staff/auth/active-facility/` | Switch the active facility | Member of that facility | FR-ACC-02 | `404` if not a member; rotates session; Audit `staff.facility.switched` | Implemented (backend-v0.1.0) |
 
 ### WebSockets
@@ -200,15 +201,15 @@ Requirements: FR-ONB-04..07, 09; FR-SCH-05..06; FR-BIL-02, 05; FR-ACC-05..07.
 | `GET`, `POST` | `/api/v1/staff/insurer-rules/` | Accepted insurers: services, patient share, referral required, exclusions, ceiling | `facility.configure` | FR-BIL-02 | Step-up | Planned |
 | `GET`, `PATCH` | `/api/v1/staff/insurer-rules/{id}/` | Change a rule from a date | `facility.configure` | FR-BIL-02 | Step-up; versioned with `valid_from` | Planned |
 | `GET` | `/api/v1/staff/roles/` | Roles and their permissions | Any staff | FR-ACC-03 | Seeded data | Planned |
-| `GET` | `/api/v1/staff/memberships/` | Staff list with two-step status and `last_login` | `staff.manage` | FR-ACC-01 | Paginated | Implemented (#85, upgrade 05 §5) |
+| `GET` | `/api/v1/staff/memberships/` | Staff list with two-step status and `last_login` and work `phone` | `staff.manage` | FR-ACC-01 | Paginated | Implemented (#85, upgrade 05 §5) |
 | `GET`, `PATCH` | `/api/v1/staff/memberships/{id}/` | Roles and service points of a member | `staff.manage` | FR-ACC-01, FR-ACC-03 | Step-up; rotates the member's sessions; Audit | Planned |
 | `POST` | `/api/v1/staff/memberships/{id}/deactivate/` | Remove access now | `staff.manage` | FR-ACC-06 | Ends sessions, closes sockets; Audit | Planned |
 | `POST` | `/api/v1/staff/memberships/{id}/attest-licence/` | Attest that the clinician licence was checked | `staff.manage` | FR-ACC-07 | Required before a clinician can sign; Audit | Planned |
 | `POST` | `/api/v1/staff/memberships/{id}/mfa-reset/` | Reset a member's second factor | `staff.manage` | FR-ACC-04 | Step-up; the member is notified | Planned |
-| `GET`, `POST` | `/api/v1/staff/invitations/` | Invite by email with roles and service points | `staff.manage` | FR-ACC-05, FR-ONB-05 | Step-up; Idem; 7-day expiry (an expired one doesn't block a re-invite); list paginated; refused when deactivated | Implemented (#85) |
+| `GET`, `POST` | `/api/v1/staff/invitations/` | Invite by email with roles and service points, and optionally the person's name and work phone | `staff.manage` | FR-ACC-05, FR-ONB-05 | Step-up; Idem; 7-day expiry (an expired one doesn't block a re-invite); list paginated; refused when deactivated; the name and phone prefill the new account | Implemented (#85) |
 | `POST` | `/api/v1/staff/invitations/{id}/resend/` | Send the invitation again | `staff.manage` | FR-ACC-05 | New token, old one invalidated | Planned |
 | `POST` | `/api/v1/staff/invitations/{id}/revoke/` | Cancel an invitation | `staff.manage` | FR-ACC-05 | | Planned |
-| `POST` | `/api/v1/staff/auth/invitations/lookup/` | Show facility, inviter and roles for an invitation token | Invitee (token in body) | FR-ACC-05 | RL: auth | Planned |
+| `POST` | `/api/v1/staff/auth/invitations/lookup/` | Show facility, inviter and roles for an invitation token, and `suggested_name` (the inviter's name for the person) | Invitee (token in body) | FR-ACC-05 | RL: auth | Planned |
 | `POST` | `/api/v1/staff/auth/invitations/accept/` | Accept: set a password (new account, then MFA setup) or confirm while signed in (existing account) | Invitee (token in body); existing account: signed-in staff session | FR-ACC-05, FR-ACC-04 | Single use; new: `LoginResult`; existing: `StaffMe`, `401` when not signed in | Implemented (#85) |
 | `GET`, `PATCH` | `/api/v1/staff/clinician-profile/` | Own licence council, licence number, specialty | Staff (self) | FR-ACC-07 | | Planned |
 

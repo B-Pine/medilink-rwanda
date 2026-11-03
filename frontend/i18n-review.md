@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5109.
+Keys: 5179.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -2072,6 +2072,8 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 |---|---|---|---|
 | `loading` | Biratangira | Loading | needs native-speaker review |
 | `nav.availability` | Imiti iboneka | Medicine availability | needs native-speaker review |
+| `nav.history` | Amateka yo gutanga imiti | Dispensing history | needs native-speaker review |
+| `nav.verify` | Genzura urupapuro rw'imiti | Verify a prescription | needs native-speaker review |
 | `age_one` | Umwaka {{count}} | {{count}} year | needs native-speaker review |
 | `age_other` | Imyaka {{count}} | {{count}} years | needs native-speaker review |
 | `days_one` | Umunsi {{count}} | {{count}} day | needs native-speaker review |
@@ -2273,6 +2275,59 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `pages` | Amapaji | Pages | needs native-speaker review |
 | `previous` | Ibibanza | Previous | needs native-speaker review |
 | `next` | Ibikurikira | Next | needs native-speaker review |
+| `today.title` | Farumasi | Pharmacy counter | needs native-speaker review |
+| `today.openQueue` | Fungura umurongo wa farumasi | Open the pharmacy queue | needs native-speaker review |
+| `today.numbers` | Uyu munsi kuri farumasi | Today at the pharmacy | needs native-speaker review |
+| `today.ready` | Biteguye gutangwa | Ready to give | needs native-speaker review |
+| `today.partly` | Byatanzwe igice | Partly given | needs native-speaker review |
+| `today.questions_one` | Ibibazo ku baganga ({{count}} byasubijwe) | Questions to doctors ({{count}} answered) | needs native-speaker review |
+| `today.questions_other` | Ibibazo ku baganga ({{count}} byasubijwe) | Questions to doctors ({{count}} answered) | needs native-speaker review |
+| `today.dispensed_one` | Byatanzwe uyu munsi ({{count}} nanjye) | Dispensed today ({{count}} by me) | needs native-speaker review |
+| `today.dispensed_other` | Byatanzwe uyu munsi ({{count}} nanjye) | Dispensed today ({{count}} by me) | needs native-speaker review |
+| `today.outOfStock` | Imiti itabonetse | Medicines out of stock | needs native-speaker review |
+| `today.next` | Ibikurikira gutangwa | Next to give | needs native-speaker review |
+| `today.nothing` | Nta rupapuro rw'imiti rutegereje. Inshya ziza hano abaganga bamaze gusinya. | No prescription waits. New ones appear here as doctors sign. | needs native-speaker review |
+| `today.items_one` | Umuti {{count}} | {{count}} medicine | needs native-speaker review |
+| `today.items_other` | Imiti {{count}} | {{count}} medicines | needs native-speaker review |
+| `history.title` | Amateka yo gutanga imiti | Dispensing history | needs native-speaker review |
+| `history.intro` | Imiti yatanzwe kuri iyi farumasi, uwayitanze n'igihe. Fungura umurongo ubone urupapuro rwose. | What was given at this pharmacy, by whom and when. Open a line for the full prescription. | needs native-speaker review |
+| `history.period` | Igihe | Period | needs native-speaker review |
+| `history.days.1` | Uyu munsi | Today | needs native-speaker review |
+| `history.days.7` | Iminsi 7 | 7 days | needs native-speaker review |
+| `history.days.30` | Iminsi 30 | 30 days | needs native-speaker review |
+| `history.mine` | Ibyanjye gusa | Only mine | needs native-speaker review |
+| `history.search` | Nimero y'urupapuro cyangwa izina | Prescription number or name | needs native-speaker review |
+| `history.empty` | Nta muti watanzwe muri iki gihe | Nothing dispensed in this period | needs native-speaker review |
+| `history.emptyBody` | Ibyatanzwe biza hano bimaze gusinywa. | Dispensings appear here once signed. | needs native-speaker review |
+| `history.columns.when` | Igihe | When | needs native-speaker review |
+| `history.columns.patient` | Umurwayi | Patient | needs native-speaker review |
+| `history.columns.medicines` | Imiti | Medicines | needs native-speaker review |
+| `history.columns.by` | Uwatanze | Given by | needs native-speaker review |
+| `history.controlled` | Umuti ugenzurwa wemejwe | Controlled medicine confirmed | needs native-speaker review |
+| `history.outcome.full` | Yatanzwe yose | Given in full | needs native-speaker review |
+| `history.outcome.partial` | Yatanzwe igice | Given in part | needs native-speaker review |
+| `history.outcome.substituted` | Yasimbujwe | Substituted | needs native-speaker review |
+| `history.outcome.not_available` | Ntabonetse | Not available | needs native-speaker review |
+| `verify.title` | Genzura urupapuro rw'imiti | Verify a prescription | needs native-speaker review |
+| `verify.intro` | Urupapuro rw'imiti ruvuye ahandi: genzura kode, hanyuma ufungure imiti ukoresheje itariki y'amavuko y'umurwayi. | A prescription from another facility: check the code, then open the medicines with the patient's date of birth. | needs native-speaker review |
+| `verify.code` | Kode yo kugenzura | Verification code | needs native-speaker review |
+| `verify.codeHint` | Yanditse munsi ya QR ku rupapuro | Printed under the QR code on the prescription | needs native-speaker review |
+| `verify.check` | Genzura | Check | needs native-speaker review |
+| `verify.notFound` | Nta nyandiko ifite iyi kode. Yigenzure n'umurwayi. | No document with this code. Check it with the patient. | needs native-speaker review |
+| `verify.status.active` | Rwemewe | Valid | needs native-speaker review |
+| `verify.status.dispensed` | Rwamaze gutangirwa imiti | Already dispensed | needs native-speaker review |
+| `verify.status.cancelled` | Rwahagaritswe | Cancelled | needs native-speaker review |
+| `verify.status.expired` | Rwarangiye | Expired | needs native-speaker review |
+| `verify.notPrescription` | Si urupapuro rw'imiti | Not a prescription | needs native-speaker review |
+| `verify.facility` | Rwatanzwe na | Issued by | needs native-speaker review |
+| `verify.author` | Muganga warwanditse | Prescriber | needs native-speaker review |
+| `verify.issued` | Rwatanzwe ku wa | Issued on | needs native-speaker review |
+| `verify.validUntil` | Rugifite agaciro kugeza | Valid until | needs native-speaker review |
+| `verify.born` | Itariki y'amavuko y'umurwayi | Patient's date of birth | needs native-speaker review |
+| `verify.bornHint` | Ifungura imiti; irinda ubuzima bwite bw'umurwayi. | Opens the medicines; protects the patient's privacy. | needs native-speaker review |
+| `verify.open` | Erekana imiti | Show medicines | needs native-speaker review |
+| `verify.bornWrong` | Itariki y'amavuko ntihuye. | The date of birth does not match. | needs native-speaker review |
+| `failed` | Ntibyashobotse. Ongera ugerageze. | Could not load. Try again. | needs native-speaker review |
 
 ## staff-web feature: platform (namespace platform)
 
@@ -3413,6 +3468,10 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `staff.mfaGapTitle_one` | Umukozi {{count}} ukora ntakoresha kwinjira mu ntambwe ebyiri | {{count}} active member has no two-step sign-in | needs native-speaker review |
 | `staff.mfaGapTitle_other` | Abakozi {{count}} bakora badakoresha kwinjira mu ntambwe ebyiri | {{count}} active members have no two-step sign-in | needs native-speaker review |
 | `staff.mfaGapBody` | Amakuru y'ubuzima asaba intambwe ya kabiri. Fungura umukozi umusabe kuyishyiraho ubutaha yinjiye, cyangwa uyisubizeho niba yarataye telefone. | Health records need a second factor. Open the person and ask them to set it up at their next sign-in, or reset it if their phone was lost. | needs native-speaker review |
+| `staff.inviteName` | Amazina ye | Their names | needs native-speaker review |
+| `staff.invitePhone` | Telefoni y’akazi | Work phone | needs native-speaker review |
+| `staff.optional` | Si ngombwa: byuzuza konti ye nshya | Optional: fills in their new account | needs native-speaker review |
+| `staff.noPhone` | Nta telefoni yatanzwe | No phone given | needs native-speaker review |
 | `clinician.title` | Uruhushya rwanjye rw'umwuga | My professional licence | needs native-speaker review |
 | `clinician.intro` | Urugaga rwawe na nimero y'uruhushya bigaragara ku mpapuro z'imiti n'amadosiye usinya. | Your council and licence number appear on prescriptions and records you sign. | needs native-speaker review |
 | `clinician.council` | Urugaga | Council | needs native-speaker review |
@@ -3451,6 +3510,17 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `publicProfile.noBio` | Nta nyandiko iriho. | No text yet. | needs native-speaker review |
 | `publicProfile.hidden` | Byahishwe abarwayi. | Hidden from patients. | needs native-speaker review |
 | `publicProfile.needLicence` | Banza ubike uruhushya rwawe; umwirondoro ugaragara ukurikira. | Save your licence first; the public profile follows. | needs native-speaker review |
+| `account.menu` | Amakuru yanjye | My details | needs native-speaker review |
+| `account.title` | Amakuru yanjye | My details | needs native-speaker review |
+| `account.intro` | Izina ryawe, telefoni y’akazi n’ururimi. Umuyobozi w’ikigo cyawe abona telefoni yawe ku rutonde rw’abakozi. | Your name, work phone and language. Your facility admin sees your phone on the team list. | needs native-speaker review |
+| `account.email` | Imeyili | Email | needs native-speaker review |
+| `account.emailHint` | Winjira ukoresheje iyi aderesi. Saba ubufasha bwa MediLink kuyihindura. | You sign in with this address. Ask MediLink support to change it. | needs native-speaker review |
+| `account.fullName` | Amazina yose | Full name | needs native-speaker review |
+| `account.phone` | Telefoni y’akazi | Work phone | needs native-speaker review |
+| `account.phoneHint` | Nimero ya telefoni yo mu Rwanda, urugero 0788 123 456 | A Rwandan mobile number, for example 0788 123 456 | needs native-speaker review |
+| `account.language` | Ururimi | Language | needs native-speaker review |
+| `account.save` | Bika | Save | needs native-speaker review |
+| `account.saved` | Byabitswe. | Saved. | needs native-speaker review |
 
 ## patient-web feature: booking (namespace booking)
 

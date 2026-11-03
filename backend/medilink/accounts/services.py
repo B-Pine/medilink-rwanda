@@ -121,6 +121,7 @@ def staff_me_data(principal: Principal, session: Any = None) -> dict[str, Any]:
         "id": user.pk,
         "email": user.email,
         "full_name": user.full_name,
+        "phone": user.phone,
         "preferred_language": user.preferred_language,
         "is_platform_admin": user.is_platform_admin,
         "mfa_enabled": has_confirmed_mfa(user),

@@ -527,7 +527,11 @@
     "neverSignedIn": "Never signed in",
     "mfaGapTitle_one": "{{count}} active member has no two-step sign-in",
     "mfaGapTitle_other": "{{count}} active members have no two-step sign-in",
-    "mfaGapBody": "Health records need a second factor. Open the person and ask them to set it up at their next sign-in, or reset it if their phone was lost."
+    "mfaGapBody": "Health records need a second factor. Open the person and ask them to set it up at their next sign-in, or reset it if their phone was lost.",
+    "inviteName": "Their names",
+    "invitePhone": "Work phone",
+    "optional": "Optional: fills in their new account",
+    "noPhone": "No phone given"
   },
   "clinician": {
     "title": "My professional licence",
@@ -574,5 +578,18 @@
     "noBio": "No text yet.",
     "hidden": "Hidden from patients.",
     "needLicence": "Save your licence first; the public profile follows."
+  },
+  "account": {
+    "menu": "My details",
+    "title": "My details",
+    "intro": "Your name, work phone and language. Your facility admin sees your phone on the team list.",
+    "email": "Email",
+    "emailHint": "You sign in with this address. Ask MediLink support to change it.",
+    "fullName": "Full name",
+    "phone": "Work phone",
+    "phoneHint": "A Rwandan mobile number, for example 0788 123 456",
+    "language": "Language",
+    "save": "Save",
+    "saved": "Saved."
   }
 }

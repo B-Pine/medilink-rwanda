@@ -30,6 +30,7 @@ export const setupFeature: FeatureRoutes = {
     { path: "/settings/history", lazy: lazy(settings, "HistoryPage") },
     { path: "/staff", lazy: lazy(staff, "StaffPage") },
     { path: "/profile/clinician", lazy: lazy(staff, "ClinicianPage") },
+    { path: "/account", lazy: lazy(() => import("./AccountPage"), "AccountPage") },
   ],
   todayCards: [SetupTodayCard, LeaveTodayCard],
 };

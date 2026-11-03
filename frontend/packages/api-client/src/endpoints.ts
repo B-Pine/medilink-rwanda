@@ -107,6 +107,9 @@ export function createMediLinkApi(client: ApiClient) {
        */
       me: (signal?: AbortSignal) =>
         client.get<StaffMe>(paths.staffMe, signal ? { signal, ...authCall } : authCall),
+      /** My own name, work phone and language (audit-logged). */
+      updateMe: (body: Partial<Pick<StaffMe, "full_name" | "phone" | "preferred_language">>) =>
+        client.request<StaffMe>("PATCH", paths.staffMe, { body }),
       setActiveFacility: (facilityId: Uuid) =>
         client.post<StaffMe>(
           paths.staffActiveFacility,

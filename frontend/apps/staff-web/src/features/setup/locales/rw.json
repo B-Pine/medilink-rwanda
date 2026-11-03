@@ -527,7 +527,11 @@
     "neverSignedIn": "Ntarigera yinjira",
     "mfaGapTitle_one": "Umukozi {{count}} ukora ntakoresha kwinjira mu ntambwe ebyiri",
     "mfaGapTitle_other": "Abakozi {{count}} bakora badakoresha kwinjira mu ntambwe ebyiri",
-    "mfaGapBody": "Amakuru y'ubuzima asaba intambwe ya kabiri. Fungura umukozi umusabe kuyishyiraho ubutaha yinjiye, cyangwa uyisubizeho niba yarataye telefone."
+    "mfaGapBody": "Amakuru y'ubuzima asaba intambwe ya kabiri. Fungura umukozi umusabe kuyishyiraho ubutaha yinjiye, cyangwa uyisubizeho niba yarataye telefone.",
+    "inviteName": "Amazina ye",
+    "invitePhone": "Telefoni y’akazi",
+    "optional": "Si ngombwa: byuzuza konti ye nshya",
+    "noPhone": "Nta telefoni yatanzwe"
   },
   "clinician": {
     "title": "Uruhushya rwanjye rw'umwuga",
@@ -574,5 +578,18 @@
     "noBio": "Nta nyandiko iriho.",
     "hidden": "Byahishwe abarwayi.",
     "needLicence": "Banza ubike uruhushya rwawe; umwirondoro ugaragara ukurikira."
+  },
+  "account": {
+    "menu": "Amakuru yanjye",
+    "title": "Amakuru yanjye",
+    "intro": "Izina ryawe, telefoni y’akazi n’ururimi. Umuyobozi w’ikigo cyawe abona telefoni yawe ku rutonde rw’abakozi.",
+    "email": "Imeyili",
+    "emailHint": "Winjira ukoresheje iyi aderesi. Saba ubufasha bwa MediLink kuyihindura.",
+    "fullName": "Amazina yose",
+    "phone": "Telefoni y’akazi",
+    "phoneHint": "Nimero ya telefoni yo mu Rwanda, urugero 0788 123 456",
+    "language": "Ururimi",
+    "save": "Bika",
+    "saved": "Byabitswe."
   }
 }

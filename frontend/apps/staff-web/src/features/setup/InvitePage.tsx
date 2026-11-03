@@ -93,7 +93,11 @@ function Invitation({ token, invitation }: { token: string; invitation: Invitati
           </div>
         )
       ) : (
-        <NewAccount token={token} email={invitation.email_masked} />
+        <NewAccount
+          token={token}
+          email={invitation.email_masked}
+          suggestedName={invitation.suggested_name}
+        />
       )}
     </>
   );
@@ -125,12 +129,21 @@ function AcceptExisting({ token }: { token: string }) {
   );
 }
 
-function NewAccount({ token, email }: { token: string; email: string }) {
+function NewAccount({
+  token,
+  email,
+  suggestedName,
+}: {
+  token: string;
+  email: string;
+  /** The name the inviter gave (the application's proposed admin): change it if wrong. */
+  suggestedName: string;
+}) {
   const { t } = useTranslation();
   const api = useApi();
   const navigate = useNavigate();
   const { setPending } = useAuthFlow();
-  const [form, setForm] = useState({ full_name: "", password: "" });
+  const [form, setForm] = useState({ full_name: suggestedName, password: "" });
   const accept = useMutation({
     mutationFn: () => api.setup.acceptNewAccount({ token, ...form }),
     onSuccess: () => {

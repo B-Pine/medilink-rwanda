@@ -117,6 +117,8 @@ export interface MockStaffUser {
   id: string;
   email: string;
   full_name: string;
+  /** Work phone, E.164; empty when not given. */
+  phone?: string;
   preferred_language: LanguageCode;
   is_platform_admin: boolean;
   /** Has a confirmed TOTP device. false → login answers `mfa_setup_required`. */
@@ -147,6 +149,7 @@ export const STAFF_USERS: MockStaffUser[] = [
     id: "7a1e0b2c-0000-4000-8000-000000000003",
     email: "doctor@medilink.test",
     full_name: "Uwimana Keza",
+    phone: "+250788100203",
     preferred_language: "en",
     is_platform_admin: false,
     mfa_enabled: true,
@@ -169,6 +172,7 @@ export const STAFF_USERS: MockStaffUser[] = [
     id: "7a1e0b2c-0000-4000-8000-000000000005",
     email: "admin@medilink.test",
     full_name: "Ingabire Grace",
+    phone: "+250788100205",
     preferred_language: "en",
     is_platform_admin: true,
     mfa_enabled: true,
@@ -232,6 +236,7 @@ export function toStaffMe(
     id: user.id,
     email: user.email,
     full_name: user.full_name,
+    phone: user.phone ?? "",
     preferred_language: user.preferred_language,
     is_platform_admin: user.is_platform_admin,
     mfa_enabled: mfaEnabled,
@@ -248,4 +253,14 @@ export function toStaffMe(
       step_up_valid_until: extras.step_up_valid_until ?? null,
     },
   };
+}
+
+/** Rwandan mobile numbers to E.164 like the API (`normalize_phone`); "" stays ""; null = invalid. */
+export function mockStaffPhone(value: string): string | null {
+  let digits = value.replace(/[\s\-().]/g, "");
+  if (!digits) return "";
+  if (digits.startsWith("+")) digits = digits.slice(1);
+  if (digits.startsWith("250")) digits = digits.slice(3);
+  if (digits.startsWith("0")) digits = digits.slice(1);
+  return /^7\d{8}$/.test(digits) ? `+250${digits}` : null;
 }

@@ -4,6 +4,7 @@ import {
   LockKey,
   ShieldCheck,
   SignOut,
+  UserCircle,
 } from "@phosphor-icons/react";
 import { hasPermission, type StaffMe } from "@medilink/api-client";
 import {
@@ -98,6 +99,10 @@ export function UserMenu({ me }: { me: StaffMe }) {
           ))}
         </MenuRadioGroup>
         <MenuSeparator />
+        <MenuItem onSelect={() => void navigate("/account")}>
+          <UserCircle aria-hidden="true" className="size-icon" />
+          {t("setup.account.menu")}
+        </MenuItem>
         {hasPermission(me, "clinical.write") && (
           <MenuItem onSelect={() => void navigate("/profile/clinician")}>
             <IdentificationBadge aria-hidden="true" className="size-icon" />

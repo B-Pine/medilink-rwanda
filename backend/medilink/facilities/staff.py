@@ -46,6 +46,18 @@ def _hash(token: str) -> bytes:
     return hashlib.sha256(token.encode()).digest()
 
 
+def work_phone(value: str | None) -> str:
+    """A Rwandan mobile number in E.164, or the value as given when it is another kind of number
+    (a landline or a foreign number on an application)."""
+    from medilink.patients.normalize import InvalidValue, normalize_phone
+
+    value = (value or "").strip()
+    try:
+        return normalize_phone(value) or ""
+    except InvalidValue:
+        return value[:20]
+
+
 def _check_roles(codes: list[str]) -> list[Role]:
     roles = list(Role.objects.filter(code__in=codes))
     if not codes or len(roles) != len(set(codes)):
@@ -97,9 +109,13 @@ def invite(
     source: str = InvitationSource.STAFF,
     source_ref: str = "",
     idempotency_key: str | None = None,
+    full_name: str = "",
+    phone: str = "",
+    preferred_language: str = "",
 ) -> Invitation:
     """Invite by email. A repeat with the same `idempotency_key` returns the first invitation
-    (no second email); an expired pending invitation is closed first so it doesn't block."""
+    (no second email); an expired pending invitation is closed first so it doesn't block.
+    `full_name`, `phone` and `preferred_language` prefill the new account."""
     if idempotency_key:
         replay = Invitation.objects.filter(
             facility=facility, idempotency_key=idempotency_key
@@ -123,6 +139,9 @@ def invite(
             invitation = Invitation.objects.create(
                 facility=facility,
                 email=email,
+                full_name=full_name.strip(),
+                phone=phone,
+                preferred_language=preferred_language,
                 invited_by=actor,
                 role_codes=role_codes,
                 service_point_ids=points,
@@ -212,6 +231,14 @@ def find(token: str) -> dict[str, Any] | None:
     found = dict(zip(columns, row, strict=True))
     if found["accepted_at"] or found["revoked_at"] or found["expires_at"] <= timezone.now():
         return None
+    # what the inviter gave about the person (RLS: read in the invitation's facility)
+    with rls_context(facility_id=found["facility_id"]):
+        extra = (
+            Invitation.objects.filter(pk=found["id"])
+            .values("full_name", "phone", "preferred_language")
+            .first()
+        )
+    found.update(extra or {"full_name": "", "phone": "", "preferred_language": ""})
     return found
 
 
@@ -235,6 +262,8 @@ def lookup(token: str) -> dict[str, Any]:
         "email_masked": mask_email(found["email"]),
         "account_exists": User.objects.filter(email__iexact=found["email"]).exists(),
         "expires_at": found["expires_at"],
+        # prefills "Your names" on the accept page (the person who receives the link)
+        "suggested_name": found["full_name"],
     }
 
 
@@ -281,7 +310,9 @@ def _grant(found: dict[str, Any], user: Any, request: Any) -> FacilityMembership
 
 
 def accept_new_account(token: str, *, full_name: str, password: str, request: Any) -> Any:
-    from medilink.accounts.models import User
+    """New account from an invitation: the name the person typed (or the inviter's), and the
+    inviter's phone and language."""
+    from medilink.accounts.models import Language, User
     from medilink.accounts.serializers import run_password_validators
 
     found = find(token)
@@ -289,14 +320,20 @@ def accept_new_account(token: str, *, full_name: str, password: str, request: An
         raise exceptions.ValidationError({"token": [str(INVALID)]})
     if User.objects.filter(email__iexact=found["email"]).exists():
         raise BusinessRuleViolation(WRONG_ACCOUNT)
+    full_name = (full_name or found["full_name"]).strip()
+    if not full_name:
+        raise exceptions.ValidationError({"full_name": [str(_("Give your names."))]})
     candidate = User(email=found["email"], full_name=full_name)
     candidate._password_audience = "staff"  # type: ignore[attr-defined]  # noqa: S105
     try:
         run_password_validators(password, candidate)
     except exceptions.ValidationError as exc:
         raise exceptions.ValidationError({"password": exc.detail}) from None
+    extra: dict[str, Any] = {"phone": found["phone"]}
+    if found["preferred_language"] in Language.values:
+        extra["preferred_language"] = found["preferred_language"]
     user = User.objects.create_user(
-        email=found["email"], password=password, full_name=full_name.strip()
+        email=found["email"], password=password, full_name=full_name, **extra
     )
     _grant(found, user, request)
     return user
@@ -308,6 +345,9 @@ def accept_existing(token: str, *, user: Any, request: Any) -> FacilityMembershi
         raise exceptions.ValidationError({"token": [str(INVALID)]})
     if user.email.lower() != found["email"].lower():
         raise exceptions.PermissionDenied(WRONG_ACCOUNT)
+    if not user.phone and found["phone"]:  # keep the person's own number if they have one
+        user.phone = found["phone"]
+        user.save(update_fields=["phone", "updated_at"])
     return _grant(found, user, request)
 
 
@@ -530,8 +570,9 @@ def reset_mfa(user: Any, *, actor: Any, facility_id: Any, request: Any) -> None:
 def on_application_approved(
     sender: Any, application_id: Any, facility_id: Any, **kwargs: Any
 ) -> None:
-    """Invite the proposed facility admin and move the facility to setup (contract §2.2).
-    Idempotent."""
+    """Copy the application into the facility profile, invite the proposed facility admin (with
+    their name, phone and language) and move the facility to setup (contract §2.2). Idempotent."""
+    from medilink.facilities.services import seed_profile
     from medilink.onboarding.models import Application
     from medilink.onboarding.services import change_facility_status, facility_version
     from medilink.tenancy.models import FacilityStatus
@@ -542,6 +583,7 @@ def on_application_approved(
             return
         facility = Facility.objects.get(pk=facility_id)
         actor = application.reviewer
+        seed_profile(facility, application)
         if (
             not Invitation.objects.filter(
                 facility=facility,
@@ -559,6 +601,9 @@ def on_application_approved(
                 request=None,
                 source=InvitationSource.APPLICATION_APPROVAL,
                 source_ref=str(application_id),
+                full_name=application.proposed_admin_name,
+                phone=work_phone(application.proposed_admin_phone),
+                preferred_language=application.preferred_language,
             )
         if facility.status == FacilityStatus.APPROVED and actor is not None:
             change_facility_status(

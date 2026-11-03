@@ -527,7 +527,11 @@
     "neverSignedIn": "Jamais connecté",
     "mfaGapTitle_one": "{{count}} membre actif sans connexion en deux étapes",
     "mfaGapTitle_other": "{{count}} membres actifs sans connexion en deux étapes",
-    "mfaGapBody": "Les dossiers de santé exigent un second facteur. Ouvrez la fiche et demandez à la personne de l’activer à sa prochaine connexion, ou réinitialisez-le si son téléphone est perdu."
+    "mfaGapBody": "Les dossiers de santé exigent un second facteur. Ouvrez la fiche et demandez à la personne de l’activer à sa prochaine connexion, ou réinitialisez-le si son téléphone est perdu.",
+    "inviteName": "Ses noms",
+    "invitePhone": "Téléphone professionnel",
+    "optional": "Facultatif : pré-remplit son nouveau compte",
+    "noPhone": "Aucun téléphone indiqué"
   },
   "clinician": {
     "title": "Ma licence professionnelle",
@@ -574,5 +578,18 @@
     "noBio": "Pas encore de texte.",
     "hidden": "Masqué aux patients.",
     "needLicence": "Enregistrez d’abord votre licence ; le profil public suit."
+  },
+  "account": {
+    "menu": "Mes informations",
+    "title": "Mes informations",
+    "intro": "Votre nom, votre téléphone professionnel et votre langue. L’administrateur de votre établissement voit votre téléphone dans la liste de l’équipe.",
+    "email": "E-mail",
+    "emailHint": "Vous vous connectez avec cette adresse. Demandez au support MediLink pour la changer.",
+    "fullName": "Nom complet",
+    "phone": "Téléphone professionnel",
+    "phoneHint": "Un numéro mobile rwandais, par exemple 0788 123 456",
+    "language": "Langue",
+    "save": "Enregistrer",
+    "saved": "Enregistré."
   }
 }

@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5253.
+Keys: 5258.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -3221,6 +3221,9 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `profile.levels.tertiary` | Ubuvuzi bwo ku rwego rwo hejuru | Tertiary care | needs native-speaker review |
 | `profile.levelUnknown` | Ntibyashyizweho | Not set | needs native-speaker review |
 | `profile.cover` | Ifoto nyamukuru | Cover | needs native-speaker review |
+| `profile.emergencyTitle` | Ubutabazi bwihuse | Emergency care | needs native-speaker review |
+| `profile.emergency` | Serivisi y'ubutabazi bwihuse amasaha 24 | 24-hour emergency department | needs native-speaker review |
+| `profile.emergencyHint` | Bikore gusa niba mwakira indembe ku manywa na nijoro. Ivuriro ryanyu rizagaragara mbere ku rupapuro rw'ubutabazi. | Turn on only if you receive emergencies day and night. Your facility is then listed first on the public Emergency page. | needs native-speaker review |
 | `catalogue.intro` | Serivisi ni byo abarwayi bafatira gahunda cyangwa bategerereza. Buri imwe igira inyuguti ya tike, nka G kuri G-023. | Services are what patients book or queue for. Each has a ticket prefix, such as G for G-023. | needs native-speaker review |
 | `catalogue.services` | Serivisi | Services | needs native-speaker review |
 | `catalogue.departments` | Amashami | Departments | needs native-speaker review |
@@ -5146,6 +5149,7 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `facility.bring.documents` | Ibisubizo cyangwa impapuro z’imiti byabanje, niba ubifite | Previous results or prescriptions, if you have them | needs native-speaker review |
 | `facility.map` | Aho biri ku ikarita | Location on the map | needs native-speaker review |
 | `facility.insurance` | Ubwishingizi bwemewe | Insurance accepted | needs native-speaker review |
+| `facility.emergencyOpen` | Serivisi y'ubutabazi ikora ku manywa na nijoro. Hamagara {{number}} niba ubuzima buri mu kaga. | Emergency department open day and night. Call {{number}} if life is at risk. | needs native-speaker review |
 | `doctors.title` | Abaganga | Doctors | needs native-speaker review |
 | `doctors.lead` | Shaka umuganga ukurikije izina, serivisi cyangwa ikigo. | Find a doctor by name, service or facility. | needs native-speaker review |
 | `doctors.searchName` | Shakisha izina ry’umuganga | Search by doctor name | needs native-speaker review |
@@ -5238,7 +5242,7 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `emergency.callNow` | Hamagara {{number}} ubu | Call {{number}} now | needs native-speaker review |
 | `emergency.callNote` | Serivisi y’imbangukiragutabara y’igihugu (SAMU) | National ambulance service (SAMU) | needs native-speaker review |
 | `emergency.nearest` | Ibitaro biri hafi yawe | Hospitals near you | needs native-speaker review |
-| `emergency.nearestNote` | Ibitaro byakira ubutabazi bwihuse. Kanda “Hafi yanjye” kugira ngo bitondekwe ukurikije intera. | Hospitals receive emergencies. Use Near me to sort by distance. | needs native-speaker review |
+| `emergency.nearestNote` | Ahakira indembe haza mbere. Koresha Hafi yanjye kugira ngo utondeke ukurikije intera. | Places that receive emergencies come first. Use Near me to sort by distance. | needs native-speaker review |
 | `emergency.nearMe` | Hafi yanjye | Near me | needs native-speaker review |
 | `emergency.none` | Nta bitaro byanditswe aha | No hospitals listed for this area | needs native-speaker review |
 | `emergency.signsTitle` | Genda ubu niba umuntu afite | Go now if someone has | needs native-speaker review |
@@ -5248,6 +5252,7 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `emergency.guidance.bring` | Zana indangamuntu n’ikarita y’ubwishingizi niba bishoboka, ariko ntubitegereze. | Bring the person’s ID and insurance card if you can, but do not wait for them. | needs native-speaker review |
 | `emergency.loadFailed` | Ntibyashobotse kubona ibitaro biri hafi. Hamagara {{number}} cyangwa wongere ugerageze. | Couldn't load nearby hospitals. Call {{number}} or try again. | needs native-speaker review |
 | `emergency.referral` | Ibitaro byoherezwamo abarwayi | Referral hospitals | needs native-speaker review |
+| `emergency.department` | Ubutabazi amasaha 24 | 24-hour emergency | needs native-speaker review |
 | `help.title` | Ubufasha | Help & Support | needs native-speaker review |
 | `help.lead` | Ibisubizo ku bibazo bikunze kubazwa. | Answers to common questions. | needs native-speaker review |
 | `help.search` | Shakisha mu bufasha | Search help | needs native-speaker review |

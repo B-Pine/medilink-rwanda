@@ -1,7 +1,8 @@
 {
   "nav": {
     "consultation": "Consultation",
-    "unsigned": "Dossiers non signés"
+    "unsigned": "Dossiers non signés",
+    "results": "Résultats"
   },
   "title": "Consultation",
   "headerTitle": "Consultation · {{name}}",
@@ -229,7 +230,14 @@
     "overdue": "Plus de 24 heures",
     "open": "Ouvrir le brouillon de {{name}}",
     "empty": "Aucun dossier non signé",
-    "emptyBody": "Toutes les consultations sont signées."
+    "emptyBody": "Toutes les consultations sont signées.",
+    "columns": {
+      "patient": "Patient",
+      "author": "Commencé par",
+      "age": "Attente",
+      "action": "Action"
+    },
+    "openShort": "Ouvrir"
   },
   "today": {
     "title": "Votre journée",
@@ -256,7 +264,9 @@
     "openQueue": "Ouvrir ma file",
     "nobody": "Personne ne vous attend pour le moment.",
     "week": "Patients cette semaine",
-    "weekCaption": "7 derniers jours"
+    "weekCaption": "7 derniers jours",
+    "results_one": "{{count}} résultat externe à examiner",
+    "results_other": "{{count}} résultats externes à examiner"
   },
   "reasonForVisit": {
     "title": "Motif de la visite",
@@ -281,5 +291,30 @@
     "redFlags_other": "{{count}} signes d’alerte",
     "provisional": "Règles {{version}} en attente de validation clinique"
   },
-  "toQueue": "Ma file"
+  "toQueue": "Ma file",
+  "results": {
+    "title": "Résultats",
+    "intro": "Résultats de laboratoire et d’imagerie externes qui vous sont attribués. Ouvrez-les, puis marquez-les examinés.",
+    "tabs": {
+      "pending": "À examiner",
+      "reviewed": "Examinés"
+    },
+    "untitled": "Résultat externe",
+    "dated": "daté du {{date}}",
+    "uploaded": "Ajouté par {{name}} · {{time}}",
+    "status": {
+      "pending": "À examiner",
+      "reviewed": "Examiné"
+    },
+    "view": "Voir le document",
+    "history": "Historique du patient",
+    "comment": "Commentaire (facultatif)",
+    "markReviewed": "Marquer examiné",
+    "reviewedBy": "Examiné par {{name}} · {{time}}",
+    "empty": {
+      "pending": "Aucun résultat en attente",
+      "reviewed": "Rien d’examiné pour l’instant"
+    },
+    "emptyBody": "Les résultats numérisés à l’accueil pour vos patients apparaissent ici."
+  }
 }

@@ -289,6 +289,50 @@ export interface ClinicalAlert {
   max_usual_quantity: number | null;
 }
 
+export type ScanType = "outside_result" | "legacy_record" | "referral_letter" | "other";
+
+/** A scanned paper record or outside result (S6b L2). */
+export interface ClinicalScan {
+  id: Uuid;
+  facility_patient_id: Uuid;
+  document_type: ScanType;
+  document_date: string;
+  description: string;
+  content_type: string;
+  uploaded_by_name: string;
+  uploaded_at: string;
+  review_id: Uuid | null;
+}
+
+/** An outside result waiting for the doctor (S6b R1). */
+export interface ResultReview {
+  id: Uuid;
+  status: "pending" | "reviewed";
+  scan: ClinicalScan;
+  patient_display_name: string;
+  facility_patient_id: Uuid;
+  assigned_to_name: string;
+  comment: string;
+  reviewed_by_name: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+  version: number;
+}
+
+/** Back-entered history from paper, always labelled historical (S6b L3). */
+export interface HistoryEntry {
+  id: Uuid;
+  kind: "diagnosis" | "allergy" | "condition" | "medication" | "procedure";
+  code: string;
+  display: string;
+  note: string;
+  occurred_on: string | null;
+  source_scan_id: Uuid | null;
+  entered_by_name: string;
+  entered_at: string;
+  is_historical: boolean;
+}
+
 /** Patient view (PR1/PR2): no private notes, no examination. */
 export interface PatientRecordDiagnosis {
   code: string;
@@ -335,6 +379,11 @@ export const clinicalPaths = {
   access: (fpId: Uuid) => `${STF}/clinical/patients/${fpId}/access/`,
   alerts: `${STF}/clinical/alerts/`,
   myDay: `${STF}/clinical/my-day/`,
+  results: `${STF}/results-inbox/`,
+  reviewResult: (id: Uuid) => `${STF}/results-inbox/${id}/review/`,
+  scans: (fpId: Uuid) => `${STF}/clinical/patients/${fpId}/scans/`,
+  scanLink: (id: Uuid) => `${STF}/clinical/scans/${id}/download-link/`,
+  historyEntries: (fpId: Uuid) => `${STF}/clinical/patients/${fpId}/history-entries/`,
   records: `${PAT}/records/`,
   record: (id: Uuid) => `${PAT}/records/${id}/`,
 };
@@ -379,6 +428,16 @@ export function createClinicalApi(client: ApiClient) {
       items: { drug_code: string; quantity?: number }[];
     }) => client.post<{ alerts: ClinicalAlert[] }>(clinicalPaths.alerts, body),
     myDay: () => client.get<MyDay>(clinicalPaths.myDay),
+    /** R1: outside results assigned to me, oldest first. */
+    results: (params: { status?: "pending" | "reviewed"; page?: number } = {}) =>
+      client.get<Paginated<ResultReview>>(clinicalPaths.results + query(params)),
+    reviewResult: (id: Uuid, body: { version: number; comment?: string }) =>
+      client.post<ResultReview>(clinicalPaths.reviewResult(id), body),
+    scans: (fpId: Uuid) => client.get<ClinicalScan[]>(clinicalPaths.scans(fpId)),
+    /** A 5-minute link, audited in the access history. */
+    scanLink: (id: Uuid) =>
+      client.post<{ url: string; expires_at: string }>(clinicalPaths.scanLink(id), {}),
+    historyEntries: (fpId: Uuid) => client.get<HistoryEntry[]>(clinicalPaths.historyEntries(fpId)),
     patient: {
       records: (params: { patient_id?: Uuid; page?: number } = {}) =>
         client.get<Paginated<PatientRecordRow>>(clinicalPaths.records + query(params)),

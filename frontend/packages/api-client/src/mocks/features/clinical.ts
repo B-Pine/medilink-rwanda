@@ -12,8 +12,11 @@ import type {
   PatientRecordRow,
   ProblemSummary,
   SectionField,
+  ClinicalScan,
+  HistoryEntry,
   MyDay,
   ReasonForVisit,
+  ResultReview,
   Vitals,
   VitalFlag,
 } from "../../features/clinical";
@@ -499,9 +502,78 @@ export function mockConsultation(id: string): Consultation | undefined {
 }
 // [/S7]
 
+/** Paper records and outside results for Mukamana Jeanne (S6b L2, L3, R1). */
+function seedRecords() {
+  const jeanne = RECORDS[0]!;
+  const scan = (
+    type: ClinicalScan["document_type"],
+    days: number,
+    description: string,
+    review: boolean,
+  ): ClinicalScan => ({
+    id: id(),
+    facility_patient_id: jeanne.fp,
+    document_type: type,
+    document_date: daysAgo(days).slice(0, 10),
+    description,
+    content_type: "application/pdf",
+    uploaded_by_name: "Habimana Eric",
+    uploaded_at: daysAgo(Math.max(0, days - 1)),
+    review_id: review ? id() : null,
+  });
+  const scans = [
+    scan("outside_result", 2, "Kidney function (creatinine, urea) from King Faisal lab", true),
+    scan("outside_result", 1, "Chest X-ray report", true),
+    scan("legacy_record", 400, "Paper file 2024: hypertension diagnosed", false),
+  ];
+  const results: ResultReview[] = scans
+    .filter((x) => x.review_id)
+    .map((x) => ({
+      id: x.review_id!,
+      status: "pending",
+      scan: x,
+      patient_display_name: jeanne.name,
+      facility_patient_id: jeanne.fp,
+      assigned_to_name: DOCTOR.full_name,
+      comment: "",
+      reviewed_by_name: null,
+      reviewed_at: null,
+      created_at: x.uploaded_at,
+      version: 1,
+    }));
+  const entries: HistoryEntry[] = [
+    {
+      id: id(),
+      kind: "diagnosis",
+      code: "I10",
+      display: "Essential (primary) hypertension",
+      note: "Diagnosed at the health centre, on amlodipine since.",
+      occurred_on: daysAgo(400).slice(0, 10),
+      source_scan_id: scans[2]!.id,
+      entered_by_name: DOCTOR.full_name,
+      entered_at: daysAgo(30),
+      is_historical: true,
+    },
+    {
+      id: id(),
+      kind: "procedure",
+      code: "",
+      display: "Caesarean section",
+      note: "",
+      occurred_on: daysAgo(2900).slice(0, 10),
+      source_scan_id: scans[2]!.id,
+      entered_by_name: DOCTOR.full_name,
+      entered_at: daysAgo(30),
+      is_historical: true,
+    },
+  ];
+  return { scans, results, entries };
+}
+
 export const clinicalMocks: FeatureMockFactory = (context) => {
   const { api } = context;
   let db = seed();
+  let paper = seedRecords();
   liveConsultations = () => db.consultations; // [S7]
   const S = `${api}/staff`;
 
@@ -554,8 +626,59 @@ export const clinicalMocks: FeatureMockFactory = (context) => {
   return {
     reset() {
       db = seed();
+      paper = seedRecords();
     },
     handlers: [
+      http.get(`${S}/results-inbox/`, async ({ request }) => {
+        await context.settle();
+        const ok = staff(request, ["clinical.view"]);
+        if ("error" in ok) return ok.error;
+        const url = new URL(request.url);
+        const status = url.searchParams.get("status") ?? "pending";
+        return HttpResponse.json(
+          page(
+            paper.results.filter((r) => r.status === status),
+            url,
+          ),
+        );
+      }),
+      http.post(`${S}/results-inbox/:id/review/`, async ({ request, params }) => {
+        await context.settle();
+        const ok = staff(request, ["clinical.view"]);
+        if ("error" in ok) return ok.error;
+        const row = paper.results.find((r) => r.id === params.id);
+        if (!row) return notFound(ok.lang);
+        const body = (await context.readJson(request)) ?? {};
+        if (body.version !== row.version)
+          return context.errorResponse(409, "conflict", msg("stale", ok.lang));
+        row.status = "reviewed";
+        row.comment = asText(body.comment);
+        row.reviewed_by_name = ok.me.full_name;
+        row.reviewed_at = now();
+        row.version += 1;
+        return HttpResponse.json(row);
+      }),
+      http.get(`${S}/clinical/patients/:fp/scans/`, async ({ request, params }) => {
+        await context.settle();
+        const ok = staff(request, ["clinical.view"]);
+        if ("error" in ok) return ok.error;
+        return HttpResponse.json(paper.scans.filter((x) => x.facility_patient_id === params.fp));
+      }),
+      http.post(`${S}/clinical/scans/:id/download-link/`, async ({ request }) => {
+        await context.settle();
+        const ok = staff(request, ["clinical.view"]);
+        if ("error" in ok) return ok.error;
+        return HttpResponse.json({
+          url: "about:blank",
+          expires_at: new Date(Date.now() + 5 * 60_000).toISOString(),
+        });
+      }),
+      http.get(`${S}/clinical/patients/:fp/history-entries/`, async ({ request, params }) => {
+        await context.settle();
+        const ok = staff(request, ["clinical.view"]);
+        if ("error" in ok) return ok.error;
+        return HttpResponse.json(params.fp === RECORDS[0]!.fp ? paper.entries : []);
+      }),
       http.post(`${S}/visits/:visitId/consultation/`, async ({ request, params }) => {
         await context.settle();
         const ok = staff(request, ["clinical.write"]);
@@ -596,7 +719,7 @@ export const clinicalMocks: FeatureMockFactory = (context) => {
           unsigned: drafts.length,
           unsigned_overdue: drafts.filter((c) => Date.now() - Date.parse(c.started_at) > 86_400_000)
             .length,
-          results_waiting: 2,
+          results_waiting: paper.results.filter((r) => r.status === "pending").length,
           follow_ups_today: 3,
           open_questions: [
             {

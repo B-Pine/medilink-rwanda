@@ -38,7 +38,7 @@ import { ArrowsDownUp } from "@phosphor-icons/react";
 import { CalendarX } from "@phosphor-icons/react";
 // [/S5 imports]
 // [S6 imports]
-import { Notepad, Signature } from "@phosphor-icons/react";
+import { Flask, Notepad, Signature } from "@phosphor-icons/react";
 // [/S6 imports]
 // [S7 imports]
 import { Storefront } from "@phosphor-icons/react";
@@ -323,6 +323,14 @@ export const NAV_ITEMS: readonly NavItem[] = [
     labelKey: "clinical.nav.unsigned",
     visible: hasAny("clinical.unsigned_list"),
   },
+  {
+    key: "clinicalResults",
+    path: "/clinical/results",
+    icon: Flask,
+    group: "facility",
+    labelKey: "clinical.nav.results",
+    visible: hasAny("clinical.write"),
+  },
   // [/S6]
   // [S7]
   {
@@ -405,6 +413,7 @@ const ORDER = [
   "calendar",
   "patients",
   "clinicalUnsigned",
+  "clinicalResults",
   "mySchedule",
   "pharmacy",
   // [S7]

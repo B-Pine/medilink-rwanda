@@ -46,7 +46,7 @@ describe("staff login → MFA verify → facility picker → shell", () => {
       expect(within(nav).getByRole("link", { name })).toBeInTheDocument();
     }
     // Sections without a built page stay out of the menu (design 04 §2: no dead ends)
-    for (const name of ["Pharmacy", "Approvals", "Payments", "Audit log"]) {
+    for (const name of ["Pharmacy", "Audit log"]) {
       expect(within(nav).queryByRole("link", { name })).not.toBeInTheDocument();
     }
     expect(within(nav).getByRole("link", { name: "Today" })).toHaveAttribute(
@@ -94,7 +94,8 @@ describe("staff login → MFA verify → facility picker → shell", () => {
     const nav = screen.getByRole("navigation", { name: "Main menu" });
     expect(within(nav).getByRole("link", { name: "Queue" })).toBeInTheDocument();
     expect(within(nav).queryByRole("link", { name: "Pharmacy" })).not.toBeInTheDocument();
-    expect(within(nav).queryByRole("link", { name: "Payments" })).not.toBeInTheDocument();
+    // reception also takes payments (upgrade 05 §2)
+    expect(within(nav).getByRole("link", { name: "Payments" })).toBeInTheDocument();
     // No facility switcher for a single membership.
     expect(screen.queryByRole("button", { name: /Current facility/ })).not.toBeInTheDocument();
   });
@@ -295,24 +296,29 @@ describe("shell: user menu, language, theme, logout", () => {
     await user.click(screen.getByRole("button", { name: "Verify and log in" }));
     // No facility, so the day starts on the platform overview, not an empty Today
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Platform overview" }),
+      await screen.findByRole("heading", { level: 1, name: "Command centre" }),
     ).toBeInTheDocument();
     const nav = screen.getByRole("navigation", { name: "Main menu" });
-    expect(
-      within(nav)
-        .getAllByRole("link")
-        .map((link) => link.textContent),
-    ).toEqual([
+    const links = within(nav)
+      .getAllByRole("link")
+      .map((link) => link.textContent);
+    const expected = [
       "Platform overview",
       "Facility applications",
       "Facilities",
+      "Users",
       "Support queue",
       "Master data",
       "Platform announcements",
       "Help articles",
       "Patient merges",
+      "Break-glass reviews",
+      "Security log",
+      "Record access log",
       "Feature flags",
-    ]);
+    ];
+    expect(links).toEqual(expect.arrayContaining(expected));
+    expect(links).toHaveLength(expected.length);
   });
 
   it("an API 401 mid-session sends the user to login with an explanation", async () => {

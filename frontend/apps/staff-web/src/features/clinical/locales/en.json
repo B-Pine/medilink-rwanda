@@ -1,7 +1,8 @@
 {
   "nav": {
     "consultation": "Consultation",
-    "unsigned": "Unsigned records"
+    "unsigned": "Unsigned records",
+    "results": "Results"
   },
   "title": "Consultation",
   "headerTitle": "Consultation · {{name}}",
@@ -229,7 +230,14 @@
     "overdue": "Over 24 hours",
     "open": "Open the draft for {{name}}",
     "empty": "No unsigned records",
-    "emptyBody": "Every consultation is signed."
+    "emptyBody": "Every consultation is signed.",
+    "columns": {
+      "patient": "Patient",
+      "author": "Started by",
+      "age": "Waiting",
+      "action": "Action"
+    },
+    "openShort": "Open"
   },
   "today": {
     "title": "Your day",
@@ -256,7 +264,9 @@
     "openQueue": "Open my queue",
     "nobody": "No one is waiting for you right now.",
     "week": "Patients this week",
-    "weekCaption": "Last 7 days"
+    "weekCaption": "Last 7 days",
+    "results_one": "{{count}} outside result to review",
+    "results_other": "{{count}} outside results to review"
   },
   "reasonForVisit": {
     "title": "Why the patient came",
@@ -281,5 +291,30 @@
     "redFlags_other": "{{count}} red flags",
     "provisional": "Rules {{version}} awaiting clinical sign-off"
   },
-  "toQueue": "My queue"
+  "toQueue": "My queue",
+  "results": {
+    "title": "Results",
+    "intro": "Outside lab and imaging results assigned to you. Open each one, then mark it reviewed.",
+    "tabs": {
+      "pending": "To review",
+      "reviewed": "Reviewed"
+    },
+    "untitled": "Outside result",
+    "dated": "dated {{date}}",
+    "uploaded": "Added by {{name}} · {{time}}",
+    "status": {
+      "pending": "To review",
+      "reviewed": "Reviewed"
+    },
+    "view": "View document",
+    "history": "Patient history",
+    "comment": "Comment (optional)",
+    "markReviewed": "Mark reviewed",
+    "reviewedBy": "Reviewed by {{name}} · {{time}}",
+    "empty": {
+      "pending": "No results waiting",
+      "reviewed": "Nothing reviewed yet"
+    },
+    "emptyBody": "Results scanned at reception for your patients appear here."
+  }
 }

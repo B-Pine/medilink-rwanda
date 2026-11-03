@@ -1,7 +1,8 @@
 {
   "nav": {
     "consultation": "Isuzuma",
-    "unsigned": "Dosiye zitarasinywa"
+    "unsigned": "Dosiye zitarasinywa",
+    "results": "Ibisubizo"
   },
   "title": "Isuzuma",
   "headerTitle": "Isuzuma · {{name}}",
@@ -229,7 +230,14 @@
     "overdue": "Zirengeje amasaha 24",
     "open": "Fungura inyandiko ya {{name}}",
     "empty": "Nta dosiye itarasinywa",
-    "emptyBody": "Amasuzuma yose yasinywe."
+    "emptyBody": "Amasuzuma yose yasinywe.",
+    "columns": {
+      "patient": "Umurwayi",
+      "author": "Yatangijwe na",
+      "age": "Imaze",
+      "action": "Igikorwa"
+    },
+    "openShort": "Fungura"
   },
   "today": {
     "title": "Umunsi wawe",
@@ -256,7 +264,9 @@
     "openQueue": "Fungura umurongo wanjye",
     "nobody": "Nta muntu ugutegereje ubu.",
     "week": "Abarwayi b'iki cyumweru",
-    "weekCaption": "Iminsi 7 ishize"
+    "weekCaption": "Iminsi 7 ishize",
+    "results_one": "Igisubizo {{count}} cyo hanze cyo gusuzuma",
+    "results_other": "Ibisubizo {{count}} byo hanze byo gusuzuma"
   },
   "reasonForVisit": {
     "title": "Icyazanye umurwayi",
@@ -281,5 +291,30 @@
     "redFlags_other": "Ibimenyetso {{count}} bikomeye",
     "provisional": "Amategeko {{version}} ategereje kwemezwa n'abaganga"
   },
-  "toQueue": "Umurongo wanjye"
+  "toQueue": "Umurongo wanjye",
+  "results": {
+    "title": "Ibisubizo",
+    "intro": "Ibisubizo bya laboratwari n'amafoto byaturutse hanze wahawe. Bifungure, hanyuma wemeze ko wabisuzumye.",
+    "tabs": {
+      "pending": "Ibyo gusuzuma",
+      "reviewed": "Byasuzumwe"
+    },
+    "untitled": "Igisubizo cyo hanze",
+    "dated": "cyo ku wa {{date}}",
+    "uploaded": "Cyongewemo na {{name}} · {{time}}",
+    "status": {
+      "pending": "Cyo gusuzuma",
+      "reviewed": "Cyasuzumwe"
+    },
+    "view": "Reba inyandiko",
+    "history": "Amateka y'umurwayi",
+    "comment": "Icyo uvuga (si ngombwa)",
+    "markReviewed": "Emeza ko wasuzumye",
+    "reviewedBy": "Cyasuzumwe na {{name}} · {{time}}",
+    "empty": {
+      "pending": "Nta gisubizo gitegereje",
+      "reviewed": "Nta cyasuzumwe kugeza ubu"
+    },
+    "emptyBody": "Ibisubizo by'abarwayi bawe byashyizwe muri sisitemu ku kwakira biza hano."
+  }
 }

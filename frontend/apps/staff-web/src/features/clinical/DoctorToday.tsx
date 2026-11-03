@@ -6,6 +6,7 @@ import {
   CheckCircle,
   ClipboardText,
   ClockCountdown,
+  Flask,
   MegaphoneSimple,
   Notepad,
   Signature,
@@ -138,6 +139,17 @@ function NeedsYou({ data }: { data: MyDay }) {
       detail: t("clinical.today.askedAt", { time: time(q.raised_at) }),
       urgent: true,
     })),
+    ...(data.results_waiting > 0
+      ? [
+          {
+            key: "results",
+            to: "/clinical/results",
+            icon: Flask,
+            label: t("clinical.today.results", { count: data.results_waiting }),
+            urgent: false,
+          },
+        ]
+      : []),
     ...(data.unsigned > data.unsigned_overdue
       ? [
           {

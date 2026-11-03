@@ -26,6 +26,7 @@ export const clinicalFeature: FeatureRoutes = {
       lazy: lazy(() => import("./History"), "HistoryPage"),
     },
     { path: "/clinical/unsigned", lazy: lazy(() => import("./UnsignedPage"), "UnsignedPage") },
+    { path: "/clinical/results", lazy: lazy(() => import("./ResultsPage"), "ResultsPage") },
   ],
   // upgrade 05 §3: the doctor's day leads their Today page
   todayCards: [DoctorTodayCard],

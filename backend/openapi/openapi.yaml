@@ -18771,14 +18771,45 @@ components:
           type: string
           format: date-time
           nullable: true
+        profession:
+          type: string
+        specialty_code:
+          type: string
+        licence_valid_until:
+          type: string
+          format: date
+          nullable: true
+        licence_state:
+          $ref: '#/components/schemas/LicenceStateEnum'
+        licence_file:
+          allOf:
+          - $ref: '#/components/schemas/FileRef'
+          nullable: true
+        refused_reason:
+          type: string
+        sex:
+          type: string
+        qualifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Qualification'
       required:
       - attested_at
       - council
+      - licence_file
       - licence_number
+      - licence_state
+      - licence_valid_until
+      - profession
+      - qualifications
+      - refused_reason
+      - sex
       - specialty
+      - specialty_code
     ClinicianProfile:
       type: object
-      description: Rejects unknown fields instead of silently ignoring them.
+      description: 'GET/PATCH /staff/clinician-profile/: my professional profile (2026-11-03:
+        the full set).'
       properties:
         council:
           $ref: '#/components/schemas/CouncilEnum'
@@ -18789,9 +18820,47 @@ components:
           type: string
           default: ''
           maxLength: 100
+        profession:
+          oneOf:
+          - $ref: '#/components/schemas/ProfessionEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        specialty_code:
+          oneOf:
+          - $ref: '#/components/schemas/SpecialtyCodeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        licence_valid_until:
+          type: string
+          format: date
+          nullable: true
+        sex:
+          oneOf:
+          - $ref: '#/components/schemas/ServiceSexRestrictionEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        qualifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Qualification'
+          maxItems: 5
+        licence_state:
+          allOf:
+          - $ref: '#/components/schemas/LicenceStateEnum'
+          readOnly: true
+        licence_file:
+          allOf:
+          - $ref: '#/components/schemas/FileRef'
+          readOnly: true
+          nullable: true
+        photo_file:
+          allOf:
+          - $ref: '#/components/schemas/FileRef'
+          readOnly: true
+          nullable: true
       required:
       - council
+      - licence_file
       - licence_number
+      - licence_state
+      - photo_file
     ClinicianPublicProfile:
       type: object
       description: 'upgrade 05 §3: the doctor''s own words for patients, in up to
@@ -19232,12 +19301,14 @@ components:
       - rmdc
       - ncnm
       - npc
+      - rahpc
       - other
       type: string
       description: |-
         * `rmdc` - Rwanda Medical and Dental Council
         * `ncnm` - National Council of Nurses and Midwives
         * `npc` - National Pharmacy Council
+        * `rahpc` - Rwanda Allied Health Professions Council
         * `other` - Other council
     CountedRequest:
       type: object
@@ -19655,7 +19726,7 @@ components:
           minLength: 1
           maxLength: 200
         sex:
-          $ref: '#/components/schemas/SexEnum'
+          $ref: '#/components/schemas/PatientSexEnum'
         date_of_birth:
           type: string
           format: date
@@ -21131,7 +21202,7 @@ components:
         sex:
           nullable: true
           oneOf:
-          - $ref: '#/components/schemas/SexEnum'
+          - $ref: '#/components/schemas/PatientSexEnum'
           - $ref: '#/components/schemas/NullEnum'
         phone_e164:
           type: string
@@ -21322,6 +21393,18 @@ components:
       - name
       - phone_e164
       - relationship
+    EmploymentTypeEnum:
+      enum:
+      - full_time
+      - part_time
+      - visiting
+      - locum
+      type: string
+      description: |-
+        * `full_time` - Full time
+        * `part_time` - Part time
+        * `visiting` - Visiting
+        * `locum` - Locum
     EnteredInErrorInfo:
       type: object
       properties:
@@ -22367,6 +22450,36 @@ components:
       description: |-
         * `identifier` - identifier
         * `phone` - phone
+    FileRef:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        original_filename:
+          type: string
+        status:
+          type: string
+      required:
+      - id
+      - original_filename
+      - status
+    FileRefRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        original_filename:
+          type: string
+          minLength: 1
+        status:
+          type: string
+          minLength: 1
+      required:
+      - id
+      - original_filename
+      - status
     FollowUp:
       type: object
       properties:
@@ -26708,7 +26821,8 @@ components:
           maxLength: 200
     PatchedClinicianProfileRequest:
       type: object
-      description: Rejects unknown fields instead of silently ignoring them.
+      description: 'GET/PATCH /staff/clinician-profile/: my professional profile (2026-11-03:
+        the full set).'
       properties:
         council:
           $ref: '#/components/schemas/CouncilEnum'
@@ -26720,6 +26834,37 @@ components:
           type: string
           default: ''
           maxLength: 100
+        profession:
+          oneOf:
+          - $ref: '#/components/schemas/ProfessionEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        specialty_code:
+          oneOf:
+          - $ref: '#/components/schemas/SpecialtyCodeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        licence_valid_until:
+          type: string
+          format: date
+          nullable: true
+        sex:
+          oneOf:
+          - $ref: '#/components/schemas/ServiceSexRestrictionEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        qualifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/QualificationRequest'
+          maxItems: 5
+        licence_upload_id:
+          type: string
+          format: uuid
+          writeOnly: true
+          nullable: true
+        photo_upload_id:
+          type: string
+          format: uuid
+          writeOnly: true
+          nullable: true
     PatchedClinicianPublicProfileRequest:
       type: object
       description: 'upgrade 05 §3: the doctor''s own words for patients, in up to
@@ -27172,6 +27317,14 @@ components:
           items:
             type: string
             format: uuid
+        department_id:
+          type: string
+          format: uuid
+          nullable: true
+        employment_type:
+          oneOf:
+          - $ref: '#/components/schemas/EmploymentTypeEnum'
+          - $ref: '#/components/schemas/BlankEnum'
     PatchedPatientPreferencesPatchRequest:
       type: object
       properties:
@@ -27220,7 +27373,7 @@ components:
         sex:
           nullable: true
           oneOf:
-          - $ref: '#/components/schemas/SexEnum'
+          - $ref: '#/components/schemas/PatientSexEnum'
           - $ref: '#/components/schemas/NullEnum'
         phone_e164:
           type: string
@@ -27443,7 +27596,7 @@ components:
         sex:
           nullable: true
           oneOf:
-          - $ref: '#/components/schemas/SexEnum'
+          - $ref: '#/components/schemas/PatientSexEnum'
           - $ref: '#/components/schemas/NullEnum'
         date_of_birth:
           type: string
@@ -28345,6 +28498,16 @@ components:
         * `declined` - Declined
         * `rebooked_other` - Chose another time
         * `cancelled` - Cancelled
+    PatientSexEnum:
+      enum:
+      - female
+      - male
+      - other
+      type: string
+      description: |-
+        * `female` - Female
+        * `male` - Male
+        * `other` - Other
     PatientSummary:
       type: object
       properties:
@@ -29746,6 +29909,36 @@ components:
       - medications
       - no_known_allergies
       - recent_diagnoses
+    ProfessionEnum:
+      enum:
+      - medical_doctor
+      - dentist
+      - nurse
+      - midwife
+      - pharmacist
+      - lab_technologist
+      - radiographer
+      - anaesthetist
+      - physiotherapist
+      - clinical_psychologist
+      - nutritionist
+      - optometrist
+      - other
+      type: string
+      description: |-
+        * `medical_doctor` - Medical doctor
+        * `dentist` - Dentist
+        * `nurse` - Nurse
+        * `midwife` - Midwife
+        * `pharmacist` - Pharmacist
+        * `lab_technologist` - Laboratory technologist
+        * `radiographer` - Radiographer
+        * `anaesthetist` - Anaesthetist
+        * `physiotherapist` - Physiotherapist
+        * `clinical_psychologist` - Clinical psychologist
+        * `nutritionist` - Nutritionist
+        * `optometrist` - Optometrist
+        * `other` - Other
     ProfileSummary:
       type: object
       properties:
@@ -30198,6 +30391,44 @@ components:
       required:
       - endpoint
       - keys
+    Qualification:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        degree:
+          type: string
+          maxLength: 120
+        institution:
+          type: string
+          maxLength: 160
+        year:
+          type: integer
+          maximum: 2100
+          minimum: 1950
+      required:
+      - degree
+      - institution
+      - year
+    QualificationRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        degree:
+          type: string
+          minLength: 1
+          maxLength: 120
+        institution:
+          type: string
+          minLength: 1
+          maxLength: 160
+        year:
+          type: integer
+          maximum: 2100
+          minimum: 1950
+      required:
+      - degree
+      - institution
+      - year
     QueryAnswerRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -30800,7 +31031,7 @@ components:
           minLength: 1
           maxLength: 200
         sex:
-          $ref: '#/components/schemas/SexEnum'
+          $ref: '#/components/schemas/PatientSexEnum'
         phone_e164:
           type: string
           nullable: true
@@ -31833,16 +32064,6 @@ components:
       - schema
       - umuganda
       - version
-    SexEnum:
-      enum:
-      - female
-      - male
-      - other
-      type: string
-      description: |-
-        * `female` - Female
-        * `male` - Male
-        * `other` - Other
     ShareLink:
       type: object
       properties:
@@ -32009,6 +32230,52 @@ components:
       required:
       - days
       - service_id
+    SpecialtyCodeEnum:
+      enum:
+      - anaesthesiology
+      - cardiology
+      - dentistry
+      - dermatology
+      - emergency_medicine
+      - ent
+      - family_medicine
+      - general_practice
+      - general_surgery
+      - internal_medicine
+      - neurology
+      - obstetrics_gynaecology
+      - ophthalmology
+      - orthopaedics
+      - other
+      - paediatrics
+      - pathology
+      - psychiatry
+      - public_health
+      - radiology
+      - urology
+      type: string
+      description: |-
+        * `anaesthesiology` - anaesthesiology
+        * `cardiology` - cardiology
+        * `dentistry` - dentistry
+        * `dermatology` - dermatology
+        * `emergency_medicine` - emergency_medicine
+        * `ent` - ent
+        * `family_medicine` - family_medicine
+        * `general_practice` - general_practice
+        * `general_surgery` - general_surgery
+        * `internal_medicine` - internal_medicine
+        * `neurology` - neurology
+        * `obstetrics_gynaecology` - obstetrics_gynaecology
+        * `ophthalmology` - ophthalmology
+        * `orthopaedics` - orthopaedics
+        * `other` - other
+        * `paediatrics` - paediatrics
+        * `pathology` - pathology
+        * `psychiatry` - psychiatry
+        * `public_health` - public_health
+        * `radiology` - radiology
+        * `urology` - urology
     StaffBookRequest:
       type: object
       properties:
@@ -32627,12 +32894,20 @@ components:
           format: date-time
         deactivation_reason:
           type: string
+        department_id:
+          type: string
+          format: uuid
+          nullable: true
+        employment_type:
+          type: string
         version:
           type: integer
       required:
       - clinician
       - deactivation_reason
+      - department_id
       - email
+      - employment_type
       - full_name
       - id
       - is_active

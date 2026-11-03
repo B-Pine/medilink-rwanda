@@ -155,19 +155,87 @@ class Council(models.TextChoices):
     RMDC = "rmdc", "Rwanda Medical and Dental Council"
     NCNM = "ncnm", "National Council of Nurses and Midwives"
     NPC = "npc", "National Pharmacy Council"
+    RAHPC = "rahpc", "Rwanda Allied Health Professions Council"
     OTHER = "other", "Other council"
+
+
+class Profession(models.TextChoices):
+    """The cadre a clinician is registered in: the government counts staff by these."""
+
+    MEDICAL_DOCTOR = "medical_doctor", "Medical doctor"
+    DENTIST = "dentist", "Dentist"
+    NURSE = "nurse", "Nurse"
+    MIDWIFE = "midwife", "Midwife"
+    PHARMACIST = "pharmacist", "Pharmacist"
+    LAB_TECHNOLOGIST = "lab_technologist", "Laboratory technologist"
+    RADIOGRAPHER = "radiographer", "Radiographer"
+    ANAESTHETIST = "anaesthetist", "Anaesthetist"
+    PHYSIOTHERAPIST = "physiotherapist", "Physiotherapist"
+    CLINICAL_PSYCHOLOGIST = "clinical_psychologist", "Clinical psychologist"
+    NUTRITIONIST = "nutritionist", "Nutritionist"
+    OPTOMETRIST = "optometrist", "Optometrist"
+    OTHER = "other", "Other"
+
+
+# A fixed list, so the facility and the government can count by specialty. `specialty` keeps the
+# English name for the letters and pages that print it.
+SPECIALTIES: dict[str, str] = {
+    "general_practice": "General practice",
+    "family_medicine": "Family medicine",
+    "internal_medicine": "Internal medicine",
+    "paediatrics": "Paediatrics",
+    "obstetrics_gynaecology": "Obstetrics and gynaecology",
+    "general_surgery": "General surgery",
+    "orthopaedics": "Orthopaedics",
+    "anaesthesiology": "Anaesthesiology",
+    "emergency_medicine": "Emergency medicine",
+    "psychiatry": "Psychiatry",
+    "dermatology": "Dermatology",
+    "ophthalmology": "Ophthalmology",
+    "ent": "Ear, nose and throat",
+    "cardiology": "Cardiology",
+    "neurology": "Neurology",
+    "radiology": "Radiology",
+    "pathology": "Pathology",
+    "urology": "Urology",
+    "dentistry": "Dentistry",
+    "public_health": "Public health",
+    "other": "Other",
+}
+
+
+class Sex(models.TextChoices):
+    FEMALE = "female", "Female"
+    MALE = "male", "Male"
 
 
 class ClinicianProfile(models.Model):
     """S2: a clinician's professional licence (FR-ACC-07). Platform-wide; a facility sees it only
-    for its members."""
+    for its members. 2026-11-03: the full professional profile (profession, specialty from a fixed
+    list, licence expiry and scan, photo, sex, qualifications)."""
 
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, primary_key=True, related_name="clinician_profile"
     )
     council = models.CharField(max_length=8, choices=Council.choices)
     licence_number = models.CharField(max_length=40)
+    # C1: when the council licence (practising certificate) ends, and its scan (purpose
+    # clinician_licence); a facility admin checks both before attesting
+    licence_valid_until = models.DateField(null=True, blank=True)
+    licence_file = models.ForeignKey(
+        "uploads.UploadedFile", on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
+    )
+    licence_reminder_days = models.PositiveSmallIntegerField(null=True, blank=True)  # 60, 30, 0
+    profession = models.CharField(max_length=24, choices=Profession.choices, blank=True)
+    specialty_code = models.CharField(max_length=32, blank=True)  # a SPECIALTIES key
     specialty = models.CharField(max_length=100, blank=True)
+    sex = models.CharField(max_length=8, choices=Sex.choices, blank=True)
+    # C0: the face patients see (purpose clinician_photo)
+    photo_file = models.ForeignKey(
+        "uploads.UploadedFile", on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
+    )
+    # [{"degree": "MBChB", "institution": "University of Rwanda", "year": 2015}], up to 5
+    qualifications = models.JSONField(default=list, blank=True)
     # upgrade 05 §3: what patients read on the public doctor page (no licence data there)
     bio_i18n = models.JSONField(default=dict, blank=True)
     languages = ArrayField(models.CharField(max_length=8), default=list, blank=True)

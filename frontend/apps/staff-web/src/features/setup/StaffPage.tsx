@@ -1,8 +1,6 @@
 import {
   newIdempotencyKey,
-  type ClinicianProfile,
   type RoleCode,
-  type Council,
   type Invitation,
   type ServicePoint,
   type StaffMembership,
@@ -15,7 +13,6 @@ import {
   cx,
   Dialog,
   EmptyState,
-  SelectField,
   SidePanel,
   Tabs,
   TabsContent,
@@ -40,6 +37,8 @@ import { useApi } from "../../app/services";
 import { useStaffMe } from "../../auth/queries";
 import { PageHeader } from "../../components/PageHeader";
 import { roleLabel } from "../../facility/labels";
+import { ClinicianProfileForm } from "./ClinicianProfileForm";
+import { MemberLicence, MemberWork } from "./MemberClinician";
 import { PublicProfileCard } from "./PublicProfileCard";
 import { useStepUp } from "../lock";
 import {
@@ -53,7 +52,6 @@ import {
 } from "./shared";
 
 const ROLES = ["facility_admin", "receptionist", "doctor", "pharmacist", "cashier"];
-const COUNCILS: Council[] = ["rmdc", "ncnm", "npc", "other"];
 
 const initials = (name: string) =>
   name
@@ -715,33 +713,8 @@ function MemberPanel({
           <RoleChecks value={roles} onChange={setRoles} />
           <PointChecks points={points} value={assigned} onChange={setAssigned} />
         </form>
-        {member.clinician && (
-          <section className="flex flex-col gap-2 rounded-2xl border border-border/60 p-4">
-            <h3 className="m-0 font-heading text-h3">{t("setup.staff.licence")}</h3>
-            <p className="m-0 text-body-sm text-fg-secondary">
-              {t(`setup.councils.${member.clinician.council}`, {
-                defaultValue: member.clinician.council,
-              })}{" "}
-              · <span className="font-mono">{member.clinician.licence_number}</span>
-              {member.clinician.specialty && ` · ${member.clinician.specialty}`}
-            </p>
-            {member.clinician.attested_at ? (
-              <Badge tone="success">
-                {t("setup.staff.attestedOn", {
-                  date: formatDate(member.clinician.attested_at, locale),
-                })}
-              </Badge>
-            ) : (
-              <Button
-                variant="secondary"
-                onClick={() => action.mutate({ name: "attest-licence" })}
-                className="self-start"
-              >
-                {t("setup.staff.attest")}
-              </Button>
-            )}
-          </section>
-        )}
+        <MemberLicence member={member} onDone={done} />
+        {member.is_active && <MemberWork member={member} onDone={done} />}
         <section className="flex flex-col gap-3 rounded-xl border border-danger/30 p-4">
           <h3 className="m-0 font-heading text-h3">{t("setup.staff.account")}</h3>
           <div className="flex flex-wrap gap-2">
@@ -843,81 +816,9 @@ export function ClinicianPage() {
         <h2 id="licence-title" className="m-0 font-heading text-h3 tracking-tight">
           {t("setup.clinician.licenceTitle")}
         </h2>
-        <QueryState query={profile}>{(data) => <ClinicianForm profile={data} />}</QueryState>
+        <QueryState query={profile}>{(data) => <ClinicianProfileForm profile={data} />}</QueryState>
       </section>
       {profile.data && <PublicProfileCard />}
     </div>
-  );
-}
-
-function ClinicianForm({ profile }: { profile: ClinicianProfile }) {
-  const { t } = useTranslation();
-  const api = useApi();
-  const queryClient = useQueryClient();
-  const [form, setForm] = useState({
-    council: profile.council,
-    licence_number: profile.licence_number,
-    specialty: profile.specialty ?? "",
-  });
-  const changed =
-    form.council !== profile.council || form.licence_number !== profile.licence_number;
-  const save = useMutation({
-    mutationFn: () => api.setup.updateClinicianProfile(form),
-    onSuccess: (data) => queryClient.setQueryData(["setup", "clinician"], data),
-  });
-  const errors = fieldErrors(save.error);
-  return (
-    <form
-      noValidate
-      onSubmit={(e) => {
-        e.preventDefault();
-        save.mutate();
-      }}
-      className="flex max-w-2xl flex-col gap-5 rounded-2xl bg-surface p-5 shadow-card"
-    >
-      <SelectField
-        label={t("setup.clinician.council")}
-        value={form.council}
-        onChange={(e) => setForm((f) => ({ ...f, council: e.target.value as Council }))}
-        className="max-w-sm"
-      >
-        {COUNCILS.map((c) => (
-          <option key={c} value={c}>
-            {t(`setup.councils.${c}`)}
-          </option>
-        ))}
-      </SelectField>
-      <TextField
-        label={t("setup.clinician.licence")}
-        value={form.licence_number}
-        onChange={(e) => setForm((f) => ({ ...f, licence_number: e.target.value }))}
-        error={errors.licence_number}
-        className="max-w-sm"
-        inputClassName="font-mono"
-      />
-      <TextField
-        label={t("setup.clinician.specialty")}
-        optional
-        value={form.specialty}
-        onChange={(e) => setForm((f) => ({ ...f, specialty: e.target.value }))}
-        className="max-w-sm"
-      />
-      {changed && <Alert tone="warning">{t("setup.clinician.reattest")}</Alert>}
-      {save.isSuccess && (
-        <Alert tone="success" role="status">
-          {t("setup.saved")}
-        </Alert>
-      )}
-      {save.isError && Object.keys(errors).length === 0 && (
-        <Alert tone="danger" role="alert">
-          {errorText(save.error, t("setup.failed"))}
-        </Alert>
-      )}
-      <div className="flex justify-end">
-        <Button type="submit" disabled={save.isPending}>
-          {t("setup.save")}
-        </Button>
-      </div>
-    </form>
   );
 }

@@ -8,6 +8,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Clinician profile: full professional details (2026-11-03)
+
+- Added: on `ClinicianProfile`, `profession` (13 cadres), `specialty_code` (a fixed list of 21; `specialty`
+  keeps the English name), `licence_valid_until`, the licence scan (upload purpose
+  `clinician_licence`, C1), a photo (`clinician_photo`, C0), `sex` and up to 5 `qualifications`
+  (migration accounts/0008). The RAHPC council joins the list.
+- Changed: attesting a licence needs its scan and an end date that has not passed. New action
+  `POST /staff/memberships/{id}/refuse-licence/` (reason required) removes the attestation and
+  emails the clinician; a new licence number, council or scan clears every attestation.
+- Added: daily `facilities.check_clinician_licences` (06:00): reminders 60 and 30 days before the
+  end to the clinician and the facility admins; the day after, attestations are cleared ("The
+  licence ended."). Scheduling refuses a clinician whose licence has ended.
+- Added: `department_id` and `employment_type` (full time, part time, visiting, locum) on the
+  membership (migration tenancy/0010), set with `PATCH /staff/memberships/{id}/`.
+- Changed: OpenAPI names the patients' sex enum `PatientSexEnum`.
+
 ### Upgrade U2 · Public facility page ↔ facility admin
 
 - Added: the public facility profile carries the admin's `email`, `website` and `photos` (stable

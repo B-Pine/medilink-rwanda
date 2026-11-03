@@ -151,7 +151,7 @@ def test_roles_last_admin_and_deactivation(admin: Any, setup_facility: Any) -> N
 
 
 def test_mfa_reset_and_attestation(
-    admin: Any, setup_facility: Any, django_capture_on_commit_callbacks: Any
+    admin: Any, setup_facility: Any, django_capture_on_commit_callbacks: Any, local_uploads: None
 ) -> None:
     from django_otp.plugins.otp_totp.models import TOTPDevice
 
@@ -167,6 +167,11 @@ def test_mfa_reset_and_attestation(
         f"{S}clinician-profile/", {"council": "rmdc", "licence_number": "RMDC/77"}, format="json"
     )
     assert profile.status_code == 200
+    # the scan and the end date come first (2026-11-03)
+    assert admin_client.post(f"{S}memberships/{membership.pk}/attest-licence/").status_code == 422
+    from tests.s2.test_clinician_profile import _full_profile
+
+    _full_profile(doc_client, django_capture_on_commit_callbacks, number="RMDC/77")
     attested = admin_client.post(f"{S}memberships/{membership.pk}/attest-licence/")
     assert attested.json()["clinician"]["attested_at"] is not None
     self_reset = admin_client.post(

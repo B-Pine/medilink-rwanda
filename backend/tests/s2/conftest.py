@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from typing import Any
 
 import pytest
@@ -121,3 +122,19 @@ def set_hours(client: APIClient, service_id: str | None = None) -> Any:
     )
     assert response.status_code == 200, response.content
     return response.json()
+
+
+@pytest.fixture
+def local_uploads(tmp_path: Any) -> Iterator[None]:
+    """Uploads on local disk with the fake scanner (scans on commit)."""
+    from django.test import override_settings
+
+    with override_settings(
+        UPLOADS={
+            "storage": "local",
+            "scanner": "fake",
+            "local_root": str(tmp_path / "objects"),
+            "download_base_url": "http://testserver/api/v1/files",
+        }
+    ):
+        yield

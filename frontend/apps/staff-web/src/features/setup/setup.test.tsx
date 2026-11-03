@@ -280,3 +280,64 @@ describe("invitation page (S2-F8)", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 });
+
+describe("clinician profile (2026-11-03)", () => {
+  it("the doctor keeps profession, specialty, licence end date, scan and qualifications", async () => {
+    const { user, container } = await signIn("doctor@medilink.test", "/profile/clinician");
+    // three facilities: choose one first
+    await user.click(await screen.findByRole("button", { name: "Work at Kigali Clinic" }));
+    await user.click(await screen.findByRole("button", { name: /^Account menu/ }));
+    await user.click(await screen.findByRole("menuitem", { name: "My doctor profile" }));
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "My clinician profile" }),
+    ).toBeInTheDocument();
+    // the form itself (the Public profile card below has a known Radix tabs aria-controls issue)
+    expect(await axe(container.querySelector("form")!)).toHaveNoViolations();
+    expect(screen.getByLabelText("Profession")).toHaveValue("medical_doctor");
+    expect(screen.getByLabelText("Specialty")).toHaveValue("general_practice");
+    expect(screen.getByText("rmdc-licence.pdf")).toBeInTheDocument();
+    await user.selectOptions(screen.getByLabelText("Specialty"), "paediatrics");
+    await user.click(screen.getByRole("button", { name: "Add a qualification" }));
+    const degrees = screen.getAllByLabelText("Degree or diploma");
+    await user.type(degrees.at(-1)!, "MMed Paediatrics");
+    await user.type(
+      screen.getAllByLabelText("School or university").at(-1)!,
+      "University of Rwanda",
+    );
+    await user.type(screen.getAllByLabelText("Year").at(-1)!, "2021");
+    const form = container.querySelector("form")!;
+    await user.click(within(form).getByRole("button", { name: "Save changes" }));
+    expect(await within(form).findByText("Saved.")).toBeInTheDocument();
+  });
+
+  it("the facility admin opens the licence, attests it or says why not", async () => {
+    const { user } = await signIn(MOCK_FACILITY_ADMIN_EMAIL, "/staff");
+    const table = await screen.findByRole("table", { name: "Members" });
+    await user.click(within(table).getByRole("button", { name: /Niyonsenga Paul/ }));
+    const panel = await screen.findByRole("dialog", { name: "Niyonsenga Paul" });
+    expect(within(panel).getByText("Licence valid")).toBeInTheDocument();
+    expect(within(panel).getByText("Paediatrics")).toBeInTheDocument();
+    expect(
+      within(panel).getByRole("button", { name: "Open the licence scan" }),
+    ).toBeInTheDocument();
+    await user.click(within(panel).getByRole("button", { name: "Cannot confirm" }));
+    const refuse = await screen.findByRole("dialog", {
+      name: "Cannot confirm the licence of Niyonsenga Paul",
+    });
+    const go = within(refuse).getByRole("button", { name: "Cannot confirm" });
+    expect(go).toBeDisabled();
+    await user.type(within(refuse).getByLabelText("Reason"), "Not on the RMDC register.");
+    await user.click(go);
+    expect(
+      await within(panel).findByText("Not confirmed: Not on the RMDC register."),
+    ).toBeInTheDocument();
+    await user.click(within(panel).getByRole("button", { name: "Attest licence" }));
+    expect(await within(panel).findByText(/^Attested/)).toBeInTheDocument();
+    // where they work here
+    await user.selectOptions(within(panel).getByLabelText("Employment"), "part_time");
+    await user.click(within(panel).getByRole("button", { name: "Save" }));
+    await waitFor(() =>
+      expect(within(panel).getByLabelText("Employment")).toHaveValue("part_time"),
+    );
+  });
+});

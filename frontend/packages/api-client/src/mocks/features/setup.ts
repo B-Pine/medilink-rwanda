@@ -2,6 +2,7 @@ import { http, HttpResponse } from "msw";
 
 import type {
   CalendarDay,
+  ClinicianProfile,
   ClinicianPublicProfile,
   CalendarEvent,
   ChecklistItem,
@@ -26,6 +27,34 @@ import type { LanguageCode } from "../../types";
 import { FACILITIES, mockStaffPhone, STAFF_USERS } from "../data";
 import type { FeatureMockFactory } from "../features";
 import { conflict, fieldError, id, now, page, rule, s1, stepUpFailure, str } from "./s1-common";
+import { uploadStore } from "./uploads";
+
+type StaffClinician = NonNullable<StaffMembership["clinician"]>;
+
+// the API's SPECIALTIES (accounts/models.py): the English name kept in `specialty`
+const SPECIALTY_NAMES: Record<string, string> = {
+  general_practice: "General practice",
+  family_medicine: "Family medicine",
+  internal_medicine: "Internal medicine",
+  paediatrics: "Paediatrics",
+  obstetrics_gynaecology: "Obstetrics and gynaecology",
+  general_surgery: "General surgery",
+  orthopaedics: "Orthopaedics",
+  anaesthesiology: "Anaesthesiology",
+  emergency_medicine: "Emergency medicine",
+  psychiatry: "Psychiatry",
+  dermatology: "Dermatology",
+  ophthalmology: "Ophthalmology",
+  ent: "Ear, nose and throat",
+  cardiology: "Cardiology",
+  neurology: "Neurology",
+  radiology: "Radiology",
+  pathology: "Pathology",
+  urology: "Urology",
+  dentistry: "Dentistry",
+  public_health: "Public health",
+  other: "Other",
+};
 
 /** S2 mocks (sprint-02 §6.2): Kigali Clinic in `setup` with a partly complete checklist. */
 
@@ -256,7 +285,29 @@ function seed() {
     clinician,
     joined_at: "2026-09-01T08:00:00Z",
     deactivation_reason: "",
+    department_id: null,
+    employment_type: "",
     version: 1,
+  });
+  const clinicianBlock = (
+    licence_number: string,
+    specialty_code: StaffClinician["specialty_code"],
+    attested_at: string | null,
+    extra: Partial<StaffClinician> = {},
+  ): StaffClinician => ({
+    council: "rmdc",
+    licence_number,
+    specialty: specialty_code === "paediatrics" ? "Paediatrics" : "General practice",
+    attested_at,
+    profession: "medical_doctor",
+    specialty_code,
+    licence_valid_until: addDays(new Date(), 400).toISOString().slice(0, 10),
+    licence_state: "valid",
+    licence_file: { id: id(), original_filename: "rmdc-licence.pdf", status: "clean" },
+    refused_reason: "",
+    sex: "female",
+    qualifications: [{ degree: "MBChB", institution: "University of Rwanda", year: 2014 }],
+    ...extra,
   });
   const memberships: StaffMembership[] = [
     member(SETUP_IDS.mAdmin, "Mutesi Diane", MOCK_FACILITY_ADMIN_EMAIL, ["facility_admin"]),
@@ -268,23 +319,19 @@ function seed() {
       null,
       0.3,
     ),
-    member(SETUP_IDS.mKeza, "Uwimana Keza", "doctor@medilink.test", ["doctor"], {
-      council: "rmdc",
-      licence_number: "RMDC/1234",
-      specialty: "General practice",
-      attested_at: "2026-09-02T09:00:00Z",
-    }),
+    member(
+      SETUP_IDS.mKeza,
+      "Uwimana Keza",
+      "doctor@medilink.test",
+      ["doctor"],
+      clinicianBlock("RMDC/1234", "general_practice", "2026-09-02T09:00:00Z"),
+    ),
     member(
       SETUP_IDS.mPaul,
       "Niyonsenga Paul",
       "paul.niyonsenga@example.test",
       ["doctor"],
-      {
-        council: "rmdc",
-        licence_number: "RMDC/5678",
-        specialty: "Pediatrics",
-        attested_at: null,
-      },
+      clinicianBlock("RMDC/5678", "paediatrics", null, { sex: "male" }),
       null,
     ),
   ];
@@ -427,10 +474,22 @@ function seed() {
     },
     changes: [] as ConfigChange[],
     clinician: {
-      council: "rmdc" as const,
+      council: "rmdc",
       licence_number: "RMDC/1234",
       specialty: "General practice",
-    },
+      profession: "medical_doctor",
+      specialty_code: "general_practice",
+      licence_valid_until: addDays(new Date(), 400).toISOString().slice(0, 10),
+      sex: "female",
+      qualifications: [{ degree: "MBChB", institution: "University of Rwanda", year: 2014 }],
+      licence_state: "valid",
+      licence_file: {
+        id: "5d1b2c3a-0000-4000-8000-00000000c1c1",
+        original_filename: "rmdc-licence.pdf",
+        status: "clean",
+      },
+      photo_file: null,
+    } as ClinicianProfile,
     clinicianPublic: {
       bio_i18n: {
         en: "Family doctor with ten years in Kigali. I look after adults and children, and follow people with high blood pressure and diabetes.",
@@ -444,6 +503,7 @@ function seed() {
 
 export const setupMocks: FeatureMockFactory = (context) => {
   const { api } = context;
+  const uploads = uploadStore(context);
   let db = seed();
   /** Idempotency-Key → invitation created with it (a repeat returns the same row). */
   const invitationKeys = new Map<string, Invitation>();
@@ -1397,6 +1457,14 @@ export const setupMocks: FeatureMockFactory = (context) => {
           ...row,
           roles,
           service_points: (data.service_point_ids as string[] | undefined) ?? row.service_points,
+          department_id:
+            "department_id" in data
+              ? ((data.department_id as string | null) ?? null)
+              : row.department_id,
+          employment_type:
+            "employment_type" in data
+              ? (str(data.employment_type) as StaffMembership["employment_type"])
+              : row.employment_type,
           version: row.version + 1,
         };
         return HttpResponse.json(db.memberships[index]);
@@ -1406,7 +1474,7 @@ export const setupMocks: FeatureMockFactory = (context) => {
         const ok = guard(request, ["staff.manage"]);
         if (ok instanceof Response) return ok;
         const action = str(params.action);
-        if (action !== "attest-licence") {
+        if (action !== "attest-licence" && action !== "refuse-licence") {
           const step = stepUpFailure(context, ok.lang);
           if (step) return step;
         }
@@ -1439,9 +1507,30 @@ export const setupMocks: FeatureMockFactory = (context) => {
           };
         } else if (action === "attest-licence") {
           if (!row.clinician) return rule(context, ok.lang);
+          if (!row.clinician.licence_file)
+            return context.errorResponse(
+              422,
+              "business_rule_violation",
+              "Ask the clinician to upload the scan of their practising licence first.",
+            );
+          if (row.clinician.licence_state === "expired")
+            return context.errorResponse(
+              422,
+              "business_rule_violation",
+              "This licence has ended. Ask the clinician to renew it and upload the new one.",
+            );
           db.memberships[index] = {
             ...row,
-            clinician: { ...row.clinician, attested_at: now() },
+            clinician: { ...row.clinician, attested_at: now(), refused_reason: "" },
+            version: row.version + 1,
+          };
+        } else if (action === "refuse-licence") {
+          if (!row.clinician) return rule(context, ok.lang);
+          if (!str(data.reason).trim())
+            return fieldError(context, ok.lang, { reason: "Give a reason." });
+          db.memberships[index] = {
+            ...row,
+            clinician: { ...row.clinician, attested_at: null, refused_reason: str(data.reason) },
             version: row.version + 1,
           };
         } else if (action === "mfa-reset") {
@@ -1526,10 +1615,61 @@ export const setupMocks: FeatureMockFactory = (context) => {
           return fieldError(context, ok.lang, {
             licence_number: "Use letters, numbers and / . _ -",
           });
-        db.clinician = { ...db.clinician, ...(data as object) };
+        const until = data.licence_valid_until;
+        if (typeof until === "string" && until < new Date().toISOString().slice(0, 10))
+          return fieldError(context, ok.lang, {
+            licence_valid_until: "This date has passed: renew the licence first.",
+          });
+        const next = { ...db.clinician };
+        for (const key of [
+          "council",
+          "licence_number",
+          "specialty",
+          "profession",
+          "specialty_code",
+          "licence_valid_until",
+          "sex",
+          "qualifications",
+        ] as const)
+          if (key in data) (next as Record<string, unknown>)[key] = data[key];
+        for (const [field, target] of [
+          ["licence_upload_id", "licence_file"],
+          ["photo_upload_id", "photo_file"],
+        ] as const) {
+          if (!(field in data)) continue;
+          const uploadId = data[field] ? str(data[field]) : null;
+          const stored = uploadId ? uploads.settleScan(uploadId) : null;
+          if (uploadId && !stored)
+            return fieldError(context, ok.lang, {
+              [field]: "Upload the file again: it is not ready or not yours.",
+            });
+          next[target] = stored
+            ? { id: stored.id, original_filename: stored.original_filename, status: stored.status }
+            : null;
+        }
+        if (next.specialty_code && !("specialty" in data))
+          next.specialty = SPECIALTY_NAMES[next.specialty_code] ?? next.specialty;
+        next.licence_state =
+          !next.licence_valid_until || !next.licence_file
+            ? "missing"
+            : (Date.parse(next.licence_valid_until) - Date.now()) / 86_400_000 <= 60
+              ? "expiring"
+              : "valid";
+        const licenceChanged =
+          next.council !== db.clinician.council ||
+          next.licence_number !== db.clinician.licence_number ||
+          next.licence_file?.id !== db.clinician.licence_file?.id;
+        db.clinician = next;
         const own = ownMembership(ok.email);
         const m = db.memberships.find((x) => x.id === own);
-        if (m?.clinician) m.clinician = { ...m.clinician, ...(data as object), attested_at: null };
+        if (m?.clinician) {
+          const { photo_file: _photo, ...block } = next;
+          m.clinician = {
+            ...m.clinician,
+            ...(block as Partial<StaffClinician>),
+            attested_at: licenceChanged ? null : m.clinician.attested_at,
+          };
+        }
         return HttpResponse.json(db.clinician);
       }),
       http.get(`${api}/staff/clinician-profile/public/`, async ({ request }) => {

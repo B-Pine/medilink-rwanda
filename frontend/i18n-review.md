@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5251.
+Keys: 5253.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -2654,6 +2654,7 @@ File: `apps/staff-web/src/features/platform/locales/rw.json`
 | `masterData.fields.max_age_months` | Imyaka nini (amezi) | Maximum age (months) | needs native-speaker review |
 | `masterData.fields.sex_restriction` | Igitsina | Sex restriction | needs native-speaker review |
 | `masterData.fields.code_system` | Uburyo bwa kode | Code system | needs native-speaker review |
+| `masterData.fields.description_i18n` | Ibisobanuro bibonwa na bose | Public description | needs native-speaker review |
 | `masterData.import` | Injiza CSV | Import CSV | needs native-speaker review |
 | `masterData.importHint` | Ohereza CSV ya UTF-8. Ubona impinduka mbere y'uko zikorwa. | Upload a UTF-8 CSV. You see a preview of the changes before anything is applied. | needs native-speaker review |
 | `masterData.importTitle` | Igenzura ry'iyinjizwa | Import preview | needs native-speaker review |
@@ -2681,6 +2682,7 @@ File: `apps/staff-web/src/features/platform/locales/rw.json`
 | `masterData.errorLine` | Umurongo {{line}} ({{field}}): {{message}} | Line {{line}} ({{field}}): {{message}} | needs native-speaker review |
 | `masterData.samples` | Ingero z'impinduka | Examples of changes | needs native-speaker review |
 | `masterData.confirm` | Kora impinduka | Apply the changes | needs native-speaker review |
+| `masterData.descriptionHint` | Icyo iyi serivisi ari cyo, mu magambo yoroshye. Bigaragara ku rupapuro rwa serivisi. | What the service is, in plain words. Shown on the public service page. | needs native-speaker review |
 | `upload.drop` | Kurura dosiye hano, cyangwa | Drag a file here, or | needs native-speaker review |
 | `upload.browse` | Hitamo dosiye | Choose a file | needs native-speaker review |
 | `upload.remove` | Kuraho | Remove | needs native-speaker review |

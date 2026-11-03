@@ -130,6 +130,15 @@ function seed(): Record<MasterDataKind, Row[]> {
         code,
         name_i18n: name,
         synonyms_i18n: {},
+        // one written description, as a platform admin would add in master data
+        description_i18n:
+          code === "vaccination"
+            ? tr(
+                "Inkingo zirinda abana n'abakuru indwara zikomeye.",
+                "Vaccines protect children and adults from serious diseases.",
+                "Les vaccins protègent enfants et adultes contre des maladies graves.",
+              )
+            : {},
         min_age_months: null,
         max_age_months: null,
         sex_restriction: null,
@@ -280,11 +289,13 @@ function localised(kind: MasterDataKind, row: Row, lang: LanguageCode, rows: Row
   return out;
 }
 
+/** Texts that may stay empty, even where names need every language (as the API). */
+const OPTIONAL_I18N = ["plain_language_i18n", "description_i18n"];
+
 function missingLanguages(row: Row): LanguageCode[] {
   const missing = new Set<LanguageCode>();
   for (const [key, value] of Object.entries(row)) {
-    if (!key.endsWith("_i18n") || key === "synonyms_i18n" || key === "plain_language_i18n")
-      continue;
+    if (!key.endsWith("_i18n") || key === "synonyms_i18n" || OPTIONAL_I18N.includes(key)) continue;
     for (const lang of LANGS) if (!((value ?? {}) as I18n)[lang]) missing.add(lang);
   }
   return LANGS.filter((l) => missing.has(l));
@@ -363,7 +374,7 @@ export const masterDataMocks: FeatureMockFactory = (context) => {
   ) {
     const fields: Record<string, string> = {};
     for (const key of Object.keys(body)) {
-      if (!key.endsWith("_i18n") || key === "synonyms_i18n" || key === "plain_language_i18n")
+      if (!key.endsWith("_i18n") || key === "synonyms_i18n" || OPTIONAL_I18N.includes(key))
         continue;
       const value = (body[key] ?? {}) as I18n;
       if (

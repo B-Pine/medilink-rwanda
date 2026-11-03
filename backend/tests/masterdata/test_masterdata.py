@@ -374,6 +374,32 @@ def test_platform_validation(platform_client: APIClient) -> None:
     assert sector.json()["parent_code"] == "11"
 
 
+@pytest.mark.django_db
+def test_service_description_is_optional_and_public(platform_client: APIClient) -> None:
+    """Upgrade U2: the public service page reads the platform's own words for a service."""
+    names = {"rw": "Isuzuma ry'uruhu", "en": "Skin check", "fr": "Examen de la peau"}
+    created = platform_client.post(
+        f"{PLATFORM}/service-catalogue-items/",
+        {"code": "skin_check", "name_i18n": names},
+        format="json",
+    )
+    assert created.status_code == 201, created.content
+    assert created.json()["description_i18n"] == {}
+    assert created.json()["missing_languages"] == []  # the description stays optional
+    item = created.json()
+    patched = platform_client.patch(
+        f"{PLATFORM}/service-catalogue-items/{item['id']}/",
+        {"version": item["version"], "description_i18n": {"en": "A doctor looks at your skin."}},
+        format="json",
+    )
+    assert patched.status_code == 200, patched.content
+    public = APIClient().get(
+        f"{PUBLIC}/service-catalogue-items/", {"q": "skin"}, HTTP_ACCEPT_LANGUAGE="en"
+    )
+    row = next(r for r in public.json()["results"] if r["code"] == "skin_check")
+    assert row["description"] == "A doctor looks at your skin."
+
+
 @pytest.mark.acceptance("S1-B16")
 @pytest.mark.django_db
 def test_platform_writes_need_recent_auth(stale_platform_client: APIClient) -> None:

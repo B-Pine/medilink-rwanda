@@ -157,7 +157,7 @@ Master data kinds (`{kind}`):
 |---|---|---|
 | `locations` | Provinces, districts, sectors, cells, villages | Yes (national list; official codes: #48) |
 | `facility-types` | Facility types, level of care | — |
-| `service-catalogue-items` | Standard service names | — |
+| `service-catalogue-items` | Standard service names; optional `description_i18n` (public `description`) for the public service page | — |
 | `insurers` | Insurers and schemes | — |
 | `drugs` | Drug catalogue (Essential Medicines List: generic name, strength, form; controlled flag) | Yes |
 | `diagnosis-codes` | ICD-10 subset with plain-language names | Yes |

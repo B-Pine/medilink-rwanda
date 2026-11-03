@@ -359,7 +359,8 @@
       "min_age_months": "Minimum age (months)",
       "max_age_months": "Maximum age (months)",
       "sex_restriction": "Sex restriction",
-      "code_system": "Code system"
+      "code_system": "Code system",
+      "description_i18n": "Public description"
     },
     "import": "Import CSV",
     "importHint": "Upload a UTF-8 CSV. You see a preview of the changes before anything is applied.",
@@ -393,7 +394,8 @@
     "errorsTitle": "Fix these lines and upload the file again",
     "errorLine": "Line {{line}} ({{field}}): {{message}}",
     "samples": "Examples of changes",
-    "confirm": "Apply the changes"
+    "confirm": "Apply the changes",
+    "descriptionHint": "What the service is, in plain words. Shown on the public service page."
   },
   "upload": {
     "drop": "Drag a file here, or",

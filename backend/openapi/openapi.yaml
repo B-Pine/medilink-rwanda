@@ -27296,6 +27296,11 @@ components:
               type: string
               minLength: 1
               maxLength: 120
+        description_i18n:
+          type: object
+          additionalProperties:
+            type: string
+            maxLength: 500
         min_age_months:
           type: integer
           maximum: 2147483647
@@ -31465,8 +31470,12 @@ components:
           items:
             type: string
           readOnly: true
+        description:
+          type: string
+          readOnly: true
       required:
       - code
+      - description
       - id
       - is_active
       - max_age_months
@@ -31497,6 +31506,11 @@ components:
             items:
               type: string
               maxLength: 120
+        description_i18n:
+          type: object
+          additionalProperties:
+            type: string
+            maxLength: 500
         min_age_months:
           type: integer
           maximum: 2147483647
@@ -31563,6 +31577,11 @@ components:
               type: string
               minLength: 1
               maxLength: 120
+        description_i18n:
+          type: object
+          additionalProperties:
+            type: string
+            maxLength: 500
         min_age_months:
           type: integer
           maximum: 2147483647

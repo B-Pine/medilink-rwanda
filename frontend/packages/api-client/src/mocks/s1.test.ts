@@ -162,7 +162,12 @@ describe("facility onboarding", () => {
         phone: "+250788000000",
         email: "a@b.rw",
       },
-      location: { village_code: "DEV-12010101", address: "KG 1 Ave" },
+      location: {
+        village_code: "DEV-12010101",
+        address: "KG 1 Ave",
+        latitude: -1.9442,
+        longitude: 30.1234,
+      },
       applicant: { phone: "+250788000001" },
       proposed_admin: { name: "Eric", email: "eric@example.test", phone: "+250788000002" },
     });

@@ -67,4 +67,9 @@ urlpatterns = [
         name="staff-invitation-action",
     ),
     path("clinician-profile/", team.ClinicianProfileView.as_view(), name="staff-clinician-profile"),
+    path(
+        "clinician-profile/public/",
+        team.ClinicianPublicProfileView.as_view(),
+        name="staff-clinician-public-profile",
+    ),
 ]

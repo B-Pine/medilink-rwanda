@@ -353,6 +353,50 @@ class ClinicianProfileView(SetupAPIView):
         return Response(s.ClinicianProfileSerializer(profile).data)
 
 
+class ClinicianPublicProfileView(SetupAPIView):
+    """upgrade 05 §3: what patients read on the public doctor page; the licence stays private."""
+
+    permission_classes = [IsStaffAuthenticated]
+
+    def profile(self) -> ClinicianProfile:
+        user_id: Any = self.request.user.pk
+        profile = ClinicianProfile.objects.filter(user_id=user_id).first()
+        if profile is None:
+            raise Http404
+        return profile
+
+    @extend_schema(
+        operation_id="staff_clinician_public_profile_retrieve",
+        tags=TAGS,
+        responses={200: s.ClinicianPublicProfileSerializer},
+    )
+    def get(self, request: Request) -> Response:
+        return Response(s.ClinicianPublicProfileSerializer(self.profile()).data)
+
+    @extend_schema(
+        operation_id="staff_clinician_public_profile_update",
+        tags=TAGS,
+        request=s.ClinicianPublicProfileSerializer,
+        responses={200: s.ClinicianPublicProfileSerializer},
+    )
+    def patch(self, request: Request) -> Response:
+        profile = self.profile()
+        body = s.ClinicianPublicProfileSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        data = body.validated_data
+        profile.bio_i18n = {k: v.strip() for k, v in data["bio_i18n"].items() if v.strip()}
+        profile.languages = sorted(set(data["languages"]))
+        profile.is_public = data["is_public"]
+        profile.save(update_fields=["bio_i18n", "languages", "is_public", "updated_at"])
+        record(
+            "staff.clinician_profile.public_updated",
+            request=request,
+            object_type="user",
+            object_id=request.user.pk,
+        )
+        return Response(s.ClinicianPublicProfileSerializer(profile).data)
+
+
 # ---- invitation acceptance (before login) -------------------------------------------------------
 
 

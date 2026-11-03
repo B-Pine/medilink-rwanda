@@ -9798,6 +9798,30 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: 'access_reason_required: give a reason for this patient first
             (A1)'
+  /api/v1/staff/clinical/my-activity/:
+    get:
+      operationId: staff_clinical_my_activity
+      summary: 'My activity over 7 or 30 days: seen, signed, consult time, top diagnoses'
+      parameters:
+      - in: query
+        name: days
+        schema:
+          type: integer
+          enum:
+          - 30
+          - 7
+      tags:
+      - clinical
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyActivity'
+          description: ''
   /api/v1/staff/clinical/my-day/:
     get:
       operationId: staff_clinical_my_day
@@ -9813,6 +9837,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MyDay'
+          description: ''
+  /api/v1/staff/clinical/my-follow-ups/:
+    get:
+      operationId: staff_clinical_my_follow_ups
+      summary: 'Follow-ups I set: missed (last 30 days), today, the next 14 days,
+        attended'
+      tags:
+      - clinical
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MyFollowUp'
           description: ''
   /api/v1/staff/clinical/patients/{facility_patient_id}/access/:
     get:
@@ -10164,6 +10207,74 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Unknown upload, future date, or no reviewer
+  /api/v1/staff/clinical/questions/:
+    get:
+      operationId: staff_clinical_questions
+      summary: 'Pharmacy questions on my prescriptions: open first, or the last 50
+        answered'
+      parameters:
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - answered
+          - open
+      tags:
+      - clinical
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PharmacyQuestion'
+          description: ''
+  /api/v1/staff/clinical/questions/{query_id}/reply/:
+    post:
+      operationId: staff_clinical_question_reply
+      summary: 'Answer a pharmacy question: signed addendum and answer in one step'
+      parameters:
+      - in: path
+        name: query_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionReplyRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PharmacyQuestion'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required or permission_denied
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not open, not signed, or not your prescription
   /api/v1/staff/clinical/scans/{scan_id}/download-link/:
     post:
       operationId: staff_scan_download_link
@@ -10193,6 +10304,137 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: 'access_reason_required: give a reason for this patient first'
+  /api/v1/staff/clinical/templates/:
+    get:
+      operationId: staff_clinical_templates
+      description: Templates belong to the signed-in clinician; another user's id
+        is a 404.
+      summary: My note templates and favourite prescriptions, most used first
+      tags:
+      - clinical
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NoteTemplate'
+          description: ''
+    post:
+      operationId: staff_clinical_template_create
+      description: Templates belong to the signed-in clinician; another user's id
+        is a 404.
+      summary: Save a note template, with diagnoses and medicines
+      tags:
+      - clinical
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteTemplateInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteTemplate'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You already have a template with this name
+  /api/v1/staff/clinical/templates/{template_id}/:
+    put:
+      operationId: staff_clinical_template_update
+      description: Templates belong to the signed-in clinician; another user's id
+        is a 404.
+      summary: Replace one of my templates
+      parameters:
+      - in: path
+        name: template_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteTemplateInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteTemplate'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: You already have a template with this name
+    delete:
+      operationId: staff_clinical_template_delete
+      description: Templates belong to the signed-in clinician; another user's id
+        is a 404.
+      summary: Delete one of my templates
+      parameters:
+      - in: path
+        name: template_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/staff/clinical/templates/{template_id}/used/:
+    post:
+      operationId: staff_clinical_template_used
+      description: Templates belong to the signed-in clinician; another user's id
+        is a 404.
+      summary: Count one use, so the most used templates come first
+      parameters:
+      - in: path
+        name: template_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - clinical
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoteTemplate'
+          description: ''
   /api/v1/staff/clinician-profile/:
     get:
       operationId: staff_clinician_profile_retrieve
@@ -10233,6 +10475,44 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: licence already registered
+  /api/v1/staff/clinician-profile/public/:
+    get:
+      operationId: staff_clinician_public_profile_retrieve
+      description: 'upgrade 05 §3: what patients read on the public doctor page; the
+        licence stays private.'
+      tags:
+      - staff-team
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClinicianPublicProfile'
+          description: ''
+    patch:
+      operationId: staff_clinician_public_profile_update
+      description: 'upgrade 05 §3: what patients read on the public doctor page; the
+        licence stays private.'
+      tags:
+      - staff-team
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedClinicianPublicProfileRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClinicianPublicProfile'
+          description: ''
   /api/v1/staff/consultations/:
     get:
       operationId: staff_consultations_unsigned
@@ -18125,6 +18405,29 @@ components:
       required:
       - council
       - licence_number
+    ClinicianPublicProfile:
+      type: object
+      description: 'upgrade 05 §3: the doctor''s own words for patients, in up to
+        three languages.'
+      properties:
+        bio_i18n:
+          type: object
+          additionalProperties:
+            type: string
+            maxLength: 600
+        languages:
+          type: array
+          items:
+            $ref: '#/components/schemas/LanguagesEnum'
+          maxItems: 4
+        is_public:
+          type: boolean
+          default: true
+        specialty:
+          type: string
+          readOnly: true
+      required:
+      - specialty
     CloseShiftRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -23212,6 +23515,18 @@ components:
         * `rw` - Kinyarwanda
         * `en` - English
         * `fr` - Français
+    LanguagesEnum:
+      enum:
+      - rw
+      - en
+      - fr
+      - sw
+      type: string
+      description: |-
+        * `rw` - rw
+        * `en` - en
+        * `fr` - fr
+        * `sw` - sw
     LegacyEntry:
       type: object
       properties:
@@ -24091,6 +24406,56 @@ components:
       description: |-
         * `upsert` - Create and update
         * `upsert_and_retire_missing` - Create, update and retire missing rows
+    MyActivity:
+      type: object
+      properties:
+        days:
+          type: integer
+        seen:
+          type: integer
+        signed:
+          type: integer
+        avg_consult_min:
+          type: integer
+          nullable: true
+        late_signatures:
+          type: integer
+        unsigned_now:
+          type: integer
+        follow_ups_set:
+          type: integer
+        trend:
+          type: array
+          items:
+            $ref: '#/components/schemas/MyActivityDay'
+        top_diagnoses:
+          type: array
+          items:
+            $ref: '#/components/schemas/TopDiagnosis'
+      required:
+      - avg_consult_min
+      - days
+      - follow_ups_set
+      - late_signatures
+      - seen
+      - signed
+      - top_diagnoses
+      - trend
+      - unsigned_now
+    MyActivityDay:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        seen:
+          type: integer
+        signed:
+          type: integer
+      required:
+      - date
+      - seen
+      - signed
     MyDay:
       type: object
       description: 'Doctor Today (upgrade 05 §3): counts for one clinician, no clinical
@@ -24148,6 +24513,60 @@ components:
       required:
       - date
       - seen
+    MyFollowUp:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_display_name:
+          type: string
+        facility_patient_id:
+          type: string
+          format: uuid
+        service_name_i18n:
+          type: object
+          additionalProperties: {}
+        due_on:
+          type: string
+          format: date
+        mode:
+          type: string
+        status:
+          type: string
+        state:
+          $ref: '#/components/schemas/MyFollowUpStateEnum'
+        booking_starts_at:
+          type: string
+          format: date-time
+          nullable: true
+        consultation_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - booking_starts_at
+      - consultation_id
+      - due_on
+      - facility_patient_id
+      - id
+      - mode
+      - patient_display_name
+      - service_name_i18n
+      - state
+      - status
+    MyFollowUpStateEnum:
+      enum:
+      - missed
+      - today
+      - upcoming
+      - attended
+      type: string
+      description: |-
+        * `missed` - missed
+        * `today` - today
+        * `upcoming` - upcoming
+        * `attended` - attended
     NearRequest:
       type: object
       properties:
@@ -24253,6 +24672,185 @@ components:
         * `visit` - Visit
         * `document_check` - Document check
         * `other` - Other
+    NoteTemplate:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        sections:
+          $ref: '#/components/schemas/NoteTemplateSections'
+        diagnosis_codes:
+          type: array
+          items:
+            type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/NoteTemplateItem'
+        use_count:
+          type: integer
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - diagnosis_codes
+      - id
+      - items
+      - name
+      - sections
+      - updated_at
+      - use_count
+    NoteTemplateInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 80
+        sections:
+          $ref: '#/components/schemas/NoteTemplateSectionsRequest'
+        diagnosis_codes:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 10
+          maxItems: 5
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/NoteTemplateItemRequest'
+      required:
+      - name
+    NoteTemplateItem:
+      type: object
+      properties:
+        drug_code:
+          type: string
+          default: ''
+          maxLength: 40
+        free_text_drug:
+          type: string
+          default: ''
+          maxLength: 120
+        drug_display:
+          type: string
+          default: ''
+          maxLength: 300
+        dose:
+          type: string
+          maxLength: 60
+        frequency_code:
+          type: string
+          maxLength: 20
+        route:
+          type: string
+          maxLength: 20
+        duration_days:
+          type: integer
+          maximum: 365
+          minimum: 1
+          nullable: true
+        quantity:
+          type: integer
+          maximum: 10000
+          minimum: 1
+          nullable: true
+        instructions:
+          type: string
+          default: ''
+          maxLength: 500
+      required:
+      - dose
+      - frequency_code
+      - route
+    NoteTemplateItemRequest:
+      type: object
+      properties:
+        drug_code:
+          type: string
+          default: ''
+          maxLength: 40
+        free_text_drug:
+          type: string
+          default: ''
+          maxLength: 120
+        drug_display:
+          type: string
+          default: ''
+          maxLength: 300
+        dose:
+          type: string
+          minLength: 1
+          maxLength: 60
+        frequency_code:
+          type: string
+          minLength: 1
+          maxLength: 20
+        route:
+          type: string
+          minLength: 1
+          maxLength: 20
+        duration_days:
+          type: integer
+          maximum: 365
+          minimum: 1
+          nullable: true
+        quantity:
+          type: integer
+          maximum: 10000
+          minimum: 1
+          nullable: true
+        instructions:
+          type: string
+          default: ''
+          maxLength: 500
+      required:
+      - dose
+      - frequency_code
+      - route
+    NoteTemplateSections:
+      type: object
+      properties:
+        history_text:
+          type: string
+          default: ''
+          maxLength: 4000
+        examination_text:
+          type: string
+          default: ''
+          maxLength: 4000
+        plan_text:
+          type: string
+          default: ''
+          maxLength: 4000
+        patient_instructions_text:
+          type: string
+          default: ''
+          maxLength: 4000
+    NoteTemplateSectionsRequest:
+      type: object
+      properties:
+        history_text:
+          type: string
+          default: ''
+          maxLength: 4000
+        examination_text:
+          type: string
+          default: ''
+          maxLength: 4000
+        plan_text:
+          type: string
+          default: ''
+          maxLength: 4000
+        patient_instructions_text:
+          type: string
+          default: ''
+          maxLength: 4000
     Notification:
       type: object
       properties:
@@ -25600,6 +26198,24 @@ components:
           type: string
           default: ''
           maxLength: 100
+    PatchedClinicianPublicProfileRequest:
+      type: object
+      description: 'upgrade 05 §3: the doctor''s own words for patients, in up to
+        three languages.'
+      properties:
+        bio_i18n:
+          type: object
+          additionalProperties:
+            type: string
+            maxLength: 600
+        languages:
+          type: array
+          items:
+            $ref: '#/components/schemas/LanguagesEnum'
+          maxItems: 4
+        is_public:
+          type: boolean
+          default: true
     PatchedConsultationUpdateRequest:
       type: object
       description: Reject unknown input fields (mass-assignment protection, security
@@ -27509,6 +28125,52 @@ components:
       required:
       - full_name
       - id
+    PharmacyQuestion:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/SupportRequestStatusEnum'
+        message:
+          type: string
+        raised_by_name:
+          type: string
+        raised_at:
+          type: string
+          format: date-time
+        answered_at:
+          type: string
+          format: date-time
+          nullable: true
+        prescription_id:
+          type: string
+          format: uuid
+        consultation_id:
+          type: string
+          format: uuid
+        facility_patient_id:
+          type: string
+          format: uuid
+        patient_display_name:
+          type: string
+        items:
+          type: array
+          items:
+            type: string
+      required:
+      - answered_at
+      - consultation_id
+      - facility_patient_id
+      - id
+      - items
+      - message
+      - patient_display_name
+      - prescription_id
+      - raised_at
+      - raised_by_name
+      - status
     PhotoRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -28560,11 +29222,24 @@ components:
           items:
             type: string
             format: uuid
+        specialty:
+          type: string
+        bio_i18n:
+          type: object
+          additionalProperties:
+            type: string
+        languages:
+          type: array
+          items:
+            type: string
       required:
+      - bio_i18n
       - days
+      - languages
       - membership_id
       - name
       - service_ids
+      - specialty
     PublicFacilityService:
       type: object
       properties:
@@ -28831,6 +29506,16 @@ components:
           maxLength: 1000
       required:
       - message
+    QuestionReplyRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        body:
+          type: string
+          minLength: 2
+          maxLength: 2000
+      required:
+      - body
     QueueGroup:
       type: object
       properties:
@@ -32370,6 +33055,19 @@ components:
           maxLength: 200
       required:
       - token
+    TopDiagnosis:
+      type: object
+      properties:
+        code:
+          type: string
+        display:
+          type: string
+        count:
+          type: integer
+      required:
+      - code
+      - count
+      - display
     Totals:
       type: object
       properties:

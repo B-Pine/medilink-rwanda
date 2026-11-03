@@ -36,5 +36,6 @@ ACTIONS: frozenset[str] = frozenset(
         "staff.membership.licence_attested",
         "staff.mfa.reset",
         "staff.clinician_profile.updated",
+        "staff.clinician_profile.public_updated",  # upgrade 05 §3
     }
 )

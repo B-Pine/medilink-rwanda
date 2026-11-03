@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
+from django.contrib.postgres.fields import ArrayField
 from django.contrib.sessions.base_session import AbstractBaseSession
 from django.db import models
 from django.db.models.functions import Lower
@@ -165,6 +166,10 @@ class ClinicianProfile(models.Model):
     council = models.CharField(max_length=8, choices=Council.choices)
     licence_number = models.CharField(max_length=40)
     specialty = models.CharField(max_length=100, blank=True)
+    # upgrade 05 §3: what patients read on the public doctor page (no licence data there)
+    bio_i18n = models.JSONField(default=dict, blank=True)
+    languages = ArrayField(models.CharField(max_length=8), default=list, blank=True)
+    is_public = models.BooleanField(default=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
@@ -177,3 +182,32 @@ class ClinicianProfile(models.Model):
 
     def __str__(self) -> str:
         return f"clinician profile {self.pk}"
+
+
+class ClinicianTemplate(models.Model):
+    """A clinician's own note template and favourite prescription (upgrade 05 §3).
+
+    Personal working text, never patient data, so it follows the clinician across facilities.
+    `items` use the prescription item fields (drug_code or free_text_drug, dose, frequency_code,
+    route, duration_days, quantity, instructions).
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="clinician_templates")
+    name = models.CharField(max_length=80)
+    sections = models.JSONField(default=dict, blank=True)
+    diagnosis_codes = ArrayField(models.CharField(max_length=10), default=list, blank=True)
+    items = models.JSONField(default=list, blank=True)
+    use_count = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "accounts_clinician_template"
+        ordering = ["-use_count", "name"]
+        constraints = [
+            models.UniqueConstraint(fields=["user", "name"], name="accounts_template_name_unique")
+        ]
+
+    def __str__(self) -> str:
+        return f"template {self.pk}"

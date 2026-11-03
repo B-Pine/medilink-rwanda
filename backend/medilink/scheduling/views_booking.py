@@ -14,7 +14,7 @@ from rest_framework import exceptions, status
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from medilink.accounts.models import User
+from medilink.accounts.models import ClinicianProfile, User
 from medilink.authz.permissions import IsPatientAuthenticated, PublicEndpoint
 from medilink.core.exceptions import error_payload
 from medilink.facilities.calendar import KIGALI, effective_calendar
@@ -224,6 +224,16 @@ def slot_taken(exc: BookingConflict, slot_id: Any) -> Response:
 # ---- public (no account) -------------------------------------------------------------------------
 
 
+def _public_profile(profile: Any) -> dict[str, Any]:
+    if profile is None:
+        return {"specialty": "", "bio_i18n": {}, "languages": []}
+    return {
+        "specialty": profile.specialty,
+        "bio_i18n": profile.bio_i18n or {},
+        "languages": profile.languages,
+    }
+
+
 class PublicView(PatientsAPIView):
     permission_classes = [PublicEndpoint]
     authentication_classes: list[Any] = []
@@ -291,6 +301,7 @@ class FacilityProfileView(PublicView):
                 t.membership_id,
                 {
                     "membership_id": t.membership_id,
+                    "user_id": t.membership.user_id,
                     "name": t.membership.user.full_name,
                     "days": set(),
                     "service_ids": set(),
@@ -298,6 +309,13 @@ class FacilityProfileView(PublicView):
             )
             row["days"].add(t.weekday)
             row["service_ids"].add(t.service_id)
+        # upgrade 05 §3: the doctor's own public words; never the licence number
+        public_profiles = {
+            p.user_id: p
+            for p in ClinicianProfile.objects.filter(
+                user_id__in=[d["user_id"] for d in doctors.values()], is_public=True
+            )
+        }
         place = next(iter(rows.values()), None)
         hours = place.hours if place else []
         response = Response(
@@ -347,6 +365,7 @@ class FacilityProfileView(PublicView):
                         **d,
                         "days": sorted(d["days"]),
                         "service_ids": sorted(d["service_ids"], key=str),
+                        **_public_profile(public_profiles.get(d.pop("user_id"))),
                     }
                     for d in sorted(doctors.values(), key=lambda d: d["name"])
                 ],

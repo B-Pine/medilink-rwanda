@@ -543,6 +543,25 @@ class ClinicianProfileSerializer(StrictSerializer):
     specialty = serializers.CharField(max_length=100, required=False, allow_blank=True, default="")
 
 
+class ClinicianPublicProfileSerializer(StrictSerializer):
+    """upgrade 05 §3: the doctor's own words for patients, in up to three languages."""
+
+    bio_i18n = serializers.DictField(
+        child=serializers.CharField(max_length=600, allow_blank=True), default=dict
+    )
+    languages = serializers.ListField(
+        child=serializers.ChoiceField(choices=["rw", "en", "fr", "sw"]), max_length=4, default=list
+    )
+    is_public = serializers.BooleanField(default=True)
+    specialty = serializers.CharField(read_only=True)
+
+    def validate_bio_i18n(self, value: dict[str, str]) -> dict[str, str]:
+        unknown = set(value) - {"rw", "en", "fr"}
+        if unknown:
+            raise serializers.ValidationError("Use rw, en or fr.")
+        return value
+
+
 class TokenSerializer(StrictSerializer):
     token = serializers.CharField(max_length=200)
 

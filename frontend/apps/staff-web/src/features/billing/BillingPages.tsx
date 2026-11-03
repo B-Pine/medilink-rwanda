@@ -22,6 +22,7 @@ import {
   LoadingState,
   SelectField,
   Tabs,
+  TabsContent,
   TabsList,
   TabsTrigger,
   TextField,
@@ -927,34 +928,37 @@ export function ApprovalsPage() {
             {count(shifts.data?.count)}
           </TabsTrigger>
         </TabsList>
+        <TabsContent value="requests">
+          {approvals.isPending ? (
+            <LoadingState />
+          ) : approvals.isError ? (
+            <Alert tone="danger">{errorText(approvals.error, t("billing.failed"))}</Alert>
+          ) : rows.length === 0 ? (
+            <EmptyState icon={SealCheck} title={t("billing.approvals.empty")} />
+          ) : (
+            <ul className="ml-stagger m-0 flex list-none flex-col gap-4 p-0">
+              {rows.map((r) => (
+                <ApprovalItem key={r.id} request={r} />
+              ))}
+            </ul>
+          )}
+        </TabsContent>
+        <TabsContent value="shifts">
+          {shifts.isPending ? (
+            <LoadingState />
+          ) : shifts.isError ? (
+            <Alert tone="danger">{errorText(shifts.error, t("billing.failed"))}</Alert>
+          ) : closed.length === 0 ? (
+            <EmptyState icon={CashRegister} title={t("billing.approvals.shifts.empty")} />
+          ) : (
+            <ul className="ml-stagger m-0 grid list-none gap-4 p-0 xl:grid-cols-2">
+              {closed.map((s) => (
+                <ShiftReviewItem key={s.id} shift={s} />
+              ))}
+            </ul>
+          )}
+        </TabsContent>
       </Tabs>
-      {tab === "requests" ? (
-        approvals.isPending ? (
-          <LoadingState />
-        ) : approvals.isError ? (
-          <Alert tone="danger">{errorText(approvals.error, t("billing.failed"))}</Alert>
-        ) : rows.length === 0 ? (
-          <EmptyState icon={SealCheck} title={t("billing.approvals.empty")} />
-        ) : (
-          <ul className="ml-stagger m-0 flex list-none flex-col gap-4 p-0">
-            {rows.map((r) => (
-              <ApprovalItem key={r.id} request={r} />
-            ))}
-          </ul>
-        )
-      ) : shifts.isPending ? (
-        <LoadingState />
-      ) : shifts.isError ? (
-        <Alert tone="danger">{errorText(shifts.error, t("billing.failed"))}</Alert>
-      ) : closed.length === 0 ? (
-        <EmptyState icon={CashRegister} title={t("billing.approvals.shifts.empty")} />
-      ) : (
-        <ul className="ml-stagger m-0 grid list-none gap-4 p-0 xl:grid-cols-2">
-          {closed.map((s) => (
-            <ShiftReviewItem key={s.id} shift={s} />
-          ))}
-        </ul>
-      )}
     </div>
   );
 }

@@ -221,7 +221,11 @@
     "reviewed": "Byagenzuwe",
     "markReviewed": "Emeza ko byagenzuwe",
     "emptyTitle": "Nta cyo kugenzura",
-    "empty": "Kwimura kutubahirije uko bakurikirana kugaragara hano."
+    "empty": "Kwimura kutubahirije uko bakurikirana kugaragara hano.",
+    "tabs": {
+      "open": "Ibyo kugenzura",
+      "all": "Kwimura kose"
+    }
   },
   "displays": {
     "title": "Televiziyo z’aho bategerereza",

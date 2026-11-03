@@ -221,7 +221,11 @@
     "reviewed": "Reviewed",
     "markReviewed": "Mark reviewed",
     "emptyTitle": "Nothing to review",
-    "empty": "Moves that skip the normal order appear here."
+    "empty": "Moves that skip the normal order appear here.",
+    "tabs": {
+      "open": "To review",
+      "all": "All moves"
+    }
   },
   "displays": {
     "title": "Waiting-room screens",

@@ -175,21 +175,40 @@ function Checklist() {
                 )}
               </Alert>
             )}
-            <ol className="m-0 flex list-none flex-col overflow-hidden rounded-2xl bg-surface shadow-card p-0">
-              {data.items.map((item) => {
+            <ol className="ml-stagger m-0 flex list-none flex-col rounded-2xl bg-surface p-2 shadow-card">
+              {data.items.map((item, index) => {
                 const ItemIcon = CHECKLIST_ICONS[item.code];
+                const last = index === data.items.length - 1;
                 return (
                   <li
                     key={item.code}
-                    className="flex flex-wrap items-center gap-4 border-b border-border/60 px-4 py-3.5 last:border-0 sm:flex-nowrap"
+                    className="relative flex flex-wrap items-center gap-4 rounded-xl px-3 py-3.5 transition-colors duration-150 hover:bg-subtle/60 sm:flex-nowrap"
                   >
+                    {!last && (
+                      <span
+                        aria-hidden="true"
+                        className={cx(
+                          "absolute top-[3.25rem] bottom-[-0.75rem] left-[2rem] w-0.5 rounded-full",
+                          item.done ? "bg-success/40" : "bg-border",
+                        )}
+                      />
+                    )}
                     <span
                       className={cx(
-                        "inline-flex size-10 shrink-0 items-center justify-center rounded-md",
+                        "relative inline-flex size-10 shrink-0 items-center justify-center rounded-full ring-4 ring-surface",
                         item.done ? "bg-success-bg text-success" : "bg-subtle text-fg-secondary",
                       )}
                     >
                       <ItemIcon aria-hidden="true" weight="duotone" className="size-5" />
+                      <span
+                        aria-hidden="true"
+                        className={cx(
+                          "absolute -top-1 -right-1 grid size-5 place-items-center rounded-full text-[0.625rem] font-bold tabular-nums ring-2 ring-surface",
+                          item.done ? "bg-success text-on-primary" : "bg-surface text-fg-secondary",
+                        )}
+                      >
+                        {item.done ? <CheckCircle weight="fill" className="size-3.5" /> : index + 1}
+                      </span>
                     </span>
                     <div className="flex min-w-0 flex-1 flex-col">
                       <span className="font-semibold">
@@ -207,7 +226,10 @@ function Checklist() {
                     </Badge>
                     <Link
                       to={item.link}
-                      className={buttonClassName({ variant: item.done ? "ghost" : "secondary" })}
+                      className={buttonClassName({
+                        variant: item.done ? "ghost" : "secondary",
+                        pill: true,
+                      })}
                       aria-label={`${item.done ? t("setup.checklist.review") : t("setup.checklist.setUp")}: ${t(`setup.checklist.items.${item.code}`)}`}
                     >
                       {item.done ? t("setup.checklist.review") : t("setup.checklist.setUp")}

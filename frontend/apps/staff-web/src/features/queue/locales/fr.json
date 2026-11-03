@@ -221,7 +221,11 @@
     "reviewed": "Contrôlé",
     "markReviewed": "Marquer contrôlé",
     "emptyTitle": "Rien à contrôler",
-    "empty": "Les déplacements hors de l’ordre normal apparaissent ici."
+    "empty": "Les déplacements hors de l’ordre normal apparaissent ici.",
+    "tabs": {
+      "open": "À vérifier",
+      "all": "Tous les déplacements"
+    }
   },
   "displays": {
     "title": "Écrans de la salle d’attente",

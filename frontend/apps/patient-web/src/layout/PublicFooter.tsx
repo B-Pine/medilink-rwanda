@@ -1,4 +1,4 @@
-import { ArrowUpRight, Phone, ShieldCheck, Siren } from "@phosphor-icons/react";
+import { Phone, ShieldCheck } from "@phosphor-icons/react";
 import { ImigongoPattern, LanguageSwitcher, Logo, ThemeSwitch } from "@medilink/ui";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
@@ -48,7 +48,7 @@ export function PublicFooter() {
       <div aria-hidden="true" className="relative isolate h-3 overflow-hidden bg-brand-subtle">
         <ImigongoPattern opacity={0.18} className="-z-10 text-primary" />
       </div>
-      <div className="mx-auto flex max-w-[75rem] flex-col gap-12 px-4 pt-12 pb-8 sm:px-6">
+      <div className="mx-auto flex max-w-[75rem] flex-col gap-10 px-4 pt-14 pb-8 sm:px-6">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,2fr)] lg:gap-16">
           <div className="flex max-w-sm flex-col items-start gap-5">
             <Link
@@ -62,28 +62,28 @@ export function PublicFooter() {
             <p className="m-0 text-body-sm leading-relaxed text-fg-secondary">
               {t("footer.tagline")}
             </p>
-            <div className="flex w-full flex-col gap-2 rounded-2xl border border-danger/20 bg-danger-bg p-4">
-              <p className="m-0 flex items-center gap-2 font-semibold text-danger">
-                <Siren aria-hidden="true" weight="bold" className="size-5" />
-                {t("nav.strip.long")}
-              </p>
-              <a
-                href="tel:912"
-                className="group inline-flex min-h-target items-center gap-2 self-start rounded-full bg-danger-solid px-4 font-semibold text-on-danger-solid no-underline transition-[filter] duration-150 hover:brightness-105"
-              >
+            {/* one calm line: the red strip above every page already carries the emergency */}
+            <a
+              href="tel:912"
+              className="group flex min-h-target items-center gap-3 rounded-2xl border border-danger/20 bg-danger-bg/60 p-2 pr-4 no-underline transition-colors duration-150 ease-out-quint hover:border-danger/40 hover:bg-danger-bg"
+            >
+              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-danger-solid text-on-danger-solid">
                 <Phone aria-hidden="true" weight="fill" className="size-4" />
-                {t("nav.strip.call")}
-                <ArrowUpRight aria-hidden="true" weight="bold" className="size-4" />
-              </a>
-              <span className="text-caption text-fg-secondary">{t("footer.hotlineNote")}</span>
-            </div>
+              </span>
+              <span className="flex flex-col">
+                <span className="text-body-sm font-bold whitespace-nowrap text-danger">
+                  {t("nav.strip.call")}
+                </span>
+                <span className="text-caption text-fg-secondary">{t("footer.hotlineNote")}</span>
+              </span>
+            </a>
           </div>
           <nav aria-label={t("footer.label")} className="grid gap-8 sm:grid-cols-3">
             {GROUPS.map((group) => (
               <div key={group.key}>
                 <h2
                   id={`footer-${group.key}`}
-                  className="mt-0 mb-3 text-caption font-bold tracking-wider text-fg-secondary uppercase"
+                  className="mt-0 mb-2 text-caption font-bold tracking-wider text-fg uppercase"
                 >
                   {t(`footer.groups.${group.key}`)}
                 </h2>
@@ -96,7 +96,7 @@ export function PublicFooter() {
                       <Link
                         viewTransition
                         to={link.to}
-                        className="inline-flex min-h-11 items-center text-body-sm text-fg no-underline transition-colors duration-150 ease-out-quint hover:text-primary hover:underline"
+                        className="inline-flex min-h-11 items-center text-body-sm text-fg-secondary no-underline transition-colors duration-150 ease-out-quint hover:text-fg"
                       >
                         {t(link.key)}
                       </Link>
@@ -110,7 +110,7 @@ export function PublicFooter() {
 
         <div className="flex flex-col gap-4 border-t border-border pt-6 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-col gap-1 md:flex-row md:items-center md:gap-3">
-            <p className="m-0 text-body-sm font-semibold">
+            <p className="m-0 text-body-sm text-fg-secondary">
               {t("footer.copyright", { year: new Date().getFullYear() })}
             </p>
             <span aria-hidden="true" className="hidden h-4 w-px bg-border md:block" />
@@ -120,7 +120,7 @@ export function PublicFooter() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <LanguageSwitcher compact />
+            <LanguageSwitcher pill />
             <ThemeSwitch />
           </div>
         </div>

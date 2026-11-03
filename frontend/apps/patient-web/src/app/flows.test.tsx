@@ -10,7 +10,10 @@ describe("landing page", () => {
   it("has one h1 and a search that opens Find care", async () => {
     const { user } = renderApp("/");
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Healthcare, made easier." }),
+      await screen.findByRole("heading", {
+        level: 1,
+        name: "Find the right care, without the long wait.",
+      }),
     ).toBeInTheDocument();
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
 
@@ -19,20 +22,24 @@ describe("landing page", () => {
       within(search).getByLabelText("Search facilities, services or symptoms"),
       "dentist",
     );
-    await user.click(within(search).getByRole("button", { name: "Find Care" }));
+    await user.click(within(search).getByRole("button", { name: "Search" }));
     expect(
       await screen.findByRole("heading", { level: 1, name: "Find healthcare" }),
     ).toBeInTheDocument();
   });
 
-  it("has how it works, the emergency band, a sign-in link and the footer", async () => {
+  it("has the three steps, the emergency strip, a sign-in link and the footer", async () => {
     renderApp("/");
     expect(
-      await screen.findByRole("heading", { level: 2, name: "How MediLink works" }),
+      await screen.findByRole("heading", {
+        level: 2,
+        name: "From search to seen, in three steps",
+      }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { level: 2, name: "Need emergency care?" }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Emergency guide" })).toHaveAttribute(
+      "href",
+      "/emergency",
+    );
     const footer = screen.getByRole("contentinfo");
     expect(within(footer).getByRole("link", { name: "Verify a document" })).toHaveAttribute(
       "href",
@@ -44,12 +51,18 @@ describe("landing page", () => {
   it("is in Kinyarwanda by default and the language switch updates <html lang>", async () => {
     const { user } = renderApp("/", { language: "rw" });
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Ubuvuzi, bworoshye." }),
+      await screen.findByRole("heading", {
+        level: 1,
+        name: "Bona ubuvuzi bukwiye, udategereje igihe kirekire.",
+      }),
     ).toBeInTheDocument();
     expect(document.documentElement.lang).toBe("rw");
     await user.selectOptions(screen.getAllByLabelText("Ururimi")[0]!, "fr");
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Les soins, en plus simple." }),
+      await screen.findByRole("heading", {
+        level: 1,
+        name: "Trouvez les bons soins, sans longue attente.",
+      }),
     ).toBeInTheDocument();
     expect(document.documentElement.lang).toBe("fr");
   });

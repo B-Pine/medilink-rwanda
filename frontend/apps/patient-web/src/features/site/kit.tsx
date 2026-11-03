@@ -31,8 +31,9 @@ export function PageContainer({
   return (
     <div
       className={cx(
-        inDashboard ? "w-full" : "mx-auto w-full px-4 sm:px-6 lg:px-8",
-        narrow ? "max-w-[48rem]" : "max-w-[80rem]",
+        // one template for every public page: 1200 px wide, 24 px gutters (16 px on phones)
+        inDashboard ? "w-full" : "mx-auto w-full px-4 sm:px-6",
+        narrow ? "max-w-[48rem]" : "max-w-[75rem]",
         className,
       )}
     >
@@ -105,13 +106,12 @@ export function PageHeader({
         </div>
       </div>
     );
-  // public pages: breadcrumb, a short emerald rule, a large title and a readable lead
+  // public pages (one template): breadcrumb → H1 (Figtree 44 px, 800) → one-line lead
   return (
-    <div className="flex animate-enter flex-col gap-4 pt-8 pb-8 sm:pt-12 sm:pb-10">
+    <div className="flex animate-enter flex-col gap-4 pt-8 pb-8 sm:pt-10 sm:pb-10">
       {crumbs && <Breadcrumbs items={[{ to: "/", label: t("nav.home") }, ...crumbs]} />}
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div className="flex max-w-[46rem] flex-col gap-3">
-          <span aria-hidden="true" className="h-1 w-10 rounded-full bg-primary" />
           {eyebrow && (
             <p className="m-0 text-caption font-semibold tracking-[0.14em] text-primary uppercase">
               {eyebrow}
@@ -119,7 +119,7 @@ export function PageHeader({
           )}
           <PageHeading
             title={title}
-            className="font-heading text-[2rem] leading-[1.12] font-bold tracking-tight text-balance text-fg sm:text-[2.5rem]"
+            className="font-heading text-[2rem] leading-[1.12] font-extrabold tracking-tight text-balance text-fg sm:text-[2.75rem]"
           >
             {title}
           </PageHeading>
@@ -154,7 +154,7 @@ export function Panel({
       className={cx(
         "rounded-2xl bg-surface",
         // public panels rise into view as the page scrolls (base.css .ml-reveal)
-        inDashboard ? "border border-border" : "ml-reveal shadow-card",
+        inDashboard ? "border border-border" : "ml-reveal border border-border",
         className,
       )}
       {...rest}

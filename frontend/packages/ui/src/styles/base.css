@@ -400,3 +400,11 @@ html:has(.ml-soft) {
 :root[data-theme="dark"] .leaflet-container {
   background: var(--color-subtle);
 }
+
+/* Public site: map zoom buttons are 44 px targets, like every other control. */
+:root[data-surface="site"] .leaflet-touch .leaflet-bar a,
+:root[data-surface="site"] .leaflet-bar a {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+}

@@ -10,9 +10,12 @@ function isThemePreference(value: unknown): value is ThemePreference {
   return value === "light" || value === "dark" || value === "system";
 }
 
+/** What a visitor without a saved choice gets; an app may start light-first (redesign 2026-11). */
+let fallbackTheme: ThemePreference = "system";
+
 export function storedTheme(): ThemePreference {
   const value = readPreference("theme");
-  return isThemePreference(value) ? value : "system";
+  return isThemePreference(value) ? value : fallbackTheme;
 }
 
 /** Apply a theme to <html>: `data-theme` overrides the system preference; none = follow it. */
@@ -23,7 +26,8 @@ export function applyTheme(theme: ThemePreference): void {
 }
 
 /** Apply the stored theme before the first render (avoids a flash of the wrong theme). */
-export function initTheme(): ThemePreference {
+export function initTheme(fallback: ThemePreference = "system"): ThemePreference {
+  fallbackTheme = fallback;
   const theme = storedTheme();
   applyTheme(theme);
   return theme;
@@ -42,7 +46,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const setTheme = useCallback((next: ThemePreference) => {
     setThemeState(next);
     applyTheme(next);
-    writePreference("theme", next === "system" ? null : next);
+    writePreference("theme", next === fallbackTheme ? null : next);
   }, []);
 
   const value = useMemo(() => ({ theme, setTheme }), [theme, setTheme]);

@@ -1,9 +1,9 @@
-import { LoadingState } from "@medilink/ui";
 import type { ComponentType } from "react";
 import type { RouteObject } from "react-router";
 
 import { RequirePatient } from "../auth/RequirePatient";
 import { PatientShell } from "../layout/PatientShell";
+import { RouteSkeleton } from "../layout/RouteSkeleton";
 import { FEATURES } from "./features";
 import { legacyRoutes, paths } from "./paths";
 
@@ -15,7 +15,7 @@ const page =
 /** Route table, shared by the browser router (main.tsx) and the memory router (tests). */
 export const routes: RouteObject[] = [
   {
-    HydrateFallback: () => <LoadingState className="min-h-dvh" />,
+    HydrateFallback: RouteSkeleton,
     children: [
       { path: "/", lazy: page(() => import("../pages/LandingPage"), "LandingPage") },
       { path: "/login", lazy: page(() => import("../pages/LoginPage"), "LoginPage") },

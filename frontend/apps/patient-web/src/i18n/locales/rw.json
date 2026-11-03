@@ -43,7 +43,15 @@
     "services": "Serivisi",
     "howItWorks": "Uko bikora",
     "emergencyShort": "Ubutabazi",
-    "closeMenu": "Funga ibikubiyemo"
+    "closeMenu": "Funga ibikubiyemo",
+    "homeLabel": "Ahabanza ha MediLink Rwanda",
+    "strip": {
+      "long": "Ubuzima buri mu kaga?",
+      "short": "Byihutirwa?",
+      "call": "Hamagara 912",
+      "free": "SAMU · ni ubuntu, amasaha 24",
+      "guide": "Icyo wakora mu byihutirwa"
+    }
   },
   "landing": {
     "search": {
@@ -119,7 +127,8 @@
       "body": "Shaka ikigo cy’ubuvuzi gifunguye hafi yawe, urebe uko cyuzuye kandi ufate umwanya mbere yo kuva mu rugo.",
       "symptoms": "Ntuzi aho wajya?",
       "call": "Ibyihutirwa · hamagara 912"
-    }
+    },
+    "dataInRwanda": "Amakuru y'ubuzima abikwa mu Rwanda"
   },
   "authAside": {
     "eyebrow": "Konti yawe ya MediLink",

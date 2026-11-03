@@ -28,6 +28,28 @@ export const EMERGENCY = {
   number: "912",
 } as const;
 
+/**
+ * Referral hospitals shown on /emergency when the live list cannot load (redesign: "works with the
+ * API down"). Names and districts only: a phone number is added here only once it is confirmed with
+ * the hospital, because a wrong number on this page is worse than none. 912 stays the call action.
+ */
+export const REFERRAL_HOSPITALS: { name: string; district: string; phone?: string }[] = [
+  { name: "University Teaching Hospital of Kigali (CHUK)", district: "Nyarugenge" },
+  { name: "King Faisal Hospital", district: "Gasabo" },
+  { name: "Rwanda Military Hospital", district: "Kicukiro" },
+  { name: "Kibagabaga Hospital", district: "Gasabo" },
+  { name: "Masaka Hospital", district: "Kicukiro" },
+  { name: "Muhima Hospital", district: "Nyarugenge" },
+  { name: "University Teaching Hospital of Butare (CHUB)", district: "Huye" },
+  { name: "Ruhengeri Referral Hospital", district: "Musanze" },
+  { name: "Rwamagana Provincial Hospital", district: "Rwamagana" },
+  { name: "Kibuye Referral Hospital", district: "Karongi" },
+];
+
+/** A map search for a place by name (no coordinates needed). */
+export const mapSearchUrl = (name: string) =>
+  `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${name}, Rwanda`)}`;
+
 // ---- facilities ----
 
 /** Every live facility, page by page (the listing returns 20 at a time). */
@@ -95,6 +117,8 @@ export interface PublicDoctor {
   bio: Partial<Record<"rw" | "en" | "fr", string>>;
   languages: string[];
   facility: Pick<PublicFacility, "slug" | "name" | "district" | "type">;
+  /** Every facility this doctor works at (one card per doctor, redesign 2026-11). */
+  facilities: Pick<PublicFacility, "slug" | "name" | "district" | "type">[];
   services: { id: string; code: string; name: PublicFacility["services"][number]["name_i18n"] }[];
 }
 
@@ -122,16 +146,44 @@ export function doctorsOf(profile: PublicFacility): PublicDoctor[] {
       district: profile.district,
       type: profile.type,
     },
+    facilities: [
+      { slug: profile.slug, name: profile.name, district: profile.district, type: profile.type },
+    ],
     services: profile.services
       .filter((service) => doctor.service_ids.includes(service.id))
       .map((service) => ({ id: service.id, code: service.code, name: service.name_i18n })),
   }));
 }
 
+/**
+ * One card per doctor: the same person listed at two facilities is merged (by name), with their
+ * days and services joined and every facility kept; the first facility keeps the profile page.
+ */
+function mergeDoctors(rows: PublicDoctor[]): PublicDoctor[] {
+  const byName = new Map<string, PublicDoctor>();
+  for (const row of rows) {
+    const key = row.name.trim().toLowerCase().replace(/\s+/g, " ");
+    const seen = byName.get(key);
+    if (!seen) {
+      byName.set(key, { ...row, facilities: [...row.facilities] });
+      continue;
+    }
+    seen.days = [...new Set([...seen.days, ...row.days])].sort((a, b) => a - b);
+    for (const service of row.services)
+      if (!seen.services.some((s) => s.code === service.code)) seen.services.push(service);
+    for (const place of row.facilities)
+      if (!seen.facilities.some((f) => f.slug === place.slug)) seen.facilities.push(place);
+    seen.specialty ||= row.specialty;
+    if (!Object.keys(seen.bio).length) seen.bio = row.bio;
+    seen.languages = [...new Set([...seen.languages, ...row.languages])];
+  }
+  return [...byName.values()].sort((a, b) => a.name.localeCompare(b.name));
+}
+
 export function useDoctors() {
   const facilities = useAllFacilities();
   const profiles = useProfiles((facilities.data ?? []).map((f) => f.slug));
-  const doctors = profiles.data.flatMap(doctorsOf).sort((a, b) => a.name.localeCompare(b.name));
+  const doctors = mergeDoctors(profiles.data.flatMap(doctorsOf));
   return {
     doctors,
     facilities: facilities.data ?? [],

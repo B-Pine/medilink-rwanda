@@ -152,7 +152,9 @@
     "none": "Aucun médecin ne correspond à ces filtres",
     "viewProfile": "Voir le profil",
     "days": "Jours",
-    "source": "Les médecins sont listés à partir des profils des établissements."
+    "source": "Les médecins sont listés à partir des profils des établissements.",
+    "places_one": "{{name}} + {{count}} autre",
+    "places_other": "{{name}} + {{count}} autres"
   },
   "doctor": {
     "notFound": "Ce médecin n’est pas listé",
@@ -268,7 +270,9 @@
       "call": "Appelez d’abord le {{number}} si la personne ne peut pas se déplacer en sécurité.",
       "nearest": "Allez à l’hôpital le plus proche ; les centres de santé peuvent vous y orienter.",
       "bring": "Apportez la pièce d’identité et la carte d’assurance si possible, sans les attendre."
-    }
+    },
+    "loadFailed": "Impossible de charger les hôpitaux proches. Appelez le {{number}} ou réessayez.",
+    "referral": "Hôpitaux de référence"
   },
   "help": {
     "title": "Aide et assistance",
@@ -412,5 +416,85 @@
       }
     }
   },
-  "onThisPage": "Sur cette page"
+  "onThisPage": "Sur cette page",
+  "card": {
+    "open": "Ouvert",
+    "busy": "Chargé",
+    "closed": "Fermé pour le moment",
+    "accepted": "Accepte",
+    "noInsurance": "Assurance : demandez à l’accueil",
+    "details": "Détails"
+  },
+  "home2": {
+    "tag": "Temps d’attente en direct dans des établissements vérifiés",
+    "title": "Trouvez les bons soins, sans longue attente.",
+    "lead": "Comparez les cliniques et hôpitaux proches, voyez qui est ouvert et l’attente, puis rejoignez la file ou réservez.",
+    "searchPlaceholder": "Service, établissement ou symptôme",
+    "search": "Rechercher",
+    "popular": "Populaire",
+    "chips": {
+      "general": "Consultation générale",
+      "maternal": "Soins maternels",
+      "lab": "Analyses",
+      "dental": "Dentaire",
+      "symptoms": "Pas sûr ? Vérifiez vos symptômes"
+    },
+    "float": {
+      "queue": "Vous êtes 3e dans la file · environ 12 min",
+      "insurance": "Acceptées ici : Mutuelle · RAMA · MMI",
+      "open": "Ouvert · ferme à 18:00"
+    },
+    "trust": {
+      "label": "MediLink en chiffres",
+      "facilities": "établissements vérifiés",
+      "districts": "districts consultables",
+      "languages": "langues : kinyarwanda, anglais, français",
+      "noAccountValue": "Gratuit",
+      "noAccount": "sans compte pour chercher"
+    },
+    "careTitle": "De quels soins avez-vous besoin ?",
+    "careLead": "Choisissez un service pour voir les lieux qui l’offrent.",
+    "facilityCount_one": "{{count}} établissement",
+    "facilityCount_other": "{{count}} établissements",
+    "nearTitle": "Ouverts près de vous",
+    "howTitle": "De la recherche à la consultation, en trois étapes",
+    "howLead": "Pas de compte pour chercher ; un compte pour rejoindre une file ou réserver.",
+    "stepLabel": "Étape {{n}}",
+    "steps": {
+      "search": {
+        "title": "Cherchez et comparez",
+        "body": "Voyez qui est ouvert, l’attente, la distance et les assurances acceptées."
+      },
+      "join": {
+        "title": "Rejoignez la file ou réservez",
+        "body": "Rejoignez la file du jour depuis votre téléphone, ou réservez une heure."
+      },
+      "arrive": {
+        "title": "Arrivez à votre tour",
+        "body": "Suivez votre place en direct et venez quand vous approchez."
+      }
+    },
+    "phone": {
+      "search": "Dentiste près de moi",
+      "place1": "Centre de santé de Kacyiru",
+      "wait1": "Ouvert · ~15 min",
+      "place2": "Clinique de Remera",
+      "wait2": "Chargé · ~45 min",
+      "service": "Consultation générale",
+      "slot": "Aujourd’hui · 6 en attente",
+      "joinButton": "Rejoindre la file",
+      "ticket": "Votre ticket"
+    },
+    "facilitiesTitle": "Une salle d’attente plus calme.",
+    "facilitiesLead": "Les patients voient votre attente avant de venir. Vous voyez la file, le flux et la journée sur un tableau de bord.",
+    "facilitiesAction": "MediLink pour les établissements",
+    "dash": {
+      "title": "Aujourd’hui",
+      "live": "En direct",
+      "queue": "En file",
+      "wait": "Attente moyenne",
+      "seen": "Vus aujourd’hui",
+      "note": "Arrivées par heure"
+    }
+  }
 }

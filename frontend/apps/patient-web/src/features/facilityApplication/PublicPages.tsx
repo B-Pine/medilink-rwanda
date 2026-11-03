@@ -11,6 +11,7 @@ import { PageHeading } from "../../components/PageHeading";
 import { describeApiError } from "../../forms/api-errors";
 import { EMAIL_PATTERN } from "../../forms/validation";
 import { PublicLayout } from "../../layout/PublicLayout";
+import { PageContainer, PageHeader } from "../site/kit";
 import { applicationKey, firstIncompleteStep, useApplication } from "./data";
 
 const ROLES = ["admin", "reception", "doctor", "pharmacy"] as const;
@@ -24,19 +25,19 @@ export function ForFacilitiesPage() {
   const ended = (location.state as { ended?: boolean } | null)?.ended;
   return (
     <PublicLayout>
-      <div className="mx-auto flex max-w-5xl flex-col gap-12 px-4 py-10 sm:px-6 sm:py-14">
+      <PageContainer className="flex flex-col gap-12 pb-16">
         {ended && (
           <Alert tone="success" role="status">
             {t("facilityApplication.public.sessionEnded")}
           </Alert>
         )}
         <section className="flex flex-col gap-4">
-          <PageHeading title={t("facilityApplication.public.title")}>
-            {t("facilityApplication.public.title")}
-          </PageHeading>
-          <p className="m-0 max-w-3xl text-h3 font-normal text-fg-secondary">
-            {t("facilityApplication.public.problem")}
-          </p>
+          {/* the one public page template: breadcrumb → H1 → lead */}
+          <PageHeader
+            crumbs={[{ label: t("facilityApplication.public.title") }]}
+            title={t("facilityApplication.public.title")}
+            lead={t("facilityApplication.public.problem")}
+          />
           <div className="flex flex-wrap gap-3">
             <Link to="/for-facilities/apply" className={buttonClassName({ size: "lg" })}>
               {t("facilityApplication.public.register")}
@@ -110,7 +111,7 @@ export function ForFacilitiesPage() {
         <section id="continue" aria-labelledby="continue-title" className="max-w-xl">
           <ResumeLinkForm headingId="continue-title" />
         </section>
-      </div>
+      </PageContainer>
     </PublicLayout>
   );
 }

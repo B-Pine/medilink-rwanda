@@ -11,7 +11,11 @@ describe("symptom checker (PT-F3)", () => {
     const { user } = renderApp("/check-symptoms");
     await user.click(await screen.findByRole("button", { name: "Chest pain" }));
     expect(screen.getByRole("alert")).toHaveTextContent("Get help now");
-    expect(screen.queryByRole("button", { name: "None of these" })).not.toBeInTheDocument();
+    // calling 912 comes first, and no way past the danger step is offered
+    expect(
+      within(screen.getByRole("alert")).getByRole("link", { name: "Call 912" }),
+    ).toHaveAttribute("href", "tel:912");
+    expect(screen.queryByRole("button", { name: /None of these/ })).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "What to do in an emergency" })).toHaveAttribute(
       "href",
       "/emergency",
@@ -20,7 +24,7 @@ describe("symptom checker (PT-F3)", () => {
 
   it("who, what, how long; then the urgency, the kind of care and places nearby", async () => {
     const { user, container } = renderApp("/check-symptoms");
-    await user.click(await screen.findByRole("button", { name: "None of these" }));
+    await user.click(await screen.findByRole("button", { name: "None of these, continue" }));
     await user.click(screen.getByRole("button", { name: "An adult (18 to 64)" }));
     await user.click(screen.getByRole("button", { name: "Next" }));
     await user.click(await screen.findByRole("button", { name: "Fever" }));
@@ -60,13 +64,17 @@ describe("information pages (PT-F4, PT-F5)", () => {
     expect(screen.getAllByText(/912/).length).toBeGreaterThan(0);
   });
 
-  it("privacy and terms are drafts with their sections", async () => {
+  it("privacy and terms show their sections and no draft markers", async () => {
     const { router } = renderApp("/privacy");
     expect(
       await screen.findByRole("heading", { level: 1, name: "Privacy notice" }),
     ).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Your rights" })).toBeInTheDocument();
-    expect(screen.getByText(/Draft text awaiting legal review/)).toBeInTheDocument();
+    expect(screen.queryByText(/Draft text awaiting legal review/)).not.toBeInTheDocument();
+    expect(screen.queryByText("To confirm")).not.toBeInTheDocument();
+    expect(screen.getByRole("navigation", { name: "Breadcrumb" })).toHaveTextContent(
+      "Privacy notice",
+    );
     await router.navigate("/terms");
     expect(
       await screen.findByRole("heading", { level: 1, name: "Terms of use" }),
@@ -78,13 +86,13 @@ describe("information pages (PT-F4, PT-F5)", () => {
 describe("care near you on the home page (PT-F1)", () => {
   it("the home page lists facilities with the live queue and accepted insurers", async () => {
     const { container } = renderApp("/");
-    const section = await screen.findByRole("region", { name: "Healthcare facilities near you" });
+    const section = await screen.findByRole("region", { name: "Open near you" });
     const list = await within(section).findByRole("list", {
       name: "Healthcare facilities near you",
     });
     const rows = within(list).getAllByRole("heading", { level: 3 });
     expect(rows.length).toBeGreaterThan(0);
-    expect(within(section).getAllByText("RAMA").length).toBeGreaterThan(0);
+    expect(within(section).getAllByText(/RAMA/).length).toBeGreaterThan(0);
     expect(screen.getByRole("link", { name: "View all facilities" })).toHaveAttribute(
       "href",
       "/facilities",
@@ -94,14 +102,13 @@ describe("care near you on the home page (PT-F1)", () => {
 
   it("links to the symptom checker and the new footer pages", async () => {
     renderApp("/");
-    expect(await screen.findByRole("link", { name: /Not sure where to go\?/ })).toHaveAttribute(
+    expect(await screen.findByRole("link", { name: /Not sure\? Check symptoms/ })).toHaveAttribute(
       "href",
       "/check-symptoms",
     );
     const footer = screen.getByRole("navigation", { name: "Site links" });
     for (const [name, href] of [
       ["About MediLink", "/about"],
-      ["Emergency", "/emergency"],
       ["Check symptoms", "/check-symptoms"],
     ]) {
       expect(within(footer).getByRole("link", { name })).toHaveAttribute("href", href);

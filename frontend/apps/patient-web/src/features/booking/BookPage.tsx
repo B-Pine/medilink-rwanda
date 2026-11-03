@@ -176,7 +176,7 @@ function StepFrame({
           {onBack && (
             <Button
               variant="ghost"
-              size="sm"
+
               onClick={onBack}
               iconStart={<ArrowLeft aria-hidden="true" className="size-4" />}
             >

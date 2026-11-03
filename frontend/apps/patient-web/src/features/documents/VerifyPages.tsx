@@ -9,6 +9,7 @@ import { useNavigate, useParams } from "react-router";
 import { useApi } from "../../app/services";
 import { PageHeading } from "../../components/PageHeading";
 import { PublicLayout } from "../../layout/PublicLayout";
+import { PageContainer, PageHeader } from "../site/kit";
 import { useDate } from "../records/RecordsPages";
 import { openFile, STATUS_TONE } from "./DocumentsPages";
 
@@ -49,13 +50,13 @@ export function VerifyPage() {
 
   return (
     <PublicLayout>
-      <div className="mx-auto flex w-full max-w-[36rem] flex-col gap-6 px-4 py-10 sm:px-6">
-        <div className="flex flex-col gap-2">
-          <PageHeading title={t("documents.verify.title")}>
-            {t("documents.verify.title")}
-          </PageHeading>
-          <p className="m-0 text-fg-secondary">{t("documents.verify.intro")}</p>
-        </div>
+      {/* the one public page template: breadcrumb → H1 → lead */}
+      <PageContainer narrow className="flex flex-col gap-6 pb-16">
+        <PageHeader
+          crumbs={[{ label: t("documents.verify.title") }]}
+          title={t("documents.verify.title")}
+          lead={t("documents.verify.intro")}
+        />
         <form noValidate onSubmit={lookUp} className="flex flex-wrap items-end gap-3">
           <TextField
             label={t("documents.verify.code")}
@@ -65,7 +66,7 @@ export function VerifyPage() {
             autoComplete="off"
             spellCheck={false}
             onChange={(e) => setTyped(e.target.value)}
-            className="min-w-56 flex-1 font-mono"
+            className="min-w-56 flex-1"
           />
           <Button type="submit">
             <QrCode aria-hidden="true" className="size-icon" />
@@ -193,7 +194,7 @@ export function VerifyPage() {
             )}
           </Card>
         ) : null}
-      </div>
+      </PageContainer>
     </PublicLayout>
   );
 }

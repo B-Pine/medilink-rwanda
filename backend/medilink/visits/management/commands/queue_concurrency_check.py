@@ -43,6 +43,16 @@ class Command(BaseCommand):
     help = "Prove check-in idempotency, gapless numbers and atomic call-next (DEBUG only)."
 
     def handle(self, *args: Any, **options: Any) -> None:
+        try:
+            self._check()
+        finally:
+            # The throwaway facility must never show on public pages: suspend it, and any left by
+            # an earlier run, once the check is over (public listings show live facilities only).
+            Facility.objects.filter(
+                slug__startswith="concurrency-", status=FacilityStatus.LIVE
+            ).update(status=FacilityStatus.SUSPENDED)
+
+    def _check(self) -> None:
         if not settings.DEBUG:
             raise CommandError("queue_concurrency_check runs only with DEBUG=True.")
         tag = get_random_string(6).lower()

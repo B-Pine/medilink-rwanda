@@ -16,6 +16,7 @@ import {
   Phone,
   Siren,
   Sparkle,
+  WarningOctagon,
   type Icon,
 } from "@phosphor-icons/react";
 import { Alert, Button, buttonClassName, cx, LoadingState } from "@medilink/ui";
@@ -52,10 +53,13 @@ function Choice({
   selected,
   onClick,
   children,
+  danger = false,
 }: {
   selected: boolean;
   onClick: () => void;
   children: React.ReactNode;
+  /** A danger sign: red tint and an alert icon, never a harmless-looking grey card. */
+  danger?: boolean;
 }) {
   return (
     <button
@@ -64,13 +68,25 @@ function Choice({
       onClick={onClick}
       className={cx(
         "flex min-h-target cursor-pointer items-center gap-2 rounded-lg px-4 py-3 text-left font-semibold",
-        "transition-[background-color,box-shadow,transform] duration-150 active:scale-[0.98]",
-        selected
-          ? "bg-brand-subtle text-on-brand-subtle shadow-[inset_0_0_0_2px_var(--ml-brand)]"
-          : "bg-surface text-fg shadow-card hover:bg-raised",
+        "transition-[background-color,box-shadow,transform] duration-150 active:scale-[0.98] motion-reduce:active:scale-100",
+        danger
+          ? selected
+            ? "bg-danger-solid text-on-danger-solid shadow-card"
+            : "bg-danger-bg text-fg shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--ml-danger)_30%,transparent)] hover:shadow-[inset_0_0_0_2px_var(--ml-danger)]"
+          : selected
+            ? "bg-brand-subtle text-on-brand-subtle shadow-[inset_0_0_0_2px_var(--ml-brand)]"
+            : "bg-surface text-fg shadow-card hover:bg-raised",
       )}
     >
-      {selected && <CheckCircle aria-hidden="true" weight="fill" className="size-5 shrink-0" />}
+      {danger ? (
+        <WarningOctagon
+          aria-hidden="true"
+          weight={selected ? "fill" : "bold"}
+          className={cx("size-5 shrink-0", !selected && "text-danger")}
+        />
+      ) : (
+        selected && <CheckCircle aria-hidden="true" weight="fill" className="size-5 shrink-0" />
+      )}
       {children}
     </button>
   );
@@ -193,6 +209,7 @@ export function SymptomCheckerPage() {
               {redFlags.map((s) => (
                 <Choice
                   key={s.code}
+                  danger
                   selected={danger.includes(s.code)}
                   onClick={() => toggle(s.code, setDanger, danger)}
                 >
@@ -200,6 +217,7 @@ export function SymptomCheckerPage() {
                 </Choice>
               ))}
               <Choice
+                danger
                 selected={danger.includes("unconscious")}
                 onClick={() => toggle("unconscious", setDanger, danger)}
               >
@@ -209,7 +227,7 @@ export function SymptomCheckerPage() {
             {danger.length > 0 ? (
               <EmergencyAnswer />
             ) : (
-              <Button size="lg" onClick={() => setStep("who")}>
+              <Button variant="secondary" size="lg" onClick={() => setStep("who")}>
                 {t("public.checker.noneOfThese")}
                 <ArrowRight aria-hidden="true" weight="bold" />
               </Button>
@@ -356,12 +374,15 @@ export function EmergencyAnswer() {
         <Siren aria-hidden="true" weight="fill" className="size-7" />
         {t("public.checker.emergencyTitle")}
       </p>
+      <a
+        href={`tel:${EMERGENCY_NUMBER}`}
+        className="inline-flex min-h-14 items-center gap-3 self-start rounded-2xl bg-danger-solid px-6 font-heading text-h1 font-extrabold text-on-danger-solid no-underline tabular-nums shadow-card transition-[filter] duration-150 hover:brightness-105"
+      >
+        <Phone aria-hidden="true" weight="fill" className="size-7" />
+        {t("public.checker.callNumber", { number: EMERGENCY_NUMBER })}
+      </a>
       <p className="m-0 text-fg">
         {t("public.checker.emergencyBody", { number: EMERGENCY_NUMBER })}
-      </p>
-      <p className="m-0 flex items-center gap-2 font-heading text-display font-extrabold text-danger tabular-nums">
-        <Phone aria-hidden="true" weight="fill" className="size-8" />
-        {EMERGENCY_NUMBER}
       </p>
       <Link to="/emergency" className="self-start font-semibold">
         {t("public.checker.emergencyMore")}

@@ -43,7 +43,15 @@
     "services": "Services",
     "howItWorks": "Comment ça marche",
     "emergencyShort": "Urgence",
-    "closeMenu": "Fermer le menu"
+    "closeMenu": "Fermer le menu",
+    "homeLabel": "Accueil MediLink Rwanda",
+    "strip": {
+      "long": "Urgence vitale ?",
+      "short": "Urgence ?",
+      "call": "Appelez le 912",
+      "free": "SAMU · gratuit, 24 h/24",
+      "guide": "Guide d’urgence"
+    }
   },
   "landing": {
     "search": {
@@ -119,7 +127,8 @@
       "body": "Trouvez un établissement ouvert près de chez vous, voyez son affluence et réservez avant de partir.",
       "symptoms": "Vous ne savez pas où aller ?",
       "call": "Urgence · appelez le 912"
-    }
+    },
+    "dataInRwanda": "Données de santé hébergées au Rwanda"
   },
   "authAside": {
     "eyebrow": "Votre compte MediLink",

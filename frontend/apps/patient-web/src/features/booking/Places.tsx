@@ -130,18 +130,14 @@ export function RowActions({ result }: { result: FacilityResult }) {
   return (
     <>
       {(join || result.next_slot_at) && (
-        <Link
-          to={`/book/${result.slug}`}
-          viewTransition
-          className={buttonClassName({ size: "sm" })}
-        >
+        <Link to={`/book/${result.slug}`} viewTransition className={buttonClassName({})}>
           {join ? t("home.join") : t("home.book")}
         </Link>
       )}
       <Link
         viewTransition
         to={`/facilities/${result.slug}`}
-        className={buttonClassName({ variant: "ghost", size: "sm" })}
+        className={buttonClassName({ variant: "ghost" })}
       >
         {t("home.viewLink")}
       </Link>
@@ -350,7 +346,7 @@ export function PlacesView({
           ) : state === "error" ? (
             <p role="alert" className="m-0 flex items-center gap-3 p-4">
               {t("home.failed")}
-              <Button variant="secondary" size="sm" onClick={onRetry}>
+              <Button variant="secondary" onClick={onRetry}>
                 {t("home.retry")}
               </Button>
             </p>

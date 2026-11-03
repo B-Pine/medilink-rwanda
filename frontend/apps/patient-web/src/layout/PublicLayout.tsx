@@ -1,5 +1,5 @@
 import { cx, MAIN_CONTENT_ID, SkipLink } from "@medilink/ui";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 
 import { useInDashboard } from "./DashboardContext";
 import { PublicFooter } from "./PublicFooter";
@@ -18,6 +18,15 @@ export function PublicLayout({
 }) {
   // Inside the dashboard the shell already has the header, <main> and navigation
   const inDashboard = useInDashboard();
+  // the public site's "clinical calm" palette (tokens.css, data-surface="site")
+  useEffect(() => {
+    if (inDashboard) return;
+    const root = document.documentElement;
+    root.dataset.surface = "site";
+    return () => {
+      if (root.dataset.surface === "site") delete root.dataset.surface;
+    };
+  }, [inDashboard]);
   if (inDashboard)
     return (
       <div className={cx("flex w-full flex-col", narrow && "mx-auto max-w-[40rem]")}>

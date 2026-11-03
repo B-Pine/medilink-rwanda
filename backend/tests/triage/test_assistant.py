@@ -165,7 +165,7 @@ def test_a_no_removes_the_symptom_and_state_from_the_client_is_cleaned(
 def test_switched_off_the_endpoint_says_unavailable() -> None:
     response = APIClient().post(URL, {"message": "fever", "language": "en"}, format="json")
     assert response.status_code == 503
-    assert response.json()["code"] == "assistant_unavailable"
+    assert response.json()["error"]["code"] == "assistant_unavailable"
 
 
 @pytest.mark.django_db

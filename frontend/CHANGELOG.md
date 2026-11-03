@@ -9,6 +9,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### AI symptom assistant, test phase (issue #159)
+
+- Added: `/assistant`, a chat where the person describes symptoms in their own words. It asks
+  yes/no follow-ups (Yes · No · I am not sure buttons), then may name a possible cause, says how
+  soon to see a doctor, and lists facilities for the suggested service; red flags show the 912
+  card. A test-phase and privacy notice comes first (do not type a name or ID); Kinyarwanda is
+  marked experimental. Linked from Check symptoms.
+- Added: `api.triage.assistant()` with `AssistantTurn` types, the `assistant_unavailable` error
+  code and a scripted MSW mock.
+
 ### Upgrade U2 · Doctor tools (upgrade 05 §3)
 
 - Added: Pharmacy questions `/clinical/questions`: questions on my prescriptions, answered in

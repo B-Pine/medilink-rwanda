@@ -23,7 +23,7 @@ import { setupMocks } from "./features/setup";
 import { helpMocks } from "./features/help";
 // [/S10 imports]
 // [PT imports]
-import { triageMocks } from "./features/triage";
+import { assistantMocks, triageMocks } from "./features/triage";
 // [/PT imports]
 // [S4 imports]
 import { queueMocks } from "./features/queue";
@@ -80,6 +80,7 @@ export const FEATURE_MOCKS: FeatureMockFactory[] = [
   // [/S10]
   // [PT]
   triageMocks,
+  assistantMocks,
   // [/PT]
   // [S4]
   queueMocks,

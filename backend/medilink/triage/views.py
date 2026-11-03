@@ -11,6 +11,7 @@ from rest_framework.response import Response
 
 from medilink.accounts.models import Language
 from medilink.authz.permissions import PublicEndpoint
+from medilink.core.exceptions import error_response
 from medilink.masterdata.models import Symptom
 from medilink.patients.errors import PatientsAPIView
 from medilink.triage import assistant, llm, matcher, rules
@@ -213,12 +214,10 @@ class AssistantView(PatientsAPIView):
 
 
 def _unavailable() -> Response:
-    response = Response(
-        {
-            "code": "assistant_unavailable",
-            "message": "The assistant is not available right now. Use the symptom checker.",
-        },
-        status=503,
+    response = error_response(
+        503,
+        "assistant_unavailable",
+        "The assistant is not available right now. Use the symptom checker.",
     )
     response["Cache-Control"] = "no-store"
     return response

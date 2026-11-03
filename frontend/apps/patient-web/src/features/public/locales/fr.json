@@ -201,5 +201,41 @@
         "body": "[To confirm] These terms are governed by the laws of Rwanda."
       }
     }
+  },
+  "assistant": {
+    "eyebrow": "Assistant IA · test",
+    "title": "Dites-nous comment vous vous sentez",
+    "intro": "Décrivez ce que vous ressentez avec vos mots. L’assistant pose quelques questions, puis vous dit ce que cela pourrait être et où consulter un médecin.",
+    "testTitle": "Ceci est une version de test",
+    "testBody": "Ce n’est pas un diagnostic et ce n’est pas pour les urgences. Pour les tests, vos mots sont envoyés à un service d’IA hors du Rwanda : n’écrivez pas votre nom, votre numéro ni votre pièce d’identité.",
+    "kinyarwanda": "Les réponses en kinyarwanda sont encore en amélioration. Vous pouvez aussi écrire en anglais ou en français.",
+    "conversation": "Conversation avec l’assistant",
+    "greeting": "Bonjour. Que ressentez-vous, et depuis quand ?",
+    "thinking": "L’assistant écrit",
+    "clarify": "Je n’ai pas encore reconnu de symptôme. Pouvez-vous décrire ce que vous ressentez, par exemple où vous avez mal et depuis quand ?",
+    "unavailable": "L’assistant n’est pas disponible pour le moment.",
+    "failed": "Un problème est survenu. Réessayez.",
+    "useChecker": "Utiliser plutôt le vérificateur de symptômes",
+    "restart": "Recommencer",
+    "quick": "Réponses rapides",
+    "answers": {
+      "yes": "Oui",
+      "no": "Non",
+      "notSure": "Je ne suis pas sûr"
+    },
+    "label": "Décrivez ce que vous ressentez",
+    "placeholder": "Par exemple : j’ai de la fièvre et mal à la tête depuis hier",
+    "send": "Envoyer",
+    "notName": "N’indiquez ni votre nom ni aucune pièce d’identité.",
+    "urgency": {
+      "today": "Consultez un médecin aujourd’hui",
+      "soon": "Consultez un médecin dans les prochains jours"
+    },
+    "possible": "Cause possible : {{condition}}",
+    "notDiagnosis": "Ce n’est pas un diagnostic. Seul un médecin qui vous examine peut le dire.",
+    "placesTitle": "Lieux qui peuvent vous aider",
+    "noPlaces": "Aucun établissement proche ne propose encore ce service.",
+    "morePlaces": "Voir plus de lieux",
+    "tryIt": "Vous préférez le décrire avec vos mots ? Essayez l’assistant IA (test)"
   }
 }

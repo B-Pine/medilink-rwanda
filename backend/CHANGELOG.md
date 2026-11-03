@@ -12,6 +12,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 - Added: `GET /staff/pharmacy/my-day/` (ready, partly given, questions, dispensed, out of stock)
   and `GET /staff/pharmacy/history/?days=1|7|30&mine=&q=` (dispensings with line outcomes).
+### Rwanda locations, NISR codes (issue #48)
+
+- Added: migration `masterdata/0004_nisr_locations` loads Rwanda's 416 sectors, 2,148 cells and
+  14,816 villages with NISR codes (NISR List of Villages 2019, via a CC BY 4.0 copy) from
+  `masterdata/data/locations_nisr_2019.csv`. It adds only missing codes and reverses cleanly.
+- Added: `scripts/convert_nisr_villages.py`, which rebuilds the CSV from the source and checks it
+  against the NISR PDF. `masterdata/data/SOURCE.md` records the source, licence, every repair
+  (merged I/II cells, glued and capitalised names) and the 3 rows where the PDF is incomplete.
+- Changed: the onboarding test village is the real Abatuje (12090101, Bibare, Kimironko).
 
 ### Upgrade U2 · Reception (upgrade 05 §2)
 

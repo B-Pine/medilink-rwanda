@@ -1,8 +1,8 @@
 """manage.py seed_masterdata_dev: development-only sample locations below the district level, so
 the facility application wizard can pick a village. Refuses to run unless DEBUG.
 
-Codes start with "DEV-" and village names are placeholders: real sectors, cells and villages come
-from the official NISR file through `import_locations`.
+Codes start with "DEV-" and village names are placeholders. The real NISR sectors, cells and
+villages are loaded by migration `masterdata/0004_nisr_locations`, so this is rarely needed.
 """
 
 from __future__ import annotations

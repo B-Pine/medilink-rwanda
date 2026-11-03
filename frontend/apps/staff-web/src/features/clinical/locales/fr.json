@@ -316,5 +316,26 @@
       "reviewed": "Rien d’examiné pour l’instant"
     },
     "emptyBody": "Les résultats numérisés à l’accueil pour vos patients apparaissent ici."
+  },
+  "paper": {
+    "title": "Dossiers papier et documents scannés",
+    "entries": "Antécédents saisis",
+    "scans": "Documents scannés",
+    "historical": "Depuis le papier",
+    "enteredBy": "saisi par {{name}}",
+    "view": "Voir",
+    "kind": {
+      "diagnosis": "Diagnostic",
+      "condition": "Affection",
+      "allergy": "Allergie",
+      "medication": "Médicament",
+      "procedure": "Intervention"
+    },
+    "type": {
+      "outside_result": "Résultat externe",
+      "legacy_record": "Dossier papier",
+      "referral_letter": "Lettre de référence",
+      "other": "Document"
+    }
   }
 }

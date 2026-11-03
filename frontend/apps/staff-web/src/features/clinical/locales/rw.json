@@ -316,5 +316,26 @@
       "reviewed": "Nta cyasuzumwe kugeza ubu"
     },
     "emptyBody": "Ibisubizo by'abarwayi bawe byashyizwe muri sisitemu ku kwakira biza hano."
+  },
+  "paper": {
+    "title": "Dosiye zo ku mpapuro n'inyandiko zafotowe",
+    "entries": "Amateka yinjijwe",
+    "scans": "Inyandiko zafotowe",
+    "historical": "Byavuye ku mpapuro",
+    "enteredBy": "byinjijwe na {{name}}",
+    "view": "Reba",
+    "kind": {
+      "diagnosis": "Isuzuma",
+      "condition": "Indwara",
+      "allergy": "Allerijiya",
+      "medication": "Umuti",
+      "procedure": "Igikorwa cy'ubuvuzi"
+    },
+    "type": {
+      "outside_result": "Igisubizo cyo hanze",
+      "legacy_record": "Dosiye yo ku mpapuro",
+      "referral_letter": "Ibaruwa yo kohereza",
+      "other": "Inyandiko"
+    }
   }
 }

@@ -316,5 +316,26 @@
       "reviewed": "Nothing reviewed yet"
     },
     "emptyBody": "Results scanned at reception for your patients appear here."
+  },
+  "paper": {
+    "title": "Paper records and scans",
+    "entries": "Back-entered history",
+    "scans": "Scanned documents",
+    "historical": "From paper",
+    "enteredBy": "entered by {{name}}",
+    "view": "View",
+    "kind": {
+      "diagnosis": "Diagnosis",
+      "condition": "Condition",
+      "allergy": "Allergy",
+      "medication": "Medicine",
+      "procedure": "Procedure"
+    },
+    "type": {
+      "outside_result": "Outside result",
+      "legacy_record": "Paper record",
+      "referral_letter": "Referral letter",
+      "other": "Document"
+    }
   }
 }

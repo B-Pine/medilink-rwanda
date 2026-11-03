@@ -535,7 +535,8 @@
     "council": "Council",
     "licence": "Licence number",
     "specialty": "Specialty",
-    "reattest": "Changing your council or licence number means your facility admin attests it again."
+    "reattest": "Changing your council or licence number means your facility admin attests it again.",
+    "licenceTitle": "Professional licence"
   },
   "invite": {
     "title": "Join a facility on MediLink",
@@ -551,5 +552,27 @@
     "password": "Password",
     "passwordHint": "At least 12 characters",
     "create": "Create account"
+  },
+  "publicProfile": {
+    "title": "Public profile",
+    "intro": "What patients read about you on the facility and doctor pages. Your licence number is never shown.",
+    "visible": "Show my profile to patients",
+    "visibleHint": "Off: patients still see your name and days, without the text below.",
+    "on": "Shown",
+    "off": "Hidden",
+    "bioLanguage": "Language of the text",
+    "bio": "About you",
+    "bioHint": "{{count}} characters left. Plain words: what you treat, who you see, how you work.",
+    "languages": "Languages you speak with patients",
+    "spoken": {
+      "rw": "Kinyarwanda",
+      "en": "English",
+      "fr": "French",
+      "sw": "Kiswahili"
+    },
+    "preview": "What patients see",
+    "noBio": "No text yet.",
+    "hidden": "Hidden from patients.",
+    "needLicence": "Save your licence first; the public profile follows."
   }
 }

@@ -253,6 +253,11 @@ function DoctorCard({
         </span>
         <span className="flex min-w-0 flex-1 flex-col gap-0.5">
           <span className="font-heading text-h3 leading-snug font-bold">{doctor.name}</span>
+          {doctor.specialty && (
+            <span className="truncate text-body-sm font-semibold text-brand">
+              {doctor.specialty}
+            </span>
+          )}
           <span className="truncate text-body-sm text-fg-secondary">
             {doctor.services.map((s) => pick(s.name, lang)).join(" · ")}
           </span>
@@ -490,7 +495,13 @@ export function DoctorPage() {
         <PageHeader
           crumbs={[{ to: "/doctors", label: t("nav.doctors") }, { label: doctor?.name ?? "…" }]}
           title={doctor?.name ?? "…"}
-          lead={doctor ? doctor.services.map((s) => pick(s.name, lang)).join(" · ") : undefined}
+          lead={
+            doctor
+              ? [doctor.specialty, ...doctor.services.map((s) => pick(s.name, lang))]
+                  .filter(Boolean)
+                  .join(" · ")
+              : undefined
+          }
         />
         {profile.isPending || !doctor ? (
           <Panel as="div">
@@ -543,82 +554,102 @@ export function DoctorPage() {
                   </dt>
                   <dd className="m-0 mt-1 font-semibold">{daysText(doctor.days, lang)}</dd>
                 </div>
+                {doctor.languages.length > 0 && (
+                  <div>
+                    <dt className="text-caption font-semibold text-fg-muted uppercase">
+                      {t("site.doctor.languages")}
+                    </dt>
+                    <dd className="m-0 mt-1 font-semibold">
+                      {doctor.languages
+                        .map((code) => t(`site.doctor.spoken.${code}`, { defaultValue: code }))
+                        .join(" · ")}
+                    </dd>
+                  </div>
+                )}
               </dl>
             </Panel>
 
-            <Panel aria-labelledby="availability" className="flex flex-col gap-5 p-6">
-              <SectionTitle id="availability">{t("site.doctor.availability")}</SectionTitle>
-              {!firstService ? (
-                <p className="m-0 text-fg-secondary">{t("site.doctor.noTimes")}</p>
-              ) : slots.isPending ? (
-                <LoadingRows rows={2} />
-              ) : slots.isError ? (
-                <ErrorState onRetry={() => void slots.refetch()} />
-              ) : (
-                <>
-                  <div
-                    role="group"
-                    aria-label={t("site.doctor.pickDay")}
-                    className="grid grid-cols-4 gap-2 sm:grid-cols-7"
-                  >
-                    {days.map((d) => {
-                      const count = free(d.slots).length;
-                      const selected = d.date === activeDay?.date;
-                      return (
-                        <button
-                          key={d.date}
-                          type="button"
-                          aria-pressed={selected}
-                          onClick={() => setPicked(d.date)}
-                          className={cx(
-                            "flex cursor-pointer flex-col items-center gap-1 rounded-2xl border px-2 py-3 transition-[background-color,border-color,transform] duration-200 ease-out-quint active:scale-[0.97]",
-                            selected
-                              ? "border-primary bg-brand-subtle text-on-brand-subtle"
-                              : "border-border bg-surface text-fg hover:border-fg-muted",
-                          )}
-                        >
-                          <span className="text-caption font-semibold uppercase">
-                            {day(d.date, lang, "short")}
-                          </span>
-                          <span
+            <div className="flex min-w-0 flex-col gap-6">
+              {pick(doctor.bio, lang) && (
+                <Panel aria-labelledby="about-doctor" className="flex flex-col gap-3 p-6">
+                  <SectionTitle id="about-doctor">{t("site.doctor.about")}</SectionTitle>
+                  <p className="m-0 whitespace-pre-line text-fg">{pick(doctor.bio, lang)}</p>
+                </Panel>
+              )}
+              <Panel aria-labelledby="availability" className="flex flex-col gap-5 p-6">
+                <SectionTitle id="availability">{t("site.doctor.availability")}</SectionTitle>
+                {!firstService ? (
+                  <p className="m-0 text-fg-secondary">{t("site.doctor.noTimes")}</p>
+                ) : slots.isPending ? (
+                  <LoadingRows rows={2} />
+                ) : slots.isError ? (
+                  <ErrorState onRetry={() => void slots.refetch()} />
+                ) : (
+                  <>
+                    <div
+                      role="group"
+                      aria-label={t("site.doctor.pickDay")}
+                      className="grid grid-cols-4 gap-2 sm:grid-cols-7"
+                    >
+                      {days.map((d) => {
+                        const count = free(d.slots).length;
+                        const selected = d.date === activeDay?.date;
+                        return (
+                          <button
+                            key={d.date}
+                            type="button"
+                            aria-pressed={selected}
+                            onClick={() => setPicked(d.date)}
                             className={cx(
-                              "text-caption tabular-nums",
-                              count ? "font-semibold text-primary" : "text-fg-muted",
+                              "flex cursor-pointer flex-col items-center gap-1 rounded-2xl border px-2 py-3 transition-[background-color,border-color,transform] duration-200 ease-out-quint active:scale-[0.97]",
+                              selected
+                                ? "border-primary bg-brand-subtle text-on-brand-subtle"
+                                : "border-border bg-surface text-fg hover:border-fg-muted",
                             )}
                           >
-                            {count ? t("site.doctor.free", { count }) : t("site.doctor.full")}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                  {activeDay && free(activeDay.slots).length > 0 ? (
-                    <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
-                      {free(activeDay.slots).map((s) => (
-                        <li key={s.id} className="animate-enter">
-                          <span className="inline-flex min-h-10 items-center rounded-full bg-subtle px-4 font-semibold tabular-nums">
-                            {time(s.starts_at, lang)}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="m-0 text-fg-secondary">{t("site.doctor.noTimes")}</p>
-                  )}
-                  <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-4">
-                    <p className="m-0 text-caption text-fg-muted">{t("site.doctor.privacy")}</p>
-                    <Link
-                      to={`/book/${doctor.facility.slug}?doctor=${doctor.membershipId}&service=${firstService.id}`}
-                      viewTransition
-                      className={buttonClassName({ pill: true })}
-                    >
-                      <CalendarCheck aria-hidden="true" className="size-5" />
-                      {t("site.doctor.book")}
-                    </Link>
-                  </div>
-                </>
-              )}
-            </Panel>
+                            <span className="text-caption font-semibold uppercase">
+                              {day(d.date, lang, "short")}
+                            </span>
+                            <span
+                              className={cx(
+                                "text-caption tabular-nums",
+                                count ? "font-semibold text-primary" : "text-fg-muted",
+                              )}
+                            >
+                              {count ? t("site.doctor.free", { count }) : t("site.doctor.full")}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {activeDay && free(activeDay.slots).length > 0 ? (
+                      <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
+                        {free(activeDay.slots).map((s) => (
+                          <li key={s.id} className="animate-enter">
+                            <span className="inline-flex min-h-10 items-center rounded-full bg-subtle px-4 font-semibold tabular-nums">
+                              {time(s.starts_at, lang)}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="m-0 text-fg-secondary">{t("site.doctor.noTimes")}</p>
+                    )}
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-4">
+                      <p className="m-0 text-caption text-fg-muted">{t("site.doctor.privacy")}</p>
+                      <Link
+                        to={`/book/${doctor.facility.slug}?doctor=${doctor.membershipId}&service=${firstService.id}`}
+                        viewTransition
+                        className={buttonClassName({ pill: true })}
+                      >
+                        <CalendarCheck aria-hidden="true" className="size-5" />
+                        {t("site.doctor.book")}
+                      </Link>
+                    </div>
+                  </>
+                )}
+              </Panel>
+            </div>
           </div>
         )}
       </PageContainer>

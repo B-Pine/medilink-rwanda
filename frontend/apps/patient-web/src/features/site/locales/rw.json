@@ -167,7 +167,15 @@
     "noTimes": "Nta gihe kiboneka uyu munsi",
     "book": "Fata gahunda kuri uyu muganga",
     "pickDay": "Hitamo umunsi",
-    "privacy": "Hagaragazwa gusa ibihe biboneka, ntihagaragazwa abafashe gahunda."
+    "privacy": "Hagaragazwa gusa ibihe biboneka, ntihagaragazwa abafashe gahunda.",
+    "about": "Ibimwerekeye",
+    "languages": "Avuga",
+    "spoken": {
+      "rw": "Ikinyarwanda",
+      "en": "Icyongereza",
+      "fr": "Igifaransa",
+      "sw": "Igiswahili"
+    }
   },
   "services": {
     "title": "Menya serivisi z’ubuvuzi",

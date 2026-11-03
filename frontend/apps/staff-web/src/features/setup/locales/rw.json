@@ -535,7 +535,8 @@
     "council": "Urugaga",
     "licence": "Nimero y'uruhushya",
     "specialty": "Ubuhanga bwihariye",
-    "reattest": "Guhindura urugaga cyangwa nimero y'uruhushya bisaba ko umuyobozi wawe arwemeza bundi bushya."
+    "reattest": "Guhindura urugaga cyangwa nimero y'uruhushya bisaba ko umuyobozi wawe arwemeza bundi bushya.",
+    "licenceTitle": "Uruhushya rw'umwuga"
   },
   "invite": {
     "title": "Injira mu kigo kuri MediLink",
@@ -551,5 +552,27 @@
     "password": "Ijambobanga",
     "passwordHint": "Nibura inyuguti 12",
     "create": "Fungura konti"
+  },
+  "publicProfile": {
+    "title": "Umwirondoro ugaragara",
+    "intro": "Ibyo abarwayi basoma kuri wowe ku mapaji y'ikigo n'aya muganga. Nomero y'uruhushya rwawe ntigaragara.",
+    "visible": "Erekana umwirondoro wanjye abarwayi",
+    "visibleHint": "Bifunze: abarwayi babona izina ryawe n'iminsi ukora, nta nyandiko iri hepfo.",
+    "on": "Biragaragara",
+    "off": "Byahishwe",
+    "bioLanguage": "Ururimi rw'inyandiko",
+    "bio": "Ibyerekeye wowe",
+    "bioHint": "Hasigaye inyuguti {{count}}. Amagambo yoroshye: ibyo uvura, abo wakira, uko ukora.",
+    "languages": "Indimi uvuga n'abarwayi",
+    "spoken": {
+      "rw": "Ikinyarwanda",
+      "en": "Icyongereza",
+      "fr": "Igifaransa",
+      "sw": "Igiswahili"
+    },
+    "preview": "Ibyo abarwayi babona",
+    "noBio": "Nta nyandiko iriho.",
+    "hidden": "Byahishwe abarwayi.",
+    "needLicence": "Banza ubike uruhushya rwawe; umwirondoro ugaragara ukurikira."
   }
 }

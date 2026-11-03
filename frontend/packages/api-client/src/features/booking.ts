@@ -114,7 +114,16 @@ export interface PublicFacility {
   hours: [string, string, string][];
   closures: { date: string; reason: string }[];
   services: PublicService[];
-  doctors: { membership_id: Uuid; name: string; days: number[]; service_ids: Uuid[] }[];
+  doctors: {
+    membership_id: Uuid;
+    name: string;
+    days: number[];
+    service_ids: Uuid[];
+    /** upgrade 05 §3: written by the doctor; empty when not made public. */
+    specialty?: string;
+    bio_i18n?: Partial<Record<"rw" | "en" | "fr", string>>;
+    languages?: string[];
+  }[];
 }
 
 export interface PublicSlot {

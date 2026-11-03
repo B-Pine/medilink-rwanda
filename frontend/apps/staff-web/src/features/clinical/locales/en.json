@@ -2,7 +2,12 @@
   "nav": {
     "consultation": "Consultation",
     "unsigned": "Unsigned records",
-    "results": "Results"
+    "results": "Results",
+    "questions": "Pharmacy questions",
+    "followUps": "Follow-ups",
+    "activity": "My activity",
+    "templates": "Templates",
+    "profile": "My doctor profile"
   },
   "title": "Consultation",
   "headerTitle": "Consultation · {{name}}",
@@ -337,5 +342,118 @@
       "referral_letter": "Referral letter",
       "other": "Document"
     }
+  },
+  "questions": {
+    "title": "Pharmacy questions",
+    "intro": "Questions from the pharmacy about your prescriptions. Your answer is added to the record as a signed note.",
+    "tabs": {
+      "open": "Waiting for you",
+      "answered": "Answered"
+    },
+    "status": {
+      "open": "Waiting",
+      "answered": "Answered",
+      "closed": "Closed"
+    },
+    "from": "From {{name}} · {{time}}",
+    "medicines": "Medicines on this prescription",
+    "answer": "Your answer",
+    "answerHint": "Clear and short. It becomes a signed note on the record.",
+    "answerRequired": "Write an answer first.",
+    "send": "Send answer",
+    "openRecord": "Open record",
+    "answeredAt": "Answered {{time}}",
+    "empty": {
+      "open": "No questions waiting",
+      "answered": "No answered questions yet"
+    },
+    "emptyBody": "When the pharmacy asks about one of your prescriptions, it shows here."
+  },
+  "followUps": {
+    "title": "Follow-ups",
+    "intro": "Patients you asked to come back. Missed ones need a call from reception or a new booking.",
+    "state": {
+      "missed": "Missed",
+      "today": "Today",
+      "upcoming": "Next 14 days",
+      "attended": "Came back"
+    },
+    "columns": {
+      "patient": "Patient",
+      "service": "Service",
+      "due": "Due",
+      "how": "How",
+      "action": "Action"
+    },
+    "mode": {
+      "booking": "Booked",
+      "reminder": "Reminder"
+    },
+    "history": "History",
+    "empty": {
+      "missed": "No missed follow-ups",
+      "today": "No follow-ups today",
+      "upcoming": "Nothing planned in the next 14 days",
+      "attended": "No one has come back yet"
+    },
+    "emptyBody": "Set a follow-up from My queue when you finish with a patient."
+  },
+  "activity": {
+    "title": "My activity",
+    "intro": "Your own numbers, for you. No patient names here.",
+    "period": "Period",
+    "days_one": "{{count}} day",
+    "days_other": "{{count}} days",
+    "seen": "Patients seen",
+    "signed": "Records signed",
+    "perDay": "{{value}} per day",
+    "late_one": "{{count}} signed after 24 h",
+    "late_other": "{{count}} signed after 24 h",
+    "avg": "Average consultation",
+    "avgCaption": "From start to finish",
+    "followUps": "Follow-ups set",
+    "unsignedNow_one": "{{count}} record not signed now",
+    "unsignedNow_other": "{{count}} records not signed now",
+    "chart": "Seen and signed per day",
+    "topDiagnoses": "Most frequent diagnoses",
+    "noDiagnoses": "No diagnoses in this period.",
+    "privacy": "Only you see this page. The facility sees totals, never one doctor's list."
+  },
+  "templates": {
+    "title": "Templates",
+    "intro": "Your notes, diagnoses and usual prescriptions for common visits. One click fills the consultation.",
+    "new": "New template",
+    "edit": "Edit template",
+    "delete": "Delete",
+    "deleteTitle": "Delete “{{name}}”?",
+    "deleteBody": "Records already written with it do not change.",
+    "used_one": "Used {{count}} time",
+    "used_other": "Used {{count}} times",
+    "name": "Name",
+    "nameHint": "For example: Fever (adult), Antenatal visit, Hypertension review",
+    "nameRequired": "Give the template a name.",
+    "sections": {
+      "history_text": "History",
+      "examination_text": "Examination",
+      "plan_text": "Plan",
+      "patient_instructions_text": "Instructions for the patient"
+    },
+    "codes": "Diagnosis codes (ICD-10)",
+    "codesHint": "Separated by commas, for example B54, J06.9",
+    "medicines": "Usual prescription",
+    "drug": "Medicine",
+    "drugHint": "Search the catalogue, or type a name",
+    "drugRequired": "Choose or type a medicine.",
+    "change": "Change",
+    "addMedicine": "Add medicine",
+    "remove": "Remove",
+    "save": "Save template",
+    "duplicate": "You already have a template with this name.",
+    "emptyTitle": "No templates yet",
+    "empty": "Create one here, or save a consultation as a template while you write it.",
+    "use": "Use a template",
+    "useHint": "Text goes into empty sections or after what you wrote. Diagnoses are added as provisional; medicines go to the prescription.",
+    "saveAs": "Save as template",
+    "itemsFailed": "These medicines need your attention in the prescription: {{names}}"
   }
 }

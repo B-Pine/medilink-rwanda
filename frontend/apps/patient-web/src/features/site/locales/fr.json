@@ -167,7 +167,15 @@
     "noTimes": "Aucun créneau libre ce jour",
     "book": "Réserver avec ce médecin",
     "pickDay": "Choisissez un jour",
-    "privacy": "Seuls les créneaux libres sont affichés, jamais qui a réservé."
+    "privacy": "Seuls les créneaux libres sont affichés, jamais qui a réservé.",
+    "about": "À propos",
+    "languages": "Parle",
+    "spoken": {
+      "rw": "Kinyarwanda",
+      "en": "Anglais",
+      "fr": "Français",
+      "sw": "Kiswahili"
+    }
   },
   "services": {
     "title": "Explorer les services de santé",

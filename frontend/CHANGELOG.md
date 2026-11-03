@@ -9,6 +9,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Doctor tools (upgrade 05 §3)
+
+- Added: Pharmacy questions `/clinical/questions`: questions on my prescriptions, answered in
+  one step (a signed note on the record).
+- Added: Follow-ups `/clinical/follow-ups`: missed, today, next 14 days and came back.
+- Added: My activity `/clinical/activity` and Templates `/clinical/templates` under a new
+  "My practice" menu section; in the consultation, "Use a template" fills empty sections, adds
+  provisional diagnoses and the usual medicines, and "Save as template" keeps the current note.
+- Added: My doctor profile in the user menu: licence plus a public bio in rw/en/fr, languages
+  and visibility; public doctor pages show specialty, bio and languages.
+
 ### Upgrade U12 · Patient dashboard (upgrade 12)
 
 - Changed: every signed-in patient page moves under `/dashboard` (`app/paths.ts`); the old

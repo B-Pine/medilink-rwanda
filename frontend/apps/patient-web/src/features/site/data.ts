@@ -90,6 +90,10 @@ export interface PublicDoctor {
   membershipId: string;
   name: string;
   days: number[];
+  /** Written by the doctor (upgrade 05 §3); empty when they keep it private. */
+  specialty: string;
+  bio: Partial<Record<"rw" | "en" | "fr", string>>;
+  languages: string[];
   facility: Pick<PublicFacility, "slug" | "name" | "district" | "type">;
   services: { id: string; code: string; name: PublicFacility["services"][number]["name_i18n"] }[];
 }
@@ -109,6 +113,9 @@ export function doctorsOf(profile: PublicFacility): PublicDoctor[] {
     membershipId: doctor.membership_id,
     name: doctor.name,
     days: doctor.days,
+    specialty: doctor.specialty ?? "",
+    bio: doctor.bio_i18n ?? {},
+    languages: doctor.languages ?? [],
     facility: {
       slug: profile.slug,
       name: profile.name,

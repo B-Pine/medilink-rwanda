@@ -1,5 +1,11 @@
-import { CaretDown, LockKey, ShieldCheck, SignOut } from "@phosphor-icons/react";
-import type { StaffMe } from "@medilink/api-client";
+import {
+  CaretDown,
+  IdentificationBadge,
+  LockKey,
+  ShieldCheck,
+  SignOut,
+} from "@phosphor-icons/react";
+import { hasPermission, type StaffMe } from "@medilink/api-client";
 import {
   Menu,
   MenuContent,
@@ -92,6 +98,12 @@ export function UserMenu({ me }: { me: StaffMe }) {
           ))}
         </MenuRadioGroup>
         <MenuSeparator />
+        {hasPermission(me, "clinical.write") && (
+          <MenuItem onSelect={() => void navigate("/profile/clinician")}>
+            <IdentificationBadge aria-hidden="true" className="size-icon" />
+            {t("clinical.nav.profile")}
+          </MenuItem>
+        )}
         <MenuItem onSelect={() => void navigate("/account/security")}>
           <ShieldCheck aria-hidden="true" className="size-icon" />
           {t("lock.menuSecurity")}

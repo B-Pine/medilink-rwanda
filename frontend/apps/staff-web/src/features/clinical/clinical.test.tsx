@@ -51,6 +51,53 @@ describe("doctor's day (upgrade 05 §3)", () => {
   }, 40_000);
 });
 
+describe("doctor tools (upgrade 05 §3)", () => {
+  it("answers a pharmacy question in one step", async () => {
+    const app = await signIn();
+    await app.router.navigate("/clinical/questions");
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "Pharmacy questions" }),
+    ).toBeInTheDocument();
+    expect(await screen.findByText(/Amlodipine 5 mg is out of stock/)).toBeInTheDocument();
+    await app.user.type(screen.getByRole("textbox", { name: /Your answer/ }), "Yes, two tablets.");
+    await app.user.click(screen.getByRole("button", { name: "Send answer" }));
+    expect(await screen.findByText("No questions waiting")).toBeInTheDocument();
+    expect(await axe(app.container)).toHaveNoViolations();
+  }, 40_000);
+
+  it("follow-ups by state, activity and templates", async () => {
+    const app = await signIn();
+    await app.router.navigate("/clinical/follow-ups");
+    await app.user.click(await screen.findByRole("button", { name: /^Missed/ }));
+    expect(await screen.findByRole("table", { name: "Missed" })).toBeInTheDocument();
+    expect(screen.getByText("Habimana Jean")).toBeInTheDocument();
+
+    await app.router.navigate("/clinical/activity");
+    expect((await screen.findAllByText("Patients seen")).length).toBeGreaterThan(0);
+    expect(screen.getByRole("heading", { name: "Most frequent diagnoses" })).toBeInTheDocument();
+
+    await app.router.navigate("/clinical/templates");
+    expect(await screen.findByText("Fever (adult)")).toBeInTheDocument();
+    await app.user.click(screen.getByRole("button", { name: "New template" }));
+    await app.user.type(await screen.findByRole("textbox", { name: /^Name/ }), "Cough (child)");
+    await app.user.click(screen.getByRole("button", { name: "Save template" }));
+    expect(await screen.findByText("Cough (child)")).toBeInTheDocument();
+    expect(await axe(app.container)).toHaveNoViolations();
+  }, 60_000);
+
+  it("a template fills an empty plan in the consultation", async () => {
+    const app = await signIn();
+    await openDraft(app);
+    await app.user.click(screen.getByRole("button", { name: "Use a template" }));
+    await app.user.click(await screen.findByRole("button", { name: /Hypertension review/ }));
+    await waitFor(() =>
+      expect(screen.getByRole("textbox", { name: "Plan" })).toHaveValue(
+        "Continue amlodipine. Check BP in one month.",
+      ),
+    );
+  }, 40_000);
+});
+
 describe("results inbox (S6b R1)", () => {
   it("lists outside results to review and marks one reviewed", async () => {
     const app = await signIn();

@@ -133,7 +133,7 @@ function NeedsYou({ data }: { data: MyDay }) {
       : []),
     ...data.open_questions.map((q) => ({
       key: q.id,
-      to: `/clinical/consultations/${q.consultation_id}#prescription`,
+      to: "/clinical/questions",
       icon: ChatCircleDots,
       label: t("clinical.today.question", { name: q.patient_display_name }),
       detail: t("clinical.today.askedAt", { time: time(q.raised_at) }),
@@ -165,7 +165,7 @@ function NeedsYou({ data }: { data: MyDay }) {
       ? [
           {
             key: "followUps",
-            to: "/schedule/mine",
+            to: "/clinical/follow-ups",
             icon: CalendarCheck,
             label: t("clinical.today.followUps", { count: data.follow_ups_today }),
             urgent: false,

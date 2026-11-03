@@ -40,6 +40,7 @@ import { useApi } from "../../app/services";
 import { useStaffMe } from "../../auth/queries";
 import { PageHeader } from "../../components/PageHeader";
 import { roleLabel } from "../../facility/labels";
+import { PublicProfileCard } from "./PublicProfileCard";
 import { useStepUp } from "../lock";
 import {
   errorText,
@@ -802,9 +803,15 @@ export function ClinicianPage() {
     queryFn: () => api.setup.clinicianProfile(),
   });
   return (
-    <div className="flex max-w-2xl flex-col gap-6">
+    <div className="flex max-w-5xl flex-col gap-6">
       <PageHeader title={t("setup.clinician.title")} description={t("setup.clinician.intro")} />
-      <QueryState query={profile}>{(data) => <ClinicianForm profile={data} />}</QueryState>
+      <section aria-labelledby="licence-title" className="flex flex-col gap-3">
+        <h2 id="licence-title" className="m-0 font-heading text-h3 tracking-tight">
+          {t("setup.clinician.licenceTitle")}
+        </h2>
+        <QueryState query={profile}>{(data) => <ClinicianForm profile={data} />}</QueryState>
+      </section>
+      {profile.data && <PublicProfileCard />}
     </div>
   );
 }
@@ -832,7 +839,7 @@ function ClinicianForm({ profile }: { profile: ClinicianProfile }) {
         e.preventDefault();
         save.mutate();
       }}
-      className="flex flex-col gap-5 rounded-2xl bg-surface shadow-card p-5"
+      className="flex max-w-2xl flex-col gap-5 rounded-2xl bg-surface p-5 shadow-card"
     >
       <SelectField
         label={t("setup.clinician.council")}

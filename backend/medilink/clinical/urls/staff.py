@@ -3,6 +3,7 @@
 from django.urls import path
 
 from medilink.clinical import views as v
+from medilink.clinical import views_doctor as d
 from medilink.clinical import views_s6b as b
 
 urlpatterns = [
@@ -14,6 +15,26 @@ urlpatterns = [
     path("visits/<uuid:visit_id>/vitals/", v.VisitVitalsView.as_view(), name="staff-visit-vitals"),
     path("consultations/", v.ConsultationListView.as_view(), name="staff-consultations"),
     path("clinical/my-day/", v.MyDayView.as_view(), name="staff-clinical-my-day"),
+    # upgrade 05 §3: doctor tools
+    path("clinical/questions/", d.QuestionsView.as_view(), name="staff-clinical-questions"),
+    path(
+        "clinical/questions/<uuid:query_id>/reply/",
+        d.QuestionReplyView.as_view(),
+        name="staff-clinical-question-reply",
+    ),
+    path("clinical/my-follow-ups/", d.MyFollowUpsView.as_view(), name="staff-clinical-follow-ups"),
+    path("clinical/my-activity/", d.MyActivityView.as_view(), name="staff-clinical-activity"),
+    path("clinical/templates/", d.TemplatesView.as_view(), name="staff-clinical-templates"),
+    path(
+        "clinical/templates/<uuid:template_id>/",
+        d.TemplateView.as_view(),
+        name="staff-clinical-template",
+    ),
+    path(
+        "clinical/templates/<uuid:template_id>/used/",
+        d.TemplateUsedView.as_view(),
+        name="staff-clinical-template-used",
+    ),
     path(
         "consultations/<uuid:consultation_id>/",
         v.ConsultationView.as_view(),

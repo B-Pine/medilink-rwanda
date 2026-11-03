@@ -167,7 +167,15 @@
     "noTimes": "No free times this day",
     "book": "Book with this doctor",
     "pickDay": "Choose a day",
-    "privacy": "Only free times are shown, never who has booked."
+    "privacy": "Only free times are shown, never who has booked.",
+    "about": "About",
+    "languages": "Speaks",
+    "spoken": {
+      "rw": "Kinyarwanda",
+      "en": "English",
+      "fr": "French",
+      "sw": "Kiswahili"
+    }
   },
   "services": {
     "title": "Explore healthcare services",

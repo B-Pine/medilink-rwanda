@@ -14,7 +14,11 @@ import type {
   SectionField,
   ClinicalScan,
   HistoryEntry,
+  MyActivity,
   MyDay,
+  MyFollowUp,
+  NoteTemplate,
+  PharmacyQuestion,
   ReasonForVisit,
   ResultReview,
   Vitals,
@@ -570,10 +574,120 @@ function seedRecords() {
   return { scans, results, entries };
 }
 
+/** Doctor tools (upgrade 05 §3): a pharmacy question, follow-ups and two templates. */
+function seedTools() {
+  const jeanne = RECORDS[0]!;
+  const ago = (minutes: number) => new Date(Date.now() - minutes * 60_000).toISOString();
+  const day = (offset: number) =>
+    new Date(Date.now() + offset * 86_400_000).toISOString().slice(0, 10);
+  const general = {
+    en: "General consultation",
+    rw: "Kwisuzumisha rusange",
+    fr: "Consultation générale",
+  };
+  const questions: PharmacyQuestion[] = [
+    {
+      id: "7e000000-0000-4000-8000-000000000001",
+      status: "open",
+      message: "Amlodipine 5 mg is out of stock. Can I give 2 × 2.5 mg instead?",
+      raised_by_name: "Mukeshimana Alice",
+      raised_at: ago(25),
+      answered_at: null,
+      prescription_id: "7e000000-0000-4000-8000-000000000002",
+      consultation_id: MOCK_PRESSURE_CONSULTATION,
+      facility_patient_id: jeanne.fp,
+      patient_display_name: jeanne.name,
+      items: ["Amlodipine 5 mg tablet"],
+    },
+    {
+      id: "7e000000-0000-4000-8000-000000000003",
+      status: "answered",
+      message: "Is 7 days of amoxicillin right for a child of 4?",
+      raised_by_name: "Mukeshimana Alice",
+      raised_at: ago(60 * 26),
+      answered_at: ago(60 * 25),
+      prescription_id: "7e000000-0000-4000-8000-000000000004",
+      consultation_id: MOCK_PRESSURE_CONSULTATION,
+      facility_patient_id: jeanne.fp,
+      patient_display_name: "Iradukunda Eric",
+      items: ["Amoxicillin 250 mg/5 ml suspension"],
+    },
+  ];
+  const followUp = (
+    name: string,
+    offset: number,
+    state: MyFollowUp["state"],
+    mode: MyFollowUp["mode"] = "booking",
+  ): MyFollowUp => ({
+    id: id(),
+    patient_display_name: name,
+    facility_patient_id: jeanne.fp,
+    service_name_i18n: general,
+    due_on: day(offset),
+    mode,
+    status: state === "attended" ? "done" : mode === "booking" ? "booked" : "due",
+    state,
+    booking_starts_at: mode === "booking" ? `${day(offset)}T08:30:00Z` : null,
+    consultation_id: null,
+  });
+  const followUps = [
+    followUp("Habimana Jean", -3, "missed"),
+    followUp(jeanne.name, 0, "today"),
+    followUp("Uwase Diane", 0, "today", "reminder"),
+    followUp("Niyonsaba Claude", 4, "upcoming"),
+    followUp("Mukamana Grace", 9, "upcoming", "reminder"),
+    followUp("Iradukunda Eric", -6, "attended"),
+  ];
+  const templates: NoteTemplate[] = [
+    {
+      id: id(),
+      name: "Fever (adult)",
+      sections: {
+        history_text: "Fever for __ days. Headache: __. Cough: __. Travel: __.",
+        examination_text: "Temperature __. Pulse __. Neck soft. Chest clear.",
+        plan_text: "Malaria rapid test. Paracetamol. Review if fever lasts 3 days.",
+        patient_instructions_text:
+          "Drink plenty of water. Come back if the fever lasts more than two days.",
+      },
+      diagnosis_codes: ["B54"],
+      items: [
+        {
+          drug_code: "PARA500",
+          drug_display: "Paracetamol 500 mg tablet",
+          dose: "2 tablets",
+          frequency_code: "qds",
+          route: "oral",
+          duration_days: 3,
+          quantity: 24,
+          instructions: "After food",
+        },
+      ],
+      use_count: 14,
+      updated_at: ago(60 * 48),
+    },
+    {
+      id: id(),
+      name: "Hypertension review",
+      sections: {
+        history_text: "Known hypertension. Taking tablets every day: __. Headaches: __.",
+        examination_text: "BP __/__. Pulse __. No oedema.",
+        plan_text: "Continue amlodipine. Check BP in one month.",
+        patient_instructions_text: "Take the tablet every morning. Eat less salt.",
+      },
+      diagnosis_codes: ["I10"],
+      items: [],
+      use_count: 6,
+      updated_at: ago(60 * 72),
+    },
+  ];
+  return { questions, followUps, templates };
+}
+
 export const clinicalMocks: FeatureMockFactory = (context) => {
   const { api } = context;
   let db = seed();
   let paper = seedRecords();
+  let tools = seedTools();
   liveConsultations = () => db.consultations; // [S7]
   const S = `${api}/staff`;
 
@@ -627,8 +741,154 @@ export const clinicalMocks: FeatureMockFactory = (context) => {
     reset() {
       db = seed();
       paper = seedRecords();
+      tools = seedTools();
     },
     handlers: [
+      http.get(`${S}/clinical/questions/`, async ({ request }) => {
+        await context.settle();
+        const ok = staff(request, ["prescription.issue"]);
+        if ("error" in ok) return ok.error;
+        const open = new URL(request.url).searchParams.get("status") !== "answered";
+        return HttpResponse.json(tools.questions.filter((q) => (q.status === "open") === open));
+      }),
+      http.post(`${S}/clinical/questions/:id/reply/`, async ({ request, params }) => {
+        await context.settle();
+        const ok = staff(request, ["prescription.issue"]);
+        if ("error" in ok) return ok.error;
+        const step = stepUpFailure(context, ok.lang);
+        if (step) return step;
+        const q = tools.questions.find((x) => x.id === params.id);
+        if (!q) return notFound(ok.lang);
+        const body = (await context.readJson(request)) ?? {};
+        if (asText(body.body).trim().length < 2)
+          return context.validationError(ok.lang, { body: "required" });
+        q.status = "answered";
+        q.answered_at = now();
+        return HttpResponse.json(q);
+      }),
+      http.get(`${S}/clinical/my-follow-ups/`, async ({ request }) => {
+        await context.settle();
+        const ok = staff(request, ["clinical.write"]);
+        if ("error" in ok) return ok.error;
+        return HttpResponse.json(tools.followUps);
+      }),
+      http.get(`${S}/clinical/my-activity/`, async ({ request }) => {
+        await context.settle();
+        const ok = staff(request, ["clinical.write"]);
+        if ("error" in ok) return ok.error;
+        const days = new URL(request.url).searchParams.get("days") === "30" ? 30 : 7;
+        const trend = Array.from({ length: days }, (_, i) => {
+          const d = new Date(Date.now() - (days - 1 - i) * 86_400_000);
+          const sunday = d.getUTCDay() === 0;
+          const seen = sunday ? 0 : 11 + ((i * 7) % 9);
+          return { date: d.toISOString().slice(0, 10), seen, signed: Math.max(0, seen - (i % 3)) };
+        });
+        const seen = trend.reduce((n, d) => n + d.seen, 0);
+        const body: MyActivity = {
+          days,
+          seen,
+          signed: trend.reduce((n, d) => n + d.signed, 0),
+          avg_consult_min: 13,
+          late_signatures: days === 7 ? 1 : 3,
+          unsigned_now: db.consultations.filter((c) => c.status === "draft" && isMine(c, ok.me))
+            .length,
+          follow_ups_set: days === 7 ? 6 : 21,
+          trend,
+          top_diagnoses: [
+            { code: "B54", display: "Unspecified malaria", count: Math.round(seen * 0.22) },
+            {
+              code: "J06.9",
+              display: "Acute upper respiratory infection",
+              count: Math.round(seen * 0.17),
+            },
+            {
+              code: "I10",
+              display: "Essential (primary) hypertension",
+              count: Math.round(seen * 0.12),
+            },
+            {
+              code: "A09",
+              display: "Diarrhoea and gastroenteritis",
+              count: Math.round(seen * 0.08),
+            },
+            { code: "E11", display: "Type 2 diabetes mellitus", count: Math.round(seen * 0.05) },
+          ],
+        };
+        return HttpResponse.json(body);
+      }),
+      http.get(`${S}/clinical/templates/`, async ({ request }) => {
+        await context.settle();
+        const ok = staff(request, ["clinical.write"]);
+        if ("error" in ok) return ok.error;
+        return HttpResponse.json(
+          [...tools.templates].sort(
+            (a, b) => b.use_count - a.use_count || a.name.localeCompare(b.name),
+          ),
+        );
+      }),
+      http.post(`${S}/clinical/templates/`, async ({ request }) => {
+        await context.settle();
+        const ok = staff(request, ["clinical.write"]);
+        if ("error" in ok) return ok.error;
+        const body = ((await context.readJson(request)) ?? {}) as Partial<NoteTemplate>;
+        const name = asText(body.name).trim();
+        if (!name) return context.validationError(ok.lang, { name: "required" });
+        if (tools.templates.some((t) => t.name === name))
+          return context.errorResponse(
+            409,
+            "conflict",
+            "You already have a template with this name.",
+          );
+        const t: NoteTemplate = {
+          id: id(),
+          name,
+          sections: {
+            history_text: "",
+            examination_text: "",
+            plan_text: "",
+            patient_instructions_text: "",
+            ...(body.sections ?? {}),
+          },
+          diagnosis_codes: (body.diagnosis_codes ?? []).map((c) => c.toUpperCase()),
+          items: body.items ?? [],
+          use_count: 0,
+          updated_at: now(),
+        };
+        tools.templates.push(t);
+        return HttpResponse.json(t, { status: 201 });
+      }),
+      http.put(`${S}/clinical/templates/:id/`, async ({ request, params }) => {
+        await context.settle();
+        const ok = staff(request, ["clinical.write"]);
+        if ("error" in ok) return ok.error;
+        const t = tools.templates.find((x) => x.id === params.id);
+        if (!t) return notFound(ok.lang);
+        const body = ((await context.readJson(request)) ?? {}) as Partial<NoteTemplate>;
+        Object.assign(t, {
+          name: asText(body.name).trim() || t.name,
+          sections: { ...t.sections, ...(body.sections ?? {}) },
+          diagnosis_codes: (body.diagnosis_codes ?? []).map((c) => c.toUpperCase()),
+          items: body.items ?? [],
+          updated_at: now(),
+        });
+        return HttpResponse.json(t);
+      }),
+      http.delete(`${S}/clinical/templates/:id/`, async ({ request, params }) => {
+        await context.settle();
+        const ok = staff(request, ["clinical.write"]);
+        if ("error" in ok) return ok.error;
+        tools.templates = tools.templates.filter((x) => x.id !== params.id);
+        return new HttpResponse(null, { status: 204 });
+      }),
+      http.post(`${S}/clinical/templates/:id/used/`, async ({ request, params }) => {
+        await context.settle();
+        const ok = staff(request, ["clinical.write"]);
+        if ("error" in ok) return ok.error;
+        const t = tools.templates.find((x) => x.id === params.id);
+        if (!t) return notFound(ok.lang);
+        t.use_count += 1;
+        return HttpResponse.json(t);
+      }),
       http.get(`${S}/results-inbox/`, async ({ request }) => {
         await context.settle();
         const ok = staff(request, ["clinical.view"]);
@@ -720,16 +980,16 @@ export const clinicalMocks: FeatureMockFactory = (context) => {
           unsigned_overdue: drafts.filter((c) => Date.now() - Date.parse(c.started_at) > 86_400_000)
             .length,
           results_waiting: paper.results.filter((r) => r.status === "pending").length,
-          follow_ups_today: 3,
-          open_questions: [
-            {
-              id: "7e000000-0000-4000-8000-000000000001",
-              prescription_id: "7e000000-0000-4000-8000-000000000002",
-              consultation_id: MOCK_PRESSURE_CONSULTATION,
-              patient_display_name: RECORDS[0]!.name,
-              raised_at: new Date(Date.now() - 25 * 60_000).toISOString(),
-            },
-          ],
+          follow_ups_today: tools.followUps.filter((f) => f.state === "today").length,
+          open_questions: tools.questions
+            .filter((q) => q.status === "open")
+            .map((q) => ({
+              id: q.id,
+              prescription_id: q.prescription_id,
+              consultation_id: q.consultation_id,
+              patient_display_name: q.patient_display_name,
+              raised_at: q.raised_at,
+            })),
           updated_at: now(),
         };
         return HttpResponse.json(body);

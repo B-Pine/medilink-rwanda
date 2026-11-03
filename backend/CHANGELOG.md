@@ -8,6 +8,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Doctor tools (upgrade 05 §3)
+
+- Added: `GET /staff/clinical/questions/` and `POST .../questions/{id}/reply/` (signed addendum
+  linked as the answer in one step; step-up; prescriber only); `GET /staff/clinical/my-follow-ups/`;
+  `GET /staff/clinical/my-activity/?days=7|30` (counts only); `/staff/clinical/templates/`
+  (private to the clinician, across facilities; migration `accounts.0006`).
+- Added: `GET/PATCH /staff/clinician-profile/public/` (bio in rw/en/fr, languages, visibility;
+  audit `staff.clinician_profile.public_updated`). Public facility profiles show specialty, bio and
+  languages of doctors who opted in; never the licence.
+
 ### Upgrade U12 · Patient dashboard links (upgrade 12 §2)
 
 - Changed: patient notification targets follow the `/dashboard` app: bookings open

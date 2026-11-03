@@ -535,7 +535,8 @@
     "council": "Conseil",
     "licence": "Numéro de licence",
     "specialty": "Spécialité",
-    "reattest": "Changer de conseil ou de numéro de licence demande une nouvelle attestation par l’administrateur."
+    "reattest": "Changer de conseil ou de numéro de licence demande une nouvelle attestation par l’administrateur.",
+    "licenceTitle": "Licence professionnelle"
   },
   "invite": {
     "title": "Rejoindre un établissement sur MediLink",
@@ -551,5 +552,27 @@
     "password": "Mot de passe",
     "passwordHint": "Au moins 12 caractères",
     "create": "Créer le compte"
+  },
+  "publicProfile": {
+    "title": "Profil public",
+    "intro": "Ce que les patients lisent sur vous sur les pages de l’établissement et du médecin. Votre numéro de licence n’est jamais affiché.",
+    "visible": "Montrer mon profil aux patients",
+    "visibleHint": "Désactivé : les patients voient votre nom et vos jours, sans le texte ci-dessous.",
+    "on": "Visible",
+    "off": "Masqué",
+    "bioLanguage": "Langue du texte",
+    "bio": "À propos de vous",
+    "bioHint": "{{count}} caractères restants. Des mots simples : ce que vous soignez, qui vous voyez, comment vous travaillez.",
+    "languages": "Langues parlées avec les patients",
+    "spoken": {
+      "rw": "Kinyarwanda",
+      "en": "Anglais",
+      "fr": "Français",
+      "sw": "Kiswahili"
+    },
+    "preview": "Ce que voient les patients",
+    "noBio": "Pas encore de texte.",
+    "hidden": "Masqué aux patients.",
+    "needLicence": "Enregistrez d’abord votre licence ; le profil public suit."
   }
 }

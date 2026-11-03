@@ -97,6 +97,10 @@ class PublicFacilityDoctorSerializer(serializers.Serializer):
     name = serializers.CharField()
     days = serializers.ListField(child=serializers.IntegerField())
     service_ids = serializers.ListField(child=serializers.UUIDField())
+    # upgrade 05 §3: written by the doctor, shown only when they made it public
+    specialty = serializers.CharField(allow_blank=True)
+    bio_i18n = serializers.DictField(child=serializers.CharField())
+    languages = serializers.ListField(child=serializers.CharField())
 
 
 class PublicClosureSerializer(serializers.Serializer):

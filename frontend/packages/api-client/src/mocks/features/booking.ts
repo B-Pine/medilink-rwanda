@@ -998,6 +998,17 @@ export const bookingMocks: FeatureMockFactory = (context) => {
             name: s.doctor,
             days: s.weekdays,
             service_ids: [s.id],
+            // upgrade 05 §3: the doctor's own public words (the demo doctor filled them in)
+            ...(s.membership_id === SETUP_IDS.mKeza
+              ? {
+                  specialty: "General practice",
+                  bio_i18n: {
+                    en: "Family doctor with ten years in Kigali. I look after adults and children, and follow people with high blood pressure and diabetes.",
+                    rw: "Muganga w'umuryango umaze imyaka icumi i Kigali. Nita ku bantu bakuru n'abana.",
+                  },
+                  languages: ["en", "fr", "rw"],
+                }
+              : { specialty: "", bio_i18n: {}, languages: [] }),
           })),
         };
         return HttpResponse.json(body);

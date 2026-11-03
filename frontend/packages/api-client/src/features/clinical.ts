@@ -333,6 +333,86 @@ export interface HistoryEntry {
   is_historical: boolean;
 }
 
+// ---- doctor tools (upgrade 05 §3) ---------------------------------------------------------
+
+/** A pharmacist's question on one of my prescriptions. */
+export interface PharmacyQuestion {
+  id: Uuid;
+  status: "open" | "answered" | "closed";
+  message: string;
+  raised_by_name: string;
+  raised_at: string;
+  answered_at: string | null;
+  prescription_id: Uuid;
+  consultation_id: Uuid;
+  facility_patient_id: Uuid;
+  patient_display_name: string;
+  /** Medicine names on the prescription. */
+  items: string[];
+}
+
+export type FollowUpState = "missed" | "today" | "upcoming" | "attended";
+
+/** A follow-up I set: missed in the last 30 days, today, the next 14 days, or attended. */
+export interface MyFollowUp {
+  id: Uuid;
+  patient_display_name: string;
+  facility_patient_id: Uuid;
+  service_name_i18n: I18nText;
+  due_on: string;
+  mode: "booking" | "reminder";
+  status: string;
+  state: FollowUpState;
+  booking_starts_at: string | null;
+  consultation_id: Uuid | null;
+}
+
+/** My activity over 7 or 30 days (counts only). */
+export interface MyActivity {
+  days: 7 | 30;
+  seen: number;
+  signed: number;
+  avg_consult_min: number | null;
+  late_signatures: number;
+  unsigned_now: number;
+  follow_ups_set: number;
+  trend: { date: string; seen: number; signed: number }[];
+  top_diagnoses: { code: string; display: string; count: number }[];
+}
+
+export interface NoteTemplateItem {
+  drug_code?: string;
+  free_text_drug?: string;
+  /** Name to show; the catalogue name for a drug code. */
+  drug_display?: string;
+  dose: string;
+  frequency_code: string;
+  route: string;
+  duration_days?: number | null;
+  quantity?: number | null;
+  instructions?: string;
+}
+
+export type TemplateSections = Record<
+  "history_text" | "examination_text" | "plan_text" | "patient_instructions_text",
+  string
+>;
+
+/** My note template, with diagnoses and a favourite prescription; follows me across facilities. */
+export interface NoteTemplate {
+  id: Uuid;
+  name: string;
+  sections: TemplateSections;
+  diagnosis_codes: string[];
+  items: NoteTemplateItem[];
+  use_count: number;
+  updated_at: string;
+}
+
+export type NoteTemplateInput = Pick<NoteTemplate, "name" | "diagnosis_codes" | "items"> & {
+  sections: Partial<TemplateSections>;
+};
+
 /** Patient view (PR1/PR2): no private notes, no examination. */
 export interface PatientRecordDiagnosis {
   code: string;
@@ -379,6 +459,13 @@ export const clinicalPaths = {
   access: (fpId: Uuid) => `${STF}/clinical/patients/${fpId}/access/`,
   alerts: `${STF}/clinical/alerts/`,
   myDay: `${STF}/clinical/my-day/`,
+  questions: `${STF}/clinical/questions/`,
+  reply: (id: Uuid) => `${STF}/clinical/questions/${id}/reply/`,
+  myFollowUps: `${STF}/clinical/my-follow-ups/`,
+  myActivity: `${STF}/clinical/my-activity/`,
+  templates: `${STF}/clinical/templates/`,
+  template: (id: Uuid) => `${STF}/clinical/templates/${id}/`,
+  templateUsed: (id: Uuid) => `${STF}/clinical/templates/${id}/used/`,
   results: `${STF}/results-inbox/`,
   reviewResult: (id: Uuid) => `${STF}/results-inbox/${id}/review/`,
   scans: (fpId: Uuid) => `${STF}/clinical/patients/${fpId}/scans/`,
@@ -428,6 +515,21 @@ export function createClinicalApi(client: ApiClient) {
       items: { drug_code: string; quantity?: number }[];
     }) => client.post<{ alerts: ClinicalAlert[] }>(clinicalPaths.alerts, body),
     myDay: () => client.get<MyDay>(clinicalPaths.myDay),
+    questions: (status: "open" | "answered" = "open") =>
+      client.get<PharmacyQuestion[]>(clinicalPaths.questions + query({ status })),
+    /** Signed addendum and answer in one step; asks for step-up. */
+    reply: (id: Uuid, body: string) =>
+      client.post<PharmacyQuestion>(clinicalPaths.reply(id), { body }),
+    myFollowUps: () => client.get<MyFollowUp[]>(clinicalPaths.myFollowUps),
+    myActivity: (days: 7 | 30 = 7) =>
+      client.get<MyActivity>(clinicalPaths.myActivity + query({ days })),
+    templates: () => client.get<NoteTemplate[]>(clinicalPaths.templates),
+    createTemplate: (body: NoteTemplateInput) =>
+      client.post<NoteTemplate>(clinicalPaths.templates, body),
+    updateTemplate: (id: Uuid, body: NoteTemplateInput) =>
+      client.request<NoteTemplate>("PUT", clinicalPaths.template(id), { body }),
+    deleteTemplate: (id: Uuid) => client.request<void>("DELETE", clinicalPaths.template(id)),
+    templateUsed: (id: Uuid) => client.post<NoteTemplate>(clinicalPaths.templateUsed(id), {}),
     /** R1: outside results assigned to me, oldest first. */
     results: (params: { status?: "pending" | "reviewed"; page?: number } = {}) =>
       client.get<Paginated<ResultReview>>(clinicalPaths.results + query(params)),

@@ -27,6 +27,17 @@ export const clinicalFeature: FeatureRoutes = {
     },
     { path: "/clinical/unsigned", lazy: lazy(() => import("./UnsignedPage"), "UnsignedPage") },
     { path: "/clinical/results", lazy: lazy(() => import("./ResultsPage"), "ResultsPage") },
+    // upgrade 05 §3: doctor tools
+    { path: "/clinical/questions", lazy: lazy(() => import("./QuestionsPage"), "QuestionsPage") },
+    {
+      path: "/clinical/follow-ups",
+      lazy: lazy(() => import("./FollowUpsPage"), "FollowUpsPage"),
+    },
+    { path: "/clinical/activity", lazy: lazy(() => import("./ActivityPage"), "ActivityPage") },
+    {
+      path: "/clinical/templates",
+      lazy: lazy(() => import("./TemplatesPage"), "TemplatesPage"),
+    },
   ],
   // upgrade 05 §3: the doctor's day leads their Today page
   todayCards: [DoctorTodayCard],

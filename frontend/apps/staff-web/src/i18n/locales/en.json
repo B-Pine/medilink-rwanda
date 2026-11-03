@@ -119,7 +119,10 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "platformAdmin": "Platform admin",
-    "theme": { "toLight": "Switch to light mode", "toDark": "Switch to dark mode" },
+    "theme": {
+      "toLight": "Switch to light mode",
+      "toDark": "Switch to dark mode"
+    },
     "nav": {
       "today": "Today",
       "queue": "Queue",
@@ -164,7 +167,8 @@
     "expand": "Expand menu",
     "section": {
       "work": "Daily work",
-      "manage": "Manage"
+      "manage": "Manage",
+      "practice": "My practice"
     }
   },
   "today": {

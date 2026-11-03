@@ -50,6 +50,7 @@ import { useStepUp } from "../lock";
 import { AccessReasonPrompt } from "./AccessGate";
 import { DiagnosisPicker, type PickedDiagnosis } from "./DiagnosisPicker";
 import { HistoryDrawer } from "./History";
+import { TemplateTools } from "./TemplateTools";
 import {
   clinicalKeys,
   errorText,
@@ -395,10 +396,19 @@ function DraftEditor({ c }: { c: Consultation }) {
             ) : undefined
           }
         />
+        {c.can_edit && (
+          <div className="ms-auto flex flex-wrap gap-2">
+            <TemplateTools
+              c={c}
+              local={draft.local}
+              onApply={({ sections, diagnoses }) => draft.edit({ sections, diagnoses })}
+            />
+          </div>
+        )}
         {c.can_sign && (
           <Button
             pill
-            className="ms-auto"
+            className={c.can_edit ? undefined : "ms-auto"}
             loading={signing}
             onClick={() => void sign()}
             disabled={signing || !hasPrimary}

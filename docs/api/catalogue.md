@@ -205,14 +205,15 @@ Requirements: FR-ONB-04..07, 09; FR-SCH-05..06; FR-BIL-02, 05; FR-ACC-05..07.
 | `GET` | `/api/v1/staff/memberships/` | Staff list with two-step status and `last_login` and work `phone` | `staff.manage` | FR-ACC-01 | Paginated | Implemented (#85, upgrade 05 §5) |
 | `GET`, `PATCH` | `/api/v1/staff/memberships/{id}/` | Roles and service points of a member | `staff.manage` | FR-ACC-01, FR-ACC-03 | Step-up; rotates the member's sessions; Audit | Planned |
 | `POST` | `/api/v1/staff/memberships/{id}/deactivate/` | Remove access now | `staff.manage` | FR-ACC-06 | Ends sessions, closes sockets; Audit | Planned |
-| `POST` | `/api/v1/staff/memberships/{id}/attest-licence/` | Attest that the clinician licence was checked | `staff.manage` | FR-ACC-07 | Required before a clinician can sign; Audit | Planned |
+| `POST` | `/api/v1/staff/memberships/{id}/attest-licence/` | Attest that the clinician licence was checked | `staff.manage` | FR-ACC-07 | Needs the scan and a valid end date; required before a clinician can be scheduled or sign; Audit | Implemented |
+| `POST` | `/api/v1/staff/memberships/{id}/refuse-licence/` | The licence could not be confirmed (reason) | `staff.manage` | FR-ACC-07 | Removes the attestation, emails the clinician; Audit `staff.membership.licence_refused` | Implemented (2026-11-03) |
 | `POST` | `/api/v1/staff/memberships/{id}/mfa-reset/` | Reset a member's second factor | `staff.manage` | FR-ACC-04 | Step-up; the member is notified | Planned |
 | `GET`, `POST` | `/api/v1/staff/invitations/` | Invite by email with roles and service points, and optionally the person's name and work phone | `staff.manage` | FR-ACC-05, FR-ONB-05 | Step-up; Idem; 7-day expiry (an expired one doesn't block a re-invite); list paginated; refused when deactivated; the name and phone prefill the new account | Implemented (#85) |
 | `POST` | `/api/v1/staff/invitations/{id}/resend/` | Send the invitation again | `staff.manage` | FR-ACC-05 | New token, old one invalidated | Planned |
 | `POST` | `/api/v1/staff/invitations/{id}/revoke/` | Cancel an invitation | `staff.manage` | FR-ACC-05 | | Planned |
 | `POST` | `/api/v1/staff/auth/invitations/lookup/` | Show facility, inviter and roles for an invitation token, and `suggested_name` (the inviter's name for the person) | Invitee (token in body) | FR-ACC-05 | RL: auth | Planned |
 | `POST` | `/api/v1/staff/auth/invitations/accept/` | Accept: set a password (new account, then MFA setup) or confirm while signed in (existing account) | Invitee (token in body); existing account: signed-in staff session | FR-ACC-05, FR-ACC-04 | Single use; new: `LoginResult`; existing: `StaffMe`, `401` when not signed in | Implemented (#85) |
-| `GET`, `PATCH` | `/api/v1/staff/clinician-profile/` | Own licence council, licence number, specialty | Staff (self) | FR-ACC-07 | | Planned |
+| `GET`, `PATCH` | `/api/v1/staff/clinician-profile/` | Own council, licence number and end date, licence scan, profession, specialty (list), sex, qualifications, photo | Staff (self) | FR-ACC-07 | Uploads by id (`clinician_licence`, `clinician_photo`); a new licence clears attestations; Audit | Implemented (2026-11-03) |
 
 ### Platform
 

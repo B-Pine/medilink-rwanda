@@ -56,6 +56,13 @@ class RoleCode(models.TextChoices):
     CASHIER = "cashier", "Cashier"
 
 
+class EmploymentType(models.TextChoices):
+    FULL_TIME = "full_time", "Full time"
+    PART_TIME = "part_time", "Part time"
+    VISITING = "visiting", "Visiting"
+    LOCUM = "locum", "Locum"
+
+
 class Organization(TimeStampedModel):
     name = models.CharField(max_length=200)
 
@@ -156,6 +163,13 @@ class FacilityMembership(TimeStampedModel):
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, blank=True, related_name="+"
     )
     deactivation_reason = models.CharField(max_length=300, blank=True)
+    # 2026-11-03: why the facility admin did not attest the licence (shown to the clinician)
+    licence_refused_reason = models.CharField(max_length=300, blank=True)
+    licence_refused_at = models.DateTimeField(null=True, blank=True)
+    # where and how the person works here: a facilities.Department id (no cross-app FK: tenancy
+    # comes before facilities) and the employment type
+    department_id = models.UUIDField(null=True, blank=True)
+    employment_type = models.CharField(max_length=12, choices=EmploymentType.choices, blank=True)
     version = models.PositiveIntegerField(default=1)
 
     objects = FacilityMembershipQuerySet.as_manager()

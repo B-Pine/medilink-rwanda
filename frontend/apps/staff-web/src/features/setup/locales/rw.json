@@ -41,7 +41,8 @@
     "rmdc": "Urugaga rw'abaganga n'abaganga b'amenyo (RMDC)",
     "ncnm": "Urugaga rw'abaforomo n'ababyaza (NCNM)",
     "npc": "Urugaga rw'abafarumasiye (NPC)",
-    "other": "Urundi rugaga"
+    "other": "Urundi rugaga",
+    "rahpc": "Urugaga rw’abakora indi myuga y’ubuzima (RAHPC)"
   },
   "today": {
     "title": "Rangiza gutegura ikigo cyawe",
@@ -535,7 +536,8 @@
       "deactivate": "Yahagaritswe.",
       "reactivate": "Yasubijweho.",
       "attest-licence": "Uruhushya rwemejwe.",
-      "mfa-reset": "Kwinjira mu ntambwe ebyiri byasubiwemo. Azabitegura ubutaha yinjiye."
+      "mfa-reset": "Kwinjira mu ntambwe ebyiri byasubiwemo. Azabitegura ubutaha yinjiye.",
+      "refuse-licence": "Icyemezo cyakuweho; yamenyeshejwe impamvu."
     },
     "neverSignedIn": "Ntarigera yinjira",
     "mfaGapTitle_one": "Umukozi {{count}} ukora ntakoresha kwinjira mu ntambwe ebyiri",
@@ -544,16 +546,53 @@
     "inviteName": "Amazina ye",
     "invitePhone": "Telefoni y’akazi",
     "optional": "Si ngombwa: byuzuza konti ye nshya",
-    "noPhone": "Nta telefoni yatanzwe"
+    "noPhone": "Nta telefoni yatanzwe",
+    "openScan": "Fungura kopi y’uruhushya",
+    "noScan": "Nta kopi y’uruhushya iraboneka.",
+    "checkFirst": "Genzura kopi n’itariki rurangiriraho mu gitabo cy’urugaga, hanyuma wemeze.",
+    "refuse": "Ntibishoboka kwemeza",
+    "withdraw": "Kuraho icyemezo",
+    "refuseTitle": "Ntibishoboka kwemeza uruhushya rwa {{name}}",
+    "refuseHint": "Ntashobora gushyirwa kuri gahunda cyangwa gusinya kugeza rugenzuwe bundi bushya. Abona impamvu yawe kuri imeyili.",
+    "refusedBecause": "Ntirwemejwe: {{reason}}",
+    "cannotAttest": {
+      "missing": "Musabe kubanza gushyiraho itariki rurangiriraho na kopi yarwo.",
+      "expired": "Uruhushya rwarangiye. Musabe kubanza kuruvugurura."
+    },
+    "work": "Akazi muri iki kigo",
+    "department": "Serivisi",
+    "noDepartment": "Nta serivisi",
+    "employment": "Amasezerano",
+    "notSet": "Ntibyashyizweho",
+    "saveWork": "Bika"
   },
   "clinician": {
-    "title": "Uruhushya rwanjye rw'umwuga",
-    "intro": "Urugaga rwawe na nimero y'uruhushya bigaragara ku mpapuro z'imiti n'amadosiye usinya.",
+    "title": "Umwirondoro wanjye w’umwuga",
+    "intro": "Umwuga wawe, uruhushya n’impamyabumenyi. Umuyobozi w’ikigo agenzura uruhushya rwawe mbere y’uko ushyirwa kuri gahunda cyangwa usinya; Minisiteri y’Ubuzima ibara abakozi hakurikijwe imyuga.",
     "council": "Urugaga",
     "licence": "Nimero y'uruhushya",
     "specialty": "Ubuhanga bwihariye",
-    "reattest": "Guhindura urugaga cyangwa nimero y'uruhushya bisaba ko umuyobozi wawe arwemeza bundi bushya.",
-    "licenceTitle": "Uruhushya rw'umwuga"
+    "reattest": "Urugaga, nimero cyangwa kopi nshya y’uruhushya bigenzurwa bundi bushya n’umuyobozi w’ikigo.",
+    "licenceTitle": "Uruhushya rwo gukora umwuga",
+    "professionTitle": "Umwuga",
+    "profession": "Umwuga",
+    "sex": "Igitsina",
+    "female": "Gore",
+    "male": "Gabo",
+    "validUntil": "Rufite agaciro kugeza",
+    "validUntilHint": "Itariki rurangiriraho iri ku cyemezo cyawe.",
+    "validUntilNow": "Ubu: kugeza {{date}}",
+    "scan": "Kopi cyangwa ifoto y’uruhushya",
+    "scanHint": "PDF, JPEG, PNG cyangwa HEIC, kugeza kuri MB 10. Umuyobozi w’ikigo arufungura akarugenzura.",
+    "qualifications": "Impamyabumenyi",
+    "degree": "Impamyabumenyi",
+    "institution": "Ishuri cyangwa kaminuza",
+    "year": "Umwaka",
+    "addQualification": "Ongeraho impamyabumenyi",
+    "removeQualification": "Kuraho {{degree}}",
+    "photo": "Ifoto",
+    "photoLabel": "Ifoto yawe",
+    "photoHint": "Ifoto igaragara neza y’isura yawe, JPEG, PNG cyangwa HEIC, kugeza kuri MB 5."
   },
   "invite": {
     "title": "Injira mu kigo kuri MediLink",
@@ -604,5 +643,73 @@
     "language": "Ururimi",
     "save": "Bika",
     "saved": "Byabitswe."
+  },
+  "licenceState": {
+    "valid": "Uruhushya rufite agaciro",
+    "expiring": "Uruhushya rugiye kurangira",
+    "expired": "Uruhushya rwarangiye",
+    "missing": "Amakuru y’uruhushya abura"
+  },
+  "employment": {
+    "full_time": "Igihe cyose",
+    "part_time": "Igice cy’igihe",
+    "visiting": "Usura",
+    "locum": "Usimbura"
+  },
+  "upload": {
+    "drop": "Kurura dosiye hano, cyangwa",
+    "browse": "Hitamo dosiye",
+    "camera": "Fata ifoto",
+    "retry": "Ongera ugerageze",
+    "remove": "Kuraho",
+    "tooLarge": "Iyi dosiye ni nini cyane.",
+    "wrongType": "Ubu bwoko bwa dosiye ntibwemewe.",
+    "status": {
+      "uploading": "Irimo koherezwa",
+      "pending": "Irimo gusuzumwa virusi",
+      "clean": "Yiteguye",
+      "infected": "Habonetse virusi",
+      "rejected": "Ntiyemewe",
+      "failed": "Isuzuma ryanze",
+      "error": "Ntiyoherejwe"
+    }
+  },
+  "professions": {
+    "medical_doctor": "Muganga",
+    "dentist": "Muganga w’amenyo",
+    "nurse": "Umuforomo",
+    "midwife": "Umubyaza",
+    "pharmacist": "Umufarumasiye",
+    "lab_technologist": "Umutekinisiye wa laboratwari",
+    "radiographer": "Umutekinisiye w’amashusho y’umubiri",
+    "anaesthetist": "Umuganga ushinzwe ikinya",
+    "physiotherapist": "Umuvuzi ngororangingo",
+    "clinical_psychologist": "Umuhanga mu by’imitekerereze",
+    "nutritionist": "Inzobere mu mirire",
+    "optometrist": "Umuhanga mu by’amaso",
+    "other": "Ibindi"
+  },
+  "specialties": {
+    "general_practice": "Ubuvuzi rusange",
+    "family_medicine": "Ubuvuzi bw’umuryango",
+    "internal_medicine": "Indwara z’imbere mu mubiri",
+    "paediatrics": "Ubuvuzi bw’abana",
+    "obstetrics_gynaecology": "Ububyaza n’indwara z’abagore",
+    "general_surgery": "Kubaga muri rusange",
+    "orthopaedics": "Amagufwa",
+    "anaesthesiology": "Ikinya",
+    "emergency_medicine": "Ubutabazi bwihuse",
+    "psychiatry": "Indwara zo mu mutwe",
+    "dermatology": "Indwara z’uruhu",
+    "ophthalmology": "Indwara z’amaso",
+    "ent": "Amatwi, izuru n’umuhogo",
+    "cardiology": "Indwara z’umutima",
+    "neurology": "Indwara z’imitsi y’ubwonko",
+    "radiology": "Amashusho y’umubiri",
+    "pathology": "Isuzuma ry’indwara",
+    "urology": "Imyanya y’inkari",
+    "dentistry": "Amenyo",
+    "public_health": "Ubuzima rusange",
+    "other": "Ibindi"
   }
 }

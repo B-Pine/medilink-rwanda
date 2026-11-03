@@ -41,7 +41,8 @@
     "rmdc": "Medical and Dental Council (RMDC)",
     "ncnm": "Nursing and Midwifery Council (NCNM)",
     "npc": "Pharmacy Council (NPC)",
-    "other": "Other council"
+    "other": "Other council",
+    "rahpc": "Allied Health Professions Council (RAHPC)"
   },
   "today": {
     "title": "Finish setting up your facility",
@@ -535,7 +536,8 @@
       "deactivate": "Deactivated.",
       "reactivate": "Reactivated.",
       "attest-licence": "Licence attested.",
-      "mfa-reset": "Two-step sign-in reset. They set it up again at their next login."
+      "mfa-reset": "Two-step sign-in reset. They set it up again at their next login.",
+      "refuse-licence": "Attestation removed; they were told why."
     },
     "neverSignedIn": "Never signed in",
     "mfaGapTitle_one": "{{count}} active member has no two-step sign-in",
@@ -544,16 +546,53 @@
     "inviteName": "Their names",
     "invitePhone": "Work phone",
     "optional": "Optional: fills in their new account",
-    "noPhone": "No phone given"
+    "noPhone": "No phone given",
+    "openScan": "Open the licence scan",
+    "noScan": "No licence scan yet.",
+    "checkFirst": "Check the scan and its end date against the council's register, then attest.",
+    "refuse": "Cannot confirm",
+    "withdraw": "Withdraw the attestation",
+    "refuseTitle": "Cannot confirm the licence of {{name}}",
+    "refuseHint": "They can't be scheduled or sign until it's checked again. They read your reason by email.",
+    "refusedBecause": "Not confirmed: {{reason}}",
+    "cannotAttest": {
+      "missing": "Ask them to add the licence end date and its scan first.",
+      "expired": "The licence has ended. Ask them to renew it first."
+    },
+    "work": "Work at this facility",
+    "department": "Department",
+    "noDepartment": "No department",
+    "employment": "Employment",
+    "notSet": "Not set",
+    "saveWork": "Save"
   },
   "clinician": {
-    "title": "My professional licence",
-    "intro": "Your council and licence number appear on prescriptions and records you sign.",
+    "title": "My clinician profile",
+    "intro": "Your profession, licence and qualifications. Your facility admin checks your licence before you can be scheduled or sign; the Ministry of Health counts staff by profession.",
     "council": "Council",
     "licence": "Licence number",
     "specialty": "Specialty",
-    "reattest": "Changing your council or licence number means your facility admin attests it again.",
-    "licenceTitle": "Professional licence"
+    "reattest": "A new council, licence number or scan means your facility admin checks it again.",
+    "licenceTitle": "Practising licence",
+    "professionTitle": "Profession",
+    "profession": "Profession",
+    "sex": "Sex",
+    "female": "Female",
+    "male": "Male",
+    "validUntil": "Valid until",
+    "validUntilHint": "The end date on your practising certificate.",
+    "validUntilNow": "Now: until {{date}}",
+    "scan": "Scan or photo of the licence",
+    "scanHint": "PDF, JPEG, PNG or HEIC, up to 10 MB. Your facility admin opens it to check.",
+    "qualifications": "Qualifications",
+    "degree": "Degree or diploma",
+    "institution": "School or university",
+    "year": "Year",
+    "addQualification": "Add a qualification",
+    "removeQualification": "Remove {{degree}}",
+    "photo": "Photo",
+    "photoLabel": "Your photo",
+    "photoHint": "A clear photo of your face, JPEG, PNG or HEIC, up to 5 MB."
   },
   "invite": {
     "title": "Join a facility on MediLink",
@@ -604,5 +643,73 @@
     "language": "Language",
     "save": "Save",
     "saved": "Saved."
+  },
+  "licenceState": {
+    "valid": "Licence valid",
+    "expiring": "Licence ends soon",
+    "expired": "Licence ended",
+    "missing": "Licence details missing"
+  },
+  "employment": {
+    "full_time": "Full time",
+    "part_time": "Part time",
+    "visiting": "Visiting",
+    "locum": "Locum"
+  },
+  "upload": {
+    "drop": "Drag a file here, or",
+    "browse": "Choose a file",
+    "camera": "Take a photo",
+    "retry": "Try again",
+    "remove": "Remove",
+    "tooLarge": "This file is too large.",
+    "wrongType": "This type of file is not accepted.",
+    "status": {
+      "uploading": "Uploading",
+      "pending": "Checking for viruses",
+      "clean": "Ready",
+      "infected": "Virus found",
+      "rejected": "Not accepted",
+      "failed": "Check failed",
+      "error": "Not uploaded"
+    }
+  },
+  "professions": {
+    "medical_doctor": "Medical doctor",
+    "dentist": "Dentist",
+    "nurse": "Nurse",
+    "midwife": "Midwife",
+    "pharmacist": "Pharmacist",
+    "lab_technologist": "Laboratory technologist",
+    "radiographer": "Radiographer",
+    "anaesthetist": "Anaesthetist",
+    "physiotherapist": "Physiotherapist",
+    "clinical_psychologist": "Clinical psychologist",
+    "nutritionist": "Nutritionist",
+    "optometrist": "Optometrist",
+    "other": "Other"
+  },
+  "specialties": {
+    "general_practice": "General practice",
+    "family_medicine": "Family medicine",
+    "internal_medicine": "Internal medicine",
+    "paediatrics": "Paediatrics",
+    "obstetrics_gynaecology": "Obstetrics and gynaecology",
+    "general_surgery": "General surgery",
+    "orthopaedics": "Orthopaedics",
+    "anaesthesiology": "Anaesthesiology",
+    "emergency_medicine": "Emergency medicine",
+    "psychiatry": "Psychiatry",
+    "dermatology": "Dermatology",
+    "ophthalmology": "Ophthalmology",
+    "ent": "Ear, nose and throat",
+    "cardiology": "Cardiology",
+    "neurology": "Neurology",
+    "radiology": "Radiology",
+    "pathology": "Pathology",
+    "urology": "Urology",
+    "dentistry": "Dentistry",
+    "public_health": "Public health",
+    "other": "Other"
   }
 }

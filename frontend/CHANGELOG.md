@@ -9,6 +9,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Clinician profile: full professional details (2026-11-03)
+
+- Changed: **My clinician profile** (`/profile/clinician`) holds profession, specialty (list), sex,
+  the licence end date and scan (camera or file, virus-checked), qualifications and a photo.
+- Changed: the team panel shows the licence check: details, state, the scan to open, and Attest
+  or **Cannot confirm** with a reason (the clinician is emailed); attesting is offered only with a
+  scan and a valid end date. A new **Work at this facility** block sets department and employment.
+- Added: `PROFESSIONS`, `SPECIALTY_CODES`, `EMPLOYMENT_TYPES` and the full clinician types in the
+  API client, with the mocks.
+
 ### Public site · Facilities as products (#180)
 
 - Changed: facility cards are product cards (tinted cover with the facility's monogram, type and

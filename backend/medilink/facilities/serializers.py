@@ -7,11 +7,12 @@ from typing import Any
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
-from medilink.accounts.models import Council
+from medilink.accounts.models import SPECIALTIES, Council, Profession, Sex
 from medilink.accounts.serializers import StaffPhoneField, StrictSerializer
 from medilink.billing.models import TariffKind
 from medilink.facilities.models import CalendarEventKind, ServicePointKind, SexRestriction
 from medilink.scheduling.models import ExceptionKind
+from medilink.tenancy.models import EmploymentType
 
 LANGS = ("rw", "en", "fr")
 
@@ -465,11 +466,35 @@ class RoleSerializer(serializers.Serializer):
     permissions = serializers.ListField(child=serializers.CharField())
 
 
+class FileRefSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    original_filename = serializers.CharField()
+    status = serializers.CharField()
+
+
+class QualificationSerializer(StrictSerializer):
+    degree = serializers.CharField(max_length=120)
+    institution = serializers.CharField(max_length=160)
+    year = serializers.IntegerField(min_value=1950, max_value=2100)
+
+
+LICENCE_STATES = ["valid", "expiring", "expired", "missing"]
+
+
 class ClinicianSerializer(serializers.Serializer):
     council = serializers.CharField()
     licence_number = serializers.CharField()
     specialty = serializers.CharField()
     attested_at = serializers.DateTimeField(allow_null=True)
+    # 2026-11-03: what the facility admin checks, and the professional details
+    profession = serializers.CharField(allow_blank=True)
+    specialty_code = serializers.CharField(allow_blank=True)
+    licence_valid_until = serializers.DateField(allow_null=True)
+    licence_state = serializers.ChoiceField(choices=LICENCE_STATES)
+    licence_file = FileRefSerializer(allow_null=True)
+    refused_reason = serializers.CharField(allow_blank=True)
+    sex = serializers.CharField(allow_blank=True)
+    qualifications = QualificationSerializer(many=True)
 
 
 class StaffMembershipSerializer(serializers.Serializer):
@@ -487,6 +512,8 @@ class StaffMembershipSerializer(serializers.Serializer):
     clinician = ClinicianSerializer(allow_null=True)
     joined_at = serializers.DateTimeField()
     deactivation_reason = serializers.CharField()
+    department_id = serializers.UUIDField(allow_null=True)
+    employment_type = serializers.CharField(allow_blank=True)
     version = serializers.IntegerField()
 
 
@@ -512,6 +539,10 @@ class MembershipUpdateSerializer(StrictSerializer):
     version = serializers.IntegerField(min_value=1)
     role_codes = serializers.ListField(child=serializers.CharField(max_length=32), required=False)
     service_point_ids = serializers.ListField(child=serializers.UUIDField(), required=False)
+    department_id = serializers.UUIDField(required=False, allow_null=True)
+    employment_type = serializers.ChoiceField(
+        choices=EmploymentType.choices, required=False, allow_blank=True
+    )
 
 
 class ReasonSerializer(StrictSerializer):
@@ -546,9 +577,37 @@ InvitationPageSerializer = page_of(InvitationSerializer, "InvitationPage")
 
 
 class ClinicianProfileSerializer(StrictSerializer):
+    """GET/PATCH /staff/clinician-profile/: my professional profile (2026-11-03: the full set)."""
+
     council = serializers.ChoiceField(choices=Council.choices)
     licence_number = serializers.RegexField(r"^[A-Za-z0-9/._-]{2,40}$")
     specialty = serializers.CharField(max_length=100, required=False, allow_blank=True, default="")
+    profession = serializers.ChoiceField(
+        choices=Profession.choices, required=False, allow_blank=True
+    )
+    specialty_code = serializers.ChoiceField(
+        choices=sorted(SPECIALTIES), required=False, allow_blank=True
+    )
+    licence_valid_until = serializers.DateField(required=False, allow_null=True)
+    sex = serializers.ChoiceField(choices=Sex.choices, required=False, allow_blank=True)
+    qualifications = serializers.ListField(
+        child=QualificationSerializer(), required=False, max_length=5
+    )
+    # a clean upload of purpose clinician_licence / clinician_photo (POST /staff/uploads/);
+    # null removes it
+    licence_upload_id = serializers.UUIDField(required=False, allow_null=True, write_only=True)
+    photo_upload_id = serializers.UUIDField(required=False, allow_null=True, write_only=True)
+    # read only
+    licence_state = serializers.ChoiceField(choices=LICENCE_STATES, read_only=True)
+    licence_file = FileRefSerializer(read_only=True, allow_null=True)
+    photo_file = FileRefSerializer(read_only=True, allow_null=True)
+
+    def validate_licence_valid_until(self, value: Any) -> Any:
+        from django.utils import timezone
+
+        if value is not None and value < timezone.localdate():
+            raise serializers.ValidationError("This date has passed: renew the licence first.")
+        return value
 
 
 class ClinicianPublicProfileSerializer(StrictSerializer):

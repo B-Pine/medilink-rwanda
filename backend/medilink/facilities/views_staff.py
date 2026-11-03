@@ -28,8 +28,8 @@ from medilink.authz.platform import PlatformAdmin
 from medilink.authz.stepup import RecentAuthRequired
 from medilink.core.idempotency import IDEMPOTENCY, idempotency_key
 from medilink.core.throttling import BurstRateThrottle, IPScopedRateThrottle
+from medilink.facilities import clinician, staff
 from medilink.facilities import serializers as s
-from medilink.facilities import staff
 from medilink.facilities.errors import SetupAPIView
 from medilink.facilities.throttling import InvitationRateThrottle
 from medilink.facilities.views_base import PAGE, FacilityView, Member, Needs, err, paginated
@@ -77,16 +77,11 @@ def membership_data(m: FacilityMembership) -> dict[str, Any]:
             "is_active": m.is_active,
             "mfa_enabled": mfa.has_confirmed_mfa(m.user),
             "last_login": m.user.last_login,
-            "clinician": {
-                "council": profile.council,
-                "licence_number": profile.licence_number,
-                "specialty": profile.specialty,
-                "attested_at": m.licence_attested_at,
-            }
-            if profile
-            else None,
+            "clinician": clinician.membership_clinician(profile, m) if profile else None,
             "joined_at": m.created_at,
             "deactivation_reason": m.deactivation_reason,
+            "department_id": m.department_id,
+            "employment_type": m.employment_type,
             "version": m.version,
         }
     ).data
@@ -193,6 +188,12 @@ class MembershipActionView(StaffView):
             staff.reactivate(m, actor=request.user, request=request)
         elif action == "attest-licence":
             staff.attest_licence(m, actor=request.user, request=request)
+        elif action == "refuse-licence":
+            body = s.ReasonSerializer(data=request.data)
+            body.is_valid(raise_exception=True)
+            staff.refuse_licence(
+                m, reason=body.validated_data["reason"], actor=request.user, request=request
+            )
         elif action == "mfa-reset":
             staff.reset_mfa(m.user, actor=request.user, facility_id=m.facility_id, request=request)
         else:
@@ -311,7 +312,7 @@ class ClinicianProfileView(SetupAPIView):
         profile = ClinicianProfile.objects.filter(user_id=self.user_id()).first()
         if profile is None:
             raise Http404
-        return Response(s.ClinicianProfileSerializer(profile).data)
+        return Response(s.ClinicianProfileSerializer(clinician.profile_data(profile)).data)
 
     @extend_schema(
         operation_id="staff_clinician_profile_update",
@@ -320,42 +321,20 @@ class ClinicianProfileView(SetupAPIView):
         responses={200: s.ClinicianProfileSerializer, 409: err("licence already registered")},
     )
     def patch(self, request: Request) -> Response:
-        from django.db import IntegrityError, transaction
-
-        from medilink.facilities.errors import FieldConflict
-
         body = s.ClinicianProfileSerializer(data=request.data)
         body.is_valid(raise_exception=True)
-        data = body.validated_data
-        profile = ClinicianProfile.objects.filter(user_id=self.user_id()).first()
-        changed_licence = profile is None or (profile.council, profile.licence_number) != (
-            data["council"],
-            data["licence_number"],
+        profile, changed_licence = clinician.save_profile(
+            request.user, dict(body.validated_data), request=request
         )
-        try:
-            with transaction.atomic():
-                profile, _created = ClinicianProfile.objects.update_or_create(
-                    user_id=self.user_id(), defaults=data
-                )
-        except IntegrityError:
-            raise FieldConflict(
-                "licence_number", "This licence number is already registered."
-            ) from None
-        if changed_licence:  # attestations are for the old number: re-attest
-            for membership in FacilityMembership.objects.filter(
-                user_id=self.user_id(), licence_attested_at__isnull=False
-            ):
-                with rls_context(facility_id=membership.facility_id, user_id=self.user_id()):
-                    FacilityMembership.objects.filter(pk=membership.pk).update(
-                        licence_attested_at=None, licence_attested_by=None
-                    )
+        if changed_licence:  # attestations are for the old licence: re-attest
+            clinician.clear_attestations(self.user_id())
         record(
             "staff.clinician_profile.updated",
             request=request,
             object_type="user",
             object_id=request.user.pk,
         )
-        return Response(s.ClinicianProfileSerializer(profile).data)
+        return Response(s.ClinicianProfileSerializer(clinician.profile_data(profile)).data)
 
 
 class ClinicianPublicProfileView(SetupAPIView):

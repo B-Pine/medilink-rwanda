@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5271.
+Keys: 5364.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -3124,6 +3124,7 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `councils.ncnm` | Urugaga rw'abaforomo n'ababyaza (NCNM) | Nursing and Midwifery Council (NCNM) | needs native-speaker review |
 | `councils.npc` | Urugaga rw'abafarumasiye (NPC) | Pharmacy Council (NPC) | needs native-speaker review |
 | `councils.other` | Urundi rugaga | Other council | needs native-speaker review |
+| `councils.rahpc` | Urugaga rw’abakora indi myuga y’ubuzima (RAHPC) | Allied Health Professions Council (RAHPC) | needs native-speaker review |
 | `today.title` | Rangiza gutegura ikigo cyawe | Finish setting up your facility | needs native-speaker review |
 | `today.open` | Fungura intambwe | Open checklist | needs native-speaker review |
 | `today.leaveTitle` | Gusaba ikiruhuko | Leave requests | needs native-speaker review |
@@ -3529,6 +3530,7 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `staff.done.reactivate` | Yasubijweho. | Reactivated. | needs native-speaker review |
 | `staff.done.attest-licence` | Uruhushya rwemejwe. | Licence attested. | needs native-speaker review |
 | `staff.done.mfa-reset` | Kwinjira mu ntambwe ebyiri byasubiwemo. Azabitegura ubutaha yinjiye. | Two-step sign-in reset. They set it up again at their next login. | needs native-speaker review |
+| `staff.done.refuse-licence` | Icyemezo cyakuweho; yamenyeshejwe impamvu. | Attestation removed; they were told why. | needs native-speaker review |
 | `staff.neverSignedIn` | Ntarigera yinjira | Never signed in | needs native-speaker review |
 | `staff.mfaGapTitle_one` | Umukozi {{count}} ukora ntakoresha kwinjira mu ntambwe ebyiri | {{count}} active member has no two-step sign-in | needs native-speaker review |
 | `staff.mfaGapTitle_other` | Abakozi {{count}} bakora badakoresha kwinjira mu ntambwe ebyiri | {{count}} active members have no two-step sign-in | needs native-speaker review |
@@ -3537,13 +3539,48 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `staff.invitePhone` | Telefoni y’akazi | Work phone | needs native-speaker review |
 | `staff.optional` | Si ngombwa: byuzuza konti ye nshya | Optional: fills in their new account | needs native-speaker review |
 | `staff.noPhone` | Nta telefoni yatanzwe | No phone given | needs native-speaker review |
-| `clinician.title` | Uruhushya rwanjye rw'umwuga | My professional licence | needs native-speaker review |
-| `clinician.intro` | Urugaga rwawe na nimero y'uruhushya bigaragara ku mpapuro z'imiti n'amadosiye usinya. | Your council and licence number appear on prescriptions and records you sign. | needs native-speaker review |
+| `staff.openScan` | Fungura kopi y’uruhushya | Open the licence scan | needs native-speaker review |
+| `staff.noScan` | Nta kopi y’uruhushya iraboneka. | No licence scan yet. | needs native-speaker review |
+| `staff.checkFirst` | Genzura kopi n’itariki rurangiriraho mu gitabo cy’urugaga, hanyuma wemeze. | Check the scan and its end date against the council's register, then attest. | needs native-speaker review |
+| `staff.refuse` | Ntibishoboka kwemeza | Cannot confirm | needs native-speaker review |
+| `staff.withdraw` | Kuraho icyemezo | Withdraw the attestation | needs native-speaker review |
+| `staff.refuseTitle` | Ntibishoboka kwemeza uruhushya rwa {{name}} | Cannot confirm the licence of {{name}} | needs native-speaker review |
+| `staff.refuseHint` | Ntashobora gushyirwa kuri gahunda cyangwa gusinya kugeza rugenzuwe bundi bushya. Abona impamvu yawe kuri imeyili. | They can't be scheduled or sign until it's checked again. They read your reason by email. | needs native-speaker review |
+| `staff.refusedBecause` | Ntirwemejwe: {{reason}} | Not confirmed: {{reason}} | needs native-speaker review |
+| `staff.cannotAttest.missing` | Musabe kubanza gushyiraho itariki rurangiriraho na kopi yarwo. | Ask them to add the licence end date and its scan first. | needs native-speaker review |
+| `staff.cannotAttest.expired` | Uruhushya rwarangiye. Musabe kubanza kuruvugurura. | The licence has ended. Ask them to renew it first. | needs native-speaker review |
+| `staff.work` | Akazi muri iki kigo | Work at this facility | needs native-speaker review |
+| `staff.department` | Serivisi | Department | needs native-speaker review |
+| `staff.noDepartment` | Nta serivisi | No department | needs native-speaker review |
+| `staff.employment` | Amasezerano | Employment | needs native-speaker review |
+| `staff.notSet` | Ntibyashyizweho | Not set | needs native-speaker review |
+| `staff.saveWork` | Bika | Save | needs native-speaker review |
+| `clinician.title` | Umwirondoro wanjye w’umwuga | My clinician profile | needs native-speaker review |
+| `clinician.intro` | Umwuga wawe, uruhushya n’impamyabumenyi. Umuyobozi w’ikigo agenzura uruhushya rwawe mbere y’uko ushyirwa kuri gahunda cyangwa usinya; Minisiteri y’Ubuzima ibara abakozi hakurikijwe imyuga. | Your profession, licence and qualifications. Your facility admin checks your licence before you can be scheduled or sign; the Ministry of Health counts staff by profession. | needs native-speaker review |
 | `clinician.council` | Urugaga | Council | needs native-speaker review |
 | `clinician.licence` | Nimero y'uruhushya | Licence number | needs native-speaker review |
 | `clinician.specialty` | Ubuhanga bwihariye | Specialty | needs native-speaker review |
-| `clinician.reattest` | Guhindura urugaga cyangwa nimero y'uruhushya bisaba ko umuyobozi wawe arwemeza bundi bushya. | Changing your council or licence number means your facility admin attests it again. | needs native-speaker review |
-| `clinician.licenceTitle` | Uruhushya rw'umwuga | Professional licence | needs native-speaker review |
+| `clinician.reattest` | Urugaga, nimero cyangwa kopi nshya y’uruhushya bigenzurwa bundi bushya n’umuyobozi w’ikigo. | A new council, licence number or scan means your facility admin checks it again. | needs native-speaker review |
+| `clinician.licenceTitle` | Uruhushya rwo gukora umwuga | Practising licence | needs native-speaker review |
+| `clinician.professionTitle` | Umwuga | Profession | needs native-speaker review |
+| `clinician.profession` | Umwuga | Profession | needs native-speaker review |
+| `clinician.sex` | Igitsina | Sex | needs native-speaker review |
+| `clinician.female` | Gore | Female | needs native-speaker review |
+| `clinician.male` | Gabo | Male | needs native-speaker review |
+| `clinician.validUntil` | Rufite agaciro kugeza | Valid until | needs native-speaker review |
+| `clinician.validUntilHint` | Itariki rurangiriraho iri ku cyemezo cyawe. | The end date on your practising certificate. | needs native-speaker review |
+| `clinician.validUntilNow` | Ubu: kugeza {{date}} | Now: until {{date}} | needs native-speaker review |
+| `clinician.scan` | Kopi cyangwa ifoto y’uruhushya | Scan or photo of the licence | needs native-speaker review |
+| `clinician.scanHint` | PDF, JPEG, PNG cyangwa HEIC, kugeza kuri MB 10. Umuyobozi w’ikigo arufungura akarugenzura. | PDF, JPEG, PNG or HEIC, up to 10 MB. Your facility admin opens it to check. | needs native-speaker review |
+| `clinician.qualifications` | Impamyabumenyi | Qualifications | needs native-speaker review |
+| `clinician.degree` | Impamyabumenyi | Degree or diploma | needs native-speaker review |
+| `clinician.institution` | Ishuri cyangwa kaminuza | School or university | needs native-speaker review |
+| `clinician.year` | Umwaka | Year | needs native-speaker review |
+| `clinician.addQualification` | Ongeraho impamyabumenyi | Add a qualification | needs native-speaker review |
+| `clinician.removeQualification` | Kuraho {{degree}} | Remove {{degree}} | needs native-speaker review |
+| `clinician.photo` | Ifoto | Photo | needs native-speaker review |
+| `clinician.photoLabel` | Ifoto yawe | Your photo | needs native-speaker review |
+| `clinician.photoHint` | Ifoto igaragara neza y’isura yawe, JPEG, PNG cyangwa HEIC, kugeza kuri MB 5. | A clear photo of your face, JPEG, PNG or HEIC, up to 5 MB. | needs native-speaker review |
 | `invite.title` | Injira mu kigo kuri MediLink | Join a facility on MediLink | needs native-speaker review |
 | `invite.invitedBy` | Watumiwe na {{name}} | Invited by {{name}} | needs native-speaker review |
 | `invite.expires` | link irakora kugeza {{date}} | link valid until {{date}} | needs native-speaker review |
@@ -3586,6 +3623,62 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `account.language` | Ururimi | Language | needs native-speaker review |
 | `account.save` | Bika | Save | needs native-speaker review |
 | `account.saved` | Byabitswe. | Saved. | needs native-speaker review |
+| `licenceState.valid` | Uruhushya rufite agaciro | Licence valid | needs native-speaker review |
+| `licenceState.expiring` | Uruhushya rugiye kurangira | Licence ends soon | needs native-speaker review |
+| `licenceState.expired` | Uruhushya rwarangiye | Licence ended | needs native-speaker review |
+| `licenceState.missing` | Amakuru y’uruhushya abura | Licence details missing | needs native-speaker review |
+| `employment.full_time` | Igihe cyose | Full time | needs native-speaker review |
+| `employment.part_time` | Igice cy’igihe | Part time | needs native-speaker review |
+| `employment.visiting` | Usura | Visiting | needs native-speaker review |
+| `employment.locum` | Usimbura | Locum | needs native-speaker review |
+| `upload.drop` | Kurura dosiye hano, cyangwa | Drag a file here, or | needs native-speaker review |
+| `upload.browse` | Hitamo dosiye | Choose a file | needs native-speaker review |
+| `upload.camera` | Fata ifoto | Take a photo | needs native-speaker review |
+| `upload.retry` | Ongera ugerageze | Try again | needs native-speaker review |
+| `upload.remove` | Kuraho | Remove | needs native-speaker review |
+| `upload.tooLarge` | Iyi dosiye ni nini cyane. | This file is too large. | needs native-speaker review |
+| `upload.wrongType` | Ubu bwoko bwa dosiye ntibwemewe. | This type of file is not accepted. | needs native-speaker review |
+| `upload.status.uploading` | Irimo koherezwa | Uploading | needs native-speaker review |
+| `upload.status.pending` | Irimo gusuzumwa virusi | Checking for viruses | needs native-speaker review |
+| `upload.status.clean` | Yiteguye | Ready | needs native-speaker review |
+| `upload.status.infected` | Habonetse virusi | Virus found | needs native-speaker review |
+| `upload.status.rejected` | Ntiyemewe | Not accepted | needs native-speaker review |
+| `upload.status.failed` | Isuzuma ryanze | Check failed | needs native-speaker review |
+| `upload.status.error` | Ntiyoherejwe | Not uploaded | needs native-speaker review |
+| `professions.medical_doctor` | Muganga | Medical doctor | needs native-speaker review |
+| `professions.dentist` | Muganga w’amenyo | Dentist | needs native-speaker review |
+| `professions.nurse` | Umuforomo | Nurse | needs native-speaker review |
+| `professions.midwife` | Umubyaza | Midwife | needs native-speaker review |
+| `professions.pharmacist` | Umufarumasiye | Pharmacist | needs native-speaker review |
+| `professions.lab_technologist` | Umutekinisiye wa laboratwari | Laboratory technologist | needs native-speaker review |
+| `professions.radiographer` | Umutekinisiye w’amashusho y’umubiri | Radiographer | needs native-speaker review |
+| `professions.anaesthetist` | Umuganga ushinzwe ikinya | Anaesthetist | needs native-speaker review |
+| `professions.physiotherapist` | Umuvuzi ngororangingo | Physiotherapist | needs native-speaker review |
+| `professions.clinical_psychologist` | Umuhanga mu by’imitekerereze | Clinical psychologist | needs native-speaker review |
+| `professions.nutritionist` | Inzobere mu mirire | Nutritionist | needs native-speaker review |
+| `professions.optometrist` | Umuhanga mu by’amaso | Optometrist | needs native-speaker review |
+| `professions.other` | Ibindi | Other | needs native-speaker review |
+| `specialties.general_practice` | Ubuvuzi rusange | General practice | needs native-speaker review |
+| `specialties.family_medicine` | Ubuvuzi bw’umuryango | Family medicine | needs native-speaker review |
+| `specialties.internal_medicine` | Indwara z’imbere mu mubiri | Internal medicine | needs native-speaker review |
+| `specialties.paediatrics` | Ubuvuzi bw’abana | Paediatrics | needs native-speaker review |
+| `specialties.obstetrics_gynaecology` | Ububyaza n’indwara z’abagore | Obstetrics and gynaecology | needs native-speaker review |
+| `specialties.general_surgery` | Kubaga muri rusange | General surgery | needs native-speaker review |
+| `specialties.orthopaedics` | Amagufwa | Orthopaedics | needs native-speaker review |
+| `specialties.anaesthesiology` | Ikinya | Anaesthesiology | needs native-speaker review |
+| `specialties.emergency_medicine` | Ubutabazi bwihuse | Emergency medicine | needs native-speaker review |
+| `specialties.psychiatry` | Indwara zo mu mutwe | Psychiatry | needs native-speaker review |
+| `specialties.dermatology` | Indwara z’uruhu | Dermatology | needs native-speaker review |
+| `specialties.ophthalmology` | Indwara z’amaso | Ophthalmology | needs native-speaker review |
+| `specialties.ent` | Amatwi, izuru n’umuhogo | Ear, nose and throat | needs native-speaker review |
+| `specialties.cardiology` | Indwara z’umutima | Cardiology | needs native-speaker review |
+| `specialties.neurology` | Indwara z’imitsi y’ubwonko | Neurology | needs native-speaker review |
+| `specialties.radiology` | Amashusho y’umubiri | Radiology | needs native-speaker review |
+| `specialties.pathology` | Isuzuma ry’indwara | Pathology | needs native-speaker review |
+| `specialties.urology` | Imyanya y’inkari | Urology | needs native-speaker review |
+| `specialties.dentistry` | Amenyo | Dentistry | needs native-speaker review |
+| `specialties.public_health` | Ubuzima rusange | Public health | needs native-speaker review |
+| `specialties.other` | Ibindi | Other | needs native-speaker review |
 
 ## patient-web feature: booking (namespace booking)
 

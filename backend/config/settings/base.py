@@ -416,6 +416,7 @@ SPECTACULAR_SETTINGS = {
         "LanguageEnum": "medilink.accounts.models.Language",
         "LoginStatusEnum": "medilink.accounts.serializers.LOGIN_STATUS_CHOICES",
         "RoleCodeEnum": "medilink.tenancy.models.RoleCode",
+        "PatientSexEnum": "medilink.patients.models.Sex",
         # [S1]
         "ApplicationStatusEnum": "medilink.onboarding.models.ApplicationStatus",
         "FacilityStatusEnum": "medilink.tenancy.models.FacilityStatus",

@@ -144,6 +144,35 @@ export interface DispenseRecord {
   lines: DispenseLine[];
 }
 
+/** Pharmacist Today (upgrade 05 §4): counts for the facility and for me. */
+export interface PharmacyDay {
+  date: string;
+  ready: number;
+  partly: number;
+  questions_open: number;
+  questions_answered: number;
+  dispensed_today: number;
+  dispensed_by_me: number;
+  not_available_today: number;
+  substituted_today: number;
+  out_of_stock: number;
+  updated_at: string;
+}
+
+/** One dispensing in the history, with each line's outcome. */
+export interface DispenseHistoryRow {
+  id: Uuid;
+  prescription_id: Uuid;
+  prescription_number: string;
+  patient_display_name: string;
+  pharmacist_name: string;
+  signed_at: string;
+  identity_check_method: string;
+  controlled_confirmed: boolean;
+  lines: { drug: string; outcome: string; quantity: number }[];
+  status: string;
+}
+
 export interface PrescriptionQuery {
   id: Uuid;
   status: PrescriptionQueryStatus;
@@ -305,6 +334,8 @@ export const pharmacyPaths = {
   answerQuery: (id: Uuid) => `${STF}/prescription-queries/${id}/answer/`,
   closeQuery: (id: Uuid) => `${STF}/prescription-queries/${id}/close/`,
   queue: `${STF}/pharmacy/queue/`,
+  myDay: `${STF}/pharmacy/my-day/`,
+  history: `${STF}/pharmacy/history/`,
   availability: `${STF}/pharmacy/availability/`,
   availabilityDrug: (code: string) => `${STF}/pharmacy/availability/${encodeURIComponent(code)}/`,
   drugs: `${STF}/drugs/`,
@@ -352,6 +383,9 @@ export function createPharmacyApi(client: ApiClient) {
       client.post<PrescriptionQuery>(pharmacyPaths.closeQuery(queryId), {}),
     queue: (params: { status?: PharmacyQueueTab; q?: string; page?: number } = {}) =>
       client.get<Paginated<PharmacyQueueRow>>(pharmacyPaths.queue + query(params)),
+    myDay: () => client.get<PharmacyDay>(pharmacyPaths.myDay),
+    history: (params: { days?: 1 | 7 | 30; mine?: boolean; q?: string } = {}) =>
+      client.get<DispenseHistoryRow[]>(pharmacyPaths.history + query(params)),
     availability: (params: { q?: string; available?: boolean; page?: number } = {}) =>
       client.get<Paginated<AvailabilityRow>>(pharmacyPaths.availability + query(params)),
     setAvailability: (drugCode: string, isAvailable: boolean) =>

@@ -9,6 +9,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Pharmacist (upgrade 05 §4)
+
+- Added: Pharmacy counter on Today (numbers and the next prescriptions to give), Dispensing
+  history (`/pharmacy/history`: today, 7 or 30 days, only mine, search) and Verify a prescription
+  from another facility (`/pharmacy/verify`: code, then the medicines with the date of birth).
+
 ### Upgrade U2 · Reception (upgrade 05 §2)
 
 - Added: Reception Today (desk bar, flow, today's numbers, check-in by code, arrivals to confirm,

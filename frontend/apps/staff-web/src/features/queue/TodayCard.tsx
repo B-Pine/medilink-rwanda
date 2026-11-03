@@ -21,7 +21,8 @@ export function OnSiteTodayCard() {
   // Clinicians get Doctor Today instead (clinical/DoctorToday.tsx)
   const clinician = useCan("clinical.write");
   // Reception gets Reception Today instead (ReceptionToday.tsx)
-  const allowed = useCan("queue.call") && !reception && !admin && !clinician;
+  const pharmacist = useCan("pharmacy.dispense");
+  const allowed = useCan("queue.call") && !reception && !admin && !clinician && !pharmacist;
   const refetchInterval = usePollInterval();
   const board = useQuery({
     queryKey: queueKeys.board,

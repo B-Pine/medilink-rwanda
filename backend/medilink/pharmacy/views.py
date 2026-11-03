@@ -14,7 +14,7 @@ from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models import Exists, OuterRef, Prefetch, Q, QuerySet
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, extend_schema
-from rest_framework import exceptions, status
+from rest_framework import exceptions, serializers, status
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -502,6 +502,84 @@ class QueueView(PharmacyView):
         unavailable = services.unavailable_codes(self.facility_id())
         data = [s.QueueRowSerializer(queue_row_data(p, unavailable)).data for p in page]
         return paginator.get_paginated_response(data)
+
+
+class PharmacyDaySerializer(serializers.Serializer):
+    date = serializers.DateField()
+    ready = serializers.IntegerField()
+    partly = serializers.IntegerField()
+    questions_open = serializers.IntegerField()
+    questions_answered = serializers.IntegerField()
+    dispensed_today = serializers.IntegerField()
+    dispensed_by_me = serializers.IntegerField()
+    not_available_today = serializers.IntegerField()
+    substituted_today = serializers.IntegerField()
+    out_of_stock = serializers.IntegerField()
+    updated_at = serializers.DateTimeField()
+
+
+class HistoryLineSerializer(serializers.Serializer):
+    drug = serializers.CharField()
+    outcome = serializers.CharField()
+    quantity = serializers.IntegerField()
+
+
+class HistoryRowSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    prescription_id = serializers.UUIDField()
+    prescription_number = serializers.CharField(allow_blank=True)
+    patient_display_name = serializers.CharField()
+    pharmacist_name = serializers.CharField()
+    signed_at = serializers.DateTimeField()
+    identity_check_method = serializers.CharField()
+    controlled_confirmed = serializers.BooleanField()
+    lines = HistoryLineSerializer(many=True)
+    status = serializers.CharField()
+
+
+class PharmacyDayView(PharmacyView):
+    permission_classes = [Needs(DISPENSE)]
+
+    @extend_schema(
+        operation_id="staff_pharmacy_my_day",
+        tags=TAGS,
+        responses={200: PharmacyDaySerializer},
+        summary="Pharmacist Today: ready, partly given, questions, dispensed, out of stock",
+    )
+    def get(self, request: Request) -> Response:
+        from medilink.pharmacy.desk import my_day
+
+        return Response(
+            PharmacyDaySerializer(my_day(self.facility_id(), self.membership().pk)).data
+        )
+
+
+class DispenseHistoryView(PharmacyView):
+    permission_classes = [Needs(DISPENSE)]
+
+    @extend_schema(
+        operation_id="staff_pharmacy_history",
+        tags=TAGS,
+        parameters=[
+            OpenApiParameter("days", int, enum=[1, 7, 30]),
+            OpenApiParameter("mine", bool),
+            OpenApiParameter("q", str, description="Prescription number or patient name"),
+        ],
+        responses={200: HistoryRowSerializer(many=True)},
+        summary="Dispensing history at my facility, newest first (upgrade 05 §4)",
+    )
+    def get(self, request: Request) -> Response:
+        from medilink.pharmacy.desk import history
+
+        days = {"1": 1, "30": 30}.get(request.query_params.get("days", ""), 7)
+        mine = request.query_params.get("mine") == "true"
+        rows = history(
+            self.facility_id(),
+            days=days,
+            mine_of=self.membership().pk if mine else None,
+            q=request.query_params.get("q", "").strip()[:60],
+        )
+        return Response(HistoryRowSerializer(rows, many=True).data)
 
 
 class DispenseView(PharmacyView):

@@ -30,6 +30,31 @@ async function signIn(email: string, path = "/today") {
 
 const pharmacist = () => signIn("pharmacist@medilink.test");
 
+describe("pharmacist workspace (upgrade 05 §4)", () => {
+  it("Today shows the counter, the history lists dispensings, verify checks a code", async () => {
+    const { user, router, container } = await signIn("pharmacist@medilink.test");
+    const counter = await screen.findByRole("region", { name: "Pharmacy counter" });
+    expect(
+      within(counter).getByRole("list", { name: "Today at the pharmacy" }),
+    ).toBeInTheDocument();
+    expect(within(counter).getByRole("region", { name: "Next to give" })).toBeInTheDocument();
+    expect(screen.queryByText("On site now")).not.toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
+
+    await router.navigate("/pharmacy/history");
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "Dispensing history" }),
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "30 days" }));
+    expect(await screen.findByRole("table", { name: "Dispensing history" })).toBeInTheDocument();
+
+    await router.navigate("/pharmacy/verify");
+    await user.type(await screen.findByRole("textbox", { name: /Verification code/ }), "NOPE-0000");
+    await user.click(screen.getByRole("button", { name: "Check" }));
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+  }, 60_000);
+});
+
 describe("pharmacy queue (S7-F2)", () => {
   it("tabs, search by number, flags; the menu shows Pharmacy and availability", async () => {
     const app = await pharmacist();

@@ -9,6 +9,7 @@ const lazy =
   async () => ({ Component: (await load())[name] });
 
 export { PrescriptionSection } from "./PrescriptionSection";
+import { PharmacistTodayCard } from "./DeskPages";
 
 /** S7a `pharmacy`: queue, dispensing, availability and labels (contract sprint-07 §6.1). */
 export const pharmacyFeature: FeatureRoutes = {
@@ -26,7 +27,17 @@ export const pharmacyFeature: FeatureRoutes = {
       path: "/pharmacy/availability",
       lazy: lazy(() => import("./AvailabilityPage"), "AvailabilityPage"),
     },
+    // upgrade 05 §4: dispensing history and outside prescriptions
+    {
+      path: "/pharmacy/history",
+      lazy: lazy(() => import("./DeskPages"), "DispenseHistoryPage"),
+    },
+    {
+      path: "/pharmacy/verify",
+      lazy: lazy(() => import("./DeskPages"), "VerifyPrescriptionPage"),
+    },
   ],
+  todayCards: [PharmacistTodayCard],
   commands: [
     {
       actions: (me, t) => [

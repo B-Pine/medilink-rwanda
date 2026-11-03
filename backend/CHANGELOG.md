@@ -8,6 +8,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Pharmacist (upgrade 05 §4)
+
+- Added: `GET /staff/pharmacy/my-day/` (ready, partly given, questions, dispensed, out of stock)
+  and `GET /staff/pharmacy/history/?days=1|7|30&mine=&q=` (dispensings with line outcomes).
 ### Rwanda locations, NISR codes (issue #48)
 
 - Added: migration `masterdata/0004_nisr_locations` loads Rwanda's 416 sectors, 2,148 cells and

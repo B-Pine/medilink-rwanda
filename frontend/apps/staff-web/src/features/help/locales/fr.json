@@ -2,7 +2,8 @@
   "nav": {
     "help": "Aide et support",
     "platformSupport": "File du support",
-    "platformHelpArticles": "Articles d'aide"
+    "platformHelpArticles": "Articles d'aide",
+    "platformContact": "Messages du site"
   },
   "loadFailed": "Impossible de charger. Vérifiez votre connexion et réessayez.",
   "retry": "Réessayer",
@@ -204,5 +205,28 @@
     "fixErrors": "Corrigez ces points avant d'enregistrer",
     "statusDraft": "Brouillon",
     "statusPublished": "Publié"
+  },
+  "contact": {
+    "title": "Messages du site",
+    "intro": "Envoyés depuis la page Contact publique. Répondez par l’e-mail ou le téléphone du visiteur, puis marquez le message traité.",
+    "tabs": {
+      "label": "Statut des messages",
+      "new": "Nouveaux",
+      "handled": "Traités",
+      "all": "Tous"
+    },
+    "search": "Référence, nom ou objet",
+    "searchGo": "Rechercher",
+    "empty": "Aucun message ici",
+    "emptyNew": "Aucun nouveau message. Les messages des visiteurs apparaissent ici.",
+    "new": "Nouveau",
+    "handled": "Traité",
+    "handledBy": "Traité par {{name}}, {{when}}",
+    "note": "Ce qui a été fait",
+    "noteHint": "Pour l’équipe : par exemple « Répondu par e-mail ».",
+    "markHandled": "Marquer comme traité",
+    "cancel": "Annuler",
+    "replyEmail": "Répondre à {{reach}}",
+    "call": "Appeler {{reach}}"
   }
 }

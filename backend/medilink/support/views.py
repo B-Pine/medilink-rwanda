@@ -30,13 +30,15 @@ from medilink.support.models import (
     ArticleStatus,
     Audience,
     CloseReason,
+    ContactMessage,
+    ContactStatus,
     HelpArticle,
     RequestPriority,
     RequestStatus,
     SupportRequest,
     Topic,
 )
-from medilink.support.throttling import SupportWriteThrottle
+from medilink.support.throttling import ContactIPThrottle, SupportWriteThrottle
 
 HELP_TAGS = ["help"]
 SUPPORT_TAGS = ["support"]
@@ -735,3 +737,87 @@ class PlatformArticleUnpublishView(APIView):
         article = _platform_article(article_id)
         services.unpublish_article(http_request=request, article=article, user=_user(request))
         return _article_response(article.pk)
+
+
+# ---------------------------------------------------------------------------------------------
+# The public Contact page (upgrade 11 §13): no account, so a platform inbox, not a request
+# ---------------------------------------------------------------------------------------------
+
+
+class PublicContactView(APIView):
+    permission_classes = [PublicEndpoint]
+    authentication_classes: list[Any] = []
+    throttle_classes = [BurstRateThrottle, ContactIPThrottle]
+
+    @extend_schema(
+        tags=SUPPORT_TAGS,
+        request=s.PublicContactSerializer,
+        responses={201: s.ContactReceiptSerializer, 400: err("Invalid fields or health details")},
+    )
+    def post(self, request: Request) -> Response:
+        data = s.PublicContactSerializer(data=request.data)
+        data.is_valid(raise_exception=True)
+        fields = data.validated_data
+        message = services.receive_contact(
+            http_request=request,
+            name=fields["name"].strip(),
+            reach=fields["reach"].strip(),
+            subject=fields["subject"].strip(),
+            body=fields["message"].strip(),
+            language=(request.LANGUAGE_CODE or "rw")[:2],
+        )
+        return Response({"reference": message.reference}, status=status.HTTP_201_CREATED)
+
+
+class PlatformContactListView(APIView):
+    permission_classes = [PlatformAdmin]
+    pagination_class = DefaultPagination
+
+    @extend_schema(
+        tags=SUPPORT_TAGS,
+        parameters=[
+            OpenApiParameter("status", str, enum=ContactStatus.values),
+            OpenApiParameter("q", str, description="Reference, name or subject"),
+        ],
+        responses={200: s.PlatformContactMessageSerializer(many=True), 400: err("Filter")},
+    )
+    def get(self, request: Request) -> Response:
+        rows = ContactMessage.objects.select_related("handled_by")
+        wanted = _choice(request, "status", ContactStatus.values)
+        if wanted:
+            rows = rows.filter(status=wanted)
+        q = _search(request)
+        if q:
+            rows = rows.filter(
+                Q(reference__iexact=q) | Q(name__icontains=q) | Q(subject__icontains=q)
+            )
+        return _paginate(
+            self, request, rows.order_by("-created_at"), s.PlatformContactMessageSerializer
+        )
+
+
+class PlatformContactHandleView(APIView):
+    permission_classes = [PlatformAdmin]
+
+    @extend_schema(
+        tags=SUPPORT_TAGS,
+        request=s.ContactHandleSerializer,
+        responses={
+            200: s.PlatformContactMessageSerializer,
+            404: err("Unknown"),
+            409: err("Already handled"),
+        },
+    )
+    def post(self, request: Request, message_id: Any) -> Response:
+        message = ContactMessage.objects.filter(pk=message_id).first()
+        if message is None:
+            raise exceptions.NotFound()
+        data = s.ContactHandleSerializer(data=request.data)
+        data.is_valid(raise_exception=True)
+        done = services.handle_contact(
+            http_request=request,
+            message=message,
+            user=_user(request),
+            note=data.validated_data["note"].strip(),
+        )
+        return Response(s.PlatformContactMessageSerializer(done).data)

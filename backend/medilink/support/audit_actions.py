@@ -10,6 +10,8 @@ REQUEST_MESSAGE_ADDED = "support.request.message_added"
 REQUEST_REPLIED = "support.request.replied"
 REQUEST_TRIAGED = "support.request.triaged"
 REQUEST_CLOSED = "support.request.closed"
+CONTACT_RECEIVED = "support.contact.received"
+CONTACT_HANDLED = "support.contact.handled"
 
 ACTIONS: frozenset[str] = frozenset(
     {
@@ -22,5 +24,7 @@ ACTIONS: frozenset[str] = frozenset(
         REQUEST_REPLIED,
         REQUEST_TRIAGED,
         REQUEST_CLOSED,
+        CONTACT_RECEIVED,
+        CONTACT_HANDLED,
     }
 )

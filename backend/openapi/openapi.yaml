@@ -2932,6 +2932,91 @@ paths:
               schema:
                 $ref: '#/components/schemas/CommandCenter'
           description: ''
+  /api/v1/platform/contact-messages/:
+    get:
+      operationId: platform_contact_messages_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: Reference, name or subject
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - handled
+          - new
+      tags:
+      - support
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPlatformContactMessageList'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Filter
+  /api/v1/platform/contact-messages/{message_id}/handled/:
+    post:
+      operationId: platform_contact_messages_handled_create
+      parameters:
+      - in: path
+        name: message_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - support
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactHandleRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformContactMessage'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Already handled
   /api/v1/platform/disputes/:
     get:
       operationId: platform_disputes
@@ -7571,6 +7656,30 @@ paths:
               schema:
                 $ref: '#/components/schemas/AssistantTurn'
           description: ''
+  /api/v1/public/contact/:
+    post:
+      operationId: public_contact_create
+      tags:
+      - support
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicContactRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactReceipt'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid fields or health details
   /api/v1/public/facilities/{slug}/:
     get:
       operationId: public_facility_profile
@@ -19047,6 +19156,20 @@ components:
         * `draft` - Draft
         * `signed` - Signed
         * `entered_in_error` - Entered in error
+    ContactHandleRequest:
+      type: object
+      properties:
+        note:
+          type: string
+          default: ''
+          maxLength: 500
+    ContactReceipt:
+      type: object
+      properties:
+        reference:
+          type: string
+      required:
+      - reference
     Cost:
       type: object
       properties:
@@ -26023,6 +26146,29 @@ components:
       - next
       - previous
       - results
+    PaginatedPlatformContactMessageList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlatformContactMessage'
     PaginatedPlatformFacilityList:
       type: object
       required:
@@ -28628,6 +28774,65 @@ components:
       - suggested_slug
       - updated_at
       - version
+    PlatformContactMessage:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        reference:
+          type: string
+          maxLength: 12
+        name:
+          type: string
+          maxLength: 120
+        reach:
+          type: string
+          maxLength: 120
+        subject:
+          type: string
+          maxLength: 120
+        message:
+          type: string
+        language:
+          type: string
+          maxLength: 2
+        status:
+          $ref: '#/components/schemas/PlatformContactMessageStatusEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        handled_by:
+          allOf:
+          - $ref: '#/components/schemas/SupportPerson'
+          nullable: true
+        handled_at:
+          type: string
+          format: date-time
+          nullable: true
+        note:
+          type: string
+          maxLength: 500
+      required:
+      - created_at
+      - handled_by
+      - id
+      - message
+      - name
+      - reach
+      - reference
+      - status
+      - subject
+    PlatformContactMessageStatusEnum:
+      enum:
+      - new
+      - handled
+      type: string
+      description: |-
+        * `new` - New
+        * `handled` - Handled
     PlatformCreateInputRequest:
       type: object
       properties:
@@ -29485,6 +29690,31 @@ components:
       required:
       - date
       - reason
+    PublicContactRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 120
+        reach:
+          type: string
+          minLength: 5
+          description: Email or phone
+          maxLength: 120
+        subject:
+          type: string
+          minLength: 3
+          maxLength: 120
+        message:
+          type: string
+          minLength: 10
+          maxLength: 4000
+      required:
+      - message
+      - name
+      - reach
+      - subject
     PublicFacility:
       type: object
       properties:

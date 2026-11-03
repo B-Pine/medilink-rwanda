@@ -1,3 +1,4 @@
+import { ApiError } from "@medilink/api-client";
 import {
   ArrowRight,
   BellRinging,
@@ -624,11 +625,12 @@ export function AboutPage() {
 // ---- /contact ----
 
 type ContactField = "name" | "reach" | "subject" | "message";
+const CONTACT_FIELDS: ContactField[] = ["name", "reach", "subject", "message"];
 
 /**
  * Contact (upgrade 11 §5): support information and a form with validation, sending, success and
- * error. Sends to the public contact endpoint (upgrade 11 §13); until it exists the error state
- * tells the person plainly.
+ * error. Sends to the public contact endpoint (upgrade 11 §13): the message reaches the MediLink
+ * team's inbox and the visitor gets a reference. Health details are refused, field by field.
  */
 export function ContactPage() {
   const { t } = useTranslation();
@@ -641,6 +643,7 @@ export function ContactPage() {
   });
   const [errors, setErrors] = useState<Partial<Record<ContactField, string>>>({});
   const [state, setState] = useState<"idle" | "sending" | "sent" | "failed">("idle");
+  const [reference, setReference] = useState("");
 
   const update = (field: ContactField) => (value: string) => {
     setValues((v) => ({ ...v, [field]: value }));
@@ -655,7 +658,7 @@ export function ContactPage() {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(reach) && !/^\+?[\d\s]{9,15}$/.test(reach))
       found.reach = t("site.contact.errors.reach");
     if (!values.subject.trim()) found.subject = t("site.contact.errors.subject");
-    if (!values.message.trim()) found.message = t("site.contact.errors.message");
+    if (values.message.trim().length < 10) found.message = t("site.contact.errors.message");
     setErrors(found);
     const first = (Object.keys(found) as ContactField[])[0];
     if (first) {
@@ -664,16 +667,28 @@ export function ContactPage() {
     }
     setState("sending");
     try {
-      await api.help.public.contact({
+      const receipt = await api.help.public.contact({
         name: values.name.trim(),
         reach: reach,
         subject: values.subject.trim(),
         message: values.message.trim(),
       });
+      setReference(receipt.reference);
       setState("sent");
       setValues({ name: "", reach: "", subject: "", message: "" });
-    } catch {
-      setState("failed");
+    } catch (error) {
+      // the server's own words per field (e.g. "no health details here"), else the general error
+      const server: Partial<Record<ContactField, string>> = {};
+      if (error instanceof ApiError && error.status === 400) {
+        for (const field of CONTACT_FIELDS) {
+          const message = error.fields[field]?.[0];
+          if (message) server[field] = message;
+        }
+      }
+      const field = CONTACT_FIELDS.find((f) => server[f]);
+      setErrors(server);
+      setState(field ? "idle" : "failed");
+      if (field) document.getElementById(`contact-${field}`)?.focus();
     }
   };
 
@@ -703,7 +718,9 @@ export function ContactPage() {
           </Panel>
           <Panel as="div" className="p-6 sm:p-8">
             {state === "sent" ? (
-              <Alert tone="success" role="status" title={t("site.contact.sent")} />
+              <Alert tone="success" role="status" title={t("site.contact.sent")}>
+                {reference && t("site.contact.reference", { reference })}
+              </Alert>
             ) : (
               <form noValidate onSubmit={(e) => void submit(e)} className="flex flex-col gap-5">
                 {state === "failed" && (

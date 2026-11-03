@@ -27,6 +27,8 @@ from medilink.support.models import (
     ArticleStatus,
     Audience,
     AuthorKind,
+    ContactMessage,
+    ContactStatus,
     HelpArticle,
     RequestStatus,
     SupportMessage,
@@ -46,6 +48,7 @@ OPEN_LIMIT = _(
     "You already have 5 open requests. Close one, or add to an open one, before opening another."
 )
 ALREADY_CLOSED = _("This request is already closed.")
+ALREADY_HANDLED = _("This message is already handled.")
 
 
 def _invalid(field: str, message: Any) -> exceptions.ValidationError:
@@ -375,3 +378,61 @@ def unpublish_article(*, http_request: Any, article: HelpArticle, user: User) ->
     article.save()
     _article_audit(actions.ARTICLE_UNPUBLISHED, http_request, article)
     return article
+
+
+# ---- the public Contact page (upgrade 11 §13) ---------------------------------------------------
+
+
+def receive_contact(
+    *, http_request: Any, name: str, reach: str, subject: str, body: str, language: str
+) -> ContactMessage:
+    """Store a visitor's message for the platform inbox; health details are refused."""
+    fields = {
+        "name": clean_text("name", name),
+        "reach": clean_text("reach", reach),
+        "subject": clean_text("subject", subject),
+        "body": clean_text("message", body),
+    }
+    message: ContactMessage | None = None
+    for _attempt in range(5):
+        try:
+            with transaction.atomic():
+                message = ContactMessage.objects.create(
+                    reference="CM-" + new_reference()[3:], language=language[:2], **fields
+                )
+            break
+        except IntegrityError:  # reference collision: try another one
+            continue
+    if message is None:  # pragma: no cover - 5 collisions in a 31^6 space
+        raise RuntimeError("Could not allocate a contact message reference")
+    # no names or text in the audit entry: the reference is enough to find the message
+    record(
+        actions.CONTACT_RECEIVED,
+        request=http_request,
+        object_type="contact_message",
+        object_id=message.pk,
+        metadata={"reference": message.reference},
+    )
+    return message
+
+
+def handle_contact(
+    *, http_request: Any, message: ContactMessage, user: User, note: str
+) -> ContactMessage:
+    """Mark a message as answered (support replies by the visitor's own email or phone)."""
+    message = ContactMessage.objects.select_for_update().get(pk=message.pk)
+    if message.status == ContactStatus.HANDLED:
+        raise Conflict(ALREADY_HANDLED)
+    message.status = ContactStatus.HANDLED
+    message.handled_by = user
+    message.handled_at = timezone.now()
+    message.note = clean_text("note", note)
+    message.save(update_fields=["status", "handled_by", "handled_at", "note", "updated_at"])
+    record(
+        actions.CONTACT_HANDLED,
+        request=http_request,
+        object_type="contact_message",
+        object_id=message.pk,
+        metadata={"reference": message.reference},
+    )
+    return message

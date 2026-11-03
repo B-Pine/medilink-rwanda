@@ -663,7 +663,7 @@ Requirements: FR-DSP-01..11; FR-RPT-01..05; FR-SEC-12, 13. Retention jobs (FR-SE
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
 | `GET` | `/api/v1/public/help-articles/` | Help center articles (`?q`, `?category`) | Public | FR-DSP-11 | rw/en/fr; RL: burst | Implemented (S10 part 1 backend) |
-| `POST` | `/api/v1/public/contact/` | Public contact form: name, email or phone, subject, message | Public | Upgrade 11 §5 | RL: strict; no account; spam protection to decide | Proposed (upgrade 11 §13; frontend uses a development mock) |
+| `POST` | `/api/v1/public/contact/` | Public contact form: name, email or phone, subject, message; returns `{reference}` | Public | Upgrade 11 §5 | 10/h per IP (`THROTTLE_RATE_CONTACT_IP`); health details refused (400); audit holds the reference only | Implemented (upgrade U2) |
 | `GET` | `/api/v1/public/doctors/`, `/api/v1/public/doctors/{id}/` | Doctor directory and profile (name, specialty, facility, days, verified qualifications) | Public | FR-SCH-19 (proposed) | Never patients or bookings | Proposed (upgrade 11 §13; built from facility profiles meanwhile) |
 | `GET` | `/api/v1/public/help-articles/{slug}/` | One article | Public | FR-DSP-11 | Plain text, never HTML | Implemented (S10 part 1 backend) |
 | `POST` | `/api/v1/public/support-requests/` | Ask for help without logging in ("I can't log in") | Public | FR-DSP-11 | No clinical data; RL: auth | Deferred (sprint-10 S10-D2: needs a bot check) |
@@ -736,6 +736,8 @@ Note: the permission matrix in analysis 02 §3 gives the receptionist no "raise 
 | `POST` | `/api/v1/platform/disputes/{id}/messages/` | Ask the facility or patient for information | Platform admin | FR-DSP-04 | | Implemented (S10b backend) |
 | `POST` | `/api/v1/platform/disputes/{id}/final-decision/` | Final decision with written reasons | Platform admin | FR-DSP-02, FR-DSP-06 | Step-up; corrections are still made by the facility | Implemented (S10b backend) |
 | `POST` | `/api/v1/platform/facilities/{id}/warnings/` | Record a warning on a facility | Platform admin | FR-DSP-06 | | Planned |
+| `GET` | `/api/v1/platform/contact-messages/` | Contact page inbox (`status=new|handled`, `q` reference, name or subject) | Platform admin | Upgrade 11 §13 | Newest first | Implemented (upgrade U2) |
+| `POST` | `/api/v1/platform/contact-messages/{id}/handled/` | Mark a Contact page message handled, with an optional note | Platform admin | Upgrade 11 §13 | 409 when already handled | Implemented (upgrade U2) |
 | `GET` | `/api/v1/platform/support-requests/` | Support queue (status, topic, audience, priority, facility, assigned, search) | Platform admin | FR-DSP-11 | High first, then oldest activity | Implemented (S10 part 1 backend) |
 | `GET`, `PATCH` | `/api/v1/platform/support-requests/{id}/` | Request with messages; triage (priority, topic, assignee) | Platform admin | FR-DSP-11 | 409 stale version, 422 closed | Implemented (S10 part 1 backend) |
 | `POST` | `/api/v1/platform/support-requests/{id}/close/` | Close with a reason and an optional message | Platform admin | FR-DSP-11 | | Implemented (S10 part 1 backend) |

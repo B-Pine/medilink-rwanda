@@ -391,8 +391,9 @@
       "name": "Indiquez votre nom",
       "reach": "Indiquez une adresse e-mail ou un numéro de téléphone",
       "subject": "Indiquez un objet",
-      "message": "Écrivez votre message"
-    }
+      "message": "Écrivez votre message (au moins 10 caractères)"
+    },
+    "reference": "Votre référence : {{reference}}. Gardez-la si vous écrivez à nouveau."
   },
   "accessibility": {
     "title": "Déclaration d’accessibilité",

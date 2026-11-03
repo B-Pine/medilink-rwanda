@@ -9,6 +9,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Public Contact page inbox (upgrade 11 §13)
+
+- Fixed: the public Contact form now reaches the MediLink team (it posted to an endpoint that did
+  not exist); the visitor sees a reference, and the server's own field errors inline.
+- Added: Website messages (`/platform/contact-messages`) for platform admins: new / handled /
+  all, search, reply by email or call, mark handled with a note.
+
 ### Upgrade U2 · Public facility page ↔ facility admin
 
 - Added: the public facility page shows the admin's photos (first one large, each opens full

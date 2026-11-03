@@ -30,7 +30,7 @@ import { Megaphone, MegaphoneSimple } from "@phosphor-icons/react";
 import { CalendarDots, ClipboardText } from "@phosphor-icons/react";
 // [/S2 imports]
 // [S10 imports]
-import { Article, Headset, Lifebuoy } from "@phosphor-icons/react";
+import { Article, EnvelopeSimple, Headset, Lifebuoy } from "@phosphor-icons/react";
 // [/S10 imports]
 // [S4 imports]
 import { ArrowsDownUp } from "@phosphor-icons/react";
@@ -287,6 +287,15 @@ export const NAV_ITEMS: readonly NavItem[] = [
     visible: (me: StaffMe) => me.is_platform_admin,
   },
   {
+    // upgrade 11 §13: messages from the public Contact page
+    key: "platformContact",
+    path: "/platform/contact-messages",
+    icon: EnvelopeSimple,
+    group: "platform",
+    labelKey: "help.nav.platformContact",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
+  {
     key: "platformHelpArticles",
     path: "/platform/help-articles",
     icon: Article,
@@ -509,6 +518,7 @@ const ORDER = [
   "platformSecurityLog",
   "platformAccessLog",
   "platformSupport",
+  "platformContact",
   "platformMasterData",
   "platformAnnouncements",
   "platformHelpArticles",

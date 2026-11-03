@@ -15,6 +15,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Added: `GET /public/facilities/{slug}/photos/{upload_id}/` redirects to a short-lived signed
   link to one public photo (C0; 404 once the admin removes it).
 
+### Upgrade U2 · Public Contact page inbox (upgrade 11 §13)
+
+- Added: `POST /public/contact/` stores a visitor's message (10/h per IP, health details refused)
+  and returns its `CM-` reference; `support.ContactMessage` (migration `support/0003`).
+- Added: `GET /platform/contact-messages/` and `POST /platform/contact-messages/{id}/handled/`
+  for the MediLink team; audit actions `support.contact.received` and `support.contact.handled`.
+
 ### Upgrade U2 · Pharmacist (upgrade 05 §4)
 
 - Added: `GET /staff/pharmacy/my-day/` (ready, partly given, questions, dispensed, out of stock)

@@ -5,6 +5,7 @@ import type {
   HelpAudience,
   HelpCategory,
   PersonRef,
+  ContactMessageRow,
   PlatformHelpArticle,
   PlatformSupportRequest,
   SupportCloseReason,
@@ -584,10 +585,80 @@ export const helpMocks: FeatureMockFactory = (context: MockContext) => {
     return { me, facility: { id: membership.facility.id, name: membership.facility.name } };
   };
 
+  // the Contact page inbox (upgrade 11 §13)
+  const contactMessages: ContactMessageRow[] = [
+    {
+      id: id(),
+      reference: "CM-7KQ2MA",
+      name: "Aline Uwase",
+      reach: "aline@example.test",
+      subject: "Our clinic is not listed",
+      message: "We run a clinic in Huye and would like to join MediLink. Who do we talk to?",
+      language: "en",
+      status: "new",
+      created_at: now(),
+      handled_by: null,
+      handled_at: null,
+      note: "",
+    },
+  ];
+
   const handlers = [
     // ---- public
-    // Upgrade 11 §13: development stand-in for the proposed public contact endpoint
-    http.post(`${api}/public/contact/`, () => new HttpResponse(null, { status: 202 })),
+    http.post(`${api}/public/contact/`, async ({ request }) => {
+      await context.settle();
+      const body = await context.readJson(request);
+      const message: ContactMessageRow = {
+        id: id(),
+        reference: `CM-${String(contactMessages.length + 1).padStart(6, "0")}`,
+        name: str(body.name),
+        reach: str(body.reach),
+        subject: str(body.subject),
+        message: str(body.message),
+        language: context.languageFrom(request),
+        status: "new",
+        created_at: now(),
+        handled_by: null,
+        handled_at: null,
+        note: "",
+      };
+      contactMessages.unshift(message);
+      return HttpResponse.json({ reference: message.reference }, { status: 201 });
+    }),
+    http.get(`${api}/platform/contact-messages/`, ({ request }) => {
+      const admin = platformAdmin(context, context.languageFrom(request));
+      if ("error" in admin) return admin.error;
+      const url = new URL(request.url);
+      const status = url.searchParams.get("status");
+      const q = (url.searchParams.get("q") ?? "").toLowerCase();
+      const rows = contactMessages.filter(
+        (m) =>
+          (!status || m.status === status) &&
+          (!q ||
+            m.reference.toLowerCase() === q ||
+            m.name.toLowerCase().includes(q) ||
+            m.subject.toLowerCase().includes(q)),
+      );
+      return HttpResponse.json(page(rows, url));
+    }),
+    http.post(`${api}/platform/contact-messages/:id/handled/`, async ({ request, params }) => {
+      const lang = context.languageFrom(request);
+      const admin = platformAdmin(context, lang);
+      if ("error" in admin) return admin.error;
+      const message = contactMessages.find((m) => m.id === str(params.id));
+      if (!message)
+        return context.errorResponse(404, "not_found", context.message("notFound", lang));
+      if (message.status === "handled")
+        return context.errorResponse(409, "conflict", "This message is already handled.");
+      const body = await context.readJson(request);
+      Object.assign(message, {
+        status: "handled",
+        handled_by: { id: admin.me.id, full_name: admin.me.full_name },
+        handled_at: now(),
+        note: str(body.note ?? ""),
+      });
+      return HttpResponse.json(message);
+    }),
     http.get(`${api}/public/help-articles/`, ({ request }) =>
       listArticles("patient", new URL(request.url), context.languageFrom(request)),
     ),

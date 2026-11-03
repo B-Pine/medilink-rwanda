@@ -277,7 +277,7 @@ Source: [10 · Disputes, complaints, support](../analysis/10-disputes-complaints
 | FR-DSP-08 | Conflict of interest; one-person facility to super admin | P1 | S10 | Backend | BR | In progress (S10b backend) |
 | FR-DSP-09 | Disputes raised by guardians and at the counter | P1 | S10 | Both | AZ, API | In progress (S10b backend) |
 | FR-DSP-10 | Abuse protection: limits, duplicates, flags | P1 | S10 | Backend | BR | In progress (S10b backend) |
-| FR-DSP-11 | Help center and support requests | P1 | S10 (part 1) | Both | API, E2E | In progress |
+| FR-DSP-11 | Help center, support requests and the public Contact page inbox | P1 | S10 (part 1) | Both | API, E2E | In progress |
 | FR-DSP-12 | Ratings with one reply, moderation, completed-visit rule | P2 | — | Both | BR | Not started |
 | FR-DSP-13 | Complaints flow | P2 | — | Both | API | Not started |
 | FR-DSP-14 | Facility quality score | P2 | — | Backend | UT | Not started |

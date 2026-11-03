@@ -125,6 +125,26 @@ describe("platform support queue (S10-F6)", () => {
   });
 });
 
+describe("website messages (upgrade 11 §13)", () => {
+  it("lists new messages and marks one handled with a note", async () => {
+    const { user, container } = await signIn(PLATFORM_ADMIN, "/platform/contact-messages");
+    expect(
+      await screen.findByRole("heading", { level: 2, name: "Our clinic is not listed" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Reply to aline@example.test" })).toHaveAttribute(
+      "href",
+      expect.stringContaining("mailto:aline@example.test"),
+    );
+    await user.click(screen.getByRole("button", { name: "Mark as handled" }));
+    await user.type(screen.getByLabelText(/What was done/), "Replied by email");
+    await user.click(screen.getByRole("button", { name: "Mark as handled" }));
+    expect(await screen.findByText(/No new messages/)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Handled" }));
+    expect(await screen.findByText("Replied by email")).toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
 describe("help article editor (S10-F7)", () => {
   it("shows missing languages, previews, saves and publishes", async () => {
     const { user, container } = await signIn(PLATFORM_ADMIN, "/platform/help-articles");

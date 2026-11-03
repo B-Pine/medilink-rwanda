@@ -978,7 +978,12 @@ export const bookingMocks: FeatureMockFactory = (context) => {
           phone: "+250788000000",
           email: "",
           website: "",
-          photos: [],
+          // dev photos (the public site's own) so the profile gallery shows in mock mode
+          photos: [
+            "/photos/home/clinic-entrance.webp",
+            "/photos/home/clinic-hillside.webp",
+            "/photos/home/care-guide.webp",
+          ],
           district: f.district,
           sector: f.sector,
           lat: f.lat,

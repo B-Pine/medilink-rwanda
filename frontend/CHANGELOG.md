@@ -9,6 +9,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Public site · Facilities as products (#180)
+
+- Changed: facility cards are product cards (tinted cover with the facility's monogram, type and
+  24-hour emergency badges, insurer chips, the whole card clickable, one action row with a map
+  icon button). The facility profile opens with its photo gallery under the name.
+- Fixed: home service tiles no longer show "0 facilities".
+
 ### Upgrade U2 · Cashier role (upgrade 06 §4)
 
 - Added: Cashier in the staff invite roles; Cash desk on Today (shift, bills to pay, partly

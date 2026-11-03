@@ -386,7 +386,10 @@ export function LandingPage() {
                   <span className="flex min-w-0 flex-1 flex-col">
                     <span className="font-semibold">{t(`landing.services.${key}`)}</span>
                     <span className="text-body-sm text-fg-secondary tabular-nums">
-                      {all.data ? t("site.home2.facilityCount", { count: countFor(key) }) : " "}
+                      {/* a zero reads as an empty shelf: only real counts are shown */}
+                      {all.data && countFor(key) > 0
+                        ? t("site.home2.facilityCount", { count: countFor(key) })
+                        : " "}
                     </span>
                   </span>
                   <ArrowRight

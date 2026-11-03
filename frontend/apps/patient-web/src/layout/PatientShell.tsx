@@ -50,6 +50,7 @@ import { FEATURE_HEADER_ITEMS } from "../app/features";
 import { paths } from "../app/paths";
 import { useLogout, usePatientMe } from "../auth/queries";
 import { GlobalSearch } from "../features/dashboard/GlobalSearch";
+import { AssistantLauncher } from "../features/public/AssistantLauncher";
 import { Avatar, initials } from "../features/dashboard/kit";
 import { useUnreadCount } from "../features/notifications/api";
 import {
@@ -803,6 +804,8 @@ export function PatientShell() {
               <div key={pathname} className="flex flex-1 flex-col animate-enter">
                 <Outlet />
               </div>
+              {/* inside <main> so links from the answer open the in-shell pages */}
+              <AssistantLauncher raised={!md} />
             </main>
           </div>
 

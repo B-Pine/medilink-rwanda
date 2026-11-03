@@ -44,6 +44,28 @@ describe("AI symptom assistant", () => {
     expect(screen.queryByLabelText("Describe how you feel")).not.toBeInTheDocument();
   });
 
+  it("the floating button opens the chat in a panel on other pages", async () => {
+    const { user } = renderApp("/check-symptoms");
+    await user.click(await screen.findByRole("button", { name: "Open the AI assistant" }));
+    const panel = await screen.findByRole("dialog", { name: /AI health assistant/ });
+    expect(within(panel).getByText("This is a test version")).toBeInTheDocument();
+
+    await user.type(within(panel).getByLabelText("Describe how you feel"), "fever and headache");
+    await user.click(within(panel).getByRole("button", { name: "Send" }));
+    expect(await within(panel).findByText("Do you also have vomiting?")).toBeInTheDocument();
+
+    // closing keeps the conversation
+    await user.click(within(panel).getByRole("button", { name: "Close the assistant" }));
+    await user.click(screen.getByRole("button", { name: "Open the AI assistant" }));
+    expect(await screen.findByText("Do you also have vomiting?")).toBeInTheDocument();
+  });
+
+  it("the full assistant page has no floating button", async () => {
+    renderApp("/assistant");
+    await screen.findByRole("heading", { level: 1, name: "Tell us how you feel" });
+    expect(screen.queryByRole("button", { name: "Open the AI assistant" })).not.toBeInTheDocument();
+  });
+
   it("the symptom checker links to the assistant", async () => {
     renderApp("/check-symptoms");
     expect(await screen.findByRole("link", { name: /Try the AI assistant/ })).toHaveAttribute(

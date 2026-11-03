@@ -1,6 +1,7 @@
 import { cx, MAIN_CONTENT_ID, SkipLink } from "@medilink/ui";
 import { useEffect, type ReactNode } from "react";
 
+import { AssistantLauncher } from "../features/public/AssistantLauncher";
 import { useInDashboard } from "./DashboardContext";
 import { PublicFooter } from "./PublicFooter";
 import { PublicHeader } from "./PublicHeader";
@@ -48,6 +49,7 @@ export function PublicLayout({
         {children}
       </main>
       <PublicFooter />
+      <AssistantLauncher />
     </div>
   );
 }

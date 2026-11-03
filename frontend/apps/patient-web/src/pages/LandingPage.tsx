@@ -5,7 +5,6 @@ import {
   Buildings,
   ChartLineUp,
   CheckCircle,
-  ClockCountdown,
   Crosshair,
   Eye,
   Globe,
@@ -110,32 +109,6 @@ const STEPS: { key: "search" | "join" | "arrive"; icon: Icon }[] = [
   { key: "join", icon: Ticket },
   { key: "arrive", icon: CheckCircle },
 ];
-
-/** A small card that floats over the hero photo; drawn from the real app's UI, not invented. */
-function FloatCard({
-  icon: CardIcon,
-  children,
-  className,
-}: {
-  icon: Icon;
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div
-      aria-hidden="true"
-      className={cx(
-        "ml-float absolute flex items-center gap-2.5 rounded-2xl border border-border/70 bg-surface/95 px-3.5 py-2.5 text-body-sm font-semibold text-fg shadow-raised",
-        className,
-      )}
-    >
-      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-brand-subtle text-primary">
-        <CardIcon weight="bold" className="size-4" />
-      </span>
-      {children}
-    </div>
-  );
-}
 
 /** A phone screen for "How it works": the app's own parts, scaled down. */
 function Phone({ children }: { children: ReactNode }) {
@@ -313,26 +286,17 @@ export function LandingPage() {
               <HeroPhoto
                 photo={HERO_PHOTOS.main}
                 priority
-                className="row-span-2 aspect-[4/5.4] rounded-[28px]"
+                className="row-span-2 aspect-[4/5.4] rounded-lg"
               />
               <HeroPhoto
                 photo={HERO_PHOTOS.entrance}
-                className="aspect-[4/3.4] self-end rounded-[22px]"
+                className="aspect-[4/3.4] self-end rounded-lg"
               />
               <HeroPhoto
                 photo={HERO_PHOTOS.hillside}
-                className="aspect-[4/3.4] self-start rounded-[22px]"
+                className="aspect-[4/3.4] self-start rounded-lg"
               />
             </div>
-            <FloatCard icon={Ticket} className="-left-2 top-8 sm:-left-8">
-              {t("site.home2.float.queue")}
-            </FloatCard>
-            <FloatCard icon={ShieldCheck} className="-right-2 top-1/2 sm:-right-6">
-              {t("site.home2.float.insurance")}
-            </FloatCard>
-            <FloatCard icon={ClockCountdown} className="bottom-0 left-6 lg:-bottom-4">
-              {t("site.home2.float.open")}
-            </FloatCard>
           </div>
         </PageContainer>
       </section>

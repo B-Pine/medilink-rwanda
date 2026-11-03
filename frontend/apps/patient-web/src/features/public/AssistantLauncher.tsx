@@ -37,7 +37,7 @@ export function AssistantLauncher({
         className={cx(
           "group fixed right-4 z-30 inline-flex min-h-14 cursor-pointer items-center gap-2 rounded-full bg-primary p-2 text-on-primary shadow-raised",
           "transition-[translate,box-shadow] duration-200 ease-out hover:-translate-y-0.5 motion-reduce:transition-none",
-          "sm:right-6 sm:pr-5",
+          "sm:right-6",
           raised ? "bottom-[calc(5rem+env(safe-area-inset-bottom))]" : "bottom-4 sm:bottom-6",
         )}
       >
@@ -51,7 +51,8 @@ export function AssistantLauncher({
             <span className="absolute top-0.5 right-0.5 size-2.5 rounded-full bg-attention-solid ring-2 ring-primary" />
           )}
         </span>
-        <span className="hidden font-semibold sm:inline">
+        {/* the label folds away once the page scrolls, so the button stops covering content */}
+        <span className="ml-fab-label hidden overflow-hidden pr-3 font-semibold whitespace-nowrap sm:inline-block">
           {t("public.assistant.launcherShort")}
         </span>
       </button>

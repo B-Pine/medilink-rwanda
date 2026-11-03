@@ -237,6 +237,11 @@
     "placesTitle": "Places that can help",
     "noPlaces": "No facility offers this service nearby yet.",
     "morePlaces": "See more places",
-    "tryIt": "Prefer to describe it in your own words? Try the AI assistant (test)"
+    "tryIt": "Prefer to describe it in your own words? Try the AI assistant (test)",
+    "launcher": "Open the AI assistant",
+    "launcherShort": "AI assistant",
+    "panelTitle": "AI health assistant",
+    "testBadge": "Test",
+    "close": "Close the assistant"
   }
 }

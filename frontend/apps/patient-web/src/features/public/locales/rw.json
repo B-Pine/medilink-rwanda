@@ -237,6 +237,11 @@
     "placesTitle": "Aho bagufasha",
     "noPlaces": "Nta kigo kiri hafi gitanga iyi serivisi ubu.",
     "morePlaces": "Reba ahandi hantu",
-    "tryIt": "Wahitamo kubisobanura mu magambo yawe? Gerageza umufasha wa AI (igerageza)"
+    "tryIt": "Wahitamo kubisobanura mu magambo yawe? Gerageza umufasha wa AI (igerageza)",
+    "launcher": "Fungura umufasha wa AI",
+    "launcherShort": "Umufasha wa AI",
+    "panelTitle": "Umufasha w’ubuzima wa AI",
+    "testBadge": "Igerageza",
+    "close": "Funga umufasha"
   }
 }

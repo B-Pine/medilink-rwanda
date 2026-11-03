@@ -237,6 +237,11 @@
     "placesTitle": "Lieux qui peuvent vous aider",
     "noPlaces": "Aucun établissement proche ne propose encore ce service.",
     "morePlaces": "Voir plus de lieux",
-    "tryIt": "Vous préférez le décrire avec vos mots ? Essayez l’assistant IA (test)"
+    "tryIt": "Vous préférez le décrire avec vos mots ? Essayez l’assistant IA (test)",
+    "launcher": "Ouvrir l’assistant IA",
+    "launcherShort": "Assistant IA",
+    "panelTitle": "Assistant santé IA",
+    "testBadge": "Test",
+    "close": "Fermer l’assistant"
   }
 }

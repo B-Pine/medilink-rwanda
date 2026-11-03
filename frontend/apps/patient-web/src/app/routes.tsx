@@ -1,7 +1,8 @@
 import type { ComponentType } from "react";
-import type { RouteObject } from "react-router";
+import { Outlet, type RouteObject } from "react-router";
 
 import { RequirePatient } from "../auth/RequirePatient";
+import { AssistantProvider } from "../features/public/assistantState";
 import { PatientShell } from "../layout/PatientShell";
 import { RouteSkeleton } from "../layout/RouteSkeleton";
 import { FEATURES } from "./features";
@@ -15,6 +16,12 @@ const page =
 /** Route table, shared by the browser router (main.tsx) and the memory router (tests). */
 export const routes: RouteObject[] = [
   {
+    // one AI assistant conversation across pages (the /assistant page and the floating panel)
+    element: (
+      <AssistantProvider>
+        <Outlet />
+      </AssistantProvider>
+    ),
     HydrateFallback: RouteSkeleton,
     children: [
       { path: "/", lazy: page(() => import("../pages/LandingPage"), "LandingPage") },

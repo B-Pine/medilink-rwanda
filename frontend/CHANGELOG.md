@@ -18,6 +18,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   marked experimental. Linked from Check symptoms.
 - Added: `api.triage.assistant()` with `AssistantTurn` types, the `assistant_unavailable` error
   code and a scripted MSW mock.
+- Added: a floating "AI assistant" button on every public page and in the patient dashboard
+  (above the phone tab bar). It opens the same chat in a side panel, full screen on phones; the
+  conversation carries across pages and continues on `/assistant`, where the button is hidden.
+  Following a facility from the answer closes the panel; in the dashboard it opens the in-app
+  page.
 
 ### Upgrade U2 · Doctor tools (upgrade 05 §3)
 

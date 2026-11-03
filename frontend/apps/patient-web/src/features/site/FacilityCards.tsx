@@ -210,6 +210,7 @@ export function FacilityCardGrid({
   onShowOnMap,
   compact = false,
   wide = false,
+  stack = false,
 }: {
   label: string;
   rows: FacilityResult[];
@@ -221,12 +222,16 @@ export function FacilityCardGrid({
   compact?: boolean;
   /** No map beside: three cards a row on wide screens. */
   wide?: boolean;
+  /** In a narrow panel: always one card per row. */
+  stack?: boolean;
 }) {
-  const cols = compact
-    ? "sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2"
-    : wide
-      ? "sm:grid-cols-2 lg:grid-cols-3"
-      : "sm:grid-cols-2";
+  const cols = stack
+    ? ""
+    : compact
+      ? "sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2"
+      : wide
+        ? "sm:grid-cols-2 lg:grid-cols-3"
+        : "sm:grid-cols-2";
   if (loading)
     return (
       <div className={cx("grid gap-4", cols)}>

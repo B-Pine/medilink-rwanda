@@ -81,6 +81,10 @@ describe("application wizard", () => {
       await waitFor(() => expect(screen.getByLabelText("Village")).not.toBeDisabled());
       await user.selectOptions(screen.getByLabelText("Village"), "DEV-12010101");
       await user.type(screen.getByLabelText("Street address"), "KG 11 Ave 5");
+      // the map pin is required: typed here (the map and GPS set the same fields)
+      expect(screen.getByRole("group", { name: "Map pin" })).toBeInTheDocument();
+      await user.type(screen.getByLabelText(/^Latitude/), "-1.9442");
+      await user.type(screen.getByLabelText(/^Longitude/), "30.1234");
       await act(() => vi.advanceTimersByTimeAsync(1000));
 
       // Documents: a public facility needs only the MoH licence (with number and expiry).
@@ -128,6 +132,27 @@ describe("application wizard", () => {
       vi.useRealTimers();
     }
   }, 30_000);
+
+  it("asks for the government identifiers and offers facility photos", async () => {
+    const { user, container } = await startApplication();
+    expect(screen.getByLabelText(/^MoH facility code/)).toBeInTheDocument();
+    await user.type(screen.getByLabelText(/^TIN/), "12345");
+    expect(await screen.findByText("A TIN has 9 digits.")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Next" }));
+    await screen.findByRole("heading", { level: 1, name: "Location" });
+    // the pin is required: the GPS button, the map and typed coordinates
+    expect(screen.getByRole("button", { name: "Use my location" })).toBeInTheDocument();
+    await user.type(screen.getByLabelText(/^Latitude/), "5.1");
+    await user.type(screen.getByLabelText(/^Longitude/), "30.1");
+    expect(await screen.findByText(/outside Rwanda/)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Next" }));
+    await screen.findByRole("heading", { level: 1, name: "Documents" });
+    expect(screen.getByRole("heading", { name: "Photos of the facility" })).toBeInTheDocument();
+    const photos = container.querySelector<HTMLInputElement>(
+      'section[id="documents.facility_photo"] input[type="file"]',
+    );
+    expect(photos?.accept).toBe("image/jpeg,image/png,image/heic,image/heif");
+  });
 
   it("pre-checks file type and size before uploading", async () => {
     const { container, router } = await startApplication();

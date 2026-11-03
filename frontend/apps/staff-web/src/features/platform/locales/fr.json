@@ -61,7 +61,8 @@
     "tin_certificate": "Certificat TIN",
     "accreditation": "Accréditation",
     "insurer_contract": "Contrat d'assurance",
-    "other": "Autre document"
+    "other": "Autre document",
+    "facility_photo": "Photo de l’établissement"
   },
   "overview": {
     "title": "Vue d'ensemble de la plateforme",
@@ -186,7 +187,23 @@
     "licenceNumber": "Numéro de licence du MINISANTE",
     "licenceExpiry": "Date d'expiration de la licence",
     "rejectTitle": "Rejeter cette demande",
-    "rejectConsequences": "Le demandeur reçoit la raison. C'est définitif ; il peut faire une nouvelle demande."
+    "rejectConsequences": "Le demandeur reçoit la raison. C'est définitif ; il peut faire une nouvelle demande.",
+    "levelOfCare": "Niveau de soins",
+    "levelFromType": "Selon le type d’établissement",
+    "level": {
+      "primary": "Primaire",
+      "secondary": "Secondaire",
+      "tertiary": "Tertiaire"
+    },
+    "mohCode": "Code MINISANTE (FOSA ID)",
+    "tin": "NIF (TIN)",
+    "mapPin": "Épingle sur la carte",
+    "language": "Langue",
+    "agreements": "Accords",
+    "agreed": "Conditions {{terms}} · traitement des données {{dpa}}",
+    "ncsa": "Enregistré auprès de la NCSA",
+    "yes": "Oui",
+    "no": "Non"
   },
   "reason": {
     "code": "Raison",
@@ -236,7 +253,11 @@
       "suspend": "{{name}} disparaît de la recherche et n'accepte plus de nouveaux rendez-vous. Le travail du jour continue.",
       "reactivate": "{{name}} redevient visible et accepte les rendez-vous.",
       "deactivate": "{{name}} passe en lecture seule. C'est définitif."
-    }
+    },
+    "identifiers": "Identifiants officiels",
+    "identifiersHint": "Le code de l’établissement au Ministère de la Santé (FOSA ID) et le numéro fiscal RRA. Ils figurent dans la liste des établissements pour le gouvernement.",
+    "saveIdentifiers": "Enregistrer",
+    "identifiersSaved": "Enregistré."
   },
   "licences": {
     "add": "Ajouter une licence",

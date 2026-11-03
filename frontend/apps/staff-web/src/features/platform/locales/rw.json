@@ -61,7 +61,8 @@
     "tin_certificate": "Icyemezo cya TIN",
     "accreditation": "Icyemezo cy'ubuziranenge",
     "insurer_contract": "Amasezerano n'ubwishingizi",
-    "other": "Indi nyandiko"
+    "other": "Indi nyandiko",
+    "facility_photo": "Ifoto y’ikigo"
   },
   "overview": {
     "title": "Incamake ya sisitemu",
@@ -186,7 +187,23 @@
     "licenceNumber": "Nimero y'uruhushya rwa MINISANTE",
     "licenceExpiry": "Itariki uruhushya rurangiriraho",
     "rejectTitle": "Anga ubu busabe",
-    "rejectConsequences": "Usaba amenyeshwa impamvu. Ntibisubirwaho; ashobora kongera gusaba."
+    "rejectConsequences": "Usaba amenyeshwa impamvu. Ntibisubirwaho; ashobora kongera gusaba.",
+    "levelOfCare": "Urwego rw’ubuvuzi",
+    "levelFromType": "Bivuye ku bwoko bw’ikigo",
+    "level": {
+      "primary": "Ibanze",
+      "secondary": "Icyiciro cya kabiri",
+      "tertiary": "Icyiciro cya gatatu"
+    },
+    "mohCode": "Kode ya MINISANTE (FOSA ID)",
+    "tin": "TIN",
+    "mapPin": "Akamenyetso ku ikarita",
+    "language": "Ururimi",
+    "agreements": "Amasezerano",
+    "agreed": "Amabwiriza {{terms}} · gutunganya amakuru {{dpa}}",
+    "ncsa": "Cyanditswe muri NCSA",
+    "yes": "Yego",
+    "no": "Oya"
   },
   "reason": {
     "code": "Impamvu",
@@ -236,7 +253,11 @@
       "suspend": "{{name}} kiva mu bushakashatsi kandi ntikigakira gahunda nshya. Akazi k'uyu munsi gakomeza.",
       "reactivate": "{{name}} kongera kugaragara kandi cyakira gahunda.",
       "deactivate": "{{name}} gisigara gisomwa gusa. Ni burundu."
-    }
+    },
+    "identifiers": "Ibiranga ikigo bya Leta",
+    "identifiersHint": "Kode y’ikigo muri Minisiteri y’Ubuzima (FOSA ID) na nimero y’imisoro ya RRA. Bigaragara ku rutonde rw’ibigo rwa Leta.",
+    "saveIdentifiers": "Bika",
+    "identifiersSaved": "Byabitswe."
   },
   "licences": {
     "add": "Ongeraho uruhushya",

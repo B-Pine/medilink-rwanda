@@ -40,6 +40,7 @@ from medilink.onboarding.models import (
 )
 from medilink.tenancy.models import Facility, FacilityStatus, Organization, Ownership
 from medilink.uploads import services as uploads
+from medilink.uploads.sniff import IMAGE_TYPES
 
 # Sent after approval, on commit: S2 invites the proposed admin and moves the facility to setup.
 application_approved = Signal()  # kwargs: application_id, facility_id
@@ -47,6 +48,7 @@ application_approved = Signal()  # kwargs: application_id, facility_id
 DOCUMENT_PURPOSE = "facility_application_document"
 MAX_DOCUMENTS = 20
 MAX_DOCUMENT_BYTES = 100 * 2**20
+MAX_PHOTOS = 6  # the facility profile keeps up to 6 photos
 
 NOT_EDITABLE = _("This application can't be changed in its current status.")
 WRONG_STATUS = _("This action isn't possible in the current status.")
@@ -63,6 +65,8 @@ SLUG_MISMATCH = _("Type the facility's address exactly to confirm.")
 GO_LIVE_FAILED = _("The facility isn't ready to go live.")
 SUPERSEDED = _("This licence was renewed; change the current one instead.")
 NEEDS_ITEM = _("Add at least one comment.")
+PHOTOS_LIMIT = _("Add up to 6 photos of the facility.")
+PHOTO_NOT_IMAGE = _("A facility photo must be a JPEG, PNG or HEIC image.")
 
 EDITABLE_GROUPS = ("facility", "location", "applicant", "proposed_admin", "claimed_insurer_codes")
 
@@ -310,6 +314,8 @@ def _apply_groups(application: Application, data: dict[str, Any]) -> list[str]:
             "level_of_care": "level_of_care",
             "ownership": "ownership",
             "organization_name": "organization_name",
+            "moh_facility_code": "moh_facility_code",
+            "tin": "tin",
             "phone": "phone",
             "email": "email",
         }
@@ -409,6 +415,9 @@ def add_document(
     total = current.aggregate(total=Sum("file__size_bytes"))["total"] or 0
     if current.count() >= MAX_DOCUMENTS or total + (django_file.size or 0) > MAX_DOCUMENT_BYTES:
         raise BusinessRuleViolation(DOCUMENTS_LIMIT)
+    photo = kind == DocumentKind.FACILITY_PHOTO
+    if photo and current.filter(kind=kind).count() >= MAX_PHOTOS:
+        raise BusinessRuleViolation(PHOTOS_LIMIT)
     file = uploads.receive(
         actor=actor,
         audience="platform" if actor is not None else "public",
@@ -418,6 +427,9 @@ def add_document(
         idempotency_scope=scope,
         request=request,
     )
+    if photo and file.content_type not in IMAGE_TYPES:  # sniffed, not the client's claim
+        uploads.soft_delete(file, actor=actor)
+        raise exceptions.ValidationError({"file": [str(PHOTO_NOT_IMAGE)]})
     document = ApplicationDocument.objects.create(
         application=application,
         file=file,
@@ -487,6 +499,8 @@ def missing_for_submit(application: Application) -> list[str]:
         "facility.email": application.email,
         "location.village_code": application.village_id,
         "location.address": application.address,
+        # the map pin: the public map, directions and the government list need it
+        "location.latitude": application.latitude is not None and application.longitude is not None,
         "applicant.name": application.applicant_name,
         "applicant.email": application.applicant_email,
         "applicant.phone": application.applicant_phone,
@@ -681,6 +695,8 @@ def approve(
                 facility_type=facility_type,
                 ownership=ownership,
                 status=FacilityStatus.APPROVED,
+                moh_facility_code=application.moh_facility_code,
+                tin=application.tin,
             )
     except IntegrityError:
         raise exceptions.ValidationError({"slug": [str(SLUG_TAKEN)]}) from None

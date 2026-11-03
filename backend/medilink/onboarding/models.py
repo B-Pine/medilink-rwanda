@@ -42,6 +42,9 @@ class Application(TimeStampedModel):
     level_of_care = models.CharField(max_length=12, blank=True)
     ownership = models.CharField(max_length=16, choices=Ownership.choices, blank=True)
     organization_name = models.CharField(max_length=200, blank=True)
+    # C0: the Ministry of Health facility code (FOSA ID) and the RRA tax number, when known
+    moh_facility_code = models.CharField(max_length=20, blank=True)
+    tin = models.CharField(max_length=9, blank=True)
     phone = models.CharField(max_length=20, blank=True)
     email = models.EmailField(max_length=254, blank=True)
     village = models.ForeignKey(
@@ -103,6 +106,8 @@ class DocumentKind(models.TextChoices):
     TIN_CERTIFICATE = "tin_certificate", "TIN certificate"
     ACCREDITATION = "accreditation", "Accreditation"
     INSURER_CONTRACT = "insurer_contract", "Insurer contract"
+    # Optional, up to 6 images: become the facility profile's photos at approval
+    FACILITY_PHOTO = "facility_photo", "Facility photo"
     OTHER = "other", "Other"
 
 

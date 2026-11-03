@@ -20,13 +20,23 @@ import {
 } from "@medilink/ui";
 import { MapPin } from "@phosphor-icons/react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useApi } from "../../app/services";
+import { env } from "../../env";
 import { applicationKey, insideRwanda, usePublicList } from "./data";
 
+// Leaflet and the tiles load only on the location step
+const LocationPicker = lazy(() => import("@medilink/ui/map-picker"));
+
 type Save = (patch: Omit<ApplicationPatch, "version">) => void;
+// facility photos: images only, up to 6 (they become the facility profile's photos)
+const PHOTO_ACCEPT = "image/jpeg,image/png,image/heic,image/heif";
+const MAX_PHOTOS = 6;
+// as the API: the RRA TIN has 9 digits; the MoH facility code (FOSA ID) is short and plain
+const TIN = /^\d{9}$/;
+const MOH_CODE = /^[A-Za-z0-9/._-]{1,20}$/;
 const OWNERSHIPS = ["public", "private", "faith_based", "ngo"] as const;
 
 /** The reviewer's comment on a field (changes requested), shown as that field's error. */
@@ -44,8 +54,17 @@ export function FacilityStep({ app, save }: { app: ApplicantApplication; save: S
     (key: keyof ApplicantApplication["facility"]) => (e: { target: { value: string } }) => {
       const value = e.target.value;
       setValues((v) => ({ ...v, [key]: value }));
+      // the identifiers are checked here first: autosave sends only a well-formed value
+      if (key === "tin" && value && !TIN.test(value)) return;
+      if (key === "moh_facility_code" && value && !MOH_CODE.test(value)) return;
       save({ facility: { [key]: value } });
     };
+  const tinError =
+    values.tin && !TIN.test(values.tin) ? t("facilityApplication.fields.tinInvalid") : undefined;
+  const codeError =
+    values.moh_facility_code && !MOH_CODE.test(values.moh_facility_code)
+      ? t("facilityApplication.fields.mohCodeInvalid")
+      : undefined;
   return (
     <form className="flex flex-col gap-5" noValidate onSubmit={(e) => e.preventDefault()}>
       <TextField
@@ -89,6 +108,30 @@ export function FacilityStep({ app, save }: { app: ApplicantApplication; save: S
         value={values.organization_name}
         onChange={change("organization_name")}
       />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <TextField
+          id="facility.moh_facility_code"
+          label={t("facilityApplication.fields.mohCode")}
+          hint={t("facilityApplication.fields.mohCodeHint")}
+          optional
+          autoComplete="off"
+          value={values.moh_facility_code}
+          onChange={change("moh_facility_code")}
+          error={codeError ?? feedback("facility.moh_facility_code")}
+        />
+        <TextField
+          id="facility.tin"
+          label={t("facilityApplication.fields.tin")}
+          hint={t("facilityApplication.fields.tinHint")}
+          optional
+          inputMode="numeric"
+          autoComplete="off"
+          maxLength={9}
+          value={values.tin}
+          onChange={change("tin")}
+          error={tinError ?? feedback("facility.tin")}
+        />
+      </div>
       <TextField
         id="facility.phone"
         label={t("facilityApplication.fields.facilityPhone")}
@@ -124,6 +167,16 @@ export function LocationStep({ app, save }: { app: ApplicantApplication; save: S
     lng: app.location.longitude,
   });
   const [geoMessage, setGeoMessage] = useState<string | undefined>();
+  // the typed fields (keyboard alternative to the map); saved once both are valid
+  const [typed, setTyped] = useState({
+    lat: app.location.latitude?.toString() ?? "",
+    lng: app.location.longitude?.toString() ?? "",
+  });
+  const [typedError, setTypedError] = useState<string | undefined>();
+  const feedback = useFeedback(app);
+  const pinMissing =
+    app.missing_for_submit.includes("location.latitude") &&
+    (coords.lat === null || coords.lng === null);
   const provinces = usePublicList<LocationItem>("locations");
   const districts = usePublicList<LocationItem>(
     "locations",
@@ -177,15 +230,35 @@ export function LocationStep({ app, save }: { app: ApplicantApplication; save: S
           setGeoMessage(t("facilityApplication.location.outsideRwanda"));
           return;
         }
-        const lat = Number(c.latitude.toFixed(6));
-        const lng = Number(c.longitude.toFixed(6));
-        setCoords({ lat, lng });
+        place(Number(c.latitude.toFixed(6)), Number(c.longitude.toFixed(6)));
         setGeoMessage(t("facilityApplication.location.saved"));
-        save({ location: { latitude: lat, longitude: lng } });
       },
       () => setGeoMessage(t("facilityApplication.location.geoDenied")),
       { enableHighAccuracy: true, timeout: 15_000 },
     );
+  }
+
+  /** The pin from the GPS, the map or the typed fields. */
+  function place(lat: number, lng: number) {
+    setCoords({ lat, lng });
+    setTyped({ lat: String(lat), lng: String(lng) });
+    setTypedError(undefined);
+    save({ location: { latitude: lat, longitude: lng } });
+  }
+
+  function typeCoordinate(key: "lat" | "lng", value: string) {
+    const next = { ...typed, [key]: value };
+    setTyped(next);
+    const lat = Number(next.lat.replace(",", "."));
+    const lng = Number(next.lng.replace(",", "."));
+    if (!next.lat.trim() || !next.lng.trim() || Number.isNaN(lat) || Number.isNaN(lng)) return;
+    if (!insideRwanda(lat, lng)) {
+      setTypedError(t("facilityApplication.location.outsideRwanda"));
+      return;
+    }
+    setTypedError(undefined);
+    setCoords({ lat, lng });
+    save({ location: { latitude: Number(lat.toFixed(6)), longitude: Number(lng.toFixed(6)) } });
   }
 
   return (
@@ -222,7 +295,21 @@ export function LocationStep({ app, save }: { app: ApplicantApplication; save: S
           save({ location: { address: e.target.value } });
         }}
       />
-      <div className="flex flex-col gap-2">
+      <fieldset id="location.latitude" className="m-0 flex flex-col gap-3 border-0 p-0">
+        <legend className="mb-1 p-0 font-semibold text-fg">
+          {t("facilityApplication.location.pinTitle")}
+        </legend>
+        <p className="m-0 text-body-sm text-fg-secondary">
+          {t("facilityApplication.location.pinHint")}
+        </p>
+        {pinMissing && (
+          <p className="m-0 text-body-sm font-semibold text-danger" role="alert">
+            {t("facilityApplication.location.pinRequired")}
+          </p>
+        )}
+        {feedback("location.latitude") && (
+          <Alert tone="warning">{feedback("location.latitude")}</Alert>
+        )}
         <div>
           <Button
             variant="secondary"
@@ -232,17 +319,48 @@ export function LocationStep({ app, save }: { app: ApplicantApplication; save: S
             {t("facilityApplication.location.useMine")}
           </Button>
         </div>
-        {coords.lat !== null && coords.lng !== null && (
-          <p className="m-0 text-body-sm text-fg-secondary">
-            {t("facilityApplication.location.coords", { lat: coords.lat, lng: coords.lng })}
-          </p>
-        )}
         {geoMessage && (
           <p className="m-0 text-body-sm font-semibold" role="status">
             {geoMessage}
           </p>
         )}
-      </div>
+        <Suspense fallback={<div className="h-72 rounded-3xl bg-subtle" aria-hidden="true" />}>
+          <LocationPicker
+            value={
+              coords.lat !== null && coords.lng !== null
+                ? { lat: coords.lat, lng: coords.lng }
+                : null
+            }
+            onChange={({ lat, lng }) => {
+              setGeoMessage(undefined);
+              place(lat, lng);
+            }}
+            tilesUrl={env.mapTilesUrl}
+            attribution={t("facilityApplication.location.mapAttribution")}
+            label={t("facilityApplication.location.mapLabel")}
+            pinLabel={t("facilityApplication.location.pinLabel")}
+          />
+        </Suspense>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <TextField
+            id="location.latitude.value"
+            label={t("facilityApplication.location.latitude")}
+            hint={t("facilityApplication.location.latitudeHint")}
+            inputMode="decimal"
+            value={typed.lat}
+            onChange={(e) => typeCoordinate("lat", e.target.value)}
+            error={typedError}
+          />
+          <TextField
+            id="location.longitude.value"
+            label={t("facilityApplication.location.longitude")}
+            hint={t("facilityApplication.location.longitudeHint")}
+            inputMode="decimal"
+            value={typed.lng}
+            onChange={(e) => typeCoordinate("lng", e.target.value)}
+          />
+        </div>
+      </fieldset>
     </form>
   );
 }
@@ -455,9 +573,13 @@ function DocumentSlot({
             )}
           </>
         }
-        labels={labels}
+        labels={
+          kind === "facility_photo"
+            ? { ...labels, hint: t("facilityApplication.upload.photoHint") }
+            : labels
+        }
         items={items}
-        accept={UPLOAD_ACCEPT}
+        accept={kind === "facility_photo" ? PHOTO_ACCEPT : UPLOAD_ACCEPT}
         maxBytes={UPLOAD_MAX_BYTES}
         error={
           missing && needsNumber && docs.length > 0
@@ -528,6 +650,21 @@ export function DocumentsStep({ app }: { app: ApplicantApplication }) {
       {optional.map((kind) => (
         <DocumentSlot key={kind} app={app} kind={kind} required={false} />
       ))}
+      <section className="flex flex-col gap-2">
+        <h3 className="m-0 font-heading text-h4 font-bold">
+          {t("facilityApplication.documents.photosTitle")}
+        </h3>
+        <p className="m-0 text-body-sm text-fg-secondary">
+          {t("facilityApplication.documents.photosHint", {
+            count: MAX_PHOTOS,
+            left: Math.max(
+              0,
+              MAX_PHOTOS - app.documents.filter((d) => d.kind === "facility_photo").length,
+            ),
+          })}
+        </p>
+        <DocumentSlot app={app} kind="facility_photo" required={false} />
+      </section>
     </div>
   );
 }

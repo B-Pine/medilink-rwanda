@@ -81,8 +81,8 @@ Requirements: FR-ONB-01..03, 07, 08, 10; FR-DOC-03, 05 (uploads); FR-SEC-06 (loc
 | `POST` | `/api/v1/public/facility-applications/resume-links/` | Email a resume link for each open application of an address | Public | FR-ONB-01 | Always `202`; RL: resume | Implemented (#47) |
 | `POST` | `/api/v1/public/facility-applications/resume/` | Exchange a resume token for an applicant session | Token (body) | FR-ONB-01 | Single use; RL: resume; Audit | Implemented (#47) |
 | `GET` | `/api/v1/public/facility-applications/{id}/` | Read the draft | Applicant | FR-ONB-01 | | Implemented (#47) |
-| `PATCH` | `/api/v1/public/facility-applications/{id}/` | Autosave wizard steps | Applicant | FR-ONB-01 | Ver; only in `draft` or `changes_requested` | Implemented (#47) |
-| `POST` | `/api/v1/public/facility-applications/{id}/documents/` | Upload licence, RDB registration, TIN, accreditation, insurer contracts | Applicant | FR-ONB-01, FR-DOC-03 | `multipart`; upload pipeline; Idem; RL: upload | Implemented (#47) |
+| `PATCH` | `/api/v1/public/facility-applications/{id}/` | Autosave wizard steps, including the MoH facility code (FOSA ID) and 9-digit TIN; submit needs the map pin (`location.latitude` in `missing_for_submit`) | Applicant | FR-ONB-01 | Ver; only in `draft` or `changes_requested` | Implemented (#47) |
+| `POST` | `/api/v1/public/facility-applications/{id}/documents/` | Upload licence, RDB registration, TIN, accreditation, insurer contracts, and up to 6 facility photos (`facility_photo`, images only; they become the profile's photos at approval) | Applicant | FR-ONB-01, FR-DOC-03 | `multipart`; upload pipeline; Idem; RL: upload | Implemented (#47) |
 | `PATCH`, `DELETE` | `/api/v1/public/facility-applications/{id}/documents/{document_id}/` | Edit document details or remove an upload | Applicant | FR-ONB-01 | Editable statuses only | Implemented (#47) |
 | `POST` | `/api/v1/public/facility-applications/{id}/submit/` | Submit or resubmit | Applicant | FR-ONB-01, FR-ONB-02 | → `submitted`; Idem; super admins notified | Implemented (#47) |
 | `POST` | `/api/v1/public/facility-applications/{id}/end-session/` | "Continue later" on shared computers | Applicant | FR-ONB-01 | Cookie cleared | Implemented (#47) |
@@ -135,6 +135,7 @@ Requirements: FR-ONB-01..03, 07, 08, 10; FR-DOC-03, 05 (uploads); FR-SEC-06 (loc
 | `GET` | `/api/v1/platform/facility-applications/{id}/events/` | Verification history | Platform admin | FR-ONB-02 | Append-only | Implemented (#47) |
 | `GET` | `/api/v1/platform/facilities/` | Facilities by status, type, district, licence state | Platform admin | FR-ONB-02 | No clinical data | Implemented (#47) |
 | `GET` | `/api/v1/platform/facilities/{id}/` | Facility profile, status, licences | Platform admin | FR-ONB-02 | | Implemented (#47) |
+| `PATCH` | `/api/v1/platform/facilities/{id}/` | Set the MoH facility code (FOSA ID) and TIN | Platform admin | FR-ONB-09 | Step-up; Audit `facility.identifiers_updated`; the list and detail return both | Implemented (onboarding, 2026-11-03) |
 | `GET` | `/api/v1/platform/facilities/{id}/status-events/` | Status history | Platform admin | FR-ONB-07 | | Implemented (#47) |
 | `POST` | `/api/v1/platform/facilities/{id}/start-setup/` | `approved` → `setup` | Platform admin | FR-ONB-03 | Audit | Implemented (#47) |
 | `POST` | `/api/v1/platform/facilities/{id}/go-live/` | `setup` → `live` when the checks pass | Platform admin | FR-ONB-03 | Step-up; Idem; failing checks in `fields` | Implemented (#47) |

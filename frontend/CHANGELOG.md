@@ -23,6 +23,19 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 - Changed: Settings › Facility profile shows real photo thumbnails (the first marked as cover),
   the level of care, and a "View public page" link once live (`VITE_PATIENT_WEB_URL`).
 
+### Facility onboarding: map pin, government identifiers, photos (2026-11-03)
+
+- Added: `@medilink/ui/map-picker` (`LocationPicker`): tap or drag one pin on a Leaflet map.
+- Changed: the application wizard's location step requires the map pin: use my location, tap the
+  map at the entrance, or type latitude and longitude (checked to be inside Rwanda).
+- Added: the facility step asks for the MoH facility code (FOSA ID) and the 9-digit TIN
+  (optional); the documents step takes up to 6 facility photos; the review step lists them.
+- Changed: the super admin's application review shows every field: level of care, government
+  identifiers, map pin (opens OpenStreetMap), applicant phone, language, agreements and NCSA;
+  type and ownership as words. The facility page shows and edits the identifiers (step-up).
+- Fixed: the location coordinates text used `lng` as an i18next value, which i18next reads as
+  the language and fails on.
+
 ### Upgrade U2 · Pharmacist (upgrade 05 §4)
 
 - Added: Pharmacy counter on Today (numbers and the next prescriptions to give), Dispensing

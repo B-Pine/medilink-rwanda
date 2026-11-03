@@ -63,6 +63,27 @@ class ApplicantPatchInput(ApplicantInput):
     email = serializers.EmailField(max_length=254, required=False)
 
 
+def moh_facility_code_field() -> serializers.RegexField:
+    """The Ministry of Health facility code (the master facility list's FOSA ID)."""
+    return serializers.RegexField(
+        r"^[A-Za-z0-9/._-]{1,20}$",
+        max_length=20,
+        required=False,
+        allow_blank=True,
+        error_messages={"invalid": "Use letters, digits and / . _ - only."},
+    )
+
+
+def tin_field() -> serializers.RegexField:
+    """The RRA tax identification number: 9 digits."""
+    return serializers.RegexField(
+        r"^\d{9}$",
+        required=False,
+        allow_blank=True,
+        error_messages={"invalid": "A TIN has 9 digits."},
+    )
+
+
 class FacilityInput(StrictSerializer):
     name = serializers.CharField(max_length=200, required=False)
     facility_type = serializers.ChoiceField(choices=FacilityType.choices, required=False)
@@ -73,6 +94,9 @@ class FacilityInput(StrictSerializer):
     organization_name = serializers.CharField(max_length=200, required=False, allow_blank=True)
     phone = serializers.CharField(max_length=20, required=False, allow_blank=True)
     email = serializers.EmailField(max_length=254, required=False, allow_blank=True)
+    # when known: the government identifiers, copied to the facility at approval
+    moh_facility_code = moh_facility_code_field()
+    tin = tin_field()
 
 
 class LocationInput(StrictSerializer):
@@ -243,6 +267,8 @@ class FacilityBlock(serializers.Serializer):
     level_of_care = serializers.CharField(allow_blank=True)
     ownership = serializers.CharField(allow_blank=True)
     organization_name = serializers.CharField(allow_blank=True)
+    moh_facility_code = serializers.CharField(allow_blank=True)
+    tin = serializers.CharField(allow_blank=True)
     phone = serializers.CharField(allow_blank=True)
     email = serializers.CharField(allow_blank=True)
 
@@ -380,6 +406,8 @@ class PlatformFacilitySerializer(serializers.Serializer):
     facility_type = serializers.CharField()
     level_of_care = serializers.CharField(allow_blank=True)
     ownership = serializers.CharField()
+    moh_facility_code = serializers.CharField(allow_blank=True)
+    tin = serializers.CharField(allow_blank=True)
     status = serializers.ChoiceField(choices=FacilityStatus.choices)
     district = DistrictSerializer(allow_null=True)
     application_id = serializers.UUIDField(allow_null=True)
@@ -406,6 +434,13 @@ class LicenceSerializer(serializers.Serializer):
 class PlatformFacilityDetailSerializer(PlatformFacilitySerializer):
     application = ApplicationSummarySerializer(allow_null=True)
     licences = LicenceSerializer(many=True)
+
+
+class FacilityIdentifiersInput(StrictSerializer):
+    """PATCH /platform/facilities/{id}/: the government identifiers, once known."""
+
+    moh_facility_code = moh_facility_code_field()
+    tin = tin_field()
 
 
 class StatusEventSerializer(serializers.Serializer):
@@ -535,6 +570,8 @@ def application_data(
             "level_of_care": application.level_of_care,
             "ownership": application.ownership,
             "organization_name": application.organization_name,
+            "moh_facility_code": application.moh_facility_code,
+            "tin": application.tin,
             "phone": application.phone,
             "email": application.email,
         },
@@ -662,6 +699,8 @@ def facility_data(facility: Facility, *, detail: bool = False) -> dict[str, Any]
         "facility_type": facility.facility_type,
         "level_of_care": application.level_of_care if application else "",
         "ownership": facility.ownership,
+        "moh_facility_code": facility.moh_facility_code,
+        "tin": facility.tin,
         "status": facility.status,
         "district": _district(application),
         "application_id": application.pk if application else None,

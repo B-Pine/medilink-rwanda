@@ -133,7 +133,13 @@
     "position": "Your position",
     "choose": "Choose…",
     "optionalSuffix": "(optional)",
-    "yourPhone": "Your phone"
+    "yourPhone": "Your phone",
+    "mohCode": "MoH facility code (FOSA ID)",
+    "mohCodeHint": "If the Ministry of Health already gave the facility a code.",
+    "tin": "TIN",
+    "tinHint": "The facility's 9-digit RRA tax number.",
+    "tinInvalid": "A TIN has 9 digits.",
+    "mohCodeInvalid": "Use letters, digits and / . _ - only."
   },
   "ownership": {
     "public": "Public",
@@ -150,11 +156,21 @@
     "address": "Street address",
     "addressHint": "For example: KG 11 Ave 5, next to the market.",
     "useMine": "Use my location",
-    "coords": "Location saved: {{lat}}, {{lng}}",
+    "coords": "{{latitude}}, {{longitude}}",
     "saved": "Your location is saved.",
-    "outsideRwanda": "That location is outside Rwanda. Stand at the facility and try again, or skip this.",
-    "geoDenied": "We couldn't get your location. You can skip this.",
-    "geoUnavailable": "Your browser can't share a location. You can skip this."
+    "outsideRwanda": "That location is outside Rwanda. Place the pin on the map instead.",
+    "geoDenied": "We couldn't get your location. Place the pin on the map or type the coordinates.",
+    "geoUnavailable": "Your browser can't share a location. Place the pin on the map or type the coordinates.",
+    "pinTitle": "Map pin",
+    "pinHint": "Patients use it for directions. At the facility, use your location; anywhere else, tap the map at the entrance or type the coordinates.",
+    "pinRequired": "Place the facility on the map before you submit.",
+    "mapLabel": "Map: tap to place the facility",
+    "mapAttribution": "© OpenStreetMap contributors",
+    "pinLabel": "Facility entrance (drag to move)",
+    "latitude": "Latitude",
+    "latitudeHint": "For example -1.944200",
+    "longitude": "Longitude",
+    "longitudeHint": "For example 30.123400"
   },
   "documents": {
     "intro": "Upload clear photos or PDFs. Each file is checked for viruses before our team can open it.",
@@ -165,14 +181,17 @@
       "tin_certificate": "TIN certificate",
       "accreditation": "Accreditation",
       "insurer_contract": "Insurer contract",
-      "other": "Other document"
+      "other": "Other document",
+      "facility_photo": "Facility photo"
     },
     "number": "Licence number",
     "expires": "Expiry date",
     "numberRequired": "Add the licence number and expiry date, then upload the licence again.",
     "insurers": "Insurers you work with",
     "insurersHint": "Optional. Add a contract for each insurer if you have one.",
-    "insurerContract": "Contract with {{insurer}}"
+    "insurerContract": "Contract with {{insurer}}",
+    "photosTitle": "Photos of the facility",
+    "photosHint": "Optional, up to {{count}} images ({{left}} left): the entrance, the sign, the waiting area. After approval they appear on your facility profile."
   },
   "upload": {
     "drop": "Drag a file here, or",
@@ -191,7 +210,8 @@
       "rejected": "Refused: upload another file",
       "failed": "Check failed: upload again",
       "error": "Not uploaded"
-    }
+    },
+    "photoHint": "JPEG, PNG or HEIC images, up to 10 MB."
   },
   "admin": {
     "intro": "Who will manage MediLink at the facility? We invite this person once the facility is approved.",

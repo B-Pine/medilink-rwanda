@@ -3224,6 +3224,51 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Not found
+    patch:
+      operationId: platform_facility_identifiers_update
+      summary: Set the facility's MoH facility code (FOSA ID) and TIN; audit-logged
+      parameters:
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedFacilityIdentifiersInputRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformFacilityDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid input
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: step_up_required
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not found
   /api/v1/platform/facilities/{facility_id}/deactivate/:
     post:
       operationId: platform_facility_deactivate
@@ -20628,6 +20673,7 @@ components:
       - tin_certificate
       - accreditation
       - insurer_contract
+      - facility_photo
       - other
       type: string
       description: |-
@@ -20636,6 +20682,7 @@ components:
         * `tin_certificate` - TIN certificate
         * `accreditation` - Accreditation
         * `insurer_contract` - Insurer contract
+        * `facility_photo` - Facility photo
         * `other` - Other
     DocumentReviewInputRequest:
       type: object
@@ -21664,6 +21711,10 @@ components:
           type: string
         organization_name:
           type: string
+        moh_facility_code:
+          type: string
+        tin:
+          type: string
         phone:
           type: string
         email:
@@ -21672,10 +21723,12 @@ components:
       - email
       - facility_type
       - level_of_care
+      - moh_facility_code
       - name
       - organization_name
       - ownership
       - phone
+      - tin
     FacilityFeatureFlag:
       type: object
       properties:
@@ -21754,6 +21807,19 @@ components:
           - type: string
             format: email
             maxLength: 254
+          - type: string
+            maxLength: 0
+        moh_facility_code:
+          oneOf:
+          - type: string
+            maxLength: 20
+            pattern: ^[A-Za-z0-9/._-]{1,20}$
+          - type: string
+            maxLength: 0
+        tin:
+          oneOf:
+          - type: string
+            pattern: ^\d{9}$
           - type: string
             maxLength: 0
     FacilityPatientDetail:
@@ -26786,6 +26852,24 @@ components:
           type: integer
           maximum: 2147483647
           minimum: -2147483648
+    PatchedFacilityIdentifiersInputRequest:
+      type: object
+      description: 'PATCH /platform/facilities/{id}/: the government identifiers,
+        once known.'
+      properties:
+        moh_facility_code:
+          oneOf:
+          - type: string
+            maxLength: 20
+            pattern: ^[A-Za-z0-9/._-]{1,20}$
+          - type: string
+            maxLength: 0
+        tin:
+          oneOf:
+          - type: string
+            pattern: ^\d{9}$
+          - type: string
+            maxLength: 0
     PatchedFacilityProfileUpdateRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -28864,6 +28948,10 @@ components:
           type: string
         ownership:
           type: string
+        moh_facility_code:
+          type: string
+        tin:
+          type: string
         status:
           $ref: '#/components/schemas/FacilityStatusEnum'
         district:
@@ -28893,11 +28981,13 @@ components:
       - id
       - level_of_care
       - licence_state
+      - moh_facility_code
       - name
       - next_licence_expiry
       - ownership
       - slug
       - status
+      - tin
       - version
     PlatformFacilityDetail:
       type: object
@@ -28914,6 +29004,10 @@ components:
         level_of_care:
           type: string
         ownership:
+          type: string
+        moh_facility_code:
+          type: string
+        tin:
           type: string
         status:
           $ref: '#/components/schemas/FacilityStatusEnum'
@@ -28954,11 +29048,13 @@ components:
       - level_of_care
       - licence_state
       - licences
+      - moh_facility_code
       - name
       - next_licence_expiry
       - ownership
       - slug
       - status
+      - tin
       - version
     PlatformHelpArticle:
       type: object

@@ -1,10 +1,11 @@
-import type {
-  FacilityAction,
-  FacilityFeatureFlag,
-  Licence,
-  LicenceKind,
-  PlatformFacility,
-  PlatformFacilityDetail,
+import {
+  isApiError,
+  type FacilityAction,
+  type FacilityFeatureFlag,
+  type Licence,
+  type LicenceKind,
+  type PlatformFacility,
+  type PlatformFacilityDetail,
 } from "@medilink/api-client";
 import {
   Alert,
@@ -251,6 +252,10 @@ function FacilityDetail() {
             </dd>
             <dt className="text-fg-muted">{t("platform.facilities.district")}</dt>
             <dd className="m-0">{data.district?.name ?? "—"}</dd>
+            <dt className="text-fg-muted">{t("platform.review.mohCode")}</dt>
+            <dd className="m-0">{data.moh_facility_code || "—"}</dd>
+            <dt className="text-fg-muted">{t("platform.review.tin")}</dt>
+            <dd className="m-0">{data.tin || "—"}</dd>
             <dt className="text-fg-muted">{t("platform.facilities.licence")}</dt>
             <dd className="m-0">
               <StatusBadge kind="licence" value={data.licence_state} />
@@ -266,6 +271,7 @@ function FacilityDetail() {
               </>
             )}
           </dl>
+          <IdentifiersForm facility={data} />
           <div className="flex flex-wrap gap-2">
             {(ACTIONS[data.status] ?? []).map((a) => (
               <Button
@@ -292,6 +298,80 @@ function FacilityDetail() {
         <StatusActionDialog facility={data} action={action} onClose={() => setAction(null)} />
       )}
     </div>
+  );
+}
+
+/** The government identifiers, often known only after approval (step-up, audit-logged). */
+function IdentifiersForm({ facility }: { facility: PlatformFacilityDetail }) {
+  const { t } = useTranslation();
+  const api = useApi();
+  const queryClient = useQueryClient();
+  const { withStepUp } = useStepUp();
+  const [form, setForm] = useState({
+    moh_facility_code: facility.moh_facility_code,
+    tin: facility.tin,
+  });
+  const [saved, setSaved] = useState(false);
+  const save = useMutation({
+    mutationFn: () =>
+      withStepUp(() => api.onboarding.platform.updateFacilityIdentifiers(facility.id, form)),
+    onSuccess: (next) => {
+      queryClient.setQueryData(["platform", "facility", facility.id], next);
+      setSaved(true);
+    },
+  });
+  const field = (name: "moh_facility_code" | "tin") =>
+    isApiError(save.error) ? save.error.fieldError(name) : undefined;
+  const changed =
+    form.moh_facility_code !== facility.moh_facility_code || form.tin !== facility.tin;
+  function submit(event: FormEvent) {
+    event.preventDefault();
+    setSaved(false);
+    save.mutate();
+  }
+  return (
+    <Card padding="md" className="flex flex-col gap-3">
+      <h2 className="m-0 font-heading text-h4 font-bold">{t("platform.facilities.identifiers")}</h2>
+      <p className="m-0 text-body-sm text-fg-secondary">
+        {t("platform.facilities.identifiersHint")}
+      </p>
+      <form
+        noValidate
+        onSubmit={submit}
+        className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
+      >
+        <TextField
+          label={t("platform.review.mohCode")}
+          value={form.moh_facility_code}
+          onChange={(e) => setForm((f) => ({ ...f, moh_facility_code: e.target.value }))}
+          error={field("moh_facility_code")}
+        />
+        <TextField
+          label={t("platform.review.tin")}
+          inputMode="numeric"
+          maxLength={9}
+          value={form.tin}
+          onChange={(e) => setForm((f) => ({ ...f, tin: e.target.value }))}
+          error={field("tin")}
+        />
+        <Button type="submit" disabled={!changed || save.isPending}>
+          {t("platform.facilities.saveIdentifiers")}
+        </Button>
+      </form>
+      {saved && !changed && (
+        <Alert tone="success" role="status">
+          {t("platform.facilities.identifiersSaved")}
+        </Alert>
+      )}
+      {save.isError &&
+        !field("moh_facility_code") &&
+        !field("tin") &&
+        actionError(save.error, "") !== undefined && (
+          <Alert tone="danger" role="alert">
+            {actionError(save.error, t("platform.table.error"))}
+          </Alert>
+        )}
+    </Card>
   );
 }
 

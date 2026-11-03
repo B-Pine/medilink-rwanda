@@ -15,12 +15,13 @@ import {
   type DocumentViewerLabels,
 } from "@medilink/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
+import { facilityTypeLabel } from "../../facility/labels";
 import { useStepUp } from "../lock";
 import {
   actionError,
@@ -158,9 +159,25 @@ function Review() {
           <dl className="m-0 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
             {(
               [
-                [t("platform.review.type"), data.facility.facility_type],
-                [t("platform.review.ownership"), data.facility.ownership],
+                [
+                  t("platform.review.type"),
+                  data.facility.facility_type
+                    ? facilityTypeLabel(data.facility.facility_type, t)
+                    : "",
+                ],
+                [
+                  t("platform.review.levelOfCare"),
+                  data.facility.level_of_care
+                    ? t(`platform.review.level.${data.facility.level_of_care}`)
+                    : t("platform.review.levelFromType"),
+                ],
+                [
+                  t("platform.review.ownership"),
+                  data.facility.ownership ? t(`platform.ownership.${data.facility.ownership}`) : "",
+                ],
                 [t("platform.review.organization"), data.facility.organization_name],
+                [t("platform.review.mohCode"), data.facility.moh_facility_code],
+                [t("platform.review.tin"), data.facility.tin],
                 [
                   t("platform.review.contacts"),
                   [data.facility.phone, data.facility.email].filter(Boolean).join(" · "),
@@ -172,8 +189,29 @@ function Review() {
                     .join(" · "),
                 ],
                 [
+                  t("platform.review.mapPin"),
+                  data.location.latitude !== null && data.location.longitude !== null ? (
+                    <a
+                      href={`https://www.openstreetmap.org/?mlat=${data.location.latitude}&mlon=${data.location.longitude}#map=17/${data.location.latitude}/${data.location.longitude}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {`${data.location.latitude}, ${data.location.longitude}`}
+                    </a>
+                  ) : (
+                    ""
+                  ),
+                ],
+                [
                   t("platform.applications.applicant"),
-                  `${data.applicant.name} · ${data.applicant.email} · ${data.applicant.position}`,
+                  [
+                    data.applicant.name,
+                    data.applicant.position,
+                    data.applicant.email,
+                    data.applicant.phone,
+                  ]
+                    .filter(Boolean)
+                    .join(" · "),
                 ],
                 [
                   t("platform.review.proposedAdmin"),
@@ -181,13 +219,32 @@ function Review() {
                     .filter(Boolean)
                     .join(" · "),
                 ],
+                [
+                  t("platform.review.language"),
+                  t(`language.names.${data.preferred_language}`, { ns: "ui" }),
+                ],
                 [t("platform.review.insurers"), data.claimed_insurer_codes.join(", ")],
+                [
+                  t("platform.review.agreements"),
+                  data.agreements.accepted_terms_version
+                    ? t("platform.review.agreed", {
+                        terms: data.agreements.accepted_terms_version,
+                        dpa: data.agreements.accepted_dpa_version ?? "—",
+                      })
+                    : "",
+                ],
+                [
+                  t("platform.review.ncsa"),
+                  data.agreements.ncsa_registration_confirmed
+                    ? t("platform.review.yes")
+                    : t("platform.review.no"),
+                ],
                 [t("platform.applications.submitted"), formatDate(data.submitted_at, locale)],
-              ] as [string, string][]
+              ] as [string, ReactNode][]
             ).map(([label, value]) => (
               <div key={label} className="contents">
                 <dt className="text-fg-muted">{label}</dt>
-                <dd className="m-0">{value || "—"}</dd>
+                <dd className="m-0 break-words">{value || "—"}</dd>
               </div>
             ))}
           </dl>

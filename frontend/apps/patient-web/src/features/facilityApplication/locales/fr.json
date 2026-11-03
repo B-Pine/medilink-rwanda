@@ -133,7 +133,13 @@
     "position": "Votre fonction",
     "choose": "Choisir…",
     "optionalSuffix": "(facultatif)",
-    "yourPhone": "Votre téléphone"
+    "yourPhone": "Votre téléphone",
+    "mohCode": "Code de l’établissement au MINISANTE (FOSA ID)",
+    "mohCodeHint": "Si le Ministère de la Santé a déjà attribué un code à l’établissement.",
+    "tin": "NIF (TIN)",
+    "tinHint": "Le numéro fiscal RRA de l’établissement, à 9 chiffres.",
+    "tinInvalid": "Un NIF compte 9 chiffres.",
+    "mohCodeInvalid": "Utilisez des lettres, des chiffres et / . _ - uniquement."
   },
   "ownership": {
     "public": "Public",
@@ -150,11 +156,21 @@
     "address": "Adresse",
     "addressHint": "Par exemple : KG 11 Ave 5, à côté du marché.",
     "useMine": "Utiliser ma position",
-    "coords": "Position enregistrée : {{lat}}, {{lng}}",
+    "coords": "{{latitude}}, {{longitude}}",
     "saved": "Votre position est enregistrée.",
-    "outsideRwanda": "Cette position est hors du Rwanda. Réessayez depuis l'établissement, ou passez cette étape.",
-    "geoDenied": "Impossible d'obtenir votre position. Vous pouvez passer cette étape.",
-    "geoUnavailable": "Votre navigateur ne peut pas partager de position. Vous pouvez passer cette étape."
+    "outsideRwanda": "Cette position est hors du Rwanda. Placez plutôt l’épingle sur la carte.",
+    "geoDenied": "Nous n’avons pas pu obtenir votre position. Placez l’épingle sur la carte ou saisissez les coordonnées.",
+    "geoUnavailable": "Votre navigateur ne peut pas partager de position. Placez l’épingle sur la carte ou saisissez les coordonnées.",
+    "pinTitle": "Épingle sur la carte",
+    "pinHint": "Les patients l’utilisent pour trouver l’itinéraire. Sur place, utilisez votre position ; ailleurs, touchez la carte à l’entrée ou saisissez les coordonnées.",
+    "pinRequired": "Placez l’établissement sur la carte avant d’envoyer.",
+    "mapLabel": "Carte : touchez pour placer l’établissement",
+    "mapAttribution": "© contributeurs OpenStreetMap",
+    "pinLabel": "Entrée de l’établissement (glissez pour déplacer)",
+    "latitude": "Latitude",
+    "latitudeHint": "Par exemple -1,944200",
+    "longitude": "Longitude",
+    "longitudeHint": "Par exemple 30,123400"
   },
   "documents": {
     "intro": "Envoyez des photos nettes ou des PDF. Chaque fichier est analysé contre les virus avant que notre équipe puisse l'ouvrir.",
@@ -165,14 +181,17 @@
       "tin_certificate": "Certificat TIN",
       "accreditation": "Accréditation",
       "insurer_contract": "Contrat d'assurance",
-      "other": "Autre document"
+      "other": "Autre document",
+      "facility_photo": "Photo de l’établissement"
     },
     "number": "Numéro de licence",
     "expires": "Date d'expiration",
     "numberRequired": "Ajoutez le numéro et la date d'expiration, puis renvoyez la licence.",
     "insurers": "Assureurs avec lesquels vous travaillez",
     "insurersHint": "Facultatif. Ajoutez le contrat de chaque assureur si vous l'avez.",
-    "insurerContract": "Contrat avec {{insurer}}"
+    "insurerContract": "Contrat avec {{insurer}}",
+    "photosTitle": "Photos de l’établissement",
+    "photosHint": "Facultatif, jusqu’à {{count}} images ({{left}} restantes) : l’entrée, l’enseigne, la salle d’attente. Après l’approbation, elles apparaissent sur le profil de votre établissement."
   },
   "upload": {
     "drop": "Glissez un fichier ici, ou",
@@ -191,7 +210,8 @@
       "rejected": "Refusé : envoyez un autre fichier",
       "failed": "Analyse échouée : renvoyez le fichier",
       "error": "Non envoyé"
-    }
+    },
+    "photoHint": "Images JPEG, PNG ou HEIC, jusqu’à 10 Mo."
   },
   "admin": {
     "intro": "Qui gérera MediLink dans l'établissement ? Nous invitons cette personne une fois l'établissement approuvé.",

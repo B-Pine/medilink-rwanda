@@ -104,6 +104,8 @@ export function ReviewStep({
             ? t(`facilityApplication.ownership.${app.facility.ownership}`)
             : "",
         ],
+        [t("facilityApplication.fields.mohCode"), app.facility.moh_facility_code],
+        [t("facilityApplication.fields.tin"), app.facility.tin],
         [t("facilityApplication.fields.facilityPhone"), app.facility.phone],
         [t("facilityApplication.fields.facilityEmail"), app.facility.email],
       ],
@@ -116,6 +118,15 @@ export function ReviewStep({
           app.location.path.map((p) => p.name).join(", "),
         ],
         [t("facilityApplication.location.address"), app.location.address],
+        [
+          t("facilityApplication.location.pinTitle"),
+          app.location.latitude !== null && app.location.longitude !== null
+            ? t("facilityApplication.location.coords", {
+                latitude: app.location.latitude,
+                longitude: app.location.longitude,
+              })
+            : "",
+        ],
       ],
     },
     {

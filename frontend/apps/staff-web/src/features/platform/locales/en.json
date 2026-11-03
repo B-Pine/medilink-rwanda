@@ -61,7 +61,8 @@
     "tin_certificate": "TIN certificate",
     "accreditation": "Accreditation",
     "insurer_contract": "Insurer contract",
-    "other": "Other document"
+    "other": "Other document",
+    "facility_photo": "Facility photo"
   },
   "overview": {
     "title": "Platform overview",
@@ -186,7 +187,23 @@
     "licenceNumber": "MoH licence number",
     "licenceExpiry": "Licence expiry date",
     "rejectTitle": "Reject this application",
-    "rejectConsequences": "The applicant is told the reason. This can't be undone; they can apply again."
+    "rejectConsequences": "The applicant is told the reason. This can't be undone; they can apply again.",
+    "levelOfCare": "Level of care",
+    "levelFromType": "From the facility type",
+    "level": {
+      "primary": "Primary",
+      "secondary": "Secondary",
+      "tertiary": "Tertiary"
+    },
+    "mohCode": "MoH facility code (FOSA ID)",
+    "tin": "TIN",
+    "mapPin": "Map pin",
+    "language": "Language",
+    "agreements": "Agreements",
+    "agreed": "Terms {{terms}} · data processing {{dpa}}",
+    "ncsa": "Registered with the NCSA",
+    "yes": "Yes",
+    "no": "No"
   },
   "reason": {
     "code": "Reason",
@@ -236,7 +253,11 @@
       "suspend": "{{name}} disappears from search and stops taking new bookings. Today's work continues.",
       "reactivate": "{{name}} is visible again and accepts bookings.",
       "deactivate": "{{name}} becomes read-only. This is final."
-    }
+    },
+    "identifiers": "Government identifiers",
+    "identifiersHint": "The Ministry of Health facility code (FOSA ID) and the RRA tax number. They appear in the facility list for the government.",
+    "saveIdentifiers": "Save",
+    "identifiersSaved": "Saved."
   },
   "licences": {
     "add": "Add licence",

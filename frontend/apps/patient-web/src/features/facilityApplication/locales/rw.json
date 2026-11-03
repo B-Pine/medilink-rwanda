@@ -133,7 +133,13 @@
     "position": "Umwanya ukoraho",
     "choose": "Hitamo…",
     "optionalSuffix": "(si ngombwa)",
-    "yourPhone": "Telefoni yawe"
+    "yourPhone": "Telefoni yawe",
+    "mohCode": "Kode y’ikigo muri MINISANTE (FOSA ID)",
+    "mohCodeHint": "Niba Minisiteri y’Ubuzima yarahaye ikigo kode.",
+    "tin": "TIN",
+    "tinHint": "Nimero y’imisoro ya RRA y’ikigo, imibare 9.",
+    "tinInvalid": "TIN igira imibare 9.",
+    "mohCodeInvalid": "Koresha inyuguti, imibare na / . _ - gusa."
   },
   "ownership": {
     "public": "Icya Leta",
@@ -150,11 +156,21 @@
     "address": "Aderesi",
     "addressHint": "Urugero: KG 11 Ave 5, iruhande rw'isoko.",
     "useMine": "Koresha aho ndi",
-    "coords": "Aho uri habitswe: {{lat}}, {{lng}}",
+    "coords": "{{latitude}}, {{longitude}}",
     "saved": "Aho uri habitswe.",
-    "outsideRwanda": "Aho hantu hari hanze y'u Rwanda. Ongera ugerageze uri ku kigo, cyangwa usimbuke iyi ntambwe.",
-    "geoDenied": "Ntitwashoboye kubona aho uri. Ushobora gusimbuka iyi ntambwe.",
-    "geoUnavailable": "Mushakisha yawe ntishobora gutanga aho uri. Ushobora gusimbuka iyi ntambwe."
+    "outsideRwanda": "Aho hantu hari hanze y’u Rwanda. Shyira akamenyetso ku ikarita.",
+    "geoDenied": "Ntitwabashije kubona aho uri. Shyira akamenyetso ku ikarita cyangwa wandike aho ikigo kiri.",
+    "geoUnavailable": "Mushakisha yawe ntishobora gutanga aho uri. Shyira akamenyetso ku ikarita cyangwa wandike aho ikigo kiri.",
+    "pinTitle": "Akamenyetso ku ikarita",
+    "pinHint": "Abarwayi bagakoresha bashaka inzira. Uri ku kigo, koresha aho uri; ahandi, kanda ku ikarita ku muryango cyangwa wandike imibare.",
+    "pinRequired": "Shyira ikigo ku ikarita mbere yo kohereza.",
+    "mapLabel": "Ikarita: kanda ushyireho ikigo",
+    "mapAttribution": "© abagize OpenStreetMap",
+    "pinLabel": "Umuryango w’ikigo (kurura ugahindure)",
+    "latitude": "Latitude",
+    "latitudeHint": "Urugero -1.944200",
+    "longitude": "Longitude",
+    "longitudeHint": "Urugero 30.123400"
   },
   "documents": {
     "intro": "Ohereza amafoto agaragara neza cyangwa PDF. Buri dosiye igenzurwamo virusi mbere y'uko itsinda ryacu riyifungura.",
@@ -165,14 +181,17 @@
       "tin_certificate": "Icyemezo cya TIN",
       "accreditation": "Icyemezo cy'ubuziranenge",
       "insurer_contract": "Amasezerano n'ubwishingizi",
-      "other": "Indi nyandiko"
+      "other": "Indi nyandiko",
+      "facility_photo": "Ifoto y’ikigo"
     },
     "number": "Nimero y'uruhushya",
     "expires": "Itariki rurangiriraho",
     "numberRequired": "Ongeraho nimero n'itariki rurangiriraho, hanyuma wongere wohereze uruhushya.",
     "insurers": "Ibigo by'ubwishingizi mukorana",
     "insurersHint": "Si ngombwa. Ongeraho amasezerano ya buri kigo niba uyafite.",
-    "insurerContract": "Amasezerano na {{insurer}}"
+    "insurerContract": "Amasezerano na {{insurer}}",
+    "photosTitle": "Amafoto y’ikigo",
+    "photosHint": "Si ngombwa, kugeza ku mafoto {{count}} (hasigaye {{left}}): umuryango, icyapa, aho bategerereza. Nyuma yo kwemezwa agaragara ku mwirondoro w’ikigo cyawe."
   },
   "upload": {
     "drop": "Kurura dosiye hano, cyangwa",
@@ -191,7 +210,8 @@
       "rejected": "Byanzwe: ohereza indi dosiye",
       "failed": "Kugenzura byanze: ongera wohereze",
       "error": "Ntibyoherejwe"
-    }
+    },
+    "photoHint": "Amafoto ya JPEG, PNG cyangwa HEIC, kugeza kuri MB 10."
   },
   "admin": {
     "intro": "Ni nde uzayobora MediLink ku kigo? Tuzamutumira ikigo nikimara kwemerwa.",

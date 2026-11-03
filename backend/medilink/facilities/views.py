@@ -35,7 +35,7 @@ from medilink.uploads.views import rejected
 
 TAGS = ["staff-facility"]
 CONFIGURE = "facility.configure"
-MAX_PHOTOS = 6
+MAX_PHOTOS = services.MAX_PROFILE_PHOTOS
 
 
 def profile_data(facility: Any) -> dict[str, Any]:

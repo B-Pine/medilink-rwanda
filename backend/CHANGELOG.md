@@ -22,6 +22,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Added: `GET /platform/contact-messages/` and `POST /platform/contact-messages/{id}/handled/`
   for the MediLink team; audit actions `support.contact.received` and `support.contact.handled`.
 
+### Facility onboarding: map pin, government identifiers, photos (2026-11-03)
+
+- Changed: an application can be submitted only with its map pin (`location.latitude` is listed in
+  `missing_for_submit`).
+- Added: `moh_facility_code` (MoH facility code, the FOSA ID) and `tin` (9 digits) on the
+  application's facility block and on `tenancy.Facility` (migrations onboarding/0003,
+  tenancy/0008); approval copies them. `PATCH /api/v1/platform/facilities/{id}/` sets them
+  later (step-up, audit `facility.identifiers_updated`).
+- Added: document kind `facility_photo` (images only, up to 6). At approval the accepted photos
+  become the facility profile's photos: each file turns into a `facility_photo` upload owned by
+  the facility (C0), logged as a config change.
+
 ### Upgrade U2 · Pharmacist (upgrade 05 §4)
 
 - Added: `GET /staff/pharmacy/my-day/` (ready, partly given, questions, dispensed, out of stock)

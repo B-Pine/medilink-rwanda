@@ -82,7 +82,12 @@ def fill(
                 "phone": "+250788123456",
                 "email": "info@ubuzima.example",
             },
-            "location": {"village_code": village, "address": "KG 11 Ave 5"},
+            "location": {
+                "village_code": village,
+                "address": "KG 11 Ave 5",
+                "latitude": "-1.944200",
+                "longitude": "30.123400",
+            },
             "applicant": {"position": "Director"},
             "proposed_admin": {
                 "name": "Habimana Eric",

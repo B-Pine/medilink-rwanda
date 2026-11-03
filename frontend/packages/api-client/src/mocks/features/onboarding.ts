@@ -68,6 +68,7 @@ function missingFor(app: ApplicantApplication): string[] {
     ["facility.email", app.facility.email],
     ["location.village_code", app.location.village_code],
     ["location.address", app.location.address],
+    ["location.latitude", app.location.latitude !== null && app.location.longitude !== null],
     ["applicant.name", app.applicant.name],
     ["applicant.phone", app.applicant.phone],
     ["proposed_admin.name", app.proposed_admin.name],
@@ -103,6 +104,8 @@ function blankApplication(
       level_of_care: "",
       ownership: "",
       organization_name: "",
+      moh_facility_code: "",
+      tin: "",
       phone: "",
       email: "",
     },
@@ -206,6 +209,22 @@ export const onboardingMocks: FeatureMockFactory = (context: MockContext) => {
     });
   }
 
+  /** Field errors for the identifiers, like the API (`moh_facility_code`, 9-digit `tin`). */
+  function identifierErrors(
+    values: Record<string, unknown> | undefined,
+    prefix: string,
+  ): Record<string, string> {
+    const errors: Record<string, string> = {};
+    if (!values) return errors;
+    const code = values.moh_facility_code;
+    if (typeof code === "string" && code && !/^[A-Za-z0-9/._-]{1,20}$/.test(code))
+      errors[`${prefix}moh_facility_code`] = "Use letters, digits and / . _ - only.";
+    const tin = values.tin;
+    if (typeof tin === "string" && tin && !/^\d{9}$/.test(tin))
+      errors[`${prefix}tin`] = "A TIN has 9 digits.";
+    return errors;
+  }
+
   function applyPatch(entry: MockApplication, body: Record<string, unknown>) {
     const app = entry.app;
     const group = <K extends "facility" | "applicant" | "proposed_admin">(key: K) => {
@@ -243,11 +262,25 @@ export const onboardingMocks: FeatureMockFactory = (context: MockContext) => {
     const form = await request.formData();
     const file = form.get("file");
     if (!(file instanceof File)) return fieldError(context, l, { file: s1("required", l) });
+    const kind = str(form.get("kind") ?? "other");
+    if (kind === "facility_photo") {
+      const photos = entry.app.documents.filter((d) => d.kind === "facility_photo").length;
+      if (photos >= 6)
+        return context.errorResponse(
+          422,
+          "business_rule_violation",
+          "Add up to 6 photos of the facility.",
+        );
+      if (!file.type.startsWith("image/"))
+        return fieldError(context, l, {
+          file: "A facility photo must be a JPEG, PNG or HEIC image.",
+        });
+    }
     const received = await uploads.receive(file, "facility_application_document", owner, l);
     if ("error" in received) return received.error;
     const document: ApplicationDocument = {
       id: id(),
-      kind: str(form.get("kind") ?? "other") as ApplicationDocument["kind"],
+      kind: kind as ApplicationDocument["kind"],
       insurer_code: form.get("insurer_code") ? str(form.get("insurer_code")) : null,
       number: str(form.get("number") ?? ""),
       issued_on: form.get("issued_on") ? str(form.get("issued_on")) : null,
@@ -271,6 +304,30 @@ export const onboardingMocks: FeatureMockFactory = (context: MockContext) => {
   function applicantEntry(_request: Request, appId: string) {
     const entry = applications.get(appId);
     return entry && applicantSession === appId ? entry : null;
+  }
+
+  function facilityDetail(entry: MockFacility) {
+    const app = entry.facility.application_id
+      ? applications.get(entry.facility.application_id)?.app
+      : undefined;
+    return {
+      ...facilityView(entry),
+      application: app
+        ? {
+            id: app.id,
+            status: app.status,
+            facility_name: app.facility.name,
+            facility_type: app.facility.facility_type,
+            district_code: "12",
+            applicant_name: app.applicant.name,
+            created_by_platform: app.created_by_platform,
+            submitted_at: app.submitted_at,
+            last_activity_at: app.last_activity_at,
+            reviewer: app.reviewer,
+          }
+        : null,
+      licences: entry.licences.filter((lic) => !lic.superseded_at),
+    };
   }
 
   function facilityView(entry: MockFacility): PlatformFacility {
@@ -335,6 +392,8 @@ export const onboardingMocks: FeatureMockFactory = (context: MockContext) => {
         facility_type: "private_clinic",
         level_of_care: "primary",
         ownership: "private",
+        moh_facility_code: "RW-0217",
+        tin: "102345671",
         status: "live",
         district: { code: "12", name: "Gasabo" },
         application_id: null,
@@ -471,6 +530,11 @@ export const onboardingMocks: FeatureMockFactory = (context: MockContext) => {
       const body = await context.readJson(request);
       if (!EDITABLE.includes(entry.app.status)) return rule(context, l, "notEditable");
       if (body.version !== entry.app.version) return conflict(context, l);
+      const invalid = identifierErrors(
+        body.facility as Record<string, unknown> | undefined,
+        "facility.",
+      );
+      if (Object.keys(invalid).length) return fieldError(context, l, invalid);
       applyPatch(entry, body);
       touch(entry);
       return HttpResponse.json(applicantView(entry.app));
@@ -712,6 +776,11 @@ export const onboardingMocks: FeatureMockFactory = (context: MockContext) => {
       const body = await context.readJson(request);
       if (!EDITABLE.includes(entry.app.status)) return rule(context, l, "notEditable");
       if (body.version !== entry.app.version) return conflict(context, l);
+      const invalid = identifierErrors(
+        body.facility as Record<string, unknown> | undefined,
+        "facility.",
+      );
+      if (Object.keys(invalid).length) return fieldError(context, l, invalid);
       applyPatch(entry, body);
       touch(entry);
       event(entry, "platform_edit", { actor_kind: "platform_admin", actor: admin.me });
@@ -883,6 +952,8 @@ export const onboardingMocks: FeatureMockFactory = (context: MockContext) => {
               facility_type: str(body.facility_type),
               level_of_care: entry.app.facility.level_of_care,
               ownership: str(body.ownership),
+              moh_facility_code: entry.app.facility.moh_facility_code,
+              tin: entry.app.facility.tin,
               status: "approved",
               district: { code: "12", name: "Gasabo" },
               application_id: entry.app.id,
@@ -966,27 +1037,34 @@ export const onboardingMocks: FeatureMockFactory = (context: MockContext) => {
       if ("error" in admin) return admin.error;
       const entry = facilities.get(str(params.id));
       if (!entry) return notFound(l);
-      const app = entry.facility.application_id
-        ? applications.get(entry.facility.application_id)?.app
-        : undefined;
-      return HttpResponse.json({
-        ...facilityView(entry),
-        application: app
-          ? {
-              id: app.id,
-              status: app.status,
-              facility_name: app.facility.name,
-              facility_type: app.facility.facility_type,
-              district_code: "12",
-              applicant_name: app.applicant.name,
-              created_by_platform: app.created_by_platform,
-              submitted_at: app.submitted_at,
-              last_activity_at: app.last_activity_at,
-              reviewer: app.reviewer,
-            }
-          : null,
-        licences: entry.licences.filter((lic) => !lic.superseded_at),
-      });
+      return HttpResponse.json(facilityDetail(entry));
+    }),
+
+    http.patch(`${api}/platform/facilities/:id/`, async ({ request, params }) => {
+      await context.settle();
+      const l = lang(request);
+      const csrf = context.csrfFailure(request, l);
+      if (csrf) return csrf;
+      const admin = platformAdmin(context, l);
+      if ("error" in admin) return admin.error;
+      const stepUp = stepUpFailure(context, l);
+      if (stepUp) return stepUp;
+      const entry = facilities.get(str(params.id));
+      if (!entry) return notFound(l);
+      const body = await context.readJson(request);
+      const unknown = Object.keys(body).filter((k) => k !== "moh_facility_code" && k !== "tin");
+      if (unknown.length)
+        return fieldError(
+          context,
+          l,
+          Object.fromEntries(unknown.map((k) => [k, "Unknown field."])),
+        );
+      const invalid = identifierErrors(body, "");
+      if (Object.keys(invalid).length) return fieldError(context, l, invalid);
+      if (typeof body.moh_facility_code === "string")
+        entry.facility.moh_facility_code = body.moh_facility_code;
+      if (typeof body.tin === "string") entry.facility.tin = body.tin;
+      return HttpResponse.json(facilityDetail(entry));
     }),
 
     http.get(`${api}/platform/facilities/:id/:list/`, async ({ request, params }) => {

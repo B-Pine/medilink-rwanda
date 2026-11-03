@@ -234,6 +234,12 @@
     --ml-action-primary-text: #0e2219;
     --ml-brand-subtle-bg: #1c2e25;
     --ml-brand-subtle-text: #8fdbb8;
+    /* deep bands (footer, sign-in panel): charcoal with a green cast, not a green slab */
+    --ml-forest: #111915;
+    --ml-forest-raised: #19231e;
+    --ml-on-forest: #e8efeb;
+    --ml-on-forest-muted: #a9b8b0;
+    --ml-on-forest-accent: #5fc59a;
     --ml-link: #5fc59a;
     --ml-focus-ring: #5fc59a;
     --ml-accent: #fbbf24;
@@ -289,6 +295,12 @@
   --ml-action-primary-text: #0e2219;
   --ml-brand-subtle-bg: #1c2e25;
   --ml-brand-subtle-text: #8fdbb8;
+  /* deep bands (footer, sign-in panel): charcoal with a green cast, not a green slab */
+  --ml-forest: #111915;
+  --ml-forest-raised: #19231e;
+  --ml-on-forest: #e8efeb;
+  --ml-on-forest-muted: #a9b8b0;
+  --ml-on-forest-accent: #5fc59a;
   --ml-link: #5fc59a;
   --ml-focus-ring: #5fc59a;
   --ml-accent: #fbbf24;

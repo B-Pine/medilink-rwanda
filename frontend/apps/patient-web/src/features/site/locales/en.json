@@ -51,7 +51,15 @@
     "accountTitle": "Your healthcare journey, in one place.",
     "accountLead": "Create an account to manage appointments, follow your queue, access your visit documents and stay informed.",
     "exploreFirst": "Explore healthcare first",
-    "readyTitle": "Ready to find healthcare?"
+    "readyTitle": "Ready to find healthcare?",
+    "away": "{{km}} km away",
+    "distanceHint": "Tap Near me to see how far each one is.",
+    "sortedByDistance": "Closest first, from where you are.",
+    "showOnMap": "Show on map",
+    "view": {
+      "list": "Cards",
+      "map": "Map"
+    }
   },
   "care": {
     "title": "Find healthcare",

@@ -67,8 +67,6 @@ function ToastCard({ toast, dismiss }: { toast: ToastItem; dismiss: (id: number)
     };
   }, [start]);
   return (
-    // Pointer and focus only pause the timer; the link and close button inside are the controls.
-    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <li
       ref={item}
       className="pointer-events-auto flex w-full items-start gap-3 rounded-2xl border border-border bg-raised p-4 text-fg shadow-raised animate-rise"

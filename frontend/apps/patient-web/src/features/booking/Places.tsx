@@ -148,7 +148,7 @@ export function RowActions({ result }: { result: FacilityResult }) {
   );
 }
 
-function MapCard({ result }: { result: FacilityResult }) {
+export function MapCard({ result }: { result: FacilityResult }) {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage ?? "rw";
   return (

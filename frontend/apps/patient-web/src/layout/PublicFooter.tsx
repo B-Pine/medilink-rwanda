@@ -52,7 +52,7 @@ const GROUPS = [
 export function PublicFooter() {
   const { t } = useTranslation();
   return (
-    <footer className="relative isolate mt-auto overflow-hidden bg-forest text-on-forest print:hidden">
+    <footer className="relative isolate mt-auto overflow-hidden border-t border-on-forest/10 bg-forest text-on-forest print:hidden">
       <ImigongoPattern opacity={0.05} className="-z-10 text-on-forest-accent" />
       <div className="mx-auto flex max-w-[84rem] flex-col gap-14 px-4 pt-12 pb-8 sm:px-6 lg:px-8 lg:pt-16">
         <section

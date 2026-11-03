@@ -5,25 +5,46 @@ import {
   Crosshair,
   FirstAid,
   MagnifyingGlass,
+  MapTrifold,
   Phone,
   Siren,
+  SquaresFour,
   Ticket,
   type Icon,
 } from "@phosphor-icons/react";
-import { Button, buttonClassName, cx, ImigongoPattern } from "@medilink/ui";
+import {
+  Button,
+  buttonClassName,
+  cx,
+  ImigongoPattern,
+  Skeleton,
+  type MapPoint,
+} from "@medilink/ui";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState, type FormEvent } from "react";
+import { lazy, Suspense, useMemo, useRef, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 
 import { useApi } from "../app/services";
 import { PageHeading } from "../components/PageHeading";
-import { DISTRICT_CODES, type DistrictKey } from "../features/booking/discovery";
-import { FILTER, PlacesView, sortResults, useNearMe, type Sort } from "../features/booking/Places";
+import { env } from "../env";
+import { DISTRICT_CODES, pinKind, type DistrictKey } from "../features/booking/discovery";
+import {
+  FILTER,
+  MapCard,
+  sortResults,
+  useNearMe,
+  useWide,
+  type Sort,
+} from "../features/booking/Places";
 import { EMERGENCY } from "../features/site/data";
+import { FacilityCardGrid } from "../features/site/FacilityCards";
 import { HeroIllustration } from "../features/site/illustrations";
 import { LocationSelector, PageContainer, SearchBar } from "../features/site/kit";
 import { PublicLayout } from "../layout/PublicLayout";
+
+// Leaflet and the tiles load only when the map is on screen (upgrade 03 §2, < 100 KB JS budget)
+const FacilityMap = lazy(() => import("@medilink/ui/map"));
 
 const STEPS: { key: string; icon: Icon }[] = [
   { key: "find", icon: MagnifyingGlass },
@@ -45,7 +66,6 @@ export function LandingPage() {
   const [where, setWhere] = useState<DistrictKey | "">("");
   const [sort, setSort] = useState<Sort>("soonest");
   const { near, locating, locate } = useNearMe(() => setSort("nearest"));
-
   const body: FacilitySearchInput = {
     district_code: near ? undefined : where ? DISTRICT_CODES[where] : undefined,
     near,
@@ -55,9 +75,29 @@ export function LandingPage() {
     queryFn: () => api.booking.search(body),
   });
   const rows = useMemo(
-    () => sortResults(results.data?.results ?? [], sort).slice(0, 8),
+    () => sortResults(results.data?.results ?? [], sort).slice(0, 6),
     [results.data, sort],
   );
+  const [view, setView] = useState<"list" | "map">("list");
+  const [selected, setSelected] = useState<string | null>(null);
+  const map = useRef<HTMLDivElement>(null);
+  // false while the pre-rendered page hydrates (Leaflet needs the browser), then true
+  const inBrowser = useWide("all");
+  const points: MapPoint[] = rows.flatMap((r) =>
+    r.lat !== null && r.lng !== null
+      ? [
+          {
+            id: r.slug,
+            lat: r.lat,
+            lng: r.lng,
+            kind: pinKind(r.type),
+            load: r.queue_load,
+            label: r.name,
+          },
+        ]
+      : [],
+  );
+  const chosen = rows.find((r) => r.slug === selected);
 
   const onSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -144,20 +184,24 @@ export function LandingPage() {
         </section>
       </PageContainer>
 
-      <PageContainer className="ml-stagger flex flex-col gap-20 py-16 lg:gap-24 lg:py-20">
+      <PageContainer className="flex flex-col gap-20 py-16 lg:gap-28 lg:py-24">
         {/* 3 · Facilities near you */}
-        <div className="flex flex-col gap-4">
-          <PlacesView
-            heading={t("site.home.nearTitle")}
-            headingId="near-title"
-            rows={rows}
-            state={results.status}
-            busy={results.isFetching && !results.isPending}
-            onRetry={() => void results.refetch()}
-            near={near}
-            sort={sort}
-            onSort={setSort}
-            toolbar={
+        {/* cards; once the visitor shares a location they sort by distance and show the km */}
+        <section aria-labelledby="near-title" className="flex flex-col gap-5">
+          <div className="ml-reveal flex flex-wrap items-end justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              <h2 id="near-title" className="m-0 text-h2 tracking-tight">
+                {t("site.home.nearTitle")}
+              </h2>
+              <p role="status" className="m-0 text-body-sm text-fg-secondary">
+                {locating === "denied"
+                  ? t("home.locationDenied")
+                  : near
+                    ? t("site.home.sortedByDistance")
+                    : t("site.home.distanceHint")}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 aria-pressed={near !== null}
@@ -171,31 +215,125 @@ export function LandingPage() {
                 />
                 {near ? t("home.nearYou") : t("home.nearMe")}
               </button>
-            }
-            empty={t("site.home.nearEmpty")}
-          />
-          {locating === "denied" && (
-            <p role="status" className="m-0 text-body-sm text-fg-secondary">
-              {t("home.locationDenied")}
+              <Link
+                to="/facilities"
+                viewTransition
+                className="group inline-flex min-h-target items-center gap-1.5 px-2 font-semibold text-link no-underline hover:underline"
+              >
+                {t("site.home.viewAll")}
+                <ArrowRight
+                  aria-hidden="true"
+                  className="size-4 transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5"
+                />
+              </Link>
+            </div>
+          </div>
+          {results.isError ? (
+            <p
+              role="alert"
+              className="m-0 flex items-center gap-3 rounded-2xl bg-surface p-5 shadow-card"
+            >
+              {t("home.failed")}
+              <Button variant="secondary" size="sm" onClick={() => void results.refetch()}>
+                {t("home.retry")}
+              </Button>
             </p>
+          ) : !results.isPending && rows.length === 0 ? (
+            <p className="m-0 rounded-2xl bg-surface p-8 text-center text-fg-secondary shadow-card">
+              {t("site.home.nearEmpty")}
+            </p>
+          ) : (
+            <>
+              {/* phones and tablets: one view at a time */}
+              <div
+                role="group"
+                aria-label={t("home.view.label")}
+                className="flex self-start rounded-full bg-subtle p-1 lg:hidden"
+              >
+                {(["list", "map"] as const).map((key) => (
+                  <button
+                    key={key}
+                    type="button"
+                    aria-pressed={view === key}
+                    onClick={() => setView(key)}
+                    className="inline-flex min-h-10 cursor-pointer items-center gap-1.5 rounded-full px-4 text-body-sm font-semibold text-fg-secondary transition-[background-color,color,box-shadow] duration-200 aria-pressed:bg-surface aria-pressed:text-fg aria-pressed:shadow-card"
+                  >
+                    {key === "list" ? (
+                      <SquaresFour aria-hidden="true" className="size-4" />
+                    ) : (
+                      <MapTrifold aria-hidden="true" className="size-4" />
+                    )}
+                    {t(`site.home.view.${key}`)}
+                  </button>
+                ))}
+              </div>
+              {/* wide screens: the cards beside a map that stays in view */}
+              <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] xl:grid-cols-[minmax(0,1fr)_minmax(0,30rem)]">
+                <div
+                  className={cx(
+                    "min-w-0 transition-opacity duration-200 ease-out-quint",
+                    results.isFetching && !results.isPending && "opacity-60",
+                    view === "map" && "hidden lg:block",
+                  )}
+                >
+                  <FacilityCardGrid
+                    label={t("site.home.nearTitle")}
+                    rows={rows}
+                    loading={results.isPending}
+                    selected={selected}
+                    onSelect={setSelected}
+                    onShowOnMap={(slug) => {
+                      setSelected(slug);
+                      setView("map");
+                      map.current?.scrollIntoView({ block: "nearest" });
+                    }}
+                  />
+                </div>
+                <div
+                  ref={map}
+                  className={cx(
+                    "scroll-mt-24 lg:sticky lg:top-24",
+                    view === "list" && "hidden lg:block",
+                  )}
+                >
+                  {inBrowser ? (
+                    <Suspense
+                      fallback={<Skeleton className="h-[28rem] rounded-3xl lg:h-[34rem]" />}
+                    >
+                      <FacilityMap
+                        points={points}
+                        selectedId={selected}
+                        onSelect={setSelected}
+                        you={near}
+                        tilesUrl={env.mapTilesUrl}
+                        attribution={t("home.mapAttribution")}
+                        label={t("home.mapLabel")}
+                        className="h-[28rem] lg:h-[34rem]"
+                        card={chosen ? <MapCard result={chosen} /> : undefined}
+                      />
+                    </Suspense>
+                  ) : (
+                    <Skeleton className="h-[28rem] rounded-3xl lg:h-[34rem]" />
+                  )}
+                </div>
+              </div>
+            </>
           )}
-          <Link
-            to="/facilities"
-            viewTransition
-            className="inline-flex min-h-target items-center gap-1.5 self-start font-semibold text-link"
-          >
-            {t("site.home.viewAll")}
-            <ArrowRight aria-hidden="true" className="size-4" />
-          </Link>
-        </div>
+        </section>
 
         {/* 4 · Emergency */}
         <section
           aria-labelledby="emergency-title"
-          className="flex flex-col gap-5 rounded-3xl bg-surface p-6 shadow-card sm:flex-row sm:items-center sm:p-8"
+          className="ml-reveal relative flex flex-col gap-5 overflow-hidden rounded-3xl border border-danger/20 bg-surface p-6 shadow-card sm:flex-row sm:items-center sm:p-8"
         >
-          <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-danger-bg text-danger">
-            <Siren aria-hidden="true" weight="bold" className="size-7" />
+          {/* a red edge: the one band on the page that is about danger */}
+          <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5 bg-danger-solid" />
+          <span className="relative grid size-14 shrink-0 place-items-center rounded-2xl bg-danger-bg text-danger">
+            <span
+              aria-hidden="true"
+              className="absolute inset-0 animate-ping rounded-2xl bg-danger-bg opacity-60 [animation-duration:2.4s] motion-reduce:hidden"
+            />
+            <Siren aria-hidden="true" weight="bold" className="relative size-7" />
           </span>
           <div className="flex flex-1 flex-col gap-1">
             <h2 id="emergency-title" className="m-0 text-h2 tracking-tight">
@@ -223,26 +361,40 @@ export function LandingPage() {
 
         {/* 5 · How MediLink works */}
         <section aria-labelledby="how-title" className="flex flex-col gap-8">
-          <h2 id="how-title" className="m-0 text-h2 tracking-tight">
-            {t("site.home.howTitle")}
-          </h2>
-          <ol className="relative m-0 grid list-none gap-8 p-0 lg:grid-cols-4 lg:gap-6">
-            <span
-              aria-hidden="true"
-              className="absolute top-7 right-[12%] left-[12%] hidden h-px bg-border lg:block"
-            />
+          <div className="ml-reveal flex flex-wrap items-end justify-between gap-4">
+            <h2 id="how-title" className="m-0 text-h2 tracking-tight">
+              {t("site.home.howTitle")}
+            </h2>
+            <Link
+              to="/how-it-works"
+              viewTransition
+              className="group inline-flex min-h-target items-center gap-1.5 font-semibold text-link no-underline hover:underline"
+            >
+              {t("site.home.how")}
+              <ArrowRight
+                aria-hidden="true"
+                className="size-4 transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5"
+              />
+            </Link>
+          </div>
+          {/* four cards, each rising in turn as the row scrolls into view */}
+          <ol className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map(({ key, icon: StepIcon }, index) => (
               <li
                 key={key}
-                className="relative flex gap-4 lg:flex-col lg:items-center lg:text-center"
+                style={{ animationRange: `entry ${index * 8}% entry ${60 + index * 8}%` }}
+                className="ml-reveal group relative flex flex-col gap-4 overflow-hidden rounded-3xl bg-surface p-6 shadow-card transition-[box-shadow,translate] duration-300 ease-out-quint hover:-translate-y-1 hover:shadow-raised motion-reduce:hover:translate-y-0"
               >
-                <span className="relative grid size-14 shrink-0 place-items-center rounded-2xl bg-surface text-primary shadow-card">
-                  <StepIcon aria-hidden="true" className="size-7" />
-                  <span className="absolute -top-2 -right-2 grid size-6 place-items-center rounded-full bg-forest text-caption font-bold text-on-forest">
-                    {index + 1}
-                  </span>
+                <span
+                  aria-hidden="true"
+                  className="absolute -top-3 -right-1 font-heading text-[5rem] leading-none font-extrabold text-brand-subtle tabular-nums select-none"
+                >
+                  {index + 1}
                 </span>
-                <div className="flex flex-col gap-1">
+                <span className="relative grid size-12 place-items-center rounded-2xl bg-brand-subtle text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-on-primary">
+                  <StepIcon aria-hidden="true" weight="duotone" className="size-6" />
+                </span>
+                <div className="relative flex flex-col gap-1">
                   <h3 className="m-0 text-h3">{t(`site.home.steps.${key}.title`)}</h3>
                   <p className="m-0 text-body-sm text-fg-secondary">
                     {t(`site.home.steps.${key}.body`)}
@@ -260,7 +412,7 @@ export function LandingPage() {
         className="relative isolate overflow-hidden bg-forest text-on-forest"
       >
         <ImigongoPattern opacity={0.07} className="-z-10 text-on-forest-accent" />
-        <PageContainer className="flex flex-col items-start gap-6 py-16 lg:flex-row lg:items-center lg:justify-between lg:py-20">
+        <PageContainer className="ml-reveal flex flex-col items-start gap-6 py-16 lg:flex-row lg:items-center lg:justify-between lg:py-20">
           <div className="flex max-w-xl flex-col gap-3">
             <h2 id="account-title" className="m-0 text-h1 tracking-tight text-on-forest">
               {t("site.home.accountTitle")}
@@ -287,15 +439,32 @@ export function LandingPage() {
       </section>
 
       {/* 7 · Final action */}
-      <PageContainer className="flex flex-col items-center gap-5 py-16 text-center lg:py-20">
-        <h2 className="m-0 text-h1 tracking-tight">{t("site.home.readyTitle")}</h2>
-        <Link
-          to="/find-care"
-          viewTransition
-          className={buttonClassName({ size: "lg", pill: true, className: "px-8" })}
+      <PageContainer className="py-16 lg:py-24">
+        <section
+          aria-labelledby="ready-title"
+          className="ml-reveal relative isolate flex flex-col items-center gap-5 overflow-hidden rounded-[2rem] bg-brand-subtle px-6 py-14 text-center"
         >
-          {t("nav.findCare")}
-        </Link>
+          <ImigongoPattern opacity={0.06} className="-z-10 text-primary" />
+          <h2 id="ready-title" className="m-0 max-w-2xl text-h1 tracking-tight text-balance">
+            {t("site.home.readyTitle")}
+          </h2>
+          <p className="m-0 max-w-md text-fg-secondary">{t("site.home.reassure")}</p>
+          <Link
+            to="/find-care"
+            viewTransition
+            className={buttonClassName({
+              size: "lg",
+              pill: true,
+              className: "group px-8 shadow-raised",
+            })}
+          >
+            {t("nav.findCare")}
+            <ArrowRight
+              aria-hidden="true"
+              className="size-5 transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5"
+            />
+          </Link>
+        </section>
       </PageContainer>
     </PublicLayout>
   );

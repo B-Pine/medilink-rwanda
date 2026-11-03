@@ -51,7 +51,15 @@
     "accountTitle": "Urugendo rwawe rw’ubuvuzi, ahantu hamwe.",
     "accountLead": "Fungura konti ucunge gahunda zawe, ukurikire umurongo wawe, ubone inyandiko z’isura yawe kandi umenye amakuru.",
     "exploreFirst": "Banza urebe ubuvuzi",
-    "readyTitle": "Witeguye gushaka ubuvuzi?"
+    "readyTitle": "Witeguye gushaka ubuvuzi?",
+    "away": "Kuri km {{km}}",
+    "distanceHint": "Kanda Hafi yanjye urebe intera ya buri kigo.",
+    "sortedByDistance": "Ibikwegereye mbere, uhereye aho uri.",
+    "showOnMap": "Reba ku ikarita",
+    "view": {
+      "list": "Amakarita",
+      "map": "Ikarita"
+    }
   },
   "care": {
     "title": "Shaka ubuvuzi",

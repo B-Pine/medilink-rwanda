@@ -91,22 +91,43 @@ export function PageHeader({
   const { t } = useTranslation();
   // Inside the dashboard the shell shows the breadcrumb and the top spacing
   const inDashboard = useInDashboard();
+  if (inDashboard)
+    return (
+      <div className="flex flex-col gap-3 pb-5">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div className="flex max-w-[44rem] flex-col gap-2">
+            <PageHeading title={title} className="text-h1 tracking-tight text-fg">
+              {title}
+            </PageHeading>
+            {lead && <p className="m-0 text-body text-fg-secondary">{lead}</p>}
+          </div>
+          {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
+        </div>
+      </div>
+    );
+  // public pages: breadcrumb, a short emerald rule, a large title and a readable lead
   return (
-    <div className={cx("flex flex-col gap-3", inDashboard ? "pb-5" : "pt-8 pb-6 sm:pt-10")}>
-      {crumbs && !inDashboard && (
-        <Breadcrumbs items={[{ to: "/", label: t("nav.home") }, ...crumbs]} />
-      )}
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="flex max-w-[44rem] flex-col gap-2">
+    <div className="flex animate-enter flex-col gap-4 pt-8 pb-8 sm:pt-12 sm:pb-10">
+      {crumbs && <Breadcrumbs items={[{ to: "/", label: t("nav.home") }, ...crumbs]} />}
+      <div className="flex flex-wrap items-end justify-between gap-6">
+        <div className="flex max-w-[46rem] flex-col gap-3">
+          <span aria-hidden="true" className="h-1 w-10 rounded-full bg-primary" />
           {eyebrow && (
-            <p className="m-0 text-caption font-semibold tracking-wider text-primary uppercase">
+            <p className="m-0 text-caption font-semibold tracking-[0.14em] text-primary uppercase">
               {eyebrow}
             </p>
           )}
-          <PageHeading title={title} className="text-h1 tracking-tight text-fg">
+          <PageHeading
+            title={title}
+            className="font-heading text-[2rem] leading-[1.12] font-bold tracking-tight text-balance text-fg sm:text-[2.5rem]"
+          >
             {title}
           </PageHeading>
-          {lead && <p className="m-0 text-body text-fg-secondary">{lead}</p>}
+          {lead && (
+            <p className="m-0 max-w-[40rem] text-[1.0625rem] leading-relaxed text-pretty text-fg-secondary">
+              {lead}
+            </p>
+          )}
         </div>
         {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
       </div>
@@ -132,7 +153,8 @@ export function Panel({
     <Tag
       className={cx(
         "rounded-2xl bg-surface",
-        inDashboard ? "border border-border" : "shadow-card",
+        // public panels rise into view as the page scrolls (base.css .ml-reveal)
+        inDashboard ? "border border-border" : "ml-reveal shadow-card",
         className,
       )}
       {...rest}
@@ -420,8 +442,8 @@ export function SectionTitle({
   action?: ReactNode;
 }) {
   return (
-    <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-      <h2 id={id} className="m-0 text-h2 tracking-tight">
+    <div className="ml-reveal mb-5 flex flex-wrap items-end justify-between gap-3">
+      <h2 id={id} className="m-0 text-h2 tracking-tight text-balance">
         {children}
       </h2>
       {action}

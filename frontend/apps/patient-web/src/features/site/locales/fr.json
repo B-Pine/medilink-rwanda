@@ -51,7 +51,15 @@
     "accountTitle": "Votre parcours de santé, au même endroit.",
     "accountLead": "Créez un compte pour gérer vos rendez-vous, suivre votre file, retrouver vos documents de visite et rester informé.",
     "exploreFirst": "Explorer d’abord les soins",
-    "readyTitle": "Prêt à trouver des soins ?"
+    "readyTitle": "Prêt à trouver des soins ?",
+    "away": "à {{km}} km",
+    "distanceHint": "Touchez Près de moi pour voir la distance de chacun.",
+    "sortedByDistance": "Le plus proche d’abord, depuis votre position.",
+    "showOnMap": "Voir sur la carte",
+    "view": {
+      "list": "Cartes",
+      "map": "Carte"
+    }
   },
   "care": {
     "title": "Trouver des soins",

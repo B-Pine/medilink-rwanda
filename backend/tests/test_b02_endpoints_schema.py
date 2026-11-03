@@ -61,6 +61,7 @@ def test_b2_staff_me_schema_matches_contract(schema: dict[str, Any]) -> None:
         "id",
         "email",
         "full_name",
+        "phone",  # staff work phone (onboarding carry-over, 2026-11-03)
         "preferred_language",
         "is_platform_admin",
         "mfa_enabled",

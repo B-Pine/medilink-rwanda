@@ -58,6 +58,8 @@ class User(AbstractBaseUser):
     preferred_language = models.CharField(
         max_length=2, choices=Language.choices, default=Language.RW
     )
+    # Staff work phone, E.164 (+2507…); patients keep theirs on the encrypted patient record
+    phone = models.CharField(max_length=20, blank=True)
     is_platform_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     email_verified_at = models.DateTimeField(null=True, blank=True)

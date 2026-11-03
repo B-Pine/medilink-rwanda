@@ -18,6 +18,7 @@ import {
   MOCK_RECOVERY_CODE,
   MOCK_RESET_TOKEN,
   MOCK_VERIFY_TOKEN,
+  mockStaffPhone,
   MOCK_RETRY_AFTER_SECONDS,
   MOCK_STEP_UP_SECONDS,
   MOCK_TOTP_CODE,
@@ -480,6 +481,38 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
       const result = authenticatedStaff(languageFrom(request));
       if ("error" in result) return result.error;
       return HttpResponse.json(result.me);
+    }),
+
+    http.patch(`${API}/staff/auth/me/`, async ({ request }) => {
+      await settle();
+      const lang = languageFrom(request);
+      const csrf = csrfFailure(request, lang);
+      if (csrf) return csrf;
+      const result = authenticatedStaff(lang);
+      if ("error" in result) return result.error;
+      const user = findStaff(result.session.email);
+      if (!user) return errorResponse(404, "not_found", message("notFound", lang));
+      const body = await readJson(request);
+      if ("full_name" in body) {
+        const name = asString(body.full_name).trim().replace(/s+/g, " ");
+        if (name.length < 2) return validationError(lang, { full_name: ["Give your names."] });
+        user.full_name = name;
+      }
+      if ("phone" in body) {
+        const phone = mockStaffPhone(asString(body.phone));
+        if (phone === null)
+          return validationError(lang, {
+            phone: ["Enter a Rwandan mobile number like 0788 123 456"],
+          });
+        user.phone = phone;
+      }
+      if ("preferred_language" in body) {
+        const language = asString(body.preferred_language);
+        if (!["rw", "en", "fr"].includes(language))
+          return validationError(lang, { preferred_language: ["Choose rw, en or fr."] });
+        user.preferred_language = language as LanguageCode;
+      }
+      return HttpResponse.json(staffMe(result.session));
     }),
 
     http.post(`${API}/staff/auth/active-facility/`, async ({ request }) => {

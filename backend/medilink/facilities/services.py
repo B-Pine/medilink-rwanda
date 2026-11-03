@@ -103,6 +103,46 @@ def branding_of(facility: Facility) -> Branding:
     return row
 
 
+def seed_profile(facility: Facility, application: Any) -> Profile:
+    """At approval (S1 hook): what the applicant gave becomes the facility profile, so the
+    facility admin doesn't type it again. Fills only empty fields; logged as config changes by
+    the reviewer. The caller sets the facility's RLS context."""
+    from medilink.masterdata.models import FacilityType as FacilityTypeItem
+
+    profile = Profile.objects.select_for_update().get(pk=profile_of(facility).pk)
+    before = snapshot(profile, PROFILE_FIELDS)
+    # master data holds the level of care of every facility type
+    type_level = (
+        FacilityTypeItem.objects.filter(code=facility.facility_type)
+        .values_list("level_of_care", flat=True)
+        .first()
+    )
+    given = {
+        "phone": application.phone,
+        "email": application.email,
+        "address": application.address,
+        "village_code": application.village.code if application.village_id else "",
+        "latitude": application.latitude,
+        "longitude": application.longitude,
+        "level_of_care": application.level_of_care or type_level or "",
+    }
+    for name, value in given.items():
+        if value not in (None, "") and getattr(profile, name) in (None, ""):
+            setattr(profile, name, value)
+    changed = log_changes(
+        facility_id=facility.pk,
+        entity="profile",
+        entity_id=facility.pk,
+        before=before,
+        after=snapshot(profile, PROFILE_FIELDS),
+        actor=application.reviewer,
+    )
+    if changed:
+        profile.version += 1
+        profile.save()
+    return profile
+
+
 def update_profile(
     facility: Facility, data: dict[str, Any], *, actor: Any, request: Any
 ) -> Profile:

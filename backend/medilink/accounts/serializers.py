@@ -39,6 +39,38 @@ class StrictSerializer(serializers.Serializer):
         return super().to_internal_value(data)
 
 
+class StaffPhoneField(serializers.CharField):
+    """A staff work phone: a Rwandan mobile number, stored as E.164 (+2507…); blank allowed."""
+
+    def __init__(self, **kwargs: Any) -> None:
+        kwargs.setdefault("max_length", 20)
+        kwargs.setdefault("allow_blank", True)
+        super().__init__(**kwargs)
+
+    def to_internal_value(self, data: Any) -> str:
+        from medilink.patients.normalize import InvalidValue, normalize_phone
+
+        value = super().to_internal_value(data)
+        try:
+            return normalize_phone(value) or ""
+        except InvalidValue as exc:
+            raise serializers.ValidationError(str(exc)) from None
+
+
+class StaffAccountUpdateSerializer(StrictSerializer):
+    """PATCH /staff/auth/me/: the signed-in staff member's own name, work phone and language."""
+
+    full_name = serializers.CharField(max_length=150, required=False)
+    phone = StaffPhoneField(required=False)
+    preferred_language = serializers.ChoiceField(choices=Language.choices, required=False)
+
+    def validate_full_name(self, value: str) -> str:
+        value = " ".join(value.split())
+        if len(value) < 2:
+            raise serializers.ValidationError(_("Give your names."))
+        return value
+
+
 def password_field() -> serializers.CharField:
     return serializers.CharField(
         write_only=True,
@@ -80,6 +112,7 @@ class StaffMeSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     email = serializers.EmailField()
     full_name = serializers.CharField()
+    phone = serializers.CharField(allow_blank=True)
     preferred_language = serializers.ChoiceField(choices=Language.choices)
     is_platform_admin = serializers.BooleanField()
     mfa_enabled = serializers.BooleanField()

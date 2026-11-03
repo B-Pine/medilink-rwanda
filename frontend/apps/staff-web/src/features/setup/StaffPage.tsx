@@ -390,7 +390,10 @@ function InvitationList({ invitations }: { invitations: Invitation[] }) {
           >
             <EnvelopeSimple aria-hidden="true" className="size-5 text-fg-muted" />
             <div className="flex min-w-0 flex-1 flex-col">
-              <span className="font-semibold">{i.email}</span>
+              <span className="font-semibold">{i.full_name || i.email}</span>
+              {i.full_name && (
+                <span className="text-body-sm break-all text-fg-secondary">{i.email}</span>
+              )}
               <span className="text-body-sm text-fg-secondary">
                 {i.role_codes.map((r) => roleLabel(r as RoleCode, t)).join(", ")} ·{" "}
                 {t("setup.staff.expires", { date: formatDate(i.expires_at, locale) })}
@@ -495,6 +498,8 @@ function InviteDialog({ points, onClose }: { points: ServicePoint[]; onClose: ()
   const key = useRef(newIdempotencyKey());
   const [form, setForm] = useState({
     email: "",
+    full_name: "",
+    phone: "",
     role_codes: [] as string[],
     service_point_ids: [] as string[],
   });
@@ -541,6 +546,26 @@ function InviteDialog({ points, onClose }: { points: ServicePoint[]; onClose: ()
           onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
           error={errors.email}
         />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <TextField
+            label={t("setup.staff.inviteName")}
+            hint={t("setup.staff.optional")}
+            autoComplete="off"
+            value={form.full_name}
+            onChange={(e) => setForm((f) => ({ ...f, full_name: e.target.value }))}
+            error={errors.full_name}
+          />
+          <TextField
+            label={t("setup.staff.invitePhone")}
+            hint={t("setup.staff.optional")}
+            type="tel"
+            inputMode="tel"
+            autoComplete="off"
+            value={form.phone}
+            onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+            error={errors.phone}
+          />
+        </div>
         <RoleChecks
           value={form.role_codes}
           onChange={(role_codes) => setForm((f) => ({ ...f, role_codes }))}
@@ -640,8 +665,17 @@ function MemberPanel({
           >
             {initials(member.full_name)}
           </span>
-          <div className="flex flex-col">
-            <span className="text-fg-secondary">{member.email}</span>
+          <div className="flex min-w-0 flex-col">
+            <a href={`mailto:${member.email}`} className="break-all text-fg-secondary">
+              {member.email}
+            </a>
+            {member.phone ? (
+              <a href={`tel:${member.phone}`} className="text-fg-secondary">
+                {member.phone}
+              </a>
+            ) : (
+              <span className="text-body-sm text-fg-muted">{t("setup.staff.noPhone")}</span>
+            )}
             <span className="text-body-sm text-fg-muted">
               {t("setup.staff.joined", { date: formatDate(member.joined_at, locale) })}
             </span>

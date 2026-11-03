@@ -23,7 +23,7 @@ import type {
   Tariff,
 } from "../../features/setup";
 import type { LanguageCode } from "../../types";
-import { FACILITIES, STAFF_USERS } from "../data";
+import { FACILITIES, mockStaffPhone, STAFF_USERS } from "../data";
 import type { FeatureMockFactory } from "../features";
 import { conflict, fieldError, id, now, page, rule, s1, stepUpFailure, str } from "./s1-common";
 
@@ -245,6 +245,7 @@ function seed() {
     user_id: id(),
     full_name: name,
     email,
+    phone: "",
     roles,
     service_points: [],
     is_active: true,
@@ -375,6 +376,8 @@ function seed() {
     {
       id: id(),
       email: "nurse.mukamana@example.test",
+      full_name: "Mukamana Ange",
+      phone: "+250788200301",
       role_codes: ["receptionist"],
       service_point_ids: [SETUP_IDS.pDesk],
       status: "pending",
@@ -1466,6 +1469,11 @@ export const setupMocks: FeatureMockFactory = (context) => {
         const email = str(data.email).trim().toLowerCase();
         if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))
           return fieldError(context, ok.lang, { email: "Enter a valid email address." });
+        const invitePhone = mockStaffPhone(str(data.phone));
+        if (invitePhone === null)
+          return fieldError(context, ok.lang, {
+            phone: "Enter a Rwandan mobile number like 0788 123 456",
+          });
         const roles = (data.role_codes as string[] | undefined) ?? [];
         if (!roles.length)
           return fieldError(context, ok.lang, { role_codes: "Choose at least one role." });
@@ -1476,6 +1484,8 @@ export const setupMocks: FeatureMockFactory = (context) => {
         const row: Invitation = {
           id: id(),
           email,
+          full_name: str(data.full_name).trim(),
+          phone: invitePhone,
           role_codes: roles,
           service_point_ids: (data.service_point_ids as string[]) ?? [],
           status: "pending",
@@ -1562,8 +1572,8 @@ export const setupMocks: FeatureMockFactory = (context) => {
           if ("error" in result) return result.error;
           return HttpResponse.json(result.me);
         }
-        if (!str(data.full_name).trim())
-          return fieldError(context, lang, { full_name: "Enter your full name." });
+        const fullName = str(data.full_name).trim() || found.lookup.suggested_name;
+        if (!fullName) return fieldError(context, lang, { full_name: "Enter your full name." });
         if (str(data.password).length < 12)
           return fieldError(context, lang, { password: "Use at least 12 characters." });
         const email = "new.nurse@medilink.test";
@@ -1571,7 +1581,7 @@ export const setupMocks: FeatureMockFactory = (context) => {
           STAFF_USERS.push({
             id: id(),
             email,
-            full_name: str(data.full_name),
+            full_name: fullName,
             preferred_language: lang,
             is_platform_admin: false,
             mfa_enabled: false,
@@ -1610,6 +1620,7 @@ export const setupMocks: FeatureMockFactory = (context) => {
           email_masked: "n•••@medilink.test",
           account_exists: false,
           expires_at: expires,
+          suggested_name: "Mukamana Ange",
         },
       };
     if (token === MOCK_INVITATION_EXISTING_TOKEN)
@@ -1622,6 +1633,7 @@ export const setupMocks: FeatureMockFactory = (context) => {
           email_masked: "p•••@medilink.test",
           account_exists: true,
           expires_at: expires,
+          suggested_name: "",
         },
       };
     return null;

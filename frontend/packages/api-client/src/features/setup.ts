@@ -318,6 +318,8 @@ export interface StaffMembership {
   user_id: Uuid;
   full_name: string;
   email: string;
+  /** Work phone, E.164; empty when not given. */
+  phone: string;
   roles: string[];
   service_points: Uuid[];
   is_active: boolean;
@@ -340,6 +342,9 @@ export type InvitationStatus = "pending" | "accepted" | "revoked" | "expired";
 export interface Invitation {
   id: Uuid;
   email: string;
+  /** What the inviter gave: prefills the new account. */
+  full_name: string;
+  phone: string;
   role_codes: string[];
   service_point_ids: Uuid[];
   status: InvitationStatus;
@@ -369,6 +374,8 @@ export interface InvitationLookup {
   email_masked: string;
   account_exists: boolean;
   expires_at: string;
+  /** The name the inviter gave, to prefill "Your names". */
+  suggested_name: string;
 }
 
 // ---- client ------------------------------------------------------------------------------------
@@ -571,7 +578,13 @@ export function createSetupApi(client: ApiClient) {
       ),
     invitations: () => allPages<Invitation>(client, setupPaths.invitations),
     invite: (
-      body: { email: string; role_codes: string[]; service_point_ids?: Uuid[] },
+      body: {
+        email: string;
+        role_codes: string[];
+        service_point_ids?: Uuid[];
+        full_name?: string;
+        phone?: string;
+      },
       idempotencyKey?: string,
     ) => client.post<Invitation>(setupPaths.invitations, body, idem(idempotencyKey)),
     invitationAction: (id: Uuid, action: "resend" | "revoke") =>
@@ -584,8 +597,8 @@ export function createSetupApi(client: ApiClient) {
       patch<ClinicianPublicProfile>(setupPaths.clinicianPublic, body),
     lookupInvitation: (token: string) =>
       client.post<InvitationLookup>(setupPaths.invitationLookup, { token }),
-    /** New account: `{token, full_name, password}` → `LoginResult` (`mfa_setup_required`). */
-    acceptNewAccount: (body: { token: string; full_name: string; password: string }) =>
+    /** New account: `{token, full_name?, password}` → `LoginResult`; the name defaults to the inviter's. */
+    acceptNewAccount: (body: { token: string; full_name?: string; password: string }) =>
       client.post<StaffLoginResult>(setupPaths.invitationAccept, body),
     /** Existing account, signed in with the invited email: `{token}` → `StaffMe`. */
     acceptInvitation: (token: string) =>

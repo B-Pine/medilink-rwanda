@@ -71,6 +71,7 @@ def membership_data(m: FacilityMembership) -> dict[str, Any]:
             "user_id": m.user_id,
             "full_name": m.user.full_name,
             "email": m.user.email,
+            "phone": m.user.phone,
             "roles": sorted(r.code for r in m.roles.all()),
             "service_points": [p.service_point_id for p in m.service_points.all()],
             "is_active": m.is_active,
@@ -211,6 +212,8 @@ def invitation_data(i: Invitation) -> dict[str, Any]:
     return {
         "id": i.pk,
         "email": i.email,
+        "full_name": i.full_name,
+        "phone": i.phone,
         "role_codes": list(i.role_codes),
         "service_point_ids": list(i.service_point_ids),
         "status": state,
@@ -264,6 +267,8 @@ class InvitationsView(StaffView):
             actor=request.user,
             request=request,
             idempotency_key=key,
+            full_name=data.get("full_name", ""),
+            phone=data.get("phone", ""),
         )
         return Response(invitation_data(invitation), status=status.HTTP_201_CREATED)
 
@@ -465,12 +470,13 @@ class InvitationAcceptView(_InvitationAuthView):
             return Response(staff_me_data(self.signed_in_principal(request), request.session))
         if User.objects.filter(email__iexact=found["email"]).exists():
             raise exceptions.NotAuthenticated(SIGN_IN_FIRST)
-        if not data.get("full_name") or not data.get("password"):
+        full_name = data.get("full_name") or found["full_name"]  # the inviter's, if not typed
+        if not full_name or not data.get("password"):
             raise exceptions.ValidationError(
                 {"password": ["Choose a password."], "full_name": ["Give your names."]}
             )
         user = staff.accept_new_account(
-            token, full_name=data["full_name"], password=data["password"], request=request
+            token, full_name=full_name, password=data["password"], request=request
         )
         from medilink.accounts.views import dev_skip_staff_mfa
 

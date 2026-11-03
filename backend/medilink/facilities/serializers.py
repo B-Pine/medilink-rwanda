@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from medilink.accounts.models import Council
-from medilink.accounts.serializers import StrictSerializer
+from medilink.accounts.serializers import StaffPhoneField, StrictSerializer
 from medilink.billing.models import TariffKind
 from medilink.facilities.models import CalendarEventKind, ServicePointKind, SexRestriction
 from medilink.scheduling.models import ExceptionKind
@@ -475,6 +475,7 @@ class StaffMembershipSerializer(serializers.Serializer):
     user_id = serializers.UUIDField()
     full_name = serializers.CharField()
     email = serializers.EmailField()
+    phone = serializers.CharField(allow_blank=True)
     roles = serializers.ListField(child=serializers.CharField())
     service_points = serializers.ListField(child=serializers.UUIDField())
     is_active = serializers.BooleanField()
@@ -521,11 +522,16 @@ class InvitationCreateSerializer(StrictSerializer):
     service_point_ids = serializers.ListField(
         child=serializers.UUIDField(), required=False, default=list
     )
+    # optional: prefill the new account (the person can change the name when accepting)
+    full_name = serializers.CharField(max_length=150, required=False, allow_blank=True)
+    phone = StaffPhoneField(required=False)
 
 
 class InvitationSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     email = serializers.EmailField()
+    full_name = serializers.CharField(allow_blank=True)
+    phone = serializers.CharField(allow_blank=True)
     role_codes = serializers.ListField(child=serializers.CharField())
     service_point_ids = serializers.ListField(child=serializers.UUIDField())
     status = serializers.ChoiceField(choices=["pending", "accepted", "revoked", "expired"])
@@ -573,6 +579,9 @@ class InvitationLookupSerializer(serializers.Serializer):
     email_masked = serializers.CharField()
     account_exists = serializers.BooleanField()
     expires_at = serializers.DateTimeField()
+    suggested_name = serializers.CharField(
+        allow_blank=True, help_text="The name the inviter gave, to prefill 'Your names'."
+    )
 
 
 class AcceptNewSerializer(StrictSerializer):

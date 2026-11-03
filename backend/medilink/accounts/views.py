@@ -50,6 +50,7 @@ from medilink.accounts.serializers import (
     PatientLoginSerializer,
     PatientMeSerializer,
     PatientRegisterSerializer,
+    StaffAccountUpdateSerializer,
     StaffLoginSerializer,
     StaffMeSerializer,
     VerifyEmailSerializer,
@@ -381,6 +382,39 @@ class StaffMeView(_AuthView):
     )
     def get(self, request: Request) -> Response:
         return Response(StaffMeSerializer(staff_me_data(_principal(request), request.session)).data)
+
+    @extend_schema(
+        operation_id="staff_auth_me_update",
+        tags=["staff-auth"],
+        request=StaffAccountUpdateSerializer,
+        responses={
+            200: StaffMeSerializer,
+            400: _err("Invalid input"),
+            401: _err("not_authenticated or mfa_required"),
+        },
+        summary="Update my own name, work phone and language; audit-logged",
+    )
+    def patch(self, request: Request) -> Response:
+        body = StaffAccountUpdateSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        principal = _principal(request)
+        user = principal.user
+        assert user is not None  # noqa: S101 (IsStaffAuthenticated)
+        changed = [
+            name for name, value in body.validated_data.items() if getattr(user, name) != value
+        ]
+        if changed:
+            for name in changed:
+                setattr(user, name, body.validated_data[name])
+            user.save(update_fields=[*changed, "updated_at"])
+            record(
+                actions.STAFF_ACCOUNT_UPDATED,
+                request=request,
+                object_type="user",
+                object_id=user.pk,
+                metadata={"fields": changed},
+            )
+        return Response(StaffMeSerializer(staff_me_data(principal, request.session)).data)
 
 
 class StaffActiveFacilityView(_AuthView):

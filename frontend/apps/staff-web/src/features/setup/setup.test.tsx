@@ -180,6 +180,48 @@ describe("staff (S2-F7)", () => {
     await user.click(within(self).getByRole("button", { name: "Save changes" }));
     expect(await within(self).findByText(/needs at least one admin/)).toBeInTheDocument();
   });
+
+  it("an invitation can carry the person's name and work phone", async () => {
+    const { user } = await signIn(MOCK_FACILITY_ADMIN_EMAIL, "/staff");
+    await screen.findByRole("table", { name: "Members" });
+    await user.click(screen.getByRole("button", { name: "Invite staff" }));
+    const invite = await screen.findByRole("dialog", { name: "Invite staff" });
+    await user.type(within(invite).getByLabelText("Email"), "nurse.three@example.test");
+    await user.type(within(invite).getByLabelText(/^Their names/), "Iradukunda Joy");
+    await user.type(within(invite).getByLabelText(/^Work phone/), "12345");
+    await user.click(within(invite).getByLabelText("Receptionist"));
+    await user.click(within(invite).getByRole("button", { name: "Send invitation" }));
+    expect(await within(invite).findByText(/^Enter a Rwandan mobile number/)).toBeInTheDocument();
+    await user.clear(within(invite).getByLabelText(/^Work phone/));
+    await user.type(within(invite).getByLabelText(/^Work phone/), "0788 555 111");
+    await user.click(within(invite).getByRole("button", { name: "Send invitation" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog", { name: "Invite staff" })).not.toBeInTheDocument(),
+    );
+    await user.click(screen.getByRole("tab", { name: /Invitations/ }));
+    expect(await screen.findByText("Iradukunda Joy")).toBeInTheDocument();
+    expect(screen.getByText("nurse.three@example.test")).toBeInTheDocument();
+  });
+});
+
+describe("my details", () => {
+  it("saves my name, work phone and language", async () => {
+    const { user, container } = await signIn(MOCK_FACILITY_ADMIN_EMAIL, "/account");
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "My details" }),
+    ).toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
+    const save = screen.getByRole("button", { name: "Save" });
+    expect(save).toBeDisabled();
+    await user.type(screen.getByLabelText(/^Work phone/), "0788 1");
+    await user.click(save);
+    expect(await screen.findByText(/^Enter a Rwandan mobile number/)).toBeInTheDocument();
+    await user.clear(screen.getByLabelText(/^Work phone/));
+    await user.type(screen.getByLabelText(/^Work phone/), "0788 123 456");
+    await user.click(screen.getByRole("button", { name: "Save" }));
+    expect(await screen.findByText("Saved.")).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Work phone/)).toHaveValue("+250788123456");
+  });
 });
 
 describe("rules (S2-F9)", () => {
@@ -222,7 +264,11 @@ describe("invitation page (S2-F8)", () => {
   it("new account: name + password, then MFA setup", async () => {
     const { user } = renderApp(`/invite/${MOCK_INVITATION_TOKEN}`);
     expect(await screen.findByText("Gasabo Family Clinic")).toBeInTheDocument();
-    await user.type(screen.getByLabelText("Full name"), "Mukamana Alice");
+    // prefilled with the name the inviter gave; the person can correct it
+    const name = screen.getByLabelText("Full name");
+    expect(name).toHaveValue("Mukamana Ange");
+    await user.clear(name);
+    await user.type(name, "Mukamana Alice");
     await user.type(screen.getByLabelText(/^Password/), "a-long-enough-password");
     await user.click(screen.getByRole("button", { name: "Create account" }));
     expect(await screen.findByLabelText("6-digit code")).toBeInTheDocument();

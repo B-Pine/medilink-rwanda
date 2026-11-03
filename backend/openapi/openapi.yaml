@@ -8929,6 +8929,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: not_authenticated or mfa_required
+    patch:
+      operationId: staff_auth_me_update
+      summary: Update my own name, work phone and language; audit-logged
+      tags:
+      - staff-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffAccountUpdateRequest'
+      security:
+      - staffSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffMe'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Invalid input
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: not_authenticated or mfa_required
   /api/v1/staff/auth/mfa/confirm/:
     post:
       operationId: staff_auth_mfa_confirm
@@ -23421,6 +23452,10 @@ components:
         email:
           type: string
           format: email
+        full_name:
+          type: string
+        phone:
+          type: string
         role_codes:
           type: array
           items:
@@ -23445,8 +23480,10 @@ components:
       - created_at
       - email
       - expires_at
+      - full_name
       - id
       - invited_by
+      - phone
       - role_codes
       - service_point_ids
       - status
@@ -23474,6 +23511,12 @@ components:
           items:
             type: string
             format: uuid
+        full_name:
+          type: string
+          maxLength: 150
+        phone:
+          type: string
+          maxLength: 20
       required:
       - email
       - role_codes
@@ -23496,6 +23539,9 @@ components:
         expires_at:
           type: string
           format: date-time
+        suggested_name:
+          type: string
+          description: The name the inviter gave, to prefill 'Your names'.
       required:
       - account_exists
       - email_masked
@@ -23503,6 +23549,7 @@ components:
       - facility_name
       - invited_by
       - role_codes
+      - suggested_name
     InvitationPage:
       type: object
       properties:
@@ -27083,6 +27130,20 @@ components:
         values:
           type: object
           additionalProperties: {}
+    PatchedStaffAccountUpdateRequest:
+      type: object
+      description: 'PATCH /staff/auth/me/: the signed-in staff member''s own name,
+        work phone and language.'
+      properties:
+        full_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        phone:
+          type: string
+          maxLength: 20
+        preferred_language:
+          $ref: '#/components/schemas/LanguageEnum'
     PatchedStaffPatientUpdateRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -32079,6 +32140,8 @@ components:
           format: email
         full_name:
           type: string
+        phone:
+          type: string
         preferred_language:
           $ref: '#/components/schemas/LanguageEnum'
         is_platform_admin:
@@ -32115,6 +32178,7 @@ components:
       - memberships
       - mfa_enabled
       - permissions
+      - phone
       - preferred_language
       - security
     StaffMembership:
@@ -32131,6 +32195,8 @@ components:
         email:
           type: string
           format: email
+        phone:
+          type: string
         roles:
           type: array
           items:
@@ -32169,6 +32235,7 @@ components:
       - joined_at
       - last_login
       - mfa_enabled
+      - phone
       - roles
       - service_points
       - user_id

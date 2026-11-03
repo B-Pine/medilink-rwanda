@@ -12,6 +12,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 - Added: `GET /staff/pharmacy/my-day/` (ready, partly given, questions, dispensed, out of stock)
   and `GET /staff/pharmacy/history/?days=1|7|30&mine=&q=` (dispensings with line outcomes).
+
+### Facility onboarding: approval keeps the application (2026-11-03)
+
+- Changed: approving a facility application copies its phone, email, address, village, map pin
+  and level of care (or the facility type's) into the facility profile, so the facility admin
+  doesn't retype them. Only empty fields are filled; each one is logged as a config change by
+  the reviewer.
+- Changed: the facility admin's invitation carries the proposed admin's name, phone and
+  language. Their new account starts with them; the accept page prefills the name
+  (`suggested_name` on the lookup) and `full_name` may be left out.
+- Added: `User.phone` (staff work phone, E.164) and `Invitation.full_name`, `phone`,
+  `preferred_language` (migrations accounts/0007, tenancy/0007). `POST /staff/invitations/`
+  takes optional `full_name` and `phone`; memberships, invitations and `StaffMe` return them.
+- Added: `PATCH /api/v1/staff/auth/me/` for my own name, work phone and language (audit
+  `staff.account.updated`). Phones must be Rwandan mobile numbers.
+
 ### Rwanda locations, NISR codes (issue #48)
 
 - Added: migration `masterdata/0004_nisr_locations` loads Rwanda's 416 sectors, 2,148 cells and

@@ -253,6 +253,11 @@ class Invitation(TimeStampedModel):
 
     facility = models.ForeignKey(Facility, on_delete=models.PROTECT, related_name="+")
     email = models.EmailField()
+    # What the inviter knows about the person (the facility application's proposed admin, or the
+    # invite form): prefills the new account. The person can change the name when accepting.
+    full_name = models.CharField(max_length=150, blank=True)
+    phone = models.CharField(max_length=20, blank=True)
+    preferred_language = models.CharField(max_length=2, blank=True)
     invited_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, related_name="+"
     )

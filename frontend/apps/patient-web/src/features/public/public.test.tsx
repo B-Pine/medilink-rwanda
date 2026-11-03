@@ -55,6 +55,13 @@ describe("information pages (PT-F4, PT-F5)", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
+  it("a service page shows the description written in master data", async () => {
+    renderApp("/services/vaccination");
+    expect(
+      await screen.findByText("Vaccines protect children and adults from serious diseases."),
+    ).toBeInTheDocument();
+  });
+
   it("emergency gives the number and the danger signs", async () => {
     renderApp("/emergency");
     expect(

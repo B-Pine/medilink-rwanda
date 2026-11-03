@@ -248,6 +248,8 @@ export interface CatalogueService {
   code: string;
   name: string;
   category: ServiceCategory;
+  /** Written by the platform in master data; empty when not written yet. */
+  description: string;
 }
 
 /** The public service catalogue (master data), names in the request language. */
@@ -265,6 +267,7 @@ export function useCatalogue(language: string) {
           code: item.code!,
           name: item.name ?? item.code!,
           category: categoryOf(item.code!),
+          description: typeof item.description === "string" ? item.description : "",
         }))
         .sort((a, b) => a.name.localeCompare(b.name));
     },

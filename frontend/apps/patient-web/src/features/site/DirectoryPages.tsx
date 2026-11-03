@@ -835,8 +835,11 @@ export function ServicePage() {
     );
   }
 
+  // the platform's own words first, then the built-in text for the common services
   const explain =
-    t(`site.service.explain.${code}`, { defaultValue: "" }) || t("site.service.aboutGeneric");
+    service?.description ||
+    t(`site.service.explain.${code}`, { defaultValue: "" }) ||
+    t("site.service.aboutGeneric");
 
   return (
     <PublicLayout>

@@ -8,6 +8,8 @@ from dataclasses import dataclass, field
 from medilink.masterdata import models as m
 
 LANGUAGES = ("rw", "en", "fr")
+# Texts that may stay empty, even on kinds that need every language for their names
+OPTIONAL_I18N = ("plain_language_i18n", "description_i18n")
 
 
 @dataclass(frozen=True)
@@ -62,11 +64,12 @@ KINDS: dict[str, Kind] = {
                 "code",
                 "name_i18n",
                 "synonyms_i18n",
+                "description_i18n",
                 "min_age_months",
                 "max_age_months",
                 "sex_restriction",
             ),
-            i18n_fields=("name_i18n", "synonyms_i18n"),
+            i18n_fields=("name_i18n", "synonyms_i18n", "description_i18n"),
             all_languages=True,
             public=True,
             search=("code", "name_i18n", "synonyms_i18n"),
@@ -193,7 +196,7 @@ def localise(value: object, language: str) -> str:
 def missing_languages(row: m.MasterDataModel, kind: Kind) -> list[str]:
     missing: set[str] = set()
     for name in kind.i18n_fields:
-        if name in ("synonyms_i18n", "plain_language_i18n"):
+        if name == "synonyms_i18n" or name in OPTIONAL_I18N:
             continue  # optional
         value = getattr(row, name) or {}
         missing.update(code for code in LANGUAGES if not value.get(code))

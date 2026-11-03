@@ -45,6 +45,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   (verified facilities, districts, languages, free) under the hero.
 - Changed: a cleaner sign-in side panel: no pattern or glow, the three benefits as plain lines
   between hairlines instead of icon tiles, and a narrower panel so the form leads.
+- Changed: the landing hero shows a flat SVG illustration (a health centre on terraced hills with
+  an Imigongo frieze, a tree and people waiting) in theme colours instead of the generated photo
+  collage.
 - Fixed: home service tiles no longer show "0 facilities".
 - Fixed: sign-in, sign-up and password screens use the public site's palette (the button green
   matches the site), the logo no longer squashes on phones, and the top bar fits 360 px (the

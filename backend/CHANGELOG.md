@@ -8,6 +8,19 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### AI symptom assistant, test phase (issue #159)
+
+- Added: `POST /api/v1/public/assistant/`, one chat turn of the AI symptom assistant. The person's
+  words become dataset symptoms (LLM); red flags answer 912 with no model; a local naive Bayes
+  matcher (`triage/matcher.py`, model `nb-2026.11-1`, 773 conditions, held-out top-1 85 %, top-3
+  94.7 %) asks the most useful follow-up question until it has 3 symptoms and 50 % confidence; the
+  LLM then writes a hedged reply ("you may have X; see a doctor") and picks the service to book.
+- Added: `train_symptom_matcher` command (the dataset CSV stays out of git) and the append-only,
+  de-identified `triage_assistant_log` (symptom names and outcome, never the person's words).
+- Added: `ASSISTANT_ENABLED`, `NVIDIA_API_KEY`, `NVIDIA_API_BASE`, `NVIDIA_MODEL`,
+  `NVIDIA_TIMEOUT_SECONDS`, `THROTTLE_RATE_ASSISTANT` (15/min). Off by default. Test phase only:
+  the hosted NVIDIA API sends symptom text abroad; production must use a NIM hosted in Rwanda.
+
 ### Upgrade U2 · Doctor tools (upgrade 05 §3)
 
 - Added: `GET /staff/clinical/questions/` and `POST .../questions/{id}/reply/` (signed addendum

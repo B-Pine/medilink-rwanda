@@ -1,6 +1,12 @@
 import { http, HttpResponse } from "msw";
 
-import type { TriageInput, TriageResult } from "../../features/triage";
+import type {
+  AssistantInput,
+  AssistantState,
+  AssistantTurn,
+  TriageInput,
+  TriageResult,
+} from "../../features/triage";
 import type { FeatureMockFactory } from "../features";
 import { SYMPTOMS } from "./booking";
 
@@ -98,6 +104,92 @@ export const triageMocks: FeatureMockFactory = (context) => ({
       if (!body.duration || !body.age_group)
         return context.errorResponse(400, "validation_error", "Say how long and who it is for.");
       return HttpResponse.json(mockTriage(body as TriageInput));
+    }),
+  ],
+});
+
+// ---- AI symptom assistant (issue #159): a scripted conversation for dev and tests -----------
+
+const WORDS: [RegExp, string][] = [
+  [/fever|hot|umuriro|fièvre/i, "fever"],
+  [/head|umutwe|tête/i, "headache"],
+  [/chill|cold|frisson/i, "chills"],
+  [/vomit|kuruka/i, "vomiting"],
+  [/cough|inkorora|toux/i, "cough"],
+  [/chest pain|douleur thoracique|igituza/i, "sharp chest pain"],
+  [/breath|guhumeka|respir/i, "difficulty breathing"],
+];
+
+/** Fever + headache, a "yes" to vomiting, then a hedged answer naming malaria as possible. */
+export function mockAssistantTurn(body: AssistantInput): AssistantTurn {
+  const state: AssistantState = {
+    present: [...(body.state?.present ?? [])],
+    absent: [...(body.state?.absent ?? [])],
+    asked: [...(body.state?.asked ?? [])],
+    pending: null,
+  };
+  const text = body.message.trim();
+  const pending = body.state?.pending ?? null;
+  if (pending && /^(yes|yego|oui)\b/i.test(text)) state.present.push(pending);
+  else if (pending && /^(no|oya|non)\b/i.test(text)) state.absent.push(pending);
+  for (const [pattern, name] of WORDS)
+    if (pattern.test(text) && !state.present.includes(name)) state.present.push(name);
+  const base = {
+    state,
+    red_flags: [] as string[],
+    condition: null,
+    named: false,
+    service_code: null,
+    urgency: null,
+    matcher_version: "nb-2026.11-1",
+    test_phase: true,
+  };
+  const flags = state.present.filter(
+    (s) => s === "sharp chest pain" || s === "difficulty breathing",
+  );
+  if (flags.length)
+    return {
+      ...base,
+      kind: "emergency",
+      reply: null,
+      red_flags: flags,
+      service_code: "emergency_care",
+    };
+  if (!state.present.length) return { ...base, kind: "clarify", reply: null };
+  if (state.present.length < 3 && state.asked.length < 4) {
+    const next = ["vomiting", "chills", "cough"].find(
+      (s) => !state.present.includes(s) && !state.asked.includes(s) && !state.absent.includes(s),
+    );
+    if (next) {
+      state.asked.push(next);
+      state.pending = next;
+      return { ...base, kind: "question", reply: `Do you also have ${next}?` };
+    }
+  }
+  return {
+    ...base,
+    kind: "answer",
+    reply:
+      `You told me about ${state.present.join(", ")}. You may have malaria, but only a doctor ` +
+      "can tell after a test. It is best to see a doctor today at a health facility, where they " +
+      "can examine you and help you further. The facilities below can help you.",
+    condition: "malaria",
+    named: true,
+    service_code: "general_consultation",
+    urgency: "today",
+  };
+}
+
+export const assistantMocks: FeatureMockFactory = (context) => ({
+  handlers: [
+    http.post(`${context.api}/public/assistant/`, async ({ request }) => {
+      await context.settle();
+      const body = ((await context.readJson(request)) ?? {}) as Partial<AssistantInput>;
+      if (typeof body.message !== "string" || !body.message.trim() || body.message.length > 600)
+        return context.errorResponse(400, "validation_error", "Write up to 600 characters.");
+      if (!body.language || !["rw", "en", "fr"].includes(body.language))
+        return context.errorResponse(400, "validation_error", "Unknown language.");
+      return HttpResponse.json(mockAssistantTurn(body as AssistantInput));
     }),
   ],
 });

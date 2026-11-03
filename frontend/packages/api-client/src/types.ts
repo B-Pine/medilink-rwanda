@@ -193,6 +193,7 @@ export interface PasswordResetConfirmRequest {
 /** Error codes from docs/architecture/02-api-conventions.md §4 (+ client-side `network_error`). */
 export type ApiErrorCode =
   | "validation_error"
+  | "assistant_unavailable"
   | "bad_request"
   | "not_authenticated"
   | "mfa_required"

@@ -202,5 +202,41 @@
         "body": "[To confirm] These terms are governed by the laws of Rwanda."
       }
     }
+  },
+  "assistant": {
+    "eyebrow": "Umufasha wa AI · igerageza",
+    "title": "Tubwire uko wiyumva",
+    "intro": "Sobanura uko wiyumva mu magambo yawe. Umufasha akubaza ibibazo bike, hanyuma akakubwira icyo bishobora kuba n’aho wabona muganga.",
+    "testTitle": "Iyi ni verisiyo y’igerageza",
+    "testBody": "Ntabwo ari isuzuma kandi si iy’ibyihutirwa. Mu igerageza, amagambo yawe yoherezwa kuri serivisi ya AI iri hanze y’u Rwanda: ntwandike izina ryawe, nimero ya telefoni cyangwa indangamuntu.",
+    "kinyarwanda": "Ibisubizo mu Kinyarwanda biracyanozwa. Ushobora no kwandika mu Cyongereza cyangwa mu Gifaransa.",
+    "conversation": "Ikiganiro n’umufasha",
+    "greeting": "Muraho. Wumva umeze ute, kandi kuva ryari?",
+    "thinking": "Umufasha arimo kwandika",
+    "clarify": "Sinabashije kumenya ikimenyetso. Wasobanura uko wiyumva, urugero aho ubabara n’igihe byatangiriye?",
+    "unavailable": "Umufasha ntaboneka ubu.",
+    "failed": "Hari ikitagenze neza. Ongera ugerageze.",
+    "useChecker": "Koresha isuzuma ry’ibimenyetso aho",
+    "restart": "Ongera utangire",
+    "quick": "Ibisubizo byihuse",
+    "answers": {
+      "yes": "Yego",
+      "no": "Oya",
+      "notSure": "Simbizi neza"
+    },
+    "label": "Sobanura uko wiyumva",
+    "placeholder": "Urugero: mfite umuriro n’umutwe undya kuva ejo",
+    "send": "Ohereza",
+    "notName": "Ntushyiremo izina ryawe cyangwa indangamuntu.",
+    "urgency": {
+      "today": "Jya kwa muganga uyu munsi",
+      "soon": "Jya kwa muganga mu minsi mike"
+    },
+    "possible": "Impamvu ishoboka: {{condition}}",
+    "notDiagnosis": "Iri si isuzuma. Muganga ukusuzumye ni we wenyine ushobora kubimenya.",
+    "placesTitle": "Aho bagufasha",
+    "noPlaces": "Nta kigo kiri hafi gitanga iyi serivisi ubu.",
+    "morePlaces": "Reba ahandi hantu",
+    "tryIt": "Wahitamo kubisobanura mu magambo yawe? Gerageza umufasha wa AI (igerageza)"
   }
 }

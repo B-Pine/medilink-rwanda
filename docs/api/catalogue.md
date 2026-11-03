@@ -387,6 +387,7 @@ Requirements: FR-SCH-01..15; FR-BIL-03; FR-AI-01.
 | `GET` | `/api/v1/public/facilities/{slug}/slots/` | Bookable slots for a service, doctor and date range | Public | FR-SCH-07 | Server recomputes at hold time | Planned |
 | `GET` | `/api/v1/public/symptoms/` | Structured symptom list | Public | FR-AI-01, FR-SCH-10 | rw/en/fr | Planned |
 | `POST` | `/api/v1/public/triage/` | Rules-based symptom triage: urgency, service, level of care | Public | FR-AI-04, FR-AI-05, FR-AI-06, FR-AI-07 | [Contract PT §2.2](../architecture/contracts/public-pages-and-triage.md); rules `2026.11-p1`, not signed off (#93); logged without personal data; 20/min | Implemented |
+| `POST` | `/api/v1/public/assistant/` | AI symptom assistant, one chat turn: follow-up question, hedged answer ("you may have…, see a doctor") or 912 | Public | FR-AI-04, FR-AI-05, FR-AI-07 | Issue #159; **test phase**: NVIDIA hosted API, off unless `ASSISTANT_ENABLED` and `NVIDIA_API_KEY`; naive Bayes matcher `nb-2026.11-1` runs locally; red flags answer 912 without the model; logged without the person's words; 15/min; 503 `assistant_unavailable` | Implemented (test phase) |
 | `GET` | `/api/v1/public/calendar-feeds/{token}/` | Private `.ics` subscription feed | Feed token | FR-SCH-11 | `text/calendar`; no clinical details; revocable; README §6 item 6 | Planned |
 
 ### Patient

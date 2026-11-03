@@ -202,5 +202,41 @@
         "body": "[To confirm] These terms are governed by the laws of Rwanda."
       }
     }
+  },
+  "assistant": {
+    "eyebrow": "AI assistant · test",
+    "title": "Tell us how you feel",
+    "intro": "Describe what you feel in your own words. The assistant asks a few questions, then tells you what it may be and where to see a doctor.",
+    "testTitle": "This is a test version",
+    "testBody": "It is not a diagnosis and not for emergencies. For testing, your words are sent to an AI service outside Rwanda: do not type your name, phone number or ID.",
+    "kinyarwanda": "Answers in Kinyarwanda are still being improved. You can also write in English or French.",
+    "conversation": "Conversation with the assistant",
+    "greeting": "Hello. What are you feeling, and since when?",
+    "thinking": "The assistant is writing",
+    "clarify": "I did not recognise a symptom yet. Can you describe what you feel, for example where it hurts and since when?",
+    "unavailable": "The assistant is not available right now.",
+    "failed": "Something went wrong. Try again.",
+    "useChecker": "Use the symptom checker instead",
+    "restart": "Start again",
+    "quick": "Quick answers",
+    "answers": {
+      "yes": "Yes",
+      "no": "No",
+      "notSure": "I am not sure"
+    },
+    "label": "Describe how you feel",
+    "placeholder": "For example: I have had a fever and a headache since yesterday",
+    "send": "Send",
+    "notName": "Do not include your name or any ID.",
+    "urgency": {
+      "today": "See a doctor today",
+      "soon": "See a doctor in the next few days"
+    },
+    "possible": "Possible cause: {{condition}}",
+    "notDiagnosis": "This is not a diagnosis. Only a doctor who examines you can tell what it is.",
+    "placesTitle": "Places that can help",
+    "noPlaces": "No facility offers this service nearby yet.",
+    "morePlaces": "See more places",
+    "tryIt": "Prefer to describe it in your own words? Try the AI assistant (test)"
   }
 }

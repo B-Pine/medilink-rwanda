@@ -300,7 +300,9 @@ class TemplatesView(_MyTemplates):
             )
         except IntegrityError:
             raise Conflict("You already have a template with this name.") from None
-        return Response(NoteTemplateSerializer(template_data(t)).data, status=status.HTTP_201_CREATED)
+        return Response(
+            NoteTemplateSerializer(template_data(t)).data, status=status.HTTP_201_CREATED
+        )
 
 
 class TemplateView(_MyTemplates):

@@ -15,6 +15,7 @@ import {
   MagnifyingGlass,
   Phone,
   Siren,
+  Sparkle,
   WarningOctagon,
   type Icon,
 } from "@phosphor-icons/react";
@@ -175,6 +176,18 @@ export function SymptomCheckerPage() {
             {title}
           </PageHeading>
           <p className="m-0 text-fg-muted">{t("public.checker.intro")}</p>
+          <Link
+            to="/assistant"
+            viewTransition
+            className="group inline-flex items-center gap-2 self-start rounded-full border border-violet/30 bg-violet-bg px-4 py-2 text-body-sm font-semibold text-violet no-underline transition-colors duration-150 hover:border-violet"
+          >
+            <Sparkle aria-hidden="true" weight="fill" className="size-4" />
+            {t("public.assistant.tryIt")}
+            <ArrowRight
+              aria-hidden="true"
+              className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
+            />
+          </Link>
         </div>
         <Progress step={step} />
 
@@ -353,7 +366,7 @@ function StepButtons({
   );
 }
 
-function EmergencyAnswer() {
+export function EmergencyAnswer() {
   const { t } = useTranslation();
   return (
     <div role="alert" className="flex flex-col gap-3 rounded-xl bg-danger-bg p-5">

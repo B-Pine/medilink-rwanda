@@ -92,7 +92,7 @@ function Merges({ platform }: { platform: boolean }) {
             <button
               type="button"
               onClick={() => setOpenId(merge.id)}
-              className="flex w-full flex-wrap items-center gap-3 rounded-md border border-border bg-surface p-3 text-left"
+              className="flex w-full flex-wrap items-center gap-3 rounded-2xl border border-border/60 bg-surface p-3 text-left"
             >
               <Badge tone={TONES[merge.status]}>
                 {t(`patients.merges.status.${merge.status}`)}
@@ -118,7 +118,7 @@ function Side({ title, side }: { title: string; side: MergeSide }) {
   const { t } = useTranslation();
   const locale = useLocale();
   return (
-    <div className="flex-1 rounded-md border border-border p-3">
+    <div className="flex-1 rounded-2xl border border-border/60 p-3">
       <h3 className="m-0 mb-1 text-body-sm text-fg-muted">{title}</h3>
       <p className="m-0 font-medium">{side.full_name}</p>
       <p className="m-0 text-body-sm">

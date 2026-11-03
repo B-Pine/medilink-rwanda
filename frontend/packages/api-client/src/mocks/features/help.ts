@@ -586,6 +586,8 @@ export const helpMocks: FeatureMockFactory = (context: MockContext) => {
 
   const handlers = [
     // ---- public
+    // Upgrade 11 §13: development stand-in for the proposed public contact endpoint
+    http.post(`${api}/public/contact/`, () => new HttpResponse(null, { status: 202 })),
     http.get(`${api}/public/help-articles/`, ({ request }) =>
       listArticles("patient", new URL(request.url), context.languageFrom(request)),
     ),

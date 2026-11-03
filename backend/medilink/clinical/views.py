@@ -26,6 +26,7 @@ from medilink.clinical.models import (
     Diagnosis,
     Vitals,
 )
+from medilink.clinical.reason import reason_for_visit, vitals_flags
 from medilink.core.pagination import DefaultPagination
 from medilink.facilities.views_base import FacilityView, Needs, err, query_date
 from medilink.masterdata.models import Drug
@@ -78,6 +79,7 @@ def vitals_data(row: Vitals) -> dict[str, Any]:
         "weight_kg": row.weight_kg,
         "height_cm": row.height_cm,
         "muac_mm": row.muac_mm,
+        "flags": vitals_flags(row),
         "is_entered_in_error": row.entered_in_error_at is not None,
     }
 
@@ -164,6 +166,7 @@ def consultation_data(c: Consultation, principal: Any) -> dict[str, Any]:
             for d in diagnoses
         ],
         "vitals": [vitals_data(v) for v in vitals],
+        "reason_for_visit": reason_for_visit(c.visit, patient),
         "addenda": [addendum_data(a) for a in addenda],
         "allergies": allergy_data(patient),
         "no_known_allergies": patient.no_known_allergies,
@@ -403,6 +406,22 @@ class EnteredInErrorView(ClinicalView):
             request=request,
         )
         return self.respond(marked)
+
+
+class MyDayView(ClinicalView):
+    permission_classes = [Needs(WRITE)]
+
+    @extend_schema(
+        operation_id="staff_clinical_my_day",
+        tags=TAGS,
+        responses={200: s.MyDaySerializer},
+        summary="Doctor Today: my patients seen, unsigned records, questions and results",
+    )
+    def get(self, request: Request) -> Response:
+        from medilink.clinical.my_day import my_day
+
+        data = my_day(self.facility_id(), self.membership().pk)
+        return Response(s.MyDaySerializer(data).data)
 
 
 class ConsultationListView(ClinicalView):

@@ -9,6 +9,120 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Doctor workspace (upgrade 05 §3)
+
+- Added: Doctor Today: my day in numbers, the patient in the room with Open record, and what
+  waits for me (overdue records, pharmacy questions, results, records to sign, follow-ups).
+- Added: Results inbox `/clinical/results`: outside results assigned to me, opened through a
+  5-minute link, marked reviewed with a comment.
+- Changed: My queue opens the record directly and can finish and call next in one step; the
+  consultation opens with why the patient came, uses icon section cards, a glass action bar,
+  diagnosis chips and a "signed, back to my queue" callout; vitals are tiles with red, named
+  flags; patient history shows a four-card summary, paper records and scans, and a card
+  timeline; unsigned records are a table.
+
+### Upgrade U2 · Facility admin command centre (upgrade 05 §5)
+
+- Changed: the facility admin's Today is a command centre: four live KPIs (patients, median
+  wait, no-show rate, collected today), queue load by service, needs your attention (licence,
+  approvals, cash shifts, queue moves, unsigned records, disputes, two-step sign-in, invitations;
+  urgent first), bookings today, money today and the team on duty.
+- Added: Approvals has a Cash shifts tab (`/approvals?tab=shifts`): expected against counted per
+  method, the gap, the cashier's note, and accept with step-up (a note is needed when the drawer
+  does not balance). `api.billing.shifts()` and `api.billing.reviewShift()` with mocks.
+- Changed: Staff shows coverage bars for attestation and two-step sign-in, a warning when active
+  members lack a second factor, and a Last active column. `StatTile` takes a `caption`.
+
+### Upgrade U2 · Public website (upgrade 11)
+
+- Added: every public route of the brief: `/find-care`, `/facilities`, `/facilities/:slug`,
+  `/doctors`, `/doctors/:slug`, `/services`, `/services/:slug`, `/how-it-works`, `/emergency`,
+  `/help`, `/about`, `/contact`, `/privacy`, `/terms`, `/accessibility` (new `site` feature with
+  locales in rw, en and fr; Kinyarwanda and French are drafts for native review). `/care` and
+  `/search` redirect to `/find-care`.
+- Changed: home follows the brief (hero with a custom SVG illustration, search, facilities near
+  you with list and map, emergency access, how it works, sign-in band, final call). Navbar: Home ·
+  Find Care · Facilities · Doctors · Services · How It Works with a sliding indicator, Emergency,
+  language, Sign In and a Find Care button; 80 px; a slide-down menu under 1024 px that locks the
+  page. Footer: deep forest with Explore, Information and Legal columns.
+- Changed: facility profile with a Today panel (hours, live wait, queue and booking, insurers,
+  hospital note), tabs (Overview, Services, Doctors, Insurance, Hours & Location with a map) and
+  What to bring; the primary action follows real availability.
+- Changed: light palette from the brief (forest `#123D2B`, emerald `#168451`, link `#11744A`,
+  text `#17231D`, page `#F7F9F7`, light green `#EDF5EF`); token tests updated.
+- Added: shared public kit (`PageContainer`, `PageHeader`, `Breadcrumbs`, `SearchBar`,
+  `LocationSelector`, `FacilityStatus`, `WaitingTime`, `InsuranceList`, `LinkRow`, `Faq`,
+  `EmptyState` with an illustration, `LoadingRows`, `ErrorState`), the `help.public.contact` API
+  call with a development mock, and pre-rendering of how-it-works, about, privacy, terms and
+  accessibility. Pre-rendered facility snapshots no longer carry live waits.
+- Known gaps (upgrade 11 §13): doctors come from facility profiles (no directory endpoint yet);
+  the emergency filter and list show hospitals; `POST /public/contact/` is not on the API yet.
+
+### Upgrade U2 · Soft public look
+
+- Changed: public pages use `.ml-soft`: wide, diffuse shadows tinted toward the brand green (a
+  dark-theme variant too) and a faint emerald light at the top of the page. Cards and the list
+  are 24 px round, the hero is a forest gradient with a pill search bar, filters and the main
+  buttons are pills, hairlines are lighter and sections have more space. `Button` gains `pill`.
+
+### Upgrade U2 · Header and page transitions
+
+- Changed: the public header is sticky (64 px) and lifts with a shadow once the page scrolls
+  (scroll-driven animation where supported). A pill slides between Find care, Check symptoms and
+  For facilities under the pointer or focus and rests on the current page. Emergency · 912 is a red
+  pill; Sign in is a primary pill. On phones the links open in a panel (Escape and navigation
+  close it).
+- Added: page changes from header, footer and list links cross-fade with view transitions while
+  the header stays still (no animation where unsupported or with reduced motion); a thin emerald
+  bar shows while the next page loads.
+
+### Upgrade U2 · Sign-in and sign-up shell
+
+- Changed: log in, sign up, check email, forgot and reset password and email verification use one
+  `AuthLayout`: a full-height deep-forest band (Imigongo pattern, soft emerald light), a centred
+  card that rises in with the MediLink mark and a centred title, a two-bar step indicator on sign-up,
+  and "Continue without an account" under the card. Top bar: logo, Emergency · 912, language. Form
+  logic, validation, error summaries and consent are unchanged.
+
+### Upgrade U2 · Public pages polish and motion (upgrade 02 §2–6)
+
+- Changed: the home hero is a deep-forest band (Imigongo at 6 %) holding the search, chips and
+  filters, with a "Right now" ticket stub of live facts (places open, people waiting, shortest
+  wait) and a heartbeat line; numbers show dashes until the data arrives. Filters are compact
+  pills; service tiles, alerts, verify and for-facilities blocks share one card style.
+- Changed: the footer has three link groups (Care, MediLink, Trust), one emergency line, the
+  language switch and copyright, on a hairline instead of the boxed notice.
+- Added: motion tokens (`ease-out-quint`, `animate-enter`, `animate-rise`, `animate-fade`) and
+  `.ml-stagger`; dialogs and the map card rise in; list rows ease on hover and show the selected
+  place with an emerald edge; a changed live wait glows once; the list dims while new results load.
+  All of it is off with reduced motion or data saver.
+
+### Upgrade U2 · Find care `/care` (upgrade 03 §3)
+
+- Added: `/care` with the same list and map at full width and every filter in a panel (a dialog
+  on phones): service, insurance, district, type, level of care (Mutuelle transfer hint), open
+  now, free time today, join remotely, distance after Near me. Active filters are removable chips
+  with "Clear all" and the count; choices live in the URL, never the location. No results: one
+  line, the nearest place offering the service, and Clear all.
+- Changed: `/search` and `/find-care` redirect to `/care`; links, the header and the patient menu
+  point there. The "how to get care" explainer page (with a "Coming soon" card) and the old search
+  cards are removed. The list and map are one shared module (`features/booking/Places.tsx`) used
+  by Home and Find care.
+
+### Upgrade U2 · Home with list and map (U-04, upgrade 03 §1–2)
+
+- Changed: `/` leads with "What are you feeling?" (symptom words go to the checker, service words
+  filter), chips, district · insurance · type · open now · Near me, then the live list
+  (`FacilityRow`) with a map (`@medilink/ui/map`, Leaflet, lazy) beside it on desktop and a
+  List | Map toggle on phones; sort soonest seen · nearest · A–Z. Then Emergency 24h, By service,
+  Recent places, alerts (install, turn on alerts), Verify a document and For facilities. The hero,
+  how-it-works, trust, tracker, records and FAQ sections are removed.
+- Changed: public header is Find care · Check symptoms · For facilities · language · Sign in, with
+  "Emergency · 912" always visible.
+- Added: `VITE_MAP_TILES_URL` (tile origin added to `img-src`; provider is open decision OD-3,
+  OpenStreetMap default for development only). District and insurer choice and recent places are
+  remembered on the device through the UI preferences store.
+
 ### Upgrade U2 · No prices in discovery or booking (U-01, contract sprint-05 D-14)
 
 - Changed: search results, facility services, the booking flow and booking cards no longer show a

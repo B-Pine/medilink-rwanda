@@ -192,7 +192,7 @@ export function UpcomingSection() {
           title={t("booking.upcoming.none")}
           description={t("booking.upcoming.noneBody")}
           action={
-            <Link to="/search" className={buttonClassName({})}>
+            <Link to="/find-care" className={buttonClassName({})}>
               <CalendarPlus aria-hidden="true" className="size-icon" />
               {t("booking.upcoming.book")}
             </Link>

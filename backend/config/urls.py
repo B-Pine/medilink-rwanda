@@ -89,6 +89,9 @@ api_v1: list[URLPattern | URLResolver] = [
     path("staff/", include("medilink.billing.urls.staff")),
     path("patient/bills/", include("medilink.billing.urls.patient")),
     # [/S8]
+    # [S11]
+    path("platform/", include("medilink.platform_admin.urls")),
+    # [/S11]
 ]
 
 if settings.SCHEMA_ENABLED:  # non-production only (architecture 02 §7)

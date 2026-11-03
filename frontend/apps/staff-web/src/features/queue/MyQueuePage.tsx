@@ -3,6 +3,7 @@ import type { DutyState, TicketRow } from "@medilink/api-client";
 import {
   Alert,
   Button,
+  buttonClassName,
   cx,
   EmptyState,
   ImigongoPattern,
@@ -16,6 +17,7 @@ import {
   Coffee,
   Flask,
   MegaphoneSimple,
+  Notepad,
   Play,
   SpeakerHigh,
   UserMinus,
@@ -24,13 +26,22 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PageHeading } from "../../components/PageHeading";
 import { FollowUpAction } from "../bookings";
+import { MyDayStrip, useMyDay } from "../clinical/DoctorToday";
 import { queueKeys, usePollInterval, useQueueSocket } from "./live";
 import { LiveBadge } from "./LiveIndicator";
-import { actionError, Flags, minutesSince, useServiceNames, useTicketAction } from "./shared";
+import {
+  actionError,
+  Flags,
+  minutesSince,
+  useCan,
+  useServiceNames,
+  useTicketAction,
+} from "./shared";
 
 const DUTY: DutyState[] = ["on_duty", "break", "emergency", "off"];
 
@@ -52,6 +63,8 @@ export function MyQueuePage() {
   });
   const points = useQuery({ queryKey: ["setup", "points"], queryFn: () => api.setup.points() });
   const act = useTicketAction();
+  const clinician = useCan("clinical.write");
+  const myDay = useMyDay(clinician);
   const [empty, setEmpty] = useState(false);
   const callButton = useRef<HTMLButtonElement>(null);
 
@@ -101,6 +114,11 @@ export function MyQueuePage() {
   ) => act.mutate({ ticket, action, body });
 
   const next = data?.waiting[0];
+  // upgrade 05 §3: the step a doctor repeats most is one action
+  const finishAndNext = async (ticket: TicketRow) => {
+    await act.mutateAsync({ ticket, action: "complete" });
+    if (onDuty && serviceId && (data?.waiting.length ?? 0) > 0) callNext.mutate();
+  };
 
   return (
     <div className="flex flex-col gap-5">
@@ -120,7 +138,7 @@ export function MyQueuePage() {
           <div
             role="group"
             aria-label={t("queue.mine.duty")}
-            className="inline-flex flex-wrap gap-0.5 rounded-lg bg-subtle p-1"
+            className="inline-flex flex-wrap gap-0.5 rounded-2xl bg-subtle p-1"
           >
             {DUTY.map((state) => {
               const active = duty?.state === state;
@@ -141,7 +159,7 @@ export function MyQueuePage() {
                     })
                   }
                   className={cx(
-                    "inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-md px-3 text-body-sm font-semibold",
+                    "inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-xl px-3 text-body-sm font-semibold",
                     "transition-[background-color,color,box-shadow] duration-150",
                     active ? "bg-surface text-fg shadow-card" : "text-fg-secondary hover:text-fg",
                   )}
@@ -194,6 +212,8 @@ export function MyQueuePage() {
         </section>
       </header>
 
+      {myDay.data && <MyDayStrip data={myDay.data} compact />}
+
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_24rem]">
         <section aria-labelledby="current" className="flex flex-col gap-4">
           <h2 id="current" className="sr-only">
@@ -234,7 +254,7 @@ export function MyQueuePage() {
                 </div>
               </div>
               <Flags ticket={current} />
-              <div className="flex flex-wrap gap-2 border-t border-border pt-5">
+              <div className="flex flex-wrap gap-2 border-t border-border/60 pt-5">
                 {current.state === "called" ? (
                   <>
                     <Button size="lg" onClick={() => run(current, "start")}>
@@ -252,7 +272,25 @@ export function MyQueuePage() {
                   </>
                 ) : (
                   <>
-                    <Button size="lg" onClick={() => run(current, "complete")}>
+                    <Link
+                      to={`/clinical/visits/${current.visit_id}/consultation`}
+                      className={buttonClassName({ size: "lg" })}
+                    >
+                      <Notepad aria-hidden="true" weight="bold" />
+                      {t("queue.mine.openRecord")}
+                    </Link>
+                    {data && data.waiting.length > 0 && (
+                      <Button
+                        variant="secondary"
+                        size="lg"
+                        loading={act.isPending || callNext.isPending}
+                        onClick={() => void finishAndNext(current)}
+                      >
+                        <MegaphoneSimple aria-hidden="true" weight="bold" />
+                        {t("queue.mine.finishAndNext")}
+                      </Button>
+                    )}
+                    <Button variant="secondary" size="lg" onClick={() => run(current, "complete")}>
                       <CheckCircle aria-hidden="true" weight="fill" />
                       {t("queue.mine.complete")}
                     </Button>
@@ -281,7 +319,7 @@ export function MyQueuePage() {
               </div>
             </div>
           ) : (
-            <div className="relative isolate flex flex-col items-center gap-5 overflow-hidden rounded-xl bg-forest px-6 py-12 text-center text-on-forest">
+            <div className="relative isolate flex animate-rise flex-col items-center gap-5 overflow-hidden rounded-3xl bg-[linear-gradient(135deg,var(--color-forest)_0%,var(--color-forest-raised)_100%)] px-6 py-14 text-center text-on-forest shadow-raised">
               <div
                 aria-hidden="true"
                 className="absolute inset-0 -z-10 text-on-forest-accent"
@@ -306,7 +344,7 @@ export function MyQueuePage() {
                 onClick={() => callNext.mutate()}
                 aria-keyshortcuts="Space"
                 className={cx(
-                  "inline-flex min-h-16 cursor-pointer items-center gap-3 rounded-xl px-10 font-heading text-h2 font-bold",
+                  "inline-flex min-h-16 cursor-pointer items-center gap-3 rounded-full px-10 font-heading text-h2 font-bold",
                   "bg-on-forest-accent text-forest shadow-raised transition-[transform,filter] duration-150",
                   "enabled:hover:brightness-105 enabled:active:scale-[0.97]",
                   "disabled:cursor-not-allowed disabled:opacity-50",
@@ -333,7 +371,7 @@ export function MyQueuePage() {
 
         <section
           aria-labelledby="waiting"
-          className="flex flex-col self-start overflow-hidden rounded-lg bg-surface shadow-card"
+          className="flex flex-col self-start overflow-hidden rounded-2xl bg-surface shadow-card"
         >
           <h2
             id="waiting"
@@ -358,7 +396,7 @@ export function MyQueuePage() {
               {(data?.waiting ?? []).map((ticket, index) => (
                 <li
                   key={ticket.id}
-                  className="flex items-center gap-3 border-t border-border px-4 py-2.5"
+                  className="flex animate-enter items-center gap-3 border-t border-border/60 px-4 py-3 transition-colors duration-200 ease-out-quint hover:bg-subtle/50"
                 >
                   <TicketNumber
                     number={ticket.number}

@@ -10,7 +10,9 @@ import {
   AutosaveStatus,
   Badge,
   Button,
+  buttonClassName,
   ConfirmDialog,
+  cx,
   LoadingState,
   SectionAnchors,
   SwitchField,
@@ -18,11 +20,27 @@ import {
   TextField,
   type AutosaveState,
 } from "@medilink/ui";
-import { ClockCounterClockwise, LockKey, PenNib, ShieldWarning } from "@phosphor-icons/react";
+import {
+  ChatTeardropText,
+  ClockCounterClockwise,
+  FirstAidKit,
+  Heartbeat,
+  Info,
+  ListChecks,
+  LockKey,
+  MegaphoneSimple,
+  Notepad,
+  PenNib,
+  PlusCircle,
+  SealCheck,
+  ShieldWarning,
+  Stethoscope,
+  type Icon,
+} from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams, useSearchParams } from "react-router";
+import { Link, useParams, useSearchParams } from "react-router";
 
 import { useApi } from "../../app/services";
 import { useStaffMe } from "../../auth/queries";
@@ -80,30 +98,143 @@ const SECTION_IDS: Record<SectionField, string> = {
   private_notes: "private-notes",
 };
 
+const SECTION_ICONS: Record<string, Icon> = {
+  reason: ChatTeardropText,
+  vitals: Heartbeat,
+  history: ClockCounterClockwise,
+  examination: Stethoscope,
+  diagnosis: FirstAidKit,
+  plan: ListChecks,
+  instructions: Info,
+  "private-notes": LockKey,
+  addenda: PlusCircle,
+};
+
 function Section({
   id,
   title,
   children,
   note,
+  tone = "default",
 }: {
   id: string;
   title: string;
   children: ReactNode;
   note?: ReactNode;
+  tone?: "default" | "private";
 }) {
+  const SectionIcon = SECTION_ICONS[id] ?? Notepad;
   return (
     <section
       id={id}
       tabIndex={-1}
       aria-labelledby={`${id}-title`}
-      className="flex scroll-mt-24 flex-col gap-3 rounded-lg bg-surface shadow-card p-4"
+      className={cx(
+        "flex scroll-mt-28 flex-col gap-4 rounded-2xl p-5 shadow-card outline-none focus-visible:ring-2 focus-visible:ring-focus",
+        tone === "private" ? "bg-warning-bg/40 ring-1 ring-warning/20" : "bg-surface",
+      )}
     >
-      <h2 id={`${id}-title`} className="m-0 text-h3">
-        {title}
-      </h2>
+      <div className="flex items-center gap-3">
+        <span
+          aria-hidden="true"
+          className={cx(
+            "grid size-9 shrink-0 place-items-center rounded-lg",
+            tone === "private"
+              ? "bg-warning-bg text-warning"
+              : "bg-brand-subtle text-on-brand-subtle",
+          )}
+        >
+          <SectionIcon weight="bold" className="size-[1.125rem]" />
+        </span>
+        <h2 id={`${id}-title`} className="m-0 font-heading text-h3 tracking-tight">
+          {title}
+        </h2>
+      </div>
       {note}
       {children}
     </section>
+  );
+}
+
+const URGENCY_TONE: Record<string, string> = {
+  emergency: "bg-danger-bg text-danger",
+  today: "bg-attention-bg text-attention",
+  soon: "bg-info-bg text-info",
+  self_care: "bg-success-bg text-success",
+};
+
+/** Why the patient came (upgrade 05 §3): their words, symptoms, and the navigation hint. */
+function ReasonSection({ c }: { c: Consultation }) {
+  const { t } = useTranslation();
+  const r = c.reason_for_visit;
+  const empty = !r.patient_words && r.symptoms.length === 0;
+  return (
+    <Section id="reason" title={t("clinical.reasonForVisit.title")}>
+      {empty ? (
+        <p className="m-0 text-fg-muted">{t("clinical.reasonForVisit.none")}</p>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {r.patient_words && (
+            <blockquote className="m-0 border-s-4 border-primary/40 ps-4 text-h3 font-normal text-fg">
+              “{r.patient_words}”
+            </blockquote>
+          )}
+          {r.symptoms.length > 0 && (
+            <ul
+              aria-label={t("clinical.reasonForVisit.symptoms")}
+              className="m-0 flex list-none flex-wrap gap-2 p-0"
+            >
+              {r.symptoms.map((symptom) => (
+                <li
+                  key={symptom.code}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-subtle px-3 py-1 text-body-sm"
+                >
+                  <span className="font-semibold">{symptom.label}</span>
+                  {symptom.duration_days !== null && (
+                    <span className="text-fg-secondary tabular-nums">
+                      · {t("clinical.reasonForVisit.days", { count: symptom.duration_days })}
+                    </span>
+                  )}
+                  {symptom.severity && (
+                    <span className="text-fg-secondary">
+                      ·{" "}
+                      {t(`clinical.reasonForVisit.severity.${symptom.severity}`, {
+                        defaultValue: symptom.severity,
+                      })}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+          {r.triage && (
+            <div className="flex flex-wrap items-center gap-3 rounded-xl bg-subtle/60 px-4 py-3">
+              <span
+                className={cx(
+                  "rounded-full px-2.5 py-0.5 text-body-sm font-semibold",
+                  URGENCY_TONE[r.triage.urgency],
+                )}
+              >
+                {t(`clinical.reasonForVisit.urgency.${r.triage.urgency}`)}
+              </span>
+              <span className="text-body-sm text-fg-secondary">
+                {t("clinical.reasonForVisit.hint")}
+              </span>
+              {r.triage.red_flags.length > 0 && (
+                <span className="rounded-full bg-danger-bg px-2.5 py-0.5 text-body-sm font-semibold text-danger">
+                  {t("clinical.reasonForVisit.redFlags", { count: r.triage.red_flags.length })}
+                </span>
+              )}
+              {!r.triage.signed_off && (
+                <span className="ms-auto text-caption text-fg-muted">
+                  {t("clinical.reasonForVisit.provisional", { version: r.triage.rules_version })}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </Section>
   );
 }
 
@@ -252,7 +383,7 @@ function DraftEditor({ c }: { c: Consultation }) {
 
   return (
     <>
-      <div className="sticky top-0 z-10 flex flex-wrap items-center gap-3 border-b border-border bg-bg py-3">
+      <div className="sticky top-2 z-20 flex flex-wrap items-center gap-3 rounded-2xl bg-surface/90 px-4 py-2.5 shadow-raised ring-1 ring-border backdrop-blur supports-[backdrop-filter]:bg-surface/75">
         <AutosaveStatus
           state={draft.state}
           label={status}
@@ -265,7 +396,13 @@ function DraftEditor({ c }: { c: Consultation }) {
           }
         />
         {c.can_sign && (
-          <Button className="ms-auto" onClick={() => void sign()} disabled={signing || !hasPrimary}>
+          <Button
+            pill
+            className="ms-auto"
+            loading={signing}
+            onClick={() => void sign()}
+            disabled={signing || !hasPrimary}
+          >
             <PenNib aria-hidden="true" className="size-icon" />
             {t("clinical.sign.action")}
           </Button>
@@ -290,6 +427,7 @@ function DraftEditor({ c }: { c: Consultation }) {
         </Alert>
       )}
 
+      <ReasonSection c={c} />
       <Section id="vitals" title={t("clinical.sections.vitals")}>
         <VitalsPanel visitId={c.visit_id} />
       </Section>
@@ -336,6 +474,7 @@ function DraftEditor({ c }: { c: Consultation }) {
       </Section>
       <Section
         id="private-notes"
+        tone="private"
         title={t("clinical.sections.private-notes")}
         note={
           <p className="m-0 flex items-center gap-2 font-semibold text-warning">
@@ -406,8 +545,27 @@ function SignedView({ c }: { c: Consultation }) {
       <p className="m-0 text-fg-muted">{t("clinical.empty")}</p>
     );
   const signedOk = c.status === "signed";
+  const [openedAt] = useState(() => Date.now());
+  const justSigned =
+    signedOk &&
+    isAuthor &&
+    c.signed_at !== null &&
+    openedAt - Date.parse(c.signed_at) < 15 * 60_000;
   return (
     <>
+      {justSigned && (
+        <div className="flex animate-rise flex-wrap items-center gap-4 rounded-2xl bg-success-bg px-5 py-4">
+          <SealCheck aria-hidden="true" weight="fill" className="size-8 text-success" />
+          <div className="flex min-w-0 flex-1 flex-col">
+            <p className="m-0 font-heading text-h3 font-semibold">{t("clinical.sign.doneTitle")}</p>
+            <p className="m-0 text-body-sm text-fg-secondary">{t("clinical.sign.doneBody")}</p>
+          </div>
+          <Link to="/queue/mine" className={buttonClassName({ pill: true })}>
+            <MegaphoneSimple aria-hidden="true" weight="bold" />
+            {t("clinical.sign.backToQueue")}
+          </Link>
+        </div>
+      )}
       {c.entered_in_error && (
         <Alert tone="danger" title={t("clinical.enteredInError.banner")}>
           {t("clinical.enteredInError.detail", {
@@ -434,6 +592,7 @@ function SignedView({ c }: { c: Consultation }) {
           )}
         </p>
       )}
+      <ReasonSection c={c} />
       <Section id="vitals" title={t("clinical.sections.vitals")}>
         <VitalsPanel visitId={c.visit_id} />
       </Section>
@@ -448,11 +607,27 @@ function SignedView({ c }: { c: Consultation }) {
       ))}
       <Section id="diagnosis" title={t("clinical.sections.diagnosis")}>
         {c.diagnoses.length ? (
-          <ul className="m-0 flex list-none flex-col gap-1 p-0">
+          <ul className="m-0 flex list-none flex-col gap-2 p-0">
             {c.diagnoses.map((d) => (
-              <li key={d.id}>
-                <span className="font-mono font-semibold">{d.code}</span> {d.display} ·{" "}
-                {t(`clinical.diagnosis.${d.rank}`)} · {t(`clinical.diagnosis.${d.certainty}`)}
+              <li
+                key={d.id}
+                className="flex flex-wrap items-center gap-2 rounded-xl bg-subtle/60 px-3 py-2.5"
+              >
+                <span className="rounded-md bg-surface px-2 py-0.5 font-mono text-body-sm font-semibold ring-1 ring-border">
+                  {d.code}
+                </span>
+                <span className="font-semibold">{d.plain_language || d.display}</span>
+                {d.plain_language && d.plain_language !== d.display && (
+                  <span className="text-body-sm text-fg-secondary">{d.display}</span>
+                )}
+                <span className="ms-auto flex gap-1.5">
+                  <Badge tone={d.rank === "primary" ? "brand" : "neutral"}>
+                    {t(`clinical.diagnosis.${d.rank}`)}
+                  </Badge>
+                  <Badge tone={d.certainty === "confirmed" ? "success" : "warning"}>
+                    {t(`clinical.diagnosis.${d.certainty}`)}
+                  </Badge>
+                </span>
               </li>
             ))}
           </ul>
@@ -462,6 +637,7 @@ function SignedView({ c }: { c: Consultation }) {
       </Section>
       <Section
         id="private-notes"
+        tone="private"
         title={t("clinical.sections.private-notes")}
         note={
           <p className="m-0 flex items-center gap-2 font-semibold text-warning">
@@ -476,7 +652,7 @@ function SignedView({ c }: { c: Consultation }) {
         {c.addenda.length ? (
           <ol className="m-0 flex list-none flex-col gap-3 p-0">
             {c.addenda.map((a) => (
-              <li key={a.id} className="rounded-md border border-border p-3">
+              <li key={a.id} className="rounded-2xl border border-border/60 p-3">
                 <p className="m-0 text-body-sm text-fg-muted">
                   {t("clinical.addendum.by", {
                     name: a.author_name,
@@ -596,6 +772,7 @@ export function ConsultationPage() {
     .filter(Boolean)
     .join(" · ");
   const sections = [
+    { id: "reason", label: t("clinical.reasonForVisit.short") },
     { id: "vitals", label: t("clinical.sections.vitals") },
     { id: "history", label: t("clinical.sections.history") },
     { id: "examination", label: t("clinical.sections.examination") },
@@ -614,7 +791,7 @@ export function ConsultationPage() {
     ...(isDraft ? [] : [{ id: "addenda", label: t("clinical.sections.addenda") }]),
   ];
   return (
-    <div className="flex max-w-5xl flex-col gap-4">
+    <div className="flex max-w-5xl flex-col gap-5">
       <PageHeader
         title={t("clinical.headerTitle", { name: p.display_name })}
         description={facts}
@@ -633,10 +810,16 @@ export function ConsultationPage() {
           </>
         }
         actions={
-          <Button variant="secondary" onClick={() => setHistoryOpen(true)}>
-            <ClockCounterClockwise aria-hidden="true" className="size-icon" />
-            {t("clinical.history.open")}
-          </Button>
+          <>
+            <Button variant="secondary" pill onClick={() => setHistoryOpen(true)}>
+              <ClockCounterClockwise aria-hidden="true" className="size-icon" />
+              {t("clinical.history.open")}
+            </Button>
+            <Link to="/queue/mine" className={buttonClassName({ variant: "ghost", pill: true })}>
+              <MegaphoneSimple aria-hidden="true" />
+              {t("clinical.toQueue")}
+            </Link>
+          </>
         }
       />
       <AllergyBanner
@@ -646,7 +829,11 @@ export function ConsultationPage() {
         noneLabel={t("clinical.allergy.none")}
         unknownLabel={t("clinical.allergy.unknown")}
       />
-      <SectionAnchors sections={sections} label={t("clinical.sections.nav")} />
+      <SectionAnchors
+        sections={sections}
+        label={t("clinical.sections.nav")}
+        className="rounded-2xl bg-surface p-1 shadow-card"
+      />
       {isDraft && c.can_edit ? <DraftEditor key={c.id} c={c} /> : <SignedView c={c} />}
       {/* [S7] */}
       <PrescriptionSection consultation={c} />

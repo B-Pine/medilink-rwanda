@@ -25,8 +25,8 @@ describe("command palette", () => {
     expect(await axe(baseElement)).toHaveNoViolations();
 
     // Sections that only open a placeholder are not offered (design 04 §2: no dead ends)
-    await user.type(input, "pay");
-    expect(screen.queryByRole("option", { name: "Payments" })).not.toBeInTheDocument();
+    await user.type(input, "audit");
+    expect(screen.queryByRole("option", { name: "Audit log" })).not.toBeInTheDocument();
     await user.clear(input);
 
     await user.type(input, "calen");

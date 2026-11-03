@@ -1,0 +1,398 @@
+{
+  "breadcrumb": "Fil d’Ariane",
+  "loading": "Chargement",
+  "error": "Un problème est survenu pendant le chargement.",
+  "retry": "Réessayer",
+  "open": "Ouvert",
+  "closed": "Fermé",
+  "noInsurers": "Assurances non indiquées",
+  "location": "Lieu",
+  "allRwanda": "Tout le Rwanda",
+  "searchLabel": "Rechercher établissements, services ou symptômes",
+  "searchPlaceholder": "Rechercher des services ou établissements...",
+  "call": "Appeler le {{number}}",
+  "devData": "Données de développement",
+  "toConfirm": "À confirmer",
+  "lastUpdated": "Mis à jour le {{date}}",
+  "draft": "Texte provisoire en attente de relecture juridique. Les passages « À confirmer » ne sont pas définitifs.",
+  "home": {
+    "label": "MediLink Rwanda",
+    "title": "Les soins, en plus simple.",
+    "lead": "Trouvez des établissements de santé, vérifiez les disponibilités et préparez votre visite — au même endroit.",
+    "how": "Comment fonctionne MediLink",
+    "reassure": "Explorez les services de santé sans créer de compte.",
+    "searchTitle": "Trouvez les soins dont vous avez besoin",
+    "searchLead": "Cherchez un service ou un établissement de santé près de chez vous.",
+    "nearTitle": "Établissements de santé près de chez vous",
+    "nearEmpty": "Aucun établissement à afficher pour l’instant",
+    "viewAll": "Voir tous les établissements",
+    "emergencyTitle": "Besoin de soins urgents ?",
+    "emergencyLead": "Trouvez les établissements disposant de services d’urgence.",
+    "emergencyAction": "Trouver un service d’urgence",
+    "howTitle": "Comment fonctionne MediLink",
+    "steps": {
+      "find": {
+        "title": "Trouver des soins",
+        "body": "Cherchez des établissements et des services."
+      },
+      "check": {
+        "title": "Vérifier la disponibilité",
+        "body": "Comparez la distance, l’attente et l’assurance."
+      },
+      "join": {
+        "title": "Rejoindre ou réserver",
+        "body": "Rejoignez la file du jour ou réservez un créneau libre."
+      },
+      "receive": {
+        "title": "Recevoir des soins",
+        "body": "Arrivez, enregistrez-vous et suivez votre visite."
+      }
+    },
+    "accountTitle": "Votre parcours de santé, au même endroit.",
+    "accountLead": "Créez un compte pour gérer vos rendez-vous, suivre votre file, retrouver vos documents de visite et rester informé.",
+    "exploreFirst": "Explorer d’abord les soins",
+    "readyTitle": "Prêt à trouver des soins ?"
+  },
+  "care": {
+    "title": "Trouver des soins",
+    "lead": "Cherchez par établissement, service, spécialité ou symptôme.",
+    "results": "Résultats",
+    "emergencyFilter": "Urgences (hôpitaux)",
+    "checkSymptoms": "Vérifier plutôt vos symptômes"
+  },
+  "facilities": {
+    "title": "Établissements de santé",
+    "lead": "Tous les établissements vérifiés sur MediLink.",
+    "type": "Type d’établissement",
+    "service": "Service",
+    "anyService": "Tous les services",
+    "loadMore": "Afficher plus",
+    "count_one": "{{count}} établissement",
+    "count_other": "{{count}} établissements",
+    "none": "Aucun établissement ne correspond à ces filtres",
+    "clear": "Effacer les filtres"
+  },
+  "facility": {
+    "notFound": "Cet établissement n’est pas sur MediLink",
+    "back": "Retour aux établissements",
+    "verified": "Vérifié",
+    "directions": "Itinéraire",
+    "call": "Appeler",
+    "today": "Aujourd’hui",
+    "hoursToday": "Horaires du jour",
+    "closedToday": "Fermé aujourd’hui",
+    "liveWait": "Attente actuelle",
+    "waitUnknown": "Non publiée",
+    "queue": "File d’attente",
+    "booking": "Rendez-vous",
+    "available": "Disponible",
+    "notAvailable": "Non proposé",
+    "emergencyDept": "Hôpital",
+    "emergencyNote": "Les hôpitaux reçoivent les urgences. Appelez le {{number}} si une vie est en danger.",
+    "joinQueue": "Rejoindre la file",
+    "bookAppointment": "Prendre rendez-vous",
+    "tabs": {
+      "label": "Informations sur l’établissement",
+      "overview": "Aperçu",
+      "services": "Services",
+      "doctors": "Médecins",
+      "insurance": "Assurances",
+      "hours": "Horaires et accès"
+    },
+    "about": "À propos",
+    "noDescription": "L’établissement n’a pas encore ajouté de description.",
+    "contact": "Contact",
+    "address": "Adresse",
+    "phone": "Téléphone",
+    "notListed": "Non indiqué",
+    "walkIn": "Sans rendez-vous",
+    "appointment": "Sur rendez-vous",
+    "remote": "File à distance",
+    "waitingNow": "{{count}} en attente",
+    "nextTime": "Prochain {{day}} {{time}}",
+    "noServices": "Aucun service publié pour l’instant",
+    "noDoctors": "Aucun médecin publié pour l’instant",
+    "doctorDays": "Présent {{days}}",
+    "insuranceLead": "Assurances acceptées dans cet établissement. Les montants figurent seulement sur la facture après la visite.",
+    "referral": "Les membres de la Mutuelle ont besoin d’une lettre de transfert à ce niveau de soins.",
+    "week": "Cette semaine",
+    "closures": "Fermetures à venir",
+    "noClosures": "Aucune fermeture annoncée",
+    "bring": {
+      "title": "À apporter",
+      "insurance": "Votre carte d’assurance",
+      "id": "Carte d’identité ou autre pièce d’identité",
+      "referral": "Lettre de transfert (Mutuelle, à l’hôpital)",
+      "documents": "Résultats ou ordonnances précédents, si vous en avez"
+    },
+    "map": "Emplacement sur la carte",
+    "insurance": "Assurances acceptées"
+  },
+  "doctors": {
+    "title": "Médecins",
+    "lead": "Trouvez un médecin par nom, service ou établissement.",
+    "searchName": "Rechercher par nom",
+    "specialty": "Service",
+    "anySpecialty": "Tous les services",
+    "facility": "Établissement",
+    "anyFacility": "Tous les établissements",
+    "availability": "Disponibilité",
+    "anyDay": "N’importe quel jour",
+    "today": "Présent aujourd’hui",
+    "count_one": "{{count}} médecin",
+    "count_other": "{{count}} médecins",
+    "none": "Aucun médecin ne correspond à ces filtres",
+    "viewProfile": "Voir le profil",
+    "days": "Jours",
+    "source": "Les médecins sont listés à partir des profils des établissements."
+  },
+  "doctor": {
+    "notFound": "Ce médecin n’est pas listé",
+    "at": "À {{facility}}",
+    "worksIn": "Services",
+    "presentDays": "Jours dans cet établissement",
+    "availability": "Disponibilités",
+    "free_one": "{{count}} libre",
+    "free_other": "{{count}} libres",
+    "full": "Complet",
+    "away": "—",
+    "noTimes": "Aucun créneau libre ce jour",
+    "book": "Réserver avec ce médecin",
+    "pickDay": "Choisissez un jour",
+    "privacy": "Seuls les créneaux libres sont affichés, jamais qui a réservé."
+  },
+  "services": {
+    "title": "Explorer les services de santé",
+    "lead": "Services proposés par les établissements sur MediLink.",
+    "search": "Rechercher un service",
+    "none": "Aucun service ne correspond à votre recherche",
+    "categories": {
+      "general": "Soins généraux",
+      "maternalChild": "Santé de la mère et de l’enfant",
+      "laboratory": "Laboratoire",
+      "dental": "Soins dentaires",
+      "eye": "Soins des yeux",
+      "imaging": "Imagerie et diagnostic",
+      "specialist": "Soins spécialisés",
+      "emergency": "Urgences"
+    }
+  },
+  "service": {
+    "notFound": "Ce service n’est pas au catalogue",
+    "about": "À propos de ce service",
+    "aboutGeneric": "Un service proposé par des établissements sur MediLink. Demandez à l’établissement comment se déroule la visite.",
+    "offering": "Établissements proposant ce service",
+    "noneOffering": "Aucun établissement ne propose encore ce service",
+    "find": "Trouver les établissements qui le proposent",
+    "doctors": "Médecins pour ce service",
+    "explain": {
+      "general_consultation": "Une visite chez un médecin ou un infirmier pour un nouveau problème de santé ou un contrôle.",
+      "paediatric_consultation": "Soins pour les bébés et les enfants jusqu’à 14 ans.",
+      "antenatal_care": "Contrôles réguliers pendant la grossesse, pour la mère et le bébé.",
+      "vaccination": "Vaccins pour enfants et adultes, selon le calendrier national.",
+      "dental_care": "Contrôles et soins des dents et des gencives.",
+      "eye_care": "Examens des yeux et traitement des problèmes oculaires.",
+      "internal_medicine": "Suivi des maladies chroniques de l’adulte, comme le diabète ou l’hypertension.",
+      "gynaecology": "Soins de santé reproductive des femmes.",
+      "family_planning": "Conseils et méthodes pour planifier les naissances.",
+      "laboratory_tests": "Analyses de sang, d’urine et autres demandées par un soignant."
+    }
+  },
+  "how": {
+    "title": "Comment fonctionne MediLink",
+    "lead": "De la recherche à votre visite, étape par étape.",
+    "steps": {
+      "search": {
+        "title": "Chercher des soins",
+        "body": "Par service, établissement ou ce que vous ressentez."
+      },
+      "select": {
+        "title": "Choisir un établissement",
+        "body": "Comparez distance, attente en direct et assurance."
+      },
+      "join": {
+        "title": "Rejoindre une file ou réserver",
+        "body": "Rejoignez la file du jour ou choisissez un rendez-vous."
+      },
+      "confirm": {
+        "title": "Recevoir une confirmation",
+        "body": "Vous recevez un numéro de ticket ou un code de réservation."
+      },
+      "arrive": {
+        "title": "Arriver et s’enregistrer",
+        "body": "L’accueil confirme votre arrivée."
+      },
+      "follow": {
+        "title": "Suivre votre visite",
+        "body": "Voyez votre place dans la file et quand entrer."
+      }
+    },
+    "goodTitle": "Bon à savoir",
+    "good": {
+      "noAccount": "Vous pouvez explorer établissements, services et médecins sans compte.",
+      "walkIn": "Les patients sans rendez-vous peuvent toujours être enregistrés sur place.",
+      "reception": "L’accueil confirme votre présence avant que vous soyez appelé.",
+      "noPhone": "Pas de smartphone ? L’établissement vous remet un ticket imprimé, affiche votre numéro à l’écran et l’annonce à voix haute."
+    },
+    "start": "Trouver des soins"
+  },
+  "emergency": {
+    "title": "Besoin de soins urgents ?",
+    "lead": "Si une vie est en danger, n’attendez pas un rendez-vous. Appelez à l’aide ou rendez-vous à l’hôpital le plus proche maintenant.",
+    "callNow": "Appeler le {{number}}",
+    "callNote": "Service national d’ambulance (SAMU)",
+    "nearest": "Hôpitaux près de vous",
+    "nearestNote": "Les hôpitaux reçoivent les urgences. Utilisez « Près de moi » pour trier par distance.",
+    "nearMe": "Près de moi",
+    "none": "Aucun hôpital listé pour cette zone",
+    "signsTitle": "Partez maintenant si quelqu’un a",
+    "guidanceTitle": "Trouver le service d’urgence le plus proche",
+    "guidance": {
+      "call": "Appelez d’abord le {{number}} si la personne ne peut pas se déplacer en sécurité.",
+      "nearest": "Allez à l’hôpital le plus proche ; les centres de santé peuvent vous y orienter.",
+      "bring": "Apportez la pièce d’identité et la carte d’assurance si possible, sans les attendre."
+    }
+  },
+  "help": {
+    "title": "Aide et assistance",
+    "lead": "Réponses aux questions fréquentes.",
+    "search": "Rechercher dans l’aide",
+    "none": "Aucune réponse ne correspond à votre recherche",
+    "articles": "Autres articles d’aide",
+    "contactTitle": "Encore besoin d’aide ?",
+    "contactLead": "Écrivez-nous, nous vous répondrons.",
+    "contactAction": "Contacter l’assistance",
+    "categories": {
+      "finding": {
+        "title": "Trouver des soins",
+        "q1": "Faut-il un compte pour chercher ?",
+        "a1": "Non. Vous pouvez chercher établissements, services et médecins sans compte.",
+        "q2": "Comment l’attente est-elle calculée ?",
+        "a2": "À partir des personnes en attente et de la durée des visites récentes dans l’établissement. C’est une estimation, affichée seulement si l’établissement publie des données en direct."
+      },
+      "queue": {
+        "title": "Rejoindre une file",
+        "q1": "Puis-je rejoindre une file depuis chez moi ?",
+        "a1": "Oui, dans les établissements qui le permettent, avant l’heure limite du jour. Partez quand l’application vous le dit.",
+        "q2": "Que se passe-t-il si je suis en retard ?",
+        "a2": "Votre place peut reculer de quelques rangs. Signalez-vous à l’accueil en arrivant."
+      },
+      "booking": {
+        "title": "Prendre rendez-vous",
+        "q1": "Comment réserver un créneau ?",
+        "a1": "Ouvrez un établissement, choisissez un service et un créneau libre, puis confirmez. Il faut se connecter pour réserver.",
+        "q2": "Puis-je annuler ?",
+        "a2": "Oui, depuis vos visites, jusqu’à l’échéance d’annulation de l’établissement."
+      },
+      "arrival": {
+        "title": "Arrivée et enregistrement",
+        "q1": "Que faire en arrivant ?",
+        "a1": "Présentez-vous à l’accueil avec votre numéro de ticket ou votre code de réservation. L’accueil confirme votre arrivée.",
+        "q2": "Je n’ai pas de smartphone. Puis-je être servi ?",
+        "a2": "Oui. L’accueil vous enregistre et vous remet un ticket imprimé ; l’écran affiche et annonce votre numéro."
+      },
+      "insurance": {
+        "title": "Assurance",
+        "q1": "Quelles assurances sont acceptées ?",
+        "a1": "Chaque page d’établissement liste les assurances acceptées pour chaque service.",
+        "q2": "Pourquoi n’y a-t-il pas de prix ?",
+        "a2": "Le coût dépend de la maladie, des examens et des médicaments. Les montants figurent sur la facture après la visite."
+      },
+      "accounts": {
+        "title": "Comptes patients",
+        "q1": "Puis-je ajouter mes enfants ?",
+        "a1": "Oui. Ajoutez les membres de la famille dans votre profil et réservez pour eux.",
+        "q2": "Comment changer mon mot de passe ?",
+        "a2": "Utilisez « Mot de passe oublié » sur la page de connexion pour recevoir un lien par e-mail."
+      },
+      "documents": {
+        "title": "Documents et dossiers",
+        "q1": "Où sont mes ordonnances ?",
+        "a1": "Dans Documents, après connexion. Chacune a un code et un QR que les pharmacies peuvent vérifier.",
+        "q2": "Peut-on vérifier qu’un document est authentique ?",
+        "a2": "Oui, avec le code du document sur « Vérifier un document »."
+      },
+      "technical": {
+        "title": "Assistance technique",
+        "q1": "Le site est lent sur mon téléphone.",
+        "a1": "Activez l’économie de données dans les réglages ; les pages fonctionnent aussi en connexion faible après une première visite.",
+        "q2": "Je ne reçois pas les alertes.",
+        "a2": "Autorisez les notifications de MediLink dans votre navigateur et activez les alertes dans vos réglages."
+      }
+    }
+  },
+  "about": {
+    "title": "À propos de MediLink",
+    "lead": "MediLink relie les habitants du Rwanda aux établissements de santé, pour que les soins soient plus faciles à trouver et à planifier.",
+    "sections": {
+      "what": {
+        "title": "Ce qu’est MediLink",
+        "body": "Une plateforme nationale où les patients trouvent établissements, services et médecins, voient l’attente en direct et rejoignent une file ou réservent. Les établissements l’utilisent pour gérer la visite, de l’accueil à la pharmacie."
+      },
+      "problem": {
+        "title": "Le problème traité",
+        "body": "On se déplace souvent sans savoir si l’établissement est ouvert, combien de temps on attendra ou s’il accepte son assurance. Les établissements, eux, voient mal qui attend."
+      },
+      "how": {
+        "title": "Comment elle relie patients et établissements",
+        "body": "Les établissements publient leurs services, horaires et file en direct. Les patients choisissent avec des informations réelles et arrivent au bon moment ; l’accueil confirme chaque arrivée."
+      },
+      "access": {
+        "title": "Accessible à tous",
+        "body": "La recherche ne demande aucun compte. MediLink fonctionne en kinyarwanda, anglais et français, sur petits téléphones et connexions lentes, et les personnes sans téléphone sont servies sur place avec ticket imprimé et appel vocal."
+      },
+      "privacy": {
+        "title": "Protéger les informations des patients",
+        "body": "Les informations de santé sont traitées selon la loi rwandaise sur la protection des données (loi 058/2021). Les établissements voient seulement ce qui est utile à vos soins, et chaque accès à un dossier est enregistré."
+      }
+    }
+  },
+  "contact": {
+    "title": "Contact",
+    "lead": "Questions, problèmes ou suggestions.",
+    "infoTitle": "Assistance",
+    "infoBody": "Pour un problème lié à une visite, contactez d’abord l’établissement. Pour MediLink, utilisez ce formulaire.",
+    "emergency": "En cas d’urgence, appelez le {{number}}. Ce formulaire n’est pas suivi en continu.",
+    "name": "Nom",
+    "reach": "E-mail ou téléphone",
+    "reachHint": "Pour pouvoir vous répondre.",
+    "subject": "Objet",
+    "message": "Message",
+    "send": "Envoyer le message",
+    "sending": "Envoi",
+    "sent": "Message envoyé. Nous répondrons bientôt.",
+    "failed": "Votre message n’a pas pu être envoyé. Réessayez plus tard.",
+    "errors": {
+      "name": "Indiquez votre nom",
+      "reach": "Indiquez une adresse e-mail ou un numéro de téléphone",
+      "subject": "Indiquez un objet",
+      "message": "Écrivez votre message"
+    }
+  },
+  "accessibility": {
+    "title": "Déclaration d’accessibilité",
+    "lead": "MediLink doit être utilisable par tous.",
+    "sections": {
+      "standard": {
+        "title": "Notre référence",
+        "body": "Nous visons le niveau AA des WCAG 2.2 sur toutes les pages publiques et dans l’application patient."
+      },
+      "features": {
+        "title": "Ce que nous faisons",
+        "body": "Trois langues, grandes zones tactiles, réglage de la taille du texte, accès au clavier, focus visible, libellés pour lecteurs d’écran, contraste suffisant, aucune information par la couleur seule et mouvements réduits si votre appareil le demande."
+      },
+      "offline": {
+        "title": "Au-delà du site",
+        "body": "Les patients sans téléphone sont servis sur place avec ticket imprimé, écran de salle d’attente et appel vocal."
+      },
+      "limits": {
+        "title": "Limites connues",
+        "body": "Certaines traductions sont encore relues par des locuteurs natifs. La carte demande un pointeur ou le toucher ; la liste à côté donne les mêmes informations. [To confirm]"
+      },
+      "feedback": {
+        "title": "Dites-le-nous",
+        "body": "Si quelque chose est difficile à utiliser, écrivez-nous via la page Contact et nous vous répondrons."
+      }
+    }
+  }
+}

@@ -105,7 +105,7 @@ export function ExpectedList({
           icon={CalendarCheck}
           title={t("queue.board.expectedEmptyTitle")}
           description={t("queue.board.expectedEmpty")}
-          className="rounded-lg border border-dashed border-border"
+          className="rounded-2xl border border-dashed border-border"
         />
       </div>
     );
@@ -122,7 +122,7 @@ export function ExpectedList({
       <ul
         aria-label={t("queue.board.expected")}
         aria-busy={bookings.isPending}
-        className="m-0 flex list-none flex-col divide-y divide-border overflow-hidden rounded-lg bg-surface p-0 shadow-card"
+        className="m-0 flex list-none flex-col divide-y divide-border/60 overflow-hidden rounded-2xl bg-surface p-0 shadow-card"
       >
         {rows.map((booking) => (
           <li key={booking.id} className="flex flex-col gap-2.5 px-3 py-3">
@@ -216,7 +216,7 @@ export function MissedList({ serviceId }: { serviceId: string | null }) {
       <p className="m-0 text-body-sm text-fg-muted">{t("queue.board.missedHint")}</p>
       <ul
         aria-labelledby="missed-today"
-        className="m-0 flex list-none flex-col divide-y divide-border overflow-hidden rounded-lg bg-surface/60 p-0 shadow-card"
+        className="m-0 flex list-none flex-col divide-y divide-border/60 overflow-hidden rounded-2xl bg-surface/60 p-0 shadow-card"
       >
         {rows.map((booking) => (
           <li key={booking.id} className="flex flex-col gap-2 px-3 py-3">

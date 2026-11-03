@@ -119,6 +119,10 @@
     "openMenu": "Fungura menu",
     "closeMenu": "Funga menu",
     "platformAdmin": "Umuyobozi w’urubuga",
+    "theme": {
+      "toLight": "Hindura ujye ku mabara y’umunsi",
+      "toDark": "Hindura ujye ku mabara y’ijoro"
+    },
     "nav": {
       "today": "Uyu munsi",
       "queue": "Umurongo",
@@ -162,6 +166,7 @@
     "collapse": "Gabanya menyu",
     "expand": "Agura menyu",
     "section": {
+      "work": "Akazi k’umunsi",
       "manage": "Gucunga ikigo"
     }
   },

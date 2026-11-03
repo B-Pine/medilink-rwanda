@@ -18,10 +18,9 @@ import { z } from "zod";
 
 import { useApi } from "../app/services";
 import { patientMeKey } from "../auth/queries";
-import { PageHeading } from "../components/PageHeading";
 import { applyFieldErrors, describeApiError, translator } from "../forms/api-errors";
 import { EMAIL_PATTERN } from "../forms/validation";
-import { PublicLayout } from "../layout/PublicLayout";
+import { AuthLayout, AuthTitle } from "../layout/AuthLayout";
 
 const schema = z
   .object({
@@ -119,17 +118,24 @@ export function LoginPage() {
   const title = step === "email" ? t("login.title") : t("login.passwordTitle");
 
   return (
-    <PublicLayout narrow showLogin={false}>
-      <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-2">
-          <PageHeading title={title}>{title}</PageHeading>
-          {step === "email" && <p className="m-0 text-fg-secondary">{t("login.intro")}</p>}
-        </div>
+    <AuthLayout
+      below={
+        <Link
+          to="/"
+          className="inline-flex min-h-target items-center gap-2 font-semibold text-on-forest no-underline hover:underline"
+        >
+          <MagnifyingGlass aria-hidden="true" className="size-5" />
+          {t("login.guest")}
+        </Link>
+      }
+    >
+      <div className="flex flex-col gap-5">
+        <AuthTitle title={title} hint={step === "email" ? t("login.intro") : undefined} />
         <ErrorSummary items={summary} focusKey={attempt} />
         <form
           noValidate
           onSubmit={handleSubmit(onValid, () => setAttempt((n) => n + 1))}
-          className="flex flex-col gap-6"
+          className="flex flex-col gap-5"
         >
           {step === "email" ? (
             <TextField
@@ -179,28 +185,19 @@ export function LoginPage() {
           </Button>
         </form>
 
-        {step === "password" && (
-          <div className="flex flex-col gap-1 rounded-card bg-surface shadow-card p-4">
-            <p className="m-0 font-semibold">{t("login.newHere")}</p>
-            <Link
-              to="/signup"
-              state={{ email }}
-              className="inline-flex min-h-target items-center gap-2 font-semibold"
-            >
-              {t("login.createAccount")}
-              <ArrowRight aria-hidden="true" className="size-5" />
-            </Link>
-          </div>
-        )}
-
-        <Link
-          to="/"
-          className="inline-flex min-h-target items-center gap-2 self-start font-semibold"
-        >
-          <MagnifyingGlass aria-hidden="true" className="size-5" />
-          {t("login.guest")}
-        </Link>
+        <div aria-hidden="true" className="border-t border-border" />
+        <p className="m-0 flex flex-wrap items-center justify-center gap-x-2 text-center text-body-sm text-fg-secondary">
+          {t("login.newHere")}
+          <Link
+            to="/signup"
+            state={{ email }}
+            className="inline-flex min-h-target items-center gap-1 font-semibold"
+          >
+            {t("login.createAccount")}
+            <ArrowRight aria-hidden="true" className="size-4" />
+          </Link>
+        </p>
       </div>
-    </PublicLayout>
+    </AuthLayout>
   );
 }

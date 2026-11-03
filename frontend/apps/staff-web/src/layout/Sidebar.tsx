@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { NavLink, useLocation } from "react-router";
 
 import { BUILT_PATHS } from "../app/features";
+import { roleLabel } from "../facility/labels";
 import { ConnectionIndicator } from "./ConnectionIndicator";
 import { navLabelKey, navSection, visibleNavItems, type NavItem } from "./navigation";
 
@@ -43,24 +44,37 @@ function NavList({
               aria-current={isActive ? "page" : undefined}
               title={collapsed ? t(navLabelKey({ key, labelKey })) : undefined}
               className={cx(
-                "flex min-h-9 items-center gap-2.5 rounded-md px-2.5 text-body-sm font-medium no-underline",
-                "transition-[background-color,color,box-shadow] duration-150",
+                "group relative flex min-h-10 items-center gap-3 rounded-xl px-2.5 text-body-sm font-medium no-underline",
+                "transition-[background-color,color] duration-200 ease-out-quint",
                 collapsed && "lg:justify-center lg:px-0",
                 isActive
-                  ? "bg-surface font-semibold text-fg shadow-card"
+                  ? "bg-brand-subtle font-semibold text-on-brand-subtle"
                   : "text-fg-secondary hover:bg-subtle hover:text-fg",
               )}
             >
-              <>
+              {isActive && (
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-y-2 -left-3 w-1 rounded-r-full bg-primary"
+                />
+              )}
+              <span
+                className={cx(
+                  "grid size-7 shrink-0 place-items-center rounded-lg transition-colors duration-200 ease-out-quint",
+                  isActive
+                    ? "bg-primary text-on-primary shadow-card"
+                    : "text-fg-muted group-hover:text-fg",
+                )}
+              >
                 <ItemIcon
                   aria-hidden="true"
                   weight={isActive ? "fill" : "regular"}
-                  className={cx("size-[1.125rem] shrink-0", isActive && "text-brand")}
+                  className="size-[1.0625rem]"
                 />
-                <span className={cx("truncate", collapsed && "lg:sr-only")}>
-                  {t(navLabelKey({ key, labelKey }))}
-                </span>
-              </>
+              </span>
+              <span className={cx("truncate", collapsed && "lg:sr-only")}>
+                {t(navLabelKey({ key, labelKey }))}
+              </span>
             </NavLink>
           </li>
         );
@@ -73,7 +87,7 @@ function SectionLabel({ children, collapsed }: { children: string; collapsed: bo
   return (
     <p
       className={cx(
-        "m-0 px-2.5 pt-3 pb-1 text-caption font-semibold tracking-wide text-fg-muted uppercase",
+        "m-0 px-2.5 pt-5 pb-1.5 text-[0.6875rem] font-semibold tracking-[0.08em] text-fg-muted uppercase",
         collapsed && "lg:sr-only",
       )}
     >
@@ -83,9 +97,11 @@ function SectionLabel({ children, collapsed }: { children: string; collapsed: bo
 }
 
 /**
- * Sidebar (design 04 §2): on the page colour with a hairline edge, so navigation serves the
- * content instead of competing with it. Daily work first, running the facility second, the
- * MediLink platform last, help pinned at the foot. Only permitted, built sections appear.
+ * Sidebar (design 04 §2, staff redesign 2026-11-02): a white panel in the light theme and the dark
+ * surface in the dark theme (tokens only). The logo and the person's workspace on top; daily work
+ * first, running the facility second, the MediLink platform last; help, connection and collapse
+ * pinned at the foot. The current page is an emerald pill with an accent bar and a filled icon
+ * tile. Only permitted, built sections appear.
  */
 export function Sidebar({
   me,
@@ -111,23 +127,51 @@ export function Sidebar({
   const manage = facility.filter((item) => navSection(item) === "manage");
   const help = facility.filter((item) => navSection(item) === "help");
   const platform = items.filter((item) => item.group === "platform");
+  const membership = me.memberships.find((m) => m.facility.id === me.active_facility_id);
 
   return (
     <nav
       id={id}
       aria-label={t("shell.navLabel")}
       className={cx(
-        "flex-col gap-2 border-r border-border bg-page px-3 py-4 print:hidden",
+        "flex-col gap-1 border-r border-border/70 bg-surface px-3 py-4 print:hidden",
         "lg:sticky lg:top-0 lg:flex lg:h-dvh",
         open ? "flex" : "hidden",
       )}
     >
-      <div className={cx("hidden pb-3 lg:block", collapsed ? "self-center" : "px-2")}>
+      <div
+        className={cx(
+          "hidden items-center pb-3 lg:flex",
+          collapsed ? "justify-center" : "justify-between px-1.5",
+        )}
+      >
         {collapsed ? <Logo variant="symbol" className="h-8" /> : <Logo className="h-8" />}
       </div>
-      <div className="-mx-1.5 flex flex-1 flex-col gap-1 overflow-y-auto px-1.5 py-1">
+
+      {!collapsed && (
+        <div className="mb-2 hidden items-center gap-3 rounded-2xl border border-border/70 bg-page px-3 py-2.5 lg:flex">
+          <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary font-heading text-body-sm font-bold text-on-primary">
+            {(membership?.facility.name ?? "MediLink").slice(0, 2).toUpperCase()}
+          </span>
+          <span className="flex min-w-0 flex-col">
+            <span className="truncate text-body-sm font-semibold text-fg">
+              {membership?.facility.name ?? t("shell.platformAdmin")}
+            </span>
+            <span className="truncate text-caption text-fg-muted">
+              {membership
+                ? membership.roles.map((role) => roleLabel(role, t)).join(" · ")
+                : t("today.platform")}
+            </span>
+          </span>
+        </div>
+      )}
+
+      <div className="-mx-1.5 flex flex-1 flex-col overflow-y-auto px-1.5 py-1">
         {work.length > 0 && (
-          <NavList items={work} active={active} collapsed={collapsed} onNavigate={onNavigate} />
+          <div className="flex flex-col">
+            <SectionLabel collapsed={collapsed}>{t("shell.section.work")}</SectionLabel>
+            <NavList items={work} active={active} collapsed={collapsed} onNavigate={onNavigate} />
+          </div>
         )}
         {manage.length > 0 && (
           <div className="flex flex-col">
@@ -147,7 +191,8 @@ export function Sidebar({
           </div>
         )}
       </div>
-      <div className="-mx-1.5 flex flex-col gap-2 border-t border-border px-1.5 pt-3">
+
+      <div className="-mx-1.5 flex flex-col gap-2 border-t border-border/70 px-1.5 pt-3">
         {help.length > 0 && (
           <NavList items={help} active={active} collapsed={collapsed} onNavigate={onNavigate} />
         )}
@@ -163,7 +208,7 @@ export function Sidebar({
             onClick={onToggleCollapsed}
             aria-label={collapsed ? t("shell.expand") : t("shell.collapse")}
             title={collapsed ? t("shell.expand") : t("shell.collapse")}
-            className="hidden min-h-9 min-w-9 cursor-pointer items-center justify-center rounded-md text-fg-muted hover:bg-subtle hover:text-fg lg:inline-flex"
+            className="hidden min-h-9 min-w-9 cursor-pointer items-center justify-center rounded-xl text-fg-muted transition-colors duration-150 ease-out-quint hover:bg-subtle hover:text-fg lg:inline-flex"
           >
             <SidebarSimple aria-hidden="true" className="size-[1.125rem]" />
           </button>

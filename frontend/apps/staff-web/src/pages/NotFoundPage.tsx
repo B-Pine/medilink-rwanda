@@ -30,7 +30,7 @@ export function NoAccessContent() {
   const title = t("noAccess.title");
   return (
     <div className="flex max-w-xl flex-col items-start gap-4 py-8">
-      <span className="grid size-12 place-items-center rounded-lg bg-subtle text-fg-muted">
+      <span className="grid size-12 place-items-center rounded-2xl bg-subtle text-fg-muted">
         <LockKey aria-hidden="true" weight="duotone" className="size-6" />
       </span>
       <PageHeading title={title}>{title}</PageHeading>
@@ -47,7 +47,7 @@ export function NotFoundPage() {
   return (
     <div className="min-h-dvh bg-page">
       <SkipLink />
-      <header className="flex items-center justify-between gap-4 border-b border-border bg-surface px-4 py-3 sm:px-8">
+      <header className="flex items-center justify-between gap-4 border-b border-border/60 bg-surface px-4 py-3 sm:px-8">
         <Logo className="h-9" />
         <LanguageSwitcher compact />
       </header>

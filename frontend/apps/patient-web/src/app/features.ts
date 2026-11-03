@@ -16,6 +16,9 @@ import { notificationsFeature } from "../features/notifications";
 // [S10 imports]
 import { helpFeature } from "../features/help";
 // [/S10 imports]
+// [Upgrade U2 imports]
+import { siteFeature } from "../features/site";
+// [/Upgrade U2 imports]
 // [PT imports]
 import { publicFeature } from "../features/public";
 // [/PT imports]
@@ -77,6 +80,9 @@ export const FEATURES: FeatureRoutes[] = [
   // [S10]
   helpFeature,
   // [/S10]
+  // [Upgrade U2]
+  siteFeature,
+  // [/Upgrade U2]
   // [PT]
   publicFeature,
   // [/PT]

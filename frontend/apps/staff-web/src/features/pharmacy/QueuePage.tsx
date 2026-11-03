@@ -125,18 +125,18 @@ function QueueItem({ row }: { row: PharmacyQueueRow }) {
   const { t } = useTranslation();
   const when = useWhen();
   return (
-    <li className="group relative flex flex-wrap items-center gap-4 rounded-lg bg-surface p-4 shadow-card transition-shadow hover:shadow-raised">
+    <li className="group relative flex animate-enter flex-wrap items-center gap-4 rounded-2xl bg-surface p-4 shadow-card transition-[box-shadow,transform] duration-200 ease-out-quint hover:-translate-y-0.5 hover:shadow-raised motion-reduce:hover:translate-y-0">
       {row.ticket_number ? (
         <TicketNumber number={row.ticket_number} size="sm" stub tone="brand" />
       ) : (
-        <span className="grid size-12 shrink-0 place-items-center rounded-lg bg-subtle text-fg-muted">
+        <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-subtle text-fg-muted">
           <Pill aria-hidden="true" weight="duotone" className="size-6" />
         </span>
       )}
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <Link
           to={`/pharmacy/prescriptions/${row.id}`}
-          className="font-heading text-h3 font-bold text-fg no-underline after:absolute after:inset-0 after:rounded-lg group-hover:underline"
+          className="font-heading text-h3 font-bold text-fg no-underline after:absolute after:inset-0 after:rounded-2xl group-hover:underline"
         >
           {row.patient_display_name}
         </Link>

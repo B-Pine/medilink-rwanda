@@ -62,7 +62,7 @@ export function RemoteList({
       )}
       <ul
         aria-labelledby="remote-joiners"
-        className="m-0 flex list-none flex-col divide-y divide-border overflow-hidden rounded-lg bg-surface p-0 shadow-card"
+        className="m-0 flex list-none flex-col divide-y divide-border/60 overflow-hidden rounded-2xl bg-surface p-0 shadow-card"
       >
         {rows.map((ticket) => (
           <li key={ticket.id} className="flex flex-col gap-2.5 px-3 py-3">

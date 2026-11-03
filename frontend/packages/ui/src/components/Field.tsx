@@ -81,7 +81,9 @@ export function Field({
 
 /** Shared input styling: >= 3:1 border (#7C8A9D), 40/48 px height by density. */
 export const inputClassName = cx(
-  "block w-full min-h-control rounded-sm border border-border-input bg-surface px-3 py-2 text-body text-fg",
+  "block w-full min-h-control rounded-xl border border-border-input bg-surface px-3.5 py-2 text-body text-fg",
+  "transition-[border-color,box-shadow] duration-150 ease-out-quint hover:border-fg-muted",
+  "focus-visible:border-primary focus-visible:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_18%,transparent)] focus-visible:outline-none",
   "aria-invalid:border-2 aria-invalid:border-danger",
   "disabled:cursor-not-allowed disabled:bg-subtle",
 );

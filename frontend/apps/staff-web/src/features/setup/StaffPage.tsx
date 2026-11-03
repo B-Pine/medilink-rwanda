@@ -24,7 +24,14 @@ import {
   TextareaField,
   TextField,
 } from "@medilink/ui";
-import { EnvelopeSimple, MagnifyingGlass, UserPlus, Users } from "@phosphor-icons/react";
+import {
+  EnvelopeSimple,
+  IdentificationBadge,
+  MagnifyingGlass,
+  ShieldCheck,
+  UserPlus,
+  Users,
+} from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -73,17 +80,37 @@ export function StaffPage() {
   const active = all.filter((m) => m.is_active);
   const doctors = active.filter((m) => m.roles.includes("doctor"));
   const pending = (invitations.data?.results ?? []).filter((i) => i.status === "pending");
+  const attested = doctors.filter((d) => d.clinician?.attested_at).length;
+  const withMfa = active.filter((m) => m.mfa_enabled).length;
   const stats = [
-    { label: t("setup.staff.activeMembers"), value: active.length },
     {
+      key: "active",
+      icon: Users,
+      label: t("setup.staff.activeMembers"),
+      value: String(active.length),
+      ratio: null,
+    },
+    {
+      key: "attested",
+      icon: IdentificationBadge,
       label: t("setup.staff.doctorsAttested"),
-      value: `${doctors.filter((d) => d.clinician?.attested_at).length}/${doctors.length}`,
+      value: `${attested}/${doctors.length}`,
+      ratio: doctors.length ? attested / doctors.length : null,
     },
     {
+      key: "mfa",
+      icon: ShieldCheck,
       label: t("setup.staff.withMfa"),
-      value: `${active.filter((m) => m.mfa_enabled).length}/${active.length}`,
+      value: `${withMfa}/${active.length}`,
+      ratio: active.length ? withMfa / active.length : null,
     },
-    { label: t("setup.staff.pendingInvites"), value: pending.length },
+    {
+      key: "invites",
+      icon: EnvelopeSimple,
+      label: t("setup.staff.pendingInvites"),
+      value: String(pending.length),
+      ratio: null,
+    },
   ];
   const shown = all.filter(
     (m) =>
@@ -104,17 +131,43 @@ export function StaffPage() {
             </Button>
           }
         />
-        <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 lg:grid-cols-4">
-          {stats.map((s) => (
+        <ul className="ml-stagger m-0 grid list-none grid-cols-2 gap-3 p-0 lg:grid-cols-4">
+          {stats.map(({ key, icon: StatIcon, label, value, ratio }) => (
             <li
-              key={s.label}
-              className="flex flex-col gap-1 rounded-lg bg-surface shadow-card px-4 py-3"
+              key={key}
+              className="flex flex-col gap-3 rounded-2xl bg-surface p-4 shadow-card transition-shadow duration-200 ease-out-quint hover:shadow-raised"
             >
-              <span className="text-body-sm font-semibold text-fg-secondary">{s.label}</span>
-              <span className="font-heading text-h1 tabular-nums">{s.value}</span>
+              <span className="flex items-center justify-between gap-2">
+                <span className="text-body-sm font-semibold text-fg-secondary">{label}</span>
+                <span className="grid size-8 place-items-center rounded-lg bg-brand-subtle text-on-brand-subtle">
+                  <StatIcon aria-hidden="true" weight="bold" className="size-4" />
+                </span>
+              </span>
+              <span className="font-heading text-h1 leading-none font-semibold tabular-nums">
+                {value}
+              </span>
+              {ratio !== null && (
+                <span aria-hidden="true" className="h-1.5 overflow-hidden rounded-full bg-subtle">
+                  <span
+                    className={cx(
+                      "block h-full rounded-full transition-[width] duration-500 ease-out-quint",
+                      ratio === 1 ? "bg-success" : "bg-attention",
+                    )}
+                    style={{ width: `${Math.round(ratio * 100)}%` }}
+                  />
+                </span>
+              )}
             </li>
           ))}
         </ul>
+        {active.length > withMfa && (
+          <Alert
+            tone="warning"
+            title={t("setup.staff.mfaGapTitle", { count: active.length - withMfa })}
+          >
+            {t("setup.staff.mfaGapBody")}
+          </Alert>
+        )}
         <Tabs defaultValue="members">
           <TabsList aria-label={t("setup.staff.title")}>
             <TabsTrigger value="members">{t("setup.staff.members")}</TabsTrigger>
@@ -165,16 +218,18 @@ export function StaffPage() {
                       description={t("setup.staff.none")}
                     />
                   ) : (
-                    <div className="overflow-x-auto rounded-lg bg-surface shadow-card">
+                    <div className="overflow-x-auto rounded-2xl bg-surface shadow-card">
                       <table className="w-full border-collapse text-left">
                         <caption className="sr-only">{t("setup.staff.members")}</caption>
                         <thead className="bg-subtle text-body-sm text-fg-secondary">
                           <tr>
-                            {["person", "roles", "mfa", "licence", "status"].map((col) => (
-                              <th key={col} scope="col" className="px-4 py-2.5 font-semibold">
-                                {t(`setup.staff.columns.${col}`)}
-                              </th>
-                            ))}
+                            {["person", "roles", "mfa", "licence", "lastActive", "status"].map(
+                              (col) => (
+                                <th key={col} scope="col" className="px-4 py-2.5 font-semibold">
+                                  {t(`setup.staff.columns.${col}`)}
+                                </th>
+                              ),
+                            )}
                           </tr>
                         </thead>
                         <tbody>
@@ -182,7 +237,7 @@ export function StaffPage() {
                             <tr
                               key={m.id}
                               className={cx(
-                                "border-t border-border hover:bg-subtle",
+                                "border-t border-border/60 hover:bg-subtle",
                                 !m.is_active && "text-fg-muted",
                               )}
                             >
@@ -233,6 +288,9 @@ export function StaffPage() {
                                   <span className="text-fg-muted">—</span>
                                 )}
                               </td>
+                              <td className="px-4 py-3 text-body-sm whitespace-nowrap text-fg-secondary tabular-nums">
+                                <LastActive at={m.last_login} />
+                              </td>
                               <td className="px-4 py-3">
                                 <Badge tone={m.is_active ? "brand" : "neutral"}>
                                   {m.is_active
@@ -274,6 +332,29 @@ export function StaffPage() {
   );
 }
 
+/** "12 min ago", "3 days ago", or "Never signed in" (relative, so the list reads at a glance). */
+function LastActive({ at }: { at: string | null }) {
+  const { t, i18n } = useTranslation();
+  const [now] = useState(() => Date.now());
+  if (!at) return <span className="text-attention">{t("setup.staff.neverSignedIn")}</span>;
+  const minutes = Math.round((new Date(at).getTime() - now) / 60_000);
+  const rtf = new Intl.RelativeTimeFormat(
+    i18n.resolvedLanguage === "rw" ? "en" : i18n.resolvedLanguage,
+    { numeric: "auto" },
+  );
+  const text =
+    Math.abs(minutes) < 60
+      ? rtf.format(minutes, "minute")
+      : Math.abs(minutes) < 1440
+        ? rtf.format(Math.round(minutes / 60), "hour")
+        : rtf.format(Math.round(minutes / 1440), "day");
+  return (
+    <time dateTime={at} title={new Date(at).toLocaleString()}>
+      {text}
+    </time>
+  );
+}
+
 function InvitationList({ invitations }: { invitations: Invitation[] }) {
   const { t } = useTranslation();
   const api = useApi();
@@ -300,11 +381,11 @@ function InvitationList({ invitations }: { invitations: Invitation[] }) {
     );
   return (
     <>
-      <ul className="m-0 list-none overflow-hidden rounded-lg bg-surface shadow-card p-0">
+      <ul className="m-0 list-none overflow-hidden rounded-2xl bg-surface shadow-card p-0">
         {invitations.map((i) => (
           <li
             key={i.id}
-            className="flex flex-wrap items-center gap-3 border-b border-border px-4 py-3 last:border-0"
+            className="flex flex-wrap items-center gap-3 border-b border-border/60 px-4 py-3 last:border-0"
           >
             <EnvelopeSimple aria-hidden="true" className="size-5 text-fg-muted" />
             <div className="flex min-w-0 flex-1 flex-col">
@@ -600,7 +681,7 @@ function MemberPanel({
           <PointChecks points={points} value={assigned} onChange={setAssigned} />
         </form>
         {member.clinician && (
-          <section className="flex flex-col gap-2 rounded-md border border-border p-4">
+          <section className="flex flex-col gap-2 rounded-2xl border border-border/60 p-4">
             <h3 className="m-0 font-heading text-h3">{t("setup.staff.licence")}</h3>
             <p className="m-0 text-body-sm text-fg-secondary">
               {t(`setup.councils.${member.clinician.council}`, {
@@ -626,7 +707,7 @@ function MemberPanel({
             )}
           </section>
         )}
-        <section className="flex flex-col gap-3 rounded-md border border-danger/30 p-4">
+        <section className="flex flex-col gap-3 rounded-xl border border-danger/30 p-4">
           <h3 className="m-0 font-heading text-h3">{t("setup.staff.account")}</h3>
           <div className="flex flex-wrap gap-2">
             {!isSelf && member.mfa_enabled && (
@@ -751,7 +832,7 @@ function ClinicianForm({ profile }: { profile: ClinicianProfile }) {
         e.preventDefault();
         save.mutate();
       }}
-      className="flex flex-col gap-5 rounded-lg bg-surface shadow-card p-5"
+      className="flex flex-col gap-5 rounded-2xl bg-surface shadow-card p-5"
     >
       <SelectField
         label={t("setup.clinician.council")}

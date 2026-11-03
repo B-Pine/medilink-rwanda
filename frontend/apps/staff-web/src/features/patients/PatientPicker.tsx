@@ -78,7 +78,7 @@ export function PatientPicker({ onPicked }: { onPicked: (patient: PickedPatient)
                   <button
                     type="button"
                     onClick={() => chosen(r)}
-                    className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-md border border-border px-3 py-2 text-left transition-colors duration-150 hover:border-primary hover:bg-brand-subtle motion-reduce:transition-none"
+                    className="flex w-full cursor-pointer items-center justify-between gap-3 rounded-2xl border border-border/60 px-3 py-2 text-left transition-colors duration-150 hover:border-primary hover:bg-brand-subtle motion-reduce:transition-none"
                   >
                     <span className="flex flex-col">
                       <span className="font-semibold">{r.full_name}</span>

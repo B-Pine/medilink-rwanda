@@ -322,6 +322,8 @@ export interface StaffMembership {
   service_points: Uuid[];
   is_active: boolean;
   mfa_enabled: boolean;
+  /** Last sign-in anywhere; null when the person never signed in. */
+  last_login: string | null;
   clinician: {
     council: string;
     licence_number: string;

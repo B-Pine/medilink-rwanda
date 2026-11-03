@@ -18,7 +18,9 @@ export function OnSiteTodayCard() {
   // Facility admins get the full operations dashboard instead (Operations.tsx)
   const admin = useCan("reports.view");
   const reception = useCan("queue.operate");
-  const allowed = useCan("queue.operate", "queue.call") && !admin;
+  // Clinicians get Doctor Today instead (clinical/DoctorToday.tsx)
+  const clinician = useCan("clinical.write");
+  const allowed = useCan("queue.operate", "queue.call") && !admin && !clinician;
   const refetchInterval = usePollInterval();
   const board = useQuery({
     queryKey: queueKeys.board,
@@ -34,7 +36,7 @@ export function OnSiteTodayCard() {
   return (
     <section
       aria-labelledby="today-onsite"
-      className="flex flex-col gap-4 rounded-lg bg-surface p-5 shadow-card lg:col-span-3"
+      className="flex flex-col gap-4 rounded-2xl bg-surface p-5 shadow-card lg:col-span-3"
     >
       <div className="flex flex-wrap items-center gap-4">
         <div className="flex min-w-0 flex-1 flex-col">
@@ -56,7 +58,7 @@ export function OnSiteTodayCard() {
           {queues.map((q) => (
             <li
               key={`${q.service_id}-${q.stage}`}
-              className="flex items-center justify-between gap-3 rounded-md bg-page px-3.5 py-2.5"
+              className="flex items-center justify-between gap-3 rounded-xl bg-page px-3.5 py-2.5"
             >
               <span className="flex min-w-0 flex-col">
                 <span className="truncate font-semibold">{serviceName(q.service_id)}</span>

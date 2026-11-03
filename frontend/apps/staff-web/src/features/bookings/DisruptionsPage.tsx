@@ -10,6 +10,7 @@ import {
   Alert,
   Badge,
   Button,
+  cx,
   EmptyState,
   SelectField,
   Skeleton,
@@ -18,7 +19,7 @@ import {
   TextField,
   type BadgeTone,
 } from "@medilink/ui";
-import { CalendarX, Phone, Plus } from "@phosphor-icons/react";
+import { CalendarX, DoorOpen, type Icon, Phone, Plus, UserMinus } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
@@ -37,6 +38,12 @@ export const disruptionKeys = {
   all: ["bookings", "disruptions"] as const,
   list: ["bookings", "disruptions", "list"] as const,
   one: (id: string) => ["bookings", "disruptions", id] as const,
+};
+
+const KIND_ICON: Record<DisruptionKind, Icon> = {
+  doctor_absent: UserMinus,
+  closure: DoorOpen,
+  schedule_change: CalendarX,
 };
 
 const RESPONSE_TONE: Record<PatientResponse, BadgeTone> = {
@@ -100,7 +107,7 @@ function Disruptions() {
         }
       />
       {list.isPending ? (
-        <Skeleton height="8rem" className="rounded-lg" />
+        <Skeleton height="8rem" className="rounded-2xl" />
       ) : list.isError ? (
         <Alert tone="danger" role="alert" title={t("bookings.disruptions.failed")}>
           <Button variant="secondary" onClick={() => void list.refetch()}>
@@ -116,33 +123,73 @@ function Disruptions() {
       ) : (
         <ul
           aria-label={t("bookings.disruptions.title")}
-          className="m-0 flex list-none flex-col gap-2 p-0"
+          className="ml-stagger m-0 grid list-none gap-3 p-0 lg:grid-cols-2"
         >
-          {rows.map((d) => (
-            <li
-              key={d.id}
-              className="flex flex-wrap items-center gap-3 rounded-lg bg-surface shadow-card p-4"
-            >
-              <div className="flex min-w-0 flex-1 flex-col gap-1">
-                <Link to={`/disruptions/${d.id}`} className="font-semibold text-link">
-                  {t(`bookings.disruptions.kind.${d.kind}`)}
-                  {d.doctor ? ` · ${d.doctor}` : ""}
+          {rows.map((d) => {
+            const KindIcon = KIND_ICON[d.kind];
+            const c = d.counts;
+            const handled = c.accepted + c.declined + c.rebooked_other + c.cancelled;
+            const share = c.total ? Math.round((100 * handled) / c.total) : 100;
+            return (
+              <li key={d.id}>
+                <Link
+                  to={`/disruptions/${d.id}`}
+                  className="group flex h-full flex-col gap-4 rounded-2xl bg-surface p-5 text-fg no-underline shadow-card transition-[box-shadow,transform] duration-200 ease-out-quint hover:-translate-y-0.5 hover:shadow-raised"
+                >
+                  <span className="flex items-start gap-3">
+                    <span
+                      className={cx(
+                        "grid size-10 shrink-0 place-items-center rounded-xl",
+                        d.status === "open"
+                          ? "bg-attention-bg text-attention"
+                          : "bg-success-bg text-success",
+                      )}
+                    >
+                      <KindIcon aria-hidden="true" weight="bold" className="size-5" />
+                    </span>
+                    <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                      <span className="font-semibold">
+                        {t(`bookings.disruptions.kind.${d.kind}`)}
+                        {d.doctor ? ` · ${d.doctor}` : ""}
+                      </span>
+                      <span className="text-body-sm text-fg-secondary tabular-nums">
+                        {when(d.starts_at)} – {when(d.ends_at)}
+                      </span>
+                    </span>
+                    <Badge tone={d.status === "open" ? "warning" : "success"}>
+                      {t(`bookings.disruptions.status.${d.status}`)}
+                    </Badge>
+                  </span>
+                  {d.reason && (
+                    <span className="line-clamp-2 text-body-sm text-fg-secondary">{d.reason}</span>
+                  )}
+                  <span className="mt-auto flex flex-col gap-1.5">
+                    <span className="flex items-center justify-between gap-2 text-body-sm">
+                      <span className="text-fg-secondary">
+                        {t("bookings.disruptions.summary", {
+                          total: c.total,
+                          pending: c.pending + c.not_applied,
+                        })}
+                      </span>
+                      <span className="font-semibold tabular-nums">{share}%</span>
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      className="h-1.5 overflow-hidden rounded-full bg-subtle"
+                    >
+                      <span
+                        className={cx(
+                          "block h-full rounded-full transition-[width] duration-500 ease-out-quint",
+                          share === 100 ? "bg-success" : "bg-brand",
+                        )}
+                        style={{ width: `${share}%` }}
+                      />
+                    </span>
+                  </span>
                 </Link>
-                <span className="text-body-sm text-fg-secondary tabular-nums">
-                  {when(d.starts_at)} – {when(d.ends_at)}
-                </span>
-              </div>
-              <Badge tone={d.status === "open" ? "warning" : "success"}>
-                {t(`bookings.disruptions.status.${d.status}`)}
-              </Badge>
-              <span className="text-body-sm text-fg-secondary">
-                {t("bookings.disruptions.summary", {
-                  total: d.counts.total,
-                  pending: d.counts.pending + d.counts.not_applied,
-                })}
-              </span>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
@@ -199,7 +246,7 @@ function Wizard({ initialId, onCancel }: { initialId: string; onCancel?: () => v
           onCancel={() => (onCancel ? onCancel() : void navigate("/disruptions"))}
         />
       )}
-      {id && detail.isPending && <Skeleton height="10rem" className="rounded-lg" />}
+      {id && detail.isPending && <Skeleton height="10rem" className="rounded-2xl" />}
       {id && detail.isError && (
         <Alert tone="danger" role="alert" title={t("bookings.disruptions.failed")} />
       )}
@@ -373,7 +420,7 @@ function AffectedStep({ data, onApplied }: { data: DisruptionDetail; onApplied: 
   return (
     <div className="flex flex-col gap-4">
       <p className="m-0">{t("bookings.disruptions.affectedCount", { count: open.length })}</p>
-      <div className="flex flex-wrap items-end gap-2 rounded-lg bg-surface shadow-card p-4">
+      <div className="flex flex-wrap items-end gap-2 rounded-2xl bg-surface shadow-card p-4">
         <SelectField
           label={t("bookings.disruptions.forAll")}
           value={all}
@@ -403,7 +450,7 @@ function AffectedStep({ data, onApplied }: { data: DisruptionDetail; onApplied: 
         {open.map((item) => (
           <li
             key={item.id}
-            className="flex flex-wrap items-end gap-3 rounded-lg bg-surface shadow-card p-3"
+            className="flex flex-wrap items-end gap-3 rounded-2xl bg-surface shadow-card p-3"
           >
             <ItemLabel item={item} />
             <SelectField
@@ -472,7 +519,7 @@ function AnswersStep({ data }: { data: DisruptionDetail }) {
           return (
             <li
               key={item.id}
-              className="flex flex-wrap items-center gap-3 rounded-lg bg-surface shadow-card p-3"
+              className="flex flex-wrap items-center gap-3 rounded-2xl bg-surface shadow-card p-3"
             >
               <ItemLabel item={item} />
               <span className="text-body-sm text-fg-secondary">

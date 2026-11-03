@@ -77,6 +77,9 @@ INSTALLED_APPS = [
     # [PT] public pages and rules-based symptom triage
     "medilink.triage",
     # [/PT]
+    # [S11] super admin console (users, logs, command centre)
+    "medilink.platform_admin",
+    # [/S11]
     # [S4] visits and the live queue
     "medilink.visits",
     # [/S4]
@@ -409,6 +412,7 @@ SPECTACULAR_SETTINGS = {
     "SERVE_PERMISSIONS": ["medilink.authz.permissions.PublicEndpoint"],
     "SERVE_AUTHENTICATION": [],
     "ENUM_NAME_OVERRIDES": {
+        "UserKindEnum": "medilink.platform_admin.serializers.USER_KINDS",
         "LanguageEnum": "medilink.accounts.models.Language",
         "LoginStatusEnum": "medilink.accounts.serializers.LOGIN_STATUS_CHOICES",
         "RoleCodeEnum": "medilink.tenancy.models.RoleCode",

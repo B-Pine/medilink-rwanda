@@ -12,6 +12,7 @@ This root changelog covers documentation and repository-wide changes (CI, toolin
 
 ### Changed
 
+- Upgrade 11: the product owner's public website brief (`docs/upgrade/11-public-website.md`) supersedes 03 for routes, navigation, home, footer and palette; 02 and 03 point to it.
 - U-01: no prices in discovery or booking. Sprint 5 contract D-14; FR-BIL-03 and FR-SCH-02 reworded in analysis 05 and 08; the public pages contract and the traceability matrix follow.
 
 ### Changed

@@ -30,25 +30,27 @@
   --ml-emerald-900: #064e3b;
   --ml-emerald-950: #022c22;
 
-  /* Neutrals (design 02 §2): leaning toward the forest green, so structure and brand share a hue */
-  --ml-bg-page: #f2f5f3;
+  /* Palette from the public website brief (upgrade 11 §2, 2026-11-02): forest #123D2B, emerald
+     #168451 (white 4.72:1), link #11744A (AA on the page), text #17231D, page #F7F9F7,
+     light green #EDF5EF. Neutrals (design 02 §2): leaning toward the forest green, so structure and brand share a hue */
+  --ml-bg-page: #f7f9f7;
   --ml-bg-surface: #ffffff;
   --ml-bg-raised: #ffffff;
-  --ml-bg-subtle: #eaefec;
-  --ml-text-primary: #0e1f18;
-  --ml-text-secondary: #3c4e46;
-  --ml-text-muted: #55665e;
-  --ml-border-subtle: #dfe6e2;
+  --ml-bg-subtle: #edf2ee;
+  --ml-text-primary: #17231d;
+  --ml-text-secondary: #4a5a51;
+  --ml-text-muted: #5d6a62;
+  --ml-border-subtle: #e1e8e3;
   --ml-border-input: #7b8a83;
 
   /* Semantic (design 02 §3) */
-  --ml-brand: #047857;
-  --ml-action-primary: #047857;
-  --ml-action-primary-hover: #065f46;
+  --ml-brand: #168451;
+  --ml-action-primary: #168451;
+  --ml-action-primary-hover: #11744a;
   --ml-action-primary-text: #ffffff;
-  --ml-brand-subtle-bg: #ecfdf5;
-  --ml-brand-subtle-text: #065f46;
-  --ml-link: #047857;
+  --ml-brand-subtle-bg: #edf5ef;
+  --ml-brand-subtle-text: #0f5e3b;
+  --ml-link: #11744a;
   --ml-focus-ring: #059669;
   --ml-accent: #fbbf24;
   --ml-accent-text: #0f172a;
@@ -82,10 +84,10 @@
 
   /* Deep forest, combination B (design 02 §5): landing hero, login brand panel, display.
      Same in both themes. White 15:1, emerald-200/300 9.9-13:1. */
-  --ml-forest: #022c22;
-  --ml-forest-raised: #064e3b;
+  --ml-forest: #123d2b;
+  --ml-forest-raised: #1a4d37;
   --ml-on-forest: #ffffff;
-  --ml-on-forest-muted: #a7f3d0;
+  --ml-on-forest-muted: #b9d6c4;
   --ml-on-forest-accent: #6ee7b7;
 
   /* QR codes stay dark-on-white in both themes so every scanner reads them

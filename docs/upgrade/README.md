@@ -26,6 +26,7 @@ Sprints S0–S10 delivered most of the M1 scope, but three things came out of a 
 | 08 | [Patients without a phone](08-patients-without-phone.md) | How every step of a visit works for someone with no phone, no account and possibly no reading |
 | 09 | [Audit method](09-audit-method.md) | How the current system is checked against this folder and against professional standards |
 | 10 | [Implementation plan](10-implementation-plan.md) | Phases, order of work, the older documents to update, and the definition of done |
+| 11 | [Public website](11-public-website.md) | The product owner's brief for every public page (2026-11-02); supersedes 03 where they differ |
 | — | [audit/](audit/) | Audit reports, one file per audit run |
 
 ## Order of work
@@ -58,6 +59,6 @@ flowchart LR
 | Upgrade documents | Draft written 2026-11-02 |
 | Audit | Skipped for this round (decision 2026-11-02, see below) |
 | Cleaning | Done inside each implementation change |
-| Implementation | Started 2026-11-02: public site (U2) and staff dashboards first |
+| Implementation | Public site (U2) **completed** 2026-11-02 to [11](11-public-website.md) (#149–#153); open backend items in 11 §13; staff dashboards next |
 
 **Decision 2026-11-02 — no up-front audit.** The full audit of [09](09-audit-method.md) costs more time than it saves at this stage. Instead, each implementation change cleans the screens and code it touches against [02](02-design-system.md) and updates the older documents it makes outdated, in the same pull request. Tests for the upgraded screens are written in a follow-up pass once the screens are settled; CI stays the gate for merging. The audit method stays for release checks.

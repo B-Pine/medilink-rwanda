@@ -127,7 +127,7 @@ function Row({
   editLabel: string;
 }) {
   return (
-    <li className="flex flex-wrap items-center gap-3 border-b border-border px-4 py-3 last:border-0 sm:flex-nowrap">
+    <li className="flex flex-wrap items-center gap-3 border-b border-border/60 px-4 py-3 last:border-0 sm:flex-nowrap">
       <div className="flex min-w-0 flex-1 flex-col">
         <span className="font-semibold">{title}</span>
         <span className="text-body-sm text-fg-secondary">{meta}</span>
@@ -194,7 +194,7 @@ function ServicesTab({
           description={t("setup.catalogue.noServices")}
         />
       ) : (
-        <ul className="m-0 list-none overflow-hidden rounded-lg bg-surface shadow-card p-0">
+        <ul className="m-0 list-none overflow-hidden rounded-2xl bg-surface shadow-card p-0">
           {services.map((s) => (
             <Row
               key={s.id}
@@ -358,7 +358,7 @@ function ServiceEditor({
             inputClassName="tabular-nums"
           />
         </div>
-        <div className="flex flex-col gap-3 rounded-md border border-border p-3">
+        <div className="flex flex-col gap-3 rounded-2xl border border-border/60 p-3">
           <SwitchField
             label={t("setup.catalogue.bookable")}
             checked={form.is_bookable}
@@ -408,7 +408,7 @@ function DepartmentsTab({ departments }: { departments: Department[] }) {
           description={t("setup.catalogue.noDepartments")}
         />
       ) : (
-        <ul className="m-0 list-none overflow-hidden rounded-lg bg-surface shadow-card p-0">
+        <ul className="m-0 list-none overflow-hidden rounded-2xl bg-surface shadow-card p-0">
           {departments.map((d) => (
             <Row
               key={d.id}
@@ -529,7 +529,7 @@ function PointsTab({ points, services }: { points: ServicePoint[]; services: Ser
           description={t("setup.catalogue.noPoints")}
         />
       ) : (
-        <ul className="m-0 list-none overflow-hidden rounded-lg bg-surface shadow-card p-0">
+        <ul className="m-0 list-none overflow-hidden rounded-2xl bg-surface shadow-card p-0">
           {points.map((p) => (
             <Row
               key={p.id}

@@ -26,7 +26,7 @@ export const pwaOptions: Partial<VitePWAOptions> = {
     name: "MediLink Rwanda",
     short_name: "MediLink",
     // Kinyarwanda first (the manifest has one language); text from the resource files.
-    description: rw.landing.heroBody,
+    description: rw.home.description,
     lang: "rw",
     dir: "ltr",
     start_url: "/",

@@ -266,7 +266,7 @@ function DoctorWeeks({
         ].map(([label, value]) => (
           <div
             key={label}
-            className="flex flex-col gap-1 rounded-lg bg-surface shadow-card px-4 py-3"
+            className="flex flex-col gap-1 rounded-2xl bg-surface shadow-card px-4 py-3"
           >
             <span className="text-body-sm font-semibold text-fg-secondary">{label}</span>
             <span className="font-heading text-h1 tabular-nums">{value}</span>
@@ -583,14 +583,14 @@ function ExceptionsSection({ canManage }: { canManage: boolean }) {
               icon={AirplaneTilt}
               title={t("setup.schedules.noExceptionsTitle")}
               description={t("setup.schedules.noExceptions")}
-              className="rounded-lg border border-dashed border-border"
+              className="rounded-2xl border border-dashed border-border"
             />
           ) : (
-            <ul className="m-0 list-none overflow-hidden rounded-lg bg-surface shadow-card p-0">
+            <ul className="m-0 list-none overflow-hidden rounded-2xl bg-surface shadow-card p-0">
               {data.results.map((e) => (
                 <li
                   key={e.id}
-                  className="flex flex-wrap items-center gap-3 border-b border-border px-4 py-3 last:border-0"
+                  className="flex flex-wrap items-center gap-3 border-b border-border/60 px-4 py-3 last:border-0"
                 >
                   <div className="flex min-w-0 flex-1 flex-col">
                     <span className="font-semibold">
@@ -794,14 +794,14 @@ export function MySchedulePage() {
                   icon={AirplaneTilt}
                   title={t("setup.mine.noLeaveTitle")}
                   description={t("setup.mine.noLeave")}
-                  className="rounded-lg border border-dashed border-border"
+                  className="rounded-2xl border border-dashed border-border"
                 />
               ) : (
-                <ul className="m-0 list-none overflow-hidden rounded-lg bg-surface shadow-card p-0">
+                <ul className="m-0 list-none overflow-hidden rounded-2xl bg-surface shadow-card p-0">
                   {data.results.map((e) => (
                     <li
                       key={e.id}
-                      className="flex flex-wrap items-center gap-3 border-b border-border px-4 py-3 last:border-0"
+                      className="flex flex-wrap items-center gap-3 border-b border-border/60 px-4 py-3 last:border-0"
                     >
                       <span className="flex-1 tabular-nums">
                         {formatDate(e.starts_at, locale)} – {formatDate(e.ends_at, locale)}

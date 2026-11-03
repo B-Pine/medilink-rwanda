@@ -50,6 +50,11 @@ export {
 export type { ThemePreference } from "./theme/theme";
 export { cx } from "./utils/cx";
 
+// [Upgrade U2] public site (upgrade 02 §3); the map itself is `@medilink/ui/map` (lazy)
+export { FacilityList, FacilityRow } from "./components/FacilityRow";
+export type { FacilityListLabels, FacilityRowProps, WaitTone } from "./components/FacilityRow";
+export type { FacilityMapProps, MapPoint, PinKind } from "./map/FacilityMap";
+
 // ---- New components (own files): exports ONLY between the sprint's markers ----
 // [S1]
 export { DataTable, PAGE_SIZES } from "./components/DataTable";

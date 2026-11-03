@@ -278,6 +278,12 @@ class HeatCellSerializer(serializers.Serializer):
     count = serializers.IntegerField()
 
 
+class OnDutySerializer(serializers.Serializer):
+    name = serializers.CharField()
+    state = serializers.CharField()
+    room = serializers.CharField(allow_blank=True)
+
+
 class OperationsSerializer(serializers.Serializer):
     today = DayFiguresSerializer()
     same_day_last_week = DayFiguresSerializer()
@@ -286,4 +292,8 @@ class OperationsSerializer(serializers.Serializer):
     services = ServiceLoadSerializer(many=True)
     arrivals_heatmap = HeatCellSerializer(many=True)
     attention = serializers.DictField(child=serializers.IntegerField())
+    # upgrade 05 §5: money today, bookings and who is on duty (counts and names of staff only)
+    finance = serializers.DictField(child=serializers.IntegerField())
+    bookings = serializers.DictField(child=serializers.IntegerField())
+    on_duty = OnDutySerializer(many=True)
     updated_at = serializers.DateTimeField()

@@ -71,17 +71,18 @@ function contrast(fg: string, bg: string): number {
 const px = (rem: string | undefined) =>
   Number.parseFloat(rem ?? "0") * (rem?.endsWith("rem") ? 16 : 1);
 
+// Light brand values follow the public website brief (upgrade 11 §2, 2026-11-02).
 describe("design tokens (F2): values equal design research 02", () => {
   it("light theme spot checks", () => {
-    expect(hex(light["--ml-action-primary"])).toBe("#047857");
-    expect(hex(light["--ml-action-primary-hover"])).toBe("#065f46");
+    expect(hex(light["--ml-action-primary"])).toBe("#168451");
+    expect(hex(light["--ml-action-primary-hover"])).toBe("#11744a");
     expect(hex(light["--ml-action-primary-text"])).toBe("#ffffff");
-    expect(hex(light["--ml-text-muted"])).toBe("#55665e");
+    expect(hex(light["--ml-text-muted"])).toBe("#5d6a62");
     expect(hex(light["--ml-border-input"])).toBe("#7b8a83");
-    expect(hex(light["--ml-bg-page"])).toBe("#f2f5f3");
-    expect(hex(light["--ml-text-primary"])).toBe("#0e1f18");
+    expect(hex(light["--ml-bg-page"])).toBe("#f7f9f7");
+    expect(hex(light["--ml-text-primary"])).toBe("#17231d");
     expect(hex(light["--ml-focus-ring"])).toBe("#059669");
-    expect(hex(light["--ml-forest"])).toBe("#022c22");
+    expect(hex(light["--ml-forest"])).toBe("#123d2b");
   });
 
   it("dark theme spot checks", () => {
@@ -169,9 +170,9 @@ describe("contrast of text tokens (F8), both themes", () => {
   });
 
   it("matches the measured ratios of design 02 (±0.05)", () => {
-    expect(contrast(light["--ml-text-primary"]!, "#ffffff")).toBeCloseTo(17.1, 1);
-    expect(contrast(light["--ml-text-muted"]!, "#ffffff")).toBeCloseTo(6.09, 1);
-    expect(contrast(light["--ml-action-primary"]!, "#ffffff")).toBeCloseTo(5.48, 1);
+    expect(contrast(light["--ml-text-primary"]!, "#ffffff")).toBeCloseTo(16.22, 1);
+    expect(contrast(light["--ml-text-muted"]!, "#ffffff")).toBeCloseTo(5.67, 1);
+    expect(contrast(light["--ml-action-primary"]!, "#ffffff")).toBeCloseTo(4.72, 1);
     expect(contrast(dark["--ml-action-primary-text"]!, dark["--ml-action-primary"]!)).toBeCloseTo(
       7.88,
       1,

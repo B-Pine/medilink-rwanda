@@ -2,6 +2,8 @@
 
 Status: Draft v0.1 · 2026-11-02 · Part of the [system upgrade](README.md) · Host: `medilink.rw` (patient-web)
 
+> **Superseded in part by [11 · Public website](11-public-website.md) (2026-11-02).** Routes, navigation, home structure, footer and palette follow 11; the data rules here (no prices, live counts only, location never stored, pre-rendered public data) still apply. See 11 §12 for the list of changes.
+
 Everything on this page works **without an account**. A signed-in patient sees the same pages with a personal layer on top ([04](04-patient-app.md)).
 
 ## 1. Site map

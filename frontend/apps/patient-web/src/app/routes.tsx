@@ -4,21 +4,12 @@ import type { RouteObject } from "react-router";
 
 import { RequirePatient } from "../auth/RequirePatient";
 import { PatientShell } from "../layout/PatientShell";
-import type { InfoSection } from "../pages/InfoPage";
 import { FEATURES } from "./features";
 
 // Pages are code-split per route: the landing page stays small on 3G (design 06 H4).
 const page =
   <K extends string>(load: () => Promise<Record<K, ComponentType>>, name: K) =>
   async () => ({ Component: (await load())[name] });
-
-const info = (path: string, section: InfoSection): RouteObject => ({
-  path,
-  lazy: async () => {
-    const { InfoPage } = await import("../pages/InfoPage");
-    return { element: <InfoPage section={section} /> };
-  },
-});
 
 /** Route table, shared by the browser router (main.tsx) and the memory router (tests). */
 export const routes: RouteObject[] = [
@@ -41,7 +32,6 @@ export const routes: RouteObject[] = [
         lazy: page(() => import("../pages/VerifyEmailPage"), "VerifyEmailPage"),
       },
       // /verify is the S7b documents feature's public page
-      info("/help", "help"),
       {
         element: <RequirePatient />,
         children: [
@@ -50,10 +40,6 @@ export const routes: RouteObject[] = [
             element: <PatientShell />,
             children: [
               { path: "/home", lazy: page(() => import("../pages/HomePage"), "HomePage") },
-              {
-                path: "/find-care",
-                lazy: page(() => import("../pages/FindCarePage"), "FindCarePage"),
-              },
               { path: "/support", lazy: page(() => import("../pages/SupportPage"), "SupportPage") },
               {
                 path: "/settings",

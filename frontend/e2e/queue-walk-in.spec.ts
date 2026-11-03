@@ -59,7 +59,7 @@ test("walk-in: checked in at reception, called by the doctor, completed", async 
   await openQueue(page);
   await expect(page.getByRole("heading", { level: 1, name: "My queue" })).toBeVisible();
   const current = page.getByRole("region", { name: "Current patient" });
-  const callNext = page.getByRole("button", { name: "Call next" });
+  const callNext = page.getByRole("button", { name: "Call next", exact: true });
   const start = page.getByRole("button", { name: "Start consultation" });
   const complete = page.getByRole("button", { name: "Complete visit" });
   // the seed has a patient in consultation with this doctor

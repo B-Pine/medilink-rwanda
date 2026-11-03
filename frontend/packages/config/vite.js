@@ -9,6 +9,7 @@ import { resolve } from "node:path";
  */
 
 export const DEFAULT_API_BASE_URL = "http://localhost:8000";
+export const DEFAULT_MAP_TILES_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 
 /**
  * Resolve the build-time environment of an app.
@@ -22,17 +23,22 @@ export function resolveAppEnv(mode, env) {
   // Validate early: a typo here would only show up as failed requests in the browser.
   new URL(apiBaseUrl);
   const useMocks = mode === "mock" || env.VITE_USE_MOCKS === "true";
-  return { apiBaseUrl, useMocks };
+  // Map tiles (upgrade 03 §2). The provider for Rwanda is open decision OD-3; the OpenStreetMap
+  // default is for development only (its tile policy does not allow production traffic).
+  const mapTilesUrl = env.VITE_MAP_TILES_URL || DEFAULT_MAP_TILES_URL;
+  new URL(mapTilesUrl.replace(/\{[a-z]\}/g, "0"));
+  return { apiBaseUrl, useMocks, mapTilesUrl };
 }
 
 /**
  * Values for Vite's `define` so the resolved values are baked into the static build.
- * @param {{ apiBaseUrl: string, useMocks: boolean }} appEnv
+ * @param {{ apiBaseUrl: string, useMocks: boolean, mapTilesUrl?: string }} appEnv
  */
-export function defineAppEnv({ apiBaseUrl, useMocks }) {
+export function defineAppEnv({ apiBaseUrl, useMocks, mapTilesUrl = DEFAULT_MAP_TILES_URL }) {
   return {
     "import.meta.env.VITE_API_BASE_URL": JSON.stringify(apiBaseUrl),
     "import.meta.env.VITE_USE_MOCKS": JSON.stringify(String(useMocks)),
+    "import.meta.env.VITE_MAP_TILES_URL": JSON.stringify(mapTilesUrl),
   };
 }
 
@@ -41,10 +47,11 @@ export function defineAppEnv({ apiBaseUrl, useMocks }) {
  * set headers; when they do, send the same policy as a header and add `frame-ancestors 'none'`).
  * Not applied in dev: the Vite dev server injects inline scripts for hot reload.
  *
- * @param {{ apiBaseUrl: string }} options
+ * @param {{ apiBaseUrl: string, mapTilesUrl?: string }} options
  */
-export function contentSecurityPolicy({ apiBaseUrl }) {
+export function contentSecurityPolicy({ apiBaseUrl, mapTilesUrl = DEFAULT_MAP_TILES_URL }) {
   const api = new URL(apiBaseUrl);
+  const tiles = new URL(mapTilesUrl.replace(/\{[a-z]\}/g, "0")).origin;
   const ws = `${api.protocol === "https:" ? "wss:" : "ws:"}//${api.host}`;
   return [
     "default-src 'self'",
@@ -58,7 +65,8 @@ export function contentSecurityPolicy({ apiBaseUrl }) {
     // injection, which React's escaping and the strict script-src keep low. Revisit if the apps
     // move behind a server that can send a nonce header.
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data:",
+    // map tiles come from one configured origin (upgrade 03 §2, OD-3)
+    `img-src 'self' data: ${tiles}`,
     "font-src 'self'",
     `connect-src 'self' ${api.origin} ${ws}`,
     "worker-src 'self'",

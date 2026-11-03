@@ -40,6 +40,8 @@ export function staticFacility(facility: PublicFacility): PublicFacility {
     services: facility.services.map((service) => ({
       ...service,
       queue_load: null,
+      waiting: null,
+      wait_range: null,
       next_slot_at: null,
     })),
   };
@@ -164,7 +166,7 @@ export async function prerender({ url }: { url: string }): Promise<PrerenderResu
   });
   const { api, queryClient, i18n } = services;
 
-  let description = i18n.t("landing.heroBody");
+  let description = i18n.t("home.description");
   const facility = FACILITY_PATH.test(path);
   if (facility) {
     const slug = decodeURIComponent(path.split("/")[2]!);
@@ -207,7 +209,18 @@ export async function prerender({ url }: { url: string }): Promise<PrerenderResu
     }),
   };
   const links =
-    path === "/" ? new Set(["/for-facilities", ...(await facilityPaths(api))]) : new Set<string>();
+    path === "/"
+      ? new Set([
+          "/for-facilities",
+          // static public pages (upgrade 11 §9: pre-rendering where supported)
+          "/how-it-works",
+          "/about",
+          "/privacy",
+          "/terms",
+          "/accessibility",
+          ...(await facilityPaths(api)),
+        ])
+      : new Set<string>();
   // Drop the cache: its garbage-collection timers would keep the build process alive.
   queryClient.clear();
   const heading = /<h1\b[^>]*>([\s\S]*?)<\/h1>/.exec(markup)?.[1];

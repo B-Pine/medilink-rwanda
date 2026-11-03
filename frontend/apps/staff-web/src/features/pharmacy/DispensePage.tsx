@@ -224,7 +224,7 @@ export function DispensePage() {
           className="flex flex-col gap-4"
           aria-label={t("pharmacy.dispense.title")}
         >
-          <fieldset className="m-0 flex flex-col gap-3 rounded-lg border-0 bg-surface p-4 shadow-card">
+          <fieldset className="m-0 flex flex-col gap-3 rounded-2xl border-0 bg-surface p-4 shadow-card">
             <legend className="float-left mb-1 flex items-center gap-2 p-0 font-heading text-h3 font-bold">
               <IdentificationCard
                 aria-hidden="true"
@@ -241,7 +241,7 @@ export function DispensePage() {
                 <label
                   key={method}
                   className={cx(
-                    "grid cursor-pointer grid-cols-[auto_1fr] items-start gap-x-3 rounded-md border p-3",
+                    "grid cursor-pointer grid-cols-[auto_1fr] items-start gap-x-3 rounded-xl border p-3",
                     identity === method ? "border-primary bg-brand-subtle" : "border-border-input",
                   )}
                 >
@@ -291,7 +291,7 @@ export function DispensePage() {
           </ol>
 
           {needsControlled && (
-            <div className="rounded-lg bg-attention-bg p-4">
+            <div className="rounded-2xl bg-attention-bg p-4">
               <CheckboxField
                 label={t("pharmacy.dispense.controlled")}
                 hint={t("pharmacy.dispense.controlledHint")}
@@ -348,7 +348,7 @@ function ItemPlan({
   );
   const legend = `pharmacy-item-${item.id}`;
   return (
-    <li className="flex flex-col gap-3 rounded-lg bg-surface p-4 shadow-card">
+    <li className="flex flex-col gap-3 rounded-2xl bg-surface p-4 shadow-card">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex min-w-0 flex-col gap-0.5">
           <span id={legend} className="font-heading text-h3 font-bold">
@@ -503,7 +503,7 @@ function Substitute({
         same(d.strength, item.strength),
     ) ?? [];
   return (
-    <div className="flex flex-col gap-3 rounded-md bg-subtle p-3">
+    <div className="flex flex-col gap-3 rounded-xl bg-subtle p-3">
       {original.isLoading ? (
         <LoadingState label={t("pharmacy.loading")} />
       ) : options.length ? (
@@ -559,7 +559,7 @@ function Done({ p }: { p: Prescription }) {
       </h2>
       <ol className="m-0 flex list-none flex-col gap-2 p-0">
         {p.dispense_records.map((record) => (
-          <li key={record.id} className="rounded-lg bg-surface p-4 shadow-card">
+          <li key={record.id} className="rounded-2xl bg-surface p-4 shadow-card">
             <p className="m-0 text-body-sm text-fg-muted">
               {t("pharmacy.dispense.signedBy", {
                 name: record.pharmacist_name,
@@ -626,7 +626,7 @@ function QuerySection({ p }: { p: Prescription }) {
   return (
     <section
       aria-labelledby="rx-query"
-      className="flex flex-col gap-3 rounded-lg bg-surface p-4 shadow-card"
+      className="flex flex-col gap-3 rounded-2xl bg-surface p-4 shadow-card"
     >
       <h2 id="rx-query" className="m-0 flex items-center gap-2 text-h3">
         <ChatCircleDots aria-hidden="true" weight="duotone" className="size-6 text-brand" />

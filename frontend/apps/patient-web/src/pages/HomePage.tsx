@@ -94,7 +94,7 @@ export function HomePage() {
           </section>
 
           <Link
-            to="/find-care#symptoms"
+            to="/check-symptoms"
             aria-label={t("home.notSure")}
             aria-describedby="home-not-sure"
             className={cx(

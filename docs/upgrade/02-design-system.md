@@ -23,6 +23,8 @@ Three brand devices carry the identity:
 | **Grid** | 4 px base unit. Staff: 12 columns, 24 px gutters, sidebar 240 px (64 px collapsed), content max 1440 px. Patient: one column up to 640 px; two columns from 1024 px. Breakpoints 360, 640, 768, 1024, 1280. |
 | **Type** | Figtree for headings and ticket numbers, Inter for text, both self-hosted. Scale 12 · 14 · 16 · 18 · 24 · 32 · 48 · 72 (ticket). Staff body 15 px, patient body 18 px (21 px with large text). Hierarchy comes first from weight (400, 500, 600) and colour, then size. Every changing number uses tabular figures. |
 | **Colour** | Ink `#0E1F18` on page `#F2F5F3` and surface `#FFFFFF`; neutrals tinted toward forest green. **Emerald `#047857`** is the only action colour. **Ochre** (`attention-*`) is the only accent and means time or "your turn". **Red** means danger only. Status colours (success, warning, danger, info) always come with an icon and a word. No other colours in the product chrome. |
+| **Colour (public brief, 2026-11-02)** | Light values follow [11](11-public-website.md) §2: forest `#123D2B`, emerald `#168451` (white 4.72:1), link `#11744A`, text `#17231D`, page `#F7F9F7`, light green `#EDF5EF`. Dark theme unchanged. |
+| **Illustration (public pages)** | Custom minimal SVG illustrations are allowed on public pages ([11](11-public-website.md) §7); stock photos and generic AI art are still not. |
 | **Dark theme** | Designed, not inverted: surfaces `#0A1310`, `#101C17`, `#14221C`; emerald lifted to `#34D399` with dark text `#022C22`. Recommended for night shifts. |
 | **Surfaces** | Flat. Hairline dividers separate rows. Cards only for things a person acts on. One soft card shadow (`shadow-card`); a raised shadow only for menus, dialogs and side panels. No borders on cards, no cards inside cards. Inputs keep a visible border at 3:1 contrast or more. |
 | **Radius** | 6 px controls, 10 px staff cards, 16 px patient cards, 20 px hero bands, full round for pills. Nested shapes use concentric radius. |
@@ -75,6 +77,7 @@ All live in `packages/ui`, one file each, with unit and axe tests. Feature code 
 - 150–250 ms, easing `cubic-bezier(0.23, 1, 0.32, 1)`; buttons scale to 0.97 on press.
 - Only three moments animate: the "You're called" takeover (with sound and vibration until acknowledged), live-row highlights, and panels entering.
 - No parallax, no scroll-jacking, no animated counters. `prefers-reduced-motion` and data-saver mode turn movement off.
+- **Decision 2026-11-02 (product owner):** public pages also use gentle transitions. Page sections enter with a 220 ms fade and 4 px lift, staggered by 40 ms (`.ml-stagger`); cards, dialogs and the map card rise into place (`animate-rise`, 240 ms); hover and pressed states ease over 150–200 ms; a live value glows once when it changes. Opacity and transform only, one easing (`ease-out-quint`).
 
 ## 7. Accessibility and performance (release gates)
 

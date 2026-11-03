@@ -53,7 +53,7 @@ export function UserMenu({ me }: { me: StaffMe }) {
     <Menu>
       <MenuTrigger
         aria-label={`${t("shell.userMenu.label")}: ${me.full_name}`}
-        className="inline-flex min-h-target cursor-pointer items-center gap-2 rounded-md px-2 text-fg hover:bg-subtle"
+        className="inline-flex min-h-target cursor-pointer items-center gap-2 rounded-xl px-2 text-fg hover:bg-subtle"
       >
         <span
           aria-hidden="true"

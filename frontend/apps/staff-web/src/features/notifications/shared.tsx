@@ -84,7 +84,7 @@ export function ListSkeleton({ rows = 4, label }: { rows?: number; label: string
   return (
     <div role="status" aria-busy="true" aria-label={label} className="flex flex-col gap-3">
       {Array.from({ length: rows }, (_, index) => (
-        <div key={index} className="flex flex-col gap-2 rounded-lg bg-surface shadow-card p-4">
+        <div key={index} className="flex flex-col gap-2 rounded-2xl bg-surface shadow-card p-4">
           <Skeleton width="40%" height="1.1em" />
           <Skeleton width="85%" />
           <Skeleton width="25%" height="0.8em" />

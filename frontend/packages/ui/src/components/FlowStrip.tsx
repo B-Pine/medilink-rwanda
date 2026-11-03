@@ -33,6 +33,7 @@ export function FlowStrip({
 }) {
   return (
     <div className={cx("overflow-x-auto rounded-lg bg-surface shadow-card", className)}>
+      {/* stages and their bars ease when counts change (upgrade 02 §6) */}
       <ol
         aria-label={label}
         className="m-0 grid min-w-[40rem] list-none p-0"
@@ -45,7 +46,7 @@ export function FlowStrip({
             <li
               key={stage.key}
               className={cx(
-                "relative flex min-w-0 flex-col gap-0.5 py-3.5 pr-4",
+                "relative flex min-w-0 flex-col gap-0.5 py-4 pr-4 transition-colors duration-300 ease-out-quint",
                 index === 0 ? "pl-4" : "pl-7",
                 stage.hot && "bg-attention-bg",
               )}
@@ -91,7 +92,7 @@ export function FlowStrip({
               <span aria-hidden="true" className="mt-2 h-1 overflow-hidden rounded-full bg-subtle">
                 <span
                   className={cx(
-                    "block h-full rounded-full transition-[width] duration-500",
+                    "block h-full rounded-full transition-[width] duration-500 ease-out-quint",
                     stage.hot ? "bg-attention-solid" : "bg-brand",
                   )}
                   style={{ width: `${Math.round(share * 100)}%` }}

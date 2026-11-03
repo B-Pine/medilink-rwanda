@@ -45,13 +45,13 @@ export function DeskBar({
 }) {
   const { t } = useTranslation();
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-lg bg-forest p-3.5 text-on-forest">
+    <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-forest p-3.5 text-on-forest">
       <button
         type="button"
         onClick={onFind}
         aria-keyshortcuts={SHORTCUT_FIND}
         className={cx(
-          "flex min-h-11 min-w-0 flex-1 basis-72 cursor-pointer items-center gap-3 rounded-md px-3.5 text-left",
+          "flex min-h-11 min-w-0 flex-1 basis-72 cursor-pointer items-center gap-3 rounded-xl px-3.5 text-left",
           "border border-on-forest/15 bg-on-forest/[0.07] text-on-forest-muted",
           "transition-colors duration-150 hover:border-on-forest/30 hover:bg-on-forest/[0.11]",
         )}
@@ -67,7 +67,7 @@ export function DeskBar({
         onClick={onCheckIn}
         aria-keyshortcuts={SHORTCUT_NEW}
         className={cx(
-          "inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-md px-4 font-semibold",
+          "inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl px-4 font-semibold",
           "bg-on-forest-accent text-forest transition-[transform,filter] duration-150",
           "hover:brightness-105 active:scale-[0.97]",
         )}
@@ -83,7 +83,7 @@ export function DeskBar({
           type="button"
           onClick={onBookByPhone}
           className={cx(
-            "inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-md px-4 font-semibold",
+            "inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl px-4 font-semibold",
             "border border-on-forest/25 text-on-forest transition-colors duration-150",
             "hover:bg-on-forest/[0.08] active:scale-[0.97]",
           )}
@@ -243,7 +243,7 @@ export function BottleneckCallout({ bottleneck }: { bottleneck: FlowBottleneck |
   const { t } = useTranslation();
   if (!bottleneck) return null;
   return (
-    <p className="m-0 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-md bg-attention-bg px-4 py-3 text-attention">
+    <p className="m-0 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-xl bg-attention-bg px-4 py-3 text-attention">
       <WarningCircle aria-hidden="true" weight="bold" className="size-5 shrink-0" />
       <strong className="font-semibold text-fg">{t(`queue.flow.slow.${bottleneck.stage}`)}</strong>
       <span>
@@ -280,7 +280,7 @@ export function ServiceFilter({
     <div
       role="group"
       aria-label={label}
-      className="inline-flex max-w-full flex-wrap gap-0.5 self-start rounded-lg bg-subtle p-1"
+      className="inline-flex max-w-full flex-wrap gap-0.5 self-start rounded-2xl bg-subtle p-1"
     >
       {options.map((option) => (
         <button
@@ -289,7 +289,7 @@ export function ServiceFilter({
           aria-pressed={value === option.id}
           onClick={() => onChange(option.id)}
           className={cx(
-            "inline-flex min-h-8 cursor-pointer items-center gap-2 rounded-md px-3 text-body-sm font-semibold",
+            "inline-flex min-h-8 cursor-pointer items-center gap-2 rounded-xl px-3 text-body-sm font-semibold",
             "text-fg-secondary transition-[background-color,color,box-shadow] duration-150 hover:text-fg",
             "aria-pressed:bg-surface aria-pressed:text-fg aria-pressed:shadow-card",
           )}

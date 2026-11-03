@@ -153,7 +153,7 @@ function Results({
           <table className="hidden w-full border-collapse text-left sm:table">
             <caption className="sr-only">{t("patients.search.results")}</caption>
             <thead>
-              <tr className="border-b border-border text-body-sm text-fg-muted">
+              <tr className="border-b border-border/60 text-body-sm text-fg-muted">
                 <th scope="col" className="p-2">
                   {t("patients.fields.name")}
                 </th>
@@ -176,7 +176,7 @@ function Results({
             </thead>
             <tbody>
               {results.map((row) => (
-                <tr key={row.facility_patient_id} className="border-b border-border">
+                <tr key={row.facility_patient_id} className="border-b border-border/60">
                   <td className="p-2">
                     <Link to={`/patients/${row.facility_patient_id}`} className="font-medium">
                       {row.full_name}

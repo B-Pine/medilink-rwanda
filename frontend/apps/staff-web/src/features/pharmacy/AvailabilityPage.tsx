@@ -59,7 +59,7 @@ export function AvailabilityPage() {
           <p className="m-0 text-body-sm text-fg-muted" aria-live="polite">
             {t("pharmacy.availability.summary", { count: out })}
           </p>
-          <ul className="m-0 flex list-none flex-col divide-y divide-border rounded-lg bg-surface px-4 shadow-card">
+          <ul className="m-0 flex list-none flex-col divide-y divide-border/60 rounded-2xl bg-surface px-4 shadow-card">
             {rows.map((row) => (
               <AvailabilityItem key={row.drug_code} row={row} canChange={canChange} />
             ))}

@@ -19,10 +19,13 @@ function subscribe(callback: () => void) {
 export function ConnectionIndicator({
   className,
   compact = false,
+  onDark = false,
 }: {
   className?: string;
   /** Icon only on large screens (collapsed sidebar); the state stays in the accessible text. */
   compact?: boolean;
+  /** On the forest sidebar. */
+  onDark?: boolean;
 }) {
   const { t } = useTranslation();
   const online = useSyncExternalStore(
@@ -38,7 +41,13 @@ export function ConnectionIndicator({
       className={cx(
         "m-0 inline-flex items-center gap-2 rounded-full px-3 py-1 text-body-sm font-semibold",
         compact && "lg:p-2",
-        online ? "bg-success-bg text-success" : "bg-danger-bg text-danger",
+        onDark
+          ? online
+            ? "bg-on-forest/10 text-on-forest-accent"
+            : "bg-danger-solid text-on-danger-solid"
+          : online
+            ? "bg-success-bg text-success"
+            : "bg-danger-bg text-danger",
         className,
       )}
     >

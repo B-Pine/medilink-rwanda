@@ -183,7 +183,7 @@ export function BoardPage() {
                   type="button"
                   onClick={() => setOpen(ticket)}
                   className={cx(
-                    "flex cursor-pointer items-center gap-3 rounded-lg py-2 pr-4 pl-2 text-left shadow-card",
+                    "flex cursor-pointer items-center gap-3 rounded-2xl py-2 pr-4 pl-2 text-left shadow-card",
                     "transition-transform duration-150 active:scale-[0.98]",
                     ticket.state === "called" ? "bg-attention-bg" : "bg-surface",
                   )}
@@ -231,7 +231,7 @@ export function BoardPage() {
             <div aria-busy="true" className="flex flex-col gap-3">
               <p className="m-0 text-fg-muted">{t("queue.loading")}</p>
               {[0, 1].map((i) => (
-                <div key={i} className="h-36 animate-pulse rounded-lg bg-surface shadow-card" />
+                <div key={i} className="h-36 animate-pulse rounded-2xl bg-surface shadow-card" />
               ))}
             </div>
           )}
@@ -291,7 +291,7 @@ function QueueTable({
   const { t } = useTranslation();
   const est = group.estimate_next;
   return (
-    <div className="overflow-hidden rounded-lg bg-surface shadow-card">
+    <div className="overflow-hidden rounded-2xl bg-surface shadow-card">
       <div className="flex flex-wrap items-center justify-between gap-3 px-4 pt-3.5 pb-2.5">
         <h3 className="m-0 font-heading text-body font-bold">
           {title}{" "}
@@ -340,7 +340,7 @@ function QueueTable({
               <tr
                 key={ticket.id}
                 className={cx(
-                  "border-t border-border transition-colors hover:bg-page",
+                  "border-t border-border/60 transition-colors hover:bg-page",
                   // on at once, then fade out over 1.5 s
                   changed.has(ticket.id)
                     ? "bg-brand-subtle"
@@ -352,7 +352,7 @@ function QueueTable({
                   <button
                     type="button"
                     onClick={() => onOpen(ticket)}
-                    className="cursor-pointer rounded-md transition-transform duration-150 active:scale-[0.96]"
+                    className="cursor-pointer rounded-xl transition-transform duration-150 active:scale-[0.96]"
                   >
                     <TicketNumber number={ticket.number} stub tone={ticketTone(ticket, index)} />
                   </button>
@@ -460,7 +460,7 @@ function TicketPanel({
         </dl>
 
         {canOperate && waiting && current.is_remote && !current.remote_arrival_confirmed_at && (
-          <div className="flex flex-col gap-2 rounded-md bg-info-bg p-3 text-body-sm">
+          <div className="flex flex-col gap-2 rounded-xl bg-info-bg p-3 text-body-sm">
             <p className="m-0">
               {current.remote_arrival_claimed_at
                 ? t("queue.panel.remoteClaimed")

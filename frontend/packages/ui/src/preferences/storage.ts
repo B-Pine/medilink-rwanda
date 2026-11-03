@@ -16,6 +16,12 @@ const KEYS = {
   // [S9] patient push-off banner dismissed until (ISO date; a UI flag, no personal data), design 07 §3.1
   pushBannerDismissedUntil: "medilink.pushBannerDismissedUntil",
   // [/S9]
+  // [Upgrade U2] home (upgrade 03 §2): last district and insurer choice (catalogue codes only),
+  // and recently opened public facility pages (slug and public name, at most 5). Facility pages
+  // are public data; nothing about a visit or a person is stored.
+  discoveryChoice: "medilink.discoveryChoice",
+  recentPlaces: "medilink.recentPlaces",
+  // [/Upgrade U2]
 } as const;
 
 export type PreferenceKey = keyof typeof KEYS;

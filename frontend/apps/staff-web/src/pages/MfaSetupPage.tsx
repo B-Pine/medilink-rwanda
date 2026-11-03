@@ -166,7 +166,7 @@ function EnrolStep({ onConfirmed }: { onConfirmed: (user: StaffMe, codes: string
         <h2 id="mfa-step-2" className="m-0 text-h3">
           {t("mfaSetup.step2Title")}
         </h2>
-        <div className="self-start rounded-md border border-border bg-qr-bg p-3 text-qr-fg">
+        <div className="self-start rounded-2xl border border-border/60 bg-qr-bg p-3 text-qr-fg">
           <QRCodeSVG
             value={uri}
             size={176}

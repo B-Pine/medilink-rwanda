@@ -94,6 +94,156 @@
   }
 }
 
+/*
+ * Motion (upgrade 02 §6, decision 2026-11-02): content enters with a short fade and lift, panels
+ * and cards rise into place, a changed live row glows once. Opacity and transform only, so nothing
+ * reflows; reduced motion and data saver turn it off (above).
+ */
+@keyframes ml-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+@keyframes ml-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+@keyframes ml-panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+}
+@keyframes ml-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes ml-glow {
+  from {
+    background-color: color-mix(in srgb, var(--color-attention-solid) 18%, transparent);
+  }
+}
+/* Sections of a page follow each other by 40 ms, at most five steps. */
+.ml-stagger > * {
+  animation: var(--animate-enter);
+}
+.ml-stagger > :nth-child(2) {
+  animation-delay: 40ms;
+}
+.ml-stagger > :nth-child(3) {
+  animation-delay: 80ms;
+}
+.ml-stagger > :nth-child(4) {
+  animation-delay: 120ms;
+}
+.ml-stagger > :nth-child(n + 5) {
+  animation-delay: 160ms;
+}
+:root[data-data-saver="on"] .ml-stagger > * {
+  animation: none;
+}
+
+/*
+ * Public header (upgrade 03 §1): stays still while pages cross-fade (view transitions), lifts with
+ * a shadow once the page scrolls (scroll-driven where supported; otherwise the hairline stays).
+ */
+.ml-site-header {
+  view-transition-name: site-header;
+}
+@supports (animation-timeline: scroll()) {
+  .ml-site-header {
+    animation: ml-header-lift linear both;
+    animation-timeline: scroll();
+    animation-range: 0 4rem;
+  }
+}
+@keyframes ml-header-lift {
+  to {
+    border-bottom-color: transparent;
+    box-shadow: var(--ml-shadow-raised);
+  }
+}
+
+/* Route loading bar: grows while the next page loads, fades out when it is shown. */
+.ml-route-progress {
+  opacity: 0;
+  transform: scaleX(0);
+  transition:
+    opacity 300ms var(--ease-out-quint),
+    transform 300ms var(--ease-out-quint);
+  &[data-loading="true"] {
+    opacity: 1;
+    animation: ml-progress 2.5s var(--ease-out-quint) forwards;
+  }
+  &[data-loading="false"] {
+    transform: scaleX(1);
+  }
+}
+@keyframes ml-progress {
+  from {
+    transform: scaleX(0.05);
+  }
+  to {
+    transform: scaleX(0.85);
+  }
+}
+
+/* Page changes (React Router `viewTransition` links): the old page fades, the new one lifts in. */
+::view-transition-old(root) {
+  animation: ml-vt-out 160ms var(--ease-out-quint) both;
+}
+::view-transition-new(root) {
+  animation: ml-vt-in 240ms var(--ease-out-quint) both;
+}
+@keyframes ml-vt-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes ml-vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/*
+ * Soft public look (product owner, 2026-11-02): wide, diffuse shadows tinted toward the brand
+ * green instead of rings and hard edges, and a faint emerald light at the top of the page.
+ * Applied on the public layouts only; staff screens keep the denser default.
+ */
+.ml-soft {
+  --ml-shadow-card: 0 1px 2px rgb(14 31 24 / 0.04), 0 10px 30px -14px rgb(6 78 59 / 0.22);
+  --ml-shadow-raised: 0 2px 6px rgb(14 31 24 / 0.05), 0 28px 56px -20px rgb(6 78 59 / 0.32);
+  background-image: radial-gradient(
+    70rem 30rem at 50% -10rem,
+    color-mix(in srgb, var(--color-primary) 10%, transparent),
+    transparent 70%
+  );
+  background-repeat: no-repeat;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .ml-soft {
+    --ml-shadow-card: 0 0 0 1px rgb(255 255 255 / 0.05), 0 12px 28px -12px rgb(0 0 0 / 0.6);
+    --ml-shadow-raised: 0 0 0 1px rgb(255 255 255 / 0.06), 0 28px 56px -20px rgb(0 0 0 / 0.75);
+  }
+}
+:root[data-theme="dark"] .ml-soft {
+  --ml-shadow-card: 0 0 0 1px rgb(255 255 255 / 0.05), 0 12px 28px -12px rgb(0 0 0 / 0.6);
+  --ml-shadow-raised: 0 0 0 1px rgb(255 255 255 / 0.06), 0 28px 56px -20px rgb(0 0 0 / 0.75);
+}
+
 /* Logo: the colour version on light surfaces, the white version on dark ones. */
 .ml-logo-for-dark {
   display: none;
@@ -151,4 +301,71 @@
   background: currentColor;
   box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 22%, transparent);
   animation: ml-live-pulse 2s ease-in-out infinite;
+}
+
+/* Map pins (upgrade 02 §3 FacilityMap): shape by type, colour by wait, ring when selected. */
+.ml-pin {
+  display: block;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin: 0.1875rem;
+  border: 2px solid var(--color-surface);
+  border-radius: 999px;
+  background: var(--color-fg-muted);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.35);
+}
+.ml-pin--hospital {
+  border-radius: 0.25rem;
+}
+.ml-pin--clinic {
+  border-radius: 0.125rem;
+  transform: rotate(45deg) scale(0.85);
+}
+.ml-pin--post {
+  width: 0.875rem;
+  height: 0.875rem;
+  margin: 0.3125rem;
+}
+.ml-pin--low {
+  background: var(--color-success);
+}
+.ml-pin--medium {
+  background: var(--color-warning);
+}
+.ml-pin--high {
+  background: var(--color-attention-solid);
+}
+.ml-pin--selected {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 1px;
+}
+.ml-pin-you {
+  display: block;
+  width: 1.125rem;
+  height: 1.125rem;
+  border: 3px solid #fff;
+  border-radius: 999px;
+  background: #2563eb;
+  box-shadow: 0 0 0 4px rgb(37 99 235 / 0.25);
+}
+.leaflet-marker-icon:focus-visible .ml-pin {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 1px;
+}
+
+/* Dark theme: the street tiles are light images, so only the tile layer is inverted and muted;
+   pins, the "you" dot and the controls keep their real colours. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .leaflet-tile-pane {
+    filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.85) saturate(0.4);
+  }
+  :root:not([data-theme="light"]) .leaflet-container {
+    background: var(--color-subtle);
+  }
+}
+:root[data-theme="dark"] .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.85) saturate(0.4);
+}
+:root[data-theme="dark"] .leaflet-container {
+  background: var(--color-subtle);
 }

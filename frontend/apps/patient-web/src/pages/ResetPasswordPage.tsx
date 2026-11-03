@@ -16,10 +16,9 @@ import { Link, useSearchParams } from "react-router";
 import { z } from "zod";
 
 import { useApi } from "../app/services";
-import { PageHeading } from "../components/PageHeading";
 import { applyFieldErrors, describeApiError, translator } from "../forms/api-errors";
 import { PATIENT_PASSWORD_MIN } from "../forms/validation";
-import { PublicLayout } from "../layout/PublicLayout";
+import { AuthLayout, AuthTitle } from "../layout/AuthLayout";
 
 const schema = z.object({
   new_password: z.string().min(PATIENT_PASSWORD_MIN, "validation.passwordLength"),
@@ -64,9 +63,9 @@ export function ResetPasswordPage() {
 
   const title = done ? t("reset.doneTitle") : t("reset.title");
   return (
-    <PublicLayout narrow showLogin={false}>
-      <div className="flex flex-col gap-6">
-        <PageHeading title={title}>{title}</PageHeading>
+    <AuthLayout>
+      <div className="flex flex-col gap-5">
+        <AuthTitle title={title} />
         {done ? (
           <>
             <Alert tone="success" role="status" title={t("reset.doneTitle")}>
@@ -111,6 +110,6 @@ export function ResetPasswordPage() {
           </>
         )}
       </div>
-    </PublicLayout>
+    </AuthLayout>
   );
 }

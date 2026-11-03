@@ -67,6 +67,12 @@ STAFF = [
         False,
         {"kigali-demo-clinic": ["pharmacist"]},
     ),
+    (
+        "cashier@demo.medilink.test",
+        "Iradukunda Claudine",
+        False,
+        {"kigali-demo-clinic": ["cashier"]},
+    ),
 ]
 PATIENT = ("patient@demo.medilink.test", "Mukamana Jeanne")
 

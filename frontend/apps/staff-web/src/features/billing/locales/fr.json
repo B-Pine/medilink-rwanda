@@ -123,5 +123,19 @@
       "reviewNote": "Note de vérification (requise si la caisse n’est pas équilibrée)",
       "accept": "Valider la caisse"
     }
+  },
+  "today": {
+    "title": "Caisse",
+    "openPayments": "Ouvrir les paiements",
+    "openShift": "Ouvrir votre caisse",
+    "shiftSince_one": "{{count}} paiement encaissé pendant cette session",
+    "shiftSince_other": "{{count}} paiements encaissés pendant cette session",
+    "numbers": "Aujourd’hui à la caisse",
+    "toPay": "Factures à payer",
+    "partly": "Payées en partie",
+    "payments": "Paiements de la session",
+    "collected": "Encaissé pendant la session",
+    "next": "Prochaines à payer",
+    "nothing": "Aucune facture en attente. Les nouvelles factures arrivent ici après la visite."
   }
 }

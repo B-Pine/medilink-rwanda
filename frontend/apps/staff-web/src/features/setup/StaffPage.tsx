@@ -52,7 +52,7 @@ import {
   useLocale,
 } from "./shared";
 
-const ROLES = ["facility_admin", "receptionist", "doctor", "pharmacist"];
+const ROLES = ["facility_admin", "receptionist", "doctor", "pharmacist", "cashier"];
 const COUNCILS: Council[] = ["rmdc", "ncnm", "npc", "other"];
 
 const initials = (name: string) =>

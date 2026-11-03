@@ -74,7 +74,7 @@ Source: [02 · Users, roles, access](../analysis/02-users-roles-and-permissions.
 | FR-ACC-07 | Clinician licence number; admin attests the check | P1 | S0, S2 | Both | API, CMP | In progress |
 | FR-ACC-08 | Server-side, logged permission checks on patient data | P1 | S0 | Backend | AZ, API | Verified (S0, v0.1.0) |
 | FR-ACC-09 | Super admin emergency access with reason, logged, reviewable | P1 | S6b | Both | AZ, API | In progress |
-| FR-ACC-10 | New roles without changing existing roles | P2 | — | Backend | AZ, INS | Not started |
+| FR-ACC-10 | New roles without changing existing roles (cashier done; triage nurse, laboratory technician next) | P1 | U2 | Both | AZ, INS | In progress |
 
 ## FR-ONB · Tenancy, onboarding, master data
 

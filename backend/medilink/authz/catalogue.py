@@ -46,6 +46,8 @@ ROLES: dict[str, str] = {
     "receptionist": "Receptionist",
     "doctor": "Doctor / clinician",
     "pharmacist": "Pharmacist",
+    # upgrade 06 §4: takes payments, nothing else (no queue control, no clinical data)
+    "cashier": "Cashier",
 }
 
 ROLE_GRANTS: dict[str, frozenset[str]] = {
@@ -106,6 +108,7 @@ ROLE_GRANTS: dict[str, frozenset[str]] = {
     "pharmacist": frozenset(
         {"prescription.view", "pharmacy.dispense", "disputes.comment", "reports.view_own"}
     ),
+    "cashier": frozenset({"billing.record_payment", "disputes.comment", "reports.view_own"}),
 }
 
 

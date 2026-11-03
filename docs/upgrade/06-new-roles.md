@@ -12,7 +12,7 @@ Roles are permission sets, so adding a role must not change existing roles (FR-A
 |---|---|---|---|
 | Triage nurse | P1 | staff-web | `triage.operate`, `vitals.record`, `visit.reason.view`, `queue.call` (triage stage only) |
 | Laboratory technician | P1 (lite) | staff-web | `lab.operate`, `lab.result.enter` |
-| Cashier | P1 | staff-web | `billing.record_payment` without `queue.operate` |
+| Cashier | P1 (built) | staff-web | `billing.record_payment` without `queue.operate` |
 | Community health worker (Umujyanama w'Ubuzima) | P2 | patient-web, special account | `chw.follow` (linked patients only) |
 | Platform support agent | P2 | staff-web platform | `support.handle` |
 | External pharmacy | P2 | public verification + small account | `prescription.external_dispense` |

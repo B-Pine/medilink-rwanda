@@ -28,7 +28,7 @@ export type FacilityType =
   | "diagnostic_center"
   | (string & {});
 
-export type RoleCode = "facility_admin" | "receptionist" | "doctor" | "pharmacist";
+export type RoleCode = "facility_admin" | "receptionist" | "doctor" | "pharmacist" | "cashier";
 
 /**
  * Known permission codes. Feature modules add theirs by declaration merging in their own file,

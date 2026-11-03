@@ -12,8 +12,7 @@ from django.test import override_settings
 from rest_framework.test import APIClient
 
 from medilink.accounts.models import User
-from medilink.masterdata import services as md
-from medilink.masterdata.kinds import KINDS
+from medilink.masterdata.models import Location
 from tests.conftest import login_staff
 from tests.factories import make_staff
 from tests.uploads.conftest import make_pdf
@@ -50,15 +49,8 @@ def platform_client(platform_admin: User) -> APIClient:
 
 @pytest.fixture
 def village(db: Any) -> str:
-    kind = KINDS["locations"]
-    for code, level, parent, name in (
-        ("1209", "sector", "12", "Kimironko"),
-        ("120901", "cell", "1209", "Bibare"),
-        ("12090101", "village", "120901", "Sample village"),
-    ):
-        md.create(
-            kind, {"code": code, "level": level, "parent_code": parent, "name": name}, actor=None
-        )
+    """Abatuje, Bibare cell, Kimironko sector, Gasabo: loaded by masterdata/0004 (NISR)."""
+    assert Location.objects.filter(code="12090101", parent__parent__code="1209").exists()
     return "12090101"
 
 

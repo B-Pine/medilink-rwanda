@@ -232,6 +232,39 @@ def test_public_reads_are_localised_cacheable_and_hide_retired(platform_admin: A
     assert client.get(f"{PUBLIC}/drugs/").status_code == 404  # not a public kind
 
 
+@pytest.mark.acceptance("S1-B13")
+@pytest.mark.django_db
+def test_nisr_locations_loaded() -> None:
+    """masterdata/0004: NISR List of Villages 2019 (data/SOURCE.md), repaired and complete."""
+    counts = {
+        level: Location.objects.filter(level=level).exclude(code__startswith="DEV-").count()
+        for level in ("sector", "cell", "village")
+    }
+    assert counts == {"sector": 416, "cell": 2148, "village": 14816}
+    # every row sits under its parent's code: village 8 digits, cell 6, sector 4
+    for level, length in (("sector", 4), ("cell", 6), ("village", 8)):
+        rows = Location.objects.filter(level=level).exclude(code__startswith="DEV-")
+        assert not rows.exclude(code__regex=rf"^\d{{{length}}}$").exists(), level
+        for code, parent in rows.values_list("code", "parent__code").iterator():
+            assert code.startswith(parent), code
+    # the cells the source left without a code, and the source's other repairs
+    names = dict(
+        Location.objects.filter(
+            code__in=["121403", "121404", "111001", "450301", "521104", "3501", "12090101"]
+        ).values_list("code", "name")
+    )
+    assert names == {
+        "121403": "Kabuga I",
+        "121404": "Kabuga II",
+        "111001": "Kabuguru I",
+        "450301": "Gacurabwenge",
+        "521104": "Rukomo II",
+        "3501": "Bwira",
+        "12090101": "Abatuje",
+    }
+    assert Location.objects.get(code="1110").name == "Rwezamenyo"
+
+
 @pytest.mark.django_db
 def test_location_cascade() -> None:
     client = APIClient()
@@ -328,13 +361,13 @@ def test_platform_validation(platform_client: APIClient) -> None:
     assert filtered["count"] == DiagnosisCode.objects.count()
     location = platform_client.post(
         f"{PLATFORM}/locations/",
-        {"code": "1101", "level": "sector", "parent_code": "1", "name": "X"},
+        {"code": "1199", "level": "sector", "parent_code": "1", "name": "X"},
         format="json",
     )
     assert location.status_code == 400 and "parent_code" in location.json()["error"]["fields"]
-    sector = platform_client.post(
+    sector = platform_client.post(  # 1199: not an NISR code (Nyarugenge's sectors end at 1110)
         f"{PLATFORM}/locations/",
-        {"code": "1101", "level": "sector", "parent_code": "11", "name": "Gitega"},
+        {"code": "1199", "level": "sector", "parent_code": "11", "name": "Test sector"},
         format="json",
     )
     assert sector.status_code == 201, sector.content
@@ -379,11 +412,12 @@ def test_platform_matrix(
 # ---- S1-B13: imports ------------------------------------------------------------------------------
 
 
+# 1199…: not NISR codes, so they don't collide with the loaded list (Nyarugenge ends at 1110)
 LOCATIONS_CSV = (
     "code,level,parent_code,name\n"
-    "110101,cell,1101,Kiyovu\n"
-    "1101,sector,11,Nyarugenge\n"
-    "11010101,village,110101,Ubumwe\n"
+    "119901,cell,1199,Test cell\n"
+    "1199,sector,11,Test sector\n"
+    "11990101,village,119901,Test village\n"
 )
 
 
@@ -393,12 +427,12 @@ def test_import_locations_cli(tmp_path: Path) -> None:
     path = tmp_path / "locations.csv"
     path.write_text(LOCATIONS_CSV, encoding="utf-8")
     call_command("import_locations", str(path))  # dry run
-    assert not Location.objects.filter(code="1101").exists()
+    assert not Location.objects.filter(code="1199").exists()
     call_command("import_locations", str(path), "--apply")
-    village = Location.objects.select_related("parent__parent").get(code="11010101")
-    assert village.parent.parent.code == "1101"
+    village = Location.objects.select_related("parent__parent").get(code="11990101")
+    assert village.parent.parent.code == "1199"
     call_command("import_locations", str(path), "--apply")  # idempotent
-    assert Location.objects.filter(code__startswith="1101").count() == 3
+    assert Location.objects.filter(code__startswith="1199").count() == 3
     assert MasterDataChange.objects.filter(kind="locations", action="import").count() == 3
     bad = tmp_path / "bad.csv"
     bad.write_text(

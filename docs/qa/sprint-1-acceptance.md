@@ -69,5 +69,5 @@ Evidence below points to where each check is covered; the full check text is in 
 
 ## Notes, waivers and follow-ups
 
-- Official NISR sector, cell and village codes: #48 (dev data uses `DEV-` codes).
+- Official NISR sector, cell and village codes: loaded by `masterdata/0004_nisr_locations` (#48; source and checks in `backend/medilink/masterdata/data/SOURCE.md`).
 - `document-templates` master data is not built in S1 (planned with S7).

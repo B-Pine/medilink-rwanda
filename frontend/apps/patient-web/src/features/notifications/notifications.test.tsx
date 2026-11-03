@@ -32,31 +32,33 @@ afterEach(() => setPushClient(null));
 describe("bell and inbox (S9-F5)", () => {
   it("header bell with the count; 18 px cards with the About chip; mark all as read", async () => {
     const { user, container } = await signIn();
-    const bell = await screen.findByRole("link", { name: "Notifications, 2 unread" });
+    const bell = await screen.findByRole("button", { name: "Notifications, 2 unread" });
     expect(bell).toHaveClass("min-h-target", "min-w-target");
     await user.click(bell);
+    await user.click(await screen.findByRole("menuitem", { name: "View all notifications" }));
     expect(
       await screen.findByRole("heading", { level: 1, name: "Notifications" }),
     ).toBeInTheDocument();
     const list = await screen.findByRole("list", { name: "Notifications" });
-    expect(within(list).getAllByRole("listitem")).toHaveLength(3);
+    // one link per notification, under a heading per day
+    expect(within(list).getAllByRole("link")).toHaveLength(3);
     expect(await within(list).findByText("About Keza")).toBeInTheDocument();
     expect(within(list).getAllByText("New")).toHaveLength(2);
     expect(await axe(container)).toHaveNoViolations();
 
     await user.click(screen.getByRole("button", { name: "Mark all as read" }));
     expect(
-      await screen.findByRole("link", { name: "Notifications, none unread" }),
+      await screen.findByRole("button", { name: "Notifications, none unread" }),
     ).toBeInTheDocument();
     expect(screen.getByText("0 unread notifications.")).toBeInTheDocument();
   });
 
   it("updates live and announces new items politely", async () => {
     await signIn();
-    await screen.findByRole("link", { name: "Notifications, 2 unread" });
+    await screen.findByRole("button", { name: "Notifications, 2 unread" });
     await waitFor(() => expect(emitMockNotification({ audience: "patient" })).not.toBeNull());
     expect(
-      await screen.findByRole("link", { name: "Notifications, 3 unread" }),
+      await screen.findByRole("button", { name: "Notifications, 3 unread" }),
     ).toBeInTheDocument();
     expect(await screen.findByText("New notification. 3 unread.")).toHaveAttribute(
       "aria-live",
@@ -73,7 +75,7 @@ describe("bell and inbox (S9-F5)", () => {
       await screen.findByRole("heading", { level: 1, name: /New sign-in|Hari uwinjiye/ }),
     ).toBeInTheDocument();
     expect(
-      await screen.findByRole("link", { name: "Notifications, 1 unread" }),
+      await screen.findByRole("button", { name: "Notifications, 1 unread" }),
     ).toBeInTheDocument();
   });
 });

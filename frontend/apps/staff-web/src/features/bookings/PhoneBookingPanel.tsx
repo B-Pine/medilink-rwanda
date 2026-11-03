@@ -7,6 +7,7 @@ import {
   type Uuid,
 } from "@medilink/api-client";
 import {
+  buttonClassName,
   Alert,
   BODY_SYSTEM_ORDER,
   Button,
@@ -20,6 +21,8 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
+import { Printer } from "@phosphor-icons/react";
 
 import { useApi } from "../../app/services";
 import { PatientPicker, type PickedPatient } from "../patients";
@@ -426,6 +429,13 @@ export function PhoneBookingPanel({
               </span>
             </div>
             <p className="m-0 max-w-sm text-body-sm text-fg-secondary">{t("bookings.done.tell")}</p>
+            <Link
+              to={`/bookings/card/${save.data.booking_code}`}
+              className={buttonClassName({ variant: "secondary", pill: true })}
+            >
+              <Printer aria-hidden="true" />
+              {t("queue.print.card")}
+            </Link>
           </div>
         )}
       </div>

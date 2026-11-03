@@ -300,5 +300,14 @@
     },
     "reasonText": "Explain the reason",
     "open": "Open record"
+  },
+  "contact": {
+    "title": "Contact person",
+    "hint": "For a patient without a phone: a relative or a community health worker who gets reminders and alerts, with the patient's consent.",
+    "name": "Name",
+    "phone": "Phone",
+    "newPhone": "New phone (leave empty to keep it)",
+    "relationship": "Relationship",
+    "relationshipHint": "For example: daughter, neighbour, community health worker"
   }
 }

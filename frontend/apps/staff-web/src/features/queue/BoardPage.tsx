@@ -4,6 +4,7 @@ import { newIdempotencyKey } from "@medilink/api-client";
 import {
   Alert,
   Button,
+  buttonClassName,
   cx,
   Dialog,
   EmptyState,
@@ -19,6 +20,7 @@ import {
   CalendarCheck,
   ClockCountdown,
   MegaphoneSimple,
+  Printer,
   ShieldWarning,
   Siren,
   Star,
@@ -503,6 +505,13 @@ function TicketPanel({
             )}
           </section>
         )}
+        <Link
+          to={`/queue/visits/${current.visit_id}/slip`}
+          className={buttonClassName({ variant: "secondary", pill: true, className: "self-start" })}
+        >
+          <Printer aria-hidden="true" />
+          {t("queue.print.slip")}
+        </Link>
         {current.flags.includes("insurance_unverified") && visit.data && (
           <Link
             to={`/patients/${visit.data.facility_patient_id}?tab=insurance`}
@@ -721,7 +730,18 @@ function CheckInDialog({ onClose, services }: { onClose: () => void; services: s
         onOpenChange={(o) => !o && onClose()}
         title={t("queue.checkIn.done")}
         closeLabel={t("queue.close")}
-        footer={<Button onClick={onClose}>{t("queue.checkIn.close")}</Button>}
+        footer={
+          <>
+            <Link
+              to={`/queue/visits/${checkIn.data.visit_id}/slip`}
+              className={buttonClassName({ variant: "secondary", pill: true })}
+            >
+              <Printer aria-hidden="true" />
+              {t("queue.print.slip")}
+            </Link>
+            <Button onClick={onClose}>{t("queue.checkIn.close")}</Button>
+          </>
+        }
       >
         <div className="flex flex-col items-center gap-2 py-4 text-center">
           <p className="m-0 text-fg-secondary">

@@ -431,5 +431,18 @@
     "next": "Prochaines arrivées",
     "more_one": "{{count}} de plus sur le tableau",
     "more_other": "{{count}} de plus sur le tableau"
+  },
+  "print": {
+    "print": "Imprimer",
+    "hint": "Imprimante thermique 80 mm ; choisissez-la dans la fenêtre d’impression.",
+    "noTicket": "Cette visite n’a pas de ticket.",
+    "yourNumber": "Votre numéro",
+    "wait": "Attente prévue : {{min}}–{{max}} min",
+    "watch": "Regardez l’écran et écoutez votre numéro.",
+    "appointment": "Votre prochaine visite",
+    "code": "Code de réservation",
+    "bring": "Apportez cette carte, votre carte d’assurance et vos médicaments.",
+    "slip": "Imprimer le ticket",
+    "card": "Imprimer la carte de rendez-vous"
   }
 }

@@ -16,6 +16,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 - Changed: the board shows the patient's words and Danger sign / Not paid / Insurance to verify /
   No phone chips, "Raise to emergency" with a reason, "I'm here" claims above Expected, and intake
   done or missing on each expected booking.
+- Added: insurance card photos (front and back) with verify or reject on the patient record,
+  and "Check insurance" from the board; `?tab=` opens a record tab.
+- Added: contact person for a patient without a phone (FR-PAT-18) on the record; printed ticket
+  slip (`/queue/visits/:visitId/slip`) and appointment card (`/bookings/card/:code`), 80 mm,
+  from check-in, the ticket panel and phone booking (upgrade 08 §3).
 
 ### AI symptom assistant, test phase (issue #159)
 

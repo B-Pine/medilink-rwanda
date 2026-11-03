@@ -184,6 +184,9 @@ function Details({ record }: { record: FacilityPatientDetail }) {
     email: record.email ?? "",
     file_number: record.file_number ?? "",
     reception_notes: record.reception_notes ?? "",
+    contact_name: record.emergency_contact?.name ?? "",
+    contact_phone: "",
+    contact_relationship: record.emergency_contact?.relationship ?? "",
   });
   const save = useMutation({
     mutationFn: () => {
@@ -197,6 +200,18 @@ function Details({ record }: { record: FacilityPatientDetail }) {
         file_number: form.file_number || null,
         reception_notes: form.reception_notes || null,
         ...(form.phone ? { phone_e164: phone || form.phone } : {}),
+        // FR-PAT-18 (upgrade 08): a contact person for reminders when the patient has no phone
+        ...(form.contact_name.trim() && (form.contact_phone || record.emergency_contact)
+          ? {
+              emergency_contact: {
+                name: form.contact_name.trim(),
+                phone_e164: form.contact_phone
+                  ? toE164(form.contact_phone) || form.contact_phone
+                  : record.emergency_contact!.phone_e164,
+                relationship: form.contact_relationship.trim() || "other",
+              },
+            }
+          : {}),
       });
     },
     onSuccess: (data) => {
@@ -282,6 +297,33 @@ function Details({ record }: { record: FacilityPatientDetail }) {
         onChange={(e) => setForm({ ...form, file_number: e.target.value })}
         error={errors.file_number}
       />
+      <fieldset className="m-0 flex flex-col gap-3 rounded-xl border border-border p-3">
+        <legend className="px-1 font-semibold">{t("patients.contact.title")}</legend>
+        <p className="m-0 text-body-sm text-fg-secondary">{t("patients.contact.hint")}</p>
+        <TextField
+          label={t("patients.contact.name")}
+          optional
+          value={form.contact_name}
+          onChange={(e) => setForm({ ...form, contact_name: e.target.value })}
+          error={errors["emergency_contact.name"]}
+        />
+        <PhoneField
+          label={
+            record.emergency_contact ? t("patients.contact.newPhone") : t("patients.contact.phone")
+          }
+          optional
+          value={form.contact_phone}
+          onChange={(e) => setForm({ ...form, contact_phone: e.target.value })}
+          error={errors["emergency_contact.phone_e164"]}
+        />
+        <TextField
+          label={t("patients.contact.relationship")}
+          hint={t("patients.contact.relationshipHint")}
+          optional
+          value={form.contact_relationship}
+          onChange={(e) => setForm({ ...form, contact_relationship: e.target.value })}
+        />
+      </fieldset>
       <TextareaField
         label={t("patients.fields.notes")}
         optional

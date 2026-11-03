@@ -300,5 +300,14 @@
     },
     "reasonText": "Précisez la raison",
     "open": "Ouvrir le dossier"
+  },
+  "contact": {
+    "title": "Personne à contacter",
+    "hint": "Pour un patient sans téléphone : un proche ou un agent de santé communautaire qui reçoit les rappels et alertes, avec l’accord du patient.",
+    "name": "Nom",
+    "phone": "Téléphone",
+    "newPhone": "Nouveau téléphone (vide pour le garder)",
+    "relationship": "Lien",
+    "relationshipHint": "Par exemple : fille, voisin, agent de santé communautaire"
   }
 }

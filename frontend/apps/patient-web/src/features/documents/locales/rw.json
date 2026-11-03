@@ -9,6 +9,14 @@
   "empty": "Nta nyandiko irahari",
   "emptyBody": "Muganga nasinya resept, urwandiko cyangwa icyemezo cy'uburwayi, kizagaragara hano.",
   "back": "Inyandiko zanjye",
+  "about": "Ibyerekeye iyi nyandiko",
+  "facts": {
+    "number": "Nimero",
+    "facility": "Ikigo cy'ubuvuzi",
+    "author": "Yanditswe na",
+    "date": "Itariki",
+    "version": "Verisiyo"
+  },
   "notFound": "Ntitubona iyi nyandiko.",
   "by": "na {{name}}",
   "codeLabel": "Kode yo kugenzura",

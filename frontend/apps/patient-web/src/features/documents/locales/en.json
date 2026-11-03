@@ -9,6 +9,14 @@
   "empty": "No documents yet",
   "emptyBody": "When a doctor signs a prescription, letter or sick note for you, it appears here.",
   "back": "My documents",
+  "about": "About this document",
+  "facts": {
+    "number": "Number",
+    "facility": "Facility",
+    "author": "Written by",
+    "date": "Date",
+    "version": "Version"
+  },
   "notFound": "We can't find this document.",
   "by": "by {{name}}",
   "codeLabel": "Verification code",

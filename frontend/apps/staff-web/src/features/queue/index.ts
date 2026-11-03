@@ -5,6 +5,7 @@ import type { ComponentType } from "react";
 import type { FeatureRoutes } from "../../app/features";
 import { QueueHeaderLive } from "./LiveIndicator";
 import { OperationsTodayCard } from "./Operations";
+import { ReceptionTodayCard } from "./ReceptionToday";
 import { OnSiteTodayCard } from "./TodayCard";
 
 const lazy =
@@ -19,12 +20,21 @@ export const queueFeature: FeatureRoutes = {
   shell: [
     { path: "/queue", lazy: lazy(() => import("./QueuePage"), "QueuePage") },
     { path: "/queue/mine", lazy: lazy(() => import("./MyQueuePage"), "MyQueuePage") },
+    // upgrade 08 §3: thermal prints for patients without a phone
+    {
+      path: "/queue/visits/:visitId/slip",
+      lazy: lazy(() => import("./PrintPages"), "TicketSlipPage"),
+    },
+    {
+      path: "/bookings/card/:code",
+      lazy: lazy(() => import("./PrintPages"), "AppointmentCardPage"),
+    },
     { path: "/queue/reorders", lazy: lazy(admin, "ReordersPage") },
     { path: "/reports", lazy: lazy(() => import("./Operations"), "ReportsPage") },
     { path: "/settings/displays", lazy: lazy(admin, "DisplaysPage") },
   ],
   headerItems: [QueueHeaderLive],
-  todayCards: [OperationsTodayCard, OnSiteTodayCard],
+  todayCards: [OperationsTodayCard, ReceptionTodayCard, OnSiteTodayCard],
   commands: [
     {
       actions: (me, t) =>

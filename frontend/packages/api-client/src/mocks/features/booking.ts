@@ -1149,6 +1149,16 @@ export const bookingMocks: FeatureMockFactory = (context) => {
         const ok = staffOnly(request, ["queue.operate", "schedule.view"]);
         if ("error" in ok) return ok.error;
         const url = new URL(request.url);
+        const code = (url.searchParams.get("code") ?? "").trim().toUpperCase().replace(/\s/g, "");
+        if (code) {
+          const today = isoDate(kigaliDay(0));
+          const found = db.bookings
+            .filter((b) => b.facility_slug === FACILITIES.kigaliClinic.slug)
+            .filter((b) => b.booking_code.toUpperCase() === code && b.status !== "superseded")
+            .filter((b) => isoDate(new Date(b.starts_at)) >= today)
+            .map(staffRow);
+          return HttpResponse.json({ count: found.length, results: found });
+        }
         const date = url.searchParams.get("date") ?? isoDate(kigaliDay(0));
         const status = url.searchParams.get("status")?.split(",");
         const rows = db.bookings

@@ -4,6 +4,7 @@ import { newIdempotencyKey } from "@medilink/api-client";
 import {
   Alert,
   Button,
+  buttonClassName,
   cx,
   Dialog,
   EmptyState,
@@ -19,19 +20,23 @@ import {
   CalendarCheck,
   ClockCountdown,
   MegaphoneSimple,
+  Printer,
+  ShieldWarning,
+  Siren,
   Star,
   UsersThree,
 } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router";
+import { Link, useSearchParams } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PhoneBookingPanel, type PhoneBookingMode } from "../bookings";
 import { PageHeading } from "../../components/PageHeading";
 import { PatientPicker } from "../patients";
 import { queueKeys, usePollInterval, useQueueSocket } from "./live";
+import { CodeCheckIn } from "./CodeCheckIn";
 import { ExpectedList, MissedList, useTodayBookings } from "./ExpectedList";
 import { DeskBar, DeskFlow, ServiceFilter, ticketTone } from "./FrontDesk";
 import { RemoteList, useConfirmArrival } from "./RemoteList";
@@ -97,9 +102,18 @@ export function BoardPage() {
   const board = useBoard();
   const [filter, setFilter] = useState<string | null>(null);
   const [open, setOpen] = useState<TicketRow | null>(null);
-  const [checkingIn, setCheckingIn] = useState(false);
   const canBook = useCan("queue.operate");
   const [params, setParams] = useSearchParams();
+  // Reception Today links here with ?find=1 to open the check-in search at once
+  const [checkingIn, setCheckingInState] = useState(() => params.get("find") === "1");
+  const setCheckingIn = (value: boolean) => {
+    setCheckingInState(value);
+    if (!value && params.has("find")) {
+      const next = new URLSearchParams(params);
+      next.delete("find");
+      setParams(next, { replace: true });
+    }
+  };
   const [booking, setBooking] = useState<PhoneBookingMode | null>(null);
   const bookingMode: PhoneBookingMode | null =
     booking ?? (canBook && params.get("book") === "new" ? { kind: "new" } : null);
@@ -122,7 +136,7 @@ export function BoardPage() {
       // "/" opens the check-in search (the patient search has focus)
       if (event.key === "n" || event.key === "N" || event.key === "/") {
         event.preventDefault();
-        setCheckingIn(true);
+        setCheckingInState(true);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -210,15 +224,17 @@ export function BoardPage() {
 
       <div className="grid gap-5 xl:grid-cols-[21rem_minmax(0,1fr)]">
         <section aria-labelledby="expected" className="flex flex-col gap-3 self-start">
+          {canBook && <CodeCheckIn />}
           <h2 id="expected" className="m-0 flex items-center gap-2 font-heading text-h3">
             <CalendarCheck aria-hidden="true" className="size-5 text-fg-muted" />
             {t("queue.board.expected")}
           </h2>
+          {/* "I'm here" claims first: those patients are already at the door */}
+          <RemoteList queues={queues} serviceId={filter} />
           <ExpectedList
             serviceId={filter}
             onNewTime={(b) => setBooking({ kind: "reschedule", booking: b })}
           />
-          <RemoteList queues={queues} serviceId={filter} />
           <MissedList serviceId={filter} />
         </section>
 
@@ -357,8 +373,19 @@ function QueueTable({
                     <TicketNumber number={ticket.number} stub tone={ticketTone(ticket, index)} />
                   </button>
                 </td>
-                <td className="px-2 py-2.5">
+                <td className="max-w-[22rem] px-2 py-2.5">
                   <span className="block font-semibold">{ticket.display_name}</span>
+                  {(ticket.reason_text || ticket.symptoms.length > 0) && (
+                    <span
+                      className={cx(
+                        "block truncate text-body-sm",
+                        ticket.flags.includes("red_flag") ? "text-danger" : "text-fg-secondary",
+                      )}
+                      title={ticket.reason_text || ticket.symptoms.join(", ")}
+                    >
+                      “{ticket.reason_text || ticket.symptoms.join(", ")}”
+                    </span>
+                  )}
                   <span className="text-body-sm text-fg-muted">
                     {[
                       ticket.age_years !== null
@@ -414,7 +441,9 @@ function TicketPanel({
     board
       .find((q) => q.service_id === current.service_id && q.stage === current.stage)
       ?.waiting.filter((r) => r.id !== current.id) ?? [];
-  const [dialog, setDialog] = useState<"priority" | "reorder" | "leave" | "transfer" | null>(null);
+  const [dialog, setDialog] = useState<
+    "priority" | "emergency" | "reorder" | "leave" | "transfer" | null
+  >(null);
   const run = (
     action: Parameters<typeof act.mutate>[0]["action"],
     body?: Parameters<typeof act.mutate>[0]["body"],
@@ -459,6 +488,52 @@ function TicketPanel({
           </div>
         </dl>
 
+        {(current.reason_text || current.symptoms.length > 0) && (
+          <section
+            aria-labelledby="patient-words"
+            className={cx(
+              "flex flex-col gap-1.5 rounded-xl p-3",
+              current.flags.includes("red_flag") ? "bg-danger-bg" : "bg-subtle",
+            )}
+          >
+            <h3 id="patient-words" className="m-0 text-caption font-semibold text-fg-secondary">
+              {t("queue.panel.patientWords")}
+            </h3>
+            {current.reason_text && <p className="m-0">“{current.reason_text}”</p>}
+            {current.symptoms.length > 0 && (
+              <p className="m-0 text-body-sm text-fg-secondary">{current.symptoms.join(" · ")}</p>
+            )}
+          </section>
+        )}
+        <Link
+          to={`/queue/visits/${current.visit_id}/slip`}
+          className={buttonClassName({ variant: "secondary", pill: true, className: "self-start" })}
+        >
+          <Printer aria-hidden="true" />
+          {t("queue.print.slip")}
+        </Link>
+        {current.flags.includes("insurance_unverified") && visit.data && (
+          <Link
+            to={`/patients/${visit.data.facility_patient_id}?tab=insurance`}
+            className="flex min-h-target items-center gap-3 rounded-xl bg-attention-bg px-3 py-2.5 text-fg no-underline"
+          >
+            <ShieldWarning aria-hidden="true" weight="bold" className="size-5 text-attention" />
+            <span className="flex-1 text-body-sm font-semibold">
+              {t("queue.panel.checkInsurance")}
+            </span>
+          </Link>
+        )}
+        {canOperate && waiting && !current.flags.includes("emergency") && (
+          <Button
+            variant="danger"
+            pill
+            className="self-start"
+            onClick={() => setDialog("emergency")}
+          >
+            <Siren aria-hidden="true" weight="bold" />
+            {t("queue.panel.raiseEmergency")}
+          </Button>
+        )}
         {canOperate && waiting && current.is_remote && !current.remote_arrival_confirmed_at && (
           <div className="flex flex-col gap-2 rounded-xl bg-info-bg p-3 text-body-sm">
             <p className="m-0">
@@ -556,6 +631,19 @@ function TicketPanel({
           freeReason
         />
       )}
+      {dialog === "emergency" && (
+        <ReasonDialog
+          title={t("queue.panel.raiseEmergency")}
+          description={t("queue.panel.raiseEmergencyHint")}
+          onClose={() => setDialog(null)}
+          busy={act.isPending}
+          choice={null}
+          reasons={null}
+          onSubmit={(_choice, reason) => run("emergency", { reason_text: reason })}
+          freeReason
+          danger
+        />
+      )}
       {dialog === "reorder" && (
         <ReasonDialog
           title={t("queue.panel.reorder")}
@@ -642,7 +730,18 @@ function CheckInDialog({ onClose, services }: { onClose: () => void; services: s
         onOpenChange={(o) => !o && onClose()}
         title={t("queue.checkIn.done")}
         closeLabel={t("queue.close")}
-        footer={<Button onClick={onClose}>{t("queue.checkIn.close")}</Button>}
+        footer={
+          <>
+            <Link
+              to={`/queue/visits/${checkIn.data.visit_id}/slip`}
+              className={buttonClassName({ variant: "secondary", pill: true })}
+            >
+              <Printer aria-hidden="true" />
+              {t("queue.print.slip")}
+            </Link>
+            <Button onClick={onClose}>{t("queue.checkIn.close")}</Button>
+          </>
+        }
       >
         <div className="flex flex-col items-center gap-2 py-4 text-center">
           <p className="m-0 text-fg-secondary">

@@ -48,7 +48,11 @@
     "no_response": "Ntiyitabye",
     "booked": "Yafashe gahunda {{time}}",
     "lateWalkIn": "Yakererewe: nk'utafashe gahunda",
-    "remote": "Ari kure, ntarahagera"
+    "remote": "Ari kure, ntarahagera",
+    "redFlag": "Ikimenyetso cy'akaga",
+    "unpaid": "Ntiyishyuye",
+    "insurance": "Ubwishingizi bwo kugenzura",
+    "noPhone": "Nta telefone"
   },
   "priority": {
     "elderly": "Umusaza/Umukecuru",
@@ -150,7 +154,9 @@
     "remoteError": "Ntibyakunze kwemeza ko yahageze.",
     "expectedCheckedIn": "{{name}} yanditswe: {{ticket}}",
     "expectedLateWalkIn": "Yahageze igihe cyo gutegereza cyarenze, ashyirwa ku murongo nk'utafashe gahunda. Mumuhe ikindi gihe niba abishaka.",
-    "findPatient": "Shaka umurwayi: izina, telefoni, indangamuntu cyangwa nimero ya dosiye"
+    "findPatient": "Shaka umurwayi: izina, telefoni, indangamuntu cyangwa nimero ya dosiye",
+    "intakeDone": "Impamvu yatanzwe",
+    "intakeMissing": "Nta mpamvu"
   },
   "panel": {
     "service": "Serivisi",
@@ -170,7 +176,11 @@
     "left": "Yagiye",
     "timeline": "Ibyabaye",
     "remoteClaimed": "Umurwayi yakanze \"Nahageze\". Reba ko ari ku biro, hanyuma wemeze.",
-    "remoteNotArrived": "Yiyandikishije ari mu rugo kandi ntaremezwa. Emeza igihe umurwayi ageze ku biro."
+    "remoteNotArrived": "Yiyandikishije ari mu rugo kandi ntaremezwa. Emeza igihe umurwayi ageze ku biro.",
+    "patientWords": "Uko umurwayi abivuga",
+    "raiseEmergency": "Shyira mu byihutirwa",
+    "raiseEmergencyHint": "Umurwayi ajya imbere ku murongo ubu. Vuga icyo wabonye, urugero \"ububabare mu gatuza, ahumeka nabi\".",
+    "checkInsurance": "Genzura ubwishingizi: fotora ikarita, hanyuma wemeze"
   },
   "checkIn": {
     "title": "Andika umurwayi",
@@ -387,5 +397,52 @@
     "slowDetail_other": "Abantu {{count}}, hagati: iminota {{minutes}} kuva bahageze.",
     "people_one": "Umuntu {{count}}",
     "people_other": "Abantu {{count}}"
+  },
+  "code": {
+    "title": "Kwakira hakoreshejwe kode ya gahunda",
+    "label": "Kode ya gahunda",
+    "placeholder": "urugero K03M7Q",
+    "find": "Shaka",
+    "notFound": "Nta gahunda ifite iyi kode hano uyu munsi cyangwa nyuma. Genzura kode n'umurwayi, cyangwa umushake ku izina.",
+    "onDay": "Gahunda yo ku wa {{date}}",
+    "notToday": "Si uyu munsi",
+    "status": {
+      "checked_in": "Yamaze kwakirwa",
+      "cancelled": "Yahagaritswe",
+      "late_cancelled": "Yahagaritswe atinze",
+      "no_show": "Ntiyaje",
+      "superseded": "Yahinduwe"
+    }
+  },
+  "reception": {
+    "title": "Kwakira abarwayi",
+    "openBoard": "Fungura ikibaho cy'umurongo",
+    "numbers": "Uyu munsi ku kwakira",
+    "waiting": "Bategereje ubu",
+    "expected": "Bagitegerejwe",
+    "claims": "\"Ndahari\" byo kwemeza",
+    "missed": "Abataje uyu munsi",
+    "late_one": "Gahunda {{count}} yatinze",
+    "late_other": "Gahunda {{count}} zatinze",
+    "collected": "Ayakiriwe mu isanduku yanjye (RWF)",
+    "noShift": "Nta sanduku ifunguye",
+    "noClaims": "Nta bahageze bo kwemeza.",
+    "openShift": "Fungura isanduku yawe mbere yo kwakira amafaranga",
+    "next": "Abakurikira kuza",
+    "more_one": "Abandi {{count}} ku kibaho",
+    "more_other": "Abandi {{count}} ku kibaho"
+  },
+  "print": {
+    "print": "Capa",
+    "hint": "Imashini ya 80 mm; uyihitemo mu idirishya ryo gucapa.",
+    "noTicket": "Uru ruzinduko nta tike rufite.",
+    "yourNumber": "Nimero yawe",
+    "wait": "Igihe cyo gutegereza: iminota {{min}}–{{max}}",
+    "watch": "Reba kuri ekarani kandi wumve nimero yawe.",
+    "appointment": "Gahunda yawe itaha",
+    "code": "Kode ya gahunda",
+    "bring": "Uzane iyi karita, ikarita y'ubwishingizi n'imiti yawe.",
+    "slip": "Capa itike",
+    "card": "Capa ikarita ya gahunda"
   }
 }

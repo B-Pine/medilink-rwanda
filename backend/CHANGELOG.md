@@ -18,6 +18,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   (merged I/II cells, glued and capitalised names) and the 3 rows where the PDF is incomplete.
 - Changed: the onboarding test village is the real Abatuje (12090101, Bibare, Kimironko).
 
+### Upgrade U2 · Reception (upgrade 05 §2)
+
+- Added: `GET /staff/bookings/?code=` (check-in by booking code); ticket action `emergency`
+  (reason required, audited `visits.ticket.emergency`); board rows carry `reason_text`, `symptoms`
+  and the flags `red_flag`, `unpaid`, `insurance_unverified`, `no_phone`.
+
 ### AI symptom assistant, test phase (issue #159)
 
 - Added: `POST /api/v1/public/assistant/`, one chat turn of the AI symptom assistant. The person's

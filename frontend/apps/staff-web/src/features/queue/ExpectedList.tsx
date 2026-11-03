@@ -1,7 +1,7 @@
 import type { CheckInResult, NoShowReversalReason, StaffBooking } from "@medilink/api-client";
 import { newIdempotencyKey, NO_SHOW_REVERSAL_REASONS } from "@medilink/api-client";
 import { Alert, Badge, Button, EmptyState } from "@medilink/ui";
-import { CalendarCheck } from "@phosphor-icons/react";
+import { CalendarCheck, CheckCircle, Circle } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -33,8 +33,11 @@ export function useTodayBookings(enabled = true) {
 export function ExpectedList({
   serviceId,
   onNewTime,
+  limit,
 }: {
   serviceId: string | null;
+  /** Show only the next few (Reception Today). */
+  limit?: number;
   /** Offer another time (contract S5 §6.2 "Late: offer a new time", R4). */
   onNewTime?: (booking: StaffBooking) => void;
 }) {
@@ -70,9 +73,12 @@ export function ExpectedList({
     );
   }
 
-  const rows = (bookings.data?.results ?? []).filter(
-    (booking) => booking.status === "confirmed" && (!serviceId || booking.service_id === serviceId),
-  );
+  const rows = (bookings.data?.results ?? [])
+    .filter(
+      (booking) =>
+        booking.status === "confirmed" && (!serviceId || booking.service_id === serviceId),
+    )
+    .slice(0, limit);
 
   const done = checkedIn && (
     <Alert
@@ -125,7 +131,10 @@ export function ExpectedList({
         className="m-0 flex list-none flex-col divide-y divide-border/60 overflow-hidden rounded-2xl bg-surface p-0 shadow-card"
       >
         {rows.map((booking) => (
-          <li key={booking.id} className="flex flex-col gap-2.5 px-3 py-3">
+          <li
+            key={booking.id}
+            className="flex flex-col gap-2.5 px-3.5 py-3 transition-colors duration-150 hover:bg-subtle/50"
+          >
             <div className="flex items-start gap-3">
               <time
                 dateTime={booking.starts_at}
@@ -145,11 +154,18 @@ export function ExpectedList({
                   </span>
                 )}
               </span>
-              {booking.late && (
-                <Badge tone="warning" className="shrink-0">
-                  {t("queue.board.expectedLate")}
+              <span className="flex shrink-0 flex-col items-end gap-1">
+                {booking.late && <Badge tone="warning">{t("queue.board.expectedLate")}</Badge>}
+                {/* intake: the patient told us why they come (symptoms at booking) */}
+                <Badge
+                  tone={booking.symptoms.length > 0 ? "success" : "neutral"}
+                  icon={booking.symptoms.length > 0 ? CheckCircle : Circle}
+                >
+                  {booking.symptoms.length > 0
+                    ? t("queue.board.intakeDone")
+                    : t("queue.board.intakeMissing")}
                 </Badge>
-              )}
+              </span>
             </div>
             {canCheckIn && (
               <div className="flex gap-2 pl-15">

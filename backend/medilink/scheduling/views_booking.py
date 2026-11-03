@@ -766,10 +766,26 @@ class StaffBookingsView(StaffBookingView):
             OpenApiParameter("service_id", str),
             OpenApiParameter("membership_id", str),
             OpenApiParameter("status", str),
+            OpenApiParameter(
+                "code",
+                str,
+                description="Booking code from the patient's phone: matches today and later "
+                "(the reception check-in search), any date filter is ignored.",
+            ),
         ],
         responses={200: s.StaffBookingPageSerializer},
     )
     def get(self, request: Request) -> Response:
+        code = (request.query_params.get("code") or "").strip().upper().replace(" ", "")
+        if code:
+            # check-in by code (upgrade 05 §2): today's and future bookings with this code
+            qs = Booking.objects.filter(
+                facility_id=self.facility_id(),
+                booking_code__iexact=code,
+                service_date__gte=timezone.localdate(),
+            ).exclude(status=BookingStatus.SUPERSEDED)
+            rows = list(qs.order_by("starts_at")[:5])
+            return Response({"count": len(rows), "results": staff_rows(rows)})
         day = query_date(request, "date", timezone.localdate())
         qs = Booking.objects.filter(facility_id=self.facility_id(), service_date=day)
         for name in ("service_id", "membership_id"):

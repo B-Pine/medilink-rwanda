@@ -9447,6 +9447,12 @@ paths:
       operationId: staff_bookings
       parameters:
       - in: query
+        name: code
+        schema:
+          type: string
+        description: 'Booking code from the patient''s phone: matches today and later
+          (the reception check-in search), any date filter is ignored.'
+      - in: query
         name: date
         schema:
           type: string
@@ -33098,6 +33104,12 @@ components:
           type: string
           format: date-time
           nullable: true
+        reason_text:
+          type: string
+        symptoms:
+          type: array
+          items:
+            type: string
         version:
           type: integer
       required:
@@ -33113,6 +33125,7 @@ components:
       - number
       - position
       - priority_rank
+      - reason_text
       - remote_arrival_claimed_at
       - remote_arrival_confirmed_at
       - service_id
@@ -33122,6 +33135,7 @@ components:
       - stage
       - state
       - step_out_until
+      - symptoms
       - version
       - visit_id
     TicketStateEnum:

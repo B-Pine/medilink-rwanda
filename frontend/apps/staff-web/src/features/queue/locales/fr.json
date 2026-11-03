@@ -48,7 +48,11 @@
     "no_response": "Appel manqué",
     "booked": "Rendez-vous {{time}}",
     "lateWalkIn": "En retard : sans rendez-vous",
-    "remote": "À distance, pas encore là"
+    "remote": "À distance, pas encore là",
+    "redFlag": "Signe de danger",
+    "unpaid": "Non payé",
+    "insurance": "Assurance à vérifier",
+    "noPhone": "Sans téléphone"
   },
   "priority": {
     "elderly": "Personne âgée",
@@ -150,7 +154,9 @@
     "remoteError": "Impossible de confirmer l’arrivée.",
     "expectedCheckedIn": "{{name}} enregistré : {{ticket}}",
     "expectedLateWalkIn": "Arrivé après le délai de grâce : placé comme sans rendez-vous. Proposez un autre horaire s’il le préfère.",
-    "findPatient": "Trouver un patient : nom, téléphone, carte d'identité ou numéro de dossier"
+    "findPatient": "Trouver un patient : nom, téléphone, carte d'identité ou numéro de dossier",
+    "intakeDone": "Accueil fait",
+    "intakeMissing": "Sans motif"
   },
   "panel": {
     "service": "Service",
@@ -170,7 +176,11 @@
     "left": "Marquer comme parti",
     "timeline": "Historique",
     "remoteClaimed": "Le patient a touché « Je suis là ». Vérifiez qu’il est au guichet, puis confirmez.",
-    "remoteNotArrived": "Inscrit depuis chez lui et pas encore confirmé. Confirmez quand le patient est au guichet."
+    "remoteNotArrived": "Inscrit depuis chez lui et pas encore confirmé. Confirmez quand le patient est au guichet.",
+    "patientWords": "Selon le patient",
+    "raiseEmergency": "Passer en urgence",
+    "raiseEmergencyHint": "Le patient passe en tête de file maintenant. Dites ce que vous avez vu, par exemple « douleur thoracique, respire mal ».",
+    "checkInsurance": "Vérifier l’assurance : photo de la carte, puis vérification"
   },
   "checkIn": {
     "title": "Enregistrer un patient",
@@ -387,5 +397,52 @@
     "slowDetail_other": "{{count}} personnes, médiane {{minutes}} min depuis l'arrivée.",
     "people_one": "{{count}} personne",
     "people_other": "{{count}} personnes"
+  },
+  "code": {
+    "title": "Accueil par code de réservation",
+    "label": "Code de réservation",
+    "placeholder": "ex. K03M7Q",
+    "find": "Chercher",
+    "notFound": "Aucune réservation avec ce code ici pour aujourd’hui ou plus tard. Vérifiez le code avec le patient, ou cherchez-le par son nom.",
+    "onDay": "Réservé pour le {{date}}",
+    "notToday": "Pas aujourd’hui",
+    "status": {
+      "checked_in": "Déjà accueilli",
+      "cancelled": "Annulée",
+      "late_cancelled": "Annulée tard",
+      "no_show": "Absent",
+      "superseded": "Modifiée"
+    }
+  },
+  "reception": {
+    "title": "Accueil",
+    "openBoard": "Ouvrir le tableau de la file",
+    "numbers": "Aujourd’hui à l’accueil",
+    "waiting": "En attente",
+    "expected": "Encore attendus",
+    "claims": "« Je suis là » à confirmer",
+    "missed": "Absents aujourd’hui",
+    "late_one": "{{count}} réservation en retard",
+    "late_other": "{{count}} réservations en retard",
+    "collected": "Encaissé dans ma caisse (RWF)",
+    "noShift": "Aucune caisse ouverte",
+    "noClaims": "Aucune arrivée à confirmer.",
+    "openShift": "Ouvrez votre caisse avant d’encaisser",
+    "next": "Prochaines arrivées",
+    "more_one": "{{count}} de plus sur le tableau",
+    "more_other": "{{count}} de plus sur le tableau"
+  },
+  "print": {
+    "print": "Imprimer",
+    "hint": "Imprimante thermique 80 mm ; choisissez-la dans la fenêtre d’impression.",
+    "noTicket": "Cette visite n’a pas de ticket.",
+    "yourNumber": "Votre numéro",
+    "wait": "Attente prévue : {{min}}–{{max}} min",
+    "watch": "Regardez l’écran et écoutez votre numéro.",
+    "appointment": "Votre prochaine visite",
+    "code": "Code de réservation",
+    "bring": "Apportez cette carte, votre carte d’assurance et vos médicaments.",
+    "slip": "Imprimer le ticket",
+    "card": "Imprimer la carte de rendez-vous"
   }
 }

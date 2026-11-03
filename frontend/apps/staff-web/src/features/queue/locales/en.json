@@ -48,7 +48,11 @@
     "no_response": "Missed call",
     "booked": "Booked {{time}}",
     "lateWalkIn": "Late: walk-in",
-    "remote": "Remote, not here yet"
+    "remote": "Remote, not here yet",
+    "redFlag": "Danger sign",
+    "unpaid": "Not paid",
+    "insurance": "Insurance to verify",
+    "noPhone": "No phone"
   },
   "priority": {
     "elderly": "Elderly",
@@ -150,7 +154,9 @@
     "remoteError": "Could not confirm the arrival.",
     "expectedCheckedIn": "{{name}} checked in: {{ticket}}",
     "expectedLateWalkIn": "Arrived after the grace time, so queued as a walk-in. Offer a new time if they prefer.",
-    "findPatient": "Find a patient: name, phone, national ID or file number"
+    "findPatient": "Find a patient: name, phone, national ID or file number",
+    "intakeDone": "Intake done",
+    "intakeMissing": "No intake"
   },
   "panel": {
     "service": "Service",
@@ -170,7 +176,11 @@
     "left": "Mark as left",
     "timeline": "What happened",
     "remoteClaimed": "The patient tapped \"I'm here\". Check they are at the desk, then confirm.",
-    "remoteNotArrived": "Joined from home and not confirmed yet. Confirm when the patient is at the desk."
+    "remoteNotArrived": "Joined from home and not confirmed yet. Confirm when the patient is at the desk.",
+    "patientWords": "In the patient's words",
+    "raiseEmergency": "Raise to emergency",
+    "raiseEmergencyHint": "The patient goes to the top of the queue now. Say what you saw, for example \"chest pain, struggling to breathe\".",
+    "checkInsurance": "Check insurance: photo of the card, then verify"
   },
   "checkIn": {
     "title": "Check in a patient",
@@ -387,5 +397,52 @@
     "slowDetail_other": "{{count}} people, median {{minutes}} min since arriving.",
     "people_one": "{{count}} person",
     "people_other": "{{count}} people"
+  },
+  "code": {
+    "title": "Check in by booking code",
+    "label": "Booking code",
+    "placeholder": "e.g. K03M7Q",
+    "find": "Find",
+    "notFound": "No booking with this code here for today or later. Check the code with the patient, or find them by name.",
+    "onDay": "Booked for {{date}}",
+    "notToday": "Not today",
+    "status": {
+      "checked_in": "Already checked in",
+      "cancelled": "Cancelled",
+      "late_cancelled": "Cancelled late",
+      "no_show": "Missed",
+      "superseded": "Changed"
+    }
+  },
+  "reception": {
+    "title": "Front desk",
+    "openBoard": "Open the queue board",
+    "numbers": "Today at the front desk",
+    "waiting": "Waiting now",
+    "expected": "Still expected",
+    "claims": "\"I'm here\" to confirm",
+    "missed": "Missed today",
+    "late_one": "{{count}} booking running late",
+    "late_other": "{{count}} bookings running late",
+    "collected": "Collected in my shift (RWF)",
+    "noShift": "No cash shift open",
+    "noClaims": "No arrivals to confirm.",
+    "openShift": "Open your cash shift before taking payments",
+    "next": "Next arrivals",
+    "more_one": "{{count}} more on the board",
+    "more_other": "{{count}} more on the board"
+  },
+  "print": {
+    "print": "Print",
+    "hint": "80 mm thermal printer; choose it in the print window.",
+    "noTicket": "This visit has no ticket.",
+    "yourNumber": "Your number",
+    "wait": "Expected wait: {{min}}–{{max}} min",
+    "watch": "Watch the screen and listen for your number.",
+    "appointment": "Your next visit",
+    "code": "Booking code",
+    "bring": "Bring this card, your insurance card and your medicines.",
+    "slip": "Print ticket slip",
+    "card": "Print appointment card"
   }
 }

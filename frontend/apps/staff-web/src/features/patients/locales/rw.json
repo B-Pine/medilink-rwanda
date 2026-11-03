@@ -171,7 +171,15 @@
     "rejectTitle": "Yanga iyi karita",
     "rejectConsequences": "Ikarita izagaragara nk'iyanzwe kugeza yongeye kugenzurwa.",
     "reason": "Impamvu",
-    "add": "Ongeraho ikarita"
+    "add": "Ongeraho ikarita",
+    "card": {
+      "front": "Imbere y'ikarita",
+      "back": "Inyuma y'ikarita",
+      "added": "Ifoto yongeweho",
+      "missing": "Nta foto iriho",
+      "add": "Ongeraho ifoto",
+      "view": "Reba"
+    }
   },
   "health": {
     "noKnownAllergies": "Nta allergie izwi",
@@ -292,5 +300,14 @@
     },
     "reasonText": "Sobanura impamvu",
     "open": "Fungura dosiye"
+  },
+  "contact": {
+    "title": "Uwo kuvugisha",
+    "hint": "Ku murwayi udafite telefone: umuvandimwe cyangwa umujyanama w'ubuzima uhabwa ubutumwa bwo kwibutsa, umurwayi abyemeye.",
+    "name": "Izina",
+    "phone": "Telefone",
+    "newPhone": "Telefone nshya (siga ubusa ngo igume)",
+    "relationship": "Isano",
+    "relationshipHint": "Urugero: umukobwa, umuturanyi, umujyanama w'ubuzima"
   }
 }

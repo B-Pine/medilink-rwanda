@@ -964,6 +964,15 @@ def act(
             visit.save(update_fields=["priority_class", "priority_reason_code", "updated_at"])
             _save(ticket, "priority_rank")
             extra["priority_class"] = klass
+        elif action == "emergency":
+            # upgrade 05 §2: the front desk sees a danger sign and raises the patient at once
+            _require(ticket, TicketState.WAITING)
+            if not (reason_code or reason_text.strip()):
+                raise FieldRule("reason_code", NEED_REASON)
+            visit.is_emergency = True
+            visit.save(update_fields=["is_emergency", "updated_at"])
+            ticket.priority_rank = RANK_EMERGENCY
+            _save(ticket, "priority_rank")
         elif action == "reorder":
             _require(ticket, TicketState.WAITING)
             if reason_code not in REASON_CODES or (
@@ -1018,7 +1027,7 @@ def act(
             reason_text=reason_text,
             **extra,
         )
-        if action in ("priority", "transfer"):
+        if action in ("priority", "transfer", "emergency"):
             record(
                 f"visits.ticket.{action}",
                 request=actor.request,

@@ -8,6 +8,8 @@ const lazy =
   <K extends string>(load: () => Promise<Record<K, ComponentType>>, name: K) =>
   async () => ({ Component: (await load())[name] });
 
+import { DoctorTodayCard } from "./DoctorToday";
+
 const start = () => import("./StartPage");
 
 /** S6a `clinical`: consultation, vitals, history and unsigned records (contract sprint-06 §6.1). */
@@ -24,7 +26,10 @@ export const clinicalFeature: FeatureRoutes = {
       lazy: lazy(() => import("./History"), "HistoryPage"),
     },
     { path: "/clinical/unsigned", lazy: lazy(() => import("./UnsignedPage"), "UnsignedPage") },
+    { path: "/clinical/results", lazy: lazy(() => import("./ResultsPage"), "ResultsPage") },
   ],
+  // upgrade 05 §3: the doctor's day leads their Today page
+  todayCards: [DoctorTodayCard],
   commands: [
     {
       actions: (me, t) => [

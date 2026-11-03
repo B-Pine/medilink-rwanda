@@ -35,7 +35,61 @@ export interface Vitals {
   weight_kg: string | null;
   height_cm: string | null;
   muac_mm: number | null;
+  /** Red flags so a dangerous number is never missed (upgrade 05 §3). */
+  flags: VitalFlag[];
   is_entered_in_error: boolean;
+}
+
+export type VitalFlag =
+  | "spo2_low"
+  | "bp_high"
+  | "bp_low"
+  | "temp_high"
+  | "temp_low"
+  | "pulse_high"
+  | "pulse_low"
+  | "rr_high";
+
+/** Why the patient came (upgrade 05 §3): their words, symptoms and the triage navigation hint. */
+export interface ReasonForVisit {
+  patient_words: string;
+  symptoms: {
+    code: string;
+    label: string;
+    duration_days: number | null;
+    severity: string;
+    stage: "booking" | "check_in";
+  }[];
+  /** Care navigation, never a diagnosis; `signed_off` false while the rules await review. */
+  triage: {
+    urgency: "self_care" | "soon" | "today" | "emergency";
+    service_code: string;
+    level_of_care: string;
+    red_flags: string[];
+    rules_version: string;
+    signed_off: boolean;
+  } | null;
+}
+
+/** Doctor Today (upgrade 05 §3): counts for the signed-in clinician. */
+export interface MyDay {
+  date: string;
+  seen_today: number;
+  avg_consult_min: number | null;
+  signed_today: number;
+  trend: { date: string; seen: number }[];
+  unsigned: number;
+  unsigned_overdue: number;
+  results_waiting: number;
+  follow_ups_today: number;
+  open_questions: {
+    id: Uuid;
+    prescription_id: Uuid;
+    consultation_id: Uuid;
+    patient_display_name: string;
+    raised_at: string;
+  }[];
+  updated_at: string;
 }
 
 export type VitalsInput = Partial<
@@ -134,6 +188,7 @@ export interface Consultation {
   private_notes: string;
   diagnoses: Diagnosis[];
   vitals: Vitals[];
+  reason_for_visit: ReasonForVisit;
   addenda: Addendum[];
   allergies: ClinicalAllergy[];
   no_known_allergies: boolean | null;
@@ -234,6 +289,50 @@ export interface ClinicalAlert {
   max_usual_quantity: number | null;
 }
 
+export type ScanType = "outside_result" | "legacy_record" | "referral_letter" | "other";
+
+/** A scanned paper record or outside result (S6b L2). */
+export interface ClinicalScan {
+  id: Uuid;
+  facility_patient_id: Uuid;
+  document_type: ScanType;
+  document_date: string;
+  description: string;
+  content_type: string;
+  uploaded_by_name: string;
+  uploaded_at: string;
+  review_id: Uuid | null;
+}
+
+/** An outside result waiting for the doctor (S6b R1). */
+export interface ResultReview {
+  id: Uuid;
+  status: "pending" | "reviewed";
+  scan: ClinicalScan;
+  patient_display_name: string;
+  facility_patient_id: Uuid;
+  assigned_to_name: string;
+  comment: string;
+  reviewed_by_name: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+  version: number;
+}
+
+/** Back-entered history from paper, always labelled historical (S6b L3). */
+export interface HistoryEntry {
+  id: Uuid;
+  kind: "diagnosis" | "allergy" | "condition" | "medication" | "procedure";
+  code: string;
+  display: string;
+  note: string;
+  occurred_on: string | null;
+  source_scan_id: Uuid | null;
+  entered_by_name: string;
+  entered_at: string;
+  is_historical: boolean;
+}
+
 /** Patient view (PR1/PR2): no private notes, no examination. */
 export interface PatientRecordDiagnosis {
   code: string;
@@ -258,7 +357,7 @@ export interface PatientRecord extends PatientRecordRow {
   history_text: string;
   plan_text: string;
   patient_instructions_text: string;
-  vitals: Omit<Vitals, "id" | "visit_id" | "recorded_by_name" | "is_entered_in_error">[];
+  vitals: Omit<Vitals, "id" | "visit_id" | "recorded_by_name" | "is_entered_in_error" | "flags">[];
   addenda: { author_name: string; reason: string; body: string; signed_at: string }[];
 }
 
@@ -279,6 +378,12 @@ export const clinicalPaths = {
   reasons: (fpId: Uuid) => `${STF}/clinical/patients/${fpId}/access-reasons/`,
   access: (fpId: Uuid) => `${STF}/clinical/patients/${fpId}/access/`,
   alerts: `${STF}/clinical/alerts/`,
+  myDay: `${STF}/clinical/my-day/`,
+  results: `${STF}/results-inbox/`,
+  reviewResult: (id: Uuid) => `${STF}/results-inbox/${id}/review/`,
+  scans: (fpId: Uuid) => `${STF}/clinical/patients/${fpId}/scans/`,
+  scanLink: (id: Uuid) => `${STF}/clinical/scans/${id}/download-link/`,
+  historyEntries: (fpId: Uuid) => `${STF}/clinical/patients/${fpId}/history-entries/`,
   records: `${PAT}/records/`,
   record: (id: Uuid) => `${PAT}/records/${id}/`,
 };
@@ -322,6 +427,17 @@ export function createClinicalApi(client: ApiClient) {
       facility_patient_id: Uuid;
       items: { drug_code: string; quantity?: number }[];
     }) => client.post<{ alerts: ClinicalAlert[] }>(clinicalPaths.alerts, body),
+    myDay: () => client.get<MyDay>(clinicalPaths.myDay),
+    /** R1: outside results assigned to me, oldest first. */
+    results: (params: { status?: "pending" | "reviewed"; page?: number } = {}) =>
+      client.get<Paginated<ResultReview>>(clinicalPaths.results + query(params)),
+    reviewResult: (id: Uuid, body: { version: number; comment?: string }) =>
+      client.post<ResultReview>(clinicalPaths.reviewResult(id), body),
+    scans: (fpId: Uuid) => client.get<ClinicalScan[]>(clinicalPaths.scans(fpId)),
+    /** A 5-minute link, audited in the access history. */
+    scanLink: (id: Uuid) =>
+      client.post<{ url: string; expires_at: string }>(clinicalPaths.scanLink(id), {}),
+    historyEntries: (fpId: Uuid) => client.get<HistoryEntry[]>(clinicalPaths.historyEntries(fpId)),
     patient: {
       records: (params: { patient_id?: Uuid; page?: number } = {}) =>
         client.get<Paginated<PatientRecordRow>>(clinicalPaths.records + query(params)),

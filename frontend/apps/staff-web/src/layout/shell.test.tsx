@@ -24,9 +24,9 @@ describe("command palette", () => {
     await waitFor(() => expect(input).toHaveFocus());
     expect(await axe(baseElement)).toHaveNoViolations();
 
-    // built sections are offered (Payments shipped with S8 billing)
-    await user.type(input, "pay");
-    expect(screen.getAllByRole("option", { name: "Payments" }).length).toBeGreaterThan(0);
+    // Sections that only open a placeholder are not offered (design 04 §2: no dead ends)
+    await user.type(input, "audit");
+    expect(screen.queryByRole("option", { name: "Audit log" })).not.toBeInTheDocument();
     await user.clear(input);
 
     await user.type(input, "calen");

@@ -1,7 +1,8 @@
 {
   "nav": {
     "consultation": "Consultation",
-    "unsigned": "Unsigned records"
+    "unsigned": "Unsigned records",
+    "results": "Results"
   },
   "title": "Consultation",
   "headerTitle": "Consultation · {{name}}",
@@ -101,7 +102,10 @@
     "action": "Sign and lock",
     "needPrimary": "Add a primary diagnosis to sign.",
     "signedBy": "Signed by {{name}} on {{time}}",
-    "fingerprint": "Fingerprint {{hash}}…"
+    "fingerprint": "Fingerprint {{hash}}…",
+    "doneTitle": "Record signed",
+    "doneBody": "The prescription and letters went out. Finish the visit from your queue.",
+    "backToQueue": "Back to my queue"
   },
   "integrity": {
     "mismatch": "This record no longer matches its fingerprint. Report it to the facility admin."
@@ -153,6 +157,26 @@
       "weight": "{{value}} kg",
       "height": "{{value}} cm",
       "muac": "MUAC {{value}}"
+    },
+    "tiles": {
+      "temperature": "Temperature",
+      "bp": "Blood pressure",
+      "pulse": "Pulse",
+      "respiratory": "Breathing",
+      "spo2": "Oxygen",
+      "weight": "Weight",
+      "height": "Height",
+      "muac": "MUAC"
+    },
+    "flags": {
+      "spo2_low": "Low oxygen",
+      "bp_high": "Very high blood pressure",
+      "bp_low": "Low blood pressure",
+      "temp_high": "High fever",
+      "temp_low": "Low temperature",
+      "pulse_high": "Fast pulse",
+      "pulse_low": "Slow pulse",
+      "rr_high": "Fast breathing"
     }
   },
   "history": {
@@ -206,6 +230,112 @@
     "overdue": "Over 24 hours",
     "open": "Open the draft for {{name}}",
     "empty": "No unsigned records",
-    "emptyBody": "Every consultation is signed."
+    "emptyBody": "Every consultation is signed.",
+    "columns": {
+      "patient": "Patient",
+      "author": "Started by",
+      "age": "Waiting",
+      "action": "Action"
+    },
+    "openShort": "Open"
+  },
+  "today": {
+    "title": "Your day",
+    "seen": "Seen today",
+    "avg": "Average consult",
+    "min": "min",
+    "signed": "Signed today",
+    "unsigned": "Not signed",
+    "needsYou": "Waiting for you",
+    "allClear": "Nothing waits for you. Well done.",
+    "overdue_one": "{{count}} record unsigned for more than 24 h",
+    "overdue_other": "{{count}} records unsigned for more than 24 h",
+    "question": "Pharmacy question about {{name}}",
+    "askedAt": "Asked at {{time}}",
+    "toSign_one": "{{count}} record to sign",
+    "toSign_other": "{{count}} records to sign",
+    "followUps_one": "{{count}} follow-up due today",
+    "followUps_other": "{{count}} follow-ups due today",
+    "inRoom": "In your room",
+    "upNext": "Up next",
+    "waiting_one": "{{count}} waiting",
+    "waiting_other": "{{count}} waiting",
+    "openRecord": "Open record",
+    "openQueue": "Open my queue",
+    "nobody": "No one is waiting for you right now.",
+    "week": "Patients this week",
+    "weekCaption": "Last 7 days",
+    "results_one": "{{count}} outside result to review",
+    "results_other": "{{count}} outside results to review"
+  },
+  "reasonForVisit": {
+    "title": "Why the patient came",
+    "short": "Reason",
+    "none": "No reason was recorded at booking or check-in. Ask the patient.",
+    "symptoms": "Symptoms",
+    "days_one": "{{count}} day",
+    "days_other": "{{count}} days",
+    "severity": {
+      "mild": "mild",
+      "moderate": "moderate",
+      "severe": "severe"
+    },
+    "urgency": {
+      "emergency": "Emergency",
+      "today": "Be seen today",
+      "soon": "Within a few days",
+      "self_care": "Care at home"
+    },
+    "hint": "Triage navigation hint, not a diagnosis.",
+    "redFlags_one": "{{count}} red flag",
+    "redFlags_other": "{{count}} red flags",
+    "provisional": "Rules {{version}} awaiting clinical sign-off"
+  },
+  "toQueue": "My queue",
+  "results": {
+    "title": "Results",
+    "intro": "Outside lab and imaging results assigned to you. Open each one, then mark it reviewed.",
+    "tabs": {
+      "pending": "To review",
+      "reviewed": "Reviewed"
+    },
+    "untitled": "Outside result",
+    "dated": "dated {{date}}",
+    "uploaded": "Added by {{name}} · {{time}}",
+    "status": {
+      "pending": "To review",
+      "reviewed": "Reviewed"
+    },
+    "view": "View document",
+    "history": "Patient history",
+    "comment": "Comment (optional)",
+    "markReviewed": "Mark reviewed",
+    "reviewedBy": "Reviewed by {{name}} · {{time}}",
+    "empty": {
+      "pending": "No results waiting",
+      "reviewed": "Nothing reviewed yet"
+    },
+    "emptyBody": "Results scanned at reception for your patients appear here."
+  },
+  "paper": {
+    "title": "Paper records and scans",
+    "entries": "Back-entered history",
+    "scans": "Scanned documents",
+    "historical": "From paper",
+    "enteredBy": "entered by {{name}}",
+    "view": "View",
+    "kind": {
+      "diagnosis": "Diagnosis",
+      "condition": "Condition",
+      "allergy": "Allergy",
+      "medication": "Medicine",
+      "procedure": "Procedure"
+    },
+    "type": {
+      "outside_result": "Outside result",
+      "legacy_record": "Paper record",
+      "referral_letter": "Referral letter",
+      "other": "Document"
+    }
   }
 }

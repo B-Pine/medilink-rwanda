@@ -9798,6 +9798,22 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: 'access_reason_required: give a reason for this patient first
             (A1)'
+  /api/v1/staff/clinical/my-day/:
+    get:
+      operationId: staff_clinical_my_day
+      summary: 'Doctor Today: my patients seen, unsigned records, questions and results'
+      tags:
+      - clinical
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyDay'
+          description: ''
   /api/v1/staff/clinical/patients/{facility_patient_id}/access/:
     get:
       operationId: staff_patient_access_state
@@ -18385,6 +18401,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Vitals'
+        reason_for_visit:
+          $ref: '#/components/schemas/ReasonForVisit'
         addenda:
           type: array
           items:
@@ -18438,6 +18456,7 @@ components:
       - patient_instructions_text
       - plan_text
       - private_notes
+      - reason_for_visit
       - signed_at
       - started_at
       - status
@@ -24072,6 +24091,63 @@ components:
       description: |-
         * `upsert` - Create and update
         * `upsert_and_retire_missing` - Create, update and retire missing rows
+    MyDay:
+      type: object
+      description: 'Doctor Today (upgrade 05 §3): counts for one clinician, no clinical
+        content.'
+      properties:
+        date:
+          type: string
+          format: date
+        seen_today:
+          type: integer
+        avg_consult_min:
+          type: integer
+          nullable: true
+        signed_today:
+          type: integer
+        trend:
+          type: array
+          items:
+            $ref: '#/components/schemas/MyDayTrend'
+        unsigned:
+          type: integer
+        unsigned_overdue:
+          type: integer
+        results_waiting:
+          type: integer
+        follow_ups_today:
+          type: integer
+        open_questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/OpenQuestion'
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - avg_consult_min
+      - date
+      - follow_ups_today
+      - open_questions
+      - results_waiting
+      - seen_today
+      - signed_today
+      - trend
+      - unsigned
+      - unsigned_overdue
+      - updated_at
+    MyDayTrend:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        seen:
+          type: integer
+      required:
+      - date
+      - seen
     NearRequest:
       type: object
       properties:
@@ -24332,6 +24408,29 @@ components:
       - name
       - room
       - state
+    OpenQuestion:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        prescription_id:
+          type: string
+          format: uuid
+        consultation_id:
+          type: string
+          format: uuid
+        patient_display_name:
+          type: string
+        raised_at:
+          type: string
+          format: date-time
+      required:
+      - consultation_id
+      - id
+      - patient_display_name
+      - prescription_id
+      - raised_at
     OpenShiftRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -29016,6 +29115,23 @@ components:
       required:
       - count
       - reason
+    ReasonForVisit:
+      type: object
+      properties:
+        patient_words:
+          type: string
+        symptoms:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReasonSymptom'
+        triage:
+          allOf:
+          - $ref: '#/components/schemas/TriageHint'
+          nullable: true
+      required:
+      - patient_words
+      - symptoms
+      - triage
     ReasonInputRequest:
       type: object
       properties:
@@ -29041,6 +29157,26 @@ components:
           maxLength: 300
       required:
       - reason
+    ReasonSymptom:
+      type: object
+      properties:
+        code:
+          type: string
+        label:
+          type: string
+        duration_days:
+          type: integer
+          nullable: true
+        severity:
+          type: string
+        stage:
+          type: string
+      required:
+      - code
+      - duration_days
+      - label
+      - severity
+      - stage
     Receipt:
       type: object
       properties:
@@ -32291,6 +32427,32 @@ components:
           minimum: 0
       required:
       - minutes
+    TriageHint:
+      type: object
+      description: 'Care navigation from the triage rules: an urgency and a service,
+        never a diagnosis.'
+      properties:
+        urgency:
+          type: string
+        service_code:
+          type: string
+        level_of_care:
+          type: string
+        red_flags:
+          type: array
+          items:
+            type: string
+        rules_version:
+          type: string
+        signed_off:
+          type: boolean
+      required:
+      - level_of_care
+      - red_flags
+      - rules_version
+      - service_code
+      - signed_off
+      - urgency
     TriageRequestRequest:
       type: object
       properties:
@@ -32844,10 +33006,15 @@ components:
         muac_mm:
           type: integer
           nullable: true
+        flags:
+          type: array
+          items:
+            type: string
         is_entered_in_error:
           type: boolean
       required:
       - diastolic_mmhg
+      - flags
       - height_cm
       - id
       - is_entered_in_error

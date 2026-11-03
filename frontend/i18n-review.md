@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 4715.
+Keys: 4819.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -871,6 +871,7 @@ File: `apps/staff-web/src/features/clinical/locales/rw.json`
 |---|---|---|---|
 | `nav.consultation` | Isuzuma | Consultation | needs native-speaker review |
 | `nav.unsigned` | Dosiye zitarasinywa | Unsigned records | needs native-speaker review |
+| `nav.results` | Ibisubizo | Results | needs native-speaker review |
 | `title` | Isuzuma | Consultation | needs native-speaker review |
 | `headerTitle` | Isuzuma · {{name}} | Consultation · {{name}} | needs native-speaker review |
 | `loading` | Dosiye irimo gufunguka… | Loading the record… | needs native-speaker review |
@@ -947,6 +948,9 @@ File: `apps/staff-web/src/features/clinical/locales/rw.json`
 | `sign.needPrimary` | Ongeraho indwara y'ingenzi kugira ngo usinye. | Add a primary diagnosis to sign. | needs native-speaker review |
 | `sign.signedBy` | Yasinywe na {{name}} ku wa {{time}} | Signed by {{name}} on {{time}} | needs native-speaker review |
 | `sign.fingerprint` | Igikumwe {{hash}}… | Fingerprint {{hash}}… | needs native-speaker review |
+| `sign.doneTitle` | Dosiye yasinywe | Record signed | needs native-speaker review |
+| `sign.doneBody` | Urupapuro rw'imiti n'amabaruwa byoherejwe. Soza uruzinduko uvuye ku murongo wawe. | The prescription and letters went out. Finish the visit from your queue. | needs native-speaker review |
+| `sign.backToQueue` | Subira ku murongo wanjye | Back to my queue | needs native-speaker review |
 | `integrity.mismatch` | Iyi dosiye ntigihura n'igikumwe cyayo. Bimenyeshe umuyobozi w'ikigo. | This record no longer matches its fingerprint. Report it to the facility admin. | needs native-speaker review |
 | `addendum.none` | Nta nyongera. | No addenda. | needs native-speaker review |
 | `addendum.add` | Ongeraho inyongera | Add addendum | needs native-speaker review |
@@ -987,6 +991,22 @@ File: `apps/staff-web/src/features/clinical/locales/rw.json`
 | `vitals.short.weight` | {{value}} kg | {{value}} kg | needs native-speaker review |
 | `vitals.short.height` | {{value}} cm | {{value}} cm | needs native-speaker review |
 | `vitals.short.muac` | MUAC {{value}} | MUAC {{value}} | needs native-speaker review |
+| `vitals.tiles.temperature` | Ubushyuhe | Temperature | needs native-speaker review |
+| `vitals.tiles.bp` | Umuvuduko w'amaraso | Blood pressure | needs native-speaker review |
+| `vitals.tiles.pulse` | Umutima | Pulse | needs native-speaker review |
+| `vitals.tiles.respiratory` | Guhumeka | Breathing | needs native-speaker review |
+| `vitals.tiles.spo2` | Umwuka (oxygène) | Oxygen | needs native-speaker review |
+| `vitals.tiles.weight` | Ibiro | Weight | needs native-speaker review |
+| `vitals.tiles.height` | Uburebure | Height | needs native-speaker review |
+| `vitals.tiles.muac` | MUAC | MUAC | needs native-speaker review |
+| `vitals.flags.spo2_low` | Umwuka muke | Low oxygen | needs native-speaker review |
+| `vitals.flags.bp_high` | Umuvuduko w'amaraso uri hejuru cyane | Very high blood pressure | needs native-speaker review |
+| `vitals.flags.bp_low` | Umuvuduko w'amaraso uri hasi | Low blood pressure | needs native-speaker review |
+| `vitals.flags.temp_high` | Umuriro mwinshi | High fever | needs native-speaker review |
+| `vitals.flags.temp_low` | Ubushyuhe buri hasi | Low temperature | needs native-speaker review |
+| `vitals.flags.pulse_high` | Umutima wihuta | Fast pulse | needs native-speaker review |
+| `vitals.flags.pulse_low` | Umutima utera buhoro | Slow pulse | needs native-speaker review |
+| `vitals.flags.rr_high` | Guhumeka vuba | Fast breathing | needs native-speaker review |
 | `history.title` | Amateka y'umurwayi | Patient history | needs native-speaker review |
 | `history.drawerTitle` | Amateka · {{name}} | History · {{name}} | needs native-speaker review |
 | `history.open` | Amateka | History | needs native-speaker review |
@@ -1030,6 +1050,88 @@ File: `apps/staff-web/src/features/clinical/locales/rw.json`
 | `unsigned.open` | Fungura inyandiko ya {{name}} | Open the draft for {{name}} | needs native-speaker review |
 | `unsigned.empty` | Nta dosiye itarasinywa | No unsigned records | needs native-speaker review |
 | `unsigned.emptyBody` | Amasuzuma yose yasinywe. | Every consultation is signed. | needs native-speaker review |
+| `unsigned.columns.patient` | Umurwayi | Patient | needs native-speaker review |
+| `unsigned.columns.author` | Yatangijwe na | Started by | needs native-speaker review |
+| `unsigned.columns.age` | Imaze | Waiting | needs native-speaker review |
+| `unsigned.columns.action` | Igikorwa | Action | needs native-speaker review |
+| `unsigned.openShort` | Fungura | Open | needs native-speaker review |
+| `today.title` | Umunsi wawe | Your day | needs native-speaker review |
+| `today.seen` | Abo wakiriye uyu munsi | Seen today | needs native-speaker review |
+| `today.avg` | Igihe cyo gusuzuma (hagati) | Average consult | needs native-speaker review |
+| `today.min` | min | min | needs native-speaker review |
+| `today.signed` | Byasinywe uyu munsi | Signed today | needs native-speaker review |
+| `today.unsigned` | Bitarasinywa | Not signed | needs native-speaker review |
+| `today.needsYou` | Ibigutegereje | Waiting for you | needs native-speaker review |
+| `today.allClear` | Nta kigutegereje. Ni byiza. | Nothing waits for you. Well done. | needs native-speaker review |
+| `today.overdue_one` | Dosiye {{count}} imaze amasaha arenga 24 idasinywe | {{count}} record unsigned for more than 24 h | needs native-speaker review |
+| `today.overdue_other` | Dosiye {{count}} zimaze amasaha arenga 24 zidasinywe | {{count}} records unsigned for more than 24 h | needs native-speaker review |
+| `today.question` | Ikibazo cya farumasi kuri {{name}} | Pharmacy question about {{name}} | needs native-speaker review |
+| `today.askedAt` | Cyabajijwe saa {{time}} | Asked at {{time}} | needs native-speaker review |
+| `today.toSign_one` | Dosiye {{count}} yo gusinya | {{count}} record to sign | needs native-speaker review |
+| `today.toSign_other` | Dosiye {{count}} zo gusinya | {{count}} records to sign | needs native-speaker review |
+| `today.followUps_one` | Isubiramo {{count}} riteganyijwe uyu munsi | {{count}} follow-up due today | needs native-speaker review |
+| `today.followUps_other` | Amasubiramo {{count}} ateganyijwe uyu munsi | {{count}} follow-ups due today | needs native-speaker review |
+| `today.inRoom` | Mu cyumba cyawe | In your room | needs native-speaker review |
+| `today.upNext` | Abakurikira | Up next | needs native-speaker review |
+| `today.waiting_one` | {{count}} arategereje | {{count}} waiting | needs native-speaker review |
+| `today.waiting_other` | {{count}} barategereje | {{count}} waiting | needs native-speaker review |
+| `today.openRecord` | Fungura dosiye | Open record | needs native-speaker review |
+| `today.openQueue` | Fungura umurongo wanjye | Open my queue | needs native-speaker review |
+| `today.nobody` | Nta muntu ugutegereje ubu. | No one is waiting for you right now. | needs native-speaker review |
+| `today.week` | Abarwayi b'iki cyumweru | Patients this week | needs native-speaker review |
+| `today.weekCaption` | Iminsi 7 ishize | Last 7 days | needs native-speaker review |
+| `today.results_one` | Igisubizo {{count}} cyo hanze cyo gusuzuma | {{count}} outside result to review | needs native-speaker review |
+| `today.results_other` | Ibisubizo {{count}} byo hanze byo gusuzuma | {{count}} outside results to review | needs native-speaker review |
+| `reasonForVisit.title` | Icyazanye umurwayi | Why the patient came | needs native-speaker review |
+| `reasonForVisit.short` | Impamvu | Reason | needs native-speaker review |
+| `reasonForVisit.none` | Nta mpamvu yanditswe igihe cyo gufata gahunda cyangwa kwakirwa. Baza umurwayi. | No reason was recorded at booking or check-in. Ask the patient. | needs native-speaker review |
+| `reasonForVisit.symptoms` | Ibimenyetso | Symptoms | needs native-speaker review |
+| `reasonForVisit.days_one` | Umunsi {{count}} | {{count}} day | needs native-speaker review |
+| `reasonForVisit.days_other` | Iminsi {{count}} | {{count}} days | needs native-speaker review |
+| `reasonForVisit.severity.mild` | byoroheje | mild | needs native-speaker review |
+| `reasonForVisit.severity.moderate` | biringaniye | moderate | needs native-speaker review |
+| `reasonForVisit.severity.severe` | bikabije | severe | needs native-speaker review |
+| `reasonForVisit.urgency.emergency` | Byihutirwa | Emergency | needs native-speaker review |
+| `reasonForVisit.urgency.today` | Abonwe uyu munsi | Be seen today | needs native-speaker review |
+| `reasonForVisit.urgency.soon` | Mu minsi mike | Within a few days | needs native-speaker review |
+| `reasonForVisit.urgency.self_care` | Kwivurira mu rugo | Care at home | needs native-speaker review |
+| `reasonForVisit.hint` | Inama yo kuyobora umurwayi, si isuzuma. | Triage navigation hint, not a diagnosis. | needs native-speaker review |
+| `reasonForVisit.redFlags_one` | Ikimenyetso {{count}} gikomeye | {{count}} red flag | needs native-speaker review |
+| `reasonForVisit.redFlags_other` | Ibimenyetso {{count}} bikomeye | {{count}} red flags | needs native-speaker review |
+| `reasonForVisit.provisional` | Amategeko {{version}} ategereje kwemezwa n'abaganga | Rules {{version}} awaiting clinical sign-off | needs native-speaker review |
+| `toQueue` | Umurongo wanjye | My queue | needs native-speaker review |
+| `results.title` | Ibisubizo | Results | needs native-speaker review |
+| `results.intro` | Ibisubizo bya laboratwari n'amafoto byaturutse hanze wahawe. Bifungure, hanyuma wemeze ko wabisuzumye. | Outside lab and imaging results assigned to you. Open each one, then mark it reviewed. | needs native-speaker review |
+| `results.tabs.pending` | Ibyo gusuzuma | To review | needs native-speaker review |
+| `results.tabs.reviewed` | Byasuzumwe | Reviewed | needs native-speaker review |
+| `results.untitled` | Igisubizo cyo hanze | Outside result | needs native-speaker review |
+| `results.dated` | cyo ku wa {{date}} | dated {{date}} | needs native-speaker review |
+| `results.uploaded` | Cyongewemo na {{name}} · {{time}} | Added by {{name}} · {{time}} | needs native-speaker review |
+| `results.status.pending` | Cyo gusuzuma | To review | needs native-speaker review |
+| `results.status.reviewed` | Cyasuzumwe | Reviewed | needs native-speaker review |
+| `results.view` | Reba inyandiko | View document | needs native-speaker review |
+| `results.history` | Amateka y'umurwayi | Patient history | needs native-speaker review |
+| `results.comment` | Icyo uvuga (si ngombwa) | Comment (optional) | needs native-speaker review |
+| `results.markReviewed` | Emeza ko wasuzumye | Mark reviewed | needs native-speaker review |
+| `results.reviewedBy` | Cyasuzumwe na {{name}} · {{time}} | Reviewed by {{name}} · {{time}} | needs native-speaker review |
+| `results.empty.pending` | Nta gisubizo gitegereje | No results waiting | needs native-speaker review |
+| `results.empty.reviewed` | Nta cyasuzumwe kugeza ubu | Nothing reviewed yet | needs native-speaker review |
+| `results.emptyBody` | Ibisubizo by'abarwayi bawe byashyizwe muri sisitemu ku kwakira biza hano. | Results scanned at reception for your patients appear here. | needs native-speaker review |
+| `paper.title` | Dosiye zo ku mpapuro n'inyandiko zafotowe | Paper records and scans | needs native-speaker review |
+| `paper.entries` | Amateka yinjijwe | Back-entered history | needs native-speaker review |
+| `paper.scans` | Inyandiko zafotowe | Scanned documents | needs native-speaker review |
+| `paper.historical` | Byavuye ku mpapuro | From paper | needs native-speaker review |
+| `paper.enteredBy` | byinjijwe na {{name}} | entered by {{name}} | needs native-speaker review |
+| `paper.view` | Reba | View | needs native-speaker review |
+| `paper.kind.diagnosis` | Isuzuma | Diagnosis | needs native-speaker review |
+| `paper.kind.condition` | Indwara | Condition | needs native-speaker review |
+| `paper.kind.allergy` | Allerijiya | Allergy | needs native-speaker review |
+| `paper.kind.medication` | Umuti | Medicine | needs native-speaker review |
+| `paper.kind.procedure` | Igikorwa cy'ubuvuzi | Procedure | needs native-speaker review |
+| `paper.type.outside_result` | Igisubizo cyo hanze | Outside result | needs native-speaker review |
+| `paper.type.legacy_record` | Dosiye yo ku mpapuro | Paper record | needs native-speaker review |
+| `paper.type.referral_letter` | Ibaruwa yo kohereza | Referral letter | needs native-speaker review |
+| `paper.type.other` | Inyandiko | Document | needs native-speaker review |
 
 ## staff-web feature: console (namespace console)
 
@@ -2555,6 +2657,8 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `mine.hold` | Ategereze ibisubizo | Wait for results | needs native-speaker review |
 | `mine.waiting` | Abategereje | Waiting | needs native-speaker review |
 | `mine.nextUp` | Ukurikiyeho | Next up | needs native-speaker review |
+| `mine.openRecord` | Fungura dosiye | Open record | needs native-speaker review |
+| `mine.finishAndNext` | Soza uhamagare ukurikira | Finish and call next | needs native-speaker review |
 | `reorders.title` | Igenzura ry’umurongo | Queue reviews | needs native-speaker review |
 | `reorders.intro` | Igihe cyose umurwayi yimuwe imbere ku murongo, n’impamvu. Bigenzure kugira ngo umurongo ube uw’ukuri. | Every time someone moved a patient up the queue, with the reason. Review them to keep the queue fair. | needs native-speaker review |
 | `reorders.onlyOpen` | Erekana gusa ibitaragenzurwa | Show only moves not yet reviewed | needs native-speaker review |

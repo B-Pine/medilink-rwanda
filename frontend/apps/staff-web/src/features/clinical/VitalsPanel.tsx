@@ -2,10 +2,12 @@ import {
   VITAL_FIELDS,
   VITAL_RANGES,
   type VitalField,
+  type VitalFlag,
   type Vitals,
   type VitalsInput,
 } from "@medilink/api-client";
-import { Alert, Button, ConfirmDialog, TextField } from "@medilink/ui";
+import { Alert, Button, ConfirmDialog, cx, TextField } from "@medilink/ui";
+import { WarningOctagon } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
@@ -35,6 +37,38 @@ function localErrors(values: Record<VitalField, string>): Partial<Record<VitalFi
     if (!Number.isFinite(n) || n < low || n > high) errors[field] = true;
   }
   return errors;
+}
+
+const FLAGS_OF: Record<string, VitalFlag[]> = {
+  temperature: ["temp_high", "temp_low"],
+  bp: ["bp_high", "bp_low"],
+  pulse: ["pulse_high", "pulse_low"],
+  respiratory: ["rr_high"],
+  spo2: ["spo2_low"],
+};
+
+/** One tile per measured value; a flagged value is red so it is never missed. */
+function tiles(v: Vitals) {
+  const all = [
+    { key: "temperature", value: v.temperature_c, unit: "°C" },
+    {
+      key: "bp",
+      value: v.systolic_mmhg && v.diastolic_mmhg ? `${v.systolic_mmhg}/${v.diastolic_mmhg}` : null,
+      unit: "mmHg",
+    },
+    { key: "pulse", value: v.pulse_bpm, unit: "bpm" },
+    { key: "respiratory", value: v.respiratory_rate, unit: "/min" },
+    { key: "spo2", value: v.spo2_pct, unit: "%" },
+    { key: "weight", value: v.weight_kg, unit: "kg" },
+    { key: "height", value: v.height_cm, unit: "cm" },
+    { key: "muac", value: v.muac_mm, unit: "mm" },
+  ];
+  return all
+    .filter((tile) => tile.value !== null && tile.value !== "")
+    .map((tile) => ({
+      ...tile,
+      flagged: (FLAGS_OF[tile.key] ?? []).some((f) => v.flags.includes(f)),
+    }));
 }
 
 const EMPTY = Object.fromEntries(VITAL_FIELDS.map((f) => [f, ""])) as Record<VitalField, string>;
@@ -89,30 +123,76 @@ export function VitalsPanel({ visitId, onRecorded }: { visitId: string; onRecord
       {rows.length > 0 ? (
         <ul
           aria-label={t("clinical.vitals.recorded")}
-          className="m-0 flex list-none flex-col gap-2 p-0"
+          className="m-0 flex list-none flex-col gap-3 p-0"
         >
           {rows.map((v) => (
-            <li
-              key={v.id}
-              className="flex flex-wrap items-center gap-3 rounded-2xl border border-border/60 p-3"
-            >
-              <span className="font-semibold tabular-nums">{line(v)}</span>
-              <span className="text-body-sm text-fg-muted">
-                {t("clinical.vitals.by", {
-                  name: v.recorded_by_name ?? "—",
-                  time: when.time(v.recorded_at),
-                })}
-              </span>
-              {canRecord && (
-                <Button variant="ghost" className="ms-auto" onClick={() => setWrong(v)}>
-                  {t("clinical.vitals.markWrong")}
-                </Button>
+            <li key={v.id} className="flex flex-col gap-3 rounded-xl bg-subtle/60 p-3">
+              <span className="sr-only">{line(v)}</span>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-6">
+                {tiles(v).map((tile) => (
+                  <div
+                    key={tile.key}
+                    className={cx(
+                      "flex flex-col gap-0.5 rounded-lg px-3 py-2",
+                      tile.flagged ? "bg-danger-bg ring-1 ring-danger/30" : "bg-surface",
+                    )}
+                  >
+                    <span
+                      className={cx(
+                        "text-caption font-semibold",
+                        tile.flagged ? "text-danger" : "text-fg-secondary",
+                      )}
+                    >
+                      {t(`clinical.vitals.tiles.${tile.key}`)}
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      className={cx(
+                        "font-heading text-h3 leading-tight font-semibold tabular-nums",
+                        tile.flagged && "text-danger",
+                      )}
+                    >
+                      {tile.value}
+                      <span className="ms-1 text-caption font-medium text-fg-muted">
+                        {tile.unit}
+                      </span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+              {v.flags.length > 0 && (
+                <p role="alert" className="m-0 flex flex-wrap items-center gap-1.5 text-body-sm">
+                  <WarningOctagon aria-hidden="true" weight="fill" className="size-4 text-danger" />
+                  {v.flags.map((flag) => (
+                    <span
+                      key={flag}
+                      className="rounded-full bg-danger-bg px-2 py-0.5 font-semibold text-danger"
+                    >
+                      {t(`clinical.vitals.flags.${flag}`)}
+                    </span>
+                  ))}
+                </p>
               )}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-body-sm text-fg-muted">
+                  {t("clinical.vitals.by", {
+                    name: v.recorded_by_name ?? "—",
+                    time: when.time(v.recorded_at),
+                  })}
+                </span>
+                {canRecord && (
+                  <Button variant="ghost" className="ms-auto" onClick={() => setWrong(v)}>
+                    {t("clinical.vitals.markWrong")}
+                  </Button>
+                )}
+              </div>
             </li>
           ))}
         </ul>
       ) : (
-        <p className="m-0 text-fg-muted">{t("clinical.vitals.none")}</p>
+        <p className="m-0 rounded-xl bg-subtle/60 px-4 py-5 text-center text-fg-muted">
+          {t("clinical.vitals.none")}
+        </p>
       )}
 
       {canRecord && (

@@ -16,6 +16,7 @@ import { Link, useNavigate, useParams } from "react-router";
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
 import { NoAccessContent } from "../../pages/NotFoundPage";
+import { MyDayStrip, useMyDay } from "./DoctorToday";
 import { errorText, isReasonRequired, useCan } from "./shared";
 
 /** Opens (or returns) my draft for a visit (C1) and goes to it. */
@@ -42,11 +43,13 @@ export function StartPage() {
     enabled: allowed,
   });
   const open = useOpen();
+  const day = useMyDay(allowed);
   if (!allowed) return <NoAccessContent />;
   const current = mine.data?.current ?? null;
   return (
-    <div className="flex max-w-3xl flex-col gap-5">
+    <div className="flex max-w-4xl flex-col gap-5">
       <PageHeader title={t("clinical.start.title")} description={t("clinical.start.description")} />
+      {day.data && <MyDayStrip data={day.data} />}
       {mine.isPending ? (
         <LoadingState label={t("clinical.loading")} />
       ) : mine.isError ? (
@@ -56,13 +59,19 @@ export function StartPage() {
       ) : current ? (
         <section
           aria-labelledby="current-patient"
-          className="flex flex-wrap items-center gap-4 rounded-2xl bg-surface shadow-card p-5"
+          className="flex animate-rise flex-wrap items-center gap-5 rounded-2xl bg-surface p-6 shadow-card"
         >
-          <TicketNumber number={current.number} />
-          <div className="flex min-w-0 flex-1 flex-col gap-1">
-            <h2 id="current-patient" className="m-0 text-h3">
+          <TicketNumber number={current.number} size="lg" stub />
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <h2 id="current-patient" className="m-0 font-heading text-h1 tracking-tight">
               {current.display_name}
             </h2>
+            {current.age_years !== null && (
+              <span className="text-fg-secondary">
+                {t("clinical.age", { count: current.age_years })}
+                {current.service_point ? ` · ${current.service_point}` : ""}
+              </span>
+            )}
             <span>
               <Badge tone="info">
                 {t(
@@ -71,7 +80,13 @@ export function StartPage() {
               </Badge>
             </span>
           </div>
-          <Button size="lg" onClick={() => open.mutate(current.visit_id)} disabled={open.isPending}>
+          <Button
+            size="lg"
+            pill
+            loading={open.isPending}
+            onClick={() => open.mutate(current.visit_id)}
+            disabled={open.isPending}
+          >
             <Notepad aria-hidden="true" className="size-icon" />
             {t("clinical.start.open")}
           </Button>

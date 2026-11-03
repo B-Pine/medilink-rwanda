@@ -15,7 +15,7 @@ import {
   TextareaField,
   TextField,
 } from "@medilink/ui";
-import { Flask, FirstAidKit, Plus, SignOut } from "@phosphor-icons/react";
+import { EnvelopeSimple, FirstAidKit, Flask, Plus, SignOut } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -78,10 +78,19 @@ export function LettersSection({ consultation: c }: { consultation: Consultation
       id="letters"
       tabIndex={-1}
       aria-labelledby="letters-title"
-      className="flex scroll-mt-24 flex-col gap-3 rounded-2xl bg-surface p-4 shadow-card"
+      className="flex scroll-mt-28 flex-col gap-4 rounded-2xl bg-surface p-5 shadow-card outline-none focus-visible:ring-2 focus-visible:ring-focus"
     >
       <div className="flex flex-col gap-1">
-        <h2 id="letters-title" className="m-0 text-h3">
+        <h2
+          id="letters-title"
+          className="m-0 flex items-center gap-3 font-heading text-h3 tracking-tight"
+        >
+          <span
+            aria-hidden="true"
+            className="grid size-9 shrink-0 place-items-center rounded-lg bg-brand-subtle text-on-brand-subtle"
+          >
+            <EnvelopeSimple weight="bold" className="size-[1.125rem]" />
+          </span>
           {t("documents.letters.title")}
         </h2>
         <p className="m-0 text-body-sm text-fg-secondary">

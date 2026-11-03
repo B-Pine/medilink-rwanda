@@ -27,6 +27,7 @@ import {
 } from "@medilink/ui";
 import {
   ChatCircleText,
+  Pill,
   Plus,
   Storefront,
   Trash,
@@ -100,10 +101,16 @@ export function PrescriptionSection({ consultation: c }: { consultation: Consult
       id="prescription"
       tabIndex={-1}
       aria-labelledby="prescription-title"
-      className="flex scroll-mt-24 flex-col gap-3 rounded-2xl bg-surface p-4 shadow-card"
+      className="flex scroll-mt-28 flex-col gap-4 rounded-2xl bg-surface p-5 shadow-card outline-none focus-visible:ring-2 focus-visible:ring-focus"
     >
       <div className="flex flex-wrap items-center gap-3">
-        <h2 id="prescription-title" className="m-0 text-h3">
+        <span
+          aria-hidden="true"
+          className="grid size-9 shrink-0 place-items-center rounded-lg bg-brand-subtle text-on-brand-subtle"
+        >
+          <Pill weight="bold" className="size-[1.125rem]" />
+        </span>
+        <h2 id="prescription-title" className="m-0 font-heading text-h3 tracking-tight">
           {t("pharmacy.prescription.title")}
         </h2>
         {p && p.status !== "draft" && (

@@ -13,6 +13,7 @@ urlpatterns = [
     ),
     path("visits/<uuid:visit_id>/vitals/", v.VisitVitalsView.as_view(), name="staff-visit-vitals"),
     path("consultations/", v.ConsultationListView.as_view(), name="staff-consultations"),
+    path("clinical/my-day/", v.MyDayView.as_view(), name="staff-clinical-my-day"),
     path(
         "consultations/<uuid:consultation_id>/",
         v.ConsultationView.as_view(),

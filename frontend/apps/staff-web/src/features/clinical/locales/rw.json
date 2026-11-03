@@ -1,7 +1,8 @@
 {
   "nav": {
     "consultation": "Isuzuma",
-    "unsigned": "Dosiye zitarasinywa"
+    "unsigned": "Dosiye zitarasinywa",
+    "results": "Ibisubizo"
   },
   "title": "Isuzuma",
   "headerTitle": "Isuzuma · {{name}}",
@@ -101,7 +102,10 @@
     "action": "Sinya kandi ufunge",
     "needPrimary": "Ongeraho indwara y'ingenzi kugira ngo usinye.",
     "signedBy": "Yasinywe na {{name}} ku wa {{time}}",
-    "fingerprint": "Igikumwe {{hash}}…"
+    "fingerprint": "Igikumwe {{hash}}…",
+    "doneTitle": "Dosiye yasinywe",
+    "doneBody": "Urupapuro rw'imiti n'amabaruwa byoherejwe. Soza uruzinduko uvuye ku murongo wawe.",
+    "backToQueue": "Subira ku murongo wanjye"
   },
   "integrity": {
     "mismatch": "Iyi dosiye ntigihura n'igikumwe cyayo. Bimenyeshe umuyobozi w'ikigo."
@@ -153,6 +157,26 @@
       "weight": "{{value}} kg",
       "height": "{{value}} cm",
       "muac": "MUAC {{value}}"
+    },
+    "tiles": {
+      "temperature": "Ubushyuhe",
+      "bp": "Umuvuduko w'amaraso",
+      "pulse": "Umutima",
+      "respiratory": "Guhumeka",
+      "spo2": "Umwuka (oxygène)",
+      "weight": "Ibiro",
+      "height": "Uburebure",
+      "muac": "MUAC"
+    },
+    "flags": {
+      "spo2_low": "Umwuka muke",
+      "bp_high": "Umuvuduko w'amaraso uri hejuru cyane",
+      "bp_low": "Umuvuduko w'amaraso uri hasi",
+      "temp_high": "Umuriro mwinshi",
+      "temp_low": "Ubushyuhe buri hasi",
+      "pulse_high": "Umutima wihuta",
+      "pulse_low": "Umutima utera buhoro",
+      "rr_high": "Guhumeka vuba"
     }
   },
   "history": {
@@ -206,6 +230,112 @@
     "overdue": "Zirengeje amasaha 24",
     "open": "Fungura inyandiko ya {{name}}",
     "empty": "Nta dosiye itarasinywa",
-    "emptyBody": "Amasuzuma yose yasinywe."
+    "emptyBody": "Amasuzuma yose yasinywe.",
+    "columns": {
+      "patient": "Umurwayi",
+      "author": "Yatangijwe na",
+      "age": "Imaze",
+      "action": "Igikorwa"
+    },
+    "openShort": "Fungura"
+  },
+  "today": {
+    "title": "Umunsi wawe",
+    "seen": "Abo wakiriye uyu munsi",
+    "avg": "Igihe cyo gusuzuma (hagati)",
+    "min": "min",
+    "signed": "Byasinywe uyu munsi",
+    "unsigned": "Bitarasinywa",
+    "needsYou": "Ibigutegereje",
+    "allClear": "Nta kigutegereje. Ni byiza.",
+    "overdue_one": "Dosiye {{count}} imaze amasaha arenga 24 idasinywe",
+    "overdue_other": "Dosiye {{count}} zimaze amasaha arenga 24 zidasinywe",
+    "question": "Ikibazo cya farumasi kuri {{name}}",
+    "askedAt": "Cyabajijwe saa {{time}}",
+    "toSign_one": "Dosiye {{count}} yo gusinya",
+    "toSign_other": "Dosiye {{count}} zo gusinya",
+    "followUps_one": "Isubiramo {{count}} riteganyijwe uyu munsi",
+    "followUps_other": "Amasubiramo {{count}} ateganyijwe uyu munsi",
+    "inRoom": "Mu cyumba cyawe",
+    "upNext": "Abakurikira",
+    "waiting_one": "{{count}} arategereje",
+    "waiting_other": "{{count}} barategereje",
+    "openRecord": "Fungura dosiye",
+    "openQueue": "Fungura umurongo wanjye",
+    "nobody": "Nta muntu ugutegereje ubu.",
+    "week": "Abarwayi b'iki cyumweru",
+    "weekCaption": "Iminsi 7 ishize",
+    "results_one": "Igisubizo {{count}} cyo hanze cyo gusuzuma",
+    "results_other": "Ibisubizo {{count}} byo hanze byo gusuzuma"
+  },
+  "reasonForVisit": {
+    "title": "Icyazanye umurwayi",
+    "short": "Impamvu",
+    "none": "Nta mpamvu yanditswe igihe cyo gufata gahunda cyangwa kwakirwa. Baza umurwayi.",
+    "symptoms": "Ibimenyetso",
+    "days_one": "Umunsi {{count}}",
+    "days_other": "Iminsi {{count}}",
+    "severity": {
+      "mild": "byoroheje",
+      "moderate": "biringaniye",
+      "severe": "bikabije"
+    },
+    "urgency": {
+      "emergency": "Byihutirwa",
+      "today": "Abonwe uyu munsi",
+      "soon": "Mu minsi mike",
+      "self_care": "Kwivurira mu rugo"
+    },
+    "hint": "Inama yo kuyobora umurwayi, si isuzuma.",
+    "redFlags_one": "Ikimenyetso {{count}} gikomeye",
+    "redFlags_other": "Ibimenyetso {{count}} bikomeye",
+    "provisional": "Amategeko {{version}} ategereje kwemezwa n'abaganga"
+  },
+  "toQueue": "Umurongo wanjye",
+  "results": {
+    "title": "Ibisubizo",
+    "intro": "Ibisubizo bya laboratwari n'amafoto byaturutse hanze wahawe. Bifungure, hanyuma wemeze ko wabisuzumye.",
+    "tabs": {
+      "pending": "Ibyo gusuzuma",
+      "reviewed": "Byasuzumwe"
+    },
+    "untitled": "Igisubizo cyo hanze",
+    "dated": "cyo ku wa {{date}}",
+    "uploaded": "Cyongewemo na {{name}} · {{time}}",
+    "status": {
+      "pending": "Cyo gusuzuma",
+      "reviewed": "Cyasuzumwe"
+    },
+    "view": "Reba inyandiko",
+    "history": "Amateka y'umurwayi",
+    "comment": "Icyo uvuga (si ngombwa)",
+    "markReviewed": "Emeza ko wasuzumye",
+    "reviewedBy": "Cyasuzumwe na {{name}} · {{time}}",
+    "empty": {
+      "pending": "Nta gisubizo gitegereje",
+      "reviewed": "Nta cyasuzumwe kugeza ubu"
+    },
+    "emptyBody": "Ibisubizo by'abarwayi bawe byashyizwe muri sisitemu ku kwakira biza hano."
+  },
+  "paper": {
+    "title": "Dosiye zo ku mpapuro n'inyandiko zafotowe",
+    "entries": "Amateka yinjijwe",
+    "scans": "Inyandiko zafotowe",
+    "historical": "Byavuye ku mpapuro",
+    "enteredBy": "byinjijwe na {{name}}",
+    "view": "Reba",
+    "kind": {
+      "diagnosis": "Isuzuma",
+      "condition": "Indwara",
+      "allergy": "Allerijiya",
+      "medication": "Umuti",
+      "procedure": "Igikorwa cy'ubuvuzi"
+    },
+    "type": {
+      "outside_result": "Igisubizo cyo hanze",
+      "legacy_record": "Dosiye yo ku mpapuro",
+      "referral_letter": "Ibaruwa yo kohereza",
+      "other": "Inyandiko"
+    }
   }
 }

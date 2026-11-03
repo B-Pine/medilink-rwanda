@@ -208,7 +208,7 @@ function ReferralFallback({ failed, onRetry }: { failed: boolean; onRetry: () =>
           className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 bg-attention-bg/50 px-5 py-3 text-body-sm"
         >
           <span>{t("site.emergency.loadFailed", { number: EMERGENCY.number })}</span>
-          <Button variant="ghost" size="sm" pill onClick={onRetry}>
+          <Button variant="ghost" pill onClick={onRetry}>
             {t("site.retry")}
           </Button>
         </div>
@@ -229,7 +229,7 @@ function ReferralFallback({ failed, onRetry }: { failed: boolean; onRetry: () =>
             {h.phone && (
               <a
                 href={`tel:${h.phone.replace(/\s/g, "")}`}
-                className={buttonClassName({ variant: "secondary", size: "sm", pill: true })}
+                className={buttonClassName({ variant: "secondary", pill: true })}
               >
                 <Phone aria-hidden="true" className="size-4" />
                 {h.phone}
@@ -240,7 +240,7 @@ function ReferralFallback({ failed, onRetry }: { failed: boolean; onRetry: () =>
               target="_blank"
               rel="noreferrer"
               aria-label={`${t("site.facility.directions")}: ${h.name}`}
-              className={buttonClassName({ variant: "secondary", size: "sm", pill: true })}
+              className={buttonClassName({ variant: "secondary", pill: true })}
             >
               <NavigationArrow aria-hidden="true" className="size-4" />
               {t("site.facility.directions")}
@@ -315,7 +315,7 @@ export function EmergencyPage() {
                 </div>
                 <Button
                   variant="secondary"
-                  size="sm"
+
                   pill
                   onClick={locate}
                   loading={locating === "busy"}
@@ -360,7 +360,7 @@ export function EmergencyPage() {
                           rel="noreferrer"
                           className={buttonClassName({
                             variant: "secondary",
-                            size: "sm",
+
                             pill: true,
                           })}
                         >

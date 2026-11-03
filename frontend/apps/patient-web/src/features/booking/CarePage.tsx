@@ -401,7 +401,7 @@ export function CarePage() {
                 <span className="lg:hidden">
                   <Button
                     variant="secondary"
-                    size="sm"
+
                     pill
                     onClick={() => setPanel(true)}
                     iconStart={<Faders aria-hidden="true" className="size-4" />}
@@ -501,7 +501,7 @@ function NoMatch({
               {t("site.care.checkSymptoms")}
             </Link>
           )}
-          <Button variant="secondary" size="sm" pill onClick={onClear}>
+          <Button variant="secondary" pill onClick={onClear}>
             {t("care.clearAll")}
           </Button>
         </div>

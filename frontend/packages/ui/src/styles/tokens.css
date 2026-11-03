@@ -153,6 +153,42 @@
 }
 
 /* Patient density (design 03 §2, design 07 §1): body 18px, targets >= 48px, primary 56px */
+/*
+ * Public site "clinical calm" (redesign 2026-11): off-white ground, deep green for actions only,
+ * status tints that always come with a word. Light theme only; dark keeps its own palette.
+ * Contrast on white: ink 17.5:1, muted 6.6:1, brand 6.9:1 (white on brand 6.9:1), danger 6.4:1.
+ */
+:root[data-surface="site"][data-theme="light"] {
+  --ml-bg-page: #f6f8f7;
+  --ml-bg-surface: #ffffff;
+  --ml-bg-raised: #ffffff;
+  --ml-bg-subtle: #eef2f0;
+  --ml-text-primary: #0e1c17;
+  --ml-text-secondary: #4e5d57;
+  --ml-text-muted: #56655f;
+  --ml-border-subtle: #dfe6e2;
+  --ml-brand: #17694d;
+  --ml-action-primary: #17694d;
+  --ml-action-primary-hover: #0f4f3a;
+  --ml-brand-subtle-bg: #e7f3ed;
+  --ml-brand-subtle-text: #0f4f3a;
+  --ml-link: #17694d;
+  --ml-focus-ring: #17694d;
+  --ml-attention-bg: #fff4db;
+  --ml-attention-text: #7a4f00;
+  --ml-danger-bg: #fdecea;
+  --ml-danger-text: #b42318;
+  --ml-danger-solid: #b42318;
+  --ml-success-bg: #e7f3ed;
+  --ml-success-text: #17694d;
+}
+
+/* Public site, both themes: every button, link-button and input is at least 44 px (WCAG 2.5.8). */
+:root[data-surface="site"] {
+  --ml-control-height: 2.75rem; /* 44px */
+  --ml-control-height-primary: 3rem; /* 48px */
+}
+
 :root[data-density="patient"] {
   --ml-font-size-display: 2.5rem; /* 40px */
   --ml-line-height-display: 3rem; /* 48px */

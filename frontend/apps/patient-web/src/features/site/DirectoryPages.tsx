@@ -46,10 +46,23 @@ function weekday(index: number, language: string, style: "short" | "long" = "sho
   }).format(new Date(WEEKDAY_BASE + index * 86_400_000));
 }
 
-const daysText = (days: number[], language: string) =>
-  days.length === 7
-    ? `${weekday(0, language)}–${weekday(6, language)}`
-    : days.map((d) => weekday(d, language)).join(" · ");
+/** "Mon–Fri", "Mon–Wed · Sat": consecutive days read as a range. */
+const daysText = (days: number[], language: string) => {
+  const sorted = [...new Set(days)].sort((a, b) => a - b);
+  const runs: number[][] = [];
+  for (const day of sorted) {
+    const last = runs.at(-1);
+    if (last && day === last[last.length - 1]! + 1) last.push(day);
+    else runs.push([day]);
+  }
+  return runs
+    .map((run) =>
+      run.length >= 3
+        ? `${weekday(run[0]!, language)}–${weekday(run[run.length - 1]!, language)}`
+        : run.map((d) => weekday(d, language)).join(" · "),
+    )
+    .join(" · ");
+};
 
 // ---- /facilities ----
 
@@ -263,13 +276,22 @@ function DoctorCard({
           </span>
         </span>
       </span>
-      <span className="inline-flex items-center gap-1.5 text-body-sm text-fg-muted">
+      <span className="inline-flex items-center gap-1.5 text-body-sm text-fg-secondary">
         <UserCircle aria-hidden="true" className="size-4 shrink-0" />
-        <span className="truncate">{doctor.facility.name}</span>
+        <span className="truncate">
+          {doctor.facilities.length > 1
+            ? t("site.doctors.places", {
+                name: doctor.facility.name,
+                count: doctor.facilities.length - 1,
+              })
+            : doctor.facility.name}
+        </span>
       </span>
       <span className="mt-auto flex flex-col gap-2 border-t border-border/60 pt-4">
-        <span className="sr-only">
-          {t("site.doctors.days")}: {daysText(doctor.days, lang)}
+        {/* the days in words (Mon–Fri), then chips for a glance; off days are labelled too */}
+        <span className="text-body-sm font-semibold text-fg">
+          <span className="sr-only">{t("site.doctors.days")}: </span>
+          {daysText(doctor.days, lang)}
         </span>
         <span aria-hidden="true" className="grid grid-cols-7 gap-1">
           {Array.from({ length: 7 }, (_, i) => (
@@ -279,7 +301,7 @@ function DoctorCard({
                 "grid h-7 place-items-center rounded-md text-[0.6875rem] font-semibold",
                 doctor.days.includes(i)
                   ? "bg-brand-subtle text-on-brand-subtle"
-                  : "bg-subtle text-fg-muted/60",
+                  : "bg-subtle text-fg-muted line-through",
                 i === today && "ring-2 ring-primary ring-offset-1 ring-offset-surface",
               )}
             >
@@ -336,7 +358,7 @@ export function DoctorsPage() {
     (d) =>
       (!words || d.name.toLowerCase().includes(words)) &&
       (!service || d.services.some((s) => s.code === service)) &&
-      (!facility || d.facility.slug === facility) &&
+      (!facility || d.facilities.some((f) => f.slug === facility)) &&
       (!todayOnly || d.days.includes(todayIndex)),
   );
 

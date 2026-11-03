@@ -117,6 +117,8 @@ export interface PublicDoctor {
   bio: Partial<Record<"rw" | "en" | "fr", string>>;
   languages: string[];
   facility: Pick<PublicFacility, "slug" | "name" | "district" | "type">;
+  /** Every facility this doctor works at (one card per doctor, redesign 2026-11). */
+  facilities: Pick<PublicFacility, "slug" | "name" | "district" | "type">[];
   services: { id: string; code: string; name: PublicFacility["services"][number]["name_i18n"] }[];
 }
 
@@ -144,16 +146,44 @@ export function doctorsOf(profile: PublicFacility): PublicDoctor[] {
       district: profile.district,
       type: profile.type,
     },
+    facilities: [
+      { slug: profile.slug, name: profile.name, district: profile.district, type: profile.type },
+    ],
     services: profile.services
       .filter((service) => doctor.service_ids.includes(service.id))
       .map((service) => ({ id: service.id, code: service.code, name: service.name_i18n })),
   }));
 }
 
+/**
+ * One card per doctor: the same person listed at two facilities is merged (by name), with their
+ * days and services joined and every facility kept; the first facility keeps the profile page.
+ */
+function mergeDoctors(rows: PublicDoctor[]): PublicDoctor[] {
+  const byName = new Map<string, PublicDoctor>();
+  for (const row of rows) {
+    const key = row.name.trim().toLowerCase().replace(/\s+/g, " ");
+    const seen = byName.get(key);
+    if (!seen) {
+      byName.set(key, { ...row, facilities: [...row.facilities] });
+      continue;
+    }
+    seen.days = [...new Set([...seen.days, ...row.days])].sort((a, b) => a - b);
+    for (const service of row.services)
+      if (!seen.services.some((s) => s.code === service.code)) seen.services.push(service);
+    for (const place of row.facilities)
+      if (!seen.facilities.some((f) => f.slug === place.slug)) seen.facilities.push(place);
+    seen.specialty ||= row.specialty;
+    if (!Object.keys(seen.bio).length) seen.bio = row.bio;
+    seen.languages = [...new Set([...seen.languages, ...row.languages])];
+  }
+  return [...byName.values()].sort((a, b) => a.name.localeCompare(b.name));
+}
+
 export function useDoctors() {
   const facilities = useAllFacilities();
   const profiles = useProfiles((facilities.data ?? []).map((f) => f.slug));
-  const doctors = profiles.data.flatMap(doctorsOf).sort((a, b) => a.name.localeCompare(b.name));
+  const doctors = mergeDoctors(profiles.data.flatMap(doctorsOf));
   return {
     doctors,
     facilities: facilities.data ?? [],

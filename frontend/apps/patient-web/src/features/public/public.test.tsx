@@ -92,7 +92,7 @@ describe("care near you on the home page (PT-F1)", () => {
     });
     const rows = within(list).getAllByRole("heading", { level: 3 });
     expect(rows.length).toBeGreaterThan(0);
-    expect(within(section).getAllByText("RAMA").length).toBeGreaterThan(0);
+    expect(within(section).getAllByText(/RAMA/).length).toBeGreaterThan(0);
     expect(screen.getByRole("link", { name: "View all facilities" })).toHaveAttribute(
       "href",
       "/facilities",

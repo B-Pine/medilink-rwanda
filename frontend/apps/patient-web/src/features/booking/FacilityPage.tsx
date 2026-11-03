@@ -429,7 +429,7 @@ export function FacilityPage() {
                     rel="noreferrer"
                     className={buttonClassName({
                       variant: "secondary",
-                      size: "sm",
+
                       fullWidth: true,
                     })}
                   >
@@ -574,7 +574,7 @@ function ServiceRow({ slug, service }: { slug: string; service: PublicService })
           <Link
             to={`/book/${slug}?service=${service.id}&today=1`}
             viewTransition
-            className={buttonClassName({ size: "sm", pill: true })}
+            className={buttonClassName({ pill: true })}
           >
             {t("site.facility.joinQueue")}
           </Link>
@@ -584,7 +584,6 @@ function ServiceRow({ slug, service }: { slug: string; service: PublicService })
             to={`/book/${slug}?service=${service.id}`}
             viewTransition
             className={buttonClassName({
-              size: "sm",
               pill: true,
               variant: service.remote_join ? "secondary" : "primary",
             })}

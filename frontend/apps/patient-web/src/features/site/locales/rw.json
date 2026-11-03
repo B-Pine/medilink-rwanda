@@ -152,7 +152,9 @@
     "none": "Nta baganga bahuye n’ibyatoranyijwe",
     "viewProfile": "Reba umwirondoro",
     "days": "Iminsi",
-    "source": "Abaganga bagaragazwa bakurikije imyirondoro y’ibigo."
+    "source": "Abaganga bagaragazwa bakurikije imyirondoro y’ibigo.",
+    "places_one": "{{name}} n'ahandi {{count}}",
+    "places_other": "{{name}} n'ahandi {{count}}"
   },
   "doctor": {
     "notFound": "Uyu muganga ntagaragara",
@@ -414,5 +416,13 @@
       }
     }
   },
-  "onThisPage": "Kuri iyi paji"
+  "onThisPage": "Kuri iyi paji",
+  "card": {
+    "open": "Irakora",
+    "busy": "Hari benshi",
+    "closed": "Ifunze ubu",
+    "accepted": "Yakira",
+    "noInsurance": "Ubwishingizi: baza ku kwakira",
+    "details": "Ibisobanuro"
+  }
 }

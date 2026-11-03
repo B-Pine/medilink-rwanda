@@ -152,7 +152,9 @@
     "none": "No doctors match these filters",
     "viewProfile": "View profile",
     "days": "Days",
-    "source": "Doctors are listed from facility profiles."
+    "source": "Doctors are listed from facility profiles.",
+    "places_one": "{{name}} + {{count}} more",
+    "places_other": "{{name}} + {{count}} more"
   },
   "doctor": {
     "notFound": "This doctor is not listed",
@@ -414,5 +416,13 @@
       }
     }
   },
-  "onThisPage": "On this page"
+  "onThisPage": "On this page",
+  "card": {
+    "open": "Open",
+    "busy": "Busy",
+    "closed": "Closed now",
+    "accepted": "Accepts",
+    "noInsurance": "Insurance: ask at the desk",
+    "details": "Details"
+  }
 }

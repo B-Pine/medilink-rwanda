@@ -26,7 +26,8 @@ async function registerPwa() {
 }
 
 async function bootstrap() {
-  initTheme();
+  // light-first (public redesign "clinical calm"); dark stays one tap away
+  initTheme("light");
   initTextSize();
   await enableMocks();
   const services = createServices();

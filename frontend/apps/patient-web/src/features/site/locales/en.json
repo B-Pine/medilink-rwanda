@@ -51,7 +51,15 @@
     "accountTitle": "Your healthcare journey, in one place.",
     "accountLead": "Create an account to manage appointments, follow your queue, access your visit documents and stay informed.",
     "exploreFirst": "Explore healthcare first",
-    "readyTitle": "Ready to find healthcare?"
+    "readyTitle": "Ready to find healthcare?",
+    "away": "{{km}} km away",
+    "distanceHint": "Tap Near me to see how far each one is.",
+    "sortedByDistance": "Closest first, from where you are.",
+    "showOnMap": "Show on map",
+    "view": {
+      "list": "Cards",
+      "map": "Map"
+    }
   },
   "care": {
     "title": "Find healthcare",
@@ -175,7 +183,8 @@
       "imaging": "Imaging and diagnostics",
       "specialist": "Specialist care",
       "emergency": "Emergency services"
-    }
+    },
+    "jump": "Jump to a category"
   },
   "service": {
     "notFound": "This service is not in the catalogue",
@@ -394,5 +403,6 @@
         "body": "If something is hard to use, write to us through the contact page and we will answer."
       }
     }
-  }
+  },
+  "onThisPage": "On this page"
 }

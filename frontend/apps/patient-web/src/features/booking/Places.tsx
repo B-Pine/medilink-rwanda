@@ -15,6 +15,8 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { env } from "../../env";
+import { useInDashboard } from "../../layout/DashboardContext";
+import { FacilityCardGrid } from "../site/FacilityCards";
 import { EmptyState } from "../site/kit";
 import { INSURER_CODES, INSURER_KEYS, pinKind, time, type InsurerKey } from "./discovery";
 
@@ -147,7 +149,7 @@ export function RowActions({ result }: { result: FacilityResult }) {
   );
 }
 
-function MapCard({ result }: { result: FacilityResult }) {
+export function MapCard({ result }: { result: FacilityResult }) {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage ?? "rw";
   return (
@@ -174,18 +176,28 @@ function MapCard({ result }: { result: FacilityResult }) {
 
 /** Desktop (≥ 1024 px): the map sits beside the list instead of behind a toggle. */
 const WIDE = "(min-width: 64rem)";
+/** Inside the dashboard the sidebar takes 248 px: the map sits beside the list from 1280 px. */
+const WIDE_IN_DASHBOARD = "(min-width: 80rem)";
 
-function subscribeWide(change: () => void): () => void {
-  const media = window.matchMedia?.(WIDE);
-  media?.addEventListener("change", change);
-  return () => media?.removeEventListener("change", change);
+const subscribers = new Map<string, (change: () => void) => () => void>();
+function subscribeTo(query: string): (change: () => void) => () => void {
+  let subscribe = subscribers.get(query);
+  if (!subscribe) {
+    subscribe = (change) => {
+      const media = window.matchMedia?.(query);
+      media?.addEventListener("change", change);
+      return () => media?.removeEventListener("change", change);
+    };
+    subscribers.set(query, subscribe);
+  }
+  return subscribe;
 }
 
-export function useWide(): boolean {
+export function useWide(query: string = WIDE): boolean {
   // false while the pre-rendered markup hydrates (it has no map), then the real width
   return useSyncExternalStore(
-    subscribeWide,
-    () => !!window.matchMedia?.(WIDE).matches,
+    subscribeTo(query),
+    () => !!window.matchMedia?.(query).matches,
     () => false,
   );
 }
@@ -208,6 +220,7 @@ export function PlacesView({
   onSort,
   empty,
   toolbar,
+  cards = false,
 }: {
   heading: string;
   headingId: string;
@@ -224,10 +237,13 @@ export function PlacesView({
   empty: ReactNode;
   /** Extra controls in the title row (e.g. the Filters button). */
   toolbar?: ReactNode;
+  /** Cards instead of table rows (Find care, product owner 2026-11-03). */
+  cards?: boolean;
 }) {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage ?? "rw";
-  const wide = useWide();
+  const inDashboard = useInDashboard();
+  const wide = useWide(inDashboard ? WIDE_IN_DASHBOARD : WIDE);
   const [view, setView] = useState<"list" | "map">("list");
   const [selected, setSelected] = useState<string | null>(null);
   const Heading = headingLevel === 1 ? "h1" : "h2";
@@ -251,7 +267,13 @@ export function PlacesView({
   return (
     <section aria-labelledby={headingId} className="flex scroll-mt-4 flex-col gap-3">
       <div className="flex flex-wrap items-center gap-3">
-        <Heading id={headingId} className={cx("m-0", headingLevel === 1 ? "text-h1" : "text-h2")}>
+        <Heading
+          id={headingId}
+          className={cx(
+            "m-0",
+            headingLevel === 1 ? "text-h1" : inDashboard ? "text-h3 font-bold" : "text-h2",
+          )}
+        >
           {heading}
         </Heading>
         {state === "success" && (
@@ -276,7 +298,10 @@ export function PlacesView({
           <div
             role="group"
             aria-label={t("home.view.label")}
-            className="flex rounded-md bg-subtle p-0.5 lg:hidden"
+            className={cx(
+              "flex rounded-md bg-subtle p-0.5",
+              inDashboard ? "xl:hidden" : "lg:hidden",
+            )}
           >
             {(["list", "map"] as const).map((key) => (
               <button
@@ -298,10 +323,19 @@ export function PlacesView({
         </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_26rem]">
+      <div
+        className={cx(
+          "grid gap-4",
+          inDashboard ? "xl:grid-cols-[minmax(0,1fr)_24rem]" : "lg:grid-cols-[minmax(0,1fr)_26rem]",
+        )}
+      >
         <div
           className={cx(
-            "min-w-0 overflow-hidden rounded-3xl bg-surface shadow-card",
+            "min-w-0",
+            // cards carry their own surface; the table rows sit on one
+            !cards && "overflow-hidden bg-surface",
+            !cards &&
+              (inDashboard ? "rounded-2xl border border-border" : "rounded-3xl shadow-card"),
             "transition-opacity duration-200 ease-out-quint",
             busy && "opacity-60",
             !wide && view === "map" && "hidden",
@@ -326,6 +360,19 @@ export function PlacesView({
             ) : (
               empty
             )
+          ) : cards ? (
+            <FacilityCardGrid
+              label={heading}
+              rows={rows}
+              loading={false}
+              compact
+              selected={selected}
+              onSelect={setSelected}
+              onShowOnMap={(slug) => {
+                setSelected(slug);
+                setView("map");
+              }}
+            />
           ) : (
             <FacilityList
               labels={{
@@ -377,7 +424,11 @@ export function PlacesView({
               tilesUrl={env.mapTilesUrl}
               attribution={t("home.mapAttribution")}
               label={t("home.mapLabel")}
-              className="h-[28rem] lg:sticky lg:top-4 lg:h-[36rem]"
+              className={
+                inDashboard
+                  ? "h-[28rem] xl:sticky xl:top-20 xl:h-[36rem]"
+                  : "h-[28rem] lg:sticky lg:top-4 lg:h-[36rem]"
+              }
               card={chosen ? <MapCard result={chosen} /> : undefined}
             />
           </Suspense>

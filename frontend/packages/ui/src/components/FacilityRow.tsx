@@ -4,8 +4,12 @@ import { cx } from "../utils/cx";
 
 export type WaitTone = "low" | "medium" | "high";
 
-/** Columns shared by the header and every row, so values line up down the list (upgrade 02 §3). */
-const COLUMNS = "lg:grid-cols-[minmax(0,1fr)_8rem_5rem_6rem_minmax(0,12rem)]";
+/**
+ * Columns shared by the header and every row, so values line up down the list (upgrade 02 §3).
+ * Chosen by the list's own width (container query), not the window's: beside a map or inside the
+ * dashboard the list is far narrower than the screen.
+ */
+const COLUMNS = "@4xl:grid-cols-[minmax(0,1fr)_8rem_5rem_6rem_minmax(0,12rem)]";
 
 const TONE_DOT: Record<WaitTone, string> = {
   low: "text-success",
@@ -37,11 +41,11 @@ export function FacilityList({
   className?: string;
 }) {
   return (
-    <div className={cx("flex flex-col", className)}>
+    <div className={cx("@container flex flex-col", className)}>
       <div
         aria-hidden="true"
         className={cx(
-          "hidden gap-x-6 border-b border-border/50 px-5 pt-4 pb-3 text-caption font-semibold text-fg-muted lg:grid",
+          "hidden gap-x-6 border-b border-border/50 px-5 pt-4 pb-3 text-caption font-semibold text-fg-muted @4xl:grid",
           COLUMNS,
         )}
       >
@@ -108,13 +112,13 @@ export function FacilityRow({
       )}
     >
       <h3 className="m-0 min-w-0 truncate text-body font-semibold">{title}</h3>
-      {/* phones: one line of facts; wide screens: each fact in its own column */}
-      <p className="m-0 flex flex-wrap items-center gap-x-2 text-body-sm text-fg-secondary lg:contents">
-        <span className="lg:truncate">{type}</span>
+      {/* narrow lists: one line of facts; wide lists: each fact in its own column */}
+      <p className="m-0 flex flex-wrap items-center gap-x-2 text-body-sm text-fg-secondary @4xl:contents">
+        <span className="@4xl:truncate">{type}</span>
         {distance ? (
-          <span className="font-semibold text-fg tabular-nums lg:text-right">{distance}</span>
+          <span className="font-semibold text-fg tabular-nums @4xl:text-right">{distance}</span>
         ) : (
-          <span aria-hidden="true" className="hidden lg:block" />
+          <span aria-hidden="true" className="hidden @4xl:block" />
         )}
         <span
           className={cx(
@@ -139,7 +143,7 @@ export function FacilityRow({
           </>
         ) : null}
       </p>
-      <div className="flex flex-wrap items-center justify-between gap-3 lg:col-span-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 @4xl:col-span-5">
         <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
           {insurers.map((name) => (
             <li
@@ -169,7 +173,13 @@ function LiveText({ text }: { text: string }) {
       return;
     }
     const element = node.current;
-    if (!element || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    // older browsers (and jsdom) have no Web Animations API: the new text shows without the glow
+    if (
+      !element ||
+      typeof element.animate !== "function" ||
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
     element.animate(
       [
         { backgroundColor: "color-mix(in srgb, var(--color-attention-solid) 22%, transparent)" },

@@ -1,0 +1,393 @@
+{
+  "close": "Fermer",
+  "cancel": "Annuler",
+  "retry": "Réessayer",
+  "findCare": "Trouver des soins",
+  "viewAll": "Tout voir",
+  "viewDetails": "Voir le détail",
+  "toast": {
+    "close": "Fermer le message"
+  },
+  "nav": {
+    "label": "MediLink",
+    "portal": "Espace patient",
+    "main": "Menu principal",
+    "account": "Menu du compte",
+    "breadcrumb": "Vous êtes ici",
+    "details": "Détail",
+    "expand": "Ouvrir le menu",
+    "collapse": "Réduire le menu",
+    "more": "Plus",
+    "language": "Langue",
+    "groups": {
+      "care": "Soins",
+      "account": "Compte"
+    },
+    "overview": "Accueil",
+    "findCare": "Trouver des soins",
+    "appointments": "Rendez-vous",
+    "queue": "Ma file d'attente",
+    "family": "Ma famille",
+    "records": "Dossier médical",
+    "medications": "Médicaments",
+    "documents": "Documents",
+    "notifications": "Notifications",
+    "help": "Aide et assistance",
+    "settings": "Paramètres",
+    "short": {
+      "overview": "Accueil",
+      "findCare": "Soins",
+      "appointments": "Visites",
+      "records": "Dossier"
+    }
+  },
+  "account": {
+    "label": "Menu du compte de {{name}}",
+    "subtitle": "Compte patient",
+    "profile": "Mon profil",
+    "family": "Ma famille",
+    "privacy": "Confidentialité et consentement",
+    "settings": "Paramètres",
+    "viewProfile": "Voir mon profil"
+  },
+  "search": {
+    "open": "Rechercher",
+    "title": "Rechercher dans MediLink",
+    "placeholder": "Soins, rendez-vous, documents",
+    "shortcut": "Ctrl K",
+    "empty": "Aucun résultat. Essayez un établissement, un médecin ou un service.",
+    "hints": "↑ ↓ se déplacer · Entrée ouvrir · Échap fermer",
+    "findCare": "Trouver des soins pour « {{query}} »",
+    "groups": {
+      "find": "Recherche",
+      "pages": "Pages",
+      "appointments": "Mes rendez-vous",
+      "documents": "Mes documents",
+      "facilities": "Établissements",
+      "doctors": "Médecins"
+    }
+  },
+  "bell": {
+    "title": "Notifications",
+    "markAll": "Tout marquer comme lu",
+    "viewAll": "Voir toutes les notifications",
+    "empty": "Vous êtes à jour.",
+    "failed": "Impossible de charger vos notifications.",
+    "unread": "non lue"
+  },
+  "status": {
+    "confirmed": "Confirmé",
+    "checked_in": "Enregistré",
+    "cancelled": "Annulé",
+    "late_cancelled": "Annulé tardivement",
+    "no_show": "Manqué",
+    "rescheduled": "Déplacé",
+    "answer": "Réponse attendue"
+  },
+  "overview": {
+    "greeting_morning": "Bonjour, {{name}}",
+    "greeting_afternoon": "Bon après-midi, {{name}}",
+    "greeting_evening": "Bonsoir, {{name}}",
+    "subtitle": "Voici l'aperçu de vos soins.",
+    "verifyTitle": "Confirmez votre e-mail",
+    "verifyBody": "Nous avons envoyé un lien à {{email}}. Ouvrez-le pour protéger votre compte.",
+    "nextAppointment": "Prochain rendez-vous",
+    "currentVisit": "Visite en cours",
+    "viewDetails": "Voir le détail",
+    "allTickets": "Ma file d'attente",
+    "moreTickets_one": "{{count}} autre ticket aujourd'hui",
+    "moreTickets_other": "{{count}} autres tickets aujourd'hui",
+    "startTitle": "Vos soins commencent ici.",
+    "startBody": "Trouvez un établissement de santé, découvrez les services disponibles ou réservez votre prochaine visite.",
+    "explore": "Voir les établissements",
+    "quick": "Actions rapides",
+    "actions": {
+      "findCare": "Trouver des soins",
+      "findCareBody": "Établissements proches",
+      "book": "Prendre rendez-vous",
+      "bookBody": "Choisir une heure",
+      "records": "Mon dossier",
+      "recordsBody": "Visites et résultats",
+      "family": "Ma famille",
+      "familyBody": "Vos proches",
+      "documents": "Documents",
+      "documentsBody": "Lettres et comptes rendus"
+    },
+    "upcoming": "Prochains rendez-vous",
+    "activity": "Activité récente",
+    "activityFailed": "Impossible de charger votre activité récente.",
+    "activityEmpty": "Aucune activité pour l'instant",
+    "activityEmptyBody": "Vos réservations, résultats et documents apparaîtront ici.",
+    "aside": "Votre santé et votre famille",
+    "family": "Famille",
+    "manage": "Gérer",
+    "familyEmpty": "Ajoutez un enfant ou un proche dont vous vous occupez.",
+    "attention": {
+      "title": "À traiter",
+      "allSet": "Tout est en ordre",
+      "allSetBody": "Rien n’attend votre réponse pour le moment."
+    },
+    "glance": {
+      "label": "En un coup d’œil",
+      "upcoming": "À venir",
+      "next": "Prochain : {{when}}",
+      "upcomingNone": "Aucune réservation",
+      "medicines": "Médicaments en cours",
+      "from": "De {{facility}}",
+      "medicinesNone": "Aucun pour le moment",
+      "records": "Dossiers médicaux",
+      "lastVisit": "Dernière visite le {{date}}",
+      "recordsNone": "Aucune visite",
+      "unread": "Messages non lus",
+      "unreadHint": "Dans vos notifications",
+      "unreadNone": "Vous êtes à jour"
+    },
+    "visits": {
+      "title": "Visites récentes",
+      "empty": "Aucune visite",
+      "emptyBody": "Après une visite, le résumé signé du médecin apparaît ici."
+    },
+    "vitals": {
+      "title": "Dernières mesures",
+      "recorded": "Prises le {{date}} à {{facility}}.",
+      "note": "Votre médecin peut vous expliquer ce qu’elles signifient pour vous.",
+      "empty": "Aucune mesure",
+      "emptyBody": "Les mesures prises lors de vos visites apparaissent ici.",
+      "bp": "Tension artérielle",
+      "pulse": "Pouls",
+      "temperature": "Température",
+      "spo2": "Taux d’oxygène",
+      "weight": "Poids",
+      "respiratory": "Fréquence respiratoire"
+    },
+    "medicines": {
+      "title": "Médicaments en cours",
+      "items_one": "{{count}} médicament",
+      "items_other": "{{count}} médicaments",
+      "until": "Valable jusqu’au {{date}}",
+      "empty": "Aucun médicament en cours"
+    }
+  },
+  "reminders": {
+    "title": "Rappels",
+    "answer": "L'établissement propose une nouvelle heure pour {{service}}",
+    "reply": "Répondre",
+    "soon": "{{service}} approche",
+    "arrive": "Signalez votre arrivée à l'accueil (ticket {{ticket}})",
+    "open": "Ouvrir le ticket"
+  },
+  "appointments": {
+    "title": "Mes rendez-vous",
+    "subtitle": "Gérez vos visites à venir et passées.",
+    "book": "Prendre rendez-vous",
+    "views": "Quels rendez-vous",
+    "count_one": "{{count}} rendez-vous",
+    "count_other": "{{count}} rendez-vous",
+    "tabs": {
+      "upcoming": "À venir",
+      "past": "Passés",
+      "cancelled": "Annulés"
+    },
+    "failed": "Impossible de charger vos rendez-vous.",
+    "empty": {
+      "upcoming": "Vous n'avez aucun rendez-vous à venir.",
+      "past": "Aucun rendez-vous passé pour l'instant.",
+      "cancelled": "Aucun rendez-vous annulé."
+    },
+    "emptyBody": "Trouvez un établissement et réservez l'heure qui vous convient.",
+    "for": "pour {{name}}",
+    "view": "Voir le rendez-vous",
+    "more": "Autres actions pour {{service}}",
+    "manage": "Gérer",
+    "facilityPage": "Page de l'établissement",
+    "reschedule": "Déplacer",
+    "cancel": "Annuler le rendez-vous",
+    "cancelled": "Votre rendez-vous a été annulé.",
+    "rescheduled": "Votre rendez-vous a été déplacé.",
+    "actionFailed": "Impossible de modifier votre rendez-vous. Veuillez réessayer.",
+    "back": "Tous les rendez-vous",
+    "notFound": "Rendez-vous introuvable",
+    "notFoundBody": "Impossible de charger ce rendez-vous. Il appartient peut-être à un autre compte.",
+    "info": "Rendez-vous",
+    "date": "Date",
+    "time": "Heure",
+    "doctor": "Médecin",
+    "patient": "Patient",
+    "room": "Salle",
+    "reason": "Ce que vous nous avez dit",
+    "facility": "Établissement",
+    "hoursToday": "Ouvert aujourd'hui",
+    "phone": "Téléphone",
+    "timeline": "Étapes",
+    "steps": {
+      "booked": "Réservé",
+      "day": "Jour de la visite",
+      "checkedIn": "Enregistré à l'accueil",
+      "cancelled": "Annulé",
+      "missed": "Manqué",
+      "rescheduled": "Déplacé à une nouvelle heure"
+    },
+    "bring": "À apporter",
+    "bringItems": {
+      "id": "Votre carte d'identité ou numéro MediLink",
+      "insurance": "Votre carte d'assurance",
+      "code": "Votre code de réservation {{code}}",
+      "papers": "Résultats, ordonnances ou lettres de référence récents"
+    },
+    "reference": "Référence de réservation",
+    "showCode": "Montrez ce code à l'accueil.",
+    "changeUntil": "Vous pouvez modifier ou annuler jusqu'au {{time}}.",
+    "changeClosed": "Les modifications sont fermées. Annuler maintenant compte comme une annulation tardive.",
+    "directions": "Itinéraire"
+  },
+  "reschedule": {
+    "title": "Choisir une nouvelle heure",
+    "body": "Heures libres pour {{service}} à {{facility}}.",
+    "reviewTitle": "Vérifier la nouvelle heure",
+    "earlier": "Plus tôt",
+    "later": "Plus tard",
+    "days": "Jours avec des heures libres",
+    "times": "Heures libres",
+    "none": "Aucune heure libre cette semaine. Essayez la semaine suivante.",
+    "loadFailed": "Impossible de charger les heures libres.",
+    "from": "Heure actuelle",
+    "to": "Nouvelle heure",
+    "held": "Nous gardons cette heure pour vous pendant",
+    "expired": "Le délai est écoulé. Choisissez de nouveau une heure.",
+    "oldFreed": "Votre heure actuelle n'est libérée qu'une fois la nouvelle confirmée.",
+    "otherTime": "Choisir une autre heure",
+    "confirm": "Confirmer la nouvelle heure"
+  },
+  "queue": {
+    "title": "Ma file d'attente",
+    "subtitle": "Suivez vos tickets du jour et votre place dans la file.",
+    "join": "Rejoindre une file",
+    "today": "Aujourd'hui",
+    "failed": "Impossible de charger vos tickets.",
+    "none": "Vous n'êtes dans aucune file d'attente.",
+    "noneBody": "Rejoignez la file d'un établissement qui le permet, ou enregistrez-vous à l'accueil.",
+    "remoteNote": "Rejoindre depuis votre téléphone n'est pas un enregistrement. L'accueil confirme votre arrivée sur place.",
+    "previous": "Visites précédentes",
+    "previousTitle": "Les anciens tickets ne sont pas encore listés ici",
+    "previousBody": "Après une visite, le compte rendu signé du médecin apparaît dans le dossier médical.",
+    "how": {
+      "title": "Comment fonctionne la file",
+      "join": "Rejoignez la file depuis votre téléphone si l’établissement le permet, ou prenez un ticket à l’accueil.",
+      "follow": "Suivez ici le nombre de personnes devant vous et l’estimation d’attente de l’établissement.",
+      "called": "Quand c’est votre tour, cette page vous indique où aller, avec un son."
+    },
+    "back": "Ma file d'attente",
+    "ticket": "Ticket",
+    "ahead": "Personnes avant vous",
+    "estimate": "Attente estimée",
+    "wait": "{{min}}–{{max}} min",
+    "noEstimate": {
+      "break": "Médecin en courte pause",
+      "emergency": "En pause pour une urgence",
+      "none_on_duty": "Aucun médecin de service pour l'instant",
+      "none": "Pas encore disponible"
+    },
+    "updated": "Mis à jour à {{time}}",
+    "arrival": {
+      "confirmed": "Enregistré",
+      "claimed": "En attente de confirmation de l'accueil",
+      "notYet": "Pas encore enregistré"
+    },
+    "viewLive": "Suivre la file en direct",
+    "state": {
+      "waiting": "En attente",
+      "called": "C'est votre tour",
+      "in_service": "Avec le médecin",
+      "no_response": "Appel manqué",
+      "on_hold": "En pause",
+      "moved_to_next_stage": "Étape suivante",
+      "transferred": "Transféré",
+      "cancelled": "Annulé",
+      "left_without_service": "Parti",
+      "completed": "Terminé"
+    }
+  },
+  "family": {
+    "title": "Ma famille",
+    "subtitle": "Gérez les soins des personnes liées à votre compte.",
+    "add": "Ajouter un membre",
+    "you": "Vous",
+    "open": "Ouvrir le profil",
+    "age_one": "{{count}} an",
+    "age_other": "{{count}} ans",
+    "access": {
+      "guardian": "Tuteur",
+      "delegate": "Délégué"
+    },
+    "viewing": "Vous consultez le profil de {{name}}",
+    "accessHint": {
+      "guardian": "Vous gérez ce profil en tant que tuteur.",
+      "delegate": "{{name}} vous a donné accès pour vous aider à suivre ses soins."
+    },
+    "careFor": "Soins de {{name}}",
+    "links": {
+      "appointments": "Prochaines visites",
+      "records": "Historique des visites",
+      "medications": "Ordonnances",
+      "documents": "Lettres et comptes rendus"
+    }
+  },
+  "records": {
+    "search": "Rechercher par établissement, médecin ou diagnostic",
+    "signed": "Signé",
+    "noMatch": "Aucun dossier ne correspond à votre recherche.",
+    "emptyBody": "Votre dossier médical apparaîtra ici dès qu'il sera disponible."
+  },
+  "medications": {
+    "title": "Mes médicaments"
+  },
+  "documents": {
+    "kinds": "Types de documents",
+    "all": "Tous"
+  },
+  "help": {
+    "title": "Aide et assistance",
+    "subtitle": "Trouvez des réponses, contactez l'assistance et suivez vos demandes."
+  },
+  "settings": {
+    "subtitle": "Vos informations, la langue, la confidentialité, la sécurité et les alertes.",
+    "sections": "Sections des paramètres",
+    "personal": {
+      "title": "Informations personnelles",
+      "body": "Votre nom, vos coordonnées et vos identifiants sont sur votre profil.",
+      "name": "Nom",
+      "email": "E-mail",
+      "verified": "Vérifié",
+      "unverified": "Non confirmé",
+      "edit": "Modifier mon profil"
+    },
+    "display": {
+      "title": "Langue et affichage",
+      "body": "S'applique immédiatement et reste sur cet appareil."
+    },
+    "privacy": {
+      "title": "Confidentialité et consentement",
+      "body": "Choisissez qui peut voir votre dossier et voyez qui l'a consulté.",
+      "consent": "Confidentialité et consentement",
+      "delegates": "Personnes ayant accès"
+    },
+    "security": {
+      "title": "Sécurité",
+      "body": "Protégez votre compte.",
+      "password": "Pour changer votre mot de passe, nous vous envoyons un lien sécurisé par e-mail : vous seul pouvez en définir un nouveau.",
+      "change": "Changer le mot de passe",
+      "later": "Les appareils connectés et la connexion en deux étapes seront ajoutés ici."
+    },
+    "alerts": {
+      "title": "Préférences de notification",
+      "body": "Quelles alertes, sur quel canal, et les heures calmes.",
+      "open": "Préférences de notification",
+      "openShort": "Ouvrir"
+    },
+    "account": {
+      "title": "Compte",
+      "body": "Déconnectez-vous de cet appareil ou demandez la fermeture de votre compte.",
+      "close": "Demander la fermeture du compte"
+    }
+  }
+}

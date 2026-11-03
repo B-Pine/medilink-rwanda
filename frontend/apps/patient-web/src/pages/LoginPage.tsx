@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router";
 import { z } from "zod";
 
+import { paths } from "../app/paths";
 import { useApi } from "../app/services";
 import { patientMeKey } from "../auth/queries";
 import { applyFieldErrors, describeApiError, translator } from "../forms/api-errors";
@@ -44,7 +45,7 @@ const FIELD_IDS = { email: "login-email", password: "login-password" } as const;
 function safeReturnPath(from: unknown): string {
   return typeof from === "string" && from.startsWith("/") && !from.startsWith("//")
     ? from
-    : "/home";
+    : paths.overview;
 }
 
 /**
@@ -122,9 +123,9 @@ export function LoginPage() {
       below={
         <Link
           to="/"
-          className="inline-flex min-h-target items-center gap-2 font-semibold text-on-forest no-underline hover:underline"
+          className="inline-flex min-h-target items-center gap-2 font-semibold text-fg-secondary no-underline transition-colors duration-150 ease-out-quint hover:text-fg"
         >
-          <MagnifyingGlass aria-hidden="true" className="size-5" />
+          <MagnifyingGlass aria-hidden="true" weight="bold" className="size-4" />
           {t("login.guest")}
         </Link>
       }

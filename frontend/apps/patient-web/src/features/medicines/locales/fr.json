@@ -25,6 +25,12 @@
   "codeHint": "Montrez-le à la pharmacie. Valable jusqu'au {{date}}.",
   "days_one": "pendant {{count}} jour",
   "days_other": "pendant {{count}} jours",
+  "facts": {
+    "dose": "Dose",
+    "often": "Combien de fois",
+    "long": "Combien de temps",
+    "how": "Comment le prendre"
+  },
   "status": {
     "draft": "En cours de rédaction",
     "issued": "Prescrite",

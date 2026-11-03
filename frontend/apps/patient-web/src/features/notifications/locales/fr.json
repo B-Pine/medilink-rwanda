@@ -62,7 +62,13 @@
     "previous": "Précédent",
     "next": "Suivant",
     "page": "Page {{page}} sur {{pages}}",
-    "back": "Retour aux notifications"
+    "back": "Retour aux notifications",
+    "which": "Quelles notifications",
+    "all": "Toutes",
+    "unread": "Non lues",
+    "caughtUp": "Vous êtes à jour.",
+    "today": "Aujourd’hui",
+    "yesterday": "Hier"
   },
   "detail": {
     "notFound": "Notification introuvable",

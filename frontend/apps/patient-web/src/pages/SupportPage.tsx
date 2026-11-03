@@ -3,7 +3,7 @@ import { Card } from "@medilink/ui";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
-import { PageHeading } from "../components/PageHeading";
+import { PageHeader } from "../features/dashboard/kit";
 import { EmergencyNotice } from "../layout/EmergencyNotice";
 // [S10 imports]
 import { HelpCenter } from "../features/help";
@@ -31,8 +31,8 @@ function Row({ to, icon: RowIcon, label }: { to: string; icon: Icon; label: stri
 export function SupportPage() {
   const { t } = useTranslation();
   return (
-    <div className="mx-auto flex w-full max-w-[40rem] flex-col gap-5">
-      <PageHeading title={t("support.title")}>{t("support.title")}</PageHeading>
+    <div className="flex w-full max-w-[48rem] flex-col gap-6">
+      <PageHeader title={t("dashboard.help.title")} subtitle={t("dashboard.help.subtitle")} />
       <EmergencyNotice />
 
       {/* [S10] searchable help articles and support requests (sprint-10 S10-D5) */}

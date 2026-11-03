@@ -23,6 +23,7 @@ import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate, useParams } from "react-router";
 
+import { paths } from "../../app/paths";
 import { useApi } from "../../app/services";
 import { PageHeading } from "../../components/PageHeading";
 import { errorText, fieldErrors, helpKeys, StatusBadge, useWhen } from "./shared";
@@ -59,11 +60,11 @@ export function RequestsPage() {
   const rows = list.data?.results ?? [];
   return (
     <div className="mx-auto flex w-full max-w-[40rem] flex-col gap-4">
-      <Back to="/support" label={t("help.article.back")} />
+      <Back to={paths.help} label={t("help.article.back")} />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <PageHeading title={t("help.requests.title")}>{t("help.requests.title")}</PageHeading>
         {rows.length > 0 && (
-          <Link to="/support/requests/new" className={buttonClassName({})}>
+          <Link to={paths.newRequest} className={buttonClassName({})}>
             {t("help.requests.new")}
           </Link>
         )}
@@ -78,7 +79,7 @@ export function RequestsPage() {
           title={t("help.requests.empty")}
           description={t("help.requests.emptyBody")}
           action={
-            <Link to="/support/requests/new" className={buttonClassName({})}>
+            <Link to={paths.newRequest} className={buttonClassName({})}>
               {t("help.requests.new")}
             </Link>
           }
@@ -88,7 +89,7 @@ export function RequestsPage() {
           {rows.map((r) => (
             <li key={r.id}>
               <Link
-                to={`/support/requests/${r.id}`}
+                to={paths.request(r.id)}
                 className="flex min-h-target flex-col gap-2 rounded-lg bg-surface shadow-card p-4 text-fg no-underline hover:bg-subtle"
               >
                 <span className="flex flex-wrap items-center justify-between gap-2">
@@ -122,19 +123,19 @@ export function NewRequestPage() {
   const [step, setStep] = useState<1 | 2>(1);
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
-  const from = (location.state as { from?: string } | null)?.from ?? "/support";
+  const from = (location.state as { from?: string } | null)?.from ?? paths.help;
   const send = useMutation({
     mutationFn: () =>
       api.help.patient.create({
         topic: choice as SupportTopic,
         subject: subject.trim(),
         body: body.trim(),
-        client_path: /^\/[A-Za-z0-9/_-]*$/.test(from) ? from : "/support",
+        client_path: /^\/[A-Za-z0-9/_-]*$/.test(from) ? from : paths.help,
       }),
     onSuccess: (created) => {
       void queryClient.invalidateQueries({ queryKey: helpKeys.all });
       queryClient.setQueryData(helpKeys.request(created.id), created);
-      void navigate(`/support/requests/${created.id}`, {
+      void navigate(paths.request(created.id), {
         replace: true,
         state: { notice: t("help.new.sent", { reference: created.reference }) },
       });
@@ -156,7 +157,7 @@ export function NewRequestPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-[40rem] flex-col gap-4">
-      <Back to="/support" label={t("help.article.back")} />
+      <Back to={paths.help} label={t("help.article.back")} />
       <PageHeading title={t("help.new.title")}>{t("help.new.title")}</PageHeading>
       {step === 1 ? (
         <fieldset className="m-0 flex flex-col gap-3 border-0 p-0">
@@ -324,7 +325,7 @@ export function RequestPage() {
   if (request.isError) {
     return (
       <div className="mx-auto flex w-full max-w-[40rem] flex-col gap-4">
-        <Back to="/support/requests" label={t("help.requests.title")} />
+        <Back to={paths.requests} label={t("help.requests.title")} />
         {isApiError(request.error) && request.error.status === 404 ? (
           <>
             <PageHeading title={t("help.thread.notFound")}>{t("help.thread.notFound")}</PageHeading>
@@ -345,7 +346,7 @@ export function RequestPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-[40rem] flex-col gap-4">
-      <Back to="/support/requests" label={t("help.requests.title")} />
+      <Back to={paths.requests} label={t("help.requests.title")} />
       <div className="flex flex-col gap-2">
         <PageHeading title={title}>{r.subject}</PageHeading>
         <p className="m-0 flex flex-wrap items-center gap-2 text-body-sm text-fg-secondary">
@@ -382,7 +383,7 @@ export function RequestPage() {
       {closed ? (
         <Alert tone="success" title={t("help.thread.closedTitle")}>
           <p className="m-0">{t("help.thread.closedBody")}</p>
-          <Link to="/support/requests/new" className={buttonClassName({})}>
+          <Link to={paths.newRequest} className={buttonClassName({})}>
             {t("help.thread.openNew")}
           </Link>
         </Alert>

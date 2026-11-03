@@ -94,7 +94,7 @@ export function Badge({
   return (
     <span
       className={cx(
-        "inline-flex max-w-full min-w-0 items-center gap-1 rounded-full border px-2.5 py-0.5 text-left text-caption font-semibold whitespace-nowrap [overflow-wrap:anywhere]",
+        "inline-flex max-w-full min-w-0 items-center gap-1 rounded-full border px-2.5 py-0.5 text-left text-caption font-semibold [overflow-wrap:anywhere]",
         badgeToneClassName(tone, variant),
         className,
       )}

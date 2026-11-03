@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router";
 
+import { paths } from "../../app/paths";
 import { useApi } from "../../app/services";
 import { PageHeading } from "../../components/PageHeading";
 import { ContactCard } from "./HelpCenter";
@@ -13,7 +14,7 @@ import { ArticleText, FallbackNote, helpKeys, useLanguage } from "./shared";
 function BackLink() {
   const { t } = useTranslation();
   return (
-    <Link to="/support" className="inline-flex min-h-target items-center gap-2 font-semibold">
+    <Link to={paths.help} className="inline-flex min-h-target items-center gap-2 font-semibold">
       <ArrowLeft aria-hidden="true" />
       {t("help.article.back")}
     </Link>

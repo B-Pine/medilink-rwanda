@@ -6,7 +6,8 @@
  * - push: show the notification from the JSON payload {v, id, title, body, url, tag, priority};
  *   critical ones stay on screen (requireInteraction) and alert again (renotify).
  * - notificationclick: focus an open MediLink window or open the URL, but only a same-origin path
- *   under /notifications/ (never an external link from a payload).
+ *   under /dashboard/notifications/ or the older /notifications/ (never an external link from a
+ *   payload; the app redirects the older one).
  * - pushsubscriptionchange: nothing to fetch here; the app re-syncs on its next start.
  * This worker makes no requests and caches nothing.
  */
@@ -16,11 +17,14 @@
   var ICON = "/icon-192.png";
   var BADGE = "/favicon-32.png";
 
-  /** The payload URL as a same-origin /notifications/… path, or the inbox. */
+  /** The payload URL as a same-origin inbox path, or the inbox. */
   function safeUrl(raw) {
     try {
       var url = new URL(String(raw || ""), self.location.origin);
-      if (url.origin === self.location.origin && /^\/notifications(\/|$)/.test(url.pathname)) {
+      if (
+        url.origin === self.location.origin &&
+        /^\/(dashboard\/)?notifications(\/|$)/.test(url.pathname)
+      ) {
         return url.pathname + url.search;
       }
     } catch (error) {

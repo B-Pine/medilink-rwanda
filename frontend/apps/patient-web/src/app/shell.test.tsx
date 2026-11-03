@@ -5,9 +5,12 @@ import { axe } from "vitest-axe";
 
 import { renderApp } from "../test/render";
 
-/** Patient app shell and its destinations (design 07 §2, §3.1, §3.5, §4). */
+/**
+ * Patient dashboard shell (upgrade 12 §2). jsdom has no media queries, so these run against the
+ * phone layout: compact header, five-tab bar and the More drawer.
+ */
 
-async function signIn(path = "/home") {
+async function signIn(path = "/dashboard") {
   const app = renderApp("/login");
   await app.user.type(await screen.findByLabelText("Email"), "patient@medilink.test");
   await app.user.click(screen.getByRole("button", { name: "Continue" }));
@@ -16,7 +19,7 @@ async function signIn(path = "/home") {
   await app.user.paste(MOCK_PASSWORD);
   await app.user.click(screen.getByRole("button", { name: "Log in" }));
   await screen.findByRole("heading", { level: 1, name: /^Good (morning|afternoon|evening),/ });
-  if (path !== "/home") await app.router.navigate(path);
+  if (path !== "/dashboard") await app.router.navigate(path);
   return app;
 }
 
@@ -24,32 +27,47 @@ afterEach(() => {
   delete document.documentElement.dataset.textSize;
 });
 
-describe("patient shell (design 07 §2)", () => {
-  it("has the four destinations with text labels and marks the current one", async () => {
+describe("patient dashboard shell (upgrade 12 §2)", () => {
+  it("signs in to /dashboard and the tab bar marks the current place", async () => {
     const { user, router } = await signIn();
+    expect(router.state.location.pathname).toBe("/dashboard");
     const nav = screen.getByRole("navigation", { name: "Main menu" });
     const links = within(nav).getAllByRole("link");
-    expect(links.map((l) => l.textContent)).toEqual(["Home", "Find care", "My visits", "Help"]);
+    expect(links.map((l) => l.textContent)).toEqual(["Home", "Find care", "Visits", "Records"]);
     expect(within(nav).getByRole("link", { name: "Home" })).toHaveAttribute("aria-current", "page");
-    await user.click(within(nav).getByRole("link", { name: "My visits" }));
-    expect(await screen.findByRole("heading", { level: 1, name: "My visits" })).toBeInTheDocument();
-    expect(router.state.location.pathname).toBe("/visits");
-    expect(within(nav).getByRole("link", { name: "My visits" })).toHaveAttribute(
-      "aria-current",
-      "page",
-    );
+    await user.click(within(nav).getByRole("link", { name: "Visits" }));
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "My appointments" }),
+    ).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe("/dashboard/appointments");
   });
 
-  it("home leads with Find care, family and the emergency notice", async () => {
+  it("the overview has counts at a glance, upcoming appointments and the emergency notice", async () => {
     const { container } = await signIn();
-    expect(screen.getByRole("heading", { name: "Need to see a doctor?" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Not sure? Describe your symptoms" })).toHaveAttribute(
+    const glance = screen.getByRole("navigation", { name: "At a glance" });
+    expect(within(glance).getByRole("link", { name: /Upcoming/ })).toHaveAttribute(
       "href",
-      "/find-care#symptoms",
+      "/dashboard/appointments",
     );
-    expect(await screen.findByRole("region", { name: "Family" })).toBeInTheDocument();
+    expect(within(glance).getByRole("link", { name: /Medical records/ })).toHaveAttribute(
+      "href",
+      "/dashboard/records",
+    );
+    expect(
+      await screen.findByRole("heading", { level: 2, name: "Upcoming appointments" }),
+    ).toBeInTheDocument();
     expect(screen.getByText(/MediLink is not for emergencies/)).toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("More opens the other places; My queue shows today's ticket", async () => {
+    const { user, router } = await signIn();
+    await user.click(screen.getByRole("button", { name: "More" }));
+    const drawer = await screen.findByRole("dialog", { name: "More" });
+    await user.click(within(drawer).getByRole("link", { name: "My queue" }));
+    expect(await screen.findByRole("heading", { level: 1, name: "My queue" })).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe("/dashboard/queue");
+    expect(await screen.findByRole("link", { name: /G-020/ })).toBeInTheDocument();
   });
 
   it("the account menu reaches settings, where text size applies at once", async () => {
@@ -64,34 +82,14 @@ describe("patient shell (design 07 §2)", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
-  it("find care explains today's walk-in and says what comes later", async () => {
-    const { container } = await signIn("/find-care");
-    expect(await screen.findByRole("heading", { level: 1, name: "Find care" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Visit today" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Book a time" })).toBeInTheDocument();
-    expect(screen.getAllByText("Coming soon")).toHaveLength(1); // symptom help (P2)
-    expect(await axe(container)).toHaveNoViolations();
-  });
-
-  it("my visits shows today's ticket and an empty history with a next step", async () => {
-    const { container } = await signIn("/visits");
-    expect(await screen.findByRole("heading", { level: 1, name: "My visits" })).toBeInTheDocument();
-    expect(await screen.findByRole("link", { name: /G-020/ })).toBeInTheDocument();
-    expect(screen.getByText("Your visit history starts here")).toBeInTheDocument();
-    expect(await axe(container)).toHaveNoViolations();
-  });
-
-  it("help shows searchable articles and keeps the emergency notice first", async () => {
-    const { user, container } = await signIn("/support");
-    expect(await screen.findByRole("heading", { level: 1, name: "Help" })).toBeInTheDocument();
-    // S10: searchable help articles replace the static questions (sprint-10 S10-D5)
-    const articles = await screen.findByRole("region", { name: "Help articles" });
+  it("old addresses still work: /visits opens My queue, /support opens Help", async () => {
+    const { router } = await signIn();
+    await router.navigate("/visits");
+    await waitFor(() => expect(router.state.location.pathname).toBe("/dashboard/queue"));
+    await router.navigate("/support");
+    await waitFor(() => expect(router.state.location.pathname).toBe("/dashboard/help"));
     expect(
-      screen.getByText(/call 912/).compareDocumentPosition(articles) &
-        Node.DOCUMENT_POSITION_FOLLOWING,
-    ).toBeTruthy();
-    await user.click(await within(articles).findByRole("link", { name: /Add your child/ }));
-    expect(await screen.findByRole("heading", { level: 1, name: "Add your child" })).toBeVisible();
-    expect(await axe(container)).toHaveNoViolations();
+      await screen.findByRole("heading", { level: 1, name: "Help & support" }),
+    ).toBeInTheDocument();
   });
 });

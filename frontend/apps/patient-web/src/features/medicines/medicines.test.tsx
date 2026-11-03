@@ -21,26 +21,28 @@ async function signIn(next = "/home") {
 }
 
 describe("My medicines (S7-F5)", () => {
-  it("the home card shows the active prescription's state in words", async () => {
+  it("the overview lists the current medicines, one tap from the list", async () => {
     await signIn();
-    const card = (await screen.findByRole("heading", { name: "My medicines" })).closest("section")!;
-    expect(await within(card).findByText("Ready at the pharmacy")).toBeInTheDocument();
-    expect(within(card).getByRole("link", { name: "See all" })).toHaveAttribute(
+    const card = await screen.findByRole("region", { name: "Current medicines" });
+    expect(await within(card).findByRole("link", { name: /Kigali Clinic/ })).toBeInTheDocument();
+    expect(within(card).getByRole("link", { name: /View all/ })).toHaveAttribute(
       "href",
-      "/medicines",
+      "/dashboard/medications",
     );
   });
 
   it("lists active and past prescriptions; the detail gives each medicine in words", async () => {
     const { user, container } = await signIn("/medicines");
     expect(
-      await screen.findByRole("heading", { level: 1, name: "My medicines" }),
+      await screen.findByRole("heading", { level: 1, name: "My medications" }),
     ).toBeInTheDocument();
     await user.click(
       await screen.findByRole("link", { name: /Kigali Clinic.*Ready at the pharmacy/ }),
     );
     expect(await screen.findByText("RX-2026-000101")).toBeInTheDocument();
-    expect(screen.getByText("2 tablets, three times a day, for 5 days")).toBeInTheDocument();
+    // dose, how often and how long, each under its own label
+    const facts = screen.getAllByRole("definition").map((d) => d.textContent);
+    expect(facts).toEqual(expect.arrayContaining(["2 tablets", "three times a day", "for 5 days"]));
     expect(screen.getByText("After food")).toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
 

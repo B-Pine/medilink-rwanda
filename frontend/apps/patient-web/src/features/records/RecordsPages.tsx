@@ -1,14 +1,24 @@
-import type { PatientRecordDiagnosis } from "@medilink/api-client";
-import { Alert, Button, Card, EmptyState, SelectField, Skeleton } from "@medilink/ui";
+import { Badge, cx, EmptyState, SelectField, Skeleton, TextField } from "@medilink/ui";
 import { dateFormat } from "@medilink/ui/i18n";
-import { ArrowLeft, CaretRight, FileText } from "@phosphor-icons/react";
+import { FileText, ListChecks, SealCheck, Stethoscope } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useParams } from "react-router";
+import { useParams } from "react-router";
 
+import { paths } from "../../app/paths";
 import { useApi } from "../../app/services";
-import { PageHeading } from "../../components/PageHeading";
+import {
+  DateBlock,
+  ErrorBlock,
+  PageHeader,
+  panelClass,
+  RowIcon,
+  RowLink,
+  RowList,
+  RowsSkeleton,
+  WidgetCard,
+} from "../dashboard/kit";
 import { useProfiles } from "../profile/ProfileLayout";
 
 export const recordsKeys = {
@@ -34,21 +44,6 @@ export function useDate() {
   };
 }
 
-/** Plain language first, the code after (design 07 §3.4). */
-function DiagnosisLine({ d }: { d: PatientRecordDiagnosis }) {
-  const { t } = useTranslation();
-  return (
-    <span>
-      <span className="font-semibold">{d.plain_language || d.display}</span>
-      <span className="text-fg-muted">
-        {" "}
-        · {d.code}
-        {d.certainty === "provisional" ? ` · ${t("records.provisional")}` : ""}
-      </span>
-    </span>
-  );
-}
-
 /** /records: signed records of my profiles, newest first (contract PR1). */
 export function RecordsPage() {
   const { t } = useTranslation();
@@ -60,76 +55,116 @@ export function RecordsPage() {
     queryKey: recordsKeys.list(patientId),
     queryFn: () => api.clinical.patient.records(patientId ? { patient_id: patientId } : {}),
   });
+  const [query, setQuery] = useState("");
   const people = profiles.data?.results ?? [];
   const nameOf = (id: string) => people.find((p) => p.patient_id === id)?.display_name;
+  const q = query.trim().toLocaleLowerCase();
+  const rows = (list.data?.results ?? []).filter(
+    (r) =>
+      !q ||
+      [r.facility_name, r.doctor_name, ...r.diagnoses.map((d) => d.plain_language || d.display)]
+        .filter(Boolean)
+        .some((text) => text.toLocaleLowerCase().includes(q)),
+  );
+  const years = [...new Set(rows.map((r) => r.service_date.slice(0, 4)))];
   return (
-    <div className="mx-auto flex w-full max-w-[40rem] flex-col gap-6">
-      <PageHeading title={t("records.title")}>{t("records.title")}</PageHeading>
-      <p className="m-0 text-fg-secondary">{t("records.intro")}</p>
-      {people.length > 1 && (
-        <SelectField
-          label={t("records.whose")}
-          value={patientId}
-          onChange={(e) => setPatientId(e.target.value)}
-        >
-          <option value="">{t("records.everyone")}</option>
-          {people.map((p) => (
-            <option key={p.patient_id} value={p.patient_id}>
-              {p.display_name}
-            </option>
-          ))}
-        </SelectField>
-      )}
+    <div className="flex flex-col gap-6">
+      <PageHeader title={t("records.title")} subtitle={t("records.intro")} />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+        <TextField
+          type="search"
+          label={t("dashboard.records.search")}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="flex-1"
+        />
+        {people.length > 1 && (
+          <SelectField
+            label={t("records.whose")}
+            value={patientId}
+            onChange={(e) => setPatientId(e.target.value)}
+            className="sm:w-64"
+          >
+            <option value="">{t("records.everyone")}</option>
+            {people.map((p) => (
+              <option key={p.patient_id} value={p.patient_id}>
+                {p.display_name}
+              </option>
+            ))}
+          </SelectField>
+        )}
+      </div>
       {list.isPending ? (
-        <Skeleton height="7rem" className="rounded-lg" />
+        <RowsSkeleton rows={4} />
       ) : list.isError ? (
-        <Alert tone="danger" role="alert" title={t("records.loadFailed")}>
-          <Button variant="secondary" onClick={() => void list.refetch()}>
-            {t("common.retry")}
-          </Button>
-        </Alert>
-      ) : list.data.results.length ? (
-        <ul aria-label={t("records.title")} className="m-0 flex list-none flex-col gap-3 p-0">
-          {list.data.results.map((r) => (
-            <li key={r.id}>
-              <Link
-                to={`/records/${r.id}`}
-                className="flex min-h-target items-center gap-3 rounded-lg bg-surface shadow-card p-4 text-fg no-underline hover:bg-subtle"
-              >
-                <FileText
-                  aria-hidden="true"
-                  weight="duotone"
-                  className="size-6 shrink-0 text-brand"
-                />
-                <span className="flex min-w-0 flex-1 flex-col gap-1">
-                  <span className="text-body-sm text-fg-muted">
-                    {date(r.service_date)} · {r.facility_name}
-                    {people.length > 1 && nameOf(r.patient_id) ? ` · ${nameOf(r.patient_id)}` : ""}
-                  </span>
-                  {r.diagnoses.map((d) => (
-                    <DiagnosisLine key={d.code} d={d} />
-                  ))}
-                  <span className="text-body-sm text-fg-muted">
-                    {t("records.doctor", { name: r.doctor_name })}
-                  </span>
+        <ErrorBlock message={t("records.loadFailed")} onRetry={() => void list.refetch()} />
+      ) : rows.length ? (
+        // newest first, under a heading per year
+        <div className={cx(panelClass, "flex flex-col divide-y divide-border overflow-hidden")}>
+          {years.map((year) => (
+            <section key={year} aria-labelledby={`year-${year}`}>
+              <div className="flex items-center justify-between gap-3 border-b border-border bg-subtle/60 px-4 py-2 sm:px-5">
+                <h2
+                  id={`year-${year}`}
+                  className="m-0 text-caption font-semibold tracking-wide text-fg-secondary tabular-nums"
+                >
+                  {year}
+                </h2>
+                <span aria-hidden="true" className="text-caption text-fg-muted tabular-nums">
+                  {rows.filter((r) => r.service_date.startsWith(year)).length}
                 </span>
-                <CaretRight aria-hidden="true" className="size-icon shrink-0 text-fg-muted" />
-              </Link>
-            </li>
+              </div>
+              <RowList bare label={year}>
+                {rows
+                  .filter((r) => r.service_date.startsWith(year))
+                  .map((r) => {
+                    const main = r.diagnoses[0];
+                    return (
+                      <RowLink
+                        key={r.id}
+                        to={paths.record(r.id)}
+                        leading={<DateBlock iso={r.service_date} />}
+                        title={
+                          main
+                            ? main.plain_language || main.display
+                            : t("records.visitOn", { date: date(r.service_date) })
+                        }
+                        meta={[
+                          r.facility_name,
+                          t("records.doctor", { name: r.doctor_name }),
+                          people.length > 1 ? nameOf(r.patient_id) : null,
+                          main?.certainty === "provisional" ? t("records.provisional") : null,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
+                        trailing={
+                          <Badge tone="success" icon={SealCheck}>
+                            {t("dashboard.records.signed")}
+                          </Badge>
+                        }
+                      />
+                    );
+                  })}
+              </RowList>
+            </section>
           ))}
-        </ul>
+        </div>
       ) : (
         <EmptyState
           icon={FileText}
-          title={t("records.empty")}
-          description={t("records.emptyBody")}
+          title={q ? t("dashboard.records.noMatch") : t("records.empty")}
+          description={q ? undefined : t("dashboard.records.emptyBody")}
         />
       )}
     </div>
   );
 }
 
-/** /records/:recordId: one signed record in plain language (contract PR2). No private notes. */
+/**
+ * /records/:recordId: one signed record in plain language (contract PR2). No private notes.
+ * Redesign 2026-11-02: what the doctor found and what to do first; the visit, its measurements
+ * (as recorded, never judged) and later additions beside.
+ */
 export function RecordDetailPage() {
   const { t } = useTranslation();
   const api = useApi();
@@ -139,128 +174,179 @@ export function RecordDetailPage() {
     queryKey: recordsKeys.detail(recordId),
     queryFn: () => api.clinical.patient.record(recordId),
   });
-  const back = (
-    <Link
-      to="/records"
-      className="inline-flex items-center gap-1.5 self-start font-semibold text-link"
-    >
-      <ArrowLeft aria-hidden="true" className="size-icon" />
-      {t("records.back")}
-    </Link>
-  );
+  const back = { to: paths.records, label: t("records.back") };
   if (record.isPending)
     return (
-      <div className="mx-auto flex w-full max-w-[40rem] flex-col gap-6">
-        <Skeleton height="12rem" className="rounded-lg" />
+      <div className="flex flex-col gap-6">
+        <Skeleton height="2.5rem" width="50%" />
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+          <Skeleton height="14rem" className="rounded-2xl" />
+          <Skeleton height="12rem" className="rounded-2xl" />
+        </div>
       </div>
     );
   if (record.isError)
     return (
-      <div className="mx-auto flex w-full max-w-[40rem] flex-col gap-6">
-        {back}
-        <PageHeading title={t("records.notFound")}>{t("records.notFound")}</PageHeading>
+      <div className="flex flex-col gap-6">
+        <PageHeader title={t("records.notFound")} back={back} />
       </div>
     );
   const r = record.data;
-  const v = r.vitals;
+  const reading = [...r.vitals].sort((a, b) => b.recorded_at.localeCompare(a.recorded_at));
+  const tiles = (row: (typeof r.vitals)[number]) =>
+    (
+      [
+        ["temperature", row.temperature_c, "°C"],
+        [
+          "bloodPressure",
+          row.systolic_mmhg && row.diastolic_mmhg
+            ? `${row.systolic_mmhg}/${row.diastolic_mmhg}`
+            : null,
+          "mmHg",
+        ],
+        ["pulse", row.pulse_bpm, "/min"],
+        ["spo2", row.spo2_pct, "%"],
+        ["weight", row.weight_kg, "kg"],
+        ["height", row.height_cm, "cm"],
+      ] as const
+    ).filter(([, value]) => value !== null && value !== undefined && value !== "");
+
   return (
-    <div className="mx-auto flex w-full max-w-[40rem] flex-col gap-5">
-      {back}
-      <PageHeading title={t("records.visitOn", { date: date(r.service_date) })}>
-        {t("records.visitOn", { date: date(r.service_date) })}
-      </PageHeading>
-      <p className="m-0 text-fg-secondary">
-        {r.facility_name} · {t("records.doctor", { name: r.doctor_name })}
-        {r.is_late_entry ? ` · ${t("records.lateEntry")}` : ""}
-      </p>
-      <Card as="section" aria-labelledby="record-diagnosis" className="flex flex-col gap-2">
-        <h2 id="record-diagnosis" className="m-0 text-h3">
-          {t("records.diagnosis")}
-        </h2>
-        {r.diagnoses.map((d) => (
-          <p key={d.code} className="m-0">
-            <DiagnosisLine d={d} />
-          </p>
-        ))}
-      </Card>
-      {r.patient_instructions_text && (
-        <Card as="section" aria-labelledby="record-instructions" className="flex flex-col gap-2">
-          <h2 id="record-instructions" className="m-0 text-h3">
-            {t("records.instructions")}
-          </h2>
-          <p className="m-0 whitespace-pre-wrap text-body-lg">{r.patient_instructions_text}</p>
-        </Card>
-      )}
-      {r.plan_text && (
-        <Card as="section" aria-labelledby="record-plan" className="flex flex-col gap-2">
-          <h2 id="record-plan" className="m-0 text-h3">
-            {t("records.plan")}
-          </h2>
-          <p className="m-0 whitespace-pre-wrap">{r.plan_text}</p>
-        </Card>
-      )}
-      {r.history_text && (
-        <Card as="section" aria-labelledby="record-history" className="flex flex-col gap-2">
-          <h2 id="record-history" className="m-0 text-h3">
-            {t("records.history")}
-          </h2>
-          <p className="m-0 whitespace-pre-wrap">{r.history_text}</p>
-        </Card>
-      )}
-      {v.length > 0 && (
-        <Card as="section" aria-labelledby="record-vitals" className="flex flex-col gap-2">
-          <h2 id="record-vitals" className="m-0 text-h3">
-            {t("records.vitals")}
-          </h2>
-          <dl className="m-0 grid grid-cols-2 gap-2">
-            {v.flatMap((row) =>
-              (
+    <div className="flex flex-col gap-6">
+      <PageHeader
+        title={t("records.visitOn", { date: date(r.service_date) })}
+        subtitle={`${r.facility_name} · ${t("records.doctor", { name: r.doctor_name })}`}
+        back={back}
+        actions={
+          <Badge tone="success" icon={SealCheck}>
+            {t("dashboard.records.signed")}
+          </Badge>
+        }
+      />
+
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div className="flex min-w-0 flex-col gap-6">
+          <WidgetCard id="record-diagnosis" title={t("records.diagnosis")}>
+            <ul className="m-0 flex list-none flex-col divide-y divide-border p-0">
+              {r.diagnoses.map((d) => (
+                <li key={d.code} className="flex items-start gap-3 px-5 py-4">
+                  <RowIcon icon={Stethoscope} />
+                  <span className="flex min-w-0 flex-1 flex-col gap-1">
+                    <span className="font-semibold text-fg">{d.plain_language || d.display}</span>
+                    <span className="flex flex-wrap items-center gap-2">
+                      <span className="rounded-md bg-subtle px-2 py-0.5 font-mono text-caption text-fg-secondary">
+                        {d.code}
+                      </span>
+                      {d.plain_language && d.display !== d.plain_language && (
+                        <span className="text-caption text-fg-muted">{d.display}</span>
+                      )}
+                      {d.certainty === "provisional" && (
+                        <Badge tone="warning">{t("records.provisional")}</Badge>
+                      )}
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </WidgetCard>
+
+          {r.patient_instructions_text && (
+            // what the patient has to do: the one block on a tint
+            <section
+              aria-labelledby="record-instructions"
+              className="flex flex-col gap-2 rounded-2xl border border-brand/25 bg-brand-subtle p-5"
+            >
+              <h2
+                id="record-instructions"
+                className="m-0 flex items-center gap-2 font-heading text-body font-bold text-on-brand-subtle"
+              >
+                <ListChecks aria-hidden="true" weight="bold" className="size-5" />
+                {t("records.instructions")}
+              </h2>
+              <p className="m-0 whitespace-pre-wrap text-fg">{r.patient_instructions_text}</p>
+            </section>
+          )}
+
+          {r.plan_text && (
+            <WidgetCard id="record-plan" title={t("records.plan")}>
+              <p className="m-0 p-5 whitespace-pre-wrap text-fg-secondary">{r.plan_text}</p>
+            </WidgetCard>
+          )}
+          {r.history_text && (
+            <WidgetCard id="record-history" title={t("records.history")}>
+              <p className="m-0 p-5 whitespace-pre-wrap text-fg-secondary">{r.history_text}</p>
+            </WidgetCard>
+          )}
+        </div>
+
+        <aside className="flex flex-col gap-6 lg:sticky lg:top-24">
+          <WidgetCard id="record-visit" title={t("records.about")}>
+            <dl className="m-0 flex flex-col divide-y divide-border">
+              {[
+                [t("records.date"), date(r.service_date)],
+                [t("records.facility"), r.facility_name],
+                [t("records.doctorLabel"), r.doctor_name],
                 [
-                  ["temperature", row.temperature_c, "°C"],
-                  [
-                    "bloodPressure",
-                    row.systolic_mmhg && row.diastolic_mmhg
-                      ? `${row.systolic_mmhg}/${row.diastolic_mmhg}`
-                      : null,
-                    "mmHg",
-                  ],
-                  ["pulse", row.pulse_bpm, "/min"],
-                  ["spo2", row.spo2_pct, "%"],
-                  ["weight", row.weight_kg, "kg"],
-                  ["height", row.height_cm, "cm"],
-                ] as const
-              )
-                .filter(([, value]) => value !== null && value !== undefined)
-                .map(([key, value, unit]) => (
-                  <div key={`${row.recorded_at}-${key}`}>
-                    <dt className="text-body-sm text-fg-muted">
-                      {t(`records.vitalsFields.${key}`)}
-                    </dt>
-                    <dd className="m-0 font-semibold tabular-nums">
-                      {value} {unit}
-                    </dd>
-                  </div>
-                )),
-            )}
-          </dl>
-        </Card>
-      )}
-      {r.addenda.length > 0 && (
-        <Card as="section" aria-labelledby="record-addenda" className="flex flex-col gap-3">
-          <h2 id="record-addenda" className="m-0 text-h3">
-            {t("records.addenda")}
-          </h2>
-          {r.addenda.map((a) => (
-            <div key={a.signed_at} className="flex flex-col gap-1">
-              <p className="m-0 text-body-sm text-fg-muted">
-                {date(a.signed_at, true)} · {a.author_name}
-              </p>
-              <p className="m-0 font-semibold">{a.reason}</p>
-              <p className="m-0 whitespace-pre-wrap">{a.body}</p>
-            </div>
-          ))}
-        </Card>
-      )}
+                  t("records.signedOn"),
+                  `${date(r.signed_at, true)}${r.is_late_entry ? ` · ${t("records.lateEntry")}` : ""}`,
+                ],
+              ].map(([label, value]) => (
+                <div key={label} className="flex flex-col gap-0.5 px-5 py-3">
+                  <dt className="text-caption font-semibold text-fg-muted">{label}</dt>
+                  <dd className="m-0 text-body-sm font-semibold text-fg">{value}</dd>
+                </div>
+              ))}
+            </dl>
+          </WidgetCard>
+
+          {reading.length > 0 && (
+            <WidgetCard id="record-vitals" title={t("records.vitals")}>
+              {reading.map((row) => (
+                <div key={row.recorded_at} className="border-b border-border last:border-b-0">
+                  {reading.length > 1 && (
+                    <p className="m-0 px-5 pt-3 text-caption text-fg-muted tabular-nums">
+                      {date(row.recorded_at, true)}
+                    </p>
+                  )}
+                  <dl className="m-0 grid grid-cols-2 gap-px bg-border">
+                    {tiles(row).map(([key, value, unit]) => (
+                      <div key={key} className="flex flex-col gap-1 bg-surface px-5 py-3">
+                        <dt className="text-caption font-semibold text-fg-muted">
+                          {t(`records.vitalsFields.${key}`)}
+                        </dt>
+                        <dd className="m-0 flex items-baseline gap-1">
+                          <span className="font-heading text-h3 leading-none font-bold text-fg tabular-nums">
+                            {value}
+                          </span>
+                          <span className="text-caption text-fg-muted">{unit}</span>
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              ))}
+            </WidgetCard>
+          )}
+
+          {r.addenda.length > 0 && (
+            <WidgetCard id="record-addenda" title={t("records.addenda")}>
+              <ul className="m-0 flex list-none flex-col divide-y divide-border p-0">
+                {r.addenda.map((a) => (
+                  <li key={a.signed_at} className="flex flex-col gap-1 px-5 py-4">
+                    <p className="m-0 text-caption text-fg-muted tabular-nums">
+                      {date(a.signed_at, true)} · {a.author_name}
+                    </p>
+                    <p className="m-0 font-semibold">{a.reason}</p>
+                    <p className="m-0 text-body-sm whitespace-pre-wrap text-fg-secondary">
+                      {a.body}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            </WidgetCard>
+          )}
+        </aside>
+      </div>
     </div>
   );
 }

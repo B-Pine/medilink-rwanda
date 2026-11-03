@@ -116,6 +116,8 @@ describe("push service worker (S9-F9)", () => {
     ["javascript:alert(1)", "/notifications"],
     [undefined, "/notifications"],
     ["/notifications/n3?from=push", "/notifications/n3?from=push"],
+    ["/dashboard/notifications/n5", "/dashboard/notifications/n5"],
+    ["/dashboard/records/r1", "/notifications"],
   ])("a click on %s opens %s", async (url, expected) => {
     const sw = loadWorker();
     const click = clickEvent(url);

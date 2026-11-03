@@ -77,6 +77,16 @@
   "flow": {
     "title": "Réserver une visite",
     "step": "Étape {{step}} sur {{total}}",
+    "steps": {
+      "label": "Étapes de la réservation",
+      "who": "Pour qui",
+      "what": "Service",
+      "when": "Heure",
+      "reason": "Motif",
+      "review": "Vérifier"
+    },
+    "summary": "Votre réservation",
+    "notChosen": "Pas encore choisi",
     "who": "Pour qui est la visite ?",
     "addPerson": "Ajouter un membre de la famille",
     "what": "De quoi avez-vous besoin ?",

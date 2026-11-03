@@ -111,7 +111,35 @@
     "tagline": "Relier les personnes aux établissements de santé partout au Rwanda.",
     "trust": "Cherchez sans compte. Votre position sert seulement à votre recherche et n’est jamais conservée.",
     "contact": "Contact",
-    "accessibility": "Accessibilité"
+    "accessibility": "Accessibilité",
+    "label": "Liens du site",
+    "hotlineNote": "Ligne d’ambulance gratuite, ouverte 24 h/24",
+    "cta": {
+      "title": "Besoin de soins aujourd’hui ?",
+      "body": "Trouvez un établissement ouvert près de chez vous, voyez son affluence et réservez avant de partir.",
+      "symptoms": "Vous ne savez pas où aller ?",
+      "call": "Urgence · appelez le 912"
+    }
+  },
+  "authAside": {
+    "eyebrow": "Votre compte MediLink",
+    "title": "Moins de temps à attendre, plus de temps pour guérir.",
+    "lead": "Un seul compte pour vous et votre famille, dans chaque établissement sur MediLink.",
+    "points": {
+      "book": {
+        "title": "Réservez à l’avance",
+        "body": "Choisissez un établissement, un service et l’heure qui vous convient."
+      },
+      "queue": {
+        "title": "Suivez votre place dans la file",
+        "body": "Partez de chez vous quand votre tour approche, pas des heures avant."
+      },
+      "records": {
+        "title": "Votre dossier au même endroit",
+        "body": "Ordonnances, résultats et documents que vous pouvez partager en sécurité."
+      }
+    },
+    "trust": "Vos données de santé sont protégées par la loi rwandaise sur la protection des données et ne sont partagées qu’avec votre accord."
   },
   "login": {
     "title": "Se connecter ou créer un compte",
@@ -368,6 +396,7 @@
   "care": {
     "title": "Trouver des soins",
     "filters": "Filtres",
+    "quick": "Filtres rapides",
     "filtersCount_one": "Filtres · {{count}}",
     "filtersCount_other": "Filtres · {{count}}",
     "active": "Filtres actifs",

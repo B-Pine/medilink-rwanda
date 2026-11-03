@@ -1,0 +1,393 @@
+{
+  "close": "Close",
+  "cancel": "Cancel",
+  "retry": "Try again",
+  "findCare": "Find care",
+  "viewAll": "View all",
+  "viewDetails": "View details",
+  "toast": {
+    "close": "Dismiss message"
+  },
+  "nav": {
+    "label": "MediLink",
+    "portal": "Patient portal",
+    "main": "Main menu",
+    "account": "Account menu",
+    "breadcrumb": "You are here",
+    "details": "Details",
+    "expand": "Open the menu",
+    "collapse": "Collapse the menu",
+    "more": "More",
+    "language": "Language",
+    "groups": {
+      "care": "Care",
+      "account": "Account"
+    },
+    "overview": "Overview",
+    "findCare": "Find care",
+    "appointments": "Appointments",
+    "queue": "My queue",
+    "family": "My family",
+    "records": "Medical records",
+    "medications": "Medications",
+    "documents": "Documents",
+    "notifications": "Notifications",
+    "help": "Help & support",
+    "settings": "Settings",
+    "short": {
+      "overview": "Home",
+      "findCare": "Find care",
+      "appointments": "Visits",
+      "records": "Records"
+    }
+  },
+  "account": {
+    "label": "Account menu for {{name}}",
+    "subtitle": "Patient account",
+    "profile": "My profile",
+    "family": "My family",
+    "privacy": "Privacy and consent",
+    "settings": "Settings",
+    "viewProfile": "View my profile"
+  },
+  "search": {
+    "open": "Search",
+    "title": "Search MediLink",
+    "placeholder": "Search care, appointments, documents",
+    "shortcut": "Ctrl K",
+    "empty": "Nothing found. Try a facility, a doctor or a service.",
+    "hints": "↑ ↓ move · Enter open · Esc close",
+    "findCare": "Find care for “{{query}}”",
+    "groups": {
+      "find": "Search",
+      "pages": "Pages",
+      "appointments": "My appointments",
+      "documents": "My documents",
+      "facilities": "Facilities",
+      "doctors": "Doctors"
+    }
+  },
+  "bell": {
+    "title": "Notifications",
+    "markAll": "Mark all as read",
+    "viewAll": "View all notifications",
+    "empty": "You're all caught up.",
+    "failed": "We couldn't load your notifications.",
+    "unread": "unread"
+  },
+  "status": {
+    "confirmed": "Confirmed",
+    "checked_in": "Checked in",
+    "cancelled": "Cancelled",
+    "late_cancelled": "Cancelled late",
+    "no_show": "Missed",
+    "rescheduled": "Rescheduled",
+    "answer": "Needs your answer"
+  },
+  "overview": {
+    "greeting_morning": "Good morning, {{name}}",
+    "greeting_afternoon": "Good afternoon, {{name}}",
+    "greeting_evening": "Good evening, {{name}}",
+    "subtitle": "Here's your healthcare overview.",
+    "verifyTitle": "Confirm your email",
+    "verifyBody": "We sent a link to {{email}}. Open it to keep your account safe.",
+    "nextAppointment": "Next appointment",
+    "currentVisit": "Current visit",
+    "viewDetails": "View details",
+    "allTickets": "My queue",
+    "moreTickets_one": "{{count}} more ticket today",
+    "moreTickets_other": "{{count}} more tickets today",
+    "startTitle": "Your healthcare starts here.",
+    "startBody": "Find a healthcare facility, explore available services or book your next visit.",
+    "explore": "Explore facilities",
+    "quick": "Quick actions",
+    "actions": {
+      "findCare": "Find care",
+      "findCareBody": "Facilities near you",
+      "book": "Book appointment",
+      "bookBody": "Choose a time",
+      "records": "My records",
+      "recordsBody": "Visits and results",
+      "family": "My family",
+      "familyBody": "People you care for",
+      "documents": "Documents",
+      "documentsBody": "Letters and reports"
+    },
+    "upcoming": "Upcoming appointments",
+    "activity": "Recent activity",
+    "activityFailed": "We couldn't load your recent activity.",
+    "activityEmpty": "No activity yet",
+    "activityEmptyBody": "Bookings, results and documents will show up here.",
+    "aside": "Your health and family",
+    "family": "Family",
+    "manage": "Manage",
+    "familyEmpty": "Add a child or someone you care for.",
+    "attention": {
+      "title": "Needs your attention",
+      "allSet": "You're all set",
+      "allSetBody": "Nothing needs an answer from you right now."
+    },
+    "glance": {
+      "label": "At a glance",
+      "upcoming": "Upcoming",
+      "next": "Next: {{when}}",
+      "upcomingNone": "Nothing booked",
+      "medicines": "Active medicines",
+      "from": "From {{facility}}",
+      "medicinesNone": "None right now",
+      "records": "Medical records",
+      "lastVisit": "Last visit {{date}}",
+      "recordsNone": "No visits yet",
+      "unread": "Unread messages",
+      "unreadHint": "In your notifications",
+      "unreadNone": "You're all caught up"
+    },
+    "visits": {
+      "title": "Recent visits",
+      "empty": "No visits yet",
+      "emptyBody": "After a visit, the doctor's signed summary shows here."
+    },
+    "vitals": {
+      "title": "Latest measurements",
+      "recorded": "Taken on {{date}} at {{facility}}.",
+      "note": "Your doctor can explain what they mean for you.",
+      "empty": "No measurements yet",
+      "emptyBody": "Measurements taken at your visits show here.",
+      "bp": "Blood pressure",
+      "pulse": "Pulse",
+      "temperature": "Temperature",
+      "spo2": "Oxygen level",
+      "weight": "Weight",
+      "respiratory": "Breathing rate"
+    },
+    "medicines": {
+      "title": "Current medicines",
+      "items_one": "{{count}} medicine",
+      "items_other": "{{count}} medicines",
+      "until": "Valid until {{date}}",
+      "empty": "No active medicines"
+    }
+  },
+  "reminders": {
+    "title": "Reminders",
+    "answer": "The facility proposed a new time for {{service}}",
+    "reply": "Answer",
+    "soon": "{{service}} is coming up",
+    "arrive": "Tell reception you've arrived (ticket {{ticket}})",
+    "open": "Open ticket"
+  },
+  "appointments": {
+    "title": "My appointments",
+    "subtitle": "Manage your upcoming and previous healthcare visits.",
+    "book": "Book appointment",
+    "views": "Which appointments",
+    "count_one": "{{count}} appointment",
+    "count_other": "{{count}} appointments",
+    "tabs": {
+      "upcoming": "Upcoming",
+      "past": "Past",
+      "cancelled": "Cancelled"
+    },
+    "failed": "We couldn't load your appointments.",
+    "empty": {
+      "upcoming": "You don't have upcoming appointments.",
+      "past": "No past appointments yet.",
+      "cancelled": "No cancelled appointments."
+    },
+    "emptyBody": "Find a facility and book a time that suits you.",
+    "for": "for {{name}}",
+    "view": "View appointment",
+    "more": "More actions for {{service}}",
+    "manage": "Manage",
+    "facilityPage": "Facility page",
+    "reschedule": "Reschedule",
+    "cancel": "Cancel appointment",
+    "cancelled": "Your appointment has been cancelled.",
+    "rescheduled": "Your appointment has been moved.",
+    "actionFailed": "We couldn't update your appointment. Please try again.",
+    "back": "All appointments",
+    "notFound": "Appointment not found",
+    "notFoundBody": "We couldn't load this appointment. It may belong to another account.",
+    "info": "Appointment",
+    "date": "Date",
+    "time": "Time",
+    "doctor": "Doctor",
+    "patient": "Patient",
+    "room": "Room",
+    "reason": "What you told us",
+    "facility": "Facility",
+    "hoursToday": "Open today",
+    "phone": "Phone",
+    "timeline": "Timeline",
+    "steps": {
+      "booked": "Booked",
+      "day": "Visit day",
+      "checkedIn": "Checked in at reception",
+      "cancelled": "Cancelled",
+      "missed": "Missed",
+      "rescheduled": "Moved to a new time"
+    },
+    "bring": "What to bring",
+    "bringItems": {
+      "id": "Your ID card or MediLink number",
+      "insurance": "Your insurance card",
+      "code": "Your booking code {{code}}",
+      "papers": "Recent results, prescriptions or referral letters"
+    },
+    "reference": "Booking reference",
+    "showCode": "Show this code at reception.",
+    "changeUntil": "You can change or cancel until {{time}}.",
+    "changeClosed": "Changes are closed. Cancelling now counts as a late cancellation.",
+    "directions": "Get directions"
+  },
+  "reschedule": {
+    "title": "Choose a new time",
+    "body": "Free times for {{service}} at {{facility}}.",
+    "reviewTitle": "Review the new time",
+    "earlier": "Earlier",
+    "later": "Later",
+    "days": "Days with free times",
+    "times": "Free times",
+    "none": "No free times this week. Try the next week.",
+    "loadFailed": "We couldn't load free times.",
+    "from": "Current time",
+    "to": "New time",
+    "held": "We're keeping this time for you for",
+    "expired": "The time we kept for you has run out. Choose a time again.",
+    "oldFreed": "Your current time is released only when the new one is confirmed.",
+    "otherTime": "Choose another time",
+    "confirm": "Confirm new time"
+  },
+  "queue": {
+    "title": "My queue",
+    "subtitle": "Follow today's tickets and see where you are in line.",
+    "join": "Join a queue",
+    "today": "Today",
+    "failed": "We couldn't load your tickets.",
+    "none": "You're not currently in a queue.",
+    "noneBody": "Join a queue from a facility that allows it, or check in at reception.",
+    "remoteNote": "Joining from your phone is not the same as checking in. Reception confirms your arrival when you get there.",
+    "previous": "Previous visits",
+    "previousTitle": "Past tickets aren't listed here yet",
+    "previousBody": "After a visit, the doctor's signed record appears in Medical records.",
+    "how": {
+      "title": "How the queue works",
+      "join": "Join from your phone where the facility allows it, or take a ticket at reception.",
+      "follow": "Follow the people ahead of you and the facility's own wait estimate here.",
+      "called": "When it's your turn, this page tells you where to go, with a sound."
+    },
+    "back": "My queue",
+    "ticket": "Ticket",
+    "ahead": "People ahead",
+    "estimate": "Estimated wait",
+    "wait": "{{min}}–{{max}} min",
+    "noEstimate": {
+      "break": "Doctor on a short break",
+      "emergency": "Paused for an emergency",
+      "none_on_duty": "No doctor on duty yet",
+      "none": "Not available yet"
+    },
+    "updated": "Updated {{time}}",
+    "arrival": {
+      "confirmed": "Checked in",
+      "claimed": "Waiting for reception to confirm",
+      "notYet": "Not checked in yet"
+    },
+    "viewLive": "View live queue",
+    "state": {
+      "waiting": "Waiting",
+      "called": "Your turn",
+      "in_service": "With the doctor",
+      "no_response": "Missed call",
+      "on_hold": "On hold",
+      "moved_to_next_stage": "Next step",
+      "transferred": "Transferred",
+      "cancelled": "Cancelled",
+      "left_without_service": "Left",
+      "completed": "Completed"
+    }
+  },
+  "family": {
+    "title": "My family",
+    "subtitle": "Manage healthcare for the people connected to your account.",
+    "add": "Add family member",
+    "you": "You",
+    "open": "Open profile",
+    "age_one": "{{count}} year",
+    "age_other": "{{count}} years",
+    "access": {
+      "guardian": "Guardian",
+      "delegate": "Delegated"
+    },
+    "viewing": "You're viewing {{name}}'s profile",
+    "accessHint": {
+      "guardian": "You manage this profile as their guardian.",
+      "delegate": "{{name}} gave you access to help with their care."
+    },
+    "careFor": "Care for {{name}}",
+    "links": {
+      "appointments": "Upcoming visits",
+      "records": "Visit history",
+      "medications": "Prescriptions",
+      "documents": "Letters and reports"
+    }
+  },
+  "records": {
+    "search": "Search by facility, doctor or diagnosis",
+    "signed": "Signed",
+    "noMatch": "No records match your search.",
+    "emptyBody": "Your medical records will appear here when they become available."
+  },
+  "medications": {
+    "title": "My medications"
+  },
+  "documents": {
+    "kinds": "Document types",
+    "all": "All"
+  },
+  "help": {
+    "title": "Help & support",
+    "subtitle": "Find answers, contact support and follow your requests."
+  },
+  "settings": {
+    "subtitle": "Your details, language, privacy, security and alerts.",
+    "sections": "Settings sections",
+    "personal": {
+      "title": "Personal information",
+      "body": "Your name, contact details and identifiers live on your profile.",
+      "name": "Name",
+      "email": "Email",
+      "verified": "Verified",
+      "unverified": "Not confirmed",
+      "edit": "Edit my profile"
+    },
+    "display": {
+      "title": "Language and display",
+      "body": "Applies at once and stays on this device."
+    },
+    "privacy": {
+      "title": "Privacy and consent",
+      "body": "Choose who can see your records and review who opened them.",
+      "consent": "Privacy and consent",
+      "delegates": "People with access"
+    },
+    "security": {
+      "title": "Security",
+      "body": "Keep your account safe.",
+      "password": "To change your password we email you a secure link, so only you can set a new one.",
+      "change": "Change password",
+      "later": "Signed-in devices and two-step sign-in will be added here."
+    },
+    "alerts": {
+      "title": "Notification preferences",
+      "body": "Which alerts you get, on which channel, and quiet hours.",
+      "open": "Notification preferences",
+      "openShort": "Open"
+    },
+    "account": {
+      "title": "Account",
+      "body": "Sign out on this device or ask us to close your account.",
+      "close": "Ask to close my account"
+    }
+  }
+}

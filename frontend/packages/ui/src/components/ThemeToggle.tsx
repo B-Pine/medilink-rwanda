@@ -75,7 +75,14 @@ function systemPrefersDark(): boolean {
  * One-click light / dark switch for headers and toolbars: a toggle button pressed when the page is
  * dark. Until it is used the page follows the system; after that it remembers the choice.
  */
-export function ThemeSwitch({ className }: { className?: string }) {
+export function ThemeSwitch({
+  tone = "outline",
+  className,
+}: {
+  /** `outline`: a bordered round chip (site headers); `ghost`: a borderless square (app bars). */
+  tone?: "outline" | "ghost";
+  className?: string;
+}) {
   const { t } = useTranslation("ui");
   const { theme, setTheme } = useTheme();
   const systemDark = useSyncExternalStore(subscribeToScheme, systemPrefersDark, () => false);
@@ -89,7 +96,10 @@ export function ThemeSwitch({ className }: { className?: string }) {
       title={dark ? t("theme.light") : t("theme.dark")}
       onClick={() => setTheme(dark ? "light" : "dark")}
       className={cx(
-        "relative inline-flex size-10 shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-border bg-surface text-fg-secondary transition-[background-color,border-color,color,transform] duration-150 ease-out-quint hover:border-border-input hover:bg-subtle hover:text-fg active:scale-[0.94] motion-reduce:active:scale-100",
+        "relative inline-flex size-10 shrink-0 cursor-pointer items-center justify-center overflow-hidden text-fg-secondary transition-[background-color,border-color,color,transform] duration-150 ease-out-quint hover:bg-subtle hover:text-fg active:scale-[0.94] motion-reduce:active:scale-100",
+        tone === "outline"
+          ? "rounded-full border border-border bg-surface hover:border-border-input"
+          : "rounded-xl",
         className,
       )}
     >

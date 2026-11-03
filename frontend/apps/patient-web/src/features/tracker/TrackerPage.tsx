@@ -5,20 +5,10 @@ import {
   socketUrl,
   type PatientVisit,
 } from "@medilink/api-client";
-import {
-  Alert,
-  Button,
-  cx,
-  Dialog,
-  ImigongoPattern,
-  ProgressDots,
-  TextField,
-  TicketNumber,
-} from "@medilink/ui";
+import { Alert, Button, cx, Dialog, ProgressDots, TextField, TicketNumber } from "@medilink/ui";
 import { formatTime } from "@medilink/ui/i18n";
 import {
-  CaretRight,
-  Clock,
+  Check,
   CloudSlash,
   MapPin,
   MegaphoneSimple,
@@ -29,9 +19,10 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router";
 
+import { paths } from "../../app/paths";
 import { useApi } from "../../app/services";
 import { env } from "../../env";
-import { ProfileLayout } from "../profile/ProfileLayout";
+import { PageHeader, panelClass } from "../dashboard/kit";
 
 export const trackerKey = ["tracker", "visits"] as const;
 
@@ -111,7 +102,11 @@ export function TrackerPage() {
   const lang = i18n.resolvedLanguage ?? "rw";
 
   return (
-    <ProfileLayout title={t("tracker.title")} back={{ to: "/home", label: t("tracker.backHome") }}>
+    <div className="flex w-full flex-col gap-6">
+      <PageHeader
+        title={t("tracker.title")}
+        back={{ to: paths.queue, label: t("dashboard.queue.back") }}
+      />
       {!online && visits.data && (
         <Alert tone="warning" title={t("tracker.offline")}>
           <span className="inline-flex items-center gap-2">
@@ -124,16 +119,16 @@ export function TrackerPage() {
       )}
       {visits.isPending && <p className="m-0 text-fg-secondary">{t("tracker.loading")}</p>}
       {visits.data && !visit && (
-        <div className="flex flex-col gap-3 rounded-lg bg-surface shadow-card p-5">
+        <div className={cx(panelClass, "flex max-w-[40rem] flex-col gap-3 p-5")}>
           <p className="m-0 font-heading text-h3">{t("tracker.noVisitTitle")}</p>
           <p className="m-0 text-fg-secondary">{t("tracker.noVisit")}</p>
-          <Link to="/home" className="font-semibold">
-            {t("tracker.backHome")}
+          <Link to={paths.queue} className="font-semibold">
+            {t("dashboard.queue.back")}
           </Link>
         </div>
       )}
       {visit && <Tracker visit={visit} lang={lang} />}
-    </ProfileLayout>
+    </div>
   );
 }
 
@@ -146,85 +141,123 @@ function Tracker({ visit, lang }: { visit: PatientVisit; lang: string }) {
   const stageIndex = STAGES.indexOf(visit.stage as (typeof STAGES)[number]);
 
   return (
-    <>
+    // the ticket and what to do now on the left; the visit's steps and the exits beside it
+    <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
       {takeover && (
         <CalledTakeover
           visit={visit}
           onAcknowledge={() => setAcknowledged(`${visit.visit_id}-${visit.version}`)}
         />
       )}
-      <section
-        aria-labelledby="ticket"
-        className="flex flex-col items-center gap-5 rounded-lg bg-surface shadow-raised px-5 py-7 text-center "
-      >
-        <p className="m-0 text-fg-secondary">
-          {visit.facility_name} · {name}
-        </p>
-        <div className="flex flex-col items-center gap-1">
-          <h2 id="ticket" className="sr-only">
-            {t("tracker.yourTicket")}
-          </h2>
-          <TicketNumber
-            number={visit.ticket_number}
-            size="display"
-            stub
-            tone={visit.state === "called" ? "attention" : "brand"}
-          />
-          <span className="text-fg-secondary">{t("tracker.yourTicket")}</span>
-        </div>
-        {visit.state === "waiting" && (
-          <div className="flex flex-col items-center gap-2" aria-live="polite">
-            <ProgressDots ahead={visit.ahead} label={t("tracker.ahead", { count: visit.ahead })} />
-            <p className="m-0 font-heading text-h3">{t("tracker.ahead", { count: visit.ahead })}</p>
-          </div>
-        )}
-        {called && (
-          <p
-            className="m-0 rounded-md bg-warning-bg px-4 py-2 font-heading text-h3 text-warning"
-            aria-live="assertive"
-          >
-            {t("tracker.calledTo", { room: visit.service_point ?? "" })}
+      <div className="flex min-w-0 flex-col gap-6">
+        <section
+          aria-labelledby="ticket"
+          className={cx(
+            panelClass,
+            "flex flex-col items-center gap-5 px-5 py-8 text-center shadow-card sm:px-8",
+            called && "border-attention-solid",
+          )}
+        >
+          <p className="m-0 text-fg-secondary">
+            {visit.facility_name} · {name}
           </p>
-        )}
-        {visit.state === "in_service" && (
-          <p className="m-0 font-heading text-h3 text-brand">{t("tracker.inService")}</p>
-        )}
-        {visit.state === "waiting" && <WaitBlock visit={visit} lang={lang} />}
-      </section>
-
-      {visit.is_remote && !visit.remote_arrival_confirmed_at && visit.state === "waiting" && (
-        <RemoteArrival visit={visit} />
-      )}
-
-      <section aria-labelledby="stages" className="rounded-lg bg-surface shadow-card p-5">
-        <h2 id="stages" className="m-0 mb-3 font-heading text-h3">
-          {t("tracker.stagesTitle")}
-        </h2>
-        <ol className="m-0 flex list-none items-start gap-2 p-0">
-          {STAGES.map((stage, i) => (
-            <li key={stage} className="flex flex-1 flex-col items-center gap-1.5 text-center">
-              <span
-                className={cx(
-                  "h-1.5 w-full rounded-full",
-                  i < stageIndex ? "bg-primary" : i === stageIndex ? "bg-primary/60" : "bg-border",
-                )}
+          <div className="flex flex-col items-center gap-1">
+            <h2 id="ticket" className="sr-only">
+              {t("tracker.yourTicket")}
+            </h2>
+            <TicketNumber
+              number={visit.ticket_number}
+              size="display"
+              stub
+              tone={visit.state === "called" ? "attention" : "brand"}
+            />
+            <span className="text-fg-secondary">{t("tracker.yourTicket")}</span>
+          </div>
+          {visit.state === "waiting" && (
+            <div className="flex flex-col items-center gap-2" aria-live="polite">
+              <ProgressDots
+                ahead={visit.ahead}
+                label={t("tracker.ahead", { count: visit.ahead })}
               />
-              <span
-                className={cx(
-                  "text-body-sm",
-                  i === stageIndex ? "font-semibold text-fg" : "text-fg-secondary",
-                )}
-                aria-current={i === stageIndex ? "step" : undefined}
-              >
-                {t(`tracker.stages.${stage}`)}
-              </span>
-            </li>
-          ))}
-        </ol>
-      </section>
+              <p className="m-0 font-heading text-h3">
+                {t("tracker.ahead", { count: visit.ahead })}
+              </p>
+            </div>
+          )}
+          {called && (
+            <p
+              className="m-0 rounded-md bg-warning-bg px-4 py-2 font-heading text-h3 text-warning"
+              aria-live="assertive"
+            >
+              {t("tracker.calledTo", { room: visit.service_point ?? "" })}
+            </p>
+          )}
+          {visit.state === "in_service" && (
+            <p className="m-0 font-heading text-h3 text-brand">{t("tracker.inService")}</p>
+          )}
+          {visit.state === "waiting" && <WaitBlock visit={visit} lang={lang} />}
+        </section>
 
-      {visit.state === "waiting" && <CancelVisit visit={visit} />}
-    </>
+        {visit.is_remote && !visit.remote_arrival_confirmed_at && visit.state === "waiting" && (
+          <RemoteArrival visit={visit} />
+        )}
+      </div>
+
+      <aside className="flex flex-col gap-4 lg:sticky lg:top-24">
+        <section aria-labelledby="stages" className={cx(panelClass, "overflow-hidden")}>
+          <h2
+            id="stages"
+            className="m-0 border-b border-border px-5 py-4 font-heading text-body font-bold"
+          >
+            {t("tracker.stagesTitle")}
+          </h2>
+          <ol className="m-0 flex list-none flex-col p-5">
+            {STAGES.map((stage, i) => {
+              const done = i < stageIndex;
+              const current = i === stageIndex;
+              return (
+                <li
+                  key={stage}
+                  aria-current={current ? "step" : undefined}
+                  className="relative flex items-center gap-3 pb-5 last:pb-0"
+                >
+                  {i < STAGES.length - 1 && (
+                    <span
+                      aria-hidden="true"
+                      className={cx(
+                        "absolute top-7 left-[0.6875rem] h-[calc(100%-1.75rem)] w-px",
+                        done ? "bg-primary" : "bg-border",
+                      )}
+                    />
+                  )}
+                  <span
+                    aria-hidden="true"
+                    className={cx(
+                      "relative grid size-6 shrink-0 place-items-center rounded-full border-2 text-caption font-bold tabular-nums",
+                      done && "border-primary bg-primary text-on-primary",
+                      current && "border-primary bg-brand-subtle text-on-brand-subtle",
+                      !done && !current && "border-border bg-surface text-fg-muted",
+                    )}
+                  >
+                    {done ? <Check weight="bold" className="size-3.5" /> : i + 1}
+                  </span>
+                  <span
+                    className={cx(
+                      "text-body-sm",
+                      current ? "font-semibold text-fg" : "text-fg-secondary",
+                    )}
+                  >
+                    {t(`tracker.stages.${stage}`)}
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+
+        {visit.state === "waiting" && <CancelVisit visit={visit} />}
+      </aside>
+    </div>
   );
 }
 
@@ -314,10 +347,7 @@ function RemoteArrival({ visit }: { visit: PatientVisit }) {
   const nearFront = visit.ahead <= PASS_OVER_PLACES;
 
   return (
-    <section
-      aria-labelledby="remote-arrival"
-      className="flex flex-col gap-3 rounded-lg bg-surface shadow-card p-5"
-    >
+    <section aria-labelledby="remote-arrival" className={cx(panelClass, "flex flex-col gap-3 p-5")}>
       <h2 id="remote-arrival" className="m-0 flex items-center gap-2 font-heading text-h3">
         <MapPin aria-hidden="true" className="size-5 text-brand" />
         {t("tracker.remote.title")}
@@ -360,12 +390,12 @@ function CancelVisit({ visit }: { visit: PatientVisit }) {
     mutationFn: () => api.queue.cancelVisit(visit.visit_id),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: trackerKey });
-      void navigate("/home");
+      void navigate(paths.queue);
     },
   });
   return (
     <>
-      <Button variant="ghost" size="lg" fullWidth onClick={() => setConfirming(true)}>
+      <Button variant="ghost" fullWidth onClick={() => setConfirming(true)} className="text-danger">
         {t("tracker.cancel")}
       </Button>
       {confirming && (
@@ -469,92 +499,5 @@ function CalledTakeover({
         {t("tracker.coming")}
       </button>
     </div>
-  );
-}
-
-/** Home card: today's live ticket(s), first thing on /home (design 07 §3.1). */
-export function ActiveVisitCard() {
-  const { t, i18n } = useTranslation();
-  const visits = useActiveVisits();
-  const list = visits.data?.results ?? [];
-  if (!list.length) return null;
-  const lang = i18n.resolvedLanguage ?? "rw";
-  return (
-    <section aria-labelledby="active-visits" className="flex flex-col gap-3">
-      <h2 id="active-visits" className="sr-only">
-        {t("tracker.homeTitle")}
-      </h2>
-      {list.map((v) => {
-        const called = v.state === "called";
-        return (
-          <Link
-            key={v.visit_id}
-            to={`/visits/${v.visit_id}`}
-            className={cx(
-              "group relative isolate flex flex-col gap-4 overflow-hidden rounded-xl p-5 no-underline shadow-raised sm:p-6",
-              "transition-transform duration-150 active:scale-[0.99]",
-              called ? "bg-attention-solid text-on-attention-solid" : "bg-forest text-on-forest",
-            )}
-          >
-            {!called && <ImigongoPattern opacity={0.06} className="-z-10 text-on-forest-accent" />}
-            <span className="flex items-center justify-between gap-3 text-body-sm font-semibold">
-              <span className="min-w-0 truncate">{v.facility_name}</span>
-              <span className="inline-flex shrink-0 items-center gap-1.5">
-                <span aria-hidden="true" className="ml-live-dot" />
-                {t("tracker.open")}
-                <CaretRight
-                  aria-hidden="true"
-                  weight="bold"
-                  className="size-4 transition-transform group-hover:translate-x-0.5"
-                />
-              </span>
-            </span>
-            <span className="flex flex-wrap items-center gap-x-5 gap-y-3">
-              <TicketNumber
-                number={v.ticket_number}
-                size="lg"
-                stub
-                tone={called ? "onSolid" : "onForest"}
-              />
-              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                {called ? (
-                  <span className="font-heading text-h2 font-bold">
-                    {t("tracker.calledTo", { room: v.service_point ?? "" })}
-                  </span>
-                ) : v.state === "waiting" ? (
-                  <>
-                    <span className="flex items-baseline gap-2">
-                      <span className="font-heading text-display leading-none font-extrabold tabular-nums">
-                        {v.ahead}
-                      </span>
-                      <span className="font-semibold">
-                        {t("tracker.aheadShort", { count: v.ahead })}
-                      </span>
-                    </span>
-                    {v.estimate.min !== null && (
-                      <span className="text-body-sm opacity-85">
-                        {t("tracker.wait", { min: v.estimate.min, max: v.estimate.max })}
-                      </span>
-                    )}
-                  </>
-                ) : (
-                  <span className="font-heading text-h2 font-bold">
-                    {t(`tracker.states.${v.state}`, { defaultValue: t("tracker.inService") })}
-                  </span>
-                )}
-              </span>
-            </span>
-            {v.leave_by && !called && (
-              <span className="flex items-center gap-3 rounded-lg bg-attention-bg px-4 py-3 text-attention">
-                <Clock aria-hidden="true" weight="bold" className="size-5 shrink-0" />
-                <span className="font-semibold text-fg">
-                  {t("tracker.leaveBy", { time: time(v.leave_by, lang) })}
-                </span>
-              </span>
-            )}
-          </Link>
-        );
-      })}
-    </section>
   );
 }

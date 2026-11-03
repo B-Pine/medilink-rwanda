@@ -111,7 +111,35 @@
     "tagline": "Connecting people to healthcare facilities across Rwanda.",
     "trust": "Search without an account. Your location is used only for your search and never stored.",
     "contact": "Contact",
-    "accessibility": "Accessibility"
+    "accessibility": "Accessibility",
+    "label": "Site links",
+    "hotlineNote": "Free ambulance line, open 24 hours",
+    "cta": {
+      "title": "Need care today?",
+      "body": "Find an open facility near you, see how busy it is and book ahead before you leave home.",
+      "symptoms": "Not sure where to go?",
+      "call": "Emergency · call 912"
+    }
+  },
+  "authAside": {
+    "eyebrow": "Your MediLink account",
+    "title": "Spend less time waiting and more time getting better.",
+    "lead": "One account for you and your family, at every facility on MediLink.",
+    "points": {
+      "book": {
+        "title": "Book ahead",
+        "body": "Choose a facility, a service and a time that suits you."
+      },
+      "queue": {
+        "title": "Follow your place in the queue",
+        "body": "Leave home when it is nearly your turn, not hours before."
+      },
+      "records": {
+        "title": "Your records in one place",
+        "body": "Prescriptions, results and documents you can share safely."
+      }
+    },
+    "trust": "Your health data is protected under Rwanda’s data protection law and is only shared when you allow it."
   },
   "login": {
     "title": "Log in or create an account",
@@ -368,6 +396,7 @@
   "care": {
     "title": "Find care",
     "filters": "Filters",
+    "quick": "Quick filters",
     "filtersCount_one": "Filters · {{count}}",
     "filtersCount_other": "Filters · {{count}}",
     "active": "Active filters",

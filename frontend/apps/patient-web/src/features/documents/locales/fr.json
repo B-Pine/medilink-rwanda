@@ -9,6 +9,14 @@
   "empty": "Aucun document pour l'instant",
   "emptyBody": "Quand un médecin signe une ordonnance, une lettre ou un arrêt maladie pour vous, il apparaît ici.",
   "back": "Mes documents",
+  "about": "À propos de ce document",
+  "facts": {
+    "number": "Numéro",
+    "facility": "Établissement",
+    "author": "Rédigé par",
+    "date": "Date",
+    "version": "Version"
+  },
   "notFound": "Nous ne trouvons pas ce document.",
   "by": "par {{name}}",
   "codeLabel": "Code de vérification",

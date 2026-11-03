@@ -1,6 +1,6 @@
 import type { PublicSlot } from "@medilink/api-client";
-import { ArrowRight, CalendarCheck, UserCircle } from "@phosphor-icons/react";
-import { Button, buttonClassName, cx, FacilityList, FacilityRow } from "@medilink/ui";
+import { ArrowRight, CalendarCheck, Crosshair, UserCircle } from "@phosphor-icons/react";
+import { Button, buttonClassName, cx } from "@medilink/ui";
 import { kigaliDate } from "@medilink/ui/i18n";
 import { useQuery } from "@tanstack/react-query";
 import { createElement, useMemo, useState } from "react";
@@ -10,7 +10,8 @@ import { Link, useParams } from "react-router";
 import { useApi } from "../../app/services";
 import { PublicLayout } from "../../layout/PublicLayout";
 import { DISTRICT_CODES, day, pick, time, type DistrictKey } from "../booking/discovery";
-import { FilterSelect, insurerNames, RowActions, TYPES, waitText } from "../booking/Places";
+import { FILTER, FilterSelect, TYPES, useNearMe, waitText } from "../booking/Places";
+import { FacilityExplorer } from "./FacilityCards";
 import {
   categoryIcon,
   doctorsOf,
@@ -61,143 +62,142 @@ export function FacilitiesPage() {
   const [type, setType] = useState("");
   const [service, setService] = useState("");
   const [openNow, setOpenNow] = useState(false);
+  const { near, locating, locate } = useNearMe();
   const catalogue = useCatalogue(lang);
   const pages = useFacilityPages({
-    district_code: where ? DISTRICT_CODES[where] : undefined,
+    district_code: !near && where ? DISTRICT_CODES[where] : undefined,
     service_code: service || undefined,
     open_now: openNow || undefined,
+    near,
   });
   const words = text.trim().toLowerCase();
   const rows = (pages.data?.pages.flatMap((p) => p.results) ?? []).filter(
     (r) => (!type || r.type === type) && (!words || r.name.toLowerCase().includes(words)),
   );
   const total = pages.data?.pages[0]?.count ?? 0;
+  const filtered = Boolean(text || where || type || service || openNow);
+  const clear = () => {
+    setText("");
+    setWhere("");
+    setType("");
+    setService("");
+    setOpenNow(false);
+  };
 
   return (
     <PublicLayout>
-      <PageContainer className="pb-16">
+      <PageContainer className="pb-20">
         <PageHeader
           crumbs={[{ label: t("nav.facilities") }]}
           title={t("site.facilities.title")}
           lead={t("site.facilities.lead")}
         />
-        <div className="ml-stagger flex flex-col gap-4">
-          <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_14rem]">
-            <SearchBar
-              id="facility-search"
-              label={t("site.searchLabel")}
-              value={text}
-              onChange={setText}
-              placeholder={t("site.searchPlaceholder")}
-            />
-            <LocationSelector id="facility-location" value={where} onChange={setWhere} />
-          </div>
-          <div
-            role="group"
-            aria-label={t("care.filters")}
-            className="flex flex-wrap items-center gap-2"
-          >
-            <FilterSelect
-              id="facility-type"
-              label={t("site.facilities.type")}
-              value={type}
-              onChange={setType}
+        <div className="flex flex-col gap-6">
+          {/* search and every filter in one card above the results */}
+          <div className="flex animate-rise flex-col gap-3 rounded-3xl bg-surface p-4 shadow-card sm:p-5">
+            <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_14rem]">
+              <SearchBar
+                id="facility-search"
+                label={t("site.searchLabel")}
+                value={text}
+                onChange={setText}
+                placeholder={t("site.searchPlaceholder")}
+              />
+              <LocationSelector id="facility-location" value={where} onChange={setWhere} />
+            </div>
+            <div
+              role="group"
+              aria-label={t("care.filters")}
+              className="flex flex-wrap items-center gap-2"
             >
-              <option value="">{t("home.anyType")}</option>
-              {TYPES.map((key) => (
-                <option key={key} value={key}>
-                  {t(`booking.types.${key}`)}
-                </option>
-              ))}
-            </FilterSelect>
-            <FilterSelect
-              id="facility-service"
-              label={t("site.facilities.service")}
-              value={service}
-              onChange={setService}
-            >
-              <option value="">{t("site.facilities.anyService")}</option>
-              {(catalogue.data ?? []).map((s) => (
-                <option key={s.code} value={s.code}>
-                  {s.name}
-                </option>
-              ))}
-            </FilterSelect>
-            <button
-              type="button"
-              aria-pressed={openNow}
-              onClick={() => setOpenNow((on) => !on)}
-              className="min-h-target cursor-pointer rounded-full border border-border-input bg-surface px-4 text-body-sm font-semibold text-fg transition-colors duration-150 ease-out-quint hover:border-fg-muted aria-pressed:border-primary aria-pressed:bg-brand-subtle aria-pressed:text-on-brand-subtle"
-            >
-              {t("home.openNow")}
-            </button>
-            {pages.isSuccess && (
-              <span role="status" className="ml-auto text-body-sm text-fg-muted tabular-nums">
-                {t("site.facilities.count", { count: type || words ? rows.length : total })}
-              </span>
+              <button
+                type="button"
+                aria-pressed={near !== null}
+                onClick={locate}
+                disabled={locating === "busy"}
+                className={cx(FILTER, "inline-flex items-center gap-1.5")}
+              >
+                <Crosshair
+                  aria-hidden="true"
+                  className={cx("size-4", locating === "busy" && "animate-spin")}
+                />
+                {near ? t("home.nearYou") : t("home.nearMe")}
+              </button>
+              <FilterSelect
+                id="facility-type"
+                label={t("site.facilities.type")}
+                value={type}
+                onChange={setType}
+              >
+                <option value="">{t("home.anyType")}</option>
+                {TYPES.map((key) => (
+                  <option key={key} value={key}>
+                    {t(`booking.types.${key}`)}
+                  </option>
+                ))}
+              </FilterSelect>
+              <FilterSelect
+                id="facility-service"
+                label={t("site.facilities.service")}
+                value={service}
+                onChange={setService}
+              >
+                <option value="">{t("site.facilities.anyService")}</option>
+                {(catalogue.data ?? []).map((s) => (
+                  <option key={s.code} value={s.code}>
+                    {s.name}
+                  </option>
+                ))}
+              </FilterSelect>
+              <button
+                type="button"
+                aria-pressed={openNow}
+                onClick={() => setOpenNow((on) => !on)}
+                className={FILTER}
+              >
+                {t("home.openNow")}
+              </button>
+              {filtered && (
+                <button
+                  type="button"
+                  onClick={clear}
+                  className="min-h-target cursor-pointer rounded-full px-3 text-body-sm font-semibold text-link hover:underline"
+                >
+                  {t("site.facilities.clear")}
+                </button>
+              )}
+              {pages.isSuccess && (
+                <span role="status" className="ml-auto text-body-sm text-fg-muted tabular-nums">
+                  {t("site.facilities.count", { count: type || words ? rows.length : total })}
+                </span>
+              )}
+            </div>
+            {locating === "denied" && (
+              <p role="status" className="m-0 text-body-sm text-fg-secondary">
+                {t("home.locationDenied")}
+              </p>
             )}
           </div>
 
-          <Panel as="div" className="overflow-hidden">
-            {pages.isPending ? (
-              <LoadingRows rows={6} />
-            ) : pages.isError ? (
-              <ErrorState onRetry={() => void pages.refetch()} />
-            ) : rows.length === 0 ? (
+          <FacilityExplorer
+            label={t("site.facilities.title")}
+            rows={rows}
+            loading={pages.isPending}
+            fetching={pages.isFetching && !pages.isFetchingNextPage}
+            failed={pages.isError}
+            onRetry={() => void pages.refetch()}
+            near={near}
+            empty={
               <EmptyState
                 title={t("site.facilities.none")}
                 action={
-                  <Button
-                    variant="secondary"
-                    pill
-                    onClick={() => {
-                      setText("");
-                      setWhere("");
-                      setType("");
-                      setService("");
-                      setOpenNow(false);
-                    }}
-                  >
+                  <Button variant="secondary" pill onClick={clear}>
                     {t("site.facilities.clear")}
                   </Button>
                 }
               />
-            ) : (
-              <FacilityList
-                labels={{
-                  list: t("site.facilities.title"),
-                  name: t("home.columns.name"),
-                  type: t("home.columns.type"),
-                  distance: t("home.columns.distance"),
-                  status: t("home.columns.status"),
-                  wait: t("home.columns.wait"),
-                }}
-              >
-                {rows.map((r) => (
-                  <FacilityRow
-                    key={r.slug}
-                    title={
-                      <Link
-                        to={`/facilities/${r.slug}`}
-                        viewTransition
-                        className="text-fg no-underline hover:underline"
-                      >
-                        {r.name}
-                      </Link>
-                    }
-                    type={`${t(`booking.types.${r.type}`, { defaultValue: r.type })} · ${r.district}`}
-                    open={{
-                      isOpen: r.open_now,
-                      label: r.open_now ? t("site.open") : t("site.closed"),
-                    }}
-                    wait={{ text: waitText(r, t, lang), tone: r.queue_load }}
-                    insurers={insurerNames(r.insurers, t)}
-                    actions={<RowActions result={r} />}
-                  />
-                ))}
-              </FacilityList>
-            )}
-          </Panel>
+            }
+          />
           {pages.hasNextPage && !type && !words && (
             <Button
               variant="secondary"
@@ -216,6 +216,93 @@ export function FacilitiesPage() {
 }
 
 // ---- /doctors ----
+
+function initialsOf(name: string): string {
+  return name
+    .replace(/^Dr\.?\s+/i, "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]!.toUpperCase())
+    .join("");
+}
+
+/** One doctor: initials, name, services, facility, and the seven days with theirs filled. */
+function DoctorCard({
+  doctor,
+  today,
+}: {
+  doctor: ReturnType<typeof useDoctors>["doctors"][number];
+  today: number;
+}) {
+  const { t, i18n } = useTranslation();
+  const lang = i18n.resolvedLanguage ?? "rw";
+  const here = doctor.days.includes(today);
+  return (
+    <Link
+      to={`/doctors/${doctor.slug}`}
+      viewTransition
+      className="group flex h-full flex-col gap-4 rounded-3xl border border-border/70 bg-surface p-5 text-fg no-underline transition-[box-shadow,translate,border-color] duration-300 ease-out-quint hover:-translate-y-1 hover:border-brand/40 hover:shadow-raised motion-reduce:hover:translate-y-0"
+    >
+      <span className="flex items-start gap-3">
+        <span
+          aria-hidden="true"
+          className="grid size-12 shrink-0 place-items-center rounded-2xl bg-brand-subtle font-heading font-bold text-on-brand-subtle"
+        >
+          {initialsOf(doctor.name)}
+        </span>
+        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <span className="font-heading text-h3 leading-snug font-bold">{doctor.name}</span>
+          <span className="truncate text-body-sm text-fg-secondary">
+            {doctor.services.map((s) => pick(s.name, lang)).join(" · ")}
+          </span>
+        </span>
+      </span>
+      <span className="inline-flex items-center gap-1.5 text-body-sm text-fg-muted">
+        <UserCircle aria-hidden="true" className="size-4 shrink-0" />
+        <span className="truncate">{doctor.facility.name}</span>
+      </span>
+      <span className="mt-auto flex flex-col gap-2 border-t border-border/60 pt-4">
+        <span className="sr-only">
+          {t("site.doctors.days")}: {daysText(doctor.days, lang)}
+        </span>
+        <span aria-hidden="true" className="grid grid-cols-7 gap-1">
+          {Array.from({ length: 7 }, (_, i) => (
+            <span
+              key={i}
+              className={cx(
+                "grid h-7 place-items-center rounded-md text-[0.6875rem] font-semibold",
+                doctor.days.includes(i)
+                  ? "bg-brand-subtle text-on-brand-subtle"
+                  : "bg-subtle text-fg-muted/60",
+                i === today && "ring-2 ring-primary ring-offset-1 ring-offset-surface",
+              )}
+            >
+              {weekday(i, lang).slice(0, 2)}
+            </span>
+          ))}
+        </span>
+        <span className="flex items-center justify-between text-body-sm">
+          {here ? (
+            <span className="inline-flex items-center gap-1.5 font-semibold text-success">
+              <span aria-hidden="true" className="ml-live-dot" />
+              {t("site.doctors.today")}
+            </span>
+          ) : (
+            <span />
+          )}
+          <span className="inline-flex items-center gap-1 font-semibold text-link">
+            {t("site.doctors.viewProfile")}
+            <ArrowRight
+              aria-hidden="true"
+              className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
+            />
+          </span>
+        </span>
+      </span>
+    </Link>
+  );
+}
 
 /**
  * Doctor directory (upgrade 11 §5). Public doctor data comes from facility profiles until a
@@ -256,59 +343,60 @@ export function DoctorsPage() {
           title={t("site.doctors.title")}
           lead={t("site.doctors.lead")}
         />
-        <div className="ml-stagger flex flex-col gap-4">
-          <SearchBar
-            id="doctor-search"
-            label={t("site.doctors.searchName")}
-            value={text}
-            onChange={setText}
-            placeholder={t("site.doctors.searchName")}
-            className="max-w-2xl"
-          />
-          <div
-            role="group"
-            aria-label={t("care.filters")}
-            className="flex flex-wrap items-center gap-2"
-          >
-            <FilterSelect
-              id="doctor-service"
-              label={t("site.doctors.specialty")}
-              value={service}
-              onChange={setService}
+        <div className="flex flex-col gap-6">
+          <div className="flex animate-rise flex-col gap-3 rounded-3xl bg-surface p-4 shadow-card sm:p-5">
+            <SearchBar
+              id="doctor-search"
+              label={t("site.doctors.searchName")}
+              value={text}
+              onChange={setText}
+              placeholder={t("site.doctors.searchName")}
+            />
+            <div
+              role="group"
+              aria-label={t("care.filters")}
+              className="flex flex-wrap items-center gap-2"
             >
-              <option value="">{t("site.doctors.anySpecialty")}</option>
-              {services.map(([code, name]) => (
-                <option key={code} value={code}>
-                  {name}
-                </option>
-              ))}
-            </FilterSelect>
-            <FilterSelect
-              id="doctor-facility"
-              label={t("site.doctors.facility")}
-              value={facility}
-              onChange={setFacility}
-            >
-              <option value="">{t("site.doctors.anyFacility")}</option>
-              {facilities.map((f) => (
-                <option key={f.slug} value={f.slug}>
-                  {f.name}
-                </option>
-              ))}
-            </FilterSelect>
-            <button
-              type="button"
-              aria-pressed={todayOnly}
-              onClick={() => setTodayOnly((on) => !on)}
-              className="min-h-target cursor-pointer rounded-full border border-border-input bg-surface px-4 text-body-sm font-semibold text-fg transition-colors duration-150 ease-out-quint hover:border-fg-muted aria-pressed:border-primary aria-pressed:bg-brand-subtle aria-pressed:text-on-brand-subtle"
-            >
-              {t("site.doctors.today")}
-            </button>
-            {!isPending && (
-              <span role="status" className="ml-auto text-body-sm text-fg-muted tabular-nums">
-                {t("site.doctors.count", { count: rows.length })}
-              </span>
-            )}
+              <FilterSelect
+                id="doctor-service"
+                label={t("site.doctors.specialty")}
+                value={service}
+                onChange={setService}
+              >
+                <option value="">{t("site.doctors.anySpecialty")}</option>
+                {services.map(([code, name]) => (
+                  <option key={code} value={code}>
+                    {name}
+                  </option>
+                ))}
+              </FilterSelect>
+              <FilterSelect
+                id="doctor-facility"
+                label={t("site.doctors.facility")}
+                value={facility}
+                onChange={setFacility}
+              >
+                <option value="">{t("site.doctors.anyFacility")}</option>
+                {facilities.map((f) => (
+                  <option key={f.slug} value={f.slug}>
+                    {f.name}
+                  </option>
+                ))}
+              </FilterSelect>
+              <button
+                type="button"
+                aria-pressed={todayOnly}
+                onClick={() => setTodayOnly((on) => !on)}
+                className={FILTER}
+              >
+                {t("site.doctors.today")}
+              </button>
+              {!isPending && (
+                <span role="status" className="ml-auto text-body-sm text-fg-muted tabular-nums">
+                  {t("site.doctors.count", { count: rows.length })}
+                </span>
+              )}
+            </div>
           </div>
           <Panel as="div" className="overflow-hidden">
             {isPending ? (
@@ -318,21 +406,17 @@ export function DoctorsPage() {
             ) : rows.length === 0 ? (
               <EmptyState title={t("site.doctors.none")} />
             ) : (
-              <ul className="m-0 list-none p-0">
-                {rows.map((d) => (
-                  <LinkRow
+              <ul className="m-0 grid list-none gap-4 p-4 sm:grid-cols-2 sm:p-5 xl:grid-cols-3">
+                {rows.map((d, index) => (
+                  <li
                     key={d.slug}
-                    to={`/doctors/${d.slug}`}
-                    icon={<UserCircle aria-hidden="true" className="size-6" />}
-                    title={d.name}
-                    detail={
-                      <>
-                        {d.services.map((s) => pick(s.name, lang)).join(" · ")}
-                        <span className="block text-fg-muted">{d.facility.name}</span>
-                      </>
-                    }
-                    meta={daysText(d.days, lang)}
-                  />
+                    className="ml-reveal"
+                    style={{
+                      animationRange: `entry ${(index % 3) * 8}% entry ${55 + (index % 3) * 8}%`,
+                    }}
+                  >
+                    <DoctorCard doctor={d} today={todayIndex} />
+                  </li>
                 ))}
               </ul>
             )}
@@ -563,15 +647,39 @@ export function ServicesPage() {
           title={t("site.services.title")}
           lead={t("site.services.lead")}
         />
-        <div className="ml-stagger flex flex-col gap-8">
-          <SearchBar
-            id="service-search"
-            label={t("site.services.search")}
-            value={text}
-            onChange={setText}
-            placeholder={t("site.services.search")}
-            className="max-w-2xl"
-          />
+        <div className="flex flex-col gap-8">
+          <div className="flex animate-rise flex-col gap-4 rounded-3xl bg-surface p-4 shadow-card sm:p-5">
+            <SearchBar
+              id="service-search"
+              label={t("site.services.search")}
+              value={text}
+              onChange={setText}
+              placeholder={t("site.services.search")}
+            />
+            {/* jump to a category; the page glides there (base.css smooth scrolling) */}
+            {!catalogue.isPending && items.length > 0 && (
+              <nav aria-label={t("site.services.jump")}>
+                <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
+                  {SERVICE_CATEGORIES.filter(({ key }) =>
+                    items.some((s) => s.category === key),
+                  ).map(({ key, icon: CategoryIcon }) => (
+                    <li key={key}>
+                      <a
+                        href={`#cat-${key}`}
+                        className="inline-flex min-h-target items-center gap-2 rounded-full border border-border bg-page px-3.5 text-body-sm font-semibold text-fg no-underline transition-colors duration-150 hover:border-primary hover:bg-brand-subtle hover:text-on-brand-subtle"
+                      >
+                        <CategoryIcon aria-hidden="true" className="size-4 text-primary" />
+                        {t(`site.services.categories.${key}`)}
+                        <span className="text-caption text-fg-muted tabular-nums">
+                          {items.filter((s) => s.category === key).length}
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            )}
+          </div>
           {catalogue.isPending ? (
             <Panel as="div">
               <LoadingRows rows={5} />
@@ -590,21 +698,40 @@ export function ServicesPage() {
                 const inCategory = items.filter((s) => s.category === key);
                 if (!inCategory.length) return null;
                 return (
-                  <Panel key={key} aria-labelledby={`cat-${key}`} className="overflow-hidden">
-                    <h2
-                      id={`cat-${key}`}
-                      className="m-0 flex items-center gap-3 border-b border-border/60 px-5 py-4 text-h3"
-                    >
-                      <CategoryIcon aria-hidden="true" className="size-5 text-primary" />
-                      {t(`site.services.categories.${key}`)}
-                    </h2>
-                    <ul className="m-0 list-none p-0">
+                  <Panel
+                    key={key}
+                    aria-labelledby={`cat-${key}`}
+                    className="scroll-mt-28 overflow-hidden"
+                  >
+                    <div className="flex items-center gap-3 border-b border-border/60 px-5 py-4">
+                      <span
+                        aria-hidden="true"
+                        className="grid size-10 place-items-center rounded-xl bg-brand-subtle text-primary"
+                      >
+                        <CategoryIcon weight="duotone" className="size-5" />
+                      </span>
+                      <h2 id={`cat-${key}`} className="m-0 flex-1 text-h3">
+                        {t(`site.services.categories.${key}`)}
+                      </h2>
+                      <span className="text-body-sm text-fg-muted tabular-nums">
+                        {inCategory.length}
+                      </span>
+                    </div>
+                    <ul className="m-0 grid list-none gap-2 p-4 sm:grid-cols-2">
                       {inCategory.map((s) => (
-                        <LinkRow
-                          key={s.code}
-                          to={`/services/${serviceSlug(s.code)}`}
-                          title={s.name}
-                        />
+                        <li key={s.code}>
+                          <Link
+                            to={`/services/${serviceSlug(s.code)}`}
+                            viewTransition
+                            className="group flex min-h-12 items-center justify-between gap-2 rounded-xl border border-border/60 px-3.5 py-2 text-body-sm font-semibold text-fg no-underline transition-[background-color,border-color] duration-150 hover:border-primary/40 hover:bg-brand-subtle/60"
+                          >
+                            {s.name}
+                            <ArrowRight
+                              aria-hidden="true"
+                              className="size-4 shrink-0 text-fg-muted transition-[translate,color] duration-200 group-hover:translate-x-0.5 group-hover:text-primary"
+                            />
+                          </Link>
+                        </li>
                       ))}
                     </ul>
                   </Panel>

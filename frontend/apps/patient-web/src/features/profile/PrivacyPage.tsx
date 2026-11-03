@@ -1,16 +1,22 @@
-import { Alert, Card, LoadingState, SwitchField } from "@medilink/ui";
+import { Eye, ShieldCheck } from "@phosphor-icons/react";
+import { Alert, LoadingState, SwitchField } from "@medilink/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router";
 
+import { paths } from "../../app/paths";
 import { useApi } from "../../app/services";
-import { can, ProfileLayout, useProfiles, useRelationshipLabel } from "./ProfileLayout";
+import { Avatar, PageHeader, RowIcon, RowLink, RowList, WidgetCard } from "../dashboard/kit";
+import { can, useProfiles, useRelationshipLabel } from "./ProfileLayout";
 import { CONSENT_VERSION, errorText } from "./shared";
 
 /** Account-level switches (PA23): research and, since R2, notifications and location. */
 const ACCOUNT_SWITCHES = ["research", "notifications", "location"] as const;
 
-/** /privacy/settings: consent switches (research off by default) and care consent per profile. */
+/**
+ * /privacy/settings: consent switches (research off by default) and care consent per profile.
+ * Redesign 2026-11-02: the account switches and care consent in two cards, one row per switch;
+ * who opened my record beside.
+ */
 export function PrivacyPage() {
   const { t } = useTranslation();
   const api = useApi();
@@ -35,7 +41,8 @@ export function PrivacyPage() {
   const managed = (profiles.data?.results ?? []).filter((p) => can.history(p.relationship));
   const self = managed.find((p) => p.relationship === "self");
   return (
-    <ProfileLayout title={t("profile.privacy.title")}>
+    <div className="flex flex-col gap-6">
+      <PageHeader title={t("profile.privacy.title")} subtitle={t("profile.privacy.later")} />
       {state.isPending && <LoadingState />}
       {give.isError && (
         <Alert tone="danger" role="alert">
@@ -43,48 +50,73 @@ export function PrivacyPage() {
         </Alert>
       )}
       {state.data && (
-        <>
-          <Card padding="md" className="flex flex-col gap-3">
-            {ACCOUNT_SWITCHES.filter((kind) => kind in state.data.current_versions).map((kind) => (
-              <SwitchField
-                key={kind}
-                label={t(`profile.privacy.${kind}`)}
-                hint={t(`profile.privacy.${kind}Hint`)}
-                checked={current(kind, null)}
-                stateLabel={
-                  current(kind, null) ? t("profile.privacy.on") : t("profile.privacy.off")
-                }
-                onCheckedChange={(on) => give.mutate({ kind, granted: on })}
-              />
-            ))}
-          </Card>
-          <Card as="section" aria-labelledby="care" padding="md" className="flex flex-col gap-3">
-            <h2 id="care" className="m-0 text-h3">
-              {t("profile.privacy.care")}
-            </h2>
-            <p className="m-0 text-fg-secondary">{t("profile.privacy.careHint")}</p>
-            {managed.map((p) => (
-              <SwitchField
-                key={p.patient_id}
-                label={`${p.display_name} (${label(p.relationship)})`}
-                checked={current("care", p.patient_id)}
-                stateLabel={
-                  current("care", p.patient_id) ? t("profile.privacy.on") : t("profile.privacy.off")
-                }
-                onCheckedChange={(on) =>
-                  give.mutate({ kind: "care", granted: on, patient_id: p.patient_id })
-                }
-              />
-            ))}
-          </Card>
-          {self && (
-            <Link to={`/profile/${self.patient_id}/access-history`}>
-              {t("profile.privacy.history")}
-            </Link>
-          )}
-          <p className="m-0 text-fg-muted">{t("profile.privacy.later")}</p>
-        </>
+        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+          <div className="flex min-w-0 flex-col gap-6">
+            <WidgetCard id="privacy-account" title={t("profile.privacy.account")}>
+              <div className="flex flex-col divide-y divide-border">
+                {ACCOUNT_SWITCHES.filter((kind) => kind in state.data.current_versions).map(
+                  (kind) => (
+                    <div key={kind} className="px-5 py-4">
+                      <SwitchField
+                        label={t(`profile.privacy.${kind}`)}
+                        hint={t(`profile.privacy.${kind}Hint`)}
+                        checked={current(kind, null)}
+                        stateLabel={
+                          current(kind, null) ? t("profile.privacy.on") : t("profile.privacy.off")
+                        }
+                        onCheckedChange={(on) => give.mutate({ kind, granted: on })}
+                      />
+                    </div>
+                  ),
+                )}
+              </div>
+            </WidgetCard>
+
+            <WidgetCard id="care" title={t("profile.privacy.care")}>
+              <p className="m-0 border-b border-border px-5 py-3 text-body-sm text-fg-secondary">
+                {t("profile.privacy.careHint")}
+              </p>
+              <div className="flex flex-col divide-y divide-border">
+                {managed.map((p) => (
+                  <div key={p.patient_id} className="flex items-center gap-4 px-5 py-4">
+                    <Avatar name={p.display_name} />
+                    <div className="min-w-0 flex-1">
+                      <SwitchField
+                        label={`${p.display_name} (${label(p.relationship)})`}
+                        checked={current("care", p.patient_id)}
+                        stateLabel={
+                          current("care", p.patient_id)
+                            ? t("profile.privacy.on")
+                            : t("profile.privacy.off")
+                        }
+                        onCheckedChange={(on) =>
+                          give.mutate({ kind: "care", granted: on, patient_id: p.patient_id })
+                        }
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </WidgetCard>
+          </div>
+
+          <aside className="flex flex-col gap-6 lg:sticky lg:top-24">
+            <div className="flex items-start gap-3 rounded-2xl border border-brand/25 bg-brand-subtle p-5">
+              <RowIcon icon={ShieldCheck} />
+              <p className="m-0 text-body-sm text-on-brand-subtle">{t("authAside.trust")}</p>
+            </div>
+            {self && (
+              <RowList label={t("profile.privacy.history")}>
+                <RowLink
+                  to={`${paths.profileOf(self.patient_id)}/access-history`}
+                  leading={<RowIcon icon={Eye} tone="neutral" />}
+                  title={t("profile.privacy.history")}
+                />
+              </RowList>
+            )}
+          </aside>
+        </div>
       )}
-    </ProfileLayout>
+    </div>
   );
 }

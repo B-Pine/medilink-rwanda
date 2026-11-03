@@ -25,6 +25,12 @@
   "codeHint": "Show it at the pharmacy. Valid until {{date}}.",
   "days_one": "for {{count}} day",
   "days_other": "for {{count}} days",
+  "facts": {
+    "dose": "Dose",
+    "often": "How often",
+    "long": "How long",
+    "how": "How to take it"
+  },
   "status": {
     "draft": "Being written",
     "issued": "Prescribed",

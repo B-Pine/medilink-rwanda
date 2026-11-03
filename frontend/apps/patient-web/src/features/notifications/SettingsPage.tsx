@@ -11,10 +11,10 @@ import { LockSimple, Trash } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router";
 
+import { paths } from "../../app/paths";
 import { useApi } from "../../app/services";
-import { PageHeading } from "../../components/PageHeading";
+import { PageHeader } from "../dashboard/kit";
 import { notificationKeys, usePreferences, usePush } from "./api";
 import { PushOptIn } from "./PushOptIn";
 
@@ -55,7 +55,7 @@ function OtherBrowsers() {
   const list = rows.data ?? [];
   return (
     <Card as="section" aria-labelledby="push-browsers" className="flex flex-col gap-3">
-      <h2 id="push-browsers" className="m-0 text-h3">
+      <h2 id="push-browsers" className="m-0 font-heading text-body font-bold">
         {t("notifications.settings.browsers")}
       </h2>
       {rows.isPending ? (
@@ -76,7 +76,7 @@ function OtherBrowsers() {
           {list.map((row) => (
             <li
               key={row.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border p-3"
+              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border p-3"
             >
               <span className="flex flex-col">
                 <span className="font-semibold">{row.label}</span>
@@ -189,7 +189,7 @@ function PreferencesForm({ saved }: { saved: PatientNotificationPreferences }) {
       )}
 
       <Card as="section" aria-labelledby="prefs-language" className="flex flex-col gap-3">
-        <h2 id="prefs-language" className="m-0 text-h3">
+        <h2 id="prefs-language" className="m-0 font-heading text-body font-bold">
           {t("notifications.settings.languageTitle")}
         </h2>
         <SelectField
@@ -207,7 +207,7 @@ function PreferencesForm({ saved }: { saved: PatientNotificationPreferences }) {
       </Card>
 
       <Card as="section" aria-labelledby="prefs-channels" className="flex flex-col gap-3">
-        <h2 id="prefs-channels" className="m-0 text-h3">
+        <h2 id="prefs-channels" className="m-0 font-heading text-body font-bold">
           {t("notifications.settings.channelsTitle")}
         </h2>
         <p className="m-0 text-fg-secondary">{t("notifications.settings.channelsHint")}</p>
@@ -298,7 +298,7 @@ function PreferencesForm({ saved }: { saved: PatientNotificationPreferences }) {
       </Card>
 
       <Card as="section" aria-labelledby="prefs-quiet" className="flex flex-col gap-3">
-        <h2 id="prefs-quiet" className="m-0 text-h3">
+        <h2 id="prefs-quiet" className="m-0 font-heading text-body font-bold">
           {t("notifications.settings.quietTitle")}
         </h2>
         <SwitchField
@@ -330,7 +330,7 @@ function PreferencesForm({ saved }: { saved: PatientNotificationPreferences }) {
 
       {saved.dependents.length > 0 && (
         <Card as="section" aria-labelledby="prefs-family" className="flex flex-col gap-4">
-          <h2 id="prefs-family" className="m-0 text-h3">
+          <h2 id="prefs-family" className="m-0 font-heading text-body font-bold">
             {t("notifications.settings.familyTitle")}
           </h2>
           {saved.dependents.map((d) => (
@@ -354,8 +354,9 @@ function PreferencesForm({ saved }: { saved: PatientNotificationPreferences }) {
         </Card>
       )}
 
-      <div>
-        <Button type="submit" size="lg" loading={save.isPending}>
+      {/* the save bar stays in reach while the patient scrolls the choices */}
+      <div className="sticky bottom-20 z-10 flex items-center justify-end gap-3 rounded-2xl border border-border bg-surface/95 px-4 py-3 shadow-raised backdrop-blur-sm md:bottom-4">
+        <Button type="submit" loading={save.isPending}>
           {t("notifications.settings.save")}
         </Button>
       </div>
@@ -370,41 +371,45 @@ export function SettingsPage() {
   // Hidden while the server has push off (no VAPID keys): there is nothing to turn on.
   const pushAvailable = usePush().state !== "disabled";
   return (
-    <div className="mx-auto flex w-full max-w-[44rem] flex-col gap-5">
-      <Link to="/notifications" className="self-start font-semibold text-link">
-        {t("notifications.inbox.back")}
-      </Link>
-      <PageHeading title={t("notifications.settings.title")}>
-        {t("notifications.settings.title")}
-      </PageHeading>
-      {pushAvailable && (
-        <section aria-labelledby="push-this-browser" className="flex flex-col gap-3">
-          <h2 id="push-this-browser" className="m-0 text-h3">
-            {t("notifications.settings.thisBrowser")}
-          </h2>
-          <PushOptIn />
-        </section>
-      )}
-      <OtherBrowsers />
-      {prefs.data ? (
-        <PreferencesForm saved={prefs.data} />
-      ) : prefs.isError ? (
-        <Alert tone="danger" role="alert" title={t("notifications.loadError")}>
-          <Button variant="secondary" onClick={() => void prefs.refetch()}>
-            {t("common.retry")}
-          </Button>
-        </Alert>
-      ) : (
-        <div
-          role="status"
-          aria-busy="true"
-          aria-label={t("notifications.loading")}
-          className="flex flex-col gap-3"
-        >
-          <Skeleton height="8rem" className="rounded-lg" />
-          <Skeleton height="12rem" className="rounded-lg" />
+    <div className="flex flex-col gap-6">
+      <PageHeader
+        title={t("notifications.settings.title")}
+        back={{ to: paths.notifications, label: t("notifications.inbox.back") }}
+      />
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+        <div className="flex min-w-0 flex-col gap-6">
+          {prefs.data ? (
+            <PreferencesForm saved={prefs.data} />
+          ) : prefs.isError ? (
+            <Alert tone="danger" role="alert" title={t("notifications.loadError")}>
+              <Button variant="secondary" onClick={() => void prefs.refetch()}>
+                {t("common.retry")}
+              </Button>
+            </Alert>
+          ) : (
+            <div
+              role="status"
+              aria-busy="true"
+              aria-label={t("notifications.loading")}
+              className="flex flex-col gap-3"
+            >
+              <Skeleton height="8rem" className="rounded-2xl" />
+              <Skeleton height="12rem" className="rounded-2xl" />
+            </div>
+          )}
         </div>
-      )}
+        <aside className="flex flex-col gap-6 lg:sticky lg:top-24">
+          {pushAvailable && (
+            <section aria-labelledby="push-this-browser" className="flex flex-col gap-3">
+              <h2 id="push-this-browser" className="m-0 font-heading text-body font-bold">
+                {t("notifications.settings.thisBrowser")}
+              </h2>
+              <PushOptIn />
+            </section>
+          )}
+          <OtherBrowsers />
+        </aside>
+      </div>
     </div>
   );
 }

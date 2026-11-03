@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
+import { paths } from "../../app/paths";
 import { useApi } from "../../app/services";
 import { ProfileLayout } from "./ProfileLayout";
 import { errorText, fieldErrors } from "./shared";
@@ -82,7 +83,7 @@ export function ClaimPage() {
       {done || confirmed ? (
         <Alert tone="success" role="status" title={t("profile.claim.done")}>
           <Link
-            to={done ? `/profile/${done}` : "/profile"}
+            to={done ? paths.profileOf(done) : paths.profile}
             className={buttonClassName({ size: "lg" })}
           >
             {t("profile.claim.open")}

@@ -194,6 +194,7 @@
   },
   "privacy": {
     "title": "Privacy and consent",
+    "account": "Your account",
     "research": "Use my data for health research",
     "researchHint": "Only anonymised data, and only for approved studies. You can change this any time.",
     "on": "On",

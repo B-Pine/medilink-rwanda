@@ -8,12 +8,15 @@ import {
   type Sex,
 } from "@medilink/api-client";
 import {
-  CaretRight,
+  CalendarCheck,
   CheckCircle,
   Circle,
   Eye,
+  Files,
+  FileText,
   Heartbeat,
   IdentificationCard,
+  Pill,
   ShieldCheck,
   UserCircle,
   type Icon,
@@ -24,6 +27,7 @@ import {
   Button,
   buttonClassName,
   Card,
+  cx,
   ImigongoPattern,
   LoadingState,
   MaskedValue,
@@ -37,7 +41,17 @@ import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, Navigate, useParams } from "react-router";
 
+import { paths } from "../../app/paths";
 import { useApi } from "../../app/services";
+import {
+  Avatar,
+  PageHeader,
+  panelClass,
+  QuickActionTile,
+  RowIcon,
+  RowLink,
+  RowList,
+} from "../dashboard/kit";
 import { can, ProfileLayout, rememberedProfile, useProfiles } from "./ProfileLayout";
 import { errorText, fieldErrors, formatDateTime, useLocale } from "./shared";
 
@@ -45,7 +59,7 @@ const COMPLETION_STEPS: { key: keyof ProfileCompletion; to: string }[] = [
   { key: "details", to: "details" },
   { key: "identifier", to: "identifiers" },
   { key: "emergency_contact", to: "details" },
-  { key: "care_consent", to: "/privacy/settings" },
+  { key: "care_consent", to: paths.privacy },
   { key: "insurance", to: "insurance" },
   { key: "allergies_reviewed", to: "health" },
 ];
@@ -66,9 +80,9 @@ export function ProfileRedirect() {
   const remembered = rememberedProfile();
   const target = list.find((p) => p.patient_id === remembered) ?? list[0];
   return target ? (
-    <Navigate to={`/profile/${target.patient_id}`} replace />
+    <Navigate to={paths.profileOf(target.patient_id)} replace />
   ) : (
-    <Navigate to="/home" replace />
+    <Navigate to={paths.overview} replace />
   );
 }
 
@@ -79,11 +93,20 @@ export function ProfileHubPage() {
   const profile = useProfile(patientId);
   const p = profile.data;
   return (
-    <ProfileLayout title={p ? (p.preferred_name ?? p.full_name) : t("profile.title")}>
+    // wide like the other dashboard pages; the edit forms under it keep the narrow ProfileLayout
+    <div className="flex w-full flex-col gap-6">
+      <PageHeader
+        title={p ? (p.preferred_name ?? p.full_name) : t("profile.title")}
+        back={
+          p && p.relationship !== "self"
+            ? { to: paths.family, label: t("dashboard.family.title") }
+            : undefined
+        }
+      />
       {profile.isPending && <LoadingState />}
       {profile.isError && <Alert tone="danger">{t("profile.notFound")}</Alert>}
       {p && <Hub profile={p} />}
-    </ProfileLayout>
+    </div>
   );
 }
 
@@ -91,7 +114,8 @@ function Hub({ profile }: { profile: PatientProfileDetail }) {
   const { t } = useTranslation();
   const next = COMPLETION_STEPS.find((step) => !profile.completion[step.key]);
   const done = COMPLETION_STEPS.filter((step) => profile.completion[step.key]).length;
-  const href = (to: string) => (to.startsWith("/") ? to : `/profile/${profile.patient_id}/${to}`);
+  const href = (to: string) =>
+    to.startsWith("/") ? to : `${paths.profileOf(profile.patient_id)}/${to}`;
   const sections: { to: string; icon: Icon }[] = [
     { to: "details", icon: UserCircle },
     { to: "identifiers", icon: IdentificationCard },
@@ -100,105 +124,153 @@ function Hub({ profile }: { profile: PatientProfileDetail }) {
     ...(can.history(profile.relationship) ? [{ to: "access-history", icon: Eye }] : []),
   ];
   const sectionKey = (to: string) => (to === "access-history" ? "history" : to);
+  const name = profile.preferred_name ?? profile.full_name;
   return (
-    <>
-      <section
-        aria-label={t("profile.medilinkNumber")}
-        className="relative overflow-hidden rounded-lg bg-forest p-5 text-on-forest shadow-raised"
-      >
-        <ImigongoPattern opacity={0.08} />
-        <div className="relative flex flex-col gap-1">
-          <p className="m-0 text-body-sm text-on-forest-muted">{t("profile.medilinkNumber")}</p>
-          <p className="m-0 font-mono text-h1 tracking-wider">{profile.medilink_number ?? "—"}</p>
-          <p className="m-0 mt-2 text-body-sm text-on-forest-muted">{t("profile.numberHint")}</p>
-        </div>
-      </section>
-      {next && (
-        <Card
-          as="section"
-          aria-labelledby="completion"
-          padding="md"
-          className="flex flex-col gap-4"
-        >
-          <div className="flex flex-col gap-2">
-            <div className="flex items-baseline justify-between gap-3">
-              <h2 id="completion" className="m-0 text-h3">
-                {t("profile.completion.title")}
+    <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+      <div className="flex min-w-0 flex-col gap-6">
+        {profile.relationship !== "self" && (
+          // upgrade 12 §9: it must be unmistakable whose information is on screen
+          <section
+            aria-labelledby="whose"
+            className="flex flex-col gap-3 rounded-2xl border border-brand/25 bg-brand-subtle p-4 sm:flex-row sm:items-center"
+          >
+            <Avatar name={name} size="lg" />
+            <div className="flex min-w-0 flex-1 flex-col">
+              <h2 id="whose" className="m-0 text-body font-bold text-on-brand-subtle">
+                {t("dashboard.family.viewing", { name })}
               </h2>
-              <span className="text-body-sm font-semibold text-fg-secondary">
-                {t("profile.completion.progress", { done, total: COMPLETION_STEPS.length })}
-              </span>
+              <p className="m-0 text-body-sm text-on-brand-subtle">
+                {t(`dashboard.family.accessHint.${profile.relationship}`, { name })}
+              </p>
             </div>
-            <div
-              role="progressbar"
-              aria-labelledby="completion"
-              aria-valuemin={0}
-              aria-valuemax={COMPLETION_STEPS.length}
-              aria-valuenow={done}
-              className="h-2 overflow-hidden rounded-full bg-subtle"
-            >
-              <div
-                className="h-full rounded-full bg-primary"
-                style={{ width: `${(done / COMPLETION_STEPS.length) * 100}%` }}
-              />
-            </div>
-          </div>
-          <ul className="m-0 flex list-none flex-col gap-2 p-0">
-            {COMPLETION_STEPS.map((step) => {
-              const stepDone = profile.completion[step.key];
-              return (
-                <li key={step.key} className="flex items-center gap-3">
-                  {stepDone ? (
-                    <CheckCircle aria-hidden="true" className="size-6 text-success" weight="fill" />
-                  ) : (
-                    <Circle aria-hidden="true" className="size-6 text-fg-muted" />
-                  )}
-                  <span className={stepDone ? "text-fg-secondary" : undefined}>
-                    {t(`profile.completion.${step.key}`)}
-                  </span>
-                  <span className="sr-only">
-                    {stepDone ? t("profile.completion.done") : t("profile.completion.todo")}
-                  </span>
+          </section>
+        )}
+        {profile.relationship !== "self" && (
+          <nav aria-label={t("dashboard.family.careFor", { name })}>
+            <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 sm:grid-cols-4">
+              {[
+                { to: paths.appointments, key: "appointments", icon: CalendarCheck },
+                { to: paths.records, key: "records", icon: FileText },
+                { to: paths.medications, key: "medications", icon: Pill },
+                { to: paths.documents, key: "documents", icon: Files },
+              ].map((link) => (
+                <li key={link.key}>
+                  <QuickActionTile
+                    to={link.to}
+                    icon={link.icon}
+                    title={t(`dashboard.nav.${link.key}`)}
+                    description={t(`dashboard.family.links.${link.key}`)}
+                  />
                 </li>
-              );
-            })}
-          </ul>
-          <Link to={href(next.to)} className={buttonClassName({ size: "lg", fullWidth: true })}>
-            {t("profile.completion.next", { step: t(`profile.completion.${next.key}`) })}
-          </Link>
-        </Card>
-      )}
-      <nav aria-label={t("profile.sectionsLabel")}>
-        <ul className="m-0 flex list-none flex-col overflow-hidden rounded-lg bg-surface shadow-card p-0">
-          {sections.map(({ to, icon: SectionIcon }) => (
-            <li key={to} className="border-b border-border last:border-0">
-              <Link
+              ))}
+            </ul>
+          </nav>
+        )}
+        <nav aria-label={t("profile.sectionsLabel")}>
+          <RowList label={t("profile.sectionsLabel")}>
+            {sections.map(({ to, icon: SectionIcon }) => (
+              <RowLink
+                key={to}
                 to={href(to)}
-                className="flex min-h-16 items-center gap-4 px-4 py-3 text-fg no-underline hover:bg-subtle"
+                leading={<RowIcon icon={SectionIcon} />}
+                title={t(`profile.sections.${sectionKey(to)}`)}
+                meta={t(`profile.sectionHints.${sectionKey(to)}`)}
+              />
+            ))}
+          </RowList>
+        </nav>
+      </div>
+
+      <aside className="flex flex-col gap-6 lg:sticky lg:top-24">
+        <section
+          aria-label={t("profile.medilinkNumber")}
+          className="relative overflow-hidden rounded-2xl bg-forest p-5 text-on-forest shadow-card"
+        >
+          <ImigongoPattern opacity={0.08} />
+          <div className="relative flex flex-col gap-1">
+            <p className="m-0 text-caption font-semibold tracking-wider text-on-forest-muted uppercase">
+              {t("profile.medilinkNumber")}
+            </p>
+            <p className="m-0 font-mono text-h1 tracking-wider">{profile.medilink_number ?? "—"}</p>
+            <p className="m-0 mt-2 text-body-sm text-on-forest-muted">{t("profile.numberHint")}</p>
+          </div>
+        </section>
+        {!next && (
+          <p className="m-0 flex items-start gap-2.5 rounded-2xl border border-border bg-surface p-4 text-body-sm text-fg-secondary">
+            <CheckCircle
+              aria-hidden="true"
+              weight="fill"
+              className="mt-0.5 size-5 shrink-0 text-success"
+            />
+            {t("profile.completion.progress", { done, total: COMPLETION_STEPS.length })}
+          </p>
+        )}
+        {next && (
+          <section
+            aria-labelledby="completion"
+            className={cx(panelClass, "flex flex-col gap-4 p-5")}
+          >
+            <div className="flex flex-col gap-2">
+              <div className="flex items-baseline justify-between gap-3">
+                <h2 id="completion" className="m-0 text-h3">
+                  {t("profile.completion.title")}
+                </h2>
+                <span className="text-body-sm font-semibold text-fg-secondary">
+                  {t("profile.completion.progress", { done, total: COMPLETION_STEPS.length })}
+                </span>
+              </div>
+              <div
+                role="progressbar"
+                aria-labelledby="completion"
+                aria-valuemin={0}
+                aria-valuemax={COMPLETION_STEPS.length}
+                aria-valuenow={done}
+                className="h-2 overflow-hidden rounded-full bg-subtle"
               >
-                <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-md bg-brand-subtle text-on-brand-subtle">
-                  <SectionIcon aria-hidden="true" weight="duotone" className="size-icon" />
-                </span>
-                <span className="flex min-w-0 flex-1 flex-col">
-                  <span className="font-semibold">{t(`profile.sections.${sectionKey(to)}`)}</span>
-                  <span className="text-body-sm text-fg-secondary">
-                    {t(`profile.sectionHints.${sectionKey(to)}`)}
-                  </span>
-                </span>
-                <CaretRight aria-hidden="true" className="size-5 shrink-0 text-fg-muted" />
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    </>
+                <div
+                  className="h-full rounded-full bg-primary"
+                  style={{ width: `${(done / COMPLETION_STEPS.length) * 100}%` }}
+                />
+              </div>
+            </div>
+            <ul className="m-0 flex list-none flex-col gap-2 p-0">
+              {COMPLETION_STEPS.map((step) => {
+                const stepDone = profile.completion[step.key];
+                return (
+                  <li key={step.key} className="flex items-center gap-3">
+                    {stepDone ? (
+                      <CheckCircle
+                        aria-hidden="true"
+                        className="size-6 text-success"
+                        weight="fill"
+                      />
+                    ) : (
+                      <Circle aria-hidden="true" className="size-6 text-fg-muted" />
+                    )}
+                    <span className={stepDone ? "text-fg-secondary" : undefined}>
+                      {t(`profile.completion.${step.key}`)}
+                    </span>
+                    <span className="sr-only">
+                      {stepDone ? t("profile.completion.done") : t("profile.completion.todo")}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+            <Link to={href(next.to)} className={buttonClassName({ fullWidth: true })}>
+              {t("profile.completion.next", { step: t(`profile.completion.${next.key}`) })}
+            </Link>
+          </section>
+        )}
+      </aside>
+    </div>
   );
 }
 
 function useBack() {
   const { t } = useTranslation();
   const { patientId = "" } = useParams();
-  return { to: `/profile/${patientId}`, label: t("profile.backToProfile") };
+  return { to: paths.profileOf(patientId), label: t("profile.backToProfile") };
 }
 
 /** /profile/:patientId/details */
@@ -445,7 +517,7 @@ export function IdentifiersPage() {
           {taken && (
             <Alert tone="info" role="alert">
               {errorText(add.error, t("profile.error"))}{" "}
-              <Link to="/claim">{t("profile.identifiers.claim")}</Link>
+              <Link to={paths.claim}>{t("profile.identifiers.claim")}</Link>
             </Alert>
           )}
           {add.isError && !taken && !fieldErrors(add.error).value && (

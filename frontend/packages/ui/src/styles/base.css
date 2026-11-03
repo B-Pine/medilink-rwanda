@@ -148,6 +148,37 @@
 }
 
 /*
+ * Scroll reveal (public pages, 2026-11-03): a section fades and lifts as it enters the viewport,
+ * driven by the scroll itself (no JavaScript, no layout work). Without scroll timelines, or with
+ * reduced motion or data saver, sections are simply there.
+ */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    :root:not([data-data-saver="on"]) .ml-reveal {
+      animation: ml-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+  }
+}
+@keyframes ml-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+/* In-page links glide, and stop below the sticky public header. */
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.ml-soft) {
+    scroll-behavior: smooth;
+  }
+}
+html:has(.ml-soft) {
+  scroll-padding-top: 6rem;
+}
+
+/*
  * Public header (upgrade 03 §1): stays still while pages cross-fade (view transitions), lifts with
  * a shadow once the page scrolls (scroll-driven where supported; otherwise the hairline stays).
  */

@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { PageHeading } from "../../components/PageHeading";
+import { useInDashboard } from "../../layout/DashboardContext";
 import { DISTRICT_KEYS, type DistrictKey } from "../booking/discovery";
 import { insurerNames } from "../booking/Places";
 import { EmptyIllustration } from "./illustrations";
@@ -25,10 +26,12 @@ export function PageContainer({
   narrow?: boolean;
   className?: string;
 }) {
+  // The dashboard shell already sets the width and gutters
+  const inDashboard = useInDashboard();
   return (
     <div
       className={cx(
-        "mx-auto w-full px-4 sm:px-6 lg:px-8",
+        inDashboard ? "w-full" : "mx-auto w-full px-4 sm:px-6 lg:px-8",
         narrow ? "max-w-[48rem]" : "max-w-[80rem]",
         className,
       )}
@@ -86,20 +89,45 @@ export function PageHeader({
   eyebrow?: string;
 }) {
   const { t } = useTranslation();
+  // Inside the dashboard the shell shows the breadcrumb and the top spacing
+  const inDashboard = useInDashboard();
+  if (inDashboard)
+    return (
+      <div className="flex flex-col gap-3 pb-5">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div className="flex max-w-[44rem] flex-col gap-2">
+            <PageHeading title={title} className="text-h1 tracking-tight text-fg">
+              {title}
+            </PageHeading>
+            {lead && <p className="m-0 text-body text-fg-secondary">{lead}</p>}
+          </div>
+          {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
+        </div>
+      </div>
+    );
+  // public pages: breadcrumb, a short emerald rule, a large title and a readable lead
   return (
-    <div className="flex flex-col gap-3 pt-8 pb-6 sm:pt-10">
+    <div className="flex animate-enter flex-col gap-4 pt-8 pb-8 sm:pt-12 sm:pb-10">
       {crumbs && <Breadcrumbs items={[{ to: "/", label: t("nav.home") }, ...crumbs]} />}
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="flex max-w-[44rem] flex-col gap-2">
+      <div className="flex flex-wrap items-end justify-between gap-6">
+        <div className="flex max-w-[46rem] flex-col gap-3">
+          <span aria-hidden="true" className="h-1 w-10 rounded-full bg-primary" />
           {eyebrow && (
-            <p className="m-0 text-caption font-semibold tracking-wider text-primary uppercase">
+            <p className="m-0 text-caption font-semibold tracking-[0.14em] text-primary uppercase">
               {eyebrow}
             </p>
           )}
-          <PageHeading title={title} className="text-h1 tracking-tight text-fg">
+          <PageHeading
+            title={title}
+            className="font-heading text-[2rem] leading-[1.12] font-bold tracking-tight text-balance text-fg sm:text-[2.5rem]"
+          >
             {title}
           </PageHeading>
-          {lead && <p className="m-0 text-body text-fg-secondary">{lead}</p>}
+          {lead && (
+            <p className="m-0 max-w-[40rem] text-[1.0625rem] leading-relaxed text-pretty text-fg-secondary">
+              {lead}
+            </p>
+          )}
         </div>
         {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
       </div>
@@ -119,8 +147,18 @@ export function Panel({
   as?: "section" | "div" | "aside";
   "aria-labelledby"?: string;
 }) {
+  // inside the dashboard, the dashboard's surfaces: a hairline border instead of a shadow
+  const inDashboard = useInDashboard();
   return (
-    <Tag className={cx("rounded-2xl bg-surface shadow-card", className)} {...rest}>
+    <Tag
+      className={cx(
+        "rounded-2xl bg-surface",
+        // public panels rise into view as the page scrolls (base.css .ml-reveal)
+        inDashboard ? "border border-border" : "ml-reveal shadow-card",
+        className,
+      )}
+      {...rest}
+    >
       {children}
     </Tag>
   );
@@ -404,8 +442,8 @@ export function SectionTitle({
   action?: ReactNode;
 }) {
   return (
-    <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-      <h2 id={id} className="m-0 text-h2 tracking-tight">
+    <div className="ml-reveal mb-5 flex flex-wrap items-end justify-between gap-3">
+      <h2 id={id} className="m-0 text-h2 tracking-tight text-balance">
         {children}
       </h2>
       {action}

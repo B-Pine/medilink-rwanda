@@ -2,6 +2,8 @@
 
 Status: Draft v0.1 · 2026-11-02 · Part of the [system upgrade](README.md)
 
+> **Superseded in part (2026-11-02):** the layout, navigation and addresses of the signed-in app follow [12 · Patient dashboard](12-patient-dashboard.md) (everything under `/dashboard`). The data and safety rules here still apply.
+
 **Rule:** the signed-in experience is the public site ([03](03-public-site.md)) plus a personal layer. The same URLs, the same home, the same facility and doctor pages. Signing in adds the patient's own items; it never removes public content.
 
 ## 1. What changes after sign-in

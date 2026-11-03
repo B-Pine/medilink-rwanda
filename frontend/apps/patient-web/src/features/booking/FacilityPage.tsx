@@ -1,14 +1,18 @@
 import type { PublicFacility, PublicService } from "@medilink/api-client";
 import {
   CalendarPlus,
+  CheckCircle,
   Clock,
   MapPin,
+  MinusCircle,
   NavigationArrow,
   PersonSimpleWalk,
   Phone,
   SealCheck,
   Siren,
+  Stethoscope,
   UserCircle,
+  type Icon,
 } from "@phosphor-icons/react";
 import {
   buttonClassName,
@@ -21,7 +25,7 @@ import {
 } from "@medilink/ui";
 import { dateFormat, kigaliDate } from "@medilink/ui/i18n";
 import { useQuery } from "@tanstack/react-query";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams, useSearchParams } from "react-router";
 
@@ -187,80 +191,74 @@ export function FacilityPage() {
 
         <div className="ml-stagger grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="flex min-w-0 flex-col gap-6">
-            {/* Today: the most important part of the page */}
-            <Panel aria-labelledby="today" className="p-6 sm:p-7">
-              <h2 id="today" className="m-0 flex items-center gap-2 text-h2 tracking-tight">
-                {t("site.facility.today")}
-                {live.length > 0 && (
-                  <span aria-hidden="true" className="ml-live-dot text-success" />
-                )}
-              </h2>
-              <dl className="m-0 mt-5 grid gap-x-6 gap-y-5 sm:grid-cols-3">
-                <div>
-                  <dt className="text-caption font-semibold text-fg-muted uppercase">
-                    {t("site.facility.hoursToday")}
-                  </dt>
-                  <dd className="m-0 mt-1 font-heading text-h3 font-bold tabular-nums">
+            {/* Today: the most important part of the page; the four facts first, as tiles */}
+            <Panel aria-labelledby="today" className="overflow-hidden">
+              <div className="flex items-center justify-between gap-3 border-b border-border/60 px-5 py-4 sm:px-6">
+                <h2
+                  id="today"
+                  className="m-0 flex items-center gap-2 text-h3 font-bold tracking-tight"
+                >
+                  {t("site.facility.today")}
+                  {live.length > 0 && (
+                    <span aria-hidden="true" className="ml-live-dot text-success" />
+                  )}
+                </h2>
+                <FacilityStatus open={f.open_now} />
+              </div>
+              <dl className="m-0 grid grid-cols-2 gap-px bg-border/60 md:grid-cols-4">
+                <Fact icon={Clock} label={t("site.facility.hoursToday")}>
+                  <span className="tabular-nums">
                     {todayHours ?? t("site.facility.closedToday")}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-caption font-semibold text-fg-muted uppercase">
-                    {t("site.facility.queue")}
-                  </dt>
-                  <dd className="m-0 mt-1 font-semibold">
-                    {f.services.some((s) => s.remote_join || s.walk_in)
-                      ? t("site.facility.available")
-                      : t("site.facility.notAvailable")}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-caption font-semibold text-fg-muted uppercase">
-                    {t("site.facility.booking")}
-                  </dt>
-                  <dd className="m-0 mt-1 font-semibold">
-                    {f.services.some((s) => s.bookable)
-                      ? t("site.facility.available")
-                      : t("site.facility.notAvailable")}
-                  </dd>
-                </div>
+                  </span>
+                </Fact>
+                <Fact icon={PersonSimpleWalk} label={t("site.facility.queue")}>
+                  <Availability on={f.services.some((s) => s.remote_join || s.walk_in)} />
+                </Fact>
+                <Fact icon={CalendarPlus} label={t("site.facility.booking")}>
+                  <Availability on={f.services.some((s) => s.bookable)} />
+                </Fact>
+                <Fact icon={Stethoscope} label={t("site.facility.tabs.doctors")}>
+                  <span className="tabular-nums">{f.doctors.length}</span>
+                </Fact>
               </dl>
-              <div className="mt-6 border-t border-border/60 pt-5">
-                <h3 className="m-0 text-caption font-semibold text-fg-muted uppercase">
-                  {t("site.facility.liveWait")}
-                </h3>
-                {live.length === 0 ? (
-                  <p className="m-0 mt-1 text-fg-secondary">{t("site.facility.waitUnknown")}</p>
-                ) : (
-                  <ul className="m-0 mt-2 flex list-none flex-col p-0">
-                    {live.map((s) => (
-                      <li
-                        key={s.id}
-                        className="flex flex-wrap items-center justify-between gap-2 border-b border-border/50 py-2.5 last:border-b-0"
-                      >
-                        <span className="font-semibold">{pick(s.name_i18n, lang)}</span>
-                        <WaitingTime result={s} />
-                      </li>
-                    ))}
-                  </ul>
+              <div className="flex flex-col gap-5 border-t border-border/60 p-5 sm:p-6">
+                <div>
+                  <h3 className="m-0 text-caption font-semibold tracking-wide text-fg-muted uppercase">
+                    {t("site.facility.liveWait")}
+                  </h3>
+                  {live.length === 0 ? (
+                    <p className="m-0 mt-1 text-fg-secondary">{t("site.facility.waitUnknown")}</p>
+                  ) : (
+                    <ul className="m-0 mt-2 flex list-none flex-col p-0">
+                      {live.map((s) => (
+                        <li
+                          key={s.id}
+                          className="flex flex-wrap items-center justify-between gap-2 border-b border-border/50 py-2.5 last:border-b-0"
+                        >
+                          <span className="font-semibold">{pick(s.name_i18n, lang)}</span>
+                          <WaitingTime result={s} />
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <h3 className="m-0 text-caption font-semibold tracking-wide text-fg-muted uppercase">
+                    {t("site.facility.insurance")}
+                  </h3>
+                  <InsuranceList codes={insurers} />
+                </div>
+                {hospital && (
+                  <p className="m-0 flex items-start gap-2 rounded-xl bg-danger-bg p-4 text-body-sm text-fg">
+                    <Siren
+                      aria-hidden="true"
+                      weight="bold"
+                      className="mt-0.5 size-4 shrink-0 text-danger"
+                    />
+                    {t("site.facility.emergencyNote", { number: EMERGENCY.number })}
+                  </p>
                 )}
               </div>
-              <div className="mt-5 flex flex-col gap-2 border-t border-border/60 pt-5">
-                <h3 className="m-0 text-caption font-semibold text-fg-muted uppercase">
-                  {t("site.facility.insurance")}
-                </h3>
-                <InsuranceList codes={insurers} />
-              </div>
-              {hospital && (
-                <p className="m-0 mt-5 flex items-start gap-2 rounded-2xl bg-danger-bg p-4 text-body-sm text-fg">
-                  <Siren
-                    aria-hidden="true"
-                    weight="bold"
-                    className="mt-0.5 size-4 shrink-0 text-danger"
-                  />
-                  {t("site.facility.emergencyNote", { number: EMERGENCY.number })}
-                </p>
-              )}
             </Panel>
 
             <Tabs defaultValue="overview" className="flex flex-col">
@@ -280,14 +278,11 @@ export function FacilityPage() {
               </TabsList>
 
               <TabsContent value="overview" className="animate-enter">
-                <Panel as="div" className="flex flex-col gap-5 p-6">
-                  <div>
-                    <h3 className="m-0 text-h3">{t("site.facility.about")}</h3>
-                    <p className="m-0 mt-2 text-fg-secondary">
-                      {pick(f.description_i18n, lang) || t("site.facility.noDescription")}
-                    </p>
-                  </div>
-                  <Contact f={f} />
+                <Panel as="div" className="p-6">
+                  <h3 className="m-0 text-h3">{t("site.facility.about")}</h3>
+                  <p className="m-0 mt-2 text-fg-secondary">
+                    {pick(f.description_i18n, lang) || t("site.facility.noDescription")}
+                  </p>
                 </Panel>
               </TabsContent>
 
@@ -369,86 +364,106 @@ export function FacilityPage() {
               </TabsContent>
 
               <TabsContent value="hours" className="animate-enter">
-                <div className="grid gap-6 md:grid-cols-2">
-                  <Panel as="div" className="flex flex-col gap-3 p-6">
-                    <h3 className="m-0 text-h3">{t("site.facility.week")}</h3>
-                    <dl className="m-0 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
-                      {week.map(({ iso, hours }, index) => (
-                        <div key={iso} className="contents">
-                          <dt
-                            className={cx("first-letter:uppercase", index === 0 && "font-semibold")}
-                          >
-                            {day(iso, lang, "short")}
-                          </dt>
-                          <dd
-                            className={cx("m-0 text-right tabular-nums", !hours && "text-fg-muted")}
-                          >
-                            {hours ?? t("site.closed")}
-                          </dd>
-                        </div>
-                      ))}
-                    </dl>
-                    <h3 className="m-0 mt-3 text-body-sm font-semibold text-fg-muted">
-                      {t("site.facility.closures")}
-                    </h3>
-                    <p className="m-0 text-body-sm text-fg-secondary">
-                      {f.closures.length
-                        ? f.closures.map((c) => day(c.date, lang, "short")).join(", ")
-                        : t("site.facility.noClosures")}
-                    </p>
-                  </Panel>
-                  <Panel as="div" className="flex flex-col gap-4 p-6">
-                    <Contact f={f} />
-                    {f.lat !== null && f.lng !== null && (
-                      <Suspense fallback={<Skeleton className="h-56 rounded-2xl" />}>
-                        <FacilityMap
-                          points={[
-                            {
-                              id: f.slug,
-                              lat: f.lat,
-                              lng: f.lng,
-                              kind: pinKind(f.type),
-                              load: null,
-                              label: f.name,
-                            },
-                          ]}
-                          selectedId={f.slug}
-                          tilesUrl={env.mapTilesUrl}
-                          attribution={t("home.mapAttribution")}
-                          label={t("site.facility.map")}
-                          className="h-56"
-                        />
-                      </Suspense>
-                    )}
-                  </Panel>
-                </div>
+                {/* the map, address and phone are in the location card beside */}
+                <Panel as="div" className="flex flex-col gap-3 p-6">
+                  <h3 className="m-0 text-h3">{t("site.facility.week")}</h3>
+                  <dl className="m-0 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
+                    {week.map(({ iso, hours }, index) => (
+                      <div key={iso} className="contents">
+                        <dt
+                          className={cx("first-letter:uppercase", index === 0 && "font-semibold")}
+                        >
+                          {day(iso, lang, "short")}
+                        </dt>
+                        <dd
+                          className={cx("m-0 text-right tabular-nums", !hours && "text-fg-muted")}
+                        >
+                          {hours ?? t("site.closed")}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                  <h3 className="m-0 mt-3 text-body-sm font-semibold text-fg-muted">
+                    {t("site.facility.closures")}
+                  </h3>
+                  <p className="m-0 text-body-sm text-fg-secondary">
+                    {f.closures.length
+                      ? f.closures.map((c) => day(c.date, lang, "short")).join(", ")
+                      : t("site.facility.noClosures")}
+                  </p>
+                </Panel>
               </TabsContent>
             </Tabs>
           </div>
 
           <aside className="flex flex-col gap-6">
-            <Panel aria-labelledby="bring" className="p-6">
-              <h2 id="bring" className="m-0 text-h3">
+            <Panel aria-labelledby="location" className="overflow-hidden">
+              {f.lat !== null && f.lng !== null && (
+                <Suspense fallback={<Skeleton className="h-44 rounded-none" />}>
+                  <FacilityMap
+                    points={[
+                      {
+                        id: f.slug,
+                        lat: f.lat,
+                        lng: f.lng,
+                        kind: pinKind(f.type),
+                        load: null,
+                        label: f.name,
+                      },
+                    ]}
+                    selectedId={f.slug}
+                    tilesUrl={env.mapTilesUrl}
+                    attribution={t("home.mapAttribution")}
+                    label={t("site.facility.map")}
+                    // flush with the card's top edge (the map's own radius and shadow are dropped)
+                    className="h-44 rounded-none! shadow-none!"
+                  />
+                </Suspense>
+              )}
+              <div className="flex flex-col gap-4 p-5">
+                <Contact f={f} />
+                {directions && (
+                  <a
+                    href={directions}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={buttonClassName({
+                      variant: "secondary",
+                      size: "sm",
+                      fullWidth: true,
+                    })}
+                  >
+                    <NavigationArrow aria-hidden="true" className="size-4" />
+                    {t("site.facility.directions")}
+                    <span className="sr-only"> {t("common.opensInNewTab")}</span>
+                  </a>
+                )}
+              </div>
+            </Panel>
+            <Panel aria-labelledby="bring" className="p-5">
+              <h2 id="bring" className="m-0 text-h3 font-bold">
                 {t("site.facility.bring.title")}
               </h2>
-              <ul className="m-0 mt-3 flex flex-col gap-2 pl-5 text-fg-secondary">
-                <li>{t("site.facility.bring.insurance")}</li>
-                <li>{t("site.facility.bring.id")}</li>
-                {f.level_of_care !== "primary" && <li>{t("site.facility.bring.referral")}</li>}
-                <li>{t("site.facility.bring.documents")}</li>
+              <ul className="m-0 mt-3 flex list-none flex-col gap-2.5 p-0 text-body-sm text-fg-secondary">
+                {[
+                  t("site.facility.bring.insurance"),
+                  t("site.facility.bring.id"),
+                  f.level_of_care !== "primary" ? t("site.facility.bring.referral") : null,
+                  t("site.facility.bring.documents"),
+                ]
+                  .filter((item): item is string => Boolean(item))
+                  .map((item) => (
+                    <li key={item} className="flex items-start gap-2.5">
+                      <CheckCircle
+                        aria-hidden="true"
+                        weight="fill"
+                        className="mt-0.5 size-4 shrink-0 text-primary"
+                      />
+                      {item}
+                    </li>
+                  ))}
               </ul>
             </Panel>
-            {todayHours && (
-              <Panel as="div" className="flex items-center gap-3 p-6">
-                <Clock aria-hidden="true" className="size-6 text-primary" />
-                <span>
-                  <span className="block text-caption font-semibold text-fg-muted uppercase">
-                    {t("site.facility.hoursToday")}
-                  </span>
-                  <span className="font-semibold tabular-nums">{todayHours}</span>
-                </span>
-              </Panel>
-            )}
           </aside>
         </div>
       </PageContainer>
@@ -456,12 +471,55 @@ export function FacilityPage() {
   );
 }
 
+/** One fact of the Today strip: small icon tile, caption, value. */
+function Fact({
+  icon: FactIcon,
+  label,
+  children,
+}: {
+  icon: Icon;
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-1 bg-surface px-5 py-4">
+      <dt className="flex flex-col gap-2 text-caption font-semibold text-fg-muted">
+        <span
+          aria-hidden="true"
+          className="grid size-8 place-items-center rounded-lg bg-brand-subtle text-brand"
+        >
+          <FactIcon weight="duotone" className="size-[1.125rem]" />
+        </span>
+        {label}
+      </dt>
+      <dd className="m-0 font-heading font-bold text-fg">{children}</dd>
+    </div>
+  );
+}
+
+/** Available or not, with a word and a mark, never colour alone. */
+function Availability({ on }: { on: boolean }) {
+  const { t } = useTranslation();
+  return (
+    <span className={cx("inline-flex items-center gap-1.5", on ? "text-success" : "text-fg-muted")}>
+      {on ? (
+        <CheckCircle aria-hidden="true" weight="fill" className="size-4" />
+      ) : (
+        <MinusCircle aria-hidden="true" className="size-4" />
+      )}
+      {on ? t("site.facility.available") : t("site.facility.notAvailable")}
+    </span>
+  );
+}
+
 function Contact({ f }: { f: PublicFacility }) {
   const { t } = useTranslation();
   return (
     <div>
-      <h3 className="m-0 text-h3">{t("site.facility.contact")}</h3>
-      <dl className="m-0 mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
+      <h2 id="location" className="m-0 text-h3 font-bold">
+        {t("site.facility.contact")}
+      </h2>
+      <dl className="m-0 mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-body-sm">
         <dt className="text-fg-muted">{t("site.facility.address")}</dt>
         <dd className="m-0">{f.address || t("site.facility.notListed")}</dd>
         <dt className="text-fg-muted">{t("site.facility.phone")}</dt>

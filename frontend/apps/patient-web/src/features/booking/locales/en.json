@@ -77,6 +77,16 @@
   "flow": {
     "title": "Book a visit",
     "step": "Step {{step}} of {{total}}",
+    "steps": {
+      "label": "Booking steps",
+      "who": "Who",
+      "what": "Service",
+      "when": "Time",
+      "reason": "Reason",
+      "review": "Review"
+    },
+    "summary": "Your booking",
+    "notChosen": "Not chosen yet",
     "who": "Who is the visit for?",
     "addPerson": "Add a family member",
     "what": "What do you need?",

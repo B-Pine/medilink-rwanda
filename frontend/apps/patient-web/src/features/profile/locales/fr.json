@@ -194,6 +194,7 @@
   },
   "privacy": {
     "title": "Confidentialité et consentement",
+    "account": "Votre compte",
     "research": "Utiliser mes données pour la recherche en santé",
     "researchHint": "Uniquement des données anonymisées, pour des études approuvées. Vous pouvez changer d'avis à tout moment.",
     "on": "Activé",

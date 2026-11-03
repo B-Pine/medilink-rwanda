@@ -210,6 +210,13 @@ T_MERGE = {
     ),
 }
 
+# Patient app pages (upgrade 12 §2): the signed-in app lives under /dashboard; the frontend still
+# redirects the older /visits, /medicines and /documents addresses already sent.
+APPOINTMENT_PATH = "/dashboard/appointments/{booking_id}"
+TICKET_PATH = "/dashboard/queue/{visit_id}"
+MEDICATION_PATH = "/dashboard/medications/{prescription_id}"
+DOCUMENT_PATH = "/dashboard/documents/{document_id}"
+
 EVENTS: list[EventDefinition] = [
     EventDefinition(
         type=BOOKING_CONFIRMED,
@@ -218,7 +225,7 @@ EVENTS: list[EventDefinition] = [
         channels=PATIENT_ALL,
         placeholders=WHEN,
         data_keys=frozenset({"booking_id"}),
-        action_path="/visits",
+        action_path=APPOINTMENT_PATH,
         dedupe="{type}:{booking_id}",
         templates=_texts(PATIENT_ALL, T_CONFIRMED),
     ),
@@ -229,7 +236,7 @@ EVENTS: list[EventDefinition] = [
         channels=PATIENT_ALL,
         placeholders=WHEN,
         data_keys=frozenset({"booking_id"}),
-        action_path="/visits",
+        action_path=APPOINTMENT_PATH,
         dedupe="{type}:{booking_id}",
         templates=_texts(PATIENT_ALL, T_CANCELLED),
     ),
@@ -240,7 +247,7 @@ EVENTS: list[EventDefinition] = [
         channels=PATIENT_ALL,
         placeholders=WHEN,
         data_keys=frozenset({"booking_id"}),
-        action_path="/visits",
+        action_path=APPOINTMENT_PATH,
         dedupe="{type}:{booking_id}:{date}:{time}",
         templates=_texts(PATIENT_ALL, T_CHANGED),
     ),
@@ -251,7 +258,7 @@ EVENTS: list[EventDefinition] = [
         channels=("in_app", "email"),
         placeholders={"facility_name": P.FACILITY_NAME, "date": P.DATE},
         data_keys=frozenset({"booking_id"}),
-        action_path="/visits",
+        action_path=APPOINTMENT_PATH,
         dedupe="{type}:{booking_id}",
         templates=_texts(("in_app", "email"), T_NO_SHOW),
     ),
@@ -262,7 +269,7 @@ EVENTS: list[EventDefinition] = [
         channels=PATIENT_LIVE,
         placeholders={"ticket_number": P.TICKET_NUMBER, "room": P.ROOM},
         data_keys=frozenset({"ticket_id", "visit_id"}),
-        action_path="/visits/{visit_id}",
+        action_path=TICKET_PATH,
         dedupe="{type}:{ticket_id}:{room}",
         ttl=timedelta(minutes=30),
         templates=_texts(PATIENT_LIVE, T_CALLED),
@@ -278,7 +285,7 @@ EVENTS: list[EventDefinition] = [
             "facility_name": P.FACILITY_NAME,
         },
         data_keys=frozenset({"ticket_id", "visit_id"}),
-        action_path="/visits/{visit_id}",
+        action_path=TICKET_PATH,
         dedupe="{type}:{ticket_id}",
         ttl=timedelta(hours=1),
         templates=_texts(PATIENT_LIVE, T_ALMOST),
@@ -290,7 +297,7 @@ EVENTS: list[EventDefinition] = [
         channels=PATIENT_LIVE,
         placeholders={"ticket_number": P.TICKET_NUMBER, "facility_name": P.FACILITY_NAME},
         data_keys=frozenset({"ticket_id", "visit_id"}),
-        action_path="/visits/{visit_id}",
+        action_path=TICKET_PATH,
         dedupe="{type}:{ticket_id}",
         ttl=timedelta(minutes=30),
         templates=_texts(PATIENT_LIVE, T_PASS_OVER),
@@ -302,7 +309,7 @@ EVENTS: list[EventDefinition] = [
         channels=PATIENT_LIVE,
         placeholders={"facility_name": P.FACILITY_NAME},
         data_keys=frozenset({"prescription_id"}),
-        action_path="/medicines/{prescription_id}",
+        action_path=MEDICATION_PATH,
         dedupe="{type}:{prescription_id}",
         templates=_texts(PATIENT_LIVE, T_RX_READY),
     ),
@@ -313,7 +320,7 @@ EVENTS: list[EventDefinition] = [
         channels=("in_app",),
         placeholders={"facility_name": P.FACILITY_NAME},
         data_keys=frozenset({"prescription_id", "record_id"}),
-        action_path="/medicines/{prescription_id}",
+        action_path=MEDICATION_PATH,
         dedupe="{type}:{record_id}",
         templates=_texts(("in_app",), T_RX_DISPENSED),
     ),
@@ -346,7 +353,7 @@ EVENTS: list[EventDefinition] = [
         channels=("in_app", "email"),
         placeholders={"facility_name": P.FACILITY_NAME},
         data_keys=frozenset({"document_id"}),
-        action_path="/documents/{document_id}",
+        action_path=DOCUMENT_PATH,
         dedupe="{type}:{document_id}",
         templates=_texts(("in_app", "email"), T_DOCUMENT),
     ),

@@ -173,7 +173,13 @@ function LiveText({ text }: { text: string }) {
       return;
     }
     const element = node.current;
-    if (!element || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    // older browsers (and jsdom) have no Web Animations API: the new text shows without the glow
+    if (
+      !element ||
+      typeof element.animate !== "function" ||
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+    )
+      return;
     element.animate(
       [
         { backgroundColor: "color-mix(in srgb, var(--color-attention-solid) 22%, transparent)" },

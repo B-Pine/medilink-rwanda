@@ -32,7 +32,7 @@ describe("symptom checker (PT-F3)", () => {
     expect(screen.getByText("A fever needs a malaria test the same day.")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /See places near me/ })).toHaveAttribute(
       "href",
-      "/search?service=general",
+      "/find-care?service=general",
     );
     expect(
       screen.getByText("These rules are being reviewed by clinicians before the pilot."),
@@ -42,22 +42,22 @@ describe("symptom checker (PT-F3)", () => {
 });
 
 describe("information pages (PT-F4, PT-F5)", () => {
-  it("about marks unconfirmed facts instead of stating them", async () => {
+  it("about explains what MediLink is, section by section", async () => {
     const { container } = renderApp("/about");
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Care that knows you are coming" }),
+      await screen.findByRole("heading", { level: 1, name: "About MediLink" }),
     ).toBeInTheDocument();
-    expect(screen.getAllByText("To confirm").length).toBeGreaterThan(0);
+    expect(screen.getByRole("heading", { name: "What MediLink is" })).toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });
 
   it("emergency gives the number and the danger signs", async () => {
     renderApp("/emergency");
     expect(
-      await screen.findByRole("heading", { level: 1, name: "In an emergency, do not wait" }),
+      await screen.findByRole("heading", { level: 1, name: "Need emergency care?" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Chest pain or pressure")).toBeInTheDocument();
-    expect(screen.getAllByText("912").length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/912/).length).toBeGreaterThan(0);
   });
 
   it("privacy and terms are drafts with their sections", async () => {
@@ -66,7 +66,7 @@ describe("information pages (PT-F4, PT-F5)", () => {
       await screen.findByRole("heading", { level: 1, name: "Privacy notice" }),
     ).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Your rights" })).toBeInTheDocument();
-    expect(screen.getByText(/Draft for review/)).toBeInTheDocument();
+    expect(screen.getByText(/Draft text awaiting legal review/)).toBeInTheDocument();
     await router.navigate("/terms");
     expect(
       await screen.findByRole("heading", { level: 1, name: "Terms of use" }),
@@ -76,19 +76,18 @@ describe("information pages (PT-F4, PT-F5)", () => {
 });
 
 describe("care near you on the home page (PT-F1)", () => {
-  it("a district shows verified facilities with the live queue and accepted insurers", async () => {
-    const { user, container } = renderApp("/");
-    const section = (await screen.findByRole("heading", { name: "Care near you" })).closest(
-      "section",
-    )!;
-    await user.selectOptions(within(section).getByLabelText("Or choose a district"), "gasabo");
-    const tiles = await within(section).findAllByRole("article");
-    expect(tiles.length).toBeGreaterThan(0);
-    expect(within(section).getAllByText("Insurance accepted").length).toBe(tiles.length);
+  it("the home page lists facilities with the live queue and accepted insurers", async () => {
+    const { container } = renderApp("/");
+    const section = await screen.findByRole("region", { name: "Healthcare facilities near you" });
+    const list = await within(section).findByRole("list", {
+      name: "Healthcare facilities near you",
+    });
+    const rows = within(list).getAllByRole("heading", { level: 3 });
+    expect(rows.length).toBeGreaterThan(0);
     expect(within(section).getAllByText("RAMA").length).toBeGreaterThan(0);
-    expect(within(section).getByRole("link", { name: "Search all facilities" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "View all facilities" })).toHaveAttribute(
       "href",
-      "/search",
+      "/facilities",
     );
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -101,7 +100,7 @@ describe("care near you on the home page (PT-F1)", () => {
     );
     const footer = screen.getByRole("navigation", { name: "Site links" });
     for (const [name, href] of [
-      ["About", "/about"],
+      ["About MediLink", "/about"],
       ["Emergency", "/emergency"],
       ["Check symptoms", "/check-symptoms"],
     ]) {

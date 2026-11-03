@@ -30,7 +30,9 @@ async function signIn(next = "/support", language: "en" | "fr" = "en") {
 describe("Help tab (S10-F1)", () => {
   it("emergency first, search, category filter, Contact support and My requests", async () => {
     const { user, container } = await signIn();
-    expect(await screen.findByRole("heading", { level: 1, name: "Help" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "Help & support" }),
+    ).toBeInTheDocument();
     const articles = await screen.findByRole("region", { name: "Help articles" });
     // the emergency notice comes before the articles
     const emergency = screen.getByText(/call 912/);
@@ -61,7 +63,7 @@ describe("Help tab (S10-F1)", () => {
     const contact = screen.getByRole("region", { name: "Still need help?" });
     expect(within(contact).getByRole("link", { name: "Contact support" })).toHaveAttribute(
       "href",
-      "/support/requests/new",
+      "/dashboard/help/requests/new",
     );
     expect(
       await within(contact).findByRole("link", { name: /My requests.*1 open/ }),
@@ -174,7 +176,7 @@ describe("requests and thread (S10-F4)", () => {
     expect(await screen.findByText("This request is closed")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Open a new request" })).toHaveAttribute(
       "href",
-      "/support/requests/new",
+      "/dashboard/help/requests/new",
     );
     expect(screen.queryByLabelText("Your reply")).not.toBeInTheDocument();
   });

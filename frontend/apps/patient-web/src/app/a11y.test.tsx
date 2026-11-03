@@ -9,13 +9,13 @@ import { renderApp } from "../test/render";
 describe("accessibility (axe)", () => {
   it("landing page", async () => {
     const { container } = renderApp("/");
-    await screen.findByRole("heading", { level: 1, name: "Know before you go." });
+    await screen.findByRole("heading", { level: 1, name: "Healthcare, made easier." });
     expect(await axe(container)).toHaveNoViolations();
   });
 
   it("landing page in Kinyarwanda", async () => {
     const { container } = renderApp("/", { language: "rw" });
-    await screen.findByRole("heading", { level: 1, name: "Menya mbere yo kugenda." });
+    await screen.findByRole("heading", { level: 1, name: "Ubuvuzi, bworoshye." });
     expect(await axe(container)).toHaveNoViolations();
   });
 
@@ -68,7 +68,7 @@ describe("accessibility (axe)", () => {
 describe("keyboard (F5)", () => {
   it("skip link first, then the header controls", async () => {
     const { user } = renderApp("/");
-    await screen.findByRole("heading", { level: 1, name: "Know before you go." });
+    await screen.findByRole("heading", { level: 1, name: "Healthcare, made easier." });
     await user.tab();
     expect(screen.getByRole("link", { name: "Skip to main content" })).toHaveFocus();
     await user.tab();

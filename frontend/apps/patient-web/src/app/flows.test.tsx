@@ -7,53 +7,49 @@ import { renderApp } from "../test/render";
 /** Patient flows against the contract mocks: landing, email-first login, sign-up with consent. */
 
 describe("landing page", () => {
-  it("has one h1 and a search that opens facility search", async () => {
+  it("has one h1 and a search that opens Find care", async () => {
     const { user } = renderApp("/");
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Know before you go." }),
+      await screen.findByRole("heading", { level: 1, name: "Healthcare, made easier." }),
     ).toBeInTheDocument();
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
 
-    const search = screen.getByRole("form", { name: "Find care" });
-    expect(within(search).getByLabelText("What do you need?")).toBeInTheDocument();
-    expect(within(search).getByLabelText("Where?")).toBeInTheDocument();
-    expect(within(search).getByLabelText("Your insurance")).toBeInTheDocument();
-
-    // Popular chip fills the service; search opens the facility search (S5).
-    await user.click(screen.getByRole("button", { name: "Pediatrics" }));
-    expect(within(search).getByLabelText("What do you need?")).toHaveValue("pediatrics");
-    await user.click(within(search).getByRole("button", { name: "Search" }));
+    const search = screen.getAllByRole("search")[0]!;
+    await user.type(
+      within(search).getByLabelText("Search facilities, services or symptoms"),
+      "dentist",
+    );
+    await user.click(within(search).getByRole("button", { name: "Find Care" }));
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Find a facility" }),
+      await screen.findByRole("heading", { level: 1, name: "Find healthcare" }),
     ).toBeInTheDocument();
   });
 
-  it("has how it works, facilities band, emergency notice and footer", async () => {
+  it("has how it works, the emergency band, a sign-in link and the footer", async () => {
     renderApp("/");
     expect(
-      await screen.findByRole("heading", { level: 2, name: "How it works" }),
+      await screen.findByRole("heading", { level: 2, name: "How MediLink works" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { level: 2, name: "For health facilities" }),
+      screen.getByRole("heading", { level: 2, name: "Need emergency care?" }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/call 912/)).toBeInTheDocument();
     const footer = screen.getByRole("contentinfo");
     expect(within(footer).getByRole("link", { name: "Verify a document" })).toHaveAttribute(
       "href",
       "/verify",
     );
-    expect(screen.getByRole("link", { name: "Log in" })).toHaveAttribute("href", "/login");
+    expect(screen.getAllByRole("link", { name: "Sign In" })[0]).toHaveAttribute("href", "/login");
   });
 
   it("is in Kinyarwanda by default and the language switch updates <html lang>", async () => {
     const { user } = renderApp("/", { language: "rw" });
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Menya mbere yo kugenda." }),
+      await screen.findByRole("heading", { level: 1, name: "Ubuvuzi, bworoshye." }),
     ).toBeInTheDocument();
     expect(document.documentElement.lang).toBe("rw");
     await user.selectOptions(screen.getAllByLabelText("Ururimi")[0]!, "fr");
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Sachez avant de partir." }),
+      await screen.findByRole("heading", { level: 1, name: "Les soins, en plus simple." }),
     ).toBeInTheDocument();
     expect(document.documentElement.lang).toBe("fr");
   });
@@ -83,7 +79,7 @@ describe("email-first login", () => {
         name: /^Good (morning|afternoon|evening), Mukamana Jeanne$/,
       }),
     ).toBeInTheDocument();
-    expect(router.state.location.pathname).toBe("/home");
+    expect(router.state.location.pathname).toBe("/dashboard");
     expect(screen.getByText("Confirm your email")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /^Account menu for/ }));
@@ -214,7 +210,7 @@ describe("sign-up with consent", () => {
         name: /^Good (morning|afternoon|evening), Uwera Diane$/,
       }),
     ).toBeInTheDocument();
-    expect(router.state.location.pathname).toBe("/home");
+    expect(router.state.location.pathname).toBe("/dashboard");
   });
 
   it("a bad verification link offers to sign up again", async () => {

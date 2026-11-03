@@ -7549,6 +7549,28 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserRow'
           description: ''
+  /api/v1/public/assistant/:
+    post:
+      operationId: public_assistant_turn
+      description: 'One turn of the AI symptom assistant (test phase). Not a diagnosis:
+        it may name a possible cause and always routes to a clinician; red flags answer
+        ''call 912''. 503 `assistant_unavailable` when switched off or the model cannot
+        be reached.'
+      tags:
+      - public
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssistantRequestRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssistantTurn'
+          description: ''
   /api/v1/public/facilities/{slug}/:
     get:
       operationId: public_facility_profile
@@ -17001,6 +17023,96 @@ components:
       required:
       - application
       - facility
+    AssistantRequestRequest:
+      type: object
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 600
+        language:
+          $ref: '#/components/schemas/LanguageEnum'
+        state:
+          type: object
+          additionalProperties: {}
+      required:
+      - language
+      - message
+    AssistantState:
+      type: object
+      properties:
+        present:
+          type: array
+          items:
+            type: string
+        absent:
+          type: array
+          items:
+            type: string
+        asked:
+          type: array
+          items:
+            type: string
+        pending:
+          type: string
+          nullable: true
+      required:
+      - absent
+      - asked
+      - pending
+      - present
+    AssistantTurn:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/AssistantTurnKindEnum'
+        reply:
+          type: string
+          nullable: true
+        state:
+          $ref: '#/components/schemas/AssistantState'
+        red_flags:
+          type: array
+          items:
+            type: string
+        condition:
+          type: string
+          nullable: true
+        named:
+          type: boolean
+        service_code:
+          type: string
+          nullable: true
+        urgency:
+          type: string
+          nullable: true
+        matcher_version:
+          type: string
+        test_phase:
+          type: boolean
+      required:
+      - condition
+      - kind
+      - matcher_version
+      - named
+      - red_flags
+      - reply
+      - service_code
+      - state
+      - test_phase
+      - urgency
+    AssistantTurnKindEnum:
+      enum:
+      - question
+      - answer
+      - emergency
+      - clarify
+      type: string
+      description: |-
+        * `question` - question
+        * `answer` - answer
+        * `emergency` - emergency
+        * `clarify` - clarify
     AttemptLog:
       type: object
       properties:

@@ -36,3 +36,34 @@ class TriageLog(UUIDModel):
         if not self._state.adding:
             raise AppendOnlyError("Triage log rows are append-only.")
         super().save(*args, **kwargs)
+
+
+class AssistantLog(UUIDModel):
+    """One row per finished assistant conversation (answer or emergency), issue #159.
+
+    De-identified like TriageLog: symptom names and the outcome only. The person's own words are
+    never stored, and there is no account, IP or device.
+    """
+
+    present = ArrayField(models.CharField(max_length=80))
+    absent = ArrayField(models.CharField(max_length=80), default=list)
+    questions = models.PositiveSmallIntegerField(default=0)
+    outcome = models.CharField(max_length=12)  # "answer" | "emergency"
+    condition = models.CharField(max_length=120, blank=True)
+    named = models.BooleanField(default=False)
+    probability = models.FloatField(null=True, blank=True)
+    service_code = models.CharField(max_length=40, blank=True)
+    urgency = models.CharField(max_length=12, blank=True)
+    language = models.CharField(max_length=4)
+    matcher_version = models.CharField(max_length=20)
+    llm_model = models.CharField(max_length=80)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "triage_assistant_log"
+        indexes = [models.Index(fields=["created_at"], name="assistant_log_created_idx")]
+
+    def save(self, *args: Any, **kwargs: Any) -> None:
+        if not self._state.adding:
+            raise AppendOnlyError("Assistant log rows are append-only.")
+        super().save(*args, **kwargs)

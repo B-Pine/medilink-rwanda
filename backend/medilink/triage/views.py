@@ -9,11 +9,12 @@ from rest_framework import serializers
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from medilink.accounts.models import Language
 from medilink.authz.permissions import PublicEndpoint
 from medilink.masterdata.models import Symptom
 from medilink.patients.errors import PatientsAPIView
-from medilink.triage import rules
-from medilink.triage.models import TriageLog
+from medilink.triage import assistant, llm, matcher, rules
+from medilink.triage.models import AssistantLog, TriageLog
 from medilink.uploads.throttling import EnvRateThrottle
 
 
@@ -115,3 +116,109 @@ class TriageView(PatientsAPIView):
         )
         response["Cache-Control"] = "no-store"
         return response
+
+
+# ---- AI symptom assistant (issue #159) ------------------------------------------------------
+
+
+class AssistantThrottle(TriageThrottle):
+    scope = "assistant"
+    env_var = "THROTTLE_RATE_ASSISTANT"
+    default_rate = "15/min"
+
+
+class AssistantRequestSerializer(serializers.Serializer):
+    message = serializers.CharField(max_length=assistant.MAX_MESSAGE, trim_whitespace=True)
+    language = serializers.ChoiceField(choices=Language.choices)
+    state = serializers.DictField(required=False, default=dict)
+
+
+class AssistantStateSerializer(serializers.Serializer):
+    present = serializers.ListField(child=serializers.CharField())
+    absent = serializers.ListField(child=serializers.CharField())
+    asked = serializers.ListField(child=serializers.CharField())
+    pending = serializers.CharField(allow_null=True)
+
+
+class AssistantTurnSerializer(serializers.Serializer):
+    kind = serializers.ChoiceField(choices=("question", "answer", "emergency", "clarify"))
+    reply = serializers.CharField(allow_null=True)
+    state = AssistantStateSerializer()
+    red_flags = serializers.ListField(child=serializers.CharField())
+    condition = serializers.CharField(allow_null=True)
+    named = serializers.BooleanField()
+    service_code = serializers.CharField(allow_null=True)
+    urgency = serializers.CharField(allow_null=True)
+    matcher_version = serializers.CharField()
+    test_phase = serializers.BooleanField()
+
+
+class AssistantView(PatientsAPIView):
+    permission_classes = [PublicEndpoint]
+    authentication_classes: list[Any] = []
+    throttle_classes = [AssistantThrottle]
+
+    @extend_schema(
+        operation_id="public_assistant_turn",
+        tags=["public"],
+        request=AssistantRequestSerializer,
+        responses={200: AssistantTurnSerializer},
+        description=(
+            "One turn of the AI symptom assistant (test phase). Not a diagnosis: it may name a "
+            "possible cause and always routes to a clinician; red flags answer 'call 912'. "
+            "503 `assistant_unavailable` when switched off or the model cannot be reached."
+        ),
+    )
+    def post(self, request: Request) -> Response:
+        if not llm.enabled():
+            return _unavailable()
+        body = AssistantRequestSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        data = body.validated_data
+        try:
+            turn = assistant.respond(data["message"], data["language"], data["state"])
+        except llm.LLMError:
+            return _unavailable()
+        if turn.kind in ("answer", "emergency"):
+            AssistantLog.objects.create(
+                present=turn.state.present,
+                absent=turn.state.absent,
+                questions=len(turn.state.asked),
+                outcome=turn.kind,
+                condition=turn.condition or "",
+                named=turn.named,
+                probability=turn.probability,
+                service_code=turn.service_code or "",
+                urgency=turn.urgency or "",
+                language=data["language"],
+                matcher_version=matcher.MODEL_VERSION,
+                llm_model=llm.model_name(),
+            )
+        response = Response(
+            {
+                "kind": turn.kind,
+                "reply": turn.reply,
+                "state": turn.state.to_json(),
+                "red_flags": list(turn.red_flags),
+                "condition": turn.condition,
+                "named": turn.named,
+                "service_code": turn.service_code,
+                "urgency": turn.urgency,
+                "matcher_version": matcher.MODEL_VERSION,
+                "test_phase": True,
+            }
+        )
+        response["Cache-Control"] = "no-store"
+        return response
+
+
+def _unavailable() -> Response:
+    response = Response(
+        {
+            "code": "assistant_unavailable",
+            "message": "The assistant is not available right now. Use the symptom checker.",
+        },
+        status=503,
+    )
+    response["Cache-Control"] = "no-store"
+    return response

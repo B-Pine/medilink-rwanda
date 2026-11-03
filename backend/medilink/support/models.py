@@ -254,3 +254,43 @@ class SupportMessage(TimeStampedModel):
         if not self._state.adding:
             raise AppendOnlyError("Support messages are append-only.")
         super().save(*args, **kwargs)
+
+
+class ContactStatus(models.TextChoices):
+    NEW = "new", "New"
+    HANDLED = "handled", "Handled"
+
+
+class ContactMessage(TimeStampedModel):
+    """A message from the public Contact page (upgrade 11 §13); no account, so no support request.
+
+    Read only by the platform (no facility RLS). Health details are refused at intake, as for
+    support requests; `reach` is the email or phone number the visitor asked to be answered on.
+    """
+
+    reference = models.CharField(max_length=12, unique=True)
+    name = models.CharField(max_length=120)
+    reach = models.CharField(max_length=120)
+    subject = models.CharField(max_length=120)
+    body = models.TextField()
+    language = models.CharField(max_length=2, default="rw")
+    status = models.CharField(
+        max_length=10, choices=ContactStatus.choices, default=ContactStatus.NEW
+    )
+    handled_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+    handled_at = models.DateTimeField(null=True, blank=True)
+    note = models.CharField(max_length=500, blank=True, default="")
+
+    class Meta:
+        db_table = "support_contact_message"
+        ordering = ["-created_at"]
+        indexes = [models.Index(fields=["status", "created_at"])]
+
+    def __str__(self) -> str:
+        return self.reference

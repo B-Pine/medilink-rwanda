@@ -17,3 +17,14 @@ class SupportWriteThrottle(EnvRateThrottle):
             return None
         user = getattr(request, "user", None)
         return str(user.pk) if user is not None and user.is_authenticated else None
+
+
+class ContactIPThrottle(EnvRateThrottle):
+    """Public Contact page: per IP, POSTs only (no account to count against)."""
+
+    scope = "contact_ip"
+    env_var = "THROTTLE_RATE_CONTACT_IP"
+    default_rate = "10/hour"
+
+    def get_ident_for(self, request: Any, view: Any) -> str | None:
+        return self.get_ident(request) if request.method == "POST" else None

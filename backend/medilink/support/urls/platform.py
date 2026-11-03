@@ -4,6 +4,16 @@ from medilink.support import views
 
 urlpatterns = [
     path(
+        "contact-messages/",
+        views.PlatformContactListView.as_view(),
+        name="platform-contact-messages",
+    ),
+    path(
+        "contact-messages/<uuid:message_id>/handled/",
+        views.PlatformContactHandleView.as_view(),
+        name="platform-contact-message-handled",
+    ),
+    path(
         "support-requests/",
         views.PlatformRequestListView.as_view(),
         name="platform-support-requests",

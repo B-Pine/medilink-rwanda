@@ -2,7 +2,8 @@
   "nav": {
     "help": "Ubufasha",
     "platformSupport": "Ibibazo by'ubufasha",
-    "platformHelpArticles": "Inyandiko z'ubufasha"
+    "platformHelpArticles": "Inyandiko z'ubufasha",
+    "platformContact": "Ubutumwa bwo ku rubuga"
   },
   "loadFailed": "Ntibyashobotse kubifungura. Reba interineti wongere ugerageze.",
   "retry": "Ongera ugerageze",
@@ -204,5 +205,28 @@
     "fixErrors": "Banza ukosore ibi mbere yo kubika",
     "statusDraft": "Umushinga",
     "statusPublished": "Yatangajwe"
+  },
+  "contact": {
+    "title": "Ubutumwa bwo ku rubuga",
+    "intro": "Bwoherejwe ku rupapuro rwa Twandikire. Subiza kuri imeyili cyangwa telefoni y'uwanditse, hanyuma wemeze ko byakozwe.",
+    "tabs": {
+      "label": "Uko ubutumwa buhagaze",
+      "new": "Bushya",
+      "handled": "Bwakozweho",
+      "all": "Bwose"
+    },
+    "search": "Nimero, izina cyangwa umutwe",
+    "searchGo": "Shakisha",
+    "empty": "Nta butumwa buri hano",
+    "emptyNew": "Nta butumwa bushya. Ubutumwa bw'abasura urubuga buza hano.",
+    "new": "Bushya",
+    "handled": "Bwakozweho",
+    "handledBy": "Bwakozweho na {{name}}, {{when}}",
+    "note": "Icyakozwe",
+    "noteHint": "Ku itsinda: urugero \"Nasubije kuri imeyili\".",
+    "markHandled": "Emeza ko byakozwe",
+    "cancel": "Reka",
+    "replyEmail": "Subiza {{reach}}",
+    "call": "Hamagara {{reach}}"
   }
 }

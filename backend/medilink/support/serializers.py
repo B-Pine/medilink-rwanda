@@ -14,6 +14,8 @@ from medilink.support.models import (
     Audience,
     AuthorKind,
     CloseReason,
+    ContactMessage,
+    ContactStatus,
     HelpArticle,
     RequestPriority,
     SupportMessage,
@@ -253,3 +255,44 @@ class TriageSerializer(serializers.Serializer[Any]):
     topic = serializers.ChoiceField(choices=Topic.choices, required=False)
     assigned_to_id = serializers.UUIDField(required=False, allow_null=True)
     version = serializers.IntegerField(min_value=1)
+
+
+# ---- the public Contact page (upgrade 11 §13) ---------------------------------------------------
+
+
+class PublicContactSerializer(serializers.Serializer[Any]):
+    name = serializers.CharField(min_length=2, max_length=120)
+    reach = serializers.CharField(min_length=5, max_length=120, help_text="Email or phone")
+    subject = serializers.CharField(min_length=3, max_length=120)
+    message = serializers.CharField(min_length=10, max_length=4000)
+
+
+class ContactReceiptSerializer(serializers.Serializer[Any]):
+    reference = serializers.CharField()
+
+
+class PlatformContactMessageSerializer(serializers.ModelSerializer[ContactMessage]):
+    handled_by = SupportPersonSerializer(allow_null=True)
+    message = serializers.CharField(source="body")
+    status = serializers.ChoiceField(choices=ContactStatus.choices)
+
+    class Meta:
+        model = ContactMessage
+        fields = [
+            "id",
+            "reference",
+            "name",
+            "reach",
+            "subject",
+            "message",
+            "language",
+            "status",
+            "created_at",
+            "handled_by",
+            "handled_at",
+            "note",
+        ]
+
+
+class ContactHandleSerializer(serializers.Serializer[Any]):
+    note = serializers.CharField(max_length=500, required=False, allow_blank=True, default="")

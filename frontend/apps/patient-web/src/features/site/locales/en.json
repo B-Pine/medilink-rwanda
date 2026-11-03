@@ -391,8 +391,9 @@
       "name": "Enter your name",
       "reach": "Enter an email address or a phone number",
       "subject": "Enter a subject",
-      "message": "Write your message"
-    }
+      "message": "Write your message (at least 10 characters)"
+    },
+    "reference": "Your reference: {{reference}}. Keep it if you write again."
   },
   "accessibility": {
     "title": "Accessibility statement",

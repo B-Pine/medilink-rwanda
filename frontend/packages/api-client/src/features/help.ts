@@ -174,6 +174,28 @@ export interface PublicContactInput {
   message: string;
 }
 
+/** The reference a visitor keeps for a Contact page message. */
+export interface ContactReceipt {
+  reference: string;
+}
+
+/** A Contact page message in the MediLink team's inbox (platform). */
+export interface ContactMessageRow {
+  id: Uuid;
+  reference: string;
+  name: string;
+  /** Email or phone the visitor asked to be answered on. */
+  reach: string;
+  subject: string;
+  message: string;
+  language: string;
+  status: "new" | "handled";
+  created_at: string;
+  handled_by: { id: Uuid; full_name: string } | null;
+  handled_at: string | null;
+  note: string;
+}
+
 export interface ArticleListParams {
   q?: string;
   category?: HelpCategory;
@@ -219,7 +241,7 @@ export const helpPaths = {
   public: {
     articles: `${v1}/public/help-articles/`,
     article: (slug: string) => `${v1}/public/help-articles/${encodeURIComponent(slug)}/`,
-    /** Upgrade 11 §13: proposed, not built on the API yet. */
+    /** Upgrade 11 §13: the public Contact page. */
     contact: `${v1}/public/contact/`,
   },
   patient: requestPaths(`${v1}/patient`),
@@ -229,6 +251,8 @@ export const helpPaths = {
     ...requestPaths(`${v1}/staff`),
   },
   platform: {
+    contactMessages: `${v1}/platform/contact-messages/`,
+    contactHandled: (id: Uuid) => `${v1}/platform/contact-messages/${id}/handled/`,
     requests: `${v1}/platform/support-requests/`,
     request: (id: Uuid) => `${v1}/platform/support-requests/${id}/`,
     replies: (id: Uuid) => `${v1}/platform/support-requests/${id}/replies/`,
@@ -256,8 +280,9 @@ export function createHelpApi(client: ApiClient) {
       articles: (params: ArticleListParams = {}) =>
         client.get<Page<HelpArticleSummary>>(helpPaths.public.articles + query({ ...params })),
       article: (slug: string) => client.get<HelpArticle>(helpPaths.public.article(slug)),
-      /** Public contact form (upgrade 11 §13, proposed endpoint). */
-      contact: (body: PublicContactInput) => client.post<void>(helpPaths.public.contact, body),
+      /** Public contact form (upgrade 11 §13): returns the visitor's reference. */
+      contact: (body: PublicContactInput) =>
+        client.post<ContactReceipt>(helpPaths.public.contact, body),
     },
     patient: {
       requests: (params: RequestListParams = {}) =>
@@ -291,6 +316,11 @@ export function createHelpApi(client: ApiClient) {
         client.request<PlatformHelpArticle>("PATCH", platform.article(id), { body }),
       publish: (id: Uuid) => client.post<PlatformHelpArticle>(platform.publish(id)),
       unpublish: (id: Uuid) => client.post<PlatformHelpArticle>(platform.unpublish(id)),
+      contactMessages: (
+        params: { status?: ContactMessageRow["status"]; q?: string; page?: number } = {},
+      ) => client.get<Page<ContactMessageRow>>(platform.contactMessages + query({ ...params })),
+      handleContact: (id: Uuid, note = "") =>
+        client.post<ContactMessageRow>(platform.contactHandled(id), { note }),
     },
   };
 }

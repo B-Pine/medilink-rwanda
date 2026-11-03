@@ -2,7 +2,8 @@
   "nav": {
     "help": "Help and support",
     "platformSupport": "Support queue",
-    "platformHelpArticles": "Help articles"
+    "platformHelpArticles": "Help articles",
+    "platformContact": "Website messages"
   },
   "loadFailed": "We couldn't load this. Check your connection and try again.",
   "retry": "Try again",
@@ -38,8 +39,14 @@
     "answered": "Answered",
     "closed": "Closed"
   },
-  "priority": { "normal": "Normal", "high": "High" },
-  "audience": { "patient": "Patient", "staff": "Staff" },
+  "priority": {
+    "normal": "Normal",
+    "high": "High"
+  },
+  "audience": {
+    "patient": "Patient",
+    "staff": "Staff"
+  },
   "closeReasons": {
     "resolved": "Resolved",
     "no_response": "No response",
@@ -47,7 +54,11 @@
     "redirected_to_facility": "Sent to the facility",
     "withdrawn": "Closed by the requester"
   },
-  "languages": { "rw": "Kinyarwanda", "en": "English", "fr": "French" },
+  "languages": {
+    "rw": "Kinyarwanda",
+    "en": "English",
+    "fr": "French"
+  },
   "shownIn": "Shown in {{language}}: not written in your language yet.",
   "support": {
     "title": "Help and support",
@@ -108,7 +119,12 @@
     "status": "Status",
     "assignee": "Assigned to",
     "lastActivity": "Last activity",
-    "tabs": { "active": "Active", "open": "Open", "answered": "Answered", "closed": "Closed" },
+    "tabs": {
+      "active": "Active",
+      "open": "Open",
+      "answered": "Answered",
+      "closed": "Closed"
+    },
     "statusTabs": "Status",
     "allTopics": "All topics",
     "allAudiences": "Patients and staff",
@@ -189,5 +205,28 @@
     "fixErrors": "Please fix these before saving",
     "statusDraft": "Draft",
     "statusPublished": "Published"
+  },
+  "contact": {
+    "title": "Website messages",
+    "intro": "Sent from the public Contact page. Answer on the visitor's email or phone, then mark the message handled.",
+    "tabs": {
+      "label": "Message status",
+      "new": "New",
+      "handled": "Handled",
+      "all": "All"
+    },
+    "search": "Reference, name or subject",
+    "searchGo": "Search",
+    "empty": "No messages here",
+    "emptyNew": "No new messages. Visitors' messages appear here.",
+    "new": "New",
+    "handled": "Handled",
+    "handledBy": "Handled by {{name}}, {{when}}",
+    "note": "What was done",
+    "noteHint": "For the team: for example \"Replied by email\".",
+    "markHandled": "Mark as handled",
+    "cancel": "Cancel",
+    "replyEmail": "Reply to {{reach}}",
+    "call": "Call {{reach}}"
   }
 }

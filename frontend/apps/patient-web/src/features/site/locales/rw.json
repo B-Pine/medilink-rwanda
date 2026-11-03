@@ -391,8 +391,9 @@
       "name": "Andika amazina yawe",
       "reach": "Andika imeli cyangwa nimero ya telefoni",
       "subject": "Andika impamvu",
-      "message": "Andika ubutumwa bwawe"
-    }
+      "message": "Andika ubutumwa bwawe (nibura inyuguti 10)"
+    },
+    "reference": "Nimero yawe: {{reference}}. Yibike niwongera kwandika."
   },
   "accessibility": {
     "title": "Itangazo ku kugerwaho n’abantu bose",

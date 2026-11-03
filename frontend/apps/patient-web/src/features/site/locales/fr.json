@@ -495,6 +495,11 @@
       "wait": "Attente moyenne",
       "seen": "Vus aujourd’hui",
       "note": "Arrivées par heure"
+    },
+    "photos": {
+      "main": "Une agente de santé en tenue verte montre à une femme comment utiliser une application sur son téléphone, à l’accueil d’un centre de santé.",
+      "entrance": "L’entrée couverte d’un centre de santé, avec des patients qui attendent sur des bancs.",
+      "hillside": "Un centre de santé en briques au toit vert, entre bananiers et collines verdoyantes."
     }
   }
 }

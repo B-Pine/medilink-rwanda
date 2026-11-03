@@ -160,7 +160,10 @@ export function RowList({ children, label }: { children: ReactNode; label?: stri
   return (
     <ul
       aria-label={label}
-      className={cx(panelClass, "m-0 flex list-none flex-col divide-y divide-border overflow-hidden p-0")}
+      className={cx(
+        panelClass,
+        "m-0 flex list-none flex-col divide-y divide-border overflow-hidden p-0",
+      )}
     >
       {children}
     </ul>
@@ -191,7 +194,10 @@ export function RowLink({
   return (
     <li className="relative flex items-center">
       {unread && (
-        <span aria-hidden="true" className="absolute top-1/2 left-1.5 size-2 -translate-y-1/2 rounded-full bg-brand" />
+        <span
+          aria-hidden="true"
+          className="absolute top-1/2 left-1.5 size-2 -translate-y-1/2 rounded-full bg-brand"
+        />
       )}
       <Link
         to={to}
@@ -214,7 +220,13 @@ export function RowLink({
 }
 
 /** Leading icon of a row: soft square, brand icon. */
-export function RowIcon({ icon: IconComponent, tone = "brand" }: { icon: Icon; tone?: "brand" | "neutral" }) {
+export function RowIcon({
+  icon: IconComponent,
+  tone = "brand",
+}: {
+  icon: Icon;
+  tone?: "brand" | "neutral";
+}) {
   return (
     <span
       aria-hidden="true"
@@ -241,7 +253,9 @@ export function DateBlock({ iso, size = "md" }: { iso: string; size?: "md" | "lg
         size === "md" ? "w-14 py-1.5" : "w-20 py-3",
       )}
     >
-      <span className="text-caption font-semibold tracking-wide uppercase">{part({ month: "short" })}</span>
+      <span className="text-caption font-semibold tracking-wide uppercase">
+        {part({ month: "short" })}
+      </span>
       <span
         className={cx(
           "font-heading leading-none font-extrabold tabular-nums text-fg",
@@ -340,7 +354,9 @@ export function EmptyRow({
   action?: ReactNode;
 }) {
   return (
-    <div className={cx(panelClass, "flex flex-col items-start gap-3 p-5 sm:flex-row sm:items-center")}>
+    <div
+      className={cx(panelClass, "flex flex-col items-start gap-3 p-5 sm:flex-row sm:items-center")}
+    >
       <RowIcon icon={IconComponent} tone="neutral" />
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <p className="m-0 font-semibold text-fg">{title}</p>

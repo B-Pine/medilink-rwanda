@@ -48,7 +48,7 @@ export function PublicFooter() {
       <div aria-hidden="true" className="relative isolate h-3 overflow-hidden bg-brand-subtle">
         <ImigongoPattern opacity={0.18} className="-z-10 text-primary" />
       </div>
-      <div className="mx-auto flex max-w-[75rem] flex-col gap-10 px-4 pt-14 pb-8 sm:px-6">
+      <div className="mx-auto flex max-w-[88rem] flex-col gap-10 px-4 pt-14 pb-8 sm:px-6">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,2fr)] lg:gap-16">
           <div className="flex max-w-sm flex-col items-start gap-5">
             <Link

@@ -31,9 +31,9 @@ export function PageContainer({
   return (
     <div
       className={cx(
-        // one template for every public page: 1200 px wide, 24 px gutters (16 px on phones)
+        // one template for every public page: 1408 px wide, 24 px gutters (16 px on phones)
         inDashboard ? "w-full" : "mx-auto w-full px-4 sm:px-6",
-        narrow ? "max-w-[48rem]" : "max-w-[75rem]",
+        narrow ? "max-w-[48rem]" : "max-w-[88rem]",
         className,
       )}
     >

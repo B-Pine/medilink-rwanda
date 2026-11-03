@@ -18,7 +18,7 @@ export function RouteSkeleton() {
       <div
         role="status"
         aria-label={t("site.loading")}
-        className="mx-auto flex w-full max-w-[75rem] flex-col gap-6 px-4 pt-10 pb-16 sm:px-6"
+        className="mx-auto flex w-full max-w-[88rem] flex-col gap-6 px-4 pt-10 pb-16 sm:px-6"
       >
         <Skeleton className="h-4 w-32 rounded-md" />
         <Skeleton className="h-11 w-full max-w-[32rem] rounded-xl" />

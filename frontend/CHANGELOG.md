@@ -29,6 +29,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   hairline borders instead of glowing shadows, no tinted glow, flat hero and page headers (an
   editorial heading with a rule), no floating UI cards over the hero photos, and facility cards
   with a plain header row (type icon, type, emergency) instead of an illustrated cover.
+- Changed: public pages use more of wide screens (container 1200 → 1408 px, header, footer and
+  Find Care aligned to it); Find Care keeps one card per row until 1792 px so actions never clip.
 - Fixed: home service tiles no longer show "0 facilities".
 - Fixed: sign-in, sign-up and password screens use the public site's palette (the button green
   matches the site), the logo no longer squashes on phones, and the top bar fits 360 px (the

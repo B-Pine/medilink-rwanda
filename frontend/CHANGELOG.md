@@ -47,6 +47,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   the footer), footer (call-to-action card, tap-to-call 912, all site links) and the sign-in shell
   (split screen with the brand panel).
 - Added: `ThemeSwitch` (`@medilink/ui`, `outline` / `ghost`) and `LanguageSwitcher` `pill`.
+
 ### Upgrade U2 · Doctor workspace (upgrade 05 §3)
 
 - Added: Doctor Today: my day in numbers, the patient in the room with Open record, and what

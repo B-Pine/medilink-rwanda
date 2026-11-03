@@ -62,7 +62,13 @@
     "previous": "Ibibanza",
     "next": "Ibikurikira",
     "page": "Urupapuro {{page}} kuri {{pages}}",
-    "back": "Subira ku butumwa"
+    "back": "Subira ku butumwa",
+    "which": "Ubutumwa buhe",
+    "all": "Byose",
+    "unread": "Butarasomwa",
+    "caughtUp": "Wasomye byose.",
+    "today": "Uyu munsi",
+    "yesterday": "Ejo hashize"
   },
   "detail": {
     "notFound": "Ubu butumwa ntibubonetse",

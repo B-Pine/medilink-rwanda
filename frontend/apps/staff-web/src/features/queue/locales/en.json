@@ -203,7 +203,9 @@
     "toPayment": "Send to payment",
     "hold": "Wait for results",
     "waiting": "Waiting",
-    "nextUp": "Next up"
+    "nextUp": "Next up",
+    "openRecord": "Open record",
+    "finishAndNext": "Finish and call next"
   },
   "reorders": {
     "title": "Queue reviews",

@@ -3,6 +3,7 @@ import type { DutyState, TicketRow } from "@medilink/api-client";
 import {
   Alert,
   Button,
+  buttonClassName,
   cx,
   EmptyState,
   ImigongoPattern,
@@ -16,6 +17,7 @@ import {
   Coffee,
   Flask,
   MegaphoneSimple,
+  Notepad,
   Play,
   SpeakerHigh,
   UserMinus,
@@ -24,13 +26,22 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PageHeading } from "../../components/PageHeading";
 import { FollowUpAction } from "../bookings";
+import { MyDayStrip, useMyDay } from "../clinical/DoctorToday";
 import { queueKeys, usePollInterval, useQueueSocket } from "./live";
 import { LiveBadge } from "./LiveIndicator";
-import { actionError, Flags, minutesSince, useServiceNames, useTicketAction } from "./shared";
+import {
+  actionError,
+  Flags,
+  minutesSince,
+  useCan,
+  useServiceNames,
+  useTicketAction,
+} from "./shared";
 
 const DUTY: DutyState[] = ["on_duty", "break", "emergency", "off"];
 
@@ -52,6 +63,8 @@ export function MyQueuePage() {
   });
   const points = useQuery({ queryKey: ["setup", "points"], queryFn: () => api.setup.points() });
   const act = useTicketAction();
+  const clinician = useCan("clinical.write");
+  const myDay = useMyDay(clinician);
   const [empty, setEmpty] = useState(false);
   const callButton = useRef<HTMLButtonElement>(null);
 
@@ -101,6 +114,11 @@ export function MyQueuePage() {
   ) => act.mutate({ ticket, action, body });
 
   const next = data?.waiting[0];
+  // upgrade 05 §3: the step a doctor repeats most is one action
+  const finishAndNext = async (ticket: TicketRow) => {
+    await act.mutateAsync({ ticket, action: "complete" });
+    if (onDuty && serviceId && (data?.waiting.length ?? 0) > 0) callNext.mutate();
+  };
 
   return (
     <div className="flex flex-col gap-5">
@@ -194,6 +212,8 @@ export function MyQueuePage() {
         </section>
       </header>
 
+      {myDay.data && <MyDayStrip data={myDay.data} compact />}
+
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_24rem]">
         <section aria-labelledby="current" className="flex flex-col gap-4">
           <h2 id="current" className="sr-only">
@@ -252,7 +272,25 @@ export function MyQueuePage() {
                   </>
                 ) : (
                   <>
-                    <Button size="lg" onClick={() => run(current, "complete")}>
+                    <Link
+                      to={`/clinical/visits/${current.visit_id}/consultation`}
+                      className={buttonClassName({ size: "lg" })}
+                    >
+                      <Notepad aria-hidden="true" weight="bold" />
+                      {t("queue.mine.openRecord")}
+                    </Link>
+                    {data && data.waiting.length > 0 && (
+                      <Button
+                        variant="secondary"
+                        size="lg"
+                        loading={act.isPending || callNext.isPending}
+                        onClick={() => void finishAndNext(current)}
+                      >
+                        <MegaphoneSimple aria-hidden="true" weight="bold" />
+                        {t("queue.mine.finishAndNext")}
+                      </Button>
+                    )}
+                    <Button variant="secondary" size="lg" onClick={() => run(current, "complete")}>
                       <CheckCircle aria-hidden="true" weight="fill" />
                       {t("queue.mine.complete")}
                     </Button>

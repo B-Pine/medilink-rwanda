@@ -33,6 +33,24 @@ async function openDraft(app: Awaited<ReturnType<typeof signIn>>) {
   return screen.findByRole("heading", { level: 1, name: /^Consultation · Mukamana/ });
 }
 
+describe("doctor's day (upgrade 05 §3)", () => {
+  it("Today shows my day, what waits for me, and the consultation says why the patient came", async () => {
+    const app = await signIn();
+    const day = await screen.findByRole("region", { name: "Your day" });
+    expect(await within(day).findByText("Seen today")).toBeInTheDocument();
+    expect(
+      within(day).getByRole("link", { name: /Pharmacy question about Mukamana/ }),
+    ).toBeInTheDocument();
+    expect(await axe(app.container)).toHaveNoViolations();
+    await openDraft(app);
+    const reason = screen.getByRole("region", { name: "Why the patient came" });
+    expect(within(reason).getByText(/my blood pressure tablets ran out/)).toBeInTheDocument();
+    expect(within(reason).getByText("Be seen today")).toBeInTheDocument();
+    // a dangerous number is flagged in words, not only in red
+    expect(await screen.findByText("Very high blood pressure")).toBeInTheDocument();
+  }, 40_000);
+});
+
 describe("consultation page (S6-F1, F2, F3)", () => {
   it("one scroll with anchors, autosave status, permanent allergy banner, private notes marked", async () => {
     const app = await signIn();

@@ -203,7 +203,9 @@
     "toPayment": "Envoyer au paiement",
     "hold": "Attendre les résultats",
     "waiting": "En attente",
-    "nextUp": "Ensuite"
+    "nextUp": "Ensuite",
+    "openRecord": "Ouvrir le dossier",
+    "finishAndNext": "Terminer et appeler le suivant"
   },
   "reorders": {
     "title": "Contrôle de la file",

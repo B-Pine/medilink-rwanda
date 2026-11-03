@@ -12,7 +12,10 @@ import type {
   PatientRecordRow,
   ProblemSummary,
   SectionField,
+  MyDay,
+  ReasonForVisit,
   Vitals,
+  VitalFlag,
 } from "../../features/clinical";
 import { SECTION_FIELDS, VITAL_FIELDS, VITAL_RANGES } from "../../features/clinical";
 import type { LanguageCode } from "../../types";
@@ -192,8 +195,51 @@ function diagnosis(
   };
 }
 
+/** Same thresholds as the API (clinical/reason.py). */
+function flagsOf(v: Vitals): VitalFlag[] {
+  const flags: VitalFlag[] = [];
+  const temp = v.temperature_c === null ? null : Number(v.temperature_c);
+  if (v.spo2_pct !== null && v.spo2_pct < 92) flags.push("spo2_low");
+  if (
+    (v.systolic_mmhg !== null && v.systolic_mmhg >= 180) ||
+    (v.diastolic_mmhg !== null && v.diastolic_mmhg >= 110)
+  )
+    flags.push("bp_high");
+  if (v.systolic_mmhg !== null && v.systolic_mmhg < 90) flags.push("bp_low");
+  if (temp !== null && temp >= 39.5) flags.push("temp_high");
+  if (temp !== null && temp < 35) flags.push("temp_low");
+  if (v.pulse_bpm !== null && v.pulse_bpm > 120) flags.push("pulse_high");
+  if (v.pulse_bpm !== null && v.pulse_bpm < 50) flags.push("pulse_low");
+  if (v.respiratory_rate !== null && v.respiratory_rate > 30) flags.push("rr_high");
+  return flags;
+}
+
+/** What a demo patient told reception, with the symptoms picked at booking. */
+const DEMO_REASON: ReasonForVisit = {
+  patient_words:
+    "Strong headache and dizziness since yesterday; my blood pressure tablets ran out.",
+  symptoms: [
+    { code: "headache", label: "Headache", duration_days: 1, severity: "severe", stage: "booking" },
+    {
+      code: "dizziness",
+      label: "Dizziness",
+      duration_days: 1,
+      severity: "moderate",
+      stage: "check_in",
+    },
+  ],
+  triage: {
+    urgency: "today",
+    service_code: "general_consultation",
+    level_of_care: "primary",
+    red_flags: [],
+    rules_version: "2026.11-p1",
+    signed_off: false,
+  },
+};
+
 function vitalsRow(visitId: string, at: string, values: Partial<Vitals>): Vitals {
-  return {
+  const row: Vitals = {
     id: id(),
     visit_id: visitId,
     recorded_at: at,
@@ -207,9 +253,12 @@ function vitalsRow(visitId: string, at: string, values: Partial<Vitals>): Vitals
     weight_kg: null,
     height_cm: null,
     muac_mm: null,
+    flags: [],
     is_entered_in_error: false,
     ...values,
   };
+  row.flags = flagsOf(row);
+  return row;
 }
 
 function consultation(
@@ -236,6 +285,7 @@ function consultation(
     private_notes: "",
     diagnoses: [],
     vitals: [],
+    reason_for_visit: { patient_words: "", symptoms: [], triage: null },
     addenda: [],
     allergies: [],
     no_known_allergies: null,
@@ -302,12 +352,20 @@ function seed(): Store {
   const draft = consultation(jeanne, id(), {
     started_at: daysAgo(1, 2),
     history_text: "Follow-up of blood pressure.",
+    reason_for_visit: DEMO_REASON,
   });
   return {
     consultations: [malaria, pressure, cold, draft],
     vitals: [
       vitalsRow(malaria.visit_id, daysAgo(40, 2), { temperature_c: "38.9", pulse_bpm: 102 }),
       vitalsRow(pressure.visit_id, daysAgo(20, 2), { systolic_mmhg: 152, diastolic_mmhg: 96 }),
+      vitalsRow(draft.visit_id, daysAgo(1, 2), {
+        systolic_mmhg: 186,
+        diastolic_mmhg: 112,
+        pulse_bpm: 96,
+        temperature_c: "36.8",
+        spo2_pct: 97,
+      }),
     ],
     reasons: new Map(),
   };
@@ -509,9 +567,49 @@ export const clinicalMocks: FeatureMockFactory = (context) => {
         if (existing) return HttpResponse.json(view(existing, ok.me, ok.granted));
         const created = consultation(RECORDS[0]!, visitId, {
           author: { ...DOCTOR, full_name: ok.me.full_name },
+          reason_for_visit: DEMO_REASON,
         });
         db.consultations.push(created);
         return HttpResponse.json(view(created, ok.me, ok.granted), { status: 201 });
+      }),
+
+      http.get(`${S}/clinical/my-day/`, async ({ request }) => {
+        await context.settle();
+        const ok = staff(request, ["clinical.write"]);
+        if ("error" in ok) return ok.error;
+        const drafts = db.consultations.filter((c) => c.status === "draft" && isMine(c, ok.me));
+        const today = new Date();
+        const trend = Array.from({ length: 7 }, (_, i) => {
+          const d = new Date(today.getTime() - (6 - i) * 86_400_000);
+          const weekday = d.getUTCDay();
+          return {
+            date: d.toISOString().slice(0, 10),
+            seen: weekday === 0 ? 0 : i === 6 ? 9 : 14 + ((i * 5) % 7),
+          };
+        });
+        const body: MyDay = {
+          date: today.toISOString().slice(0, 10),
+          seen_today: trend[6]!.seen,
+          avg_consult_min: 13,
+          signed_today: 8,
+          trend,
+          unsigned: drafts.length,
+          unsigned_overdue: drafts.filter((c) => Date.now() - Date.parse(c.started_at) > 86_400_000)
+            .length,
+          results_waiting: 2,
+          follow_ups_today: 3,
+          open_questions: [
+            {
+              id: "7e000000-0000-4000-8000-000000000001",
+              prescription_id: "7e000000-0000-4000-8000-000000000002",
+              consultation_id: MOCK_PRESSURE_CONSULTATION,
+              patient_display_name: RECORDS[0]!.name,
+              raised_at: new Date(Date.now() - 25 * 60_000).toISOString(),
+            },
+          ],
+          updated_at: now(),
+        };
+        return HttpResponse.json(body);
       }),
 
       http.get(`${S}/consultations/`, async ({ request }) => {

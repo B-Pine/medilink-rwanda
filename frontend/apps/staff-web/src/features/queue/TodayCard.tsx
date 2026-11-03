@@ -18,7 +18,9 @@ export function OnSiteTodayCard() {
   // Facility admins get the full operations dashboard instead (Operations.tsx)
   const admin = useCan("reports.view");
   const reception = useCan("queue.operate");
-  const allowed = useCan("queue.operate", "queue.call") && !admin;
+  // Clinicians get Doctor Today instead (clinical/DoctorToday.tsx)
+  const clinician = useCan("clinical.write");
+  const allowed = useCan("queue.operate", "queue.call") && !admin && !clinician;
   const refetchInterval = usePollInterval();
   const board = useQuery({
     queryKey: queueKeys.board,

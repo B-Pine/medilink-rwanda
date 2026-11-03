@@ -203,7 +203,9 @@
     "toPayment": "Mwohereze kwishyura",
     "hold": "Ategereze ibisubizo",
     "waiting": "Abategereje",
-    "nextUp": "Ukurikiyeho"
+    "nextUp": "Ukurikiyeho",
+    "openRecord": "Fungura dosiye",
+    "finishAndNext": "Soza uhamagare ukurikira"
   },
   "reorders": {
     "title": "Igenzura ry’umurongo",

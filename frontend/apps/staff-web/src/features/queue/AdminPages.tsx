@@ -1,6 +1,29 @@
 import { formatDate, formatTime } from "@medilink/ui/i18n";
-import { Alert, Badge, Button, CheckboxField, Dialog, EmptyState, TextField } from "@medilink/ui";
-import { ArrowsDownUp, Copy, Monitor, Plus } from "@phosphor-icons/react";
+import {
+  Alert,
+  Badge,
+  Button,
+  CheckboxField,
+  cx,
+  Dialog,
+  EmptyState,
+  Skeleton,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  TextField,
+  TicketNumber,
+} from "@medilink/ui";
+import {
+  ArrowDown,
+  ArrowsDownUp,
+  ArrowUp,
+  CheckCircle,
+  Copy,
+  Monitor,
+  Plus,
+} from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
 import { useState } from "react";
@@ -11,6 +34,14 @@ import { PageHeader } from "../../components/PageHeader";
 import { NoAccessContent } from "../../pages/NotFoundPage";
 import { queueKeys } from "./live";
 import { actionError, useCan, useServiceNames } from "./shared";
+
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase())
+    .join("");
 
 /** /queue/reorders (FR-QUE-10): every manual reorder, with who, why, and a review mark. */
 export function ReordersPage() {
@@ -34,71 +65,124 @@ export function ReordersPage() {
   return (
     <div className="flex flex-col gap-5">
       <PageHeader title={t("queue.reorders.title")} description={t("queue.reorders.intro")} />
-      <CheckboxField
-        label={t("queue.reorders.onlyOpen")}
-        checked={onlyOpen}
-        onChange={(e) => setOnlyOpen(e.target.checked)}
-      />
-      {rows.data && list.length === 0 ? (
-        <EmptyState
-          icon={ArrowsDownUp}
-          title={t("queue.reorders.emptyTitle")}
-          description={t("queue.reorders.empty")}
-        />
-      ) : (
-        <div className="overflow-x-auto rounded-2xl bg-surface shadow-card">
-          <table className="w-full border-collapse text-left">
-            <caption className="sr-only">{t("queue.reorders.title")}</caption>
-            <thead className="bg-subtle text-body-sm text-fg-secondary">
-              <tr>
-                {["when", "ticket", "who", "reason", "move", "review"].map((c) => (
-                  <th key={c} scope="col" className="px-4 py-2.5 font-semibold">
-                    {t(`queue.reorders.columns.${c}`)}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {list.map((r) => (
-                <tr key={r.event_id} className="border-t border-border/60">
-                  <td className="px-4 py-3 text-body-sm tabular-nums">
-                    {`${formatDate(r.occurred_at, lang)} ${formatTime(r.occurred_at, lang)}`}
-                  </td>
-                  <td className="px-4 py-3 font-heading font-bold tabular-nums">
-                    {r.ticket_number}
-                  </td>
-                  <td className="px-4 py-3">{r.actor_name ?? "—"}</td>
-                  <td className="px-4 py-3">
-                    {t(`queue.reasons.${r.reason_code}`, { defaultValue: r.reason_code })}
-                    {r.reason_text && (
-                      <span className="block text-body-sm text-fg-secondary">{r.reason_text}</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 tabular-nums">
-                    {t("queue.reorders.positions", {
-                      from: Number(r.old_position ?? 0) + 1,
-                      to: Number(r.new_position ?? 0) + 1,
-                    })}
-                  </td>
-                  <td className="px-4 py-3">
-                    {r.reviewed ? (
-                      <Badge tone="success">{t("queue.reorders.reviewed")}</Badge>
-                    ) : (
-                      <Button
-                        variant="secondary"
-                        onClick={() => review.mutate(r.event_id)}
-                        aria-label={`${t("queue.reorders.markReviewed")}: ${r.ticket_number}`}
+      <Tabs
+        value={onlyOpen ? "open" : "all"}
+        onValueChange={(value) => setOnlyOpen(value === "open")}
+      >
+        <TabsList aria-label={t("queue.reorders.title")}>
+          <TabsTrigger value="open">{t("queue.reorders.tabs.open")}</TabsTrigger>
+          <TabsTrigger value="all">{t("queue.reorders.tabs.all")}</TabsTrigger>
+        </TabsList>
+        <TabsContent value={onlyOpen ? "open" : "all"}>
+          {rows.isPending ? (
+            <Skeleton height="14rem" className="rounded-2xl" />
+          ) : list.length === 0 ? (
+            <EmptyState
+              icon={ArrowsDownUp}
+              title={t("queue.reorders.emptyTitle")}
+              description={t("queue.reorders.empty")}
+            />
+          ) : (
+            <div className="animate-enter overflow-x-auto rounded-2xl bg-surface shadow-card">
+              <table className="w-full border-collapse text-left">
+                <caption className="sr-only">{t("queue.reorders.title")}</caption>
+                <thead className="border-b border-border text-caption font-semibold tracking-wide text-fg-secondary uppercase">
+                  <tr>
+                    {["when", "ticket", "who", "reason", "move", "review"].map((c) => (
+                      <th
+                        key={c}
+                        scope="col"
+                        className={cx("px-4 py-3 font-semibold", c === "review" && "text-right")}
                       >
-                        {t("queue.reorders.markReviewed")}
-                      </Button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+                        {t(`queue.reorders.columns.${c}`)}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {list.map((r) => {
+                    const from = Number(r.old_position ?? 0) + 1;
+                    const to = Number(r.new_position ?? 0) + 1;
+                    const Arrow = to < from ? ArrowUp : ArrowDown;
+                    return (
+                      <tr
+                        key={r.event_id}
+                        className="transition-colors duration-150 hover:bg-subtle/60"
+                      >
+                        <td className="px-4 py-3 text-body-sm whitespace-nowrap tabular-nums">
+                          <span className="block font-semibold">
+                            {formatTime(r.occurred_at, lang)}
+                          </span>
+                          <span className="text-fg-secondary">
+                            {formatDate(r.occurred_at, lang)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <TicketNumber number={r.ticket_number} size="sm" />
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="flex items-center gap-2.5">
+                            <span
+                              aria-hidden="true"
+                              className="grid size-8 shrink-0 place-items-center rounded-full bg-brand-subtle text-caption font-bold text-on-brand-subtle"
+                            >
+                              {initials(r.actor_name ?? "?")}
+                            </span>
+                            <span className="text-body-sm font-semibold">
+                              {r.actor_name ?? "—"}
+                            </span>
+                          </span>
+                        </td>
+                        <td className="max-w-xs px-4 py-3">
+                          <span className="text-body-sm font-semibold">
+                            {t(`queue.reasons.${r.reason_code}`, { defaultValue: r.reason_code })}
+                          </span>
+                          {r.reason_text && (
+                            <span className="block truncate text-body-sm text-fg-secondary">
+                              {r.reason_text}
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="inline-flex items-center gap-1.5 rounded-full bg-subtle px-2.5 py-1 text-body-sm font-semibold whitespace-nowrap tabular-nums">
+                            <Arrow
+                              aria-hidden="true"
+                              weight="bold"
+                              className={cx(
+                                "size-3.5",
+                                to < from ? "text-attention" : "text-fg-muted",
+                              )}
+                            />
+                            {t("queue.reorders.positions", { from, to })}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          {r.reviewed ? (
+                            <Badge tone="success">
+                              <CheckCircle aria-hidden="true" weight="fill" />
+                              {t("queue.reorders.reviewed")}
+                            </Badge>
+                          ) : (
+                            <Button
+                              variant="secondary"
+                              pill
+                              loading={review.isPending && review.variables === r.event_id}
+                              onClick={() => review.mutate(r.event_id)}
+                              aria-label={`${t("queue.reorders.markReviewed")}: ${r.ticket_number}`}
+                            >
+                              {t("queue.reorders.markReviewed")}
+                            </Button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

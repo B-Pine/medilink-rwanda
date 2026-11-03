@@ -212,6 +212,7 @@ export const billingPaths = {
   shifts: `${STF}/cash-shifts/`,
   currentShift: `${STF}/cash-shifts/current/`,
   closeShift: (id: Uuid) => `${STF}/cash-shifts/${id}/close/`,
+  reviewShift: (id: Uuid) => `${STF}/cash-shifts/${id}/review/`,
 };
 
 function query(params: Record<string, string | number | boolean | undefined | null>): string {
@@ -262,6 +263,12 @@ export function createBillingApi(client: ApiClient) {
       id: Uuid,
       body: { version: number; counted_totals: MethodTotals; note?: string },
     ) => client.post<CashShift>(billingPaths.closeShift(id), body),
+    /** B18: my shifts, or every shift for an approver; filter by `status`. */
+    shifts: (params: { status?: ShiftStatus; page?: number } = {}) =>
+      client.get<Paginated<CashShift>>(billingPaths.shifts + query(params)),
+    /** B22: accept a closed shift; not the owner unless a one-person clinic. */
+    reviewShift: (id: Uuid, body: { version: number; note?: string }) =>
+      client.post<CashShift>(billingPaths.reviewShift(id), body),
   };
 }
 

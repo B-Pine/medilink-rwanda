@@ -210,17 +210,42 @@ describe("operations dashboard and reports (design 04 §3.4, analysis 13 §1)", 
     wednesday.setUTCHours(10, 0, 0, 0);
     vi.useFakeTimers({ toFake: ["Date"], now: wednesday });
     const { container } = await signIn(MOCK_FACILITY_ADMIN_EMAIL, "/today");
-    const ops = await screen.findByRole("region", { name: /^Operations today/ });
+    const ops = await screen.findByRole("region", { name: /^Facility command centre/ });
     expect(await within(ops).findByText("Patients today")).toBeInTheDocument();
     expect(within(ops).getByText("Median wait to be seen")).toBeInTheDocument();
     expect(within(ops).getAllByText(/vs last/).length).toBeGreaterThan(0);
-    expect(within(ops).getByText("Measured once online booking opens.")).toBeInTheDocument();
+    // no-shows and money are measured now (upgrade 05 §5)
+    expect(within(ops).getByText("2 of 14 booked")).toBeInTheDocument();
+    expect(within(ops).getByText("Collected today")).toBeInTheDocument();
     expect(within(ops).getByRole("region", { name: "Queue load by service" })).toBeInTheDocument();
-    expect(within(ops).getByRole("region", { name: "Needs your attention" })).toBeInTheDocument();
+    const attention = within(ops).getByRole("region", { name: "Needs your attention" });
+    expect(
+      within(attention).getByRole("link", { name: /2 requests wait for your approval/ }),
+    ).toHaveAttribute("href", "/approvals");
+    expect(
+      within(attention).getByRole("link", { name: /2 closed cash shifts to review/ }),
+    ).toHaveAttribute("href", "/approvals?tab=shifts");
+    expect(within(ops).getByRole("region", { name: "Bookings today" })).toBeInTheDocument();
+    expect(within(ops).getByRole("region", { name: "Money today" })).toBeInTheDocument();
+    expect(within(ops).getByRole("region", { name: "Team on duty" })).toBeInTheDocument();
     // the plain on-site card is replaced, not shown twice
     expect(screen.queryByText("On site now")).not.toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  it("reviews closed cash shifts: a short drawer needs a note, a balanced one is accepted", async () => {
+    const { user, container } = await signIn(MOCK_FACILITY_ADMIN_EMAIL, "/approvals");
+    await user.click(await screen.findByRole("tab", { name: /Cash shifts/ }));
+    expect(await screen.findByText("Mukamana Aline")).toBeInTheDocument();
+    const short = screen.getByText("Habimana Eric").closest("li")!;
+    expect(within(short).getByText(/^Short/)).toBeInTheDocument();
+    expect(within(short).getByRole("button", { name: "Accept shift" })).toBeDisabled();
+    const balanced = screen.getByText("Mukamana Aline").closest("li")!;
+    expect(within(balanced).getByText("Balanced")).toBeInTheDocument();
+    await user.click(within(balanced).getByRole("button", { name: "Accept shift" }));
+    await waitFor(() => expect(screen.queryByText("Mukamana Aline")).not.toBeInTheDocument());
+    expect(await axe(container)).toHaveNoViolations();
+  }, 40_000);
 
   it("the reports page charts the last 14 days with readable tables behind the charts", async () => {
     const { container } = await signIn(MOCK_FACILITY_ADMIN_EMAIL, "/reports");

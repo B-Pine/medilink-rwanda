@@ -221,7 +221,64 @@ function seed() {
     version: 1,
   };
   niyonsaba.approval_requests.push(request);
-  return { bills, receipts, approvals: [request], shift: null as CashShift | null };
+  // Yesterday's closed shifts wait for the admin's review (B22): one balanced, one 500 RWF short.
+  const closed = (
+    cashier: string,
+    hoursAgo: number,
+    expected: MethodTotals,
+    counted: MethodTotals,
+    note: string,
+  ): CashShift => {
+    const opened = new Date(Date.now() - hoursAgo * 3_600_000);
+    const diff =
+      counted.cash -
+      (expected.cash + 10_000) +
+      (counted.mtn_momo - expected.mtn_momo) +
+      (counted.airtel_money - expected.airtel_money) +
+      (counted.card - expected.card);
+    return {
+      id: id(),
+      membership_id: id(),
+      cashier_name: cashier,
+      status: "closed",
+      opened_at: opened.toISOString(),
+      opening_float_rwf: 10_000,
+      closed_at: new Date(opened.getTime() + 8 * 3_600_000).toISOString(),
+      expected_totals: expected,
+      counted_totals: counted,
+      difference_rwf: diff,
+      note,
+      payment_count: 18 + (hoursAgo % 7),
+      reviewed_by_name: null,
+      reviewed_at: null,
+      review_note: "",
+      is_self_reviewed: false,
+      version: 2,
+    };
+  };
+  const history = [
+    closed(
+      "Mukamana Aline",
+      20,
+      { cash: 64_000, mtn_momo: 52_500, airtel_money: 8_000, card: 0 },
+      { cash: 74_000, mtn_momo: 52_500, airtel_money: 8_000, card: 0 },
+      "",
+    ),
+    closed(
+      "Habimana Eric",
+      44,
+      { cash: 41_500, mtn_momo: 37_000, airtel_money: 4_500, card: 12_000 },
+      { cash: 51_000, mtn_momo: 37_000, airtel_money: 4_500, card: 12_000 },
+      "Gave change from my own pocket once; 500 short in the drawer.",
+    ),
+  ];
+  return {
+    bills,
+    receipts,
+    approvals: [request],
+    shift: null as CashShift | null,
+    history,
+  };
 }
 
 const zero = (): MethodTotals => ({ cash: 0, mtn_momo: 0, airtel_money: 0, card: 0 });
@@ -474,6 +531,35 @@ export const billingMocks: FeatureMockFactory = (context) => {
       if ("error" in ok) return ok.error;
       const receipt = db.receipts.find((r) => r.id === params.id);
       return receipt ? HttpResponse.json(receipt) : notFound(ok.lang);
+    }),
+    http.get(`${S}/cash-shifts/`, ({ request }) => {
+      const ok = staff(request, READ);
+      if ("error" in ok) return ok.error;
+      const url = new URL(request.url);
+      const status = url.searchParams.get("status");
+      const all = [...(db.shift ? [db.shift] : []), ...db.history];
+      return HttpResponse.json(
+        page(
+          all.filter((s) => !status || s.status === status),
+          url,
+        ),
+      );
+    }),
+    http.post(`${S}/cash-shifts/:id/review/`, async ({ request, params }) => {
+      const ok = staff(request, ["billing.approve"]);
+      if ("error" in ok) return ok.error;
+      const shift = [...(db.shift ? [db.shift] : []), ...db.history].find(
+        (s) => s.id === params.id,
+      );
+      if (!shift) return notFound(ok.lang);
+      const body = (await request.json()) as { version: number; note?: string };
+      if (body.version !== shift.version) return rule(ok.lang, "stale", 409);
+      shift.status = "reviewed";
+      shift.reviewed_by_name = ok.me.full_name;
+      shift.reviewed_at = now();
+      shift.review_note = body.note ?? "";
+      shift.version += 1;
+      return HttpResponse.json(shift);
     }),
     http.get(`${S}/cash-shifts/current/`, ({ request }) => {
       const ok = staff(request, PAY);

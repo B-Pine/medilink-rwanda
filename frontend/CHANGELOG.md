@@ -48,6 +48,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   (split screen with the brand panel).
 - Added: `ThemeSwitch` (`@medilink/ui`, `outline` / `ghost`) and `LanguageSwitcher` `pill`.
 
+### Upgrade U2 · Facility admin command centre (upgrade 05 §5)
+
+- Changed: the facility admin's Today is a command centre: four live KPIs (patients, median
+  wait, no-show rate, collected today), queue load by service, needs your attention (licence,
+  approvals, cash shifts, queue moves, unsigned records, disputes, two-step sign-in, invitations;
+  urgent first), bookings today, money today and the team on duty.
+- Added: Approvals has a Cash shifts tab (`/approvals?tab=shifts`): expected against counted per
+  method, the gap, the cashier's note, and accept with step-up (a note is needed when the drawer
+  does not balance). `api.billing.shifts()` and `api.billing.reviewShift()` with mocks.
+- Changed: Staff shows coverage bars for attestation and two-step sign-in, a warning when active
+  members lack a second factor, and a Last active column. `StatTile` takes a `caption`.
+
 ### Upgrade U2 · Public website (upgrade 11)
 
 - Added: every public route of the brief: `/find-care`, `/facilities`, `/facilities/:slug`,

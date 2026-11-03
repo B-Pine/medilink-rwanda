@@ -221,7 +221,11 @@
     "reviewed": "Contrôlé",
     "markReviewed": "Marquer contrôlé",
     "emptyTitle": "Rien à contrôler",
-    "empty": "Les déplacements hors de l’ordre normal apparaissent ici."
+    "empty": "Les déplacements hors de l’ordre normal apparaissent ici.",
+    "tabs": {
+      "open": "À vérifier",
+      "all": "Tous les déplacements"
+    }
   },
   "displays": {
     "title": "Écrans de la salle d’attente",
@@ -259,7 +263,7 @@
     "waiting": "en attente"
   },
   "ops": {
-    "title": "Activité du jour",
+    "title": "Centre de pilotage",
     "allReports": "Tous les rapports",
     "vsLast": "par rapport à {{day}} dernier",
     "patientsToday": "Patients aujourd’hui",
@@ -287,7 +291,58 @@
     "noDoctor_one": "{{count}} patient attend sans médecin en service",
     "noDoctor_other": "{{count}} patients attendent sans médecin en service",
     "liveSummary_one": "{{waiting}} en attente · {{count}} médecin en service",
-    "liveSummary_other": "{{waiting}} en attente · {{count}} médecins en service"
+    "liveSummary_other": "{{waiting}} en attente · {{count}} médecins en service",
+    "subtitle": "Flux de patients, encaissements et équipe du jour, en direct.",
+    "updated": "Mis à jour à {{time}}",
+    "noShowsCaption": "{{count}} sur {{expected}} réservés",
+    "noBookings": "Aucune réservation aujourd’hui",
+    "paymentsCaption_one": "{{count}} paiement enregistré",
+    "paymentsCaption_other": "{{count}} paiements enregistrés",
+    "rwf": "RWF",
+    "approvalsPending_one": "{{count}} demande attend votre approbation",
+    "approvalsPending_other": "{{count}} demandes attendent votre approbation",
+    "shiftsToReview_one": "{{count}} caisse clôturée à vérifier",
+    "shiftsToReview_other": "{{count}} caisses clôturées à vérifier",
+    "unsignedRecords_one": "{{count}} consultation non signée",
+    "unsignedRecords_other": "{{count}} consultations non signées",
+    "disputesOpen_one": "{{count}} litige ouvert",
+    "disputesOpen_other": "{{count}} litiges ouverts",
+    "invitationsPending_one": "{{count}} invitation pas encore acceptée",
+    "invitationsPending_other": "{{count}} invitations pas encore acceptées",
+    "staffWithoutMfa_one": "{{count}} membre du personnel sans connexion en deux étapes",
+    "staffWithoutMfa_other": "{{count}} membres du personnel sans connexion en deux étapes",
+    "licenceExpiring_one": "La licence expire dans {{count}} jour",
+    "licenceExpiring_other": "La licence expire dans {{count}} jours",
+    "licenceExpired": "La licence de l’établissement a expiré",
+    "urgent": "Urgent",
+    "review": "À vérifier",
+    "bookings": {
+      "title": "Réservations du jour",
+      "expected": "Attendus",
+      "arrived": "Arrivés",
+      "noShow": "Absents",
+      "toCome": "À venir",
+      "empty": "Aucune réservation aujourd’hui.",
+      "open": "Ouvrir le calendrier"
+    },
+    "money": {
+      "title": "Encaissements du jour",
+      "collected": "Encaissé",
+      "bills": "Factures ouvertes",
+      "open": "Soldes impayés",
+      "view": "Ouvrir les paiements"
+    },
+    "team": {
+      "title": "Équipe en service",
+      "empty": "Personne n’a encore pris son service.",
+      "manage": "Gérer le personnel",
+      "state": {
+        "on_duty": "En service",
+        "break": "En pause",
+        "emergency": "Urgence",
+        "off": "Absent"
+      }
+    }
   },
   "reports": {
     "title": "Rapports",

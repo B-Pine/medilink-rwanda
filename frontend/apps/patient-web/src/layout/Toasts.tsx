@@ -48,19 +48,29 @@ function ToastCard({ toast, dismiss }: { toast: ToastItem; dismiss: (id: number)
   const start = useCallback(() => {
     timer.current = window.setTimeout(onClose, SHOW_MS);
   }, [onClose]);
-  const stop = () => window.clearTimeout(timer.current);
+  const item = useRef<HTMLLIElement>(null);
   useEffect(() => {
+    // Pause while the pointer or focus is on the toast so it can be read or acted on.
+    const el = item.current;
+    const stop = () => window.clearTimeout(timer.current);
     start();
-    return () => window.clearTimeout(timer.current);
+    const events = [
+      ["mouseenter", stop],
+      ["mouseleave", start],
+      ["focusin", stop],
+      ["focusout", start],
+    ] as const;
+    events.forEach(([name, fn]) => el?.addEventListener(name, fn));
+    return () => {
+      window.clearTimeout(timer.current);
+      events.forEach(([name, fn]) => el?.removeEventListener(name, fn));
+    };
   }, [start]);
   return (
     // Pointer and focus only pause the timer; the link and close button inside are the controls.
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <li
-      onMouseEnter={stop}
-      onMouseLeave={start}
-      onFocus={stop}
-      onBlur={start}
+      ref={item}
       className="pointer-events-auto flex w-full items-start gap-3 rounded-2xl border border-border bg-raised p-4 text-fg shadow-raised animate-rise"
     >
       <ToneIcon

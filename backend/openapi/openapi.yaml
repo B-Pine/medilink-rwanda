@@ -24319,6 +24319,19 @@ components:
     NullEnum:
       enum:
       - null
+    OnDuty:
+      type: object
+      properties:
+        name:
+          type: string
+        state:
+          type: string
+        room:
+          type: string
+      required:
+      - name
+      - room
+      - state
     OpenShiftRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -24354,13 +24367,28 @@ components:
           type: object
           additionalProperties:
             type: integer
+        finance:
+          type: object
+          additionalProperties:
+            type: integer
+        bookings:
+          type: object
+          additionalProperties:
+            type: integer
+        on_duty:
+          type: array
+          items:
+            $ref: '#/components/schemas/OnDuty'
         updated_at:
           type: string
           format: date-time
       required:
       - arrivals_heatmap
       - attention
+      - bookings
+      - finance
       - now
+      - on_duty
       - same_day_last_week
       - services
       - today
@@ -31033,6 +31061,10 @@ components:
           type: boolean
         mfa_enabled:
           type: boolean
+        last_login:
+          type: string
+          format: date-time
+          nullable: true
         clinician:
           allOf:
           - $ref: '#/components/schemas/Clinician'
@@ -31052,6 +31084,7 @@ components:
       - id
       - is_active
       - joined_at
+      - last_login
       - mfa_enabled
       - roles
       - service_points

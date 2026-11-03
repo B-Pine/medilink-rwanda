@@ -254,9 +254,36 @@ export interface Operations {
     load: "low" | "medium" | "high";
   }[];
   arrivals_heatmap: { weekday: number; hour: number; count: number }[];
-  attention: Record<string, number>;
+  /** Needs-your-attention counts (upgrade 05 §5); `licence_days_left` only when a licence is on file. */
+  attention: Partial<Record<OperationsAttentionKey, number>>;
+  /** Money today (S8): amounts in RWF and counts only. */
+  finance: {
+    collected_today_rwf: number;
+    payments_today: number;
+    bills_today: number;
+    open_balance_rwf: number;
+  };
+  /** Today's bookings (S5). */
+  bookings: {
+    expected_today: number;
+    checked_in_today: number;
+    no_shows_today: number;
+    no_show_rate_pct: number;
+  };
+  /** Staff on duty or on break now. */
+  on_duty: { name: string; state: DutyState; room: string }[];
   updated_at: string;
 }
+
+export type OperationsAttentionKey =
+  | "unreviewed_reorders"
+  | "approvals_pending"
+  | "shifts_to_review"
+  | "unsigned_records"
+  | "disputes_open"
+  | "invitations_pending"
+  | "staff_without_mfa"
+  | "licence_days_left";
 
 const S = "/api/v1/staff";
 export const queuePaths = {

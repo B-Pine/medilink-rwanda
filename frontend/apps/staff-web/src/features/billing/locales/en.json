@@ -1,7 +1,12 @@
 {
   "title": "Payments",
   "tabsLabel": "Bills by status",
-  "tab": { "unpaid": "Unpaid", "partly": "Partly paid", "paid": "Paid", "all": "All today" },
+  "tab": {
+    "unpaid": "Unpaid",
+    "partly": "Partly paid",
+    "paid": "Paid",
+    "all": "All today"
+  },
   "search": "Search name, ticket or receipt",
   "empty": "No bills here",
   "failed": "Something went wrong. Try again.",
@@ -89,10 +94,34 @@
     "title": "Approvals",
     "empty": "Nothing waiting for approval",
     "by": "Requested by {{name}}",
-    "kind": { "void_payment": "Void payment", "refund": "Refund", "waiver": "Waiver" },
+    "kind": {
+      "void_payment": "Void payment",
+      "refund": "Refund",
+      "waiver": "Waiver"
+    },
     "approve": "Approve",
     "reject": "Reject",
     "rejectNote": "Why reject?",
-    "viewBill": "View bill"
+    "viewBill": "View bill",
+    "intro": "Requests from your team and closed cash shifts. Every decision is recorded.",
+    "tabs": {
+      "requests": "Requests",
+      "shifts": "Cash shifts"
+    },
+    "shifts": {
+      "empty": "No closed shifts to review",
+      "payments_one": "{{count}} payment",
+      "payments_other": "{{count}} payments",
+      "balanced": "Balanced",
+      "short": "Short {{amount}}",
+      "over": "Over {{amount}}",
+      "method": "Method",
+      "expected": "Expected",
+      "counted": "Counted",
+      "float": "Expected cash includes the opening float of {{amount}}.",
+      "cashierNote": "Cashier's note",
+      "reviewNote": "Review note (needed when the drawer does not balance)",
+      "accept": "Accept shift"
+    }
   }
 }

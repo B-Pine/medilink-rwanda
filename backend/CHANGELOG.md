@@ -17,6 +17,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   `/dashboard/notifications/{id}` (`notifications.tasks.inbox_url`); staff links are unchanged.
   Older links already sent keep working through the frontend redirects. No API or schema change.
 
+### Upgrade U2 · Facility admin command centre (upgrade 05 §5)
+
+- Changed: `GET /staff/reports/operations/` adds `attention` counts (approvals pending, closed
+  cash shifts, unsigned consultations, open disputes, pending invitations, staff without two-step
+  sign-in, licence days left), `finance` (collected today, payments, bills, open balances),
+  `bookings` (expected, arrived, no-shows, no-show rate) and `on_duty`. Aggregates only.
+- Changed: staff memberships carry `last_login`.
+
 ### Upgrade U2 · No prices in discovery or booking (U-01, contract sprint-05 D-14)
 
 - Changed: P1 search results drop `fee_rwf` and `patient_share_rwf`; P2 profile services drop

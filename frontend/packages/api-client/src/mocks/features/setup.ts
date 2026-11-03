@@ -238,6 +238,7 @@ function seed() {
     email: string,
     roles: string[],
     clinician: StaffMembership["clinician"] = null,
+    seenHoursAgo: number | null = 2,
   ): StaffMembership => ({
     id: mid,
     user_id: id(),
@@ -246,7 +247,9 @@ function seed() {
     roles,
     service_points: [],
     is_active: true,
-    mfa_enabled: true,
+    mfa_enabled: seenHoursAgo !== null,
+    last_login:
+      seenHoursAgo === null ? null : new Date(Date.now() - seenHoursAgo * 3_600_000).toISOString(),
     clinician,
     joined_at: "2026-09-01T08:00:00Z",
     deactivation_reason: "",
@@ -254,19 +257,33 @@ function seed() {
   });
   const memberships: StaffMembership[] = [
     member(SETUP_IDS.mAdmin, "Mutesi Diane", MOCK_FACILITY_ADMIN_EMAIL, ["facility_admin"]),
-    member(SETUP_IDS.mReception, "Habimana Eric", "reception@medilink.test", ["receptionist"]),
+    member(
+      SETUP_IDS.mReception,
+      "Habimana Eric",
+      "reception@medilink.test",
+      ["receptionist"],
+      null,
+      0.3,
+    ),
     member(SETUP_IDS.mKeza, "Uwimana Keza", "doctor@medilink.test", ["doctor"], {
       council: "rmdc",
       licence_number: "RMDC/1234",
       specialty: "General practice",
       attested_at: "2026-09-02T09:00:00Z",
     }),
-    member(SETUP_IDS.mPaul, "Niyonsenga Paul", "paul.niyonsenga@example.test", ["doctor"], {
-      council: "rmdc",
-      licence_number: "RMDC/5678",
-      specialty: "Pediatrics",
-      attested_at: null,
-    }),
+    member(
+      SETUP_IDS.mPaul,
+      "Niyonsenga Paul",
+      "paul.niyonsenga@example.test",
+      ["doctor"],
+      {
+        council: "rmdc",
+        licence_number: "RMDC/5678",
+        specialty: "Pediatrics",
+        attested_at: null,
+      },
+      null,
+    ),
   ];
   const template = (weekday: number, starts_at: string, ends_at: string): ScheduleTemplate => ({
     id: id(),

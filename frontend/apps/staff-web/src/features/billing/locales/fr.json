@@ -102,6 +102,26 @@
     "approve": "Approuver",
     "reject": "Refuser",
     "rejectNote": "Motif du refus",
-    "viewBill": "Voir la facture"
+    "viewBill": "Voir la facture",
+    "intro": "Demandes de l’équipe et caisses clôturées. Chaque décision est enregistrée.",
+    "tabs": {
+      "requests": "Demandes",
+      "shifts": "Caisses"
+    },
+    "shifts": {
+      "empty": "Aucune caisse clôturée à vérifier",
+      "payments_one": "{{count}} paiement",
+      "payments_other": "{{count}} paiements",
+      "balanced": "Équilibrée",
+      "short": "Manque {{amount}}",
+      "over": "Excédent {{amount}}",
+      "method": "Mode",
+      "expected": "Attendu",
+      "counted": "Compté",
+      "float": "L’espèce attendue inclut le fonds de caisse de {{amount}}.",
+      "cashierNote": "Note du caissier",
+      "reviewNote": "Note de vérification (requise si la caisse n’est pas équilibrée)",
+      "accept": "Valider la caisse"
+    }
   }
 }

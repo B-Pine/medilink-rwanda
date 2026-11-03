@@ -421,7 +421,29 @@ export const queueMocks: FeatureMockFactory = (context) => {
             unreviewed_reorders: db.events.filter(
               (e) => e.action === "reorder" && !db.reviews.has(e.id),
             ).length,
+            approvals_pending: 2,
+            shifts_to_review: 2,
+            unsigned_records: 3,
+            disputes_open: 1,
+            invitations_pending: 2,
+            staff_without_mfa: 1,
+            licence_days_left: 24,
           },
+          finance: {
+            collected_today_rwf: 184_500,
+            payments_today: 27,
+            bills_today: 31,
+            open_balance_rwf: 42_800,
+          },
+          bookings: {
+            expected_today: 14,
+            checked_in_today: 9,
+            no_shows_today: 2,
+            no_show_rate_pct: 14,
+          },
+          on_duty: db.duty
+            .filter((d) => d.state !== "off")
+            .map((d) => ({ name: d.full_name, state: d.state, room: d.service_point ?? "" })),
           updated_at: now(),
         });
       }),

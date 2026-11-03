@@ -81,6 +81,15 @@ function textIn(texts: AnnouncementText, lang: string): string {
   return texts[lang as LanguageCode] || texts.rw || texts.en || texts.fr || "";
 }
 
+const PRIORITY_TILE: Record<AnnouncementPriority, string> = {
+  important: "bg-attention-bg text-attention",
+  routine: "bg-brand-subtle text-on-brand-subtle",
+};
+const PRIORITY_DOT: Record<AnnouncementPriority, string> = {
+  important: "bg-attention",
+  routine: "bg-fg-muted",
+};
+
 export function StatusBadge({ status }: { status: AnnouncementStatus }) {
   const { t } = useTranslation();
   return (
@@ -114,19 +123,25 @@ function AnnouncementsList({ scope }: { scope: AnnouncementScope }) {
         }
       />
       <OfflineNotice />
-      <SelectField
-        label={t("notifications.announcements.filterStatus")}
-        value={status}
-        onChange={(event) => setStatus(event.target.value as AnnouncementStatus | "")}
-        className="max-w-xs"
+      <div
+        role="group"
+        aria-label={t("notifications.announcements.filterStatus")}
+        className="inline-flex max-w-full flex-wrap gap-1 self-start rounded-full bg-subtle p-1"
       >
-        <option value="">{t("notifications.announcements.allStatuses")}</option>
-        {(["draft", "published", "withdrawn"] as const).map((s) => (
-          <option key={s} value={s}>
-            {t(`notifications.announcements.status.${s}`)}
-          </option>
+        {(["", "draft", "published", "withdrawn"] as const).map((s) => (
+          <button
+            key={s || "all"}
+            type="button"
+            aria-pressed={status === s}
+            onClick={() => setStatus(s)}
+            className="inline-flex min-h-9 cursor-pointer items-center rounded-full px-4 text-body-sm font-semibold whitespace-nowrap text-fg-secondary transition-[background-color,color,box-shadow] duration-200 ease-out-quint hover:text-fg aria-pressed:bg-surface aria-pressed:text-fg aria-pressed:shadow-card"
+          >
+            {s
+              ? t(`notifications.announcements.status.${s}`)
+              : t("notifications.announcements.allStatuses")}
+          </button>
         ))}
-      </SelectField>
+      </div>
       {list.isPending ? (
         <ListSkeleton label={t("notifications.loading")} />
       ) : list.isError ? (
@@ -143,30 +158,44 @@ function AnnouncementsList({ scope }: { scope: AnnouncementScope }) {
           }
         />
       ) : (
-        <div className="overflow-x-auto rounded-2xl bg-surface shadow-card">
+        <div className="animate-enter overflow-x-auto rounded-2xl bg-surface shadow-card">
           <table className="w-full border-collapse text-left">
             <caption className="sr-only">{t(`notifications.announcements.${scope}Title`)}</caption>
-            <thead className="bg-subtle text-body-sm text-fg-secondary">
+            <thead className="border-b border-border text-caption font-semibold tracking-wide text-fg-secondary uppercase">
               <tr>
                 {["title", "audience", "priority", "status", "updated"].map((column) => (
-                  <th key={column} scope="col" className="px-4 py-2.5 font-semibold">
+                  <th key={column} scope="col" className="px-4 py-3 font-semibold">
                     {t(`notifications.announcements.columns.${column}`)}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-border">
               {rows.map((row) => (
-                <tr key={row.id} className="border-t border-border/60">
+                <tr key={row.id} className="transition-colors duration-150 hover:bg-subtle/60">
                   <td className="px-4 py-3">
-                    <Link to={`${base}/${row.id}`} className="font-semibold text-link">
-                      {textIn(row.title_i18n, lang)}
-                    </Link>
+                    <span className="flex items-center gap-3">
+                      <span
+                        aria-hidden="true"
+                        className={cx(
+                          "grid size-9 shrink-0 place-items-center rounded-lg",
+                          PRIORITY_TILE[row.priority],
+                        )}
+                      >
+                        <Megaphone weight="bold" className="size-[1.125rem]" />
+                      </span>
+                      <Link
+                        to={`${base}/${row.id}`}
+                        className="font-semibold text-fg no-underline hover:text-link hover:underline"
+                      >
+                        {textIn(row.title_i18n, lang)}
+                      </Link>
+                    </span>
                   </td>
-                  <td className="px-4 py-3 text-fg-secondary">
+                  <td className="px-4 py-3 text-body-sm text-fg-secondary">
                     {t(`notifications.announcements.audience.${row.audience}`)}
                     {row.range_starts_on && (
-                      <span className="block text-body-sm text-fg-muted">
+                      <span className="block text-fg-muted tabular-nums">
                         {day(row.range_starts_on)}
                         {row.range_ends_on && row.range_ends_on !== row.range_starts_on
                           ? ` – ${day(row.range_ends_on)}`
@@ -174,11 +203,19 @@ function AnnouncementsList({ scope }: { scope: AnnouncementScope }) {
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3">{t(`notifications.priority.${row.priority}`)}</td>
+                  <td className="px-4 py-3">
+                    <span className="inline-flex items-center gap-1.5 text-body-sm font-semibold">
+                      <span
+                        aria-hidden="true"
+                        className={cx("size-2 rounded-full", PRIORITY_DOT[row.priority])}
+                      />
+                      {t(`notifications.priority.${row.priority}`)}
+                    </span>
+                  </td>
                   <td className="px-4 py-3">
                     <StatusBadge status={row.status} />
                   </td>
-                  <td className="px-4 py-3 text-body-sm text-fg-muted">
+                  <td className="px-4 py-3 text-body-sm whitespace-nowrap text-fg-muted tabular-nums">
                     {when(row.published_at ?? row.created_at)}
                   </td>
                 </tr>

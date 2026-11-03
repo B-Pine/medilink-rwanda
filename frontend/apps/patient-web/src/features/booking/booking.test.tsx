@@ -22,11 +22,12 @@ async function signIn(next = "/home") {
 
 describe("facility search (S5-F2)", () => {
   it("lists live facilities with the patient share, and filters with chips", async () => {
+    // old /search addresses open Find care with the same choices
     const { user, container } = renderApp("/search?service=general_consultation&insurer=rama");
     expect(
-      await screen.findByRole("heading", { level: 1, name: "Find a facility" }),
+      await screen.findByRole("heading", { level: 1, name: "Find healthcare" }),
     ).toBeInTheDocument();
-    expect(await screen.findByText(/^\d+ facilit(y|ies)$/)).toBeInTheDocument();
+    expect(await screen.findByText(/^\d+ places?$/)).toBeInTheDocument();
     expect(screen.getAllByText("Kigali Clinic").length).toBeGreaterThan(0);
     const openNow = screen.getByRole("button", { name: "Open now" });
     await user.click(openNow);
@@ -122,12 +123,16 @@ describe("booking draft in the URL (S5-F3)", () => {
 
 describe("upcoming visits (S5-F5)", () => {
   it("lists the upcoming booking and cancels it after a confirmation", async () => {
-    const { user } = await signIn("/visits");
-    const upcoming = await screen.findByRole("region", { name: "Upcoming" });
-    const cancel = await within(upcoming).findByRole("button", { name: "Cancel" });
-    await user.click(cancel);
+    const { user } = await signIn("/dashboard/appointments");
+    await screen.findByRole("heading", { level: 1, name: "My appointments" });
+    const [first] = await screen.findAllByRole("button", { name: /^More actions for/ });
+    await user.click(first!);
+    await user.click(await screen.findByRole("menuitem", { name: "Cancel appointment" }));
     const dialog = await screen.findByRole("dialog", { name: "Cancel this booking?" });
     await user.click(within(dialog).getByRole("button", { name: "Cancel booking" }));
-    expect(await within(upcoming).findByText("No upcoming bookings")).toBeInTheDocument();
+    expect(await screen.findByText("Your appointment has been cancelled.")).toBeInTheDocument();
+    // the cancelled booking now shows under Cancelled
+    await user.click(screen.getByRole("button", { name: "Cancelled" }));
+    expect(await screen.findByText("Cancelled", { selector: "span" })).toBeInTheDocument();
   });
 });

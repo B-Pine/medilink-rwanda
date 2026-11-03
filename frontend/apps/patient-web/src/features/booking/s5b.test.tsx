@@ -7,7 +7,7 @@ import { renderApp } from "../../test/render";
 
 /** S5b patient-web (contract §6.1): disruption offer on My visits and the calendar feed. */
 
-async function signIn(next = "/visits") {
+async function signIn(next = "/dashboard/appointments") {
   const app = renderApp("/login");
   await app.user.type(await screen.findByLabelText("Email"), "patient@medilink.test");
   await app.user.click(screen.getByRole("button", { name: "Continue" }));
@@ -20,10 +20,17 @@ async function signIn(next = "/visits") {
   return app;
 }
 
+/** The changed booking: its row says "Needs your answer"; the offer is on its detail page. */
+async function openOffer(user: Awaited<ReturnType<typeof signIn>>["user"]) {
+  await user.click(await screen.findByRole("link", { name: /Needs your answer/ }));
+  await screen.findByRole("heading", { level: 1 });
+  return screen.getByRole("main");
+}
+
 describe("disruption offer (S5-B13)", () => {
   it("explains the change and the deadline; keeping the new time closes it", async () => {
     const { user, container } = await signIn();
-    const upcoming = await screen.findByRole("region", { name: "Upcoming" });
+    const upcoming = await openOffer(user);
     expect(await within(upcoming).findByText("Your booking has changed")).toBeInTheDocument();
     expect(within(upcoming).getByText(/^The facility moved your visit/)).toBeInTheDocument();
     expect(within(upcoming).getByText(/If you don't answer by|Please answer/)).toBeInTheDocument();
@@ -37,7 +44,7 @@ describe("disruption offer (S5-B13)", () => {
 
   it("choosing another time lists the free times", async () => {
     const { user } = await signIn();
-    const upcoming = await screen.findByRole("region", { name: "Upcoming" });
+    const upcoming = await openOffer(user);
     await user.click(await within(upcoming).findByRole("button", { name: "Choose another time" }));
     const dialog = await screen.findByRole("dialog", { name: "Choose another time" });
     // free times this week, or a clear message when there are none

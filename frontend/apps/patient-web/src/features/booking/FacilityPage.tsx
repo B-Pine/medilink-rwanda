@@ -3,6 +3,8 @@ import {
   CalendarPlus,
   CheckCircle,
   Clock,
+  EnvelopeSimple,
+  Globe,
   MapPin,
   MinusCircle,
   NavigationArrow,
@@ -283,6 +285,7 @@ export function FacilityPage() {
                   <p className="m-0 mt-2 text-fg-secondary">
                     {pick(f.description_i18n, lang) || t("site.facility.noDescription")}
                   </p>
+                  <Photos name={f.name} photos={f.photos} />
                 </Panel>
               </TabsContent>
 
@@ -514,6 +517,7 @@ function Availability({ on }: { on: boolean }) {
 
 function Contact({ f }: { f: PublicFacility }) {
   const { t } = useTranslation();
+  const website = f.website ? webLink(f.website) : null;
   return (
     <div>
       <h2 id="location" className="m-0 text-h3 font-bold">
@@ -533,8 +537,95 @@ function Contact({ f }: { f: PublicFacility }) {
             t("site.facility.notListed")
           )}
         </dd>
+        {f.email && (
+          <>
+            <dt className="text-fg-muted">{t("site.facility.email")}</dt>
+            <dd className="m-0 min-w-0">
+              <a
+                href={`mailto:${f.email}`}
+                className="inline-flex max-w-full items-center gap-1.5 font-semibold break-all"
+              >
+                <EnvelopeSimple aria-hidden="true" className="size-4 shrink-0" />
+                {f.email}
+              </a>
+            </dd>
+          </>
+        )}
+        {website && (
+          <>
+            <dt className="text-fg-muted">{t("site.facility.website")}</dt>
+            <dd className="m-0 min-w-0">
+              <a
+                href={website.href}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex max-w-full items-center gap-1.5 font-semibold break-all"
+              >
+                <Globe aria-hidden="true" className="size-4 shrink-0" />
+                {website.host}
+                <span className="sr-only"> {t("common.opensInNewTab")}</span>
+              </a>
+            </dd>
+          </>
+        )}
       </dl>
     </div>
+  );
+}
+
+/** Only http(s) links are shown; the host alone reads cleaner than the whole URL. */
+function webLink(value: string): { href: string; host: string } | null {
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "https:" && url.protocol !== "http:") return null;
+    return { href: url.href, host: url.host.replace(/^www\./, "") };
+  } catch {
+    return null;
+  }
+}
+
+/** The admin's photos: the first one large, the rest beside it. Each opens full size. */
+function Photos({ name, photos }: { name: string; photos: string[] }) {
+  const { t } = useTranslation();
+  if (photos.length === 0) return null;
+  return (
+    <section aria-labelledby="photos" className="mt-6">
+      <h3 id="photos" className="sr-only">
+        {t("site.facility.photos")}
+      </h3>
+      <ul
+        className={cx(
+          "m-0 grid list-none gap-2 p-0",
+          photos.length > 1 && "grid-cols-2 sm:grid-cols-3",
+        )}
+      >
+        {photos.map((src, index) => (
+          <li
+            key={src}
+            className={cx(
+              photos.length > 1 && index === 0 && "col-span-2 row-span-2",
+              "overflow-hidden rounded-xl bg-subtle",
+            )}
+          >
+            <a href={src} target="_blank" rel="noreferrer" className="block h-full">
+              <img
+                src={src}
+                alt={t("site.facility.photoAlt", { name, n: index + 1, total: photos.length })}
+                loading={index === 0 ? "eager" : "lazy"}
+                decoding="async"
+                className={cx(
+                  "block size-full object-cover transition-transform duration-300 ease-out-quint hover:scale-[1.03]",
+                  photos.length === 1 ? "aspect-video" : "aspect-[4/3]",
+                  // the large first photo fills both rows beside the small ones
+                  photos.length > 2 && index === 0 && "sm:aspect-auto",
+                )}
+              />
+              <span className="sr-only"> {t("common.opensInNewTab")}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

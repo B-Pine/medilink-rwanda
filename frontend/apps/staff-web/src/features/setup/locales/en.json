@@ -158,7 +158,7 @@
     "name": "Name",
     "type": "Type",
     "status": "Status",
-    "platformManaged": "Name and type come from your approved application. Ask MediLink support to change them.",
+    "platformManaged": "Name, type and level of care come from your approved application. Ask MediLink support to change them.",
     "contact": "Contact",
     "phone": "Phone",
     "email": "Email",
@@ -173,11 +173,21 @@
     "description": "Description",
     "descriptionHint": "A few sentences in each language: what you treat and how to find you.",
     "photos": "Photos",
-    "photosHint_one": "{{count}} of 6 photos. JPEG, PNG or WebP.",
-    "photosHint_other": "{{count}} of 6 photos. JPEG, PNG or WebP.",
+    "photosHint_one": "{{count}} of 6 photos. JPEG, PNG or WebP. The first is the cover on your public page.",
+    "photosHint_other": "{{count}} of 6 photos. JPEG, PNG or WebP. The first is the cover on your public page.",
     "addPhoto": "Add photo",
     "photoN": "Photo {{n}}",
-    "removePhotoN": "Remove photo {{n}}"
+    "removePhotoN": "Remove photo {{n}}",
+    "viewPublic": "View public page",
+    "newTab": "(opens in a new tab)",
+    "levelOfCare": "Level of care",
+    "levels": {
+      "primary": "Primary care",
+      "secondary": "Secondary care",
+      "tertiary": "Tertiary care"
+    },
+    "levelUnknown": "Not set",
+    "cover": "Cover"
   },
   "catalogue": {
     "intro": "Services are what patients book or queue for. Each has a ticket prefix, such as G for G-023.",

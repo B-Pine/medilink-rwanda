@@ -20,7 +20,7 @@ from medilink.facilities import calendar
 from medilink.facilities.tasks import expire_invitations
 from medilink.scheduling import services as scheduling
 from medilink.tenancy.context import rls_context
-from medilink.tenancy.models import Invitation
+from medilink.tenancy.models import FacilityStatus, Invitation
 from tests.conftest import login_staff
 from tests.factories import make_staff
 from tests.s2.conftest import NAMES, F, S, attest, make_catalogue, membership_of, set_hours
@@ -47,13 +47,36 @@ def _png(name: str = "photo.png") -> SimpleUploadedFile:
     return SimpleUploadedFile(name, buffer.getvalue(), content_type="image/png")
 
 
-def test_photos_and_branding(admin_client: Any, django_capture_on_commit_callbacks: Any) -> None:
+def test_photos_and_branding(
+    admin_client: Any, setup_facility: Any, django_capture_on_commit_callbacks: Any
+) -> None:
     with django_capture_on_commit_callbacks(execute=True):
         added = admin_client.post(f"{F}photos/", {"file": _png()}, format="multipart")
     assert added.status_code == 201, added.content
     photo_id = added.json()["photos"][0]
+    # the public profile shows what the admin set: contacts and the clean photos, by stable URL
+    setup_facility.status = FacilityStatus.LIVE
+    setup_facility.save(update_fields=["status"])
+    version = admin_client.get(F).json()["version"]
+    patched = admin_client.patch(
+        F,
+        {"version": version, "email": "desk@remera.example", "website": "https://remera.example"},
+        format="json",
+    )
+    assert patched.status_code == 200, patched.content
+    public = APIClient().get("/api/v1/public/facilities/remera-test/").json()
+    assert public["email"] == "desk@remera.example"
+    assert public["website"] == "https://remera.example"
+    assert public["photos"] == [
+        f"http://testserver/api/v1/public/facilities/remera-test/photos/{photo_id}/"
+    ]
+    shown = APIClient().get(public["photos"][0])
+    assert shown.status_code == 302
+    assert shown["Location"].startswith("http://testserver/api/v1/files/")
     assert admin_client.delete(f"{F}photos/{photo_id}/").status_code == 204
     assert admin_client.delete(f"{F}photos/{photo_id}/").status_code == 404
+    gone = f"/api/v1/public/facilities/remera-test/photos/{photo_id}/"
+    assert APIClient().get(gone).status_code == 404
     with django_capture_on_commit_callbacks(execute=True):
         logo = admin_client.post(
             "/api/v1/staff/uploads/",

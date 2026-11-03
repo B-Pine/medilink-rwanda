@@ -8,6 +8,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Public facility page ↔ facility admin
+
+- Added: the public facility profile carries the admin's `email`, `website` and `photos` (stable
+  public URLs, only clean photos, in the admin's order).
+- Added: `GET /public/facilities/{slug}/photos/{upload_id}/` redirects to a short-lived signed
+  link to one public photo (C0; 404 once the admin removes it).
+
 ### Upgrade U2 · Pharmacist (upgrade 05 §4)
 
 - Added: `GET /staff/pharmacy/my-day/` (ready, partly given, questions, dispensed, out of stock)

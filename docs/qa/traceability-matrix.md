@@ -125,7 +125,7 @@ Source: [05 · Discovery, calendars, scheduling, booking](../analysis/05-discove
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
 | FR-SCH-01 | Facility search with filters; list and map | P1 | S5 | Both | API, E2E | In progress |
-| FR-SCH-02 | Facility profile: services, insurers, hours, doctors, load (no fees, U-01) | P1 | S5 | Both | API, E2E | In progress |
+| FR-SCH-02 | Facility profile: services, insurers, hours, doctors, load, admin photos and contacts (no fees, U-01) | P1 | S5 | Both | API, E2E | In progress |
 | FR-SCH-03 | Public facility pages indexable by search engines | P1 | S5 | Frontend | INS, E2E | In progress (R8: pre-rendered at build time, ADR 0008) |
 | FR-SCH-04 | Referral pathway hint for Mutuelle patients | P1 | S5 | Both | BR, CMP | In progress |
 | FR-SCH-05 | Facility calendar: hours, closures, holidays, Umuganda | P1 | S2, S5 | Both | UT, API | In progress |

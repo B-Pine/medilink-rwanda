@@ -7,7 +7,9 @@ import uuid
 from typing import Any, cast
 
 from django.db import connection
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http.response import HttpResponseBase
+from django.urls import reverse
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework import exceptions, status
@@ -39,6 +41,9 @@ from medilink.scheduling.models import (
 )
 from medilink.tenancy.context import rls_context
 from medilink.tenancy.models import Facility, FacilityMembership, FacilityStatus
+from medilink.uploads.conf import upload_settings
+from medilink.uploads.models import ScanStatus, UploadedFile
+from medilink.uploads.storage import SERVED_DISPOSITION, get_storage
 from medilink.uploads.views import idempotency_key
 from medilink.visits.models import ReasonSymptom
 from medilink.visits.remote import claim_arrival, facility_record, join
@@ -224,6 +229,20 @@ def slot_taken(exc: BookingConflict, slot_id: Any) -> Response:
 # ---- public (no account) -------------------------------------------------------------------------
 
 
+def _clean_photos(facility_id: Any, ids: list[Any]) -> list[Any]:
+    """The admin's photos that passed the scan, in the admin's order (C0: public by design)."""
+    clean = set(
+        UploadedFile.objects.filter(
+            pk__in=ids,
+            facility_id=facility_id,
+            purpose="facility_photo",
+            scan_status=ScanStatus.CLEAN,
+            deleted_at__isnull=True,
+        ).values_list("pk", flat=True)
+    )
+    return [pk for pk in ids if pk in clean]
+
+
 def _public_profile(profile: Any) -> dict[str, Any]:
     if profile is None:
         return {"specialty": "", "bio_i18n": {}, "languages": []}
@@ -280,6 +299,7 @@ class FacilityProfileView(PublicView):
         today = timezone.localdate()
         with rls_context(facility_id=facility.pk):
             profile = Profile.objects.filter(facility_id=facility.pk).first()
+            photos = _clean_photos(facility.pk, profile.photo_file_ids if profile else [])
             services = list(
                 Service.objects.filter(facility_id=facility.pk, is_active=True).order_by(
                     "catalogue_item_code"
@@ -329,6 +349,14 @@ class FacilityProfileView(PublicView):
                 "description_i18n": (profile.description_i18n if profile else {}) or {},
                 "address": profile.address if profile else "",
                 "phone": profile.phone if profile else "",
+                "email": profile.email if profile else "",
+                "website": profile.website if profile else "",
+                "photos": [
+                    request.build_absolute_uri(
+                        reverse("public-facility-photo", args=[facility.slug, pk])
+                    )
+                    for pk in photos
+                ],
                 "district": place.district if place else "",
                 "sector": place.sector if place else "",
                 "lat": float(profile.latitude) if profile and profile.latitude else None,
@@ -372,6 +400,40 @@ class FacilityProfileView(PublicView):
             }
         )
         response["Cache-Control"] = "public, max-age=60"
+        return response
+
+
+class FacilityPhotoView(PublicView):
+    """A short-lived signed link to one of the facility's public photos.
+
+    Photos are C0 (the admin publishes them), so no download audit entry per view; the URL in the
+    profile stays stable while the link it redirects to expires."""
+
+    @extend_schema(
+        operation_id="public_facility_photo",
+        tags=TAGS,
+        responses={302: OpenApiResponse(description="Redirect to the image"), 404: err("No photo")},
+    )
+    def get(self, request: Request, slug: str, upload_id: uuid.UUID) -> HttpResponseBase:
+        facility = _live(slug)
+        with rls_context(facility_id=facility.pk):
+            profile = Profile.objects.filter(facility_id=facility.pk).first()
+            ids = profile.photo_file_ids if profile else []
+            if upload_id not in _clean_photos(facility.pk, ids):
+                raise Http404
+            file = UploadedFile.objects.get(pk=upload_id)
+        conf = upload_settings()
+        link = get_storage().signed_download_url(
+            "documents",
+            str(file.storage_key),
+            file.original_filename,
+            file.content_type,
+            SERVED_DISPOSITION,
+            conf.link_ttl_seconds,
+        )
+        response = HttpResponseRedirect(link.url)
+        # shorter than the link, so a cached redirect never points at an expired link
+        response["Cache-Control"] = f"public, max-age={max(conf.link_ttl_seconds // 2, 1)}"
         return response
 
 

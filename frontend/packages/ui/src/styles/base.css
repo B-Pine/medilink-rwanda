@@ -408,3 +408,91 @@ html:has(.ml-soft) {
   height: 44px;
   line-height: 44px;
 }
+
+/*
+ * Public site polish (landing + navbar pages, 2026-11-03). Every value comes from the site tokens
+ * (tokens.css :root[data-surface="site"]); reduced motion and data saver switch the motion off.
+ */
+
+/* Frosted header where backdrop-filter exists; the solid surface stays the fallback. */
+@supports (backdrop-filter: blur(1px)) {
+  .ml-glass {
+    background-color: var(--ml-glass-bg);
+    backdrop-filter: saturate(1.4) blur(var(--ml-glass-blur));
+  }
+}
+
+/* The active page's underline glides to the next link on navigation (view transition). */
+.ml-nav-indicator {
+  view-transition-name: nav-indicator;
+}
+::view-transition-group(nav-indicator) {
+  animation-duration: var(--ml-motion-base, 240ms);
+  animation-timing-function: var(--ml-ease-spring, ease-out);
+}
+
+/* Hero: a soft brand mesh instead of a flat surface. */
+.ml-hero-mesh {
+  background: var(--ml-hero-mesh);
+}
+
+/* Page header band of the navbar pages: mesh, hairline, the Imigongo pattern faded to the right. */
+.ml-band {
+  background: var(--ml-band-mesh);
+}
+.ml-band-pattern {
+  mask-image: linear-gradient(90deg, transparent 35%, #000 100%);
+}
+
+/* Cards and tiles that lift a little under the pointer. */
+.ml-lift {
+  transition:
+    transform var(--ml-motion-base, 240ms) var(--ml-ease-out, ease-out),
+    box-shadow var(--ml-motion-base, 240ms) var(--ml-ease-out, ease-out),
+    border-color var(--ml-motion-fast, 150ms) var(--ml-ease-out, ease-out);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  :root:not([data-data-saver="on"]) .ml-lift:hover {
+    transform: translateY(var(--ml-lift-distance, -3px));
+    box-shadow: var(--ml-shadow-raised);
+  }
+}
+
+/* The hero's live cards drift slowly, each on its own beat. */
+@media (prefers-reduced-motion: no-preference) {
+  :root:not([data-data-saver="on"]) .ml-float {
+    animation: ml-float 6s ease-in-out infinite;
+  }
+  :root:not([data-data-saver="on"]) .ml-float:nth-of-type(2n) {
+    animation-duration: 7s;
+    animation-delay: -2s;
+  }
+  :root:not([data-data-saver="on"]) .ml-float:nth-of-type(3n) {
+    animation-duration: 8s;
+    animation-delay: -4s;
+  }
+}
+@keyframes ml-float {
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* Hero entrance: the copy, then the search, then the chips (one sequence, once). */
+@media (prefers-reduced-motion: no-preference) {
+  :root:not([data-data-saver="on"]) .ml-hero-seq > * {
+    animation: ml-rise var(--ml-motion-slow, 420ms) var(--ml-ease-out, ease-out) both;
+  }
+  :root:not([data-data-saver="on"]) .ml-hero-seq > :nth-child(2) {
+    animation-delay: 60ms;
+  }
+  :root:not([data-data-saver="on"]) .ml-hero-seq > :nth-child(3) {
+    animation-delay: 120ms;
+  }
+  :root:not([data-data-saver="on"]) .ml-hero-seq > :nth-child(4) {
+    animation-delay: 180ms;
+  }
+  :root:not([data-data-saver="on"]) .ml-hero-seq > :nth-child(n + 5) {
+    animation-delay: 240ms;
+  }
+}

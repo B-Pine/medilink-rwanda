@@ -187,6 +187,47 @@
 :root[data-surface="site"] {
   --ml-control-height: 2.75rem; /* 44px */
   --ml-control-height-primary: 3rem; /* 48px */
+
+  /*
+   * Public site motion and surfaces (landing + navbar pages, 2026-11-03). Derived from the
+   * palette above with color-mix, so light and dark follow without a second set of values.
+   */
+  --ml-motion-fast: 150ms; /* hover, press, colour */
+  --ml-motion-base: 240ms; /* lift, reveal, indicator */
+  --ml-motion-slow: 420ms; /* hero entrance */
+  --ml-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ml-ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1); /* a small overshoot, never bouncy */
+  --ml-lift-distance: -3px;
+  --ml-glass-bg: color-mix(in srgb, var(--ml-bg-surface) 82%, transparent);
+  --ml-glass-blur: 14px;
+  --ml-hero-mesh:
+    radial-gradient(
+      48rem 28rem at 12% -8%,
+      color-mix(in srgb, var(--ml-brand) 14%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      36rem 24rem at 92% 8%,
+      color-mix(in srgb, var(--ml-attention-bg) 70%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(
+      180deg,
+      var(--ml-bg-surface),
+      color-mix(in srgb, var(--ml-bg-page) 60%, var(--ml-bg-surface))
+    );
+  --ml-band-mesh:
+    radial-gradient(
+      40rem 18rem at 0% 0%,
+      color-mix(in srgb, var(--ml-brand) 12%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      28rem 16rem at 100% 100%,
+      color-mix(in srgb, var(--ml-brand) 7%, transparent),
+      transparent 70%
+    ),
+    var(--ml-bg-surface);
 }
 
 :root[data-density="patient"] {

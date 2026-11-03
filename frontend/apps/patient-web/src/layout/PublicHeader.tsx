@@ -31,7 +31,7 @@ function LanguageSelect({ className }: { className?: string }) {
         id={id}
         value={current}
         onChange={(event) => void i18n.changeLanguage(event.target.value)}
-        className="h-11 cursor-pointer appearance-none rounded-full border border-border bg-surface pr-3 pl-9 text-body-sm font-semibold text-fg uppercase transition-colors duration-150 ease-out-quint hover:border-border-input"
+        className="h-11 w-[5.25rem] cursor-pointer appearance-none rounded-full border border-border bg-surface pr-3 pl-9 text-body-sm font-semibold text-transparent uppercase transition-colors duration-150 ease-out-quint hover:border-border-input [&>option]:text-fg [&>option]:normal-case"
       >
         {SUPPORTED_LANGUAGES.map((language) => (
           <option key={language} value={language} lang={language}>
@@ -39,6 +39,13 @@ function LanguageSelect({ className }: { className?: string }) {
           </option>
         ))}
       </select>
+      {/* the closed select shows only the code; the options keep the full names */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute left-9 text-body-sm font-semibold text-fg uppercase"
+      >
+        {current.slice(0, 2)}
+      </span>
     </div>
   );
 }
@@ -116,7 +123,7 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
   return (
     <>
       <EmergencyStrip />
-      <header className="ml-site-header sticky top-0 z-30 border-b border-border bg-surface/[0.96] print:hidden">
+      <header className="ml-site-header ml-glass sticky top-0 z-30 border-b border-border bg-surface print:hidden">
         {/* route loading: a thin bar while the next page's code or data loads */}
         <div
           aria-hidden="true"
@@ -141,13 +148,23 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
                     end={item.end}
                     viewTransition
                     className={cx(
-                      "relative inline-flex h-11 items-center px-3 text-body-sm font-semibold whitespace-nowrap text-fg-secondary no-underline",
-                      "transition-colors duration-150 ease-out-quint hover:text-fg",
-                      "after:absolute after:inset-x-3 after:bottom-1.5 after:h-0.5 after:rounded-full after:bg-primary after:opacity-0 after:transition-opacity after:duration-150",
-                      "aria-[current=page]:text-primary aria-[current=page]:after:opacity-100",
+                      "relative inline-flex h-11 items-center rounded-full px-3.5 text-body-sm font-semibold whitespace-nowrap text-fg-secondary no-underline",
+                      "transition-[color,background-color] duration-150 ease-out-quint hover:bg-subtle hover:text-fg",
+                      "aria-[current=page]:text-primary aria-[current=page]:hover:bg-brand-subtle",
                     )}
                   >
-                    {t(item.key)}
+                    {({ isActive }) => (
+                      <>
+                        {t(item.key)}
+                        {/* one indicator on the page: it glides to the next link (base.css) */}
+                        {isActive && (
+                          <span
+                            aria-hidden="true"
+                            className="ml-nav-indicator absolute inset-x-3.5 -bottom-[0.9rem] h-0.5 rounded-full bg-primary"
+                          />
+                        )}
+                      </>
+                    )}
                   </NavLink>
                 </li>
               ))}

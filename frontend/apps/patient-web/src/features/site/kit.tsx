@@ -1,6 +1,6 @@
 import type { FacilityResult } from "@medilink/api-client";
 import { CaretDown, CaretRight, MagnifyingGlass, MapPin } from "@phosphor-icons/react";
-import { Button, cx, Skeleton } from "@medilink/ui";
+import { Button, cx, Skeleton, ImigongoPattern } from "@medilink/ui";
 import type { FormEvent, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
@@ -106,9 +106,11 @@ export function PageHeader({
         </div>
       </div>
     );
-  // public pages (one template): breadcrumb → H1 (Figtree 44 px, 800) → one-line lead
+  // public pages (one template): breadcrumb → H1 (Figtree 44 px, 800) → one-line lead, on a band
+  // with the brand mesh and the Imigongo pattern fading in on the right (base.css .ml-band)
   return (
-    <div className="flex animate-enter flex-col gap-4 pt-8 pb-8 sm:pt-10 sm:pb-10">
+    <div className="ml-band relative isolate mt-6 mb-8 flex animate-enter flex-col gap-4 overflow-hidden rounded-[2rem] border border-border/70 px-5 py-8 shadow-card sm:mt-8 sm:px-10 sm:py-10">
+      <ImigongoPattern opacity={0.09} className="ml-band-pattern -z-10 text-primary" />
       {crumbs && <Breadcrumbs items={[{ to: "/", label: t("nav.home") }, ...crumbs]} />}
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div className="flex max-w-[46rem] flex-col gap-3">

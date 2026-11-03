@@ -121,7 +121,7 @@ export function FacilityCard({
       onMouseEnter={onActivate}
       onFocus={onActivate}
       className={cx(
-        "group relative flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-surface transition-[box-shadow,border-color] duration-200 ease-out-quint hover:border-primary/40 hover:shadow-raised",
+        "ml-lift group relative flex h-full flex-col overflow-hidden rounded-3xl border border-border bg-surface hover:border-primary/40",
         selected && "border-primary shadow-[0_0_0_1px_var(--color-primary)]",
       )}
     >

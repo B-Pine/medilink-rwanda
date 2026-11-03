@@ -834,6 +834,39 @@ export const patientsMocks: FeatureMockFactory = (context) => {
         return updateInsurance(context, auth.lang, profile, await context.readJson(request));
       }),
 
+      // upgrade 05 §2: reception photographs the insurance card at check-in
+      http.post(
+        `${base}/:fp/insurance-profiles/:profile/card-images/`,
+        async ({ request, params }) => {
+          const auth = await unsafe(request, ["patient.register"]);
+          if ("error" in auth) return auth.error;
+          const rec = record(auth.facilityId, str(params.fp));
+          const profile =
+            rec &&
+            store()
+              .patients.get(rec.patient_id)!
+              .insurance.find((p) => p.id === params.profile);
+          if (!profile) return notFound(auth.lang);
+          const form = await request.formData();
+          const side = form.get("side") === "back" ? "back" : "front";
+          profile.card_images = {
+            ...profile.card_images,
+            [side]: { upload_id: crypto.randomUUID(), scan_status: "clean" },
+          };
+          return HttpResponse.json(profile);
+        },
+      ),
+      http.post(
+        `${base}/:fp/insurance-profiles/:profile/card-images/:side/download-links/`,
+        async ({ request }) => {
+          const auth = staff(context, request, ["patients.view"]);
+          if ("error" in auth) return auth.error;
+          return HttpResponse.json({
+            url: "about:blank",
+            expires_at: new Date(Date.now() + 5 * 60_000).toISOString(),
+          });
+        },
+      ),
       http.post(`${base}/:fp/insurance-profiles/:profile/verify/`, async ({ request, params }) => {
         const auth = await unsafe(request, ["patients.insurance_verify"]);
         if ("error" in auth) return auth.error;

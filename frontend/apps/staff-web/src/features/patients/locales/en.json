@@ -171,7 +171,15 @@
     "rejectTitle": "Reject this card",
     "rejectConsequences": "The card will show as rejected until someone checks it again.",
     "reason": "Reason",
-    "add": "Add a card"
+    "add": "Add a card",
+    "card": {
+      "front": "Card front",
+      "back": "Card back",
+      "added": "Photo added",
+      "missing": "No photo yet",
+      "add": "Add photo",
+      "view": "View"
+    }
   },
   "health": {
     "noKnownAllergies": "No known allergies",

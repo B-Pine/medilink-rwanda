@@ -179,7 +179,8 @@
     "remoteNotArrived": "Yiyandikishije ari mu rugo kandi ntaremezwa. Emeza igihe umurwayi ageze ku biro.",
     "patientWords": "Uko umurwayi abivuga",
     "raiseEmergency": "Shyira mu byihutirwa",
-    "raiseEmergencyHint": "Umurwayi ajya imbere ku murongo ubu. Vuga icyo wabonye, urugero \"ububabare mu gatuza, ahumeka nabi\"."
+    "raiseEmergencyHint": "Umurwayi ajya imbere ku murongo ubu. Vuga icyo wabonye, urugero \"ububabare mu gatuza, ahumeka nabi\".",
+    "checkInsurance": "Genzura ubwishingizi: fotora ikarita, hanyuma wemeze"
   },
   "checkIn": {
     "title": "Andika umurwayi",

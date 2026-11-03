@@ -179,7 +179,8 @@
     "remoteNotArrived": "Inscrit depuis chez lui et pas encore confirmé. Confirmez quand le patient est au guichet.",
     "patientWords": "Selon le patient",
     "raiseEmergency": "Passer en urgence",
-    "raiseEmergencyHint": "Le patient passe en tête de file maintenant. Dites ce que vous avez vu, par exemple « douleur thoracique, respire mal »."
+    "raiseEmergencyHint": "Le patient passe en tête de file maintenant. Dites ce que vous avez vu, par exemple « douleur thoracique, respire mal ».",
+    "checkInsurance": "Vérifier l’assurance : photo de la carte, puis vérification"
   },
   "checkIn": {
     "title": "Enregistrer un patient",

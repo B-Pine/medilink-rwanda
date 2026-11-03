@@ -171,7 +171,15 @@
     "rejectTitle": "Refuser cette carte",
     "rejectConsequences": "La carte restera refusée jusqu'à une nouvelle vérification.",
     "reason": "Motif",
-    "add": "Ajouter une carte"
+    "add": "Ajouter une carte",
+    "card": {
+      "front": "Recto de la carte",
+      "back": "Verso de la carte",
+      "added": "Photo ajoutée",
+      "missing": "Pas encore de photo",
+      "add": "Ajouter une photo",
+      "view": "Voir"
+    }
   },
   "health": {
     "noKnownAllergies": "Aucune allergie connue",

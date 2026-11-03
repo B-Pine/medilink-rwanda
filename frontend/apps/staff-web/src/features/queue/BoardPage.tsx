@@ -19,6 +19,7 @@ import {
   CalendarCheck,
   ClockCountdown,
   MegaphoneSimple,
+  ShieldWarning,
   Siren,
   Star,
   UsersThree,
@@ -26,7 +27,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router";
+import { Link, useSearchParams } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PhoneBookingPanel, type PhoneBookingMode } from "../bookings";
@@ -501,6 +502,17 @@ function TicketPanel({
               <p className="m-0 text-body-sm text-fg-secondary">{current.symptoms.join(" · ")}</p>
             )}
           </section>
+        )}
+        {current.flags.includes("insurance_unverified") && visit.data && (
+          <Link
+            to={`/patients/${visit.data.facility_patient_id}?tab=insurance`}
+            className="flex min-h-target items-center gap-3 rounded-xl bg-attention-bg px-3 py-2.5 text-fg no-underline"
+          >
+            <ShieldWarning aria-hidden="true" weight="bold" className="size-5 text-attention" />
+            <span className="flex-1 text-body-sm font-semibold">
+              {t("queue.panel.checkInsurance")}
+            </span>
+          </Link>
         )}
         {canOperate && waiting && !current.flags.includes("emergency") && (
           <Button

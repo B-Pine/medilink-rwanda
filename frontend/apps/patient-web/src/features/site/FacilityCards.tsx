@@ -240,7 +240,7 @@ export function FacilityCardGrid({
   const cols = stack
     ? ""
     : compact
-      ? "sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2"
+      ? "sm:grid-cols-2 lg:grid-cols-1 min-[112rem]:grid-cols-2"
       : wide
         ? "sm:grid-cols-2 lg:grid-cols-3"
         : "sm:grid-cols-2";

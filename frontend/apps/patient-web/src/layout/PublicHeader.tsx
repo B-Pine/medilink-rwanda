@@ -58,7 +58,7 @@ function EmergencyStrip() {
   const { t } = useTranslation();
   return (
     <div className="border-b border-danger/15 bg-danger-bg print:hidden">
-      <div className="mx-auto flex min-h-10 max-w-[75rem] flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-1.5 text-body-sm sm:px-6">
+      <div className="mx-auto flex min-h-10 max-w-[88rem] flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-1.5 text-body-sm sm:px-6">
         <p className="m-0 flex items-center gap-2 text-fg">
           <Siren aria-hidden="true" weight="bold" className="size-4 shrink-0 text-danger" />
           <span className="hidden sm:inline">{t("nav.strip.long")}</span>
@@ -130,7 +130,7 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
           data-loading={navigation.state !== "idle"}
           className="ml-route-progress absolute inset-x-0 top-0 h-0.5 origin-left bg-primary"
         />
-        <div className="mx-auto flex h-[4.5rem] max-w-[75rem] items-center gap-6 px-4 sm:px-6">
+        <div className="mx-auto flex h-[4.5rem] max-w-[88rem] items-center gap-6 px-4 sm:px-6">
           <Link
             to="/"
             viewTransition

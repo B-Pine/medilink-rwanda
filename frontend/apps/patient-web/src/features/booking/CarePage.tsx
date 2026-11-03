@@ -340,7 +340,7 @@ export function CarePage() {
           // filters open in the drawer instead (upgrade 12 §7)
           inDashboard
             ? "pt-6"
-            : "mx-auto max-w-[80rem] px-4 pt-6 pb-16 sm:px-6 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-8 lg:px-8",
+            : "mx-auto max-w-[88rem] px-4 pt-6 pb-16 sm:px-6 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-8",
         )}
       >
         {!inDashboard && (

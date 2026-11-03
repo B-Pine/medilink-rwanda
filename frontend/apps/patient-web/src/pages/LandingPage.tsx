@@ -243,7 +243,7 @@ export function LandingPage() {
     <PublicLayout>
       {/* 1 · Hero: search first, photo with live UI cards beside */}
       <section aria-labelledby="hero-title" className="ml-hero-mesh border-b border-border">
-        <PageContainer className="grid items-center gap-10 pt-10 pb-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-14 lg:pt-14 lg:pb-20">
+        <PageContainer className="grid items-center gap-10 pt-10 pb-14 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:gap-12 lg:pt-14 lg:pb-20">
           <div className="ml-hero-seq flex min-w-0 flex-col items-start gap-5">
             <p className="m-0 inline-flex items-center gap-2 rounded-full bg-brand-subtle px-3 py-1.5 text-body-sm font-semibold text-on-brand-subtle">
               <span aria-hidden="true" className="ml-live-dot" />
@@ -262,7 +262,7 @@ export function LandingPage() {
             <form
               onSubmit={onSearch}
               role="search"
-              className="grid w-full gap-2 rounded-3xl border border-border/70 bg-surface p-2 shadow-raised md:grid-cols-[minmax(0,1fr)_12rem_auto]"
+              className="grid w-full gap-2 rounded-3xl border border-border/70 bg-surface p-2 shadow-raised sm:grid-cols-[minmax(0,1fr)_auto] [&>:first-child]:sm:col-span-2"
             >
               <SearchBar
                 id="home-search"

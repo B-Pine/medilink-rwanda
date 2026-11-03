@@ -424,5 +424,77 @@
     "accepted": "Yakira",
     "noInsurance": "Ubwishingizi: baza ku kwakira",
     "details": "Ibisobanuro"
+  },
+  "home2": {
+    "tag": "Igihe cyo gutegereza kigaragara ako kanya mu bigo byemejwe",
+    "title": "Bona ubuvuzi bukwiye, udategereje igihe kirekire.",
+    "lead": "Gereranya amavuriro n'ibitaro biri hafi, urebe ibikora n'uko umurongo ureshya, hanyuma winjire ku murongo cyangwa ufate gahunda.",
+    "searchPlaceholder": "Serivisi, ikigo cyangwa ikimenyetso",
+    "search": "Shakisha",
+    "popular": "Ibikunze gushakwa",
+    "chips": {
+      "general": "Kwisuzumisha rusange",
+      "maternal": "Ubuvuzi bw'ababyeyi",
+      "lab": "Ibizamini",
+      "dental": "Amenyo",
+      "symptoms": "Ntubizi neza? Reba ibimenyetso"
+    },
+    "float": {
+      "queue": "Uri uwa 3 ku murongo · iminota 12",
+      "insurance": "Byakirwa hano: Mutuelle · RAMA · MMI",
+      "open": "Irakora ubu · ifunga saa 18:00"
+    },
+    "trust": {
+      "label": "MediLink mu mibare",
+      "facilities": "ibigo byemejwe",
+      "districts": "uturere dushobora gushakishwamo",
+      "languages": "indimi: Ikinyarwanda, Icyongereza, Igifaransa",
+      "noAccountValue": "Ni ubuntu",
+      "noAccount": "nta konti ikenewe ngo ushakishe"
+    },
+    "careTitle": "Ukeneye ubuhe buvuzi?",
+    "careLead": "Hitamo serivisi urebe ahantu iboneka.",
+    "facilityCount_one": "Ikigo {{count}}",
+    "facilityCount_other": "Ibigo {{count}}",
+    "nearTitle": "Ibikora biri hafi yawe",
+    "howTitle": "Kuva gushakisha kugeza kwakirwa, mu ntambwe eshatu",
+    "howLead": "Nta konti ikenewe ngo urebe; konti ikenewe ngo winjire ku murongo cyangwa ufate gahunda.",
+    "stepLabel": "Intambwe ya {{n}}",
+    "steps": {
+      "search": {
+        "title": "Shakisha kandi ugereranye",
+        "body": "Reba ibikora, igihe cyo gutegereza, intera n'ubwishingizi bwakirwa."
+      },
+      "join": {
+        "title": "Injira ku murongo cyangwa ufate gahunda",
+        "body": "Injira ku murongo w'uyu munsi uri kuri telefone, cyangwa ufate isaha."
+      },
+      "arrive": {
+        "title": "Ngwino igihe cyawe kigeze",
+        "body": "Kurikira umwanya wawe ako kanya, uze igihe wegereje imbere."
+      }
+    },
+    "phone": {
+      "search": "Amenyo hafi yanjye",
+      "place1": "Ikigo nderabuzima cya Kacyiru",
+      "wait1": "Irakora · ~iminota 15",
+      "place2": "Ivuriro rya Remera",
+      "wait2": "Hari benshi · ~iminota 45",
+      "service": "Kwisuzumisha rusange",
+      "slot": "Uyu munsi · 6 barategereje",
+      "joinButton": "Injira ku murongo",
+      "ticket": "Itike yawe"
+    },
+    "facilitiesTitle": "Icyumba cyo gutegereza gituje.",
+    "facilitiesLead": "Abarwayi babona igihe cyo gutegereza mbere yo kuza. Wowe ubona umurongo, urujya n'uruza n'umunsi wose ku kibaho kimwe.",
+    "facilitiesAction": "MediLink ku bigo by'ubuvuzi",
+    "dash": {
+      "title": "Uyu munsi",
+      "live": "Ako kanya",
+      "queue": "Ku murongo",
+      "wait": "Igihe cyo gutegereza",
+      "seen": "Bakiriwe uyu munsi",
+      "note": "Abaje ku isaha"
+    }
   }
 }

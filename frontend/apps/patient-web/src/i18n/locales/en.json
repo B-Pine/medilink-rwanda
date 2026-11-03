@@ -127,7 +127,8 @@
       "body": "Find an open facility near you, see how busy it is and book ahead before you leave home.",
       "symptoms": "Not sure where to go?",
       "call": "Emergency · call 912"
-    }
+    },
+    "dataInRwanda": "Health data stored in Rwanda"
   },
   "authAside": {
     "eyebrow": "Your MediLink account",

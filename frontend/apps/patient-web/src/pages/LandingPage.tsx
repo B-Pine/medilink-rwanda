@@ -1,42 +1,144 @@
 import type { FacilitySearchInput } from "@medilink/api-client";
 import {
   ArrowRight,
+  Baby,
+  Buildings,
+  ChartLineUp,
+  CheckCircle,
   ClockCountdown,
   Crosshair,
-  FirstAid,
+  Eye,
+  Globe,
   MagnifyingGlass,
-  Phone,
-  Siren,
+  ShieldCheck,
+  Stethoscope,
+  Syringe,
   Ticket,
+  Tooth,
+  UserCircle,
   type Icon,
 } from "@phosphor-icons/react";
-import { Button, buttonClassName, cx, ImigongoPattern } from "@medilink/ui";
+import { Button, cx } from "@medilink/ui";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 
 import { useApi } from "../app/services";
 import { PageHeading } from "../components/PageHeading";
-import { DISTRICT_CODES, type DistrictKey } from "../features/booking/discovery";
+import {
+  DISTRICT_CODES,
+  SERVICE_CODES,
+  type DistrictKey,
+  type ServiceKey,
+} from "../features/booking/discovery";
 import { FILTER, sortResults, useNearMe, type Sort } from "../features/booking/Places";
-import { EMERGENCY } from "../features/site/data";
+import { useAllFacilities } from "../features/site/data";
 import { FacilityExplorer } from "../features/site/FacilityCards";
 import { HeroIllustration } from "../features/site/illustrations";
 import { LocationSelector, PageContainer, SearchBar } from "../features/site/kit";
 import { PublicLayout } from "../layout/PublicLayout";
 
-const STEPS: { key: string; icon: Icon }[] = [
-  { key: "find", icon: MagnifyingGlass },
-  { key: "check", icon: ClockCountdown },
-  { key: "join", icon: Ticket },
-  { key: "receive", icon: FirstAid },
+/**
+ * Home photography (redesign: real Rwandan care settings, 4:4.4, green duotone). Until the
+ * commissioned photo is in `public/photos/`, the illustration fills the same frame.
+ */
+/** The example ticket on the "arrive" phone screen (a sample, not a real patient). */
+const DEMO_TICKET = "G-014";
+
+const HERO_PHOTO: { src: string; alt: string } | null = null;
+
+const POPULAR: { key: string; to: string }[] = [
+  { key: "general", to: "/find-care?service=general" },
+  { key: "maternal", to: "/find-care?service=antenatal" },
+  { key: "lab", to: "/find-care?q=lab" },
+  { key: "dental", to: "/find-care?service=dental" },
 ];
 
+const CARE_TILES: { key: ServiceKey; icon: Icon }[] = [
+  { key: "general", icon: Stethoscope },
+  { key: "antenatal", icon: Baby },
+  { key: "pediatrics", icon: UserCircle },
+  { key: "dental", icon: Tooth },
+  { key: "eye", icon: Eye },
+  { key: "vaccination", icon: Syringe },
+];
+
+const STEPS: { key: "search" | "join" | "arrive"; icon: Icon }[] = [
+  { key: "search", icon: MagnifyingGlass },
+  { key: "join", icon: Ticket },
+  { key: "arrive", icon: CheckCircle },
+];
+
+/** A small card that floats over the hero photo; drawn from the real app's UI, not invented. */
+function FloatCard({
+  icon: CardIcon,
+  children,
+  className,
+}: {
+  icon: Icon;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      aria-hidden="true"
+      className={cx(
+        "absolute flex items-center gap-2.5 rounded-2xl border border-border bg-surface px-3.5 py-2.5 text-body-sm font-semibold text-fg shadow-raised",
+        className,
+      )}
+    >
+      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-brand-subtle text-primary">
+        <CardIcon weight="bold" className="size-4" />
+      </span>
+      {children}
+    </div>
+  );
+}
+
+/** A phone screen for "How it works": the app's own parts, scaled down. */
+function Phone({ children }: { children: ReactNode }) {
+  return (
+    <div
+      aria-hidden="true"
+      className="mx-auto w-full max-w-[15rem] rounded-[2rem] border-[6px] border-fg/90 bg-page p-3 shadow-raised"
+    >
+      <div className="mx-auto mb-3 h-1.5 w-14 rounded-full bg-fg/20" />
+      <div className="flex flex-col gap-2">{children}</div>
+    </div>
+  );
+}
+
+function PhoneRow({
+  title,
+  meta,
+  tone = "brand",
+}: {
+  title: string;
+  meta: string;
+  tone?: "brand" | "busy";
+}) {
+  return (
+    <div className="flex flex-col gap-1 rounded-xl border border-border bg-surface p-2.5">
+      <span className="text-caption font-bold text-fg">{title}</span>
+      <span
+        className={cx(
+          "self-start rounded-full px-2 py-0.5 text-[0.6875rem] font-semibold",
+          tone === "busy"
+            ? "bg-attention-bg text-attention"
+            : "bg-brand-subtle text-on-brand-subtle",
+        )}
+      >
+        {meta}
+      </span>
+    </div>
+  );
+}
+
 /**
- * Home `/` (upgrade 11 §4): hero with the custom illustration, a search for any need, the live
- * list and map of facilities, emergency access, how MediLink works, the sign-in invitation and a
- * last call to find care. Works without an account; the location stays in the browser (S5 D-2).
+ * Home `/` (redesign "clinical calm"): seven sections, one job each. Hero with search and popular
+ * needs; real numbers; what care; open near you; three steps on phone screens; a band for
+ * facilities; the footer. Works without an account; the location stays in the browser (S5 D-2).
  */
 export function LandingPage() {
   const { t } = useTranslation();
@@ -54,10 +156,23 @@ export function LandingPage() {
     queryKey: ["discovery", "home", body],
     queryFn: () => api.booking.search(body),
   });
-  const rows = useMemo(
-    () => sortResults(results.data?.results ?? [], sort).slice(0, 6),
-    [results.data, sort],
-  );
+  const all = useAllFacilities();
+  const rows = useMemo(() => {
+    // one card per facility, open ones first
+    const seen = new Set<string>();
+    const unique = (results.data?.results ?? []).filter((r) =>
+      seen.has(r.slug) ? false : (seen.add(r.slug), true),
+    );
+    return sortResults(unique, sort)
+      .sort((a, b) => Number(b.open_now) - Number(a.open_now))
+      .slice(0, 6);
+  }, [results.data, sort]);
+  // real numbers only: facilities and per-service counts from the live listing
+  const facilityCount = new Set((all.data ?? []).map((r) => r.slug)).size;
+  const countFor = (key: ServiceKey) =>
+    new Set(
+      (all.data ?? []).filter((r) => r.service_code === SERVICE_CODES[key]).map((r) => r.slug),
+    ).size;
 
   const onSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -68,90 +183,184 @@ export function LandingPage() {
     void navigate(query ? `/find-care?${query}` : "/find-care", { viewTransition: true });
   };
 
+  const trust = [
+    {
+      icon: Buildings,
+      value: all.data ? String(facilityCount) : "—",
+      label: t("site.home2.trust.facilities"),
+    },
+    { icon: Globe, value: "30", label: t("site.home2.trust.districts") },
+    { icon: ShieldCheck, value: "3", label: t("site.home2.trust.languages") },
+    {
+      icon: UserCircle,
+      value: t("site.home2.trust.noAccountValue"),
+      label: t("site.home2.trust.noAccount"),
+    },
+  ];
+
   return (
     <PublicLayout>
-      {/* 1 · Hero */}
-      <section
-        aria-labelledby="hero-title"
-        className="relative isolate overflow-hidden bg-brand-subtle/60"
-      >
-        <ImigongoPattern opacity={0.05} className="-z-10 text-primary" />
-        <PageContainer className="ml-stagger grid items-center gap-10 pt-14 pb-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16 lg:pt-20 lg:pb-28">
-          <div className="flex max-w-xl flex-col items-start gap-5">
-            <p className="m-0 text-caption font-semibold tracking-[0.14em] text-primary uppercase">
-              {t("site.home.label")}
+      {/* 1 · Hero: search first, photo with live UI cards beside */}
+      <section aria-labelledby="hero-title" className="border-b border-border bg-surface">
+        <PageContainer className="grid items-center gap-10 pt-10 pb-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-14 lg:pt-14 lg:pb-20">
+          <div className="flex min-w-0 animate-enter flex-col items-start gap-5">
+            <p className="m-0 inline-flex items-center gap-2 rounded-full bg-brand-subtle px-3 py-1.5 text-body-sm font-semibold text-on-brand-subtle">
+              <span aria-hidden="true" className="ml-live-dot" />
+              {t("site.home2.tag")}
             </p>
             <PageHeading
               id="hero-title"
-              title={t("site.home.title")}
-              className="font-heading text-[2.5rem] leading-[1.08] font-bold tracking-tight text-fg sm:text-[3.25rem]"
+              title={t("site.home2.title")}
+              className="font-heading text-[2.25rem] leading-[1.08] font-extrabold tracking-tight text-balance text-fg sm:text-[3.25rem]"
             >
-              {t("site.home.title")}
+              {t("site.home2.title")}
             </PageHeading>
-            <p className="m-0 max-w-md text-[1.125rem] leading-relaxed text-fg-secondary">
-              {t("site.home.lead")}
+            <p className="m-0 max-w-[34rem] text-[1.125rem] leading-relaxed text-fg-secondary">
+              {t("site.home2.lead")}
             </p>
-            <div className="mt-1 flex flex-wrap items-center gap-x-6 gap-y-3">
-              <Link
-                to="/find-care"
-                viewTransition
-                className={buttonClassName({ size: "lg", pill: true, className: "px-7" })}
-              >
-                {t("nav.findCare")}
-                <ArrowRight aria-hidden="true" className="size-5" />
-              </Link>
-              <Link
-                to="/how-it-works"
-                viewTransition
-                className="inline-flex min-h-target items-center font-semibold text-link"
-              >
-                {t("site.home.how")}
-              </Link>
+            <form
+              onSubmit={onSearch}
+              role="search"
+              className="grid w-full gap-2 rounded-3xl border border-border bg-page p-2 md:grid-cols-[minmax(0,1fr)_12rem_auto]"
+            >
+              <SearchBar
+                id="home-search"
+                label={t("site.searchLabel")}
+                value={text}
+                onChange={setText}
+                placeholder={t("site.home2.searchPlaceholder")}
+              />
+              <LocationSelector id="home-location" value={where} onChange={setWhere} />
+              <Button type="submit" size="lg" pill className="min-h-12 px-7">
+                <MagnifyingGlass aria-hidden="true" weight="bold" />
+                {t("site.home2.search")}
+              </Button>
+            </form>
+            <div className="flex flex-col gap-2">
+              <p className="m-0 text-body-sm font-semibold text-fg-secondary">
+                {t("site.home2.popular")}
+              </p>
+              <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
+                {POPULAR.map(({ key, to }) => (
+                  <li key={key}>
+                    <Link
+                      to={to}
+                      viewTransition
+                      className="inline-flex min-h-11 items-center rounded-full border border-border bg-surface px-4 text-body-sm font-semibold text-fg no-underline transition-colors duration-150 hover:border-primary hover:text-primary"
+                    >
+                      {t(`site.home2.chips.${key}`)}
+                    </Link>
+                  </li>
+                ))}
+                <li>
+                  <Link
+                    to="/check-symptoms"
+                    viewTransition
+                    className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-brand-subtle px-4 text-body-sm font-semibold text-on-brand-subtle no-underline transition-colors duration-150 hover:bg-primary hover:text-on-primary"
+                  >
+                    {t("site.home2.chips.symptoms")}
+                    <ArrowRight aria-hidden="true" weight="bold" className="size-3.5" />
+                  </Link>
+                </li>
+              </ul>
             </div>
-            <p className="m-0 text-body-sm text-fg-muted">{t("site.home.reassure")}</p>
           </div>
-          <HeroIllustration className="mx-auto max-w-[32rem]" />
+
+          <div className="relative mx-auto w-full max-w-[28rem] pb-6 lg:pb-0">
+            <div className="aspect-[4/4.4] overflow-hidden rounded-[28px] bg-gradient-to-br from-brand-subtle to-[#d5ebe0]">
+              {HERO_PHOTO ? (
+                <img
+                  src={HERO_PHOTO.src}
+                  alt={HERO_PHOTO.alt}
+                  width={560}
+                  height={616}
+                  className="size-full object-cover"
+                />
+              ) : (
+                <HeroIllustration className="size-full p-8" />
+              )}
+            </div>
+            <FloatCard icon={Ticket} className="-left-2 top-8 sm:-left-8">
+              {t("site.home2.float.queue")}
+            </FloatCard>
+            <FloatCard icon={ShieldCheck} className="-right-2 top-1/2 sm:-right-6">
+              {t("site.home2.float.insurance")}
+            </FloatCard>
+            <FloatCard icon={ClockCountdown} className="bottom-0 left-6 lg:-bottom-4">
+              {t("site.home2.float.open")}
+            </FloatCard>
+          </div>
         </PageContainer>
       </section>
 
-      {/* 2 · Search */}
-      <PageContainer className="relative z-10 -mt-10">
-        <section
-          aria-labelledby="search-title"
-          className="animate-rise rounded-3xl bg-surface p-5 shadow-raised sm:p-7"
-        >
-          <h2 id="search-title" className="m-0 text-h2 tracking-tight">
-            {t("site.home.searchTitle")}
-          </h2>
-          <p className="m-0 mt-1 text-fg-secondary">{t("site.home.searchLead")}</p>
-          <form
-            onSubmit={onSearch}
-            role="search"
-            className="mt-5 grid gap-3 md:grid-cols-[minmax(0,1fr)_14rem_auto]"
-          >
-            <SearchBar
-              id="home-search"
-              label={t("site.searchLabel")}
-              value={text}
-              onChange={setText}
-              placeholder={t("site.searchPlaceholder")}
-            />
-            <LocationSelector id="home-location" value={where} onChange={setWhere} />
-            <Button type="submit" size="lg" pill className="min-h-12 px-7">
-              {t("nav.findCare")}
-            </Button>
-          </form>
-        </section>
-      </PageContainer>
+      {/* 2 · Trust strip: only real numbers */}
+      <section
+        aria-label={t("site.home2.trust.label")}
+        className="border-b border-border bg-surface"
+      >
+        <PageContainer>
+          <ul className="m-0 grid list-none grid-cols-2 gap-px p-0 md:grid-cols-4">
+            {trust.map(({ icon: TrustIcon, value, label }) => (
+              <li key={label} className="flex items-center gap-3 py-5">
+                <TrustIcon
+                  aria-hidden="true"
+                  weight="duotone"
+                  className="size-7 shrink-0 text-primary"
+                />
+                <span className="flex flex-col">
+                  <span className="font-heading text-h3 leading-tight font-extrabold text-fg tabular-nums">
+                    {value}
+                  </span>
+                  <span className="text-body-sm text-fg-secondary">{label}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </PageContainer>
+      </section>
 
-      <PageContainer className="flex flex-col gap-20 py-16 lg:gap-28 lg:py-24">
-        {/* 3 · Facilities near you */}
-        {/* cards; once the visitor shares a location they sort by distance and show the km */}
+      <PageContainer className="flex flex-col gap-20 py-16 lg:gap-24 lg:py-20">
+        {/* 3 · What care do you need? */}
+        <section aria-labelledby="care-title" className="flex flex-col gap-6">
+          <div className="flex flex-col gap-1">
+            <h2 id="care-title" className="m-0 font-heading text-h1 font-bold tracking-tight">
+              {t("site.home2.careTitle")}
+            </h2>
+            <p className="m-0 text-fg-secondary">{t("site.home2.careLead")}</p>
+          </div>
+          <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2 lg:grid-cols-3">
+            {CARE_TILES.map(({ key, icon: TileIcon }) => (
+              <li key={key}>
+                <Link
+                  to={`/find-care?service=${key}`}
+                  viewTransition
+                  className="group flex min-h-20 items-center gap-4 rounded-2xl border border-border bg-surface p-4 text-fg no-underline transition-[border-color,box-shadow] duration-200 ease-out-quint hover:border-primary/50 hover:shadow-card"
+                >
+                  <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-brand-subtle text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-on-primary">
+                    <TileIcon aria-hidden="true" weight="duotone" className="size-6" />
+                  </span>
+                  <span className="flex min-w-0 flex-1 flex-col">
+                    <span className="font-semibold">{t(`landing.services.${key}`)}</span>
+                    <span className="text-body-sm text-fg-secondary tabular-nums">
+                      {all.data ? t("site.home2.facilityCount", { count: countFor(key) }) : " "}
+                    </span>
+                  </span>
+                  <ArrowRight
+                    aria-hidden="true"
+                    className="size-5 text-fg-muted transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5 group-hover:text-primary"
+                  />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* 4 · Open near you */}
         <section aria-labelledby="near-title" className="flex flex-col gap-5">
-          <div className="ml-reveal flex flex-wrap items-end justify-between gap-4">
+          <div className="flex flex-wrap items-end justify-between gap-4">
             <div className="flex flex-col gap-1">
-              <h2 id="near-title" className="m-0 text-h2 tracking-tight">
-                {t("site.home.nearTitle")}
+              <h2 id="near-title" className="m-0 font-heading text-h1 font-bold tracking-tight">
+                {t("site.home2.nearTitle")}
               </h2>
               <p role="status" className="m-0 text-body-sm text-fg-secondary">
                 {locating === "denied"
@@ -167,7 +376,7 @@ export function LandingPage() {
                 aria-pressed={near !== null}
                 onClick={locate}
                 disabled={locating === "busy"}
-                className={cx(FILTER, "inline-flex items-center gap-1.5")}
+                className={cx(FILTER, "inline-flex min-h-11 items-center gap-1.5")}
               >
                 <Crosshair
                   aria-hidden="true"
@@ -178,17 +387,15 @@ export function LandingPage() {
               <Link
                 to="/facilities"
                 viewTransition
-                className="group inline-flex min-h-target items-center gap-1.5 px-2 font-semibold text-link no-underline hover:underline"
+                className="group inline-flex min-h-11 items-center gap-1.5 px-2 font-semibold text-link no-underline hover:underline"
               >
                 {t("site.home.viewAll")}
-                <ArrowRight
-                  aria-hidden="true"
-                  className="size-4 transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5"
-                />
+                <ArrowRight aria-hidden="true" className="size-4" />
               </Link>
             </div>
           </div>
           <FacilityExplorer
+            switchable
             label={t("site.home.nearTitle")}
             rows={rows}
             loading={results.isPending}
@@ -202,151 +409,139 @@ export function LandingPage() {
           />
         </section>
 
-        {/* 4 · Emergency */}
-        <section
-          aria-labelledby="emergency-title"
-          className="ml-reveal relative flex flex-col gap-5 overflow-hidden rounded-3xl border border-danger/20 bg-surface p-6 shadow-card sm:flex-row sm:items-center sm:p-8"
-        >
-          {/* a red edge: the one band on the page that is about danger */}
-          <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5 bg-danger-solid" />
-          <span className="relative grid size-14 shrink-0 place-items-center rounded-2xl bg-danger-bg text-danger">
-            <span
-              aria-hidden="true"
-              className="absolute inset-0 animate-ping rounded-2xl bg-danger-bg opacity-60 [animation-duration:2.4s] motion-reduce:hidden"
-            />
-            <Siren aria-hidden="true" weight="bold" className="relative size-7" />
-          </span>
-          <div className="flex flex-1 flex-col gap-1">
-            <h2 id="emergency-title" className="m-0 text-h2 tracking-tight">
-              {t("site.home.emergencyTitle")}
-            </h2>
-            <p className="m-0 text-fg-secondary">{t("site.home.emergencyLead")}</p>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <a
-              href={`tel:${EMERGENCY.number}`}
-              className="inline-flex min-h-target items-center gap-1.5 font-semibold text-danger"
-            >
-              <Phone aria-hidden="true" weight="bold" className="size-4" />
-              {t("site.call", { number: EMERGENCY.number })}
-            </a>
-            <Link
-              to="/emergency"
-              viewTransition
-              className={buttonClassName({ variant: "secondary", pill: true })}
-            >
-              {t("site.home.emergencyAction")}
-            </Link>
-          </div>
-        </section>
-
-        {/* 5 · How MediLink works */}
+        {/* 5 · From search to seen, in three steps */}
         <section aria-labelledby="how-title" className="flex flex-col gap-8">
-          <div className="ml-reveal flex flex-wrap items-end justify-between gap-4">
-            <h2 id="how-title" className="m-0 text-h2 tracking-tight">
-              {t("site.home.howTitle")}
+          <div className="flex flex-col gap-1">
+            <h2 id="how-title" className="m-0 font-heading text-h1 font-bold tracking-tight">
+              {t("site.home2.howTitle")}
             </h2>
-            <Link
-              to="/how-it-works"
-              viewTransition
-              className="group inline-flex min-h-target items-center gap-1.5 font-semibold text-link no-underline hover:underline"
-            >
-              {t("site.home.how")}
-              <ArrowRight
-                aria-hidden="true"
-                className="size-4 transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5"
-              />
-            </Link>
+            <p className="m-0 text-fg-secondary">{t("site.home2.howLead")}</p>
           </div>
-          {/* four cards, each rising in turn as the row scrolls into view */}
-          <ol className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
+          <ol className="m-0 grid list-none gap-6 p-0 md:grid-cols-3">
             {STEPS.map(({ key, icon: StepIcon }, index) => (
               <li
                 key={key}
-                style={{ animationRange: `entry ${index * 8}% entry ${60 + index * 8}%` }}
-                className="ml-reveal group relative flex flex-col gap-4 overflow-hidden rounded-3xl bg-surface p-6 shadow-card transition-[box-shadow,translate] duration-300 ease-out-quint hover:-translate-y-1 hover:shadow-raised motion-reduce:hover:translate-y-0"
+                className="flex flex-col gap-5 rounded-3xl border border-border bg-surface p-6"
               >
-                <span
-                  aria-hidden="true"
-                  className="absolute -top-3 -right-1 font-heading text-[5rem] leading-none font-extrabold text-brand-subtle tabular-nums select-none"
-                >
-                  {index + 1}
-                </span>
-                <span className="relative grid size-12 place-items-center rounded-2xl bg-brand-subtle text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-on-primary">
-                  <StepIcon aria-hidden="true" weight="duotone" className="size-6" />
-                </span>
-                <div className="relative flex flex-col gap-1">
-                  <h3 className="m-0 text-h3">{t(`site.home.steps.${key}.title`)}</h3>
-                  <p className="m-0 text-body-sm text-fg-secondary">
-                    {t(`site.home.steps.${key}.body`)}
-                  </p>
+                <div className="flex items-center gap-3">
+                  <span className="grid size-10 place-items-center rounded-xl bg-brand-subtle text-primary">
+                    <StepIcon aria-hidden="true" weight="bold" className="size-5" />
+                  </span>
+                  <span className="sr-only">{t("site.home2.stepLabel", { n: index + 1 })}</span>
+                  <h3 className="m-0 text-h3">{t(`site.home2.steps.${key}.title`)}</h3>
                 </div>
+                <p className="m-0 text-body-sm text-fg-secondary">
+                  {t(`site.home2.steps.${key}.body`)}
+                </p>
+                {key === "search" && (
+                  <Phone>
+                    <div className="rounded-full border border-border bg-surface px-3 py-2 text-[0.6875rem] text-fg-secondary">
+                      {t("site.home2.phone.search")}
+                    </div>
+                    <PhoneRow
+                      title={t("site.home2.phone.place1")}
+                      meta={t("site.home2.phone.wait1")}
+                    />
+                    <PhoneRow
+                      title={t("site.home2.phone.place2")}
+                      meta={t("site.home2.phone.wait2")}
+                      tone="busy"
+                    />
+                  </Phone>
+                )}
+                {key === "join" && (
+                  <Phone>
+                    <PhoneRow
+                      title={t("site.home2.phone.service")}
+                      meta={t("site.home2.phone.slot")}
+                    />
+                    <div className="rounded-xl bg-primary px-3 py-2 text-center text-caption font-bold text-on-primary">
+                      {t("site.home2.phone.joinButton")}
+                    </div>
+                  </Phone>
+                )}
+                {key === "arrive" && (
+                  <Phone>
+                    <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-surface p-3">
+                      <span className="text-[0.6875rem] text-fg-secondary">
+                        {t("site.home2.phone.ticket")}
+                      </span>
+                      <span className="font-heading text-h2 font-extrabold text-primary tabular-nums">
+                        {DEMO_TICKET}
+                      </span>
+                      <span className="rounded-full bg-brand-subtle px-2 py-0.5 text-[0.6875rem] font-semibold text-on-brand-subtle">
+                        {t("site.home2.float.queue")}
+                      </span>
+                    </div>
+                  </Phone>
+                )}
               </li>
             ))}
           </ol>
         </section>
       </PageContainer>
 
-      {/* 6 · Sign-in invitation */}
-      <section
-        aria-labelledby="account-title"
-        className="relative isolate overflow-hidden bg-forest text-on-forest"
-      >
-        <ImigongoPattern opacity={0.07} className="-z-10 text-on-forest-accent" />
-        <PageContainer className="ml-reveal flex flex-col items-start gap-6 py-16 lg:flex-row lg:items-center lg:justify-between lg:py-20">
-          <div className="flex max-w-xl flex-col gap-3">
-            <h2 id="account-title" className="m-0 text-h1 tracking-tight text-on-forest">
-              {t("site.home.accountTitle")}
+      {/* 6 · For facilities: one dark band, with the live dashboard */}
+      <section aria-labelledby="facilities-title" className="bg-forest text-on-forest">
+        <PageContainer className="grid items-center gap-10 py-16 lg:grid-cols-2 lg:py-20">
+          <div className="flex flex-col items-start gap-4">
+            <p className="m-0 text-caption font-semibold tracking-[0.14em] text-on-forest-muted uppercase">
+              {t("nav.forFacilities")}
+            </p>
+            <h2
+              id="facilities-title"
+              className="m-0 font-heading text-h1 font-bold tracking-tight text-on-forest"
+            >
+              {t("site.home2.facilitiesTitle")}
             </h2>
-            <p className="m-0 text-on-forest-muted">{t("site.home.accountLead")}</p>
+            <p className="m-0 max-w-lg text-on-forest-muted">{t("site.home2.facilitiesLead")}</p>
+            <Link
+              to="/for-facilities"
+              viewTransition
+              className="mt-2 inline-flex min-h-12 items-center gap-2 rounded-full bg-on-forest px-6 font-semibold text-forest no-underline transition-[filter] duration-150 hover:brightness-95"
+            >
+              {t("site.home2.facilitiesAction")}
+              <ArrowRight aria-hidden="true" weight="bold" className="size-4" />
+            </Link>
           </div>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-            <Link
-              to="/login"
-              viewTransition
-              className="inline-flex min-h-12 items-center rounded-full bg-on-forest px-7 font-semibold text-forest no-underline transition-[filter,transform] duration-150 ease-out-quint hover:brightness-95 active:scale-[0.97]"
-            >
-              {t("nav.login")}
-            </Link>
-            <Link
-              to="/find-care"
-              viewTransition
-              className="inline-flex min-h-target items-center font-semibold text-on-forest underline-offset-4 hover:underline"
-            >
-              {t("site.home.exploreFirst")}
-            </Link>
+          <div aria-hidden="true" className="rounded-3xl bg-surface p-5 text-fg shadow-raised">
+            <div className="mb-4 flex items-center justify-between">
+              <span className="font-heading font-bold">{t("site.home2.dash.title")}</span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-subtle px-2.5 py-1 text-caption font-semibold text-on-brand-subtle">
+                <span className="ml-live-dot" />
+                {t("site.home2.dash.live")}
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { label: t("site.home2.dash.queue"), value: "18" },
+                { label: t("site.home2.dash.wait"), value: "24 min" },
+                { label: t("site.home2.dash.seen"), value: "86" },
+              ].map((k) => (
+                <div key={k.label} className="rounded-2xl border border-border p-3">
+                  <span className="block text-caption text-fg-secondary">{k.label}</span>
+                  <span className="font-heading text-h2 font-extrabold tabular-nums">
+                    {k.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 flex h-24 items-end gap-1.5 rounded-2xl bg-page p-3">
+              {[34, 52, 61, 48, 72, 66, 80, 58, 44, 38].map((h, i) => (
+                <span
+                  key={i}
+                  className="flex-1 rounded-t-md bg-primary/70"
+                  style={{ height: `${h}%` }}
+                />
+              ))}
+            </div>
+            <p className="m-0 mt-3 inline-flex items-center gap-1.5 text-caption text-fg-secondary">
+              <ChartLineUp className="size-3.5" />
+              {t("site.home2.dash.note")}
+            </p>
           </div>
         </PageContainer>
       </section>
-
-      {/* 7 · Final action */}
-      <PageContainer className="py-16 lg:py-24">
-        <section
-          aria-labelledby="ready-title"
-          className="ml-reveal relative isolate flex flex-col items-center gap-5 overflow-hidden rounded-[2rem] bg-brand-subtle px-6 py-14 text-center"
-        >
-          <ImigongoPattern opacity={0.06} className="-z-10 text-primary" />
-          <h2 id="ready-title" className="m-0 max-w-2xl text-h1 tracking-tight text-balance">
-            {t("site.home.readyTitle")}
-          </h2>
-          <p className="m-0 max-w-md text-fg-secondary">{t("site.home.reassure")}</p>
-          <Link
-            to="/find-care"
-            viewTransition
-            className={buttonClassName({
-              size: "lg",
-              pill: true,
-              className: "group px-8 shadow-raised",
-            })}
-          >
-            {t("nav.findCare")}
-            <ArrowRight
-              aria-hidden="true"
-              className="size-5 transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5"
-            />
-          </Link>
-        </section>
-      </PageContainer>
     </PublicLayout>
   );
 }

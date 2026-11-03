@@ -127,7 +127,8 @@
       "body": "Trouvez un établissement ouvert près de chez vous, voyez son affluence et réservez avant de partir.",
       "symptoms": "Vous ne savez pas où aller ?",
       "call": "Urgence · appelez le 912"
-    }
+    },
+    "dataInRwanda": "Données de santé hébergées au Rwanda"
   },
   "authAside": {
     "eyebrow": "Votre compte MediLink",

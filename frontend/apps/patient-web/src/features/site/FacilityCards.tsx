@@ -209,6 +209,7 @@ export function FacilityCardGrid({
   onSelect,
   onShowOnMap,
   compact = false,
+  wide = false,
 }: {
   label: string;
   rows: FacilityResult[];
@@ -218,8 +219,14 @@ export function FacilityCardGrid({
   onShowOnMap?: (slug: string) => void;
   /** Beside a filter column and a map: one card per row until the screen is very wide. */
   compact?: boolean;
+  /** No map beside: three cards a row on wide screens. */
+  wide?: boolean;
 }) {
-  const cols = compact ? "sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2" : "sm:grid-cols-2";
+  const cols = compact
+    ? "sm:grid-cols-2 lg:grid-cols-1 2xl:grid-cols-2"
+    : wide
+      ? "sm:grid-cols-2 lg:grid-cols-3"
+      : "sm:grid-cols-2";
   if (loading)
     return (
       <div className={cx("grid gap-4", cols)}>
@@ -265,6 +272,7 @@ export function FacilityExplorer({
   onRetry,
   near = null,
   empty,
+  switchable = false,
 }: {
   label: string;
   rows: FacilityResult[];
@@ -276,9 +284,12 @@ export function FacilityExplorer({
   /** The visitor's position, drawn on the map when shared. */
   near?: { lat: number; lng: number } | null;
   empty: ReactNode;
+  /** List / Map switch at every width (home), instead of a map always beside the cards. */
+  switchable?: boolean;
 }) {
   const { t } = useTranslation();
   const [view, setView] = useState<"list" | "map">("list");
+  const besides = !switchable;
   const [selected, setSelected] = useState<string | null>(null);
   const map = useRef<HTMLDivElement>(null);
   // false while the pre-rendered page hydrates (Leaflet needs the browser), then true
@@ -322,7 +333,7 @@ export function FacilityExplorer({
       <div
         role="group"
         aria-label={t("home.view.label")}
-        className="flex self-start rounded-full bg-subtle p-1 lg:hidden"
+        className={cx("flex self-start rounded-full bg-subtle p-1", besides && "lg:hidden")}
       >
         {(["list", "map"] as const).map((key) => (
           <button
@@ -330,7 +341,7 @@ export function FacilityExplorer({
             type="button"
             aria-pressed={view === key}
             onClick={() => setView(key)}
-            className="inline-flex min-h-10 cursor-pointer items-center gap-1.5 rounded-full px-4 text-body-sm font-semibold text-fg-secondary transition-[background-color,color,box-shadow] duration-200 aria-pressed:bg-surface aria-pressed:text-fg aria-pressed:shadow-card"
+            className="inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full px-4 text-body-sm font-semibold text-fg-secondary transition-[background-color,color,box-shadow] duration-200 aria-pressed:bg-surface aria-pressed:text-fg aria-pressed:shadow-card"
           >
             {key === "list" ? (
               <SquaresFour aria-hidden="true" className="size-4" />
@@ -342,18 +353,25 @@ export function FacilityExplorer({
         ))}
       </div>
       {/* wide screens: the cards beside a map that stays in view */}
-      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] xl:grid-cols-[minmax(0,1fr)_minmax(0,30rem)]">
+      <div
+        className={cx(
+          "grid items-start gap-6",
+          besides &&
+            "lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] xl:grid-cols-[minmax(0,1fr)_minmax(0,30rem)]",
+        )}
+      >
         <div
           className={cx(
             "min-w-0 transition-opacity duration-200 ease-out-quint",
             fetching && !loading && "opacity-60",
-            view === "map" && "hidden lg:block",
+            view === "map" && (besides ? "hidden lg:block" : "hidden"),
           )}
         >
           <FacilityCardGrid
             label={label}
             rows={rows}
             loading={loading}
+            wide={switchable}
             selected={selected}
             onSelect={setSelected}
             onShowOnMap={(slug) => {
@@ -365,7 +383,11 @@ export function FacilityExplorer({
         </div>
         <div
           ref={map}
-          className={cx("scroll-mt-24 lg:sticky lg:top-24", view === "list" && "hidden lg:block")}
+          className={cx(
+            "scroll-mt-24",
+            besides && "lg:sticky lg:top-24",
+            view === "list" && (besides ? "hidden lg:block" : "hidden"),
+          )}
         >
           {inBrowser ? (
             <Suspense fallback={<Skeleton className="h-[28rem] rounded-3xl lg:h-[34rem]" />}>

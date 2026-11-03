@@ -86,7 +86,7 @@ describe("information pages (PT-F4, PT-F5)", () => {
 describe("care near you on the home page (PT-F1)", () => {
   it("the home page lists facilities with the live queue and accepted insurers", async () => {
     const { container } = renderApp("/");
-    const section = await screen.findByRole("region", { name: "Healthcare facilities near you" });
+    const section = await screen.findByRole("region", { name: "Open near you" });
     const list = await within(section).findByRole("list", {
       name: "Healthcare facilities near you",
     });
@@ -102,14 +102,13 @@ describe("care near you on the home page (PT-F1)", () => {
 
   it("links to the symptom checker and the new footer pages", async () => {
     renderApp("/");
-    expect(await screen.findByRole("link", { name: /Not sure where to go\?/ })).toHaveAttribute(
+    expect(await screen.findByRole("link", { name: /Not sure\? Check symptoms/ })).toHaveAttribute(
       "href",
       "/check-symptoms",
     );
     const footer = screen.getByRole("navigation", { name: "Site links" });
     for (const [name, href] of [
       ["About MediLink", "/about"],
-      ["Emergency", "/emergency"],
       ["Check symptoms", "/check-symptoms"],
     ]) {
       expect(within(footer).getByRole("link", { name })).toHaveAttribute("href", href);

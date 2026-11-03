@@ -387,5 +387,39 @@
     "slowDetail_other": "{{count}} personnes, médiane {{minutes}} min depuis l'arrivée.",
     "people_one": "{{count}} personne",
     "people_other": "{{count}} personnes"
+  },
+  "code": {
+    "title": "Accueil par code de réservation",
+    "label": "Code de réservation",
+    "placeholder": "ex. K03M7Q",
+    "find": "Chercher",
+    "notFound": "Aucune réservation avec ce code ici pour aujourd’hui ou plus tard. Vérifiez le code avec le patient, ou cherchez-le par son nom.",
+    "onDay": "Réservé pour le {{date}}",
+    "notToday": "Pas aujourd’hui",
+    "status": {
+      "checked_in": "Déjà accueilli",
+      "cancelled": "Annulée",
+      "late_cancelled": "Annulée tard",
+      "no_show": "Absent",
+      "superseded": "Modifiée"
+    }
+  },
+  "reception": {
+    "title": "Accueil",
+    "openBoard": "Ouvrir le tableau de la file",
+    "numbers": "Aujourd’hui à l’accueil",
+    "waiting": "En attente",
+    "expected": "Encore attendus",
+    "claims": "« Je suis là » à confirmer",
+    "missed": "Absents aujourd’hui",
+    "late_one": "{{count}} réservation en retard",
+    "late_other": "{{count}} réservations en retard",
+    "collected": "Encaissé dans ma caisse (RWF)",
+    "noShift": "Aucune caisse ouverte",
+    "noClaims": "Aucune arrivée à confirmer.",
+    "openShift": "Ouvrez votre caisse avant d’encaisser",
+    "next": "Prochaines arrivées",
+    "more_one": "{{count}} de plus sur le tableau",
+    "more_other": "{{count}} de plus sur le tableau"
   }
 }

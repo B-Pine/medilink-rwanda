@@ -9447,6 +9447,12 @@ paths:
       operationId: staff_bookings
       parameters:
       - in: query
+        name: code
+        schema:
+          type: string
+        description: 'Booking code from the patient''s phone: matches today and later
+          (the reception check-in search), any date filter is ignored.'
+      - in: query
         name: date
         schema:
           type: string

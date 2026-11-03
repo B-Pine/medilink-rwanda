@@ -483,7 +483,8 @@ export function createBookingApi(client: ApiClient) {
     },
     staff: {
       /** R1. The Expected list is `{ date: today, status: "confirmed" }`; `no_show` lists no-shows. */
-      bookings: (p: { date?: string; service_id?: Uuid; status?: string } = {}) =>
+      /** `code`: the booking code from the patient's phone (today and later, date ignored). */
+      bookings: (p: { date?: string; service_id?: Uuid; status?: string; code?: string } = {}) =>
         client.get<{ count: number; results: StaffBooking[] }>(
           bookingPaths.staffBookings + query(p),
         ),

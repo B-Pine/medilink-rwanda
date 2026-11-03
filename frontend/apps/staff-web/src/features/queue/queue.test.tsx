@@ -25,6 +25,25 @@ async function signIn(email: string, path: string, facility?: string) {
   return app;
 }
 
+describe("reception today (upgrade 05 §2)", () => {
+  it("shows the front desk: desk bar, numbers, next arrivals and check-in by code", async () => {
+    const { user, container } = await signIn("reception@medilink.test", "/today");
+    const desk = await screen.findByRole("region", { name: "Front desk" });
+    expect(within(desk).getByRole("link", { name: /Book by phone|Book/ })).toHaveAttribute(
+      "href",
+      "/queue?book=new",
+    );
+    expect(within(desk).getByRole("list", { name: "Today at the front desk" })).toBeInTheDocument();
+    expect(within(desk).getByRole("region", { name: "Next arrivals" })).toBeInTheDocument();
+    const byCode = within(desk).getByRole("region", { name: "Check in by booking code" });
+    await user.type(within(byCode).getByRole("textbox", { name: "Booking code" }), "ZZZZZZ");
+    await user.click(within(byCode).getByRole("button", { name: "Find" }));
+    expect(await within(byCode).findByText(/No booking with this code/)).toBeInTheDocument();
+    expect(screen.queryByText("On site now")).not.toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
+  }, 40_000);
+});
+
 describe("reception board (S4-F2, F3)", () => {
   it("lists who is on site in calling order with flags, and is accessible", async () => {
     const { container } = await signIn("reception@medilink.test", "/queue");

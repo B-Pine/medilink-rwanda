@@ -137,7 +137,7 @@ export function HowItWorksPage() {
               className="absolute top-8 bottom-8 left-[1.75rem] w-0.5 rounded-full bg-gradient-to-b from-primary via-primary/40 to-border sm:left-[2.25rem]"
             />
             {JOURNEY.map(({ key, icon: StepIcon }, index) => (
-              <li key={key} className="ml-reveal relative flex items-start gap-4 sm:gap-6">
+              <li key={key} className="relative flex items-start gap-4 sm:gap-6">
                 <span className="relative z-10 grid size-14 shrink-0 place-items-center rounded-2xl bg-surface text-primary shadow-card ring-4 ring-page sm:size-[4.5rem]">
                   <StepIcon aria-hidden="true" weight="duotone" className="size-7" />
                   <span className="absolute -top-2 -right-2 grid size-6 place-items-center rounded-full bg-primary text-caption font-bold text-on-primary tabular-nums">
@@ -153,7 +153,7 @@ export function HowItWorksPage() {
           </ol>
           <section
             aria-labelledby="good"
-            className="ml-reveal grid gap-6 rounded-3xl bg-brand-subtle/70 p-6 sm:p-8 lg:grid-cols-[16rem_minmax(0,1fr)]"
+            className="grid gap-6 rounded-3xl bg-brand-subtle/70 p-6 sm:p-8 lg:grid-cols-[16rem_minmax(0,1fr)]"
           >
             <h2 id="good" className="m-0 text-h2 tracking-tight">
               {t("site.how.goodTitle")}
@@ -484,7 +484,7 @@ export function HelpPage() {
           lead={t("site.help.lead")}
         />
         <div className="flex flex-col gap-8">
-          <div className="flex animate-rise flex-col gap-4 rounded-3xl bg-surface p-4 shadow-card sm:p-5">
+          <div className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-4 sm:p-5">
             <SearchBar
               id="help-search"
               label={t("site.help.search")}
@@ -593,7 +593,7 @@ export function AboutPage() {
               key={key}
               aria-labelledby={`about-${key}`}
               className={cx(
-                "ml-reveal flex flex-col gap-3 rounded-3xl bg-surface p-6 shadow-card sm:p-8",
+                "flex flex-col gap-3 rounded-3xl bg-surface p-6 shadow-card sm:p-8",
                 index === 0 && "md:col-span-2 md:flex-row md:items-start md:gap-6",
               )}
             >
@@ -612,7 +612,7 @@ export function AboutPage() {
             </section>
           ))}
         </div>
-        <div className="ml-reveal mt-6 flex flex-wrap gap-3">
+        <div className="mt-6 flex flex-wrap gap-3">
           <Link
             to="/for-facilities"
             viewTransition

@@ -81,13 +81,11 @@ export function PageHeader({
   lead,
   crumbs,
   actions,
-  eyebrow,
 }: {
   title: string;
   lead?: ReactNode;
   crumbs?: Crumb[];
   actions?: ReactNode;
-  eyebrow?: string;
 }) {
   const { t } = useTranslation();
   // Inside the dashboard the shell shows the breadcrumb and the top spacing
@@ -106,21 +104,16 @@ export function PageHeader({
         </div>
       </div>
     );
-  // public pages (one template): breadcrumb → H1 (Figtree 44 px, 800) → one-line lead, on a band
-  // with the brand mesh and the Imigongo pattern fading in on the right (base.css .ml-band)
+  // public pages (one template): breadcrumb → H1 (Figtree 40 px, 700) → one-line lead, then a
+  // hairline; the weight stays at 700 so headings read as a public service, not a campaign
   return (
     <div className="mb-8 flex animate-enter flex-col gap-4 border-b border-border pt-8 pb-8 sm:pt-12 sm:pb-10">
       {crumbs && <Breadcrumbs items={[{ to: "/", label: t("nav.home") }, ...crumbs]} />}
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div className="flex max-w-[46rem] flex-col gap-3">
-          {eyebrow && (
-            <p className="m-0 text-caption font-semibold tracking-[0.14em] text-primary uppercase">
-              {eyebrow}
-            </p>
-          )}
           <PageHeading
             title={title}
-            className="font-heading text-[2rem] leading-[1.12] font-extrabold tracking-tight text-balance text-fg sm:text-[2.75rem]"
+            className="font-heading text-[2rem] leading-[1.15] font-bold tracking-tight text-balance text-fg sm:text-[2.5rem]"
           >
             {title}
           </PageHeading>
@@ -148,18 +141,10 @@ export function Panel({
   as?: "section" | "div" | "aside";
   "aria-labelledby"?: string;
 }) {
-  // inside the dashboard, the dashboard's surfaces: a hairline border instead of a shadow
-  const inDashboard = useInDashboard();
+  // a hairline border, no shadow, in the dashboard and on the public site alike; content is there
+  // from the first paint (public design brief 2026-11-04: nothing waits for the scroll to appear)
   return (
-    <Tag
-      className={cx(
-        "rounded-2xl bg-surface",
-        // public panels rise into view as the page scrolls (base.css .ml-reveal)
-        inDashboard ? "border border-border" : "ml-reveal border border-border",
-        className,
-      )}
-      {...rest}
-    >
+    <Tag className={cx("rounded-2xl border border-border bg-surface", className)} {...rest}>
       {children}
     </Tag>
   );
@@ -443,7 +428,7 @@ export function SectionTitle({
   action?: ReactNode;
 }) {
   return (
-    <div className="ml-reveal mb-5 flex flex-wrap items-end justify-between gap-3">
+    <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
       <h2 id={id} className="m-0 text-h2 tracking-tight text-balance">
         {children}
       </h2>

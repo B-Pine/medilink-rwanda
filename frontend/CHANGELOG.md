@@ -9,6 +9,20 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Public site: facilities as a directory, not products (2026-11-04)
+
+- Changed: **Facilities**, **Find care**, the home page list and the assistant's suggestions show
+  facilities as directory rows on one bordered surface (name link, type and place, emergency
+  department, insurance in words, open/busy/closed, the live wait, and "Join today's queue" or
+  "Book a time" as a link) instead of product cards with chips and Book pills.
+  `FacilityCards.tsx` is now `FacilityDirectory.tsx` (`FacilityEntry`, `FacilityEntries`,
+  `FacilityExplorer`); `PlacesView`'s `cards` prop is now `directory`.
+- Changed: public page headings are Figtree 700 at 40 px (was 800 at 44 px); the eyebrow label
+  above a page title is gone (the service page shows its category in the breadcrumb); filter
+  panels and panels use a hairline border instead of a shadow.
+- Removed: the scroll reveal (`.ml-reveal`): content is visible from the first paint.
+- Changed: the floating AI assistant button is smaller (48 px).
+
 ### Super admin pages show what MediLink holds (2026-11-03)
 
 - Added: **Register a facility** (`/platform/applications/new`) replaces the three-field dialog:

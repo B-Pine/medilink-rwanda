@@ -30,7 +30,7 @@ import {
 } from "../features/booking/discovery";
 import { FILTER, sortResults, useNearMe, type Sort } from "../features/booking/Places";
 import { useAllFacilities } from "../features/site/data";
-import { FacilityExplorer } from "../features/site/FacilityCards";
+import { FacilityExplorer } from "../features/site/FacilityDirectory";
 import { HillsideClinicIllustration } from "../features/site/illustrations";
 import { LocationSelector, PageContainer, SearchBar } from "../features/site/kit";
 import { PublicLayout } from "../layout/PublicLayout";

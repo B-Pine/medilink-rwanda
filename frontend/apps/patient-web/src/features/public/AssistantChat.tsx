@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { useApi } from "../../app/services";
-import { FacilityCardGrid } from "../site/FacilityCards";
+import { FacilityEntries } from "../site/FacilityDirectory";
 import { MAX_MESSAGE, type AssistantChat, type AssistantMessage } from "./assistantState";
 import { EmergencyAnswer } from "./SymptomCheckerPage";
 
@@ -230,12 +230,7 @@ function AnswerCard({ turn, compact }: { turn: AssistantTurn; compact: boolean }
       {places.isPending ? (
         <Skeleton className="h-40 rounded-2xl" />
       ) : rows.length ? (
-        <FacilityCardGrid
-          label={t("public.assistant.placesTitle")}
-          rows={rows}
-          loading={false}
-          stack={compact}
-        />
+        <FacilityEntries label={t("public.assistant.placesTitle")} rows={rows} loading={false} />
       ) : (
         <p className="m-0 text-fg-secondary">{t("public.assistant.noPlaces")}</p>
       )}

@@ -445,8 +445,9 @@ Requirements: FR-CLN-01..09; FR-PAT-10..12; FR-SEC-03, 09. Prescription drafting
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
 | `POST` | `/api/v1/staff/visits/{id}/vitals/` | Record vitals | `vitals.record` | FR-CLN-01 | Append-only; corrections are new entries | Planned |
+| `GET` | `/api/v1/staff/clinical/my-day/` | Doctor Today: patients seen with a 7-day trend, average consult time, signed and unsigned records, results waiting, follow-ups today, open pharmacy questions | `clinical.write` (own work only) | FR-CLN-05 | Counts only, plus the patient name on open questions | Implemented (upgrade 05 §3) |
 | `POST` | `/api/v1/staff/visits/{id}/consultations/` | Start a consultation (also done by ticket `start`) | `clinical.write` | FR-CLN-01 | Idem | Planned |
-| `GET` | `/api/v1/staff/consultations/{id}/` | Consultation with addenda | `clinical.write`; treatment relationship | FR-CLN-01, FR-SEC-03 | `403 access_reason_required` outside the relationship; Audit | Planned |
+| `GET` | `/api/v1/staff/consultations/{id}/` | Consultation with addenda, `reason_for_visit` (patient's words, symptoms, triage navigation hint) and vitals `flags` for dangerous numbers | `clinical.write`; treatment relationship | FR-CLN-01, FR-SEC-03, FR-AI-01 | `403 access_reason_required` outside the relationship; the hint is never a diagnosis; Audit | Implemented (S6a, upgrade 05 §3) |
 | `PATCH` | `/api/v1/staff/consultations/{id}/` | Autosave the draft | `clinical.write` (author) | FR-CLN-02 | Ver; draft only | Planned |
 | `POST`, `DELETE` | `/api/v1/staff/consultations/{id}/diagnoses/` | Add or remove ICD-10 diagnoses (primary/secondary, provisional/confirmed) | `clinical.write` (author) | FR-CLN-06 | Draft only; code and display text snapshotted | Planned |
 | `POST` | `/api/v1/staff/consultations/{id}/prescription/items/` | Add a prescription item → safety alerts | `prescription.issue` (author) | FR-CLN-07, FR-PHA-01 | Moved to [S7](#s7--pharmacy-and-documents) (P2) | Implemented (S7a) |

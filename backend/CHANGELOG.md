@@ -8,6 +8,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Doctor workspace (upgrade 05 §3)
+
+- Added: `GET /staff/clinical/my-day/`: the clinician's own day (patients seen with a 7-day
+  trend, average consult time, signed and unsigned records, results waiting, follow-ups today,
+  open pharmacy questions).
+- Changed: the consultation carries `reason_for_visit` (the patient's words from check-in or
+  booking, structured symptoms, and the triage navigation hint, flagged while the rules are not
+  signed off); every vitals row carries `flags` for dangerous numbers (low oxygen, very high or
+  low blood pressure, high fever, low temperature, fast or slow pulse, fast breathing).
+
 ### Upgrade U2 · Facility admin command centre (upgrade 05 §5)
 
 - Changed: `GET /staff/reports/operations/` adds `attention` counts (approvals pending, closed

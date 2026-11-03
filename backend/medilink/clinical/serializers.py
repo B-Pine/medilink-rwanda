@@ -168,6 +168,8 @@ class VitalsSerializer(serializers.Serializer):
     weight_kg = serializers.DecimalField(max_digits=5, decimal_places=2, allow_null=True)
     height_cm = serializers.DecimalField(max_digits=5, decimal_places=1, allow_null=True)
     muac_mm = serializers.IntegerField(allow_null=True)
+    # upgrade 05 §3: red flags so a dangerous number is never missed
+    flags = serializers.ListField(child=serializers.CharField())
     is_entered_in_error = serializers.BooleanField()
 
 
@@ -234,6 +236,31 @@ class HealthAttributesSerializer(serializers.Serializer):
     pregnancy = PregnancySerializer(allow_null=True)
 
 
+class ReasonSymptomSerializer(serializers.Serializer):
+    code = serializers.CharField()
+    label = serializers.CharField()  # type: ignore[assignment]  # API field name
+    duration_days = serializers.IntegerField(allow_null=True)
+    severity = serializers.CharField(allow_blank=True)
+    stage = serializers.CharField()
+
+
+class TriageHintSerializer(serializers.Serializer):
+    """Care navigation from the triage rules: an urgency and a service, never a diagnosis."""
+
+    urgency = serializers.CharField()
+    service_code = serializers.CharField()
+    level_of_care = serializers.CharField()
+    red_flags = serializers.ListField(child=serializers.CharField())
+    rules_version = serializers.CharField()
+    signed_off = serializers.BooleanField()
+
+
+class ReasonForVisitSerializer(serializers.Serializer):
+    patient_words = serializers.CharField(allow_blank=True)
+    symptoms = ReasonSymptomSerializer(many=True)
+    triage = TriageHintSerializer(allow_null=True)
+
+
 class ConsultationSerializer(serializers.Serializer):
     """Staff clinical view (doctors with clinical.view who pass the access rule)."""
 
@@ -255,6 +282,8 @@ class ConsultationSerializer(serializers.Serializer):
     private_notes = serializers.CharField(allow_blank=True)
     diagnoses = DiagnosisSerializer(many=True)
     vitals = VitalsSerializer(many=True)
+    # upgrade 05 §3: why the patient came, read before they sit down
+    reason_for_visit = ReasonForVisitSerializer()
     addenda = AddendumSerializer(many=True)
     allergies = AllergySerializer(many=True)
     no_known_allergies = serializers.BooleanField(allow_null=True)
@@ -265,6 +294,35 @@ class ConsultationSerializer(serializers.Serializer):
     can_edit = serializers.BooleanField()
     can_sign = serializers.BooleanField()
     version = serializers.IntegerField()
+
+
+class MyDayTrendSerializer(serializers.Serializer):
+    date = serializers.DateField()
+    seen = serializers.IntegerField()
+
+
+class OpenQuestionSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    prescription_id = serializers.UUIDField()
+    consultation_id = serializers.UUIDField()
+    patient_display_name = serializers.CharField()
+    raised_at = serializers.DateTimeField()
+
+
+class MyDaySerializer(serializers.Serializer):
+    """Doctor Today (upgrade 05 §3): counts for one clinician, no clinical content."""
+
+    date = serializers.DateField()
+    seen_today = serializers.IntegerField()
+    avg_consult_min = serializers.IntegerField(allow_null=True)
+    signed_today = serializers.IntegerField()
+    trend = MyDayTrendSerializer(many=True)
+    unsigned = serializers.IntegerField()
+    unsigned_overdue = serializers.IntegerField()
+    results_waiting = serializers.IntegerField()
+    follow_ups_today = serializers.IntegerField()
+    open_questions = OpenQuestionSerializer(many=True)
+    updated_at = serializers.DateTimeField()
 
 
 class ConsultationRowSerializer(serializers.Serializer):

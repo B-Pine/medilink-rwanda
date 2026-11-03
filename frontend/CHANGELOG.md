@@ -9,6 +9,30 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Upgrade U2 · Doctor workspace (upgrade 05 §3)
+
+- Added: Doctor Today: my day in numbers, the patient in the room with Open record, and what
+  waits for me (overdue records, pharmacy questions, results, records to sign, follow-ups).
+- Added: Results inbox `/clinical/results`: outside results assigned to me, opened through a
+  5-minute link, marked reviewed with a comment.
+- Changed: My queue opens the record directly and can finish and call next in one step; the
+  consultation opens with why the patient came, uses icon section cards, a glass action bar,
+  diagnosis chips and a "signed, back to my queue" callout; vitals are tiles with red, named
+  flags; patient history shows a four-card summary, paper records and scans, and a card
+  timeline; unsigned records are a table.
+
+### Upgrade U2 · Facility admin command centre (upgrade 05 §5)
+
+- Changed: the facility admin's Today is a command centre: four live KPIs (patients, median
+  wait, no-show rate, collected today), queue load by service, needs your attention (licence,
+  approvals, cash shifts, queue moves, unsigned records, disputes, two-step sign-in, invitations;
+  urgent first), bookings today, money today and the team on duty.
+- Added: Approvals has a Cash shifts tab (`/approvals?tab=shifts`): expected against counted per
+  method, the gap, the cashier's note, and accept with step-up (a note is needed when the drawer
+  does not balance). `api.billing.shifts()` and `api.billing.reviewShift()` with mocks.
+- Changed: Staff shows coverage bars for attestation and two-step sign-in, a warning when active
+  members lack a second factor, and a Last active column. `StatTile` takes a `caption`.
+
 ### Upgrade U2 · Public website (upgrade 11)
 
 - Added: every public route of the brief: `/find-care`, `/facilities`, `/facilities/:slug`,

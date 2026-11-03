@@ -100,7 +100,7 @@ export function TariffsPage() {
                     </button>
                   ))}
                 </div>
-                <div className="overflow-x-auto rounded-lg bg-surface shadow-card">
+                <div className="overflow-x-auto rounded-2xl bg-surface shadow-card">
                   <table className="w-full border-collapse text-left">
                     <caption className="sr-only">
                       {t("setup.settings.sections.tariffs.title")}
@@ -126,7 +126,7 @@ export function TariffsPage() {
                     </thead>
                     <tbody>
                       {rows.map((row) => (
-                        <tr key={row.id} className="border-t border-border">
+                        <tr key={row.id} className="border-t border-border/60">
                           <td className="px-4 py-3">
                             <span className="block font-semibold">{name(row.name_i18n)}</span>
                             <span className="font-mono text-caption text-fg-muted">{row.code}</span>
@@ -468,7 +468,7 @@ export function InsurersPage() {
                 {data.results.map((rule) => (
                   <li
                     key={rule.id}
-                    className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5"
+                    className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>

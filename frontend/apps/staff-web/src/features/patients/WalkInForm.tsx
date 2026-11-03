@@ -156,7 +156,7 @@ export function WalkInForm({ onRegistered }: WalkInFormProps) {
       <form
         onSubmit={submit}
         noValidate
-        className="flex flex-col gap-6 rounded-lg bg-surface shadow-card p-5 sm:p-6"
+        className="flex flex-col gap-6 rounded-2xl bg-surface shadow-card p-5 sm:p-6"
         aria-label={t("patients.register.title")}
       >
         <FormSection title={t("patients.register.sections.person")}>
@@ -176,7 +176,7 @@ export function WalkInForm({ onRegistered }: WalkInFormProps) {
               {SEXES.map((sex) => (
                 <label
                   key={sex}
-                  className="inline-flex min-h-target cursor-pointer items-center gap-2 rounded-md border border-border px-3"
+                  className="inline-flex min-h-target cursor-pointer items-center gap-2 rounded-2xl border border-border/60 px-3"
                 >
                   <input
                     type="radio"
@@ -276,7 +276,7 @@ export function WalkInForm({ onRegistered }: WalkInFormProps) {
             {more ? t("patients.register.less") : t("patients.register.more")}
           </button>
           {more && (
-            <div className="flex flex-col gap-3 rounded-md border border-border p-3">
+            <div className="flex flex-col gap-3 rounded-2xl border border-border/60 p-3">
               <div className="flex flex-wrap gap-3">
                 <SelectField
                   label={t("patients.fields.document")}
@@ -350,7 +350,7 @@ export function WalkInForm({ onRegistered }: WalkInFormProps) {
             {actionError(register.error, t("errors.generic"))}
           </Alert>
         )}
-        <div className="border-t border-border pt-5">
+        <div className="border-t border-border/60 pt-5">
           <Button type="submit" size="lg" disabled={register.isPending}>
             {t("patients.register.submit")}
           </Button>
@@ -359,7 +359,7 @@ export function WalkInForm({ onRegistered }: WalkInFormProps) {
       <aside
         aria-label={t("patients.register.suggestions")}
         aria-live="polite"
-        className="flex flex-col gap-3 self-start rounded-lg border border-border bg-raised p-4 lg:sticky lg:top-24"
+        className="flex flex-col gap-3 self-start rounded-2xl border border-border/60 bg-raised p-4 lg:sticky lg:top-24"
       >
         <h2 className="m-0 font-heading text-h3">{t("patients.register.suggestions")}</h2>
         {!duplicates && (
@@ -412,7 +412,7 @@ export function WalkInForm({ onRegistered }: WalkInFormProps) {
 /** A titled group of fields inside the walk-in form. */
 function FormSection({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="flex flex-col gap-4 border-b border-border pb-6 last-of-type:border-0">
+    <section className="flex flex-col gap-4 border-b border-border/60 pb-6 last-of-type:border-0">
       <h2 className="m-0 font-heading text-h3 text-fg">{title}</h2>
       {children}
     </section>

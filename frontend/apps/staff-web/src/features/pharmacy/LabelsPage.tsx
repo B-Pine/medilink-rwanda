@@ -74,7 +74,7 @@ export function LabelsPage() {
             <li
               key={label.line_id}
               lang={label.language}
-              className="flex w-[62mm] flex-col gap-1 rounded-md border border-dashed border-border-input bg-white p-3 text-[11pt] leading-snug text-black print:break-after-page print:rounded-none print:border-0"
+              className="flex w-[62mm] flex-col gap-1 rounded-2xl border border-dashed border-border-input bg-white p-3 text-[11pt] leading-snug text-black print:break-after-page print:rounded-none print:border-0"
             >
               <span className="text-[9pt] font-semibold uppercase">{label.facility_name}</span>
               <strong className="text-[12pt]">{label.drug}</strong>

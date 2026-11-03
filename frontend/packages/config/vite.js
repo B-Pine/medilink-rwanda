@@ -30,7 +30,6 @@ export function resolveAppEnv(mode, env) {
   return { apiBaseUrl, useMocks, mapTilesUrl };
 }
 
-
 /**
  * Values for Vite's `define` so the resolved values are baked into the static build.
  * @param {{ apiBaseUrl: string, useMocks: boolean, mapTilesUrl?: string }} appEnv

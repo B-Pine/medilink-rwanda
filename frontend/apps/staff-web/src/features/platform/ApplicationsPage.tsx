@@ -179,7 +179,7 @@ function Applications() {
         rowActions={(row) => (
           <Link
             to={`/platform/applications/${row.id}`}
-            className={buttonClassName({ variant: "secondary" })}
+            className={buttonClassName({ variant: "ghost", size: "sm", pill: true })}
             aria-label={`${t("platform.applications.review")}: ${row.facility_name}`}
           >
             {t("platform.applications.review")}

@@ -1,7 +1,8 @@
 {
   "nav": {
     "consultation": "Consultation",
-    "unsigned": "Dossiers non signés"
+    "unsigned": "Dossiers non signés",
+    "results": "Résultats"
   },
   "title": "Consultation",
   "headerTitle": "Consultation · {{name}}",
@@ -101,7 +102,10 @@
     "action": "Signer et verrouiller",
     "needPrimary": "Ajoutez un diagnostic principal pour signer.",
     "signedBy": "Signé par {{name}} le {{time}}",
-    "fingerprint": "Empreinte {{hash}}…"
+    "fingerprint": "Empreinte {{hash}}…",
+    "doneTitle": "Dossier signé",
+    "doneBody": "L’ordonnance et les lettres sont envoyées. Terminez la visite depuis votre file.",
+    "backToQueue": "Retour à ma file"
   },
   "integrity": {
     "mismatch": "Ce dossier ne correspond plus à son empreinte. Signalez-le à l'administrateur de l'établissement."
@@ -153,6 +157,26 @@
       "weight": "{{value}} kg",
       "height": "{{value}} cm",
       "muac": "PB {{value}}"
+    },
+    "tiles": {
+      "temperature": "Température",
+      "bp": "Tension artérielle",
+      "pulse": "Pouls",
+      "respiratory": "Respiration",
+      "spo2": "Oxygène",
+      "weight": "Poids",
+      "height": "Taille",
+      "muac": "PB"
+    },
+    "flags": {
+      "spo2_low": "Oxygène bas",
+      "bp_high": "Tension très élevée",
+      "bp_low": "Tension basse",
+      "temp_high": "Forte fièvre",
+      "temp_low": "Température basse",
+      "pulse_high": "Pouls rapide",
+      "pulse_low": "Pouls lent",
+      "rr_high": "Respiration rapide"
     }
   },
   "history": {
@@ -206,6 +230,112 @@
     "overdue": "Plus de 24 heures",
     "open": "Ouvrir le brouillon de {{name}}",
     "empty": "Aucun dossier non signé",
-    "emptyBody": "Toutes les consultations sont signées."
+    "emptyBody": "Toutes les consultations sont signées.",
+    "columns": {
+      "patient": "Patient",
+      "author": "Commencé par",
+      "age": "Attente",
+      "action": "Action"
+    },
+    "openShort": "Ouvrir"
+  },
+  "today": {
+    "title": "Votre journée",
+    "seen": "Vus aujourd’hui",
+    "avg": "Consultation moyenne",
+    "min": "min",
+    "signed": "Signés aujourd’hui",
+    "unsigned": "Non signés",
+    "needsYou": "Vous attend",
+    "allClear": "Rien ne vous attend. Bravo.",
+    "overdue_one": "{{count}} dossier non signé depuis plus de 24 h",
+    "overdue_other": "{{count}} dossiers non signés depuis plus de 24 h",
+    "question": "Question de la pharmacie sur {{name}}",
+    "askedAt": "Posée à {{time}}",
+    "toSign_one": "{{count}} dossier à signer",
+    "toSign_other": "{{count}} dossiers à signer",
+    "followUps_one": "{{count}} suivi prévu aujourd’hui",
+    "followUps_other": "{{count}} suivis prévus aujourd’hui",
+    "inRoom": "Dans votre salle",
+    "upNext": "Prochains patients",
+    "waiting_one": "{{count}} en attente",
+    "waiting_other": "{{count}} en attente",
+    "openRecord": "Ouvrir le dossier",
+    "openQueue": "Ouvrir ma file",
+    "nobody": "Personne ne vous attend pour le moment.",
+    "week": "Patients cette semaine",
+    "weekCaption": "7 derniers jours",
+    "results_one": "{{count}} résultat externe à examiner",
+    "results_other": "{{count}} résultats externes à examiner"
+  },
+  "reasonForVisit": {
+    "title": "Motif de la visite",
+    "short": "Motif",
+    "none": "Aucun motif saisi à la réservation ou à l’accueil. Demandez au patient.",
+    "symptoms": "Symptômes",
+    "days_one": "{{count}} jour",
+    "days_other": "{{count}} jours",
+    "severity": {
+      "mild": "léger",
+      "moderate": "modéré",
+      "severe": "sévère"
+    },
+    "urgency": {
+      "emergency": "Urgence",
+      "today": "À voir aujourd’hui",
+      "soon": "Dans quelques jours",
+      "self_care": "Soins à domicile"
+    },
+    "hint": "Indication d’orientation, pas un diagnostic.",
+    "redFlags_one": "{{count}} signe d’alerte",
+    "redFlags_other": "{{count}} signes d’alerte",
+    "provisional": "Règles {{version}} en attente de validation clinique"
+  },
+  "toQueue": "Ma file",
+  "results": {
+    "title": "Résultats",
+    "intro": "Résultats de laboratoire et d’imagerie externes qui vous sont attribués. Ouvrez-les, puis marquez-les examinés.",
+    "tabs": {
+      "pending": "À examiner",
+      "reviewed": "Examinés"
+    },
+    "untitled": "Résultat externe",
+    "dated": "daté du {{date}}",
+    "uploaded": "Ajouté par {{name}} · {{time}}",
+    "status": {
+      "pending": "À examiner",
+      "reviewed": "Examiné"
+    },
+    "view": "Voir le document",
+    "history": "Historique du patient",
+    "comment": "Commentaire (facultatif)",
+    "markReviewed": "Marquer examiné",
+    "reviewedBy": "Examiné par {{name}} · {{time}}",
+    "empty": {
+      "pending": "Aucun résultat en attente",
+      "reviewed": "Rien d’examiné pour l’instant"
+    },
+    "emptyBody": "Les résultats numérisés à l’accueil pour vos patients apparaissent ici."
+  },
+  "paper": {
+    "title": "Dossiers papier et documents scannés",
+    "entries": "Antécédents saisis",
+    "scans": "Documents scannés",
+    "historical": "Depuis le papier",
+    "enteredBy": "saisi par {{name}}",
+    "view": "Voir",
+    "kind": {
+      "diagnosis": "Diagnostic",
+      "condition": "Affection",
+      "allergy": "Allergie",
+      "medication": "Médicament",
+      "procedure": "Intervention"
+    },
+    "type": {
+      "outside_result": "Résultat externe",
+      "legacy_record": "Dossier papier",
+      "referral_letter": "Lettre de référence",
+      "other": "Document"
+    }
   }
 }

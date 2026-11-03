@@ -43,3 +43,9 @@ export * from "./features/clinical";
 export * from "./features/documents";
 export * from "./features/pharmacy";
 // [/S7]
+// [S8]
+export * from "./features/billing";
+// [/S8]
+// [S11]
+export * from "./features/console";
+// [/S11]

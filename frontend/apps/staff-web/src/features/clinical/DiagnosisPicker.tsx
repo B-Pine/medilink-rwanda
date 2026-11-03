@@ -115,7 +115,7 @@ export function DiagnosisPicker({
           {value.map((d) => (
             <li
               key={d.code}
-              className="flex flex-wrap items-end gap-3 rounded-md border border-border bg-surface p-3"
+              className="flex flex-wrap items-end gap-3 rounded-2xl border border-border/60 bg-surface p-3"
             >
               <div className="flex min-w-48 flex-1 flex-col gap-1">
                 <span className="font-semibold">
@@ -194,7 +194,7 @@ export function DiagnosisPicker({
               }}
               onKeyDown={onKeyDown}
               onBlur={() => setTimeout(() => setOpen(false), 150)}
-              className="min-h-10 w-full rounded-md border border-border-input bg-surface ps-10 pe-3 text-body"
+              className="min-h-10 w-full rounded-xl border border-border-input bg-surface ps-10 pe-3 text-body"
             />
           </div>
           <div
@@ -202,7 +202,7 @@ export function DiagnosisPicker({
             role="listbox"
             aria-label={t("clinical.diagnosis.results")}
             hidden={!showList}
-            className="absolute top-full z-10 m-0 mt-1 flex max-h-72 w-full flex-col overflow-y-auto rounded-md border border-border bg-surface p-1 shadow-lg"
+            className="absolute top-full z-10 m-0 mt-1 flex max-h-72 w-full flex-col overflow-y-auto rounded-2xl border border-border/60 bg-surface p-1 shadow-lg"
           >
             {showList && search.isFetching && !options.length && (
               <div className="p-2 text-fg-muted">{t("clinical.diagnosis.searching")}</div>

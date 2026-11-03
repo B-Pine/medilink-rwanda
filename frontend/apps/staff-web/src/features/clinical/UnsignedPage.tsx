@@ -1,5 +1,14 @@
-import { Alert, Badge, Button, EmptyState, LoadingState, SwitchField } from "@medilink/ui";
-import { CheckCircle, Warning } from "@phosphor-icons/react";
+import {
+  Alert,
+  Badge,
+  Button,
+  buttonClassName,
+  cx,
+  EmptyState,
+  LoadingState,
+  SwitchField,
+} from "@medilink/ui";
+import { CheckCircle, Signature, Warning } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -9,6 +18,14 @@ import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
 import { NoAccessContent } from "../../pages/NotFoundPage";
 import { clinicalKeys, errorText, useCan, useWhen } from "./shared";
+
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase())
+    .join("");
 
 /**
  * /clinical/unsigned (FR-CLN-05, contract C7): drafts waiting for a signature. No clinical
@@ -31,7 +48,7 @@ export function UnsignedPage() {
   });
   if (!allowed) return <NoAccessContent />;
   return (
-    <div className="flex max-w-4xl flex-col gap-5">
+    <div className="flex max-w-5xl flex-col gap-5">
       <PageHeader
         title={t("clinical.unsigned.title")}
         description={t("clinical.unsigned.description")}
@@ -55,40 +72,75 @@ export function UnsignedPage() {
         </Alert>
       ) : list.data.results.length ? (
         <>
-          <ul
-            aria-label={t("clinical.unsigned.title")}
-            className="m-0 flex list-none flex-col gap-2 p-0"
-          >
-            {list.data.results.map((row) => (
-              <li
-                key={row.id}
-                className="flex flex-wrap items-center gap-3 rounded-md border border-border bg-surface p-3"
-              >
-                <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                  <span className="font-semibold">{row.patient_display_name}</span>
-                  <span className="text-body-sm text-fg-muted">
-                    {t("clinical.unsigned.started", {
-                      name: row.author.full_name,
-                      time: when.dateTime(row.started_at),
-                    })}
-                  </span>
-                </div>
-                {row.is_overdue && (
-                  <Badge tone="danger" icon={Warning}>
-                    {t("clinical.unsigned.overdue")}
-                  </Badge>
-                )}
-                {canOpen && (
-                  <Link
-                    to={`/clinical/consultations/${row.id}?fp=${row.facility_patient_id}`}
-                    className="font-semibold text-link"
-                  >
-                    {t("clinical.unsigned.open", { name: row.patient_display_name })}
-                  </Link>
-                )}
-              </li>
-            ))}
-          </ul>
+          <div className="animate-enter overflow-x-auto rounded-2xl bg-surface shadow-card">
+            <table className="w-full border-collapse text-left">
+              <caption className="sr-only">{t("clinical.unsigned.title")}</caption>
+              <thead className="border-b border-border text-caption font-semibold tracking-wide text-fg-secondary uppercase">
+                <tr>
+                  {["patient", "author", "age", "action"].map((c) => (
+                    <th
+                      key={c}
+                      scope="col"
+                      className={cx("px-4 py-3 font-semibold", c === "action" && "text-right")}
+                    >
+                      {t(`clinical.unsigned.columns.${c}`)}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {list.data.results.map((row) => (
+                  <tr key={row.id} className="transition-colors duration-150 hover:bg-subtle/60">
+                    <td className="px-4 py-3">
+                      <span className="flex items-center gap-3">
+                        <span
+                          aria-hidden="true"
+                          className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-subtle text-caption font-bold text-on-brand-subtle"
+                        >
+                          {initials(row.patient_display_name)}
+                        </span>
+                        <span className="flex min-w-0 flex-col">
+                          <span className="font-semibold">{row.patient_display_name}</span>
+                          <span className="text-caption text-fg-muted">
+                            {t("clinical.unsigned.started", {
+                              name: row.author.full_name,
+                              time: when.dateTime(row.started_at),
+                            })}
+                          </span>
+                        </span>
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-body-sm">{row.author.full_name}</td>
+                    <td className="px-4 py-3">
+                      {row.is_overdue ? (
+                        <Badge tone="danger" icon={Warning}>
+                          {t("clinical.unsigned.overdue")}
+                        </Badge>
+                      ) : (
+                        <span className="text-body-sm text-fg-secondary tabular-nums">
+                          {when.time(row.started_at)}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      {canOpen && (
+                        <Link
+                          to={`/clinical/consultations/${row.id}?fp=${row.facility_patient_id}`}
+                          aria-label={t("clinical.unsigned.open", {
+                            name: row.patient_display_name,
+                          })}
+                          className={buttonClassName({ variant: "secondary", pill: true })}
+                        >
+                          <Signature aria-hidden="true" />
+                          {t("clinical.unsigned.openShort")}
+                        </Link>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           {(list.data.next || list.data.previous) && (
             <div className="flex gap-2">
               <Button

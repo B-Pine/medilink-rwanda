@@ -85,6 +85,8 @@ export interface StatTileProps {
   trend?: (number | null)[];
   /** Shown instead of a value when the metric is not available yet. */
   note?: string;
+  /** Secondary line under the value when there is no change to show, e.g. "27 payments". */
+  caption?: string;
   icon?: ReactNode;
 }
 
@@ -101,6 +103,7 @@ export function StatTile({
   lowerIsBetter,
   trend,
   note,
+  caption,
   icon,
 }: StatTileProps) {
   const good =
@@ -109,10 +112,14 @@ export function StatTile({
       : deltaPct < 0 === Boolean(lowerIsBetter);
   const Arrow = !deltaPct ? Minus : deltaPct > 0 ? ArrowUpRight : ArrowDownRight;
   return (
-    <div className="flex min-w-0 flex-col gap-3 rounded-lg bg-surface shadow-card p-4">
+    <div className="flex min-w-0 flex-col gap-3 rounded-lg bg-surface p-5 shadow-card transition-shadow duration-200 ease-out-quint hover:shadow-raised">
       <div className="flex items-center justify-between gap-2">
         <span className="text-body-sm font-semibold text-fg-secondary">{label}</span>
-        {icon && <span className="text-fg-muted">{icon}</span>}
+        {icon && (
+          <span className="grid size-9 place-items-center rounded-xl bg-brand-subtle text-on-brand-subtle">
+            {icon}
+          </span>
+        )}
       </div>
       {note ? (
         <p className="m-0 text-body-sm text-fg-muted">{note}</p>
@@ -139,6 +146,9 @@ export function StatTile({
                 {deltaLabel ? ` ${deltaLabel}` : ""}
               </span>
             </p>
+          )}
+          {(deltaPct === undefined || deltaPct === null) && caption && (
+            <p className="m-0 text-body-sm text-fg-secondary tabular-nums">{caption}</p>
           )}
         </>
       )}

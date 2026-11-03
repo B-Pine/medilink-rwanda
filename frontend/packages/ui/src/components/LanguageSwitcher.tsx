@@ -1,4 +1,4 @@
-import { Globe } from "@phosphor-icons/react";
+import { CaretDown, Globe } from "@phosphor-icons/react";
 import { useId } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -10,6 +10,8 @@ export interface LanguageSwitcherProps {
   compact?: boolean;
   /** For use on deep forest surfaces. */
   onDark?: boolean;
+  /** A small rounded chip for toolbars and site headers: globe and caret inside the control. */
+  pill?: boolean;
   className?: string;
 }
 
@@ -21,11 +23,43 @@ export interface LanguageSwitcherProps {
 export function LanguageSwitcher({
   compact = false,
   onDark = false,
+  pill = false,
   className,
 }: LanguageSwitcherProps) {
   const { t, i18n } = useTranslation("ui");
   const id = `language-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const current = i18n.resolvedLanguage ?? i18n.language;
+
+  if (pill) {
+    return (
+      <div className={cx("relative inline-flex items-center", className)}>
+        <label htmlFor={id} className="sr-only">
+          {t("language.label")}
+        </label>
+        <Globe
+          aria-hidden="true"
+          className="pointer-events-none absolute left-3 size-4 text-fg-muted"
+        />
+        <select
+          id={id}
+          value={current}
+          onChange={(event) => void i18n.changeLanguage(event.target.value)}
+          className="h-10 cursor-pointer appearance-none rounded-full border border-border bg-surface pr-8 pl-9 text-body-sm font-semibold text-fg transition-colors duration-150 ease-out-quint hover:border-border-input hover:bg-subtle"
+        >
+          {SUPPORTED_LANGUAGES.map((language) => (
+            <option key={language} value={language} lang={language}>
+              {t(`language.names.${language}`)}
+            </option>
+          ))}
+        </select>
+        <CaretDown
+          aria-hidden="true"
+          weight="bold"
+          className="pointer-events-none absolute right-3 size-3 text-fg-muted"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={cx("flex items-center gap-2", className)}>

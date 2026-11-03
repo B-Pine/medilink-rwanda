@@ -26,7 +26,11 @@ export function Card<T extends ElementType = "div">({
   const Component: ElementType = as ?? "div";
   return (
     <Component
-      className={cx("rounded-card bg-surface text-fg shadow-card", PADDING[padding], className)}
+      className={cx(
+        "rounded-2xl bg-surface text-fg shadow-card transition-shadow duration-200 ease-out-quint",
+        PADDING[padding],
+        className,
+      )}
       {...props}
     >
       {children}

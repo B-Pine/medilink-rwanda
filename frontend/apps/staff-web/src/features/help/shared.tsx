@@ -154,7 +154,7 @@ export function Thread({
           <li key={m.id} className={cx("flex", end ? "justify-end" : "justify-start")}>
             <div
               className={cx(
-                "flex max-w-[85%] flex-col gap-1 rounded-lg p-3",
+                "flex max-w-[85%] flex-col gap-1 rounded-2xl p-3",
                 end ? "bg-brand-subtle" : "border border-border bg-surface",
               )}
             >

@@ -108,3 +108,8 @@ from medilink.billing import audit_actions as _s8  # noqa: E402
 
 extend_actions(_s8.ACTIONS)
 # [/S8]
+# [S11]
+from medilink.platform_admin import audit_actions as _s11  # noqa: E402
+
+extend_actions(_s11.ACTIONS)
+# [/S11]

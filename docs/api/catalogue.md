@@ -113,6 +113,12 @@ Requirements: FR-ONB-01..03, 07, 08, 10; FR-DOC-03, 05 (uploads); FR-SEC-06 (loc
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
 | `GET` | `/api/v1/platform/overview/` | Console overview | Platform admin | FR-ONB-02 | | Implemented (#47) |
+| `GET` | `/api/v1/platform/command-center/` | Command centre: map points, live facilities, people waiting, needs-action counts, security summary, recent activity | Platform admin | Upgrade 05 §6 | Aggregates only; memberships and disputes read per facility under RLS | Implemented (#154) |
+| `GET` | `/api/v1/platform/users/` | Every account: kind (platform, staff, patient), facilities and roles, MFA, status, last sign-in (`?q`, `kind`, `status`, `mfa`) | Platform admin | Upgrade 05 §6 | Patients as accounts only, never health data | Implemented (#154) |
+| `GET` | `/api/v1/platform/users/{id}/` | Account profile with sessions (short non-secret refs) and recent security events | Platform admin | Upgrade 05 §6 | Audit `platform.user.viewed` | Implemented (#154) |
+| `POST` | `/api/v1/platform/users/{id}/lock/`, `unlock/`, `reset-mfa/`, `revoke-sessions/` | Account actions | Platform admin | Upgrade 05 §6 | Up; `{reason}` ≥ 5; never on yourself (`422`); audit `platform.user.*` | Implemented (#154) |
+| `GET` | `/api/v1/platform/security-events/` | Security log (auth, account actions, MFA resets) (`?q`, `action`, `outcome=failure`) | Platform admin | Upgrade 05 §6, FR-SEC | Read-only view of the audit chain | Implemented (#154) |
+| `GET` | `/api/v1/platform/access-events/` | Record access log (records opened, access reasons, break-glass) | Platform admin | Upgrade 05 §6 | Record shown by short reference only | Implemented (#154) |
 | `GET` | `/api/v1/platform/facility-applications/` | Applications pipeline | Platform admin | FR-ONB-02 | Filters `status`, `district`, `facility_type`, `q` | Implemented (#47) |
 | `POST` | `/api/v1/platform/facility-applications/` | Create an application on behalf of a facility | Platform admin | FR-ONB-01 | Audit | Implemented (#47) |
 | `GET`, `PATCH` | `/api/v1/platform/facility-applications/{id}/` | Application, documents, checks; edit on behalf of the facility | Platform admin | FR-ONB-02 | Ver | Implemented (#47) |
@@ -194,7 +200,7 @@ Requirements: FR-ONB-04..07, 09; FR-SCH-05..06; FR-BIL-02, 05; FR-ACC-05..07.
 | `GET`, `POST` | `/api/v1/staff/insurer-rules/` | Accepted insurers: services, patient share, referral required, exclusions, ceiling | `facility.configure` | FR-BIL-02 | Step-up | Planned |
 | `GET`, `PATCH` | `/api/v1/staff/insurer-rules/{id}/` | Change a rule from a date | `facility.configure` | FR-BIL-02 | Step-up; versioned with `valid_from` | Planned |
 | `GET` | `/api/v1/staff/roles/` | Roles and their permissions | Any staff | FR-ACC-03 | Seeded data | Planned |
-| `GET` | `/api/v1/staff/memberships/` | Staff list | `staff.manage` | FR-ACC-01 | Paginated | Implemented (#85) |
+| `GET` | `/api/v1/staff/memberships/` | Staff list with two-step status and `last_login` | `staff.manage` | FR-ACC-01 | Paginated | Implemented (#85, upgrade 05 §5) |
 | `GET`, `PATCH` | `/api/v1/staff/memberships/{id}/` | Roles and service points of a member | `staff.manage` | FR-ACC-01, FR-ACC-03 | Step-up; rotates the member's sessions; Audit | Planned |
 | `POST` | `/api/v1/staff/memberships/{id}/deactivate/` | Remove access now | `staff.manage` | FR-ACC-06 | Ends sessions, closes sockets; Audit | Planned |
 | `POST` | `/api/v1/staff/memberships/{id}/attest-licence/` | Attest that the clinician licence was checked | `staff.manage` | FR-ACC-07 | Required before a clinician can sign; Audit | Planned |
@@ -439,8 +445,9 @@ Requirements: FR-CLN-01..09; FR-PAT-10..12; FR-SEC-03, 09. Prescription drafting
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
 | `POST` | `/api/v1/staff/visits/{id}/vitals/` | Record vitals | `vitals.record` | FR-CLN-01 | Append-only; corrections are new entries | Planned |
+| `GET` | `/api/v1/staff/clinical/my-day/` | Doctor Today: patients seen with a 7-day trend, average consult time, signed and unsigned records, results waiting, follow-ups today, open pharmacy questions | `clinical.write` (own work only) | FR-CLN-05 | Counts only, plus the patient name on open questions | Implemented (upgrade 05 §3) |
 | `POST` | `/api/v1/staff/visits/{id}/consultations/` | Start a consultation (also done by ticket `start`) | `clinical.write` | FR-CLN-01 | Idem | Planned |
-| `GET` | `/api/v1/staff/consultations/{id}/` | Consultation with addenda | `clinical.write`; treatment relationship | FR-CLN-01, FR-SEC-03 | `403 access_reason_required` outside the relationship; Audit | Planned |
+| `GET` | `/api/v1/staff/consultations/{id}/` | Consultation with addenda, `reason_for_visit` (patient's words, symptoms, triage navigation hint) and vitals `flags` for dangerous numbers | `clinical.write`; treatment relationship | FR-CLN-01, FR-SEC-03, FR-AI-01 | `403 access_reason_required` outside the relationship; the hint is never a diagnosis; Audit | Implemented (S6a, upgrade 05 §3) |
 | `PATCH` | `/api/v1/staff/consultations/{id}/` | Autosave the draft | `clinical.write` (author) | FR-CLN-02 | Ver; draft only | Planned |
 | `POST`, `DELETE` | `/api/v1/staff/consultations/{id}/diagnoses/` | Add or remove ICD-10 diagnoses (primary/secondary, provisional/confirmed) | `clinical.write` (author) | FR-CLN-06 | Draft only; code and display text snapshotted | Planned |
 | `POST` | `/api/v1/staff/consultations/{id}/prescription/items/` | Add a prescription item → safety alerts | `prescription.issue` (author) | FR-CLN-07, FR-PHA-01 | Moved to [S7](#s7--pharmacy-and-documents) (P2) | Implemented (S7a) |
@@ -692,7 +699,7 @@ Rectification of personal details uses `PATCH /api/v1/patient/profiles/{patient_
 | `POST` | `/api/v1/staff/disputes/{id}/request-info/` | Ask the patient for more information | `disputes.handle` | FR-DSP-03 | | Implemented (S10b backend) |
 | `POST` | `/api/v1/staff/disputes/{id}/resolve/` | Decide and create linked actions (refund, bill correction, addendum request, strike removal, rebooking, disagreement statement) | `disputes.handle` | FR-DSP-06, FR-DSP-07, FR-DSP-08 | Step-up; conflict-of-interest check; Audit | Implemented (S10b backend) |
 | `POST` | `/api/v1/staff/platform-disputes/` | Facility raises a dispute against the platform | `facility.configure` | FR-DSP-02 | Verification, suspension, subscription | Planned |
-| `GET` | `/api/v1/staff/reports/operations-today/` | Live operations board | `reports.view` | FR-RPT-02 | Polled or pushed via the queue socket | Planned |
+| `GET` | `/api/v1/staff/reports/operations/` | Facility command centre: today vs same day last week, 14-day trend, live load by service, arrivals heatmap; `attention` (approvals, closed shifts, queue moves, unsigned records, open disputes, pending invitations, staff without two-step sign-in, licence days left), `finance` (collected today, payments, bills, open balances), `bookings` (expected, arrived, no-shows, rate) and `on_duty` (staff names, state, room) | `reports.view` + `facility.configure` | FR-RPT-02 | Aggregates only, never a patient name; polled or pushed via the queue socket | Implemented (S4, upgrade 05 §5) |
 | `GET` | `/api/v1/staff/reports/daily-summary/` | Visits by source and service, waits (median, p90), no-shows, left without service | `reports.view` | FR-RPT-01, FR-RPT-03 | Filters date range, service, doctor | Planned |
 | `GET` | `/api/v1/staff/reports/wait-times/` | Wait trends and estimate accuracy | `reports.view` | FR-RPT-01, FR-RPT-03 | | Planned |
 | `GET` | `/api/v1/staff/reports/doctor-activity/` | Patients seen, consultation time, unsigned and late records | `reports.view` | FR-RPT-03 | | Planned |

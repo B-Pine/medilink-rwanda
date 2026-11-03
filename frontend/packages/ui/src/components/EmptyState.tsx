@@ -32,7 +32,7 @@ export function EmptyState({
     <div
       className={cx(
         "flex flex-col items-center gap-3 text-center",
-        page ? "rounded-lg border border-dashed border-border bg-surface px-6 py-12" : "px-4 py-8",
+        page ? "rounded-2xl bg-surface px-6 py-14 shadow-card" : "px-4 py-8",
         className,
       )}
     >

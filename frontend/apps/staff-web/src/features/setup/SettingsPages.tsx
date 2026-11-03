@@ -1,4 +1,5 @@
 import type {
+  ChecklistCode,
   FacilityProfile,
   FacilitySettings,
   SettingFieldSpec,
@@ -7,7 +8,9 @@ import type {
 } from "@medilink/api-client";
 import {
   Alert,
+  Badge,
   Button,
+  buttonClassName,
   EmptyState,
   SelectField,
   SwitchField,
@@ -43,6 +46,7 @@ import { Link } from "react-router";
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
 import { useStepUp } from "../lock";
+import { useChecklist } from "./ChecklistPage";
 import {
   ConflictNotice,
   errorText,
@@ -55,58 +59,99 @@ import {
   useLocale,
 } from "./shared";
 
-const SECTIONS: { to: string; key: string; icon: Icon }[] = [
-  { to: "/settings/profile", key: "profile", icon: Buildings },
-  { to: "/settings/services", key: "services", icon: FirstAidKit },
-  { to: "/settings/hours", key: "hours", icon: Clock },
-  { to: "/settings/schedules", key: "schedules", icon: CalendarBlank },
-  { to: "/settings/tariffs", key: "tariffs", icon: Receipt },
-  { to: "/settings/insurers", key: "insurers", icon: ShieldCheck },
-  { to: "/settings/rules", key: "rules", icon: SlidersHorizontal },
-  { to: "/settings/displays", key: "displays", icon: Monitor },
-  { to: "/settings/history", key: "history", icon: ClockCounterClockwise },
+const SECTIONS: { to: string; key: string; icon: Icon; group: string; step?: ChecklistCode }[] = [
+  { to: "/settings/profile", key: "profile", icon: Buildings, group: "facility", step: "profile" },
+  { to: "/settings/hours", key: "hours", icon: Clock, group: "facility", step: "opening_hours" },
+  { to: "/settings/displays", key: "displays", icon: Monitor, group: "facility" },
+  { to: "/settings/services", key: "services", icon: FirstAidKit, group: "care", step: "services" },
+  {
+    to: "/settings/schedules",
+    key: "schedules",
+    icon: CalendarBlank,
+    group: "care",
+    step: "schedules",
+  },
+  { to: "/settings/tariffs", key: "tariffs", icon: Receipt, group: "money", step: "tariff" },
+  {
+    to: "/settings/insurers",
+    key: "insurers",
+    icon: ShieldCheck,
+    group: "money",
+    step: "insurers",
+  },
+  { to: "/settings/rules", key: "rules", icon: SlidersHorizontal, group: "policy" },
+  { to: "/settings/history", key: "history", icon: ClockCounterClockwise, group: "policy" },
 ];
+const GROUPS = ["facility", "care", "money", "policy"];
 
-/** /settings: one tile per configuration area (contract §6.1). */
+/** /settings: configuration areas grouped by what they shape, with their setup state. */
 export function SettingsHomePage() {
   const { t } = useTranslation();
+  const checklist = useChecklist();
+  const done = new Map(checklist.data?.items.map((i) => [i.code, i.done]) ?? []);
   return (
     <SetupGate codes={["facility.configure"]}>
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-8">
         <PageHeader
           title={t("setup.settings.title")}
           description={t("setup.settings.intro")}
           actions={
-            <Link to="/setup" className="inline-flex items-center gap-1.5 font-semibold">
-              <ClipboardText aria-hidden="true" className="size-5" />
+            <Link to="/setup" className={buttonClassName({ variant: "secondary", pill: true })}>
+              <ClipboardText aria-hidden="true" />
               {t("setup.settings.checklistLink")}
             </Link>
           }
         />
-        <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2 xl:grid-cols-3">
-          {SECTIONS.map(({ to, key, icon: SectionIcon }) => (
-            <li key={key} className="flex">
-              <Link
-                to={to}
-                className="group flex flex-1 items-start gap-4 rounded-lg bg-surface shadow-card p-4 text-fg no-underline transition-colors hover:border-border-input hover:bg-raised"
-              >
-                <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-md bg-brand-subtle text-on-brand-subtle">
-                  <SectionIcon aria-hidden="true" weight="duotone" className="size-6" />
-                </span>
-                <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                  <span className="font-semibold">{t(`setup.settings.sections.${key}.title`)}</span>
-                  <span className="text-body-sm text-fg-secondary">
-                    {t(`setup.settings.sections.${key}.description`)}
-                  </span>
-                </span>
-                <CaretRight
-                  aria-hidden="true"
-                  className="mt-1 size-4 shrink-0 text-fg-muted group-hover:text-fg"
-                />
-              </Link>
-            </li>
-          ))}
-        </ul>
+        {GROUPS.map((group) => (
+          <section
+            key={group}
+            aria-labelledby={`settings-${group}`}
+            className="flex flex-col gap-3"
+          >
+            <h2
+              id={`settings-${group}`}
+              className="m-0 text-caption font-semibold tracking-wider text-fg-secondary uppercase"
+            >
+              {t(`setup.settings.groups.${group}`)}
+            </h2>
+            <ul className="ml-stagger m-0 grid list-none gap-3 p-0 sm:grid-cols-2 xl:grid-cols-3">
+              {SECTIONS.filter((x) => x.group === group).map(
+                ({ to, key, icon: SectionIcon, step }) => {
+                  const state = step ? done.get(step) : undefined;
+                  return (
+                    <li key={key} className="flex">
+                      <Link
+                        to={to}
+                        className="group flex flex-1 items-start gap-4 rounded-2xl bg-surface p-5 text-fg no-underline shadow-card transition-[box-shadow,transform] duration-200 ease-out-quint hover:-translate-y-0.5 hover:shadow-raised"
+                      >
+                        <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand-subtle text-on-brand-subtle transition-colors duration-200 group-hover:bg-primary group-hover:text-on-primary">
+                          <SectionIcon aria-hidden="true" weight="duotone" className="size-6" />
+                        </span>
+                        <span className="flex min-w-0 flex-1 flex-col gap-1">
+                          <span className="flex flex-wrap items-center gap-2 font-semibold">
+                            {t(`setup.settings.sections.${key}.title`)}
+                            {state !== undefined && (
+                              <Badge tone={state ? "success" : "warning"}>
+                                {state ? t("setup.checklist.done") : t("setup.checklist.todo")}
+                              </Badge>
+                            )}
+                          </span>
+                          <span className="text-body-sm text-fg-secondary">
+                            {t(`setup.settings.sections.${key}.description`)}
+                          </span>
+                        </span>
+                        <CaretRight
+                          aria-hidden="true"
+                          className="mt-1 size-4 shrink-0 text-fg-muted transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5 group-hover:text-fg"
+                        />
+                      </Link>
+                    </li>
+                  );
+                },
+              )}
+            </ul>
+          </section>
+        ))}
       </div>
     </SetupGate>
   );
@@ -223,7 +268,7 @@ function ProfileForm({ profile, onReload }: { profile: FacilityProfile; onReload
   return (
     <form onSubmit={submit} noValidate className="flex flex-col gap-6">
       {isConflict(save.error) && <ConflictNotice onReload={onReload} />}
-      <section className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5">
+      <section className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5">
         <h2 className="m-0 font-heading text-h3">{t("setup.profile.identity")}</h2>
         <dl className="m-0 grid gap-3 sm:grid-cols-3">
           {(
@@ -247,7 +292,7 @@ function ProfileForm({ profile, onReload }: { profile: FacilityProfile; onReload
         <p className="m-0 text-body-sm text-fg-muted">{t("setup.profile.platformManaged")}</p>
       </section>
 
-      <section className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5">
+      <section className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5">
         <h2 className="m-0 font-heading text-h3">{t("setup.profile.contact")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <TextField
@@ -284,7 +329,7 @@ function ProfileForm({ profile, onReload }: { profile: FacilityProfile; onReload
         </div>
       </section>
 
-      <section className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5">
+      <section className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5">
         <h2 className="m-0 font-heading text-h3">{t("setup.profile.location")}</h2>
         <div className="flex flex-wrap items-end gap-3">
           <TextField
@@ -317,7 +362,7 @@ function ProfileForm({ profile, onReload }: { profile: FacilityProfile; onReload
         )}
       </section>
 
-      <section className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5">
+      <section className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5">
         <h2 className="m-0 font-heading text-h3">{t("setup.profile.description")}</h2>
         <p className="m-0 -mt-2 text-body-sm text-fg-secondary">
           {t("setup.profile.descriptionHint")}
@@ -348,7 +393,7 @@ function ProfileForm({ profile, onReload }: { profile: FacilityProfile; onReload
           {t("setup.saved")}
         </Alert>
       )}
-      <div className="flex justify-end border-t border-border pt-5">
+      <div className="flex justify-end border-t border-border/60 pt-5">
         <Button type="submit" size="lg" disabled={save.isPending || outside}>
           {t("setup.save")}
         </Button>
@@ -371,7 +416,7 @@ function Photos({ profile }: { profile: FacilityProfile }) {
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: setupKeys.facility }),
   });
   return (
-    <section className="flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5">
+    <section className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="m-0 font-heading text-h3">{t("setup.profile.photos")}</h2>
@@ -379,7 +424,7 @@ function Photos({ profile }: { profile: FacilityProfile }) {
             {t("setup.profile.photosHint", { count: profile.photos.length })}
           </p>
         </div>
-        <label className="inline-flex min-h-target cursor-pointer items-center gap-2 rounded-md border border-border-input px-4 font-semibold hover:bg-subtle has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-60">
+        <label className="inline-flex min-h-target cursor-pointer items-center gap-2 rounded-xl border border-border-input px-4 font-semibold hover:bg-subtle has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-60">
           <UploadSimple aria-hidden="true" className="size-5" />
           {t("setup.profile.addPhoto")}
           <input
@@ -400,7 +445,7 @@ function Photos({ profile }: { profile: FacilityProfile }) {
           {profile.photos.map((photo, index) => (
             <li
               key={photo}
-              className="flex aspect-[4/3] flex-col justify-between rounded-md border border-border bg-subtle p-2"
+              className="flex aspect-[4/3] flex-col justify-between rounded-2xl border border-border/60 bg-subtle p-2"
             >
               <span className="text-body-sm text-fg-secondary">
                 {t("setup.profile.photoN", { n: index + 1 })}
@@ -524,13 +569,13 @@ function SectionForm({
         e.preventDefault();
         save.mutate();
       }}
-      className="mt-4 flex flex-col gap-5 rounded-lg bg-surface shadow-card p-5"
+      className="mt-4 flex flex-col gap-5 rounded-2xl bg-surface shadow-card p-5"
     >
       {isConflict(save.error) && <ConflictNotice onReload={onReload} />}
       {section === "billing" && (
         <p className="m-0 text-body-sm text-fg-secondary">{t("setup.rules.billingStepUp")}</p>
       )}
-      <div className="flex flex-col divide-y divide-border">
+      <div className="flex flex-col divide-y divide-border/60">
         {fields.map(([name, spec]) => {
           const value = values[name] ?? spec.default;
           const set = (next: boolean | number | string) => {
@@ -624,7 +669,7 @@ function BrandingForm() {
             e.preventDefault();
             save.mutate();
           }}
-          className="mt-4 flex flex-col gap-4 rounded-lg bg-surface shadow-card p-5"
+          className="mt-4 flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5"
         >
           <p className="m-0 text-body-sm text-fg-secondary">{t("setup.rules.brandingHint")}</p>
           <TextareaField
@@ -710,7 +755,7 @@ export function HistoryPage() {
                 description={t("setup.history.empty")}
               />
             ) : (
-              <div className="overflow-x-auto rounded-lg bg-surface shadow-card">
+              <div className="overflow-x-auto rounded-2xl bg-surface shadow-card">
                 <table className="w-full border-collapse text-left text-body-sm">
                   <caption className="sr-only">
                     {t("setup.settings.sections.history.title")}
@@ -726,7 +771,7 @@ export function HistoryPage() {
                   </thead>
                   <tbody>
                     {data.results.map((row) => (
-                      <tr key={row.id} className="border-t border-border align-top">
+                      <tr key={row.id} className="border-t border-border/60 align-top">
                         <td className="px-3 py-2.5 whitespace-nowrap tabular-nums">
                           {formatDate(row.changed_at, locale, true)}
                         </td>
@@ -750,7 +795,7 @@ export function HistoryPage() {
                     ))}
                   </tbody>
                 </table>
-                <div className="flex items-center justify-between gap-3 border-t border-border px-3 py-2">
+                <div className="flex items-center justify-between gap-3 border-t border-border/60 px-3 py-2">
                   <span className="text-body-sm text-fg-secondary tabular-nums">
                     {t("setup.history.count", { count: data.count })}
                   </span>

@@ -75,6 +75,7 @@ def membership_data(m: FacilityMembership) -> dict[str, Any]:
             "service_points": [p.service_point_id for p in m.service_points.all()],
             "is_active": m.is_active,
             "mfa_enabled": mfa.has_confirmed_mfa(m.user),
+            "last_login": m.user.last_login,
             "clinician": {
                 "council": profile.council,
                 "licence_number": profile.licence_number,

@@ -44,7 +44,7 @@ function NotificationRow({ item }: { item: AppNotification }) {
   return (
     <li
       className={cx(
-        "flex flex-col gap-2 rounded-lg border bg-surface p-4 sm:flex-row sm:items-start sm:justify-between",
+        "flex flex-col gap-2 rounded-2xl border bg-surface p-4 sm:flex-row sm:items-start sm:justify-between",
         item.is_read ? "border-border" : "border-primary/40 bg-brand-subtle/30",
       )}
     >

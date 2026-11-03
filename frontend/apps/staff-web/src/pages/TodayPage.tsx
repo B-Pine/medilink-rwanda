@@ -1,4 +1,4 @@
-import { cx } from "@medilink/ui";
+import { cx, ImigongoPattern } from "@medilink/ui";
 import { dateFormat } from "@medilink/ui/i18n";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
@@ -49,17 +49,18 @@ export function TodayPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
-        <div className="flex min-w-0 flex-col gap-1">
-          <p className="m-0 text-caption font-semibold tracking-wide text-fg-muted uppercase">
+      <header className="relative isolate flex flex-wrap items-end justify-between gap-x-8 gap-y-5 overflow-hidden rounded-3xl bg-[linear-gradient(135deg,var(--color-forest)_0%,var(--color-forest-raised)_100%)] p-6 text-on-forest shadow-raised sm:p-8">
+        <ImigongoPattern opacity={0.06} className="-z-10 text-on-forest-accent" />
+        <div className="flex min-w-0 flex-col gap-1.5">
+          <p className="m-0 text-caption font-semibold tracking-wider text-on-forest-muted uppercase">
             {kigali(language, { dateStyle: "full" })}
           </p>
-          <PageHeading title={title} className="text-h1 font-bold tracking-tight text-fg">
+          <PageHeading title={title} className="text-h1 font-bold tracking-tight text-on-forest">
             {t(`today.greeting_${partOfDay()}`, {
               name: me.full_name.split(" ")[0] ?? me.full_name,
             })}
           </PageHeading>
-          <p className="m-0 flex flex-wrap items-center gap-x-2 gap-y-1 text-fg-muted">
+          <p className="m-0 flex flex-wrap items-center gap-x-2 gap-y-1 text-on-forest-muted">
             {membership
               ? t("today.facility", { facility: membership.facility.name })
               : t("today.platform")}
@@ -72,7 +73,7 @@ export function TodayPage() {
               {membership.roles.map((role) => (
                 <li
                   key={role}
-                  className="rounded-full bg-brand-subtle px-2.5 py-0.5 text-caption font-semibold text-on-brand-subtle"
+                  className="rounded-full bg-on-forest/12 px-2.5 py-0.5 text-caption font-semibold text-on-forest"
                 >
                   {roleLabel(role, t)}
                 </li>
@@ -107,11 +108,11 @@ export function TodayPage() {
                   <Link
                     to={to}
                     className={cx(
-                      "inline-flex min-h-9 items-center gap-2 rounded-full px-3.5 text-body-sm font-semibold no-underline",
-                      "transition-[background-color,box-shadow,transform] duration-150 active:scale-[0.97]",
+                      "inline-flex min-h-10 items-center gap-2 rounded-full px-4 text-body-sm font-semibold no-underline",
+                      "transition-[background-color,color,transform] duration-200 ease-out-quint active:scale-[0.97]",
                       primary && index === 0
-                        ? "bg-primary text-on-primary hover:bg-primary-hover"
-                        : "bg-surface text-fg shadow-card hover:bg-subtle",
+                        ? "bg-on-forest text-forest hover:bg-on-forest/90"
+                        : "bg-on-forest/10 text-on-forest ring-1 ring-on-forest/20 hover:bg-on-forest/20",
                     )}
                   >
                     <ActionIcon
@@ -129,7 +130,7 @@ export function TodayPage() {
       </header>
 
       {cards.length > 0 && (
-        <div className="grid gap-4 lg:grid-cols-3 [&:empty]:hidden">
+        <div className="ml-stagger grid gap-5 lg:grid-cols-3 [&:empty]:hidden">
           {cards.map((Card, index) => (
             <Card key={index} />
           ))}

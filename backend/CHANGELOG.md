@@ -8,6 +8,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Railway deployment (2026-11-04)
+
+- Fixed: `railway.json` runs `migrate` as the owner role (`MEDILINK_DB_ROLE=owner`); the app
+  role cannot create tables. The pre-deploy and start commands run through `/bin/sh -c`, so
+  `&&` and `${PORT}` work.
+- Fixed: Railway's healthcheck host `healthcheck.railway.app` is allowed when
+  `RAILWAY_ENVIRONMENT_NAME` is set.
+- Fixed: `scripts/railway_bootstrap_db.py` refuses when `DATABASE_URL` or `DATABASE_OWNER_URL`
+  uses the Postgres admin user (it would have demoted it) or both use one role, and says to
+  remove `BOOTSTRAP_DATABASE_URL` afterwards; `check --deploy` warns while it is set
+  (`medilink.W005`).
+- Added: `railway.worker.json` and `railway.beat.json` for the Celery worker and beat (beat keeps
+  its schedule file in `/tmp`; the app directory is read-only). Runbook:
+  `docs/operations/railway.md`.
+
 ### National aggregate report (2026-11-04, #208)
 
 - Added: `GET /api/v1/platform/reports/national/` for platform admins: load by facility and

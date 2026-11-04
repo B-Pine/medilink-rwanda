@@ -25,6 +25,15 @@ def main() -> int:
         return 0
     owner, owner_pw, db = _creds(os.environ["DATABASE_OWNER_URL"])
     app, app_pw, _ = _creds(os.environ["DATABASE_URL"])
+    admin, _pw, _db = _creds(admin_url)
+    # DATABASE_URL or DATABASE_OWNER_URL still on the admin user would demote it (NOSUPERUSER)
+    # or leave the app running with a role that bypasses RLS.
+    if not owner or not app or owner == app or admin in (owner, app):
+        sys.stderr.write(
+            "DATABASE_OWNER_URL and DATABASE_URL must use two different roles (medilink_owner, "
+            "medilink_app), neither of them the Postgres admin user.\n"
+        )
+        return 1
 
     with psycopg.connect(admin_url, autocommit=True) as conn:
         for role, pw, extra in (
@@ -36,9 +45,7 @@ def main() -> int:
             conn.execute(
                 sql.SQL(
                     "{} ROLE {} LOGIN NOSUPERUSER NOBYPASSRLS NOCREATEROLE {} PASSWORD {}"
-                ).format(
-                    sql.SQL(verb), sql.Identifier(role), sql.SQL(extra), sql.Literal(pw)
-                )
+                ).format(sql.SQL(verb), sql.Identifier(role), sql.SQL(extra), sql.Literal(pw))
             )
         conn.execute(sql.SQL("GRANT {} TO {}").format(sql.Identifier(app), sql.Identifier(owner)))
         if not conn.execute("SELECT 1 FROM pg_database WHERE datname = %s", (db,)).fetchone():
@@ -61,7 +68,10 @@ def main() -> int:
             "GRANT USAGE, SELECT ON SEQUENCES TO {a}",
         ):
             conn.execute(sql.SQL(stmt).format(o=o, a=a))
-    sys.stdout.write("MediLink database roles ready.\n")
+    sys.stdout.write(
+        "MediLink database roles ready. Remove BOOTSTRAP_DATABASE_URL from the service now: "
+        "the running app must not hold the Postgres admin password.\n"
+    )
     return 0
 
 

@@ -316,6 +316,11 @@
     "bornWrong": "The date of birth does not match."
   },
   "failed": "Could not load. Try again.",
+  "favourites": {
+    "title": "Your frequent medicines",
+    "days_one": "{{count}} day",
+    "days_other": "{{count}} days"
+  },
   "stock": {
     "title": "Stock",
     "description": "What is on the shelf, batch by batch. Giving medicines takes the earliest expiry first.",

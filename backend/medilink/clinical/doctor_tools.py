@@ -11,13 +11,21 @@ from collections import Counter
 from typing import Any
 
 from django.db import transaction
-from django.utils import timezone
+from django.db.models import Count
+from django.utils import timezone, translation
 
 from medilink.clinical import services
 from medilink.clinical.models import Consultation, ConsultationStatus, Diagnosis
 from medilink.core.exceptions import BusinessRuleViolation
+from medilink.masterdata.models import DiagnosisCode
 from medilink.pharmacy import services as pharmacy
-from medilink.pharmacy.models import PrescriptionQuery, QueryStatus
+from medilink.pharmacy.models import (
+    ItemStatus,
+    PrescriptionItem,
+    PrescriptionQuery,
+    PrescriptionStatus,
+    QueryStatus,
+)
 from medilink.scheduling.models import BookingStatus, FollowUp, FollowUpStatus
 from medilink.visits.models import Stage, Ticket
 
@@ -190,3 +198,114 @@ def activity(facility_id: Any, membership_id: Any, days: int) -> dict[str, Any]:
             for (code, display), n in codes.most_common(6)
         ],
     }
+
+
+# ---- quick note: order sets and favourites (W3, #202) ---------------------------------------
+
+FAVOURITE_DAYS = 180
+FAVOURITE_LIMIT = 8
+FAVOURITE_MIN_USES = 2
+
+
+def _language() -> str:
+    lang = (translation.get_language() or "rw")[:2]
+    return lang if lang in ("rw", "en", "fr") else "rw"
+
+
+def _pick(values: dict[str, Any] | None, lang: str) -> str:
+    values = values or {}
+    return str(values.get(lang) or values.get("en") or next(iter(values.values()), "") or "")
+
+
+def diagnosis_labels(codes: list[str]) -> dict[str, dict[str, Any]]:
+    """Active ICD-10 codes with their title and plain words in the request language.
+
+    A code missing here cannot be saved on a consultation, so an order set reports it as
+    skipped instead of failing the autosave.
+    """
+    lang = _language()
+    return {
+        row.code: {
+            "code": row.code,
+            "display": _pick(row.title_i18n, lang) or row.code,
+            "plain_language": _pick(row.plain_language_i18n, lang),
+            "is_sensitive": row.is_sensitive,
+        }
+        for row in DiagnosisCode.objects.filter(
+            code_system="icd10", code__in=[c.upper() for c in codes], is_active=True
+        )
+    }
+
+
+def favourites(facility_id: Any, membership_id: Any) -> dict[str, Any]:
+    """The doctor's most used diagnoses and medicines here, derived from their own work.
+
+    Diagnoses come from their signed consultations, medicines from their issued prescriptions
+    (cancelled lines left out), over the last FAVOURITE_DAYS days and used at least
+    FAVOURITE_MIN_USES times. Nothing is stored: the list follows how they practise. Sensitive
+    diagnoses are left out so they never show as a shortcut on another patient's screen.
+    Each medicine carries the dosing of its latest use, to prefill the form.
+    """
+    since = timezone.now() - dt.timedelta(days=FAVOURITE_DAYS)
+    top_codes = list(
+        Diagnosis.objects.filter(
+            facility_id=facility_id,
+            consultation__author_membership_id=membership_id,
+            consultation__status=ConsultationStatus.SIGNED,
+            consultation__signed_at__gte=since,
+        )
+        .values("code")
+        .annotate(n=Count("id"))
+        .filter(n__gte=FAVOURITE_MIN_USES)
+        .order_by("-n", "code")
+        .values_list("code", "n")[: FAVOURITE_LIMIT * 2]
+    )
+    labels = diagnosis_labels([code for code, _ in top_codes])
+    diagnoses = [
+        {**labels[code], "count": n}
+        for code, n in top_codes
+        if code in labels and not labels[code]["is_sensitive"]
+    ][:FAVOURITE_LIMIT]
+
+    mine = (
+        PrescriptionItem.objects.filter(
+            facility_id=facility_id,
+            prescription__prescriber_membership_id=membership_id,
+            created_at__gte=since,
+        )
+        .exclude(prescription__status=PrescriptionStatus.DRAFT)
+        .exclude(status=ItemStatus.CANCELLED)
+    )
+    top_drugs = list(
+        mine.values("drug_code", "free_text_drug")
+        .annotate(n=Count("id"))
+        .filter(n__gte=FAVOURITE_MIN_USES)
+        .order_by("-n", "drug_code", "free_text_drug")[:FAVOURITE_LIMIT]
+    )
+    unavailable = pharmacy.unavailable_codes(
+        facility_id, [row["drug_code"] for row in top_drugs if row["drug_code"]]
+    )
+    medicines = []
+    for row in top_drugs:
+        latest = (
+            mine.filter(drug_code=row["drug_code"], free_text_drug=row["free_text_drug"])
+            .order_by("-created_at")
+            .first()
+        )
+        if latest is None:
+            continue
+        medicines.append(
+            {
+                "drug_code": latest.drug_code,
+                "free_text_drug": latest.free_text_drug,
+                "drug_display": latest.drug_display,
+                "is_controlled": latest.is_controlled,
+                "available_here": not latest.drug_code or latest.drug_code not in unavailable,
+                "dose": latest.dose,
+                "frequency_code": latest.frequency_code,
+                "route": latest.route,
+                "duration_days": latest.duration_days,
+                "count": row["n"],
+            }
+        )
+    return {"window_days": FAVOURITE_DAYS, "diagnoses": diagnoses, "medicines": medicines}

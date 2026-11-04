@@ -26,6 +26,20 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   prescription items and availability rows; MSW mocks for every stock endpoint, with FEFO
   deduction and the "only N left" refusal in the dispense mock.
 
+### Doctor's quick note: order sets and favourites (2026-11-04, #202)
+
+- Changed: **Use a template** applies an order set in one click: diagnoses (provisional, with
+  their names and the sensitive flag), plan, instructions and medicines. The panel then lists
+  what was added, what was already there (never added twice) and what needs the doctor (unknown
+  codes, medicines that failed, lab tests to order by hand). The note stays a draft until signed.
+- Changed: **Save as template** keeps the draft prescription's medicines too, so a finished
+  visit becomes an order set.
+- Added: **Your frequent diagnoses** as one-click chips under the ICD-10 search, and **your
+  frequent medicines** above the drug search (one click fills the dose, frequency, route and days
+  of the latest use); both also come first in search results (`clinical.favourites()`).
+- Added: lab tests on templates show as chips; the editor keeps them (no editor for them yet).
+- Fixed: applying a template refreshes the prescription section straight away.
+
 ### Public site: every page on the new tokens (2026-11-04)
 
 - Changed: the shared page kit: a larger fluid page heading with no rule under it; panels on

@@ -7,6 +7,7 @@ import {
   type Consultation,
   type DrugRoute,
   type DrugRow,
+  type FavouriteMedicine,
   type FrequencyCode,
   type Prescription,
   type PrescriptionAlert,
@@ -39,8 +40,10 @@ import { useDeferredValue, useId, useRef, useState, type FormEvent } from "react
 import { useTranslation } from "react-i18next";
 
 import { useApi } from "../../app/services";
+import { favouriteRank, useFavourites } from "../clinical/Favourites";
 import { useStepUp } from "../lock";
 import { ItemFlags, ItemLine } from "./DispensePage";
+import { FrequentMedicines } from "./FrequentMedicines";
 import { errorText, ITEM_TONE, pharmacyKeys, STATUS_TONE, useCan, useWhen } from "./shared";
 
 /**
@@ -444,6 +447,35 @@ function AddItem({
     queryFn: () => api.pharmacy.drugs(q),
     enabled: q.length >= 2 && !picked && !freeText,
   });
+  // W3: my frequent medicines first; one click fills the dosing of my latest use
+  const frequent = useFavourites().data?.medicines ?? [];
+  const found = [...(drugs.data ?? [])].sort(
+    (a, b) =>
+      favouriteRank(frequent, (f) => f.drug_code === a.code) -
+      favouriteRank(frequent, (f) => f.drug_code === b.code),
+  );
+  const pickFrequent = (m: FavouriteMedicine) => {
+    if (m.drug_code)
+      setPicked({
+        code: m.drug_code,
+        display: m.drug_display,
+        generic_name: "",
+        strength: "",
+        form: "",
+        is_controlled: m.is_controlled,
+        available_here: m.available_here,
+        stock_level: null, // W5: favourites carry availability only
+      });
+    else {
+      setSearch(m.free_text_drug || m.drug_display);
+      setFreeText(true);
+    }
+    setDose(m.dose);
+    setFrequency(m.frequency_code as FrequencyCode);
+    setRoute(m.route as DrugRoute);
+    setDays(m.duration_days ? String(m.duration_days) : "");
+    setQuantity("");
+  };
   const durationDays = days ? Number(days) : null;
   const computed = defaultQuantity(dose, frequency, durationDays);
   const add = useMutation({
@@ -519,13 +551,16 @@ function AddItem({
             error={tried && drugMissing ? t("pharmacy.prescription.drugRequired") : undefined}
             aria-controls={`${ids}-results`}
           />
+          {!search.trim() && !freeText && (
+            <FrequentMedicines items={frequent} onPick={pickFrequent} />
+          )}
           {q.length >= 2 && !freeText && (
             <div id={`${ids}-results`} aria-live="polite" className="flex flex-col gap-1">
               {drugs.isPending ? (
                 <LoadingState label={t("pharmacy.loading")} />
               ) : (
                 <ul className="m-0 flex list-none flex-col gap-1 p-0">
-                  {(drugs.data ?? []).map((d) => (
+                  {found.map((d) => (
                     <li key={d.code}>
                       <button
                         type="button"

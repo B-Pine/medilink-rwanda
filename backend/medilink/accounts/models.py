@@ -260,6 +260,10 @@ class ClinicianTemplate(models.Model):
     Personal working text, never patient data, so it follows the clinician across facilities.
     `items` use the prescription item fields (drug_code or free_text_drug, dose, frequency_code,
     route, duration_days, quantity, instructions).
+
+    Used as an order set (W3, #202): applying it fills the draft in one step. `tests` is the
+    extension point for lab tests (`[{"code", "name"}]`, the W2 lab catalogue codes): stored and
+    returned, but not ordered yet; the consultation says so when a template carries tests.
     """
 
     id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
@@ -268,6 +272,7 @@ class ClinicianTemplate(models.Model):
     sections = models.JSONField(default=dict, blank=True)
     diagnosis_codes = ArrayField(models.CharField(max_length=10), default=list, blank=True)
     items = models.JSONField(default=list, blank=True)
+    tests = models.JSONField(default=list, blank=True)
     use_count = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

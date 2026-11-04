@@ -316,6 +316,11 @@
     "bornWrong": "La date de naissance ne correspond pas."
   },
   "failed": "Chargement impossible. Réessayez.",
+  "favourites": {
+    "title": "Vos médicaments fréquents",
+    "days_one": "{{count}} jour",
+    "days_other": "{{count}} jours"
+  },
   "stock": {
     "title": "Stock",
     "description": "Ce qui est en rayon, lot par lot. La délivrance prend d'abord la péremption la plus proche.",

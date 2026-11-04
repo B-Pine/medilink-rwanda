@@ -120,6 +120,13 @@ class NoteTemplateSectionsSerializer(serializers.Serializer):
     )
 
 
+class NoteTemplateTestSerializer(serializers.Serializer):
+    """A lab test on an order set (W3 extension point for W2 lab orders; not ordered yet)."""
+
+    code = serializers.CharField(max_length=40)
+    name = serializers.CharField(max_length=200, required=False, allow_blank=True, default="")
+
+
 class NoteTemplateInputSerializer(StrictSerializer):
     name = serializers.CharField(max_length=80)
     sections = NoteTemplateSectionsSerializer(required=False)
@@ -127,11 +134,27 @@ class NoteTemplateInputSerializer(StrictSerializer):
         child=serializers.CharField(max_length=10), required=False, default=list, max_length=5
     )
     items = NoteTemplateItemSerializer(many=True, required=False, default=list)
+    tests = NoteTemplateTestSerializer(many=True, required=False, default=list)
 
     def validate_items(self, value: list[dict[str, Any]]) -> list[dict[str, Any]]:
         if len(value) > 10:
             raise serializers.ValidationError("At most 10 medicines.")
         return value
+
+    def validate_tests(self, value: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        if len(value) > 10:
+            raise serializers.ValidationError("At most 10 tests.")
+        return value
+
+
+class TemplateDiagnosisSerializer(serializers.Serializer):
+    code = serializers.CharField()
+    display = serializers.CharField()
+    plain_language = serializers.CharField(allow_blank=True)
+    is_sensitive = serializers.BooleanField()
+    is_known = serializers.BooleanField(
+        help_text="False when the code is not an active ICD-10 code: applying skips it."
+    )
 
 
 class NoteTemplateSerializer(serializers.Serializer):
@@ -139,12 +162,44 @@ class NoteTemplateSerializer(serializers.Serializer):
     name = serializers.CharField()
     sections = NoteTemplateSectionsSerializer()
     diagnosis_codes = serializers.ListField(child=serializers.CharField())
+    diagnoses = TemplateDiagnosisSerializer(many=True)
     items = NoteTemplateItemSerializer(many=True)
+    tests = NoteTemplateTestSerializer(many=True)
     use_count = serializers.IntegerField()
     updated_at = serializers.DateTimeField()
 
 
-def template_data(t: ClinicianTemplate) -> dict[str, Any]:
+class FavouriteDiagnosisSerializer(serializers.Serializer):
+    code = serializers.CharField()
+    display = serializers.CharField()
+    plain_language = serializers.CharField(allow_blank=True)
+    count = serializers.IntegerField()
+
+
+class FavouriteMedicineSerializer(serializers.Serializer):
+    drug_code = serializers.CharField(allow_blank=True)
+    free_text_drug = serializers.CharField(allow_blank=True)
+    drug_display = serializers.CharField()
+    is_controlled = serializers.BooleanField()
+    available_here = serializers.BooleanField()
+    dose = serializers.CharField()
+    frequency_code = serializers.CharField()
+    route = serializers.CharField()
+    duration_days = serializers.IntegerField(allow_null=True)
+    count = serializers.IntegerField()
+
+
+class FavouritesSerializer(serializers.Serializer):
+    window_days = serializers.IntegerField()
+    diagnoses = FavouriteDiagnosisSerializer(many=True)
+    medicines = FavouriteMedicineSerializer(many=True)
+
+
+def template_data(
+    t: ClinicianTemplate, labels: dict[str, dict[str, Any]] | None = None
+) -> dict[str, Any]:
+    if labels is None:
+        labels = doctor_tools.diagnosis_labels(list(t.diagnosis_codes))
     return {
         "id": t.pk,
         "name": t.name,
@@ -158,7 +213,20 @@ def template_data(t: ClinicianTemplate) -> dict[str, Any]:
             )
         },
         "diagnosis_codes": t.diagnosis_codes,
+        "diagnoses": [
+            {**labels[code], "is_known": True}
+            if code in labels
+            else {
+                "code": code,
+                "display": code,
+                "plain_language": "",
+                "is_sensitive": False,
+                "is_known": False,
+            }
+            for code in t.diagnosis_codes
+        ],
         "items": t.items,
+        "tests": t.tests or [],
         "use_count": t.use_count,
         "updated_at": t.updated_at,
     }
@@ -276,8 +344,11 @@ class TemplatesView(_MyTemplates):
         summary="My note templates and favourite prescriptions, most used first",
     )
     def get(self, request: Request) -> Response:
-        rows = ClinicianTemplate.objects.filter(user=self.owner())
-        return Response(NoteTemplateSerializer([template_data(t) for t in rows], many=True).data)
+        rows = list(ClinicianTemplate.objects.filter(user=self.owner()))
+        labels = doctor_tools.diagnosis_labels([c for t in rows for c in t.diagnosis_codes])
+        return Response(
+            NoteTemplateSerializer([template_data(t, labels) for t in rows], many=True).data
+        )
 
     @extend_schema(
         operation_id="staff_clinical_template_create",
@@ -297,6 +368,7 @@ class TemplatesView(_MyTemplates):
                 sections=dict(data.get("sections") or {}),
                 diagnosis_codes=[c.upper() for c in data["diagnosis_codes"]],
                 items=[dict(i) for i in data["items"]],
+                tests=[dict(i) for i in data["tests"]],
             )
         except IntegrityError:
             raise Conflict("You already have a template with this name.") from None
@@ -322,6 +394,7 @@ class TemplateView(_MyTemplates):
         t.sections = dict(data.get("sections") or {})
         t.diagnosis_codes = [c.upper() for c in data["diagnosis_codes"]]
         t.items = [dict(i) for i in data["items"]]
+        t.tests = [dict(i) for i in data["tests"]]
         try:
             t.save()
         except IntegrityError:
@@ -353,3 +426,19 @@ class TemplateUsedView(_MyTemplates):
         t.use_count += 1
         t.save(update_fields=["use_count", "updated_at"])
         return Response(NoteTemplateSerializer(template_data(t)).data)
+
+
+class FavouritesView(ClinicalView):
+    """W3 (#202): what the doctor uses most, shown first in the diagnosis and medicine search."""
+
+    permission_classes = [Needs(WRITE)]
+
+    @extend_schema(
+        operation_id="staff_clinical_favourites",
+        tags=TAGS,
+        responses={200: FavouritesSerializer},
+        summary="My most used diagnoses and medicines here (last 180 days, used twice or more)",
+    )
+    def get(self, request: Request) -> Response:
+        data = doctor_tools.favourites(self.facility_id(), self.membership().pk)
+        return Response(FavouritesSerializer(data).data)

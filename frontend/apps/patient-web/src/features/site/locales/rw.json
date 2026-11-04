@@ -465,5 +465,52 @@
     "facilitiesTitle": "Icyumba cyo gutegereza gituje.",
     "facilitiesLead": "Abarwayi babona igihe cyo gutegereza mbere yo kuza. Wowe ubona umurongo, urujya n'uruza n'umunsi wose ku kibaho kimwe.",
     "facilitiesAction": "MediLink ku bigo by'ubuvuzi"
+  },
+  "home3": {
+    "titleA": "Bona ubuvuzi bukwiye,",
+    "titleB": "udategereje igihe kirekire.",
+    "openNow_one": "Ikigo {{count}} gifunguye ubu",
+    "openNow_other": "Ibigo {{count}} bifunguye ubu",
+    "waitingNow_one": "Umuntu {{count}} ategereje",
+    "waitingNow_other": "Abantu {{count}} bategereje",
+    "live": "Ako kanya",
+    "seePlaces": "Reba aho bitangirwa",
+    "openTitle": "Bifunguye ubu",
+    "openLead": "Ibigo biri kuri MediLink n'igihe cyo gutegereza ako kanya. Kanda \"Hafi yanjye\" ubitondeke ukurikije intera.",
+    "trustLabel": "Ibyo wakwizera",
+    "trust": {
+      "noAccount": {
+        "title": "Nta konti ikenewe kugira ngo urebe",
+        "body": "Reba ibifunguye n'igihe cyo gutegereza mbere yo kwinjira."
+      },
+      "languages": {
+        "title": "Kinyarwanda, English, Français",
+        "body": "Buri paji mu rurimi usoma neza."
+      },
+      "dataHome": {
+        "title": "Amakuru y'ubuzima bwawe aguma mu Rwanda",
+        "body": "Abikwa mu Rwanda kandi asangizwa gusa abo uhisemo ko bakuvura."
+      }
+    },
+    "facilityPoints": {
+      "queue": "Umurongo abarwayi bakurikirana bari mu rugo",
+      "bookings": "Gahunda na ba nyakuza mu igenamigambi rimwe ry'umunsi",
+      "records": "Amadosiye, imiti yandikiwe n'ubwishyu ahantu hamwe"
+    },
+    "kpi": {
+      "open": "Bifunguye ubu",
+      "openHint_one": "mu kigo {{count}} kiri kuri MediLink",
+      "openHint_other": "mu bigo {{count}} biri kuri MediLink",
+      "waiting": "Abategereje",
+      "waitingHint": "ku mirongo y'ibigo bifunguye",
+      "typical": "Igihe gisanzwe cyo gutegereza",
+      "typicalHint": "hagati y'igihe cyo gutegereza cy'uyu munsi",
+      "minutes_one": "Umunota {{count}}",
+      "minutes_other": "Iminota {{count}}"
+    },
+    "symptoms": {
+      "title": "Ntuzi aho wajya?",
+      "action": "Suzuma ibimenyetso byawe"
+    }
   }
 }

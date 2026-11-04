@@ -1,7 +1,10 @@
-import { Phone, ShieldCheck } from "@phosphor-icons/react";
-import { ImigongoPattern, LanguageSwitcher, Logo, ThemeSwitch } from "@medilink/ui";
+import { ArrowUpRight, Phone, ShieldCheck } from "@phosphor-icons/react";
+import { LanguageSwitcher, Logo, ThemeSwitch } from "@medilink/ui";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
+
+/** The brand wordmark: decorative, hidden from assistive tech, the same in every language. */
+const WORDMARK = "MediLink";
 
 const GROUPS = [
   {
@@ -36,20 +39,16 @@ const GROUPS = [
 ] as const;
 
 /**
- * Public footer (redesign "clinical calm"): light, with the one Imigongo band of the site along its
- * top edge at low opacity. The logo, one line and an emergency card; Explore, Information and Legal;
- * last, copyright, "Health data stored in Rwanda", the language and the theme.
+ * Public footer (second pass, 2026-11-04): a hairline top, the brand column (logo, one line, the
+ * 912 line) beside three quiet link columns, a slim bottom bar (copyright, data in Rwanda,
+ * language, theme), and the MediLink wordmark set very large and faint as the signature.
  */
 export function PublicFooter() {
   const { t } = useTranslation();
   return (
-    <footer className="mt-auto border-t border-border bg-surface text-fg print:hidden">
-      {/* the site's single Imigongo signature: a thin band, low opacity */}
-      <div aria-hidden="true" className="relative isolate h-3 overflow-hidden bg-brand-subtle">
-        <ImigongoPattern opacity={0.18} className="-z-10 text-primary" />
-      </div>
-      <div className="mx-auto flex max-w-[88rem] flex-col gap-10 px-4 pt-14 pb-8 sm:px-6">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,2fr)] lg:gap-16">
+    <footer className="relative isolate mt-auto overflow-hidden border-t border-hairline bg-surface text-fg print:hidden">
+      <div className="mx-auto flex max-w-[88rem] flex-col gap-12 px-4 pt-16 pb-8 sm:px-6">
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-20">
           <div className="flex max-w-sm flex-col items-start gap-5">
             <Link
               to="/"
@@ -57,33 +56,28 @@ export function PublicFooter() {
               aria-label={t("nav.homeLabel")}
               className="inline-flex min-h-target items-center rounded-sm no-underline"
             >
-              <Logo className="h-10" />
+              <Logo className="h-9" />
             </Link>
-            <p className="m-0 text-body-sm leading-relaxed text-fg-secondary">
-              {t("footer.tagline")}
-            </p>
-            {/* one calm line: the red strip above every page already carries the emergency */}
+            <p className="m-0 text-body leading-relaxed text-fg-secondary">{t("footer.tagline")}</p>
             <a
               href="tel:912"
-              className="group flex min-h-target items-center gap-3 rounded-2xl border border-danger/20 bg-danger-bg/60 p-2 pr-4 no-underline transition-colors duration-150 ease-out-quint hover:border-danger/40 hover:bg-danger-bg"
+              className="group inline-flex min-h-11 items-center gap-3 rounded-2xl bg-surface py-2 pr-4 pl-2 no-underline shadow-e1 transition-shadow duration-200 hover:shadow-e2"
             >
-              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-danger-solid text-on-danger-solid">
-                <Phone aria-hidden="true" weight="fill" className="size-4" />
+              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-danger-solid text-on-danger-solid">
+                <Phone aria-hidden="true" weight="fill" className="size-3.5" />
               </span>
               <span className="flex flex-col">
-                <span className="text-body-sm font-bold whitespace-nowrap text-danger">
-                  {t("nav.strip.call")}
-                </span>
+                <span className="text-body-sm font-bold text-danger">{t("nav.strip.call")}</span>
                 <span className="text-caption text-fg-secondary">{t("footer.hotlineNote")}</span>
               </span>
             </a>
           </div>
-          <nav aria-label={t("footer.label")} className="grid gap-8 sm:grid-cols-3">
+          <nav aria-label={t("footer.label")} className="grid grid-cols-2 gap-8 sm:grid-cols-3">
             {GROUPS.map((group) => (
-              <div key={group.key}>
+              <div key={group.key} className="flex flex-col gap-3">
                 <h2
                   id={`footer-${group.key}`}
-                  className="mt-0 mb-2 text-body-sm font-semibold text-fg"
+                  className="m-0 text-caption font-semibold tracking-wide text-fg-muted"
                 >
                   {t(`footer.groups.${group.key}`)}
                 </h2>
@@ -96,9 +90,13 @@ export function PublicFooter() {
                       <Link
                         viewTransition
                         to={link.to}
-                        className="inline-flex min-h-11 items-center text-body-sm text-fg-secondary no-underline transition-colors duration-150 ease-out-quint hover:text-fg"
+                        className="group inline-flex min-h-10 items-center gap-1 text-body-sm text-fg-secondary no-underline transition-colors duration-150 ease-out-quint hover:text-fg"
                       >
                         {t(link.key)}
+                        <ArrowUpRight
+                          aria-hidden="true"
+                          className="size-3.5 -translate-x-1 opacity-0 transition-[opacity,transform] duration-200 ease-out-quint group-hover:translate-x-0 group-hover:opacity-100"
+                        />
                       </Link>
                     </li>
                   ))}
@@ -108,23 +106,27 @@ export function PublicFooter() {
           </nav>
         </div>
 
-        <div className="flex flex-col gap-4 border-t border-border pt-6 md:flex-row md:items-center md:justify-between">
-          <div className="flex flex-col gap-1 md:flex-row md:items-center md:gap-3">
-            <p className="m-0 text-body-sm text-fg-secondary">
-              {t("footer.copyright", { year: new Date().getFullYear() })}
-            </p>
-            <span aria-hidden="true" className="hidden h-4 w-px bg-border md:block" />
-            <p className="m-0 inline-flex items-center gap-1.5 text-body-sm text-fg-secondary">
-              <ShieldCheck aria-hidden="true" weight="bold" className="size-4 text-primary" />
+        <div className="flex flex-col gap-4 border-t border-hairline pt-6 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-1 text-body-sm text-fg-secondary md:flex-row md:items-center md:gap-4">
+            <p className="m-0">{t("footer.copyright", { year: new Date().getFullYear() })}</p>
+            <p className="m-0 inline-flex items-center gap-1.5">
+              <ShieldCheck aria-hidden="true" weight="duotone" className="size-4 text-primary" />
               {t("footer.dataInRwanda")}
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <LanguageSwitcher pill />
             <ThemeSwitch />
           </div>
         </div>
       </div>
+      {/* the signature: the wordmark, very large and faint, cut by the page edge */}
+      <p
+        aria-hidden="true"
+        className="pointer-events-none -mt-6 mb-[-2.5vw] text-center font-heading text-[clamp(5rem,17vw,16rem)] leading-[0.8] font-bold tracking-[-0.06em] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-primary)_22%,transparent)_10%,transparent_90%)] bg-clip-text text-transparent select-none"
+      >
+        {WORDMARK}
+      </p>
     </footer>
   );
 }

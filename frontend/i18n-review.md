@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5621.
+Keys: 5652.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -5769,6 +5769,37 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `home2.facilitiesTitle` | Icyumba cyo gutegereza gituje. | Run a calmer waiting room. | needs native-speaker review |
 | `home2.facilitiesLead` | Abarwayi babona igihe cyo gutegereza mbere yo kuza. Wowe ubona umurongo, urujya n'uruza n'umunsi wose ku kibaho kimwe. | Patients see your live wait before they come. You see the queue, the flow and the day in one dashboard. | needs native-speaker review |
 | `home2.facilitiesAction` | MediLink ku bigo by'ubuvuzi | MediLink for facilities | needs native-speaker review |
+| `home3.titleA` | Bona ubuvuzi bukwiye, | Find the right care, | needs native-speaker review |
+| `home3.titleB` | udategereje igihe kirekire. | without the long wait. | needs native-speaker review |
+| `home3.openNow_one` | Ikigo {{count}} gifunguye ubu | {{count}} place open now | needs native-speaker review |
+| `home3.openNow_other` | Ibigo {{count}} bifunguye ubu | {{count}} places open now | needs native-speaker review |
+| `home3.waitingNow_one` | Umuntu {{count}} ategereje | {{count}} person waiting | needs native-speaker review |
+| `home3.waitingNow_other` | Abantu {{count}} bategereje | {{count}} people waiting | needs native-speaker review |
+| `home3.live` | Ako kanya | Live | needs native-speaker review |
+| `home3.seePlaces` | Reba aho bitangirwa | See the places | needs native-speaker review |
+| `home3.openTitle` | Bifunguye ubu | Open right now | needs native-speaker review |
+| `home3.openLead` | Ibigo biri kuri MediLink n'igihe cyo gutegereza ako kanya. Kanda "Hafi yanjye" ubitondeke ukurikije intera. | Places on MediLink with their live wait. Tap Near me to sort by distance. | needs native-speaker review |
+| `home3.trustLabel` | Ibyo wakwizera | What you can count on | needs native-speaker review |
+| `home3.trust.noAccount.title` | Nta konti ikenewe kugira ngo urebe | No account to look | needs native-speaker review |
+| `home3.trust.noAccount.body` | Reba ibifunguye n'igihe cyo gutegereza mbere yo kwinjira. | See who is open and the wait before you sign in. | needs native-speaker review |
+| `home3.trust.languages.title` | Kinyarwanda, English, Français | Kinyarwanda, English, Français | needs native-speaker review |
+| `home3.trust.languages.body` | Buri paji mu rurimi usoma neza. | Every page in the language you read best. | needs native-speaker review |
+| `home3.trust.dataHome.title` | Amakuru y'ubuzima bwawe aguma mu Rwanda | Your health data stays in Rwanda | needs native-speaker review |
+| `home3.trust.dataHome.body` | Abikwa mu Rwanda kandi asangizwa gusa abo uhisemo ko bakuvura. | Stored in Rwanda and shared only with the care you choose. | needs native-speaker review |
+| `home3.facilityPoints.queue` | Umurongo abarwayi bakurikirana bari mu rugo | A live queue patients can follow from home | needs native-speaker review |
+| `home3.facilityPoints.bookings` | Gahunda na ba nyakuza mu igenamigambi rimwe ry'umunsi | Bookings and walk-ins in one day plan | needs native-speaker review |
+| `home3.facilityPoints.records` | Amadosiye, imiti yandikiwe n'ubwishyu ahantu hamwe | Records, prescriptions and payments in one place | needs native-speaker review |
+| `home3.kpi.open` | Bifunguye ubu | Open now | needs native-speaker review |
+| `home3.kpi.openHint_one` | mu kigo {{count}} kiri kuri MediLink | of {{count}} place on MediLink | needs native-speaker review |
+| `home3.kpi.openHint_other` | mu bigo {{count}} biri kuri MediLink | of {{count}} places on MediLink | needs native-speaker review |
+| `home3.kpi.waiting` | Abategereje | People waiting | needs native-speaker review |
+| `home3.kpi.waitingHint` | ku mirongo y'ibigo bifunguye | in the queues of open places | needs native-speaker review |
+| `home3.kpi.typical` | Igihe gisanzwe cyo gutegereza | Typical wait | needs native-speaker review |
+| `home3.kpi.typicalHint` | hagati y'igihe cyo gutegereza cy'uyu munsi | the middle of today's live waits | needs native-speaker review |
+| `home3.kpi.minutes_one` | Umunota {{count}} | {{count}} min | needs native-speaker review |
+| `home3.kpi.minutes_other` | Iminota {{count}} | {{count}} min | needs native-speaker review |
+| `home3.symptoms.title` | Ntuzi aho wajya? | Not sure where to go? | needs native-speaker review |
+| `home3.symptoms.action` | Suzuma ibimenyetso byawe | Check your symptoms | needs native-speaker review |
 
 ## patient-web feature: tracker (namespace tracker)
 

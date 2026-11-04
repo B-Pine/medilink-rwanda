@@ -8,6 +8,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Super admin user management (2026-11-04, #198)
+
+- Changed: `GET /platform/users/` filters in the database (the list no longer loads every account)
+  and takes `facility`, `role` and `verification=pending`; `q` also finds a phone (0788… finds
+  +250788…); `mfa=off` lists staff and platform admins only.
+- Added: `GET /platform/users/summary/` (counts and the facilities that have staff) and
+  `GET /platform/users/export/` (staff and platform accounts as CSV, never patients; audit
+  `platform.user.list_exported`).
+- Changed: `GET /platform/users/{id}/` adds `verification_pending`, `preferred_language`,
+  `sign_in_blocked_for`, pending `invitations` and admin `changes`; memberships carry
+  `deactivated_at` and `deactivation_reason`.
+- Added: `PATCH /platform/users/{id}/` corrects the name, work phone or language (never the email
+  or password; no phone for patients); `send-password-reset/`, `resend-verification/` and
+  `clear-sign-in-block/`; `facilities/{facility_id}/remove/` and `restore/`, which keep the last
+  facility admin. All need a step-up and a reason, never on yourself, and are audited.
+- Changed: facility admins on the platform facility rows carry `user_id`; restoring a membership
+  records the reason when one is given.
+
 ### Super admin pages show what MediLink holds (2026-11-03)
 
 - Changed: `POST /platform/facility-applications/` also takes `proposed_admin` and

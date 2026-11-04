@@ -419,6 +419,7 @@ class FacilityPlaceSerializer(serializers.Serializer):
 
 
 class FacilityContactSerializer(serializers.Serializer):
+    user_id = serializers.UUIDField(help_text="Opens the person in the user directory.")
     name = serializers.CharField()
     email = serializers.CharField()
     phone = serializers.CharField(allow_blank=True)

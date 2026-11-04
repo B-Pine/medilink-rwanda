@@ -7555,6 +7555,11 @@ paths:
       operationId: platform_users
       parameters:
       - in: query
+        name: facility
+        schema:
+          type: string
+        description: 'Facility ID: its staff, active or not'
+      - in: query
         name: kind
         schema:
           type: string
@@ -7577,6 +7582,12 @@ paths:
         name: q
         schema:
           type: string
+        description: Name, email or phone
+      - in: query
+        name: role
+        schema:
+          type: string
+        description: Role code at any (or the chosen) facility
       - in: query
         name: status
         schema:
@@ -7584,6 +7595,12 @@ paths:
           enum:
           - active
           - locked
+      - in: query
+        name: verification
+        schema:
+          type: string
+          enum:
+          - pending
       tags:
       - platform-admin
       security:
@@ -7620,9 +7637,139 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserDetail'
           description: ''
+    patch:
+      operationId: platform_user_update
+      summary: Correct the name, work phone or language (step-up, reason; audit-logged)
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAccountUpdateRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
+  /api/v1/platform/users/{user_id}/clear-sign-in-block/:
+    post:
+      operationId: platform_user_sign_in_unblock
+      description: Ends the temporary block after too many failed passwords or MFA
+        codes (security 03 §6).
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRow'
+          description: ''
+  /api/v1/platform/users/{user_id}/facilities/{facility_id}/{action}/:
+    post:
+      operationId: platform_user_facility_access
+      description: |-
+        Remove or restore a person's access to one facility, for example a facility admin who
+        left. The facility keeps at least one active facility admin.
+      parameters:
+      - in: path
+        name: action
+        schema:
+          type: string
+          enum:
+          - remove
+          - restore
+        required: true
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
   /api/v1/platform/users/{user_id}/lock/:
     post:
       operationId: platform_user_lock
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRow'
+          description: ''
+  /api/v1/platform/users/{user_id}/resend-verification/:
+    post:
+      operationId: platform_user_verification_resend
       parameters:
       - in: path
         name: user_id
@@ -7704,6 +7851,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserRow'
           description: ''
+  /api/v1/platform/users/{user_id}/send-password-reset/:
+    post:
+      operationId: platform_user_password_reset
+      description: |-
+        For someone who calls for help: the reset link goes to their own address, never to the
+        admin, and the admin never sees or sets the password.
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRow'
+          description: ''
   /api/v1/platform/users/{user_id}/unlock/:
     post:
       operationId: platform_user_unlock
@@ -7731,6 +7909,79 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserRow'
+          description: ''
+  /api/v1/platform/users/export/:
+    get:
+      operationId: platform_users_export
+      description: 'Who has access to MediLink, for an access review: staff and platform
+        admins only.'
+      summary: Export staff and platform accounts (CSV, UTF-8; never patients); audit-logged
+      parameters:
+      - in: query
+        name: facility
+        schema:
+          type: string
+        description: 'Facility ID: its staff, active or not'
+      - in: query
+        name: kind
+        schema:
+          type: string
+          enum:
+          - patient
+          - platform
+          - staff
+      - in: query
+        name: mfa
+        schema:
+          type: string
+          enum:
+          - 'off'
+          - 'on'
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: Name, email or phone
+      - in: query
+        name: role
+        schema:
+          type: string
+        description: Role code at any (or the chosen) facility
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - active
+          - locked
+      - in: query
+        name: verification
+        schema:
+          type: string
+          enum:
+          - pending
+      tags:
+      - platform-admin
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          description: One row per account
+  /api/v1/platform/users/summary/:
+    get:
+      operationId: platform_users_summary
+      tags:
+      - platform-admin
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSummary'
           description: ''
   /api/v1/public/assistant/:
     post:
@@ -21880,6 +22131,10 @@ components:
     FacilityContact:
       type: object
       properties:
+        user_id:
+          type: string
+          format: uuid
+          description: Opens the person in the user directory.
         name:
           type: string
         email:
@@ -21890,6 +22145,7 @@ components:
       - email
       - name
       - phone
+      - user_id
     FacilityFeatureFlag:
       type: object
       properties:
@@ -21983,6 +22239,17 @@ components:
             pattern: ^\d{9}$
           - type: string
             maxLength: 0
+    FacilityOption:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+      required:
+      - id
+      - name
     FacilityPatientDetail:
       type: object
       properties:
@@ -24775,7 +25042,15 @@ components:
             type: string
         is_active:
           type: boolean
+        deactivated_at:
+          type: string
+          format: date-time
+          nullable: true
+        deactivation_reason:
+          type: string
       required:
+      - deactivated_at
+      - deactivation_reason
       - facility_id
       - facility_name
       - is_active
@@ -26828,6 +27103,24 @@ components:
           maxLength: 254
       required:
       - email
+    PatchedAccountUpdateRequest:
+      type: object
+      description: What a platform admin may correct on an account; never the email
+        or the password.
+      properties:
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 300
+        full_name:
+          type: string
+          minLength: 2
+          maxLength: 150
+        phone:
+          type: string
+          maxLength: 20
+        preferred_language:
+          $ref: '#/components/schemas/LanguageEnum'
     PatchedAnnouncementPatchRequest:
       type: object
       properties:
@@ -28913,6 +29206,30 @@ components:
       required:
       - amount_rwf
       - method
+    PendingInvitation:
+      type: object
+      properties:
+        facility_id:
+          type: string
+          format: uuid
+        facility_name:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        invited_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - expires_at
+      - facility_id
+      - facility_name
+      - invited_at
+      - roles
     PendingInvite:
       type: object
       properties:
@@ -34601,15 +34918,35 @@ components:
           format: date-time
         email_verified:
           type: boolean
+        verification_pending:
+          type: boolean
+          description: 'Signed up and has not opened the confirmation link yet: cannot
+            sign in.'
+        preferred_language:
+          type: string
+        sign_in_blocked_for:
+          type: integer
+          description: Seconds left of the block after failed sign-ins or MFA codes
+            (0 = none).
         sessions:
           type: array
           items:
             $ref: '#/components/schemas/SessionRow'
+        invitations:
+          type: array
+          items:
+            $ref: '#/components/schemas/PendingInvitation'
         events:
           type: array
           items:
             $ref: '#/components/schemas/EventRow'
+        changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventRow'
+          description: What admins changed on this account and its facility access.
       required:
+      - changes
       - created_at
       - email
       - email_verified
@@ -34617,14 +34954,18 @@ components:
       - facilities
       - full_name
       - id
+      - invitations
       - is_active
       - kind
       - last_login
       - licence_state
       - mfa_enabled
       - phone
+      - preferred_language
       - profession
       - sessions
+      - sign_in_blocked_for
+      - verification_pending
     UserKindEnum:
       enum:
       - platform
@@ -34682,6 +35023,38 @@ components:
       - mfa_enabled
       - phone
       - profession
+    UserSummary:
+      type: object
+      properties:
+        total:
+          type: integer
+        platform:
+          type: integer
+        staff:
+          type: integer
+        patient:
+          type: integer
+        locked:
+          type: integer
+        without_mfa:
+          type: integer
+          description: Staff and platform admins.
+        verification_pending:
+          type: integer
+        facilities:
+          type: array
+          items:
+            $ref: '#/components/schemas/FacilityOption'
+          description: Facilities that have staff.
+      required:
+      - facilities
+      - locked
+      - patient
+      - platform
+      - staff
+      - total
+      - verification_pending
+      - without_mfa
     ValueEnum:
       enum:
       - A+

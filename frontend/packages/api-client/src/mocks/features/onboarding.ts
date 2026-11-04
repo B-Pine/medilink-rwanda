@@ -26,6 +26,7 @@ import {
   stepUpFailure,
   str,
 } from "./s1-common";
+import { MOCK_FACILITY_ADMIN_ID } from "./console";
 import { uploadStore } from "./uploads";
 
 /**
@@ -409,7 +410,12 @@ export const onboardingMocks: FeatureMockFactory = (context: MockContext) => {
           village: "Abatuje",
         },
         admins: [
-          { name: "Mutesi Diane", email: "facility.admin@medilink.test", phone: "+250788300101" },
+          {
+            user_id: MOCK_FACILITY_ADMIN_ID,
+            name: "Mutesi Diane",
+            email: "facility.admin@medilink.test",
+            phone: "+250788300101",
+          },
         ],
         staff_count: 6,
         doctor_count: 2,

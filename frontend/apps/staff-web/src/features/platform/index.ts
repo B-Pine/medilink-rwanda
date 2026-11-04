@@ -16,6 +16,10 @@ export const platformFeature: FeatureRoutes = {
     },
     { path: "/platform/users", lazy: lazy(() => import("../console/UsersPage"), "UsersPage") },
     {
+      path: "/platform/users/:id",
+      lazy: lazy(() => import("../console/UserPage"), "UserPage"),
+    },
+    {
       path: "/platform/security-log",
       lazy: lazy(() => import("../console/LogsPage"), "SecurityLogPage"),
     },

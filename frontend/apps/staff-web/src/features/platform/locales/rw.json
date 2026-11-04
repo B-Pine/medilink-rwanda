@@ -270,6 +270,7 @@
     "inCharge": "Ushinzwe",
     "noAdmin": "Nta muyobozi w’ikigo urashyirwaho",
     "staff": "Abakozi",
+    "seeStaff": "Reba abakozi mu rutonde rw’abakoresha",
     "staffCount_one": "Umukozi {{count}} ukora",
     "staffCount_other": "Abakozi {{count}} bakora",
     "doctorsChecked_one": "Uruhushya rwa muganga {{checked}} kuri {{count}} rwagenzuwe",

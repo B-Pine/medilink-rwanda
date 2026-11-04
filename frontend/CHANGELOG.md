@@ -9,6 +9,22 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Super admin user management (2026-11-04, #198)
+
+- Changed: **Users** shows the number of accounts of each type, links to the accounts that need
+  attention (locked, staff without two-step login, email not confirmed), filters by facility,
+  role and email confirmation, searches by phone, and keeps the filters in the address.
+- Added: **Export staff accounts**: a CSV of staff and the platform team (never patients) for an
+  access review.
+- Added: a page for each person (`/platform/users/:id`) instead of the side panel: what needs
+  attention with the action that fixes it, account facts, facility access with **Remove access**
+  and **Restore access**, invitations not accepted yet, changes by admins and sign-in activity.
+  Account actions add **Send password reset link**, **Resend confirmation email** and **Clear
+  sign-in block**; **Correct details** fixes the name, work phone or language. Each asks for a
+  reason and a re-confirmed identity.
+- Changed: the platform facility page links its facility admins to their account and its staff to
+  the filtered user list.
+
 ### Public site: finishing pass and design record (2026-11-04)
 
 - Changed: **For facilities** shows the four teams on one surface with hairlines, the questions as

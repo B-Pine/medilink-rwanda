@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5398.
+Keys: 5476.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -1289,6 +1289,13 @@ File: `apps/staff-web/src/features/console/locales/rw.json`
 | `actions.platform_user_mfa_reset` | Second factor reset by admin | Second factor reset by admin | needs native-speaker review |
 | `actions.platform_user_sessions_revoked` | Sessions ended by admin | Sessions ended by admin | needs native-speaker review |
 | `actions.platform_user_viewed` | Profile viewed by admin | Profile viewed by admin | needs native-speaker review |
+| `actions.platform_user_updated` | Details corrected by admin | Details corrected by admin | needs native-speaker review |
+| `actions.platform_user_password_reset_sent` | Password reset link sent by admin | Password reset link sent by admin | needs native-speaker review |
+| `actions.platform_user_verification_resent` | Confirmation email sent again by admin | Confirmation email sent again by admin | needs native-speaker review |
+| `actions.platform_user_sign_in_unblocked` | Sign-in block cleared by admin | Sign-in block cleared by admin | needs native-speaker review |
+| `actions.platform_user_list_exported` | Account list exported | Account list exported | needs native-speaker review |
+| `actions.staff_membership_deactivated` | Facility access removed | Facility access removed | needs native-speaker review |
+| `actions.staff_membership_updated` | Facility access changed | Facility access changed | needs native-speaker review |
 | `actions.staff_mfa_reset` | Second factor reset | Second factor reset | needs native-speaker review |
 | `actions.patients_record_viewed` | Record opened | Record opened | needs native-speaker review |
 | `actions.clinical_access_reason_given` | Reason given to open a record | Reason given to open a record | needs native-speaker review |
@@ -1344,30 +1351,100 @@ File: `apps/staff-web/src/features/console/locales/rw.json`
 | `users.status` | Uko bimeze | Status | needs native-speaker review |
 | `users.active` | Arakora | Active | needs native-speaker review |
 | `users.locked` | Yafunzwe | Locked | needs native-speaker review |
-| `users.inactive` | Inactive | Inactive | needs native-speaker review |
 | `users.lastLogin` | Aheruka kwinjira | Last sign-in | needs native-speaker review |
-| `users.profile` | Konti | Account | needs native-speaker review |
-| `users.verified` | Verified | Verified | needs native-speaker review |
-| `users.unverified` | Not verified | Not verified | needs native-speaker review |
-| `users.facts.lastLogin` | Last sign-in | Last sign-in | needs native-speaker review |
-| `users.facts.since` | Member since | Member since | needs native-speaker review |
-| `users.facts.mfa` | Two-step login | Two-step login | needs native-speaker review |
-| `users.facts.email` | Email | Email | needs native-speaker review |
+| `users.never` | Ntarinjira | Never | needs native-speaker review |
+| `users.lead` | Every account on MediLink: the platform team, facility staff and patients. Patients appear as accounts only, never with their health records. | Every account on MediLink: the platform team, facility staff and patients. Patients appear as accounts only, never with their health records. | needs native-speaker review |
+| `users.search` | Shakisha izina, imeri cyangwa telefoni | Search by name, email or phone | needs native-speaker review |
+| `users.facility` | Ikigo | Facility | needs native-speaker review |
+| `users.oneFacility` | Ikigo kimwe | One facility | needs native-speaker review |
+| `users.role` | Inshingano | Role | needs native-speaker review |
+| `users.emailState` | Imeri | Email | needs native-speaker review |
+| `users.pending` | Ntiyemejwe | Not confirmed yet | needs native-speaker review |
+| `users.confirmed` | Yemejwe | Confirmed | needs native-speaker review |
+| `users.pendingFilter` | Imeri itaremezwa | Email not confirmed | needs native-speaker review |
+| `users.mfaOnFilter` | Kwinjira kw’intambwe ebyiri birakora | Two-step login on | needs native-speaker review |
+| `users.mfaOffFilter` | Kwinjira kw’intambwe ebyiri ntibikora | Two-step login off | needs native-speaker review |
+| `users.noActiveAccess` | Nta kigo akorera ubu | No active access | needs native-speaker review |
+| `users.attention` | Ibikeneye kwitabwaho: | Needs attention: | needs native-speaker review |
+| `users.attentionItems.locked_one` | Konti {{count}} yafunzwe | {{count}} locked account | needs native-speaker review |
+| `users.attentionItems.locked_other` | Konti {{count}} zafunzwe | {{count}} locked accounts | needs native-speaker review |
+| `users.attentionItems.withoutMfa_one` | {{count}} staff account without two-step login | {{count}} staff account without two-step login | needs native-speaker review |
+| `users.attentionItems.withoutMfa_other` | {{count}} staff accounts without two-step login | {{count}} staff accounts without two-step login | needs native-speaker review |
+| `users.attentionItems.pending_one` | Imeri {{count}} itaremezwa | {{count}} email not confirmed | needs native-speaker review |
+| `users.attentionItems.pending_other` | Imeri {{count}} zitaremezwa | {{count}} emails not confirmed | needs native-speaker review |
+| `users.export` | Kuramo konti z’abakozi | Export staff accounts | needs native-speaker review |
+| `users.exportHint` | CSV of staff and the platform team, never patients. | CSV of staff and the platform team, never patients. | needs native-speaker review |
+| `users.exportFailed` | The export did not download. Try again. | The export did not download. Try again. | needs native-speaker review |
+| `users.back` | Abakoresha bose | All users | needs native-speaker review |
+| `users.account` | Konti | Account | needs native-speaker review |
+| `users.facts.email` | Imeri | Email | needs native-speaker review |
+| `users.facts.emailState` | Imeri yemejwe | Email confirmed | needs native-speaker review |
+| `users.facts.phone` | Telefoni y’akazi | Work phone | needs native-speaker review |
+| `users.facts.mfa` | Kwinjira kw’intambwe ebyiri | Two-step login | needs native-speaker review |
+| `users.facts.profession` | Umwuga | Profession | needs native-speaker review |
+| `users.facts.licence` | Uruhushya rwo gukora | Practising licence | needs native-speaker review |
+| `users.facts.language` | Ururimi | Language | needs native-speaker review |
+| `users.facts.lastLogin` | Aheruka kwinjira | Last sign-in | needs native-speaker review |
+| `users.facts.since` | Konti yafunguwe | Account created | needs native-speaker review |
+| `users.patientNote` | This is a patient account. MediLink shows only the account here: the patient's records stay with the facilities that care for them. | This is a patient account. MediLink shows only the account here: the patient's records stay with the facilities that care for them. | needs native-speaker review |
+| `users.access.title` | Uburenganzira ku bigo | Facility access | needs native-speaker review |
+| `users.access.lead` | Where this person works and what they can do there. Facility admins manage roles; you can remove or restore access. | Where this person works and what they can do there. Facility admins manage roles; you can remove or restore access. | needs native-speaker review |
+| `users.access.none` | Nta kigo afitiye uburenganzira. | No facility access. | needs native-speaker review |
+| `users.access.active` | Arakora | Active | needs native-speaker review |
+| `users.access.removed` | Uburenganzira bwakuweho | Access removed | needs native-speaker review |
+| `users.access.removedOn` | Uburenganzira bwakuweho {{date}} | Access removed {{date}} | needs native-speaker review |
+| `users.access.remove` | Kuraho uburenganzira | Remove access | needs native-speaker review |
+| `users.access.restore` | Subizaho uburenganzira | Restore access | needs native-speaker review |
+| `users.access.removeConfirm` | {{name}} can no longer work at {{facility}}. Their other facilities and their account stay as they are. | {{name}} can no longer work at {{facility}}. Their other facilities and their account stay as they are. | needs native-speaker review |
+| `users.access.restoreConfirm` | {{name}} can work at {{facility}} again, with the roles they had. | {{name}} can work at {{facility}} again, with the roles they had. | needs native-speaker review |
+| `users.invitations` | Ubutumire butaremezwa | Invitations not accepted yet | needs native-speaker review |
+| `users.invited` | Bwoherejwe {{sent}} · buzarangira {{expires}} | Sent {{sent}} · expires {{expires}} | needs native-speaker review |
+| `users.changes` | Ibyahinduwe n’abayobozi | Changes by admins | needs native-speaker review |
+| `users.noChanges` | Nta muyobozi wahinduye iyi konti. | No admin has changed this account. | needs native-speaker review |
+| `users.activity` | Kwinjira guheruka | Sign-in activity | needs native-speaker review |
 | `users.sessions_one` | {{count}} active session | {{count}} active session | needs native-speaker review |
 | `users.sessions_other` | {{count}} active sessions | {{count}} active sessions | needs native-speaker review |
 | `users.noSessions` | No active session | No active session | needs native-speaker review |
 | `users.started` | Started {{time}} | Started {{time}} | needs native-speaker review |
 | `users.events` | Recent security events | Recent security events | needs native-speaker review |
+| `users.edit` | Kosora amakuru | Correct details | needs native-speaker review |
+| `users.editLead` | Correct the name, work phone or language. The email address and the password can't be changed here. | Correct the name, work phone or language. The email address and the password can't be changed here. | needs native-speaker review |
+| `users.fullName` | Amazina yose | Full name | needs native-speaker review |
+| `users.phoneHint` | Nimero ya telefoni yo mu Rwanda, urugero 0788 123 456. | A Rwandan mobile number, for example 0788 123 456. | needs native-speaker review |
+| `users.save` | Bika | Save | needs native-speaker review |
 | `users.reason` | Impamvu | Reason | needs native-speaker review |
 | `users.reasonHint` | Recorded in the audit log. At least 5 characters. | Recorded in the audit log. At least 5 characters. | needs native-speaker review |
+| `users.actionsTitle` | Ibikorwa kuri konti | Account actions | needs native-speaker review |
+| `users.actionsNote` | Each action asks you to confirm your identity again and is recorded with your reason. | Each action asks you to confirm your identity again and is recorded with your reason. | needs native-speaker review |
+| `users.notice.self` | This is your own account. Change your details and security from your profile. | This is your own account. Change your details and security from your profile. | needs native-speaker review |
+| `users.notice.locked` | This account is locked: the person can't sign in. | This account is locked: the person can't sign in. | needs native-speaker review |
+| `users.notice.blocked_one` | Sign-in is blocked for {{count}} more minute after too many failed attempts. | Sign-in is blocked for {{count}} more minute after too many failed attempts. | needs native-speaker review |
+| `users.notice.blocked_other` | Sign-in is blocked for {{count}} more minutes after too many failed attempts. | Sign-in is blocked for {{count}} more minutes after too many failed attempts. | needs native-speaker review |
+| `users.notice.pending` | The person signed up but hasn't opened the confirmation link, so they can't sign in yet. | The person signed up but hasn't opened the confirmation link, so they can't sign in yet. | needs native-speaker review |
+| `users.notice.mfa` | Two-step login isn't set up. The person is asked to set it up at the next sign-in. | Two-step login isn't set up. The person is asked to set it up at the next sign-in. | needs native-speaker review |
 | `users.actions.lock` | Funga konti | Lock account | needs native-speaker review |
 | `users.actions.unlock` | Fungura konti | Unlock account | needs native-speaker review |
 | `users.actions.reset-mfa` | Subiramo kwinjira kw’intambwe ebyiri | Reset two-step login | needs native-speaker review |
 | `users.actions.revoke-sessions` | Sohora ahantu hose | Sign out everywhere | needs native-speaker review |
+| `users.actions.send-password-reset` | Ohereza umurongo wo guhindura ijambo ry’ibanga | Send password reset link | needs native-speaker review |
+| `users.actions.resend-verification` | Ongera wohereze imeri yo kwemeza | Resend confirmation email | needs native-speaker review |
+| `users.actions.clear-sign-in-block` | Kuraho ihagarikwa ryo kwinjira | Clear sign-in block | needs native-speaker review |
+| `users.hints.lock` | Stops every sign-in until you unlock it. | Stops every sign-in until you unlock it. | needs native-speaker review |
+| `users.hints.unlock` | Lets the person sign in again. | Lets the person sign in again. | needs native-speaker review |
+| `users.hints.reset-mfa` | For a lost or new phone: they set it up again at the next sign-in. | For a lost or new phone: they set it up again at the next sign-in. | needs native-speaker review |
+| `users.hints.revoke-sessions` | Ends every session on every device. | Ends every session on every device. | needs native-speaker review |
+| `users.hints.send-password-reset` | Emails a one-time link to their own address. You never see the password. | Emails a one-time link to their own address. You never see the password. | needs native-speaker review |
+| `users.hints.resend-verification` | Sends the sign-up confirmation link again. | Sends the sign-up confirmation link again. | needs native-speaker review |
+| `users.hints.clear-sign-in-block` | Lets them try again now instead of waiting. | Lets them try again now instead of waiting. | needs native-speaker review |
 | `users.confirm.lock` | {{name}} can't sign in until the account is unlocked. Every session ends now. | {{name}} can't sign in until the account is unlocked. Every session ends now. | needs native-speaker review |
 | `users.confirm.unlock` | {{name}} can sign in again. | {{name}} can sign in again. | needs native-speaker review |
 | `users.confirm.reset-mfa` | {{name}} sets up two-step login again at the next sign-in. Every session ends now. | {{name}} sets up two-step login again at the next sign-in. Every session ends now. | needs native-speaker review |
 | `users.confirm.revoke-sessions` | {{name}} is signed out on every device. | {{name}} is signed out on every device. | needs native-speaker review |
+| `users.confirm.send-password-reset` | {{name}} gets an email with a link to choose a new password. The link works once. | {{name}} gets an email with a link to choose a new password. The link works once. | needs native-speaker review |
+| `users.confirm.resend-verification` | {{name}} gets the sign-up confirmation email again. | {{name}} gets the sign-up confirmation email again. | needs native-speaker review |
+| `users.confirm.clear-sign-in-block` | {{name}} can try to sign in again now. Confirm it is really them who asked. | {{name}} can try to sign in again now. Confirm it is really them who asked. | needs native-speaker review |
+| `users.done.send-password-reset` | Sent to {{email}}. Ask the person to check their inbox and spam folder. | Sent to {{email}}. Ask the person to check their inbox and spam folder. | needs native-speaker review |
+| `users.done.resend-verification` | Sent to {{email}}. Ask the person to check their inbox and spam folder. | Sent to {{email}}. Ask the person to check their inbox and spam folder. | needs native-speaker review |
 | `users.clinician` | Umuvuzi | Clinician | needs native-speaker review |
 | `logs.event` | Event | Event | needs native-speaker review |
 | `logs.who` | Who | Who | needs native-speaker review |
@@ -2592,6 +2669,7 @@ File: `apps/staff-web/src/features/platform/locales/rw.json`
 | `facilities.inCharge` | Ushinzwe | In charge | needs native-speaker review |
 | `facilities.noAdmin` | Nta muyobozi w’ikigo urashyirwaho | No facility admin yet | needs native-speaker review |
 | `facilities.staff` | Abakozi | Staff | needs native-speaker review |
+| `facilities.seeStaff` | Reba abakozi mu rutonde rw’abakoresha | See the staff in the user list | needs native-speaker review |
 | `facilities.staffCount_one` | Umukozi {{count}} ukora | {{count}} active staff member | needs native-speaker review |
 | `facilities.staffCount_other` | Abakozi {{count}} bakora | {{count}} active staff | needs native-speaker review |
 | `facilities.doctorsChecked_one` | Uruhushya rwa muganga {{checked}} kuri {{count}} rwagenzuwe | {{checked}} of {{count}} doctor's licence checked | needs native-speaker review |

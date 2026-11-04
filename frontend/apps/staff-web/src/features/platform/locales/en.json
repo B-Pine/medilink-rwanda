@@ -270,6 +270,7 @@
     "inCharge": "In charge",
     "noAdmin": "No facility admin yet",
     "staff": "Staff",
+    "seeStaff": "See the staff in the user list",
     "staffCount_one": "{{count}} active staff member",
     "staffCount_other": "{{count}} active staff",
     "doctorsChecked_one": "{{checked}} of {{count}} doctor's licence checked",

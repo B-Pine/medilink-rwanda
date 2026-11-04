@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from rest_framework import serializers
 
+from medilink.accounts.models import Language
 from medilink.accounts.serializers import StrictSerializer
 from medilink.onboarding.serializers import OverviewSerializer
 
@@ -14,11 +15,21 @@ class AccountReasonSerializer(StrictSerializer):
     reason = serializers.CharField(min_length=5, max_length=300)
 
 
+class AccountUpdateSerializer(AccountReasonSerializer):
+    """What a platform admin may correct on an account; never the email or the password."""
+
+    full_name = serializers.CharField(min_length=2, max_length=150, required=False)
+    phone = serializers.CharField(max_length=20, allow_blank=True, required=False)
+    preferred_language = serializers.ChoiceField(choices=Language.choices, required=False)
+
+
 class MembershipRowSerializer(serializers.Serializer):
     facility_id = serializers.UUIDField()
     facility_name = serializers.CharField()
     roles = serializers.ListField(child=serializers.CharField())
     is_active = serializers.BooleanField()
+    deactivated_at = serializers.DateTimeField(allow_null=True)
+    deactivation_reason = serializers.CharField(allow_blank=True)
 
 
 class UserRowSerializer(serializers.Serializer):
@@ -60,10 +71,45 @@ class EventRowSerializer(serializers.Serializer):
     device = serializers.CharField(allow_blank=True)
 
 
+class PendingInvitationSerializer(serializers.Serializer):
+    facility_id = serializers.UUIDField()
+    facility_name = serializers.CharField()
+    roles = serializers.ListField(child=serializers.CharField())
+    invited_at = serializers.DateTimeField()
+    expires_at = serializers.DateTimeField()
+
+
 class UserDetailSerializer(UserRowSerializer):
     email_verified = serializers.BooleanField()
+    verification_pending = serializers.BooleanField(
+        help_text="Signed up and has not opened the confirmation link yet: cannot sign in."
+    )
+    preferred_language = serializers.CharField()
+    sign_in_blocked_for = serializers.IntegerField(
+        help_text="Seconds left of the block after failed sign-ins or MFA codes (0 = none)."
+    )
     sessions = SessionRowSerializer(many=True)
+    invitations = PendingInvitationSerializer(many=True)
     events = EventRowSerializer(many=True)
+    changes = EventRowSerializer(
+        many=True, help_text="What admins changed on this account and its facility access."
+    )
+
+
+class FacilityOptionSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    name = serializers.CharField()
+
+
+class UserSummarySerializer(serializers.Serializer):
+    total = serializers.IntegerField()
+    platform = serializers.IntegerField()
+    staff = serializers.IntegerField()
+    patient = serializers.IntegerField()
+    locked = serializers.IntegerField()
+    without_mfa = serializers.IntegerField(help_text="Staff and platform admins.")
+    verification_pending = serializers.IntegerField()
+    facilities = FacilityOptionSerializer(many=True, help_text="Facilities that have staff.")
 
 
 class MapPointSerializer(serializers.Serializer):

@@ -496,6 +496,21 @@
       "queue": "Umurongo abarwayi bakurikirana bari mu rugo",
       "bookings": "Gahunda na ba nyakuza mu igenamigambi rimwe ry'umunsi",
       "records": "Amadosiye, imiti yandikiwe n'ubwishyu ahantu hamwe"
+    },
+    "kpi": {
+      "open": "Bifunguye ubu",
+      "openHint_one": "mu kigo {{count}} kiri kuri MediLink",
+      "openHint_other": "mu bigo {{count}} biri kuri MediLink",
+      "waiting": "Abategereje",
+      "waitingHint": "ku mirongo y'ibigo bifunguye",
+      "typical": "Igihe gisanzwe cyo gutegereza",
+      "typicalHint": "hagati y'igihe cyo gutegereza cy'uyu munsi",
+      "minutes_one": "Umunota {{count}}",
+      "minutes_other": "Iminota {{count}}"
+    },
+    "symptoms": {
+      "title": "Ntuzi aho wajya?",
+      "action": "Suzuma ibimenyetso byawe"
     }
   }
 }

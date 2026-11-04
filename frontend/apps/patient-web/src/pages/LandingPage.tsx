@@ -2,23 +2,26 @@ import type { FacilityResult, FacilitySearchInput } from "@medilink/api-client";
 import {
   ArrowRight,
   Baby,
+  Buildings,
   Crosshair,
   Eye,
   Flask,
   HandHeart,
+  Hourglass,
   MagnifyingGlass,
-  Question,
   ShieldCheck,
+  Sparkle,
   Stethoscope,
   Syringe,
   Tooth,
   Translate,
   UserCircleCheck,
+  UsersThree,
   type Icon,
 } from "@phosphor-icons/react";
 import { Button, cx, ImigongoPattern, Skeleton } from "@medilink/ui";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 
@@ -32,7 +35,7 @@ import {
 } from "../features/booking/discovery";
 import { FILTER, sortResults, useNearMe, waitText, type Sort } from "../features/booking/Places";
 import { useAllFacilities } from "../features/site/data";
-import { FacilityExplorer } from "../features/site/FacilityDirectory";
+import { FacilityExplorer, WaitMeter } from "../features/site/FacilityDirectory";
 import {
   FacilityBoardIllustration,
   HillsideCareIllustration,
@@ -65,10 +68,49 @@ const TRUST: { key: string; icon: Icon }[] = [
   { key: "dataHome", icon: ShieldCheck },
 ];
 
-/** How many open places the floating live panel shows. */
-const LIVE_ROWS = 3;
-/** A wait this long fills the meter (minutes). */
-const FULL_WAIT = 180;
+/** How many open places the live panel shows. */
+const LIVE_ROWS = 4;
+
+/** Section heading with its lead and one link: the same rhythm on every section. */
+function SectionHead({
+  id,
+  title,
+  lead,
+  action,
+}: {
+  id: string;
+  title: string;
+  lead: ReactNode;
+  action?: ReactNode;
+}) {
+  return (
+    <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-3">
+      <div className="flex max-w-[40rem] flex-col gap-2">
+        <h2 id={id} className="m-0 font-heading text-section font-bold text-fg">
+          {title}
+        </h2>
+        <p className="m-0 text-[1.0625rem] leading-relaxed text-fg-secondary">{lead}</p>
+      </div>
+      {action}
+    </div>
+  );
+}
+
+function MoreLink({ to, children }: { to: string; children: ReactNode }) {
+  return (
+    <Link
+      to={to}
+      viewTransition
+      className="group inline-flex min-h-target items-center gap-1.5 font-semibold text-link no-underline"
+    >
+      {children}
+      <ArrowRight
+        aria-hidden="true"
+        className="size-4 transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5"
+      />
+    </Link>
+  );
+}
 
 /** One row per facility (the listing has one row per service). */
 function unique(rows: FacilityResult[]): FacilityResult[] {
@@ -76,25 +118,43 @@ function unique(rows: FacilityResult[]): FacilityResult[] {
   return rows.filter((r) => (seen.has(r.slug) ? false : (seen.add(r.slug), true)));
 }
 
-/** The wait as a short bar: emerald when short, ochre when long; the words carry the number. */
-function WaitMeter({ result }: { result: FacilityResult }) {
-  const max = result.wait_range?.max ?? (result.waiting === 0 ? 0 : null);
-  if (max === null) return null;
-  const long = max > 60;
+/** The middle of today's live waits, from the facilities' own ranges; null without any. */
+function typicalWait(rows: FacilityResult[]): number | null {
+  const mids = rows
+    .filter((r) => r.open_now && r.wait_range)
+    .map((r) => (r.wait_range!.min + r.wait_range!.max) / 2)
+    .sort((a, b) => a - b);
+  if (!mids.length) return null;
+  return Math.round(mids[Math.floor(mids.length / 2)]! / 5) * 5;
+}
+
+/** A live figure in the bento: icon and label, one large number, and what it counts. */
+function Figure({
+  icon: FigureIcon,
+  label,
+  value,
+  hint,
+}: {
+  icon: Icon;
+  label: string;
+  value: string;
+  hint: string;
+}) {
   return (
-    <span aria-hidden="true" className="block h-1.5 w-full overflow-hidden rounded-full bg-subtle">
-      <span
-        className={cx(
-          "block h-full rounded-full transition-[width] duration-500 ease-out-quint",
-          long ? "bg-attention-solid" : "bg-primary",
-        )}
-        style={{ width: `${Math.max(6, Math.min(100, (max / FULL_WAIT) * 100))}%` }}
-      />
-    </span>
+    <div className="flex min-h-40 flex-col justify-between gap-6 rounded-panel bg-surface p-6 shadow-e2">
+      <span className="inline-flex items-center gap-2 text-body-sm font-semibold text-fg-secondary">
+        <FigureIcon aria-hidden="true" weight="duotone" className="size-5 text-primary" />
+        {label}
+      </span>
+      <span className="flex flex-col gap-1">
+        <span className="font-heading text-kpi font-bold text-fg tabular-nums">{value}</span>
+        <span className="text-body-sm text-fg-secondary">{hint}</span>
+      </span>
+    </div>
   );
 }
 
-/** The floating panel over the illustration: places open now with their live wait. */
+/** Places open now with their live wait, in the bento beside the figures. */
 function LivePanel({
   rows,
   loading,
@@ -109,16 +169,13 @@ function LivePanel({
   return (
     <section
       aria-labelledby="live-title"
-      className={cx(
-        "flex flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-raised",
-        className,
-      )}
+      className={cx("flex flex-col overflow-hidden rounded-panel bg-surface shadow-e2", className)}
     >
-      <div className="flex items-center justify-between gap-3 px-5 pt-4 pb-2">
-        <h2 id="live-title" className="m-0 font-heading text-h3">
+      <div className="flex items-center justify-between gap-3 px-6 pt-5 pb-3">
+        <h2 id="live-title" className="m-0 font-heading text-h3 font-bold">
           {t("site.home2.nearTitle")}
         </h2>
-        <span className="inline-flex items-center gap-1.5 text-caption font-semibold text-success">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-success-bg px-2.5 py-0.5 text-caption font-semibold text-success">
           <span aria-hidden="true" className="relative flex size-2">
             <span className="absolute inset-0 animate-ping rounded-full bg-success opacity-60 motion-reduce:hidden" />
             <span className="relative size-2 rounded-full bg-success" />
@@ -127,57 +184,50 @@ function LivePanel({
         </span>
       </div>
       {loading ? (
-        <div role="status" aria-label={t("site.loading")} className="flex flex-col gap-3 px-5 pb-5">
+        <div role="status" aria-label={t("site.loading")} className="flex flex-col gap-3 px-6 pb-5">
           {Array.from({ length: LIVE_ROWS }, (_, i) => (
-            <Skeleton key={i} className="h-12 w-full rounded-lg" />
+            <Skeleton key={i} className="h-11 w-full rounded-lg" />
           ))}
         </div>
       ) : rows.length === 0 ? (
-        <p className="m-0 px-5 pb-5 text-body-sm text-fg-secondary">{t("site.home.nearEmpty")}</p>
+        <p className="m-0 flex-1 px-6 pb-5 text-body-sm text-fg-secondary">
+          {t("site.home.nearEmpty")}
+        </p>
       ) : (
-        <ul className="m-0 flex list-none flex-col p-0">
+        <ul className="m-0 flex flex-1 list-none flex-col p-0">
           {rows.map((r) => (
-            <li key={r.slug} className="border-t border-border first:border-t-0">
+            <li key={r.slug} className="border-t border-hairline">
               <Link
                 to={`/facilities/${r.slug}`}
                 viewTransition
-                className="flex flex-col gap-1.5 px-5 py-3 no-underline transition-colors duration-150 hover:bg-page"
+                className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1.5 px-6 py-3 no-underline transition-colors duration-150 hover:bg-page"
               >
-                <span className="font-semibold text-fg">{r.name}</span>
-                <span className="flex items-center gap-3">
-                  <span className="min-w-0 flex-1">
-                    <WaitMeter result={r} />
-                  </span>
-                  <span className="shrink-0 text-caption text-fg-secondary tabular-nums">
-                    {waitText(r, t, lang)}
-                  </span>
+                <span className="truncate font-semibold text-fg">{r.name}</span>
+                <span className="text-caption text-fg-secondary tabular-nums">
+                  {waitText(r, t, lang)}
+                </span>
+                <span className="col-span-2">
+                  <WaitMeter result={r} />
                 </span>
               </Link>
             </li>
           ))}
         </ul>
       )}
-      <Link
-        to="/facilities"
-        viewTransition
-        className="group flex min-h-11 items-center justify-between border-t border-border bg-page/60 px-5 text-body-sm font-semibold text-link no-underline"
-      >
-        {t("site.home.viewAll")}
-        <ArrowRight
-          aria-hidden="true"
-          className="size-4 transition-transform duration-150 ease-out-quint group-hover:translate-x-0.5"
-        />
-      </Link>
+      <div className="border-t border-hairline px-6">
+        <MoreLink to="/facilities">{t("site.home.viewAll")}</MoreLink>
+      </div>
     </section>
   );
 }
 
 /**
- * Home `/` (second pass, 2026-11-04): clean means ordered, not bare. The first view pairs one
- * search with an illustration of care on Rwanda's hills and a floating live panel of places
- * open now; then the services with their icons, everything open on a list or a map, the three
- * steps as small pictures, and a forest band for facilities. Brand greens and one ochre for
- * long waits; numbers are real or not shown.
+ * Home `/` (second pass, 2026-11-04): clean means ordered, not bare. A two-column hero (one
+ * command search beside an illustration of care on Rwanda's hills), then a bento of live
+ * figures and the places open now; services with their icons; everything open on a list or a
+ * map; the three steps as small pictures; and a forest band for facilities. Built on the site
+ * tokens (elevation e1–e3, hairlines, fluid display type); brand greens with one ochre for long
+ * waits; every number is real or not shown.
  */
 export function LandingPage() {
   const { t } = useTranslation();
@@ -208,6 +258,7 @@ export function LandingPage() {
   const everywhere = unique(all.data ?? []);
   const openNow = everywhere.filter((r) => r.open_now).length;
   const waitingNow = everywhere.reduce((sum, r) => sum + (r.open_now ? (r.waiting ?? 0) : 0), 0);
+  const typical = typicalWait(everywhere);
   const countFor = (key: ServiceKey) =>
     new Set(
       (all.data ?? []).filter((r) => r.service_code === SERVICE_CODES[key]).map((r) => r.slug),
@@ -224,133 +275,151 @@ export function LandingPage() {
 
   return (
     <PublicLayout>
-      {/* 1 · Search, and care on the hills with what is open right now */}
-      <section
-        aria-labelledby="hero-title"
-        className="relative isolate overflow-hidden border-b border-border bg-[linear-gradient(180deg,var(--color-surface)_0%,var(--color-page)_100%)]"
-      >
+      {/* 1 · The question, the search, and what is open right now */}
+      <section aria-labelledby="hero-title" className="site-glow relative isolate overflow-hidden">
         <div
           aria-hidden="true"
-          className="absolute inset-y-0 right-0 -z-10 hidden w-1/2 text-primary lg:block"
-          style={{ maskImage: "linear-gradient(90deg, transparent, black 60%)" }}
+          className="absolute inset-0 -z-10 text-primary"
+          style={{ maskImage: "radial-gradient(60% 70% at 90% 10%, black, transparent 75%)" }}
         >
           <ImigongoPattern opacity={0.05} />
         </div>
-        <PageContainer className="grid items-center gap-12 pt-10 pb-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,34rem)] lg:gap-14 lg:pt-16 lg:pb-24">
-          <div className="flex min-w-0 animate-rise flex-col items-start gap-6">
-            {all.data && (
-              <p className="m-0 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3.5 py-1.5 text-body-sm text-fg-secondary shadow-card">
-                <span aria-hidden="true" className="size-2 rounded-full bg-success" />
-                <span>
-                  <strong className="font-semibold text-fg tabular-nums">
-                    {t("site.home3.openNow", { count: openNow })}
-                  </strong>
-                  {waitingNow > 0 && ` · ${t("site.home3.waitingNow", { count: waitingNow })}`}
+        <PageContainer className="flex flex-col gap-12 pt-12 pb-16 lg:gap-16 lg:pt-20 lg:pb-24">
+          <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-16">
+            <div className="flex min-w-0 animate-rise flex-col items-start gap-7">
+              <PageHeading
+                id="hero-title"
+                title={`${t("site.home3.titleA")} ${t("site.home3.titleB")}`}
+                className="m-0 max-w-[14ch] font-heading text-hero font-bold text-balance text-fg"
+              >
+                {t("site.home3.titleA")}{" "}
+                <span className="bg-[linear-gradient(100deg,var(--color-forest),var(--color-primary))] bg-clip-text text-transparent">
+                  {t("site.home3.titleB")}
                 </span>
+              </PageHeading>
+              <p className="m-0 max-w-[32rem] text-[1.1875rem] leading-relaxed text-fg-secondary">
+                {t("site.home2.lead")}
               </p>
-            )}
-            <PageHeading
-              id="hero-title"
-              title={`${t("site.home3.titleA")} ${t("site.home3.titleB")}`}
-              className="m-0 max-w-[15ch] font-heading text-[2.5rem] leading-[1.05] font-bold tracking-tight text-balance text-fg sm:text-[3.5rem]"
-            >
-              {t("site.home3.titleA")}{" "}
-              <span className="text-primary">{t("site.home3.titleB")}</span>
-            </PageHeading>
-            <p className="m-0 max-w-[34rem] text-[1.125rem] leading-relaxed text-fg-secondary">
-              {t("site.home2.lead")}
-            </p>
-            <form
-              onSubmit={onSearch}
-              role="search"
-              className="grid w-full max-w-[42rem] gap-2 rounded-[1.75rem] border border-border bg-surface p-2 shadow-raised sm:grid-cols-[minmax(0,1fr)_auto] [&>:first-child]:sm:col-span-2"
-            >
-              <SearchBar
-                id="home-search"
-                label={t("site.searchLabel")}
-                value={text}
-                onChange={setText}
-                placeholder={t("site.home2.searchPlaceholder")}
-              />
-              <LocationSelector id="home-location" value={where} onChange={setWhere} />
-              <Button type="submit" size="lg" pill className="min-h-12 px-7">
-                <MagnifyingGlass aria-hidden="true" weight="bold" />
-                {t("site.home2.search")}
-              </Button>
-            </form>
-            <nav aria-labelledby="needs-title" className="flex flex-col gap-2">
-              <p id="needs-title" className="m-0 text-body-sm text-fg-secondary">
-                {t("home.chipsLabel")}
-              </p>
-              <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
-                {COMMON_NEEDS.map(({ key, to, icon: NeedIcon }) => (
-                  <li key={key}>
-                    <Link
-                      to={to}
-                      viewTransition
-                      className="inline-flex min-h-10 items-center gap-2 rounded-full border border-border bg-surface px-3.5 text-body-sm font-semibold text-fg no-underline transition-[border-color,background-color] duration-150 hover:border-primary/50 hover:bg-brand-subtle/50"
-                    >
-                      <NeedIcon aria-hidden="true" className="size-4 text-primary" />
-                      {t(`site.home2.chips.${key}`)}
-                    </Link>
-                  </li>
-                ))}
-                <li>
-                  <Link
-                    to="/check-symptoms"
-                    viewTransition
-                    className="inline-flex min-h-10 items-center gap-2 rounded-full bg-brand-subtle px-3.5 text-body-sm font-semibold text-on-brand-subtle no-underline transition-colors duration-150 hover:bg-brand-subtle/70"
-                  >
-                    <Question aria-hidden="true" className="size-4" />
-                    {t("site.home2.chips.symptoms")}
-                  </Link>
-                </li>
-              </ul>
-            </nav>
+              <form
+                onSubmit={onSearch}
+                role="search"
+                className="grid w-full max-w-[40rem] gap-2 rounded-shell bg-surface p-2 shadow-e3 sm:grid-cols-[minmax(0,1fr)_auto] [&>:first-child]:sm:col-span-2"
+              >
+                <SearchBar
+                  id="home-search"
+                  label={t("site.searchLabel")}
+                  value={text}
+                  onChange={setText}
+                  placeholder={t("site.home2.searchPlaceholder")}
+                />
+                <LocationSelector id="home-location" value={where} onChange={setWhere} />
+                <Button type="submit" size="lg" pill className="min-h-12 px-8">
+                  <MagnifyingGlass aria-hidden="true" weight="bold" />
+                  {t("site.home2.search")}
+                </Button>
+              </form>
+              <nav aria-labelledby="needs-title" className="flex flex-wrap items-center gap-2">
+                <p id="needs-title" className="m-0 me-1 text-body-sm text-fg-muted">
+                  {t("home.chipsLabel")}
+                </p>
+                <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
+                  {COMMON_NEEDS.map(({ key, to, icon: NeedIcon }) => (
+                    <li key={key}>
+                      <Link
+                        to={to}
+                        viewTransition
+                        className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-surface px-3 text-body-sm font-medium text-fg no-underline shadow-e1 transition-shadow duration-200 hover:shadow-e2"
+                      >
+                        <NeedIcon aria-hidden="true" className="size-4 text-primary" />
+                        {t(`site.home2.chips.${key}`)}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </div>
+
+            <div className="relative min-w-0 animate-rise [animation-delay:80ms]">
+              <div className="overflow-hidden rounded-shell shadow-e3">
+                <HillsideCareIllustration className="block aspect-[5/4] h-auto w-full" />
+              </div>
+            </div>
           </div>
 
-          <div className="relative min-w-0 pb-0 lg:pb-10">
-            <div className="overflow-hidden rounded-[2rem] shadow-raised ring-1 ring-border">
-              <HillsideCareIllustration className="block aspect-[5/4] h-auto w-full" />
-            </div>
+          {/* the bento: live figures, places open now, and help choosing */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 lg:grid-rows-[auto_auto]">
+            <Figure
+              icon={Buildings}
+              label={t("site.home3.kpi.open")}
+              value={all.data ? String(openNow) : "–"}
+              hint={t("site.home3.kpi.openHint", { count: everywhere.length })}
+            />
+            <Figure
+              icon={UsersThree}
+              label={t("site.home3.kpi.waiting")}
+              value={all.data ? String(waitingNow) : "–"}
+              hint={t("site.home3.kpi.waitingHint")}
+            />
             <LivePanel
               rows={live}
               loading={results.isPending}
-              className="relative -mt-16 mx-3 animate-rise [animation-delay:120ms] sm:mx-8 lg:absolute lg:-bottom-12 lg:-left-16 lg:mx-0 lg:mt-0 lg:w-[20rem]"
+              className="md:col-span-2 lg:row-span-2"
             />
+            <Figure
+              icon={Hourglass}
+              label={t("site.home3.kpi.typical")}
+              value={typical === null ? "–" : t("site.home3.kpi.minutes", { count: typical })}
+              hint={t("site.home3.kpi.typicalHint")}
+            />
+            <Link
+              to="/check-symptoms"
+              viewTransition
+              className="group relative flex min-h-40 flex-col justify-between gap-6 overflow-hidden rounded-panel bg-forest p-6 text-on-forest no-underline shadow-e2"
+            >
+              <span aria-hidden="true" className="absolute inset-0 text-on-forest-accent">
+                <ImigongoPattern opacity={0.07} />
+              </span>
+              <Sparkle
+                aria-hidden="true"
+                weight="duotone"
+                className="relative size-6 text-on-forest-accent"
+              />
+              <span className="relative flex flex-col gap-1">
+                <span className="font-heading text-h3 font-bold">
+                  {t("site.home3.symptoms.title")}
+                </span>
+                <span className="inline-flex items-center gap-1.5 text-body-sm text-on-forest-muted">
+                  {t("site.home3.symptoms.action")}
+                  <ArrowRight
+                    aria-hidden="true"
+                    className="size-4 transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5"
+                  />
+                </span>
+              </span>
+            </Link>
           </div>
         </PageContainer>
       </section>
 
-      <PageContainer className="flex flex-col gap-20 py-16 lg:gap-24 lg:py-20">
-        {/* 2 · The services, each with its picture word */}
-        <section aria-labelledby="care-title" className="flex flex-col gap-6">
-          <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-1">
-            <div className="flex flex-col gap-1">
-              <h2 id="care-title" className="m-0 font-heading text-h1">
-                {t("site.home2.careTitle")}
-              </h2>
-              <p className="m-0 text-fg-secondary">{t("site.home2.careLead")}</p>
-            </div>
-            <Link
-              to="/services"
-              viewTransition
-              className="inline-flex min-h-target items-center gap-1.5 font-semibold text-link no-underline hover:underline"
-            >
-              {t("site.home2.allServices")}
-              <ArrowRight aria-hidden="true" className="size-4" />
-            </Link>
-          </div>
-          <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2 lg:grid-cols-3">
+      <PageContainer className="flex flex-col gap-24 py-20 lg:gap-28 lg:py-24">
+        {/* 2 · The services */}
+        <section aria-labelledby="care-title" className="site-reveal flex flex-col gap-8">
+          <SectionHead
+            id="care-title"
+            title={t("site.home2.careTitle")}
+            lead={t("site.home2.careLead")}
+            action={<MoreLink to="/services">{t("site.home2.allServices")}</MoreLink>}
+          />
+          <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
             {CARE.map(({ key, icon: CareIcon }) => (
               <li key={key}>
                 <Link
                   to={`/find-care?service=${key}`}
                   viewTransition
-                  className="group flex items-center gap-4 rounded-2xl border border-border bg-surface p-4 no-underline transition-[border-color,box-shadow,transform] duration-200 ease-out-quint hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-card motion-reduce:hover:translate-y-0"
+                  className="group flex items-center gap-4 rounded-panel bg-surface p-5 no-underline shadow-e1 transition-[box-shadow,transform] duration-300 ease-out-quint hover:-translate-y-0.5 hover:shadow-e3 motion-reduce:hover:translate-y-0"
                 >
-                  <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-brand-subtle text-on-brand-subtle">
-                    <CareIcon aria-hidden="true" className="size-6" />
+                  <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-[linear-gradient(140deg,var(--color-brand-subtle),var(--color-surface))] text-on-brand-subtle shadow-e1">
+                    <CareIcon aria-hidden="true" weight="duotone" className="size-6" />
                   </span>
                   <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                     <span className="font-semibold text-fg">{t(`landing.services.${key}`)}</span>
@@ -362,7 +431,7 @@ export function LandingPage() {
                   </span>
                   <ArrowRight
                     aria-hidden="true"
-                    className="size-5 text-fg-muted transition-[transform,color] duration-200 ease-out-quint group-hover:translate-x-1 group-hover:text-primary"
+                    className="size-5 text-fg-muted transition-[transform,color] duration-300 ease-out-quint group-hover:translate-x-1 group-hover:text-primary"
                   />
                 </Link>
               </li>
@@ -371,34 +440,35 @@ export function LandingPage() {
         </section>
 
         {/* 3 · Everything open, on a list or a map */}
-        <section aria-labelledby="open-title" className="flex flex-col gap-6">
-          <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
-            <div className="flex flex-col gap-1">
-              <h2 id="open-title" className="m-0 font-heading text-h1">
-                {t("site.home3.openTitle")}
-              </h2>
-              <p role="status" className="m-0 text-fg-secondary">
+        <section aria-labelledby="open-title" className="site-reveal flex flex-col gap-8">
+          <SectionHead
+            id="open-title"
+            title={t("site.home3.openTitle")}
+            lead={
+              <span role="status">
                 {locating === "denied"
                   ? t("home.locationDenied")
                   : near
                     ? t("site.home.sortedByDistance")
                     : t("site.home3.openLead")}
-              </p>
-            </div>
-            <button
-              type="button"
-              aria-pressed={near !== null}
-              onClick={locate}
-              disabled={locating === "busy"}
-              className={cx(FILTER, "inline-flex items-center gap-1.5")}
-            >
-              <Crosshair
-                aria-hidden="true"
-                className={cx("size-4", locating === "busy" && "animate-spin")}
-              />
-              {near ? t("home.nearYou") : t("home.nearMe")}
-            </button>
-          </div>
+              </span>
+            }
+            action={
+              <button
+                type="button"
+                aria-pressed={near !== null}
+                onClick={locate}
+                disabled={locating === "busy"}
+                className={cx(FILTER, "inline-flex items-center gap-1.5")}
+              >
+                <Crosshair
+                  aria-hidden="true"
+                  className={cx("size-4", locating === "busy" && "animate-spin")}
+                />
+                {near ? t("home.nearYou") : t("home.nearMe")}
+              </button>
+            }
+          />
           <FacilityExplorer
             label={t("site.home3.openTitle")}
             rows={listed.slice(0, 6)}
@@ -413,41 +483,31 @@ export function LandingPage() {
         </section>
 
         {/* 4 · Three steps, each a small picture */}
-        <section aria-labelledby="how-title" className="flex flex-col gap-8">
-          <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-1">
-            <div className="flex flex-col gap-1">
-              <h2 id="how-title" className="m-0 font-heading text-h1">
-                {t("site.home2.howTitle")}
-              </h2>
-              <p className="m-0 text-fg-secondary">{t("site.home2.howLead")}</p>
-            </div>
-            <Link
-              to="/how-it-works"
-              viewTransition
-              className="inline-flex min-h-target items-center gap-1.5 font-semibold text-link no-underline hover:underline"
-            >
-              {t("site.home.how")}
-              <ArrowRight aria-hidden="true" className="size-4" />
-            </Link>
-          </div>
-          <ol className="relative m-0 grid list-none gap-5 p-0 md:grid-cols-3">
+        <section aria-labelledby="how-title" className="site-reveal flex flex-col gap-10">
+          <SectionHead
+            id="how-title"
+            title={t("site.home2.howTitle")}
+            lead={t("site.home2.howLead")}
+            action={<MoreLink to="/how-it-works">{t("site.home.how")}</MoreLink>}
+          />
+          <ol className="relative m-0 grid list-none gap-4 p-0 md:grid-cols-3">
             <span
               aria-hidden="true"
-              className="absolute top-[5.5rem] right-[16%] left-[16%] hidden border-t-2 border-dashed border-primary/30 md:block"
+              className="absolute top-[5.25rem] right-[17%] left-[17%] -z-10 hidden border-t-2 border-dashed border-primary/25 md:block"
             />
             {STEPS.map((key, index) => (
               <li
                 key={key}
-                className="relative flex flex-col items-center gap-3 rounded-2xl border border-border bg-surface px-6 pt-4 pb-6 text-center"
+                className="flex flex-col items-center gap-3 rounded-panel bg-surface px-6 pt-5 pb-7 text-center shadow-e1"
               >
-                <StepIllustration step={key} className="h-36 w-auto" />
+                <StepIllustration step={key} className="h-32 w-auto" />
                 <span
                   aria-hidden="true"
-                  className="grid size-8 place-items-center rounded-full bg-forest font-heading text-body-sm font-bold text-on-forest tabular-nums"
+                  className="grid size-7 place-items-center rounded-full bg-forest font-heading text-caption font-bold text-on-forest tabular-nums"
                 >
                   {index + 1}
                 </span>
-                <h3 className="m-0 text-h3">
+                <h3 className="m-0 font-heading text-h3 font-bold">
                   <span className="sr-only">{t("site.home2.stepLabel", { n: index + 1 })}: </span>
                   {t(`site.home2.steps.${key}.title`)}
                 </h3>
@@ -462,14 +522,16 @@ export function LandingPage() {
         {/* 5 · What people can count on */}
         <ul
           aria-label={t("site.home3.trustLabel")}
-          className="m-0 grid list-none gap-4 p-0 sm:grid-cols-3"
+          className="site-reveal m-0 grid list-none gap-px overflow-hidden rounded-panel bg-hairline p-0 shadow-e1 sm:grid-cols-3"
         >
           {TRUST.map(({ key, icon: TrustIcon }) => (
-            <li key={key} className="flex items-start gap-3">
-              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-subtle text-on-brand-subtle">
-                <TrustIcon aria-hidden="true" className="size-5" />
-              </span>
-              <span className="flex flex-col">
+            <li key={key} className="flex items-start gap-4 bg-surface p-6">
+              <TrustIcon
+                aria-hidden="true"
+                weight="duotone"
+                className="mt-0.5 size-6 shrink-0 text-primary"
+              />
+              <span className="flex flex-col gap-0.5">
                 <span className="font-semibold text-fg">{t(`site.home3.trust.${key}.title`)}</span>
                 <span className="text-body-sm text-fg-secondary">
                   {t(`site.home3.trust.${key}.body`)}
@@ -488,21 +550,30 @@ export function LandingPage() {
         <div aria-hidden="true" className="absolute inset-0 -z-10 text-on-forest-accent">
           <ImigongoPattern opacity={0.06} />
         </div>
-        <PageContainer className="grid items-center gap-10 py-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:py-20">
-          <div className="flex max-w-[38rem] flex-col items-start gap-4">
+        <div
+          aria-hidden="true"
+          className="absolute -top-40 right-0 -z-10 size-[36rem] rounded-full bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--color-on-forest-accent)_18%,transparent),transparent)]"
+        />
+        <PageContainer className="grid items-center gap-12 py-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:py-24">
+          <div className="site-reveal flex max-w-[38rem] flex-col items-start gap-5">
             <h2
               id="facilities-title"
-              className="m-0 font-heading text-[2rem] leading-tight text-on-forest"
+              className="m-0 font-heading text-section font-bold text-on-forest"
             >
               {t("site.home2.facilitiesTitle")}
             </h2>
             <p className="m-0 text-[1.125rem] leading-relaxed text-on-forest-muted">
               {t("site.home2.facilitiesLead")}
             </p>
-            <ul className="m-0 flex list-none flex-col gap-2 p-0 text-on-forest">
+            <ul className="m-0 flex list-none flex-col gap-2.5 p-0 text-on-forest">
               {(["queue", "bookings", "records"] as const).map((key) => (
-                <li key={key} className="flex items-center gap-2.5">
-                  <span aria-hidden="true" className="size-1.5 rounded-full bg-on-forest-accent" />
+                <li key={key} className="flex items-center gap-3">
+                  <span
+                    aria-hidden="true"
+                    className="grid size-5 place-items-center rounded-full bg-on-forest/10"
+                  >
+                    <span className="size-1.5 rounded-full bg-on-forest-accent" />
+                  </span>
                   {t(`site.home3.facilityPoints.${key}`)}
                 </li>
               ))}
@@ -510,13 +581,16 @@ export function LandingPage() {
             <Link
               to="/for-facilities"
               viewTransition
-              className="mt-2 inline-flex min-h-12 items-center gap-2 rounded-full bg-on-forest px-6 font-semibold text-forest no-underline transition-[filter] duration-150 hover:brightness-95"
+              className="group mt-3 inline-flex min-h-12 items-center gap-2 rounded-full bg-on-forest px-6 font-semibold text-forest no-underline transition-[filter] duration-150 hover:brightness-95"
             >
               {t("site.home2.facilitiesAction")}
-              <ArrowRight aria-hidden="true" className="size-4" />
+              <ArrowRight
+                aria-hidden="true"
+                className="size-4 transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5"
+              />
             </Link>
           </div>
-          <FacilityBoardIllustration className="hidden h-auto w-full lg:block" />
+          <FacilityBoardIllustration className="site-reveal hidden h-auto w-full lg:block" />
         </PageContainer>
       </section>
     </PublicLayout>

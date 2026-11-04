@@ -9,6 +9,21 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Public site: a richer, cleaner second pass (2026-11-04)
+
+- Added: public site tokens in `apps/patient-web/src/styles.css`: elevation `shadow-e1`–`e3`,
+  hairlines (`border-hairline`), `rounded-panel` and `rounded-shell`, fluid `text-hero`,
+  `text-section` and `text-kpi`, a brand glow and scroll reveal (off with reduced motion).
+- Changed: **Home** has a two-column hero (headline, command search, common needs with icons,
+  an illustration of a health centre on Rwanda's hills) and a bento of live figures (open now,
+  people waiting, typical wait), the places open now with a wait bar each, and "Not sure where
+  to go?"; services as icon tiles; the three steps as small illustrations; a trust row; a forest
+  band for facilities with an abstract live-board illustration. Every number is real.
+- Changed: **facility rows** everywhere: a type mark, insurers as tags, a status pill with the
+  live wait bar, one action button and a round map button, aligned in columns.
+- Changed: the **header** is a translucent bar with the pages as one segmented group and a solid
+  Sign in; the **footer** has quiet columns, a slim bottom bar and a large faint wordmark.
+
 ### Triage nurse (2026-11-04, #200)
 
 - Added: **Triage** for the triage nurse (`/triage`): call the next patient, see their words,

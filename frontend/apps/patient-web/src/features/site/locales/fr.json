@@ -468,7 +468,7 @@
   },
   "home3": {
     "titleA": "Trouvez les bons soins,",
-    "titleB": "sans la longue attente.",
+    "titleB": "sans longue attente.",
     "openNow_one": "{{count}} établissement ouvert",
     "openNow_other": "{{count}} établissements ouverts",
     "waitingNow_one": "{{count}} personne en attente",
@@ -496,6 +496,21 @@
       "queue": "Une file en direct que les patients suivent depuis chez eux",
       "bookings": "Rendez-vous et patients sans rendez-vous dans un seul planning",
       "records": "Dossiers, ordonnances et paiements au même endroit"
+    },
+    "kpi": {
+      "open": "Ouverts maintenant",
+      "openHint_one": "sur {{count}} établissement sur MediLink",
+      "openHint_other": "sur {{count}} établissements sur MediLink",
+      "waiting": "Personnes en attente",
+      "waitingHint": "dans les files des lieux ouverts",
+      "typical": "Attente habituelle",
+      "typicalHint": "le milieu des attentes en direct du jour",
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min"
+    },
+    "symptoms": {
+      "title": "Vous ne savez pas où aller ?",
+      "action": "Vérifiez vos symptômes"
     }
   }
 }

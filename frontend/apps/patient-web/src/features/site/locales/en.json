@@ -496,6 +496,21 @@
       "queue": "A live queue patients can follow from home",
       "bookings": "Bookings and walk-ins in one day plan",
       "records": "Records, prescriptions and payments in one place"
+    },
+    "kpi": {
+      "open": "Open now",
+      "openHint_one": "of {{count}} place on MediLink",
+      "openHint_other": "of {{count}} places on MediLink",
+      "waiting": "People waiting",
+      "waitingHint": "in the queues of open places",
+      "typical": "Typical wait",
+      "typicalHint": "the middle of today's live waits",
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min"
+    },
+    "symptoms": {
+      "title": "Not sure where to go?",
+      "action": "Check your symptoms"
     }
   }
 }

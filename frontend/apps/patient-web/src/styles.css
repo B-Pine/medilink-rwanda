@@ -2,3 +2,86 @@
 @import "@medilink/ui/styles.css";
 
 @source "./";
+
+/*
+ * Public site tokens (2026-11-04, second pass): clean means ordered, not bare.
+ * A layered elevation scale, hairlines instead of heavy borders, fluid display type and one
+ * brand glow. Colours stay the brand greens and neutrals of @medilink/ui.
+ */
+:root {
+  --site-hairline: color-mix(in srgb, var(--color-fg) 9%, transparent);
+  --site-hairline-strong: color-mix(in srgb, var(--color-fg) 14%, transparent);
+  --site-glow: color-mix(in srgb, var(--color-primary) 14%, transparent);
+  --site-shadow-ink: 14 31 24;
+}
+:root[data-theme="dark"] {
+  --site-shadow-ink: 0 0 0;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --site-shadow-ink: 0 0 0;
+  }
+}
+
+@theme {
+  --color-hairline: var(--site-hairline);
+  --color-hairline-strong: var(--site-hairline-strong);
+
+  /* elevation: each level adds a softer, wider layer */
+  --shadow-e1: 0 1px 2px rgb(var(--site-shadow-ink) / 0.05), 0 0 0 1px var(--site-hairline);
+  --shadow-e2:
+    0 0 0 1px var(--site-hairline), 0 1px 2px rgb(var(--site-shadow-ink) / 0.04),
+    0 4px 12px -2px rgb(var(--site-shadow-ink) / 0.06);
+  --shadow-e3:
+    0 0 0 1px var(--site-hairline), 0 2px 4px rgb(var(--site-shadow-ink) / 0.04),
+    0 12px 24px -6px rgb(var(--site-shadow-ink) / 0.08),
+    0 32px 64px -24px rgb(var(--site-shadow-ink) / 0.16);
+
+  --radius-panel: 1.25rem;
+  --radius-shell: 1.75rem;
+
+  /* fluid display type */
+  --text-hero: clamp(2.5rem, 1.55rem + 3.4vw, 4.25rem);
+  --text-hero--line-height: 1.02;
+  --text-hero--letter-spacing: -0.035em;
+  --text-section: clamp(1.75rem, 1.35rem + 1.3vw, 2.5rem);
+  --text-section--line-height: 1.1;
+  --text-section--letter-spacing: -0.025em;
+  --text-kpi: clamp(2rem, 1.6rem + 1.2vw, 2.75rem);
+  --text-kpi--line-height: 1;
+  --text-kpi--letter-spacing: -0.03em;
+}
+
+/* one quiet brand glow behind the hero */
+.site-glow {
+  background:
+    radial-gradient(60% 70% at 85% 0%, var(--site-glow), transparent 70%),
+    radial-gradient(
+      40% 50% at 0% 100%,
+      color-mix(in srgb, var(--color-primary) 6%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(180deg, var(--color-surface), var(--color-page));
+}
+
+/* sections ease in as they scroll into view; without support or with reduced motion they are
+   simply there */
+@keyframes site-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .site-reveal {
+      animation: site-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 30%;
+    }
+  }
+}

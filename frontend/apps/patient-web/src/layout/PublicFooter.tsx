@@ -83,7 +83,7 @@ export function PublicFooter() {
               <div key={group.key}>
                 <h2
                   id={`footer-${group.key}`}
-                  className="mt-0 mb-2 text-caption font-bold tracking-wider text-fg uppercase"
+                  className="mt-0 mb-2 text-body-sm font-semibold text-fg"
                 >
                   {t(`footer.groups.${group.key}`)}
                 </h2>

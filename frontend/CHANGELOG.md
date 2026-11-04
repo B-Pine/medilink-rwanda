@@ -9,6 +9,21 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Public site: reading pages and the emergency page (2026-11-04)
+
+- Changed: **Emergency** opens with an urgent care card (NHS pattern): a red heading bar, the
+  danger signs as a plain list and one "Call 912 now" button; then hospitals near you (directions,
+  24-hour emergency marked in words) and the steps to take as a numbered list. The illustration,
+  the pulsing icon and the decorative circle are gone.
+- Changed: **How it works** is a step-by-step list in one reading column (numbered circles joined
+  by a hairline) and "Good to know" is a plain bulleted list; **About** is one document with five
+  sections instead of icon cards; legal pages' "On this page" is a plain list with a hairline.
+- Changed: **Help** jump links are text links and "Still need help?" is a bordered row; document
+  body text is the primary text colour at a 68-character measure; footer column headings are in
+  sentence case.
+- Fixed: legal pages no longer show "()" or "at ." where a draft "[To confirm]" marker was hidden:
+  a bracketed marker goes with its brackets and a sentence that needs the missing fact is left out.
+
 ### Public site: a facility page that reads as a record (2026-11-04)
 
 - Changed: the facility page has no tabs: **Today** is a summary list (hours and status, live

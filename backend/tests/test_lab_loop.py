@@ -175,7 +175,9 @@ def test_the_full_loop_reaches_the_patient_only_after_release(
         released = lab_post(doctor[0], reviewed.json(), "release")
     assert released.status_code == 200, released.content
     # W7: "a result is ready", never the test's name
-    [ready] = Notification.objects.filter(recipient_user=at_doctor["user"], event_type=LAB_RESULT_READY)
+    [ready] = Notification.objects.filter(
+        recipient_user=at_doctor["user"], event_type=LAB_RESULT_READY
+    )
     assert "malaria" not in f"{ready.title} {ready.body}".lower()
     assert ready.action_path == "/dashboard/records"
 

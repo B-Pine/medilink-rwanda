@@ -47,18 +47,17 @@ def notices(user: Any, event: str) -> list[Notification]:
     return list(Notification.objects.filter(recipient_user=user, event_type=event))
 
 
-def at(clock: Clock, days: int, hour: int, minute: int = 0) -> dt.datetime:
+def at(fixed: Clock, days: int, hour: int, minute: int = 0) -> dt.datetime:
     """A Kigali time `days` after the test clock's Monday; the clock moves there."""
-    monday = clock.now.astimezone(KIGALI).date() - dt.timedelta(
-        days=clock.now.astimezone(KIGALI).weekday()
-    )
-    clock.now = dt.datetime.combine(monday + dt.timedelta(days=days), dt.time(hour, minute), KIGALI)
-    return clock.now
+    local = fixed.now.astimezone(KIGALI)
+    monday = local.date() - dt.timedelta(days=local.weekday())
+    fixed.now = dt.datetime.combine(monday + dt.timedelta(days=days), dt.time(hour, minute), KIGALI)
+    return fixed.now
 
 
-def run(clinic: Any, now: dt.datetime) -> int:
-    with rls_context(facility_id=clinic.pk):
-        return reminders.facility_reminders(clinic.pk, now)
+def run(facility: Any, now: dt.datetime) -> int:
+    with rls_context(facility_id=facility.pk):
+        return reminders.facility_reminders(facility.pk, now)
 
 
 def test_latest_due_skips_moments_before_the_item_existed() -> None:
@@ -113,7 +112,9 @@ def test_care_schedule_entries_reach_the_patient_without_clinical_words(
     entry = made.json()
     assert entry["note"] == "Second visit" and entry["status"] == "due"
     listed = doctor[0].get(url)
-    assert listed.status_code == 200 and [e["id"] for e in listed.json()["results"]] == [entry["id"]]
+    assert listed.status_code == 200 and [e["id"] for e in listed.json()["results"]] == [
+        entry["id"]
+    ]
 
     patient = APIClient()
     login_patient(patient, user)

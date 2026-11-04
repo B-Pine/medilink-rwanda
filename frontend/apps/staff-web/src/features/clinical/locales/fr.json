@@ -1,4 +1,64 @@
 {
+  "lab": {
+    "title": "Examens",
+    "none": "Aucun examen demandé pour cette visite.",
+    "order": "Demander des examens",
+    "choose": "Examens à demander",
+    "chooseOne": "Choisissez au moins un examen.",
+    "reason": "Pourquoi ces examens ? (le laboratoire le voit)",
+    "reasonHint": "Par exemple : fièvre depuis 3 jours, exclure le paludisme.",
+    "reasonShort": "Pourquoi :",
+    "submit": "Demander",
+    "send": "Envoyer au laboratoire",
+    "sendHint": "Le patient va au laboratoire. Vos notes restent ouvertes et le patient revient dans votre file quand tous les résultats sont prêts.",
+    "sent": "{{name}} va au laboratoire et revient dans votre file quand les résultats sont prêts.",
+    "orderedBy": "Demandé par {{name}} à {{time}}",
+    "resultedBy": "Résultat par {{name}} à {{time}}",
+    "labComment": "Commentaire du laboratoire :",
+    "note": "Note pour le patient",
+    "noteHint": "Le patient la lit avec le résultat.",
+    "review": "Marquer comme lu",
+    "release": "Transmettre au patient",
+    "releaseHint": "Désormais, le patient voit ce résultat dans son dossier.",
+    "cancel": "Annuler l'examen",
+    "range": "{{low}}–{{high}} {{unit}}",
+    "table": {
+      "item": "Examen",
+      "value": "Résultat",
+      "reference": "Valeurs normales"
+    },
+    "states": {
+      "ordered": "Demandé",
+      "sample_taken": "Échantillon prélevé",
+      "resulted": "Résultat prêt",
+      "reviewed": "Lu",
+      "released": "Transmis",
+      "cancelled": "Annulé"
+    },
+    "specimens": {
+      "blood": "Sang",
+      "urine": "Urine",
+      "stool": "Selles"
+    },
+    "flags": {
+      "low": "Bas",
+      "high": "Élevé",
+      "abnormal": "Anormal"
+    },
+    "choices": {
+      "negative": "Négatif",
+      "positive": "Positif",
+      "invalid": "Invalide",
+      "trace": "Traces",
+      "none_seen": "Aucun vu",
+      "seen": "Vus"
+    },
+    "inbox": {
+      "title": "Résultats de laboratoire",
+      "lead": "Résultats des examens que vous avez demandés. Lisez chacun, puis transmettez-le au patient.",
+      "open": "Ouvrir la consultation"
+    }
+  },
   "nav": {
     "consultation": "Consultation",
     "unsigned": "Dossiers non signés",

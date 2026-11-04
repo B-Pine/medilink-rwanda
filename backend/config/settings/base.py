@@ -417,6 +417,7 @@ SPECTACULAR_SETTINGS = {
         "LoginStatusEnum": "medilink.accounts.serializers.LOGIN_STATUS_CHOICES",
         "RoleCodeEnum": "medilink.tenancy.models.RoleCode",
         "TriageUrgencyEnum": "medilink.visits.models.TRIAGE_URGENCIES",
+        "LabResultKindEnum": "medilink.clinical.serializers_lab.RESULT_KINDS",
         "PatientSexEnum": "medilink.patients.models.Sex",
         # [S1]
         "ApplicationStatusEnum": "medilink.onboarding.models.ApplicationStatus",

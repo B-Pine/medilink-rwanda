@@ -107,6 +107,8 @@ class Stage(models.TextChoices):
     # upgrade 06 §2: optional, between check-in and the doctor (queue setting `triage_enabled`)
     TRIAGE = "triage", "Triage"
     CONSULTATION = "consultation", "Consultation"
+    # upgrade 06 §3 (#201): a loop out of the consultation; the patient comes back to the doctor
+    LAB = "lab", "Laboratory"
     PHARMACY = "pharmacy", "Pharmacy"
 
 

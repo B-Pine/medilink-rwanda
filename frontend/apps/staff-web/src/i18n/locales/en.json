@@ -113,7 +113,8 @@
       "doctor": "Doctor",
       "pharmacist": "Pharmacist",
       "cashier": "Cashier",
-      "triage_nurse": "Triage nurse"
+      "triage_nurse": "Triage nurse",
+      "lab_technician": "Lab technician"
     }
   },
   "shell": {

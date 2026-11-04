@@ -2,7 +2,7 @@ from celery.schedules import crontab
 from django.apps import AppConfig
 from django.db.models.signals import post_migrate
 
-FUNCTIONS = ("clinical_patient_records(uuid)",)
+FUNCTIONS = ("clinical_patient_records(uuid)", "clinical_patient_lab_results(uuid)")
 APPEND_ONLY = (
     "clinical_addendum",
     "authz_access_reason",

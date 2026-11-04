@@ -74,7 +74,7 @@ Source: [02 · Users, roles, access](../analysis/02-users-roles-and-permissions.
 | FR-ACC-07 | Clinician licence number; admin attests the check | P1 | S0, S2 | Both | API, CMP | In progress |
 | FR-ACC-08 | Server-side, logged permission checks on patient data | P1 | S0 | Backend | AZ, API | Verified (S0, v0.1.0) |
 | FR-ACC-09 | Super admin emergency access with reason, logged, reviewable | P1 | S6b | Both | AZ, API | In progress |
-| FR-ACC-10 | New roles without changing existing roles (cashier and triage nurse done; laboratory technician next) | P1 | U2, U8 (#200) | Both | AZ, INS | In progress |
+| FR-ACC-10 | New roles without changing existing roles (cashier, triage nurse and laboratory technician done; community health worker and others in P2) | P1 | U2, U8 (#200, #201) | Both | AZ, INS | In progress |
 
 ## FR-ONB · Tenancy, onboarding, master data
 
@@ -187,6 +187,7 @@ Source: [07 · Clinical record](../analysis/07-clinical-documentation-and-pharma
 | FR-CLN-08 | Restricted (sensitive) records | P1 | S6 | Both | AZ | In progress |
 | FR-CLN-09 | Results inbox with review sign-off | P1 | S6b | Both | API, E2E | In progress |
 | FR-CLN-10 | Consultation templates per service | P2 | — | Both | CMP | Not started |
+| FR-CLN-11 | Laboratory loop: order, sample, result, back to the same doctor, review, release; patient sees released results only | P1 | U8 (#201) | Both | API, AZ, CMP | Implemented (#201) |
 
 ## FR-PHA · Pharmacy
 

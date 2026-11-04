@@ -1,7 +1,46 @@
 {
   "nav": {
     "reorders": "Queue reviews",
-    "triage": "Triage"
+    "triage": "Triage",
+    "lab": "Laboratory"
+  },
+  "lab": {
+    "title": "Laboratory",
+    "lead": "Call the next patient, take the samples and enter the results. The patient goes back to the doctor when every result is in.",
+    "open": "Open the lab",
+    "current": "Patient with you",
+    "start": "Start",
+    "inLab": "At the lab",
+    "nobody": "Nobody is waiting for the lab.",
+    "waiting": "Waiting for a sample",
+    "inProgress": "Results to enter",
+    "inProgressNone": "No sample is waiting for a result.",
+    "doneToday": "Done today",
+    "identity": "Check who the patient is",
+    "fullName": "Full name",
+    "born": "Date of birth",
+    "medilinkNumber": "MediLink number",
+    "payment": "Payment",
+    "paid": "Paid",
+    "unpaid": "Not paid",
+    "samples": "Samples",
+    "sample": "Sample taken",
+    "orderedBy": "Ordered by {{name}}",
+    "request": "Doctor's request:",
+    "loadingTests": "Loading the tests…",
+    "samplesDone": "Samples taken for {{name}}. Enter the results when they are ready.",
+    "enter": "Enter the result",
+    "choose": "Choose…",
+    "required": "Enter this result.",
+    "comment": "Comment for the doctor (optional)",
+    "save": "Save result",
+    "saved": "Result saved: {{test}}.",
+    "backToDoctor": "Every result is in. {{name}} goes back to the doctor.",
+    "today": {
+      "waiting": "Waiting for a sample",
+      "results": "Results to enter",
+      "done": "Done today"
+    }
   },
   "triage": {
     "title": "Triage",
@@ -83,6 +122,7 @@
     "payment": "Payment",
     "triage": "Triage",
     "consultation": "Consultation",
+    "lab": "Laboratory",
     "pharmacy": "Pharmacy"
   },
   "flags": {

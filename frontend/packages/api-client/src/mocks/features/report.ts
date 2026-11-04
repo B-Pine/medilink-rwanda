@@ -21,7 +21,7 @@ export const REPORT_MAX_DAYS = 366;
 
 const iso = (ms: number) => new Date(ms).toISOString().slice(0, 10);
 
-function bucket(date: string, group: ReportGroup): string {
+export function bucket(date: string, group: ReportGroup): string {
   if (group === "month") return `${date.slice(0, 7)}-01`;
   if (group === "week") {
     const ms = Date.parse(date);

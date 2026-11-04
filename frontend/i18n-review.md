@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5948.
+Keys: 5989.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -1375,6 +1375,7 @@ File: `apps/staff-web/src/features/console/locales/rw.json`
 | `nav.breakGlass` | Isuzuma ry’uburenganzira bwihutirwa | Break-glass reviews | needs native-speaker review |
 | `nav.securityLog` | Igitabo cy’umutekano | Security log | needs native-speaker review |
 | `nav.accessLog` | Igitabo cyo gufungura amadosiye | Record access log | needs native-speaker review |
+| `nav.nationalReport` | Raporo y'igihugu | National report | needs native-speaker review |
 | `failed` | Ntibyashobotse. Ongera ugerageze. | Could not load. Try again. | needs native-speaker review |
 | `refresh` | Vugurura | Refresh | needs native-speaker review |
 | `open` | Fungura | Open | needs native-speaker review |
@@ -1610,6 +1611,46 @@ File: `apps/staff-web/src/features/console/locales/rw.json`
 | `bg.reason.other` | Other | Other | needs native-speaker review |
 | `bg.outcome.appropriate` | Judged appropriate | Judged appropriate | needs native-speaker review |
 | `bg.outcome.inappropriate` | Judged not appropriate | Judged not appropriate | needs native-speaker review |
+| `national.title` | Raporo y'igihugu | National report | needs native-speaker review |
+| `national.intro` | Uko urusobe rwakoze mu gihe runaka: abarwayi mu karere no mu ivuriro, igihe cyo gutegereza muganga, indwara zikunze kuboneka n'imiti yashize. Imibare gusa, nta murwayi n'umwe. | How the network ran over a period: load by district and facility, the wait to see a doctor, the most common diagnoses and medicines out of stock. Figures only, never a patient. | needs native-speaker review |
+| `national.smallGroups` | Amatsinda ari munsi ya 10 arahishwa | Groups under 10 hidden | needs native-speaker review |
+| `national.failed` | Raporo ntiyabonetse. Ongera ugerageze. | The report could not load. Try again. | needs native-speaker review |
+| `national.hidden` | Byahishwe | Hidden | needs native-speaker review |
+| `national.hiddenWhy` | Abarwayi bari munsi ya 10, cyangwa umubare wagaragaza itsinda nk'iryo. | Fewer than 10 patients, or a figure that would reveal such a group. | needs native-speaker review |
+| `national.minutes_one` | Umunota {{count}} | {{count}} min | needs native-speaker review |
+| `national.minutes_other` | Iminota {{count}} | {{count}} min | needs native-speaker review |
+| `national.unknownDistrict` | Akarere ntikanditswe | District not recorded | needs native-speaker review |
+| `national.district` | Akarere | District | needs native-speaker review |
+| `national.facility` | Ivuriro | Facility | needs native-speaker review |
+| `national.facilities` | Amavuriro | Facilities | needs native-speaker review |
+| `national.visits` | Abaje kwivuza | Visits | needs native-speaker review |
+| `national.median` | Igihe cyo hagati cyo gutegereza muganga | Median wait to the doctor | needs native-speaker review |
+| `national.p90` | Ijanisha rya 90 | 90th percentile | needs native-speaker review |
+| `national.medicinesOut` | Imiti yashize ubu | Medicines out now | needs native-speaker review |
+| `national.kpi.visits` | Abaje kwivuza | Visits | needs native-speaker review |
+| `national.kpi.facilities_one` | Ivuriro {{count}} mu turere {{districts}} | {{count}} facility in {{districts}} districts | needs native-speaker review |
+| `national.kpi.facilities_other` | Amavuriro {{count}} mu turere {{districts}} | {{count}} facilities in {{districts}} districts | needs native-speaker review |
+| `national.kpi.wait` | Igihe cyo hagati cyo gutegereza muganga | Median wait to the doctor | needs native-speaker review |
+| `national.kpi.districts` | Uturere | Districts | needs native-speaker review |
+| `national.kpi.stockouts` | Amavuriro yashizemo umuti | Facilities with a stock-out | needs native-speaker review |
+| `national.kpi.medicines_one` | Umuti {{count}} washize ahantu | {{count}} medicine out somewhere | needs native-speaker review |
+| `national.kpi.medicines_other` | Imiti {{count}} yashize ahantu | {{count}} medicines out somewhere | needs native-speaker review |
+| `national.districts.title` | Abarwayi mu karere | Load by district | needs native-speaker review |
+| `national.districts.intro` | Abaje kwivuza n'igihe kuva bageze kugeza muganga abahamagaye. | Visits and the wait from arrival to the doctor's call. | needs native-speaker review |
+| `national.facilitiesTable.title` | Abarwayi mu ivuriro | Load by facility | needs native-speaker review |
+| `national.facilitiesTable.intro` | Umubare w'ivuriro rito urahishwa, n'uw'irikurikiraho mu gito mu karere, kugira ngo igiteranyo cy'akarere kitawugaragaza. | A small facility's visits are hidden, and so is the next smallest in its district, so the district total can't give it away. | needs native-speaker review |
+| `national.trend.title` | Uko gutegereza guhinduka | Wait trend | needs native-speaker review |
+| `national.trend.intro` | Igihe cyo hagati n'ijanisha rya 90 cyo gutegereza muganga, mu mavuriro yose. | Median and 90th percentile wait to the doctor, across all facilities. | needs native-speaker review |
+| `national.trend.hiddenPeriods_one` | Igihe {{count}} cyahishwe: abahamagawe bari munsi ya 10. | {{count}} period is hidden: fewer than 10 patients were called. | needs native-speaker review |
+| `national.trend.hiddenPeriods_other` | Ibihe {{count}} byahishwe: abahamagawe bari munsi ya 10. | {{count}} periods are hidden: fewer than 10 patients were called. | needs native-speaker review |
+| `national.diagnoses.title` | Indwara zikunze kuboneka mu karere | Top diagnoses by district | needs native-speaker review |
+| `national.diagnoses.intro` | Ibyasinywe; indwara zabonetse inshuro 10 cyangwa zirenga gusa, izihariye ntizigaragazwa. | Signed visits; only diagnoses seen 10 times or more, and sensitive diagnoses never. | needs native-speaker review |
+| `national.stockouts.title` | Imiti yashize ubu | Stock-outs now | needs native-speaker review |
+| `national.stockouts.intro` | Imiti idafite ububiko bukoreshwa uyu munsi, aho ububiko bukurikiranwa. | Medicines with no usable stock today, wherever stock is tracked. | needs native-speaker review |
+| `national.stockouts.facilities` | Amavuriro yashizemo umuti | Facilities with a stock-out | needs native-speaker review |
+| `national.stockouts.medicines` | Imiti yashize | Medicines out | needs native-speaker review |
+| `national.stockouts.medicine` | Umuti | Medicine | needs native-speaker review |
+| `national.stockouts.where` | Uturere | Districts | needs native-speaker review |
 
 ## staff-web feature: documents (namespace documents)
 

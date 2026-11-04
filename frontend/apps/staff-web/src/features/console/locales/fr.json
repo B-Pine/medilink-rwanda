@@ -3,7 +3,8 @@
     "users": "Utilisateurs",
     "breakGlass": "Revues bris de glace",
     "securityLog": "Journal de sécurité",
-    "accessLog": "Journal d’accès aux dossiers"
+    "accessLog": "Journal d’accès aux dossiers",
+    "nationalReport": "Rapport national"
   },
   "failed": "Chargement impossible. Réessayez.",
   "refresh": "Actualiser",
@@ -286,6 +287,60 @@
     "outcome": {
       "appropriate": "Judged appropriate",
       "inappropriate": "Judged not appropriate"
+    }
+  },
+  "national": {
+    "title": "Rapport national",
+    "intro": "Comment le réseau a fonctionné sur une période : charge par district et par établissement, attente avant le médecin, diagnostics les plus fréquents et médicaments en rupture. Des chiffres seulement, jamais un patient.",
+    "smallGroups": "Groupes de moins de 10 masqués",
+    "failed": "Le rapport n'a pas pu se charger. Réessayez.",
+    "hidden": "Masqué",
+    "hiddenWhy": "Moins de 10 patients, ou un chiffre qui révélerait un tel groupe.",
+    "minutes_one": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "unknownDistrict": "District non renseigné",
+    "district": "District",
+    "facility": "Établissement",
+    "facilities": "Établissements",
+    "visits": "Visites",
+    "median": "Attente médiane avant le médecin",
+    "p90": "90e centile",
+    "medicinesOut": "Médicaments en rupture",
+    "kpi": {
+      "visits": "Visites",
+      "facilities_one": "{{count}} établissement dans {{districts}} districts",
+      "facilities_other": "{{count}} établissements dans {{districts}} districts",
+      "wait": "Attente médiane avant le médecin",
+      "districts": "Districts",
+      "stockouts": "Établissements en rupture",
+      "medicines_one": "{{count}} médicament en rupture quelque part",
+      "medicines_other": "{{count}} médicaments en rupture quelque part"
+    },
+    "districts": {
+      "title": "Charge par district",
+      "intro": "Visites et attente entre l'arrivée et l'appel du médecin."
+    },
+    "facilitiesTable": {
+      "title": "Charge par établissement",
+      "intro": "Les visites d'un petit établissement sont masquées, ainsi que celles du plus petit suivant du district, pour que le total du district ne les révèle pas."
+    },
+    "trend": {
+      "title": "Évolution de l'attente",
+      "intro": "Attente médiane et 90e centile avant le médecin, tous établissements confondus.",
+      "hiddenPeriods_one": "{{count}} période est masquée : moins de 10 patients appelés.",
+      "hiddenPeriods_other": "{{count}} périodes sont masquées : moins de 10 patients appelés."
+    },
+    "diagnoses": {
+      "title": "Diagnostics principaux par district",
+      "intro": "Visites signées ; seulement les diagnostics vus 10 fois ou plus, jamais les diagnostics sensibles."
+    },
+    "stockouts": {
+      "title": "Ruptures de stock actuelles",
+      "intro": "Médicaments sans stock utilisable aujourd'hui, là où le stock est suivi.",
+      "facilities": "Établissements en rupture",
+      "medicines": "Médicaments en rupture",
+      "medicine": "Médicament",
+      "where": "Districts"
     }
   }
 }

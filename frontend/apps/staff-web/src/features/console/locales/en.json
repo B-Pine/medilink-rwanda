@@ -3,7 +3,8 @@
     "users": "Users",
     "breakGlass": "Break-glass reviews",
     "securityLog": "Security log",
-    "accessLog": "Record access log"
+    "accessLog": "Record access log",
+    "nationalReport": "National report"
   },
   "failed": "Could not load. Try again.",
   "refresh": "Refresh",
@@ -286,6 +287,60 @@
     "outcome": {
       "appropriate": "Judged appropriate",
       "inappropriate": "Judged not appropriate"
+    }
+  },
+  "national": {
+    "title": "National report",
+    "intro": "How the network ran over a period: load by district and facility, the wait to see a doctor, the most common diagnoses and medicines out of stock. Figures only, never a patient.",
+    "smallGroups": "Groups under 10 hidden",
+    "failed": "The report could not load. Try again.",
+    "hidden": "Hidden",
+    "hiddenWhy": "Fewer than 10 patients, or a figure that would reveal such a group.",
+    "minutes_one": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "unknownDistrict": "District not recorded",
+    "district": "District",
+    "facility": "Facility",
+    "facilities": "Facilities",
+    "visits": "Visits",
+    "median": "Median wait to the doctor",
+    "p90": "90th percentile",
+    "medicinesOut": "Medicines out now",
+    "kpi": {
+      "visits": "Visits",
+      "facilities_one": "{{count}} facility in {{districts}} districts",
+      "facilities_other": "{{count}} facilities in {{districts}} districts",
+      "wait": "Median wait to the doctor",
+      "districts": "Districts",
+      "stockouts": "Facilities with a stock-out",
+      "medicines_one": "{{count}} medicine out somewhere",
+      "medicines_other": "{{count}} medicines out somewhere"
+    },
+    "districts": {
+      "title": "Load by district",
+      "intro": "Visits and the wait from arrival to the doctor's call."
+    },
+    "facilitiesTable": {
+      "title": "Load by facility",
+      "intro": "A small facility's visits are hidden, and so is the next smallest in its district, so the district total can't give it away."
+    },
+    "trend": {
+      "title": "Wait trend",
+      "intro": "Median and 90th percentile wait to the doctor, across all facilities.",
+      "hiddenPeriods_one": "{{count}} period is hidden: fewer than 10 patients were called.",
+      "hiddenPeriods_other": "{{count}} periods are hidden: fewer than 10 patients were called."
+    },
+    "diagnoses": {
+      "title": "Top diagnoses by district",
+      "intro": "Signed visits; only diagnoses seen 10 times or more, and sensitive diagnoses never."
+    },
+    "stockouts": {
+      "title": "Stock-outs now",
+      "intro": "Medicines with no usable stock today, wherever stock is tracked.",
+      "facilities": "Facilities with a stock-out",
+      "medicines": "Medicines out",
+      "medicine": "Medicine",
+      "where": "Districts"
     }
   }
 }

@@ -198,33 +198,7 @@ class ReportBase(QueueView):
     permission_classes = [Needs(REPORTS)]
 
     def period(self, request: Request) -> tuple[dt.date, dt.date, str]:
-        today = timezone.localdate()
-        problems: dict[str, list[str]] = {}
-
-        def day(name: str, default: dt.date) -> dt.date:
-            raw = request.query_params.get(name, "").strip()
-            if not raw:
-                return default
-            try:
-                return dt.date.fromisoformat(raw)
-            except ValueError:
-                problems[name] = ["Use YYYY-MM-DD."]
-                return default
-
-        end = day("to", today)
-        start = day("from", end - dt.timedelta(days=29))
-        group = request.query_params.get("group", "day").strip() or "day"
-        if group not in report.GROUPS:
-            problems["group"] = ["Use day, week or month."]
-        if start > end:
-            problems["from"] = ["The first day comes after the last day."]
-        elif (end - start).days + 1 > report.MAX_DAYS:
-            problems["from"] = [f"Choose at most {report.MAX_DAYS} days."]
-        if end > today:
-            problems["to"] = ["The last day can't be in the future."]
-        if problems:
-            raise exceptions.ValidationError(problems)
-        return start, end, group
+        return report.parse_period(request.query_params, timezone.localdate())
 
 
 class FacilityReportView(ReportBase):

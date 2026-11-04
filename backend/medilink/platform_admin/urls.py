@@ -42,4 +42,11 @@ urlpatterns = [
     ),
     path("security-events/", v.SecurityEventsView.as_view(), name="platform-security-events"),
     path("access-events/", v.AccessEventsView.as_view(), name="platform-access-events"),
+    # W9 (#208): the national aggregate report
+    path("reports/national/", v.NationalReportView.as_view(), name="platform-report-national"),
+    path(
+        "reports/national/export/",
+        v.NationalReportExportView.as_view(),
+        name="platform-report-national-export",
+    ),
 ]

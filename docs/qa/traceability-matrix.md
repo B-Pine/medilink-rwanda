@@ -74,7 +74,7 @@ Source: [02 · Users, roles, access](../analysis/02-users-roles-and-permissions.
 | FR-ACC-07 | Clinician licence number; admin attests the check | P1 | S0, S2 | Both | API, CMP | In progress |
 | FR-ACC-08 | Server-side, logged permission checks on patient data | P1 | S0 | Backend | AZ, API | Verified (S0, v0.1.0) |
 | FR-ACC-09 | Super admin emergency access with reason, logged, reviewable | P1 | S6b | Both | AZ, API | In progress |
-| FR-ACC-10 | New roles without changing existing roles (cashier done; triage nurse, laboratory technician next) | P1 | U2 | Both | AZ, INS | In progress |
+| FR-ACC-10 | New roles without changing existing roles (cashier and triage nurse done; laboratory technician next) | P1 | U2, U8 (#200) | Both | AZ, INS | In progress |
 
 ## FR-ONB · Tenancy, onboarding, master data
 
@@ -169,6 +169,7 @@ Source: [06 · Visit lifecycle and live queue](../analysis/06-visit-lifecycle-an
 | FR-QUE-18 | Self check-in by QR at the facility | P2 | — | Both | E2E | Not started |
 | FR-QUE-19 | Travel time from location for time to leave | P2 | — | Both | UT | Not started |
 | FR-QUE-20 | Family grouping of tickets | P2 | — | Both | BR | Not started |
+| FR-QUE-22 | Optional triage stage and triage nurse (vitals, urgency, note for the doctor) | P1 | U8 (#200) | Both | API, AZ, CMP | Implemented (#200) |
 
 ## FR-CLN · Clinical record
 

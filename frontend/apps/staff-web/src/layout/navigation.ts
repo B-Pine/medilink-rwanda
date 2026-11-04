@@ -33,7 +33,7 @@ import { CalendarDots, ClipboardText } from "@phosphor-icons/react";
 import { Article, EnvelopeSimple, Headset, Lifebuoy } from "@phosphor-icons/react";
 // [/S10 imports]
 // [S4 imports]
-import { ArrowsDownUp } from "@phosphor-icons/react";
+import { ArrowsDownUp, Stethoscope } from "@phosphor-icons/react";
 // [/S4 imports]
 // [S5 imports]
 import { CalendarX } from "@phosphor-icons/react";
@@ -305,6 +305,15 @@ export const NAV_ITEMS: readonly NavItem[] = [
   },
   // [/S10]
   // [S4]
+  // upgrade 06 §2 (#200): the triage nurse's station
+  {
+    key: "triage",
+    path: "/triage",
+    icon: Stethoscope,
+    group: "facility",
+    labelKey: "queue.nav.triage",
+    visible: hasAny("triage.operate"),
+  },
   {
     key: "queueReorders",
     path: "/queue/reorders",

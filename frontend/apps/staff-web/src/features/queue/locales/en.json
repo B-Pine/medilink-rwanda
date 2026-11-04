@@ -1,6 +1,50 @@
 {
   "nav": {
-    "reorders": "Queue reviews"
+    "reorders": "Queue reviews",
+    "triage": "Triage"
+  },
+  "triage": {
+    "title": "Triage",
+    "lead": "Take vitals, decide how urgent it is, and send the patient to the doctor.",
+    "open": "Open triage",
+    "current": "Patient with you",
+    "start": "Start triage",
+    "inTriage": "In triage",
+    "nobody": "Nobody is waiting for triage.",
+    "waiting": "Waiting for triage",
+    "waitingCount_one": "{{count}} waiting for triage",
+    "waitingCount_other": "{{count}} waiting for triage",
+    "longest_one": "Longest wait {{count}} min",
+    "longest_other": "Longest wait {{count}} min",
+    "words": "In their words",
+    "noWords": "Nothing written at check-in.",
+    "symptoms": "Symptoms",
+    "allergies": "Allergies",
+    "noAllergies": "None recorded. Ask the patient.",
+    "vitals": "Vitals",
+    "decision": "Send to the doctor",
+    "urgency": "How urgent?",
+    "urgencies": {
+      "normal": "Normal",
+      "priority": "Priority",
+      "emergency": "Emergency"
+    },
+    "urgencyHints": {
+      "normal": "Waits in turn.",
+      "priority": "Seen before the normal queue.",
+      "emergency": "Seen next. The doctor sees it first."
+    },
+    "why": "Why priority?",
+    "danger": "What is dangerous?",
+    "dangerHint": "For example: chest pain with sweating, SpO₂ 88%.",
+    "dangerRequired": "Say what makes it an emergency.",
+    "note": "Note for the doctor",
+    "noteHint": "Optional. What the doctor should know first.",
+    "noVitals": "Why no vitals?",
+    "noVitalsHint": "Take at least one vital sign, or say why you could not.",
+    "noVitalsRequired": "Record a vital sign above, or say why none could be taken.",
+    "send": "Send to the doctor",
+    "sent": "{{number}} is waiting for the doctor."
   },
   "loading": "Loading the queue…",
   "loadFailed": "The queue could not load. It retries by itself.",
@@ -37,6 +81,7 @@
   "stages": {
     "reception": "Reception",
     "payment": "Payment",
+    "triage": "Triage",
     "consultation": "Consultation",
     "pharmacy": "Pharmacy"
   },
@@ -91,6 +136,7 @@
     "return": "Back in the queue",
     "complete": "Completed",
     "next_stage": "Moved to the next stage",
+    "triage": "Triaged",
     "opened": "New ticket",
     "transfer": "Transferred",
     "cancel": "Cancelled",

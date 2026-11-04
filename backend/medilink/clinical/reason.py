@@ -101,7 +101,27 @@ def reason_for_visit(visit: Any, patient: Any) -> dict[str, Any]:
             "rules_version": rules.RULES_VERSION,
             "signed_off": rules.SIGNED_OFF,
         }
-    return {"patient_words": _patient_words(visit), "symptoms": symptoms, "triage": hint}
+    return {
+        "patient_words": _patient_words(visit),
+        "symptoms": symptoms,
+        "triage": hint,
+        "nurse_triage": _nurse_triage(visit),
+    }
+
+
+def _nurse_triage(visit: Any) -> dict[str, Any] | None:
+    """What the triage nurse decided (upgrade 06 §2): the doctor reads it before the history."""
+    if visit.triaged_at is None:
+        return None
+    from medilink.visits.services import triage_note
+
+    by = visit.triaged_by
+    return {
+        "urgency": visit.triage_urgency or "normal",
+        "note": triage_note(visit),
+        "by_name": by.full_name if by is not None else "",
+        "at": visit.triaged_at,
+    }
 
 
 # Adult thresholds for a red flag on screen (WHO/ETAT-style); the doctor decides, the flag only

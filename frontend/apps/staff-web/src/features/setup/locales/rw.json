@@ -424,7 +424,8 @@
         "ticket_reset": "Gutangira nimero za tike bundi bushya",
         "show_names_on_display": "Kwerekana amazina kuri televiziyo y'aho bategerereza",
         "call_repeat_seconds": "Gusubiramo guhamagara nyuma ya (amasegonda)",
-        "priority_elderly_age": "Kwihutishwa guhera ku myaka"
+        "priority_elderly_age": "Kwihutishwa guhera ku myaka",
+        "triage_enabled": "Abarwayi babanza kubonana n’umuforomo w’isuzuma ry’ibanze mbere ya muganga"
       },
       "booking": {
         "enabled": "Gufata gahunda kuri interineti",

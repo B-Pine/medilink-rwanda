@@ -81,6 +81,14 @@ export const ROLE_PERMISSIONS: Record<RoleCode, PermissionCode[]> = {
   pharmacist: ["disputes.comment", "pharmacy.dispense", "prescription.view", "reports.view_own"],
   // upgrade 06 §4: payments only
   cashier: ["billing.record_payment", "disputes.comment", "reports.view_own"],
+  // upgrade 06 §2 (#200): triage only, no diagnoses, notes or bills
+  triage_nurse: [
+    "disputes.comment",
+    "reports.view_own",
+    "triage.operate",
+    "visit.reason.view",
+    "vitals.record",
+  ],
 };
 
 /**
@@ -178,6 +186,15 @@ export const STAFF_USERS: MockStaffUser[] = [
     is_platform_admin: false,
     mfa_enabled: true,
     memberships: [{ facility: FACILITIES.kigaliClinic, roles: ["cashier"] }],
+  },
+  {
+    id: "7a1e0b2c-0000-4000-8000-000000000010",
+    email: "triage@medilink.test",
+    full_name: "Mukeshimana Odette",
+    preferred_language: "rw",
+    is_platform_admin: false,
+    mfa_enabled: true,
+    memberships: [{ facility: FACILITIES.kigaliClinic, roles: ["triage_nurse"] }],
   },
   {
     id: "7a1e0b2c-0000-4000-8000-000000000005",

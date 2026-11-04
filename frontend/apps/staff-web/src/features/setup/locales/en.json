@@ -424,7 +424,8 @@
         "ticket_reset": "Restart ticket numbers",
         "show_names_on_display": "Show names on the waiting-room screen",
         "call_repeat_seconds": "Repeat a call after (seconds)",
-        "priority_elderly_age": "Priority from age"
+        "priority_elderly_age": "Priority from age",
+        "triage_enabled": "Patients see a triage nurse before the doctor"
       },
       "booking": {
         "enabled": "Online booking",

@@ -6,7 +6,10 @@ import type { ApiClient } from "../client";
 import type { Uuid } from "../types";
 import type { SymptomInput } from "./booking";
 
-export type Stage = "reception" | "payment" | "consultation" | "pharmacy";
+/** `triage` (upgrade 06 §2, #200): optional, between check-in and the doctor. */
+export type Stage = "reception" | "payment" | "triage" | "consultation" | "pharmacy";
+/** The triage nurse's decision (#200); not the symptom checker's `TriageUrgency`. */
+export type NurseUrgency = "normal" | "priority" | "emergency";
 export type TicketState =
   | "waiting"
   | "called"
@@ -37,7 +40,9 @@ export type TicketAction =
   | "emergency"
   /** S5 (R4 #102): reception confirms a remote joiner is on site; `{version}`. */
   | "confirm-arrival"
-  | "reorder";
+  | "reorder"
+  /** #200: the triage nurse sets the urgency and sends the patient to the doctor. */
+  | "triage";
 
 export interface TicketRow {
   id: Uuid;
@@ -75,6 +80,8 @@ export interface TicketRow {
   /** upgrade 05 §2: the patient's own words at booking or check-in, and their symptoms. */
   reason_text: string;
   symptoms: string[];
+  /** #200: known allergies, on triage tickets only (empty elsewhere). */
+  allergies: string[];
   version: number;
 }
 
@@ -150,6 +157,14 @@ export interface TicketActionInput {
   before_ticket_id?: Uuid;
   /** When the action happened, for actions retried after a connection loss (FR-QUE-16). */
   client_occurred_at?: string;
+  /**
+   * `triage` (#200): the urgency (a priority needs `priority_class` and `reason_code`, an
+   * emergency a reason), a short note, and why no vitals were taken when none were (`422`
+   * otherwise).
+   */
+  urgency?: NurseUrgency;
+  note?: string;
+  no_vitals_reason?: string;
 }
 
 export interface TicketEventRow {
@@ -333,7 +348,9 @@ export function createQueueApi(client: ApiClient) {
         version: ticket.version,
       }),
     board: () => client.get<QueueBoard>(queuePaths.board),
-    mine: () => client.get<MyQueue>(queuePaths.mine),
+    /** The doctor's queue, or the triage nurse's with `"triage"` (#200). */
+    mine: (stage?: "triage") =>
+      client.get<MyQueue>(stage ? `${queuePaths.mine}?stage=${stage}` : queuePaths.mine),
     /** `null` when nobody is waiting (204). */
     callNext: (body: { service_id: Uuid; stage?: Stage; service_point_id?: Uuid | null }) =>
       client

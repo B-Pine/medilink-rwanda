@@ -37,6 +37,7 @@ import {
   Stethoscope,
   type Icon,
 } from "@phosphor-icons/react";
+import { formatTime } from "@medilink/ui/i18n";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -168,13 +169,14 @@ const URGENCY_TONE: Record<string, string> = {
 function ReasonSection({ c }: { c: Consultation }) {
   const { t } = useTranslation();
   const r = c.reason_for_visit;
-  const empty = !r.patient_words && r.symptoms.length === 0;
+  const empty = !r.patient_words && r.symptoms.length === 0 && !r.nurse_triage;
   return (
     <Section id="reason" title={t("clinical.reasonForVisit.title")}>
       {empty ? (
         <p className="m-0 text-fg-muted">{t("clinical.reasonForVisit.none")}</p>
       ) : (
         <div className="flex flex-col gap-4">
+          {r.nurse_triage && <NurseTriage triage={r.nurse_triage} />}
           {r.patient_words && (
             <blockquote className="m-0 border-s-4 border-primary/40 ps-4 text-h3 font-normal text-fg">
               “{r.patient_words}”
@@ -236,6 +238,44 @@ function ReasonSection({ c }: { c: Consultation }) {
         </div>
       )}
     </Section>
+  );
+}
+
+const NURSE_TONE: Record<string, string> = {
+  emergency: "border-danger bg-danger-bg",
+  priority: "border-attention bg-attention-bg",
+  normal: "border-border bg-subtle/60",
+};
+
+/** What the triage nurse decided (upgrade 06 §2, #200), read before the patient's words. */
+function NurseTriage({
+  triage,
+}: {
+  triage: NonNullable<Consultation["reason_for_visit"]["nurse_triage"]>;
+}) {
+  const { t, i18n } = useTranslation();
+  return (
+    <div
+      className={cx(
+        "flex flex-col gap-1 rounded-xl border-s-4 px-4 py-3",
+        NURSE_TONE[triage.urgency],
+      )}
+    >
+      <p className="m-0 flex flex-wrap items-baseline gap-x-2 text-body-sm">
+        <span className="font-semibold text-fg">
+          {t("clinical.reasonForVisit.nurse", {
+            urgency: t(`clinical.reasonForVisit.nurseUrgency.${triage.urgency}`),
+          })}
+        </span>
+        <span className="text-fg-secondary">
+          {t("clinical.reasonForVisit.nurseBy", {
+            name: triage.by_name,
+            time: formatTime(triage.at, i18n.resolvedLanguage ?? "rw"),
+          })}
+        </span>
+      </p>
+      {triage.note && <p className="m-0 whitespace-pre-line text-fg">{triage.note}</p>}
+    </div>
   );
 }
 

@@ -274,6 +274,13 @@
     "results_other": "{{count}} résultats externes à examiner"
   },
   "reasonForVisit": {
+    "nurse": "Triage : {{urgency}}",
+    "nurseBy": "par {{name}} à {{time}}",
+    "nurseUrgency": {
+      "normal": "normale",
+      "priority": "prioritaire",
+      "emergency": "urgence"
+    },
     "title": "Motif de la visite",
     "short": "Motif",
     "none": "Aucun motif saisi à la réservation ou à l’accueil. Demandez au patient.",

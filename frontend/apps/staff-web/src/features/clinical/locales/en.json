@@ -274,6 +274,13 @@
     "results_other": "{{count}} outside results to review"
   },
   "reasonForVisit": {
+    "nurse": "Triage: {{urgency}}",
+    "nurseBy": "by {{name}} at {{time}}",
+    "nurseUrgency": {
+      "normal": "normal",
+      "priority": "priority",
+      "emergency": "emergency"
+    },
     "title": "Why the patient came",
     "short": "Reason",
     "none": "No reason was recorded at booking or check-in. Ask the patient.",

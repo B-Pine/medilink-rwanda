@@ -274,6 +274,13 @@
     "results_other": "Ibisubizo {{count}} byo hanze byo gusuzuma"
   },
   "reasonForVisit": {
+    "nurse": "Isuzuma ry’ibanze: {{urgency}}",
+    "nurseBy": "na {{name}} saa {{time}}",
+    "nurseUrgency": {
+      "normal": "bisanzwe",
+      "priority": "yihutishwa",
+      "emergency": "byihutirwa"
+    },
     "title": "Icyazanye umurwayi",
     "short": "Impamvu",
     "none": "Nta mpamvu yanditswe igihe cyo gufata gahunda cyangwa kwakirwa. Baza umurwayi.",

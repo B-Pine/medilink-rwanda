@@ -7,6 +7,7 @@ import { QueueHeaderLive } from "./LiveIndicator";
 import { OperationsTodayCard } from "./Operations";
 import { ReceptionTodayCard } from "./ReceptionToday";
 import { OnSiteTodayCard } from "./TodayCard";
+import { TriageTodayCard } from "./TriageToday";
 
 const lazy =
   <K extends string>(load: () => Promise<Record<K, ComponentType>>, name: K) =>
@@ -20,6 +21,8 @@ export const queueFeature: FeatureRoutes = {
   shell: [
     { path: "/queue", lazy: lazy(() => import("./QueuePage"), "QueuePage") },
     { path: "/queue/mine", lazy: lazy(() => import("./MyQueuePage"), "MyQueuePage") },
+    // upgrade 06 §2 (#200): the triage nurse's station
+    { path: "/triage", lazy: lazy(() => import("./TriagePage"), "TriagePage") },
     // upgrade 08 §3: thermal prints for patients without a phone
     {
       path: "/queue/visits/:visitId/slip",
@@ -34,7 +37,7 @@ export const queueFeature: FeatureRoutes = {
     { path: "/settings/displays", lazy: lazy(admin, "DisplaysPage") },
   ],
   headerItems: [QueueHeaderLive],
-  todayCards: [OperationsTodayCard, ReceptionTodayCard, OnSiteTodayCard],
+  todayCards: [OperationsTodayCard, ReceptionTodayCard, OnSiteTodayCard, TriageTodayCard],
   commands: [
     {
       actions: (me, t) =>

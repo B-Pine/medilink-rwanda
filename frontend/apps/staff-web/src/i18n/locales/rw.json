@@ -112,7 +112,8 @@
       "receptionist": "Ushinzwe kwakira abarwayi",
       "doctor": "Muganga",
       "pharmacist": "Umufarumasiye",
-      "cashier": "Ushinzwe kwishyuza"
+      "cashier": "Ushinzwe kwishyuza",
+      "triage_nurse": "Umuforomo w’isuzuma ry’ibanze"
     }
   },
   "shell": {

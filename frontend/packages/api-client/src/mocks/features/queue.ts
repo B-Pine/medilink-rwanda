@@ -92,6 +92,7 @@ function seed() {
       remote_arrival_confirmed_at: null,
       reason_text: "",
       symptoms: [],
+      allergies: [],
       version: 1,
       started_at: null,
       facility_id: FACILITIES.kigaliClinic.id,
@@ -141,6 +142,18 @@ function seed() {
       remote_arrival_claimed_at: minutesAgo(2),
     }),
     make(SETUP_IDS.sGen, "Mugabo Jean", 52, "male", 4, { is_remote: true }),
+    // #200: two patients waiting for the triage nurse (Mukeshimana Odette, triage@medilink.test)
+    make(SETUP_IDS.sGen, "Mukandayisenga Rose", 58, "female", 14, {
+      stage: "triage",
+      reason_text: "Headache and dizziness since yesterday.",
+      symptoms: ["Headache", "Dizziness"],
+      allergies: ["Penicillin"],
+    }),
+    make(SETUP_IDS.sGen, "Niyonzima Didier", 4, "male", 9, {
+      stage: "triage",
+      reason_text: "Fever and vomiting since last night.",
+      symptoms: ["Fever", "Vomiting"],
+    }),
   ];
   const duty: DutyRow[] = [
     {
@@ -183,6 +196,15 @@ function seed() {
     travel: new Map<string, number>(),
   };
 }
+
+/** Who serves each stage (as `STAGE_PERMISSION` in the API). */
+const STAGE_PERMISSION: Record<Stage, string> = {
+  reception: "queue.operate",
+  payment: "queue.operate",
+  triage: "triage.operate",
+  consultation: "queue.call",
+  pharmacy: "pharmacy.dispense",
+};
 
 const ORDER = (a: MockTicket, b: MockTicket) =>
   a.priority_rank - b.priority_rank || a.arrival_at.localeCompare(b.arrival_at);
@@ -460,12 +482,24 @@ export const queueMocks: FeatureMockFactory = (context) => {
       }),
       http.get(`${api}/staff/queue/board/`, async ({ request }) => {
         await context.settle();
-        const ok = staff(request, ["queue.operate", "queue.call", "pharmacy.dispense"]);
+        const ok = staff(request, [
+          "queue.operate",
+          "queue.call",
+          "pharmacy.dispense",
+          "triage.operate",
+        ]);
         if ("error" in ok) return ok.error;
+        // A triage nurse sees the triage queues only (upgrade 06 §2)
+        const nurseOnly = !["queue.operate", "queue.call", "pharmacy.dispense"].some((c) =>
+          ok.granted.includes(c),
+        );
         const keys = [
           ...new Set(
             db.tickets
-              .filter((t) => atKigali(t) && ACTIVE.includes(t.state))
+              .filter(
+                (t) =>
+                  atKigali(t) && ACTIVE.includes(t.state) && (!nurseOnly || t.stage === "triage"),
+              )
               .map((t) => `${t.service_id}|${t.stage}`),
           ),
         ];
@@ -489,16 +523,29 @@ export const queueMocks: FeatureMockFactory = (context) => {
       }),
       http.get(`${api}/staff/queue/mine/`, async ({ request }) => {
         await context.settle();
-        const ok = staff(request, ["queue.call"]);
+        const stage = new URL(request.url).searchParams.get("stage") === "triage" ? "triage" : null;
+        const ok = staff(request, [stage ? "triage.operate" : "queue.call"]);
         if ("error" in ok) return ok.error;
         const me = MEMBERSHIP_BY_EMAIL[ok.me.email] ?? "unknown";
         const current = db.tickets.find(
           (t) =>
             t.assigned_membership_id === me && (t.state === "called" || t.state === "in_service"),
         );
-        const list = waiting(SETUP_IDS.sGen).filter(
-          (t) => !t.assigned_membership_id || t.assigned_membership_id === me,
-        );
+        // #200: the triage nurse triages for every service
+        const list = (
+          stage
+            ? [...waiting(SETUP_IDS.sGen, "triage"), ...waiting(SETUP_IDS.sPed, "triage")].sort(
+                ORDER,
+              )
+            : waiting(SETUP_IDS.sGen)
+        ).filter((t) => !t.assigned_membership_id || t.assigned_membership_id === me);
+        if (stage)
+          return HttpResponse.json({
+            current: current ? row(current) : null,
+            waiting: list.map(row),
+            duty: null,
+            service_ids: [SETUP_IDS.sGen, SETUP_IDS.sPed],
+          });
         return HttpResponse.json({
           current: current ? row(current) : null,
           waiting: list.map(row),
@@ -508,12 +555,21 @@ export const queueMocks: FeatureMockFactory = (context) => {
       }),
       http.post(`${api}/staff/queue/call-next/`, async ({ request }) => {
         await context.settle();
-        const ok = staff(request, ["queue.call", "queue.operate", "pharmacy.dispense"]);
+        const ok = staff(request, [
+          "queue.call",
+          "queue.operate",
+          "pharmacy.dispense",
+          "triage.operate",
+        ]);
         if ("error" in ok) return ok.error;
         const body = (await context.readJson(request)) ?? {};
+        const stage = (str(body.stage) || "consultation") as Stage;
+        if (!ok.granted.includes(STAGE_PERMISSION[stage]))
+          return context.errorResponse(403, "permission_denied", s1("permissionDenied", ok.lang));
         const me = MEMBERSHIP_BY_EMAIL[ok.me.email] ?? "unknown";
         const duty = db.duty.find((d) => d.membership_id === me);
-        if (!duty || duty.state !== "on_duty")
+        // Only the doctor's room needs an on-duty status (as the API)
+        if (stage === "consultation" && (!duty || duty.state !== "on_duty"))
           return context.errorResponse(
             422,
             "business_rule_violation",
@@ -530,15 +586,14 @@ export const queueMocks: FeatureMockFactory = (context) => {
             "conflict",
             "Finish or release your current patient first.",
           );
-        const next = waiting(
-          str(body.service_id),
-          (str(body.stage) || "consultation") as Stage,
-        ).find((t) => !t.assigned_membership_id || t.assigned_membership_id === me);
+        const next = waiting(str(body.service_id), stage).find(
+          (t) => !t.assigned_membership_id || t.assigned_membership_id === me,
+        );
         if (!next) return new HttpResponse(null, { status: 204 });
         next.state = "called";
         next.called_at = now();
         next.assigned_membership_id = me;
-        next.service_point = duty.service_point;
+        next.service_point = stage === "triage" ? "Triage" : (duty?.service_point ?? null);
         next.version += 1;
         event(next, "call", "waiting", ok.me.full_name);
         return HttpResponse.json(row(next));
@@ -556,9 +611,13 @@ export const queueMocks: FeatureMockFactory = (context) => {
           "reorder",
           "confirm-arrival",
         ].includes(action);
-        const ok = staff(request, operate ? ["queue.operate"] : ["queue.call"]);
+        const target = db.tickets.find((x) => x.id === params.ticketId);
+        const ok = staff(
+          request,
+          operate ? ["queue.operate"] : [STAGE_PERMISSION[target?.stage ?? "consultation"]],
+        );
         if ("error" in ok) return ok.error;
-        const t = db.tickets.find((x) => x.id === params.ticketId);
+        const t = target;
         if (!t) return notFound(ok.lang);
         const body = (await context.readJson(request)) ?? {};
         if (Number(body.version) !== t.version) return stale(ok.lang);
@@ -615,6 +674,44 @@ export const queueMocks: FeatureMockFactory = (context) => {
             db.tickets.push(next);
             t.version += 1;
             event(t, "next_stage", before, ok.me.full_name);
+            return HttpResponse.json(row(next));
+          }
+          case "triage": {
+            // #200: the nurse sets the urgency and sends the patient to the doctor
+            if (!need("in_service") || t.stage !== "triage") return rule(context, ok.lang);
+            const urgency = str(body.urgency);
+            const why = { reason_code: ["Give a reason."] };
+            if (!["normal", "priority", "emergency"].includes(urgency))
+              return fieldError(context, ok.lang, { urgency: "Choose how urgent it is." });
+            if (urgency === "emergency" && !reason && !str(body.reason_text ?? "").trim())
+              return context.errorResponse(422, "business_rule_violation", "Give a reason.", {
+                fields: why,
+              });
+            if (urgency === "priority" && (!body.priority_class || !reason))
+              return context.errorResponse(422, "business_rule_violation", "Give a reason.", {
+                fields: why,
+              });
+            set("moved_to_next_stage");
+            const flags = t.flags.filter((f) => f !== "emergency" && !f.startsWith("priority:"));
+            if (urgency === "emergency") flags.unshift("emergency");
+            if (urgency === "priority") flags.push(`priority:${str(body.priority_class)}`);
+            const next: MockTicket = {
+              ...t,
+              id: id(),
+              state: "waiting",
+              stage: "consultation",
+              flags,
+              allergies: [],
+              priority_rank:
+                urgency === "emergency" ? 0 : urgency === "priority" ? 2 : t.priority_rank,
+              version: 1,
+              assigned_membership_id: null,
+              called_at: null,
+              service_point: null,
+            };
+            db.tickets.push(next);
+            t.version += 1;
+            event(t, "triage", before, ok.me.full_name, reason, { urgency });
             return HttpResponse.json(row(next));
           }
           case "transfer": {
@@ -770,6 +867,7 @@ export const queueMocks: FeatureMockFactory = (context) => {
           remote_arrival_confirmed_at: null,
           reason_text: "",
           symptoms: [],
+          allergies: [],
           version: 1,
           started_at: null,
           facility_id: FACILITIES.kigaliClinic.id,
@@ -1026,6 +1124,7 @@ export const queueMocks: FeatureMockFactory = (context) => {
           remote_arrival_confirmed_at: null,
           reason_text: "",
           symptoms: [],
+          allergies: [],
           version: 1,
           started_at: null,
           facility_id: service.facility_id,

@@ -1,6 +1,50 @@
 {
   "nav": {
-    "reorders": "Contrôle de la file"
+    "reorders": "Contrôle de la file",
+    "triage": "Triage"
+  },
+  "triage": {
+    "title": "Triage",
+    "lead": "Prenez les constantes, décidez du degré d’urgence et envoyez le patient au médecin.",
+    "open": "Ouvrir le triage",
+    "current": "Patient avec vous",
+    "start": "Commencer le triage",
+    "inTriage": "Au triage",
+    "nobody": "Personne n’attend le triage.",
+    "waiting": "En attente du triage",
+    "waitingCount_one": "{{count}} en attente du triage",
+    "waitingCount_other": "{{count}} en attente du triage",
+    "longest_one": "Attente la plus longue {{count}} min",
+    "longest_other": "Attente la plus longue {{count}} min",
+    "words": "Avec ses mots",
+    "noWords": "Rien d’écrit à l’accueil.",
+    "symptoms": "Symptômes",
+    "allergies": "Allergies",
+    "noAllergies": "Aucune enregistrée. Demandez au patient.",
+    "vitals": "Constantes",
+    "decision": "Envoyer au médecin",
+    "urgency": "Quelle urgence ?",
+    "urgencies": {
+      "normal": "Normale",
+      "priority": "Prioritaire",
+      "emergency": "Urgence"
+    },
+    "urgencyHints": {
+      "normal": "Attend son tour.",
+      "priority": "Vu avant la file normale.",
+      "emergency": "Vu ensuite. Le médecin le voit en premier."
+    },
+    "why": "Pourquoi prioritaire ?",
+    "danger": "Qu’est-ce qui est dangereux ?",
+    "dangerHint": "Par exemple : douleur thoracique avec sueurs, SpO₂ 88 %.",
+    "dangerRequired": "Dites ce qui en fait une urgence.",
+    "note": "Note pour le médecin",
+    "noteHint": "Facultatif. Ce que le médecin doit savoir d’abord.",
+    "noVitals": "Pourquoi pas de constantes ?",
+    "noVitalsHint": "Prenez au moins une constante, ou dites pourquoi c’était impossible.",
+    "noVitalsRequired": "Enregistrez une constante ci-dessus, ou dites pourquoi aucune n’a pu être prise.",
+    "send": "Envoyer au médecin",
+    "sent": "{{number}} attend le médecin."
   },
   "loading": "Chargement de la file…",
   "loadFailed": "La file n’a pas pu se charger. Nouvel essai automatique.",
@@ -37,6 +81,7 @@
   "stages": {
     "reception": "Accueil",
     "payment": "Paiement",
+    "triage": "Triage",
     "consultation": "Consultation",
     "pharmacy": "Pharmacie"
   },
@@ -91,6 +136,7 @@
     "return": "De retour dans la file",
     "complete": "Terminé",
     "next_stage": "Étape suivante",
+    "triage": "Trié",
     "opened": "Nouveau ticket",
     "transfer": "Transféré",
     "cancel": "Annulé",

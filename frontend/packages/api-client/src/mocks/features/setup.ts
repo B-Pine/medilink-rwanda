@@ -158,6 +158,7 @@ export const SETUP_IDS = {
   mReception: "60000000-0000-4000-8000-000000000002",
   mKeza: "60000000-0000-4000-8000-000000000003",
   mPaul: "60000000-0000-4000-8000-000000000004",
+  mNurse: "60000000-0000-4000-8000-000000000005",
 };
 
 /** Membership of a signed-in mock user at Kigali Clinic. */
@@ -165,6 +166,7 @@ export const MEMBERSHIP_BY_EMAIL: Record<string, string> = {
   [MOCK_FACILITY_ADMIN_EMAIL]: SETUP_IDS.mAdmin,
   "reception@medilink.test": SETUP_IDS.mReception,
   "doctor@medilink.test": SETUP_IDS.mKeza,
+  "triage@medilink.test": SETUP_IDS.mNurse,
 };
 
 function seed() {

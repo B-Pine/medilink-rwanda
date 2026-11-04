@@ -11,7 +11,7 @@ from __future__ import annotations
 from typing import Any
 
 from django.contrib.postgres.search import TrigramSimilarity
-from django.db.models import Exists, OuterRef, Prefetch, Q, QuerySet
+from django.db.models import Exists, F, OuterRef, Prefetch, Q, QuerySet
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import exceptions, serializers, status
@@ -30,26 +30,29 @@ from medilink.patients.audit import record_patient_event
 from medilink.patients.normalize import age_years
 from medilink.pharmacy import labels as labels_module
 from medilink.pharmacy import serializers as s
-from medilink.pharmacy import services
+from medilink.pharmacy import services, stock
 from medilink.pharmacy.models import (
     DispenseRecord,
     DrugAvailability,
     ItemStatus,
+    MovementKind,
     Prescription,
     PrescriptionItem,
     PrescriptionQuery,
     PrescriptionStatus,
     QueryStatus,
+    StockBatch,
 )
 from medilink.tenancy.models import Facility
 
 TAGS = ["pharmacy"]
-CLINICAL_VIEW, ISSUE, RX_VIEW, DISPENSE, AVAILABILITY = (
+CLINICAL_VIEW, ISSUE, RX_VIEW, DISPENSE, AVAILABILITY, STOCK = (
     "clinical.view",
     "prescription.issue",
     "prescription.view",
     "pharmacy.dispense",
     "pharmacy.availability",
+    "pharmacy.stock",
 )
 REASON_REQUIRED = err("access_reason_required: give a reason for this patient first")
 STALE = err("Stale version: reload and try again")
@@ -64,7 +67,9 @@ def _member_name(membership: Any) -> str:
     return str(membership.user.full_name) if membership is not None else ""
 
 
-def item_data(item: PrescriptionItem, unavailable: set[str]) -> dict[str, Any]:
+def item_data(
+    item: PrescriptionItem, unavailable: set[str], levels: dict[str, str] | None = None
+) -> dict[str, Any]:
     return {
         "id": item.pk,
         "drug_code": item.drug_code,
@@ -75,6 +80,7 @@ def item_data(item: PrescriptionItem, unavailable: set[str]) -> dict[str, Any]:
         "is_off_catalogue": item.is_off_catalogue,
         "is_controlled": item.is_controlled,
         "available_here": not item.drug_code or item.drug_code not in unavailable,
+        "stock_level": (levels or {}).get(item.drug_code),
         "dose": item.dose,
         "frequency_code": item.frequency_code,
         "route": item.route,
@@ -148,9 +154,9 @@ def load(prescription_id: Any) -> Prescription:
 
 def prescription_data(p: Prescription) -> dict[str, Any]:
     items = list(p.items.all())
-    unavailable = services.unavailable_codes(
-        p.facility_id, [i.drug_code for i in items if i.drug_code]
-    )
+    codes = [i.drug_code for i in items if i.drug_code]
+    unavailable = services.unavailable_codes(p.facility_id, codes)
+    levels = stock.levels(p.facility_id, codes)
     return {
         "id": p.pk,
         "consultation_id": p.consultation_id,
@@ -164,7 +170,7 @@ def prescription_data(p: Prescription) -> dict[str, Any]:
         "expires_at": p.expires_at,
         "cancelled_reason": p.cancelled_reason,
         "version": p.version,
-        "items": [item_data(i, unavailable) for i in items],
+        "items": [item_data(i, unavailable, levels) for i in items],
         "alerts": services.alerts_for(p),
         "dispense_records": [record_data(r) for r in p.dispense_records.all()],
         "queries": [query_data(q) for q in p.queries.all()],
@@ -515,6 +521,8 @@ class PharmacyDaySerializer(serializers.Serializer):
     not_available_today = serializers.IntegerField()
     substituted_today = serializers.IntegerField()
     out_of_stock = serializers.IntegerField()
+    low_stock = serializers.IntegerField(help_text="W5: medicines below their low-stock threshold")
+    expiring_soon = serializers.IntegerField(help_text="W5: batches expiring within 60 days")
     updated_at = serializers.DateTimeField()
 
 
@@ -746,29 +754,35 @@ class AvailabilityListView(PharmacyView):
         drugs = (
             _drug_search(q) if q else Drug.objects.filter(is_active=True).order_by("generic_name")
         )
-        rows = {
-            r.drug_id: r for r in DrugAvailability.objects.filter(facility_id=self.facility_id())
-        }
+        facility_id = self.facility_id()
+        rows = {r.drug_id: r for r in DrugAvailability.objects.filter(facility_id=facility_id)}
+        off = services.unavailable_codes(facility_id)
         available = request.query_params.get("available")
         if available in ("true", "false"):
-            off = [pk for pk, r in rows.items() if not r.is_available]
-            drugs = drugs.exclude(pk__in=off) if available == "true" else drugs.filter(pk__in=off)
+            drugs = (
+                drugs.exclude(code__in=off) if available == "true" else drugs.filter(code__in=off)
+            )
         paginator = DefaultPagination()
         page = list(paginator.paginate_queryset(drugs, request, view=self) or [])
-        data = []
-        for drug in page:
-            row = rows.get(drug.pk)
-            data.append(
-                s.AvailabilityRowSerializer(
-                    {
-                        "drug_code": drug.code,
-                        "display": drug_display(drug),
-                        "is_available": row.is_available if row else True,
-                        "updated_at": row.updated_at if row else None,
-                    }
-                ).data
-            )
+        levels = stock.levels(facility_id, [d.code for d in page])
+        data = [
+            s.AvailabilityRowSerializer(availability_row(drug, rows.get(drug.pk), off, levels)).data
+            for drug in page
+        ]
         return paginator.get_paginated_response(data)
+
+
+def availability_row(
+    drug: Drug, row: DrugAvailability | None, off: set[str], levels: dict[str, str]
+) -> dict[str, Any]:
+    return {
+        "drug_code": drug.code,
+        "display": drug_display(drug),
+        "is_available": drug.code not in off,
+        "updated_at": row.updated_at if row else None,
+        "follows_stock": drug.code in levels,
+        "stock_level": levels.get(drug.code),
+    }
 
 
 class AvailabilityView(PharmacyView):
@@ -778,7 +792,10 @@ class AvailabilityView(PharmacyView):
         operation_id="staff_pharmacy_availability_set",
         tags=TAGS,
         request=s.AvailabilityWriteSerializer,
-        responses={200: s.AvailabilityRowSerializer},
+        responses={
+            200: s.AvailabilityRowSerializer,
+            422: err("The medicine follows its stock count (W5): receive or adjust instead"),
+        },
         summary="Mark a catalogue drug available or not here (PA2)",
     )
     def put(self, request: Request, drug_code: str) -> Response:
@@ -794,20 +811,12 @@ class AvailabilityView(PharmacyView):
             membership=self.membership(),
             request=request,
         )
-        return Response(
-            s.AvailabilityRowSerializer(
-                {
-                    "drug_code": drug.code,
-                    "display": drug_display(drug),
-                    "is_available": row.is_available,
-                    "updated_at": row.updated_at,
-                }
-            ).data
-        )
+        off = services.unavailable_codes(self.facility_id(), [drug.code])
+        return Response(s.AvailabilityRowSerializer(availability_row(drug, row, off, {})).data)
 
 
 class DrugSearchView(PharmacyView):
-    permission_classes = [Needs(ISSUE, DISPENSE)]
+    permission_classes = [Needs(ISSUE, DISPENSE, STOCK)]
 
     @extend_schema(
         operation_id="staff_drug_search",
@@ -821,7 +830,9 @@ class DrugSearchView(PharmacyView):
         if len(q) < 2:
             raise exceptions.ValidationError({"q": ["Type at least 2 characters."]})
         drugs = list(_drug_search(q)[:SEARCH_LIMIT])
-        unavailable = services.unavailable_codes(self.facility_id(), [d.code for d in drugs])
+        codes = [d.code for d in drugs]
+        unavailable = services.unavailable_codes(self.facility_id(), codes)
+        levels = stock.levels(self.facility_id(), codes)
         data = [
             {
                 "code": d.code,
@@ -831,7 +842,211 @@ class DrugSearchView(PharmacyView):
                 "form": d.form,
                 "is_controlled": d.is_controlled,
                 "available_here": d.code not in unavailable,
+                # W5: doctors see "low stock here" as well as "not in stock here"
+                "stock_level": levels.get(d.code),
             }
             for d in drugs
         ]
         return Response(s.DrugRowSerializer(data, many=True).data)
+
+
+# ---- W5 stock ---------------------------------------------------------------------------------
+
+MOVEMENTS_SHOWN = 50
+
+
+class StockView(PharmacyView):
+    def drug(self, drug_code: str) -> Drug:
+        drug = Drug.objects.filter(code=drug_code, is_active=True).first()
+        if drug is None:
+            raise exceptions.NotFound()
+        return drug
+
+    def detail(self, drug: Drug, code: int = status.HTTP_200_OK) -> Response:
+        card = stock.cards(self.facility_id()).filter(drug=drug).first()
+        if card is None:
+            raise exceptions.NotFound()
+        batches = StockBatch.objects.filter(stock_item=card).select_related("stock_item__drug")
+        moves = stock.movements(self.facility_id()).filter(stock_item=card)[:MOVEMENTS_SHOWN]
+        data = {
+            **stock.card_data(card),
+            "batches": [stock.batch_data(b) for b in batches if b.quantity_on_hand > 0],
+            "movements": [stock.movement_data(m) for m in moves],
+        }
+        return Response(s.StockDetailSerializer(data).data, status=code)
+
+
+class StockListView(StockView):
+    permission_classes = [Needs(DISPENSE, STOCK)]
+
+    @extend_schema(
+        operation_id="staff_pharmacy_stock",
+        tags=TAGS,
+        parameters=[
+            OpenApiParameter("q", str, description="Medicine name or code"),
+            OpenApiParameter("level", str, enum=["low", "out", "short"]),
+            OpenApiParameter("page", int),
+            OpenApiParameter("page_size", int),
+        ],
+        responses={200: _paginated("PaginatedStockCardList", s.StockCardSerializer)},
+        summary="Medicines with stock here: units, level and next expiry (W5)",
+    )
+    def get(self, request: Request) -> Response:
+        rows = stock.cards(self.facility_id())
+        q = request.query_params.get("q", "").strip()[:60]
+        if q:
+            rows = rows.filter(Q(drug__generic_name__icontains=q) | Q(drug__code__icontains=q))
+        wanted = request.query_params.get("level", "")
+        if wanted in ("low", "out", "short"):
+            out = Q(on_hand__lte=0)
+            low = Q(on_hand__gt=0, on_hand__lt=F("low_stock_threshold"))
+            rows = rows.filter({"low": low, "out": out, "short": low | out}[wanted])
+        rows = rows.order_by("drug__generic_name", "drug__strength")
+        paginator = DefaultPagination()
+        page: list[Any] = list(paginator.paginate_queryset(rows, request, view=self) or [])
+        data = [s.StockCardSerializer(stock.card_data(card)).data for card in page]
+        return paginator.get_paginated_response(data)
+
+
+class StockReceiveView(StockView):
+    permission_classes = [Needs(STOCK)]
+
+    @extend_schema(
+        operation_id="staff_pharmacy_stock_receive",
+        tags=TAGS,
+        request=s.StockReceiveSerializer,
+        responses={
+            201: s.StockDetailSerializer,
+            404: err("Unknown medicine"),
+            422: err("Batch already expired, or quantity out of range"),
+        },
+        summary="Receive a batch: number, expiry, units, optional supplier (W5)",
+    )
+    def post(self, request: Request) -> Response:
+        body = s.StockReceiveSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        data = body.validated_data
+        drug = self.drug(data["drug_code"])
+        stock.receive(
+            self.facility_id(),
+            drug,
+            stock.Receipt(
+                batch_number=data["batch_number"],
+                expiry_date=data["expiry_date"],
+                quantity=data["quantity"],
+                supplier=data.get("supplier") or "",
+                low_stock_threshold=data.get("low_stock_threshold"),
+            ),
+            membership=self.membership(),
+            request=request,
+        )
+        return self.detail(drug, status.HTTP_201_CREATED)
+
+
+class StockDetailView(StockView):
+    permission_classes = [Needs(DISPENSE, STOCK, methods={"PUT": (STOCK,)})]
+
+    @extend_schema(
+        operation_id="staff_pharmacy_stock_detail",
+        tags=TAGS,
+        responses={200: s.StockDetailSerializer, 404: err("No stock card for this medicine")},
+        summary="A medicine's stock: batches on the shelf and the last 50 movements (W5)",
+    )
+    def get(self, request: Request, drug_code: str) -> Response:
+        return self.detail(self.drug(drug_code))
+
+    @extend_schema(
+        operation_id="staff_pharmacy_stock_threshold",
+        tags=TAGS,
+        request=s.StockThresholdSerializer,
+        responses={200: s.StockDetailSerializer, 404: err("No stock card for this medicine")},
+        summary="Set the low-stock threshold of a medicine (W5)",
+    )
+    def put(self, request: Request, drug_code: str) -> Response:
+        drug = self.drug(drug_code)
+        body = s.StockThresholdSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        card = stock.set_threshold(
+            self.facility_id(),
+            drug,
+            threshold=body.validated_data["low_stock_threshold"],
+            request=request,
+        )
+        if card is None:
+            raise exceptions.NotFound()
+        return self.detail(drug)
+
+
+class StockAdjustView(StockView):
+    permission_classes = [Needs(STOCK)]
+
+    @extend_schema(
+        operation_id="staff_pharmacy_stock_adjust",
+        tags=TAGS,
+        request=s.StockAdjustSerializer,
+        responses={
+            200: s.StockDetailSerializer,
+            422: err("Below zero, or damaged/expired stock added instead of removed"),
+        },
+        summary="Adjust a batch with a reason: count correction, damaged, expired (W5)",
+    )
+    def post(self, request: Request, batch_id: Any) -> Response:
+        batch = (
+            StockBatch.objects.filter(pk=batch_id, facility_id=self.facility_id())
+            .select_related("stock_item__drug")
+            .first()
+        )
+        if batch is None:
+            raise exceptions.NotFound()
+        body = s.StockAdjustSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        stock.adjust(
+            batch.pk,
+            quantity_change=body.validated_data["quantity_change"],
+            reason=body.validated_data["reason"],
+            note=body.validated_data.get("note") or "",
+            membership=self.membership(),
+            request=request,
+        )
+        return self.detail(batch.stock_item.drug)
+
+
+class StockExpiringView(StockView):
+    permission_classes = [Needs(DISPENSE, STOCK)]
+
+    @extend_schema(
+        operation_id="staff_pharmacy_stock_expiring",
+        tags=TAGS,
+        parameters=[OpenApiParameter("days", int, enum=[30, 60, 90])],
+        responses={200: s.StockBatchSerializer(many=True)},
+        summary="Batches with units left expiring soon (default 60 days), expired first (W5)",
+    )
+    def get(self, request: Request) -> Response:
+        days = {"30": 30, "90": 90}.get(request.query_params.get("days", ""), stock.EXPIRING_DAYS)
+        rows = stock.expiring(self.facility_id(), days)[:200]
+        return Response(s.StockBatchSerializer([stock.batch_data(b) for b in rows], many=True).data)
+
+
+class StockMovementsView(StockView):
+    permission_classes = [Needs(DISPENSE, STOCK)]
+
+    @extend_schema(
+        operation_id="staff_pharmacy_stock_movements",
+        tags=TAGS,
+        parameters=[
+            OpenApiParameter("kind", str, enum=MovementKind.values),
+            OpenApiParameter("page", int),
+            OpenApiParameter("page_size", int),
+        ],
+        responses={200: _paginated("PaginatedStockMovementList", s.StockMovementSerializer)},
+        summary="Stock movements at my facility, newest first (W5)",
+    )
+    def get(self, request: Request) -> Response:
+        rows = stock.movements(self.facility_id())
+        kind = request.query_params.get("kind", "")
+        if kind in MovementKind.values:
+            rows = rows.filter(kind=kind)
+        paginator = DefaultPagination()
+        page: list[Any] = list(paginator.paginate_queryset(rows, request, view=self) or [])
+        data = [s.StockMovementSerializer(stock.movement_data(m)).data for m in page]
+        return paginator.get_paginated_response(data)

@@ -9,6 +9,23 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Pharmacy stock, lite (2026-11-04, #204)
+
+- Added: **Stock** for the pharmacist (`/pharmacy/stock`, menu item for `pharmacy.stock` or
+  `pharmacy.dispense`): every medicine with stock, its usable units, level (in stock, low, out)
+  and next expiry, with search; tabs for low or out, batches expiring within 60 days (expired
+  first) and all movements. **Receive stock** takes the medicine, batch number, expiry date,
+  units, an optional supplier and an optional low-stock threshold.
+- Added: one medicine's page (`/pharmacy/stock/:drugCode`): usable units, a warning for expired
+  units still on the shelf, the threshold, batches with **Adjust** (count correction by the number
+  counted, or damaged/expired by the units taken off, with a note) and the last movements.
+- Changed: doctors see "Low stock here" next to "Not in stock here" when they choose a medicine;
+  Medicine availability shows the stock level for medicines with stock and locks their switch;
+  Pharmacist Today adds "Low on stock" with the batches expiring soon.
+- Added: api-client `pharmacy.stock.*`, the stock types and `stock_level` on drug rows,
+  prescription items and availability rows; MSW mocks for every stock endpoint, with FEFO
+  deduction and the "only N left" refusal in the dispense mock.
+
 ### Public site: a richer, cleaner second pass (2026-11-04)
 
 - Added: public site tokens in `apps/patient-web/src/styles.css`: elevation `shadow-e1`–`e3`,

@@ -1,5 +1,5 @@
 import { hasPermission } from "@medilink/api-client";
-import { Pill, Storefront } from "@phosphor-icons/react";
+import { Package, Pill, Storefront } from "@phosphor-icons/react";
 import type { ComponentType } from "react";
 
 import type { FeatureRoutes } from "../../app/features";
@@ -36,6 +36,12 @@ export const pharmacyFeature: FeatureRoutes = {
       path: "/pharmacy/verify",
       lazy: lazy(() => import("./DeskPages"), "VerifyPrescriptionPage"),
     },
+    // W5 (upgrade 13 §3): stock, expiring soon, movements
+    { path: "/pharmacy/stock", lazy: lazy(() => import("./StockPage"), "StockPage") },
+    {
+      path: "/pharmacy/stock/:drugCode",
+      lazy: lazy(() => import("./StockPage"), "StockDetailPage"),
+    },
   ],
   todayCards: [PharmacistTodayCard],
   commands: [
@@ -51,6 +57,16 @@ export const pharmacyFeature: FeatureRoutes = {
                 label: t("pharmacy.nav.availability"),
                 icon: Storefront,
                 to: "/pharmacy/availability",
+              },
+            ]
+          : []),
+        ...(hasPermission(me, "pharmacy.stock") || hasPermission(me, "pharmacy.dispense")
+          ? [
+              {
+                id: "pharmacy:stock",
+                label: t("pharmacy.nav.stock"),
+                icon: Package,
+                to: "/pharmacy/stock",
               },
             ]
           : []),

@@ -25,6 +25,15 @@ import type { LanguageCode } from "../../types";
 import { extendMockRoleGrants } from "../data";
 import type { FeatureMockFactory } from "../features";
 import { MOCK_CLINICAL_FP, MOCK_PRESSURE_CONSULTATION, setConsultationSignHook } from "./clinical";
+import {
+  deductStock,
+  followsStockMessage,
+  notEnoughMessage,
+  seedStock,
+  stockHandlers,
+  stockLeft,
+  stockLevel,
+} from "./pharmacy-stock";
 import { SELF_PATIENT_ID } from "./patients-store";
 import { id, now, page, s1, stepUpFailure } from "./s1-common";
 
@@ -40,8 +49,8 @@ import { id, now, page, s1, stepUpFailure } from "./s1-common";
  * The patient (patient@medilink.test) has the ready prescription and a past, dispensed one.
  */
 extendMockRoleGrants({
-  pharmacist: ["pharmacy.availability"],
-  facility_admin: ["pharmacy.availability"],
+  pharmacist: ["pharmacy.availability", "pharmacy.stock"],
+  facility_admin: ["pharmacy.availability", "pharmacy.stock"],
 });
 
 export const MOCK_RX_READY = "8d000000-0000-4000-8000-000000000101";
@@ -52,7 +61,7 @@ const MOCK_RX_PRESSURE = "8d000000-0000-4000-8000-000000000106";
 const MOCK_QUERY_PRESSURE = "8d000000-0000-4000-8000-000000000206";
 export const MOCK_RX_PAST = "8d000000-0000-4000-8000-000000000105";
 
-interface MockDrug extends Omit<DrugRow, "available_here"> {
+interface MockDrug extends Omit<DrugRow, "available_here" | "stock_level"> {
   klass: string;
   max: number | null;
   route: DrugRoute;
@@ -183,6 +192,7 @@ function item(
     is_off_catalogue: false,
     is_controlled: d.is_controlled,
     available_here: true,
+    stock_level: null,
     dose,
     frequency_code: frequency,
     route: d.route,
@@ -229,7 +239,7 @@ function rx(
   };
 }
 
-function seed(): { prescriptions: MockRx[]; unavailable: Map<string, string> } {
+function seed() {
   const partly = item("AMOX500", "1 capsule", "tds", 7, {
     status: "partly_dispensed",
     dispensed_quantity: 10,
@@ -241,6 +251,7 @@ function seed(): { prescriptions: MockRx[]; unavailable: Map<string, string> } {
   });
   return {
     unavailable: new Map([["ARTE20", daysFromNow(-1)]]),
+    stock: seedStock(), // W5
     prescriptions: [
       rx(MOCK_RX_READY, 101, "Mukamana Jeanne", {
         facility_patient_id: MOCK_CLINICAL_FP,
@@ -383,7 +394,11 @@ export const pharmacyMocks: FeatureMockFactory = (context) => {
   const rule = (lang: LanguageCode, key: keyof typeof MESSAGES, code = "business_rule_violation") =>
     context.errorResponse(422, code, msg(key, lang));
   const stale = (lang: LanguageCode) => context.errorResponse(409, "conflict", msg("stale", lang));
-  const available = (code: string) => !db.unavailable.has(code);
+  // W5: a medicine with stock follows its count; the others keep the manual flag
+  const available = (code: string) => {
+    const level = stockLevel(db.stock, code);
+    return level === null ? !db.unavailable.has(code) : level !== "out";
+  };
 
   const alertsOf = (r: MockRx): PrescriptionAlert[] => {
     const alerts: PrescriptionAlert[] = [];
@@ -434,7 +449,11 @@ export const pharmacyMocks: FeatureMockFactory = (context) => {
     return {
       ...out,
       items: [...r.items]
-        .map((i) => ({ ...i, available_here: i.is_off_catalogue || available(i.drug_code) }))
+        .map((i) => ({
+          ...i,
+          available_here: i.is_off_catalogue || available(i.drug_code),
+          stock_level: i.is_off_catalogue ? null : stockLevel(db.stock, i.drug_code),
+        }))
         .sort((a, b) => ITEM_ORDER[a.status] - ITEM_ORDER[b.status]),
       alerts: alertsOf(r),
     };
@@ -667,7 +686,12 @@ export const pharmacyMocks: FeatureMockFactory = (context) => {
           dispensed_by_me: records.filter((d) => d.pharmacist_name === ok.me.full_name).length,
           not_available_today: lines.filter((l) => l.outcome === "not_available").length,
           substituted_today: lines.filter((l) => l.outcome === "substituted").length,
-          out_of_stock: db.unavailable.size,
+          out_of_stock: DRUGS.filter((d) => !available(d.code)).length,
+          low_stock: DRUGS.filter((d) => stockLevel(db.stock, d.code) === "low").length,
+          expiring_soon: [...db.stock.cards.values()]
+            .flatMap((c) => c.batches)
+            .filter((b) => b.quantity_on_hand > 0 && b.expiry_date <= daysFromNow(60).slice(0, 10))
+            .length,
           updated_at: now(),
         };
         return HttpResponse.json(body);
@@ -829,6 +853,31 @@ export const pharmacyMocks: FeatureMockFactory = (context) => {
         }
         if (planned.some((p) => p.i.is_controlled && p.qty > 0) && !body.controlled_confirmed)
           return rule(ok.lang, "controlled");
+        // W5: never below zero; the whole dispensing is refused when stock is short
+        const given = (p: (typeof planned)[number]) =>
+          p.line.outcome === "substituted" ? (p.line.substitute_drug_code ?? "") : p.i.drug_code;
+        const needs = new Map<string, number>();
+        for (const p of planned)
+          if (p.qty > 0) needs.set(given(p), (needs.get(given(p)) ?? 0) + p.qty);
+        for (const [code, qty] of needs) {
+          const left = stockLeft(db.stock, code);
+          if (left !== null && left < qty)
+            return context.errorResponse(
+              422,
+              "business_rule_violation",
+              notEnoughMessage(ok.lang, left, drug(code)?.display ?? code),
+            );
+        }
+        for (const p of planned)
+          if (p.qty > 0)
+            deductStock(
+              db.stock,
+              given(p),
+              drug(given(p))?.display ?? "",
+              p.qty,
+              ok.me.full_name,
+              r.id,
+            );
         r.dispense_records.push({
           id: id(),
           pharmacist_name: ok.me.full_name,
@@ -973,6 +1022,8 @@ export const pharmacyMocks: FeatureMockFactory = (context) => {
             display: d.display,
             is_available: available(d.code),
             updated_at: db.unavailable.get(d.code) ?? null,
+            follows_stock: stockLevel(db.stock, d.code) !== null,
+            stock_level: stockLevel(db.stock, d.code),
           }))
           .filter((row) => only === null || String(row.is_available) === only);
         return HttpResponse.json(page(rows, url));
@@ -984,6 +1035,12 @@ export const pharmacyMocks: FeatureMockFactory = (context) => {
         if ("error" in ok) return ok.error;
         const d = drug(String(params.code));
         if (!d) return notFound(ok.lang);
+        if (stockLevel(db.stock, d.code) !== null)
+          return context.errorResponse(
+            422,
+            "business_rule_violation",
+            followsStockMessage(ok.lang),
+          );
         const body = ((await context.readJson(request)) ?? {}) as { is_available?: boolean };
         if (body.is_available) db.unavailable.delete(d.code);
         else db.unavailable.set(d.code, now());
@@ -992,12 +1049,14 @@ export const pharmacyMocks: FeatureMockFactory = (context) => {
           display: d.display,
           is_available: available(d.code),
           updated_at: now(),
+          follows_stock: false,
+          stock_level: null,
         });
       }),
 
       http.get(`${S}/drugs/`, async ({ request }) => {
         await context.settle();
-        const ok = staff(request, ["prescription.issue", "pharmacy.dispense"]);
+        const ok = staff(request, ["prescription.issue", "pharmacy.dispense", "pharmacy.stock"]);
         if ("error" in ok) return ok.error;
         const q = (new URL(request.url).searchParams.get("q") ?? "").trim().toLowerCase();
         if (q.length < 2)
@@ -1009,8 +1068,22 @@ export const pharmacyMocks: FeatureMockFactory = (context) => {
           .map(({ klass: _k, max: _m, route: _r, ...d }) => ({
             ...d,
             available_here: available(d.code),
+            stock_level: stockLevel(db.stock, d.code),
           }));
         return HttpResponse.json(rows);
+      }),
+
+      // ---- W5: stock
+      ...stockHandlers({
+        S,
+        store: () => db.stock,
+        staff,
+        display: (code) => drug(code),
+        settle: () => context.settle(),
+        readJson: (request) => context.readJson(request),
+        errorResponse: (status, code, message) => context.errorResponse(status, code, message),
+        validationError: (lang, errors) => context.validationError(lang, errors),
+        notFound,
       }),
 
       // ---- M1, M2: My medicines

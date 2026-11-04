@@ -14,16 +14,17 @@ from django.db.models import Q
 from django.utils import timezone
 
 from medilink.patients.models import Patient
+from medilink.pharmacy import stock
 from medilink.pharmacy.models import (
     DispenseLine,
     DispenseOutcome,
     DispenseRecord,
-    DrugAvailability,
     Prescription,
     PrescriptionQuery,
     PrescriptionStatus,
     QueryStatus,
 )
+from medilink.pharmacy.services import unavailable_codes
 from medilink.visits.views import short_name
 
 
@@ -52,9 +53,8 @@ def my_day(facility_id: Any, membership_id: Any) -> dict[str, Any]:
         "dispensed_by_me": records.filter(pharmacist_membership_id=membership_id).count(),
         "not_available_today": lines.get(DispenseOutcome.NOT_AVAILABLE, 0),
         "substituted_today": lines.get(DispenseOutcome.SUBSTITUTED, 0),
-        "out_of_stock": DrugAvailability.objects.filter(
-            facility_id=facility_id, is_available=False
-        ).count(),
+        "out_of_stock": len(unavailable_codes(facility_id)),
+        **stock.counts(facility_id),  # W5: low_stock, expiring_soon
         "updated_at": timezone.now(),
     }
 

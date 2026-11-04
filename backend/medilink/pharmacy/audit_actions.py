@@ -14,5 +14,9 @@ ACTIONS: frozenset[str] = frozenset(
         "pharmacy.query.answered",
         "pharmacy.query.closed",
         "pharmacy.availability.changed",
+        # W5 stock (upgrade 13 §3)
+        "pharmacy.stock.received",
+        "pharmacy.stock.adjusted",
+        "pharmacy.stock.threshold_changed",
     }
 )

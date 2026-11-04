@@ -14597,6 +14597,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/AvailabilityRow'
           description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'The medicine follows its stock count (W5): receive or adjust
+            instead'
   /api/v1/staff/pharmacy/history/:
     get:
       operationId: staff_pharmacy_history
@@ -14687,6 +14694,236 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedPharmacyQueueRowList'
           description: ''
+  /api/v1/staff/pharmacy/stock/:
+    get:
+      operationId: staff_pharmacy_stock
+      summary: 'Medicines with stock here: units, level and next expiry (W5)'
+      parameters:
+      - in: query
+        name: level
+        schema:
+          type: string
+          enum:
+          - low
+          - out
+          - short
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: Medicine name or code
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStockCardList'
+          description: ''
+  /api/v1/staff/pharmacy/stock/{drug_code}/:
+    get:
+      operationId: staff_pharmacy_stock_detail
+      summary: 'A medicine''s stock: batches on the shelf and the last 50 movements
+        (W5)'
+      parameters:
+      - in: path
+        name: drug_code
+        schema:
+          type: string
+        required: true
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockDetail'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: No stock card for this medicine
+    put:
+      operationId: staff_pharmacy_stock_threshold
+      summary: Set the low-stock threshold of a medicine (W5)
+      parameters:
+      - in: path
+        name: drug_code
+        schema:
+          type: string
+        required: true
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StockThresholdRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockDetail'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: No stock card for this medicine
+  /api/v1/staff/pharmacy/stock/batches/{batch_id}/adjust/:
+    post:
+      operationId: staff_pharmacy_stock_adjust
+      summary: 'Adjust a batch with a reason: count correction, damaged, expired (W5)'
+      parameters:
+      - in: path
+        name: batch_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StockAdjustRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockDetail'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Below zero, or damaged/expired stock added instead of removed
+  /api/v1/staff/pharmacy/stock/expiring/:
+    get:
+      operationId: staff_pharmacy_stock_expiring
+      summary: Batches with units left expiring soon (default 60 days), expired first
+        (W5)
+      parameters:
+      - in: query
+        name: days
+        schema:
+          type: integer
+          enum:
+          - 30
+          - 60
+          - 90
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StockBatch'
+          description: ''
+  /api/v1/staff/pharmacy/stock/movements/:
+    get:
+      operationId: staff_pharmacy_stock_movements
+      summary: Stock movements at my facility, newest first (W5)
+      parameters:
+      - in: query
+        name: kind
+        schema:
+          type: string
+          enum:
+          - adjusted
+          - dispensed
+          - received
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStockMovementList'
+          description: ''
+  /api/v1/staff/pharmacy/stock/receive/:
+    post:
+      operationId: staff_pharmacy_stock_receive
+      summary: 'Receive a batch: number, expiry, units, optional supplier (W5)'
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StockReceiveRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockDetail'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown medicine
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Batch already expired, or quantity out of range
   /api/v1/staff/prescription-items/{item_id}/:
     patch:
       operationId: staff_prescription_item_update
@@ -17807,10 +18044,19 @@ components:
           type: string
           format: date-time
           nullable: true
+        follows_stock:
+          type: boolean
+        stock_level:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/StockLevelEnum'
+          - $ref: '#/components/schemas/NullEnum'
       required:
       - display
       - drug_code
+      - follows_stock
       - is_available
+      - stock_level
       - updated_at
     AvailabilityWriteRequest:
       type: object
@@ -21325,6 +21571,11 @@ components:
           type: boolean
         available_here:
           type: boolean
+        stock_level:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/StockLevelEnum'
+          - $ref: '#/components/schemas/NullEnum'
       required:
       - available_here
       - code
@@ -21332,6 +21583,7 @@ components:
       - form
       - generic_name
       - is_controlled
+      - stock_level
       - strength
     DrugsItem:
       type: object
@@ -27029,6 +27281,50 @@ components:
       - next
       - previous
       - results
+    PaginatedStockCardList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StockCard'
+      required:
+      - count
+      - next
+      - previous
+      - results
+    PaginatedStockMovementList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StockMovement'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedSupportRequestListList:
       type: object
       required:
@@ -29314,6 +29610,12 @@ components:
           type: integer
         out_of_stock:
           type: integer
+        low_stock:
+          type: integer
+          description: 'W5: medicines below their low-stock threshold'
+        expiring_soon:
+          type: integer
+          description: 'W5: batches expiring within 60 days'
         updated_at:
           type: string
           format: date-time
@@ -29321,6 +29623,8 @@ components:
       - date
       - dispensed_by_me
       - dispensed_today
+      - expiring_soon
+      - low_stock
       - not_available_today
       - out_of_stock
       - partly
@@ -30272,6 +30576,11 @@ components:
           type: boolean
         available_here:
           type: boolean
+        stock_level:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/StockLevelEnum'
+          - $ref: '#/components/schemas/NullEnum'
         dose:
           type: string
         frequency_code:
@@ -30320,6 +30629,7 @@ components:
       - replaces_item_id
       - route
       - status
+      - stock_level
       - strength
       - substitution_allowed
     PrescriptionItemStatusEnum:
@@ -33663,6 +33973,262 @@ components:
           format: date-time
       required:
       - step_up_valid_until
+    StockAdjustReasonEnum:
+      enum:
+      - count_correction
+      - damaged
+      - expired
+      type: string
+      description: |-
+        * `count_correction` - Count correction
+        * `damaged` - Damaged
+        * `expired` - Expired
+    StockAdjustRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        quantity_change:
+          type: integer
+          maximum: 100000
+          minimum: -100000
+        reason:
+          $ref: '#/components/schemas/StockAdjustReasonEnum'
+        note:
+          type: string
+          default: ''
+          maxLength: 300
+      required:
+      - quantity_change
+      - reason
+    StockBatch:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        drug_code:
+          type: string
+        display:
+          type: string
+        batch_number:
+          type: string
+        expiry_date:
+          type: string
+          format: date
+        quantity_on_hand:
+          type: integer
+        supplier:
+          type: string
+        is_expired:
+          type: boolean
+        received_at:
+          type: string
+          format: date-time
+      required:
+      - batch_number
+      - display
+      - drug_code
+      - expiry_date
+      - id
+      - is_expired
+      - quantity_on_hand
+      - received_at
+      - supplier
+    StockCard:
+      type: object
+      properties:
+        drug_code:
+          type: string
+        display:
+          type: string
+        is_controlled:
+          type: boolean
+        on_hand:
+          type: integer
+          description: Units in batches that have not expired
+        expired_on_hand:
+          type: integer
+          description: Units in expired batches, to remove
+        low_stock_threshold:
+          type: integer
+        stock_level:
+          $ref: '#/components/schemas/StockLevelEnum'
+        next_expiry:
+          type: string
+          format: date
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - display
+      - drug_code
+      - expired_on_hand
+      - is_controlled
+      - low_stock_threshold
+      - next_expiry
+      - on_hand
+      - stock_level
+      - updated_at
+    StockDetail:
+      type: object
+      properties:
+        drug_code:
+          type: string
+        display:
+          type: string
+        is_controlled:
+          type: boolean
+        on_hand:
+          type: integer
+          description: Units in batches that have not expired
+        expired_on_hand:
+          type: integer
+          description: Units in expired batches, to remove
+        low_stock_threshold:
+          type: integer
+        stock_level:
+          $ref: '#/components/schemas/StockLevelEnum'
+        next_expiry:
+          type: string
+          format: date
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+        batches:
+          type: array
+          items:
+            $ref: '#/components/schemas/StockBatch'
+        movements:
+          type: array
+          items:
+            $ref: '#/components/schemas/StockMovement'
+      required:
+      - batches
+      - display
+      - drug_code
+      - expired_on_hand
+      - is_controlled
+      - low_stock_threshold
+      - movements
+      - next_expiry
+      - on_hand
+      - stock_level
+      - updated_at
+    StockLevelEnum:
+      enum:
+      - in_stock
+      - low
+      - out
+      type: string
+      description: |-
+        * `in_stock` - in_stock
+        * `low` - low
+        * `out` - out
+    StockMovement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        drug_code:
+          type: string
+        display:
+          type: string
+        batch_id:
+          type: string
+          format: uuid
+        batch_number:
+          type: string
+        kind:
+          $ref: '#/components/schemas/StockMovementKindEnum'
+        quantity:
+          type: integer
+          description: 'Signed: + received, - dispensed or removed'
+        balance_after:
+          type: integer
+          description: Units left in the batch afterwards
+        reason:
+          type: string
+        note:
+          type: string
+        prescription_id:
+          type: string
+          format: uuid
+          nullable: true
+        by_name:
+          type: string
+        occurred_at:
+          type: string
+          format: date-time
+      required:
+      - balance_after
+      - batch_id
+      - batch_number
+      - by_name
+      - display
+      - drug_code
+      - id
+      - kind
+      - note
+      - occurred_at
+      - prescription_id
+      - quantity
+      - reason
+    StockMovementKindEnum:
+      enum:
+      - received
+      - dispensed
+      - adjusted
+      type: string
+      description: |-
+        * `received` - Received
+        * `dispensed` - Dispensed
+        * `adjusted` - Adjusted
+    StockReceiveRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        drug_code:
+          type: string
+          minLength: 1
+          maxLength: 40
+        batch_number:
+          type: string
+          minLength: 1
+          maxLength: 40
+        expiry_date:
+          type: string
+          format: date
+        quantity:
+          type: integer
+          maximum: 100000
+          minimum: 1
+        supplier:
+          type: string
+          default: ''
+          maxLength: 120
+        low_stock_threshold:
+          type: integer
+          maximum: 100000
+          minimum: 0
+          nullable: true
+      required:
+      - batch_number
+      - drug_code
+      - expiry_date
+      - quantity
+    StockThresholdRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        low_stock_threshold:
+          type: integer
+          maximum: 100000
+          minimum: 0
+      required:
+      - low_stock_threshold
     SubmitInputRequest:
       type: object
       properties:

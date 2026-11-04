@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5554.
+Keys: 5641.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -2190,6 +2190,7 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `nav.availability` | Imiti iboneka | Medicine availability | needs native-speaker review |
 | `nav.history` | Amateka yo gutanga imiti | Dispensing history | needs native-speaker review |
 | `nav.verify` | Genzura urupapuro rw'imiti | Verify a prescription | needs native-speaker review |
+| `nav.stock` | Ububiko | Stock | needs native-speaker review |
 | `age_one` | Umwaka {{count}} | {{count}} year | needs native-speaker review |
 | `age_other` | Imyaka {{count}} | {{count}} years | needs native-speaker review |
 | `days_one` | Umunsi {{count}} | {{count}} day | needs native-speaker review |
@@ -2239,6 +2240,7 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `flag.notInStock` | Ntuboneka hano | Not in stock here | needs native-speaker review |
 | `flag.offCatalogue` | Ntuba mu rutonde | Not in the catalogue | needs native-speaker review |
 | `flag.noSubstitution` | Nta gusimbuza | No substitution | needs native-speaker review |
+| `flag.lowStock` | Ububiko buke hano | Low stock here | needs native-speaker review |
 | `queue.title` | Farumasi | Pharmacy | needs native-speaker review |
 | `queue.description` | Resept zo gutanga muri iki kigo, izabanje mbere. | Prescriptions to give at this facility, oldest first. | needs native-speaker review |
 | `queue.tabs` | Resept hakurikijwe uko zimeze | Prescriptions by state | needs native-speaker review |
@@ -2342,6 +2344,7 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `availability.out` | Washize | Out of stock | needs native-speaker review |
 | `availability.since` | Washize kuva {{date}} | Out since {{date}} | needs native-speaker review |
 | `availability.none` | Nta muti uhuye. | No medicine matches. | needs native-speaker review |
+| `availability.followsStock` | Bikurikira ibarura ry'ububiko. Byakire cyangwa ubihindure ku rupapuro rw'Ububiko. | Follows its stock count. Receive or adjust it on the Stock page. | needs native-speaker review |
 | `labels.title` | Ibirango by'imiti | Dosing labels | needs native-speaker review |
 | `labels.description` | Ikirango kimwe kuri buri muti watanzwe, mm 62 z'ubugari. | One label per medicine given, 62 mm wide. | needs native-speaker review |
 | `labels.print` | Capa ibirango | Print labels | needs native-speaker review |
@@ -2405,6 +2408,8 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `today.nothing` | Nta rupapuro rw'imiti rutegereje. Inshya ziza hano abaganga bamaze gusinya. | No prescription waits. New ones appear here as doctors sign. | needs native-speaker review |
 | `today.items_one` | Umuti {{count}} | {{count}} medicine | needs native-speaker review |
 | `today.items_other` | Imiti {{count}} | {{count}} medicines | needs native-speaker review |
+| `today.lowStock_one` | Ububiko buke (icyiciro {{count}} kirarangira vuba) | Low on stock ({{count}} batch expiring soon) | needs native-speaker review |
+| `today.lowStock_other` | Ububiko buke (ibyiciro {{count}} birarangira vuba) | Low on stock ({{count}} batches expiring soon) | needs native-speaker review |
 | `history.title` | Amateka yo gutanga imiti | Dispensing history | needs native-speaker review |
 | `history.intro` | Imiti yatanzwe kuri iyi farumasi, uwayitanze n'igihe. Fungura umurongo ubone urupapuro rwose. | What was given at this pharmacy, by whom and when. Open a line for the full prescription. | needs native-speaker review |
 | `history.period` | Igihe | Period | needs native-speaker review |
@@ -2444,6 +2449,88 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `verify.open` | Erekana imiti | Show medicines | needs native-speaker review |
 | `verify.bornWrong` | Itariki y'amavuko ntihuye. | The date of birth does not match. | needs native-speaker review |
 | `failed` | Ntibyashobotse. Ongera ugerageze. | Could not load. Try again. | needs native-speaker review |
+| `stock.title` | Ububiko | Stock | needs native-speaker review |
+| `stock.description` | Ibiri ku gipangu, icyiciro ku kindi. Gutanga imiti bihera ku izarangira mbere. | What is on the shelf, batch by batch. Giving medicines takes the earliest expiry first. | needs native-speaker review |
+| `stock.tabs` | Uko ububiko bugaragara | Stock views | needs native-speaker review |
+| `stock.tab.all` | Imiti yose | All medicines | needs native-speaker review |
+| `stock.tab.short` | Mike cyangwa yashize | Low or out | needs native-speaker review |
+| `stock.tab.expiring` | Izarangira vuba | Expiring soon | needs native-speaker review |
+| `stock.tab.movements` | Ibyahindutse | Movements | needs native-speaker review |
+| `stock.search` | Shaka umuti | Find a medicine | needs native-speaker review |
+| `stock.none` | Nta muti urafite ububiko. | No medicine has stock yet. | needs native-speaker review |
+| `stock.noneBody` | Akira icyiciro kugira ngo utangire kubara umuti. Indi miti igumana buto yo ku Kuboneka kw'imiti. | Receive a batch to start counting a medicine. Others keep the switch on Medicine availability. | needs native-speaker review |
+| `stock.noneShort` | Nta muti muke cyangwa washize. | Nothing is low or out of stock. | needs native-speaker review |
+| `stock.nextExpiry` | Irarangira {{date}} | Next expiry {{date}} | needs native-speaker review |
+| `stock.noUsable` | Nta cyiciro gikoreshwa | No usable batch | needs native-speaker review |
+| `stock.expiredUnits_one` | {{count}} yarangije igihe yo kuvanamo | {{count}} expired unit to remove | needs native-speaker review |
+| `stock.expiredUnits_other` | {{count}} zarangije igihe zo kuvanamo | {{count}} expired units to remove | needs native-speaker review |
+| `stock.units_one` | {{count}} | {{count}} unit | needs native-speaker review |
+| `stock.units_other` | {{count}} | {{count}} units | needs native-speaker review |
+| `stock.level.in_stock` | Irahari | In stock | needs native-speaker review |
+| `stock.level.low` | Ububiko buke | Low stock | needs native-speaker review |
+| `stock.level.out` | Yashize | Out of stock | needs native-speaker review |
+| `stock.expired` | Yarangije igihe | Expired | needs native-speaker review |
+| `stock.expiringNone` | Nta cyiciro kirangira mu minsi 60 iri imbere. | No batch expires in the next 60 days. | needs native-speaker review |
+| `stock.expiringIntro` | Ibyiciro bifite imiti isigaye birangira mu minsi 60, ibyarangiye mbere. Bitange mbere, cyangwa ukure ibyarangiye ku gipangu. | Batches with units left that expire within 60 days, expired ones first. Give these first, or take expired ones off the shelf. | needs native-speaker review |
+| `stock.columns.medicine` | Umuti | Medicine | needs native-speaker review |
+| `stock.columns.batch` | Icyiciro | Batch | needs native-speaker review |
+| `stock.columns.expiry` | Irangira | Expiry | needs native-speaker review |
+| `stock.columns.units` | Umubare | Units | needs native-speaker review |
+| `stock.columns.when` | Igihe | When | needs native-speaker review |
+| `stock.columns.change` | Impinduka | Change | needs native-speaker review |
+| `stock.columns.by` | Uwabikoze | By | needs native-speaker review |
+| `stock.movements` | Ibyahindutse | Movements | needs native-speaker review |
+| `stock.movementsNone` | Nta cyahindutse kugeza ubu. | No movement yet. | needs native-speaker review |
+| `stock.kind.received` | Byakiriwe | Received | needs native-speaker review |
+| `stock.kind.dispensed` | Byatanzwe | Given | needs native-speaker review |
+| `stock.kind.adjusted` | Byahinduwe | Adjusted | needs native-speaker review |
+| `stock.reason.count_correction` | Gukosora ibarura | Count correction | needs native-speaker review |
+| `stock.reason.damaged` | Byangiritse | Damaged | needs native-speaker review |
+| `stock.reason.expired` | Byarangije igihe | Expired | needs native-speaker review |
+| `stock.prescription` | Resept | Prescription | needs native-speaker review |
+| `stock.balanceAfter_one` | {{count}} isigaye mu cyiciro | {{count}} left in the batch | needs native-speaker review |
+| `stock.balanceAfter_other` | {{count}} zisigaye mu cyiciro | {{count}} left in the batch | needs native-speaker review |
+| `stock.receive.open` | Akira ububiko | Receive stock | needs native-speaker review |
+| `stock.receive.title` | Akira ububiko | Receive stock | needs native-speaker review |
+| `stock.receive.description` | Icyiciro kimwe icyarimwe, nk'uko cyanditse ku gakarito. | One batch at a time, as printed on the box. | needs native-speaker review |
+| `stock.receive.save` | Ongera mu bubiko | Add to stock | needs native-speaker review |
+| `stock.receive.drugRequired` | Hitamo umuti. | Choose a medicine. | needs native-speaker review |
+| `stock.receive.batchRequired` | Tanga nimero y'icyiciro. | Give the batch number. | needs native-speaker review |
+| `stock.receive.expiryRequired` | Tanga itariki birangiriraho. | Give the expiry date. | needs native-speaker review |
+| `stock.receive.expiryPast` | Iki cyiciro cyarangije igihe. Ntugishyire ku gipangu. | This batch has already expired. Don't put it on the shelf. | needs native-speaker review |
+| `stock.receive.quantityRequired` | Tanga umubare, 1 cyangwa urenga. | Give the number of units, 1 or more. | needs native-speaker review |
+| `stock.receive.batch` | Nimero y'icyiciro | Batch number | needs native-speaker review |
+| `stock.receive.expiry` | Itariki birangiriraho | Expiry date | needs native-speaker review |
+| `stock.receive.quantity` | Umubare wakiriwe | Units received | needs native-speaker review |
+| `stock.receive.quantityHint` | Ibinini, kapsule, amacupa: icyo utanga. | Tablets, capsules, bottles: the unit you give. | needs native-speaker review |
+| `stock.receive.supplier` | Uwatanze | Supplier | needs native-speaker review |
+| `stock.threshold` | Urugero rw'ububiko buke | Low-stock threshold | needs native-speaker review |
+| `stock.thresholdHint` | "Ububiko buke" munsi y'uyu mubare. 0 birabihagarika. | "Low stock" below this number. 0 turns it off. | needs native-speaker review |
+| `stock.thresholdInvalid` | Tanga umubare wuzuye, 0 cyangwa urenga. | Give a whole number, 0 or more. | needs native-speaker review |
+| `stock.saveThreshold` | Bika | Save | needs native-speaker review |
+| `stock.back` | Ububiko bwose | All stock | needs native-speaker review |
+| `stock.detailIntro` | Ibyiciro biri ku gipangu n'ibyahindutse vuba. | Batches on the shelf and the latest movements. | needs native-speaker review |
+| `stock.batches` | Ibyiciro biri ku gipangu | Batches on the shelf | needs native-speaker review |
+| `stock.noBatches` | Nta muti usigaye. Akira icyiciro kugira ngo wongere. | No units left. Receive a batch to restock. | needs native-speaker review |
+| `stock.noSupplier` | Uwatanze ntiyavuzwe | No supplier given | needs native-speaker review |
+| `stock.summary` | Incamake y'ububiko | Stock summary | needs native-speaker review |
+| `stock.onHand` | Ishobora gukoreshwa | Usable units | needs native-speaker review |
+| `stock.expiredToRemove_one` | {{count}} yarangije igihe iracyari ku gipangu. Hindura icyiciro cyayo ukoresheje impamvu Byarangije igihe. | {{count}} expired unit is still on the shelf. Adjust its batch with the reason Expired. | needs native-speaker review |
+| `stock.expiredToRemove_other` | {{count}} zarangije igihe ziracyari ku gipangu. Hindura icyiciro cyazo ukoresheje impamvu Byarangije igihe. | {{count}} expired units are still on the shelf. Adjust their batch with the reason Expired. | needs native-speaker review |
+| `stock.adjust.open` | Hindura | Adjust | needs native-speaker review |
+| `stock.adjust.title` | Hindura icyiciro {{batch}} | Adjust batch {{batch}} | needs native-speaker review |
+| `stock.adjust.description_one` | {{count}} iri muri iki cyiciro ubu. Buri mpinduka yandikwa n'izina ryawe. | {{count}} unit in this batch now. Every change is recorded with your name. | needs native-speaker review |
+| `stock.adjust.description_other` | {{count}} ziri muri iki cyiciro ubu. Buri mpinduka yandikwa n'izina ryawe. | {{count}} units in this batch now. Every change is recorded with your name. | needs native-speaker review |
+| `stock.adjust.save` | Bika impinduka | Save the change | needs native-speaker review |
+| `stock.adjust.reason` | Impamvu | Reason | needs native-speaker review |
+| `stock.adjust.counted` | Umubare wabaze | Units you counted | needs native-speaker review |
+| `stock.adjust.countedHint` | Bara icyiciro kiri ku gipangu wandike umubare. | Count the batch on the shelf and type the number. | needs native-speaker review |
+| `stock.adjust.countedRequired` | Andika umubare wabaze, 0 cyangwa urenga. | Type the number you counted, 0 or more. | needs native-speaker review |
+| `stock.adjust.noChange` | Ni wo mubare usanzwe wanditse. | That is the number already recorded. | needs native-speaker review |
+| `stock.adjust.difference` | Impinduka: {{change}} | Change: {{change}} | needs native-speaker review |
+| `stock.adjust.removed` | Umubare wo kuvanamo | Units to take off | needs native-speaker review |
+| `stock.adjust.removeRange` | Vanamo hagati ya 1 na {{max}}. | Take off between 1 and {{max}}. | needs native-speaker review |
+| `stock.adjust.note` | Icyitonderwa | Note | needs native-speaker review |
 
 ## staff-web feature: platform (namespace platform)
 

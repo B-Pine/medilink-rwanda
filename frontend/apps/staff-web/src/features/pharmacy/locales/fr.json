@@ -3,7 +3,8 @@
   "nav": {
     "availability": "Disponibilité des médicaments",
     "history": "Historique de délivrance",
-    "verify": "Vérifier une ordonnance"
+    "verify": "Vérifier une ordonnance",
+    "stock": "Stock"
   },
   "age_one": "{{count}} an",
   "age_other": "{{count}} ans",
@@ -62,7 +63,8 @@
     "queried": "Question au médecin",
     "notInStock": "Pas en stock ici",
     "offCatalogue": "Hors catalogue",
-    "noSubstitution": "Pas de substitution"
+    "noSubstitution": "Pas de substitution",
+    "lowStock": "Stock bas ici"
   },
   "queue": {
     "title": "Pharmacie",
@@ -185,7 +187,8 @@
     "in": "En stock",
     "out": "En rupture",
     "since": "En rupture depuis le {{date}}",
-    "none": "Aucun médicament ne correspond."
+    "none": "Aucun médicament ne correspond.",
+    "followsStock": "Suit son stock. Recevez ou ajustez-le sur la page Stock."
   },
   "labels": {
     "title": "Étiquettes de posologie",
@@ -258,7 +261,9 @@
     "next": "Prochaines à délivrer",
     "nothing": "Aucune ordonnance en attente. Les nouvelles arrivent ici dès que les médecins signent.",
     "items_one": "{{count}} médicament",
-    "items_other": "{{count}} médicaments"
+    "items_other": "{{count}} médicaments",
+    "lowStock_one": "Stock bas ({{count}} lot bientôt périmé)",
+    "lowStock_other": "Stock bas ({{count}} lots bientôt périmés)"
   },
   "history": {
     "title": "Historique de délivrance",
@@ -310,5 +315,103 @@
     "open": "Voir les médicaments",
     "bornWrong": "La date de naissance ne correspond pas."
   },
-  "failed": "Chargement impossible. Réessayez."
+  "failed": "Chargement impossible. Réessayez.",
+  "stock": {
+    "title": "Stock",
+    "description": "Ce qui est en rayon, lot par lot. La délivrance prend d'abord la péremption la plus proche.",
+    "tabs": "Vues du stock",
+    "tab": {
+      "all": "Tous les médicaments",
+      "short": "Bas ou épuisé",
+      "expiring": "Bientôt périmés",
+      "movements": "Mouvements"
+    },
+    "search": "Trouver un médicament",
+    "none": "Aucun médicament n'a encore de stock.",
+    "noneBody": "Recevez un lot pour commencer à compter un médicament. Les autres gardent l'interrupteur de Disponibilité des médicaments.",
+    "noneShort": "Rien n'est bas ou épuisé.",
+    "nextExpiry": "Prochaine péremption {{date}}",
+    "noUsable": "Aucun lot utilisable",
+    "expiredUnits_one": "{{count}} unité périmée à retirer",
+    "expiredUnits_other": "{{count}} unités périmées à retirer",
+    "units_one": "{{count}} unité",
+    "units_other": "{{count}} unités",
+    "level": {
+      "in_stock": "En stock",
+      "low": "Stock bas",
+      "out": "Épuisé"
+    },
+    "expired": "Périmé",
+    "expiringNone": "Aucun lot ne périme dans les 60 prochains jours.",
+    "expiringIntro": "Lots avec des unités restantes qui périment dans les 60 jours, les périmés d'abord. Donnez-les en premier, ou retirez les périmés du rayon.",
+    "columns": {
+      "medicine": "Médicament",
+      "batch": "Lot",
+      "expiry": "Péremption",
+      "units": "Unités",
+      "when": "Quand",
+      "change": "Changement",
+      "by": "Par"
+    },
+    "movements": "Mouvements",
+    "movementsNone": "Aucun mouvement pour l'instant.",
+    "kind": {
+      "received": "Reçu",
+      "dispensed": "Délivré",
+      "adjusted": "Ajusté"
+    },
+    "reason": {
+      "count_correction": "Correction d'inventaire",
+      "damaged": "Abîmé",
+      "expired": "Périmé"
+    },
+    "prescription": "Ordonnance",
+    "balanceAfter_one": "{{count}} restant dans le lot",
+    "balanceAfter_other": "{{count}} restants dans le lot",
+    "receive": {
+      "open": "Recevoir du stock",
+      "title": "Recevoir du stock",
+      "description": "Un lot à la fois, tel qu'imprimé sur la boîte.",
+      "save": "Ajouter au stock",
+      "drugRequired": "Choisissez un médicament.",
+      "batchRequired": "Indiquez le numéro de lot.",
+      "expiryRequired": "Indiquez la date de péremption.",
+      "expiryPast": "Ce lot est déjà périmé. Ne le mettez pas en rayon.",
+      "quantityRequired": "Indiquez le nombre d'unités, 1 ou plus.",
+      "batch": "Numéro de lot",
+      "expiry": "Date de péremption",
+      "quantity": "Unités reçues",
+      "quantityHint": "Comprimés, gélules, flacons : l'unité que vous délivrez.",
+      "supplier": "Fournisseur"
+    },
+    "threshold": "Seuil de stock bas",
+    "thresholdHint": "« Stock bas » sous ce nombre. 0 le désactive.",
+    "thresholdInvalid": "Indiquez un nombre entier, 0 ou plus.",
+    "saveThreshold": "Enregistrer",
+    "back": "Tout le stock",
+    "detailIntro": "Lots en rayon et derniers mouvements.",
+    "batches": "Lots en rayon",
+    "noBatches": "Plus aucune unité. Recevez un lot pour réapprovisionner.",
+    "noSupplier": "Fournisseur non indiqué",
+    "summary": "Résumé du stock",
+    "onHand": "Unités utilisables",
+    "expiredToRemove_one": "{{count}} unité périmée est encore en rayon. Ajustez son lot avec le motif Périmé.",
+    "expiredToRemove_other": "{{count}} unités périmées sont encore en rayon. Ajustez leur lot avec le motif Périmé.",
+    "adjust": {
+      "open": "Ajuster",
+      "title": "Ajuster le lot {{batch}}",
+      "description_one": "{{count}} unité dans ce lot actuellement. Chaque changement est enregistré à votre nom.",
+      "description_other": "{{count}} unités dans ce lot actuellement. Chaque changement est enregistré à votre nom.",
+      "save": "Enregistrer le changement",
+      "reason": "Motif",
+      "counted": "Unités comptées",
+      "countedHint": "Comptez le lot en rayon et tapez le nombre.",
+      "countedRequired": "Tapez le nombre compté, 0 ou plus.",
+      "noChange": "C'est déjà le nombre enregistré.",
+      "difference": "Changement : {{change}}",
+      "removed": "Unités à retirer",
+      "removeRange": "Retirez entre 1 et {{max}}.",
+      "note": "Note"
+    }
+  }
 }

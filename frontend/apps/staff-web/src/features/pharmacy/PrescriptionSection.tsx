@@ -496,6 +496,11 @@ function AddItem({
               {t("pharmacy.flag.notInStock")}
             </Badge>
           )}
+          {picked.stock_level === "low" && (
+            <Badge tone="warning" icon={Storefront}>
+              {t("pharmacy.flag.lowStock")}
+            </Badge>
+          )}
           <Button variant="ghost" size="sm" className="ms-auto" onClick={() => setPicked(null)}>
             {t("pharmacy.prescription.changeDrug")}
           </Button>
@@ -534,6 +539,11 @@ function AddItem({
                         {!d.available_here && (
                           <Badge tone="danger" icon={Storefront}>
                             {t("pharmacy.flag.notInStock")}
+                          </Badge>
+                        )}
+                        {d.stock_level === "low" && (
+                          <Badge tone="warning" icon={Storefront}>
+                            {t("pharmacy.flag.lowStock")}
                           </Badge>
                         )}
                       </button>

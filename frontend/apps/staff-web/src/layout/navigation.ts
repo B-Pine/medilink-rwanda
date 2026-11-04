@@ -50,7 +50,7 @@ import {
 } from "@phosphor-icons/react";
 // [/S6 imports]
 // [S7 imports]
-import { Storefront } from "@phosphor-icons/react";
+import { Package, Storefront } from "@phosphor-icons/react";
 // [/S7 imports]
 // [S11 imports]
 import { Fingerprint, ShieldCheck, Siren, UsersThree } from "@phosphor-icons/react";
@@ -416,6 +416,14 @@ export const NAV_ITEMS: readonly NavItem[] = [
     labelKey: "pharmacy.nav.availability",
     visible: hasAny("pharmacy.availability"),
   },
+  {
+    key: "pharmacyStock",
+    path: "/pharmacy/stock",
+    icon: Package,
+    group: "facility",
+    labelKey: "pharmacy.nav.stock",
+    visible: hasAny("pharmacy.stock", "pharmacy.dispense"),
+  },
   // [/S7]
   // [S11]
   {
@@ -504,6 +512,7 @@ const ORDER = [
   "pharmacyHistory",
   "pharmacyVerify",
   // [S7]
+  "pharmacyStock",
   "pharmacyAvailability",
   // [/S7]
   "payments",

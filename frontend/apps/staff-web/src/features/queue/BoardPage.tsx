@@ -512,6 +512,19 @@ function TicketPanel({
           <Printer aria-hidden="true" />
           {t("queue.print.slip")}
         </Link>
+        {visit.data?.follow_up && (
+          <Link
+            to={`/queue/visits/${current.visit_id}/card`}
+            className={buttonClassName({
+              variant: "secondary",
+              pill: true,
+              className: "self-start",
+            })}
+          >
+            <CalendarCheck aria-hidden="true" />
+            {t("queue.print.nextCard")}
+          </Link>
+        )}
         {current.flags.includes("insurance_unverified") && visit.data && (
           <Link
             to={`/patients/${visit.data.facility_patient_id}?tab=insurance`}

@@ -1,6 +1,7 @@
 import {
   MOCK_DISPLAY_TOKEN,
   MOCK_FACILITY_ADMIN_EMAIL,
+  MOCK_LAB_VISITS,
   MOCK_PASSWORD,
   MOCK_TOTP_CODE,
 } from "@medilink/api-client/mocks";
@@ -223,6 +224,18 @@ describe("admin pages and display (S4-F1, F5)", () => {
     expect(await screen.findByText("P-004")).toBeInTheDocument();
     expect(screen.getByText("Room 2")).toBeInTheDocument();
     expect(container.textContent).not.toMatch(/Keza|Habimana|Mukamana|Nshimiyimana/);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("prints the next-visit card the doctor set, for a patient without a phone (#207)", async () => {
+    const { container } = await signIn(
+      MOCK_FACILITY_ADMIN_EMAIL,
+      `/queue/visits/${MOCK_LAB_VISITS.waiting}/card`,
+    );
+    expect(await screen.findByText("Your next visit")).toBeInTheDocument();
+    expect(screen.getByText("Uwimana Grace")).toBeInTheDocument();
+    expect(screen.getByText(/Come in the morning/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Print" })).toBeEnabled();
     expect(await axe(container)).toHaveNoViolations();
   });
 

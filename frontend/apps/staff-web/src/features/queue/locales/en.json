@@ -352,7 +352,9 @@
     "spoken": "Ticket {{number}}",
     "spokenRoom": "Ticket {{number}}, please go to {{room}}",
     "invalid": "This screen link is not valid. Ask the facility for a new one.",
-    "footer": "Listen for your number. Book online: medilink.rw"
+    "footer": "Listen for your number. Book online: medilink.rw",
+    "testSound": "Test sound",
+    "testRoom": "Room 1"
   },
   "today": {
     "title": "On site now",
@@ -467,7 +469,11 @@
     "from": "From",
     "to": "To",
     "groupBy": "Show by",
-    "groups": { "day": "Day", "week": "Week", "month": "Month" },
+    "groups": {
+      "day": "Day",
+      "week": "Week",
+      "month": "Month"
+    },
     "updating": "Updating…",
     "periodText": "{{from}} to {{to}}",
     "failed": "The report could not be loaded. Check the dates and try again.",
@@ -500,7 +506,9 @@
       "expected": "Bookings expected",
       "noShows": "No-shows"
     },
-    "sources": { "title": "How patients came" },
+    "sources": {
+      "title": "How patients came"
+    },
     "source": {
       "walk_in": "Walk-in",
       "online_booking": "Online booking",
@@ -510,7 +518,9 @@
       "referral": "Referral",
       "emergency": "Emergency"
     },
-    "services": { "title": "By service" },
+    "services": {
+      "title": "By service"
+    },
     "waits": {
       "title": "Waiting time by stage",
       "intro": "From joining the stage's queue on site to the first call. The dark bar is the median, the light bar is when 9 in 10 were called.",
@@ -641,6 +651,10 @@
     "code": "Booking code",
     "bring": "Bring this card, your insurance card and your medicines.",
     "slip": "Print ticket slip",
-    "card": "Print appointment card"
+    "card": "Print appointment card",
+    "nextCard": "Print next-visit card",
+    "nextVisit": "Your next visit",
+    "comeMorning": "Come in the morning; reception will give you a number.",
+    "noFollowUp": "The doctor has not set a next visit for this patient."
   }
 }

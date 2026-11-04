@@ -352,7 +352,9 @@
     "spoken": "Ticket {{number}}",
     "spokenRoom": "Ticket {{number}}, veuillez vous rendre à {{room}}",
     "invalid": "Ce lien d’écran n’est pas valide. Demandez-en un nouveau.",
-    "footer": "Écoutez votre numéro. Réservez en ligne : medilink.rw"
+    "footer": "Écoutez votre numéro. Réservez en ligne : medilink.rw",
+    "testSound": "Tester le son",
+    "testRoom": "Salle 1"
   },
   "today": {
     "title": "Sur place maintenant",
@@ -467,7 +469,11 @@
     "from": "Du",
     "to": "Au",
     "groupBy": "Afficher par",
-    "groups": { "day": "Jour", "week": "Semaine", "month": "Mois" },
+    "groups": {
+      "day": "Jour",
+      "week": "Semaine",
+      "month": "Mois"
+    },
     "updating": "Mise à jour…",
     "periodText": "Du {{from}} au {{to}}",
     "failed": "Le rapport n’a pas pu être chargé. Vérifiez les dates et réessayez.",
@@ -500,7 +506,9 @@
       "expected": "Rendez-vous attendus",
       "noShows": "Absents"
     },
-    "sources": { "title": "Comment les patients sont venus" },
+    "sources": {
+      "title": "Comment les patients sont venus"
+    },
     "source": {
       "walk_in": "Sans rendez-vous",
       "online_booking": "Rendez-vous en ligne",
@@ -510,7 +518,9 @@
       "referral": "Référence",
       "emergency": "Urgence"
     },
-    "services": { "title": "Par service" },
+    "services": {
+      "title": "Par service"
+    },
     "waits": {
       "title": "Temps d’attente par étape",
       "intro": "De l’entrée dans la file de l’étape sur place au premier appel. La barre foncée est la médiane, la barre claire le délai pour 9 patients sur 10.",
@@ -641,6 +651,10 @@
     "code": "Code de réservation",
     "bring": "Apportez cette carte, votre carte d’assurance et vos médicaments.",
     "slip": "Imprimer le ticket",
-    "card": "Imprimer la carte de rendez-vous"
+    "card": "Imprimer la carte de rendez-vous",
+    "nextCard": "Imprimer la carte du prochain rendez-vous",
+    "nextVisit": "Votre prochaine visite",
+    "comeMorning": "Venez le matin ; l’accueil vous donnera un numéro.",
+    "noFollowUp": "Le médecin n’a pas fixé de prochaine visite pour ce patient."
   }
 }

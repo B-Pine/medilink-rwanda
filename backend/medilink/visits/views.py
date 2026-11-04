@@ -597,8 +597,33 @@ class VisitDetailView(QueueView):
                     }
                     for e in events
                 ],
+                "follow_up": next_visit(visit),
             }
         )
+
+
+def next_visit(visit: Visit) -> dict[str, Any] | None:
+    """The follow-up the doctor set in this visit, for the printed card (upgrade 13 W8, #207):
+    its date, and the booked time and code when it was booked. None when there is none."""
+    from medilink.scheduling.models import BookingStatus, FollowUp, FollowUpStatus
+
+    follow_up = (
+        FollowUp.objects.filter(visit=visit)
+        .exclude(status=FollowUpStatus.CANCELLED)
+        .select_related("booking", "membership__user")
+        .first()
+    )
+    if follow_up is None:
+        return None
+    booking = follow_up.booking
+    booked = booking is not None and booking.status == BookingStatus.CONFIRMED
+    return {
+        "due_on": booking.service_date if booked and booking else follow_up.due_on,
+        "service_id": follow_up.service_id,
+        "starts_at": booking.starts_at if booked and booking else None,
+        "booking_code": booking.booking_code if booked and booking else "",
+        "doctor_name": (str(follow_up.membership.user.full_name) if follow_up.membership else ""),
+    }
 
 
 class DutyView(QueueView):

@@ -185,6 +185,7 @@ class ItemInput:
     frequency_code: str = ""
     route: str = ""
     duration_days: int | None = None
+    meal_timing: str = ""
     quantity: int | None = None
     instructions: str = ""
     substitution_allowed: bool = True
@@ -231,6 +232,7 @@ def _apply(item: PrescriptionItem, data: ItemInput) -> None:
     item.frequency_code = data.frequency_code
     item.route = data.route
     item.duration_days = data.duration_days
+    item.meal_timing = data.meal_timing
     quantity = data.quantity or default_quantity(item.dose, item.frequency_code, data.duration_days)
     if not quantity or quantity < 1:
         raise FieldRule("quantity", _("Give the quantity to dispense."))

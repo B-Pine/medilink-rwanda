@@ -200,7 +200,16 @@
       "en": "English",
       "fr": "Français"
     },
-    "none": "No labels yet: nothing has been given."
+    "none": "No labels yet: nothing has been given.",
+    "schedule": "When to take it",
+    "times": {
+      "morning": "Morning",
+      "noon": "Noon",
+      "evening": "Evening",
+      "night": "Night"
+    },
+    "whenNeeded": "When needed",
+    "once": "Once only"
   },
   "alert": {
     "allergy": "Allergy: {{substance}}",
@@ -242,7 +251,9 @@
     "cancelTitle": "Cancel {{name}}?",
     "cancelConsequences": "The pharmacy will not give it. The patient sees it as cancelled.",
     "changeTitle": "Change {{name}}?",
-    "changeConsequences": "This one is cancelled with your reason, then you add the new one."
+    "changeConsequences": "This one is cancelled with your reason, then you add the new one.",
+    "meal": "With food?",
+    "mealHint": "Shown as a picture on the label."
   },
   "pages": "Pages",
   "previous": "Previous",
@@ -418,5 +429,11 @@
       "removeRange": "Take off between 1 and {{max}}.",
       "note": "Note"
     }
+  },
+  "meal": {
+    "any": "Any time",
+    "before_food": "Before food",
+    "with_food": "With food",
+    "after_food": "After food"
   }
 }

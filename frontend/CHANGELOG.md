@@ -9,6 +9,21 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Patients without a phone (2026-11-04, #207)
+
+- Added: **label pictograms**. Each dosing label shows the four times of the day (morning, noon,
+  evening, night) with the ones to take marked and the dose, and before, with or after food as
+  a picture with its word, in the label language. Black on white for thermal printers.
+- Added: the doctor picks **with food?** (any time, before, with or after food) when
+  prescribing.
+- Changed: the **spoken call** on the waiting-room display reads each call in the languages set
+  on the screen link (`?voice=rw,fr`), twice by default (`?repeat=1..3`), skips a language this
+  device has no voice for, and falls back to English or French so a call is never silent. A
+  **Test sound** button plays a sample call once sound is on.
+- Added: **next-visit card** (`/queue/visits/:visitId/card`): when the doctor set a follow-up,
+  reception prints the date (and booked time and code), service and doctor on the 80 mm slip,
+  from a button on the queue panel.
+
 ### Facility reports (2026-11-04, #205)
 
 - Changed: **Reports** (`/reports`, `reports.view`) is now the facility report for a period.

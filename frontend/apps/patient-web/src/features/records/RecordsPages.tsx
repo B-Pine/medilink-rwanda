@@ -1,6 +1,7 @@
+import type { PatientLabResult } from "@medilink/api-client";
 import { Badge, cx, EmptyState, SelectField, Skeleton, TextField } from "@medilink/ui";
 import { dateFormat } from "@medilink/ui/i18n";
-import { FileText, ListChecks, SealCheck, Stethoscope } from "@phosphor-icons/react";
+import { FileText, ListChecks, SealCheck, Stethoscope, TestTube } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -23,6 +24,7 @@ import { useProfiles } from "../profile/ProfileLayout";
 
 export const recordsKeys = {
   list: (patientId: string) => ["records", "list", patientId] as const,
+  labResults: (patientId: string) => ["records", "lab", patientId] as const,
   detail: (id: string) => ["records", "detail", id] as const,
 };
 
@@ -156,7 +158,110 @@ export function RecordsPage() {
           description={q ? undefined : t("dashboard.records.emptyBody")}
         />
       )}
+      <LabResults patientId={patientId} showWhose={people.length > 1} nameOf={nameOf} />
     </div>
+  );
+}
+
+/**
+ * Lab results the doctor released (upgrade 06 §3, #201, FR-CLN-11), with the doctor's note. A
+ * result never shows before the doctor reviewed and released it.
+ */
+function LabResults({
+  patientId,
+  showWhose,
+  nameOf,
+}: {
+  patientId: string;
+  showWhose: boolean;
+  nameOf: (id: string) => string | undefined;
+}) {
+  const { t } = useTranslation();
+  const api = useApi();
+  const date = useDate();
+  const results = useQuery({
+    queryKey: recordsKeys.labResults(patientId),
+    queryFn: () => api.clinical.patient.labResults(patientId ? { patient_id: patientId } : {}),
+  });
+  if (!results.data?.length) return null;
+  const value = (item: PatientLabResult["items"][number]) =>
+    item.kind === "number"
+      ? `${item.value}${item.unit ? ` ${item.unit}` : ""}`
+      : t(`records.lab.choices.${item.value}`, { defaultValue: item.value });
+  return (
+    <section aria-labelledby="lab-results" className="flex flex-col gap-3">
+      <div className="flex flex-col gap-1">
+        <h2 id="lab-results" className="m-0 font-heading text-h2 tracking-tight">
+          {t("records.lab.title")}
+        </h2>
+        <p className="m-0 text-fg-secondary">{t("records.lab.intro")}</p>
+      </div>
+      <ul className="m-0 flex list-none flex-col gap-3 p-0">
+        {results.data.map((r) => (
+          <li key={r.id} className={cx(panelClass, "flex flex-col gap-4 p-4 sm:p-5")}>
+            <div className="flex flex-wrap items-start gap-3">
+              <RowIcon icon={TestTube} />
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <h3 className="m-0 font-heading text-h3">{r.test_name}</h3>
+                <p className="m-0 text-body-sm text-fg-secondary">
+                  {[
+                    date(r.released_at),
+                    r.facility_name,
+                    r.doctor_name ? t("records.doctor", { name: r.doctor_name }) : null,
+                    showWhose ? nameOf(r.patient_id) : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </p>
+              </div>
+            </div>
+            <table className="w-full border-collapse text-body-sm">
+              <caption className="sr-only">{r.test_name}</caption>
+              <thead>
+                <tr className="text-caption text-fg-muted">
+                  <th scope="col" className="py-1 pe-3 text-start font-semibold">
+                    {t("records.lab.item")}
+                  </th>
+                  <th scope="col" className="py-1 pe-3 text-start font-semibold">
+                    {t("records.lab.value")}
+                  </th>
+                  <th scope="col" className="py-1 text-start font-semibold">
+                    {t("records.lab.normal")}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {r.items.map((item) => (
+                  <tr key={item.code} className="border-t border-border/60">
+                    <th scope="row" className="py-2 pe-3 text-start font-normal text-fg-secondary">
+                      {item.label}
+                    </th>
+                    <td className="py-2 pe-3">
+                      <span className="flex flex-wrap items-center gap-2">
+                        <span className="font-semibold tabular-nums">{value(item)}</span>
+                        {item.flag && (
+                          <Badge tone="warning">{t(`records.lab.flags.${item.flag}`)}</Badge>
+                        )}
+                      </span>
+                    </td>
+                    <td className="py-2 text-fg-muted tabular-nums">
+                      {item.low !== null && item.high !== null
+                        ? `${Number(item.low)}–${Number(item.high)} ${item.unit}`.trim()
+                        : ""}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {r.note && (
+              <p className="m-0 rounded-xl bg-brand-subtle/60 px-4 py-3">
+                <span className="font-semibold">{t("records.lab.note")}</span> {r.note}
+              </p>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

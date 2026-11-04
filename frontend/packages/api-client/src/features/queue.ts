@@ -6,8 +6,11 @@ import type { ApiClient } from "../client";
 import type { Uuid } from "../types";
 import type { SymptomInput } from "./booking";
 
-/** `triage` (upgrade 06 §2, #200): optional, between check-in and the doctor. */
-export type Stage = "reception" | "payment" | "triage" | "consultation" | "pharmacy";
+/**
+ * `triage` (upgrade 06 §2, #200): optional, between check-in and the doctor. `lab` (#201): a loop
+ * out of the consultation; the patient comes back to the doctor when every result is in.
+ */
+export type Stage = "reception" | "payment" | "triage" | "consultation" | "lab" | "pharmacy";
 /** The triage nurse's decision (#200); not the symptom checker's `TriageUrgency`. */
 export type NurseUrgency = "normal" | "priority" | "emergency";
 export type TicketState =
@@ -42,7 +45,12 @@ export type TicketAction =
   | "confirm-arrival"
   | "reorder"
   /** #200: the triage nurse sets the urgency and sends the patient to the doctor. */
-  | "triage";
+  | "triage"
+  /**
+   * #201: the doctor sends the patient in service to the lab (`422` without an ordered test).
+   * The consultation stays a draft; the patient comes back when every result is in.
+   */
+  | "send-to-lab";
 
 export interface TicketRow {
   id: Uuid;
@@ -348,8 +356,8 @@ export function createQueueApi(client: ApiClient) {
         version: ticket.version,
       }),
     board: () => client.get<QueueBoard>(queuePaths.board),
-    /** The doctor's queue, or the triage nurse's with `"triage"` (#200). */
-    mine: (stage?: "triage") =>
+    /** The doctor's queue, the triage nurse's with `"triage"` (#200), the lab's with `"lab"` (#201). */
+    mine: (stage?: "triage" | "lab") =>
       client.get<MyQueue>(stage ? `${queuePaths.mine}?stage=${stage}` : queuePaths.mine),
     /** `null` when nobody is waiting (204). */
     callNext: (body: { service_id: Uuid; stage?: Stage; service_point_id?: Uuid | null }) =>

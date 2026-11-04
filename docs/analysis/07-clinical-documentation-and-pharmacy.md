@@ -201,6 +201,7 @@ It shows no diagnosis and no drug details unless the person also enters the pati
 | FR-CLN-08 | Restricted (sensitive) records | P1 |
 | FR-CLN-09 | Results inbox for uploaded outside results with review sign-off | P1 |
 | FR-CLN-10 | Consultation templates per service | P2 |
+| FR-CLN-11 | Laboratory loop: the doctor orders tests in the consultation and sends the patient to the lab; the lab technician records each sample and enters each result (ranges flagged); the patient returns to the ordering doctor with return priority; a clinician reviews and releases each result; the patient sees released results only ([upgrade 06](../upgrade/06-new-roles.md) §3) | P1 |
 | FR-PHA-01 | Prescription items from the drug catalogue (free text flagged) with states | P1 |
 | FR-PHA-02 | Pharmacy queue, identity confirmation, full / partial dispensing, generic substitution with reason, not available | P1 |
 | FR-PHA-03 | Dispensing record signed by the pharmacist; status visible to the patient | P1 |

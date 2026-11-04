@@ -477,3 +477,107 @@ class BreakGlassSession(TimeStampedModel):
                 name="authz_break_glass_window",
             ),
         ]
+
+
+# ---- upgrade 06 §3 (#201): the laboratory loop ------------------------------------------------
+
+
+class LabOrderState(models.TextChoices):
+    ORDERED = "ordered", "Ordered"
+    SAMPLE_TAKEN = "sample_taken", "Sample taken"
+    RESULTED = "resulted", "Resulted"
+    REVIEWED = "reviewed", "Reviewed"
+    RELEASED = "released", "Released"
+    CANCELLED = "cancelled", "Cancelled"
+
+
+# Orders the lab still works on; when none is left, the patient goes back to the doctor
+LAB_OPEN_STATES = (LabOrderState.ORDERED, LabOrderState.SAMPLE_TAKEN)
+
+
+def _who() -> models.ForeignKey[Any, Any]:
+    return models.ForeignKey(
+        "tenancy.FacilityMembership",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+
+
+class LabOrder(TimeStampedModel):
+    """One requested test (FR-CLN-11): ordered by the doctor in the consultation, sampled and
+    resulted by the lab, reviewed and released by a clinician. The patient sees it only once
+    released. The request reason, the result and the doctor's note are field-encrypted (C3) and
+    bound to table, column and row. Never deleted; locked once released (trigger)."""
+
+    facility = models.ForeignKey("tenancy.Facility", on_delete=models.PROTECT, related_name="+")
+    version = models.PositiveIntegerField(default=1)
+    visit = models.ForeignKey("visits.Visit", on_delete=models.PROTECT, related_name="+")
+    consultation = models.ForeignKey(
+        Consultation, on_delete=models.PROTECT, related_name="lab_orders"
+    )
+    patient = models.ForeignKey("patients.Patient", on_delete=models.PROTECT, related_name="+")
+    facility_patient = models.ForeignKey(
+        "patients.FacilityPatient", on_delete=models.PROTECT, related_name="+"
+    )
+    ordered_by_membership = models.ForeignKey(
+        "tenancy.FacilityMembership", on_delete=models.PROTECT, related_name="+"
+    )
+    test_code = models.CharField(max_length=20)
+    test_name = models.CharField(max_length=200)
+    state = models.CharField(
+        max_length=14, choices=LabOrderState.choices, default=LabOrderState.ORDERED
+    )
+    reason_enc = models.BinaryField(null=True, blank=True)
+    ordered_at = models.DateTimeField()
+    sample_taken_at = models.DateTimeField(null=True, blank=True)
+    sample_taken_by_membership = _who()
+    resulted_at = models.DateTimeField(null=True, blank=True)
+    resulted_by_membership = _who()
+    result_enc = models.BinaryField(null=True, blank=True)
+    is_abnormal = models.BooleanField(default=False)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    reviewed_by_membership = _who()
+    review_note_enc = models.BinaryField(null=True, blank=True)
+    released_at = models.DateTimeField(null=True, blank=True)
+    released_by_membership = _who()
+    cancelled_at = models.DateTimeField(null=True, blank=True)
+    cancelled_by_membership = _who()
+    # The bill line the order added (billing app; no foreign key across the two apps)
+    bill_line_id = models.UUIDField(null=True, blank=True)
+
+    class Meta:
+        db_table = "clinical_lab_order"
+        ordering: ClassVar[list[str]] = ["ordered_at", "test_name"]
+        indexes: ClassVar[list[Any]] = [
+            models.Index(fields=["facility", "visit"], name="clinical_lab_order_visit"),
+            models.Index(
+                fields=["facility", "state"],
+                condition=Q(state__in=["ordered", "sample_taken"]),
+                name="clinical_lab_order_open",
+            ),
+            models.Index(
+                fields=["facility", "ordered_by_membership"],
+                condition=Q(state="resulted"),
+                name="clinical_lab_order_inbox",
+            ),
+        ]
+        constraints: ClassVar[list[Any]] = [
+            models.CheckConstraint(
+                condition=Q(state__in=["ordered", "cancelled"]) | Q(sample_taken_at__isnull=False),
+                name="clinical_lab_order_sampled",
+            ),
+            models.CheckConstraint(
+                condition=Q(state__in=["ordered", "sample_taken", "cancelled"])
+                | Q(resulted_at__isnull=False, result_enc__isnull=False),
+                name="clinical_lab_order_resulted",
+            ),
+            models.CheckConstraint(
+                condition=~Q(state="released") | Q(reviewed_at__isnull=False),
+                name="clinical_lab_order_reviewed_first",
+            ),
+        ]
+
+    def __str__(self) -> str:
+        return f"lab order {self.pk}"

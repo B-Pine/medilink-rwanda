@@ -11,7 +11,7 @@ import { PageHeading } from "../../components/PageHeading";
 import { describeApiError } from "../../forms/api-errors";
 import { EMAIL_PATTERN } from "../../forms/validation";
 import { PublicLayout } from "../../layout/PublicLayout";
-import { PageContainer, PageHeader } from "../site/kit";
+import { Faq, PageContainer, PageHeader, Panel } from "../site/kit";
 import { applicationKey, firstIncompleteStep, useApplication } from "./data";
 
 const ROLES = ["admin", "reception", "doctor", "pharmacy"] as const;
@@ -39,10 +39,16 @@ export function ForFacilitiesPage() {
             lead={t("facilityApplication.public.problem")}
           />
           <div className="flex flex-wrap gap-3">
-            <Link to="/for-facilities/apply" className={buttonClassName({ size: "lg" })}>
+            <Link
+              to="/for-facilities/apply"
+              className={buttonClassName({ size: "lg", pill: true })}
+            >
               {t("facilityApplication.public.register")}
             </Link>
-            <a href="#continue" className={buttonClassName({ size: "lg", variant: "secondary" })}>
+            <a
+              href="#continue"
+              className={buttonClassName({ size: "lg", variant: "secondary", pill: true })}
+            >
               {t("facilityApplication.public.continue")}
             </a>
           </div>
@@ -52,17 +58,16 @@ export function ForFacilitiesPage() {
           <h2 id="roles-title" className="m-0 font-heading text-h2">
             {t("facilityApplication.public.rolesTitle")}
           </h2>
-          <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2">
+          {/* one surface, hairlines between the teams (public design brief 2026-11-04) */}
+          <ul className="m-0 grid list-none gap-px overflow-hidden rounded-lg border border-border bg-border p-0 sm:grid-cols-2">
             {ROLES.map((role) => (
-              <li key={role}>
-                <Card className="h-full">
-                  <h3 className="m-0 font-heading text-h3">
-                    {t(`facilityApplication.public.roles.${role}.title`)}
-                  </h3>
-                  <p className="mt-2 mb-0 text-fg-secondary">
-                    {t(`facilityApplication.public.roles.${role}.body`)}
-                  </p>
-                </Card>
+              <li key={role} className="flex flex-col gap-1.5 bg-surface p-5 sm:p-6">
+                <h3 className="m-0 font-heading text-h3">
+                  {t(`facilityApplication.public.roles.${role}.title`)}
+                </h3>
+                <p className="m-0 text-fg-secondary">
+                  {t(`facilityApplication.public.roles.${role}.body`)}
+                </p>
               </li>
             ))}
           </ul>
@@ -77,7 +82,7 @@ export function ForFacilitiesPage() {
               <li key={phase} className="flex flex-col gap-2">
                 <span
                   aria-hidden="true"
-                  className="inline-flex size-9 items-center justify-center rounded-full bg-brand-subtle font-bold text-on-brand-subtle"
+                  className="inline-flex size-9 items-center justify-center rounded-full border border-fg/30 bg-surface font-heading font-bold text-fg tabular-nums"
                 >
                   {index + 1}
                 </span>
@@ -96,16 +101,13 @@ export function ForFacilitiesPage() {
           <h2 id="faq-title" className="m-0 font-heading text-h2">
             {t("facilityApplication.public.faqTitle")}
           </h2>
-          {FAQ.map((item) => (
-            <details key={item} className="rounded-md border border-border bg-surface px-4 py-3">
-              <summary className="cursor-pointer font-semibold">
-                {t(`facilityApplication.public.faq.${item}.q`)}
-              </summary>
-              <p className="mt-2 mb-0 text-fg-secondary">
+          <Panel as="div" className="overflow-hidden rounded-lg">
+            {FAQ.map((item) => (
+              <Faq key={item} question={t(`facilityApplication.public.faq.${item}.q`)}>
                 {t(`facilityApplication.public.faq.${item}.a`)}
-              </p>
-            </details>
-          ))}
+              </Faq>
+            ))}
+          </Panel>
         </section>
 
         <section id="continue" aria-labelledby="continue-title" className="max-w-xl">

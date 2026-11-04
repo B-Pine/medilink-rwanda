@@ -1,8 +1,8 @@
-import { Sparkle } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 
 import { PageHeading } from "../../components/PageHeading";
 import { PublicLayout } from "../../layout/PublicLayout";
+import { Breadcrumbs } from "../site/kit";
 import { AssistantComposer, AssistantNotice, AssistantThread } from "./AssistantChat";
 import { useAssistantChat } from "./assistantState";
 
@@ -22,10 +22,9 @@ export function AssistantPage() {
     <PublicLayout>
       <div className="mx-auto flex w-full max-w-[44rem] flex-col gap-6 px-4 py-8 sm:px-6 sm:py-12">
         <div className="flex flex-col gap-3">
-          <p className="m-0 inline-flex items-center gap-2 self-start rounded-full bg-violet-bg px-3 py-1 text-caption font-semibold text-violet">
-            <Sparkle aria-hidden="true" weight="fill" className="size-3.5" />
-            {t("public.assistant.eyebrow")}
-          </p>
+          <Breadcrumbs
+            items={[{ to: "/", label: t("nav.home") }, { label: t("public.assistant.eyebrow") }]}
+          />
           <PageHeading
             title={title}
             className="m-0 font-heading text-h1 font-bold tracking-tight text-balance text-fg"
@@ -37,7 +36,7 @@ export function AssistantPage() {
 
         <AssistantNotice language={chat.language} />
 
-        <div className="flex min-h-[18rem] flex-col gap-3 rounded-3xl bg-surface p-4 shadow-card sm:p-6">
+        <div className="flex min-h-[18rem] flex-col gap-3 rounded-lg border border-border bg-surface p-4 sm:p-6">
           <AssistantThread chat={chat} />
           <div
             className={

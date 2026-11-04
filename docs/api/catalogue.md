@@ -612,11 +612,15 @@ Requirements: FR-BIL-04..13. Tests: money invariants (no negative amounts, serve
 | `POST` | `/api/v1/staff/credit-notes/{id}/payouts/` | Record the refund payout (B15) | `billing.record_payment` | FR-BIL-09 | Idem; cash needs an open shift | Implemented (S8) |
 | `GET` | `/api/v1/staff/receipts/{id}/` | Receipt for printing (B16) | as B1 | FR-BIL-08 | PDF with S7b | Implemented (S8) |
 | `POST` | `/api/v1/staff/receipts/{id}/send/` | Send the receipt to the patient again (B17) | `billing.record_payment` | FR-BIL-08 | S9 in-app and email | Implemented (S8) |
-| `GET`, `POST` | `/api/v1/staff/cash-shifts/` | List shifts; open my shift with a float (B18, B20) | `billing.record_payment` (own) or `billing.approve` (all) | FR-BIL-10 | One open shift per person | Implemented (S8) |
-| `GET` | `/api/v1/staff/cash-shifts/current/` | My open shift with running totals (B19) | `billing.record_payment` | FR-BIL-10 | | Implemented (S8) |
+| `GET`, `POST` | `/api/v1/staff/cash-shifts/` | List shifts; open my shift with a float (B18, B20) | `billing.record_payment` (own) or `billing.approve` (all) | FR-BIL-10 | One open shift per person; `mine=true` keeps only my own (#203) | Implemented (S8) |
+| `GET` | `/api/v1/staff/cash-shifts/current/` | My open shift with running totals (B19) | `billing.record_payment` | FR-BIL-10 | Every shift carries `by_method`: payments, received, refunds paid, expected (cash with the float), counted and difference per method (#203) | Implemented (S8) |
 | `POST` | `/api/v1/staff/cash-shifts/{id}/close/` | Close: counted per method, note (B21) | owner | FR-BIL-10 | Expected vs counted | Implemented (S8) |
 | `POST` | `/api/v1/staff/cash-shifts/{id}/review/` | Accept a closed shift (B22) | `billing.approve` | FR-BIL-10 | Not the owner unless one-person clinic; Audit | Implemented (S8) |
 | `GET` | `/api/v1/staff/billing/patients/{id}/balances/` | Unpaid balances of a patient at this facility (B23) | `billing.record_payment` | FR-BIL-12 | Never other facilities | Implemented (S8) |
+| `GET` | `/api/v1/staff/insurance-claims/insurers/` | Insurers to list claims for: accepted here or verified on a bill (#203) | `billing.approve` or `reports.view` | FR-BIL-14 | | Implemented (W4) |
+| `GET` | `/api/v1/staff/insurance-claims/` | Monthly claim list for one insurer, with totals (#203) | `billing.approve` or `reports.view` | FR-BIL-14 | `insurer`, `month=YYYY-MM` (visit dates); verified bills with an insurer share, not void; member number, ICD-10 of signed notes, lines, shares, claim status; Audit | Implemented (W4) |
+| `GET` | `/api/v1/staff/insurance-claims/export/` | Download the claim list (#203) | `billing.approve` or `reports.view` | FR-BIL-14 | `kind=csv` (UTF-8 with BOM, formula-safe; default) or `kind=pdf` (A4 landscape); Audit | Implemented (W4) |
+| `POST` | `/api/v1/staff/bills/{id}/claim/` | Mark the bill's claim paid, or rejected with the insurer's reason (#203) | `billing.approve` | FR-BIL-14 | Ver (`0` for a first mark); a rejection needs a reason; may be marked again; Audit with from/to | Implemented (W4) |
 
 ### Patient
 

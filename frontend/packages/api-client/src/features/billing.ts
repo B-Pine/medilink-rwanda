@@ -168,6 +168,21 @@ export interface Receipt {
   balance_after_rwf: number;
 }
 
+/** #203 end-of-shift summary row for one payment method. */
+export interface ShiftMethodRow {
+  method: PaymentMethod;
+  payment_count: number;
+  received_rwf: number;
+  /** Refunds paid back in this shift. */
+  paid_out_rwf: number;
+  /** What the drawer should hold; cash includes the opening float. */
+  expected_rwf: number;
+  /** `null` while the shift is open. */
+  counted_rwf: number | null;
+  /** Counted minus expected; `null` while open. */
+  difference_rwf: number | null;
+}
+
 export interface CashShift {
   id: Uuid;
   membership_id: Uuid;
@@ -176,16 +191,83 @@ export interface CashShift {
   opened_at: string;
   opening_float_rwf: number;
   closed_at: string | null;
+  /** What the drawer should hold per method; cash includes the opening float. */
   expected_totals: MethodTotals;
   counted_totals: MethodTotals | null;
   difference_rwf: number | null;
   note: string;
   payment_count: number;
+  by_method: ShiftMethodRow[];
   reviewed_by_name: string | null;
   reviewed_at: string | null;
   review_note: string;
   is_self_reviewed: boolean;
   version: number;
+}
+
+/** What a shift took in across all methods (payments only: no float, no refunds paid out). */
+export function shiftCollected(shift: Pick<CashShift, "by_method">): number {
+  return shift.by_method.reduce((total, row) => total + row.received_rwf, 0);
+}
+
+// ---- #203 monthly claim list per insurer ----
+
+export type ClaimStatus = "pending" | "paid" | "rejected";
+
+export interface ClaimInsurer {
+  code: string;
+  name: string;
+}
+
+export interface ClaimLine {
+  code: string;
+  name: string;
+  kind: BillLine["kind"];
+  quantity: number;
+  total_rwf: number;
+  insurer_share_rwf: number;
+  patient_share_rwf: number;
+  is_covered: boolean;
+}
+
+export interface ClaimRow {
+  bill_id: Uuid;
+  visit_id: Uuid;
+  service_date: string;
+  patient_display_name: string;
+  member_number: string;
+  /** Signed notes only; the primary diagnosis first. */
+  icd10_codes: string[];
+  lines: ClaimLine[];
+  total_rwf: number;
+  insurer_share_rwf: number;
+  patient_share_rwf: number;
+  status: ClaimStatus;
+  reason: string;
+  reference: string;
+  decided_by_name: string | null;
+  decided_at: string | null;
+  /** 0 until the claim is first marked. */
+  version: number;
+}
+
+export interface ClaimSummary {
+  count: number;
+  total_rwf: number;
+  insurer_share_rwf: number;
+  patient_share_rwf: number;
+  pending_count: number;
+  paid_count: number;
+  paid_rwf: number;
+  rejected_count: number;
+  rejected_rwf: number;
+}
+
+export interface ClaimList {
+  insurer_code: string;
+  month: string;
+  summary: ClaimSummary;
+  results: ClaimRow[];
 }
 
 export interface PaymentInput {
@@ -213,6 +295,12 @@ export const billingPaths = {
   currentShift: `${STF}/cash-shifts/current/`,
   closeShift: (id: Uuid) => `${STF}/cash-shifts/${id}/close/`,
   reviewShift: (id: Uuid) => `${STF}/cash-shifts/${id}/review/`,
+  claims: `${STF}/insurance-claims/`,
+  claimInsurers: `${STF}/insurance-claims/insurers/`,
+  /** CSV (default) or PDF of the month's claims; fetch it with the session cookie. */
+  claimsExport: (params: { insurer: string; month: string; kind?: "csv" | "pdf" }) =>
+    `${STF}/insurance-claims/export/${query({ ...params })}`,
+  markClaim: (billId: Uuid) => `${STF}/bills/${billId}/claim/`,
 };
 
 function query(params: Record<string, string | number | boolean | undefined | null>): string {
@@ -263,12 +351,23 @@ export function createBillingApi(client: ApiClient) {
       id: Uuid,
       body: { version: number; counted_totals: MethodTotals; note?: string },
     ) => client.post<CashShift>(billingPaths.closeShift(id), body),
-    /** B18: my shifts, or every shift for an approver; filter by `status`. */
-    shifts: (params: { status?: ShiftStatus; page?: number } = {}) =>
-      client.get<Paginated<CashShift>>(billingPaths.shifts + query(params)),
+    /** B18: my shifts, or every shift for an approver (`mine` keeps only my own). */
+    shifts: (
+      params: { status?: ShiftStatus; mine?: boolean; page?: number; page_size?: number } = {},
+    ) => client.get<Paginated<CashShift>>(billingPaths.shifts + query(params)),
     /** B22: accept a closed shift; not the owner unless a one-person clinic. */
     reviewShift: (id: Uuid, body: { version: number; note?: string }) =>
       client.post<CashShift>(billingPaths.reviewShift(id), body),
+    /** #203: insurers accepted here or verified on a bill. */
+    claimInsurers: () => client.get<ClaimInsurer[]>(billingPaths.claimInsurers),
+    /** #203: the month's claims for one insurer (`month` is `YYYY-MM`). */
+    claims: (params: { insurer: string; month: string }) =>
+      client.get<ClaimList>(billingPaths.claims + query(params)),
+    /** #203: paid, or rejected with the insurer's reason; `version` 0 for a first mark. */
+    markClaim: (
+      billId: Uuid,
+      body: { version: number; status: "paid" | "rejected"; reason?: string; reference?: string },
+    ) => client.post<ClaimRow>(billingPaths.markClaim(billId), body),
   };
 }
 

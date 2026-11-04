@@ -55,6 +55,9 @@ import { Package, Storefront } from "@phosphor-icons/react";
 // [S11 imports]
 import { Fingerprint, ShieldCheck, Siren, UsersThree } from "@phosphor-icons/react";
 // [/S11 imports]
+// [S8 imports]
+import { Files } from "@phosphor-icons/react";
+// [/S8 imports]
 
 /** Sections of the Sprint 0 shell (labels in `shell.nav.<key>`). Features use their own keys. */
 export type CoreNavKey =
@@ -468,6 +471,17 @@ export const NAV_ITEMS: readonly NavItem[] = [
     visible: (me: StaffMe) => me.is_platform_admin,
   },
   // [/S11]
+  // [S8]
+  // #203: the monthly claim list per insurer
+  {
+    key: "insuranceClaims",
+    path: "/claims",
+    icon: Files,
+    group: "facility",
+    labelKey: "billing.nav.claims",
+    visible: hasAny("billing.approve", "reports.view"),
+  },
+  // [/S8]
 ];
 
 /** Translation key of a nav item's label. */
@@ -483,6 +497,7 @@ export type NavSection = "work" | "practice" | "manage" | "help";
 const PRACTICE_KEYS = new Set<string>(["clinicalActivity", "clinicalTemplates"]);
 const MANAGE_KEYS = new Set<string>([
   "approvals",
+  "insuranceClaims",
   "reports",
   "staff",
   "setup",
@@ -527,6 +542,7 @@ const ORDER = [
   "payments",
   "reports",
   "approvals",
+  "insuranceClaims",
   "staff",
   "doctorSchedules",
   "setup",

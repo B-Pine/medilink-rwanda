@@ -33,6 +33,28 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   Pharmacist Today adds `low_stock` and `expiring_soon`; `out_of_stock` counts both kinds. Drug
   search is also open to `pharmacy.stock`.
 
+### Cashier and insurance finish (2026-11-04, #203)
+
+- Added: the monthly claim list per insurer. `GET /staff/insurance-claims/?insurer=&month=YYYY-MM`
+  lists the month's bills whose insurance was verified and where the insurer owes something (not
+  void): member number, visit date, ICD-10 codes of the signed notes (primary first), lines,
+  insurer and patient shares, and the claim status, with totals. `GET .../insurers/` lists the
+  insurers to choose from; `GET .../export/?kind=csv|pdf` downloads it (CSV UTF-8 with BOM and
+  formula-safe cells; PDF A4 landscape with reportlab). Viewing needs `billing.approve` or
+  `reports.view`; lists and downloads are audited (`billing.claims.listed`,
+  `billing.claims.exported`).
+- Added: `POST /staff/bills/{id}/claim/` marks a claim `paid` (optional payment reference) or
+  `rejected` with the insurer's reason (`billing.approve`; optimistic `version`, 0 for the first
+  mark; audit `billing.claim.marked` with the from and to status). New table
+  `billing_insurance_claim` (billing migrations 0006–0007): forced facility RLS, never deleted,
+  keeps its bill.
+- Added: `by_method` on every cash shift: payments, received, refunds paid back, expected (cash
+  with the opening float), counted and difference per payment method; `GET /staff/cash-shifts/`
+  takes `mine=true`.
+- Added: `billing.bills.add_tariff_line(visit, tariff_code=…)` and `remove_tariff_line(line_id,
+  reason=…)`, the one way for other apps (lab tests, procedures) to put a priced item on a visit's
+  bill and take it off again before payment.
+
 ### Doctor's quick note: order sets and favourites (2026-11-04, #202)
 
 - Added: `GET /staff/clinical/favourites/`: the doctor's most used diagnoses and medicines at this

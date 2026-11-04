@@ -2,6 +2,7 @@ import {
   isApiError,
   PAYMENT_METHODS,
   EXEMPTION_REASONS,
+  shiftCollected,
   type ApprovalRequest,
   type Bill,
   type BillRow,
@@ -47,6 +48,7 @@ import { Link, useParams, useSearchParams } from "react-router";
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
 import { useStepUp } from "../lock/StepUp";
+import { DifferenceBadge, LastShiftSummary, ShiftMethodTable } from "./ShiftSummary";
 
 const keys = {
   all: ["billing"] as const,
@@ -106,66 +108,71 @@ function ShiftBanner() {
   const [dialog, setDialog] = useState<"open" | "close" | null>(null);
   if (shift.isPending) return null;
   const s = shift.data;
-  const expected = s
-    ? s.expected_totals.cash +
-      s.expected_totals.mtn_momo +
-      s.expected_totals.airtel_money +
-      s.expected_totals.card
-    : 0;
+  const collected = s ? shiftCollected(s) : 0;
   return (
-    <section
-      aria-labelledby="shift-title"
-      className={cx(
-        "flex flex-wrap items-center gap-x-8 gap-y-4 rounded-2xl p-5 shadow-card",
-        s ? "bg-surface" : "bg-attention-bg",
-      )}
-    >
-      <span
+    <>
+      <section
+        aria-labelledby="shift-title"
         className={cx(
-          "grid size-12 shrink-0 place-items-center rounded-2xl",
-          s ? "bg-brand-subtle text-on-brand-subtle" : "bg-surface text-attention",
+          "flex flex-wrap items-center gap-x-8 gap-y-4 rounded-2xl p-5 shadow-card",
+          s ? "bg-surface" : "bg-attention-bg",
         )}
       >
-        <CashRegister aria-hidden="true" className="size-6" />
-      </span>
-      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <h2 id="shift-title" className="m-0 text-h3">
-          {s ? t("billing.shift.open") : t("billing.shift.none")}
-        </h2>
-        <p className="m-0 text-body-sm text-fg-secondary">
-          {s
-            ? t("billing.shift.summary", { count: s.payment_count, cashier: s.cashier_name })
-            : t("billing.shift.noneHint")}
-        </p>
-      </div>
-      {s && (
-        <dl className="m-0 flex flex-wrap gap-x-8 gap-y-2">
-          <div>
-            <dt className="text-caption font-semibold text-fg-muted uppercase">
-              {t("billing.shift.collected")}
-            </dt>
-            <dd className="m-0 font-heading text-h2 font-bold tabular-nums">{money(expected)}</dd>
+        <span
+          className={cx(
+            "grid size-12 shrink-0 place-items-center rounded-2xl",
+            s ? "bg-brand-subtle text-on-brand-subtle" : "bg-surface text-attention",
+          )}
+        >
+          <CashRegister aria-hidden="true" className="size-6" />
+        </span>
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <h2 id="shift-title" className="m-0 text-h3">
+            {s ? t("billing.shift.open") : t("billing.shift.none")}
+          </h2>
+          <p className="m-0 text-body-sm text-fg-secondary">
+            {s
+              ? t("billing.shift.summary", { count: s.payment_count, cashier: s.cashier_name })
+              : t("billing.shift.noneHint")}
+          </p>
+        </div>
+        {s && (
+          <dl className="m-0 flex flex-wrap gap-x-8 gap-y-2">
+            <div>
+              <dt className="text-caption font-semibold text-fg-muted uppercase">
+                {t("billing.shift.collected")}
+              </dt>
+              <dd className="m-0 font-heading text-h2 font-bold tabular-nums">
+                {money(collected)}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-caption font-semibold text-fg-muted uppercase">
+                {t("billing.shift.float")}
+              </dt>
+              <dd className="m-0 font-heading text-h2 font-bold tabular-nums">
+                {money(s.opening_float_rwf)}
+              </dd>
+            </div>
+          </dl>
+        )}
+        <Button
+          pill
+          variant={s ? "secondary" : "primary"}
+          onClick={() => setDialog(s ? "close" : "open")}
+        >
+          {s ? t("billing.shift.closeAction") : t("billing.shift.openAction")}
+        </Button>
+        {s && (
+          <div className="basis-full">
+            <ShiftMethodTable shift={s} caption={t("billing.shift.byMethod.title")} />
           </div>
-          <div>
-            <dt className="text-caption font-semibold text-fg-muted uppercase">
-              {t("billing.shift.float")}
-            </dt>
-            <dd className="m-0 font-heading text-h2 font-bold tabular-nums">
-              {money(s.opening_float_rwf)}
-            </dd>
-          </div>
-        </dl>
-      )}
-      <Button
-        pill
-        variant={s ? "secondary" : "primary"}
-        onClick={() => setDialog(s ? "close" : "open")}
-      >
-        {s ? t("billing.shift.closeAction") : t("billing.shift.openAction")}
-      </Button>
-      {dialog === "open" && <OpenShiftDialog onClose={() => setDialog(null)} />}
-      {dialog === "close" && s && <CloseShiftDialog shift={s} onClose={() => setDialog(null)} />}
-    </section>
+        )}
+        {dialog === "open" && <OpenShiftDialog onClose={() => setDialog(null)} />}
+        {dialog === "close" && s && <CloseShiftDialog shift={s} onClose={() => setDialog(null)} />}
+      </section>
+      {!s && <LastShiftSummary />}
+    </>
   );
 }
 
@@ -213,7 +220,7 @@ function CloseShiftDialog({ shift, onClose }: { shift: CashShift; onClose: () =>
   const money = useMoney();
   const queryClient = useQueryClient();
   const [counted, setCounted] = useState<Record<PaymentMethod, string>>({
-    cash: String(shift.expected_totals.cash + shift.opening_float_rwf),
+    cash: String(shift.expected_totals.cash),
     mtn_momo: String(shift.expected_totals.mtn_momo),
     airtel_money: String(shift.expected_totals.airtel_money),
     card: String(shift.expected_totals.card),
@@ -225,17 +232,14 @@ function CloseShiftDialog({ shift, onClose }: { shift: CashShift; onClose: () =>
     airtel_money: Number(counted.airtel_money) || 0,
     card: Number(counted.card) || 0,
   };
-  const difference =
-    totals.cash -
-    (shift.expected_totals.cash + shift.opening_float_rwf) +
-    (totals.mtn_momo - shift.expected_totals.mtn_momo) +
-    (totals.airtel_money - shift.expected_totals.airtel_money) +
-    (totals.card - shift.expected_totals.card);
+  // the expected totals already hold the opening float in cash (contract §2.2 Shift)
+  const sum = (x: MethodTotals) => x.cash + x.mtn_momo + x.airtel_money + x.card;
+  const difference = sum(totals) - sum(shift.expected_totals);
   const close = useMutation({
     mutationFn: () =>
       api.billing.closeShift(shift.id, { version: shift.version, counted_totals: totals, note }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: keys.shift });
+      await queryClient.invalidateQueries({ queryKey: keys.all });
       onClose();
     },
   });
@@ -260,11 +264,7 @@ function CloseShiftDialog({ shift, onClose }: { shift: CashShift; onClose: () =>
             <TextField
               key={method}
               label={t(`billing.method.${method}`)}
-              hint={t("billing.shift.expected", {
-                amount: money(
-                  shift.expected_totals[method] + (method === "cash" ? shift.opening_float_rwf : 0),
-                ),
-              })}
+              hint={t("billing.shift.expected", { amount: money(shift.expected_totals[method]) })}
               inputMode="numeric"
               value={counted[method]}
               onChange={(e) =>
@@ -988,7 +988,6 @@ function ShiftReviewItem({ shift }: { shift: CashShift }) {
         }).format(new Date(iso))
       : "—";
   const diff = shift.difference_rwf ?? 0;
-  const counted = shift.counted_totals;
   return (
     <li className="flex flex-col gap-4 rounded-2xl bg-surface p-5 shadow-card">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -1004,54 +1003,9 @@ function ShiftReviewItem({ shift }: { shift: CashShift }) {
             </span>
           </span>
         </div>
-        <Badge tone={diff === 0 ? "success" : diff < 0 ? "danger" : "warning"}>
-          {diff === 0
-            ? t("billing.approvals.shifts.balanced")
-            : diff < 0
-              ? t("billing.approvals.shifts.short", { amount: money(-diff) })
-              : t("billing.approvals.shifts.over", { amount: money(diff) })}
-        </Badge>
+        <DifferenceBadge difference={diff} />
       </div>
-      <div className="overflow-hidden rounded-xl ring-1 ring-border">
-        <table className="w-full border-collapse text-body-sm">
-          <thead className="bg-subtle text-left text-caption font-semibold tracking-wide text-fg-secondary uppercase">
-            <tr>
-              <th scope="col" className="px-3 py-2">
-                {t("billing.approvals.shifts.method")}
-              </th>
-              <th scope="col" className="px-3 py-2 text-right">
-                {t("billing.approvals.shifts.expected")}
-              </th>
-              <th scope="col" className="px-3 py-2 text-right">
-                {t("billing.approvals.shifts.counted")}
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {PAYMENT_METHODS.map((m) => {
-              const expected =
-                shift.expected_totals[m] + (m === "cash" ? shift.opening_float_rwf : 0);
-              const got = counted?.[m] ?? null;
-              return (
-                <tr key={m}>
-                  <th scope="row" className="px-3 py-2 text-left font-medium">
-                    {t(`billing.method.${m}`)}
-                  </th>
-                  <td className="px-3 py-2 text-right tabular-nums">{money(expected)}</td>
-                  <td
-                    className={cx(
-                      "px-3 py-2 text-right font-semibold tabular-nums",
-                      got !== null && got !== expected && "text-danger",
-                    )}
-                  >
-                    {got === null ? "—" : money(got)}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      <ShiftMethodTable shift={shift} caption={t("billing.shift.byMethod.title")} />
       <p className="m-0 text-caption text-fg-muted">
         {t("billing.approvals.shifts.float", { amount: money(shift.opening_float_rwf) })}
       </p>

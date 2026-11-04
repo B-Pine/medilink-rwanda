@@ -26,6 +26,22 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   prescription items and availability rows; MSW mocks for every stock endpoint, with FEFO
   deduction and the "only N left" refusal in the dispense mock.
 
+### Cashier and insurance finish (2026-11-04, #203)
+
+- Added: **Insurance claims** (`/claims`, menu for `billing.approve` or `reports.view`): choose an
+  insurer and a month, see the totals (to claim, not settled, paid, rejected), each insured visit
+  with member number, ICD-10 codes, services and shares, download the list as CSV or PDF, and mark
+  each claim paid (optional reference) or rejected with the insurer's reason.
+- Added: the end-of-shift summary by payment method: on Payments under the open shift, on the
+  cash desk card, as "Your last shift" on Payments once the shift is closed (expected, counted,
+  difference per method, and whether it was accepted), and on the shift review in Approvals.
+- Fixed: the opening float was counted twice: the shift's expected cash already holds it, so the
+  close dialog pre-filled and compared cash with the float added again, and "Collected" included
+  the float. Collected is now the payments only (`shiftCollected`).
+- Changed: api-client `CashShift.by_method`, `billing.claimInsurers`, `claims`, `markClaim`,
+  `billingPaths.claimsExport`, `shifts({ mine })`; MSW mocks for all of them (the mock's expected
+  cash now holds the float, as the API does).
+
 ### Doctor's quick note: order sets and favourites (2026-11-04, #202)
 
 - Changed: **Use a template** applies an order set in one click: diagnoses (provisional, with

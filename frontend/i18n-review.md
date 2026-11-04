@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5759.
+Keys: 5807.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -658,6 +658,18 @@ File: `apps/staff-web/src/features/billing/locales/rw.json`
 | `shift.difference` | Itandukaniro {{amount}} | Difference {{amount}} | needs native-speaker review |
 | `shift.note` | Icyitonderwa | Note | needs native-speaker review |
 | `shift.needed` | Banza ufungure igihe cy’akazi mbere yo kwandika ubwishyu. | Open a cash shift before recording payments. | needs native-speaker review |
+| `shift.byMethod.title` | Ukurikije uburyo bwo kwishyura | By payment method | needs native-speaker review |
+| `shift.byMethod.method` | Uburyo | Method | needs native-speaker review |
+| `shift.byMethod.payments` | Ubwishyu | Payments | needs native-speaker review |
+| `shift.byMethod.received` | Byakiriwe | Received | needs native-speaker review |
+| `shift.byMethod.paidOut` | Ayasubijwe | Refunds paid | needs native-speaker review |
+| `shift.byMethod.expected` | Biri mu isanduku | In the drawer | needs native-speaker review |
+| `shift.byMethod.counted` | Byabaruwe | Counted | needs native-speaker review |
+| `shift.byMethod.difference` | Itandukaniro | Difference | needs native-speaker review |
+| `shift.byMethod.total` | Igiteranyo | Total | needs native-speaker review |
+| `shift.last.title` | Igihe cy’akazi giheruka | Your last shift | needs native-speaker review |
+| `shift.last.waiting` | Gitegereje kugenzurwa | Waiting for review | needs native-speaker review |
+| `shift.last.accepted` | Cyemejwe na {{name}} | Accepted by {{name}} | needs native-speaker review |
 | `approvals.title` | Kwemeza | Approvals | needs native-speaker review |
 | `approvals.empty` | Nta bitegereje kwemezwa | Nothing waiting for approval | needs native-speaker review |
 | `approvals.by` | Byasabwe na {{name}} | Requested by {{name}} | needs native-speaker review |
@@ -696,6 +708,42 @@ File: `apps/staff-web/src/features/billing/locales/rw.json`
 | `today.collected` | Ayakiriwe muri iki gihe | Collected this shift | needs native-speaker review |
 | `today.next` | Izikurikira kwishyurwa | Next to pay | needs native-speaker review |
 | `today.nothing` | Nta nyemezabuguzi itegereje kwishyurwa. Inshya ziza hano nyuma yo kwivuza. | No bill waits for payment. New bills appear here after the visit. | needs native-speaker review |
+| `today.inDrawer` | {{amount}} mu isanduku | {{amount}} in the drawer | needs native-speaker review |
+| `nav.claims` | Ibisabwa abishingizi | Insurance claims | needs native-speaker review |
+| `claims.title` | Ibisabwa abishingizi | Insurance claims | needs native-speaker review |
+| `claims.intro` | Abivuje bafite ubwishingizi bw’umwishingizi umwe mu kwezi. Kuramo urutonde rwo koherereza umwishingizi, hanyuma werekane niba buri gisabwa cyishyuwe cyangwa cyanzwe. | Each insurer's insured visits for a month. Download the list for the insurer, then mark each claim paid or rejected. | needs native-speaker review |
+| `claims.insurer` | Umwishingizi | Insurer | needs native-speaker review |
+| `claims.month` | Ukwezi kwo kwivuza | Month of the visits | needs native-speaker review |
+| `claims.totals` | Ibisabwa by’uku kwezi | Claims this month | needs native-speaker review |
+| `claims.visits_one` | Kwivuza {{count}} kwo gusaba | {{count}} visit to claim | needs native-speaker review |
+| `claims.visits_other` | Kwivuza {{count}} kwo gusaba | {{count}} visits to claim | needs native-speaker review |
+| `claims.toClaim` | Umugabane w’umwishingizi | Insurer share | needs native-speaker review |
+| `claims.claimsCount_one` | Igisabwa {{count}} | {{count}} claim | needs native-speaker review |
+| `claims.claimsCount_other` | Ibisabwa {{count}} | {{count}} claims | needs native-speaker review |
+| `claims.status.pending` | Ntikirishyurwa | Not settled | needs native-speaker review |
+| `claims.status.paid` | Cyishyuwe | Paid | needs native-speaker review |
+| `claims.status.rejected` | Cyanzwe | Rejected | needs native-speaker review |
+| `claims.all` | Byose | All | needs native-speaker review |
+| `claims.filter` | Ibisabwa ukurikije uko bihagaze | Claims by status | needs native-speaker review |
+| `claims.empty` | Nta bivuje bafite ubwishingizi bw’uyu mwishingizi muri uku kwezi | No insured visits for this insurer in this month | needs native-speaker review |
+| `claims.downloadCsv` | Kuramo CSV | Download CSV | needs native-speaker review |
+| `claims.downloadPdf` | Kuramo PDF | Download PDF | needs native-speaker review |
+| `claims.downloadFailed` | Gukuramo ntibyakunze. Ongera ugerageze. | The download did not work. Try again. | needs native-speaker review |
+| `claims.member` | Nimero y’umunyamuryango {{number}} | Member number {{number}} | needs native-speaker review |
+| `claims.icd10` | ICD-10 | ICD-10 | needs native-speaker review |
+| `claims.noDiagnosis` | Nta isuzuma ryashyizweho umukono | No signed diagnosis | needs native-speaker review |
+| `claims.lines_one` | Serivisi cyangwa ikintu {{count}} | {{count}} service or item | needs native-speaker review |
+| `claims.lines_other` | Serivisi n’ibintu {{count}} | {{count}} services and items | needs native-speaker review |
+| `claims.notCovered` | Ntibyishingiwe | Not covered | needs native-speaker review |
+| `claims.markedBy` | Byanditswe na {{name}} | Marked by {{name}} | needs native-speaker review |
+| `claims.referenceIs` | Nimero {{reference}} | Reference {{reference}} | needs native-speaker review |
+| `claims.reason` | Impamvu y’umwishingizi | The insurer's reason | needs native-speaker review |
+| `claims.reference` | Nimero y’ubwishyu | Payment reference | needs native-speaker review |
+| `claims.referenceHint` | Si ngombwa: nimero y’iyohereza cyangwa y’icyiciro by’umwishingizi | Optional: the insurer's transfer or batch number | needs native-speaker review |
+| `claims.confirmPaid` | Andika ko cyishyuwe | Mark paid | needs native-speaker review |
+| `claims.confirmRejected` | Andika ko cyanzwe | Mark rejected | needs native-speaker review |
+| `claims.markPaid` | Cyishyuwe | Paid | needs native-speaker review |
+| `claims.markRejected` | Cyanzwe | Rejected | needs native-speaker review |
 
 ## staff-web feature: bookings (namespace bookings)
 

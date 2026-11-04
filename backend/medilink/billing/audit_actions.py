@@ -23,5 +23,9 @@ ACTIONS: frozenset[str] = frozenset(
         "billing.shift.opened",
         "billing.shift.closed",
         "billing.shift.reviewed",
+        # #203 monthly claim list per insurer
+        "billing.claims.listed",
+        "billing.claims.exported",
+        "billing.claim.marked",
     }
 )

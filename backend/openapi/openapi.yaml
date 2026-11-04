@@ -9817,6 +9817,47 @@ paths:
               schema:
                 $ref: '#/components/schemas/Bill'
           description: ''
+  /api/v1/staff/bills/{bill_id}/claim/:
+    post:
+      operationId: staff_claim_mark
+      summary: Mark a bill's claim paid, or rejected with the insurer's reason (#203)
+      parameters:
+      - in: path
+        name: bill_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClaimMarkRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClaimRow'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not a verified insured bill, or a rejection without a reason
   /api/v1/staff/bills/{bill_id}/exemptions/:
     post:
       operationId: staff_bill_exemption
@@ -10176,6 +10217,11 @@ paths:
       operationId: staff_cash_shifts
       summary: 'Shifts: my own, or every shift for approvers (B18)'
       parameters:
+      - in: query
+        name: mine
+        schema:
+          type: boolean
+        description: Only my own shifts (approvers too)
       - in: query
         name: page
         schema:
@@ -12924,6 +12970,94 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Not published
+  /api/v1/staff/insurance-claims/:
+    get:
+      operationId: staff_claims
+      summary: The monthly claim list for one insurer, with totals; audit-logged (#203)
+      parameters:
+      - in: query
+        name: insurer
+        schema:
+          type: string
+        description: Insurer code
+        required: true
+      - in: query
+        name: month
+        schema:
+          type: string
+        description: YYYY-MM (visit dates)
+        required: true
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClaimList'
+          description: ''
+  /api/v1/staff/insurance-claims/export/:
+    get:
+      operationId: staff_claims_export
+      summary: Download the monthly claim list (CSV UTF-8, or PDF); audit-logged (#203)
+      parameters:
+      - in: query
+        name: insurer
+        schema:
+          type: string
+        description: Insurer code
+        required: true
+      - in: query
+        name: kind
+        schema:
+          type: string
+          enum:
+          - csv
+          - pdf
+        description: csv by default
+      - in: query
+        name: month
+        schema:
+          type: string
+        description: YYYY-MM (visit dates)
+        required: true
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            text/csv:
+              schema:
+                type: string
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          description: One row per visit, then the total
+  /api/v1/staff/insurance-claims/insurers/:
+    get:
+      operationId: staff_claim_insurers
+      summary: 'Insurers to list claims for: accepted here or verified on a bill (#203)'
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClaimInsurer'
+          description: ''
   /api/v1/staff/insurer-rules/:
     get:
       operationId: staff_insurer_rules_list
@@ -19380,7 +19514,10 @@ components:
           format: date-time
           nullable: true
         expected_totals:
-          $ref: '#/components/schemas/MethodTotals'
+          allOf:
+          - $ref: '#/components/schemas/MethodTotals'
+          description: What the drawer should hold per method; cash includes the opening
+            float.
         counted_totals:
           allOf:
           - $ref: '#/components/schemas/MethodTotals'
@@ -19392,6 +19529,10 @@ components:
           type: string
         payment_count:
           type: integer
+        by_method:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShiftMethod'
         reviewed_by_name:
           type: string
           nullable: true
@@ -19406,6 +19547,7 @@ components:
         version:
           type: integer
       required:
+      - by_method
       - cashier_name
       - closed_at
       - counted_totals
@@ -19622,6 +19764,62 @@ components:
       required:
       - date_of_birth
       - lookup
+    ClaimInsurer:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+      required:
+      - code
+      - name
+    ClaimLine:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        kind:
+          $ref: '#/components/schemas/TariffKindEnum'
+        quantity:
+          type: integer
+        total_rwf:
+          type: integer
+        insurer_share_rwf:
+          type: integer
+        patient_share_rwf:
+          type: integer
+        is_covered:
+          type: boolean
+      required:
+      - code
+      - insurer_share_rwf
+      - is_covered
+      - kind
+      - name
+      - patient_share_rwf
+      - quantity
+      - total_rwf
+    ClaimList:
+      type: object
+      properties:
+        insurer_code:
+          type: string
+        month:
+          type: string
+        summary:
+          $ref: '#/components/schemas/ClaimSummary'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClaimRow'
+      required:
+      - insurer_code
+      - month
+      - results
+      - summary
     ClaimLookupRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -19641,6 +19839,139 @@ components:
           type: string
           minLength: 1
           maxLength: 200
+    ClaimMarkRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 0
+        status:
+          $ref: '#/components/schemas/ClaimMarkStatusEnum'
+        reason:
+          type: string
+          default: ''
+          maxLength: 300
+        reference:
+          type: string
+          default: ''
+          maxLength: 60
+      required:
+      - status
+      - version
+    ClaimMarkStatusEnum:
+      enum:
+      - paid
+      - rejected
+      type: string
+      description: |-
+        * `paid` - paid
+        * `rejected` - rejected
+    ClaimRow:
+      type: object
+      properties:
+        bill_id:
+          type: string
+          format: uuid
+        visit_id:
+          type: string
+          format: uuid
+        service_date:
+          type: string
+          format: date
+        patient_display_name:
+          type: string
+        member_number:
+          type: string
+        icd10_codes:
+          type: array
+          items:
+            type: string
+          description: Signed notes only; the primary diagnosis first.
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClaimLine'
+        total_rwf:
+          type: integer
+        insurer_share_rwf:
+          type: integer
+        patient_share_rwf:
+          type: integer
+        status:
+          $ref: '#/components/schemas/ClaimRowStatusEnum'
+        reason:
+          type: string
+        reference:
+          type: string
+        decided_by_name:
+          type: string
+          nullable: true
+        decided_at:
+          type: string
+          format: date-time
+          nullable: true
+        version:
+          type: integer
+          description: 0 until the claim is first marked.
+      required:
+      - bill_id
+      - decided_at
+      - decided_by_name
+      - icd10_codes
+      - insurer_share_rwf
+      - lines
+      - member_number
+      - patient_display_name
+      - patient_share_rwf
+      - reason
+      - reference
+      - service_date
+      - status
+      - total_rwf
+      - version
+      - visit_id
+    ClaimRowStatusEnum:
+      enum:
+      - pending
+      - paid
+      - rejected
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `paid` - Paid
+        * `rejected` - Rejected
+    ClaimSummary:
+      type: object
+      properties:
+        count:
+          type: integer
+        total_rwf:
+          type: integer
+        insurer_share_rwf:
+          type: integer
+        patient_share_rwf:
+          type: integer
+        pending_count:
+          type: integer
+        paid_count:
+          type: integer
+        paid_rwf:
+          type: integer
+        rejected_count:
+          type: integer
+        rejected_rwf:
+          type: integer
+      required:
+      - count
+      - insurer_share_rwf
+      - paid_count
+      - paid_rwf
+      - patient_share_rwf
+      - pending_count
+      - rejected_count
+      - rejected_rwf
+      - total_rwf
     ClaimVerified:
       type: object
       properties:
@@ -33902,6 +34233,38 @@ components:
       - facility_name
       - kind
       - number
+    ShiftMethod:
+      type: object
+      description: '#203 end-of-shift summary row for one payment method.'
+      properties:
+        method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        payment_count:
+          type: integer
+        received_rwf:
+          type: integer
+        paid_out_rwf:
+          type: integer
+          description: Refunds paid back in this shift.
+        expected_rwf:
+          type: integer
+          description: Cash includes the opening float.
+        counted_rwf:
+          type: integer
+          nullable: true
+          description: Null while open.
+        difference_rwf:
+          type: integer
+          nullable: true
+          description: Counted minus expected.
+      required:
+      - counted_rwf
+      - difference_rwf
+      - expected_rwf
+      - method
+      - paid_out_rwf
+      - payment_count
+      - received_rwf
     ShiftStatusEnum:
       enum:
       - open

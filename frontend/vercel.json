@@ -1,0 +1,56 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "patient-web": {
+      "root": "apps/patient-web",
+      "framework": "vite",
+      "buildCommand": "pnpm run build",
+      "outputDirectory": "dist",
+      "rewrites": [{ "source": "/(.*)", "destination": "/app-shell.html" }],
+      "headers": [
+        {
+          "source": "/assets/(.*)",
+          "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+        },
+        {
+          "source": "/(.*)",
+          "headers": [
+            { "key": "Content-Security-Policy", "value": "frame-ancestors 'none'" },
+            { "key": "X-Content-Type-Options", "value": "nosniff" },
+            { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+          ]
+        }
+      ]
+    },
+    "staff-web": {
+      "root": "apps/staff-web",
+      "framework": "vite",
+      "buildCommand": "pnpm exec vite build --base /staff/ --outDir dist/staff --emptyOutDir",
+      "outputDirectory": "dist",
+      "rewrites": [
+        { "source": "/staff", "destination": "/staff/index.html" },
+        { "source": "/staff/(.*)", "destination": "/staff/index.html" }
+      ],
+      "headers": [
+        {
+          "source": "/staff/assets/(.*)",
+          "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+        },
+        {
+          "source": "/(.*)",
+          "headers": [
+            { "key": "Content-Security-Policy", "value": "frame-ancestors 'none'" },
+            { "key": "X-Content-Type-Options", "value": "nosniff" },
+            { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+            { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+          ]
+        }
+      ]
+    }
+  },
+  "rewrites": [
+    { "source": "/staff", "destination": { "service": "staff-web" } },
+    { "source": "/staff/(.*)", "destination": { "service": "staff-web" } },
+    { "source": "/(.*)", "destination": { "service": "patient-web" } }
+  ]
+}

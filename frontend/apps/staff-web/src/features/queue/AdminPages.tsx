@@ -290,7 +290,10 @@ function CreateDisplay({ onClose }: { onClose: () => void }) {
     mutationFn: () => api.queue.createDisplayLink({ label, service_ids: chosen }),
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: queueKeys.displays }),
   });
-  const url = create.data ? `${window.location.origin}/display/${create.data.token}` : "";
+  // BASE_URL keeps the /staff/ prefix when the app is served under one (vercel.json)
+  const url = create.data
+    ? `${window.location.origin}${import.meta.env.BASE_URL}display/${create.data.token}`
+    : "";
   return (
     <Dialog
       open

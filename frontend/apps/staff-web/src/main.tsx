@@ -20,7 +20,10 @@ async function bootstrap() {
   initTheme();
   await enableMocks();
   const services = createServices();
-  const router = createBrowserRouter(routes);
+  // Served under a path prefix on Vercel (/staff/, vite --base); "/" everywhere else.
+  const router = createBrowserRouter(routes, {
+    basename: import.meta.env.BASE_URL.replace(/\/$/, "") || "/",
+  });
   const container = document.getElementById("root");
   if (!container) throw new Error("#root not found");
   createRoot(container).render(

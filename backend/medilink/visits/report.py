@@ -136,25 +136,54 @@ def _visits(facility_id: Any, start: dt.date, end: dt.date, group: str) -> dict[
 # ---- waits -------------------------------------------------------------------------------------
 
 
-def _waits(facility_id: Any, start: dt.date, end: dt.date) -> list[dict[str, Any]]:
-    """Wait per stage: from when the patient was in that queue (the later of joining it and
-    arriving on site) to the first call (analysis 13 §1). The first `call` event is kept: a
-    recall or no response moves `called_at`."""
+def wait_samples(
+    facility_id: Any, start: dt.date, end: dt.date
+) -> list[tuple[dt.date, str, float]]:
+    """(service day, stage, minutes) per called ticket: from when the patient was in that queue
+    (the later of joining it and arriving on site) to the first call (analysis 13 §1). The first
+    `call` event is kept: a recall or no response moves `called_at`. In the facility's RLS
+    context; the national report (W9) pools these across facilities."""
     tickets = Ticket.objects.filter(
         facility_id=facility_id, service_date__gte=start, service_date__lte=end
     )
     first_calls = (
         TicketEvent.objects.filter(facility_id=facility_id, action="call", ticket__in=tickets)
-        .values("ticket_id", "ticket__stage", "ticket__arrival_at", "ticket__visit__checked_in_at")
+        .values(
+            "ticket_id",
+            "ticket__stage",
+            "ticket__service_date",
+            "ticket__arrival_at",
+            "ticket__visit__checked_in_at",
+        )
         .annotate(first=Min("occurred_at"))
     )
-    waits: dict[str, list[float]] = defaultdict(list)
+    out: list[tuple[dt.date, str, float]] = []
     for row in first_calls:
         on_site = row["ticket__visit__checked_in_at"]
         if on_site is None:
             continue
         since = max(row["ticket__arrival_at"], on_site)
-        waits[row["ticket__stage"]].append(max(0.0, _minutes(row["first"] - since)))
+        minutes = max(0.0, _minutes(row["first"] - since))
+        out.append((row["ticket__service_date"], row["ticket__stage"], minutes))
+    return out
+
+
+def median(values: list[float]) -> int | None:
+    return _median(values)
+
+
+def p90(values: list[float]) -> int | None:
+    return _p90(values)
+
+
+def _waits(facility_id: Any, start: dt.date, end: dt.date) -> list[dict[str, Any]]:
+    """Wait per stage (see `wait_samples`)."""
+    tickets = Ticket.objects.filter(
+        facility_id=facility_id, service_date__gte=start, service_date__lte=end
+    )
+    waits: dict[str, list[float]] = defaultdict(list)
+    for _day, stage, minutes in wait_samples(facility_id, start, end):
+        waits[stage].append(minutes)
     issued = Counter(tickets.values_list("stage", flat=True))
     left = Counter(
         tickets.filter(state=TicketState.LEFT_WITHOUT_SERVICE).values_list("stage", flat=True)
@@ -495,9 +524,14 @@ def table_rows(report: dict[str, Any], table: str) -> list[list[Any]]:
 
 def export_csv(report: dict[str, Any], table: str) -> str:
     """UTF-8 with BOM for spreadsheets; text cells never start a formula."""
+    return csv_text(table_rows(report, table))
+
+
+def csv_text(rows: list[list[Any]]) -> str:
+    """Rows as CSV: UTF-8 with BOM, CRLF, text cells never start a formula (also W9)."""
     buffer = io.StringIO()
     writer = csv.writer(buffer, lineterminator="\r\n")
-    for row in table_rows(report, table):
+    for row in rows:
         writer.writerow(
             [
                 ""
@@ -509,3 +543,39 @@ def export_csv(report: dict[str, Any], table: str) -> str:
             ]
         )
     return "﻿" + buffer.getvalue()
+
+
+# ---- period ------------------------------------------------------------------------------------
+
+
+def parse_period(params: Any, today: dt.date) -> tuple[dt.date, dt.date, str]:
+    """`from`, `to` (YYYY-MM-DD; the last 30 days by default) and `group` from query params.
+    Raises ValidationError with every problem at once (also the national report, W9)."""
+    from rest_framework import exceptions
+
+    problems: dict[str, list[str]] = {}
+
+    def day(name: str, default: dt.date) -> dt.date:
+        raw = str(params.get(name, "") or "").strip()
+        if not raw:
+            return default
+        try:
+            return dt.date.fromisoformat(raw)
+        except ValueError:
+            problems[name] = ["Use YYYY-MM-DD."]
+            return default
+
+    end = day("to", today)
+    start = day("from", end - dt.timedelta(days=29))
+    group = str(params.get("group", "day") or "day").strip() or "day"
+    if group not in GROUPS:
+        problems["group"] = ["Use day, week or month."]
+    if start > end:
+        problems["from"] = ["The first day comes after the last day."]
+    elif (end - start).days + 1 > MAX_DAYS:
+        problems["from"] = [f"Choose at most {MAX_DAYS} days."]
+    if end > today:
+        problems["to"] = ["The last day can't be in the future."]
+    if problems:
+        raise exceptions.ValidationError(problems)
+    return start, end, group

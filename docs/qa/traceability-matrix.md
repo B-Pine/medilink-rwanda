@@ -338,7 +338,7 @@ Source: [13 · Reporting and analytics](../analysis/13-reporting-and-analytics.m
 | FR-RPT-02 | Live operations board | P1 | S10 | Both | API, E2E | Not started |
 | FR-RPT-03 | Facility reports (daily, waits, doctors, bookings, finance, staff) | P1 | S10, W6 | Both | API, CMP | In progress (W6 `/reports`: patients, sources, no-shows, waits by stage, money, lab, stock; doctors and staff not yet, #205) |
 | FR-RPT-04 | Export to Excel and PDF | P1 | S10, W6 | Both | API, SEC | In progress (W6: CSV per table, formula-safe, audit-logged; PDF not yet, #205) |
-| FR-RPT-05 | Platform network, adoption, quality and system reports | P1 | S10 | Both | API | Not started |
+| FR-RPT-05 | Platform network, adoption, quality and system reports | P1 | S10, U8 W9 (#208: national report `/platform/reports`: load by facility and district, wait trend, top diagnoses by district, stock-outs; groups under 10 suppressed) | Both | API, BR (`test_national_report.py`), CMP (`national-report.test.tsx`) | In progress (adoption and system reports not yet) |
 | FR-RPT-06 | Peak-hours heat map, diagnoses and pharmacy reports | P2 | W6 | Both | API | In progress (W6: top ICD-10, referrals out, stock-outs and expiring stock; heat map from S4, #205) |
 | FR-RPT-07 | Pilot impact report support | P2 | — | Both | INS | Not started |
 | FR-RPT-08 | Aggregated Ministry / district analytics | P4 | — | Both | INS | Not started |

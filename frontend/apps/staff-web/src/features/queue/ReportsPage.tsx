@@ -48,8 +48,8 @@ import { useCan } from "./shared";
 const GROUPS: readonly ReportGroup[] = ["day", "week", "month"];
 type Preset = "7" | "30" | "90" | "thisMonth" | "lastMonth" | "custom";
 const PRESETS: readonly Preset[] = ["7", "30", "90", "thisMonth", "lastMonth", "custom"];
-const PANEL = "rounded-2xl bg-surface shadow-card p-5";
-const DASH = "—";
+export const PANEL = "rounded-2xl bg-surface shadow-card p-5";
+export const DASH = "—";
 
 function kigaliToday(): string {
   // en-CA formats as YYYY-MM-DD
@@ -75,7 +75,7 @@ function presetRange(preset: Preset, today: string): { from: string; to: string 
 }
 
 /** The period in the URL, so a report can be shared and reloaded. */
-function usePeriod() {
+export function usePeriod() {
   const [params, setParams] = useSearchParams();
   const today = kigaliToday();
   const preset = PRESETS.find((p) => p === params.get("range")) ?? "30";
@@ -114,85 +114,14 @@ export function ReportsPage() {
         description={t("queue.report.intro")}
         badges={<Badge tone="neutral">{t("queue.report.noNames")}</Badge>}
       />
-      <section
-        aria-label={t("queue.report.periodLabel")}
-        className={cx(PANEL, "flex flex-wrap items-end gap-4")}
-      >
-        <SelectField
-          label={t("queue.report.range")}
-          value={preset}
-          onChange={(e) => {
-            const next = e.target.value as Preset;
-            update(
-              next === "custom" ? { range: next, from: query.from, to: query.to } : { range: next },
-            );
-          }}
-          className="w-full sm:w-52"
-        >
-          {PRESETS.map((p) => (
-            <option key={p} value={p}>
-              {t(`queue.report.presets.${p}`)}
-            </option>
-          ))}
-        </SelectField>
-        {preset === "custom" && (
-          <>
-            <TextField
-              type="date"
-              label={t("queue.report.from")}
-              value={query.from}
-              max={query.to}
-              onChange={(e) => e.target.value && update({ from: e.target.value })}
-              className="w-full sm:w-44"
-            />
-            <TextField
-              type="date"
-              label={t("queue.report.to")}
-              value={query.to}
-              min={query.from}
-              max={today}
-              onChange={(e) => e.target.value && update({ to: e.target.value })}
-              className="w-full sm:w-44"
-            />
-          </>
-        )}
-        <fieldset className="m-0 flex min-w-0 flex-col gap-1.5 border-0 p-0">
-          <legend className="mb-1.5 p-0 text-body-sm font-semibold">
-            {t("queue.report.groupBy")}
-          </legend>
-          <div className="inline-flex rounded-full bg-subtle p-1">
-            {GROUPS.map((g) => (
-              <label
-                key={g}
-                className={cx(
-                  "inline-flex min-h-target cursor-pointer items-center rounded-full px-4 text-body-sm font-semibold transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-focus",
-                  g === group ? "bg-surface text-fg shadow-card" : "text-fg-secondary",
-                )}
-              >
-                <input
-                  type="radio"
-                  name="report-group"
-                  value={g}
-                  checked={g === group}
-                  onChange={() => update({ group: g })}
-                  className="sr-only"
-                />
-                {t(`queue.report.groups.${g}`)}
-              </label>
-            ))}
-          </div>
-        </fieldset>
-        <p className="m-0 ml-auto self-center text-body-sm text-fg-secondary tabular-nums">
-          {report.isFetching && !report.isPending ? (
-            <span className="inline-flex items-center gap-1.5">
-              <ArrowsClockwise aria-hidden="true" className="size-4 animate-spin" />
-              {t("queue.report.updating")}
-            </span>
-          ) : (
-            <PeriodText from={query.from} to={query.to} />
-          )}
-        </p>
-      </section>
+      <PeriodControls
+        preset={preset}
+        group={group}
+        query={query}
+        update={update}
+        today={today}
+        fetching={report.isFetching && !report.isPending}
+      />
       {report.isError ? (
         <p role="alert" className={cx(PANEL, "m-0 text-danger")}>
           {t("queue.report.failed")}
@@ -207,7 +136,100 @@ export function ReportsPage() {
   );
 }
 
-function useDate() {
+/** Range, dates and grouping, kept in the URL (also the national report, W9). */
+export function PeriodControls({
+  preset,
+  group,
+  query,
+  update,
+  today,
+  fetching,
+}: ReturnType<typeof usePeriod> & { fetching: boolean }) {
+  const { t } = useTranslation();
+  return (
+    <section
+      aria-label={t("queue.report.periodLabel")}
+      className={cx(PANEL, "flex flex-wrap items-end gap-4")}
+    >
+      <SelectField
+        label={t("queue.report.range")}
+        value={preset}
+        onChange={(e) => {
+          const next = e.target.value as Preset;
+          update(
+            next === "custom" ? { range: next, from: query.from, to: query.to } : { range: next },
+          );
+        }}
+        className="w-full sm:w-52"
+      >
+        {PRESETS.map((p) => (
+          <option key={p} value={p}>
+            {t(`queue.report.presets.${p}`)}
+          </option>
+        ))}
+      </SelectField>
+      {preset === "custom" && (
+        <>
+          <TextField
+            type="date"
+            label={t("queue.report.from")}
+            value={query.from}
+            max={query.to}
+            onChange={(e) => e.target.value && update({ from: e.target.value })}
+            className="w-full sm:w-44"
+          />
+          <TextField
+            type="date"
+            label={t("queue.report.to")}
+            value={query.to}
+            min={query.from}
+            max={today}
+            onChange={(e) => e.target.value && update({ to: e.target.value })}
+            className="w-full sm:w-44"
+          />
+        </>
+      )}
+      <fieldset className="m-0 flex min-w-0 flex-col gap-1.5 border-0 p-0">
+        <legend className="mb-1.5 p-0 text-body-sm font-semibold">
+          {t("queue.report.groupBy")}
+        </legend>
+        <div className="inline-flex rounded-full bg-subtle p-1">
+          {GROUPS.map((g) => (
+            <label
+              key={g}
+              className={cx(
+                "inline-flex min-h-target cursor-pointer items-center rounded-full px-4 text-body-sm font-semibold transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-focus",
+                g === group ? "bg-surface text-fg shadow-card" : "text-fg-secondary",
+              )}
+            >
+              <input
+                type="radio"
+                name="report-group"
+                value={g}
+                checked={g === group}
+                onChange={() => update({ group: g })}
+                className="sr-only"
+              />
+              {t(`queue.report.groups.${g}`)}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      <p className="m-0 ml-auto self-center text-body-sm text-fg-secondary tabular-nums">
+        {fetching ? (
+          <span className="inline-flex items-center gap-1.5">
+            <ArrowsClockwise aria-hidden="true" className="size-4 animate-spin" />
+            {t("queue.report.updating")}
+          </span>
+        ) : (
+          <PeriodText from={query.from} to={query.to} />
+        )}
+      </p>
+    </section>
+  );
+}
+
+export function useDate() {
   const { i18n } = useTranslation();
   return (iso: string, options: Intl.DateTimeFormatOptions = { day: "numeric", month: "short" }) =>
     dateFormat(i18n.resolvedLanguage ?? "en", { ...options, timeZone: "UTC" }).format(
@@ -215,14 +237,14 @@ function useDate() {
     );
 }
 
-function PeriodText({ from, to }: { from: string; to: string }) {
+export function PeriodText({ from, to }: { from: string; to: string }) {
   const { t } = useTranslation();
   const date = useDate();
   const full = { day: "numeric", month: "short", year: "numeric" } as const;
   return <>{t("queue.report.periodText", { from: date(from, full), to: date(to, full) })}</>;
 }
 
-function ReportSkeleton() {
+export function ReportSkeleton() {
   return (
     <div className="flex flex-col gap-4" aria-hidden="true">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -622,7 +644,7 @@ function DownloadCsv({
 }
 
 /** Label and figure pairs, with an optional note under the figure. */
-function Figures({ items }: { items: [string, ReactNode, string?][] }) {
+export function Figures({ items }: { items: [string, ReactNode, string?][] }) {
   return (
     <dl className="m-0 grid grid-cols-2 gap-px overflow-hidden rounded-xl bg-border sm:grid-cols-4">
       {items.map(([label, value, note]) => (
@@ -645,7 +667,15 @@ interface BarRow {
 }
 
 /** Ranked horizontal bars; the number is always in the text, the bar only repeats it. */
-function BarList({ label, rows, heading }: { label: string; rows: BarRow[]; heading?: boolean }) {
+export function BarList({
+  label,
+  rows,
+  heading,
+}: {
+  label: string;
+  rows: BarRow[];
+  heading?: boolean;
+}) {
   const { t } = useTranslation();
   const max = Math.max(1, ...rows.map((r) => r.value));
   return (
@@ -678,7 +708,7 @@ function BarList({ label, rows, heading }: { label: string; rows: BarRow[]; head
   );
 }
 
-function SimpleTable({
+export function SimpleTable({
   caption,
   head,
   rows,

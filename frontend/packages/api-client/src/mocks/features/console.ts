@@ -10,7 +10,10 @@ import type {
   ConsoleUserDetail,
   UserSummary,
 } from "../../features/console";
+import { NATIONAL_TABLES, type NationalTable } from "../../features/console";
 import type { FeatureMockFactory } from "../features";
+import { nationalReportCsv, nationalReportMock } from "./national-report";
+import { reportPeriod } from "./report";
 import { id, page } from "./s1-common";
 
 /**
@@ -550,6 +553,33 @@ export const consoleMocks: FeatureMockFactory = (context) => {
           .map(([facilityId, name]) => ({ id: facilityId, name }))
           .sort((a, b) => a.name.localeCompare(b.name)),
       } satisfies UserSummary);
+    }),
+    // W9 (#208): the national aggregate report
+    http.get(`${PL}/reports/national/`, ({ request }) => {
+      const ok = guard(request);
+      if ("error" in ok) return ok.error;
+      const period = reportPeriod(new URL(request.url));
+      if ("errors" in period)
+        return context.errorResponse(400, "validation_error", "Some fields need attention.", {
+          fields: Object.fromEntries(Object.entries(period.errors).map(([k, v]) => [k, [v]])),
+        });
+      return HttpResponse.json(nationalReportMock(period.from, period.to, period.group));
+    }),
+    http.get(`${PL}/reports/national/export/`, ({ request }) => {
+      const ok = guard(request);
+      if ("error" in ok) return ok.error;
+      const url = new URL(request.url);
+      const period = reportPeriod(url);
+      const table = url.searchParams.get("table") as NationalTable | null;
+      if ("errors" in period || !table || !NATIONAL_TABLES.includes(table))
+        return context.errorResponse(400, "validation_error", "Some fields need attention.");
+      const report = nationalReportMock(period.from, period.to, period.group);
+      return new HttpResponse(nationalReportCsv(report, table), {
+        headers: {
+          "Content-Type": "text/csv; charset=utf-8",
+          "Content-Disposition": `attachment; filename="national-${table}-${period.from}-${period.to}.csv"`,
+        },
+      });
     }),
     http.get(`${PL}/users/export/`, ({ request }) => {
       const ok = guard(request);

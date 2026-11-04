@@ -12,5 +12,6 @@ ACTIONS = frozenset(
         "platform.user.verification_resent",
         "platform.user.sign_in_unblocked",
         "platform.user.list_exported",
+        "platform.report.exported",  # W9 (#208): a national report table as CSV
     }
 )

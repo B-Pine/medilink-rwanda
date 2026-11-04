@@ -3,7 +3,8 @@
     "users": "Abakoresha",
     "breakGlass": "Isuzuma ry’uburenganzira bwihutirwa",
     "securityLog": "Igitabo cy’umutekano",
-    "accessLog": "Igitabo cyo gufungura amadosiye"
+    "accessLog": "Igitabo cyo gufungura amadosiye",
+    "nationalReport": "Raporo y'igihugu"
   },
   "failed": "Ntibyashobotse. Ongera ugerageze.",
   "refresh": "Vugurura",
@@ -286,6 +287,60 @@
     "outcome": {
       "appropriate": "Judged appropriate",
       "inappropriate": "Judged not appropriate"
+    }
+  },
+  "national": {
+    "title": "Raporo y'igihugu",
+    "intro": "Uko urusobe rwakoze mu gihe runaka: abarwayi mu karere no mu ivuriro, igihe cyo gutegereza muganga, indwara zikunze kuboneka n'imiti yashize. Imibare gusa, nta murwayi n'umwe.",
+    "smallGroups": "Amatsinda ari munsi ya 10 arahishwa",
+    "failed": "Raporo ntiyabonetse. Ongera ugerageze.",
+    "hidden": "Byahishwe",
+    "hiddenWhy": "Abarwayi bari munsi ya 10, cyangwa umubare wagaragaza itsinda nk'iryo.",
+    "minutes_one": "Umunota {{count}}",
+    "minutes_other": "Iminota {{count}}",
+    "unknownDistrict": "Akarere ntikanditswe",
+    "district": "Akarere",
+    "facility": "Ivuriro",
+    "facilities": "Amavuriro",
+    "visits": "Abaje kwivuza",
+    "median": "Igihe cyo hagati cyo gutegereza muganga",
+    "p90": "Ijanisha rya 90",
+    "medicinesOut": "Imiti yashize ubu",
+    "kpi": {
+      "visits": "Abaje kwivuza",
+      "facilities_one": "Ivuriro {{count}} mu turere {{districts}}",
+      "facilities_other": "Amavuriro {{count}} mu turere {{districts}}",
+      "wait": "Igihe cyo hagati cyo gutegereza muganga",
+      "districts": "Uturere",
+      "stockouts": "Amavuriro yashizemo umuti",
+      "medicines_one": "Umuti {{count}} washize ahantu",
+      "medicines_other": "Imiti {{count}} yashize ahantu"
+    },
+    "districts": {
+      "title": "Abarwayi mu karere",
+      "intro": "Abaje kwivuza n'igihe kuva bageze kugeza muganga abahamagaye."
+    },
+    "facilitiesTable": {
+      "title": "Abarwayi mu ivuriro",
+      "intro": "Umubare w'ivuriro rito urahishwa, n'uw'irikurikiraho mu gito mu karere, kugira ngo igiteranyo cy'akarere kitawugaragaza."
+    },
+    "trend": {
+      "title": "Uko gutegereza guhinduka",
+      "intro": "Igihe cyo hagati n'ijanisha rya 90 cyo gutegereza muganga, mu mavuriro yose.",
+      "hiddenPeriods_one": "Igihe {{count}} cyahishwe: abahamagawe bari munsi ya 10.",
+      "hiddenPeriods_other": "Ibihe {{count}} byahishwe: abahamagawe bari munsi ya 10."
+    },
+    "diagnoses": {
+      "title": "Indwara zikunze kuboneka mu karere",
+      "intro": "Ibyasinywe; indwara zabonetse inshuro 10 cyangwa zirenga gusa, izihariye ntizigaragazwa."
+    },
+    "stockouts": {
+      "title": "Imiti yashize ubu",
+      "intro": "Imiti idafite ububiko bukoreshwa uyu munsi, aho ububiko bukurikiranwa.",
+      "facilities": "Amavuriro yashizemo umuti",
+      "medicines": "Imiti yashize",
+      "medicine": "Umuti",
+      "where": "Uturere"
     }
   }
 }

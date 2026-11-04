@@ -7293,6 +7293,98 @@ paths:
               schema:
                 $ref: '#/components/schemas/Overview'
           description: ''
+  /api/v1/platform/reports/national/:
+    get:
+      operationId: platform_national_report
+      summary: 'National aggregate report: load by facility and district, wait trend,
+        top diagnoses by district, stock-outs; groups under 10 suppressed (#208)'
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+          format: date
+        description: First day; 29 days ago by default
+      - in: query
+        name: group
+        schema:
+          type: string
+          enum:
+          - day
+          - month
+          - week
+        description: day by default
+      - in: query
+        name: to
+        schema:
+          type: string
+          format: date
+        description: Last day; today by default
+      tags:
+      - platform-admin
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NationalReport'
+          description: ''
+        '400':
+          description: Bad dates
+  /api/v1/platform/reports/national/export/:
+    get:
+      operationId: platform_national_report_export
+      summary: Download one table of the national report as CSV; audit-logged (#208)
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+          format: date
+        description: First day; 29 days ago by default
+      - in: query
+        name: group
+        schema:
+          type: string
+          enum:
+          - day
+          - month
+          - week
+        description: day by default
+      - in: query
+        name: table
+        schema:
+          type: string
+          enum:
+          - diagnoses
+          - districts
+          - facilities
+          - stockouts
+          - waits
+        required: true
+      - in: query
+        name: to
+        schema:
+          type: string
+          format: date
+        description: Last day; today by default
+      tags:
+      - platform-admin
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            text/csv:
+              schema:
+                type: string
+          description: One table, UTF-8 with BOM
+        '400':
+          description: Bad dates, grouping or table
   /api/v1/platform/security-events/:
     get:
       operationId: platform_security_events
@@ -22315,6 +22407,22 @@ components:
       - district_code
       - facilities
       - province
+    DistrictDiagnoses:
+      type: object
+      properties:
+        district_code:
+          type: string
+        district:
+          type: string
+        top:
+          type: array
+          items:
+            $ref: '#/components/schemas/NationalDiagnosis'
+          description: 10 or more visits each; never sensitive
+      required:
+      - district
+      - district_code
+      - top
     Document:
       type: object
       properties:
@@ -27498,6 +27606,133 @@ components:
         * `today` - today
         * `upcoming` - upcoming
         * `attended` - attended
+    NationalDiagnosis:
+      type: object
+      properties:
+        code:
+          type: string
+        display:
+          type: string
+        count:
+          type: integer
+      required:
+      - code
+      - count
+      - display
+    NationalDistrictRow:
+      type: object
+      properties:
+        district_code:
+          type: string
+          description: 'Blank: location unknown'
+        district:
+          type: string
+        facilities:
+          type: integer
+        visits:
+          $ref: '#/components/schemas/SuppressedCount'
+        wait:
+          $ref: '#/components/schemas/WaitFigures'
+        medicines_out:
+          type: integer
+      required:
+      - district
+      - district_code
+      - facilities
+      - medicines_out
+      - visits
+      - wait
+    NationalFacilityRow:
+      type: object
+      properties:
+        facility_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        district_code:
+          type: string
+        district:
+          type: string
+        visits:
+          $ref: '#/components/schemas/SuppressedCount'
+        wait:
+          $ref: '#/components/schemas/WaitFigures'
+        medicines_out:
+          type: integer
+      required:
+      - district
+      - district_code
+      - facility_id
+      - medicines_out
+      - name
+      - visits
+      - wait
+    NationalReport:
+      type: object
+      properties:
+        to:
+          type: string
+          format: date
+        group:
+          $ref: '#/components/schemas/GroupEnum'
+        min_group_size:
+          type: integer
+        totals:
+          $ref: '#/components/schemas/NationalTotals'
+        facilities:
+          type: array
+          items:
+            $ref: '#/components/schemas/NationalFacilityRow'
+        districts:
+          type: array
+          items:
+            $ref: '#/components/schemas/NationalDistrictRow'
+        wait_trend:
+          type: array
+          items:
+            $ref: '#/components/schemas/WaitTrendRow'
+        diagnoses:
+          type: array
+          items:
+            $ref: '#/components/schemas/DistrictDiagnoses'
+        stockouts:
+          type: array
+          items:
+            $ref: '#/components/schemas/StockOutRow'
+        from:
+          type: string
+          format: date
+      required:
+      - diagnoses
+      - districts
+      - facilities
+      - from
+      - group
+      - min_group_size
+      - stockouts
+      - to
+      - totals
+      - wait_trend
+    NationalTotals:
+      type: object
+      properties:
+        facilities:
+          type: integer
+        districts:
+          type: integer
+        visits:
+          $ref: '#/components/schemas/SuppressedCount'
+        wait:
+          $ref: '#/components/schemas/WaitFigures'
+        facilities_with_stockouts:
+          type: integer
+      required:
+      - districts
+      - facilities
+      - facilities_with_stockouts
+      - visits
+      - wait
     NearRequest:
       type: object
       properties:
@@ -36270,6 +36505,21 @@ components:
         * `received` - Received
         * `dispensed` - Dispensed
         * `adjusted` - Adjusted
+    StockOutRow:
+      type: object
+      properties:
+        medicine:
+          type: string
+        facilities:
+          type: integer
+        districts:
+          type: array
+          items:
+            type: string
+      required:
+      - districts
+      - facilities
+      - medicine
     StockReceiveRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -36629,6 +36879,20 @@ components:
         * `facility_setup` - Facility setup
         * `technical` - Something doesn't work
         * `other` - Other
+    SuppressedCount:
+      type: object
+      properties:
+        value:
+          type: integer
+          nullable: true
+          description: null when suppressed
+        suppressed:
+          type: boolean
+          description: A group of fewer than 10, or a figure it could be worked back
+            from
+      required:
+      - suppressed
+      - value
     Symptom:
       type: object
       properties:
@@ -38190,6 +38454,22 @@ components:
           maxLength: 300
       required:
       - reason_text
+    WaitFigures:
+      type: object
+      properties:
+        median_min:
+          type: integer
+          nullable: true
+        p90_min:
+          type: integer
+          nullable: true
+        suppressed:
+          type: boolean
+          description: Fewer than 10 patients were called
+      required:
+      - median_min
+      - p90_min
+      - suppressed
     WaitRange:
       type: object
       properties:
@@ -38200,6 +38480,27 @@ components:
       required:
       - max
       - min
+    WaitTrendRow:
+      type: object
+      properties:
+        median_min:
+          type: integer
+          nullable: true
+        p90_min:
+          type: integer
+          nullable: true
+        suppressed:
+          type: boolean
+          description: Fewer than 10 patients were called
+        start:
+          type: string
+          format: date
+          description: First day of the day, week (Monday) or month
+      required:
+      - median_min
+      - p90_min
+      - start
+      - suppressed
     Warning:
       type: object
       properties:

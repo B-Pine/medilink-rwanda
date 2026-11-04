@@ -17,6 +17,7 @@ from django.http import Http404, HttpResponse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_otp.plugins.otp_totp.models import TOTPDevice
+from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
 from rest_framework import exceptions
 from rest_framework.request import Request
@@ -34,9 +35,11 @@ from medilink.core.exceptions import BusinessRuleViolation
 from medilink.core.pagination import DefaultPagination
 from medilink.facilities.models import PublicListing
 from medilink.onboarding.serializers import overview_data
+from medilink.platform_admin import national_report
 from medilink.platform_admin import serializers as s
 from medilink.tenancy.context import rls_context
 from medilink.tenancy.models import Facility, FacilityMembership, FacilityStatus, Invitation
+from medilink.visits.report import GROUPS, parse_period
 
 TAG = ["platform-admin"]
 NO_PATIENT_PHONE = _("A patient's phone is kept on their patient record, not on the account.")
@@ -54,6 +57,11 @@ ACCESS_ACTIONS = Q(action__startswith="authz.break_glass") | Q(
     ]
 )
 FAILURE_WORDS = ("failure", "locked", "exhausted", "denied")
+REPORT_PARAMS = [
+    OpenApiParameter("from", OpenApiTypes.DATE, description="First day; 29 days ago by default"),
+    OpenApiParameter("to", OpenApiTypes.DATE, description="Last day; today by default"),
+    OpenApiParameter("group", str, enum=list(GROUPS), description="day by default"),
+]
 
 User = get_user_model()
 
@@ -921,3 +929,58 @@ class AccessEventsView(_Platform):
     )
     def get(self, request: Request) -> Response:
         return _paged_events(request, self, AuditEntry.objects.filter(ACCESS_ACTIONS))
+
+
+# ---- national aggregate report (#208, upgrade 13 W9) -------------------------------------------
+
+
+class NationalReportView(_Platform):
+    @extend_schema(
+        tags=TAG,
+        operation_id="platform_national_report",
+        parameters=REPORT_PARAMS,
+        responses={200: s.NationalReportSerializer, 400: OpenApiResponse(description="Bad dates")},
+        summary="National aggregate report: load by facility and district, wait trend, top "
+        "diagnoses by district, stock-outs; groups under 10 suppressed (#208)",
+    )
+    def get(self, request: Request) -> Response:
+        start, end, group = parse_period(request.query_params, timezone.localdate())
+        data = national_report.national_report(start, end, group)
+        return Response(s.NationalReportSerializer(data).data)
+
+
+class NationalReportExportView(_Platform):
+    @extend_schema(
+        tags=TAG,
+        operation_id="platform_national_report_export",
+        parameters=[
+            *REPORT_PARAMS,
+            OpenApiParameter("table", str, enum=list(national_report.TABLES), required=True),
+        ],
+        responses={
+            (200, "text/csv"): OpenApiResponse(
+                response=OpenApiTypes.STR, description="One table, UTF-8 with BOM"
+            ),
+            400: OpenApiResponse(description="Bad dates, grouping or table"),
+        },
+        summary="Download one table of the national report as CSV; audit-logged (#208)",
+    )
+    def get(self, request: Request) -> HttpResponse:
+        start, end, group = parse_period(request.query_params, timezone.localdate())
+        table = request.query_params.get("table", "")
+        if table not in national_report.TABLES:
+            raise exceptions.ValidationError({"table": ["Choose a report table."]})
+        data = national_report.national_report(start, end, group)
+        record(
+            "platform.report.exported",
+            request=request,
+            object_type="platform.national_report",
+            metadata={"table": table, "from": str(start), "to": str(end), "group": group},
+        )
+        response = HttpResponse(
+            national_report.export_csv(data, table), content_type="text/csv; charset=utf-8"
+        )
+        name = f"national-{table}-{start.isoformat()}-{end.isoformat()}.csv"
+        response["Content-Disposition"] = f'attachment; filename="{name}"'
+        response["Cache-Control"] = "no-store"
+        return response

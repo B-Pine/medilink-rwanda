@@ -8,6 +8,25 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### National aggregate report (2026-11-04, #208)
+
+- Added: `GET /api/v1/platform/reports/national/` for platform admins: load by facility and
+  district (visits, median and 90th-percentile wait to the doctor, medicines out now), the wait
+  trend by day, week or month, top diagnoses by district and stock-outs now. Each facility is read
+  in its own RLS context with the W6 report helpers; aggregates only, never a patient.
+- Added: small-group protection (k = 10, `platform_admin/national_report.py`). Visits of 1-9 are
+  suppressed; inside a district the next smallest facilities are suppressed too until the hidden
+  ones add up to 10, so the district total can't give a small facility away; a district of 1-9
+  is suppressed, and the national total when the suppressed districts add up to 1-9. Waits are
+  hidden below 10 patients called; diagnoses are listed only at 10 or more visits per district,
+  sensitive ones never.
+- Added: `GET /api/v1/platform/reports/national/export/?table=` (facilities, districts, waits,
+  diagnoses, stockouts) as CSV, hidden cells reading `suppressed`; audit
+  `platform.report.exported`.
+- Changed: the W6 report shares its period parsing (`report.parse_period`), wait samples
+  (`report.wait_samples`) and CSV writer (`report.csv_text`) with the national report; behaviour
+  unchanged.
+
 ### Patient follow-through (2026-11-04, #206)
 
 - Added: reminders through the notification engine (`notifications/reminders.py`, beat task

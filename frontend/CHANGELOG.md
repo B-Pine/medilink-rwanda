@@ -9,6 +9,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### National aggregate report (2026-11-04, #208)
+
+- Added: **National report** in the platform console (`/platform/reports`, menu item for platform
+  admins): headline figures, load by district and by facility, the wait trend, top diagnoses by
+  district and stock-outs now, each table with a CSV download. Suppressed figures read
+  **Hidden** with the reason on hover and for screen readers. Same period controls as the
+  facility report (shared `PeriodControls`).
+- Added: API client `console.nationalReport()` and `consolePaths.nationalExport()` with MSW
+  mocks (seven facilities in four districts, small ones hidden as the server does). Strings in en
+  and fr with draft rw.
+
 ### Patient follow-through (2026-11-04, #206)
 
 - Added: **Planned by your clinic** on My appointments (upcoming): planned vaccinations and

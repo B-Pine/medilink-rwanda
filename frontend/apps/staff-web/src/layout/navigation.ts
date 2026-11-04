@@ -58,6 +58,9 @@ import { Fingerprint, ShieldCheck, Siren, UsersThree } from "@phosphor-icons/rea
 // [S8 imports]
 import { Files } from "@phosphor-icons/react";
 // [/S8 imports]
+// [W9 imports]
+import { MapTrifold } from "@phosphor-icons/react";
+// [/W9 imports]
 
 /** Sections of the Sprint 0 shell (labels in `shell.nav.<key>`). Features use their own keys. */
 export type CoreNavKey =
@@ -471,6 +474,16 @@ export const NAV_ITEMS: readonly NavItem[] = [
     visible: (me: StaffMe) => me.is_platform_admin,
   },
   // [/S11]
+  // [W9]
+  {
+    key: "platformNationalReport",
+    path: "/platform/reports",
+    icon: MapTrifold,
+    group: "platform",
+    labelKey: "console.nav.nationalReport",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
+  // [/W9]
   // [S8]
   // #203: the monthly claim list per insurer
   {

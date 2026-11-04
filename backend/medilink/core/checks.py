@@ -52,6 +52,22 @@ def check_deploy_cookies(app_configs: Any = None, **kwargs: Any) -> list[CheckMe
 
 
 @register(Tags.security, deploy=True)
+def check_deploy_bootstrap_url(app_configs: Any = None, **kwargs: Any) -> list[CheckMessage]:
+    """The Railway role bootstrap needs the Postgres superuser URL once; left on the running
+    service, any code execution in the app gets a role that bypasses RLS."""
+    import os
+
+    if os.environ.get("BOOTSTRAP_DATABASE_URL"):
+        return [
+            Warning(
+                "Remove BOOTSTRAP_DATABASE_URL from the service once the database roles exist.",
+                id="medilink.W005",
+            )
+        ]
+    return []
+
+
+@register(Tags.security, deploy=True)
 def check_deploy_mfa(app_configs: Any = None, **kwargs: Any) -> list[CheckMessage]:
     if getattr(settings, "DEV_SKIP_STAFF_MFA", False):
         return [

@@ -2,6 +2,8 @@
 
 Status: v0.1 · Index of the runbooks MediLink needs before go-live. Sources: alerts in [security 08](../security/08-logging-monitoring-and-detection.md) §3 (each alert must link a short runbook), playbooks and continuity in [security 10](../security/10-incident-response-and-continuity.md), and [security 07](../security/07-infrastructure-and-operations-security.md). The go-live checklist requires "runbooks linked" ([security 14](../security/14-go-live-security-checklist.md)).
 
+Deployment: [Railway](railway.md) (API, worker, beat, database roles and variables).
+
 Runbooks will live in `docs/operations/runbooks/<id>-<name>.md`. Owners are placeholders until the roles in security 10 §2 are assigned. Never put secrets, contact phone numbers or patient data in a runbook; the contact sheet is kept offline and in the key store.
 
 ## 1. Alert runbooks

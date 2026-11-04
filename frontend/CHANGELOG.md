@@ -9,6 +9,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Public site: doctors and services as directories (2026-11-04)
+
+- Changed: **Doctors** lists each doctor as a row on one surface (name link, specialty and
+  services, facility and district, days in words, "Here today") instead of cards with initials
+  avatars and a seven-day chip strip.
+- Changed: the doctor page's facts are a summary list (no avatar tile, no uppercase labels;
+  services as links, not chips); day buttons are in sentence case.
+- Changed: **Services** is an index: search and the categories (with counts) in a column on the
+  left, each category a heading over its services as a list of links. No icon tiles, no boxed
+  links. A service page lists where it is offered with the facility directory rows, and "What to
+  bring" without an icon tile.
+
 ### Public site: a landing page for a public service (2026-11-04)
 
 - Changed: the home page's first view is the question and the answer: the heading, one search and

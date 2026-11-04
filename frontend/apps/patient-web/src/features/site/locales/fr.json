@@ -100,12 +100,8 @@
     "joinQueue": "Rejoindre la file",
     "bookAppointment": "Prendre rendez-vous",
     "tabs": {
-      "label": "Informations sur l’établissement",
-      "overview": "Aperçu",
       "services": "Services",
-      "doctors": "Médecins",
-      "insurance": "Assurances",
-      "hours": "Horaires et accès"
+      "doctors": "Médecins"
     },
     "about": "À propos",
     "noDescription": "L’établissement n’a pas encore ajouté de description.",
@@ -125,7 +121,6 @@
     "noServices": "Aucun service publié pour l’instant",
     "noDoctors": "Aucun médecin publié pour l’instant",
     "doctorDays": "Présent {{days}}",
-    "insuranceLead": "Assurances acceptées dans cet établissement. Les montants figurent seulement sur la facture après la visite.",
     "referral": "Les membres de la Mutuelle ont besoin d’une lettre de transfert à ce niveau de soins.",
     "week": "Cette semaine",
     "closures": "Fermetures à venir",

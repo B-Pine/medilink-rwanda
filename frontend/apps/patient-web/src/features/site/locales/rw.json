@@ -100,12 +100,8 @@
     "joinQueue": "Jya ku murongo",
     "bookAppointment": "Fata gahunda",
     "tabs": {
-      "label": "Amakuru y’ikigo",
-      "overview": "Incamake",
       "services": "Serivisi",
-      "doctors": "Abaganga",
-      "insurance": "Ubwishingizi",
-      "hours": "Amasaha n’aho biri"
+      "doctors": "Abaganga"
     },
     "about": "Ibyerekeye",
     "noDescription": "Ikigo ntikirashyiraho ibisobanuro.",
@@ -125,7 +121,6 @@
     "noServices": "Nta serivisi zirashyirwaho",
     "noDoctors": "Nta baganga barashyirwaho",
     "doctorDays": "Ahaboneka {{days}}",
-    "insuranceLead": "Ubwishingizi bwemewe kuri iki kigo. Amafaranga agaragara gusa kuri fagitire nyuma y’isura.",
     "referral": "Abanyamuryango ba Mutuelle bakeneye urupapuro rwo kohereza kuri uru rwego.",
     "week": "Iki cyumweru",
     "closures": "Iminsi izafungwa",

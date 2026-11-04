@@ -100,12 +100,8 @@
     "joinQueue": "Join Queue",
     "bookAppointment": "Book Appointment",
     "tabs": {
-      "label": "Facility information",
-      "overview": "Overview",
       "services": "Services",
-      "doctors": "Doctors",
-      "insurance": "Insurance",
-      "hours": "Hours & Location"
+      "doctors": "Doctors"
     },
     "about": "About",
     "noDescription": "The facility has not added a description yet.",
@@ -125,7 +121,6 @@
     "noServices": "No services published yet",
     "noDoctors": "No doctors published yet",
     "doctorDays": "Here {{days}}",
-    "insuranceLead": "Insurers accepted at this facility. Amounts are only on your bill after the visit.",
     "referral": "Mutuelle members need a transfer letter at this level of care.",
     "week": "This week",
     "closures": "Upcoming closures",

@@ -31,6 +31,8 @@ if not CORS_ALLOWED_ORIGINS:
 
 # HTTPS everywhere (TLS terminates at the proxy, which overwrites X-Forwarded-Proto).
 SECURE_SSL_REDIRECT = True
+# Platform healthchecks (Railway) call /api/v1/health/ over plain HTTP inside the network.
+SECURE_REDIRECT_EXEMPT = [r"^api/v1/health/$"]
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_HSTS_SECONDS = 31_536_000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True

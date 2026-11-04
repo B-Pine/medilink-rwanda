@@ -3,7 +3,9 @@ import { http, HttpResponse } from "msw";
 import type { Consultation } from "../../features/clinical";
 import {
   defaultQuantity,
+  FREQUENCY_TIMES,
   OPEN_ITEM_STATUSES,
+  type MealTiming,
   type AlertOverride,
   type AvailabilityRow,
   type DispenseHistoryRow,
@@ -197,6 +199,7 @@ function item(
     frequency_code: frequency,
     route: d.route,
     duration_days: days,
+    meal_timing: "",
     quantity: defaultQuantity(dose, frequency, days) ?? 1,
     dispensed_quantity: 0,
     instructions: "",
@@ -502,6 +505,7 @@ export const pharmacyMocks: FeatureMockFactory = (context) => {
         frequency_code: body.frequency_code!,
         route: body.route!,
         duration_days: days,
+        meal_timing: body.meal_timing ?? "",
         quantity: quantity!,
         instructions: body.instructions?.trim() ?? "",
         substitution_allowed: body.substitution_allowed ?? true,
@@ -927,6 +931,10 @@ export const pharmacyMocks: FeatureMockFactory = (context) => {
                 quantity: l.quantity,
                 dose: i.dose,
                 frequency: words[i.frequency_code],
+                frequency_code: i.frequency_code,
+                times: FREQUENCY_TIMES[i.frequency_code] ?? [],
+                meal_timing: i.meal_timing,
+                meal: i.meal_timing ? MEAL_WORDS[language][i.meal_timing] : "",
                 route: ROUTE_WORDS[language][i.route] ?? i.route,
                 duration: i.duration_days ? DAYS[language](i.duration_days) : "",
                 instructions: i.instructions,
@@ -1197,6 +1205,16 @@ const FREQUENCY_WORDS: Record<LanguageCode, Record<FrequencyCode, string>> = {
     prn: "Igihe bikenewe",
   },
 };
+const MEAL_WORDS: Record<LanguageCode, Record<MealTiming, string>> = {
+  rw: { before_food: "Mbere yo kurya", with_food: "Mu gihe urya", after_food: "Nyuma yo kurya" },
+  en: { before_food: "Before food", with_food: "With food", after_food: "After food" },
+  fr: {
+    before_food: "Avant le repas",
+    with_food: "Pendant le repas",
+    after_food: "Après le repas",
+  },
+};
+
 const ROUTE_WORDS: Record<LanguageCode, Partial<Record<DrugRoute, string>>> = {
   en: { oral: "By mouth" },
   fr: { oral: "Par la bouche" },

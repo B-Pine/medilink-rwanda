@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5901.
+Keys: 5920.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -2465,6 +2465,13 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `labels.languages.en` | Icyongereza | English | needs native-speaker review |
 | `labels.languages.fr` | Igifaransa | Français | needs native-speaker review |
 | `labels.none` | Nta birango biraboneka: nta kintu cyatanzwe. | No labels yet: nothing has been given. | needs native-speaker review |
+| `labels.schedule` | Igihe cyo kuwunywa | When to take it | needs native-speaker review |
+| `labels.times.morning` | Mu gitondo | Morning | needs native-speaker review |
+| `labels.times.noon` | Saa sita | Noon | needs native-speaker review |
+| `labels.times.evening` | Ku mugoroba | Evening | needs native-speaker review |
+| `labels.times.night` | Nijoro | Night | needs native-speaker review |
+| `labels.whenNeeded` | Igihe ubikeneye | When needed | needs native-speaker review |
+| `labels.once` | Rimwe gusa | Once only | needs native-speaker review |
 | `alert.allergy` | Aleriji: {{substance}} | Allergy: {{substance}} | needs native-speaker review |
 | `alert.dose` | Birenze umubare usanzwe ({{max}}) | More than the usual quantity ({{max}}) | needs native-speaker review |
 | `alert.duplicate` | Umuti umwe kabiri | Same medicine twice | needs native-speaker review |
@@ -2503,6 +2510,8 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `prescription.cancelConsequences` | Farumasi ntizawutanga. Umurwayi azabona ko wahagaritswe. | The pharmacy will not give it. The patient sees it as cancelled. | needs native-speaker review |
 | `prescription.changeTitle` | Hindura {{name}}? | Change {{name}}? | needs native-speaker review |
 | `prescription.changeConsequences` | Uyu urahagarikwa n'impamvu yawe, hanyuma wongeremo mushya. | This one is cancelled with your reason, then you add the new one. | needs native-speaker review |
+| `prescription.meal` | Bijyanye no kurya? | With food? | needs native-speaker review |
+| `prescription.mealHint` | Bigaragara nk’ishusho ku kirango. | Shown as a picture on the label. | needs native-speaker review |
 | `pages` | Amapaji | Pages | needs native-speaker review |
 | `previous` | Ibibanza | Previous | needs native-speaker review |
 | `next` | Ibikurikira | Next | needs native-speaker review |
@@ -2646,6 +2655,10 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `stock.adjust.removed` | Umubare wo kuvanamo | Units to take off | needs native-speaker review |
 | `stock.adjust.removeRange` | Vanamo hagati ya 1 na {{max}}. | Take off between 1 and {{max}}. | needs native-speaker review |
 | `stock.adjust.note` | Icyitonderwa | Note | needs native-speaker review |
+| `meal.any` | Igihe icyo ari cyo cyose | Any time | needs native-speaker review |
+| `meal.before_food` | Mbere yo kurya | Before food | needs native-speaker review |
+| `meal.with_food` | Mu gihe urya | With food | needs native-speaker review |
+| `meal.after_food` | Nyuma yo kurya | After food | needs native-speaker review |
 
 ## staff-web feature: platform (namespace platform)
 
@@ -3363,6 +3376,8 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `display.spokenRoom` | Itike {{number}}, mwinjire muri {{room}} | Ticket {{number}}, please go to {{room}} | needs native-speaker review |
 | `display.invalid` | Iyi link ya televiziyo ntikora. Saba ikigo indi nshya. | This screen link is not valid. Ask the facility for a new one. | needs native-speaker review |
 | `display.footer` | Tega amatwi nimero yawe. Fata gahunda kuri interineti: medilink.rw | Listen for your number. Book online: medilink.rw | needs native-speaker review |
+| `display.testSound` | Gerageza ijwi | Test sound | needs native-speaker review |
+| `display.testRoom` | Icyumba 1 | Room 1 | needs native-speaker review |
 | `today.title` | Bari hano ubu | On site now | needs native-speaker review |
 | `today.summary` | {{waiting}} barategereje · {{serving}} bari kwa muganga | {{waiting}} waiting · {{serving}} with a doctor | needs native-speaker review |
 | `today.open` | Fungura umurongo | Open queue | needs native-speaker review |
@@ -3606,6 +3621,10 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `print.bring` | Uzane iyi karita, ikarita y'ubwishingizi n'imiti yawe. | Bring this card, your insurance card and your medicines. | needs native-speaker review |
 | `print.slip` | Capa itike | Print ticket slip | needs native-speaker review |
 | `print.card` | Capa ikarita ya gahunda | Print appointment card | needs native-speaker review |
+| `print.nextCard` | Capa ikarita y’igihe cyo kugaruka | Print next-visit card | needs native-speaker review |
+| `print.nextVisit` | Igihe uzagarukira | Your next visit | needs native-speaker review |
+| `print.comeMorning` | Uzaze mu gitondo; ku kwakira bazaguha nimero. | Come in the morning; reception will give you a number. | needs native-speaker review |
+| `print.noFollowUp` | Muganga ntiyashyizeho igihe uyu murwayi azagarukira. | The doctor has not set a next visit for this patient. | needs native-speaker review |
 
 ## staff-web feature: setup (namespace setup)
 

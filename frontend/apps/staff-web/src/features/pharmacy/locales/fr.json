@@ -200,7 +200,16 @@
       "en": "English",
       "fr": "Français"
     },
-    "none": "Pas encore d'étiquette : rien n'a été délivré."
+    "none": "Pas encore d'étiquette : rien n'a été délivré.",
+    "schedule": "Quand le prendre",
+    "times": {
+      "morning": "Matin",
+      "noon": "Midi",
+      "evening": "Soir",
+      "night": "Nuit"
+    },
+    "whenNeeded": "Si besoin",
+    "once": "Une seule fois"
   },
   "alert": {
     "allergy": "Allergie : {{substance}}",
@@ -242,7 +251,9 @@
     "cancelTitle": "Annuler {{name}} ?",
     "cancelConsequences": "La pharmacie ne le délivrera pas. Le patient le voit comme annulé.",
     "changeTitle": "Modifier {{name}} ?",
-    "changeConsequences": "Celui-ci est annulé avec votre motif, puis vous ajoutez le nouveau."
+    "changeConsequences": "Celui-ci est annulé avec votre motif, puis vous ajoutez le nouveau.",
+    "meal": "Avec le repas ?",
+    "mealHint": "Affiché en image sur l’étiquette."
   },
   "pages": "Pages",
   "previous": "Précédent",
@@ -418,5 +429,11 @@
       "removeRange": "Retirez entre 1 et {{max}}.",
       "note": "Note"
     }
+  },
+  "meal": {
+    "any": "À tout moment",
+    "before_food": "Avant le repas",
+    "with_food": "Pendant le repas",
+    "after_food": "Après le repas"
   }
 }

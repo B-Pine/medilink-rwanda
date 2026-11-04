@@ -200,7 +200,16 @@
       "en": "Icyongereza",
       "fr": "Igifaransa"
     },
-    "none": "Nta birango biraboneka: nta kintu cyatanzwe."
+    "none": "Nta birango biraboneka: nta kintu cyatanzwe.",
+    "schedule": "Igihe cyo kuwunywa",
+    "times": {
+      "morning": "Mu gitondo",
+      "noon": "Saa sita",
+      "evening": "Ku mugoroba",
+      "night": "Nijoro"
+    },
+    "whenNeeded": "Igihe ubikeneye",
+    "once": "Rimwe gusa"
   },
   "alert": {
     "allergy": "Aleriji: {{substance}}",
@@ -242,7 +251,9 @@
     "cancelTitle": "Hagarika {{name}}?",
     "cancelConsequences": "Farumasi ntizawutanga. Umurwayi azabona ko wahagaritswe.",
     "changeTitle": "Hindura {{name}}?",
-    "changeConsequences": "Uyu urahagarikwa n'impamvu yawe, hanyuma wongeremo mushya."
+    "changeConsequences": "Uyu urahagarikwa n'impamvu yawe, hanyuma wongeremo mushya.",
+    "meal": "Bijyanye no kurya?",
+    "mealHint": "Bigaragara nk’ishusho ku kirango."
   },
   "pages": "Amapaji",
   "previous": "Ibibanza",
@@ -418,5 +429,11 @@
       "removeRange": "Vanamo hagati ya 1 na {{max}}.",
       "note": "Icyitonderwa"
     }
+  },
+  "meal": {
+    "any": "Igihe icyo ari cyo cyose",
+    "before_food": "Mbere yo kurya",
+    "with_food": "Mu gihe urya",
+    "after_food": "Nyuma yo kurya"
   }
 }

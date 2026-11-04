@@ -352,7 +352,9 @@
     "spoken": "Itike {{number}}",
     "spokenRoom": "Itike {{number}}, mwinjire muri {{room}}",
     "invalid": "Iyi link ya televiziyo ntikora. Saba ikigo indi nshya.",
-    "footer": "Tega amatwi nimero yawe. Fata gahunda kuri interineti: medilink.rw"
+    "footer": "Tega amatwi nimero yawe. Fata gahunda kuri interineti: medilink.rw",
+    "testSound": "Gerageza ijwi",
+    "testRoom": "Icyumba 1"
   },
   "today": {
     "title": "Bari hano ubu",
@@ -467,7 +469,11 @@
     "from": "Kuva",
     "to": "Kugeza",
     "groupBy": "Erekana ku",
-    "groups": { "day": "Munsi", "week": "Cyumweru", "month": "Kwezi" },
+    "groups": {
+      "day": "Munsi",
+      "week": "Cyumweru",
+      "month": "Kwezi"
+    },
     "updating": "Birimo kuvugururwa…",
     "periodText": "Kuva {{from}} kugeza {{to}}",
     "failed": "Raporo ntiyabonetse. Reba amatariki wongere ugerageze.",
@@ -500,7 +506,9 @@
       "expected": "Gahunda zari zitegerejwe",
       "noShows": "Ntibaje"
     },
-    "sources": { "title": "Uko abarwayi baje" },
+    "sources": {
+      "title": "Uko abarwayi baje"
+    },
     "source": {
       "walk_in": "Baje nta gahunda",
       "online_booking": "Gahunda kuri interineti",
@@ -510,7 +518,9 @@
       "referral": "Boherejwe",
       "emergency": "Ibyihutirwa"
     },
-    "services": { "title": "Kuri serivisi" },
+    "services": {
+      "title": "Kuri serivisi"
+    },
     "waits": {
       "title": "Igihe cyo gutegereza kuri buri cyiciro",
       "intro": "Kuva umurwayi ageze ku murongo w’icyiciro kugeza ahamagawe bwa mbere. Umurongo wijimye ni hagati, umweru ni igihe 9 kuri 10 bahamagawe.",
@@ -641,6 +651,10 @@
     "code": "Kode ya gahunda",
     "bring": "Uzane iyi karita, ikarita y'ubwishingizi n'imiti yawe.",
     "slip": "Capa itike",
-    "card": "Capa ikarita ya gahunda"
+    "card": "Capa ikarita ya gahunda",
+    "nextCard": "Capa ikarita y’igihe cyo kugaruka",
+    "nextVisit": "Igihe uzagarukira",
+    "comeMorning": "Uzaze mu gitondo; ku kwakira bazaguha nimero.",
+    "noFollowUp": "Muganga ntiyashyizeho igihe uyu murwayi azagarukira."
   }
 }

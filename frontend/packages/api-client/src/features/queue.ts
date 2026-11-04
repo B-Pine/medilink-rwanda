@@ -197,6 +197,17 @@ export interface VisitDetail {
   checked_in_at: string | null;
   tickets: TicketRow[];
   events: TicketEventRow[];
+  /** The follow-up the doctor set in this visit, for the printed card (#207). */
+  follow_up: NextVisit | null;
+}
+
+export interface NextVisit {
+  due_on: string;
+  service_id: Uuid;
+  /** Set when the follow-up was booked. */
+  starts_at: string | null;
+  booking_code: string;
+  doctor_name: string;
 }
 
 export interface ReorderRow {

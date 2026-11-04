@@ -115,6 +115,8 @@ export interface PrescriptionItem {
   frequency_code: FrequencyCode;
   route: DrugRoute;
   duration_days: number | null;
+  /** When to take it with respect to food; blank when it does not matter (#207). */
+  meal_timing: MealTiming | "";
   quantity: number;
   dispensed_quantity: number;
   instructions: string;
@@ -225,6 +227,7 @@ export interface PrescriptionItemInput {
   frequency_code: FrequencyCode;
   route: DrugRoute;
   duration_days?: number | null;
+  meal_timing?: MealTiming | "";
   quantity?: number | null;
   instructions?: string;
   substitution_allowed?: boolean;
@@ -348,6 +351,19 @@ export interface StockAdjustInput {
   note?: string;
 }
 
+export type MealTiming = "before_food" | "with_food" | "after_food";
+export const MEAL_TIMINGS: readonly MealTiming[] = ["before_food", "with_food", "after_food"];
+export type TimeOfDay = "morning" | "noon" | "evening" | "night";
+export const TIMES_OF_DAY: readonly TimeOfDay[] = ["morning", "noon", "evening", "night"];
+/** Times of day per frequency, for the label pictograms (#207); as the server's. */
+export const FREQUENCY_TIMES: Partial<Record<FrequencyCode, TimeOfDay[]>> = {
+  od: ["morning"],
+  bd: ["morning", "evening"],
+  tds: ["morning", "noon", "evening"],
+  qds: ["morning", "noon", "evening", "night"],
+  nocte: ["night"],
+};
+
 export interface DosingLabel {
   line_id: Uuid;
   language: LanguageCode;
@@ -355,6 +371,12 @@ export interface DosingLabel {
   quantity: number;
   dose: string;
   frequency: string;
+  frequency_code: FrequencyCode;
+  /** Times of day for the pictograms; empty for once only or when needed. */
+  times: TimeOfDay[];
+  meal_timing: MealTiming | "";
+  /** `meal_timing` in the label language. */
+  meal: string;
   route: string;
   duration: string;
   instructions: string;

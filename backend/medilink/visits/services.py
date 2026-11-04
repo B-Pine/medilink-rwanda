@@ -77,6 +77,7 @@ STAGE_ORDER = (
     Stage.PHARMACY,
 )
 NEED_VITALS = _("Record at least one vital sign, or say why none could be taken.")
+NO_LAB_ORDERS = _("Order at least one test before sending the patient to the lab.")
 
 # Interface for S6 (open the consultation on `start`), S8 (bill on `check_in`) and S9 (notify on
 # `call`), contract sprint-04 §7. Sent after commit, once per ticket event. kwargs: event_id,
@@ -826,6 +827,8 @@ def next_stages(ticket: Ticket, settings_: dict[str, Any] | None = None) -> tupl
     `STAGE_ORDER`. `payment` is the second one once the visit had a consultation. With triage
     on (#200), an untriaged patient goes to triage instead of the doctor; with it off, triage is
     never offered."""
+    if ticket.stage == Stage.LAB:
+        return ()  # the lab sends the patient back to the doctor itself (#201)
     settings_ = settings_ if settings_ is not None else queue_settings(ticket.facility_id)
     consulted = ticket.visit.tickets.filter(stage=Stage.CONSULTATION).exists()
     if ticket.stage == Stage.PAYMENT:
@@ -911,6 +914,63 @@ def triage_note(visit: Visit) -> str:
         column="triage_note_encrypted",
         row_id=visit.pk,
     )
+
+
+def _lab_ticket(visit_id: Any) -> Ticket | None:
+    return (
+        Ticket.objects.select_for_update()
+        .select_related("visit", "service")
+        .filter(visit_id=visit_id, stage=Stage.LAB, state__in=ACTIVE_STATES)
+        .first()
+    )
+
+
+def lab_sampled(visit_id: Any, actor: Actor) -> None:
+    """Every test of the visit has its sample (#201): the patient waits for the results, so the
+    lab ticket goes on hold and the technician can call the next patient. Inside the caller's
+    transaction."""
+    ticket = _lab_ticket(visit_id)
+    if ticket is None or ticket.state not in (TicketState.CALLED, TicketState.IN_SERVICE):
+        return
+    before = ticket.state
+    ticket.state = TicketState.ON_HOLD
+    _save(ticket, "state")
+    _event(ticket, "sample_taken", before, actor)
+    _queue_changed(ticket)
+    _visit_changed(ticket.visit)
+
+
+def back_from_lab(visit_id: Any, *, doctor_membership_id: Any, actor: Actor) -> Ticket | None:
+    """Every test of the visit is resulted (#201): the lab ticket ends and the patient goes back
+    to the ordering doctor's queue, assigned to them, with return priority (queue setting
+    `return_priority`). None when the patient was never sent to the lab. Inside the caller's
+    transaction."""
+    ticket = _lab_ticket(visit_id)
+    if ticket is None:
+        return None
+    visit = ticket.visit
+    now = timezone.now()
+    before = ticket.state
+    ticket.state = TicketState.MOVED_TO_NEXT_STAGE
+    ticket.ended_at = now
+    _save(ticket, "state", "ended_at")
+    settings_ = queue_settings(ticket.facility_id)
+    rank = (
+        min(ticket.priority_rank, RANK_RETURN)
+        if settings_["return_priority"]
+        else ticket.priority_rank
+    )
+    result = _new_ticket(
+        visit, ticket.service, Stage.CONSULTATION, rank=rank, arrival_at=visit.checked_in_at or now
+    )
+    result.assigned_membership_id = doctor_membership_id
+    result.save(update_fields=["assigned_membership", "updated_at"])
+    _event(ticket, "lab_done", before, actor, next_ticket_id=result.pk)
+    _queue_changed(ticket)
+    _event(result, "opened", "", actor, from_ticket_id=ticket.pk)
+    _queue_changed(result)
+    _visit_changed(visit)
+    return result
 
 
 def act(
@@ -1006,6 +1066,23 @@ def act(
                 raise BusinessRuleViolation(NOT_ALLOWED)
             result = _finish_triage(ticket, visit, data, actor, now)
             extra["urgency"] = visit.triage_urgency
+            extra["next_ticket_id"] = result.pk
+        elif action == "send-to-lab":
+            # upgrade 06 §3 (#201): the doctor ordered tests; the consultation stays a draft
+            # and the patient comes back to this doctor when every result is in
+            _require(ticket, TicketState.IN_SERVICE)
+            if ticket.stage != Stage.CONSULTATION:
+                raise BusinessRuleViolation(NOT_ALLOWED)
+            from medilink.clinical.models import LabOrder, LabOrderState
+
+            if not LabOrder.objects.filter(visit=visit, state=LabOrderState.ORDERED).exists():
+                raise BusinessRuleViolation(NO_LAB_ORDERS)
+            ticket.state = TicketState.MOVED_TO_NEXT_STAGE
+            ticket.ended_at = now
+            setattr(ticket, "_lab_hand_off", True)  # read by the completion guard  # noqa: B010
+            _save(ticket, "state", "ended_at")
+            rank = RANK_NORMAL if ticket.priority_rank == RANK_RETURN else ticket.priority_rank
+            result = _new_ticket(visit, ticket.service, Stage.LAB, rank=rank, arrival_at=now)
             extra["next_ticket_id"] = result.pk
         elif action == "transfer":
             _require(ticket, TicketState.WAITING)

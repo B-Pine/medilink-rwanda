@@ -2055,6 +2055,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/PatientRecord'
           description: ''
+  /api/v1/patient/results/:
+    get:
+      operationId: patient_lab_results
+      summary: Lab results the doctor released, newest first (FR-CLN-11)
+      tags:
+      - patient-records
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PatientLabResult'
+          description: ''
   /api/v1/patient/slots/{slot_id}/hold/:
     post:
       operationId: patient_slot_hold
@@ -11253,6 +11271,75 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Not the author or already marked
+  /api/v1/staff/consultations/{consultation_id}/lab-orders/:
+    get:
+      operationId: staff_consultation_lab_orders
+      summary: The visit's lab tests and their results
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - laboratory
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LabOrder'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason for this patient first
+            (A1)'
+    post:
+      operationId: staff_consultation_lab_orders_create
+      summary: Order tests in my draft consultation (each priced test goes on the
+        bill)
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - laboratory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabOrderInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LabOrder'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not the author, not a draft, unknown or already ordered test
   /api/v1/staff/consultations/{consultation_id}/lab-requests/:
     get:
       operationId: staff_consultation_lab_requests
@@ -12976,6 +13063,284 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Invitation'
+          description: ''
+  /api/v1/staff/lab-orders/{order_id}/cancel/:
+    post:
+      operationId: staff_lab_order_cancel
+      summary: Take back a test the lab has not sampled
+      parameters:
+      - in: path
+        name: order_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - laboratory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabVersionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabOrder'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Sampled already, or not the ordering doctor
+  /api/v1/staff/lab-orders/{order_id}/release/:
+    post:
+      operationId: staff_lab_order_release
+      summary: Release a reviewed result to the patient
+      parameters:
+      - in: path
+        name: order_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - laboratory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabVersionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabOrder'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason for this patient first
+            (A1)'
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not reviewed
+  /api/v1/staff/lab-orders/{order_id}/result/:
+    post:
+      operationId: staff_lab_order_result
+      summary: Enter the result; the last one of the visit sends the patient back
+        to the doctor
+      parameters:
+      - in: path
+        name: order_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - laboratory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabResultInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabOrder'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: A value is missing, not a number or not one of the answers
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: No sample yet, or already resulted
+  /api/v1/staff/lab-orders/{order_id}/review/:
+    post:
+      operationId: staff_lab_order_review
+      summary: Review a result, with a note for the patient
+      parameters:
+      - in: path
+        name: order_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - laboratory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabReviewInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabOrder'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason for this patient first
+            (A1)'
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not resulted
+  /api/v1/staff/lab-orders/{order_id}/sample/:
+    post:
+      operationId: staff_lab_order_sample
+      summary: Record that the sample was taken
+      parameters:
+      - in: path
+        name: order_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - laboratory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabVersionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabOrder'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not now
+  /api/v1/staff/lab/queue/:
+    get:
+      operationId: staff_lab_queue
+      summary: 'Lab requests: waiting for a sample, in progress, done today'
+      tags:
+      - laboratory
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabQueue'
+          description: ''
+  /api/v1/staff/lab/results/:
+    get:
+      operationId: staff_lab_results_inbox
+      summary: Results of the tests I ordered, waiting for my review or release
+      tags:
+      - laboratory
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LabInboxRow'
+          description: ''
+  /api/v1/staff/lab/tests/:
+    get:
+      operationId: staff_lab_tests
+      summary: The lab test catalogue, with result items and reference ranges
+      tags:
+      - laboratory
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LabCatalogueTest'
           description: ''
   /api/v1/staff/master-data/diagnosis-codes/:
     get:
@@ -15117,9 +15482,10 @@ paths:
           type: string
           enum:
           - consultation
+          - lab
           - triage
-        description: '`triage` for the triage nurse (#200); default the doctor''s
-          queue'
+        description: '`triage` for the triage nurse (#200), `lab` for the lab technician
+          (#201); default the doctor''s queue'
       tags:
       - queue
       security:
@@ -22854,6 +23220,16 @@ components:
       - id
       - original_filename
       - status
+    FlagEnum:
+      enum:
+      - low
+      - high
+      - abnormal
+      type: string
+      description: |-
+        * `low` - low
+        * `high` - high
+        * `abnormal` - abnormal
     FollowUp:
       type: object
       properties:
@@ -24411,6 +24787,245 @@ components:
       - dose
       - frequency_code
       - route
+    LabCatalogueItem:
+      type: object
+      properties:
+        code:
+          type: string
+        label:
+          type: string
+        kind:
+          $ref: '#/components/schemas/LabResultKindEnum'
+        unit:
+          type: string
+        low:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          nullable: true
+        high:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          nullable: true
+        choices:
+          type: array
+          items:
+            type: string
+        normal:
+          type: string
+          nullable: true
+      required:
+      - choices
+      - code
+      - high
+      - kind
+      - label
+      - low
+      - normal
+      - unit
+    LabCatalogueTest:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        specimen:
+          $ref: '#/components/schemas/SpecimenEnum'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabCatalogueItem'
+      required:
+      - code
+      - items
+      - name
+      - specimen
+    LabInboxRow:
+      type: object
+      properties:
+        order:
+          $ref: '#/components/schemas/LabOrder'
+        patient:
+          $ref: '#/components/schemas/LabPatient'
+        facility_patient_id:
+          type: string
+          format: uuid
+      required:
+      - facility_patient_id
+      - order
+      - patient
+    LabOrder:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        visit_id:
+          type: string
+          format: uuid
+        consultation_id:
+          type: string
+          format: uuid
+        test_code:
+          type: string
+        test_name:
+          type: string
+        specimen:
+          type: string
+        state:
+          $ref: '#/components/schemas/LabOrderStateEnum'
+        reason:
+          type: string
+          description: Why the doctor asks (encrypted).
+        ordered_at:
+          type: string
+          format: date-time
+        ordered_by_name:
+          type: string
+          nullable: true
+        sample_taken_at:
+          type: string
+          format: date-time
+          nullable: true
+        sample_taken_by_name:
+          type: string
+          nullable: true
+        resulted_at:
+          type: string
+          format: date-time
+          nullable: true
+        resulted_by_name:
+          type: string
+          nullable: true
+        result:
+          allOf:
+          - $ref: '#/components/schemas/LabResult'
+          nullable: true
+        is_abnormal:
+          type: boolean
+        reviewed_at:
+          type: string
+          format: date-time
+          nullable: true
+        reviewed_by_name:
+          type: string
+          nullable: true
+        review_note:
+          type: string
+          description: The clinician's note for the patient; empty for the lab.
+        released_at:
+          type: string
+          format: date-time
+          nullable: true
+        version:
+          type: integer
+      required:
+      - consultation_id
+      - id
+      - is_abnormal
+      - ordered_at
+      - ordered_by_name
+      - reason
+      - released_at
+      - result
+      - resulted_at
+      - resulted_by_name
+      - review_note
+      - reviewed_at
+      - reviewed_by_name
+      - sample_taken_at
+      - sample_taken_by_name
+      - specimen
+      - state
+      - test_code
+      - test_name
+      - version
+      - visit_id
+    LabOrderInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        tests:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 20
+          maxItems: 10
+          minItems: 1
+        reason:
+          type: string
+          maxLength: 500
+      required:
+      - tests
+    LabOrderStateEnum:
+      enum:
+      - ordered
+      - sample_taken
+      - resulted
+      - reviewed
+      - released
+      - cancelled
+      type: string
+      description: |-
+        * `ordered` - Ordered
+        * `sample_taken` - Sample taken
+        * `resulted` - Resulted
+        * `reviewed` - Reviewed
+        * `released` - Released
+        * `cancelled` - Cancelled
+    LabPatient:
+      type: object
+      description: What the lab needs to confirm who the patient is (upgrade 06 §3).
+      properties:
+        full_name:
+          type: string
+        display_name:
+          type: string
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        age_years:
+          type: integer
+          nullable: true
+        sex:
+          type: string
+          nullable: true
+        medilink_number:
+          type: string
+          nullable: true
+      required:
+      - age_years
+      - date_of_birth
+      - display_name
+      - full_name
+      - medilink_number
+      - sex
+    LabQueue:
+      type: object
+      properties:
+        waiting:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabVisit'
+          description: At least one sample to take.
+        in_progress:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabVisit'
+          description: Samples taken, results to enter.
+        done_today:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabVisit'
+          description: Every test resulted today.
+      required:
+      - done_today
+      - in_progress
+      - waiting
     LabRequest:
       type: object
       properties:
@@ -24457,6 +25072,93 @@ components:
       required:
       - reason
       - tests
+    LabResult:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabResultItem'
+        comment:
+          type: string
+      required:
+      - comment
+      - items
+    LabResultInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        values:
+          type: object
+          additionalProperties:
+            type: string
+            maxLength: 40
+        comment:
+          type: string
+          maxLength: 500
+      required:
+      - values
+      - version
+    LabResultItem:
+      type: object
+      properties:
+        code:
+          type: string
+        label:
+          type: string
+        kind:
+          $ref: '#/components/schemas/LabResultKindEnum'
+        value:
+          type: string
+        unit:
+          type: string
+        low:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          nullable: true
+        high:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          nullable: true
+        flag:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/FlagEnum'
+          - $ref: '#/components/schemas/NullEnum'
+      required:
+      - code
+      - flag
+      - high
+      - kind
+      - label
+      - low
+      - unit
+      - value
+    LabResultKindEnum:
+      enum:
+      - number
+      - choice
+      type: string
+      description: |-
+        * `number` - number
+        * `choice` - choice
+    LabReviewInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        note:
+          type: string
+          maxLength: 1000
+      required:
+      - version
     LabTest:
       type: object
       properties:
@@ -24482,6 +25184,41 @@ components:
           maxLength: 120
       required:
       - name
+    LabVersionRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+      required:
+      - version
+    LabVisit:
+      type: object
+      properties:
+        visit_id:
+          type: string
+          format: uuid
+        ticket:
+          allOf:
+          - $ref: '#/components/schemas/TicketRow'
+          nullable: true
+          description: The lab ticket; null until the doctor sends the patient.
+        patient:
+          $ref: '#/components/schemas/LabPatient'
+        unpaid:
+          type: boolean
+          description: Something is still to pay on the visit's bill.
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabOrder'
+      required:
+      - orders
+      - patient
+      - ticket
+      - unpaid
+      - visit_id
     Labels:
       type: object
       properties:
@@ -28513,6 +29250,50 @@ components:
       - route
       - status
       - substitute_display
+    PatientLabResult:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        facility_name:
+          type: string
+        test_code:
+          type: string
+        test_name:
+          type: string
+        ordered_at:
+          type: string
+          format: date-time
+        released_at:
+          type: string
+          format: date-time
+        doctor_name:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabResultItem'
+        is_abnormal:
+          type: boolean
+        note:
+          type: string
+          description: The doctor's note with the result.
+      required:
+      - doctor_name
+      - facility_name
+      - id
+      - is_abnormal
+      - items
+      - note
+      - ordered_at
+      - patient_id
+      - released_at
+      - test_code
+      - test_name
     PatientLoginRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -31905,6 +32686,7 @@ components:
       - pharmacist
       - cashier
       - triage_nurse
+      - lab_technician
       type: string
       description: |-
         * `facility_admin` - Facility admin
@@ -31913,6 +32695,7 @@ components:
         * `pharmacist` - Pharmacist
         * `cashier` - Cashier
         * `triage_nurse` - Triage nurse
+        * `lab_technician` - Laboratory technician
     RouteEnum:
       enum:
       - oral
@@ -32831,6 +33614,16 @@ components:
         * `public_health` - public_health
         * `radiology` - radiology
         * `urology` - urology
+    SpecimenEnum:
+      enum:
+      - blood
+      - urine
+      - stool
+      type: string
+      description: |-
+        * `blood` - blood
+        * `urine` - urine
+        * `stool` - stool
     StaffBookRequest:
       type: object
       properties:
@@ -33569,6 +34362,7 @@ components:
       - payment
       - triage
       - consultation
+      - lab
       - pharmacy
       type: string
       description: |-
@@ -33576,6 +34370,7 @@ components:
         * `payment` - Payment
         * `triage` - Triage
         * `consultation` - Consultation
+        * `lab` - Laboratory
         * `pharmacy` - Pharmacy
     StartApplicationInputRequest:
       type: object

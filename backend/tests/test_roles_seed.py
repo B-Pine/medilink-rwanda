@@ -66,5 +66,20 @@ def test_matrix_boundaries() -> None:
         }
         & (ROLE_GRANTS["triage_nurse"])
     )
+    # upgrade 06 §3: the lab technician never sees diagnoses, notes or bills, never releases
+    assert {"lab.operate", "lab.result.enter"} <= ROLE_GRANTS["lab_technician"]
+    assert (
+        not {
+            "clinical.view",
+            "clinical.write",
+            "clinical.sign",
+            "prescription.view",
+            "billing.record_payment",
+            "queue.operate",
+            "queue.call",
+            "visit.reason.view",
+        }
+        & (ROLE_GRANTS["lab_technician"])
+    )
     for grants in ROLE_GRANTS.values():
         assert grants <= set(PERMISSIONS)

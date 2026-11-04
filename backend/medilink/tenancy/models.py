@@ -55,6 +55,7 @@ class RoleCode(models.TextChoices):
     PHARMACIST = "pharmacist", "Pharmacist"
     CASHIER = "cashier", "Cashier"
     TRIAGE_NURSE = "triage_nurse", "Triage nurse"
+    LAB_TECHNICIAN = "lab_technician", "Laboratory technician"
 
 
 class EmploymentType(models.TextChoices):

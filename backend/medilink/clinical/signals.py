@@ -2,7 +2,8 @@
 
 A consultation-stage ticket cannot complete or move to the next stage while its visit has a
 draft consultation. Implemented as a `pre_save` receiver so the S4 queue code stays unchanged;
-the raised 422 rolls back the whole ticket action.
+the raised 422 rolls back the whole ticket action. Sending the patient to the lab (#201) is the
+one exception: the draft stays open until the patient comes back with the results.
 """
 
 from __future__ import annotations
@@ -27,6 +28,8 @@ def refuse_close_with_draft(
         return
     if update_fields is not None and "state" not in update_fields:
         return
+    if getattr(instance, "_lab_hand_off", False):
+        return  # sent to the lab (#201): the draft waits for the results, the patient comes back
     from medilink.clinical.models import Consultation, ConsultationStatus
 
     if Consultation.objects.filter(

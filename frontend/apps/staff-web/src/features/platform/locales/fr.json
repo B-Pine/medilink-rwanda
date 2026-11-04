@@ -270,6 +270,7 @@
     "inCharge": "Responsable",
     "noAdmin": "Pas encore d’administrateur",
     "staff": "Personnel",
+    "seeStaff": "Voir le personnel dans la liste des utilisateurs",
     "staffCount_one": "{{count}} membre actif",
     "staffCount_other": "{{count}} membres actifs",
     "doctorsChecked_one": "Licence vérifiée pour {{checked}} médecin sur {{count}}",

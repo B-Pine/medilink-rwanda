@@ -70,7 +70,7 @@ Source: [02 · Users, roles, access](../analysis/02-users-roles-and-permissions.
 | FR-ACC-03 | Six phase-1 roles with the matrix permissions | P1 | S0 | Both | AZ | Verified (S0, v0.1.0) |
 | FR-ACC-04 | Staff two-factor login | P1 | S0 | Both | API, E2E | Verified (S0, v0.1.0) |
 | FR-ACC-05 | Staff invitations by email, expiring, single use | P1 | S0, S2 (R3 #85) | Both | API, E2E | In progress |
-| FR-ACC-06 | Deactivation removes access and ends sessions at once | P1 | S0, S2 | Both | API, E2E | In progress |
+| FR-ACC-06 | Deactivation removes access and ends sessions at once (also by the platform admin per facility, #198) | P1 | S0, S2 | Both | API, E2E, CMP | In progress |
 | FR-ACC-07 | Clinician licence number; admin attests the check | P1 | S0, S2 | Both | API, CMP | In progress |
 | FR-ACC-08 | Server-side, logged permission checks on patient data | P1 | S0 | Backend | AZ, API | Verified (S0, v0.1.0) |
 | FR-ACC-09 | Super admin emergency access with reason, logged, reviewable | P1 | S6b | Both | AZ, API | In progress |

@@ -556,7 +556,9 @@ function FacilityOverview({ facility }: { facility: PlatformFacilityDetail }) {
           <ul className="m-0 flex list-none flex-col gap-2 p-0">
             {facility.admins.map((a) => (
               <li key={a.email} className="flex flex-col">
-                <span className="font-semibold">{a.name}</span>
+                <Link to={`/platform/users/${a.user_id}`} className="font-semibold">
+                  {a.name}
+                </Link>
                 <span className="text-body-sm text-fg-secondary">
                   <a href={`mailto:${a.email}`}>{a.email}</a>
                   {a.phone && (
@@ -603,6 +605,9 @@ function FacilityOverview({ facility }: { facility: PlatformFacilityDetail }) {
             ))}
           </ul>
         )}
+        <Link to={`/platform/users?facility=${facility.id}`} className="text-body-sm font-semibold">
+          {t("platform.facilities.seeStaff")}
+        </Link>
       </Card>
     </div>
   );

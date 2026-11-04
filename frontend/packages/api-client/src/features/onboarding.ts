@@ -149,6 +149,8 @@ export interface FacilityPlace {
 }
 
 export interface FacilityContact {
+  /** Opens the person in the platform user directory. */
+  user_id: Uuid;
   name: string;
   email: string;
   phone: string;

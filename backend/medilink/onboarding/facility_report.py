@@ -49,7 +49,12 @@ def facility_profile(facility: Facility) -> dict[str, Any]:
         for c in ClinicianProfile.objects.filter(user_id__in=[m.user_id for m in memberships])
     }
     admins = [
-        {"name": m.user.full_name, "email": m.user.email, "phone": m.user.phone}
+        {
+            "user_id": m.user_id,
+            "name": m.user.full_name,
+            "email": m.user.email,
+            "phone": m.user.phone,
+        }
         for m in memberships
         if any(r.code == RoleCode.FACILITY_ADMIN for r in m.roles.all())
     ]
@@ -132,14 +137,14 @@ def export_csv(rows: list[dict[str, Any]]) -> str:
         }
         writer.writerow(
             [
-                "" if flat.get(key) is None else _safe(str(flat.get(key, "")))
+                "" if flat.get(key) is None else safe_cell(str(flat.get(key, "")))
                 for key, _l in EXPORT_COLUMNS
             ]
         )
     return "﻿" + buffer.getvalue()
 
 
-def _safe(value: str) -> str:
+def safe_cell(value: str) -> str:
     """No spreadsheet formulas from data (CSV injection)."""
     return "'" + value if value[:1] in ("=", "+", "-", "@") and not _number(value) else value
 

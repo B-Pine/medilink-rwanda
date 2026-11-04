@@ -224,4 +224,78 @@ describe("platform admin data (2026-11-03)", () => {
     expect((await within(table).findAllByText("Medical doctor")).length).toBeGreaterThan(0);
     expect(within(table).getAllByText("Licence valid").length).toBeGreaterThan(0);
   }, 45_000);
+
+  // #198: counts, attention links and filters kept in the address
+  it("the user list counts accounts and filters by facility from the facility page", async () => {
+    const { user, router } = await signIn("admin@medilink.test", "/platform/users");
+    expect(await screen.findByRole("button", { name: /Patients\s*4/ })).toBeInTheDocument();
+    await user.click(await screen.findByRole("button", { name: "1 locked account" }));
+    await waitFor(() => expect(router.state.location.search).toBe("?status=locked"));
+    const table = await screen.findByRole("table", { name: "Users" });
+    expect(await within(table).findByText("Habyarimana Joseph")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Export staff accounts/ })).toBeInTheDocument();
+
+    await router.navigate("/platform/facilities/4f0c1d2e-5b6a-4c7d-8e9f-0a1b2c3d4e01");
+    expect(await screen.findByRole("link", { name: "Mutesi Diane" })).toHaveAttribute(
+      "href",
+      expect.stringMatching(/^\/platform\/users\/.+/),
+    );
+    await user.click(screen.getByRole("link", { name: "See the staff in the user list" }));
+    const staff = await screen.findByRole("table", { name: "Users" });
+    expect(await within(staff).findByText("Uwimana Grace")).toBeInTheDocument();
+    await waitFor(() =>
+      expect(within(staff).queryByText("Umutoni Claire")).not.toBeInTheDocument(),
+    );
+  }, 45_000);
+
+  it("a person's page clears a sign-in block, sends a reset link and removes facility access", async () => {
+    const { user, container } = await signIn("admin@medilink.test", "/platform/users");
+    const table = await screen.findByRole("table", { name: "Users" });
+    await user.click(await within(table).findByRole("button", { name: /^Uwimana Grace/ }));
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "Uwimana Grace" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Sign-in is blocked for 11 more minutes/)).toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
+
+    const reason = async (button: string) => {
+      const dialog = await screen.findByRole("dialog");
+      await user.type(within(dialog).getByLabelText(/^Reason/), "She called the help desk.");
+      await user.click(within(dialog).getByRole("button", { name: button }));
+      return dialog;
+    };
+
+    await user.click(screen.getAllByRole("button", { name: "Clear sign-in block" })[0]!);
+    await reason("Clear sign-in block");
+    await waitFor(() => expect(screen.queryByText(/Sign-in is blocked/)).not.toBeInTheDocument());
+
+    await user.click(screen.getByRole("button", { name: "Send password reset link" }));
+    const sent = await reason("Send password reset link");
+    expect(await within(sent).findByText(/Sent to reception@medilink.test/)).toBeInTheDocument();
+    await user.click(within(sent).getAllByRole("button", { name: "Close" }).at(-1)!);
+
+    await user.click(screen.getByRole("button", { name: "Remove access" }));
+    await reason("Remove access");
+    expect(await screen.findByText(/Access removed/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Restore access" })).toBeInTheDocument();
+    expect(screen.getByText("Facility access removed")).toBeInTheDocument();
+  }, 60_000);
+
+  it("corrects a person's details with a reason", async () => {
+    const { user } = await signIn("admin@medilink.test", "/platform/users");
+    const table = await screen.findByRole("table", { name: "Users" });
+    await user.click(await within(table).findByRole("button", { name: /^Mutesi Alice/ }));
+    await user.click(await screen.findByRole("button", { name: "Correct details" }));
+    const dialog = await screen.findByRole("dialog", { name: "Correct details" });
+    const name = within(dialog).getByLabelText("Full name");
+    await user.clear(name);
+    await user.type(name, "Mutesi Alice Uwera");
+    expect(within(dialog).getByRole("button", { name: "Save" })).toBeDisabled(); // no reason yet
+    await user.type(within(dialog).getByLabelText(/^Reason/), "Name misspelt at invitation.");
+    await user.click(within(dialog).getByRole("button", { name: "Save" }));
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "Mutesi Alice Uwera" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Details corrected by admin")).toBeInTheDocument();
+  }, 45_000);
 });

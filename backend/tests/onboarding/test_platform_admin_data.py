@@ -126,6 +126,7 @@ def test_facility_rows_and_detail_carry_profile_and_people(
     }
     assert row["admins"] == [
         {
+            "user_id": row["admins"][0]["user_id"],
             "name": row["admins"][0]["name"],
             "email": "boss@ubuzima.example",
             "phone": "+250788000222",

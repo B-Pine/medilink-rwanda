@@ -27,6 +27,15 @@ describe("PWA configuration", () => {
     expect(manifest?.background_color).toBe("#F6F8F7");
   });
 
+  it("leaves the staff app on the same host alone (ADR 0009)", () => {
+    const denied = (path: string) =>
+      workbox.navigateFallbackDenylist?.some((pattern) => pattern.test(path));
+    expect(denied("/staff")).toBe(true);
+    expect(denied("/staff/today")).toBe(true);
+    expect(denied("/staffing-news")).toBe(false);
+    expect(denied("/facilities/kigali-clinic")).toBe(false);
+  });
+
   it("never caches /api/ responses", () => {
     expect(
       workbox.navigateFallbackDenylist?.some((pattern) => pattern.test("/api/v1/patient/auth/me/")),

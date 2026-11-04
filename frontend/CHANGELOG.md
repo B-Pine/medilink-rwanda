@@ -159,6 +159,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   matches the site), the logo no longer squashes on phones, and the top bar fits 360 px (the
   theme switch moves to wider screens; the theme follows the system on phones).
 
+### Vercel services (ADR 0009)
+
+- Added: `frontend/vercel.json`: one Vercel project, `patient-web` at `/` and `staff-web` at
+  `/staff` (built with `--base /staff/`); security and cache headers per service.
+- Changed: staff-web router basename and the display link follow `import.meta.env.BASE_URL`;
+  the patient service worker never serves its shell for `/staff`.
+
 ### Upgrade U2 · Cashier role (upgrade 06 §4)
 
 - Added: Cashier in the staff invite roles; Cash desk on Today (shift, bills to pay, partly

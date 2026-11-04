@@ -29,6 +29,7 @@ Sprints S0–S10 delivered most of the M1 scope, but three things came out of a 
 | 11 | [Public website](11-public-website.md) | The product owner's brief for every public page (2026-11-02); supersedes 03 where they differ |
 | 12 | [Patient dashboard](12-patient-dashboard.md) | The signed-in patient app under `/dashboard`: shell, overview, pages, surfaces and open backend items; supersedes 04 for layout and addresses |
 | 13 | [Full visit plan](13-full-visit-plan.md) | Every role end to end (2026-11-04): triage nurse, laboratory loop, quick note, cashier, stock, reports, patient follow-through, no-phone patients; workstreams W1–W10 |
+| 14 | [Public site: look audit](14-public-site-look.md) | Every public page audited (2026-11-04); same content, better look: facility cards with building drawings, page bands, type scale, motion |
 | — | [audit/](audit/) | Audit reports, one file per audit run |
 
 ## Order of work

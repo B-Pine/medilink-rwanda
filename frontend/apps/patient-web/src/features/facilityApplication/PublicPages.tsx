@@ -12,6 +12,7 @@ import { PageHeading } from "../../components/PageHeading";
 import { describeApiError } from "../../forms/api-errors";
 import { EMAIL_PATTERN } from "../../forms/validation";
 import { PublicLayout } from "../../layout/PublicLayout";
+import { FacilityBoardIllustration } from "../site/illustrations";
 import { Faq, PageContainer, PageHeader, Panel } from "../site/kit";
 import { applicationKey, firstIncompleteStep, useApplication } from "./data";
 
@@ -39,26 +40,35 @@ export function ForFacilitiesPage() {
           </Alert>
         )}
         <section className="flex flex-col gap-4">
-          {/* the one public page template: breadcrumb → H1 → lead */}
+          {/* the one public page template: breadcrumb → H1 → lead, the two first steps and the
+              facility board drawing on the band (upgrade 14 §3) */}
           <PageHeader
             crumbs={[{ label: t("facilityApplication.public.title") }]}
             title={t("facilityApplication.public.title")}
             lead={t("facilityApplication.public.problem")}
+            art={
+              // the board is drawn for the forest ground
+              <div className="bg-forest p-5">
+                <FacilityBoardIllustration className="block aspect-[16/10] w-full" />
+              </div>
+            }
+            actions={
+              <>
+                <Link
+                  to="/for-facilities/apply"
+                  className={buttonClassName({ size: "lg", pill: true })}
+                >
+                  {t("facilityApplication.public.register")}
+                </Link>
+                <a
+                  href="#continue"
+                  className={buttonClassName({ size: "lg", variant: "secondary", pill: true })}
+                >
+                  {t("facilityApplication.public.continue")}
+                </a>
+              </>
+            }
           />
-          <div className="flex flex-wrap gap-3">
-            <Link
-              to="/for-facilities/apply"
-              className={buttonClassName({ size: "lg", pill: true })}
-            >
-              {t("facilityApplication.public.register")}
-            </Link>
-            <a
-              href="#continue"
-              className={buttonClassName({ size: "lg", variant: "secondary", pill: true })}
-            >
-              {t("facilityApplication.public.continue")}
-            </a>
-          </div>
         </section>
 
         <section aria-labelledby="roles-title" className="flex flex-col gap-4">
@@ -101,10 +111,7 @@ export function ForFacilitiesPage() {
               className="absolute top-[1.75rem] right-[12%] left-[12%] -z-10 hidden border-t-2 border-dashed border-primary/25 sm:block"
             />
             {PHASES.map((phase, index) => (
-              <li
-                key={phase}
-                className="flex flex-col gap-2 rounded-panel bg-surface p-5 shadow-e1"
-              >
+              <li key={phase} className="ml-card flex flex-col gap-2 rounded-panel bg-surface p-5">
                 <span
                   aria-hidden="true"
                   className="inline-flex size-8 items-center justify-center rounded-full bg-forest font-heading text-body-sm font-bold text-on-forest tabular-nums"
@@ -122,22 +129,25 @@ export function ForFacilitiesPage() {
           </ol>
         </section>
 
-        <section aria-labelledby="faq-title" className="flex flex-col gap-3">
-          <h2 id="faq-title" className="m-0 font-heading text-h2">
-            {t("facilityApplication.public.faqTitle")}
-          </h2>
-          <Panel as="div" className="overflow-hidden">
-            {FAQ.map((item) => (
-              <Faq key={item} question={t(`facilityApplication.public.faq.${item}.q`)}>
-                {t(`facilityApplication.public.faq.${item}.a`)}
-              </Faq>
-            ))}
-          </Panel>
-        </section>
+        {/* the questions and "continue an application" side by side on wide screens */}
+        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+          <section aria-labelledby="faq-title" className="flex flex-col gap-3">
+            <h2 id="faq-title" className="m-0 font-heading text-h2">
+              {t("facilityApplication.public.faqTitle")}
+            </h2>
+            <Panel as="div" className="overflow-hidden">
+              {FAQ.map((item) => (
+                <Faq key={item} question={t(`facilityApplication.public.faq.${item}.q`)}>
+                  {t(`facilityApplication.public.faq.${item}.a`)}
+                </Faq>
+              ))}
+            </Panel>
+          </section>
 
-        <section id="continue" aria-labelledby="continue-title" className="max-w-xl">
-          <ResumeLinkForm headingId="continue-title" />
-        </section>
+          <section id="continue" aria-labelledby="continue-title" className="lg:mt-11">
+            <ResumeLinkForm headingId="continue-title" />
+          </section>
+        </div>
       </PageContainer>
     </PublicLayout>
   );

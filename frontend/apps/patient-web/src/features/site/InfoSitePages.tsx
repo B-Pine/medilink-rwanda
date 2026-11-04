@@ -2,6 +2,7 @@ import { ApiError } from "@medilink/api-client";
 import {
   ArrowRight,
   ChatCircleText,
+  CheckCircle,
   Crosshair,
   NavigationArrow,
   Phone,
@@ -120,21 +121,22 @@ export function HowItWorksPage() {
         <div className="flex flex-col gap-12">
           <ol className="m-0 flex list-none flex-col p-0">
             {JOURNEY.map((key, index) => (
-              <li key={key} className="relative flex gap-5 pb-8 last:pb-0">
+              <li key={key} className="relative flex gap-5 pb-5 last:pb-0">
                 {/* the line that joins the steps, stopping at the last one */}
                 {index < JOURNEY.length - 1 && (
                   <span
                     aria-hidden="true"
-                    className="absolute top-10 bottom-0 left-[1.1875rem] w-px bg-border"
+                    className="absolute top-12 bottom-0 left-[1.4375rem] w-0.5 rounded-full bg-[color-mix(in_srgb,var(--color-primary)_22%,transparent)]"
                   />
                 )}
                 <span
                   aria-hidden="true"
-                  className="grid size-10 shrink-0 place-items-center rounded-full border border-fg/30 bg-surface font-heading font-bold text-fg tabular-nums"
+                  className="relative grid size-12 shrink-0 place-items-center rounded-full bg-primary font-heading text-body font-bold text-on-primary tabular-nums shadow-[0_0_0_4px_var(--color-page),0_0_0_5px_var(--site-hairline-strong)]"
                 >
                   {index + 1}
                 </span>
-                <div className="flex flex-col gap-1 pt-1.5">
+                {/* each step on its own card (upgrade 14 §3) */}
+                <div className="ml-card flex flex-1 flex-col gap-1 rounded-panel bg-surface px-5 py-4">
                   <h2 className="m-0 text-h3">
                     <span className="sr-only">{t("site.home2.stepLabel", { n: index + 1 })}: </span>
                     {t(`site.how.steps.${key}.title`)}
@@ -144,19 +146,23 @@ export function HowItWorksPage() {
               </li>
             ))}
           </ol>
-          <section
-            aria-labelledby="good"
-            className="flex flex-col gap-3 border-t border-hairline pt-8"
-          >
-            <h2 id="good" className="m-0 text-h2">
+          <Panel aria-labelledby="good" className="flex flex-col gap-4 p-6 sm:p-8">
+            <h2 id="good" className="m-0 font-heading text-title font-bold">
               {t("site.how.goodTitle")}
             </h2>
-            <ul className="m-0 flex list-disc flex-col gap-2 pl-5 text-fg">
+            <ul className="m-0 grid list-none gap-3 p-0 text-fg sm:grid-cols-2">
               {(["noAccount", "walkIn", "reception", "noPhone"] as const).map((key) => (
-                <li key={key}>{t(`site.how.good.${key}`)}</li>
+                <li key={key} className="flex items-start gap-2.5">
+                  <CheckCircle
+                    aria-hidden="true"
+                    weight="fill"
+                    className="mt-0.5 size-5 shrink-0 text-primary"
+                  />
+                  {t(`site.how.good.${key}`)}
+                </li>
               ))}
             </ul>
-          </section>
+          </Panel>
           <Link
             to="/find-care"
             viewTransition
@@ -463,12 +469,12 @@ export function HelpPage() {
             />
             {groups.length > 1 && (
               <nav aria-label={t("site.services.jump")}>
-                <ul className="m-0 flex list-none flex-wrap gap-x-5 p-0">
+                <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
                   {groups.map((group) => (
                     <li key={group.key}>
                       <a
                         href={`#help-${group.key}`}
-                        className="inline-flex min-h-target items-center text-body-sm font-semibold text-link no-underline hover:underline"
+                        className="inline-flex min-h-10 items-center rounded-full bg-page px-4 text-body-sm font-semibold text-fg-secondary no-underline shadow-e1 transition-[background-color,color,box-shadow] duration-200 ease-out-quint hover:bg-brand-subtle hover:text-on-brand-subtle hover:shadow-e2"
                       >
                         {group.title}
                       </a>
@@ -555,17 +561,31 @@ export function AboutPage() {
           title={t("site.about.title")}
           lead={t("site.about.lead")}
         />
-        {/* read mode: one column, the five themes as sections of one document */}
-        <Document>
-          {ABOUT.map((key) => (
-            <section key={key} aria-labelledby={`about-${key}`} className="flex flex-col gap-2">
-              <h2 id={`about-${key}`} className="m-0 text-h3">
-                {t(`site.about.sections.${key}.title`)}
-              </h2>
-              <p className="m-0 max-w-[68ch] text-fg">{t(`site.about.sections.${key}.body`)}</p>
-            </section>
+        {/* read mode: one column, the five themes each on its own card, numbered (upgrade 14 §3) */}
+        <div className="ml-stagger flex flex-col gap-4">
+          {ABOUT.map((key, index) => (
+            <Panel
+              key={key}
+              aria-labelledby={`about-${key}`}
+              className="grid gap-x-6 gap-y-2 p-6 sm:grid-cols-[3rem_minmax(0,1fr)] sm:p-8"
+            >
+              <span
+                aria-hidden="true"
+                className="font-heading text-title font-bold text-primary tabular-nums"
+              >
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <div className="flex flex-col gap-2">
+                <h2 id={`about-${key}`} className="m-0 font-heading text-h3 font-bold">
+                  {t(`site.about.sections.${key}.title`)}
+                </h2>
+                <p className="m-0 max-w-[68ch] leading-relaxed text-fg-secondary">
+                  {t(`site.about.sections.${key}.body`)}
+                </p>
+              </div>
+            </Panel>
           ))}
-        </Document>
+        </div>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
             to="/for-facilities"

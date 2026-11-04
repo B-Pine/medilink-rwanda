@@ -46,7 +46,7 @@ const GROUPS = [
 export function PublicFooter() {
   const { t } = useTranslation();
   return (
-    <footer className="relative isolate mt-auto overflow-hidden border-t border-hairline bg-surface text-fg print:hidden">
+    <footer className="ml-site-footer relative isolate mt-auto overflow-hidden border-t border-hairline bg-surface text-fg print:hidden">
       <div className="mx-auto flex max-w-[88rem] flex-col gap-12 px-4 pt-16 pb-8 sm:px-6">
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-20">
           <div className="flex max-w-sm flex-col items-start gap-5">
@@ -77,7 +77,7 @@ export function PublicFooter() {
               <div key={group.key} className="flex flex-col gap-3">
                 <h2
                   id={`footer-${group.key}`}
-                  className="m-0 text-caption font-semibold tracking-wide text-fg-muted"
+                  className="m-0 text-caption font-semibold tracking-[0.12em] text-fg-muted uppercase"
                 >
                   {t(`footer.groups.${group.key}`)}
                 </h2>
@@ -120,10 +120,10 @@ export function PublicFooter() {
           </div>
         </div>
       </div>
-      {/* the signature: the wordmark, very large and faint, cut by the page edge */}
+      {/* the signature: the wordmark, large and quiet, engraved in one flat tint (upgrade 14 G10) */}
       <p
         aria-hidden="true"
-        className="pointer-events-none -mt-6 mb-[-2.5vw] text-center font-heading text-[clamp(5rem,17vw,16rem)] leading-[0.8] font-bold tracking-[-0.06em] bg-[linear-gradient(180deg,color-mix(in_srgb,var(--color-primary)_22%,transparent)_10%,transparent_90%)] bg-clip-text text-transparent select-none"
+        className="pointer-events-none m-0 px-4 pb-6 text-center font-heading text-[clamp(4rem,13vw,12rem)] leading-[0.9] font-bold tracking-[-0.05em] text-[color-mix(in_srgb,var(--color-primary)_9%,transparent)] select-none"
       >
         {WORDMARK}
       </p>

@@ -23,6 +23,7 @@ import { Link, useParams, useSearchParams } from "react-router";
 import { useApi } from "../../app/services";
 import { env } from "../../env";
 import { PublicLayout } from "../../layout/PublicLayout";
+import { FacilityBuilding } from "../site/buildings";
 import { doctorSlug, EMERGENCY, isHospital, serviceSlug } from "../site/data";
 import {
   EmptyState,
@@ -133,6 +134,15 @@ export function FacilityPage() {
         <PageHeader
           crumbs={[{ to: "/facilities", label: t("nav.facilities") }, { label: f.name }]}
           title={f.name}
+          titleTransition={`facility-name-${f.slug}`}
+          art={
+            <FacilityBuilding
+              type={f.type}
+              emergency={f.emergency_department}
+              className="block aspect-[16/7] w-full"
+              style={{ viewTransitionName: `facility-art-${f.slug}` }}
+            />
+          }
           lead={
             <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
               <span>{t(`booking.types.${f.type}`, { defaultValue: f.type })}</span>

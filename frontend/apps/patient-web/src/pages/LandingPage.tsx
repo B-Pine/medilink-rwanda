@@ -34,6 +34,7 @@ import {
   type ServiceKey,
 } from "../features/booking/discovery";
 import { FILTER, sortResults, useNearMe, waitText, type Sort } from "../features/booking/Places";
+import { FacilityBuilding } from "../features/site/buildings";
 import { useAllFacilities } from "../features/site/data";
 import { FacilityExplorer, WaitMeter } from "../features/site/FacilityDirectory";
 import {
@@ -190,9 +191,14 @@ function LivePanel({
           ))}
         </div>
       ) : rows.length === 0 ? (
-        <p className="m-0 flex-1 px-6 pb-5 text-body-sm text-fg-secondary">
-          {t("site.home.nearEmpty")}
-        </p>
+        // nothing open nearby: a quiet drawing instead of an empty white box (upgrade 14 §3)
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 px-6 pb-6 text-center">
+          <FacilityBuilding
+            type="health_center"
+            className="aspect-[16/7] w-full max-w-[16rem] rounded-lg opacity-80"
+          />
+          <p className="m-0 text-body-sm text-fg-secondary">{t("site.home.nearEmpty")}</p>
+        </div>
       ) : (
         <ul className="m-0 flex flex-1 list-none flex-col p-0">
           {rows.map((r) => (

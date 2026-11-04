@@ -81,11 +81,17 @@ export function PageHeader({
   lead,
   crumbs,
   actions,
+  art,
+  titleTransition,
 }: {
   title: string;
   lead?: ReactNode;
   crumbs?: Crumb[];
   actions?: ReactNode;
+  /** A decorative drawing on the right of the band (wide screens), e.g. the facility building. */
+  art?: ReactNode;
+  /** View-transition name of the title, so a card's name flows into it. */
+  titleTransition?: string;
 }) {
   const { t } = useTranslation();
   // Inside the dashboard the shell shows the breadcrumb and the top spacing
@@ -104,27 +110,44 @@ export function PageHeader({
         </div>
       </div>
     );
-  // public pages (one template, second pass): breadcrumb → fluid H1 → one-line lead; no rule
-  // underneath, the space does the work
+  // public pages (one template, upgrade 14 G3): breadcrumb → fluid H1 → one-line lead on a white
+  // band the width of the screen, a hairline under it
   return (
-    <div className="mb-10 flex animate-enter flex-col gap-5 pt-10 pb-6 sm:pt-14 sm:pb-8">
-      {crumbs && <Breadcrumbs items={[{ to: "/", label: t("nav.home") }, ...crumbs]} />}
-      <div className="flex flex-wrap items-end justify-between gap-6">
-        <div className="flex max-w-[48rem] flex-col gap-4">
-          <PageHeading
-            title={title}
-            className="font-heading text-[clamp(2.25rem,1.7rem+2vw,3.25rem)] leading-[1.05] font-bold tracking-[-0.03em] text-balance text-fg"
-          >
-            {title}
-          </PageHeading>
-          {lead && (
-            <p className="m-0 max-w-[42rem] text-[1.125rem] leading-relaxed text-pretty text-fg-secondary">
-              {lead}
-            </p>
-          )}
+    <div
+      className={cx(
+        "ml-page-band mb-10 grid gap-x-10 pt-10 pb-10 sm:pt-14 sm:pb-12",
+        Boolean(art) && "lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end",
+      )}
+    >
+      <div className="flex min-w-0 flex-col gap-5">
+        {crumbs && <Breadcrumbs items={[{ to: "/", label: t("nav.home") }, ...crumbs]} />}
+        <div className="flex animate-enter flex-wrap items-end justify-between gap-6">
+          <div className="flex max-w-[48rem] flex-col gap-4">
+            <PageHeading
+              title={title}
+              className="font-heading text-page-title font-bold text-balance text-fg"
+            >
+              <span style={titleTransition ? { viewTransitionName: titleTransition } : undefined}>
+                {title}
+              </span>
+            </PageHeading>
+            {lead && (
+              <p className="m-0 max-w-[42rem] text-[1.125rem] leading-relaxed text-pretty text-fg-secondary">
+                {lead}
+              </p>
+            )}
+          </div>
+          {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
         </div>
-        {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
       </div>
+      {art && (
+        <div
+          aria-hidden="true"
+          className="hidden overflow-hidden rounded-panel shadow-[var(--site-edge),var(--shadow-e2)] lg:block"
+        >
+          {art}
+        </div>
+      )}
     </div>
   );
 }
@@ -143,7 +166,13 @@ export function Panel({
 }) {
   // the site elevation: a hairline ring and a soft layered shadow (e2), no hard border
   return (
-    <Tag className={cx("rounded-panel bg-surface shadow-e2", className)} {...rest}>
+    <Tag
+      className={cx(
+        "rounded-panel bg-surface shadow-[var(--site-edge),var(--shadow-e2)]",
+        className,
+      )}
+      {...rest}
+    >
       {children}
     </Tag>
   );
@@ -404,7 +433,7 @@ export function LinkRow({
 /** Expandable question (native details: keyboard and screen readers for free). */
 export function Faq({ question, children }: { question: string; children: ReactNode }) {
   return (
-    <details className="group border-b border-hairline last:border-b-0">
+    <details className="ml-faq group border-b border-hairline last:border-b-0">
       <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-4 px-6 py-4 font-semibold text-fg transition-colors duration-150 hover:bg-page/70 [&::-webkit-details-marker]:hidden">
         {question}
         <span
@@ -431,10 +460,7 @@ export function SectionTitle({
 }) {
   return (
     <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-      <h2
-        id={id}
-        className="m-0 font-heading text-[1.625rem] leading-tight font-bold tracking-[-0.02em] text-balance"
-      >
+      <h2 id={id} className="m-0 font-heading text-title font-bold text-balance">
         {children}
       </h2>
       {action}

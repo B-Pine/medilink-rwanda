@@ -50,6 +50,169 @@
   --text-kpi: clamp(2rem, 1.6rem + 1.2vw, 2.75rem);
   --text-kpi--line-height: 1;
   --text-kpi--letter-spacing: -0.03em;
+  /* upgrade 14 G4: the page title of every inner page and the title of a block inside it */
+  --text-page-title: clamp(2.25rem, 1.7rem + 2vw, 3.25rem);
+  --text-page-title--line-height: 1.05;
+  --text-page-title--letter-spacing: -0.03em;
+  --text-title: 1.625rem;
+  --text-title--line-height: 1.2;
+  --text-title--letter-spacing: -0.02em;
+}
+
+/*
+ * Upgrade 14 (2026-11-04): the same colours in cleaner combinations, richer surfaces and smooth
+ * movement. Everything below only changes the look; reduced motion and data saver keep it still.
+ */
+
+/* A 1 px light along the top edge of a raised surface: paper with a lit edge (light theme). */
+:root {
+  --site-edge: inset 0 1px 0 rgb(255 255 255 / 0.7);
+}
+:root[data-theme="dark"] {
+  --site-edge: inset 0 1px 0 rgb(255 255 255 / 0.04);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --site-edge: inset 0 1px 0 rgb(255 255 255 / 0.04);
+  }
+}
+
+/* Facility cards (§4): lift under the pointer, the drawing leans in, a selected card is ringed. */
+.ml-card {
+  box-shadow: var(--site-edge), var(--shadow-e2);
+  transition:
+    transform var(--ml-motion-base, 240ms) var(--ml-ease-out, ease-out),
+    box-shadow var(--ml-motion-base, 240ms) var(--ml-ease-out, ease-out);
+}
+.ml-card-art {
+  transition: transform 600ms var(--ml-ease-out, ease-out);
+}
+.ml-card-selected {
+  box-shadow:
+    var(--site-edge),
+    0 0 0 2px var(--color-primary),
+    var(--shadow-e2);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  :root:not([data-data-saver="on"]) .ml-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--site-edge), var(--shadow-e3);
+  }
+  :root:not([data-data-saver="on"]) .ml-card:hover .ml-card-art {
+    transform: scale(1.04);
+  }
+}
+.ml-card:focus-within {
+  box-shadow:
+    var(--site-edge),
+    0 0 0 2px var(--color-focus),
+    var(--shadow-e3);
+}
+
+/* Inner pages (G3): the page header sits on a white band the width of the screen, with a
+   hairline under it and the drawn pattern line fading in on the right. */
+.ml-page-band {
+  position: relative;
+  isolation: isolate;
+}
+.ml-page-band::before {
+  content: "";
+  position: absolute;
+  inset: 0 50%;
+  margin-inline: -50vw;
+  z-index: -1;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--site-hairline);
+}
+.ml-page-band::after {
+  content: "";
+  position: absolute;
+  inset: 0 -50vw 0 55%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='24' viewBox='0 0 48 24'%3E%3Cpath d='M0 12 12 0l12 12 12-12 12 12M0 24l12-12 12 12 12-12 12 12' fill='none' stroke='%23123d2b' stroke-width='1.5'/%3E%3C/svg%3E");
+  mask-image: linear-gradient(90deg, transparent, #000 40%);
+}
+:root[data-theme="dark"] .ml-page-band::after {
+  filter: invert(1);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .ml-page-band::after {
+    filter: invert(1);
+  }
+}
+
+/* The current page in the header: its raised pill glides to the next item (view transition). */
+.ml-nav-pill {
+  view-transition-name: nav-indicator;
+}
+
+/* The emergency line and the footer keep their place while a page changes; only the content
+   moves. */
+.ml-site-strip {
+  view-transition-name: site-strip;
+}
+.ml-site-footer {
+  view-transition-name: site-footer;
+}
+::view-transition-group(site-strip),
+::view-transition-group(site-footer) {
+  animation: none;
+}
+::view-transition-old(site-strip),
+::view-transition-old(site-footer) {
+  display: none;
+}
+::view-transition-new(site-strip),
+::view-transition-new(site-footer) {
+  animation: none;
+}
+/* a facility card's drawing and name flow into the facility page */
+::view-transition-group(*) {
+  animation-duration: 280ms;
+  animation-timing-function: var(--ml-ease-out, ease-out);
+}
+
+/* FAQ answers open to their height instead of snapping (G9). */
+@supports (interpolate-size: allow-keywords) {
+  :root {
+    interpolate-size: allow-keywords;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .ml-faq::details-content {
+      block-size: 0;
+      overflow-y: clip;
+      transition:
+        block-size var(--ml-motion-base, 240ms) var(--ml-ease-out, ease-out),
+        content-visibility var(--ml-motion-base, 240ms) allow-discrete;
+    }
+    .ml-faq[open]::details-content {
+      block-size: auto;
+    }
+  }
+}
+
+/* Loading (G8): a soft light passes over the grey shapes. */
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-surface="site"]:not([data-data-saver="on"]) .animate-pulse {
+    animation: site-shimmer 1.6s ease-in-out infinite;
+    background-image: linear-gradient(
+      100deg,
+      transparent 20%,
+      color-mix(in srgb, var(--color-surface) 70%, transparent) 50%,
+      transparent 80%
+    );
+    background-size: 220% 100%;
+  }
+}
+@keyframes site-shimmer {
+  from {
+    background-position: 120% 0;
+  }
+  to {
+    background-position: -120% 0;
+  }
 }
 
 /* one quiet brand glow behind the hero */

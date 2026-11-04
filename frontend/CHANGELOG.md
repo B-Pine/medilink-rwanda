@@ -9,6 +9,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Triage nurse (2026-11-04, #200)
+
+- Added: **Triage** for the triage nurse (`/triage`): call the next patient, see their words,
+  symptoms and allergies, record vitals, choose normal, priority or emergency, add a note for the
+  doctor and send them on. The nurse's Today shows who waits for triage; the menu shows Triage and
+  nothing of the desk, clinical work or payments.
+- Changed: the consultation shows the nurse's urgency and note above the patient's words.
+- Changed: staff invitations and the user directory know the triage nurse role; facility rules
+  have the switch "Patients see a triage nurse before the doctor".
+
 ### Super admin user management (2026-11-04, #198)
 
 - Changed: **Users** shows the number of accounts of each type, links to the accounts that need

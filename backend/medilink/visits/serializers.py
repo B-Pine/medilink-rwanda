@@ -8,7 +8,14 @@ from rest_framework import serializers
 
 from medilink.accounts.serializers import StrictSerializer
 from medilink.scheduling.booking_serializers import SymptomInputSerializer
-from medilink.visits.models import DutyState, PriorityClass, Stage, TicketState, VisitSource
+from medilink.visits.models import (
+    TRIAGE_URGENCIES,
+    DutyState,
+    PriorityClass,
+    Stage,
+    TicketState,
+    VisitSource,
+)
 
 
 class CheckInSerializer(StrictSerializer):
@@ -71,6 +78,8 @@ class TicketRowSerializer(serializers.Serializer):
     # upgrade 05 §2: the patient's own words and symptoms, for the front desk and the doctor
     reason_text = serializers.CharField(allow_blank=True)
     symptoms = serializers.ListField(child=serializers.CharField())
+    # upgrade 06 §2 (#200): known allergies, on triage tickets only (empty elsewhere)
+    allergies = serializers.ListField(child=serializers.CharField())
     version = serializers.IntegerField()
 
 
@@ -139,6 +148,10 @@ class TicketActionSerializer(StrictSerializer):
     )
     before_ticket_id = serializers.UUIDField(required=False)
     client_occurred_at = serializers.DateTimeField(required=False)
+    # `triage` (#200): the nurse's urgency, a short note, and why no vitals when none were taken
+    urgency = serializers.ChoiceField(choices=list(TRIAGE_URGENCIES), required=False)
+    note = serializers.CharField(max_length=500, required=False, allow_blank=True)
+    no_vitals_reason = serializers.CharField(max_length=200, required=False, allow_blank=True)
 
 
 class TicketEventSerializer(serializers.Serializer):

@@ -112,7 +112,8 @@
       "receptionist": "Réceptionniste",
       "doctor": "Médecin",
       "pharmacist": "Pharmacien",
-      "cashier": "Caissier"
+      "cashier": "Caissier",
+      "triage_nurse": "Infirmier de triage"
     }
   },
   "shell": {

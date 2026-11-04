@@ -7,6 +7,7 @@ ACTIONS: frozenset[str] = frozenset(
         "visits.ticket.priority",
         "visits.ticket.emergency",  # upgrade 05 §2
         "visits.ticket.transfer",
+        "visits.ticket.triage",  # upgrade 06 §2 (#200)
         "visits.reorder.review",
         "visits.display_link.create",
         "visits.display_link.revoke",

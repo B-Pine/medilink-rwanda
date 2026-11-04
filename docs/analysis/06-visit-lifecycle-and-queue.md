@@ -201,3 +201,4 @@ leave home at ≈ estimated call time − travel time − buffer (10 min)
 | FR-QUE-18 | Self check-in by QR at the facility | P2 |
 | FR-QUE-19 | Travel time from location for time-to-leave | P2 |
 | FR-QUE-20 | Family grouping of tickets | P2 |
+| FR-QUE-22 | Optional triage stage: a triage nurse records vitals and sets the urgency before the doctor; emergencies skip it ([upgrade 06](../upgrade/06-new-roles.md) §2) | P1 |

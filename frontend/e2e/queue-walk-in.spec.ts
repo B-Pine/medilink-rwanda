@@ -34,7 +34,8 @@ test("walk-in: checked in at reception, called by the doctor, completed", async 
   await page.getByRole("combobox", { name: "Ururimi" }).selectOption("en");
   await logIn(page, "reception@medilink.test");
   await expect(page.getByRole("heading", { level: 1, name: "Queue" })).toBeVisible();
-  const board = page.getByRole("table", { name: /General consultation/ });
+  // the doctor's queue (the board also shows the triage queue, #200)
+  const board = page.getByRole("table", { name: /General consultation · Consultation/ });
   await expect(board).toBeVisible();
   await page.getByRole("button", { name: "Check in patient" }).click();
   const checkIn = page.getByRole("dialog", { name: "Check in a patient" });

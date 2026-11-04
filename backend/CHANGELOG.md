@@ -8,6 +8,22 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Triage nurse and the triage stage (2026-11-04, #200)
+
+- Added: role `triage_nurse` with the new permission `triage.operate` (plus `vitals.record`,
+  `visit.reason.view`, `disputes.comment`, `reports.view_own`); never diagnoses, notes,
+  prescriptions or bills (tenancy migration 0011). Seeded demo nurse `triage@demo.medilink.test`.
+- Added: queue stage `triage` and queue setting `triage_enabled` (off by default). With it on,
+  check-in and remote joiners start at triage instead of the doctor; emergencies skip it; moving a
+  ticket forward offers triage until the patient was triaged.
+- Added: ticket action `triage` (urgency `normal`, `priority` with a class, `emergency` with a
+  reason; a short note; vitals first or `no_vitals_reason`), which moves the patient to the
+  doctor's queue; the visit keeps `triaged_at`, `triaged_by`, `triage_urgency` and the encrypted
+  note (visits migration 0006); audit `visits.ticket.triage`.
+- Changed: `GET /queue/mine/?stage=triage` is the nurse's queue; a nurse's board shows triage
+  queues only; triage ticket rows carry the patient's `allergies`; the consultation's
+  `reason_for_visit.nurse_triage` gives the doctor the nurse's decision.
+
 ### Super admin user management (2026-11-04, #198)
 
 - Changed: `GET /platform/users/` filters in the database (the list no longer loads every account)

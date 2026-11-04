@@ -28,7 +28,8 @@ export type FacilityType =
   | "diagnostic_center"
   | (string & {});
 
-export type RoleCode = "facility_admin" | "receptionist" | "doctor" | "pharmacist" | "cashier";
+export type RoleCode =
+  "facility_admin" | "receptionist" | "doctor" | "pharmacist" | "cashier" | "triage_nurse";
 
 /**
  * Known permission codes. Feature modules add theirs by declaration merging in their own file,
@@ -46,6 +47,8 @@ export interface PermissionCodes {
   "queue.operate": true;
   "queue.call": true;
   "vitals.record": true;
+  /** #200: the triage nurse's queue, vitals and urgency. */
+  "triage.operate": true;
   "visit.reason.view": true;
   "clinical.view": true;
   "clinical.write": true;

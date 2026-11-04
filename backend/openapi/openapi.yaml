@@ -15110,6 +15110,16 @@ paths:
   /api/v1/staff/queue/mine/:
     get:
       operationId: staff_queue_mine
+      parameters:
+      - in: query
+        name: stage
+        schema:
+          type: string
+          enum:
+          - consultation
+          - triage
+        description: '`triage` for the triage nurse (#200); default the doctor''s
+          queue'
       tags:
       - queue
       security:
@@ -25977,6 +25987,23 @@ components:
     NullEnum:
       enum:
       - null
+    NurseTriage:
+      type: object
+      properties:
+        urgency:
+          $ref: '#/components/schemas/TriageUrgencyEnum'
+        note:
+          type: string
+        by_name:
+          type: string
+        at:
+          type: string
+          format: date-time
+      required:
+      - at
+      - by_name
+      - note
+      - urgency
     OnDuty:
       type: object
       properties:
@@ -31275,7 +31302,13 @@ components:
           allOf:
           - $ref: '#/components/schemas/TriageHint'
           nullable: true
+        nurse_triage:
+          allOf:
+          - $ref: '#/components/schemas/NurseTriage'
+          nullable: true
+          description: The triage nurse's urgency and note (#200); null when none.
       required:
+      - nurse_triage
       - patient_words
       - symptoms
       - triage
@@ -31871,6 +31904,7 @@ components:
       - doctor
       - pharmacist
       - cashier
+      - triage_nurse
       type: string
       description: |-
         * `facility_admin` - Facility admin
@@ -31878,6 +31912,7 @@ components:
         * `doctor` - Doctor / clinician
         * `pharmacist` - Pharmacist
         * `cashier` - Cashier
+        * `triage_nurse` - Triage nurse
     RouteEnum:
       enum:
       - oral
@@ -33532,12 +33567,14 @@ components:
       enum:
       - reception
       - payment
+      - triage
       - consultation
       - pharmacy
       type: string
       description: |-
         * `reception` - Reception
         * `payment` - Payment
+        * `triage` - Triage
         * `consultation` - Consultation
         * `pharmacy` - Pharmacy
     StartApplicationInputRequest:
@@ -34412,6 +34449,14 @@ components:
         client_occurred_at:
           type: string
           format: date-time
+        urgency:
+          $ref: '#/components/schemas/TriageUrgencyEnum'
+        note:
+          type: string
+          maxLength: 500
+        no_vitals_reason:
+          type: string
+          maxLength: 200
       required:
       - version
     TicketEvent:
@@ -34520,10 +34565,15 @@ components:
           type: array
           items:
             type: string
+        allergies:
+          type: array
+          items:
+            type: string
         version:
           type: integer
       required:
       - age_years
+      - allergies
       - arrival_at
       - assigned_membership_id
       - called_at
@@ -34738,6 +34788,16 @@ components:
       - service_code
       - signed_off
       - urgency
+    TriageUrgencyEnum:
+      enum:
+      - normal
+      - priority
+      - emergency
+      type: string
+      description: |-
+        * `normal` - normal
+        * `priority` - priority
+        * `emergency` - emergency
     UndoRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.

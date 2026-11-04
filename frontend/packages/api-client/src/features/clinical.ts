@@ -69,6 +69,13 @@ export interface ReasonForVisit {
     rules_version: string;
     signed_off: boolean;
   } | null;
+  /** The triage nurse's urgency and note (#200); null when the patient was not triaged. */
+  nurse_triage: {
+    urgency: "normal" | "priority" | "emergency";
+    note: string;
+    by_name: string;
+    at: string;
+  } | null;
 }
 
 /** Doctor Today (upgrade 05 §3): counts for the signed-in clinician. */

@@ -145,7 +145,7 @@ describe("reception board (S4-F2, F3)", () => {
 
   it("checks in an existing patient with N and shows the ticket", async () => {
     const { user } = await signIn("reception@medilink.test", "/queue");
-    await screen.findByRole("table", { name: /General consultation/ });
+    await screen.findByRole("table", { name: /General consultation · Consultation/ });
     await user.keyboard("n");
     const dialog = await screen.findByRole("dialog", { name: "Check in a patient" });
     await user.type(
@@ -160,7 +160,7 @@ describe("reception board (S4-F2, F3)", () => {
 
   it("/ opens the check-in search; shortcuts are ignored while a panel is open", async () => {
     const { user } = await signIn("reception@medilink.test", "/queue");
-    const table = await screen.findByRole("table", { name: /General consultation/ });
+    const table = await screen.findByRole("table", { name: /General consultation · Consultation/ });
     await user.click(within(within(table).getAllByRole("row")[1]!).getByRole("button"));
     await screen.findByRole("dialog", { name: /Kamanzi O\./ });
     await user.keyboard("/");

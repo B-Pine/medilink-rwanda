@@ -1,6 +1,50 @@
 {
   "nav": {
-    "reorders": "Igenzura ry’umurongo"
+    "reorders": "Igenzura ry’umurongo",
+    "triage": "Isuzuma ry’ibanze"
+  },
+  "triage": {
+    "title": "Isuzuma ry’ibanze",
+    "lead": "Fata ibipimo, menya uko byihutirwa, hanyuma wohereze umurwayi kwa muganga.",
+    "open": "Fungura isuzuma ry’ibanze",
+    "current": "Umurwayi uri kumwe nawe",
+    "start": "Tangira isuzuma",
+    "inTriage": "Ari mu isuzuma ry’ibanze",
+    "nobody": "Nta muntu utegereje isuzuma ry’ibanze.",
+    "waiting": "Bategereje isuzuma ry’ibanze",
+    "waitingCount_one": "{{count}} ategereje isuzuma ry’ibanze",
+    "waitingCount_other": "{{count}} bategereje isuzuma ry’ibanze",
+    "longest_one": "Uwategereje igihe kirekire: iminota {{count}}",
+    "longest_other": "Uwategereje igihe kirekire: iminota {{count}}",
+    "words": "Mu magambo ye",
+    "noWords": "Nta cyanditswe ku kwakira.",
+    "symptoms": "Ibimenyetso",
+    "allergies": "Allergies",
+    "noAllergies": "Nta na kimwe cyanditswe. Baza umurwayi.",
+    "vitals": "Ibipimo",
+    "decision": "Ohereza kwa muganga",
+    "urgency": "Byihutirwa bingana iki?",
+    "urgencies": {
+      "normal": "Bisanzwe",
+      "priority": "Yihutishwa",
+      "emergency": "Byihutirwa"
+    },
+    "urgencyHints": {
+      "normal": "Ategereza igihe cye.",
+      "priority": "Abonwa mbere y’umurongo usanzwe.",
+      "emergency": "Ni we ukurikiraho. Muganga abibona mbere."
+    },
+    "why": "Kuki yihutishwa?",
+    "danger": "Ni iki giteye impungenge?",
+    "dangerHint": "Urugero: kuribwa mu gatuza ari kubira ibyuya, SpO₂ 88%.",
+    "dangerRequired": "Vuga igituma byihutirwa.",
+    "note": "Icyo muganga agomba kumenya",
+    "noteHint": "Si ngombwa. Icyo muganga agomba kumenya mbere.",
+    "noVitals": "Kuki nta bipimo?",
+    "noVitalsHint": "Fata nibura igipimo kimwe, cyangwa uvuge impamvu bitashobotse.",
+    "noVitalsRequired": "Andika igipimo hejuru, cyangwa uvuge impamvu nta na kimwe cyafashwe.",
+    "send": "Ohereza kwa muganga",
+    "sent": "{{number}} ategereje muganga."
   },
   "loading": "Umurongo urafunguka…",
   "loadFailed": "Umurongo ntiwafungutse. Burongera kugerageza.",
@@ -37,6 +81,7 @@
   "stages": {
     "reception": "Kwakira",
     "payment": "Kwishyura",
+    "triage": "Isuzuma ry’ibanze",
     "consultation": "Kwa muganga",
     "pharmacy": "Farumasi"
   },
@@ -91,6 +136,7 @@
     "return": "Yagarutse ku murongo",
     "complete": "Byarangiye",
     "next_stage": "Yakomeje ku ntambwe ikurikira",
+    "triage": "Yasuzumwe mbere",
     "opened": "Tike nshya",
     "transfer": "Yimuriwe",
     "cancel": "Byahagaritswe",

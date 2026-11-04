@@ -243,6 +243,13 @@ const DEMO_REASON: ReasonForVisit = {
     rules_version: "2026.11-p1",
     signed_off: false,
   },
+  // #200: what the triage nurse decided before the doctor
+  nurse_triage: {
+    urgency: "priority",
+    note: "BP 168/102 at triage. Says she stopped her tablets 3 days ago.",
+    by_name: "Mukeshimana Odette",
+    at: new Date(Date.now() - 25 * 60_000).toISOString(),
+  },
 };
 
 function vitalsRow(visitId: string, at: string, values: Partial<Vitals>): Vitals {
@@ -292,7 +299,7 @@ function consultation(
     private_notes: "",
     diagnoses: [],
     vitals: [],
-    reason_for_visit: { patient_words: "", symptoms: [], triage: null },
+    reason_for_visit: { patient_words: "", symptoms: [], triage: null, nurse_triage: null },
     addenda: [],
     allergies: [],
     no_known_allergies: null,

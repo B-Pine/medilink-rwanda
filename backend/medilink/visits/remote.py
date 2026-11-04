@@ -37,6 +37,7 @@ from medilink.visits.services import (
     active_ticket,
     add_symptoms,
     calling_order,
+    first_stage,
     mark_on_site,
     place_in_order,
     queue_settings,
@@ -116,7 +117,7 @@ def join(
                 check_in_key=key,
             )
             ticket = _new_ticket(
-                visit, service, settings_["start_stage"], rank=RANK_NORMAL, arrival_at=now
+                visit, service, first_stage(settings_), rank=RANK_NORMAL, arrival_at=now
             )
             ticket.is_remote = True
             ticket.save(update_fields=["is_remote", "updated_at"])

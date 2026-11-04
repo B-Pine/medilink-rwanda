@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5476.
+Keys: 5523.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -155,6 +155,7 @@ File: `apps/staff-web/src/i18n/locales/rw.json`
 | `facility.roles.doctor` | Muganga | Doctor | needs native-speaker review |
 | `facility.roles.pharmacist` | Umufarumasiye | Pharmacist | needs native-speaker review |
 | `facility.roles.cashier` | Ushinzwe kwishyuza | Cashier | needs native-speaker review |
+| `facility.roles.triage_nurse` | Umuforomo w’isuzuma ry’ibanze | Triage nurse | needs native-speaker review |
 | `shell.navLabel` | Menu nyamukuru | Main menu | needs native-speaker review |
 | `shell.openMenu` | Fungura menu | Open menu | needs native-speaker review |
 | `shell.closeMenu` | Funga menu | Close menu | needs native-speaker review |
@@ -1107,6 +1108,11 @@ File: `apps/staff-web/src/features/clinical/locales/rw.json`
 | `today.weekCaption` | Iminsi 7 ishize | Last 7 days | needs native-speaker review |
 | `today.results_one` | Igisubizo {{count}} cyo hanze cyo gusuzuma | {{count}} outside result to review | needs native-speaker review |
 | `today.results_other` | Ibisubizo {{count}} byo hanze byo gusuzuma | {{count}} outside results to review | needs native-speaker review |
+| `reasonForVisit.nurse` | Isuzuma ry’ibanze: {{urgency}} | Triage: {{urgency}} | needs native-speaker review |
+| `reasonForVisit.nurseBy` | na {{name}} saa {{time}} | by {{name}} at {{time}} | needs native-speaker review |
+| `reasonForVisit.nurseUrgency.normal` | bisanzwe | normal | needs native-speaker review |
+| `reasonForVisit.nurseUrgency.priority` | yihutishwa | priority | needs native-speaker review |
+| `reasonForVisit.nurseUrgency.emergency` | byihutirwa | emergency | needs native-speaker review |
 | `reasonForVisit.title` | Icyazanye umurwayi | Why the patient came | needs native-speaker review |
 | `reasonForVisit.short` | Impamvu | Reason | needs native-speaker review |
 | `reasonForVisit.none` | Nta mpamvu yanditswe igihe cyo gufata gahunda cyangwa kwakirwa. Baza umurwayi. | No reason was recorded at booking or check-in. Ask the patient. | needs native-speaker review |
@@ -2853,6 +2859,44 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | Key | Kinyarwanda (draft) | English source | Status |
 |---|---|---|---|
 | `nav.reorders` | Igenzura ry’umurongo | Queue reviews | needs native-speaker review |
+| `nav.triage` | Isuzuma ry’ibanze | Triage | needs native-speaker review |
+| `triage.title` | Isuzuma ry’ibanze | Triage | needs native-speaker review |
+| `triage.lead` | Fata ibipimo, menya uko byihutirwa, hanyuma wohereze umurwayi kwa muganga. | Take vitals, decide how urgent it is, and send the patient to the doctor. | needs native-speaker review |
+| `triage.open` | Fungura isuzuma ry’ibanze | Open triage | needs native-speaker review |
+| `triage.current` | Umurwayi uri kumwe nawe | Patient with you | needs native-speaker review |
+| `triage.start` | Tangira isuzuma | Start triage | needs native-speaker review |
+| `triage.inTriage` | Ari mu isuzuma ry’ibanze | In triage | needs native-speaker review |
+| `triage.nobody` | Nta muntu utegereje isuzuma ry’ibanze. | Nobody is waiting for triage. | needs native-speaker review |
+| `triage.waiting` | Bategereje isuzuma ry’ibanze | Waiting for triage | needs native-speaker review |
+| `triage.waitingCount_one` | {{count}} ategereje isuzuma ry’ibanze | {{count}} waiting for triage | needs native-speaker review |
+| `triage.waitingCount_other` | {{count}} bategereje isuzuma ry’ibanze | {{count}} waiting for triage | needs native-speaker review |
+| `triage.longest_one` | Uwategereje igihe kirekire: iminota {{count}} | Longest wait {{count}} min | needs native-speaker review |
+| `triage.longest_other` | Uwategereje igihe kirekire: iminota {{count}} | Longest wait {{count}} min | needs native-speaker review |
+| `triage.words` | Mu magambo ye | In their words | needs native-speaker review |
+| `triage.noWords` | Nta cyanditswe ku kwakira. | Nothing written at check-in. | needs native-speaker review |
+| `triage.symptoms` | Ibimenyetso | Symptoms | needs native-speaker review |
+| `triage.allergies` | Allergies | Allergies | needs native-speaker review |
+| `triage.noAllergies` | Nta na kimwe cyanditswe. Baza umurwayi. | None recorded. Ask the patient. | needs native-speaker review |
+| `triage.vitals` | Ibipimo | Vitals | needs native-speaker review |
+| `triage.decision` | Ohereza kwa muganga | Send to the doctor | needs native-speaker review |
+| `triage.urgency` | Byihutirwa bingana iki? | How urgent? | needs native-speaker review |
+| `triage.urgencies.normal` | Bisanzwe | Normal | needs native-speaker review |
+| `triage.urgencies.priority` | Yihutishwa | Priority | needs native-speaker review |
+| `triage.urgencies.emergency` | Byihutirwa | Emergency | needs native-speaker review |
+| `triage.urgencyHints.normal` | Ategereza igihe cye. | Waits in turn. | needs native-speaker review |
+| `triage.urgencyHints.priority` | Abonwa mbere y’umurongo usanzwe. | Seen before the normal queue. | needs native-speaker review |
+| `triage.urgencyHints.emergency` | Ni we ukurikiraho. Muganga abibona mbere. | Seen next. The doctor sees it first. | needs native-speaker review |
+| `triage.why` | Kuki yihutishwa? | Why priority? | needs native-speaker review |
+| `triage.danger` | Ni iki giteye impungenge? | What is dangerous? | needs native-speaker review |
+| `triage.dangerHint` | Urugero: kuribwa mu gatuza ari kubira ibyuya, SpO₂ 88%. | For example: chest pain with sweating, SpO₂ 88%. | needs native-speaker review |
+| `triage.dangerRequired` | Vuga igituma byihutirwa. | Say what makes it an emergency. | needs native-speaker review |
+| `triage.note` | Icyo muganga agomba kumenya | Note for the doctor | needs native-speaker review |
+| `triage.noteHint` | Si ngombwa. Icyo muganga agomba kumenya mbere. | Optional. What the doctor should know first. | needs native-speaker review |
+| `triage.noVitals` | Kuki nta bipimo? | Why no vitals? | needs native-speaker review |
+| `triage.noVitalsHint` | Fata nibura igipimo kimwe, cyangwa uvuge impamvu bitashobotse. | Take at least one vital sign, or say why you could not. | needs native-speaker review |
+| `triage.noVitalsRequired` | Andika igipimo hejuru, cyangwa uvuge impamvu nta na kimwe cyafashwe. | Record a vital sign above, or say why none could be taken. | needs native-speaker review |
+| `triage.send` | Ohereza kwa muganga | Send to the doctor | needs native-speaker review |
+| `triage.sent` | {{number}} ategereje muganga. | {{number}} is waiting for the doctor. | needs native-speaker review |
 | `loading` | Umurongo urafunguka… | Loading the queue… | needs native-speaker review |
 | `loadFailed` | Umurongo ntiwafungutse. Burongera kugerageza. | The queue could not load. It retries by itself. | needs native-speaker review |
 | `failed` | Ntibyakunze. Reba interineti wongere ugerageze. | That did not work. Check your connection and try again. | needs native-speaker review |
@@ -2883,6 +2927,7 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `states.completed` | Byarangiye | Completed | needs native-speaker review |
 | `stages.reception` | Kwakira | Reception | needs native-speaker review |
 | `stages.payment` | Kwishyura | Payment | needs native-speaker review |
+| `stages.triage` | Isuzuma ry’ibanze | Triage | needs native-speaker review |
 | `stages.consultation` | Kwa muganga | Consultation | needs native-speaker review |
 | `stages.pharmacy` | Farumasi | Pharmacy | needs native-speaker review |
 | `flags.emergency` | Byihutirwa | Emergency | needs native-speaker review |
@@ -2925,6 +2970,7 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `actions.return` | Yagarutse ku murongo | Back in the queue | needs native-speaker review |
 | `actions.complete` | Byarangiye | Completed | needs native-speaker review |
 | `actions.next_stage` | Yakomeje ku ntambwe ikurikira | Moved to the next stage | needs native-speaker review |
+| `actions.triage` | Yasuzumwe mbere | Triaged | needs native-speaker review |
 | `actions.opened` | Tike nshya | New ticket | needs native-speaker review |
 | `actions.transfer` | Yimuriwe | Transferred | needs native-speaker review |
 | `actions.cancel` | Byahagaritswe | Cancelled | needs native-speaker review |
@@ -3586,6 +3632,7 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `rules.fields.queue.show_names_on_display` | Kwerekana amazina kuri televiziyo y'aho bategerereza | Show names on the waiting-room screen | needs native-speaker review |
 | `rules.fields.queue.call_repeat_seconds` | Gusubiramo guhamagara nyuma ya (amasegonda) | Repeat a call after (seconds) | needs native-speaker review |
 | `rules.fields.queue.priority_elderly_age` | Kwihutishwa guhera ku myaka | Priority from age | needs native-speaker review |
+| `rules.fields.queue.triage_enabled` | Abarwayi babanza kubonana n’umuforomo w’isuzuma ry’ibanze mbere ya muganga | Patients see a triage nurse before the doctor | needs native-speaker review |
 | `rules.fields.booking.enabled` | Gufata gahunda kuri interineti | Online booking | needs native-speaker review |
 | `rules.fields.booking.lead_time_hours` | Gufata gahunda nibura (amasaha mbere) | Book at least (hours ahead) | needs native-speaker review |
 | `rules.fields.booking.horizon_days` | Gufata gahunda kugeza (iminsi mbere) | Book up to (days ahead) | needs native-speaker review |

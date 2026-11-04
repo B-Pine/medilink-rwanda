@@ -424,7 +424,8 @@
         "ticket_reset": "Recommencer les numéros de ticket",
         "show_names_on_display": "Afficher les noms sur l’écran de la salle d’attente",
         "call_repeat_seconds": "Répéter un appel après (secondes)",
-        "priority_elderly_age": "Priorité à partir de l’âge"
+        "priority_elderly_age": "Priorité à partir de l’âge",
+        "triage_enabled": "Les patients passent au triage avant le médecin"
       },
       "booking": {
         "enabled": "Réservation en ligne",

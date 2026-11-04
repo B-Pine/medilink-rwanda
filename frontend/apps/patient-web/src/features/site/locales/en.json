@@ -433,12 +433,10 @@
     "details": "Details"
   },
   "home2": {
-    "tag": "Live waiting times at verified facilities",
     "title": "Find the right care, without the long wait.",
     "lead": "Compare nearby clinics and hospitals, see who is open and how long the queue is, then join or book.",
     "searchPlaceholder": "Service, facility or symptom",
     "search": "Search",
-    "popular": "Popular",
     "chips": {
       "general": "General consultation",
       "maternal": "Maternal care",
@@ -446,21 +444,9 @@
       "dental": "Dental",
       "symptoms": "Not sure? Check symptoms"
     },
-    "float": {
-      "queue": "You're 3rd in queue · about 12 min",
-      "insurance": "Accepted here: Mutuelle · RAMA · MMI",
-      "open": "Open now · closes 18:00"
-    },
-    "trust": {
-      "label": "MediLink in numbers",
-      "facilities": "verified facilities",
-      "districts": "districts you can search",
-      "languages": "languages: Kinyarwanda, English, French",
-      "noAccountValue": "Free",
-      "noAccount": "no account needed to search"
-    },
     "careTitle": "What care do you need?",
     "careLead": "Pick a service to see the places that offer it.",
+    "allServices": "All services",
     "facilityCount_one": "{{count}} facility",
     "facilityCount_other": "{{count}} facilities",
     "nearTitle": "Open near you",
@@ -481,32 +467,8 @@
         "body": "Follow your place live and come when you are close to the front."
       }
     },
-    "phone": {
-      "search": "Dental near me",
-      "place1": "Kacyiru Health Centre",
-      "wait1": "Open · ~15 min",
-      "place2": "Remera Clinic",
-      "wait2": "Busy · ~45 min",
-      "service": "General consultation",
-      "slot": "Today · 6 waiting",
-      "joinButton": "Join the queue",
-      "ticket": "Your ticket"
-    },
     "facilitiesTitle": "Run a calmer waiting room.",
     "facilitiesLead": "Patients see your live wait before they come. You see the queue, the flow and the day in one dashboard.",
-    "facilitiesAction": "MediLink for facilities",
-    "dash": {
-      "title": "Today",
-      "live": "Live",
-      "queue": "In queue",
-      "wait": "Average wait",
-      "seen": "Seen today",
-      "note": "Arrivals by hour"
-    },
-    "photos": {
-      "main": "A health worker in a green uniform shows a woman how to use an app on her phone at a health centre desk.",
-      "entrance": "The covered entrance of a health centre, with patients waiting on benches.",
-      "hillside": "A brick health centre with a green roof among banana trees and green hills."
-    }
+    "facilitiesAction": "MediLink for facilities"
   }
 }

@@ -307,6 +307,18 @@ class ReceiptSerializer(serializers.Serializer):
     balance_after_rwf = serializers.IntegerField()
 
 
+class ShiftMethodSerializer(serializers.Serializer):
+    """#203 end-of-shift summary row for one payment method."""
+
+    method = serializers.ChoiceField(choices=PaymentMethod.choices)
+    payment_count = serializers.IntegerField()
+    received_rwf = serializers.IntegerField()
+    paid_out_rwf = serializers.IntegerField(help_text="Refunds paid back in this shift.")
+    expected_rwf = serializers.IntegerField(help_text="Cash includes the opening float.")
+    counted_rwf = serializers.IntegerField(allow_null=True, help_text="Null while open.")
+    difference_rwf = serializers.IntegerField(allow_null=True, help_text="Counted minus expected.")
+
+
 class CashShiftSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     membership_id = serializers.UUIDField()
@@ -315,11 +327,14 @@ class CashShiftSerializer(serializers.Serializer):
     opened_at = serializers.DateTimeField()
     opening_float_rwf = serializers.IntegerField()
     closed_at = serializers.DateTimeField(allow_null=True)
-    expected_totals = MethodTotalsSerializer()
+    expected_totals = MethodTotalsSerializer(
+        help_text="What the drawer should hold per method; cash includes the opening float."
+    )
     counted_totals = MethodTotalsSerializer(allow_null=True)
     difference_rwf = serializers.IntegerField(allow_null=True)
     note = serializers.CharField(allow_blank=True)
     payment_count = serializers.IntegerField()
+    by_method = ShiftMethodSerializer(many=True)
     reviewed_by_name = serializers.CharField(allow_null=True)
     reviewed_at = serializers.DateTimeField(allow_null=True)
     review_note = serializers.CharField(allow_blank=True)

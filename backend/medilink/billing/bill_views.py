@@ -251,6 +251,7 @@ def shift_data(shift: CashShift) -> dict[str, Any]:
         "difference_rwf": shift.difference_rwf,
         "note": shift.note,
         "payment_count": shift.payments.filter(status=PaymentStatus.RECORDED).count(),
+        "by_method": bills.by_method(shift),
         "reviewed_by_name": _name(shift.reviewed_by_membership) or None,
         "reviewed_at": shift.reviewed_at,
         "review_note": shift.review_note,
@@ -768,6 +769,7 @@ class ShiftsView(BillingView):
         tags=TAGS,
         parameters=[
             OpenApiParameter("status", str, enum=list(ShiftStatus.values)),
+            OpenApiParameter("mine", bool, description="Only my own shifts (approvers too)"),
             OpenApiParameter("page", int),
             OpenApiParameter("page_size", int),
         ],
@@ -778,7 +780,7 @@ class ShiftsView(BillingView):
         rows = CashShift.objects.filter(facility_id=self.facility_id()).select_related(
             "membership__user", "reviewed_by_membership__user"
         )
-        if not self.can(APPROVE):
+        if not self.can(APPROVE) or request.query_params.get("mine") == "true":
             rows = rows.filter(membership=self.membership())
         state = request.query_params.get("status")
         if state in ShiftStatus.values:

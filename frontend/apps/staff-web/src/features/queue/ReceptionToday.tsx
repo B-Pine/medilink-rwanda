@@ -1,5 +1,5 @@
 import type { CashShift } from "@medilink/api-client";
-import { isApiError } from "@medilink/api-client";
+import { isApiError, shiftCollected } from "@medilink/api-client";
 import { buttonClassName, cx } from "@medilink/ui";
 import {
   CalendarCheck,
@@ -111,12 +111,8 @@ export function ReceptionTodayCard() {
   const missed = rows.filter((b) => b.status === "no_show").length;
   const claims = unconfirmedRemote(queues, null).length;
   const myShift: CashShift | null | undefined = shift.data;
-  const collected: number | null = myShift
-    ? myShift.expected_totals.cash +
-      myShift.expected_totals.mtn_momo +
-      myShift.expected_totals.airtel_money +
-      myShift.expected_totals.card
-    : null;
+  // payments only: the expected totals also hold the opening float
+  const collected: number | null = myShift ? shiftCollected(myShift) : null;
 
   const deskLink =
     "inline-flex min-h-11 items-center gap-2 rounded-xl px-4 font-semibold no-underline transition-[transform,filter,background-color] duration-150 active:scale-[0.97]";

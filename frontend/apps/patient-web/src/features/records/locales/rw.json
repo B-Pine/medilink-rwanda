@@ -32,5 +32,26 @@
   "date": "Itariki",
   "facility": "Ikigo cy'ubuvuzi",
   "doctorLabel": "Muganga",
-  "signedOn": "Byasinywe"
+  "signedOn": "Byasinywe",
+  "lab": {
+    "title": "Ibisubizo by'ibizamini",
+    "intro": "Ibisubizo by'ibizamini byawe bigaragara hano muganga amaze kubisoma, hamwe n'ubutumwa bwe.",
+    "item": "Ikizamini",
+    "value": "Igisubizo",
+    "normal": "Ibisanzwe",
+    "note": "Muganga wawe aravuga:",
+    "flags": {
+      "low": "Biri munsi y'ibisanzwe",
+      "high": "Biri hejuru y'ibisanzwe",
+      "abnormal": "Ntibisanzwe"
+    },
+    "choices": {
+      "negative": "Nta bwandu",
+      "positive": "Afite ubwandu",
+      "invalid": "Ntibyasomwe",
+      "trace": "Bike cyane",
+      "none_seen": "Nta byabonetse",
+      "seen": "Byabonetse"
+    }
+  }
 }

@@ -1,7 +1,46 @@
 {
   "nav": {
     "reorders": "Igenzura ry’umurongo",
-    "triage": "Isuzuma ry’ibanze"
+    "triage": "Isuzuma ry’ibanze",
+    "lab": "Laboratwari"
+  },
+  "lab": {
+    "title": "Laboratwari",
+    "lead": "Hamagara umurwayi ukurikiyeho, fata ibipimo, wandike ibisubizo. Umurwayi asubira kwa muganga iyo ibisubizo byose byabonetse.",
+    "open": "Fungura laboratwari",
+    "current": "Umurwayi uri kumwe nawe",
+    "start": "Tangira",
+    "inLab": "Muri laboratwari",
+    "nobody": "Nta muntu utegereje laboratwari.",
+    "waiting": "Bategereje gufatwa ibipimo",
+    "inProgress": "Ibisubizo byo kwandika",
+    "inProgressNone": "Nta gipimo gitegereje igisubizo.",
+    "doneToday": "Byarangiye uyu munsi",
+    "identity": "Genzura uwo murwayi uwo ari we",
+    "fullName": "Amazina yose",
+    "born": "Itariki y’amavuko",
+    "medilinkNumber": "Nomero ya MediLink",
+    "payment": "Kwishyura",
+    "paid": "Yishyuye",
+    "unpaid": "Ntiyishyuye",
+    "samples": "Ibipimo",
+    "sample": "Igipimo cyafashwe",
+    "orderedBy": "Byasabwe na {{name}}",
+    "request": "Icyo muganga asaba:",
+    "loadingTests": "Turimo gushaka ibizamini…",
+    "samplesDone": "Ibipimo bya {{name}} byafashwe. Andika ibisubizo nibimara kuboneka.",
+    "enter": "Andika igisubizo",
+    "choose": "Hitamo…",
+    "required": "Andika iki gisubizo.",
+    "comment": "Icyo ubwira muganga (si ngombwa)",
+    "save": "Bika igisubizo",
+    "saved": "Igisubizo cyabitswe: {{test}}.",
+    "backToDoctor": "Ibisubizo byose byabonetse. {{name}} asubiye kwa muganga.",
+    "today": {
+      "waiting": "Bategereje gufatwa ibipimo",
+      "results": "Ibisubizo byo kwandika",
+      "done": "Byarangiye uyu munsi"
+    }
   },
   "triage": {
     "title": "Isuzuma ry’ibanze",
@@ -83,6 +122,7 @@
     "payment": "Kwishyura",
     "triage": "Isuzuma ry’ibanze",
     "consultation": "Kwa muganga",
+    "lab": "Laboratwari",
     "pharmacy": "Farumasi"
   },
   "flags": {

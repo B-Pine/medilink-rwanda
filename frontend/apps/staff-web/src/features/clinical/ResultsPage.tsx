@@ -18,6 +18,7 @@ import {
   FileText,
   Flask,
   SealCheck,
+  TestTube,
 } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -28,6 +29,7 @@ import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
 import { NoAccessContent } from "../../pages/NotFoundPage";
 import { myDayKey } from "./DoctorToday";
+import { labKeys, LabStateBadge } from "./LabShared";
 import { errorText, useCan, useWhen } from "./shared";
 
 const resultsKey = (status: string) => ["clinical", "results", status] as const;
@@ -158,6 +160,60 @@ function ResultList({ status }: { status: "pending" | "reviewed" }) {
   );
 }
 
+/** #201: results of the tests I ordered here, waiting for my review or release. */
+function LabInbox() {
+  const { t } = useTranslation();
+  const api = useApi();
+  const when = useWhen();
+  const canWrite = useCan("clinical.write");
+  const inbox = useQuery({
+    queryKey: labKeys.inbox,
+    queryFn: () => api.clinical.lab.inbox(),
+    enabled: canWrite,
+  });
+  if (!canWrite || !inbox.data?.length) return null;
+  return (
+    <section aria-labelledby="lab-inbox" className="flex flex-col gap-3">
+      <div className="flex flex-col gap-1">
+        <h2 id="lab-inbox" className="m-0 font-heading text-h2 tracking-tight">
+          {t("clinical.lab.inbox.title")}
+        </h2>
+        <p className="m-0 text-fg-secondary">{t("clinical.lab.inbox.lead")}</p>
+      </div>
+      <ul className="m-0 grid list-none gap-3 p-0 xl:grid-cols-2">
+        {inbox.data.map(({ order, patient, facility_patient_id }) => (
+          <li
+            key={order.id}
+            className="flex flex-wrap items-center gap-3 rounded-2xl bg-surface p-4 shadow-card"
+          >
+            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-subtle text-on-brand-subtle">
+              <TestTube aria-hidden="true" weight="bold" className="size-5" />
+            </span>
+            <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <span className="font-semibold">{order.test_name}</span>
+              <span className="text-body-sm text-fg-secondary">
+                {patient.display_name}
+                {order.resulted_at && ` · ${when.time(order.resulted_at)}`}
+              </span>
+            </span>
+            <span className="flex flex-wrap gap-1.5">
+              {order.is_abnormal && <Badge tone="danger">{t("clinical.lab.flags.abnormal")}</Badge>}
+              <LabStateBadge state={order.state} />
+            </span>
+            <Link
+              to={`/clinical/consultations/${order.consultation_id}?fp=${facility_patient_id}#lab`}
+              className={buttonClassName({ variant: "secondary", pill: true })}
+              aria-label={`${t("clinical.lab.inbox.open")}: ${order.test_name}, ${patient.display_name}`}
+            >
+              {t("clinical.lab.inbox.open")}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 /** /clinical/results (S6b R1): outside lab and imaging results assigned to me. */
 export function ResultsPage() {
   const { t } = useTranslation();
@@ -166,6 +222,7 @@ export function ResultsPage() {
   return (
     <div className="flex flex-col gap-5">
       <PageHeader title={t("clinical.results.title")} description={t("clinical.results.intro")} />
+      <LabInbox />
       <Tabs defaultValue="pending">
         <TabsList aria-label={t("clinical.results.title")}>
           <TabsTrigger value="pending">{t("clinical.results.tabs.pending")}</TabsTrigger>

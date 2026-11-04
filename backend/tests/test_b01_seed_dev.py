@@ -29,7 +29,7 @@ def test_b1_seed_dev_creates_demo_data_and_is_idempotent() -> None:
     call_command("seed_dev", "--password", "a fixed dev-only passphrase", stdout=out)
     kigali = Facility.objects.get(slug="kigali-demo-clinic")
     assert kigali.name == "Kigali Demo Clinic" and kigali.status == "live"
-    assert User.objects.filter(email__endswith="@demo.medilink.test").count() == 8
+    assert User.objects.filter(email__endswith="@demo.medilink.test").count() == 9
     assert User.objects.get(email="platform.admin@demo.medilink.test").is_platform_admin
     with rls_context(facility_id=kigali.pk):
         roles = sorted(
@@ -39,6 +39,7 @@ def test_b1_seed_dev_creates_demo_data_and_is_idempotent() -> None:
         "cashier",
         "doctor",
         "facility_admin",
+        "lab_technician",
         "pharmacist",
         "receptionist",
         "triage_nurse",

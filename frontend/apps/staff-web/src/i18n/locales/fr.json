@@ -113,7 +113,8 @@
       "doctor": "Médecin",
       "pharmacist": "Pharmacien",
       "cashier": "Caissier",
-      "triage_nurse": "Infirmier de triage"
+      "triage_nurse": "Infirmier de triage",
+      "lab_technician": "Technicien de laboratoire"
     }
   },
   "shell": {

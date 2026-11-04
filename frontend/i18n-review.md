@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5641.
+Keys: 5739.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -156,6 +156,7 @@ File: `apps/staff-web/src/i18n/locales/rw.json`
 | `facility.roles.pharmacist` | Umufarumasiye | Pharmacist | needs native-speaker review |
 | `facility.roles.cashier` | Ushinzwe kwishyuza | Cashier | needs native-speaker review |
 | `facility.roles.triage_nurse` | Umuforomo w’isuzuma ry’ibanze | Triage nurse | needs native-speaker review |
+| `facility.roles.lab_technician` | Umutekinisiye wa laboratwari | Lab technician | needs native-speaker review |
 | `shell.navLabel` | Menu nyamukuru | Main menu | needs native-speaker review |
 | `shell.openMenu` | Fungura menu | Open menu | needs native-speaker review |
 | `shell.closeMenu` | Funga menu | Close menu | needs native-speaker review |
@@ -890,6 +891,52 @@ File: `apps/staff-web/src/features/clinical/locales/rw.json`
 
 | Key | Kinyarwanda (draft) | English source | Status |
 |---|---|---|---|
+| `lab.title` | Ibizamini | Tests | needs native-speaker review |
+| `lab.none` | Nta kizamini cyasabwe muri uru ruzinduko. | No test ordered for this visit. | needs native-speaker review |
+| `lab.order` | Saba ibizamini | Order tests | needs native-speaker review |
+| `lab.choose` | Ibizamini byo gusaba | Tests to order | needs native-speaker review |
+| `lab.chooseOne` | Hitamo nibura ikizamini kimwe. | Choose at least one test. | needs native-speaker review |
+| `lab.reason` | Kubera iki? (laboratwari irabibona) | Why these tests? (the lab sees this) | needs native-speaker review |
+| `lab.reasonHint` | Urugero: umuriro iminsi 3, kureba niba atari malariya. | For example: fever for 3 days, rule out malaria. | needs native-speaker review |
+| `lab.reasonShort` | Impamvu: | Why: | needs native-speaker review |
+| `lab.submit` | Saba | Order | needs native-speaker review |
+| `lab.send` | Ohereza muri laboratwari | Send to lab | needs native-speaker review |
+| `lab.sendHint` | Umurwayi ajya muri laboratwari. Inyandiko zawe zikomeza gufunguye, umurwayi akagaruka ku murongo wawe ibisubizo byose nibimara kuboneka. | The patient goes to the lab. Your notes stay open, and the patient comes back to your queue when every result is in. | needs native-speaker review |
+| `lab.sent` | {{name}} agiye muri laboratwari; azagaruka ku murongo wawe ibisubizo nibimara kuboneka. | {{name}} is on the way to the lab and comes back to your queue when the results are in. | needs native-speaker review |
+| `lab.orderedBy` | Byasabwe na {{name}} saa {{time}} | Ordered by {{name}} at {{time}} | needs native-speaker review |
+| `lab.resultedBy` | Igisubizo cyatanzwe na {{name}} saa {{time}} | Result by {{name}} at {{time}} | needs native-speaker review |
+| `lab.labComment` | Icyo laboratwari ivuga: | Lab comment: | needs native-speaker review |
+| `lab.note` | Ubutumwa ku murwayi | Note for the patient | needs native-speaker review |
+| `lab.noteHint` | Umurwayi abusoma hamwe n’igisubizo. | The patient reads it with the result. | needs native-speaker review |
+| `lab.review` | Byasomwe | Mark reviewed | needs native-speaker review |
+| `lab.release` | Ohereza ku murwayi | Release to the patient | needs native-speaker review |
+| `lab.releaseHint` | Guhera ubu umurwayi abona iki gisubizo muri dosiye ye. | From now on the patient sees this result in their record. | needs native-speaker review |
+| `lab.cancel` | Hagarika ikizamini | Cancel test | needs native-speaker review |
+| `lab.range` | {{low}}–{{high}} {{unit}} | {{low}}–{{high}} {{unit}} | needs native-speaker review |
+| `lab.table.item` | Ikizamini | Test | needs native-speaker review |
+| `lab.table.value` | Igisubizo | Result | needs native-speaker review |
+| `lab.table.reference` | Ibisanzwe | Normal range | needs native-speaker review |
+| `lab.states.ordered` | Cyasabwe | Ordered | needs native-speaker review |
+| `lab.states.sample_taken` | Igipimo cyafashwe | Sample taken | needs native-speaker review |
+| `lab.states.resulted` | Igisubizo cyabonetse | Result ready | needs native-speaker review |
+| `lab.states.reviewed` | Cyasomwe | Reviewed | needs native-speaker review |
+| `lab.states.released` | Cyoherejwe | Released | needs native-speaker review |
+| `lab.states.cancelled` | Cyahagaritswe | Cancelled | needs native-speaker review |
+| `lab.specimens.blood` | Amaraso | Blood | needs native-speaker review |
+| `lab.specimens.urine` | Inkari | Urine | needs native-speaker review |
+| `lab.specimens.stool` | Umwanda | Stool | needs native-speaker review |
+| `lab.flags.low` | Biri hasi | Low | needs native-speaker review |
+| `lab.flags.high` | Biri hejuru | High | needs native-speaker review |
+| `lab.flags.abnormal` | Ntibisanzwe | Abnormal | needs native-speaker review |
+| `lab.choices.negative` | Nta bwandu | Negative | needs native-speaker review |
+| `lab.choices.positive` | Afite ubwandu | Positive | needs native-speaker review |
+| `lab.choices.invalid` | Ntibyasomwe | Invalid | needs native-speaker review |
+| `lab.choices.trace` | Bike cyane | Trace | needs native-speaker review |
+| `lab.choices.none_seen` | Nta byabonetse | None seen | needs native-speaker review |
+| `lab.choices.seen` | Byabonetse | Seen | needs native-speaker review |
+| `lab.inbox.title` | Ibisubizo bya laboratwari | Lab results | needs native-speaker review |
+| `lab.inbox.lead` | Ibisubizo by’ibizamini wasabye. Soma buri gisubizo, hanyuma ucyohereze ku murwayi. | Results of the tests you ordered. Review each one, then release it to the patient. | needs native-speaker review |
+| `lab.inbox.open` | Fungura isuzuma | Open the consultation | needs native-speaker review |
 | `nav.consultation` | Isuzuma | Consultation | needs native-speaker review |
 | `nav.unsigned` | Dosiye zitarasinywa | Unsigned records | needs native-speaker review |
 | `nav.results` | Ibisubizo | Results | needs native-speaker review |
@@ -2947,6 +2994,41 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 |---|---|---|---|
 | `nav.reorders` | Igenzura ry’umurongo | Queue reviews | needs native-speaker review |
 | `nav.triage` | Isuzuma ry’ibanze | Triage | needs native-speaker review |
+| `nav.lab` | Laboratwari | Laboratory | needs native-speaker review |
+| `lab.title` | Laboratwari | Laboratory | needs native-speaker review |
+| `lab.lead` | Hamagara umurwayi ukurikiyeho, fata ibipimo, wandike ibisubizo. Umurwayi asubira kwa muganga iyo ibisubizo byose byabonetse. | Call the next patient, take the samples and enter the results. The patient goes back to the doctor when every result is in. | needs native-speaker review |
+| `lab.open` | Fungura laboratwari | Open the lab | needs native-speaker review |
+| `lab.current` | Umurwayi uri kumwe nawe | Patient with you | needs native-speaker review |
+| `lab.start` | Tangira | Start | needs native-speaker review |
+| `lab.inLab` | Muri laboratwari | At the lab | needs native-speaker review |
+| `lab.nobody` | Nta muntu utegereje laboratwari. | Nobody is waiting for the lab. | needs native-speaker review |
+| `lab.waiting` | Bategereje gufatwa ibipimo | Waiting for a sample | needs native-speaker review |
+| `lab.inProgress` | Ibisubizo byo kwandika | Results to enter | needs native-speaker review |
+| `lab.inProgressNone` | Nta gipimo gitegereje igisubizo. | No sample is waiting for a result. | needs native-speaker review |
+| `lab.doneToday` | Byarangiye uyu munsi | Done today | needs native-speaker review |
+| `lab.identity` | Genzura uwo murwayi uwo ari we | Check who the patient is | needs native-speaker review |
+| `lab.fullName` | Amazina yose | Full name | needs native-speaker review |
+| `lab.born` | Itariki y’amavuko | Date of birth | needs native-speaker review |
+| `lab.medilinkNumber` | Nomero ya MediLink | MediLink number | needs native-speaker review |
+| `lab.payment` | Kwishyura | Payment | needs native-speaker review |
+| `lab.paid` | Yishyuye | Paid | needs native-speaker review |
+| `lab.unpaid` | Ntiyishyuye | Not paid | needs native-speaker review |
+| `lab.samples` | Ibipimo | Samples | needs native-speaker review |
+| `lab.sample` | Igipimo cyafashwe | Sample taken | needs native-speaker review |
+| `lab.orderedBy` | Byasabwe na {{name}} | Ordered by {{name}} | needs native-speaker review |
+| `lab.request` | Icyo muganga asaba: | Doctor's request: | needs native-speaker review |
+| `lab.loadingTests` | Turimo gushaka ibizamini… | Loading the tests… | needs native-speaker review |
+| `lab.samplesDone` | Ibipimo bya {{name}} byafashwe. Andika ibisubizo nibimara kuboneka. | Samples taken for {{name}}. Enter the results when they are ready. | needs native-speaker review |
+| `lab.enter` | Andika igisubizo | Enter the result | needs native-speaker review |
+| `lab.choose` | Hitamo… | Choose… | needs native-speaker review |
+| `lab.required` | Andika iki gisubizo. | Enter this result. | needs native-speaker review |
+| `lab.comment` | Icyo ubwira muganga (si ngombwa) | Comment for the doctor (optional) | needs native-speaker review |
+| `lab.save` | Bika igisubizo | Save result | needs native-speaker review |
+| `lab.saved` | Igisubizo cyabitswe: {{test}}. | Result saved: {{test}}. | needs native-speaker review |
+| `lab.backToDoctor` | Ibisubizo byose byabonetse. {{name}} asubiye kwa muganga. | Every result is in. {{name}} goes back to the doctor. | needs native-speaker review |
+| `lab.today.waiting` | Bategereje gufatwa ibipimo | Waiting for a sample | needs native-speaker review |
+| `lab.today.results` | Ibisubizo byo kwandika | Results to enter | needs native-speaker review |
+| `lab.today.done` | Byarangiye uyu munsi | Done today | needs native-speaker review |
 | `triage.title` | Isuzuma ry’ibanze | Triage | needs native-speaker review |
 | `triage.lead` | Fata ibipimo, menya uko byihutirwa, hanyuma wohereze umurwayi kwa muganga. | Take vitals, decide how urgent it is, and send the patient to the doctor. | needs native-speaker review |
 | `triage.open` | Fungura isuzuma ry’ibanze | Open triage | needs native-speaker review |
@@ -3016,6 +3098,7 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `stages.payment` | Kwishyura | Payment | needs native-speaker review |
 | `stages.triage` | Isuzuma ry’ibanze | Triage | needs native-speaker review |
 | `stages.consultation` | Kwa muganga | Consultation | needs native-speaker review |
+| `stages.lab` | Laboratwari | Laboratory | needs native-speaker review |
 | `stages.pharmacy` | Farumasi | Pharmacy | needs native-speaker review |
 | `flags.emergency` | Byihutirwa | Emergency | needs native-speaker review |
 | `flags.priority` | Yihutishwa | Priority | needs native-speaker review |
@@ -5410,6 +5493,21 @@ File: `apps/patient-web/src/features/records/locales/rw.json`
 | `facility` | Ikigo cy'ubuvuzi | Facility | needs native-speaker review |
 | `doctorLabel` | Muganga | Doctor | needs native-speaker review |
 | `signedOn` | Byasinywe | Signed | needs native-speaker review |
+| `lab.title` | Ibisubizo by'ibizamini | Lab results | needs native-speaker review |
+| `lab.intro` | Ibisubizo by'ibizamini byawe bigaragara hano muganga amaze kubisoma, hamwe n'ubutumwa bwe. | Your test results appear here once your doctor has read them, with their note. | needs native-speaker review |
+| `lab.item` | Ikizamini | Test | needs native-speaker review |
+| `lab.value` | Igisubizo | Result | needs native-speaker review |
+| `lab.normal` | Ibisanzwe | Normal range | needs native-speaker review |
+| `lab.note` | Muganga wawe aravuga: | Your doctor says: | needs native-speaker review |
+| `lab.flags.low` | Biri munsi y'ibisanzwe | Below normal | needs native-speaker review |
+| `lab.flags.high` | Biri hejuru y'ibisanzwe | Above normal | needs native-speaker review |
+| `lab.flags.abnormal` | Ntibisanzwe | Not as expected | needs native-speaker review |
+| `lab.choices.negative` | Nta bwandu | Negative | needs native-speaker review |
+| `lab.choices.positive` | Afite ubwandu | Positive | needs native-speaker review |
+| `lab.choices.invalid` | Ntibyasomwe | Could not be read | needs native-speaker review |
+| `lab.choices.trace` | Bike cyane | Trace | needs native-speaker review |
+| `lab.choices.none_seen` | Nta byabonetse | None seen | needs native-speaker review |
+| `lab.choices.seen` | Byabonetse | Seen | needs native-speaker review |
 
 ## patient-web feature: site (namespace site)
 

@@ -4,9 +4,36 @@ from django.urls import path
 
 from medilink.clinical import views as v
 from medilink.clinical import views_doctor as d
+from medilink.clinical import views_lab as lab
 from medilink.clinical import views_s6b as b
 
 urlpatterns = [
+    # upgrade 06 §3 (#201): the laboratory loop
+    path("lab/tests/", lab.LabTestsView.as_view(), name="staff-lab-tests"),
+    path("lab/queue/", lab.LabQueueView.as_view(), name="staff-lab-queue"),
+    path("lab/results/", lab.LabInboxView.as_view(), name="staff-lab-results"),
+    path(
+        "consultations/<uuid:consultation_id>/lab-orders/",
+        lab.ConsultationLabOrdersView.as_view(),
+        name="staff-consultation-lab-orders",
+    ),
+    path(
+        "lab-orders/<uuid:order_id>/sample/", lab.LabSampleView.as_view(), name="staff-lab-sample"
+    ),
+    path(
+        "lab-orders/<uuid:order_id>/result/", lab.LabResultView.as_view(), name="staff-lab-result"
+    ),
+    path(
+        "lab-orders/<uuid:order_id>/review/", lab.LabReviewView.as_view(), name="staff-lab-review"
+    ),
+    path(
+        "lab-orders/<uuid:order_id>/release/",
+        lab.LabReleaseView.as_view(),
+        name="staff-lab-release",
+    ),
+    path(
+        "lab-orders/<uuid:order_id>/cancel/", lab.LabCancelView.as_view(), name="staff-lab-cancel"
+    ),
     path(
         "visits/<uuid:visit_id>/consultation/",
         v.VisitConsultationView.as_view(),

@@ -9,7 +9,6 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
-<<<<<<< HEAD
 ### Public site: a facility page that reads as a record (2026-11-04)
 
 - Changed: the facility page has no tabs: **Today** is a summary list (hours and status, live
@@ -22,8 +21,6 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 - Removed: unused strings `site.facility.tabs.label|overview|insurance|hours` and
   `site.facility.insuranceLead`.
 
-=======
->>>>>>> origin/main
 ### Public site: doctors and services as directories (2026-11-04)
 
 - Changed: **Doctors** lists each doctor as a row on one surface (name link, specialty and

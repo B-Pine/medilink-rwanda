@@ -827,11 +827,7 @@ export function ServicePage() {
               <h2 id="bring" className="m-0 text-h3">
                 {t("site.facility.bring.title")}
               </h2>
-<<<<<<< HEAD
               <ul className="m-0 mt-3 flex list-disc flex-col gap-2 pl-5 text-fg-secondary">
-=======
-              <ul className="m-0 mt-3 flex flex-col gap-2 pl-5 text-fg-secondary">
->>>>>>> origin/main
                 <li>{t("site.facility.bring.insurance")}</li>
                 <li>{t("site.facility.bring.id")}</li>
                 <li>{t("site.facility.bring.documents")}</li>

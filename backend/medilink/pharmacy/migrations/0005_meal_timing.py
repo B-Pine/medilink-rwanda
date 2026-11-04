@@ -15,8 +15,11 @@ assert "NEW.meal_timing" in LOCKED and "OLD.meal_timing" in LOCKED
 
 
 def _function_only(sql: str) -> str:
-    """The guard function without its CREATE TRIGGER (the trigger already exists)."""
-    return sql.split("CREATE TRIGGER", 1)[0]
+    """The item guard function alone, without its CREATE TRIGGER (the trigger already exists)
+    and without the prescription guard that comes before it in 0002."""
+    start = sql.index("CREATE OR REPLACE FUNCTION pharmacy_item_guard()")
+    end = sql.index("CREATE TRIGGER pharmacy_item_lock", start)
+    return sql[start:end]
 
 
 class Migration(migrations.Migration):

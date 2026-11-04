@@ -29,6 +29,11 @@ import { MEMBERSHIP_BY_EMAIL, SETUP_IDS } from "./setup";
  */
 export const MOCK_DISPLAY_TOKEN = "mock-display-token";
 const MOCK_PATIENT_ID = "9b2f1c3d-1111-4000-8000-000000000001";
+/** #201: the visits at the lab (their tests are in the lab mock). */
+export const MOCK_LAB_VISITS = {
+  waiting: "7c000000-0000-4000-8000-0000000000a1",
+  inProgress: "7c000000-0000-4000-8000-0000000000a2",
+};
 
 interface MockTicket extends TicketRow {
   patient_id: string;
@@ -154,6 +159,22 @@ function seed() {
       reason_text: "Fever and vomiting since last night.",
       symptoms: ["Fever", "Vomiting"],
     }),
+    // #201: Dr Keza sent one patient to the lab (Habyarimana Theogene, lab@medilink.test); another
+    // gave her samples and waits for the results
+    make(SETUP_IDS.sGen, "Uwimana Grace", 31, "female", 48, {
+      stage: "lab",
+      visit_id: MOCK_LAB_VISITS.waiting,
+      arrival_at: minutesAgo(6),
+      flags: ["unpaid"],
+    }),
+    make(SETUP_IDS.sGen, "Nkurunziza Jean", 45, "male", 65, {
+      stage: "lab",
+      state: "on_hold",
+      visit_id: MOCK_LAB_VISITS.inProgress,
+      arrival_at: minutesAgo(25),
+      called_at: minutesAgo(22),
+      service_point: "Laboratory",
+    }),
   ];
   const duty: DutyRow[] = [
     {
@@ -203,11 +224,37 @@ const STAGE_PERMISSION: Record<Stage, string> = {
   payment: "queue.operate",
   triage: "triage.operate",
   consultation: "queue.call",
+  lab: "lab.operate",
   pharmacy: "pharmacy.dispense",
 };
+/** Stations that serve one stage only see that stage (as `SINGLE_STAGE` in the API). */
+const SINGLE_STAGE: [string, Stage][] = [
+  ["triage.operate", "triage"],
+  ["lab.operate", "lab"],
+];
 
 const ORDER = (a: MockTicket, b: MockTicket) =>
   a.priority_rank - b.priority_rank || a.arrival_at.localeCompare(b.arrival_at);
+
+/**
+ * #201: the lab mock moves a visit's lab ticket. On hold once every sample is taken; back to the
+ * ordering doctor (return priority, assigned) once every result is in.
+ */
+let liveLab: {
+  ticket: (visitId: string) => TicketRow | null;
+  sampled: (visitId: string) => void;
+  back: (visitId: string, doctorMembershipId: string) => void;
+} = { ticket: () => null, sampled: () => undefined, back: () => undefined };
+export const mockLabQueue = {
+  ticket: (visitId: string) => liveLab.ticket(visitId),
+  sampled: (visitId: string) => liveLab.sampled(visitId),
+  back: (visitId: string, doctorMembershipId: string) => liveLab.back(visitId, doctorMembershipId),
+};
+/** #201: Send to lab needs an ordered test (the lab mock answers). */
+let hasLabOrders: (visitId: string) => boolean = () => true;
+export function onMockLabOrders(check: (visitId: string) => boolean): void {
+  hasLabOrders = check;
+}
 
 export const queueMocks: FeatureMockFactory = (context) => {
   const { api } = context;
@@ -353,6 +400,42 @@ export const queueMocks: FeatureMockFactory = (context) => {
     context.errorResponse(404, "not_found", context.message("notFound", lang));
   const stale = (lang: LanguageCode) =>
     context.errorResponse(409, "conflict", s1("conflict", lang));
+  const labTicket = (visitId: string) =>
+    db.tickets.find((t) => t.visit_id === visitId && t.stage === "lab" && ACTIVE.includes(t.state));
+  liveLab = {
+    ticket: (visitId) => {
+      const t = labTicket(visitId);
+      return t ? row(t) : null;
+    },
+    sampled: (visitId) => {
+      const t = labTicket(visitId);
+      if (!t || !["called", "in_service"].includes(t.state)) return;
+      const before = t.state;
+      t.state = "on_hold";
+      t.version += 1;
+      event(t, "sample_taken", before, null);
+    },
+    back: (visitId, doctorMembershipId) => {
+      const t = labTicket(visitId);
+      if (!t) return;
+      const before = t.state;
+      t.state = "moved_to_next_stage";
+      t.version += 1;
+      event(t, "lab_done", before, null);
+      db.tickets.push({
+        ...t,
+        id: id(),
+        state: "waiting",
+        stage: "consultation",
+        flags: [...t.flags.filter((f) => f !== "return"), "return"],
+        priority_rank: Math.min(t.priority_rank, 1),
+        version: 1,
+        assigned_membership_id: doctorMembershipId,
+        called_at: null,
+        service_point: null,
+      });
+    },
+  };
 
   return {
     reset() {
@@ -487,18 +570,20 @@ export const queueMocks: FeatureMockFactory = (context) => {
           "queue.call",
           "pharmacy.dispense",
           "triage.operate",
+          "lab.operate",
         ]);
         if ("error" in ok) return ok.error;
-        // A triage nurse sees the triage queues only (upgrade 06 §2)
-        const nurseOnly = !["queue.operate", "queue.call", "pharmacy.dispense"].some((c) =>
+        // A triage nurse or lab technician sees their own stage only (upgrade 06 §2-3)
+        const single = ["queue.operate", "queue.call", "pharmacy.dispense"].some((c) =>
           ok.granted.includes(c),
-        );
+        )
+          ? null
+          : (SINGLE_STAGE.find(([code]) => ok.granted.includes(code))?.[1] ?? null);
         const keys = [
           ...new Set(
             db.tickets
               .filter(
-                (t) =>
-                  atKigali(t) && ACTIVE.includes(t.state) && (!nurseOnly || t.stage === "triage"),
+                (t) => atKigali(t) && ACTIVE.includes(t.state) && (!single || t.stage === single),
               )
               .map((t) => `${t.service_id}|${t.stage}`),
           ),
@@ -523,20 +608,19 @@ export const queueMocks: FeatureMockFactory = (context) => {
       }),
       http.get(`${api}/staff/queue/mine/`, async ({ request }) => {
         await context.settle();
-        const stage = new URL(request.url).searchParams.get("stage") === "triage" ? "triage" : null;
-        const ok = staff(request, [stage ? "triage.operate" : "queue.call"]);
+        const wanted = new URL(request.url).searchParams.get("stage");
+        const stage = wanted === "triage" || wanted === "lab" ? wanted : null;
+        const ok = staff(request, [stage ? STAGE_PERMISSION[stage] : "queue.call"]);
         if ("error" in ok) return ok.error;
         const me = MEMBERSHIP_BY_EMAIL[ok.me.email] ?? "unknown";
         const current = db.tickets.find(
           (t) =>
             t.assigned_membership_id === me && (t.state === "called" || t.state === "in_service"),
         );
-        // #200: the triage nurse triages for every service
+        // #200, #201: the triage nurse and the lab serve every service
         const list = (
           stage
-            ? [...waiting(SETUP_IDS.sGen, "triage"), ...waiting(SETUP_IDS.sPed, "triage")].sort(
-                ORDER,
-              )
+            ? [...waiting(SETUP_IDS.sGen, stage), ...waiting(SETUP_IDS.sPed, stage)].sort(ORDER)
             : waiting(SETUP_IDS.sGen)
         ).filter((t) => !t.assigned_membership_id || t.assigned_membership_id === me);
         if (stage)
@@ -560,6 +644,7 @@ export const queueMocks: FeatureMockFactory = (context) => {
           "queue.operate",
           "pharmacy.dispense",
           "triage.operate",
+          "lab.operate",
         ]);
         if ("error" in ok) return ok.error;
         const body = (await context.readJson(request)) ?? {};
@@ -593,7 +678,12 @@ export const queueMocks: FeatureMockFactory = (context) => {
         next.state = "called";
         next.called_at = now();
         next.assigned_membership_id = me;
-        next.service_point = stage === "triage" ? "Triage" : (duty?.service_point ?? null);
+        next.service_point =
+          stage === "triage"
+            ? "Triage"
+            : stage === "lab"
+              ? "Laboratory"
+              : (duty?.service_point ?? null);
         next.version += 1;
         event(next, "call", "waiting", ok.me.full_name);
         return HttpResponse.json(row(next));
@@ -674,6 +764,34 @@ export const queueMocks: FeatureMockFactory = (context) => {
             db.tickets.push(next);
             t.version += 1;
             event(t, "next_stage", before, ok.me.full_name);
+            return HttpResponse.json(row(next));
+          }
+          case "send-to-lab": {
+            // #201: the doctor ordered tests; the patient goes to the lab and comes back
+            if (!need("in_service") || t.stage !== "consultation") return rule(context, ok.lang);
+            if (!hasLabOrders(t.visit_id))
+              return context.errorResponse(
+                422,
+                "business_rule_violation",
+                "Order at least one test before sending the patient to the lab.",
+              );
+            set("moved_to_next_stage");
+            const next: MockTicket = {
+              ...t,
+              id: id(),
+              state: "waiting",
+              stage: "lab",
+              flags: t.flags.filter((f) => f !== "return"),
+              priority_rank: t.priority_rank === 1 ? 3 : t.priority_rank,
+              arrival_at: now(),
+              version: 1,
+              assigned_membership_id: null,
+              called_at: null,
+              service_point: null,
+            };
+            db.tickets.push(next);
+            t.version += 1;
+            event(t, "send_to_lab", before, ok.me.full_name);
             return HttpResponse.json(row(next));
           }
           case "triage": {

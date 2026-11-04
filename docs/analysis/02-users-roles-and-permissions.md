@@ -227,4 +227,4 @@ Legend: **✓** full · **own** only own records or own facility · **view** rea
 | FR-ACC-07 | Clinicians record their professional licence number; facility admin attests verification | P1 |
 | FR-ACC-08 | Every permission check on patient data is enforced server-side and logged | P1 |
 | FR-ACC-09 | Super admin emergency access to clinical data requires a reason and is logged and reviewable | P1 |
-| FR-ACC-10 | New roles can be added later without changing existing role definitions | P2 |
+| FR-ACC-10 | New roles can be added later without changing existing role definitions (so far: cashier, triage nurse #200 and laboratory technician #201, each by its own data migration) | P2 |

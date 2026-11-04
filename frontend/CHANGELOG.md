@@ -9,6 +9,23 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Laboratory loop (2026-11-04, #201)
+
+- Added: **Tests** in the consultation: the doctor picks tests from the catalogue with a reason,
+  sends the patient to the lab, and later reads each result with its flags, writes a note for
+  the patient, marks it reviewed and releases it. A test not yet sampled can be cancelled.
+- Added: **Laboratory** for the lab technician (`/lab`): call the next patient, check who they
+  are (full name, date of birth, MediLink number) and whether the visit is paid, record each
+  sample, then enter each result with out-of-range values flagged as they are typed. The last
+  result sends the patient back to the doctor. The technician's Today shows waiting, results to
+  enter and done today; the menu shows Laboratory and nothing of the desk, clinical work or
+  payments.
+- Added: **Lab results** at the top of the doctor's Results page.
+- Added: patient-web **Lab results** in My health records, once the doctor released them, with
+  the doctor's note.
+- Changed: staff invitations and the user directory know the lab technician role; the queue
+  board names the laboratory stage.
+
 ### Triage nurse (2026-11-04, #200)
 
 - Added: **Triage** for the triage nurse (`/triage`): call the next patient, see their words,

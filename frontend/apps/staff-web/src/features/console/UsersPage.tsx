@@ -27,6 +27,7 @@ export const ROLES: RoleCode[] = [
   "pharmacist",
   "cashier",
   "triage_nurse",
+  "lab_technician",
 ];
 /** The list filters, kept in the address so a filtered list can be linked and reloaded. */
 const FILTERS = ["kind", "status", "mfa", "facility", "role", "verification", "q"] as const;

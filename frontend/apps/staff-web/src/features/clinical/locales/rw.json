@@ -1,4 +1,64 @@
 {
+  "lab": {
+    "title": "Ibizamini",
+    "none": "Nta kizamini cyasabwe muri uru ruzinduko.",
+    "order": "Saba ibizamini",
+    "choose": "Ibizamini byo gusaba",
+    "chooseOne": "Hitamo nibura ikizamini kimwe.",
+    "reason": "Kubera iki? (laboratwari irabibona)",
+    "reasonHint": "Urugero: umuriro iminsi 3, kureba niba atari malariya.",
+    "reasonShort": "Impamvu:",
+    "submit": "Saba",
+    "send": "Ohereza muri laboratwari",
+    "sendHint": "Umurwayi ajya muri laboratwari. Inyandiko zawe zikomeza gufunguye, umurwayi akagaruka ku murongo wawe ibisubizo byose nibimara kuboneka.",
+    "sent": "{{name}} agiye muri laboratwari; azagaruka ku murongo wawe ibisubizo nibimara kuboneka.",
+    "orderedBy": "Byasabwe na {{name}} saa {{time}}",
+    "resultedBy": "Igisubizo cyatanzwe na {{name}} saa {{time}}",
+    "labComment": "Icyo laboratwari ivuga:",
+    "note": "Ubutumwa ku murwayi",
+    "noteHint": "Umurwayi abusoma hamwe n’igisubizo.",
+    "review": "Byasomwe",
+    "release": "Ohereza ku murwayi",
+    "releaseHint": "Guhera ubu umurwayi abona iki gisubizo muri dosiye ye.",
+    "cancel": "Hagarika ikizamini",
+    "range": "{{low}}–{{high}} {{unit}}",
+    "table": {
+      "item": "Ikizamini",
+      "value": "Igisubizo",
+      "reference": "Ibisanzwe"
+    },
+    "states": {
+      "ordered": "Cyasabwe",
+      "sample_taken": "Igipimo cyafashwe",
+      "resulted": "Igisubizo cyabonetse",
+      "reviewed": "Cyasomwe",
+      "released": "Cyoherejwe",
+      "cancelled": "Cyahagaritswe"
+    },
+    "specimens": {
+      "blood": "Amaraso",
+      "urine": "Inkari",
+      "stool": "Umwanda"
+    },
+    "flags": {
+      "low": "Biri hasi",
+      "high": "Biri hejuru",
+      "abnormal": "Ntibisanzwe"
+    },
+    "choices": {
+      "negative": "Nta bwandu",
+      "positive": "Afite ubwandu",
+      "invalid": "Ntibyasomwe",
+      "trace": "Bike cyane",
+      "none_seen": "Nta byabonetse",
+      "seen": "Byabonetse"
+    },
+    "inbox": {
+      "title": "Ibisubizo bya laboratwari",
+      "lead": "Ibisubizo by’ibizamini wasabye. Soma buri gisubizo, hanyuma ucyohereze ku murwayi.",
+      "open": "Fungura isuzuma"
+    }
+  },
   "nav": {
     "consultation": "Isuzuma",
     "unsigned": "Dosiye zitarasinywa",

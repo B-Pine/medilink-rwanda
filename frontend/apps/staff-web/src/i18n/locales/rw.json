@@ -113,7 +113,8 @@
       "doctor": "Muganga",
       "pharmacist": "Umufarumasiye",
       "cashier": "Ushinzwe kwishyuza",
-      "triage_nurse": "Umuforomo w’isuzuma ry’ibanze"
+      "triage_nurse": "Umuforomo w’isuzuma ry’ibanze",
+      "lab_technician": "Umutekinisiye wa laboratwari"
     }
   },
   "shell": {

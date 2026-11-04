@@ -3,6 +3,7 @@ import { http, HttpResponse } from "msw";
 import type {
   Addendum,
   ClinicalAlert,
+  ClinicalFavourites,
   Consultation,
   ConsultationRow,
   Diagnosis,
@@ -90,6 +91,24 @@ const ICD: Record<string, { title: I18n; plain: I18n; sensitive: boolean }> = {
   "F32.9": { title: { en: "Depressive episode" }, plain: { en: "Depression" }, sensitive: true },
 };
 const pick = (value: I18n, lang: LanguageCode) => value[lang] ?? value.en ?? "";
+
+/** W3: a template as stored; the API adds `diagnoses` labelled in the request language. */
+type StoredTemplate = Omit<NoteTemplate, "diagnoses">;
+const labelTemplate = (t: StoredTemplate, lang: LanguageCode): NoteTemplate => ({
+  ...t,
+  diagnoses: t.diagnosis_codes.map((code) => {
+    const row = ICD[code];
+    return row
+      ? {
+          code,
+          display: pick(row.title, lang),
+          plain_language: pick(row.plain, lang),
+          is_sensitive: row.sensitive,
+          is_known: true,
+        }
+      : { code, display: code, plain_language: "", is_sensitive: false, is_known: false };
+  }),
+});
 
 const DRUGS: Record<string, { name: string; klass: string; max: number | null }> = {
   AMOX500: { name: "Amoxicillin", klass: "penicillin", max: 30 },
@@ -645,7 +664,32 @@ function seedTools() {
     followUp("Mukamana Grace", 9, "upcoming", "reminder"),
     followUp("Iradukunda Eric", -6, "attended"),
   ];
-  const templates: NoteTemplate[] = [
+  const templates: StoredTemplate[] = [
+    {
+      id: id(),
+      name: "Uncomplicated malaria",
+      sections: {
+        history_text: "",
+        examination_text: "",
+        plan_text: "Positive malaria test. Artemether-lumefantrine for 3 days. Paracetamol.",
+        patient_instructions_text:
+          "Take the tablets with food. Come back at once if vomiting, confusion or fits.",
+      },
+      diagnosis_codes: ["B54"],
+      items: [
+        {
+          drug_code: "PARA500",
+          drug_display: "Paracetamol 500 mg tablet",
+          dose: "2 tablets",
+          frequency_code: "tds",
+          route: "oral",
+          duration_days: 3,
+        },
+      ],
+      tests: [{ code: "MAL-RDT", name: "Malaria (RDT)" }],
+      use_count: 22,
+      updated_at: ago(60 * 24),
+    },
     {
       id: id(),
       name: "Fever (adult)",
@@ -669,6 +713,7 @@ function seedTools() {
           instructions: "After food",
         },
       ],
+      tests: [],
       use_count: 14,
       updated_at: ago(60 * 48),
     },
@@ -683,6 +728,7 @@ function seedTools() {
       },
       diagnosis_codes: ["I10"],
       items: [],
+      tests: [],
       use_count: 6,
       updated_at: ago(60 * 72),
     },
@@ -828,16 +874,63 @@ export const clinicalMocks: FeatureMockFactory = (context) => {
         const ok = staff(request, ["clinical.write"]);
         if ("error" in ok) return ok.error;
         return HttpResponse.json(
-          [...tools.templates].sort(
-            (a, b) => b.use_count - a.use_count || a.name.localeCompare(b.name),
-          ),
+          [...tools.templates]
+            .sort((a, b) => b.use_count - a.use_count || a.name.localeCompare(b.name))
+            .map((t) => labelTemplate(t, ok.lang)),
         );
+      }),
+      http.get(`${S}/clinical/favourites/`, async ({ request }) => {
+        await context.settle();
+        const ok = staff(request, ["clinical.write"]);
+        if ("error" in ok) return ok.error;
+        const body: ClinicalFavourites = {
+          window_days: 180,
+          diagnoses: (
+            [
+              ["B54", 41],
+              ["J06.9", 27],
+              ["I10", 18],
+            ] as const
+          ).map(([code, count]) => ({
+            code,
+            display: pick(ICD[code]!.title, ok.lang),
+            plain_language: pick(ICD[code]!.plain, ok.lang),
+            count,
+          })),
+          medicines: [
+            {
+              drug_code: "PARA500",
+              free_text_drug: "",
+              drug_display: "Paracetamol 500 mg tablet",
+              is_controlled: false,
+              available_here: true,
+              dose: "2 tablets",
+              frequency_code: "tds",
+              route: "oral",
+              duration_days: 3,
+              count: 38,
+            },
+            {
+              drug_code: "AMOX500",
+              free_text_drug: "",
+              drug_display: "Amoxicillin 500 mg capsule",
+              is_controlled: false,
+              available_here: true,
+              dose: "1 capsule",
+              frequency_code: "tds",
+              route: "oral",
+              duration_days: 7,
+              count: 16,
+            },
+          ],
+        };
+        return HttpResponse.json(body);
       }),
       http.post(`${S}/clinical/templates/`, async ({ request }) => {
         await context.settle();
         const ok = staff(request, ["clinical.write"]);
         if ("error" in ok) return ok.error;
-        const body = ((await context.readJson(request)) ?? {}) as Partial<NoteTemplate>;
+        const body = ((await context.readJson(request)) ?? {}) as Partial<StoredTemplate>;
         const name = asText(body.name).trim();
         if (!name) return context.validationError(ok.lang, { name: "required" });
         if (tools.templates.some((t) => t.name === name))
@@ -846,7 +939,7 @@ export const clinicalMocks: FeatureMockFactory = (context) => {
             "conflict",
             "You already have a template with this name.",
           );
-        const t: NoteTemplate = {
+        const t: StoredTemplate = {
           id: id(),
           name,
           sections: {
@@ -858,11 +951,12 @@ export const clinicalMocks: FeatureMockFactory = (context) => {
           },
           diagnosis_codes: (body.diagnosis_codes ?? []).map((c) => c.toUpperCase()),
           items: body.items ?? [],
+          tests: body.tests ?? [],
           use_count: 0,
           updated_at: now(),
         };
         tools.templates.push(t);
-        return HttpResponse.json(t, { status: 201 });
+        return HttpResponse.json(labelTemplate(t, ok.lang), { status: 201 });
       }),
       http.put(`${S}/clinical/templates/:id/`, async ({ request, params }) => {
         await context.settle();
@@ -870,15 +964,16 @@ export const clinicalMocks: FeatureMockFactory = (context) => {
         if ("error" in ok) return ok.error;
         const t = tools.templates.find((x) => x.id === params.id);
         if (!t) return notFound(ok.lang);
-        const body = ((await context.readJson(request)) ?? {}) as Partial<NoteTemplate>;
+        const body = ((await context.readJson(request)) ?? {}) as Partial<StoredTemplate>;
         Object.assign(t, {
           name: asText(body.name).trim() || t.name,
           sections: { ...t.sections, ...(body.sections ?? {}) },
           diagnosis_codes: (body.diagnosis_codes ?? []).map((c) => c.toUpperCase()),
           items: body.items ?? [],
+          tests: body.tests ?? [],
           updated_at: now(),
         });
-        return HttpResponse.json(t);
+        return HttpResponse.json(labelTemplate(t, ok.lang));
       }),
       http.delete(`${S}/clinical/templates/:id/`, async ({ request, params }) => {
         await context.settle();
@@ -894,7 +989,7 @@ export const clinicalMocks: FeatureMockFactory = (context) => {
         const t = tools.templates.find((x) => x.id === params.id);
         if (!t) return notFound(ok.lang);
         t.use_count += 1;
-        return HttpResponse.json(t);
+        return HttpResponse.json(labelTemplate(t, ok.lang));
       }),
       http.get(`${S}/results-inbox/`, async ({ request }) => {
         await context.settle();

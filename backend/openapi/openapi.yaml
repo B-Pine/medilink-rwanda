@@ -10364,6 +10364,25 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: 'access_reason_required: give a reason for this patient first
             (A1)'
+  /api/v1/staff/clinical/favourites/:
+    get:
+      operationId: staff_clinical_favourites
+      description: 'W3 (#202): what the doctor uses most, shown first in the diagnosis
+        and medicine search.'
+      summary: My most used diagnoses and medicines here (last 180 days, used twice
+        or more)
+      tags:
+      - clinical
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Favourites'
+          description: ''
   /api/v1/staff/clinical/my-activity/:
     get:
       operationId: staff_clinical_my_activity
@@ -23143,6 +23162,74 @@ components:
       - code
       - level_of_care
       - name_i18n
+    FavouriteDiagnosis:
+      type: object
+      properties:
+        code:
+          type: string
+        display:
+          type: string
+        plain_language:
+          type: string
+        count:
+          type: integer
+      required:
+      - code
+      - count
+      - display
+      - plain_language
+    FavouriteMedicine:
+      type: object
+      properties:
+        drug_code:
+          type: string
+        free_text_drug:
+          type: string
+        drug_display:
+          type: string
+        is_controlled:
+          type: boolean
+        available_here:
+          type: boolean
+        dose:
+          type: string
+        frequency_code:
+          type: string
+        route:
+          type: string
+        duration_days:
+          type: integer
+          nullable: true
+        count:
+          type: integer
+      required:
+      - available_here
+      - count
+      - dose
+      - drug_code
+      - drug_display
+      - duration_days
+      - free_text_drug
+      - frequency_code
+      - is_controlled
+      - route
+    Favourites:
+      type: object
+      properties:
+        window_days:
+          type: integer
+        diagnoses:
+          type: array
+          items:
+            $ref: '#/components/schemas/FavouriteDiagnosis'
+        medicines:
+          type: array
+          items:
+            $ref: '#/components/schemas/FavouriteMedicine'
+      required:
+      - diagnoses
+      - medicines
+      - window_days
     FeatureFlag:
       type: object
       properties:
@@ -26417,21 +26504,31 @@ components:
           type: array
           items:
             type: string
+        diagnoses:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateDiagnosis'
         items:
           type: array
           items:
             $ref: '#/components/schemas/NoteTemplateItem'
+        tests:
+          type: array
+          items:
+            $ref: '#/components/schemas/NoteTemplateTest'
         use_count:
           type: integer
         updated_at:
           type: string
           format: date-time
       required:
+      - diagnoses
       - diagnosis_codes
       - id
       - items
       - name
       - sections
+      - tests
       - updated_at
       - use_count
     NoteTemplateInputRequest:
@@ -26455,6 +26552,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/NoteTemplateItemRequest'
+        tests:
+          type: array
+          items:
+            $ref: '#/components/schemas/NoteTemplateTestRequest'
       required:
       - name
     NoteTemplateItem:
@@ -26582,6 +26683,35 @@ components:
           type: string
           default: ''
           maxLength: 4000
+    NoteTemplateTest:
+      type: object
+      description: A lab test on an order set (W3 extension point for W2 lab orders;
+        not ordered yet).
+      properties:
+        code:
+          type: string
+          maxLength: 40
+        name:
+          type: string
+          default: ''
+          maxLength: 200
+      required:
+      - code
+    NoteTemplateTestRequest:
+      type: object
+      description: A lab test on an order set (W3 extension point for W2 lab orders;
+        not ordered yet).
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 40
+        name:
+          type: string
+          default: ''
+          maxLength: 200
+      required:
+      - code
     Notification:
       type: object
       properties:
@@ -35103,6 +35233,27 @@ components:
       - valid_to
       - version
       - weekday
+    TemplateDiagnosis:
+      type: object
+      properties:
+        code:
+          type: string
+        display:
+          type: string
+        plain_language:
+          type: string
+        is_sensitive:
+          type: boolean
+        is_known:
+          type: boolean
+          description: 'False when the code is not an active ICD-10 code: applying
+            skips it.'
+      required:
+      - code
+      - display
+      - is_known
+      - is_sensitive
+      - plain_language
     TemplateRef:
       type: object
       properties:

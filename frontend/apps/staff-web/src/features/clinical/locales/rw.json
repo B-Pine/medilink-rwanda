@@ -519,8 +519,29 @@
     "emptyTitle": "Nta nyandiko ngenderwaho uragira",
     "empty": "Yikore hano, cyangwa ubike isuzuma nk'inyandiko ngenderwaho uri kuryandika.",
     "use": "Koresha inyandiko ngenderwaho",
-    "useHint": "Inyandiko ijya mu bice birimo ubusa cyangwa nyuma y'ibyo wanditse. Amasuzuma yongerwamo nk'ay'agateganyo; imiti ijya ku rupapuro rw'imiti.",
-    "saveAs": "Bika nk'inyandiko ngenderwaho",
-    "itemsFailed": "Iyi miti ikeneye ko uyireba ku rupapuro rw'imiti: {{names}}"
+    "useHint": "Gukanda rimwe byongeramo isuzuma, gahunda, amabwiriza n'imiti. Inyandiko ijya mu bice birimo ubusa cyangwa nyuma y'ibyo wanditse; amasuzuma yongerwamo nk'ay'agateganyo. Ushobora guhindura byose mbere yo gusinya.",
+    "saveAs": "Bika nk'inyandiko ngenderwaho"
+  },
+  "orderSet": {
+    "applied": "“{{name}}” yongewe mu nyandiko",
+    "review": "Bisuzume kuri uyu murwayi, hanyuma usinye.",
+    "listLabel": "Ibyo inyandiko ngenderwaho yahinduye",
+    "diagnosesAdded": "Isuzuma ryongewemo nk'iry'agateganyo: {{names}}",
+    "diagnosesAlready": "Byari bisanzwe mu nyandiko, ntibyongewe kabiri: {{names}}",
+    "diagnosesSkipped": "Ntibyongewemo, si kode ya ICD-10 izwi cyangwa amasuzuma ni menshi: {{names}}. Shaka kode nyayo.",
+    "sections": "Inyandiko yongewe muri: {{names}}",
+    "medicinesAdded": "Byongewe ku rupapuro rw'imiti: {{names}}",
+    "medicinesAlready": "Byari bisanzwe ku rupapuro rw'imiti, ntibyongewe kabiri: {{names}}",
+    "medicinesFailed": "Ntibyongewemo, ubyongere ubwawe ku rupapuro rw'imiti: {{names}}",
+    "tests": "Ibizamini bya laboratwari ntibirasabwa binyuze mu nyandiko ngenderwaho. Bisabe ubwawe: {{names}}",
+    "adding": "Turimo kongeramo imiti…",
+    "needsYou": "Hari ibikeneye ko ubireba. Inyandiko ntisinywa utayisinye.",
+    "stillSign": "Nta na kimwe cyasimbutswe. Inyandiko ntisinywa utayisinye.",
+    "done": "Garuka ku nyandiko",
+    "another": "Koresha indi nyandiko ngenderwaho"
+  },
+  "favourites": {
+    "diagnoses": "Amasuzuma ukunze gukoresha",
+    "add": "Ongeramo {{name}}"
   }
 }

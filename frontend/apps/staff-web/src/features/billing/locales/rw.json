@@ -88,7 +88,23 @@
     "expected": "Byari byitezwe {{amount}}",
     "difference": "Itandukaniro {{amount}}",
     "note": "Icyitonderwa",
-    "needed": "Banza ufungure igihe cy’akazi mbere yo kwandika ubwishyu."
+    "needed": "Banza ufungure igihe cy’akazi mbere yo kwandika ubwishyu.",
+    "byMethod": {
+      "title": "Ukurikije uburyo bwo kwishyura",
+      "method": "Uburyo",
+      "payments": "Ubwishyu",
+      "received": "Byakiriwe",
+      "paidOut": "Ayasubijwe",
+      "expected": "Biri mu isanduku",
+      "counted": "Byabaruwe",
+      "difference": "Itandukaniro",
+      "total": "Igiteranyo"
+    },
+    "last": {
+      "title": "Igihe cy’akazi giheruka",
+      "waiting": "Gitegereje kugenzurwa",
+      "accepted": "Cyemejwe na {{name}}"
+    }
   },
   "approvals": {
     "title": "Kwemeza",
@@ -136,6 +152,48 @@
     "payments": "Ubwishyu bw'iki gihe",
     "collected": "Ayakiriwe muri iki gihe",
     "next": "Izikurikira kwishyurwa",
-    "nothing": "Nta nyemezabuguzi itegereje kwishyurwa. Inshya ziza hano nyuma yo kwivuza."
+    "nothing": "Nta nyemezabuguzi itegereje kwishyurwa. Inshya ziza hano nyuma yo kwivuza.",
+    "inDrawer": "{{amount}} mu isanduku"
+  },
+  "nav": {
+    "claims": "Ibisabwa abishingizi"
+  },
+  "claims": {
+    "title": "Ibisabwa abishingizi",
+    "intro": "Abivuje bafite ubwishingizi bw’umwishingizi umwe mu kwezi. Kuramo urutonde rwo koherereza umwishingizi, hanyuma werekane niba buri gisabwa cyishyuwe cyangwa cyanzwe.",
+    "insurer": "Umwishingizi",
+    "month": "Ukwezi kwo kwivuza",
+    "totals": "Ibisabwa by’uku kwezi",
+    "visits_one": "Kwivuza {{count}} kwo gusaba",
+    "visits_other": "Kwivuza {{count}} kwo gusaba",
+    "toClaim": "Umugabane w’umwishingizi",
+    "claimsCount_one": "Igisabwa {{count}}",
+    "claimsCount_other": "Ibisabwa {{count}}",
+    "status": {
+      "pending": "Ntikirishyurwa",
+      "paid": "Cyishyuwe",
+      "rejected": "Cyanzwe"
+    },
+    "all": "Byose",
+    "filter": "Ibisabwa ukurikije uko bihagaze",
+    "empty": "Nta bivuje bafite ubwishingizi bw’uyu mwishingizi muri uku kwezi",
+    "downloadCsv": "Kuramo CSV",
+    "downloadPdf": "Kuramo PDF",
+    "downloadFailed": "Gukuramo ntibyakunze. Ongera ugerageze.",
+    "member": "Nimero y’umunyamuryango {{number}}",
+    "icd10": "ICD-10",
+    "noDiagnosis": "Nta isuzuma ryashyizweho umukono",
+    "lines_one": "Serivisi cyangwa ikintu {{count}}",
+    "lines_other": "Serivisi n’ibintu {{count}}",
+    "notCovered": "Ntibyishingiwe",
+    "markedBy": "Byanditswe na {{name}}",
+    "referenceIs": "Nimero {{reference}}",
+    "reason": "Impamvu y’umwishingizi",
+    "reference": "Nimero y’ubwishyu",
+    "referenceHint": "Si ngombwa: nimero y’iyohereza cyangwa y’icyiciro by’umwishingizi",
+    "confirmPaid": "Andika ko cyishyuwe",
+    "confirmRejected": "Andika ko cyanzwe",
+    "markPaid": "Cyishyuwe",
+    "markRejected": "Cyanzwe"
   }
 }

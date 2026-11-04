@@ -3,6 +3,7 @@
 from django.urls import path
 
 from medilink.billing import bill_views as v
+from medilink.billing import claim_views as c
 
 urlpatterns = [
     path("visits/<uuid:visit_id>/bill/", v.VisitBillView.as_view(), name="staff-visit-bill"),
@@ -77,4 +78,9 @@ urlpatterns = [
         v.BalancesView.as_view(),
         name="staff-patient-balances",
     ),
+    # #203 monthly claim list per insurer
+    path("insurance-claims/", c.ClaimsView.as_view(), name="staff-claims"),
+    path("insurance-claims/insurers/", c.ClaimInsurersView.as_view(), name="staff-claim-insurers"),
+    path("insurance-claims/export/", c.ClaimsExportView.as_view(), name="staff-claims-export"),
+    path("bills/<uuid:bill_id>/claim/", c.ClaimMarkView.as_view(), name="staff-bill-claim"),
 ]

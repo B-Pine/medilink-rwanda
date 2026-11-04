@@ -1,5 +1,5 @@
 import { hasPermission } from "@medilink/api-client";
-import { Receipt, SealCheck } from "@phosphor-icons/react";
+import { Receipt, SealCheck, ShieldCheck } from "@phosphor-icons/react";
 import type { ComponentType } from "react";
 
 import type { FeatureRoutes } from "../../app/features";
@@ -9,6 +9,7 @@ const lazy =
   async () => ({ Component: (await load())[name] });
 
 const pages = () => import("./BillingPages");
+const claims = () => import("./ClaimsPage");
 import { CashierTodayCard } from "./CashierToday";
 
 /**
@@ -22,6 +23,8 @@ export const billingFeature: FeatureRoutes = {
     { path: "/payments/bills/:billId", lazy: lazy(pages, "BillPage") },
     { path: "/payments/receipts/:receiptId", lazy: lazy(pages, "ReceiptPage") },
     { path: "/approvals", lazy: lazy(pages, "ApprovalsPage") },
+    // #203 monthly claim list per insurer
+    { path: "/claims", lazy: lazy(claims, "ClaimsPage") },
   ],
   // upgrade 06 §4: the cashier's day
   todayCards: [CashierTodayCard],
@@ -45,6 +48,16 @@ export const billingFeature: FeatureRoutes = {
                 label: t("shell.nav.approvals"),
                 icon: SealCheck,
                 to: "/approvals",
+              },
+            ]
+          : []),
+        ...(hasPermission(me, "billing.approve") || hasPermission(me, "reports.view")
+          ? [
+              {
+                id: "billing:claims",
+                label: t("billing.nav.claims"),
+                icon: ShieldCheck,
+                to: "/claims",
               },
             ]
           : []),

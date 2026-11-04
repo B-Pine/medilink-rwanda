@@ -513,6 +513,48 @@ class CreditNote(TimeStampedModel):
         ]
 
 
+class ClaimStatus(models.TextChoices):
+    PENDING = "pending", "Pending"
+    PAID = "paid", "Paid"
+    REJECTED = "rejected", "Rejected"
+
+
+class InsuranceClaim(TimeStampedModel):
+    """#203: what the insurer did with the insurer share of one bill. No row means pending; the
+    monthly claim list is built from the bills, this row only carries the outcome."""
+
+    facility = models.ForeignKey("tenancy.Facility", on_delete=models.PROTECT, related_name="+")
+    version = models.PositiveIntegerField(default=1)
+    bill = models.OneToOneField(Bill, on_delete=models.PROTECT, related_name="claim")
+    insurer_code = models.CharField(max_length=40)
+    status = models.CharField(
+        max_length=10, choices=ClaimStatus.choices, default=ClaimStatus.PENDING
+    )
+    reason = models.CharField(max_length=300, blank=True)
+    reference = models.CharField(max_length=60, blank=True)
+    decided_by_membership = models.ForeignKey(
+        "tenancy.FacilityMembership",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+    decided_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = "billing_insurance_claim"
+        indexes: ClassVar[list[Any]] = [
+            models.Index(
+                fields=["facility", "insurer_code", "status"], name="billing_claim_status"
+            ),
+        ]
+        constraints: ClassVar[list[Any]] = [
+            models.CheckConstraint(
+                condition=~Q(status="rejected") | ~Q(reason=""), name="billing_claim_reason"
+            ),
+        ]
+
+
 class RefundPayout(TimeStampedModel):
     facility = models.ForeignKey("tenancy.Facility", on_delete=models.PROTECT, related_name="+")
     credit_note = models.ForeignKey(CreditNote, on_delete=models.PROTECT, related_name="payouts")

@@ -48,14 +48,14 @@ Built from the requirement tables in `docs/analysis/` (titles shortened; the ana
 | `FR-DSP` | [Disputes, complaints, support](../analysis/10-disputes-complaints-and-support.md) | 14 | 11 | 3 | 0 | 0 | 0 | 0 | 14 |
 | `FR-AI` | [AI symptom checker](../analysis/11-ai-symptom-checker.md) | 13 | 2 | 5 | 3 | 3 | 1 | 0 | 12 |
 | `FR-SEC` | [Security, privacy, compliance](../analysis/12-security-privacy-and-compliance.md) | 17 | 16 | 1 | 0 | 0 | 5 | 5 | 7 |
-| `FR-RPT` | [Reporting and analytics](../analysis/13-reporting-and-analytics.md) | 8 | 5 | 2 | 0 | 1 | 0 | 0 | 8 |
+| `FR-RPT` | [Reporting and analytics](../analysis/13-reporting-and-analytics.md) | 8 | 5 | 2 | 0 | 1 | 0 | 4 | 4 |
 | `NFR-PERF` | [Performance and capacity](../analysis/14-non-functional-requirements.md) | 7 | 7 | 0 | 0 | 0 | 0 | 0 | 7 |
 | `NFR-REL` | [Availability and reliability](../analysis/14-non-functional-requirements.md) | 5 | 5 | 0 | 0 | 0 | 0 | 1 | 4 |
 | `NFR-NET` | [Low connectivity and devices](../analysis/14-non-functional-requirements.md) | 6 | 6 | 0 | 0 | 0 | 0 | 1 | 5 |
 | `NFR-UX` | [Usability, accessibility, languages](../analysis/14-non-functional-requirements.md) | 7 | 7 | 0 | 0 | 0 | 1 | 4 | 2 |
 | `NFR-OPS` | [Maintainability and operations](../analysis/14-non-functional-requirements.md) | 8 | 8 | 0 | 0 | 0 | 4 | 4 | 0 |
 | `NFR-INT` | [Interoperability](../analysis/14-non-functional-requirements.md) | 3 | 1 | 0 | 2 | 0 | 0 | 0 | 3 |
-| **All** | | **221** | **180** | **26** | **7** | **8** | **16** | **68** | **137** |
+| **All** | | **221** | **180** | **26** | **7** | **8** | **16** | **72** | **133** |
 
 `NFR-INT-03` is phased "P3–P4" in the analysis and is counted under P3.
 
@@ -334,12 +334,12 @@ Source: [13 · Reporting and analytics](../analysis/13-reporting-and-analytics.m
 
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
-| FR-RPT-01 | Metric definitions from event timestamps | P1 | S10 | Backend | UT | Not started |
+| FR-RPT-01 | Metric definitions from event timestamps | P1 | S10, W6 | Backend | UT | In progress (W6: wait per stage from the first call event, #205) |
 | FR-RPT-02 | Live operations board | P1 | S10 | Both | API, E2E | Not started |
-| FR-RPT-03 | Facility reports (daily, waits, doctors, bookings, finance, staff) | P1 | S10 | Both | API, CMP | Not started |
-| FR-RPT-04 | Export to Excel and PDF | P1 | S10 | Both | API, SEC | Not started |
+| FR-RPT-03 | Facility reports (daily, waits, doctors, bookings, finance, staff) | P1 | S10, W6 | Both | API, CMP | In progress (W6 `/reports`: patients, sources, no-shows, waits by stage, money, lab, stock; doctors and staff not yet, #205) |
+| FR-RPT-04 | Export to Excel and PDF | P1 | S10, W6 | Both | API, SEC | In progress (W6: CSV per table, formula-safe, audit-logged; PDF not yet, #205) |
 | FR-RPT-05 | Platform network, adoption, quality and system reports | P1 | S10 | Both | API | Not started |
-| FR-RPT-06 | Peak-hours heat map, diagnoses and pharmacy reports | P2 | — | Both | API | Not started |
+| FR-RPT-06 | Peak-hours heat map, diagnoses and pharmacy reports | P2 | W6 | Both | API | In progress (W6: top ICD-10, referrals out, stock-outs and expiring stock; heat map from S4, #205) |
 | FR-RPT-07 | Pilot impact report support | P2 | — | Both | INS | Not started |
 | FR-RPT-08 | Aggregated Ministry / district analytics | P4 | — | Both | INS | Not started |
 

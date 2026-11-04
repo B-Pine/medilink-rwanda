@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5835.
+Keys: 5929.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -3455,20 +3455,114 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `ops.team.state.emergency` | Ubutabazi | Emergency | needs native-speaker review |
 | `ops.team.state.off` | Ntari mu kazi | Off | needs native-speaker review |
 | `reports.title` | Raporo | Reports | needs native-speaker review |
-| `reports.intro` | Uko ikigo cyawe gihagaze: abarwayi, igihe cyo gutegereza n’igihe baza. Hakurikijwe ibisobanuro bya MediLink. | How your facility is doing: patients, waits and when people arrive. Figures follow the MediLink metric definitions. | needs native-speaker review |
-| `reports.period` | Iminsi 14 ishize | Last 14 days | needs native-speaker review |
-| `reports.patientsPerDay` | Abarwayi ku munsi | Patients per day | needs native-speaker review |
-| `reports.patients` | Abarwayi | Patients | needs native-speaker review |
 | `reports.waitToBeSeen` | Igihe cyo gutegereza muganga (iminota) | Wait to be seen (minutes) | needs native-speaker review |
 | `reports.median` | Hagati | Median | needs native-speaker review |
 | `reports.p90` | 9 kuri 10 babonye muganga mbere ya | 9 in 10 seen within | needs native-speaker review |
 | `reports.arrivals` | Igihe abarwayi baza (ibyumweru 4 bishize) | When patients arrive (last 4 weeks) | needs native-speaker review |
 | `reports.less` | Bake | Fewer | needs native-speaker review |
 | `reports.more` | Benshi | More | needs native-speaker review |
-| `reports.patients14` | Abarwayi, iminsi 14 | Patients, 14 days | needs native-speaker review |
-| `reports.avgConsult` | Igihe cyo kuvurwa uyu munsi (hagati) | Average consultation today | needs native-speaker review |
-| `reports.leftRate` | Abagiye batavuwe uyu munsi | Left without being seen today | needs native-speaker review |
-| `reports.emergencies` | Ibyihutirwa, iminsi 14 | Emergencies, 14 days | needs native-speaker review |
+| `report.intro` | Uko ikigo cyawe cyakoze mu gihe runaka: abarwayi, gutegereza, indwara, amafaranga, laboratwari n’imiti iri mu bubiko. | How your facility ran over a period: patients, waits, diagnoses, money, the laboratory and stock. | needs native-speaker review |
+| `report.noNames` | Imibare gusa, nta mazina y’abarwayi | Totals only, no patient names | needs native-speaker review |
+| `report.periodLabel` | Igihe cya raporo | Report period | needs native-speaker review |
+| `report.range` | Igihe | Period | needs native-speaker review |
+| `report.presets.7` | Iminsi 7 ishize | Last 7 days | needs native-speaker review |
+| `report.presets.30` | Iminsi 30 ishize | Last 30 days | needs native-speaker review |
+| `report.presets.90` | Iminsi 90 ishize | Last 90 days | needs native-speaker review |
+| `report.presets.thisMonth` | Uku kwezi | This month | needs native-speaker review |
+| `report.presets.lastMonth` | Ukwezi gushize | Last month | needs native-speaker review |
+| `report.presets.custom` | Hitamo amatariki | Choose dates | needs native-speaker review |
+| `report.from` | Kuva | From | needs native-speaker review |
+| `report.to` | Kugeza | To | needs native-speaker review |
+| `report.groupBy` | Erekana ku | Show by | needs native-speaker review |
+| `report.groups.day` | Munsi | Day | needs native-speaker review |
+| `report.groups.week` | Cyumweru | Week | needs native-speaker review |
+| `report.groups.month` | Kwezi | Month | needs native-speaker review |
+| `report.updating` | Birimo kuvugururwa… | Updating… | needs native-speaker review |
+| `report.periodText` | Kuva {{from}} kugeza {{to}} | {{from}} to {{to}} | needs native-speaker review |
+| `report.failed` | Raporo ntiyabonetse. Reba amatariki wongere ugerageze. | The report could not be loaded. Check the dates and try again. | needs native-speaker review |
+| `report.weekOf` | Icyumweru cya {{date}} | Week of {{date}} | needs native-speaker review |
+| `report.minutes_one` | Iminota {{count}} | {{count}} min | needs native-speaker review |
+| `report.minutes_other` | Iminota {{count}} | {{count}} min | needs native-speaker review |
+| `report.empty` | Nta kintu muri iki gihe. | Nothing in this period. | needs native-speaker review |
+| `report.download` | CSV | CSV | needs native-speaker review |
+| `report.downloadNamed` | Kuramo {{name}} nka CSV | Download {{name}} as CSV | needs native-speaker review |
+| `report.downloadFailed` | Kuramo byanze. Ongera ugerageze. | The download failed. Try again. | needs native-speaker review |
+| `report.kpi.patients` | Abarwayi | Patients | needs native-speaker review |
+| `report.kpi.completed_one` | Uruzinduko {{count}} rwarangiye | {{count}} visit completed | needs native-speaker review |
+| `report.kpi.completed_other` | Ingendo {{count}} zarangiye | {{count}} visits completed | needs native-speaker review |
+| `report.kpi.consultWait` | Igihe cyo gutegereza muganga (hagati) | Median wait for the doctor | needs native-speaker review |
+| `report.kpi.p90` | 9 kuri 10 mbere y’iminota {{minutes}} | 9 in 10 within {{minutes}} min | needs native-speaker review |
+| `report.kpi.collected` | Amafaranga yakiriwe | Collected | needs native-speaker review |
+| `report.kpi.billed` | {{amount}} byishyuzwa | {{amount}} billed | needs native-speaker review |
+| `report.kpi.noShows` | Abatitabiriye gahunda | Booking no-shows | needs native-speaker review |
+| `report.kpi.noShowCount_one` | {{count}} kuri gahunda {{expected}} | {{count}} of {{expected}} bookings | needs native-speaker review |
+| `report.kpi.noShowCount_other` | {{count}} kuri gahunda {{expected}} | {{count}} of {{expected}} bookings | needs native-speaker review |
+| `report.visits.title` | Abarwayi bakiriwe | Patients seen | needs native-speaker review |
+| `report.visits.chart` | Abarwayi muri iki gihe | Patients over the period | needs native-speaker review |
+| `report.visits.patients` | Abarwayi | Patients | needs native-speaker review |
+| `report.visits.completed` | Byarangiye | Completed | needs native-speaker review |
+| `report.visits.left` | Bagiye batavuwe | Left without service | needs native-speaker review |
+| `report.visits.emergencies` | Ibyihutirwa | Emergencies | needs native-speaker review |
+| `report.visits.expected` | Gahunda zari zitegerejwe | Bookings expected | needs native-speaker review |
+| `report.visits.noShows` | Ntibaje | No-shows | needs native-speaker review |
+| `report.sources.title` | Uko abarwayi baje | How patients came | needs native-speaker review |
+| `report.source.walk_in` | Baje nta gahunda | Walk-in | needs native-speaker review |
+| `report.source.online_booking` | Gahunda kuri interineti | Online booking | needs native-speaker review |
+| `report.source.phone_booking` | Gahunda kuri telefoni | Phone booking | needs native-speaker review |
+| `report.source.follow_up` | Gukurikiranwa | Follow-up | needs native-speaker review |
+| `report.source.remote_join` | Binjiye ku murongo bari mu rugo | Joined the queue from home | needs native-speaker review |
+| `report.source.referral` | Boherejwe | Referral | needs native-speaker review |
+| `report.source.emergency` | Ibyihutirwa | Emergency | needs native-speaker review |
+| `report.services.title` | Kuri serivisi | By service | needs native-speaker review |
+| `report.waits.title` | Igihe cyo gutegereza kuri buri cyiciro | Waiting time by stage | needs native-speaker review |
+| `report.waits.intro` | Kuva umurwayi ageze ku murongo w’icyiciro kugeza ahamagawe bwa mbere. Umurongo wijimye ni hagati, umweru ni igihe 9 kuri 10 bahamagawe. | From joining the stage's queue on site to the first call. The dark bar is the median, the light bar is when 9 in 10 were called. | needs native-speaker review |
+| `report.waits.median` | Hagati | Median | needs native-speaker review |
+| `report.waits.p90` | 9 kuri 10 | 9 in 10 | needs native-speaker review |
+| `report.waits.tickets_one` | Itike {{count}} | {{count}} ticket | needs native-speaker review |
+| `report.waits.tickets_other` | Amatike {{count}} | {{count}} tickets | needs native-speaker review |
+| `report.diagnoses.title` | Indwara zibonetse cyane | Top diagnoses | needs native-speaker review |
+| `report.diagnoses.intro_one` | ICD-10, bivuye ku nyandiko {{count}} yasinywe. | ICD-10, from {{count}} signed note. | needs native-speaker review |
+| `report.diagnoses.intro_other` | ICD-10, bivuye ku nyandiko {{count}} zasinywe. | ICD-10, from {{count}} signed notes. | needs native-speaker review |
+| `report.diagnoses.referrals` | Boherejwe ahandi | Referred out | needs native-speaker review |
+| `report.diagnoses.sensitive` | Zihishwa, ntizivugwa | Sensitive, not named | needs native-speaker review |
+| `report.diagnoses.referredTo` | Boherejwe: {{list}} | Referred to: {{list}} | needs native-speaker review |
+| `report.lab.title` | Laboratwari | Laboratory | needs native-speaker review |
+| `report.lab.resulted` | Ibizamini byakozwe | Tests done | needs native-speaker review |
+| `report.lab.waiting` | Bitegereje | Still waiting | needs native-speaker review |
+| `report.lab.turnaround` | Igihe cy’ibisubizo (hagati) | Median turnaround | needs native-speaker review |
+| `report.lab.turnaroundP90` | 9 kuri 10 mbere ya | 9 in 10 within | needs native-speaker review |
+| `report.lab.byTest` | Ibizamini byakozwe ku bwoko | Tests done by test | needs native-speaker review |
+| `report.lab.test` | Ikizamini | Test | needs native-speaker review |
+| `report.lab.count` | Byakozwe | Done | needs native-speaker review |
+| `report.lab.abnormal` | Bidasanzwe | Abnormal | needs native-speaker review |
+| `report.lab.median` | Igihe (hagati) | Median turnaround | needs native-speaker review |
+| `report.money.title` | Amafaranga | Money | needs native-speaker review |
+| `report.money.byMethod` | Ayakiriwe ku buryo bwo kwishyura | Collected by payment method | needs native-speaker review |
+| `report.money.payments_one` | Ubwishyu {{count}} | {{count}} payment | needs native-speaker review |
+| `report.money.payments_other` | Ubwishyu {{count}} | {{count}} payments | needs native-speaker review |
+| `report.money.byInsurer` | Ingendo z’abafite ubwishingizi ku mwishingizi | Insured visits by insurer | needs native-speaker review |
+| `report.money.insurer` | Umwishingizi | Insurer | needs native-speaker review |
+| `report.money.bills` | Fagitire | Bills | needs native-speaker review |
+| `report.money.insurerShare` | Igice cy’umwishingizi | Insurer share | needs native-speaker review |
+| `report.money.patientShare` | Igice cy’umurwayi | Patient share | needs native-speaker review |
+| `report.money.exemptions` | Abasonewe | Exemptions | needs native-speaker review |
+| `report.money.voidedPayments` | Ubwishyu bwahagaritswe | Payments voided | needs native-speaker review |
+| `report.money.voidedBills` | Fagitire zahagaritswe | Bills voided | needs native-speaker review |
+| `report.money.refunds` | Amafaranga yasubijwe | Refunds paid | needs native-speaker review |
+| `report.money.creditNotes_one` | Inyemezabwishyu {{count}} yo gusubiza | {{count}} credit note | needs native-speaker review |
+| `report.money.creditNotes_other` | Inyemezabwishyu {{count}} zo gusubiza | {{count}} credit notes | needs native-speaker review |
+| `report.stock.title` | Imiti iri mu bubiko bwa farumasi | Pharmacy stock | needs native-speaker review |
+| `report.stock.intro` | Iyashize n’iyenda gushira ni uko bimeze ubu; iyakiriwe n’iyatanzwe ni iy’iki gihe. | Out of stock and low are as of now; units received and dispensed are for the period. | needs native-speaker review |
+| `report.stock.out` | Iyashize ubu | Out of stock now | needs native-speaker review |
+| `report.stock.low` | Iyenda gushira ubu | Low on stock now | needs native-speaker review |
+| `report.stock.received` | Ibyakiriwe | Units received | needs native-speaker review |
+| `report.stock.dispensed` | Ibyatanzwe | Units dispensed | needs native-speaker review |
+| `report.stock.expiring` | Yarengeje igihe cyangwa izarengeza mu minsi {{days}} | Expired or expiring within {{days}} days | needs native-speaker review |
+| `report.stock.medicine` | Umuti | Medicine | needs native-speaker review |
+| `report.stock.batch` | Icyiciro | Batch | needs native-speaker review |
+| `report.stock.expiry` | Itariki irangiriraho | Expiry | needs native-speaker review |
+| `report.stock.units` | Ibisigaye | Units left | needs native-speaker review |
+| `report.stock.expired` | yarengeje igihe | expired | needs native-speaker review |
 | `flow.label` | Abarwayi muri buri cyiciro | Patients in each stage | needs native-speaker review |
 | `flow.expected` | Abategerejwe | Expected | needs native-speaker review |
 | `flow.waiting` | Bategereje | Waiting | needs native-speaker review |

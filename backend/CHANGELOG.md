@@ -32,6 +32,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   ticket forward (call, cancel, left, transfer, no response, reorder, priority, emergency,
   pass-over), not only a call, and reaches each ticket with 2 or 3 people ahead once.
 
+### Facility reports (2026-11-04, #205)
+
+- Added: `GET /api/v1/staff/reports/facility/` for `reports.view`: the facility report for a
+  period (`from`, `to`, at most 366 days; `group=day|week|month`). Patients per period
+  (completed, left without service, emergencies, no-shows), by source and service; waits per
+  stage (median and 90th percentile, from joining the stage on site to the first `call` event);
+  top ICD-10 diagnoses from signed notes and referrals out; money by payment method and insurer,
+  exemptions, voids, credit notes and refunds; laboratory tests done and turnaround by test;
+  stock out and low now, units received and dispensed, expiring batches. Built from existing
+  tables (`medilink/visits/report.py`); aggregates only, never a patient name; sensitive
+  diagnoses are counted, never named.
+- Added: `GET /api/v1/staff/reports/facility/export/?table=…` returns one table as CSV (UTF-8
+  with BOM, formula-safe cells, `no-store`) and records the audit action
+  `visits.report.exported`.
+
 ### Pharmacy stock, lite (2026-11-04, #204)
 
 - Added: stock per medicine, batch and expiry at each facility: `pharmacy_stock_item` (one card

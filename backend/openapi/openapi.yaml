@@ -35038,7 +35038,7 @@ components:
           type: integer
         without_mfa:
           type: integer
-          description: Active staff and platform admins.
+          description: Staff and platform admins.
         verification_pending:
           type: integer
         facilities:

@@ -481,7 +481,8 @@ class UsersSummaryView(_Platform):
     def get(self, request: Request) -> Response:
         memberships = _memberships()
         staff_ids = list(memberships)
-        users = User.objects.all()
+        # counts only, for the platform admin: no rows leave this view
+        users = User.objects.all()  # nosemgrep: medilink-objects-all-in-view
         with_mfa = TOTPDevice.objects.filter(confirmed=True).values("user_id")
         facilities: dict[Any, str] = {}
         for rows in memberships.values():

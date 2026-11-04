@@ -89,6 +89,8 @@ export const ROLE_PERMISSIONS: Record<RoleCode, PermissionCode[]> = {
     "visit.reason.view",
     "vitals.record",
   ],
+  // upgrade 06 §3 (#201): samples and results only, no diagnoses, notes, bills or release
+  lab_technician: ["disputes.comment", "lab.operate", "lab.result.enter", "reports.view_own"],
 };
 
 /**
@@ -195,6 +197,15 @@ export const STAFF_USERS: MockStaffUser[] = [
     is_platform_admin: false,
     mfa_enabled: true,
     memberships: [{ facility: FACILITIES.kigaliClinic, roles: ["triage_nurse"] }],
+  },
+  {
+    id: "7a1e0b2c-0000-4000-8000-000000000011",
+    email: "lab@medilink.test",
+    full_name: "Habyarimana Theogene",
+    preferred_language: "rw",
+    is_platform_admin: false,
+    mfa_enabled: true,
+    memberships: [{ facility: FACILITIES.kigaliClinic, roles: ["lab_technician"] }],
   },
   {
     id: "7a1e0b2c-0000-4000-8000-000000000005",

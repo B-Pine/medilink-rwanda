@@ -40,7 +40,7 @@ Built from the requirement tables in `docs/analysis/` (titles shortened; the ana
 | `FR-PAT` | [Patient identity and medical history](../analysis/04-patient-identity-and-medical-history.md) | 17 | 14 | 2 | 0 | 1 | 0 | 13 | 4 |
 | `FR-SCH` | [Discovery, calendars, scheduling, booking](../analysis/05-discovery-scheduling-and-booking.md) | 18 | 15 | 3 | 0 | 0 | 0 | 0 | 18 |
 | `FR-QUE` | [Visit lifecycle and live queue](../analysis/06-visit-lifecycle-and-queue.md) | 20 | 17 | 3 | 0 | 0 | 0 | 0 | 20 |
-| `FR-CLN` | [Clinical record](../analysis/07-clinical-documentation-and-pharmacy.md) | 10 | 9 | 1 | 0 | 0 | 0 | 10 | 0 |
+| `FR-CLN` | [Clinical record](../analysis/07-clinical-documentation-and-pharmacy.md) | 11 | 10 | 1 | 0 | 0 | 0 | 11 | 0 |
 | `FR-PHA` | [Pharmacy](../analysis/07-clinical-documentation-and-pharmacy.md) | 7 | 5 | 2 | 0 | 0 | 0 | 5 | 2 |
 | `FR-DOC` | [Documents](../analysis/07-clinical-documentation-and-pharmacy.md) | 7 | 7 | 0 | 0 | 0 | 0 | 1 | 6 |
 | `FR-BIL` | [Billing, payments, insurance](../analysis/08-billing-payments-and-insurance.md) | 18 | 13 | 2 | 1 | 2 | 0 | 10 | 8 |
@@ -55,7 +55,7 @@ Built from the requirement tables in `docs/analysis/` (titles shortened; the ana
 | `NFR-UX` | [Usability, accessibility, languages](../analysis/14-non-functional-requirements.md) | 7 | 7 | 0 | 0 | 0 | 1 | 4 | 2 |
 | `NFR-OPS` | [Maintainability and operations](../analysis/14-non-functional-requirements.md) | 8 | 8 | 0 | 0 | 0 | 4 | 4 | 0 |
 | `NFR-INT` | [Interoperability](../analysis/14-non-functional-requirements.md) | 3 | 1 | 0 | 2 | 0 | 0 | 0 | 3 |
-| **All** | | **220** | **179** | **26** | **7** | **8** | **16** | **66** | **138** |
+| **All** | | **221** | **180** | **26** | **7** | **8** | **16** | **67** | **138** |
 
 `NFR-INT-03` is phased "P3–P4" in the analysis and is counted under P3.
 
@@ -74,7 +74,7 @@ Source: [02 · Users, roles, access](../analysis/02-users-roles-and-permissions.
 | FR-ACC-07 | Clinician licence number; admin attests the check | P1 | S0, S2 | Both | API, CMP | In progress |
 | FR-ACC-08 | Server-side, logged permission checks on patient data | P1 | S0 | Backend | AZ, API | Verified (S0, v0.1.0) |
 | FR-ACC-09 | Super admin emergency access with reason, logged, reviewable | P1 | S6b | Both | AZ, API | In progress |
-| FR-ACC-10 | New roles without changing existing roles (cashier and triage nurse done; laboratory technician next) | P1 | U2, U8 (#200) | Both | AZ, INS | In progress |
+| FR-ACC-10 | New roles without changing existing roles (cashier, triage nurse and laboratory technician done; community health worker and others in P2) | P1 | U2, U8 (#200, #201) | Both | AZ, INS | In progress |
 
 ## FR-ONB · Tenancy, onboarding, master data
 
@@ -187,6 +187,7 @@ Source: [07 · Clinical record](../analysis/07-clinical-documentation-and-pharma
 | FR-CLN-08 | Restricted (sensitive) records | P1 | S6 | Both | AZ | In progress |
 | FR-CLN-09 | Results inbox with review sign-off | P1 | S6b | Both | API, E2E | In progress |
 | FR-CLN-10 | Consultation templates as order sets (diagnosis, plan, instructions, prescription in one click; lab tests kept for W2) and the doctor's favourites first in the diagnosis and medicine search | P2 | W3 (#202) | Both | API, CMP | Implemented (#202) |
+| FR-CLN-11 | Laboratory loop: order, sample, result, back to the same doctor, review, release; patient sees released results only | P1 | U8 (#201) | Both | API, AZ, CMP | Implemented (#201) |
 
 ## FR-PHA · Pharmacy
 

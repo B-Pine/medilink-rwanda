@@ -1,7 +1,46 @@
 {
   "nav": {
     "reorders": "Contrôle de la file",
-    "triage": "Triage"
+    "triage": "Triage",
+    "lab": "Laboratoire"
+  },
+  "lab": {
+    "title": "Laboratoire",
+    "lead": "Appelez le patient suivant, prélevez les échantillons et saisissez les résultats. Le patient retourne chez le médecin quand tous les résultats sont prêts.",
+    "open": "Ouvrir le laboratoire",
+    "current": "Patient avec vous",
+    "start": "Commencer",
+    "inLab": "Au laboratoire",
+    "nobody": "Personne n'attend le laboratoire.",
+    "waiting": "En attente de prélèvement",
+    "inProgress": "Résultats à saisir",
+    "inProgressNone": "Aucun échantillon n'attend de résultat.",
+    "doneToday": "Terminé aujourd'hui",
+    "identity": "Vérifiez l'identité du patient",
+    "fullName": "Nom complet",
+    "born": "Date de naissance",
+    "medilinkNumber": "Numéro MediLink",
+    "payment": "Paiement",
+    "paid": "Payé",
+    "unpaid": "Non payé",
+    "samples": "Prélèvements",
+    "sample": "Échantillon prélevé",
+    "orderedBy": "Demandé par {{name}}",
+    "request": "Demande du médecin :",
+    "loadingTests": "Chargement des examens…",
+    "samplesDone": "Échantillons prélevés pour {{name}}. Saisissez les résultats quand ils sont prêts.",
+    "enter": "Saisir le résultat",
+    "choose": "Choisir…",
+    "required": "Saisissez ce résultat.",
+    "comment": "Commentaire pour le médecin (facultatif)",
+    "save": "Enregistrer le résultat",
+    "saved": "Résultat enregistré : {{test}}.",
+    "backToDoctor": "Tous les résultats sont prêts. {{name}} retourne chez le médecin.",
+    "today": {
+      "waiting": "En attente de prélèvement",
+      "results": "Résultats à saisir",
+      "done": "Terminé aujourd'hui"
+    }
   },
   "triage": {
     "title": "Triage",
@@ -83,6 +122,7 @@
     "payment": "Paiement",
     "triage": "Triage",
     "consultation": "Consultation",
+    "lab": "Laboratoire",
     "pharmacy": "Pharmacie"
   },
   "flags": {

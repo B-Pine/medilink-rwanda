@@ -20,6 +20,32 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Added: `tests` on templates (`[{code, name}]`, max 10; accounts migration 0009), the extension
   point for W2 lab orders: stored and returned, not ordered yet.
 
+### Laboratory loop and the lab technician (2026-11-04, #201)
+
+- Added: role `lab_technician` with the new permissions `lab.operate` and `lab.result.enter`
+  (plus `disputes.comment`, `reports.view_own`); never diagnoses, notes, bills or the release of a
+  result (tenancy migration 0012). Seeded demo technician `lab@demo.medilink.test`.
+- Added: `LabOrder` (`clinical_lab_order`, clinical migrations 0005 and 0006), one row per test:
+  `ordered → sample_taken → resulted → reviewed → released` (`cancelled` before the sample). The
+  request reason, the result and the doctor's note are field-encrypted (C3); forced facility RLS;
+  never deleted; a result never changes once entered; released rows are locked. A constant
+  catalogue of eight outpatient tests (malaria RDT, full blood count, urinalysis, blood glucose,
+  HIV, pregnancy, stool, typhoid) with ranges and expected answers.
+- Added: queue stage `lab` (visits migration 0007) and ticket action `send-to-lab`: the doctor's
+  patient goes to the lab while the consultation stays a draft. The visit's last sample puts the
+  lab ticket on hold; its last result sends the patient back to the ordering doctor with return
+  priority, assigned to that doctor.
+- Added: `GET /staff/lab/tests/`, `GET|POST /staff/consultations/{id}/lab-orders/`,
+  `GET /staff/lab/queue/`, `POST /staff/lab-orders/{id}/sample|result|review|release|cancel/`,
+  `GET /staff/lab/results/` (the doctor's lab inbox) and `GET /patient/results/` (released only,
+  through the SECURITY DEFINER function `clinical_patient_lab_results`). Audit
+  `clinical.lab_order.*` with a patient link.
+- Added: a test whose code has a tariff item (`procedure` or `other`) adds a line to the visit's
+  bill; cancelling it removes the line while nothing is paid. The lab sees whether the bill is
+  paid.
+- Changed: `GET /queue/mine/?stage=lab` is the technician's queue; a technician's board shows lab
+  queues only; lab ticket rows carry no patient words or symptoms.
+
 ### Triage nurse and the triage stage (2026-11-04, #200)
 
 - Added: role `triage_nurse` with the new permission `triage.operate` (plus `vitals.record`,

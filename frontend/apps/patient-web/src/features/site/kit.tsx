@@ -104,21 +104,21 @@ export function PageHeader({
         </div>
       </div>
     );
-  // public pages (one template): breadcrumb → H1 (Figtree 40 px, 700) → one-line lead, then a
-  // hairline; the weight stays at 700 so headings read as a public service, not a campaign
+  // public pages (one template, second pass): breadcrumb → fluid H1 → one-line lead; no rule
+  // underneath, the space does the work
   return (
-    <div className="mb-8 flex animate-enter flex-col gap-4 border-b border-border pt-8 pb-8 sm:pt-12 sm:pb-10">
+    <div className="mb-10 flex animate-enter flex-col gap-5 pt-10 pb-6 sm:pt-14 sm:pb-8">
       {crumbs && <Breadcrumbs items={[{ to: "/", label: t("nav.home") }, ...crumbs]} />}
       <div className="flex flex-wrap items-end justify-between gap-6">
-        <div className="flex max-w-[46rem] flex-col gap-3">
+        <div className="flex max-w-[48rem] flex-col gap-4">
           <PageHeading
             title={title}
-            className="font-heading text-[2rem] leading-[1.15] font-bold tracking-tight text-balance text-fg sm:text-[2.5rem]"
+            className="font-heading text-[clamp(2.25rem,1.7rem+2vw,3.25rem)] leading-[1.05] font-bold tracking-[-0.03em] text-balance text-fg"
           >
             {title}
           </PageHeading>
           {lead && (
-            <p className="m-0 max-w-[40rem] text-[1.0625rem] leading-relaxed text-pretty text-fg-secondary">
+            <p className="m-0 max-w-[42rem] text-[1.125rem] leading-relaxed text-pretty text-fg-secondary">
               {lead}
             </p>
           )}
@@ -141,10 +141,9 @@ export function Panel({
   as?: "section" | "div" | "aside";
   "aria-labelledby"?: string;
 }) {
-  // a hairline border, no shadow, in the dashboard and on the public site alike; content is there
-  // from the first paint (public design brief 2026-11-04: nothing waits for the scroll to appear)
+  // the site elevation: a hairline ring and a soft layered shadow (e2), no hard border
   return (
-    <Tag className={cx("rounded-2xl border border-border bg-surface", className)} {...rest}>
+    <Tag className={cx("rounded-panel bg-surface shadow-e2", className)} {...rest}>
       {children}
     </Tag>
   );
@@ -158,7 +157,7 @@ export function LoadingRows({ rows = 4, className }: { rows?: number; className?
       {Array.from({ length: rows }, (_, i) => (
         <div
           key={i}
-          className="flex flex-col gap-2 border-b border-border/50 px-5 py-4 last:border-b-0"
+          className="flex flex-col gap-2 border-b border-hairline px-5 py-4 last:border-b-0"
         >
           <Skeleton className="h-5 w-1/3 rounded-md" />
           <Skeleton className="h-4 w-2/3 rounded-md" />
@@ -245,7 +244,7 @@ export function InsuranceList({ codes, className }: { codes: string[]; className
       {insurerNames(codes, t).map((name) => (
         <li
           key={name}
-          className="rounded-full bg-brand-subtle px-2.5 py-0.5 text-caption font-semibold text-on-brand-subtle"
+          className="rounded-md bg-surface px-2 py-0.5 text-caption font-medium text-fg-secondary shadow-e1"
         >
           {name}
         </li>
@@ -286,9 +285,9 @@ export function SearchBar({
           }
         : {})}
       className={cx(
-        "flex min-h-12 items-center gap-2 rounded-full border border-border-input bg-surface pr-1.5 pl-4",
-        "transition-[border-color,box-shadow] duration-200 ease-out-quint",
-        "focus-within:border-primary focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_18%,transparent)]",
+        "flex min-h-12 items-center gap-2 rounded-full bg-surface pr-1.5 pl-4 shadow-e1",
+        "transition-[box-shadow] duration-200 ease-out-quint hover:shadow-e2",
+        "focus-within:shadow-[0_0_0_1px_var(--color-primary),0_0_0_4px_color-mix(in_srgb,var(--color-primary)_16%,transparent)]",
         className,
       )}
     >
@@ -326,8 +325,9 @@ export function LocationSelector({
   return (
     <div
       className={cx(
-        "relative flex min-h-12 items-center rounded-full border border-border-input bg-surface",
-        "transition-[border-color] duration-200 ease-out-quint focus-within:border-primary",
+        "relative flex min-h-12 items-center rounded-full bg-surface shadow-e1",
+        "transition-[box-shadow] duration-200 ease-out-quint hover:shadow-e2",
+        "focus-within:shadow-[0_0_0_1px_var(--color-primary),0_0_0_4px_color-mix(in_srgb,var(--color-primary)_16%,transparent)]",
         className,
       )}
     >
@@ -374,14 +374,14 @@ export function LinkRow({
   meta?: ReactNode;
 }) {
   return (
-    <li className="border-b border-border/50 last:border-b-0">
+    <li className="border-b border-hairline last:border-b-0">
       <Link
         to={to}
         viewTransition
-        className="group flex items-center gap-4 px-5 py-4 text-fg no-underline transition-colors duration-200 ease-out-quint hover:bg-subtle/60"
+        className="group flex items-center gap-4 px-5 py-4 text-fg no-underline transition-colors duration-200 ease-out-quint hover:bg-page/70"
       >
         {icon && (
-          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-subtle text-on-brand-subtle">
+          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-[linear-gradient(140deg,var(--color-brand-subtle),var(--color-surface))] text-on-brand-subtle shadow-e1">
             {icon}
           </span>
         )}
@@ -404,15 +404,17 @@ export function LinkRow({
 /** Expandable question (native details: keyboard and screen readers for free). */
 export function Faq({ question, children }: { question: string; children: ReactNode }) {
   return (
-    <details className="group border-b border-border/60 last:border-b-0">
-      <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-5 py-3 font-semibold text-fg [&::-webkit-details-marker]:hidden">
+    <details className="group border-b border-hairline last:border-b-0">
+      <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-4 px-6 py-4 font-semibold text-fg transition-colors duration-150 hover:bg-page/70 [&::-webkit-details-marker]:hidden">
         {question}
-        <CaretDown
+        <span
           aria-hidden="true"
-          className="size-4 shrink-0 text-fg-muted transition-transform duration-200 ease-out-quint group-open:rotate-180"
-        />
+          className="grid size-8 shrink-0 place-items-center rounded-full bg-subtle text-fg-secondary transition-[transform,background-color] duration-200 ease-out-quint group-open:rotate-180 group-open:bg-brand-subtle group-open:text-on-brand-subtle"
+        >
+          <CaretDown className="size-4" />
+        </span>
       </summary>
-      <div className="animate-enter px-5 pb-5 text-fg-secondary">{children}</div>
+      <div className="animate-enter px-6 pb-6 leading-relaxed text-fg-secondary">{children}</div>
     </details>
   );
 }
@@ -429,7 +431,10 @@ export function SectionTitle({
 }) {
   return (
     <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-      <h2 id={id} className="m-0 text-h2 tracking-tight text-balance">
+      <h2
+        id={id}
+        className="m-0 font-heading text-[1.625rem] leading-tight font-bold tracking-[-0.02em] text-balance"
+      >
         {children}
       </h2>
       {action}

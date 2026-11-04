@@ -1,4 +1,64 @@
 {
+  "lab": {
+    "title": "Tests",
+    "none": "No test ordered for this visit.",
+    "order": "Order tests",
+    "choose": "Tests to order",
+    "chooseOne": "Choose at least one test.",
+    "reason": "Why these tests? (the lab sees this)",
+    "reasonHint": "For example: fever for 3 days, rule out malaria.",
+    "reasonShort": "Why:",
+    "submit": "Order",
+    "send": "Send to lab",
+    "sendHint": "The patient goes to the lab. Your notes stay open, and the patient comes back to your queue when every result is in.",
+    "sent": "{{name}} is on the way to the lab and comes back to your queue when the results are in.",
+    "orderedBy": "Ordered by {{name}} at {{time}}",
+    "resultedBy": "Result by {{name}} at {{time}}",
+    "labComment": "Lab comment:",
+    "note": "Note for the patient",
+    "noteHint": "The patient reads it with the result.",
+    "review": "Mark reviewed",
+    "release": "Release to the patient",
+    "releaseHint": "From now on the patient sees this result in their record.",
+    "cancel": "Cancel test",
+    "range": "{{low}}–{{high}} {{unit}}",
+    "table": {
+      "item": "Test",
+      "value": "Result",
+      "reference": "Normal range"
+    },
+    "states": {
+      "ordered": "Ordered",
+      "sample_taken": "Sample taken",
+      "resulted": "Result ready",
+      "reviewed": "Reviewed",
+      "released": "Released",
+      "cancelled": "Cancelled"
+    },
+    "specimens": {
+      "blood": "Blood",
+      "urine": "Urine",
+      "stool": "Stool"
+    },
+    "flags": {
+      "low": "Low",
+      "high": "High",
+      "abnormal": "Abnormal"
+    },
+    "choices": {
+      "negative": "Negative",
+      "positive": "Positive",
+      "invalid": "Invalid",
+      "trace": "Trace",
+      "none_seen": "None seen",
+      "seen": "Seen"
+    },
+    "inbox": {
+      "title": "Lab results",
+      "lead": "Results of the tests you ordered. Review each one, then release it to the patient.",
+      "open": "Open the consultation"
+    }
+  },
   "nav": {
     "consultation": "Consultation",
     "unsigned": "Unsigned records",

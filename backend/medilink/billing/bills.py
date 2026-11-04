@@ -505,6 +505,60 @@ def remove_line(line_id: Any, *, version: Any, reason: str, membership: Any, req
     return bill
 
 
+def lab_price(facility_id: Any, test_code: str) -> TariffItem | None:
+    """#201: the tariff item of kind `procedure` or `other` whose code is the lab test code (as
+    medicines, contract D-3)."""
+    return (
+        TariffItem.objects.filter(
+            current_q(timezone.localdate()),
+            facility_id=facility_id,
+            kind__in=(TariffKind.PROCEDURE, TariffKind.OTHER),
+            code=test_code,
+        )
+        .order_by("-valid_from")
+        .first()
+    )
+
+
+def add_lab_line(
+    visit: Any, *, test_code: str, test_name: str, membership: Any, request: Any = None
+) -> Any:
+    """#201: a line on the visit's bill for one ordered lab test. Returns the line id, or None
+    when the test has no price (the cashier adds it from the price list) or the bill is void."""
+    item = lab_price(visit.facility_id, test_code)
+    if item is None:
+        return None
+    opened = open_bill(visit, request=request)
+    with transaction.atomic():
+        bill = _locked(opened.pk)
+        if bill.status == BillStatus.VOIDED:
+            return None
+        line = _add_line(bill, item, quantity=1, membership=membership, name=test_name)
+        recompute(bill, request=request)
+        _audit("billing.bill.line_added", request, bill, line_id=line.pk, tariff_code=item.code)
+    return line.pk
+
+
+def remove_lab_line(line_id: Any, *, membership: Any, request: Any = None) -> bool:
+    """#201: take a cancelled test off the bill while nothing is paid (a refund otherwise)."""
+    line = BillLine.objects.filter(pk=line_id, removed_at__isnull=True).first()
+    if line is None:
+        return False
+    with transaction.atomic():
+        bill = _locked(line.bill_id)
+        if bill.payments.filter(status=PaymentStatus.RECORDED).exists():
+            return False
+        line.removed_at = timezone.now()
+        line.removed_by_membership = membership
+        line.removed_reason = "lab_order_cancelled"
+        line.save(
+            update_fields=["removed_at", "removed_by_membership", "removed_reason", "updated_at"]
+        )
+        recompute(bill, request=request)
+        _audit("billing.bill.line_removed", request, bill, line_id=line.pk)
+    return True
+
+
 # ---- insurance verification -------------------------------------------------------------------
 
 

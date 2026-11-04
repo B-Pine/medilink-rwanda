@@ -199,7 +199,7 @@ export function FacilityPage() {
               <h2 id="today" className="m-0 font-heading text-h2">
                 {t("site.facility.today")}
               </h2>
-              <Panel as="div" className="overflow-hidden rounded-lg">
+              <Panel as="div" className="overflow-hidden">
                 <dl className="m-0">
                   <Summary label={t("site.facility.hoursToday")}>
                     <span className="inline-flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -241,7 +241,7 @@ export function FacilityPage() {
                   </Summary>
                 </dl>
                 {(hospital || f.emergency_department) && (
-                  <p className="m-0 flex items-start gap-2 border-t border-border bg-danger-bg px-5 py-4 text-body-sm text-fg sm:px-6">
+                  <p className="m-0 flex items-start gap-2 border-t border-hairline bg-danger-bg px-5 py-4 text-body-sm text-fg sm:px-6">
                     <Siren
                       aria-hidden="true"
                       weight="bold"
@@ -259,7 +259,7 @@ export function FacilityPage() {
               <h2 id="services" className="m-0 font-heading text-h2">
                 {t("site.facility.tabs.services")}
               </h2>
-              <Panel as="div" className="overflow-hidden rounded-lg">
+              <Panel as="div" className="overflow-hidden">
                 {f.services.length === 0 ? (
                   <EmptyState title={t("site.facility.noServices")} />
                 ) : (
@@ -276,7 +276,7 @@ export function FacilityPage() {
               <h2 id="doctors" className="m-0 font-heading text-h2">
                 {t("site.facility.tabs.doctors")}
               </h2>
-              <Panel as="div" className="overflow-hidden rounded-lg">
+              <Panel as="div" className="overflow-hidden">
                 {f.doctors.length === 0 ? (
                   <p className="m-0 px-5 py-4 text-fg-secondary sm:px-6">
                     {t("site.facility.noDoctors")}
@@ -286,7 +286,7 @@ export function FacilityPage() {
                     {f.doctors.map((d) => (
                       <li
                         key={d.membership_id}
-                        className="flex flex-col gap-1 border-b border-border px-5 py-4 last:border-b-0 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6 sm:px-6"
+                        className="flex flex-col gap-1 border-b border-hairline px-5 py-4 last:border-b-0 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6 sm:px-6"
                       >
                         <span className="flex min-w-0 flex-col gap-0.5">
                           <Link
@@ -330,7 +330,7 @@ export function FacilityPage() {
           </div>
 
           <aside className="flex flex-col gap-6 lg:pt-11">
-            <Panel aria-labelledby="location" className="overflow-hidden rounded-lg">
+            <Panel aria-labelledby="location" className="overflow-hidden">
               {f.lat !== null && f.lng !== null && (
                 <Suspense fallback={<Skeleton className="h-44 rounded-none" />}>
                   <FacilityMap
@@ -370,7 +370,7 @@ export function FacilityPage() {
               </div>
             </Panel>
 
-            <Panel aria-labelledby="week" className="rounded-lg p-5">
+            <Panel aria-labelledby="week" className="p-5">
               <h2 id="week" className="m-0 text-h3">
                 {t("site.facility.week")}
               </h2>
@@ -402,7 +402,7 @@ export function FacilityPage() {
               </p>
             </Panel>
 
-            <Panel aria-labelledby="bring" className="rounded-lg p-5">
+            <Panel aria-labelledby="bring" className="p-5">
               <h2 id="bring" className="m-0 text-h3">
                 {t("site.facility.bring.title")}
               </h2>
@@ -429,7 +429,7 @@ export function FacilityPage() {
 /** One fact of today's summary: the label on the left, the answer on the right (NHS summary list). */
 function Summary({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="grid gap-1 border-b border-border px-5 py-3.5 last:border-b-0 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6 sm:px-6">
+    <div className="grid gap-1 border-b border-hairline px-5 py-3.5 last:border-b-0 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6 sm:px-6">
       <dt className="font-semibold text-fg">{label}</dt>
       <dd className="m-0 text-fg">{children}</dd>
     </div>
@@ -563,7 +563,7 @@ function ServiceRow({ slug, service }: { slug: string; service: PublicService })
   ].filter(Boolean);
   const insurers = insurerNames(service.insurers, t);
   return (
-    <li className="flex flex-col gap-1.5 border-b border-border px-5 py-4 last:border-b-0 sm:px-6">
+    <li className="flex flex-col gap-1.5 border-b border-hairline px-5 py-4 last:border-b-0 sm:px-6">
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
         <Link
           to={`/services/${serviceSlug(service.code)}`}

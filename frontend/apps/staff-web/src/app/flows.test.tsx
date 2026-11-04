@@ -316,6 +316,7 @@ describe("shell: user menu, language, theme, logout", () => {
       "Break-glass reviews",
       "Security log",
       "Record access log",
+      "National report",
       "Feature flags",
     ];
     expect(links).toEqual(expect.arrayContaining(expected));

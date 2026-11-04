@@ -465,5 +465,37 @@
     "facilitiesTitle": "Une salle d’attente plus calme.",
     "facilitiesLead": "Les patients voient votre attente avant de venir. Vous voyez la file, le flux et la journée sur un tableau de bord.",
     "facilitiesAction": "MediLink pour les établissements"
+  },
+  "home3": {
+    "titleA": "Trouvez les bons soins,",
+    "titleB": "sans la longue attente.",
+    "openNow_one": "{{count}} établissement ouvert",
+    "openNow_other": "{{count}} établissements ouverts",
+    "waitingNow_one": "{{count}} personne en attente",
+    "waitingNow_other": "{{count}} personnes en attente",
+    "live": "En direct",
+    "seePlaces": "Voir les lieux",
+    "openTitle": "Ouverts maintenant",
+    "openLead": "Les lieux sur MediLink avec leur attente en direct. Touchez « Près de moi » pour trier par distance.",
+    "trustLabel": "Ce sur quoi vous pouvez compter",
+    "trust": {
+      "noAccount": {
+        "title": "Pas de compte pour regarder",
+        "body": "Voyez qui est ouvert et l’attente avant de vous connecter."
+      },
+      "languages": {
+        "title": "Kinyarwanda, English, Français",
+        "body": "Chaque page dans la langue que vous lisez le mieux."
+      },
+      "dataHome": {
+        "title": "Vos données de santé restent au Rwanda",
+        "body": "Stockées au Rwanda et partagées seulement avec les soins que vous choisissez."
+      }
+    },
+    "facilityPoints": {
+      "queue": "Une file en direct que les patients suivent depuis chez eux",
+      "bookings": "Rendez-vous et patients sans rendez-vous dans un seul planning",
+      "records": "Dossiers, ordonnances et paiements au même endroit"
+    }
   }
 }

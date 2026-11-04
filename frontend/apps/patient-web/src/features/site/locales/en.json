@@ -465,5 +465,37 @@
     "facilitiesTitle": "Run a calmer waiting room.",
     "facilitiesLead": "Patients see your live wait before they come. You see the queue, the flow and the day in one dashboard.",
     "facilitiesAction": "MediLink for facilities"
+  },
+  "home3": {
+    "titleA": "Find the right care,",
+    "titleB": "without the long wait.",
+    "openNow_one": "{{count}} place open now",
+    "openNow_other": "{{count}} places open now",
+    "waitingNow_one": "{{count}} person waiting",
+    "waitingNow_other": "{{count}} people waiting",
+    "live": "Live",
+    "seePlaces": "See the places",
+    "openTitle": "Open right now",
+    "openLead": "Places on MediLink with their live wait. Tap Near me to sort by distance.",
+    "trustLabel": "What you can count on",
+    "trust": {
+      "noAccount": {
+        "title": "No account to look",
+        "body": "See who is open and the wait before you sign in."
+      },
+      "languages": {
+        "title": "Kinyarwanda, English, Français",
+        "body": "Every page in the language you read best."
+      },
+      "dataHome": {
+        "title": "Your health data stays in Rwanda",
+        "body": "Stored in Rwanda and shared only with the care you choose."
+      }
+    },
+    "facilityPoints": {
+      "queue": "A live queue patients can follow from home",
+      "bookings": "Bookings and walk-ins in one day plan",
+      "records": "Records, prescriptions and payments in one place"
+    }
   }
 }

@@ -30,6 +30,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   reason=…)`, the one way for other apps (lab tests, procedures) to put a priced item on a visit's
   bill and take it off again before payment.
 
+### Doctor's quick note: order sets and favourites (2026-11-04, #202)
+
+- Added: `GET /staff/clinical/favourites/`: the doctor's most used diagnoses and medicines at this
+  facility, derived from their own signed consultations and issued prescriptions (last 180 days,
+  used twice or more, 8 each; cancelled lines left out; sensitive diagnoses never listed). Each
+  medicine carries the dosing of its latest use and `available_here`. Nothing is stored.
+- Added: templates (order sets) return `diagnoses`, each code labelled in the request language
+  with `is_sensitive` and `is_known` (an inactive or unknown code is flagged so applying skips it
+  instead of failing the autosave).
+- Added: `tests` on templates (`[{code, name}]`, max 10; accounts migration 0009), the extension
+  point for W2 lab orders: stored and returned, not ordered yet.
+
 ### Laboratory loop and the lab technician (2026-11-04, #201)
 
 - Added: role `lab_technician` with the new permissions `lab.operate` and `lab.result.enter`

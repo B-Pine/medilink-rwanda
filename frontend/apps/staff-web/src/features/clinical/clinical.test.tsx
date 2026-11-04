@@ -90,11 +90,46 @@ describe("doctor tools (upgrade 05 §3)", () => {
     await openDraft(app);
     await app.user.click(screen.getByRole("button", { name: "Use a template" }));
     await app.user.click(await screen.findByRole("button", { name: /Hypertension review/ }));
+    await app.user.click(await screen.findByRole("button", { name: "Back to the note" }));
     await waitFor(() =>
       expect(screen.getByRole("textbox", { name: "Plan" })).toHaveValue(
         "Continue amlodipine. Check BP in one month.",
       ),
     );
+  }, 40_000);
+});
+
+describe("doctor's quick note (W3, #202)", () => {
+  it("an order set fills the note in one click and lists what it did", async () => {
+    const app = await signIn();
+    await openDraft(app);
+    await app.user.click(screen.getByRole("button", { name: "Use a template" }));
+    await app.user.click(await screen.findByRole("button", { name: /Uncomplicated malaria/ }));
+    const summary = await screen.findByRole("list", { name: "What the template changed" });
+    expect(within(summary).getByText(/Diagnosis added as provisional: B54/)).toBeInTheDocument();
+    expect(within(summary).getByText(/Text added to: Plan/)).toBeInTheDocument();
+    // lab tests are not ordered from a template yet, and the doctor is told so
+    expect(within(summary).getByText(/Order them yourself: Malaria \(RDT\)/)).toBeInTheDocument();
+    expect(await within(summary).findByText(/prescription: Paracetamol/)).toBeInTheDocument();
+    await app.user.click(await screen.findByRole("button", { name: "Back to the note" }));
+    const plan = screen.getByRole<HTMLTextAreaElement>("textbox", { name: "Plan" });
+    expect(plan.value).toContain("Artemether-lumefantrine");
+    const chosen = screen.getByRole("list", { name: "Chosen diagnoses" });
+    expect(within(chosen).getByRole("button", { name: "Remove B54" })).toBeInTheDocument();
+    // still a draft: the doctor signs
+    expect(screen.getByRole("button", { name: "Sign and lock" })).toBeInTheDocument();
+  }, 40_000);
+
+  it("my frequent diagnoses are one click away", async () => {
+    const app = await signIn();
+    await openDraft(app);
+    const frequent = await screen.findByRole("group", { name: "Your frequent diagnoses" });
+    await app.user.click(within(frequent).getByRole("button", { name: /^Add B54/ }));
+    const chosen = screen.getByRole("list", { name: "Chosen diagnoses" });
+    expect(within(chosen).getByRole("button", { name: "Remove B54" })).toBeInTheDocument();
+    // a chosen favourite leaves the shortcuts
+    expect(within(frequent).queryByRole("button", { name: /^Add B54/ })).not.toBeInTheDocument();
+    expect(await axe(app.container)).toHaveNoViolations();
   }, 40_000);
 });
 

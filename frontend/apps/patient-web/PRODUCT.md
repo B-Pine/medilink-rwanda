@@ -4,7 +4,7 @@
 
 > Written 2026-11-04 without an interview: the owner was offline overnight and asked for the work
 > to proceed. Facts come from the repository, the owner's written brief that night and earlier
-> recorded decisions; each inferred line is marked *(inferred)*. Confirm or correct them.
+> recorded decisions; each inferred line is marked _(inferred)_. Confirm or correct them.
 
 ## Platform
 
@@ -17,8 +17,8 @@ web
   French. They want to know where to go, whether it is open, how long the wait is, and whether
   their insurance (Mutuelle, RAMA, MMI, private) is accepted.
 - Someone in an emergency, who needs 912 and the nearest hospital, not a product.
-- Health facilities deciding whether to join, and officials evaluating the service *(inferred
-  from the brief: "if this system would be used by someone like the president")*.
+- Health facilities deciding whether to join, and officials evaluating the service _(inferred
+  from the brief: "if this system would be used by someone like the president")_.
 
 ## Product Purpose
 

@@ -70,7 +70,7 @@ function Updated() {
 /** A reading page: narrow column, sections with headings, one quiet document surface. */
 function Document({ children }: { children: ReactNode }) {
   return (
-    <Panel as="div" className="flex flex-col gap-8 rounded-lg p-6 sm:p-10">
+    <Panel as="div" className="flex flex-col gap-8 p-6 sm:p-10">
       {children}
     </Panel>
   );
@@ -146,7 +146,7 @@ export function HowItWorksPage() {
           </ol>
           <section
             aria-labelledby="good"
-            className="flex flex-col gap-3 border-t border-border pt-8"
+            className="flex flex-col gap-3 border-t border-hairline pt-8"
           >
             <h2 id="good" className="m-0 text-h2">
               {t("site.how.goodTitle")}
@@ -192,7 +192,7 @@ function ReferralFallback({ failed, onRetry }: { failed: boolean; onRetry: () =>
       {failed && (
         <div
           role="status"
-          className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 bg-attention-bg/50 px-5 py-3 text-body-sm"
+          className="flex flex-wrap items-center justify-between gap-3 border-b border-hairline bg-attention-bg/50 px-5 py-3 text-body-sm"
         >
           <span>{t("site.emergency.loadFailed", { number: EMERGENCY.number })}</span>
           <Button variant="ghost" pill onClick={onRetry}>
@@ -207,7 +207,7 @@ function ReferralFallback({ failed, onRetry }: { failed: boolean; onRetry: () =>
         {REFERRAL_HOSPITALS.map((h) => (
           <li
             key={h.name}
-            className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-border/50 px-5 py-3.5 last:border-b-0"
+            className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-hairline px-5 py-3.5 last:border-b-0"
           >
             <span className="min-w-0 flex-1 font-semibold text-fg">
               {h.name}
@@ -293,7 +293,7 @@ export function EmergencyPage() {
                     <li key={sign}>{t(`public.emergency.signs.${sign}`)}</li>
                   ))}
                 </ul>
-                <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border pt-5">
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-hairline pt-5">
                   <a
                     href={`tel:${EMERGENCY.number}`}
                     className="inline-flex min-h-14 items-center gap-3 rounded-md bg-danger-solid px-6 font-heading text-[1.375rem] font-bold text-on-danger-solid no-underline transition-[filter] duration-150 hover:brightness-110"
@@ -328,7 +328,7 @@ export function EmergencyPage() {
                   {near ? t("home.nearYou") : t("site.emergency.nearMe")}
                 </Button>
               </div>
-              <Panel as="div" className="overflow-hidden rounded-lg">
+              <Panel as="div" className="overflow-hidden">
                 {hospitals.isPending ? (
                   <LoadingRows rows={3} />
                 ) : hospitals.isError || !hospitals.data?.length ? (
@@ -341,7 +341,7 @@ export function EmergencyPage() {
                     {hospitals.data.map((h) => (
                       <li
                         key={h.slug}
-                        className="flex flex-col items-start gap-x-6 gap-y-3 border-b border-border px-5 py-4 last:border-b-0 sm:flex-row sm:items-center sm:px-6"
+                        className="flex flex-col items-start gap-x-6 gap-y-3 border-b border-hairline px-5 py-4 last:border-b-0 sm:flex-row sm:items-center sm:px-6"
                       >
                         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                           <Link
@@ -453,7 +453,7 @@ export function HelpPage() {
           lead={t("site.help.lead")}
         />
         <div className="flex flex-col gap-8">
-          <div className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-4 sm:p-5">
+          <div className="flex flex-col gap-4 rounded-panel bg-surface shadow-e2 p-4 sm:p-5">
             <SearchBar
               id="help-search"
               label={t("site.help.search")}
@@ -492,7 +492,7 @@ export function HelpPage() {
                 >
                   <h2
                     id={`help-${group.key}`}
-                    className="m-0 border-b border-border/60 px-5 py-4 text-h3"
+                    className="m-0 border-b border-hairline px-5 py-4 text-h3"
                   >
                     {group.title}
                   </h2>
@@ -507,7 +507,7 @@ export function HelpPage() {
           )}
           {articles.isSuccess && articles.data.results.length > 0 && (
             <Panel aria-labelledby="articles" className="overflow-hidden">
-              <h2 id="articles" className="m-0 border-b border-border/60 px-5 py-4 text-h3">
+              <h2 id="articles" className="m-0 border-b border-hairline px-5 py-4 text-h3">
                 {t("site.help.articles")}
               </h2>
               <ul className="m-0 list-none p-0">
@@ -524,7 +524,7 @@ export function HelpPage() {
           )}
           <section
             aria-labelledby="still"
-            className="flex flex-col items-start gap-4 rounded-lg border border-border bg-surface p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8"
+            className="flex flex-col items-start gap-4 rounded-panel bg-surface shadow-e2 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8"
           >
             <div>
               <h2 id="still" className="m-0 text-h2">

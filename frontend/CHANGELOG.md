@@ -9,6 +9,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Public site: every page on the new tokens (2026-11-04)
+
+- Changed: the shared page kit: a larger fluid page heading with no rule under it; panels on
+  the site elevation (`rounded-panel`, `shadow-e2`) instead of hard borders; hairline dividers;
+  search and location fields, link rows, FAQ rows and insurer tags in the same style.
+- Changed: **Doctors** rows have an initials mark, the days as a tag and "Here today" as a pill;
+  **Services** are icon tiles; **For facilities** has icons per team, numbered step cards and
+  the "Continue an application" form on a raised panel. The facility, emergency, help, about,
+  legal, find care, symptom checker, assistant and verify pages follow the same surfaces.
+
 ### Public site: a richer, cleaner second pass (2026-11-04)
 
 - Added: public site tokens in `apps/patient-web/src/styles.css`: elevation `shadow-e1`–`e3`,

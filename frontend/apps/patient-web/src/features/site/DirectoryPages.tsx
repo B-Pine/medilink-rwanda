@@ -1,5 +1,17 @@
 import type { PublicSlot } from "@medilink/api-client";
-import { ArrowRight, CalendarCheck, Crosshair } from "@phosphor-icons/react";
+import {
+  ArrowRight,
+  Baby,
+  CalendarCheck,
+  Crosshair,
+  Eye,
+  FirstAidKit,
+  Flask,
+  HandHeart,
+  Stethoscope,
+  Syringe,
+  Tooth,
+} from "@phosphor-icons/react";
 import { Button, buttonClassName, cx } from "@medilink/ui";
 import { kigaliDate } from "@medilink/ui/i18n";
 import { useQuery } from "@tanstack/react-query";
@@ -36,6 +48,20 @@ import {
 } from "./kit";
 
 const WEEKDAY_BASE = Date.UTC(2024, 0, 1); // a Monday
+
+/** A quiet picture word for a service, from its code. */
+function ServiceMark({ code }: { code: string }) {
+  const props = { weight: "duotone", className: "size-5" } as const;
+  if (code.includes("antenatal") || code.includes("maternal")) return <HandHeart {...props} />;
+  if (code.includes("vaccin")) return <Syringe {...props} />;
+  if (code.includes("lab")) return <Flask {...props} />;
+  if (code.includes("dental")) return <Tooth {...props} />;
+  if (code.includes("eye")) return <Eye {...props} />;
+  if (code.includes("paed") || code.includes("pediatric") || code.includes("child"))
+    return <Baby {...props} />;
+  if (code.includes("consult")) return <Stethoscope {...props} />;
+  return <FirstAidKit {...props} />;
+}
 
 function weekday(index: number, language: string, style: "short" | "long" = "short") {
   return new Intl.DateTimeFormat(language === "rw" ? "en" : language, {
@@ -105,7 +131,7 @@ export function FacilitiesPage() {
         />
         <div className="flex flex-col gap-6">
           {/* search and every filter in one card above the results */}
-          <div className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4 sm:p-5">
+          <div className="flex flex-col gap-3 rounded-panel bg-surface shadow-e2 p-4 sm:p-5">
             <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_14rem]">
               <SearchBar
                 id="facility-search"
@@ -246,14 +272,27 @@ function DoctorEntry({
   const work = [doctor.specialty, ...doctor.services.map((s) => pick(s.name, lang))]
     .filter(Boolean)
     .join(" · ");
+  // initials as a quiet mark, never a photo (no faces published)
+  const initials = doctor.name
+    .replace(/^(Dr|Midwife)\.?\s+/i, "")
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("");
   return (
-    <li className="grid gap-x-10 gap-y-2 border-b border-border px-5 py-5 last:border-b-0 sm:px-6 @3xl:grid-cols-[minmax(0,1fr)_15rem]">
+    <li className="grid grid-cols-[3rem_minmax(0,1fr)] gap-x-4 gap-y-3 border-b border-hairline px-5 py-5 transition-colors duration-200 last:border-b-0 hover:bg-page/60 sm:px-6 @3xl:grid-cols-[3rem_minmax(0,1fr)_14rem] @3xl:items-center @3xl:gap-x-6">
+      <span
+        aria-hidden="true"
+        className="grid size-12 place-items-center rounded-full bg-[linear-gradient(140deg,var(--color-brand-subtle),var(--color-surface))] font-heading text-body-sm font-bold text-on-brand-subtle shadow-e1"
+      >
+        {initials}
+      </span>
       <div className="flex min-w-0 flex-col gap-1">
-        <h3 className="m-0 font-heading text-[1.125rem] leading-snug">
+        <h3 className="m-0 font-heading text-[1.0625rem] leading-snug font-bold">
           <Link
             to={`/doctors/${doctor.slug}`}
             viewTransition
-            className="text-link no-underline decoration-2 underline-offset-4 hover:underline"
+            className="text-fg no-underline decoration-2 underline-offset-4 transition-colors duration-150 hover:text-link hover:underline"
           >
             {doctor.name}
           </Link>
@@ -269,16 +308,16 @@ function DoctorEntry({
           {doctor.facility.district && ` · ${doctor.facility.district}`}
         </p>
       </div>
-      <div className="flex flex-col gap-1 text-body-sm">
-        <p className="m-0 font-semibold text-fg tabular-nums">
+      <div className="col-start-2 flex flex-wrap items-center gap-2 text-body-sm @3xl:col-start-auto @3xl:flex-col @3xl:items-start">
+        <span className="rounded-md bg-surface px-2 py-0.5 font-semibold text-fg tabular-nums shadow-e1">
           <span className="sr-only">{t("site.doctors.days")}: </span>
           {daysText(doctor.days, lang)}
-        </p>
+        </span>
         {here && (
-          <p className="m-0 inline-flex items-center gap-2 font-semibold text-success">
-            <span aria-hidden="true" className="size-2 rounded-full bg-success" />
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-success-bg px-2.5 py-0.5 text-caption font-semibold text-success">
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-success" />
             {t("site.doctors.today")}
-          </p>
+          </span>
         )}
       </div>
     </li>
@@ -325,7 +364,7 @@ export function DoctorsPage() {
           lead={t("site.doctors.lead")}
         />
         <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4 sm:p-5">
+          <div className="flex flex-col gap-3 rounded-panel bg-surface shadow-e2 p-4 sm:p-5">
             <SearchBar
               id="doctor-search"
               label={t("site.doctors.searchName")}
@@ -379,7 +418,7 @@ export function DoctorsPage() {
               )}
             </div>
           </div>
-          <Panel as="div" className="@container overflow-hidden rounded-lg">
+          <Panel as="div" className="@container overflow-hidden">
             {isPending ? (
               <LoadingRows rows={6} />
             ) : isError ? (
@@ -478,7 +517,7 @@ export function DoctorPage() {
         ) : (
           <div className="grid gap-6 lg:grid-cols-[20rem_minmax(0,1fr)]">
             <Panel as="aside" className="self-start p-6">
-              <dl className="m-0 flex flex-col divide-y divide-border [&>div]:py-3.5 [&>div:first-child]:pt-0 [&>div:last-child]:pb-0">
+              <dl className="m-0 flex flex-col divide-y divide-hairline [&>div]:py-3.5 [&>div:first-child]:pt-0 [&>div:last-child]:pb-0">
                 <div>
                   <dt className="text-body-sm font-semibold text-fg-secondary">
                     {t("site.doctors.facility")}
@@ -603,7 +642,7 @@ export function DoctorPage() {
                     ) : (
                       <p className="m-0 text-fg-secondary">{t("site.doctor.noTimes")}</p>
                     )}
-                    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-hairline pt-4">
                       <p className="m-0 text-caption text-fg-muted">{t("site.doctor.privacy")}</p>
                       <Link
                         to={`/book/${doctor.facility.slug}?doctor=${doctor.membershipId}&service=${firstService.id}`}
@@ -705,18 +744,31 @@ export function ServicesPage() {
                   aria-labelledby={`cat-${key}`}
                   className="flex scroll-mt-28 flex-col gap-3"
                 >
-                  <h2 id={`cat-${key}`} className="m-0 font-heading text-h2">
+                  <h2
+                    id={`cat-${key}`}
+                    className="m-0 font-heading text-[1.5rem] leading-tight font-bold tracking-[-0.02em]"
+                  >
                     {t(`site.services.categories.${key}`)}
                   </h2>
-                  <ul className="m-0 list-none divide-y divide-border overflow-hidden rounded-lg border border-border bg-surface p-0">
+                  <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2">
                     {services.map((s) => (
                       <li key={s.code}>
                         <Link
                           to={`/services/${serviceSlug(s.code)}`}
                           viewTransition
-                          className="flex min-h-14 items-center px-5 py-3 font-semibold text-link no-underline transition-colors duration-150 hover:bg-page hover:underline"
+                          className="group flex items-center gap-4 rounded-panel bg-surface p-4 no-underline shadow-e1 transition-[box-shadow,transform] duration-300 ease-out-quint hover:-translate-y-0.5 hover:shadow-e3 motion-reduce:hover:translate-y-0"
                         >
-                          {s.name}
+                          <span
+                            aria-hidden="true"
+                            className="grid size-11 shrink-0 place-items-center rounded-xl bg-[linear-gradient(140deg,var(--color-brand-subtle),var(--color-surface))] text-on-brand-subtle shadow-e1"
+                          >
+                            <ServiceMark code={s.code} />
+                          </span>
+                          <span className="min-w-0 flex-1 font-semibold text-fg">{s.name}</span>
+                          <ArrowRight
+                            aria-hidden="true"
+                            className="size-5 text-fg-muted transition-[transform,color] duration-300 ease-out-quint group-hover:translate-x-1 group-hover:text-primary"
+                          />
                         </Link>
                       </li>
                     ))}

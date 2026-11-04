@@ -1,6 +1,7 @@
 import { isApiError } from "@medilink/api-client";
 import { Alert, Button, buttonClassName, Card, ErrorSummary, TextField } from "@medilink/ui";
 import { isLanguage } from "@medilink/ui/i18n";
+import { ChartLineUp, Pill, Stethoscope, Users, type Icon } from "@phosphor-icons/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
@@ -15,6 +16,12 @@ import { Faq, PageContainer, PageHeader, Panel } from "../site/kit";
 import { applicationKey, firstIncompleteStep, useApplication } from "./data";
 
 const ROLES = ["admin", "reception", "doctor", "pharmacy"] as const;
+const ROLE_ICONS = {
+  admin: ChartLineUp,
+  reception: Users,
+  doctor: Stethoscope,
+  pharmacy: Pill,
+} as const satisfies Record<(typeof ROLES)[number], Icon>;
 const PHASES = ["apply", "verify", "setup", "live"] as const;
 const FAQ = ["cost", "documents", "time", "data"] as const;
 
@@ -59,17 +66,28 @@ export function ForFacilitiesPage() {
             {t("facilityApplication.public.rolesTitle")}
           </h2>
           {/* one surface, hairlines between the teams (public design brief 2026-11-04) */}
-          <ul className="m-0 grid list-none gap-px overflow-hidden rounded-lg border border-border bg-border p-0 sm:grid-cols-2">
-            {ROLES.map((role) => (
-              <li key={role} className="flex flex-col gap-1.5 bg-surface p-5 sm:p-6">
-                <h3 className="m-0 font-heading text-h3">
-                  {t(`facilityApplication.public.roles.${role}.title`)}
-                </h3>
-                <p className="m-0 text-fg-secondary">
-                  {t(`facilityApplication.public.roles.${role}.body`)}
-                </p>
-              </li>
-            ))}
+          <ul className="m-0 grid list-none gap-px overflow-hidden rounded-panel bg-hairline p-0 shadow-e2 sm:grid-cols-2">
+            {ROLES.map((role) => {
+              const RoleIcon = ROLE_ICONS[role];
+              return (
+                <li key={role} className="flex gap-4 bg-surface p-5 sm:p-6">
+                  <span
+                    aria-hidden="true"
+                    className="grid size-11 shrink-0 place-items-center rounded-xl bg-[linear-gradient(140deg,var(--color-brand-subtle),var(--color-surface))] text-on-brand-subtle shadow-e1"
+                  >
+                    <RoleIcon weight="duotone" className="size-5" />
+                  </span>
+                  <span className="flex flex-col gap-1.5">
+                    <h3 className="m-0 font-heading text-h3 font-bold">
+                      {t(`facilityApplication.public.roles.${role}.title`)}
+                    </h3>
+                    <p className="m-0 text-fg-secondary">
+                      {t(`facilityApplication.public.roles.${role}.body`)}
+                    </p>
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         </section>
 
@@ -77,12 +95,19 @@ export function ForFacilitiesPage() {
           <h2 id="how-title" className="m-0 font-heading text-h2">
             {t("facilityApplication.public.howTitle")}
           </h2>
-          <ol className="m-0 grid list-none gap-4 p-0 sm:grid-cols-4">
+          <ol className="relative m-0 grid list-none gap-4 p-0 sm:grid-cols-4">
+            <span
+              aria-hidden="true"
+              className="absolute top-[1.75rem] right-[12%] left-[12%] -z-10 hidden border-t-2 border-dashed border-primary/25 sm:block"
+            />
             {PHASES.map((phase, index) => (
-              <li key={phase} className="flex flex-col gap-2">
+              <li
+                key={phase}
+                className="flex flex-col gap-2 rounded-panel bg-surface p-5 shadow-e1"
+              >
                 <span
                   aria-hidden="true"
-                  className="inline-flex size-9 items-center justify-center rounded-full border border-fg/30 bg-surface font-heading font-bold text-fg tabular-nums"
+                  className="inline-flex size-8 items-center justify-center rounded-full bg-forest font-heading text-body-sm font-bold text-on-forest tabular-nums"
                 >
                   {index + 1}
                 </span>
@@ -101,7 +126,7 @@ export function ForFacilitiesPage() {
           <h2 id="faq-title" className="m-0 font-heading text-h2">
             {t("facilityApplication.public.faqTitle")}
           </h2>
-          <Panel as="div" className="overflow-hidden rounded-lg">
+          <Panel as="div" className="overflow-hidden">
             {FAQ.map((item) => (
               <Faq key={item} question={t(`facilityApplication.public.faq.${item}.q`)}>
                 {t(`facilityApplication.public.faq.${item}.a`)}
@@ -146,8 +171,8 @@ function ResumeLinkForm({ headingId }: { headingId: string }) {
   }
 
   return (
-    <Card>
-      <h2 id={headingId} className="m-0 font-heading text-h3">
+    <Card className="rounded-panel border-0 shadow-e2">
+      <h2 id={headingId} className="m-0 font-heading text-h3 font-bold">
         {t("facilityApplication.resume.linkTitle")}
       </h2>
       <p className="mt-2 text-fg-secondary">{t("facilityApplication.resume.linkBody")}</p>

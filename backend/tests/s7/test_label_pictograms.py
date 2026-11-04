@@ -19,7 +19,13 @@ from tests.s7.conftest import AMOX, S, add_item, dispense, draft, sign
 
 pytestmark = pytest.mark.django_db(transaction=False)
 
-PARA = {"drug_code": "PARA500", "dose": "2 tablets", "frequency_code": "qds", "route": "oral"}
+PARA = {
+    "drug_code": "PARA500",
+    "dose": "2 tablets",
+    "frequency_code": "qds",
+    "route": "oral",
+    "duration_days": 3,
+}
 
 
 def test_labels_carry_times_of_day_and_meal_timing(

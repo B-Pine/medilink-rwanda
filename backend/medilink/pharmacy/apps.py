@@ -10,7 +10,12 @@ BEAT_SCHEDULE = {
     },
 }
 FUNCTIONS = ("pharmacy_patient_prescriptions(uuid)", "pharmacy_expiry_facilities()")
-APPEND_ONLY = ("pharmacy_prescription_event", "pharmacy_dispense_record", "pharmacy_dispense_line")
+APPEND_ONLY = (
+    "pharmacy_prescription_event",
+    "pharmacy_dispense_record",
+    "pharmacy_dispense_line",
+    "pharmacy_stock_movement",  # W5
+)
 
 
 class PharmacyConfig(AppConfig):

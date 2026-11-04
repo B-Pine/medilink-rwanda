@@ -2,6 +2,7 @@ import type {
   PrescriptionItem,
   PrescriptionItemStatus,
   PrescriptionStatus,
+  StockLevel,
 } from "@medilink/api-client";
 import { Button, type BadgeTone } from "@medilink/ui";
 import { useTranslation } from "react-i18next";
@@ -40,6 +41,13 @@ export const ITEM_TONE: Record<PrescriptionItemStatus, BadgeTone> = {
   not_available: "danger",
   cancelled: "neutral",
   expired: "neutral",
+};
+
+/** W5: the tone of a stock level (stock page, prescribing, availability). */
+export const LEVEL_TONE: Record<StockLevel, BadgeTone> = {
+  in_stock: "success",
+  low: "warning",
+  out: "danger",
 };
 
 /** What is left to give of an item. */

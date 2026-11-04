@@ -5,6 +5,78 @@
 import type { ApiClient } from "../client";
 import type { Uuid } from "../types";
 import type { Paginated } from "./clinical";
+import type { ReportQuery } from "./queue";
+
+// ---- national aggregate report (#208, upgrade 13 W9) ------------------------------------------
+
+/** A count of patients or visits; `null` when suppressed (a group under 10, or one it could be
+ * worked back from). */
+export interface SuppressedCount {
+  value: number | null;
+  suppressed: boolean;
+}
+
+/** Wait from arrival to the doctor's call; hidden when fewer than 10 patients were called. */
+export interface WaitFigures {
+  median_min: number | null;
+  p90_min: number | null;
+  suppressed: boolean;
+}
+
+export interface NationalFacilityRow {
+  facility_id: Uuid;
+  name: string;
+  district_code: string;
+  /** Blank when the facility's location is unknown. */
+  district: string;
+  visits: SuppressedCount;
+  wait: WaitFigures;
+  medicines_out: number;
+}
+
+export interface NationalDistrictRow {
+  district_code: string;
+  district: string;
+  facilities: number;
+  visits: SuppressedCount;
+  wait: WaitFigures;
+  medicines_out: number;
+}
+
+export interface NationalReport {
+  from: string;
+  to: string;
+  group: "day" | "week" | "month";
+  /** 10: smaller groups are never shown. */
+  min_group_size: number;
+  totals: {
+    facilities: number;
+    districts: number;
+    visits: SuppressedCount;
+    wait: WaitFigures;
+    facilities_with_stockouts: number;
+  };
+  facilities: NationalFacilityRow[];
+  districts: NationalDistrictRow[];
+  wait_trend: (WaitFigures & { start: string })[];
+  /** Top diagnoses per district, each with 10 or more visits; sensitive ones never. */
+  diagnoses: {
+    district_code: string;
+    district: string;
+    top: { code: string; display: string; count: number }[];
+  }[];
+  /** Medicines out of stock now (levels have no history). */
+  stockouts: { medicine: string; facilities: number; districts: string[] }[];
+}
+
+export const NATIONAL_TABLES = [
+  "facilities",
+  "districts",
+  "waits",
+  "diagnoses",
+  "stockouts",
+] as const;
+export type NationalTable = (typeof NATIONAL_TABLES)[number];
 
 export type UserKind = "platform" | "staff" | "patient";
 
@@ -184,6 +256,9 @@ export const consolePaths = {
   /** CSV of staff and platform accounts (never patients); fetch it with the session cookie. */
   usersExport: (params: Omit<UserListParams, "page"> = {}) =>
     `${PL}/users/export/${query({ ...params })}`,
+  /** W9: CSV of one national report table, UTF-8 with BOM; audit-logged on the server. */
+  nationalExport: (table: NationalTable, params: ReportQuery = {}) =>
+    `${PL}/reports/national/export/${query({ ...params, table })}`,
 };
 
 function query(params: Record<string, string | number | boolean | undefined | null>): string {
@@ -204,6 +279,9 @@ export interface LogParams {
 export function createConsoleApi(client: ApiClient) {
   return {
     commandCenter: () => client.get<CommandCenter>(`${PL}/command-center/`),
+    /** W9 (#208): aggregates across facilities; groups under 10 suppressed. */
+    nationalReport: (params: ReportQuery = {}) =>
+      client.get<NationalReport>(`${PL}/reports/national/${query({ ...params })}`),
     users: (params: UserListParams = {}) =>
       client.get<Paginated<ConsoleUser>>(`${PL}/users/${query({ ...params })}`),
     userSummary: () => client.get<UserSummary>(`${PL}/users/summary/`),

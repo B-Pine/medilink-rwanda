@@ -35,6 +35,7 @@
   "signedOn": "Signed",
   "lab": {
     "title": "Lab results",
+    "failed": "We couldn't load your lab results.",
     "intro": "Your test results appear here once your doctor has read them, with their note.",
     "item": "Test",
     "value": "Result",

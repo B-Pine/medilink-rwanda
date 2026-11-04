@@ -309,5 +309,26 @@
     "newPhone": "Telefone nshya (siga ubusa ngo igume)",
     "relationship": "Isano",
     "relationshipHint": "Urugero: umukobwa, umuturanyi, umujyanama w'ubuzima"
+  },
+  "careSchedule": {
+    "tab": "Gahunda y'ubuvuzi",
+    "title": "Inkingo n'isuzuma ry'ababyeyi batwite biteganyijwe",
+    "intro": "Umurwayi yibutswa umunsi ubanziriza n'icyo gitondo. Ubutumwa ntibuvuga icyo gahunda igamije; icyitonderwa kigaragara gusa muri porogaramu y'umurwayi.",
+    "empty": "Nta gahunda iteganyijwe.",
+    "failed": "Ntibyakunze kubona gahunda y'ubuvuzi.",
+    "add": "Teganya itariki",
+    "kind": "Iki",
+    "kinds": {
+      "vaccination": "Urukingo",
+      "antenatal": "Isuzuma ry'umubyeyi utwite"
+    },
+    "dueOn": "Itariki",
+    "note": "Icyitonderwa (si ngombwa)",
+    "noteHint": "Urugero: doze ya kabiri. Inyuguti 80 ntarengwa.",
+    "save": "Ongeraho kuri gahunda",
+    "saved": "Byongeweho. Umurwayi azibutswa.",
+    "cancel": "Hagarika itariki",
+    "cancelTitle": "Guhagarika iyi tariki iteganyijwe?",
+    "cancelConsequences": "Umurwayi ntazibutswa ku wa {{date}}. Kugira ngo uhindure itariki, yihagarike wongereho indi."
   }
 }

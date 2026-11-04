@@ -35,6 +35,7 @@
   "signedOn": "Byasinywe",
   "lab": {
     "title": "Ibisubizo by'ibizamini",
+    "failed": "Ntibyakunze kubona ibisubizo by'ibizamini byawe.",
     "intro": "Ibisubizo by'ibizamini byawe bigaragara hano muganga amaze kubisoma, hamwe n'ubutumwa bwe.",
     "item": "Ikizamini",
     "value": "Igisubizo",

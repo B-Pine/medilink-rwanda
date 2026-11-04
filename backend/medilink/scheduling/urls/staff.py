@@ -4,6 +4,7 @@ calendar (S5b) (contract sprint-05 §3.3)."""
 from django.urls import path
 
 from medilink.scheduling import views_booking as v
+from medilink.scheduling import views_care as care
 from medilink.scheduling import views_s5b as b
 
 urlpatterns = [
@@ -43,4 +44,15 @@ urlpatterns = [
         name="staff-visit-follow-up",
     ),
     path("calendar/", b.StaffCalendarView.as_view(), name="staff-calendar"),
+    # W7: the care schedule of a patient
+    path(
+        "care-schedule/patients/<uuid:facility_patient_id>/",
+        care.StaffCareScheduleView.as_view(),
+        name="staff-patient-care-schedule",
+    ),
+    path(
+        "care-schedule/<uuid:entry_id>/cancel/",
+        care.StaffCareScheduleCancelView.as_view(),
+        name="staff-care-schedule-cancel",
+    ),
 ]

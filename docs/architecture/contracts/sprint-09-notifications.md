@@ -521,7 +521,7 @@ The catalogue events of [analysis 09](../../analysis/09-notifications-and-commun
 | `scheduling.booking.changed` | `booking_changed_by_facility` (S5b) | Patient | critical when today, else important | in-app, push, email | facility name, date, time |
 | `scheduling.booking.no_show` | `no_show_recorded` (S5) | Patient | important | in-app, email | facility name, date |
 | `queue.ticket.called` | `on_ticket_event` with `call` (S4) | Patient | critical (TTL 30 min) | in-app, push | ticket number, room |
-| `queue.ticket.almost` | `on_ticket_event` with `call`: the ticket with 3 people ahead in the same queue | Patient | critical | in-app, push | ticket number, count, facility name |
+| `queue.ticket.almost` | `on_ticket_event` with any move that brings a waiting ticket forward (`call`, `cancel`, `left`, `transfer`, `no_response`, `reorder`, `priority`, `emergency`, `pass_over`, `pass_over_expired`; W7 #206): each ticket with 2 or 3 people ahead in the same queue, once per ticket | Patient | critical | in-app, push | ticket number, count, facility name |
 | `queue.ticket.pass_over` | `ticket_pass_over_warning` (S5) | Patient | critical | in-app, push | ticket number, facility name |
 | `pharmacy.prescription.ready` | `prescription_ready` (issue or covered, status ready) | Patient | important | in-app, push | facility name |
 | `pharmacy.prescription.dispensed` | `prescription_dispensed` | Patient | routine | in-app | facility name |
@@ -530,6 +530,11 @@ The catalogue events of [analysis 09](../../analysis/09-notifications-and-commun
 | `documents.document.ready` | `document_generated` (letters, requests, sick notes; the prescription has its own notice) | Patient | important | in-app, email | facility name |
 | `onboarding.application.submitted` | `application_submitted` (S1) | Platform admins | important | in-app, email | facility name |
 | `patients.merge.requested` | `merge_requested` (S3) | Platform admins | important | in-app | — |
+| `queue.ticket.called_desk` | `on_ticket_event` with `call` and no room to name (W7 #206) | Patient | critical (TTL 30 min) | in-app, push | ticket number, facility name |
+| `clinical.lab_result.ready` | `lab_result_released` (clinical, W7 #206) | Patient (and guardians; delegates only for unrestricted consultations) | important | in-app, push, email | facility name; never the test; one per visit and hour |
+| `scheduling.booking.reminder` | reminder job every 5 minutes (W7 #206) | Patient (and guardians) | important (for today when the visit is today) | in-app, push, email | facility name, date, time; at each recipient's reminder offsets (default 24 h and 2 h), once per offset |
+| `scheduling.follow_up.due` | reminder job (W7 #206): follow-up dates with no booking | Patient (self and guardian accounts) | important | in-app, push, email | facility name, date; the day before 08:00 and on the morning 07:00 |
+| `scheduling.care_schedule.due` | reminder job (W7 #206): planned vaccinations and antenatal visits | Patient (self and guardian accounts) | important | in-app, push, email | facility name, date; never the kind or the note; the day before 08:00 and on the morning 07:00 |
 
 "3 people ahead" is the analysis default; a facility setting comes with the settings screens. Dedupe keys are per booking, ticket, prescription, document, application or merge, so a repeated signal never sends twice.
 

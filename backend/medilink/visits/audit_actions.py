@@ -12,5 +12,6 @@ ACTIONS: frozenset[str] = frozenset(
         "visits.display_link.create",
         "visits.display_link.revoke",
         "visits.end_of_day",
+        "visits.report.exported",  # upgrade 13 W6 (#205)
     }
 )

@@ -13,5 +13,8 @@ ACTIONS: frozenset[str] = frozenset(
         "scheduling.follow_up.create",
         "scheduling.calendar_feed.create",
         "scheduling.calendar_feed.revoke",
+        # W7 (upgrade 13): planned vaccinations and antenatal visits
+        "scheduling.care_schedule.create",
+        "scheduling.care_schedule.cancel",
     }
 )

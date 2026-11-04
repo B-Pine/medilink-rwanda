@@ -189,3 +189,8 @@ from medilink.pharmacy import permissions as _s7  # noqa: E402
 extend(_s7.PERMISSIONS, _s7.ROLE_GRANTS)
 extend(_s7b.PERMISSIONS, _s7b.ROLE_GRANTS)
 # [/S7]
+# [W7]
+from medilink.scheduling import permissions as _w7  # noqa: E402
+
+extend(_w7.PERMISSIONS, _w7.ROLE_GRANTS)
+# [/W7]

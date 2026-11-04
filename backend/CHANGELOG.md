@@ -8,6 +8,99 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### National aggregate report (2026-11-04, #208)
+
+- Added: `GET /api/v1/platform/reports/national/` for platform admins: load by facility and
+  district (visits, median and 90th-percentile wait to the doctor, medicines out now), the wait
+  trend by day, week or month, top diagnoses by district and stock-outs now. Each facility is read
+  in its own RLS context with the W6 report helpers; aggregates only, never a patient.
+- Added: small-group protection (k = 10, `platform_admin/national_report.py`). Visits of 1-9 are
+  suppressed; inside a district the next smallest facilities are suppressed too until the hidden
+  ones add up to 10, so the district total can't give a small facility away; a district of 1-9
+  is suppressed, and the national total when the suppressed districts add up to 1-9. Waits are
+  hidden below 10 patients called; diagnoses are listed only at 10 or more visits per district,
+  sensitive ones never.
+- Added: `GET /api/v1/platform/reports/national/export/?table=` (facilities, districts, waits,
+  diagnoses, stockouts) as CSV, hidden cells reading `suppressed`; audit
+  `platform.report.exported`.
+- Changed: the W6 report shares its period parsing (`report.parse_period`), wait samples
+  (`report.wait_samples`) and CSV writer (`report.csv_text`) with the national report; behaviour
+  unchanged.
+
+### Patient follow-through (2026-11-04, #206)
+
+- Added: reminders through the notification engine (`notifications/reminders.py`, beat task
+  `notifications.send_reminders` every 5 minutes). Booked visits at each recipient's reminder
+  offsets (default 24 hours and 2 hours before); follow-up dates without a booking and planned
+  care-schedule dates the day before at 08:00 and on the morning at 07:00 (Kigali). One dedupe key
+  per item and moment, so nothing is sent twice; a moment from before the item existed is skipped,
+  and after a gap only the latest passed moment goes out. Channel choices, quiet hours and alerts
+  switched off for a dependant are the engine's.
+- Added: the care schedule. `scheduling_care_schedule_entry` (forced facility RLS, encrypted
+  optional note; scheduling migrations 0008 and 0009), permission `care_schedule.manage` for
+  doctors, `GET`/`POST /api/v1/staff/care-schedule/patients/{facility_patient_id}/`, `POST
+  /api/v1/staff/care-schedule/{id}/cancel/` (audit `scheduling.care_schedule.create` and
+  `.cancel`) and `GET /api/v1/patient/care-schedule/` (planned dates and follow-up dates without a
+  booking; SECURITY DEFINER `scheduling_patient_care_schedule`, self and guardian only).
+- Added: events `clinical.lab_result.ready` (sent after a doctor releases a result; one per visit
+  and hour; never the test name; delegates hear nothing of a restricted consultation),
+  `scheduling.booking.reminder`, `scheduling.follow_up.due`, `scheduling.care_schedule.due` and
+  `queue.ticket.called_desk` (a call with no room to name), each in rw, en and fr. Texts are
+  generic: no test, vaccine or visit-type names on lock screens.
+- Changed: "almost your turn" (`queue.ticket.almost`) now follows every queue move that brings a
+  ticket forward (call, cancel, left, transfer, no response, reorder, priority, emergency,
+  pass-over), not only a call, and reaches each ticket with 2 or 3 people ahead once.
+
+### Patients without a phone (2026-11-04, #207)
+
+- Added: `meal_timing` on prescription items (`before_food`, `with_food`, `after_food` or blank;
+  pharmacy migration 0005). The item lock trigger also locks it once the prescription is issued.
+- Added: dosing labels carry `frequency_code`, `times` (morning, noon, evening, night from the
+  frequency) and `meal_timing` with `meal` in the label language, for the pictograms.
+- Added: the staff visit (`GET /api/v1/staff/visits/{id}/`) carries `follow_up`: the date the
+  doctor set, the booked time and booking code when it was booked, and the doctor, for the
+  printed next-visit card.
+
+### Facility reports (2026-11-04, #205)
+
+- Added: `GET /api/v1/staff/reports/facility/` for `reports.view`: the facility report for a
+  period (`from`, `to`, at most 366 days; `group=day|week|month`). Patients per period
+  (completed, left without service, emergencies, no-shows), by source and service; waits per
+  stage (median and 90th percentile, from joining the stage on site to the first `call` event);
+  top ICD-10 diagnoses from signed notes and referrals out; money by payment method and insurer,
+  exemptions, voids, credit notes and refunds; laboratory tests done and turnaround by test;
+  stock out and low now, units received and dispensed, expiring batches. Built from existing
+  tables (`medilink/visits/report.py`); aggregates only, never a patient name; sensitive
+  diagnoses are counted, never named.
+- Added: `GET /api/v1/staff/reports/facility/export/?table=…` returns one table as CSV (UTF-8
+  with BOM, formula-safe cells, `no-store`) and records the audit action
+  `visits.report.exported`.
+
+### Pharmacy stock, lite (2026-11-04, #204)
+
+- Added: stock per medicine, batch and expiry at each facility: `pharmacy_stock_item` (one card
+  per medicine, with a low-stock threshold), `pharmacy_stock_batch` (batch number, expiry, units
+  on hand, optional supplier; never below zero) and the append-only `pharmacy_stock_movement`
+  ledger (received, dispensed, adjusted with a reason). Forced facility RLS on all three
+  (pharmacy migrations 0003 and 0004).
+- Added: permission `pharmacy.stock` for pharmacists and facility admins, and endpoints under
+  `/api/v1/staff/pharmacy/stock/`: the list (`q`, `level=low|out|short`), `receive/`, one
+  medicine's batches and last 50 movements (`{drug_code}/`; `PUT` sets the threshold),
+  `batches/{id}/adjust/` (count correction, damaged or expired), `expiring/` (60 days by
+  default, expired first) and `movements/`. Audit `pharmacy.stock.received`, `.adjusted` and
+  `.threshold_changed`.
+- Changed: dispensing takes the units from the earliest-expiring usable batches, in the same
+  transaction and under a row lock on the stock card. When the usable stock is short, the whole
+  dispensing is refused (`422`, "Only N left"): give that many as part, or correct the count
+  first. There is no override. Expired batches are never dispensed. Medicines without stock are
+  dispensed as before.
+- Changed: once a medicine has stock, its availability follows the count: out of stock at zero
+  usable units, `stock_level` `low` below the threshold. Drug search, prescription items and
+  availability rows carry `stock_level` (null when the medicine has no stock card); availability
+  rows also carry `follows_stock`, and the manual switch returns `422` for such a medicine.
+  Pharmacist Today adds `low_stock` and `expiring_soon`; `out_of_stock` counts both kinds. Drug
+  search is also open to `pharmacy.stock`.
+
 ### Cashier and insurance finish (2026-11-04, #203)
 
 - Added: the monthly claim list per insurer. `GET /staff/insurance-claims/?insurer=&month=YYYY-MM`

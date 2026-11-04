@@ -68,5 +68,10 @@ export const platformFeature: FeatureRoutes = {
       lazy: lazy(() => import("./MasterDataPages"), "ImportPage"),
     },
     { path: "/platform/feature-flags", lazy: lazy(() => import("./FlagsPage"), "FlagsPage") },
+    // W9 (#208): the national aggregate report
+    {
+      path: "/platform/reports",
+      lazy: lazy(() => import("../console/NationalReportPage"), "NationalReportPage"),
+    },
   ],
 };

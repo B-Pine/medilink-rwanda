@@ -311,3 +311,12 @@ def observe_audit_entry(entry_id: Any) -> None:
     from medilink.notifications import observers
 
     observers.handle_audit_entry(entry_id)
+
+
+@shared_task(ignore_result=True, acks_late=True, time_limit=240, soft_time_limit=230)
+def send_reminders() -> int:
+    """W7 (upgrade 13): booked visits, follow-up dates and the care schedule. Each reminder has
+    its own dedupe key, so a run that overlaps another sends nothing twice."""
+    from medilink.notifications import reminders
+
+    return reminders.run()

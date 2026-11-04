@@ -32,11 +32,15 @@ export const queueFeature: FeatureRoutes = {
       lazy: lazy(() => import("./PrintPages"), "TicketSlipPage"),
     },
     {
+      path: "/queue/visits/:visitId/card",
+      lazy: lazy(() => import("./PrintPages"), "NextVisitCardPage"),
+    },
+    {
       path: "/bookings/card/:code",
       lazy: lazy(() => import("./PrintPages"), "AppointmentCardPage"),
     },
     { path: "/queue/reorders", lazy: lazy(admin, "ReordersPage") },
-    { path: "/reports", lazy: lazy(() => import("./Operations"), "ReportsPage") },
+    { path: "/reports", lazy: lazy(() => import("./ReportsPage"), "ReportsPage") },
     { path: "/settings/displays", lazy: lazy(admin, "DisplaysPage") },
   ],
   headerItems: [QueueHeaderLive],

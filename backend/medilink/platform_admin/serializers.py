@@ -151,3 +151,87 @@ class CommandCenterSerializer(serializers.Serializer):
     security = SecuritySummarySerializer()
     map = MapPointSerializer(many=True)
     activity = EventRowSerializer(many=True)
+
+
+# ---- national aggregate report (#208, upgrade 13 W9) -------------------------------------------
+
+
+class SuppressedCountSerializer(serializers.Serializer):
+    value = serializers.IntegerField(allow_null=True, help_text="null when suppressed")
+    suppressed = serializers.BooleanField(
+        help_text="A group of fewer than 10, or a figure it could be worked back from"
+    )
+
+
+class WaitFiguresSerializer(serializers.Serializer):
+    median_min = serializers.IntegerField(allow_null=True)
+    p90_min = serializers.IntegerField(allow_null=True)
+    suppressed = serializers.BooleanField(help_text="Fewer than 10 patients were called")
+
+
+class NationalTotalsSerializer(serializers.Serializer):
+    facilities = serializers.IntegerField()
+    districts = serializers.IntegerField()
+    visits = SuppressedCountSerializer()
+    wait = WaitFiguresSerializer()
+    facilities_with_stockouts = serializers.IntegerField()
+
+
+class NationalFacilityRowSerializer(serializers.Serializer):
+    facility_id = serializers.UUIDField()
+    name = serializers.CharField()
+    district_code = serializers.CharField(allow_blank=True)
+    district = serializers.CharField(allow_blank=True)
+    visits = SuppressedCountSerializer()
+    wait = WaitFiguresSerializer()
+    medicines_out = serializers.IntegerField()
+
+
+class NationalDistrictRowSerializer(serializers.Serializer):
+    district_code = serializers.CharField(allow_blank=True, help_text="Blank: location unknown")
+    district = serializers.CharField(allow_blank=True)
+    facilities = serializers.IntegerField()
+    visits = SuppressedCountSerializer()
+    wait = WaitFiguresSerializer()
+    medicines_out = serializers.IntegerField()
+
+
+class WaitTrendRowSerializer(WaitFiguresSerializer):
+    start = serializers.DateField(help_text="First day of the day, week (Monday) or month")
+
+
+class NationalDiagnosisSerializer(serializers.Serializer):
+    code = serializers.CharField()
+    display = serializers.CharField()
+    count = serializers.IntegerField()
+
+
+class DistrictDiagnosesSerializer(serializers.Serializer):
+    district_code = serializers.CharField(allow_blank=True)
+    district = serializers.CharField(allow_blank=True)
+    top = NationalDiagnosisSerializer(
+        many=True, help_text="10 or more visits each; never sensitive"
+    )
+
+
+class StockOutRowSerializer(serializers.Serializer):
+    medicine = serializers.CharField()
+    facilities = serializers.IntegerField()
+    districts = serializers.ListField(child=serializers.CharField())
+
+
+class NationalReportSerializer(serializers.Serializer):
+    def get_fields(self) -> dict[str, serializers.Field]:
+        fields = super().get_fields()
+        fields["from"] = serializers.DateField()  # `from` is a Python keyword
+        return fields
+
+    to = serializers.DateField()
+    group = serializers.ChoiceField(choices=["day", "week", "month"])
+    min_group_size = serializers.IntegerField()
+    totals = NationalTotalsSerializer()
+    facilities = NationalFacilityRowSerializer(many=True)
+    districts = NationalDistrictRowSerializer(many=True)
+    wait_trend = WaitTrendRowSerializer(many=True)
+    diagnoses = DistrictDiagnosesSerializer(many=True)
+    stockouts = StockOutRowSerializer(many=True)

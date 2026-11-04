@@ -16,13 +16,32 @@ from typing import Any
 from django.utils import timezone
 
 from medilink.notifications import wiring_events as ev
-from medilink.notifications.recipients import Recipients
+from medilink.notifications.recipients import Recipients, RecipientSpec
 from medilink.notifications.service import notify
 from medilink.tenancy.context import rls_context
 
 logger = logging.getLogger(__name__)
 
 NEXT_AHEAD = 3  # "you are next (N ahead)": analysis 09 §4 default; a facility setting later
+# W7: "almost your turn" goes to a ticket with ALMOST_FROM..NEXT_AHEAD people ahead, once per ticket
+# (the dedupe key), so a ticket that jumps past position 3 in one move still hears it. "1 people"
+# reads badly in all three languages, and the call itself is one step away then.
+ALMOST_FROM = 2
+# Ticket actions that can bring a waiting ticket closer to the front
+MOVES = frozenset(
+    {
+        "call",
+        "cancel",
+        "left",
+        "transfer",
+        "no_response",
+        "reorder",
+        "priority",
+        "emergency",
+        "pass_over",
+        "pass_over_expired",
+    }
+)
 
 
 def _quiet(handler: Callable[..., None]) -> Callable[..., None]:
@@ -40,6 +59,23 @@ def _facility_name(facility_id: Any) -> str:
     from medilink.tenancy.models import Facility
 
     return str(Facility.objects.values_list("name", flat=True).get(pk=facility_id))
+
+
+def close_family(patient_id: Any) -> RecipientSpec:
+    """The patient's own and guardian accounts, never a delegate's (W7: results of restricted
+    consultations and the care schedule, the way the patient app shows them)."""
+    from medilink.patients.models import PatientLink, Relationship
+
+    close = set(
+        PatientLink.objects.filter(
+            patient_id=patient_id,
+            revoked_at__isnull=True,
+            relationship__in=(Relationship.SELF, Relationship.GUARDIAN),
+        ).values_list("account_id", flat=True)
+    )
+    return Recipients.explicit(
+        *[r for r in Recipients.patient(patient_id).resolve() if r.user_id in close]
+    )
 
 
 # ---- bookings (S5) -------------------------------------------------------------------------------
@@ -114,48 +150,60 @@ def no_show(sender: Any, booking_id: Any, facility_id: Any, **kwargs: Any) -> No
 def ticket_event(
     sender: Any, ticket_id: Any, facility_id: Any, action: str = "", **kwargs: Any
 ) -> None:
-    if action != "call":
+    if action not in MOVES:
         return
-    from medilink.visits import services as visits
     from medilink.visits.models import Ticket
 
     with rls_context(facility_id=facility_id):
         ticket = Ticket.objects.select_related("visit", "service_point").get(pk=ticket_id)
-        room = ticket.service_point.name if ticket.service_point is not None else ""
-        if room:
-            notify(
-                ev.TICKET_CALLED,
-                Recipients.patient(ticket.visit.patient_id),
-                {
-                    "ticket_number": ticket.number,
-                    "room": room,
-                    "ticket_id": ticket.pk,
-                    "visit_id": ticket.visit_id,
-                },
-                facility_id=facility_id,
-                patient_id=ticket.visit.patient_id,
-                is_for_today=True,
-            )
-        # the ticket that now has NEXT_AHEAD people before it in the same queue
-        order = visits.calling_order(
-            facility_id, ticket.service_id, ticket.stage, day=ticket.service_date
+        if action == "call":
+            _called(ticket, facility_id)
+        _almost(ticket, facility_id)
+
+
+def _called(ticket: Any, facility_id: Any) -> None:
+    """Where to go; a counter with no room name gets the plain "it's your turn" (W7)."""
+    room = ticket.service_point.name if ticket.service_point is not None else ""
+    ids = {"ticket_id": ticket.pk, "visit_id": ticket.visit_id}
+    notify(
+        ev.TICKET_CALLED if room else ev.TICKET_CALLED_DESK,
+        Recipients.patient(ticket.visit.patient_id),
+        {"ticket_number": ticket.number, "room": room, **ids}
+        if room
+        else {"ticket_number": ticket.number, "facility_name": _facility_name(facility_id), **ids},
+        facility_id=facility_id,
+        patient_id=ticket.visit.patient_id,
+        is_for_today=True,
+    )
+
+
+def _almost(ticket: Any, facility_id: Any) -> None:
+    """Tickets of the same queue with ALMOST_FROM..NEXT_AHEAD people before them now. The dedupe
+    key (one per ticket) keeps it to once, whichever move brought them there."""
+    from medilink.visits import services as visits
+
+    order = visits.calling_order(
+        facility_id, ticket.service_id, ticket.stage, day=ticket.service_date
+    )
+    name = ""
+    for ahead, waiting in enumerate(order[: NEXT_AHEAD + 1]):
+        if ahead < ALMOST_FROM:
+            continue
+        name = name or _facility_name(facility_id)
+        notify(
+            ev.TICKET_ALMOST,
+            Recipients.patient(waiting.visit.patient_id),
+            {
+                "ticket_number": waiting.number,
+                "count": ahead,
+                "facility_name": name,
+                "ticket_id": waiting.pk,
+                "visit_id": waiting.visit_id,
+            },
+            facility_id=facility_id,
+            patient_id=waiting.visit.patient_id,
+            is_for_today=True,
         )
-        if len(order) > NEXT_AHEAD:
-            almost = order[NEXT_AHEAD]
-            notify(
-                ev.TICKET_ALMOST,
-                Recipients.patient(almost.visit.patient_id),
-                {
-                    "ticket_number": almost.number,
-                    "count": NEXT_AHEAD,
-                    "facility_name": _facility_name(facility_id),
-                    "ticket_id": almost.pk,
-                    "visit_id": almost.visit_id,
-                },
-                facility_id=facility_id,
-                patient_id=almost.visit.patient_id,
-                is_for_today=True,
-            )
 
 
 @_quiet
@@ -244,6 +292,34 @@ def query_raised(
         )
 
 
+# ---- lab results (W2, W7) ------------------------------------------------------------------------
+
+
+@_quiet
+def lab_result_released(sender: Any, lab_order_id: Any, facility_id: Any, **kwargs: Any) -> None:
+    """Tell the patient a result is ready, never which test. One notice per visit and hour: a
+    doctor releasing three tests together sends one. Delegates hear nothing of a restricted
+    consultation, as they see nothing of it (clinical_patient_lab_results)."""
+    from medilink.clinical.models import Consultation, LabOrder, LabOrderState
+
+    with rls_context(facility_id=facility_id):
+        order = LabOrder.objects.get(pk=lab_order_id)
+        if order.state != LabOrderState.RELEASED or order.released_at is None:
+            return
+        restricted = Consultation.objects.filter(
+            pk=order.consultation_id, is_restricted=True
+        ).exists()
+        released = timezone.localtime(order.released_at)
+        notify(
+            ev.LAB_RESULT_READY,
+            close_family(order.patient_id) if restricted else Recipients.patient(order.patient_id),
+            {"facility_name": _facility_name(facility_id), "lab_order_id": order.pk},
+            facility_id=facility_id,
+            patient_id=order.patient_id,
+            dedupe_key=f"{ev.LAB_RESULT_READY}:{order.visit_id}:{released:%Y%m%d%H}",
+        )
+
+
 # ---- documents (S7b) -----------------------------------------------------------------------------
 
 
@@ -289,6 +365,7 @@ def merge_requested(sender: Any, merge_id: Any, **kwargs: Any) -> None:
 
 def connect() -> None:
     """Called once from NotificationsConfig.ready()."""
+    from medilink.clinical.lab import lab_result_released as lab_signal
     from medilink.documents.services import document_generated as doc_signal
     from medilink.patients.merge_requests import merge_requested as merge_signal
     from medilink.pharmacy import signals as rx
@@ -308,6 +385,7 @@ def connect() -> None:
         (rx.query_raised, query_raised),
         (doc_signal, document_generated),
         (merge_signal, merge_requested),
+        (lab_signal, lab_result_released),
     ]
     for signal, handler in pairs:
         signal.connect(handler, dispatch_uid=f"notifications.wiring.{handler.__name__}")

@@ -9,6 +9,84 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### National aggregate report (2026-11-04, #208)
+
+- Added: **National report** in the platform console (`/platform/reports`, menu item for platform
+  admins): headline figures, load by district and by facility, the wait trend, top diagnoses by
+  district and stock-outs now, each table with a CSV download. Suppressed figures read
+  **Hidden** with the reason on hover and for screen readers. Same period controls as the
+  facility report (shared `PeriodControls`).
+- Added: API client `console.nationalReport()` and `consolePaths.nationalExport()` with MSW
+  mocks (seven facilities in four districts, small ones hidden as the server does). Strings in en
+  and fr with draft rw.
+
+### Patient follow-through (2026-11-04, #206)
+
+- Added: **Planned by your clinic** on My appointments (upcoming): planned vaccinations and
+  antenatal visits with their note, and the return visit a doctor asked for with **Book a time**.
+- Added: **Needs your attention** on the overview shows a result released in the last week (**Read
+  it**) and a planned date within two days.
+- Changed: on My health records the released lab results come first, with an error state when
+  they fail to load.
+- Added: **Care schedule** tab on the staff patient record (`care_schedule.manage`, doctors): plan
+  a vaccination or antenatal visit with a date and optional note, cancel with a confirmation.
+- Added: API client `booking.comingUp()`, `booking.staff.careSchedule()`,
+  `addCareSchedule()` and `cancelCareSchedule()` with MSW mocks (one planned vaccination and one
+  follow-up date for patient@medilink.test). Strings in en and fr with draft rw.
+
+### Close the books (2026-11-04, #209)
+
+- Added: the **full-visit** end-to-end test (`e2e/full-visit.spec.ts`) on the staff-web mock
+  build, in one session: reception checks in a walk-in; the triage nurse records vitals and sends
+  the next patient to the doctor; the doctor orders a malaria test and sends the patient to the
+  lab; the lab technician takes the sample and enters the result; the patient comes back to the
+  same doctor first (after emergencies), who reviews and releases the result; the pharmacist
+  gives a prescription and prints the labels with their pictograms.
+
+### Patients without a phone (2026-11-04, #207)
+
+- Added: **label pictograms**. Each dosing label shows the four times of the day (morning, noon,
+  evening, night) with the ones to take marked and the dose, and before, with or after food as
+  a picture with its word, in the label language. Black on white for thermal printers.
+- Added: the doctor picks **with food?** (any time, before, with or after food) when
+  prescribing.
+- Changed: the **spoken call** on the waiting-room display reads each call in the languages set
+  on the screen link (`?voice=rw,fr`), twice by default (`?repeat=1..3`), skips a language this
+  device has no voice for, and falls back to English or French so a call is never silent. A
+  **Test sound** button plays a sample call once sound is on.
+- Added: **next-visit card** (`/queue/visits/:visitId/card`): when the doctor set a follow-up,
+  reception prints the date (and booked time and code), service and doctor on the 80 mm slip,
+  from a button on the queue panel.
+
+### Facility reports (2026-11-04, #205)
+
+- Changed: **Reports** (`/reports`, `reports.view`) is now the facility report for a period.
+  Pick last 7, 30 or 90 days, this or last month, or your own dates, and show it by day, week
+  or month (kept in the URL). Figures for patients, the doctor wait, money collected and
+  no-shows; patients over the period; how patients came and by service; waiting time per stage
+  (median and 9 in 10); top diagnoses and referrals; the laboratory; money by method and
+  insurer, exemptions and voids; pharmacy stock and expiring batches. Each section downloads
+  its table as CSV. Arrivals by hour and the 14-day wait trend stay below.
+- Added: `api.queue.report()`, `queuePaths.report` and `queuePaths.reportExport` with the
+  `FacilityReport` types, and MSW mocks with the server's period rules.
+
+### Pharmacy stock, lite (2026-11-04, #204)
+
+- Added: **Stock** for the pharmacist (`/pharmacy/stock`, menu item for `pharmacy.stock` or
+  `pharmacy.dispense`): every medicine with stock, its usable units, level (in stock, low, out)
+  and next expiry, with search; tabs for low or out, batches expiring within 60 days (expired
+  first) and all movements. **Receive stock** takes the medicine, batch number, expiry date,
+  units, an optional supplier and an optional low-stock threshold.
+- Added: one medicine's page (`/pharmacy/stock/:drugCode`): usable units, a warning for expired
+  units still on the shelf, the threshold, batches with **Adjust** (count correction by the number
+  counted, or damaged/expired by the units taken off, with a note) and the last movements.
+- Changed: doctors see "Low stock here" next to "Not in stock here" when they choose a medicine;
+  Medicine availability shows the stock level for medicines with stock and locks their switch;
+  Pharmacist Today adds "Low on stock" with the batches expiring soon.
+- Added: api-client `pharmacy.stock.*`, the stock types and `stock_level` on drug rows,
+  prescription items and availability rows; MSW mocks for every stock endpoint, with FEFO
+  deduction and the "only N left" refusal in the dispense mock.
+
 ### Cashier and insurance finish (2026-11-04, #203)
 
 - Added: **Insurance claims** (`/claims`, menu for `billing.approve` or `reports.view`): choose an

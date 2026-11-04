@@ -6,6 +6,13 @@ import type { ApiClient } from "../client";
 import type { Uuid } from "../types";
 import type { PatientVisit } from "./queue";
 
+// W7 (upgrade 13): clinicians plan vaccination and antenatal visit dates
+declare module "../types" {
+  interface PermissionCodes {
+    "care_schedule.manage": true;
+  }
+}
+
 export type I18n = Partial<Record<"rw" | "en" | "fr", string>>;
 export type QueueLoad = "low" | "medium" | "high";
 export type LevelOfCare = "primary" | "secondary" | "tertiary";
@@ -344,6 +351,40 @@ export interface FollowUp {
   version: number;
 }
 
+// ---- W7 (upgrade 13): the care schedule and the patient's "coming up" list ----------------------
+
+/** What a clinician can plan for a patient; the reminder never names it (lock screens). */
+export const CARE_SCHEDULE_KINDS = ["vaccination", "antenatal"] as const;
+export type CareScheduleKind = (typeof CARE_SCHEDULE_KINDS)[number];
+
+export interface CareScheduleEntry {
+  id: Uuid;
+  kind: CareScheduleKind;
+  due_on: string;
+  /** Optional, e.g. "second dose"; shown in the app, never in a notification. */
+  note: string;
+  status: "due" | "cancelled";
+  created_at: string;
+  version: number;
+}
+
+export interface CareScheduleInput {
+  kind: CareScheduleKind;
+  /** Today or later, within two years. */
+  due_on: string;
+  note?: string;
+}
+
+/** A follow-up date the doctor set with no booking yet, or a planned care-schedule entry. */
+export interface ComingUpItem {
+  id: Uuid;
+  type: CareScheduleKind | "follow_up";
+  due_on: string;
+  note: string;
+  facility_name: string;
+  patient_id: Uuid;
+}
+
 export interface CalendarBlock {
   service_id: Uuid;
   membership_id: Uuid | null;
@@ -440,6 +481,10 @@ export const bookingPaths = {
   disruptionApply: (id: Uuid) => `${STF}/disruptions/${id}/apply/`,
   followUp: (visitId: Uuid) => `${STF}/visits/${visitId}/follow-up/`,
   staffCalendar: `${STF}/calendar/`,
+  // W7
+  comingUp: `${PAT}/care-schedule/`,
+  careSchedule: (facilityPatientId: Uuid) => `${STF}/care-schedule/patients/${facilityPatientId}/`,
+  careScheduleCancel: (id: Uuid) => `${STF}/care-schedule/${id}/cancel/`,
 };
 
 const idem = (key?: string) => (key ? { headers: { "Idempotency-Key": key } } : {});
@@ -491,6 +536,8 @@ export function createBookingApi(client: ApiClient) {
       create: () => client.post<{ url: string; created_at: string }>(bookingPaths.calendarFeed, {}),
       revoke: () => client.request<void>("DELETE", bookingPaths.calendarFeed),
     },
+    /** W7: planned vaccinations and antenatal visits, and follow-up dates without a booking. */
+    comingUp: () => client.get<{ results: ComingUpItem[] }>(bookingPaths.comingUp),
     staff: {
       /** R1. The Expected list is `{ date: today, status: "confirmed" }`; `no_show` lists no-shows. */
       /** `code`: the booking code from the patient's phone (today and later, date ignored). */
@@ -542,6 +589,13 @@ export function createBookingApi(client: ApiClient) {
           membership_id?: Uuid;
         } = {},
       ) => client.get<StaffCalendar>(bookingPaths.staffCalendar + query(p)),
+      // W7: the care schedule (`care_schedule.manage`)
+      careSchedule: (facilityPatientId: Uuid) =>
+        client.get<{ results: CareScheduleEntry[] }>(bookingPaths.careSchedule(facilityPatientId)),
+      addCareSchedule: (facilityPatientId: Uuid, body: CareScheduleInput) =>
+        client.post<CareScheduleEntry>(bookingPaths.careSchedule(facilityPatientId), body),
+      cancelCareSchedule: (id: Uuid, version: number) =>
+        client.post<CareScheduleEntry>(bookingPaths.careScheduleCancel(id), { version }),
     },
   };
 }

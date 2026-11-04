@@ -74,4 +74,31 @@ urlpatterns = [
         name="staff-pharmacy-availability-set",
     ),
     path("drugs/", v.DrugSearchView.as_view(), name="staff-drug-search"),
+    # W5 stock (upgrade 13 §3)
+    path("pharmacy/stock/", v.StockListView.as_view(), name="staff-pharmacy-stock"),
+    path(
+        "pharmacy/stock/receive/",
+        v.StockReceiveView.as_view(),
+        name="staff-pharmacy-stock-receive",
+    ),
+    path(
+        "pharmacy/stock/expiring/",
+        v.StockExpiringView.as_view(),
+        name="staff-pharmacy-stock-expiring",
+    ),
+    path(
+        "pharmacy/stock/movements/",
+        v.StockMovementsView.as_view(),
+        name="staff-pharmacy-stock-movements",
+    ),
+    path(
+        "pharmacy/stock/batches/<uuid:batch_id>/adjust/",
+        v.StockAdjustView.as_view(),
+        name="staff-pharmacy-stock-adjust",
+    ),
+    path(
+        "pharmacy/stock/<str:drug_code>/",
+        v.StockDetailView.as_view(),
+        name="staff-pharmacy-stock-detail",
+    ),
 ]

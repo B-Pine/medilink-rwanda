@@ -35,6 +35,7 @@
   "signedOn": "Signé",
   "lab": {
     "title": "Résultats d'examens",
+    "failed": "Impossible de charger vos résultats d'examens.",
     "intro": "Vos résultats apparaissent ici une fois que votre médecin les a lus, avec sa note.",
     "item": "Examen",
     "value": "Résultat",

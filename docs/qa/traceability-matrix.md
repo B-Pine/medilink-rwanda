@@ -35,27 +35,27 @@ Built from the requirement tables in `docs/analysis/` (titles shortened; the ana
 
 | Prefix | Module | Total | P1 | P2 | P3 | P4 | Verified | In progress | Not started |
 |---|---|---|---|---|---|---|---|---|---|
-| `FR-ACC` | [Users, roles, access](../analysis/02-users-roles-and-permissions.md) | 10 | 9 | 1 | 0 | 0 | 5 | 4 | 1 |
-| `FR-ONB` | [Tenancy, onboarding, master data](../analysis/03-tenancy-onboarding-and-master-data.md) | 11 | 10 | 1 | 0 | 0 | 0 | 5 | 6 |
+| `FR-ACC` | [Users, roles, access](../analysis/02-users-roles-and-permissions.md) | 10 | 10 | 0 | 0 | 0 | 5 | 5 | 0 |
+| `FR-ONB` | [Tenancy, onboarding, master data](../analysis/03-tenancy-onboarding-and-master-data.md) | 11 | 10 | 1 | 0 | 0 | 0 | 10 | 1 |
 | `FR-PAT` | [Patient identity and medical history](../analysis/04-patient-identity-and-medical-history.md) | 17 | 14 | 2 | 0 | 1 | 0 | 13 | 4 |
-| `FR-SCH` | [Discovery, calendars, scheduling, booking](../analysis/05-discovery-scheduling-and-booking.md) | 18 | 15 | 3 | 0 | 0 | 0 | 0 | 18 |
-| `FR-QUE` | [Visit lifecycle and live queue](../analysis/06-visit-lifecycle-and-queue.md) | 20 | 17 | 3 | 0 | 0 | 0 | 0 | 20 |
+| `FR-SCH` | [Discovery, calendars, scheduling, booking](../analysis/05-discovery-scheduling-and-booking.md) | 18 | 15 | 3 | 0 | 0 | 0 | 16 | 2 |
+| `FR-QUE` | [Visit lifecycle and live queue](../analysis/06-visit-lifecycle-and-queue.md) | 21 | 18 | 3 | 0 | 0 | 0 | 18 | 3 |
 | `FR-CLN` | [Clinical record](../analysis/07-clinical-documentation-and-pharmacy.md) | 11 | 10 | 1 | 0 | 0 | 0 | 11 | 0 |
-| `FR-PHA` | [Pharmacy](../analysis/07-clinical-documentation-and-pharmacy.md) | 7 | 5 | 2 | 0 | 0 | 0 | 5 | 2 |
-| `FR-DOC` | [Documents](../analysis/07-clinical-documentation-and-pharmacy.md) | 7 | 7 | 0 | 0 | 0 | 0 | 1 | 6 |
-| `FR-BIL` | [Billing, payments, insurance](../analysis/08-billing-payments-and-insurance.md) | 18 | 13 | 2 | 1 | 2 | 0 | 11 | 7 |
+| `FR-PHA` | [Pharmacy](../analysis/07-clinical-documentation-and-pharmacy.md) | 7 | 5 | 2 | 0 | 0 | 0 | 6 | 1 |
+| `FR-DOC` | [Documents](../analysis/07-clinical-documentation-and-pharmacy.md) | 7 | 7 | 0 | 0 | 0 | 0 | 7 | 0 |
+| `FR-BIL` | [Billing, payments, insurance](../analysis/08-billing-payments-and-insurance.md) | 18 | 13 | 2 | 1 | 2 | 0 | 14 | 4 |
 | `FR-NOT` | [Notifications](../analysis/09-notifications-and-communication.md) | 14 | 12 | 0 | 1 | 1 | 0 | 12 | 2 |
-| `FR-DSP` | [Disputes, complaints, support](../analysis/10-disputes-complaints-and-support.md) | 14 | 11 | 3 | 0 | 0 | 0 | 0 | 14 |
-| `FR-AI` | [AI symptom checker](../analysis/11-ai-symptom-checker.md) | 13 | 2 | 5 | 3 | 3 | 1 | 0 | 12 |
+| `FR-DSP` | [Disputes, complaints, support](../analysis/10-disputes-complaints-and-support.md) | 14 | 11 | 3 | 0 | 0 | 0 | 11 | 3 |
+| `FR-AI` | [AI symptom checker](../analysis/11-ai-symptom-checker.md) | 13 | 2 | 5 | 3 | 3 | 1 | 5 | 7 |
 | `FR-SEC` | [Security, privacy, compliance](../analysis/12-security-privacy-and-compliance.md) | 17 | 16 | 1 | 0 | 0 | 5 | 5 | 7 |
-| `FR-RPT` | [Reporting and analytics](../analysis/13-reporting-and-analytics.md) | 8 | 5 | 2 | 0 | 1 | 0 | 0 | 8 |
-| `NFR-PERF` | [Performance and capacity](../analysis/14-non-functional-requirements.md) | 7 | 7 | 0 | 0 | 0 | 0 | 0 | 7 |
-| `NFR-REL` | [Availability and reliability](../analysis/14-non-functional-requirements.md) | 5 | 5 | 0 | 0 | 0 | 0 | 1 | 4 |
-| `NFR-NET` | [Low connectivity and devices](../analysis/14-non-functional-requirements.md) | 6 | 6 | 0 | 0 | 0 | 0 | 1 | 5 |
-| `NFR-UX` | [Usability, accessibility, languages](../analysis/14-non-functional-requirements.md) | 7 | 7 | 0 | 0 | 0 | 1 | 4 | 2 |
+| `FR-RPT` | [Reporting and analytics](../analysis/13-reporting-and-analytics.md) | 8 | 5 | 2 | 0 | 1 | 0 | 4 | 4 |
+| `NFR-PERF` | [Performance and capacity](../analysis/14-non-functional-requirements.md) | 7 | 7 | 0 | 0 | 0 | 0 | 3 | 4 |
+| `NFR-REL` | [Availability and reliability](../analysis/14-non-functional-requirements.md) | 5 | 5 | 0 | 0 | 0 | 0 | 3 | 2 |
+| `NFR-NET` | [Low connectivity and devices](../analysis/14-non-functional-requirements.md) | 6 | 6 | 0 | 0 | 0 | 0 | 2 | 4 |
+| `NFR-UX` | [Usability, accessibility, languages](../analysis/14-non-functional-requirements.md) | 7 | 7 | 0 | 0 | 0 | 1 | 6 | 0 |
 | `NFR-OPS` | [Maintainability and operations](../analysis/14-non-functional-requirements.md) | 8 | 8 | 0 | 0 | 0 | 4 | 4 | 0 |
 | `NFR-INT` | [Interoperability](../analysis/14-non-functional-requirements.md) | 3 | 1 | 0 | 2 | 0 | 0 | 0 | 3 |
-| **All** | | **221** | **180** | **26** | **7** | **8** | **16** | **67** | **138** |
+| **All** | | **222** | **182** | **25** | **7** | **8** | **16** | **155** | **51** |
 
 `NFR-INT-03` is phased "P3–P4" in the analysis and is counted under P3.
 
@@ -138,8 +138,8 @@ Source: [05 · Discovery, calendars, scheduling, booking](../analysis/05-discove
 | FR-SCH-12 | Reception and doctor calendars (day, week) | P1 | S5 | Both | CMP, E2E | In progress |
 | FR-SCH-13 | No-show detection, reversal with reason, strikes | P1 | S5 | Both | BR | In progress (R4 #86) |
 | FR-SCH-14 | Disruption flow: bulk rebooking and notification | P1 | S5 | Both | BR, E2E | In progress |
-| FR-SCH-15 | Follow-up booking from the consultation | P1 | S5 | Both | API | In progress |
-| FR-SCH-16 | Recurring care plans | P2 | — | Both | BR | Not started |
+| FR-SCH-15 | Follow-up booking from the consultation | P1 | S5, U8 W7 (#206: a follow-up date without a booking reminds the patient the day before and on the morning, and shows under "Planned by your clinic" with "Book a time") | Both | API, BR (`test_follow_through.py`), CMP (`follow-through.test.tsx`) | In progress |
+| FR-SCH-16 | Recurring care plans | P2 | U8 W7 (#206), part | Both | BR | In progress (W7: a doctor plans single dated vaccinations and antenatal visits with reminders; no recurrence rules) |
 | FR-SCH-17 | Waitlist with timed offers | P2 | — | Both | BR | Not started |
 | FR-SCH-18 | Medicine schedule in the patient calendar | P2 | — | Both | CMP | Not started |
 
@@ -187,7 +187,7 @@ Source: [07 · Clinical record](../analysis/07-clinical-documentation-and-pharma
 | FR-CLN-08 | Restricted (sensitive) records | P1 | S6 | Both | AZ | In progress |
 | FR-CLN-09 | Results inbox with review sign-off | P1 | S6b | Both | API, E2E | In progress |
 | FR-CLN-10 | Consultation templates as order sets (diagnosis, plan, instructions, prescription in one click; lab tests kept for W2) and the doctor's favourites first in the diagnosis and medicine search | P2 | W3 (#202) | Both | API, CMP | Implemented (#202) |
-| FR-CLN-11 | Laboratory loop: order, sample, result, back to the same doctor, review, release; patient sees released results only | P1 | U8 (#201) | Both | API, AZ, CMP | Implemented (#201) |
+| FR-CLN-11 | Laboratory loop: order, sample, result, back to the same doctor, review, release; patient sees released results only | P1 | U8 (#201, W7 #206: "a result is ready" notice on release, results first on Records, new results under Needs your attention) | Both | API, AZ, CMP | Implemented (#201, #206) |
 
 ## FR-PHA · Pharmacy
 
@@ -198,9 +198,9 @@ Source: [07 · Pharmacy](../analysis/07-clinical-documentation-and-pharmacy.md)
 | FR-PHA-01 | Prescription items from the catalogue, with states | P1 | S7 | Both | BR | In progress (backend and frontend on mocks; staging S7-I1 pending) |
 | FR-PHA-02 | Pharmacy queue, identity check, full/partial, substitution, not available | P1 | S7 | Both | BR, E2E | In progress (backend and frontend on mocks; staging S7-I1 pending) |
 | FR-PHA-03 | Signed dispensing record; status visible to the patient | P1 | S7 | Both | API, E2E | In progress (backend and frontend on mocks; staging S7-I1 pending) |
-| FR-PHA-04 | Drug availability toggle visible to prescribers | P1 | S7 | Both | API | In progress (backend and frontend on mocks; staging S7-I1 pending) |
-| FR-PHA-05 | Dosing labels | P1 | S7 | Both | INS | In progress (backend and frontend on mocks; staging S7-I1 pending) |
-| FR-PHA-06 | Simple stock (quantity, expiry) | P2 | — | Both | BR | Not started |
+| FR-PHA-04 | Drug availability toggle visible to prescribers | P1 | S7 | Both | API | In progress (backend and frontend on mocks; staging S7-I1 pending; W5: follows the stock count once a medicine has stock, "low stock" shown to prescribers) |
+| FR-PHA-05 | Dosing labels | P1 | S7, W8 | Both | INS | In progress (backend and frontend on mocks; staging S7-I1 pending; W8 pictograms for times of day and food, #207) |
+| FR-PHA-06 | Simple stock (quantity, expiry) | P2 | W5 (#204) | Both | BR | In progress (backend and frontend on mocks: batches with expiry, FEFO deduction on dispense, adjustments with a reason, low-stock threshold, availability follows stock, expiring soon; `tests/s7/test_stock.py`, `stock.test.tsx`; staging pending) |
 | FR-PHA-07 | Controlled medicines register | P2 | — | Both | BR | Not started |
 
 ## FR-DOC · Documents
@@ -254,7 +254,7 @@ Source: [09 · Notifications](../analysis/09-notifications-and-communication.md)
 | FR-NOT-04 | Email notifications with documents and calendar files | P1 | S9 | Backend | API | In progress |
 | FR-NOT-05 | Priority levels, quiet hours, fallback rules | P1 | S9 | Backend | BR | In progress |
 | FR-NOT-06 | Patient, staff and facility preferences | P1 | S9 | Both | API, CMP | In progress |
-| FR-NOT-07 | Notification catalogue (analysis 09 §4) | P1 | S9, S9b | Both | API, INS | In progress |
+| FR-NOT-07 | Notification catalogue (analysis 09 §4) | P1 | S9, S9b, U8 W7 (#206: visit reminders at the patient's offsets, follow-up and care-schedule reminders, result ready, "almost your turn" from every queue move, counter call) | Both | API, INS, BR (`test_follow_through.py`) | In progress |
 | FR-NOT-08 | Guardians receive dependents' notifications | P1 | S9 | Backend | BR | In progress |
 | FR-NOT-09 | Trilingual versioned templates; no clinical details | P1 | S9 | Backend | UT, INS | In progress |
 | FR-NOT-10 | Delivery log with status and failures; retries | P1 | S9 | Backend | API | In progress |
@@ -334,12 +334,12 @@ Source: [13 · Reporting and analytics](../analysis/13-reporting-and-analytics.m
 
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
-| FR-RPT-01 | Metric definitions from event timestamps | P1 | S10 | Backend | UT | Not started |
+| FR-RPT-01 | Metric definitions from event timestamps | P1 | S10, W6 | Backend | UT | In progress (W6: wait per stage from the first call event, #205) |
 | FR-RPT-02 | Live operations board | P1 | S10 | Both | API, E2E | Not started |
-| FR-RPT-03 | Facility reports (daily, waits, doctors, bookings, finance, staff) | P1 | S10 | Both | API, CMP | Not started |
-| FR-RPT-04 | Export to Excel and PDF | P1 | S10 | Both | API, SEC | Not started |
-| FR-RPT-05 | Platform network, adoption, quality and system reports | P1 | S10 | Both | API | Not started |
-| FR-RPT-06 | Peak-hours heat map, diagnoses and pharmacy reports | P2 | — | Both | API | Not started |
+| FR-RPT-03 | Facility reports (daily, waits, doctors, bookings, finance, staff) | P1 | S10, W6 | Both | API, CMP | In progress (W6 `/reports`: patients, sources, no-shows, waits by stage, money, lab, stock; doctors and staff not yet, #205) |
+| FR-RPT-04 | Export to Excel and PDF | P1 | S10, W6 | Both | API, SEC | In progress (W6: CSV per table, formula-safe, audit-logged; PDF not yet, #205) |
+| FR-RPT-05 | Platform network, adoption, quality and system reports | P1 | S10, U8 W9 (#208: national report `/platform/reports`: load by facility and district, wait trend, top diagnoses by district, stock-outs; groups under 10 suppressed) | Both | API, BR (`test_national_report.py`), CMP (`national-report.test.tsx`) | In progress (adoption and system reports not yet) |
+| FR-RPT-06 | Peak-hours heat map, diagnoses and pharmacy reports | P2 | W6 | Both | API | In progress (W6: top ICD-10, referrals out, stock-outs and expiring stock; heat map from S4, #205) |
 | FR-RPT-07 | Pilot impact report support | P2 | — | Both | INS | Not started |
 | FR-RPT-08 | Aggregated Ministry / district analytics | P4 | — | Both | INS | Not started |
 
@@ -389,7 +389,7 @@ Source: [14 · Usability, accessibility, languages](../analysis/14-non-functiona
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
 | NFR-UX-01 | Kinyarwanda first; no hard-coded text; language switch | P1 | S0 | Both | UT, INS | Verified (S0, v0.1.0) |
-| NFR-UX-02 | Elderly and low-literacy friendly; booking ≤ 5 steps | P1 | S5*, S11* | Frontend | USA | In progress |
+| NFR-UX-02 | Elderly and low-literacy friendly; booking ≤ 5 steps | P1 | S5*, S11*, W8 | Frontend | USA | In progress (W8: spoken call in chosen languages, label pictograms, next-visit card, #207) |
 | NFR-UX-03 | WCAG 2.2 AA for patient and staff apps | P1 | S0*–S11 | Frontend | CMP, A11Y | In progress |
 | NFR-UX-04 | Walk-in + ticket < 60 s; booked check-in < 15 s | P1 | S3*, S4* | Both | USA, E2E | In progress (R8: Playwright walk-in journey) |
 | NFR-UX-05 | Keyboard shortcuts for reception and doctors | P1 | S4* | Frontend | CMP, E2E | In progress |

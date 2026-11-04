@@ -12,6 +12,7 @@ import type { ClinicalAlertKind } from "./clinical";
 declare module "../types" {
   interface PermissionCodes {
     "pharmacy.availability": true;
+    "pharmacy.stock": true;
   }
 }
 
@@ -64,6 +65,15 @@ export type DispenseOutcome = "full" | "partial" | "substituted" | "not_availabl
 export type IdentityCheckMethod = "ticket_name_dob" | "verification_code";
 export type PrescriptionQueryStatus = "open" | "answered" | "closed";
 export type PharmacyQueueTab = "ready" | "partly" | "queried";
+/** W5: a medicine's stock here; `null` when it does not follow a stock count (manual flag). */
+export type StockLevel = "in_stock" | "low" | "out";
+export type StockMovementKind = "received" | "dispensed" | "adjusted";
+export type StockAdjustReason = "count_correction" | "damaged" | "expired";
+export const STOCK_ADJUST_REASONS: readonly StockAdjustReason[] = [
+  "count_correction",
+  "damaged",
+  "expired",
+];
 
 /** Items that can still be dispensed or cancelled. */
 export const OPEN_ITEM_STATUSES: readonly PrescriptionItemStatus[] = [
@@ -100,10 +110,13 @@ export interface PrescriptionItem {
   is_off_catalogue: boolean;
   is_controlled: boolean;
   available_here: boolean;
+  stock_level: StockLevel | null;
   dose: string;
   frequency_code: FrequencyCode;
   route: DrugRoute;
   duration_days: number | null;
+  /** When to take it with respect to food; blank when it does not matter (#207). */
+  meal_timing: MealTiming | "";
   quantity: number;
   dispensed_quantity: number;
   instructions: string;
@@ -156,6 +169,10 @@ export interface PharmacyDay {
   not_available_today: number;
   substituted_today: number;
   out_of_stock: number;
+  /** W5: medicines below their low-stock threshold. */
+  low_stock: number;
+  /** W5: batches with units left expiring within 60 days (expired included). */
+  expiring_soon: number;
   updated_at: string;
 }
 
@@ -210,6 +227,7 @@ export interface PrescriptionItemInput {
   frequency_code: FrequencyCode;
   route: DrugRoute;
   duration_days?: number | null;
+  meal_timing?: MealTiming | "";
   quantity?: number | null;
   instructions?: string;
   substitution_allowed?: boolean;
@@ -256,6 +274,7 @@ export interface DrugRow {
   form: string;
   is_controlled: boolean;
   available_here: boolean;
+  stock_level: StockLevel | null;
 }
 
 export interface AvailabilityRow {
@@ -263,7 +282,87 @@ export interface AvailabilityRow {
   display: string;
   is_available: boolean;
   updated_at: string | null;
+  /** W5: the medicine has stock here, so its availability follows the count (read-only). */
+  follows_stock: boolean;
+  stock_level: StockLevel | null;
 }
+
+/** W5 stock card: one medicine at this facility. */
+export interface StockCard {
+  drug_code: string;
+  display: string;
+  is_controlled: boolean;
+  /** Units in batches that have not expired. */
+  on_hand: number;
+  /** Units in expired batches, still to remove. */
+  expired_on_hand: number;
+  low_stock_threshold: number;
+  stock_level: StockLevel;
+  next_expiry: string | null;
+  updated_at: string;
+}
+
+export interface StockBatch {
+  id: Uuid;
+  drug_code: string;
+  display: string;
+  batch_number: string;
+  expiry_date: string;
+  quantity_on_hand: number;
+  supplier: string;
+  is_expired: boolean;
+  received_at: string;
+}
+
+export interface StockMovement {
+  id: Uuid;
+  drug_code: string;
+  display: string;
+  batch_id: Uuid;
+  batch_number: string;
+  kind: StockMovementKind;
+  /** Signed: + received, - dispensed or removed. */
+  quantity: number;
+  balance_after: number;
+  reason: StockAdjustReason | "";
+  note: string;
+  prescription_id: Uuid | null;
+  by_name: string;
+  occurred_at: string;
+}
+
+export interface StockDetail extends StockCard {
+  batches: StockBatch[];
+  movements: StockMovement[];
+}
+
+export interface StockReceiveInput {
+  drug_code: string;
+  batch_number: string;
+  expiry_date: string;
+  quantity: number;
+  supplier?: string;
+  low_stock_threshold?: number | null;
+}
+
+export interface StockAdjustInput {
+  quantity_change: number;
+  reason: StockAdjustReason;
+  note?: string;
+}
+
+export type MealTiming = "before_food" | "with_food" | "after_food";
+export const MEAL_TIMINGS: readonly MealTiming[] = ["before_food", "with_food", "after_food"];
+export type TimeOfDay = "morning" | "noon" | "evening" | "night";
+export const TIMES_OF_DAY: readonly TimeOfDay[] = ["morning", "noon", "evening", "night"];
+/** Times of day per frequency, for the label pictograms (#207); as the server's. */
+export const FREQUENCY_TIMES: Partial<Record<FrequencyCode, TimeOfDay[]>> = {
+  od: ["morning"],
+  bd: ["morning", "evening"],
+  tds: ["morning", "noon", "evening"],
+  qds: ["morning", "noon", "evening", "night"],
+  nocte: ["night"],
+};
 
 export interface DosingLabel {
   line_id: Uuid;
@@ -272,6 +371,12 @@ export interface DosingLabel {
   quantity: number;
   dose: string;
   frequency: string;
+  frequency_code: FrequencyCode;
+  /** Times of day for the pictograms; empty for once only or when needed. */
+  times: TimeOfDay[];
+  meal_timing: MealTiming | "";
+  /** `meal_timing` in the label language. */
+  meal: string;
   route: string;
   duration: string;
   instructions: string;
@@ -339,6 +444,12 @@ export const pharmacyPaths = {
   availability: `${STF}/pharmacy/availability/`,
   availabilityDrug: (code: string) => `${STF}/pharmacy/availability/${encodeURIComponent(code)}/`,
   drugs: `${STF}/drugs/`,
+  stock: `${STF}/pharmacy/stock/`,
+  stockReceive: `${STF}/pharmacy/stock/receive/`,
+  stockExpiring: `${STF}/pharmacy/stock/expiring/`,
+  stockMovements: `${STF}/pharmacy/stock/movements/`,
+  stockDrug: (code: string) => `${STF}/pharmacy/stock/${encodeURIComponent(code)}/`,
+  stockAdjust: (batchId: Uuid) => `${STF}/pharmacy/stock/batches/${batchId}/adjust/`,
   patientList: `${PAT}/prescriptions/`,
   patientOne: (id: Uuid) => `${PAT}/prescriptions/${id}/`,
 };
@@ -394,6 +505,24 @@ export function createPharmacyApi(client: ApiClient) {
       }),
     /** PS1: `q` of 2 characters or more; 25 results. */
     drugs: (q: string) => client.get<DrugRow[]>(pharmacyPaths.drugs + query({ q })),
+    /** W5 stock: cards, receive, adjust, threshold, expiring soon and movements. */
+    stock: {
+      list: (params: { q?: string; level?: "low" | "out" | "short"; page?: number } = {}) =>
+        client.get<Paginated<StockCard>>(pharmacyPaths.stock + query(params)),
+      get: (drugCode: string) => client.get<StockDetail>(pharmacyPaths.stockDrug(drugCode)),
+      receive: (body: StockReceiveInput) =>
+        client.post<StockDetail>(pharmacyPaths.stockReceive, body),
+      adjust: (batchId: Uuid, body: StockAdjustInput) =>
+        client.post<StockDetail>(pharmacyPaths.stockAdjust(batchId), body),
+      setThreshold: (drugCode: string, lowStockThreshold: number) =>
+        client.request<StockDetail>("PUT", pharmacyPaths.stockDrug(drugCode), {
+          body: { low_stock_threshold: lowStockThreshold },
+        }),
+      expiring: (days?: 30 | 60 | 90) =>
+        client.get<StockBatch[]>(pharmacyPaths.stockExpiring + query({ days })),
+      movements: (params: { kind?: StockMovementKind; page?: number } = {}) =>
+        client.get<Paginated<StockMovement>>(pharmacyPaths.stockMovements + query(params)),
+    },
     patient: {
       list: (params: { patient_id?: Uuid; status?: "active" | "past"; page?: number } = {}) =>
         client.get<Paginated<PatientPrescriptionRow>>(pharmacyPaths.patientList + query(params)),

@@ -2,6 +2,7 @@ import {
   defaultQuantity,
   DRUG_ROUTES,
   FREQUENCY_CODES,
+  MEAL_TIMINGS,
   isApiError,
   OPEN_ITEM_STATUSES,
   type Consultation,
@@ -9,6 +10,7 @@ import {
   type DrugRow,
   type FavouriteMedicine,
   type FrequencyCode,
+  type MealTiming,
   type Prescription,
   type PrescriptionAlert,
   type PrescriptionItem,
@@ -336,6 +338,7 @@ function AlertLine({
         frequency_code: item.frequency_code,
         route: item.route,
         duration_days: item.duration_days,
+        meal_timing: item.meal_timing,
         quantity: item.quantity,
         instructions: item.instructions,
         substitution_allowed: item.substitution_allowed,
@@ -437,6 +440,7 @@ function AddItem({
   const [frequency, setFrequency] = useState<FrequencyCode>(replaces?.frequency_code ?? "tds");
   const [route, setRoute] = useState<DrugRoute>(replaces?.route ?? "oral");
   const [days, setDays] = useState(replaces?.duration_days ? String(replaces.duration_days) : "");
+  const [meal, setMeal] = useState<MealTiming | "">(replaces?.meal_timing ?? "");
   const [quantity, setQuantity] = useState("");
   const [instructions, setInstructions] = useState(replaces?.instructions ?? "");
   const [substitution, setSubstitution] = useState(true);
@@ -464,6 +468,7 @@ function AddItem({
         form: "",
         is_controlled: m.is_controlled,
         available_here: m.available_here,
+        stock_level: null, // W5: favourites carry availability only
       });
     else {
       setSearch(m.free_text_drug || m.drug_display);
@@ -486,6 +491,7 @@ function AddItem({
           frequency_code: frequency,
           route,
           duration_days: durationDays,
+          meal_timing: meal,
           quantity: quantity ? Number(quantity) : computed,
           instructions: instructions.trim(),
           substitution_allowed: substitution,
@@ -525,6 +531,11 @@ function AddItem({
           {!picked.available_here && (
             <Badge tone="danger" icon={Storefront}>
               {t("pharmacy.flag.notInStock")}
+            </Badge>
+          )}
+          {picked.stock_level === "low" && (
+            <Badge tone="warning" icon={Storefront}>
+              {t("pharmacy.flag.lowStock")}
             </Badge>
           )}
           <Button variant="ghost" size="sm" className="ms-auto" onClick={() => setPicked(null)}>
@@ -568,6 +579,11 @@ function AddItem({
                         {!d.available_here && (
                           <Badge tone="danger" icon={Storefront}>
                             {t("pharmacy.flag.notInStock")}
+                          </Badge>
+                        )}
+                        {d.stock_level === "low" && (
+                          <Badge tone="warning" icon={Storefront}>
+                            {t("pharmacy.flag.lowStock")}
                           </Badge>
                         )}
                       </button>
@@ -632,6 +648,19 @@ function AddItem({
           value={days}
           onChange={(event) => setDays(event.target.value)}
         />
+        <SelectField
+          label={t("pharmacy.prescription.meal")}
+          hint={t("pharmacy.prescription.mealHint")}
+          value={meal}
+          onChange={(event) => setMeal(event.target.value as MealTiming | "")}
+        >
+          <option value="">{t("pharmacy.meal.any")}</option>
+          {MEAL_TIMINGS.map((code) => (
+            <option key={code} value={code}>
+              {t(`pharmacy.meal.${code}`)}
+            </option>
+          ))}
+        </SelectField>
         <TextField
           type="number"
           inputMode="numeric"

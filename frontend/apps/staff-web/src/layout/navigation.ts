@@ -50,7 +50,7 @@ import {
 } from "@phosphor-icons/react";
 // [/S6 imports]
 // [S7 imports]
-import { Storefront } from "@phosphor-icons/react";
+import { Package, Storefront } from "@phosphor-icons/react";
 // [/S7 imports]
 // [S11 imports]
 import { Fingerprint, ShieldCheck, Siren, UsersThree } from "@phosphor-icons/react";
@@ -58,6 +58,9 @@ import { Fingerprint, ShieldCheck, Siren, UsersThree } from "@phosphor-icons/rea
 // [S8 imports]
 import { Files } from "@phosphor-icons/react";
 // [/S8 imports]
+// [W9 imports]
+import { MapTrifold } from "@phosphor-icons/react";
+// [/W9 imports]
 
 /** Sections of the Sprint 0 shell (labels in `shell.nav.<key>`). Features use their own keys. */
 export type CoreNavKey =
@@ -428,6 +431,14 @@ export const NAV_ITEMS: readonly NavItem[] = [
     labelKey: "pharmacy.nav.availability",
     visible: hasAny("pharmacy.availability"),
   },
+  {
+    key: "pharmacyStock",
+    path: "/pharmacy/stock",
+    icon: Package,
+    group: "facility",
+    labelKey: "pharmacy.nav.stock",
+    visible: hasAny("pharmacy.stock", "pharmacy.dispense"),
+  },
   // [/S7]
   // [S11]
   {
@@ -463,6 +474,16 @@ export const NAV_ITEMS: readonly NavItem[] = [
     visible: (me: StaffMe) => me.is_platform_admin,
   },
   // [/S11]
+  // [W9]
+  {
+    key: "platformNationalReport",
+    path: "/platform/reports",
+    icon: MapTrifold,
+    group: "platform",
+    labelKey: "console.nav.nationalReport",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
+  // [/W9]
   // [S8]
   // #203: the monthly claim list per insurer
   {
@@ -528,6 +549,7 @@ const ORDER = [
   "pharmacyHistory",
   "pharmacyVerify",
   // [S7]
+  "pharmacyStock",
   "pharmacyAvailability",
   // [/S7]
   "payments",

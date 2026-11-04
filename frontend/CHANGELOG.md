@@ -9,6 +9,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Facility reports (2026-11-04, #205)
+
+- Changed: **Reports** (`/reports`, `reports.view`) is now the facility report for a period.
+  Pick last 7, 30 or 90 days, this or last month, or your own dates, and show it by day, week
+  or month (kept in the URL). Figures for patients, the doctor wait, money collected and
+  no-shows; patients over the period; how patients came and by service; waiting time per stage
+  (median and 9 in 10); top diagnoses and referrals; the laboratory; money by method and
+  insurer, exemptions and voids; pharmacy stock and expiring batches. Each section downloads
+  its table as CSV. Arrivals by hour and the 14-day wait trend stay below.
+- Added: `api.queue.report()`, `queuePaths.report` and `queuePaths.reportExport` with the
+  `FacilityReport` types, and MSW mocks with the server's period rules.
+
 ### Pharmacy stock, lite (2026-11-04, #204)
 
 - Added: **Stock** for the pharmacist (`/pharmacy/stock`, menu item for `pharmacy.stock` or

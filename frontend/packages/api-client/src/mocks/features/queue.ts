@@ -6,6 +6,7 @@ import type {
   DutyState,
   Estimate,
   PatientVisit,
+  ReportTable,
   Stage,
   TicketRow,
   TicketState,
@@ -16,6 +17,7 @@ import type { FeatureMockFactory } from "../features";
 import { fieldError, id, now, rule, s1, str } from "./s1-common";
 import { checkInMockBooking, remoteJoinMockService } from "./booking";
 import { patientsStore } from "./patients";
+import { facilityReportCsv, facilityReportMock, REPORT_TABLES, reportPeriod } from "./report";
 import { MEMBERSHIP_BY_EMAIL, SETUP_IDS } from "./setup";
 
 /**
@@ -446,6 +448,31 @@ export const queueMocks: FeatureMockFactory = (context) => {
       // Live sockets (contract §3.3): accepted and kept quiet; the mocks change data on request
       // only, so screens poll instead of waiting for notifications.
       ws.link("*/ws/v1/*").addEventListener("connection", () => undefined),
+      http.get(`${api}/staff/reports/facility/`, async ({ request }) => {
+        await context.settle();
+        const ok = staff(request, ["reports.view"]);
+        if ("error" in ok) return ok.error;
+        const period = reportPeriod(new URL(request.url));
+        if ("errors" in period) return fieldError(context, ok.lang, period.errors);
+        return HttpResponse.json(facilityReportMock(period.from, period.to, period.group));
+      }),
+      http.get(`${api}/staff/reports/facility/export/`, ({ request }) => {
+        const ok = staff(request, ["reports.view"]);
+        if ("error" in ok) return ok.error;
+        const url = new URL(request.url);
+        const period = reportPeriod(url);
+        const table = url.searchParams.get("table") as ReportTable | null;
+        if ("errors" in period) return fieldError(context, ok.lang, period.errors);
+        if (!table || !REPORT_TABLES.includes(table))
+          return fieldError(context, ok.lang, { table: "Choose a report table." });
+        const report = facilityReportMock(period.from, period.to, period.group);
+        return new HttpResponse(facilityReportCsv(report, table), {
+          headers: {
+            "Content-Type": "text/csv; charset=utf-8",
+            "Content-Disposition": `attachment; filename="report-${table}-${period.from}-${period.to}.csv"`,
+          },
+        });
+      }),
       http.get(`${api}/staff/reports/operations/`, async ({ request }) => {
         await context.settle();
         const ok = staff(request, ["reports.view", "facility.configure"]);

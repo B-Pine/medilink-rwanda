@@ -22571,6 +22571,21 @@ components:
           type: string
         frequency:
           type: string
+        frequency_code:
+          $ref: '#/components/schemas/FrequencyCodeEnum'
+        times:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimesEnum'
+          description: Times of day to take it, for the pictograms; empty for once
+            or when needed
+        meal_timing:
+          oneOf:
+          - $ref: '#/components/schemas/MealTimingEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        meal:
+          type: string
+          description: meal_timing in the label language
         route:
           type: string
         duration:
@@ -22593,13 +22608,17 @@ components:
       - duration
       - facility_name
       - frequency
+      - frequency_code
       - instructions
       - language
       - line_id
+      - meal
+      - meal_timing
       - patient_name
       - prescription_number
       - quantity
       - route
+      - times
     DownloadLink:
       type: object
       properties:
@@ -25896,6 +25915,11 @@ components:
           maximum: 365
           minimum: 1
           nullable: true
+        meal_timing:
+          default: ''
+          oneOf:
+          - $ref: '#/components/schemas/MealTimingEnum'
+          - $ref: '#/components/schemas/BlankEnum'
         quantity:
           type: integer
           maximum: 10000
@@ -26916,6 +26940,16 @@ components:
       - sample_changes
       - summary
       - upload
+    MealTimingEnum:
+      enum:
+      - before_food
+      - with_food
+      - after_food
+      type: string
+      description: |-
+        * `before_food` - Before food
+        * `with_food` - With food
+        * `after_food` - After food
     Membership:
       type: object
       properties:
@@ -27541,6 +27575,30 @@ components:
       - revoked_at
       - token
       - url
+    NextVisit:
+      type: object
+      properties:
+        due_on:
+          type: string
+          format: date
+        service_id:
+          type: string
+          format: uuid
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Set when it is booked
+        booking_code:
+          type: string
+        doctor_name:
+          type: string
+      required:
+      - booking_code
+      - doctor_name
+      - due_on
+      - service_id
+      - starts_at
     NoteInputRequest:
       type: object
       properties:
@@ -29647,6 +29705,11 @@ components:
           maximum: 365
           minimum: 1
           nullable: true
+        meal_timing:
+          default: ''
+          oneOf:
+          - $ref: '#/components/schemas/MealTimingEnum'
+          - $ref: '#/components/schemas/BlankEnum'
         quantity:
           type: integer
           maximum: 10000
@@ -32352,6 +32415,10 @@ components:
         duration_days:
           type: integer
           nullable: true
+        meal_timing:
+          oneOf:
+          - $ref: '#/components/schemas/MealTimingEnum'
+          - $ref: '#/components/schemas/BlankEnum'
         quantity:
           type: integer
         dispensed_quantity:
@@ -32387,6 +32454,7 @@ components:
       - instructions
       - is_controlled
       - is_off_catalogue
+      - meal_timing
       - quantity
       - replaces_item_id
       - route
@@ -37225,6 +37293,18 @@ components:
         * `cancelled` - Cancelled
         * `left_without_service` - Left without service
         * `completed` - Completed
+    TimesEnum:
+      enum:
+      - morning
+      - noon
+      - evening
+      - night
+      type: string
+      description: |-
+        * `morning` - morning
+        * `noon` - noon
+        * `evening` - evening
+        * `night` - night
     TokenInputRequest:
       type: object
       properties:
@@ -37902,11 +37982,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TicketEvent'
+        follow_up:
+          allOf:
+          - $ref: '#/components/schemas/NextVisit'
+          nullable: true
+          description: The follow-up the doctor set in this visit (#207)
       required:
       - checked_in_at
       - display_name
       - events
       - facility_patient_id
+      - follow_up
       - id
       - is_emergency
       - priority_class

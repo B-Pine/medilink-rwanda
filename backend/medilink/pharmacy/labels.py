@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from medilink.pharmacy.models import DispenseOutcome, Prescription
+from medilink.pharmacy.models import TIMES_OF_DAY, DispenseOutcome, Prescription
 from medilink.pharmacy.services import instructions
 
 FREQUENCY: dict[str, dict[str, str]] = {
@@ -73,6 +73,19 @@ ROUTE: dict[str, dict[str, str]] = {
     },
 }
 DAYS: dict[str, str] = {"rw": "Iminsi {n}", "en": "{n} days", "fr": "{n} jours"}
+MEAL: dict[str, dict[str, str]] = {
+    "rw": {
+        "before_food": "Mbere yo kurya",
+        "with_food": "Mu gihe urya",
+        "after_food": "Nyuma yo kurya",
+    },
+    "en": {"before_food": "Before food", "with_food": "With food", "after_food": "After food"},
+    "fr": {
+        "before_food": "Avant le repas",
+        "with_food": "Pendant le repas",
+        "after_food": "Après le repas",
+    },
+}
 
 
 def labels(
@@ -95,6 +108,10 @@ def labels(
                     "quantity": line.quantity,
                     "dose": item.dose,
                     "frequency": FREQUENCY[language].get(item.frequency_code, item.frequency_code),
+                    "frequency_code": item.frequency_code,
+                    "times": TIMES_OF_DAY.get(item.frequency_code, []),
+                    "meal_timing": item.meal_timing,
+                    "meal": MEAL[language].get(item.meal_timing, ""),
                     "route": ROUTE[language].get(item.route, item.route),
                     "duration": DAYS[language].format(n=item.duration_days)
                     if item.duration_days

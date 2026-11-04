@@ -199,7 +199,7 @@ Source: [07 · Pharmacy](../analysis/07-clinical-documentation-and-pharmacy.md)
 | FR-PHA-02 | Pharmacy queue, identity check, full/partial, substitution, not available | P1 | S7 | Both | BR, E2E | In progress (backend and frontend on mocks; staging S7-I1 pending) |
 | FR-PHA-03 | Signed dispensing record; status visible to the patient | P1 | S7 | Both | API, E2E | In progress (backend and frontend on mocks; staging S7-I1 pending) |
 | FR-PHA-04 | Drug availability toggle visible to prescribers | P1 | S7 | Both | API | In progress (backend and frontend on mocks; staging S7-I1 pending; W5: follows the stock count once a medicine has stock, "low stock" shown to prescribers) |
-| FR-PHA-05 | Dosing labels | P1 | S7 | Both | INS | In progress (backend and frontend on mocks; staging S7-I1 pending) |
+| FR-PHA-05 | Dosing labels | P1 | S7, W8 | Both | INS | In progress (backend and frontend on mocks; staging S7-I1 pending; W8 pictograms for times of day and food, #207) |
 | FR-PHA-06 | Simple stock (quantity, expiry) | P2 | W5 (#204) | Both | BR | In progress (backend and frontend on mocks: batches with expiry, FEFO deduction on dispense, adjustments with a reason, low-stock threshold, availability follows stock, expiring soon; `tests/s7/test_stock.py`, `stock.test.tsx`; staging pending) |
 | FR-PHA-07 | Controlled medicines register | P2 | — | Both | BR | Not started |
 
@@ -389,7 +389,7 @@ Source: [14 · Usability, accessibility, languages](../analysis/14-non-functiona
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
 | NFR-UX-01 | Kinyarwanda first; no hard-coded text; language switch | P1 | S0 | Both | UT, INS | Verified (S0, v0.1.0) |
-| NFR-UX-02 | Elderly and low-literacy friendly; booking ≤ 5 steps | P1 | S5*, S11* | Frontend | USA | In progress |
+| NFR-UX-02 | Elderly and low-literacy friendly; booking ≤ 5 steps | P1 | S5*, S11*, W8 | Frontend | USA | In progress (W8: spoken call in chosen languages, label pictograms, next-visit card, #207) |
 | NFR-UX-03 | WCAG 2.2 AA for patient and staff apps | P1 | S0*–S11 | Frontend | CMP, A11Y | In progress |
 | NFR-UX-04 | Walk-in + ticket < 60 s; booked check-in < 15 s | P1 | S3*, S4* | Both | USA, E2E | In progress (R8: Playwright walk-in journey) |
 | NFR-UX-05 | Keyboard shortcuts for reception and doctors | P1 | S4* | Frontend | CMP, E2E | In progress |

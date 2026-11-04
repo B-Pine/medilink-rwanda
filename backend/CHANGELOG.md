@@ -32,6 +32,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   ticket forward (call, cancel, left, transfer, no response, reorder, priority, emergency,
   pass-over), not only a call, and reaches each ticket with 2 or 3 people ahead once.
 
+### Patients without a phone (2026-11-04, #207)
+
+- Added: `meal_timing` on prescription items (`before_food`, `with_food`, `after_food` or blank;
+  pharmacy migration 0005). The item lock trigger also locks it once the prescription is issued.
+- Added: dosing labels carry `frequency_code`, `times` (morning, noon, evening, night from the
+  frequency) and `meal_timing` with `meal` in the label language, for the pictograms.
+- Added: the staff visit (`GET /api/v1/staff/visits/{id}/`) carries `follow_up`: the date the
+  doctor set, the booked time and booking code when it was booked, and the doctor, for the
+  printed next-visit card.
+
 ### Facility reports (2026-11-04, #205)
 
 - Added: `GET /api/v1/staff/reports/facility/` for `reports.view`: the facility report for a

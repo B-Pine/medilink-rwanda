@@ -1050,6 +1050,16 @@ export const queueMocks: FeatureMockFactory = (context) => {
               ...e,
               ticket_number: tickets.find((t) => t.id === e.ticket_id)!.number,
             })),
+          // #207: a visit past the doctor has a follow-up in two weeks (demo data)
+          follow_up: tickets.some((t) => ["lab", "payment", "pharmacy"].includes(t.stage))
+            ? {
+                due_on: new Date(Date.now() + 14 * 86_400_000).toISOString().slice(0, 10),
+                service_id: first.service_id,
+                starts_at: null,
+                booking_code: "",
+                doctor_name: "Dr. Jean Habimana",
+              }
+            : null,
         });
       }),
       http.get(`${api}/staff/duty-status/`, async ({ request }) => {

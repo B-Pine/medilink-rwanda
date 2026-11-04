@@ -16,6 +16,7 @@ from medilink.pharmacy.models import (
     Frequency,
     IdentityMethod,
     ItemStatus,
+    MealTiming,
     MovementKind,
     PrescriptionStatus,
     QueryStatus,
@@ -40,6 +41,9 @@ class ItemWriteSerializer(StrictSerializer):
     route = serializers.ChoiceField(choices=Route.choices)
     duration_days = serializers.IntegerField(
         min_value=1, max_value=365, required=False, allow_null=True
+    )
+    meal_timing = serializers.ChoiceField(
+        choices=MealTiming.choices, required=False, allow_blank=True, default=""
     )
     quantity = serializers.IntegerField(
         min_value=1, max_value=10000, required=False, allow_null=True
@@ -166,6 +170,7 @@ class PrescriptionItemSerializer(serializers.Serializer):
     frequency_code = serializers.ChoiceField(choices=Frequency.choices)
     route = serializers.ChoiceField(choices=Route.choices)
     duration_days = serializers.IntegerField(allow_null=True)
+    meal_timing = serializers.ChoiceField(choices=MealTiming.choices, allow_blank=True)
     quantity = serializers.IntegerField()
     dispensed_quantity = serializers.IntegerField()
     instructions = serializers.CharField(allow_blank=True)
@@ -308,6 +313,13 @@ class DosingLabelSerializer(serializers.Serializer):
     quantity = serializers.IntegerField()
     dose = serializers.CharField()
     frequency = serializers.CharField()
+    frequency_code = serializers.ChoiceField(choices=Frequency.choices)
+    times = serializers.ListField(
+        child=serializers.ChoiceField(choices=["morning", "noon", "evening", "night"]),
+        help_text="Times of day to take it, for the pictograms; empty for once or when needed",
+    )
+    meal_timing = serializers.ChoiceField(choices=MealTiming.choices, allow_blank=True)
+    meal = serializers.CharField(allow_blank=True, help_text="meal_timing in the label language")
     route = serializers.CharField()
     duration = serializers.CharField(allow_blank=True)
     instructions = serializers.CharField(allow_blank=True)

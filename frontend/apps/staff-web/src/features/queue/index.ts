@@ -32,6 +32,10 @@ export const queueFeature: FeatureRoutes = {
       lazy: lazy(() => import("./PrintPages"), "TicketSlipPage"),
     },
     {
+      path: "/queue/visits/:visitId/card",
+      lazy: lazy(() => import("./PrintPages"), "NextVisitCardPage"),
+    },
+    {
       path: "/bookings/card/:code",
       lazy: lazy(() => import("./PrintPages"), "AppointmentCardPage"),
     },

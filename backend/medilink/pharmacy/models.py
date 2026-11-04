@@ -54,6 +54,22 @@ class Frequency(models.TextChoices):
 
 
 PER_DAY: dict[str, int] = {"od": 1, "bd": 2, "tds": 3, "qds": 4, "nocte": 1}
+# Times of day per frequency, for the label pictograms (upgrade 13 W8, #207)
+TIMES_OF_DAY: dict[str, list[str]] = {
+    "od": ["morning"],
+    "bd": ["morning", "evening"],
+    "tds": ["morning", "noon", "evening"],
+    "qds": ["morning", "noon", "evening", "night"],
+    "nocte": ["night"],
+}
+
+
+class MealTiming(models.TextChoices):
+    """When to take it with respect to food; blank when it does not matter (#207)."""
+
+    BEFORE = "before_food", "Before food"
+    WITH = "with_food", "With food"
+    AFTER = "after_food", "After food"
 
 
 class Route(models.TextChoices):
@@ -146,6 +162,9 @@ class PrescriptionItem(TimeStampedModel):
     frequency_code = models.CharField(max_length=20, choices=Frequency.choices)
     route = models.CharField(max_length=20, choices=Route.choices)
     duration_days = models.PositiveSmallIntegerField(null=True, blank=True)
+    meal_timing = models.CharField(
+        max_length=12, choices=MealTiming.choices, blank=True, default=""
+    )
     quantity = models.PositiveIntegerField()
     instructions_enc = models.BinaryField(null=True, blank=True)
     substitution_allowed = models.BooleanField(default=True)

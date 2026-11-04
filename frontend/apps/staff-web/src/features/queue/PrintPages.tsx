@@ -80,6 +80,58 @@ export function TicketSlipPage() {
   );
 }
 
+/**
+ * /queue/visits/:visitId/card (#207, upgrade 13 W8): the next-visit card when the doctor set a
+ * follow-up in this visit, for a patient without a phone. The booked time and code when it was
+ * booked; otherwise the day to come back.
+ */
+export function NextVisitCardPage() {
+  const { t, i18n } = useTranslation();
+  const api = useApi();
+  const { visitId = "" } = useParams();
+  const facility = useFacilityName();
+  const serviceName = useServiceNames();
+  const language = i18n.resolvedLanguage ?? "rw";
+  const visit = useQuery({
+    queryKey: queueKeys.visit(visitId),
+    queryFn: () => api.queue.visit(visitId),
+  });
+  if (visit.isPending) return <LoadingState />;
+  if (visit.isError) return <Alert tone="danger">{t("queue.loadFailed")}</Alert>;
+  const next = visit.data.follow_up;
+  if (!next) return <Alert tone="warning">{t("queue.print.noFollowUp")}</Alert>;
+  return (
+    <Slip ready>
+      <p className="m-0 font-bold">{facility}</p>
+      <p className="m-0 text-[10pt] tracking-wide uppercase">{t("queue.print.nextVisit")}</p>
+      <p className="m-0 font-semibold">{visit.data.display_name}</p>
+      <p className="m-0 font-heading text-[20pt] leading-tight font-black">
+        {slotDay(next.due_on, language, "full")}
+      </p>
+      {next.starts_at ? (
+        <p className="m-0 font-heading text-[32pt] leading-none font-black tabular-nums">
+          {formatTime(next.starts_at, language)}
+        </p>
+      ) : (
+        <p className="m-0">{t("queue.print.comeMorning")}</p>
+      )}
+      <p className="m-0">
+        {serviceName(next.service_id)}
+        {next.doctor_name ? ` · ${next.doctor_name}` : ""}
+      </p>
+      {next.booking_code && (
+        <>
+          <p className="m-0 mt-1 text-[10pt]">{t("queue.print.code")}</p>
+          <p className="m-0 font-heading text-[22pt] leading-none font-black tracking-[0.2em]">
+            {next.booking_code}
+          </p>
+        </>
+      )}
+      <p className="m-0 mt-2 border-t border-black pt-2">{t("queue.print.bring")}</p>
+    </Slip>
+  );
+}
+
 /** /bookings/card/:code: the appointment card (proposed FR-DOC-08) for the next visit. */
 export function AppointmentCardPage() {
   const { t, i18n } = useTranslation();

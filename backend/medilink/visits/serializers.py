@@ -165,6 +165,14 @@ class TicketEventSerializer(serializers.Serializer):
     ticket_number = serializers.CharField()
 
 
+class NextVisitSerializer(serializers.Serializer):
+    due_on = serializers.DateField()
+    service_id = serializers.UUIDField()
+    starts_at = serializers.DateTimeField(allow_null=True, help_text="Set when it is booked")
+    booking_code = serializers.CharField(allow_blank=True)
+    doctor_name = serializers.CharField(allow_blank=True)
+
+
 class VisitDetailSerializer(serializers.Serializer):
     id = serializers.UUIDField()
     facility_patient_id = serializers.UUIDField()
@@ -176,6 +184,9 @@ class VisitDetailSerializer(serializers.Serializer):
     checked_in_at = serializers.DateTimeField(allow_null=True)
     tickets = TicketRowSerializer(many=True)
     events = TicketEventSerializer(many=True)
+    follow_up = NextVisitSerializer(
+        allow_null=True, help_text="The follow-up the doctor set in this visit (#207)"
+    )
 
 
 class DutyUpdateSerializer(StrictSerializer):

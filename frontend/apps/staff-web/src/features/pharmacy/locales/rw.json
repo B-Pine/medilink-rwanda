@@ -310,5 +310,10 @@
     "open": "Erekana imiti",
     "bornWrong": "Itariki y'amavuko ntihuye."
   },
-  "failed": "Ntibyashobotse. Ongera ugerageze."
+  "failed": "Ntibyashobotse. Ongera ugerageze.",
+  "favourites": {
+    "title": "Imiti ukunze kwandika",
+    "days_one": "Umunsi {{count}}",
+    "days_other": "Iminsi {{count}}"
+  }
 }

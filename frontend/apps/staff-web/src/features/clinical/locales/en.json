@@ -459,8 +459,29 @@
     "emptyTitle": "No templates yet",
     "empty": "Create one here, or save a consultation as a template while you write it.",
     "use": "Use a template",
-    "useHint": "Text goes into empty sections or after what you wrote. Diagnoses are added as provisional; medicines go to the prescription.",
-    "saveAs": "Save as template",
-    "itemsFailed": "These medicines need your attention in the prescription: {{names}}"
+    "useHint": "One click adds the diagnosis, plan, instructions and medicines. Text goes into empty sections or after what you wrote; diagnoses are added as provisional. You can still change everything before you sign.",
+    "saveAs": "Save as template"
+  },
+  "orderSet": {
+    "applied": "“{{name}}” added to the note",
+    "review": "Check it for this patient, then sign.",
+    "listLabel": "What the template changed",
+    "diagnosesAdded": "Diagnosis added as provisional: {{names}}",
+    "diagnosesAlready": "Already in the note, not added twice: {{names}}",
+    "diagnosesSkipped": "Not added, not a known ICD-10 code or too many diagnoses: {{names}}. Search for the right code.",
+    "sections": "Text added to: {{names}}",
+    "medicinesAdded": "Added to the prescription: {{names}}",
+    "medicinesAlready": "Already on the prescription, not added twice: {{names}}",
+    "medicinesFailed": "Not added, add them in the prescription yourself: {{names}}",
+    "tests": "Lab tests are not ordered from templates yet. Order them yourself: {{names}}",
+    "adding": "Adding the medicines…",
+    "needsYou": "Some items need you. The note is not signed until you sign it.",
+    "stillSign": "Nothing was skipped. The note is not signed until you sign it.",
+    "done": "Back to the note",
+    "another": "Use another template"
+  },
+  "favourites": {
+    "diagnoses": "Your frequent diagnoses",
+    "add": "Add {{name}}"
   }
 }

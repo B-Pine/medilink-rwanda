@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5554.
+Keys: 5574.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -1249,9 +1249,26 @@ File: `apps/staff-web/src/features/clinical/locales/rw.json`
 | `templates.emptyTitle` | Nta nyandiko ngenderwaho uragira | No templates yet | needs native-speaker review |
 | `templates.empty` | Yikore hano, cyangwa ubike isuzuma nk'inyandiko ngenderwaho uri kuryandika. | Create one here, or save a consultation as a template while you write it. | needs native-speaker review |
 | `templates.use` | Koresha inyandiko ngenderwaho | Use a template | needs native-speaker review |
-| `templates.useHint` | Inyandiko ijya mu bice birimo ubusa cyangwa nyuma y'ibyo wanditse. Amasuzuma yongerwamo nk'ay'agateganyo; imiti ijya ku rupapuro rw'imiti. | Text goes into empty sections or after what you wrote. Diagnoses are added as provisional; medicines go to the prescription. | needs native-speaker review |
+| `templates.useHint` | Gukanda rimwe byongeramo isuzuma, gahunda, amabwiriza n'imiti. Inyandiko ijya mu bice birimo ubusa cyangwa nyuma y'ibyo wanditse; amasuzuma yongerwamo nk'ay'agateganyo. Ushobora guhindura byose mbere yo gusinya. | One click adds the diagnosis, plan, instructions and medicines. Text goes into empty sections or after what you wrote; diagnoses are added as provisional. You can still change everything before you sign. | needs native-speaker review |
 | `templates.saveAs` | Bika nk'inyandiko ngenderwaho | Save as template | needs native-speaker review |
-| `templates.itemsFailed` | Iyi miti ikeneye ko uyireba ku rupapuro rw'imiti: {{names}} | These medicines need your attention in the prescription: {{names}} | needs native-speaker review |
+| `orderSet.applied` | “{{name}}” yongewe mu nyandiko | “{{name}}” added to the note | needs native-speaker review |
+| `orderSet.review` | Bisuzume kuri uyu murwayi, hanyuma usinye. | Check it for this patient, then sign. | needs native-speaker review |
+| `orderSet.listLabel` | Ibyo inyandiko ngenderwaho yahinduye | What the template changed | needs native-speaker review |
+| `orderSet.diagnosesAdded` | Isuzuma ryongewemo nk'iry'agateganyo: {{names}} | Diagnosis added as provisional: {{names}} | needs native-speaker review |
+| `orderSet.diagnosesAlready` | Byari bisanzwe mu nyandiko, ntibyongewe kabiri: {{names}} | Already in the note, not added twice: {{names}} | needs native-speaker review |
+| `orderSet.diagnosesSkipped` | Ntibyongewemo, si kode ya ICD-10 izwi cyangwa amasuzuma ni menshi: {{names}}. Shaka kode nyayo. | Not added, not a known ICD-10 code or too many diagnoses: {{names}}. Search for the right code. | needs native-speaker review |
+| `orderSet.sections` | Inyandiko yongewe muri: {{names}} | Text added to: {{names}} | needs native-speaker review |
+| `orderSet.medicinesAdded` | Byongewe ku rupapuro rw'imiti: {{names}} | Added to the prescription: {{names}} | needs native-speaker review |
+| `orderSet.medicinesAlready` | Byari bisanzwe ku rupapuro rw'imiti, ntibyongewe kabiri: {{names}} | Already on the prescription, not added twice: {{names}} | needs native-speaker review |
+| `orderSet.medicinesFailed` | Ntibyongewemo, ubyongere ubwawe ku rupapuro rw'imiti: {{names}} | Not added, add them in the prescription yourself: {{names}} | needs native-speaker review |
+| `orderSet.tests` | Ibizamini bya laboratwari ntibirasabwa binyuze mu nyandiko ngenderwaho. Bisabe ubwawe: {{names}} | Lab tests are not ordered from templates yet. Order them yourself: {{names}} | needs native-speaker review |
+| `orderSet.adding` | Turimo kongeramo imiti… | Adding the medicines… | needs native-speaker review |
+| `orderSet.needsYou` | Hari ibikeneye ko ubireba. Inyandiko ntisinywa utayisinye. | Some items need you. The note is not signed until you sign it. | needs native-speaker review |
+| `orderSet.stillSign` | Nta na kimwe cyasimbutswe. Inyandiko ntisinywa utayisinye. | Nothing was skipped. The note is not signed until you sign it. | needs native-speaker review |
+| `orderSet.done` | Garuka ku nyandiko | Back to the note | needs native-speaker review |
+| `orderSet.another` | Koresha indi nyandiko ngenderwaho | Use another template | needs native-speaker review |
+| `favourites.diagnoses` | Amasuzuma ukunze gukoresha | Your frequent diagnoses | needs native-speaker review |
+| `favourites.add` | Ongeramo {{name}} | Add {{name}} | needs native-speaker review |
 
 ## staff-web feature: console (namespace console)
 
@@ -2444,6 +2461,9 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `verify.open` | Erekana imiti | Show medicines | needs native-speaker review |
 | `verify.bornWrong` | Itariki y'amavuko ntihuye. | The date of birth does not match. | needs native-speaker review |
 | `failed` | Ntibyashobotse. Ongera ugerageze. | Could not load. Try again. | needs native-speaker review |
+| `favourites.title` | Imiti ukunze kwandika | Your frequent medicines | needs native-speaker review |
+| `favourites.days_one` | Umunsi {{count}} | {{count}} day | needs native-speaker review |
+| `favourites.days_other` | Iminsi {{count}} | {{count}} days | needs native-speaker review |
 
 ## staff-web feature: platform (namespace platform)
 

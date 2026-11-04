@@ -405,20 +405,66 @@ export type TemplateSections = Record<
   string
 >;
 
-/** My note template, with diagnoses and a favourite prescription; follows me across facilities. */
+/** A diagnosis on a template, labelled in the request language (W3, #202). */
+export interface TemplateDiagnosis {
+  code: string;
+  display: string;
+  plain_language: string;
+  is_sensitive: boolean;
+  /** False when the code is not an active ICD-10 code: applying skips it and says so. */
+  is_known: boolean;
+}
+
+/**
+ * A lab test on an order set: the extension point for W2 lab orders. Stored and returned, but
+ * not ordered yet; applying the order set lists the tests to order by hand.
+ */
+export interface TemplateTest {
+  code: string;
+  name?: string;
+}
+
+/**
+ * My note template, used as an order set (W3): diagnoses, plan, instructions and a prescription
+ * applied in one click; follows me across facilities.
+ */
 export interface NoteTemplate {
   id: Uuid;
   name: string;
   sections: TemplateSections;
   diagnosis_codes: string[];
+  diagnoses: TemplateDiagnosis[];
   items: NoteTemplateItem[];
+  tests: TemplateTest[];
   use_count: number;
   updated_at: string;
 }
 
 export type NoteTemplateInput = Pick<NoteTemplate, "name" | "diagnosis_codes" | "items"> & {
   sections: Partial<TemplateSections>;
+  tests?: TemplateTest[];
 };
+
+/** A medicine I prescribe often, with the dosing of its latest use (W3, #202). */
+export interface FavouriteMedicine {
+  drug_code: string;
+  free_text_drug: string;
+  drug_display: string;
+  is_controlled: boolean;
+  available_here: boolean;
+  dose: string;
+  frequency_code: string;
+  route: string;
+  duration_days: number | null;
+  count: number;
+}
+
+/** My most used diagnoses and medicines here: from my signed work, last 180 days, used twice+. */
+export interface ClinicalFavourites {
+  window_days: number;
+  diagnoses: { code: string; display: string; plain_language: string; count: number }[];
+  medicines: FavouriteMedicine[];
+}
 
 /** Patient view (PR1/PR2): no private notes, no examination. */
 export interface PatientRecordDiagnosis {
@@ -473,6 +519,7 @@ export const clinicalPaths = {
   templates: `${STF}/clinical/templates/`,
   template: (id: Uuid) => `${STF}/clinical/templates/${id}/`,
   templateUsed: (id: Uuid) => `${STF}/clinical/templates/${id}/used/`,
+  favourites: `${STF}/clinical/favourites/`,
   results: `${STF}/results-inbox/`,
   reviewResult: (id: Uuid) => `${STF}/results-inbox/${id}/review/`,
   scans: (fpId: Uuid) => `${STF}/clinical/patients/${fpId}/scans/`,
@@ -537,6 +584,8 @@ export function createClinicalApi(client: ApiClient) {
       client.request<NoteTemplate>("PUT", clinicalPaths.template(id), { body }),
     deleteTemplate: (id: Uuid) => client.request<void>("DELETE", clinicalPaths.template(id)),
     templateUsed: (id: Uuid) => client.post<NoteTemplate>(clinicalPaths.templateUsed(id), {}),
+    /** W3: my most used diagnoses and medicines, shown first in the pickers. */
+    favourites: () => client.get<ClinicalFavourites>(clinicalPaths.favourites),
     /** R1: outside results assigned to me, oldest first. */
     results: (params: { status?: "pending" | "reviewed"; page?: number } = {}) =>
       client.get<Paginated<ResultReview>>(clinicalPaths.results + query(params)),

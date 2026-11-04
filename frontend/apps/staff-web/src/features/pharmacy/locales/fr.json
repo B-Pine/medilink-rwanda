@@ -310,5 +310,10 @@
     "open": "Voir les médicaments",
     "bornWrong": "La date de naissance ne correspond pas."
   },
-  "failed": "Chargement impossible. Réessayez."
+  "failed": "Chargement impossible. Réessayez.",
+  "favourites": {
+    "title": "Vos médicaments fréquents",
+    "days_one": "{{count}} jour",
+    "days_other": "{{count}} jours"
+  }
 }

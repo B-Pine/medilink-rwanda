@@ -35,6 +35,7 @@ urlpatterns = [
         d.TemplateUsedView.as_view(),
         name="staff-clinical-template-used",
     ),
+    path("clinical/favourites/", d.FavouritesView.as_view(), name="staff-clinical-favourites"),
     path(
         "consultations/<uuid:consultation_id>/",
         v.ConsultationView.as_view(),

@@ -459,8 +459,29 @@
     "emptyTitle": "Aucun modèle",
     "empty": "Créez-en un ici, ou enregistrez une consultation comme modèle pendant que vous l’écrivez.",
     "use": "Utiliser un modèle",
-    "useHint": "Le texte va dans les sections vides ou après ce que vous avez écrit. Les diagnostics sont ajoutés comme provisoires ; les médicaments vont dans l’ordonnance.",
-    "saveAs": "Enregistrer comme modèle",
-    "itemsFailed": "Ces médicaments demandent votre attention dans l’ordonnance : {{names}}"
+    "useHint": "Un clic ajoute le diagnostic, le plan, les consignes et les médicaments. Le texte va dans les sections vides ou après ce que vous avez écrit ; les diagnostics sont ajoutés comme provisoires. Vous pouvez tout modifier avant de signer.",
+    "saveAs": "Enregistrer comme modèle"
+  },
+  "orderSet": {
+    "applied": "« {{name}} » ajouté à la note",
+    "review": "Vérifiez-le pour ce patient, puis signez.",
+    "listLabel": "Ce que le modèle a changé",
+    "diagnosesAdded": "Diagnostic ajouté comme provisoire : {{names}}",
+    "diagnosesAlready": "Déjà dans la note, pas ajouté deux fois : {{names}}",
+    "diagnosesSkipped": "Non ajouté, code CIM-10 inconnu ou trop de diagnostics : {{names}}. Cherchez le bon code.",
+    "sections": "Texte ajouté à : {{names}}",
+    "medicinesAdded": "Ajouté à l’ordonnance : {{names}}",
+    "medicinesAlready": "Déjà sur l’ordonnance, pas ajouté deux fois : {{names}}",
+    "medicinesFailed": "Non ajouté, ajoutez-les vous-même à l’ordonnance : {{names}}",
+    "tests": "Les examens de laboratoire ne sont pas encore demandés depuis les modèles. Demandez-les vous-même : {{names}}",
+    "adding": "Ajout des médicaments…",
+    "needsYou": "Certains éléments vous attendent. La note n’est signée que lorsque vous la signez.",
+    "stillSign": "Rien n’a été omis. La note n’est signée que lorsque vous la signez.",
+    "done": "Retour à la note",
+    "another": "Utiliser un autre modèle"
+  },
+  "favourites": {
+    "diagnoses": "Vos diagnostics fréquents",
+    "add": "Ajouter {{name}}"
   }
 }

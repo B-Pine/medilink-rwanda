@@ -6,6 +6,7 @@ import { useEffect, useId, useState, type KeyboardEvent } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useApi } from "../../app/services";
+import { favouriteRank, FrequentDiagnoses, useFavourites } from "./Favourites";
 
 /** A chosen diagnosis with what the screen shows (labels come from the server snapshot). */
 export interface PickedDiagnosis extends DiagnosisInput {
@@ -20,7 +21,9 @@ interface CodeItem extends LocalisedItem {
   is_sensitive?: boolean;
 }
 
-const label = (item: CodeItem) =>
+type Pickable = Pick<CodeItem, "code" | "title" | "plain_language" | "is_sensitive">;
+
+const label = (item: Pickable) =>
   item.plain_language && item.plain_language !== item.title
     ? `${item.plain_language} (${item.title ?? ""})`
     : (item.title ?? item.code);
@@ -60,11 +63,19 @@ export function DiagnosisPicker({
     queryFn: () => api.masterData.staffList<CodeItem>("diagnosis-codes", { q, page_size: 8 }),
     enabled: q.length >= 2,
   });
+  // W3: my frequent diagnoses as one-click chips, and first in the search results
+  const frequent = useFavourites(!disabled).data?.diagnoses ?? [];
   const chosen = new Set(value.map((d) => d.code));
-  const options = (search.data?.results ?? []).filter((item) => !chosen.has(item.code));
+  const options = (search.data?.results ?? [])
+    .filter((item) => !chosen.has(item.code))
+    .sort(
+      (a, b) =>
+        favouriteRank(frequent, (f) => f.code === a.code) -
+        favouriteRank(frequent, (f) => f.code === b.code),
+    );
   const showList = open && q.length >= 2;
 
-  const pick = (item: CodeItem) => {
+  const pick = (item: Pickable) => {
     const hasPrimary = value.some((d) => d.rank === "primary");
     onChange([
       ...value,
@@ -232,6 +243,13 @@ export function DiagnosisPicker({
             ))}
           </div>
         </div>
+      )}
+      {!disabled && (
+        <FrequentDiagnoses
+          items={frequent}
+          chosen={chosen}
+          onPick={(d) => pick({ code: d.code, title: d.display, plain_language: d.plain_language })}
+        />
       )}
     </div>
   );

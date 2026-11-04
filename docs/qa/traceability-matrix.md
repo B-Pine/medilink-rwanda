@@ -138,8 +138,8 @@ Source: [05 · Discovery, calendars, scheduling, booking](../analysis/05-discove
 | FR-SCH-12 | Reception and doctor calendars (day, week) | P1 | S5 | Both | CMP, E2E | In progress |
 | FR-SCH-13 | No-show detection, reversal with reason, strikes | P1 | S5 | Both | BR | In progress (R4 #86) |
 | FR-SCH-14 | Disruption flow: bulk rebooking and notification | P1 | S5 | Both | BR, E2E | In progress |
-| FR-SCH-15 | Follow-up booking from the consultation | P1 | S5 | Both | API | In progress |
-| FR-SCH-16 | Recurring care plans | P2 | — | Both | BR | Not started |
+| FR-SCH-15 | Follow-up booking from the consultation | P1 | S5, U8 W7 (#206: a follow-up date without a booking reminds the patient the day before and on the morning, and shows under "Planned by your clinic" with "Book a time") | Both | API, BR (`test_follow_through.py`), CMP (`follow-through.test.tsx`) | In progress |
+| FR-SCH-16 | Recurring care plans | P2 | U8 W7 (#206), part | Both | BR | In progress (W7: a doctor plans single dated vaccinations and antenatal visits with reminders; no recurrence rules) |
 | FR-SCH-17 | Waitlist with timed offers | P2 | — | Both | BR | Not started |
 | FR-SCH-18 | Medicine schedule in the patient calendar | P2 | — | Both | CMP | Not started |
 
@@ -187,7 +187,7 @@ Source: [07 · Clinical record](../analysis/07-clinical-documentation-and-pharma
 | FR-CLN-08 | Restricted (sensitive) records | P1 | S6 | Both | AZ | In progress |
 | FR-CLN-09 | Results inbox with review sign-off | P1 | S6b | Both | API, E2E | In progress |
 | FR-CLN-10 | Consultation templates as order sets (diagnosis, plan, instructions, prescription in one click; lab tests kept for W2) and the doctor's favourites first in the diagnosis and medicine search | P2 | W3 (#202) | Both | API, CMP | Implemented (#202) |
-| FR-CLN-11 | Laboratory loop: order, sample, result, back to the same doctor, review, release; patient sees released results only | P1 | U8 (#201) | Both | API, AZ, CMP | Implemented (#201) |
+| FR-CLN-11 | Laboratory loop: order, sample, result, back to the same doctor, review, release; patient sees released results only | P1 | U8 (#201, W7 #206: "a result is ready" notice on release, results first on Records, new results under Needs your attention) | Both | API, AZ, CMP | Implemented (#201, #206) |
 
 ## FR-PHA · Pharmacy
 
@@ -254,7 +254,7 @@ Source: [09 · Notifications](../analysis/09-notifications-and-communication.md)
 | FR-NOT-04 | Email notifications with documents and calendar files | P1 | S9 | Backend | API | In progress |
 | FR-NOT-05 | Priority levels, quiet hours, fallback rules | P1 | S9 | Backend | BR | In progress |
 | FR-NOT-06 | Patient, staff and facility preferences | P1 | S9 | Both | API, CMP | In progress |
-| FR-NOT-07 | Notification catalogue (analysis 09 §4) | P1 | S9, S9b | Both | API, INS | In progress |
+| FR-NOT-07 | Notification catalogue (analysis 09 §4) | P1 | S9, S9b, U8 W7 (#206: visit reminders at the patient's offsets, follow-up and care-schedule reminders, result ready, "almost your turn" from every queue move, counter call) | Both | API, INS, BR (`test_follow_through.py`) | In progress |
 | FR-NOT-08 | Guardians receive dependents' notifications | P1 | S9 | Backend | BR | In progress |
 | FR-NOT-09 | Trilingual versioned templates; no clinical details | P1 | S9 | Backend | UT, INS | In progress |
 | FR-NOT-10 | Delivery log with status and failures; retries | P1 | S9 | Backend | API | In progress |

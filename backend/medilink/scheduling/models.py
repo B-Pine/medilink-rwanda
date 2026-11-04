@@ -532,6 +532,55 @@ class FollowUp(TimeStampedModel):
         return f"follow-up {self.due_on}"
 
 
+# ---- W7: care schedule (upgrade 13 W7) -----------------------------------------------------------
+
+
+class CareScheduleKind(models.TextChoices):
+    VACCINATION = "vaccination", "Vaccination"
+    ANTENATAL = "antenatal", "Antenatal visit"
+
+
+class CareScheduleStatus(models.TextChoices):
+    DUE = "due", "Due"
+    CANCELLED = "cancelled", "Cancelled"
+
+
+class CareScheduleEntry(TimeStampedModel):
+    """A dated vaccination or antenatal visit a clinician planned for a patient (upgrade 13 W7).
+    The reminder engine tells the patient the day before and on the morning; the optional label
+    ("second dose") is encrypted and never goes into a notification."""
+
+    facility = models.ForeignKey("tenancy.Facility", on_delete=models.PROTECT, related_name="+")
+    version = models.PositiveIntegerField(default=1)
+    patient = models.ForeignKey("patients.Patient", on_delete=models.PROTECT, related_name="+")
+    facility_patient = models.ForeignKey(
+        "patients.FacilityPatient", on_delete=models.PROTECT, related_name="+"
+    )
+    kind = models.CharField(max_length=12, choices=CareScheduleKind.choices)
+    due_on = models.DateField()
+    label_encrypted = models.BinaryField(null=True, blank=True)
+    status = models.CharField(
+        max_length=10, choices=CareScheduleStatus.choices, default=CareScheduleStatus.DUE
+    )
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
+    )
+    created_by_membership = models.ForeignKey(
+        "tenancy.FacilityMembership", on_delete=models.PROTECT, null=True, related_name="+"
+    )
+    cancelled_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = "scheduling_care_schedule_entry"
+        indexes: ClassVar[list[Any]] = [
+            models.Index(fields=["facility", "due_on", "status"], name="scheduling_care_due"),
+            models.Index(fields=["facility_patient", "due_on"], name="scheduling_care_patient"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.kind} {self.due_on}"
+
+
 class CalendarFeed(TimeStampedModel):
     """Private `.ics` subscription link of one account (FR-SCH-11). Only the SHA-256 of the
     32-byte token is stored; the token is shown once. Row security by account (D-11)."""

@@ -589,6 +589,23 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/patient/care-schedule/:
+    get:
+      operationId: patient_care_schedule
+      summary: 'Coming up: planned vaccinations and antenatal visits, and follow-up
+        dates the doctor set without a booking, soonest first (W7)'
+      tags:
+      - booking
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComingUp'
+          description: ''
   /api/v1/patient/consents/:
     get:
       operationId: patient_consents_retrieve
@@ -10212,6 +10229,106 @@ paths:
               schema:
                 $ref: '#/components/schemas/StaffCalendar'
           description: ''
+  /api/v1/staff/care-schedule/{entry_id}/cancel/:
+    post:
+      operationId: staff_care_schedule_cancel
+      summary: Cancel a planned entry; no more reminders go out for it (W7)
+      parameters:
+      - in: path
+        name: entry_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - booking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CareScheduleCancelRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CareScheduleEntry'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Already cancelled
+  /api/v1/staff/care-schedule/patients/{facility_patient_id}/:
+    get:
+      operationId: staff_patient_care_schedule
+      summary: Planned vaccinations and antenatal visits of a patient at this facility
+        (W7)
+      parameters:
+      - in: path
+        name: facility_patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - booking
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CareScheduleList'
+          description: ''
+    post:
+      operationId: staff_patient_care_schedule_create
+      summary: Plan a dated vaccination or antenatal visit; the patient gets reminders
+        (W7)
+      parameters:
+      - in: path
+        name: facility_patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - booking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CareScheduleCreateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CareScheduleEntry'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: due_on in the past or too far
   /api/v1/staff/cash-shifts/:
     get:
       operationId: staff_cash_shifts
@@ -19594,6 +19711,82 @@ components:
       required:
       - granted
       - version
+    CareScheduleCancelRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 1
+      required:
+      - version
+    CareScheduleCreateRequest:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/CareScheduleKindEnum'
+        due_on:
+          type: string
+          format: date
+        note:
+          type: string
+          default: ''
+          maxLength: 80
+      required:
+      - due_on
+      - kind
+    CareScheduleEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: '#/components/schemas/CareScheduleKindEnum'
+        due_on:
+          type: string
+          format: date
+        note:
+          type: string
+        status:
+          $ref: '#/components/schemas/CareScheduleStatusEnum'
+        created_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+      required:
+      - created_at
+      - due_on
+      - id
+      - kind
+      - note
+      - status
+      - version
+    CareScheduleKindEnum:
+      enum:
+      - vaccination
+      - antenatal
+      type: string
+      description: |-
+        * `vaccination` - Vaccination
+        * `antenatal` - Antenatal visit
+    CareScheduleList:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CareScheduleEntry'
+      required:
+      - results
+    CareScheduleStatusEnum:
+      enum:
+      - due
+      - cancelled
+      type: string
+      description: |-
+        * `due` - Due
+        * `cancelled` - Cancelled
     CashShift:
       type: object
       properties:
@@ -20301,6 +20494,50 @@ components:
           maxLength: 20
       required:
       - code
+    ComingUp:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComingUpItem'
+      required:
+      - results
+    ComingUpItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/ComingUpTypeEnum'
+        due_on:
+          type: string
+          format: date
+        note:
+          type: string
+        facility_name:
+          type: string
+        patient_id:
+          type: string
+          format: uuid
+      required:
+      - due_on
+      - facility_name
+      - id
+      - note
+      - patient_id
+      - type
+    ComingUpTypeEnum:
+      enum:
+      - vaccination
+      - antenatal
+      - follow_up
+      type: string
+      description: |-
+        * `vaccination` - vaccination
+        * `antenatal` - antenatal
+        * `follow_up` - follow_up
     CommandCenter:
       type: object
       properties:

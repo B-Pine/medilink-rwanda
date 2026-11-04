@@ -27,6 +27,12 @@ RX_QUERY = "pharmacy.query.raised"
 DOCUMENT_READY = "documents.document.ready"
 APPLICATION_SUBMITTED = "onboarding.application.submitted"
 MERGE_REQUESTED = "patients.merge.requested"
+# W7 (upgrade 13): patient follow-through
+TICKET_CALLED_DESK = "queue.ticket.called_desk"
+LAB_RESULT_READY = "clinical.lab_result.ready"
+BOOKING_REMINDER = "scheduling.booking.reminder"
+FOLLOW_UP_DUE = "scheduling.follow_up.due"
+CARE_SCHEDULE_DUE = "scheduling.care_schedule.due"
 
 
 def _texts(
@@ -210,12 +216,81 @@ T_MERGE = {
     ),
 }
 
+# W7 (upgrade 13): generic on purpose. No test, vaccine or visit-type names: a push shows on the
+# lock screen, and "antenatal" alone would tell anyone who sees it that the patient is pregnant.
+T_CALLED_DESK = {
+    "rw": (
+        "Igihe kirageze",
+        "Tike $ticket_number: murahamagawe kuri $facility_name. Muze ubu.",
+    ),
+    "en": (
+        "It's your turn",
+        "Ticket $ticket_number: you are being called at $facility_name. Please come now.",
+    ),
+    "fr": (
+        "C'est votre tour",
+        "Ticket $ticket_number : on vous appelle à $facility_name. Venez maintenant.",
+    ),
+}
+T_LAB_READY = {
+    "rw": (
+        "Igisubizo kiriteguye",
+        "$facility_name yohereje igisubizo. Fungura MediLink ugisome hamwe n'icyo muganga "
+        "yanditse.",
+    ),
+    "en": (
+        "A result is ready",
+        "$facility_name shared a result. Open MediLink to read it with the doctor's note.",
+    ),
+    "fr": (
+        "Un résultat est prêt",
+        "$facility_name a partagé un résultat. Ouvrez MediLink pour le lire avec la note du "
+        "médecin.",
+    ),
+}
+T_REMINDER = {
+    "rw": (
+        "Kwibutsa gahunda",
+        "Mwibuke: gahunda yo kwivuza kuri $facility_name ku wa $date saa $time.",
+    ),
+    "en": ("Visit reminder", "Reminder: a visit at $facility_name on $date at $time."),
+    "fr": ("Rappel de visite", "Rappel : une visite à $facility_name le $date à $time."),
+}
+T_FOLLOW_UP = {
+    "rw": (
+        "Igihe cyo kugaruka",
+        "$facility_name yasabye ko mugaruka ku wa $date. Fungura MediLink mufate isaha.",
+    ),
+    "en": (
+        "A return visit is due",
+        "$facility_name asked for a return visit on $date. Open MediLink to book a time.",
+    ),
+    "fr": (
+        "Une visite de retour est prévue",
+        "$facility_name a demandé une visite de retour le $date. Ouvrez MediLink pour choisir "
+        "une heure.",
+    ),
+}
+T_CARE_SCHEDULE = {
+    "rw": (
+        "Gahunda iteganyijwe iregereje",
+        "Gahunda iteganyijwe kuri $facility_name ni ku wa $date.",
+    ),
+    "en": ("A planned visit is coming up", "A planned visit at $facility_name is due on $date."),
+    "fr": (
+        "Une visite prévue approche",
+        "Une visite prévue à $facility_name est due le $date.",
+    ),
+}
+
 # Patient app pages (upgrade 12 §2): the signed-in app lives under /dashboard; the frontend still
 # redirects the older /visits, /medicines and /documents addresses already sent.
 APPOINTMENT_PATH = "/dashboard/appointments/{booking_id}"
 TICKET_PATH = "/dashboard/queue/{visit_id}"
 MEDICATION_PATH = "/dashboard/medications/{prescription_id}"
 DOCUMENT_PATH = "/dashboard/documents/{document_id}"
+APPOINTMENTS_PATH = "/dashboard/appointments"
+RECORDS_PATH = "/dashboard/records"
 
 EVENTS: list[EventDefinition] = [
     EventDefinition(
@@ -379,5 +454,65 @@ EVENTS: list[EventDefinition] = [
         dedupe="{type}:{merge_id}",
         rate_limit=(200, timedelta(hours=1)),
         templates=_texts(("in_app",), T_MERGE),
+    ),
+    # ---- W7 (upgrade 13): patient follow-through ----
+    EventDefinition(
+        type=TICKET_CALLED_DESK,  # a call with no room to name (lab, cashier, pharmacy counters)
+        audience="patient",
+        priority="critical",
+        channels=PATIENT_LIVE,
+        placeholders={"ticket_number": P.TICKET_NUMBER, "facility_name": P.FACILITY_NAME},
+        data_keys=frozenset({"ticket_id", "visit_id"}),
+        action_path=TICKET_PATH,
+        dedupe="{type}:{ticket_id}",
+        ttl=timedelta(minutes=30),
+        templates=_texts(PATIENT_LIVE, T_CALLED_DESK),
+    ),
+    EventDefinition(
+        type=LAB_RESULT_READY,
+        audience="patient",
+        priority="important",
+        channels=PATIENT_ALL,
+        placeholders={"facility_name": P.FACILITY_NAME},
+        data_keys=frozenset({"lab_order_id"}),
+        action_path=RECORDS_PATH,
+        dedupe="{type}:{lab_order_id}",
+        templates=_texts(PATIENT_ALL, T_LAB_READY),
+    ),
+    EventDefinition(
+        type=BOOKING_REMINDER,
+        audience="patient",
+        priority="important",
+        channels=PATIENT_ALL,
+        placeholders=WHEN,
+        data_keys=frozenset({"booking_id"}),
+        action_path=APPOINTMENT_PATH,
+        dedupe="{type}:{booking_id}",  # the reminder job passes one key per offset
+        rate_limit=(20, timedelta(hours=1)),
+        templates=_texts(PATIENT_ALL, T_REMINDER),
+    ),
+    EventDefinition(
+        type=FOLLOW_UP_DUE,
+        audience="patient",
+        priority="important",
+        channels=PATIENT_ALL,
+        placeholders={"facility_name": P.FACILITY_NAME, "date": P.DATE},
+        data_keys=frozenset({"follow_up_id"}),
+        action_path=APPOINTMENTS_PATH,
+        dedupe="{type}:{follow_up_id}",
+        rate_limit=(20, timedelta(hours=1)),
+        templates=_texts(PATIENT_ALL, T_FOLLOW_UP),
+    ),
+    EventDefinition(
+        type=CARE_SCHEDULE_DUE,
+        audience="patient",
+        priority="important",
+        channels=PATIENT_ALL,
+        placeholders={"facility_name": P.FACILITY_NAME, "date": P.DATE},
+        data_keys=frozenset({"entry_id"}),
+        action_path=APPOINTMENTS_PATH,
+        dedupe="{type}:{entry_id}",
+        rate_limit=(20, timedelta(hours=1)),
+        templates=_texts(PATIENT_ALL, T_CARE_SCHEDULE),
     ),
 ]

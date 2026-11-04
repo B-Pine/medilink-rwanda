@@ -441,6 +441,8 @@ Requirements: FR-SCH-01..15; FR-BIL-03; FR-AI-01.
 | `GET` | `/api/v1/staff/disruptions/{id}/` | Disruption with affected items and patient responses | `queue.operate`, `facility.configure` | FR-SCH-14 | | Planned |
 | `POST` | `/api/v1/staff/disruptions/{id}/resolve/` | Bulk actions: another doctor, next slot, cancel | `queue.operate`, `facility.configure` | FR-SCH-14 | Idem; patients notified at once | Planned |
 | `POST` | `/api/v1/staff/visits/{id}/follow-ups/` | Set a follow-up (booking or reminder) from the consultation | `clinical.write` | FR-SCH-15 | | Planned |
+| `GET`, `POST` | `/api/v1/staff/care-schedule/patients/{facility_patient_id}/` | A patient's planned vaccinations and antenatal visits at this facility; `POST` plans one (`kind` vaccination or antenatal, `due_on` today to 2 years ahead, optional `note` up to 80 characters) | `care_schedule.manage` (doctor) | FR-SCH-16 (part) | W7 (#206). Note encrypted; reminders the day before (08:00) and on the morning (07:00) never name the kind or the note; audit `scheduling.care_schedule.create` | Implemented (#206) |
+| `POST` | `/api/v1/staff/care-schedule/{id}/cancel/` | Cancel a planned date; no more reminders for it | `care_schedule.manage` | FR-SCH-16 (part) | `version` (409 when stale, 422 when already cancelled); audit `scheduling.care_schedule.cancel` | Implemented (#206) |
 
 ### Platform
 
@@ -511,6 +513,7 @@ Requirements: FR-CLN-01..09; FR-PAT-10..12; FR-SEC-03, 09. Prescription drafting
 | `GET` | `/api/v1/patient/visits/` | My visits timeline | Patient session | FR-PAT-13 | Filter `patient_id`; email must be verified | Planned |
 | `GET` | `/api/v1/patient/visits/{id}/` | Visit detail: plain-language diagnoses, instructions, addenda | Linked account | FR-PAT-13, FR-CLN-01 | Never private notes; restricted records hidden from delegates | Planned |
 | `GET` | `/api/v1/patient/results/` | Lab results the doctor released, with the doctor's note, newest first | Linked account | FR-CLN-11 (proposed) | Filter `patient_id`; released only (SECURITY DEFINER `clinical_patient_lab_results`); delegates never see results of restricted consultations; never the lab's comment | Implemented (#201) |
+| `GET` | `/api/v1/patient/care-schedule/` | Coming up: planned vaccinations and antenatal visits, and follow-up dates the doctor set without a booking, soonest first | Linked account (self and guardian only) | FR-SCH-15, FR-SCH-16 (part) | W7 (#206). SECURITY DEFINER `scheduling_patient_care_schedule`; never a delegate's; today and later; at most 100 | Implemented (#206) |
 
 ### Platform
 

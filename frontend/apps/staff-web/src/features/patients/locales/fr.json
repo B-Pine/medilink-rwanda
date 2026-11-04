@@ -309,5 +309,26 @@
     "newPhone": "Nouveau téléphone (vide pour le garder)",
     "relationship": "Lien",
     "relationshipHint": "Par exemple : fille, voisin, agent de santé communautaire"
+  },
+  "careSchedule": {
+    "tab": "Calendrier de soins",
+    "title": "Vaccinations et consultations prénatales prévues",
+    "intro": "Le patient reçoit un rappel la veille et le matin même. Le rappel ne dit jamais à quoi sert la visite ; la note n'apparaît que dans l'application du patient.",
+    "empty": "Rien de prévu.",
+    "failed": "Impossible de charger le calendrier de soins.",
+    "add": "Prévoir une date",
+    "kind": "Quoi",
+    "kinds": {
+      "vaccination": "Vaccination",
+      "antenatal": "Consultation prénatale"
+    },
+    "dueOn": "Date",
+    "note": "Note (facultative)",
+    "noteHint": "Par exemple : deuxième dose. 80 caractères au plus.",
+    "save": "Ajouter au calendrier",
+    "saved": "Ajouté. Le patient recevra des rappels.",
+    "cancel": "Annuler la date",
+    "cancelTitle": "Annuler cette date prévue ?",
+    "cancelConsequences": "Le patient ne reçoit aucun rappel pour le {{date}}. Pour déplacer la date, annulez-la et ajoutez la nouvelle."
   }
 }

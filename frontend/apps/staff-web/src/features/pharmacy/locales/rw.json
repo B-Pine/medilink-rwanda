@@ -3,7 +3,8 @@
   "nav": {
     "availability": "Imiti iboneka",
     "history": "Amateka yo gutanga imiti",
-    "verify": "Genzura urupapuro rw'imiti"
+    "verify": "Genzura urupapuro rw'imiti",
+    "stock": "Ububiko"
   },
   "age_one": "Umwaka {{count}}",
   "age_other": "Imyaka {{count}}",
@@ -62,7 +63,8 @@
     "queried": "Ikibazo kuri muganga",
     "notInStock": "Ntuboneka hano",
     "offCatalogue": "Ntuba mu rutonde",
-    "noSubstitution": "Nta gusimbuza"
+    "noSubstitution": "Nta gusimbuza",
+    "lowStock": "Ububiko buke hano"
   },
   "queue": {
     "title": "Farumasi",
@@ -185,7 +187,8 @@
     "in": "Urahari",
     "out": "Washize",
     "since": "Washize kuva {{date}}",
-    "none": "Nta muti uhuye."
+    "none": "Nta muti uhuye.",
+    "followsStock": "Bikurikira ibarura ry'ububiko. Byakire cyangwa ubihindure ku rupapuro rw'Ububiko."
   },
   "labels": {
     "title": "Ibirango by'imiti",
@@ -258,7 +261,9 @@
     "next": "Ibikurikira gutangwa",
     "nothing": "Nta rupapuro rw'imiti rutegereje. Inshya ziza hano abaganga bamaze gusinya.",
     "items_one": "Umuti {{count}}",
-    "items_other": "Imiti {{count}}"
+    "items_other": "Imiti {{count}}",
+    "lowStock_one": "Ububiko buke (icyiciro {{count}} kirarangira vuba)",
+    "lowStock_other": "Ububiko buke (ibyiciro {{count}} birarangira vuba)"
   },
   "history": {
     "title": "Amateka yo gutanga imiti",
@@ -315,5 +320,103 @@
     "title": "Imiti ukunze kwandika",
     "days_one": "Umunsi {{count}}",
     "days_other": "Iminsi {{count}}"
+  },
+  "stock": {
+    "title": "Ububiko",
+    "description": "Ibiri ku gipangu, icyiciro ku kindi. Gutanga imiti bihera ku izarangira mbere.",
+    "tabs": "Uko ububiko bugaragara",
+    "tab": {
+      "all": "Imiti yose",
+      "short": "Mike cyangwa yashize",
+      "expiring": "Izarangira vuba",
+      "movements": "Ibyahindutse"
+    },
+    "search": "Shaka umuti",
+    "none": "Nta muti urafite ububiko.",
+    "noneBody": "Akira icyiciro kugira ngo utangire kubara umuti. Indi miti igumana buto yo ku Kuboneka kw'imiti.",
+    "noneShort": "Nta muti muke cyangwa washize.",
+    "nextExpiry": "Irarangira {{date}}",
+    "noUsable": "Nta cyiciro gikoreshwa",
+    "expiredUnits_one": "{{count}} yarangije igihe yo kuvanamo",
+    "expiredUnits_other": "{{count}} zarangije igihe zo kuvanamo",
+    "units_one": "{{count}}",
+    "units_other": "{{count}}",
+    "level": {
+      "in_stock": "Irahari",
+      "low": "Ububiko buke",
+      "out": "Yashize"
+    },
+    "expired": "Yarangije igihe",
+    "expiringNone": "Nta cyiciro kirangira mu minsi 60 iri imbere.",
+    "expiringIntro": "Ibyiciro bifite imiti isigaye birangira mu minsi 60, ibyarangiye mbere. Bitange mbere, cyangwa ukure ibyarangiye ku gipangu.",
+    "columns": {
+      "medicine": "Umuti",
+      "batch": "Icyiciro",
+      "expiry": "Irangira",
+      "units": "Umubare",
+      "when": "Igihe",
+      "change": "Impinduka",
+      "by": "Uwabikoze"
+    },
+    "movements": "Ibyahindutse",
+    "movementsNone": "Nta cyahindutse kugeza ubu.",
+    "kind": {
+      "received": "Byakiriwe",
+      "dispensed": "Byatanzwe",
+      "adjusted": "Byahinduwe"
+    },
+    "reason": {
+      "count_correction": "Gukosora ibarura",
+      "damaged": "Byangiritse",
+      "expired": "Byarangije igihe"
+    },
+    "prescription": "Resept",
+    "balanceAfter_one": "{{count}} isigaye mu cyiciro",
+    "balanceAfter_other": "{{count}} zisigaye mu cyiciro",
+    "receive": {
+      "open": "Akira ububiko",
+      "title": "Akira ububiko",
+      "description": "Icyiciro kimwe icyarimwe, nk'uko cyanditse ku gakarito.",
+      "save": "Ongera mu bubiko",
+      "drugRequired": "Hitamo umuti.",
+      "batchRequired": "Tanga nimero y'icyiciro.",
+      "expiryRequired": "Tanga itariki birangiriraho.",
+      "expiryPast": "Iki cyiciro cyarangije igihe. Ntugishyire ku gipangu.",
+      "quantityRequired": "Tanga umubare, 1 cyangwa urenga.",
+      "batch": "Nimero y'icyiciro",
+      "expiry": "Itariki birangiriraho",
+      "quantity": "Umubare wakiriwe",
+      "quantityHint": "Ibinini, kapsule, amacupa: icyo utanga.",
+      "supplier": "Uwatanze"
+    },
+    "threshold": "Urugero rw'ububiko buke",
+    "thresholdHint": "\"Ububiko buke\" munsi y'uyu mubare. 0 birabihagarika.",
+    "thresholdInvalid": "Tanga umubare wuzuye, 0 cyangwa urenga.",
+    "saveThreshold": "Bika",
+    "back": "Ububiko bwose",
+    "detailIntro": "Ibyiciro biri ku gipangu n'ibyahindutse vuba.",
+    "batches": "Ibyiciro biri ku gipangu",
+    "noBatches": "Nta muti usigaye. Akira icyiciro kugira ngo wongere.",
+    "noSupplier": "Uwatanze ntiyavuzwe",
+    "summary": "Incamake y'ububiko",
+    "onHand": "Ishobora gukoreshwa",
+    "expiredToRemove_one": "{{count}} yarangije igihe iracyari ku gipangu. Hindura icyiciro cyayo ukoresheje impamvu Byarangije igihe.",
+    "expiredToRemove_other": "{{count}} zarangije igihe ziracyari ku gipangu. Hindura icyiciro cyazo ukoresheje impamvu Byarangije igihe.",
+    "adjust": {
+      "open": "Hindura",
+      "title": "Hindura icyiciro {{batch}}",
+      "description_one": "{{count}} iri muri iki cyiciro ubu. Buri mpinduka yandikwa n'izina ryawe.",
+      "description_other": "{{count}} ziri muri iki cyiciro ubu. Buri mpinduka yandikwa n'izina ryawe.",
+      "save": "Bika impinduka",
+      "reason": "Impamvu",
+      "counted": "Umubare wabaze",
+      "countedHint": "Bara icyiciro kiri ku gipangu wandike umubare.",
+      "countedRequired": "Andika umubare wabaze, 0 cyangwa urenga.",
+      "noChange": "Ni wo mubare usanzwe wanditse.",
+      "difference": "Impinduka: {{change}}",
+      "removed": "Umubare wo kuvanamo",
+      "removeRange": "Vanamo hagati ya 1 na {{max}}.",
+      "note": "Icyitonderwa"
+    }
   }
 }

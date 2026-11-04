@@ -8,6 +8,31 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Pharmacy stock, lite (2026-11-04, #204)
+
+- Added: stock per medicine, batch and expiry at each facility: `pharmacy_stock_item` (one card
+  per medicine, with a low-stock threshold), `pharmacy_stock_batch` (batch number, expiry, units
+  on hand, optional supplier; never below zero) and the append-only `pharmacy_stock_movement`
+  ledger (received, dispensed, adjusted with a reason). Forced facility RLS on all three
+  (pharmacy migrations 0003 and 0004).
+- Added: permission `pharmacy.stock` for pharmacists and facility admins, and endpoints under
+  `/api/v1/staff/pharmacy/stock/`: the list (`q`, `level=low|out|short`), `receive/`, one
+  medicine's batches and last 50 movements (`{drug_code}/`; `PUT` sets the threshold),
+  `batches/{id}/adjust/` (count correction, damaged or expired), `expiring/` (60 days by
+  default, expired first) and `movements/`. Audit `pharmacy.stock.received`, `.adjusted` and
+  `.threshold_changed`.
+- Changed: dispensing takes the units from the earliest-expiring usable batches, in the same
+  transaction and under a row lock on the stock card. When the usable stock is short, the whole
+  dispensing is refused (`422`, "Only N left"): give that many as part, or correct the count
+  first. There is no override. Expired batches are never dispensed. Medicines without stock are
+  dispensed as before.
+- Changed: once a medicine has stock, its availability follows the count: out of stock at zero
+  usable units, `stock_level` `low` below the threshold. Drug search, prescription items and
+  availability rows carry `stock_level` (null when the medicine has no stock card); availability
+  rows also carry `follows_stock`, and the manual switch returns `422` for such a medicine.
+  Pharmacist Today adds `low_stock` and `expiring_soon`; `out_of_stock` counts both kinds. Drug
+  search is also open to `pharmacy.stock`.
+
 ### Cashier and insurance finish (2026-11-04, #203)
 
 - Added: the monthly claim list per insurer. `GET /staff/insurance-claims/?insurer=&month=YYYY-MM`

@@ -3,7 +3,8 @@ facility-owned with forced RLS; item instructions and query messages are field-e
 with `medilink.patients.crypto`, bound to table, column and row.
 
 Data classes: prescription and items C3, events C2, dispense records and lines C3,
-availability C1, queries C3.
+availability C1, queries C3; W5 stock cards and batches C1, stock movements C2 (a dispensed
+movement links to a dispense line).
 """
 
 from __future__ import annotations
@@ -260,6 +261,98 @@ class DrugAvailability(TimeStampedModel):
             models.UniqueConstraint(
                 fields=["facility", "drug"], name="pharmacy_availability_unique"
             )
+        ]
+
+
+class StockItem(TimeStampedModel):
+    """W5 stock card: one per medicine per facility. A medicine "follows its stock" from its
+    first receipt; before that its availability is the manual flag above."""
+
+    facility = models.ForeignKey("tenancy.Facility", on_delete=models.PROTECT, related_name="+")
+    drug = models.ForeignKey("masterdata.Drug", on_delete=models.PROTECT, related_name="+")
+    low_stock_threshold = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        db_table = "pharmacy_stock_item"
+        constraints = [
+            models.UniqueConstraint(fields=["facility", "drug"], name="pharmacy_stock_item_unique")
+        ]
+
+
+class StockBatch(TimeStampedModel):
+    """A batch on the shelf. `quantity_on_hand` never goes below zero (check constraint)."""
+
+    facility = models.ForeignKey("tenancy.Facility", on_delete=models.PROTECT, related_name="+")
+    stock_item = models.ForeignKey(StockItem, on_delete=models.PROTECT, related_name="batches")
+    batch_number = models.CharField(max_length=40)
+    expiry_date = models.DateField()
+    quantity_on_hand = models.PositiveIntegerField(default=0)
+    supplier = models.CharField(max_length=120, blank=True)
+
+    class Meta:
+        db_table = "pharmacy_stock_batch"
+        ordering = ["expiry_date", "created_at"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["stock_item", "batch_number", "expiry_date"],
+                name="pharmacy_stock_batch_unique",
+            ),
+            models.CheckConstraint(
+                condition=Q(quantity_on_hand__gte=0), name="pharmacy_stock_batch_not_negative"
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["stock_item", "expiry_date"], name="pharmacy_batch_fefo"),
+            models.Index(fields=["facility", "expiry_date"], name="pharmacy_batch_expiry"),
+        ]
+
+
+class MovementKind(models.TextChoices):
+    RECEIVED = "received", "Received"
+    DISPENSED = "dispensed", "Dispensed"
+    ADJUSTED = "adjusted", "Adjusted"
+
+
+class AdjustmentReason(models.TextChoices):
+    COUNT = "count_correction", "Count correction"
+    DAMAGED = "damaged", "Damaged"
+    EXPIRED = "expired", "Expired"
+
+
+class StockMovement(TimeStampedModel):
+    """Append-only ledger of every change to a batch: received (+), dispensed (-), adjusted (±,
+    with a reason)."""
+
+    facility = models.ForeignKey("tenancy.Facility", on_delete=models.PROTECT, related_name="+")
+    stock_item = models.ForeignKey(StockItem, on_delete=models.PROTECT, related_name="movements")
+    batch = models.ForeignKey(StockBatch, on_delete=models.PROTECT, related_name="movements")
+    kind = models.CharField(max_length=12, choices=MovementKind.choices)
+    quantity = models.IntegerField()
+    balance_after = models.PositiveIntegerField()
+    reason = models.CharField(max_length=20, choices=AdjustmentReason.choices, blank=True)
+    note = models.CharField(max_length=300, blank=True)
+    dispense_line = models.ForeignKey(
+        DispenseLine, on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    membership = models.ForeignKey(
+        "tenancy.FacilityMembership", on_delete=models.PROTECT, related_name="+"
+    )
+    occurred_at = models.DateTimeField()
+
+    class Meta:
+        db_table = "pharmacy_stock_movement"
+        ordering = ["-occurred_at", "-created_at"]
+        constraints = [
+            models.CheckConstraint(
+                condition=(Q(kind="received") & Q(quantity__gt=0) & Q(reason=""))
+                | (Q(kind="dispensed") & Q(quantity__lt=0) & Q(dispense_line__isnull=False))
+                | (Q(kind="adjusted") & ~Q(quantity=0) & ~Q(reason="")),
+                name="pharmacy_stock_movement_kind",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["facility", "occurred_at"], name="pharmacy_movement_recent"),
+            models.Index(fields=["stock_item", "occurred_at"], name="pharmacy_movement_item"),
         ]
 
 

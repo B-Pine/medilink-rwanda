@@ -23,6 +23,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   `addCareSchedule()` and `cancelCareSchedule()` with MSW mocks (one planned vaccination and one
   follow-up date for patient@medilink.test). Strings in en and fr with draft rw.
 
+### Close the books (2026-11-04, #209)
+
+- Added: the **full-visit** end-to-end test (`e2e/full-visit.spec.ts`) on the staff-web mock
+  build, in one session: reception checks in a walk-in; the triage nurse records vitals and sends
+  the next patient to the doctor; the doctor orders a malaria test and sends the patient to the
+  lab; the lab technician takes the sample and enters the result; the patient comes back to the
+  same doctor first (after emergencies), who reviews and releases the result; the pharmacist
+  gives a prescription and prints the labels with their pictograms.
+
 ### Patients without a phone (2026-11-04, #207)
 
 - Added: **label pictograms**. Each dosing label shows the four times of the day (morning, noon,

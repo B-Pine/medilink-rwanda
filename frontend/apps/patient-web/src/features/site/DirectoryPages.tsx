@@ -11,7 +11,7 @@ import { useApi } from "../../app/services";
 import { PublicLayout } from "../../layout/PublicLayout";
 import { DISTRICT_CODES, day, pick, time, type DistrictKey } from "../booking/discovery";
 import { FILTER, FilterSelect, TYPES, useNearMe, waitText } from "../booking/Places";
-import { FacilityExplorer } from "./FacilityCards";
+import { FacilityExplorer } from "./FacilityDirectory";
 import {
   categoryIcon,
   doctorsOf,
@@ -107,7 +107,7 @@ export function FacilitiesPage() {
         />
         <div className="flex flex-col gap-6">
           {/* search and every filter in one card above the results */}
-          <div className="flex animate-rise flex-col gap-3 rounded-3xl bg-surface p-4 shadow-card sm:p-5">
+          <div className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4 sm:p-5">
             <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_14rem]">
               <SearchBar
                 id="facility-search"
@@ -371,7 +371,7 @@ export function DoctorsPage() {
           lead={t("site.doctors.lead")}
         />
         <div className="flex flex-col gap-6">
-          <div className="flex animate-rise flex-col gap-3 rounded-3xl bg-surface p-4 shadow-card sm:p-5">
+          <div className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4 sm:p-5">
             <SearchBar
               id="doctor-search"
               label={t("site.doctors.searchName")}
@@ -434,14 +434,8 @@ export function DoctorsPage() {
               <EmptyState title={t("site.doctors.none")} />
             ) : (
               <ul className="m-0 grid list-none gap-4 p-4 sm:grid-cols-2 sm:p-5 xl:grid-cols-3">
-                {rows.map((d, index) => (
-                  <li
-                    key={d.slug}
-                    className="ml-reveal"
-                    style={{
-                      animationRange: `entry ${(index % 3) * 8}% entry ${55 + (index % 3) * 8}%`,
-                    }}
-                  >
+                {rows.map((d) => (
+                  <li key={d.slug}>
                     <DoctorCard doctor={d} today={todayIndex} />
                   </li>
                 ))}
@@ -701,7 +695,7 @@ export function ServicesPage() {
           lead={t("site.services.lead")}
         />
         <div className="flex flex-col gap-8">
-          <div className="flex animate-rise flex-col gap-4 rounded-3xl bg-surface p-4 shadow-card sm:p-5">
+          <div className="flex flex-col gap-4 rounded-lg border border-border bg-surface p-4 sm:p-5">
             <SearchBar
               id="service-search"
               label={t("site.services.search")}
@@ -845,8 +839,18 @@ export function ServicePage() {
     <PublicLayout>
       <PageContainer className="pb-16">
         <PageHeader
-          crumbs={[{ to: "/services", label: t("nav.services") }, { label: service?.name ?? "…" }]}
-          eyebrow={service ? t(`site.services.categories.${service.category}`) : undefined}
+          crumbs={[
+            { to: "/services", label: t("nav.services") },
+            ...(service
+              ? [
+                  {
+                    to: `/services#cat-${service.category}`,
+                    label: t(`site.services.categories.${service.category}`),
+                  },
+                ]
+              : []),
+            { label: service?.name ?? "…" },
+          ]}
           title={service?.name ?? "…"}
           lead={explain}
           actions={

@@ -25,6 +25,33 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   `billingPaths.claimsExport`, `shifts({ mine })`; MSW mocks for all of them (the mock's expected
   cash now holds the float, as the API does).
 
+### Public site: every page on the new tokens (2026-11-04)
+
+- Changed: the shared page kit: a larger fluid page heading with no rule under it; panels on
+  the site elevation (`rounded-panel`, `shadow-e2`) instead of hard borders; hairline dividers;
+  search and location fields, link rows, FAQ rows and insurer tags in the same style.
+- Changed: **Doctors** rows have an initials mark, the days as a tag and "Here today" as a pill;
+  **Services** are icon tiles; **For facilities** has icons per team, numbered step cards and
+  the "Continue an application" form on a raised panel. The facility, emergency, help, about,
+  legal, find care, symptom checker, assistant and verify pages follow the same surfaces.
+
+### Laboratory loop (2026-11-04, #201)
+
+- Added: **Tests** in the consultation: the doctor picks tests from the catalogue with a reason,
+  sends the patient to the lab, and later reads each result with its flags, writes a note for
+  the patient, marks it reviewed and releases it. A test not yet sampled can be cancelled.
+- Added: **Laboratory** for the lab technician (`/lab`): call the next patient, check who they
+  are (full name, date of birth, MediLink number) and whether the visit is paid, record each
+  sample, then enter each result with out-of-range values flagged as they are typed. The last
+  result sends the patient back to the doctor. The technician's Today shows waiting, results to
+  enter and done today; the menu shows Laboratory and nothing of the desk, clinical work or
+  payments.
+- Added: **Lab results** at the top of the doctor's Results page.
+- Added: patient-web **Lab results** in My health records, once the doctor released them, with
+  the doctor's note.
+- Changed: staff invitations and the user directory know the lab technician role; the queue
+  board names the laboratory stage.
+
 ### Public site: a richer, cleaner second pass (2026-11-04)
 
 - Added: public site tokens in `apps/patient-web/src/styles.css`: elevation `shadow-e1`–`e3`,

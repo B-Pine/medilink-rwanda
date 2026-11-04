@@ -33,7 +33,7 @@ import { CalendarDots, ClipboardText } from "@phosphor-icons/react";
 import { Article, EnvelopeSimple, Headset, Lifebuoy } from "@phosphor-icons/react";
 // [/S10 imports]
 // [S4 imports]
-import { ArrowsDownUp, Stethoscope } from "@phosphor-icons/react";
+import { ArrowsDownUp, Stethoscope, TestTube } from "@phosphor-icons/react";
 // [/S4 imports]
 // [S5 imports]
 import { CalendarX } from "@phosphor-icons/react";
@@ -316,6 +316,15 @@ export const NAV_ITEMS: readonly NavItem[] = [
     group: "facility",
     labelKey: "queue.nav.triage",
     visible: hasAny("triage.operate"),
+  },
+  // upgrade 06 §3 (#201): the laboratory technician's station
+  {
+    key: "lab",
+    path: "/lab",
+    icon: TestTube,
+    group: "facility",
+    labelKey: "queue.nav.lab",
+    visible: hasAny("lab.operate", "lab.result.enter"),
   },
   {
     key: "queueReorders",

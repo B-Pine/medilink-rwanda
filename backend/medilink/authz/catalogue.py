@@ -18,6 +18,8 @@ PERMISSIONS: dict[str, str] = {
     "queue.operate": "Check in, issue tickets, set priority, reorder the queue with a reason",
     "queue.call": "Call next and start consultations",
     "triage.operate": "Call patients to triage, record their vitals and set their urgency",
+    "lab.operate": "See the lab requests, call patients to the lab and record samples",
+    "lab.result.enter": "Enter laboratory results",
     "vitals.record": "Record vitals",
     "visit.reason.view": "View the reason for visit",
     "clinical.view": "View clinical records at the facility",
@@ -51,6 +53,8 @@ ROLES: dict[str, str] = {
     "cashier": "Cashier",
     # upgrade 06 §2: sees patients between check-in and the doctor (no diagnoses, notes or bills)
     "triage_nurse": "Triage nurse",
+    # upgrade 06 §3: samples and results only (no diagnoses, notes or other visits)
+    "lab_technician": "Laboratory technician",
 }
 
 ROLE_GRANTS: dict[str, frozenset[str]] = {
@@ -120,6 +124,9 @@ ROLE_GRANTS: dict[str, frozenset[str]] = {
             "disputes.comment",
             "reports.view_own",
         }
+    ),
+    "lab_technician": frozenset(
+        {"lab.operate", "lab.result.enter", "disputes.comment", "reports.view_own"}
     ),
 }
 

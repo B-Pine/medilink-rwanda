@@ -36,11 +36,11 @@ export function AssistantPage() {
 
         <AssistantNotice language={chat.language} />
 
-        <div className="flex min-h-[18rem] flex-col gap-3 rounded-lg border border-border bg-surface p-4 sm:p-6">
+        <div className="flex min-h-[18rem] flex-col gap-3 rounded-panel bg-surface shadow-e2 p-4 sm:p-6">
           <AssistantThread chat={chat} />
           <div
             className={
-              chat.done ? "flex" : "mt-auto flex flex-col gap-2 border-t border-border/60 pt-4"
+              chat.done ? "flex" : "mt-auto flex flex-col gap-2 border-t border-hairline pt-4"
             }
           >
             <AssistantComposer chat={chat} />

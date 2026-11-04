@@ -51,6 +51,7 @@ import { useStepUp } from "../lock";
 import { AccessReasonPrompt } from "./AccessGate";
 import { DiagnosisPicker, type PickedDiagnosis } from "./DiagnosisPicker";
 import { HistoryDrawer } from "./History";
+import { LabSection } from "./LabSection";
 import { TemplateTools } from "./TemplateTools";
 import {
   clinicalKeys,
@@ -832,6 +833,7 @@ export function ConsultationPage() {
     ...(c.status === "entered_in_error"
       ? []
       : [
+          { id: "lab", label: t("clinical.lab.title") }, // #201
           { id: "prescription", label: t("pharmacy.prescription.title") },
           { id: "letters", label: t("documents.letters.title") },
         ]),
@@ -885,6 +887,8 @@ export function ConsultationPage() {
         className="rounded-2xl bg-surface p-1 shadow-card"
       />
       {isDraft && c.can_edit ? <DraftEditor key={c.id} c={c} /> : <SignedView c={c} />}
+      {/* upgrade 06 §3 (#201): order tests, send to the lab, review and release results */}
+      <LabSection consultation={c} />
       {/* [S7] */}
       <PrescriptionSection consultation={c} />
       <LettersSection consultation={c} />

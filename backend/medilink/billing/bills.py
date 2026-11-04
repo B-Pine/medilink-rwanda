@@ -586,6 +586,31 @@ def remove_line(line_id: Any, *, version: Any, reason: str, membership: Any, req
     return bill
 
 
+def lab_price(facility_id: Any, test_code: str) -> TariffItem | None:
+    """#201: the tariff item of kind `procedure` or `other` whose code is the lab test code (as
+    medicines, contract D-3)."""
+    return current_tariff(facility_id, test_code, OTHER_APP_KINDS)
+
+
+def add_lab_line(
+    visit: Any, *, test_code: str, test_name: str, membership: Any, request: Any = None
+) -> Any:
+    """#201: a line on the visit's bill for one ordered lab test. Returns the line id, or None
+    when the test has no price (the cashier adds it from the price list) or the bill is void.
+    The lab's name for `add_tariff_line` (#203)."""
+    line = add_tariff_line(
+        visit, tariff_code=test_code, name=test_name, membership=membership, request=request
+    )
+    return line.pk if line is not None else None
+
+
+def remove_lab_line(line_id: Any, *, membership: Any, request: Any = None) -> bool:
+    """#201: take a cancelled test off the bill while nothing is paid (a refund otherwise)."""
+    return remove_tariff_line(
+        line_id, reason="lab_order_cancelled", membership=membership, request=request
+    )
+
+
 # ---- insurance verification -------------------------------------------------------------------
 
 

@@ -51,7 +51,15 @@ import {
   useLocale,
 } from "./shared";
 
-const ROLES = ["facility_admin", "receptionist", "triage_nurse", "doctor", "pharmacist", "cashier"];
+const ROLES = [
+  "facility_admin",
+  "receptionist",
+  "triage_nurse",
+  "doctor",
+  "lab_technician",
+  "pharmacist",
+  "cashier",
+];
 
 const initials = (name: string) =>
   name

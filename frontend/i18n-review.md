@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5404.
+Keys: 5399.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -5287,12 +5287,8 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `facility.emergencyNote` | Ibitaro byakira ubutabazi bwihuse. Hamagara {{number}} niba ubuzima buri mu kaga. | Hospitals receive emergencies. Call {{number}} if life is at risk. | needs native-speaker review |
 | `facility.joinQueue` | Jya ku murongo | Join Queue | needs native-speaker review |
 | `facility.bookAppointment` | Fata gahunda | Book Appointment | needs native-speaker review |
-| `facility.tabs.label` | Amakuru y’ikigo | Facility information | needs native-speaker review |
-| `facility.tabs.overview` | Incamake | Overview | needs native-speaker review |
 | `facility.tabs.services` | Serivisi | Services | needs native-speaker review |
 | `facility.tabs.doctors` | Abaganga | Doctors | needs native-speaker review |
-| `facility.tabs.insurance` | Ubwishingizi | Insurance | needs native-speaker review |
-| `facility.tabs.hours` | Amasaha n’aho biri | Hours & Location | needs native-speaker review |
 | `facility.about` | Ibyerekeye | About | needs native-speaker review |
 | `facility.noDescription` | Ikigo ntikirashyiraho ibisobanuro. | The facility has not added a description yet. | needs native-speaker review |
 | `facility.photos` | Amafoto | Photos | needs native-speaker review |
@@ -5311,7 +5307,6 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `facility.noServices` | Nta serivisi zirashyirwaho | No services published yet | needs native-speaker review |
 | `facility.noDoctors` | Nta baganga barashyirwaho | No doctors published yet | needs native-speaker review |
 | `facility.doctorDays` | Ahaboneka {{days}} | Here {{days}} | needs native-speaker review |
-| `facility.insuranceLead` | Ubwishingizi bwemewe kuri iki kigo. Amafaranga agaragara gusa kuri fagitire nyuma y’isura. | Insurers accepted at this facility. Amounts are only on your bill after the visit. | needs native-speaker review |
 | `facility.referral` | Abanyamuryango ba Mutuelle bakeneye urupapuro rwo kohereza kuri uru rwego. | Mutuelle members need a transfer letter at this level of care. | needs native-speaker review |
 | `facility.week` | Iki cyumweru | This week | needs native-speaker review |
 | `facility.closures` | Iminsi izafungwa | Upcoming closures | needs native-speaker review |

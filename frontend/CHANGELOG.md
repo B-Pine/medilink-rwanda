@@ -9,6 +9,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Public site: a facility page that reads as a record (2026-11-04)
+
+- Changed: the facility page has no tabs: **Today** is a summary list (hours and status, live
+  wait per service, queue, appointments, insurance, the referral note, the hospital emergency
+  note), then **Services** (ways in, live wait or next time, insurance, "Join today's queue" and
+  "Book a time" as links), **Doctors**, **About** and **Photos**; the location and contact, the
+  week's hours and what to bring sit beside.
+- Changed: facility photos come after the facts as a row of up to four, not a product-style
+  gallery under the name; no icon tiles in the facts or doctor rows.
+- Removed: unused strings `site.facility.tabs.label|overview|insurance|hours` and
+  `site.facility.insuranceLead`.
+
 ### Public site: doctors and services as directories (2026-11-04)
 
 - Changed: **Doctors** lists each doctor as a row on one surface (name link, specialty and

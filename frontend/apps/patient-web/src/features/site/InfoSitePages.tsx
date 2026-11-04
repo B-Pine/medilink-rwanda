@@ -341,7 +341,7 @@ export function EmergencyPage() {
                     {hospitals.data.map((h) => (
                       <li
                         key={h.slug}
-                        className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-border px-5 py-4 last:border-b-0 sm:px-6"
+                        className="flex flex-col items-start gap-x-6 gap-y-3 border-b border-border px-5 py-4 last:border-b-0 sm:flex-row sm:items-center sm:px-6"
                       >
                         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                           <Link

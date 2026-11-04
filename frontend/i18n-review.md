@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5399.
+Keys: 5398.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -338,7 +338,6 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `footer.cta.symptoms` | Ntuzi aho wajya? | Not sure where to go? | needs native-speaker review |
 | `footer.cta.call` | Ibyihutirwa · hamagara 912 | Emergency · call 912 | needs native-speaker review |
 | `footer.dataInRwanda` | Amakuru y'ubuzima abikwa mu Rwanda | Health data stored in Rwanda | needs native-speaker review |
-| `authAside.eyebrow` | Konti yawe ya MediLink | Your MediLink account | needs native-speaker review |
 | `authAside.title` | Tegereza igihe gito, ubone umwanya wo gukira. | Spend less time waiting and more time getting better. | needs native-speaker review |
 | `authAside.lead` | Konti imwe yawe n’umuryango wawe, mu kigo cyose kiri kuri MediLink. | One account for you and your family, at every facility on MediLink. | needs native-speaker review |
 | `authAside.points.book.title` | Fata umwanya mbere | Book ahead | needs native-speaker review |

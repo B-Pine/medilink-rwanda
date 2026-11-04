@@ -9,6 +9,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Public site: finishing pass and design record (2026-11-04)
+
+- Changed: **For facilities** shows the four teams on one surface with hairlines, the questions as
+  the site's FAQ rows (no native ▶ markers) and pill buttons like the rest of the site; onboarding
+  steps use outlined numbers.
+- Changed: **Check symptoms** and the **AI assistant** have a breadcrumb instead of an uppercase
+  eyebrow or badge above the title; the assistant's chat sits on a bordered surface. The sign-in
+  side panel loses its uppercase eyebrow (`authAside.eyebrow` removed).
+- Changed: on phones, Emergency's hospital rows stack the name above Directions.
+- Added: `apps/patient-web/DESIGN.md` (the public site's design rules) and the audit record
+  `docs/design/public-site-audit-2026-11-04.md`.
+
 ### Public site: reading pages and the emergency page (2026-11-04)
 
 - Changed: **Emergency** opens with an urgent care card (NHS pattern): a red heading bar, the

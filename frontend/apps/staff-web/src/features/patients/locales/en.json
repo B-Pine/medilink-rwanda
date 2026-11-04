@@ -309,5 +309,26 @@
     "newPhone": "New phone (leave empty to keep it)",
     "relationship": "Relationship",
     "relationshipHint": "For example: daughter, neighbour, community health worker"
+  },
+  "careSchedule": {
+    "tab": "Care schedule",
+    "title": "Planned vaccinations and antenatal visits",
+    "intro": "The patient gets a reminder the day before and on the morning. The reminder never says what the visit is for; the note shows only in the patient's app.",
+    "empty": "Nothing planned.",
+    "failed": "We couldn't load the care schedule.",
+    "add": "Plan a date",
+    "kind": "What",
+    "kinds": {
+      "vaccination": "Vaccination",
+      "antenatal": "Antenatal visit"
+    },
+    "dueOn": "Date",
+    "note": "Note (optional)",
+    "noteHint": "For example: second dose. Up to 80 characters.",
+    "save": "Add to the schedule",
+    "saved": "Added. The patient will get reminders.",
+    "cancel": "Cancel date",
+    "cancelTitle": "Cancel this planned date?",
+    "cancelConsequences": "The patient gets no reminder for {{date}}. To move the date, cancel it and add the new one."
   }
 }

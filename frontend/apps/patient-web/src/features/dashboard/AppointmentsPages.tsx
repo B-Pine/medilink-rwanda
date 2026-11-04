@@ -46,6 +46,7 @@ import { day, directionsUrl, pick, time } from "../booking/discovery";
 import { CalendarFeedCard, OfferBanner } from "../booking/Offer";
 import { useUpcoming } from "../booking/Upcoming";
 import { useProfiles } from "../profile/ProfileLayout";
+import { ComingUpSection } from "./ComingUp";
 import {
   AppointmentBadge,
   DateBlock,
@@ -633,6 +634,7 @@ export function AppointmentsPage() {
             }
           />
         )}
+        {tab === "upcoming" && <ComingUpSection />}
         {tab === "upcoming" && <CalendarFeedCard />}
       </div>
     </div>

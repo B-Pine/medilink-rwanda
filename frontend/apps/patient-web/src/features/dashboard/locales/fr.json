@@ -174,7 +174,21 @@
     "reply": "Répondre",
     "soon": "{{service}} approche",
     "arrive": "Signalez votre arrivée à l'accueil (ticket {{ticket}})",
-    "open": "Ouvrir le ticket"
+    "open": "Ouvrir le ticket",
+    "result": "Un nouveau résultat est prêt",
+    "readResult": "Le lire",
+    "planned": "{{what}} approche"
+  },
+  "comingUp": {
+    "title": "Prévu par votre établissement",
+    "intro": "Les dates prévues par votre établissement. Nous vous le rappelons la veille et le matin même.",
+    "types": {
+      "vaccination": "Vaccination",
+      "antenatal": "Consultation prénatale",
+      "follow_up": "Visite de retour"
+    },
+    "book": "Choisir une heure",
+    "failed": "Impossible de charger les dates prévues par votre établissement."
   },
   "appointments": {
     "title": "Mes rendez-vous",

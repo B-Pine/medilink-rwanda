@@ -495,6 +495,14 @@ SPECTACULAR_SETTINGS = {
         "PatientResponseEnum": "medilink.scheduling.models.PatientResponse",
         "FollowUpModeEnum": "medilink.scheduling.models.FollowUpMode",
         "FollowUpStatusEnum": "medilink.scheduling.models.FollowUpStatus",
+        # W7 (upgrade 13): the care schedule
+        "CareScheduleKindEnum": "medilink.scheduling.models.CareScheduleKind",
+        "CareScheduleStatusEnum": "medilink.scheduling.models.CareScheduleStatus",
+        "ComingUpTypeEnum": [
+            ("vaccination", "vaccination"),
+            ("antenatal", "antenatal"),
+            ("follow_up", "follow_up"),
+        ],
         # S5b adds `mode` and `action` fields: pin the S1 enums to their existing names
         "ModeEnum": "medilink.masterdata.models.ImportMode",
         "ActionEnum": "medilink.masterdata.models.ChangeAction",

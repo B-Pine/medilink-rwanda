@@ -15,6 +15,7 @@ import json
 from typing import Any
 
 from django.db import transaction
+from django.dispatch import Signal
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions
@@ -44,6 +45,10 @@ NO_TESTS = _("Choose at least one test.")
 MAX_TESTS = 10
 
 _TABLE = "clinical_lab_order"
+
+# W7 (upgrade 13): "a result is ready" for the patient. Sent after commit, once per release.
+# kwargs: lab_order_id, facility_id
+lab_result_released = Signal()
 
 
 # ---- encrypted text ---------------------------------------------------------------------------
@@ -361,4 +366,6 @@ def release(order_id: Any, *, version: Any, membership: Any, request: Any) -> La
         order.released_by_membership = membership
         _save(order, "state", "released_at", "released_by_membership")
         _audit("clinical.lab_order.released", request, order)
+        sent = {"lab_order_id": order.pk, "facility_id": order.facility_id}
+        transaction.on_commit(lambda: lab_result_released.send(sender=LabOrder, **sent))
     return order

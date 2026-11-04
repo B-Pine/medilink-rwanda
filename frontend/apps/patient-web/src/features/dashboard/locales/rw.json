@@ -174,7 +174,21 @@
     "reply": "Subiza",
     "soon": "{{service}} iregereje",
     "arrive": "Bwira abakira abarwayi ko wahageze (tike {{ticket}})",
-    "open": "Fungura tike"
+    "open": "Fungura tike",
+    "result": "Igisubizo gishya kiriteguye",
+    "readResult": "Gisome",
+    "planned": "{{what}} iregereje"
+  },
+  "comingUp": {
+    "title": "Byateganyijwe n'ivuriro ryawe",
+    "intro": "Amatariki ivuriro ryawe ryateganyije. Tukwibutsa umunsi ubanziriza n'icyo gitondo.",
+    "types": {
+      "vaccination": "Urukingo",
+      "antenatal": "Isuzuma ry'umubyeyi utwite",
+      "follow_up": "Kugaruka kwa muganga"
+    },
+    "book": "Fata isaha",
+    "failed": "Ntibyakunze kubona amatariki ivuriro ryawe ryateganyije."
   },
   "appointments": {
     "title": "Gahunda zanjye",

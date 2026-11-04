@@ -174,7 +174,21 @@
     "reply": "Answer",
     "soon": "{{service}} is coming up",
     "arrive": "Tell reception you've arrived (ticket {{ticket}})",
-    "open": "Open ticket"
+    "open": "Open ticket",
+    "result": "A new result is ready",
+    "readResult": "Read it",
+    "planned": "{{what}} is coming up"
+  },
+  "comingUp": {
+    "title": "Planned by your clinic",
+    "intro": "Dates your clinic planned. We remind you the day before and on the morning.",
+    "types": {
+      "vaccination": "Vaccination",
+      "antenatal": "Antenatal visit",
+      "follow_up": "Return visit"
+    },
+    "book": "Book a time",
+    "failed": "We couldn't load the dates your clinic planned."
   },
   "appointments": {
     "title": "My appointments",

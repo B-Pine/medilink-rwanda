@@ -36,6 +36,7 @@ import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
 import { AccessReasonPrompt, isAccessReasonRequired } from "./AccessReason";
+import { CareSchedule } from "./CareSchedule";
 // [S7 imports]
 import { PatientDocuments } from "../documents";
 // [/S7 imports]
@@ -79,6 +80,7 @@ function Record() {
   const age = useAge();
   const canHealth = useCan("clinical.view", "prescription.view");
   const canDocuments = useCan("clinical.view", "documents.print"); // [S7]
+  const canCareSchedule = useCan("care_schedule.manage"); // W7
   if (record.isPending) return <LoadingState />;
   if (isAccessReasonRequired(record.error))
     return (
@@ -139,6 +141,9 @@ function Record() {
             <TabsTrigger value="documents">{t("documents.patient.title")}</TabsTrigger>
           )}
           {/* [/S7] */}
+          {canCareSchedule && (
+            <TabsTrigger value="care-schedule">{t("patients.careSchedule.tab")}</TabsTrigger>
+          )}
         </TabsList>
         <TabsContent value="details">
           <Details record={p} />
@@ -164,6 +169,11 @@ function Record() {
           </TabsContent>
         )}
         {/* [/S7] */}
+        {canCareSchedule && (
+          <TabsContent value="care-schedule">
+            <CareSchedule record={p} />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );
@@ -877,7 +887,7 @@ function Insurance({ record }: { record: FacilityPatientDetail }) {
   );
 }
 
-const TABS = new Set(["details", "identifiers", "insurance", "health"]);
+const TABS = new Set(["details", "identifiers", "insurance", "health", "care-schedule"]);
 
 const KINDS: HealthKind[] = ["allergies", "conditions", "medications"];
 

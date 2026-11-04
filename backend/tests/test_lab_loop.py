@@ -12,6 +12,8 @@ from rest_framework.test import APIClient
 
 from medilink.billing.models import Bill
 from medilink.clinical.models import LabOrder
+from medilink.notifications.models import Notification
+from medilink.notifications.wiring_events import LAB_RESULT_READY
 from medilink.tenancy.context import rls_context
 from tests.conftest import login_patient
 from tests.s2.conftest import client_for, membership_of
@@ -84,6 +86,7 @@ def test_the_full_loop_reaches_the_patient_only_after_release(
     doctor: tuple[APIClient, Any],  # noqa: F811
     lab_tech: tuple[APIClient, Any],
     at_doctor: dict[str, Any],
+    django_capture_on_commit_callbacks: Any,
 ) -> None:
     service_id = catalogue["service"]["id"]
     consultation, ticket = at_doctor["consultation"], at_doctor["ticket"]
@@ -167,8 +170,14 @@ def test_the_full_loop_reaches_the_patient_only_after_release(
     reviewed = lab_post(doctor[0], rdt, "review", note="Malaria: start the treatment today.")
     assert reviewed.status_code == 200, reviewed.content
     assert patient.get(RESULTS).json() == []
-    released = lab_post(doctor[0], reviewed.json(), "release")
+    assert not Notification.objects.filter(event_type=LAB_RESULT_READY).exists()
+    with django_capture_on_commit_callbacks(execute=True):
+        released = lab_post(doctor[0], reviewed.json(), "release")
     assert released.status_code == 200, released.content
+    # W7: "a result is ready", never the test's name
+    [ready] = Notification.objects.filter(recipient_user=at_doctor["user"], event_type=LAB_RESULT_READY)
+    assert "malaria" not in f"{ready.title} {ready.body}".lower()
+    assert ready.action_path == "/dashboard/records"
 
     seen = patient.get(RESULTS)
     assert seen.status_code == 200, seen.content

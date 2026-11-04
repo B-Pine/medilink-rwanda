@@ -96,6 +96,8 @@ export function RecordsPage() {
           </SelectField>
         )}
       </div>
+      {/* W7: released results first, they are what the patient waits for */}
+      <LabResults patientId={patientId} showWhose={people.length > 1} nameOf={nameOf} />
       {list.isPending ? (
         <RowsSkeleton rows={4} />
       ) : list.isError ? (
@@ -158,7 +160,6 @@ export function RecordsPage() {
           description={q ? undefined : t("dashboard.records.emptyBody")}
         />
       )}
-      <LabResults patientId={patientId} showWhose={people.length > 1} nameOf={nameOf} />
     </div>
   );
 }
@@ -183,6 +184,8 @@ function LabResults({
     queryKey: recordsKeys.labResults(patientId),
     queryFn: () => api.clinical.patient.labResults(patientId ? { patient_id: patientId } : {}),
   });
+  if (results.isError)
+    return <ErrorBlock message={t("records.lab.failed")} onRetry={() => void results.refetch()} />;
   if (!results.data?.length) return null;
   const value = (item: PatientLabResult["items"][number]) =>
     item.kind === "number"

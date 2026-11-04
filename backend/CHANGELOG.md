@@ -8,6 +8,30 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Patient follow-through (2026-11-04, #206)
+
+- Added: reminders through the notification engine (`notifications/reminders.py`, beat task
+  `notifications.send_reminders` every 5 minutes). Booked visits at each recipient's reminder
+  offsets (default 24 hours and 2 hours before); follow-up dates without a booking and planned
+  care-schedule dates the day before at 08:00 and on the morning at 07:00 (Kigali). One dedupe key
+  per item and moment, so nothing is sent twice; a moment from before the item existed is skipped,
+  and after a gap only the latest passed moment goes out. Channel choices, quiet hours and alerts
+  switched off for a dependant are the engine's.
+- Added: the care schedule. `scheduling_care_schedule_entry` (forced facility RLS, encrypted
+  optional note; scheduling migrations 0008 and 0009), permission `care_schedule.manage` for
+  doctors, `GET`/`POST /api/v1/staff/care-schedule/patients/{facility_patient_id}/`, `POST
+  /api/v1/staff/care-schedule/{id}/cancel/` (audit `scheduling.care_schedule.create` and
+  `.cancel`) and `GET /api/v1/patient/care-schedule/` (planned dates and follow-up dates without a
+  booking; SECURITY DEFINER `scheduling_patient_care_schedule`, self and guardian only).
+- Added: events `clinical.lab_result.ready` (sent after a doctor releases a result; one per visit
+  and hour; never the test name; delegates hear nothing of a restricted consultation),
+  `scheduling.booking.reminder`, `scheduling.follow_up.due`, `scheduling.care_schedule.due` and
+  `queue.ticket.called_desk` (a call with no room to name), each in rw, en and fr. Texts are
+  generic: no test, vaccine or visit-type names on lock screens.
+- Changed: "almost your turn" (`queue.ticket.almost`) now follows every queue move that brings a
+  ticket forward (call, cancel, left, transfer, no response, reorder, priority, emergency,
+  pass-over), not only a call, and reaches each ticket with 2 or 3 people ahead once.
+
 ### Pharmacy stock, lite (2026-11-04, #204)
 
 - Added: stock per medicine, batch and expiry at each facility: `pharmacy_stock_item` (one card

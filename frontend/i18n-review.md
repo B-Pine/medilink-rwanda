@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5807.
+Keys: 5835.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -2291,6 +2291,23 @@ File: `apps/staff-web/src/features/patients/locales/rw.json`
 | `contact.newPhone` | Telefone nshya (siga ubusa ngo igume) | New phone (leave empty to keep it) | needs native-speaker review |
 | `contact.relationship` | Isano | Relationship | needs native-speaker review |
 | `contact.relationshipHint` | Urugero: umukobwa, umuturanyi, umujyanama w'ubuzima | For example: daughter, neighbour, community health worker | needs native-speaker review |
+| `careSchedule.tab` | Gahunda y'ubuvuzi | Care schedule | needs native-speaker review |
+| `careSchedule.title` | Inkingo n'isuzuma ry'ababyeyi batwite biteganyijwe | Planned vaccinations and antenatal visits | needs native-speaker review |
+| `careSchedule.intro` | Umurwayi yibutswa umunsi ubanziriza n'icyo gitondo. Ubutumwa ntibuvuga icyo gahunda igamije; icyitonderwa kigaragara gusa muri porogaramu y'umurwayi. | The patient gets a reminder the day before and on the morning. The reminder never says what the visit is for; the note shows only in the patient's app. | needs native-speaker review |
+| `careSchedule.empty` | Nta gahunda iteganyijwe. | Nothing planned. | needs native-speaker review |
+| `careSchedule.failed` | Ntibyakunze kubona gahunda y'ubuvuzi. | We couldn't load the care schedule. | needs native-speaker review |
+| `careSchedule.add` | Teganya itariki | Plan a date | needs native-speaker review |
+| `careSchedule.kind` | Iki | What | needs native-speaker review |
+| `careSchedule.kinds.vaccination` | Urukingo | Vaccination | needs native-speaker review |
+| `careSchedule.kinds.antenatal` | Isuzuma ry'umubyeyi utwite | Antenatal visit | needs native-speaker review |
+| `careSchedule.dueOn` | Itariki | Date | needs native-speaker review |
+| `careSchedule.note` | Icyitonderwa (si ngombwa) | Note (optional) | needs native-speaker review |
+| `careSchedule.noteHint` | Urugero: doze ya kabiri. Inyuguti 80 ntarengwa. | For example: second dose. Up to 80 characters. | needs native-speaker review |
+| `careSchedule.save` | Ongeraho kuri gahunda | Add to the schedule | needs native-speaker review |
+| `careSchedule.saved` | Byongeweho. Umurwayi azibutswa. | Added. The patient will get reminders. | needs native-speaker review |
+| `careSchedule.cancel` | Hagarika itariki | Cancel date | needs native-speaker review |
+| `careSchedule.cancelTitle` | Guhagarika iyi tariki iteganyijwe? | Cancel this planned date? | needs native-speaker review |
+| `careSchedule.cancelConsequences` | Umurwayi ntazibutswa ku wa {{date}}. Kugira ngo uhindure itariki, yihagarike wongereho indi. | The patient gets no reminder for {{date}}. To move the date, cancel it and add the new one. | needs native-speaker review |
 
 ## staff-web feature: pharmacy (namespace pharmacy)
 
@@ -4438,6 +4455,16 @@ File: `apps/patient-web/src/features/dashboard/locales/rw.json`
 | `reminders.soon` | {{service}} iregereje | {{service}} is coming up | needs native-speaker review |
 | `reminders.arrive` | Bwira abakira abarwayi ko wahageze (tike {{ticket}}) | Tell reception you've arrived (ticket {{ticket}}) | needs native-speaker review |
 | `reminders.open` | Fungura tike | Open ticket | needs native-speaker review |
+| `reminders.result` | Igisubizo gishya kiriteguye | A new result is ready | needs native-speaker review |
+| `reminders.readResult` | Gisome | Read it | needs native-speaker review |
+| `reminders.planned` | {{what}} iregereje | {{what}} is coming up | needs native-speaker review |
+| `comingUp.title` | Byateganyijwe n'ivuriro ryawe | Planned by your clinic | needs native-speaker review |
+| `comingUp.intro` | Amatariki ivuriro ryawe ryateganyije. Tukwibutsa umunsi ubanziriza n'icyo gitondo. | Dates your clinic planned. We remind you the day before and on the morning. | needs native-speaker review |
+| `comingUp.types.vaccination` | Urukingo | Vaccination | needs native-speaker review |
+| `comingUp.types.antenatal` | Isuzuma ry'umubyeyi utwite | Antenatal visit | needs native-speaker review |
+| `comingUp.types.follow_up` | Kugaruka kwa muganga | Return visit | needs native-speaker review |
+| `comingUp.book` | Fata isaha | Book a time | needs native-speaker review |
+| `comingUp.failed` | Ntibyakunze kubona amatariki ivuriro ryawe ryateganyije. | We couldn't load the dates your clinic planned. | needs native-speaker review |
 | `appointments.title` | Gahunda zanjye | My appointments | needs native-speaker review |
 | `appointments.subtitle` | Genzura gahunda zitegerejwe n'izashize. | Manage your upcoming and previous healthcare visits. | needs native-speaker review |
 | `appointments.book` | Fata gahunda | Book appointment | needs native-speaker review |
@@ -5562,6 +5589,7 @@ File: `apps/patient-web/src/features/records/locales/rw.json`
 | `doctorLabel` | Muganga | Doctor | needs native-speaker review |
 | `signedOn` | Byasinywe | Signed | needs native-speaker review |
 | `lab.title` | Ibisubizo by'ibizamini | Lab results | needs native-speaker review |
+| `lab.failed` | Ntibyakunze kubona ibisubizo by'ibizamini byawe. | We couldn't load your lab results. | needs native-speaker review |
 | `lab.intro` | Ibisubizo by'ibizamini byawe bigaragara hano muganga amaze kubisoma, hamwe n'ubutumwa bwe. | Your test results appear here once your doctor has read them, with their note. | needs native-speaker review |
 | `lab.item` | Ikizamini | Test | needs native-speaker review |
 | `lab.value` | Igisubizo | Result | needs native-speaker review |

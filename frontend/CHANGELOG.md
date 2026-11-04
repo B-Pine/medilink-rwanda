@@ -9,6 +9,20 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Patient follow-through (2026-11-04, #206)
+
+- Added: **Planned by your clinic** on My appointments (upcoming): planned vaccinations and
+  antenatal visits with their note, and the return visit a doctor asked for with **Book a time**.
+- Added: **Needs your attention** on the overview shows a result released in the last week (**Read
+  it**) and a planned date within two days.
+- Changed: on My health records the released lab results come first, with an error state when
+  they fail to load.
+- Added: **Care schedule** tab on the staff patient record (`care_schedule.manage`, doctors): plan
+  a vaccination or antenatal visit with a date and optional note, cancel with a confirmation.
+- Added: API client `booking.comingUp()`, `booking.staff.careSchedule()`,
+  `addCareSchedule()` and `cancelCareSchedule()` with MSW mocks (one planned vaccination and one
+  follow-up date for patient@medilink.test). Strings in en and fr with draft rw.
+
 ### Pharmacy stock, lite (2026-11-04, #204)
 
 - Added: **Stock** for the pharmacist (`/pharmacy/stock`, menu item for `pharmacy.stock` or

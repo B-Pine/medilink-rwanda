@@ -38,7 +38,7 @@ Built from the requirement tables in `docs/analysis/` (titles shortened; the ana
 | `FR-ACC` | [Users, roles, access](../analysis/02-users-roles-and-permissions.md) | 10 | 10 | 0 | 0 | 0 | 5 | 5 | 0 |
 | `FR-ONB` | [Tenancy, onboarding, master data](../analysis/03-tenancy-onboarding-and-master-data.md) | 11 | 10 | 1 | 0 | 0 | 0 | 10 | 1 |
 | `FR-PAT` | [Patient identity and medical history](../analysis/04-patient-identity-and-medical-history.md) | 17 | 14 | 2 | 0 | 1 | 0 | 13 | 4 |
-| `FR-SCH` | [Discovery, calendars, scheduling, booking](../analysis/05-discovery-scheduling-and-booking.md) | 18 | 15 | 3 | 0 | 0 | 0 | 15 | 3 |
+| `FR-SCH` | [Discovery, calendars, scheduling, booking](../analysis/05-discovery-scheduling-and-booking.md) | 18 | 15 | 3 | 0 | 0 | 0 | 16 | 2 |
 | `FR-QUE` | [Visit lifecycle and live queue](../analysis/06-visit-lifecycle-and-queue.md) | 21 | 18 | 3 | 0 | 0 | 0 | 18 | 3 |
 | `FR-CLN` | [Clinical record](../analysis/07-clinical-documentation-and-pharmacy.md) | 11 | 10 | 1 | 0 | 0 | 0 | 11 | 0 |
 | `FR-PHA` | [Pharmacy](../analysis/07-clinical-documentation-and-pharmacy.md) | 7 | 5 | 2 | 0 | 0 | 0 | 6 | 1 |
@@ -55,7 +55,7 @@ Built from the requirement tables in `docs/analysis/` (titles shortened; the ana
 | `NFR-UX` | [Usability, accessibility, languages](../analysis/14-non-functional-requirements.md) | 7 | 7 | 0 | 0 | 0 | 1 | 6 | 0 |
 | `NFR-OPS` | [Maintainability and operations](../analysis/14-non-functional-requirements.md) | 8 | 8 | 0 | 0 | 0 | 4 | 4 | 0 |
 | `NFR-INT` | [Interoperability](../analysis/14-non-functional-requirements.md) | 3 | 1 | 0 | 2 | 0 | 0 | 0 | 3 |
-| **All** | | **222** | **182** | **25** | **7** | **8** | **16** | **154** | **52** |
+| **All** | | **222** | **182** | **25** | **7** | **8** | **16** | **155** | **51** |
 
 `NFR-INT-03` is phased "P3–P4" in the analysis and is counted under P3.
 

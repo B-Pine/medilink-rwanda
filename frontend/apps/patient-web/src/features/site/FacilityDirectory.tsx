@@ -69,7 +69,6 @@ export function FacilityEntry({
     // Pointer and focus only highlight the map pin; the links and buttons inside are the controls.
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <li
-      aria-labelledby={`place-${result.slug}`}
       onMouseEnter={onActivate}
       onFocus={onActivate}
       className={cx(

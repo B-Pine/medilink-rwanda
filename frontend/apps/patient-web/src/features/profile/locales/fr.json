@@ -17,6 +17,15 @@
   },
   "medilinkNumber": "Votre numéro MediLink",
   "sectionsLabel": "Sections du profil",
+  "photo": {
+    "title": "Photo de profil",
+    "who": "Vous, les personnes avec qui vous partagez ce profil et le personnel des établissements où vous avez un dossier peuvent la voir. Elle les aide à vous reconnaître.",
+    "add": "Ajouter une photo",
+    "change": "Changer la photo",
+    "remove": "Supprimer",
+    "alt": "Photo de {{name}}",
+    "tooBig": "Choisissez une photo de moins de 5 Mo."
+  },
   "sections": {
     "details": "Mes informations",
     "identifiers": "Pièces d'identité",

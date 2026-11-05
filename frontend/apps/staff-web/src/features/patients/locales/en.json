@@ -119,6 +119,10 @@
     }
   },
   "record": {
+    "photoHint": "The patient added a photo to help you recognise them. Each view is logged.",
+    "showPhoto": "Show photo",
+    "photoAlt": "Photo of {{name}}",
+    "photoUnavailable": "The photo is not available right now.",
     "merged": "Merged",
     "staffMember": "Staff member",
     "hasAccount": "Has a MediLink account",

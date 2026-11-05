@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5995.
+Keys: 6006.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -2198,6 +2198,10 @@ File: `apps/staff-web/src/features/patients/locales/rw.json`
 | `register.another` | Andika undi | Register another | needs native-speaker review |
 | `register.sections.person` | Umuntu | Person | needs native-speaker review |
 | `register.sections.contact` | Aho abarizwa n'ubwishingizi | Contact and insurance | needs native-speaker review |
+| `record.photoHint` | Umurwayi yashyizeho ifoto kugira ngo mumumenye. Buri gihe iyirebwe biranditswa. | The patient added a photo to help you recognise them. Each view is logged. | needs native-speaker review |
+| `record.showPhoto` | Erekana ifoto | Show photo | needs native-speaker review |
+| `record.photoAlt` | Ifoto ya {{name}} | Photo of {{name}} | needs native-speaker review |
+| `record.photoUnavailable` | Ifoto ntiboneka ubu. | The photo is not available right now. | needs native-speaker review |
 | `record.merged` | Yahujwe | Merged | needs native-speaker review |
 | `record.staffMember` | Umukozi | Staff member | needs native-speaker review |
 | `record.hasAccount` | Afite konti ya MediLink | Has a MediLink account | needs native-speaker review |
@@ -5353,6 +5357,13 @@ File: `apps/patient-web/src/features/profile/locales/rw.json`
 | `relationship.delegate` | Wasangijwe | Shared with you | needs native-speaker review |
 | `medilinkNumber` | Nomero yawe ya MediLink | Your MediLink number | needs native-speaker review |
 | `sectionsLabel` | Ibice by'umwirondoro | Profile sections | needs native-speaker review |
+| `photo.title` | Ifoto | Profile photo | needs native-speaker review |
+| `photo.who` | Uyibona ni wowe, abo usangira uyu mwirondoro, n'abakozi b'amavuriro ufitemo dosiye. Ibafasha kukumenya. | You, people you share this profile with, and staff at facilities where you have a file can see it. It helps them recognise you. | needs native-speaker review |
+| `photo.add` | Ongeraho ifoto | Add a photo | needs native-speaker review |
+| `photo.change` | Hindura ifoto | Change photo | needs native-speaker review |
+| `photo.remove` | Kuraho | Remove | needs native-speaker review |
+| `photo.alt` | Ifoto ya {{name}} | Photo of {{name}} | needs native-speaker review |
+| `photo.tooBig` | Hitamo ifoto iri munsi ya MB 5. | Choose a photo smaller than 5 MB. | needs native-speaker review |
 | `sections.details` | Amakuru yanjye | My details | needs native-speaker review |
 | `sections.identifiers` | Ibyangombwa | Identity documents | needs native-speaker review |
 | `sections.insurance` | Ubwishingizi | Insurance | needs native-speaker review |

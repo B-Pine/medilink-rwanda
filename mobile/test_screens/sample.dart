@@ -1,5 +1,6 @@
 // Synthetic sample data for the screenshot harness (no real people).
 import 'package:medilink/data/models.dart';
+import 'package:medilink/data/profile.dart';
 
 final sampleMe = Me.fromJson({
   'id': 'u1',
@@ -149,3 +150,82 @@ final sampleSymptoms = [
   ])
     Symptom.fromJson({'code': code, 'name_i18n': {'en': en, 'rw': rw}, 'body_system': 'general', 'is_red_flag': red}),
 ];
+
+final sampleProfile = ProfileDetail.fromJson({
+  'patient_id': 'p1',
+  'relationship': 'self',
+  'medilink_number': 'ML-4K7Q-92',
+  'full_name': 'Mukamana Jeanne',
+  'date_of_birth': '1994-03-12',
+  'sex': 'female',
+  'phone_e164': '+250788000111',
+  'email': 'patient@demo.medilink.test',
+  'address': 'Kimironko, Gasabo',
+  'emergency_contact': null,
+  'no_known_allergies': null,
+  'has_care_consent': true,
+  'completion': {
+    'details': true,
+    'identifier': true,
+    'emergency_contact': false,
+    'care_consent': true,
+    'insurance': true,
+    'allergies_reviewed': false,
+  },
+  'has_photo': false,
+  'version': 3,
+});
+
+final sampleIdentifiers = [
+  IdentityDocument.fromJson({'id': 'i1', 'kind': 'national_id', 'masked_value': '•••• •••• 4412', 'is_verified': true}),
+];
+
+final sampleInsurance = [
+  InsuranceCard.fromJson({
+    'id': 'c1',
+    'insurer_code': 'mutuelle',
+    'insurer_display': 'Mutuelle de Santé',
+    'member_number': '1203/77/04',
+    'is_principal': true,
+    'valid_until': '2027-06-30',
+    'is_expired': false,
+    'status': 'verified',
+    'is_active': true,
+    'card_images': {'front': null, 'back': null},
+  }),
+];
+
+final sampleHealth = HealthSummary.fromJson({
+  'no_known_allergies': null,
+  'allergies': [
+    {'id': 'a1', 'substance_text': 'Penicillin', 'source': 'clinician', 'verification_status': 'verified'},
+  ],
+  'conditions': [
+    {'id': 'h1', 'display': 'Asthma', 'source': 'patient', 'verification_status': 'unverified'},
+  ],
+  'medications': <Object>[],
+});
+
+final samplePrefs = NotificationPrefs.fromJson({
+  'version': 2,
+  'available_channels': ['in_app', 'web_push', 'email'],
+  'channels': {
+    'critical': ['in_app', 'web_push'],
+    'important': ['in_app', 'email'],
+    'routine': ['in_app'],
+  },
+  'quiet_hours': {'is_enabled': true, 'start': '21:30', 'end': '06:30'},
+  'reminder_offsets_minutes': [120, 1440],
+  'dependents': [
+    {'patient_id': 'p2', 'display_name': 'Iradukunda Eric', 'relationship': 'guardian', 'receive_alerts': true},
+  ],
+  'is_critical_locked': false,
+});
+
+final sampleDelegations = Delegations.fromJson({
+  'granted': [
+    {'id': 'd1', 'patient_id': 'p1', 'profile_name': 'Mukamana Jeanne', 'holder_name': 'Habimana Eric', 'relationship': 'delegate', 'can_revoke': true},
+  ],
+  'received': <Object>[],
+  'pending_invites': <Object>[],
+});

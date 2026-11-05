@@ -150,6 +150,8 @@ export interface FacilityPatientDetail extends PatientSummary {
   open_claim_reference: string | null;
   is_active: boolean;
   merged_into_facility_patient_id: Uuid | null;
+  /** The patient's own profile photo (2026-11-05); `photoLink` gives a 5-minute link. */
+  has_photo?: boolean;
   version: number;
   patient_version: number;
 }
@@ -377,6 +379,9 @@ export function createPatientsApi(client: ApiClient) {
       client.post<DownloadLink>(
         `${patientsPaths.insurance(fp, profile)}card-images/${side}/download-links/`,
       ),
+    /** The patient's own photo, to recognise them at the desk (audited). 404 when none. */
+    photoLink: (fp: Uuid) =>
+      client.post<DownloadLink>(`${patientsPaths.recordAction(fp, "photo")}download-links/`),
 
     healthProfile: (fp: Uuid) =>
       client.get<HealthProfile>(patientsPaths.recordAction(fp, "health-profile")),

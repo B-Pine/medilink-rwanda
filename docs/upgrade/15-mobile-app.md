@@ -17,7 +17,7 @@ owner on 2026-11-05.
 | Colours | The existing palette only (below) |
 | Background | **Forest band**: `#123d2b` top band with the website's faint zigzag (≈7 %), a soft curve at its foot; the main card overlaps it. Page grey below, white cards. Other tabs get a short band behind the title |
 | Navigation | Bottom bar, 4 tabs: Home · Care · Visits · Me. No drawer. Tablets: a navigation rail |
-| Icons | Phosphor (the web's set), `phosphor_flutter`: Regular everywhere, Fill for the active tab and status |
+| Icons | Phosphor (the web's set), its icon fonts bundled in `mobile/assets/fonts` (the `phosphor_flutter` package no longer compiles): Regular everywhere, Fill for the active tab and status |
 | Unlock | PIN (4–6 digits) and fingerprint; auto-lock after 2 min in the background |
 | Languages | Kinyarwanda first, English |
 | Oldest Android | 8.0 (API 26); APK under 25 MB |
@@ -87,8 +87,9 @@ slides. A family switcher on Home acts for a dependent.
 
 | Version | Scope |
 |---|---|
-| **v1** | Everything above. Live updates by polling (15 s on an open tracker); update prompt (the app checks a version file and offers the new APK) |
-| v2 | Push notifications (FCM; content-free messages), WebSocket live updates for the app, home-screen widget, QR check-in scanning by staff |
+| **v1** (built 2026-11-05) | Everything above. Live updates by polling (15 s while a ticket is open). Notifications, family, privacy, help, symptoms and forgot-password open the website for now |
+| v1.1 | In-app notifications, family and privacy pages; symptom checker; update prompt (the app checks a version file and offers the new APK); bottom bar hiding on long lists |
+| v2 | Push notifications (FCM; content-free messages), WebSocket live updates for the app, home-screen widget, QR ticket and check-in scanning by staff |
 
 ## 6. Build
 

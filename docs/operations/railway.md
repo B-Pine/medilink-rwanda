@@ -69,7 +69,34 @@ Shared by `api`, `worker` and `beat` (use Railway shared variables). Generate ev
 `api` only: `DATABASE_OWNER_URL` (pre-deploy `migrate`). Losing the field or blind-index keys
 makes encrypted patient data unreadable: keep a copy in the key store, not only in Railway.
 
-## 4. Checks after a deploy
+## 4. Frontend on Vercel without a custom domain
+
+`*.vercel.app` and `*.up.railway.app` are different sites, so the browser does not send the
+API's `SameSite=Lax` session and CSRF cookies from the apps: every `POST` fails with
+`403 csrf_failed`. Until both have one custom domain (`medilink.rw` and `api.medilink.rw`),
+[`frontend/vercel.json`](../../frontend/vercel.json) forwards `/api/*` to the Railway API and the
+apps call the API on their own origin. Use the project's fixed domain from Vercel → Domains, not
+a per-deploy URL.
+
+| Where | Variable | Value |
+|---|---|---|
+| Vercel (both services) | `VITE_API_BASE_URL` | `https://<project>.vercel.app` |
+| Vercel (staff-web) | `VITE_PATIENT_WEB_URL` | `https://<project>.vercel.app` |
+| Railway | `CORS_ALLOWED_ORIGINS`, `WS_ALLOWED_ORIGINS`, `PATIENT_APP_URL` | `https://<project>.vercel.app` |
+| Railway | `STAFF_APP_URL` | `https://<project>.vercel.app/staff` |
+| Railway | `NUM_PROXIES` | `2` (Vercel, then Railway's edge) |
+
+Limits of this setup, for testing only:
+
+- WebSockets do not pass through Vercel, so live updates (queue, tracker, display) stop; reload the page to see changes.
+- API traffic, personal data included, passes through Vercel's network (ADR 0009). Use
+  synthetic data only.
+- If the Railway API domain changes, update the rewrite in `frontend/vercel.json`.
+
+With a custom domain, remove the `/api/(.*)` rewrite, set `VITE_API_BASE_URL` to the API domain
+and `NUM_PROXIES` back to `1`.
+
+## 5. Checks after a deploy
 
 - `GET https://<api domain>/api/v1/health/` returns `{"status": "ok", ...}`.
 - The deploy log shows the migrations applied as `medilink_owner`, not `postgres`.

@@ -126,6 +126,7 @@ function Record() {
           </Link>
         </Alert>
       )}
+      {p.has_photo && <PatientPhoto fpId={fpId} name={p.full_name} />}
       {/* ?tab=insurance opens that tab (the queue board's "Check insurance") */}
       <Tabs defaultValue={TABS.has(search.get("tab") ?? "") ? search.get("tab")! : "details"}>
         <TabsList aria-label={t("patients.record.sections")}>
@@ -1185,5 +1186,58 @@ function ReportDuplicate({
         )}
       </div>
     </Dialog>
+  );
+}
+
+/**
+ * The patient's own profile photo (decision 2026-11-05), to recognise them at the desk. Shown on
+ * request only: each view is audited and the link lasts five minutes.
+ */
+function PatientPhoto({ fpId, name }: { fpId: string; name: string }) {
+  const { t } = useTranslation();
+  const api = useApi();
+  const [shown, setShown] = useState(false);
+  const link = useQuery({
+    queryKey: ["patients", "photo", fpId],
+    queryFn: () => api.patients.photoLink(fpId),
+    enabled: shown,
+    staleTime: 4 * 60_000,
+    retry: false,
+  });
+  return (
+    <Card className="flex items-center gap-4 p-4">
+      {shown && link.data ? (
+        <img
+          src={link.data.url}
+          alt={t("patients.record.photoAlt", { name })}
+          className="size-24 shrink-0 rounded-full object-cover ring-2 ring-brand/30"
+        />
+      ) : (
+        <span
+          aria-hidden="true"
+          className="inline-flex size-24 shrink-0 items-center justify-center rounded-full bg-brand-subtle text-on-brand-subtle"
+        >
+          <Camera className="size-8" />
+        </span>
+      )}
+      <div className="flex min-w-0 flex-col gap-2">
+        <p className="m-0 text-body-sm text-fg-secondary">{t("patients.record.photoHint")}</p>
+        {link.isError && (
+          <Alert tone="warning" role="status">
+            {t("patients.record.photoUnavailable")}
+          </Alert>
+        )}
+        {!shown && (
+          <Button
+            size="sm"
+            variant="secondary"
+            className="self-start"
+            onClick={() => setShown(true)}
+          >
+            {t("patients.record.showPhoto")}
+          </Button>
+        )}
+      </div>
+    </Card>
   );
 }

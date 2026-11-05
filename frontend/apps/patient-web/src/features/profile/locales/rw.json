@@ -17,6 +17,15 @@
   },
   "medilinkNumber": "Nomero yawe ya MediLink",
   "sectionsLabel": "Ibice by'umwirondoro",
+  "photo": {
+    "title": "Ifoto",
+    "who": "Uyibona ni wowe, abo usangira uyu mwirondoro, n'abakozi b'amavuriro ufitemo dosiye. Ibafasha kukumenya.",
+    "add": "Ongeraho ifoto",
+    "change": "Hindura ifoto",
+    "remove": "Kuraho",
+    "alt": "Ifoto ya {{name}}",
+    "tooBig": "Hitamo ifoto iri munsi ya MB 5."
+  },
   "sections": {
     "details": "Amakuru yanjye",
     "identifiers": "Ibyangombwa",

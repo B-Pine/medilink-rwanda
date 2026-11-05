@@ -12,7 +12,7 @@ import type {
  * Documented in frontend/README.md ("Mock accounts").
  */
 
-/** Password of every seeded mock account (staff min 12, patient min 15 characters). */
+/** Password of every seeded mock account (staff min 12, patient min 8 characters). */
 export const MOCK_PASSWORD = "MediLink-demo-2026";
 /** The only valid authenticator code in the mocks. */
 export const MOCK_TOTP_CODE = "123456";

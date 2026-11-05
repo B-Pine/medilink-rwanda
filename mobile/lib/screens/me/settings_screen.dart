@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../ui/icons.dart';
 
 import '../../app/strings.dart';
+import '../../app/strings_more.dart';
 import '../../app/theme.dart';
 import '../../data/session.dart';
 
@@ -54,6 +56,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     onTap: () => ref.read(languageProvider.notifier).set(code),
                   ),
               ],
+            ),
+          ),
+          const SizedBox(height: Space.lg),
+          Card(
+            child: ListTile(
+              leading: const Icon(PhosphorIconsRegular.lockKey, color: Palette.brand),
+              title: Text(s.t('changePassword')),
+              trailing: const Icon(PhosphorIconsRegular.caretRight, color: Palette.muted, size: 18),
+              onTap: () => context.go('/me/settings/password'),
             ),
           ),
           if (_available && _biometrics != null) ...[

@@ -1,4 +1,4 @@
-"""B6: Argon2id; patients >= 15, staff >= 12; breached/common lists; no composition rules."""
+"""B6: Argon2id; patients >= 8 (2026-11-05), staff >= 12; breached/common lists; no composition."""
 
 from __future__ import annotations
 
@@ -51,10 +51,10 @@ def test_b6_stored_hashes_are_argon2id() -> None:
     assert user.check_password("a long synthetic test passphrase")
 
 
-def test_b6_patient_minimum_length_is_15() -> None:
+def test_b6_patient_minimum_length_is_8() -> None:
     patient = _patient_candidate()
-    assert _messages("fourteen chars", patient)  # 14
-    assert not _messages("fifteen chars!!", patient)  # 15
+    assert _messages("kigali7", patient)  # 7
+    assert not _messages("ikawa 48", patient)  # 8
 
 
 def test_b6_staff_minimum_length_is_12(facility: Any) -> None:
@@ -64,15 +64,16 @@ def test_b6_staff_minimum_length_is_12(facility: Any) -> None:
     assert not _messages("twelve chars", staff)  # 12
 
 
-def test_b6_minimum_length_depends_on_mfa() -> None:
+def test_b6_minimum_length_depends_on_the_account(facility: Any) -> None:
     validator = ContextualMinimumLengthValidator()
-    assert validator.min_length_for(None) == 15
+    assert validator.min_length_for(None) == 8
     patient = make_patient_user()
-    assert validator.min_length_for(patient) == 15
-    make_totp_device(patient)  # patient who turned on two-step verification
-    assert validator.min_length_for(patient) == 12
+    assert validator.min_length_for(patient) == 8
+    make_totp_device(patient)  # two-step verification never makes a patient's rule stricter
+    assert validator.min_length_for(patient) == 8
+    assert validator.min_length_for(make_staff(facility)) == 12
     assert validator.min_length_for(UserFactory(is_platform_admin=True)) == 12
-    assert "15" in validator.get_help_text()
+    assert "8" in validator.get_help_text()
 
 
 def test_b6_no_composition_rules() -> None:
@@ -133,7 +134,7 @@ def test_b6_registration_enforces_patient_policy(api: Any) -> None:
     body = {
         "full_name": "Uwimana Claudine",
         "email": "claudine@example.test",
-        "password": "short but 14ch",
+        "password": "short7!",
         "preferred_language": "rw",
         "accepted_terms_version": "2026-10",
         "accepted_privacy_version": "2026-10",

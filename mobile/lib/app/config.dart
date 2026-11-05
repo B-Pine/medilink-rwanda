@@ -32,4 +32,7 @@ class AppConfig {
   static const autoLockAfter = Duration(minutes: 2);
   static const trackerPoll = Duration(seconds: 15);
   static const pinAttempts = 5;
+
+  /// Patient password minimum (security 03 §2, decision 2026-11-05); the API enforces it too.
+  static const passwordMin = 8;
 }

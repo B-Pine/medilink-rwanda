@@ -24,7 +24,7 @@
     "emailRequired": "Enter your email address",
     "emailInvalid": "Enter an email address in the correct format, like name@example.rw",
     "passwordRequired": "Enter your password",
-    "passwordLength": "Use at least 15 characters",
+    "passwordLength": "Use at least 8 characters",
     "nameRequired": "Enter your names",
     "termsRequired": "Accept the terms of use to create an account",
     "privacyRequired": "Accept the privacy notice to create an account"
@@ -173,8 +173,8 @@
     "fullNameHint": "As written on your ID.",
     "email": "Email",
     "password": "Password",
-    "passwordHint": "Use at least 15 characters. A short sentence is easy to remember and hard to guess.",
-    "passwordRule": "At least 15 characters",
+    "passwordHint": "Use at least 8 characters. A short sentence is easy to remember and hard to guess.",
+    "passwordRule": "At least 8 characters",
     "passwordRuleMet": "done",
     "passwordRuleNotMet": "not yet",
     "language": "Language for messages",
@@ -338,7 +338,7 @@
   "reset": {
     "title": "Set a new password",
     "newPassword": "New password",
-    "hint": "At least 15 characters. A short sentence is easy to remember and hard to guess.",
+    "hint": "At least 8 characters. A short sentence is easy to remember and hard to guess.",
     "submit": "Save new password",
     "doneTitle": "Password changed",
     "doneBody": "Your password was changed and you were logged out everywhere. Log in with your new password.",

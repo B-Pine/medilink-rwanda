@@ -26,6 +26,7 @@ import { Link, useNavigate } from "react-router";
 import { paths } from "../app/paths";
 import { useLogout, usePatientMe } from "../auth/queries";
 import { Avatar, PageHeader, panelClass } from "../features/dashboard/kit";
+import { ChangePasswordForm } from "./ChangePasswordForm";
 
 const SECTIONS = ["personal", "display", "privacy", "security", "alerts", "account"] as const;
 const ICON: Record<(typeof SECTIONS)[number], Icon> = {
@@ -175,15 +176,7 @@ export function SettingsPage() {
           </SettingsSection>
 
           <SettingsSection id="security">
-            <SettingRow hint={t("dashboard.settings.security.password")}>
-              <Link
-                to="/forgot-password"
-                state={{ email: me?.email }}
-                className={buttonClassName({ variant: "secondary", size: "sm" })}
-              >
-                {t("dashboard.settings.security.change")}
-              </Link>
-            </SettingRow>
+            <ChangePasswordForm email={me?.email} />
             <p className="m-0 flex flex-wrap items-center gap-2 px-5 py-4 text-body-sm text-fg-muted">
               <Badge tone="neutral">{t("common.comingSoon")}</Badge>
               {t("dashboard.settings.security.later")}

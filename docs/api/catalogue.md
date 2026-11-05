@@ -42,11 +42,12 @@ Copied from the [Sprint 0 contract](../architecture/03-sprint-0-contract.md) §2
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `POST` | `/api/v1/patient/auth/register/` | Sign up: user + self patient + link + consents | Public | FR-PAT-02, FR-SEC-04, FR-SEC-05, FR-AI-02 | Always `202 {detail, email_verification}` "check your email", also for an existing email (that owner gets an "account exists" email; R1 #83, #14); not signed in until the email is confirmed; password ≥ 15; Audit `patient.registered`. With `PATIENT_SIGNUP_EMAIL_VERIFICATION=false` (testing only): no email, `email_verification: false`, sign in straight away | Implemented (R1 #83) |
+| `POST` | `/api/v1/patient/auth/register/` | Sign up: user + self patient + link + consents | Public | FR-PAT-02, FR-SEC-04, FR-SEC-05, FR-AI-02 | Always `202 {detail, email_verification}` "check your email", also for an existing email (that owner gets an "account exists" email; R1 #83, #14); not signed in until the email is confirmed; password ≥ 8 (2026-11-05, was 15); Audit `patient.registered`. With `PATIENT_SIGNUP_EMAIL_VERIFICATION=false` (testing only): no email, `email_verification: false`, sign in straight away | Implemented (R1 #83) |
 | `POST` | `/api/v1/patient/auth/verify-email/` | Confirm the sign-up email | Token (body) | FR-PAT-02 | `{token}` → `200 PatientMe` and signs in; single use, 3 days; `400` on `token`; Audit `auth.email.verified` | Implemented (R1 #83) |
 | `POST` | `/api/v1/patient/auth/login/` | Log in | Public | FR-PAT-02 | Generic `401`; RL: auth; rotates session. Mobile app (`X-MediLink-Client: app`): no cookie, the session key comes back in `X-Session-Token` and is sent as `Authorization: Bearer` on every `/api/v1/patient/*` call; no CSRF ([security 03 §5](../security/03-identity-authentication-sessions.md)) | Implemented (backend-v0.1.0; app transport upgrade 15) |
 | `POST` | `/api/v1/patient/auth/logout/` | Log out | Patient session | FR-SEC-06 | `204`; deletes the patient session only | Implemented (backend-v0.1.0) |
 | `GET` | `/api/v1/patient/auth/me/` | Current patient account and profiles | Patient session | FR-PAT-03 | `PatientMe` | Implemented (backend-v0.1.0) |
+| `POST` | `/api/v1/patient/auth/password/` | Change password while signed in | Patient session | FR-PAT-02 | `{current_password, new_password}` → `200 PatientMe`; wrong current = `400` field error and a failed-login count (lockout); ends other sessions, rotates this one, "password changed" email; Audit `auth.password.changed` | Implemented (2026-11-05) |
 
 ### Staff
 

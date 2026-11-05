@@ -2,9 +2,7 @@ import type { ApiClient } from "./client";
 import type {
   Credentials,
   CsrfResponse,
-  DetailResponse,
   HealthResponse,
-  SignupResponse,
   MfaConfirmResponse,
   MfaSetupResponse,
   MfaVerifyRequest,
@@ -12,6 +10,7 @@ import type {
   PasswordResetRequest,
   PatientMe,
   PatientRegisterRequest,
+  SignupResponse,
   StaffAuthenticatedResult,
   StaffLoginResult,
   StaffMe,

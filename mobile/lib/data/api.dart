@@ -79,6 +79,8 @@ class Api {
   Future<Object?> post(String path, [Object? body]) =>
       _send(() => _dio.post<Object?>(path, data: body ?? const <String, Object?>{}));
 
+  Future<Object?> patch(String path, Object body) => _send(() => _dio.patch<Object?>(path, data: body));
+
   Future<Object?> delete(String path) => _send(() => _dio.delete<Object?>(path));
 
   Map<String, Object?>? _clean(Map<String, Object?>? query) =>

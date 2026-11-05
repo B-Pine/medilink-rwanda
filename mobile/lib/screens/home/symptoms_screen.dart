@@ -14,6 +14,7 @@ import '../../data/providers.dart';
 import '../../data/session.dart';
 import '../../ui/feedback.dart';
 import '../../ui/icons.dart';
+import '../care/facility_mini_card.dart';
 
 /// Symptom checker (upgrade 07, AI decisions 2026-11-03): red flags first, soft wording
 /// ("you may have X, see a doctor"). The chat uses /public/assistant/; when it is switched off
@@ -30,16 +31,25 @@ class _Turn {
       : mine = true,
         kind = 'user',
         condition = null,
+        named = false,
+        serviceCode = null,
+        urgency = null,
         redFlags = const [];
   _Turn.reply(Json j)
       : mine = false,
         text = j['reply'] as String? ?? '',
         kind = j['kind'] as String? ?? 'answer',
         condition = j['condition'] as String?,
+        named = j['named'] as bool? ?? false,
+        serviceCode = j['service_code'] as String?,
+        urgency = j['urgency'] as String?,
         redFlags = (j['red_flags'] as List? ?? const []).map((e) => '$e').toList();
   final bool mine;
   final String text, kind;
-  final String? condition;
+  final String? condition, serviceCode, urgency;
+
+  /// Whether the possible cause may be named (soft wording, AI decisions 2026-11-03).
+  final bool named;
   final List<String> redFlags;
 }
 
@@ -58,13 +68,15 @@ class _SymptomsScreenState extends ConsumerState<SymptomsScreen> {
     super.dispose();
   }
 
-  Future<void> _send() async {
-    final text = _input.text.trim();
+  /// Sends the typed message, or [quick] (a Yes / No / Not sure tap).
+  Future<void> _send([String? quick]) async {
+    final text = (quick ?? _input.text).trim();
     if (text.isEmpty || _busy) return;
+    if (quick != null) HapticFeedback.selectionClick();
     setState(() {
       _turns.add(_Turn.user(text));
       _busy = true;
-      _input.clear();
+      if (quick == null) _input.clear();
     });
     _toEnd();
     try {
@@ -157,6 +169,9 @@ class _SymptomsScreenState extends ConsumerState<SymptomsScreen> {
                 ),
               for (final turn in _turns) _Bubble(turn: turn),
               if (_busy) const Align(alignment: Alignment.centerLeft, child: _Typing()),
+              // the assistant asked about one symptom: answer with a tap
+              if (!_busy && _turns.isNotEmpty && _turns.last.kind == 'question')
+                _QuickReplies(onPick: _send),
             ],
           ),
         ),
@@ -235,7 +250,7 @@ class _Bubble extends StatelessWidget {
       );
     }
     final mine = turn.mine;
-    return Align(
+    final bubble = Align(
       alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.8),
@@ -254,7 +269,7 @@ class _Bubble extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (turn.kind == 'answer' && turn.condition != null) ...[
+            if (turn.kind == 'answer' && turn.named && turn.condition != null) ...[
               Text(s.t('mayHave'), style: theme.textTheme.labelSmall),
               Text(turn.condition!, style: theme.textTheme.titleMedium?.copyWith(color: Palette.brand)),
               const SizedBox(height: Space.xs),
@@ -263,16 +278,109 @@ class _Bubble extends StatelessWidget {
             if (turn.kind == 'answer') ...[
               const SizedBox(height: Space.sm),
               Text(s.t('seeDoctor'), style: theme.textTheme.bodySmall),
-              const SizedBox(height: Space.sm),
-              FilledButton.tonalIcon(
-                onPressed: () => context.go('/care'),
-                icon: const Icon(PhosphorIconsRegular.mapPin, size: 18),
-                label: Text(s.findCare),
-                style: FilledButton.styleFrom(minimumSize: const Size(0, 40)),
-              ),
             ],
           ],
         ),
+      ),
+    );
+    if (turn.kind != 'answer') return bubble;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [bubble, _AnswerPlaces(serviceCode: turn.serviceCode ?? 'general_consultation')],
+    );
+  }
+}
+
+/// Yes / No / Not sure, sent as the patient's reply ("yego" / "oya" are understood too).
+class _QuickReplies extends StatelessWidget {
+  const _QuickReplies({required this.onPick});
+  final ValueChanged<String> onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = S.of(context);
+    final options = [
+      (s.t('answerYes'), PhosphorIconsBold.check),
+      (s.t('answerNo'), PhosphorIconsRegular.xCircle),
+      (s.t('answerNotSure'), PhosphorIconsRegular.question),
+    ];
+    return Padding(
+      padding: const EdgeInsets.only(top: Space.xs, bottom: Space.sm),
+      child: Wrap(
+        alignment: WrapAlignment.end,
+        spacing: Space.sm,
+        runSpacing: Space.sm,
+        children: [
+          for (final (label, icon) in options)
+            OutlinedButton.icon(
+              onPressed: () => onPick(label),
+              icon: Icon(icon, size: 18),
+              label: Text(label),
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size(0, 44),
+                foregroundColor: Palette.brand,
+                side: const BorderSide(color: Palette.brand),
+                shape: const StadiumBorder(),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// The places the answer points to: facilities offering the suggested service, nearest first
+/// when location is on.
+class _AnswerPlaces extends ConsumerWidget {
+  const _AnswerPlaces({required this.serviceCode});
+  final String serviceCode;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = S.of(context);
+    final theme = Theme.of(context);
+    final query = ref.watch(nearbyQueryProvider).copyWith(serviceCode: serviceCode);
+    final places = ref.watch(facilitySearchProvider(query));
+    return Padding(
+      padding: const EdgeInsets.only(bottom: Space.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(Space.xs, Space.sm, Space.xs, Space.sm),
+            child: Text(s.t('placesForYou'), style: theme.textTheme.titleSmall),
+          ),
+          places.when(
+            loading: () => const SizedBox(height: 230, child: Skeleton(height: 230, radius: Space.radiusLg)),
+            error: (e, _) => ErrorState(error: e, onRetry: () => ref.invalidate(facilitySearchProvider(query))),
+            data: (list) => list.isEmpty
+                ? Text(s.t('noPlacesForService'), style: theme.textTheme.bodySmall)
+                : SizedBox(
+                    height: 272,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: list.take(6).length,
+                      separatorBuilder: (_, _) => const SizedBox(width: Space.md),
+                      itemBuilder: (context, i) => SizedBox(
+                        width: 250,
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: Space.sm),
+                          child: FacilityMiniCard(facility: list[i]),
+                        ),
+                      ),
+                    ),
+                  ),
+          ),
+          const SizedBox(height: Space.sm),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton.icon(
+              onPressed: () => context.go('/care'),
+              icon: const Icon(PhosphorIconsRegular.mapPin, size: 18),
+              label: Text(s.t('morePlaces')),
+            ),
+          ),
+        ],
       ),
     );
   }

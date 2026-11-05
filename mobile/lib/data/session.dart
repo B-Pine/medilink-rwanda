@@ -27,8 +27,35 @@ class LanguageController extends Notifier<String> {
   }
 
   Future<void> set(String code) async {
+    final changed = code != state;
     state = code;
     (await SharedPreferences.getInstance()).setString(_key, code);
+    final phase = ref.read(authProvider);
+    if (changed && (phase == AuthPhase.ready || phase == AuthPhase.setPin)) await saveOnServer(code);
+  }
+
+  /// The language picked on this phone, or null if the patient never picked one.
+  Future<String?> chosen() async => (await SharedPreferences.getInstance()).getString(_key);
+
+  /// Notifications, emails and SMS are written in the account's language, so a change in the app
+  /// is saved to the account too (notification preferences carry it, with their version).
+  Future<void> saveOnServer(String code) async {
+    const path = '/api/v1/patient/notification-preferences/';
+    final api = ref.read(apiProvider);
+    try {
+      for (var attempt = 0; attempt < 2; attempt++) {
+        final prefs = await api.get(path) as Json;
+        if (prefs['language'] == code) return;
+        try {
+          await api.patch(path, {'version': prefs['version'] ?? 0, 'language': code});
+          return;
+        } on ApiException catch (e) {
+          if (e.kind != ApiFailure.conflict) rethrow; // saved elsewhere meanwhile: read again
+        }
+      }
+    } on ApiException catch (e) {
+      debugPrint('Language not saved on the server: ${e.status}');
+    }
   }
 }
 
@@ -78,7 +105,15 @@ class AuthController extends Notifier<AuthPhase> {
       throw ApiException(ApiFailure.server, message: 'No session key returned');
     }
     final me = Me.fromJson(data! as Json);
-    await ref.read(languageProvider.notifier).set(me.language == 'en' ? 'en' : 'rw');
+    final language = ref.read(languageProvider.notifier);
+    final picked = await language.chosen();
+    if (picked == null) {
+      // first time on this phone: use the account's language
+      await language.set(me.language == 'en' ? 'en' : 'rw');
+    } else if (picked != me.language) {
+      // the patient picked a language here: the account follows, so messages match the app
+      await language.saveOnServer(picked);
+    }
     state = AuthPhase.setPin;
     return me;
   }

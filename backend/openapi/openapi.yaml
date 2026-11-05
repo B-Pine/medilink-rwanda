@@ -218,7 +218,9 @@ paths:
     post:
       operationId: patient_auth_register
       summary: 'Patient sign-up: always 202 ''check your email'' (no account enumeration);
-        a new account signs in only after the emailed link is opened'
+        a new account signs in only after the emailed link is opened. With PATIENT_SIGNUP_EMAIL_VERIFICATION
+        off (testing only) no email is sent, email_verification is false and the account
+        signs in straight away'
       tags:
       - patient-auth
       requestBody:
@@ -234,7 +236,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Detail'
+                $ref: '#/components/schemas/SignupAccepted'
           description: ''
         '400':
           content:
@@ -35317,6 +35319,16 @@ components:
       description: |-
         * `front` - front
         * `back` - back
+    SignupAccepted:
+      type: object
+      properties:
+        detail:
+          type: string
+        email_verification:
+          type: boolean
+      required:
+      - detail
+      - email_verification
     SlotDay:
       type: object
       properties:

@@ -106,10 +106,12 @@ class FacilitySummary {
         waiting = j['waiting'] as int?,
         waitRange = j['wait_range'] == null ? null : Estimate.fromJson(_map(j['wait_range'])),
         queueLoad = j['queue_load'] as String?,
-        nextSlotAt = _date(j['next_slot_at']);
+        nextSlotAt = _date(j['next_slot_at']),
+        lat = (j['lat'] as num?)?.toDouble(),
+        lng = (j['lng'] as num?)?.toDouble();
   final String slug, name, type, district, sector;
   final bool emergency, openNow;
-  final double? distanceKm;
+  final double? distanceKm, lat, lng;
   final int? waiting;
   final Estimate? waitRange;
   final String? queueLoad;

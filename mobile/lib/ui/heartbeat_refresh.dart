@@ -21,8 +21,15 @@ class _HeartbeatRefreshState extends State<HeartbeatRefresh> with SingleTickerPr
   static const _trigger = 90.0;
   double _pull = 0;
   bool _refreshing = false;
-  late final AnimationController _beat =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 900));
+  // Eager, not `late`: a lazy controller first touched in dispose() would look up TickerMode on
+  // a deactivated element (the screen closed without ever being pulled).
+  late final AnimationController _beat;
+
+  @override
+  void initState() {
+    super.initState();
+    _beat = AnimationController(vsync: this, duration: const Duration(milliseconds: 900));
+  }
 
   @override
   void dispose() {

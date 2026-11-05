@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'api.dart';
 import 'models.dart';
+import 'location.dart';
 import 'session.dart';
 
 /// A result and whether it came from the phone's saved copy (no connection).
@@ -76,13 +77,26 @@ final unreadProvider = FutureProvider<int>((ref) async {
 });
 
 class SearchQuery {
-  const SearchQuery({this.openNow = false, this.emergency = false, this.availableToday = false});
+  const SearchQuery({this.openNow = false, this.emergency = false, this.availableToday = false, this.lat, this.lng});
   final bool openNow, emergency, availableToday;
+
+  /// The phone's position, rounded to about 1 km before it leaves the phone.
+  final double? lat, lng;
+
+  SearchQuery copyWith({bool? openNow, bool? emergency, bool? availableToday, double? lat, double? lng}) =>
+      SearchQuery(
+        openNow: openNow ?? this.openNow,
+        emergency: emergency ?? this.emergency,
+        availableToday: availableToday ?? this.availableToday,
+        lat: lat ?? this.lat,
+        lng: lng ?? this.lng,
+      );
 
   Json toJson() => {
         if (openNow) 'open_now': true,
         if (emergency) 'emergency': true,
         if (availableToday) 'available_today': true,
+        if (lat != null && lng != null) 'near': {'lat': lat, 'lng': lng},
       };
 
   @override
@@ -90,11 +104,19 @@ class SearchQuery {
       other is SearchQuery &&
       other.openNow == openNow &&
       other.emergency == emergency &&
-      other.availableToday == availableToday;
+      other.availableToday == availableToday &&
+      other.lat == lat &&
+      other.lng == lng;
 
   @override
-  int get hashCode => Object.hash(openNow, emergency, availableToday);
+  int get hashCode => Object.hash(openNow, emergency, availableToday, lat, lng);
 }
+
+/// Facilities sorted by distance when the phone's location is known (Home "Near you", Care).
+final nearbyQueryProvider = Provider<SearchQuery>((ref) {
+  final here = ref.watch(locationProvider).point;
+  return SearchQuery(lat: here?.latitude, lng: here?.longitude);
+});
 
 final facilitySearchProvider = FutureProvider.family<List<FacilitySummary>, SearchQuery>((ref, query) async {
   final data = await ref.read(apiProvider).post('/api/v1/public/facilities/search/', query.toJson());

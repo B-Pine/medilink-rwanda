@@ -20,12 +20,15 @@ class Skeleton extends StatefulWidget {
 }
 
 class _SkeletonState extends State<Skeleton> with SingleTickerProviderStateMixin {
-  late final AnimationController _shine =
+  // Created on first animated build only: with animations off it never exists, and dispose()
+  // must not create it (that looks up TickerMode on a deactivated element).
+  AnimationController? _controller;
+  AnimationController get _shine => _controller ??=
       AnimationController(vsync: this, duration: const Duration(milliseconds: 1300))..repeat();
 
   @override
   void dispose() {
-    _shine.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 

@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 ## [Unreleased]
 
+### 1.0.2 (2026-11-05)
+
+- Added: Home shows facilities ("Near you" once the patient allows approximate location, sorted
+  by distance; the position is rounded to about 1 km before it is sent) as a swipeable row of
+  cards with their building drawings, and a map preview. A full map (`/home/map`, `/care/map`,
+  the map button on Care) shows facilities as pins; the cards at the bottom follow the pins.
+- Changed: Home redesigned. Soft tinted shadows instead of grey elevation; the ticket card
+  (number, people ahead in a ring, footer with place and wait), the next-visit card (date block)
+  and a "where do you need care?" search card when nothing is planned; quick actions as icon
+  tiles with full labels; a cleaner emergency row. Open/closed badges readable on the drawings.
+- Fixed: with animations turned off, the loading skeleton crashed when it disappeared; screens
+  with pull-to-refresh crashed when closed without being pulled.
+- Added: `test_screens/` renders screens with sample data to PNG for design review
+  (`flutter test test_screens --dart-define=SHOTS=<folder>`; not part of CI).
+
 ### 1.0.1 (2026-11-05)
 
 - Fixed: going back to Home (or any tab) left the previous tab painted on top: its fade-out

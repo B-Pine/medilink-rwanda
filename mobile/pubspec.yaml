@@ -3,7 +3,7 @@ description: "MediLink Rwanda patient app (docs/upgrade/15-mobile-app.md)"
 publish_to: 'none'
 
 # versionName+versionCode of the APK; raise both for every APK you share.
-version: 1.0.1+2
+version: 1.0.2+3
 
 environment:
   sdk: ^3.12.2
@@ -22,6 +22,9 @@ dependencies:
   quick_actions: ^1.1.1
   shared_preferences: ^2.5.6
   url_launcher: ^6.3.3
+  flutter_map: ^8.3.2
+  latlong2: ^0.10.1
+  geolocator: ^14.1.2
 
 dev_dependencies:
   flutter_test:

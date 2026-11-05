@@ -11,6 +11,17 @@ class AppConfig {
     defaultValue: 'https://medilink-rwanda.vercel.app',
   );
 
+  /// Map tiles, same default as the website (VITE_MAP_TILES_URL). The OpenStreetMap tile policy
+  /// does not allow production traffic: set a provider for Rwanda before release (OD-3).
+  static const mapTilesUrl = String.fromEnvironment(
+    'MAP_TILES_URL',
+    defaultValue: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  );
+
+  /// Kigali, when the phone's location is unknown.
+  static const defaultLat = -1.9441;
+  static const defaultLng = 30.0619;
+
   /// Rwanda's emergency medical number (SAMU).
   static const emergencyNumber = '912';
 

@@ -265,6 +265,11 @@ class PasswordResetConfirmSerializer(StrictSerializer):
     new_password = password_field()
 
 
+class PasswordChangeSerializer(StrictSerializer):
+    current_password = password_field()
+    new_password = password_field()
+
+
 class DetailSerializer(serializers.Serializer):
     detail = serializers.CharField()
 

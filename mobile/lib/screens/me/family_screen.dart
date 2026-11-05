@@ -227,7 +227,7 @@ class _AddMemberSheetState extends ConsumerState<_AddMemberSheet> {
       });
       return true;
     } on ApiException catch (e) {
-      setState(() => _error = e.message.isNotEmpty ? e.message : s.somethingWrong);
+      setState(() => _error = e.detail.isNotEmpty ? e.detail : s.somethingWrong);
       return false;
     }
   }

@@ -45,7 +45,7 @@ Future<bool> cancelBooking(BuildContext context, WidgetRef ref, Booking booking)
   } on ApiException catch (e) {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.message.isNotEmpty ? e.message : s.somethingWrong)),
+        SnackBar(content: Text(e.detail.isNotEmpty ? e.detail : s.somethingWrong)),
       );
     }
     return false;

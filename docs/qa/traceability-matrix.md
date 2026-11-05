@@ -101,7 +101,7 @@ Source: [04 · Patient identity and medical history](../analysis/04-patient-iden
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
 | FR-PAT-01 | Account, patient and facility patient record are separate | P1 | S3; patient profile photo, seen by staff where the patient has a record (2026-11-05) | Backend | UT, API | In progress |
-| FR-PAT-02 | Patient self sign-up (email/password; phone OTP in P3) | P1 | S0, S3, R1 #83 (verify-email, no enumeration); test-only switch `PATIENT_SIGNUP_EMAIL_VERIFICATION` (2026-11-05) | Both | API, E2E | In progress |
+| FR-PAT-02 | Patient self sign-up (email/password; phone OTP in P3) | P1 | S0, S3, R1 #83 (verify-email, no enumeration); test-only switch `PATIENT_SIGNUP_EMAIL_VERIFICATION` (2026-11-05); password ≥ 8 and change password while signed in (2026-11-05) | Both | API, E2E | In progress |
 | FR-PAT-03 | Dependents, delegated access, profile switching | P1 | S3, U12 (dashboard: family rows, "whose profile" banner, switcher in the top bar and More drawer) | Both | AZ, E2E | In progress |
 | FR-PAT-04 | Walk-in registration in under one minute | P1 | S3 | Both | API, USA | In progress |
 | FR-PAT-05 | Duplicate detection; reversible merge with approval | P1 | S3 | Both | BR, API | In progress |

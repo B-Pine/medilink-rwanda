@@ -5,12 +5,22 @@ import 'secure_store.dart';
 
 /// Why a call failed, in the app's terms.
 class ApiException implements Exception {
-  ApiException(this.kind, {this.status, this.code = '', this.message = ''});
+  ApiException(this.kind, {this.status, this.code = '', this.message = '', this.fields = const {}});
 
   final ApiFailure kind;
   final int? status;
   final String code;
   final String message;
+
+  /// Per-field messages of a validation error (`error.fields`), e.g. {'new_password': [...]}.
+  final Map<String, List<String>> fields;
+
+  /// The message for [field], or null.
+  String? field(String field) => fields[field]?.firstOrNull;
+
+  /// What to show the patient: the first field message when there is one (it says what to fix),
+  /// otherwise the general message.
+  String get detail => fields.values.expand((m) => m).firstOrNull ?? message;
 
   @override
   String toString() => 'ApiException($kind, $status, $code)';
@@ -117,6 +127,12 @@ class Api {
       null => ApiFailure.offline,
       _ => ApiFailure.server,
     };
-    return ApiException(kind, status: status, code: code, message: message);
+    final raw = error is Map ? error['fields'] : null;
+    final fields = <String, List<String>>{
+      if (raw is Map)
+        for (final MapEntry(:key, :value) in raw.entries)
+          '$key': value is List ? [for (final m in value) '$m'] : ['$value'],
+    };
+    return ApiException(kind, status: status, code: code, message: message, fields: fields);
   }
 }

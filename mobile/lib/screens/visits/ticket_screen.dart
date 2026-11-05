@@ -53,7 +53,7 @@ class _TicketScreenState extends ConsumerState<TicketScreen> {
     } on ApiException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message.isNotEmpty ? e.message : s.somethingWrong)),
+          SnackBar(content: Text(e.detail.isNotEmpty ? e.detail : s.somethingWrong)),
         );
       }
     }

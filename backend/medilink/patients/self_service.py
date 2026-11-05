@@ -146,6 +146,7 @@ def profile_data(link: PatientLink) -> dict[str, Any]:
         "no_known_allergies": patient.no_known_allergies,
         "has_care_consent": consents.has_care_consent(patient),
         "completion": completion(patient),
+        "has_photo": patient.photo_file_id is not None,
         "version": patient.version,
     }
 

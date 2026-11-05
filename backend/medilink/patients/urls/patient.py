@@ -8,6 +8,16 @@ urlpatterns = [
     path("profiles/", v.ProfileListView.as_view(), name="patient-profiles"),
     path("profiles/<uuid:patient_id>/", v.ProfileDetailView.as_view(), name="patient-profile"),
     path(
+        "profiles/<uuid:patient_id>/photo/",
+        v.ProfilePhotoView.as_view(),
+        name="patient-profile-photo",
+    ),
+    path(
+        "profiles/<uuid:patient_id>/photo/download-links/",
+        v.ProfilePhotoLinkView.as_view(),
+        name="patient-profile-photo-link",
+    ),
+    path(
         "profiles/<uuid:patient_id>/identifiers/",
         v.IdentifierListView.as_view(),
         name="patient-identifiers",

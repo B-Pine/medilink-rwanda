@@ -1860,6 +1860,89 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: same card exists
+  /api/v1/patient/profiles/{patient_id}/photo/:
+    post:
+      operationId: patient_profile_photo_upload
+      description: 'Profile photo (decision 2026-11-05): JPEG, PNG or HEIC up to 5
+        MB, scanned before use.'
+      summary: Add or replace the profile photo (self or guardian)
+      parameters:
+      - in: path
+        name: patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PhotoUploadRequest'
+        required: true
+      security:
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientProfileDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: validation_error
+    delete:
+      operationId: patient_profile_photo_remove
+      description: 'Profile photo (decision 2026-11-05): JPEG, PNG or HEIC up to 5
+        MB, scanned before use.'
+      summary: Remove the profile photo
+      parameters:
+      - in: path
+        name: patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      security:
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientProfileDetail'
+          description: ''
+  /api/v1/patient/profiles/{patient_id}/photo/download-links/:
+    post:
+      operationId: patient_profile_photo_link
+      summary: A 5-minute link to the profile photo
+      parameters:
+      - in: path
+        name: patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      security:
+      - patientSession: []
+      responses:
+        '200':
+          description: '{url, expires_at}'
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'not_found: no photo'
   /api/v1/patient/push-subscriptions/:
     get:
       operationId: patient_push_subscriptions_list
@@ -15122,6 +15205,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/InsuranceProfile'
           description: ''
+  /api/v1/staff/patients/{fp_id}/photo/download-links/:
+    post:
+      operationId: staff_patients_photo_link
+      description: |-
+        The patient's own profile photo, to recognise them at the desk (decision 2026-11-05).
+        Same rule as card photos: patients.view where the patient has a record here.
+      summary: A 5-minute link to the patient's profile photo
+      parameters:
+      - in: path
+        name: fp_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-patients
+      security:
+      - staffSession: []
+      responses:
+        '200':
+          description: '{url, expires_at}'
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'not_found: no photo'
   /api/v1/staff/patients/{fp_id}/reveal/:
     post:
       operationId: staff_patients_reveal
@@ -23831,6 +23941,8 @@ components:
           type: string
           format: uuid
           nullable: true
+        has_photo:
+          type: boolean
         version:
           type: integer
         patient_version:
@@ -23846,6 +23958,7 @@ components:
       - full_name
       - has_account
       - has_care_consent
+      - has_photo
       - identifiers
       - insurance
       - is_active
@@ -31084,6 +31197,8 @@ components:
           type: boolean
         completion:
           $ref: '#/components/schemas/Completion'
+        has_photo:
+          type: boolean
         version:
           type: integer
       required:
@@ -31094,6 +31209,7 @@ components:
       - emergency_contact
       - full_name
       - has_care_consent
+      - has_photo
       - is_birth_date_estimated
       - medilink_number
       - no_known_allergies
@@ -31742,6 +31858,15 @@ components:
       - raised_by_name
       - status
     PhotoRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        file:
+          type: string
+          format: binary
+      required:
+      - file
+    PhotoUploadRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
       properties:

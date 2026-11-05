@@ -42,6 +42,11 @@ urlpatterns = [
         name="staff-patients-insurance-card",
     ),
     path(
+        "<uuid:fp_id>/photo/download-links/",
+        v.PhotoLinkView.as_view(),
+        name="staff-patients-photo-link",
+    ),
+    path(
         "<uuid:fp_id>/insurance-profiles/<uuid:profile_id>/card-images/<str:side>/download-links/",
         v.CardDownloadLinkView.as_view(),
         name="staff-patients-insurance-card-link",

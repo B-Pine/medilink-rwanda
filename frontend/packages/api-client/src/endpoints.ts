@@ -2,6 +2,8 @@ import type { ApiClient } from "./client";
 import type {
   Credentials,
   CsrfResponse,
+  GoogleConfig,
+  GoogleSignInRequest,
   HealthResponse,
   MfaConfirmResponse,
   MfaSetupResponse,
@@ -76,6 +78,7 @@ export const paths = {
   patientLogout: "/api/v1/patient/auth/logout/",
   patientMe: "/api/v1/patient/auth/me/",
   patientPassword: "/api/v1/patient/auth/password/",
+  patientGoogle: "/api/v1/patient/auth/google/",
   passwordReset: "/api/v1/auth/password-reset/",
   passwordResetConfirm: "/api/v1/auth/password-reset/confirm/",
   schema: "/api/v1/schema/",
@@ -138,6 +141,14 @@ export function createMediLinkApi(client: ApiClient) {
       /** Current + new password; other sessions end and this one rotates (security 03 §6). */
       changePassword: (body: { current_password: string; new_password: string }) =>
         client.post<PatientMe>(paths.patientPassword, body, sessionChange),
+      /** Upgrade 17: whether Sign in with Google is on, and the public OAuth client ID. */
+      googleConfig: () => client.get<GoogleConfig>(paths.patientGoogle, authCall),
+      /**
+       * Signs in with Google's ID token. A first sign-in answers 409 `consent_required` with
+       * `error.current = {email, full_name}`: show the consents, then call again with them.
+       */
+      google: (body: GoogleSignInRequest) =>
+        client.post<PatientMe>(paths.patientGoogle, body, sessionChange),
     },
 
     passwordReset: {

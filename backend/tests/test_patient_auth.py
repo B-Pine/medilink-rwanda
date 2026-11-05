@@ -10,6 +10,7 @@ import pytest
 from rest_framework.test import APIClient
 
 from medilink.accounts.models import User
+from medilink.accounts.tasks import TEXTS
 from medilink.patients.models import ConsentRecord, PatientLink
 from tests.conftest import error_code
 
@@ -99,7 +100,8 @@ def test_register_existing_email_looks_the_same_and_emails_the_owner(
     assert patient_user.full_name != "Uwimana Claudine"  # nothing about the account changed
     assert patient_user.email_verification_pending is False
     assert len(mailoutbox) == 1 and mailoutbox[0].to == [patient_user.email]
-    assert "already have an account" in mailoutbox[0].body
+    # in the owner's language (upgrade 17)
+    assert mailoutbox[0].subject == TEXTS["exists"][patient_user.preferred_language][0]
     assert "/verify-email" not in mailoutbox[0].body
 
 

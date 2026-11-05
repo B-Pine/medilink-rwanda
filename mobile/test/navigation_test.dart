@@ -40,6 +40,12 @@ void main() {
     expect(n('/pharmacy/prescriptions/42').appRoute, '/me/medications');
     expect(n('/clinical/consultations/7').appRoute, '/me/records');
     expect(n('/notifications/n1').appRoute, isNull);
+    // the website's /dashboard paths the API sends since upgrade 12
+    const id = '0196f0a1-2b3c-7d4e-8f90-123456789abc';
+    expect(n('/dashboard/appointments/$id').appRoute, '/visits/booking/$id');
+    expect(n('/dashboard/queue/$id').appRoute, '/visits/ticket/$id');
+    expect(n('/dashboard/medications/$id').appRoute, '/me/medications');
+    expect(n('/dashboard/documents/$id').appRoute, '/me/documents');
   });
 
   test('every new label exists in Kinyarwanda and English', () {

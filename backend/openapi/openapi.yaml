@@ -143,6 +143,92 @@ paths:
               schema:
                 $ref: '#/components/schemas/Health'
           description: ''
+  /api/v1/patient/auth/google/:
+    get:
+      operationId: patient_auth_google_config
+      description: |-
+        Sign in with Google, patients only (upgrade 17, security 03 §5).
+
+        GET says whether it is on and which public client ID to use. POST takes Google's ID token:
+        a known Google account signs in; a verified email that matches a patient account links it and
+        signs in; a new person gets 409 consent_required, then sends the token again with the
+        sign-up consents. Staff and platform accounts are refused (they need MFA).
+      summary: Whether Sign in with Google is on, and the public OAuth client ID
+      tags:
+      - patient-auth
+      security:
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleConfig'
+          description: ''
+    post:
+      operationId: patient_auth_google
+      description: |-
+        Sign in with Google, patients only (upgrade 17, security 03 §5).
+
+        GET says whether it is on and which public client ID to use. POST takes Google's ID token:
+        a known Google account signs in; a verified email that matches a patient account links it and
+        signs in; a new person gets 409 consent_required, then sends the token again with the
+        sign-up consents. Staff and platform accounts are refused (they need MFA).
+      summary: Sign in (or sign up) with a Google ID token; rotates the session
+      tags:
+      - patient-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleSignInRequest'
+        required: true
+      security:
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientMe'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: validation_error; google_unverified_email
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'not_authenticated: the Google token is invalid, expired or
+            not ours'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'staff_account: staff sign in with password + MFA'
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'not_found: Google sign-in is not configured'
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'consent_required: new account; error.current = {email, full_name}'
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: rate_limited
   /api/v1/patient/auth/login/:
     post:
       operationId: patient_auth_login
@@ -24718,6 +24804,41 @@ components:
             version.
       required:
       - version
+    GoogleConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        client_id:
+          type: string
+      required:
+      - client_id
+      - enabled
+    GoogleSignInRequest:
+      type: object
+      description: |-
+        Google's ID token, plus the consents a first Google sign-in needs to create an account
+        (the same as sign-up; asked only after the API answers 409 consent_required).
+      properties:
+        id_token:
+          type: string
+          minLength: 1
+          maxLength: 4096
+        preferred_language:
+          $ref: '#/components/schemas/LanguageEnum'
+        accepted_terms_version:
+          type: string
+          minLength: 1
+          maxLength: 32
+        accepted_privacy_version:
+          type: string
+          minLength: 1
+          maxLength: 32
+        research_consent:
+          type: boolean
+          default: false
+      required:
+      - id_token
     GroupEnum:
       enum:
       - day

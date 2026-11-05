@@ -165,6 +165,13 @@
     "invalidCredentials": "Imeyili cyangwa ijambo ry’ibanga si byo. Bisuzume wongere ugerageze.",
     "guest": "Shaka ubuvuzi nta konti"
   },
+  "google": {
+    "or": "cyangwa",
+    "failed": "Kwinjira ukoresheje Google ntibyakunze. Ongera ugerageze.",
+    "consentTitle": "Fungura konti yawe ukoresheje Google",
+    "create": "Fungura konti yanjye",
+    "cancel": "Reka"
+  },
   "signup": {
     "title": "Fungura konti yawe",
     "intro": "Bifata nk’umunota umwe. Ubwishingizi n’abagize umuryango wabyongeraho nyuma.",

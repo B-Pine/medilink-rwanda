@@ -48,6 +48,8 @@ Copied from the [Sprint 0 contract](../architecture/03-sprint-0-contract.md) §2
 | `POST` | `/api/v1/patient/auth/logout/` | Log out | Patient session | FR-SEC-06 | `204`; deletes the patient session only | Implemented (backend-v0.1.0) |
 | `GET` | `/api/v1/patient/auth/me/` | Current patient account and profiles | Patient session | FR-PAT-03 | `PatientMe` | Implemented (backend-v0.1.0) |
 | `POST` | `/api/v1/patient/auth/password/` | Change password while signed in | Patient session | FR-PAT-02 | `{current_password, new_password}` → `200 PatientMe`; wrong current = `400` field error and a failed-login count (lockout); ends other sessions, rotates this one, "password changed" email; Audit `auth.password.changed` | Implemented (2026-11-05) |
+| `GET` | `/api/v1/patient/auth/google/` | Sign in with Google: on/off and public client ID | Public | FR-PAT-02 | `{enabled, client_id}`; `client_id` is "" when off (upgrade 17) | Implemented (2026-11-06) |
+| `POST` | `/api/v1/patient/auth/google/` | Sign in or sign up with Google | Public | FR-PAT-02 | `{id_token, preferred_language?, accepted_terms_version?, accepted_privacy_version?, research_consent?}` → `200 PatientMe`, rotates session (app: `X-Session-Token`). `409 consent_required` (`error.current = {email, full_name}`) for a new person; `403 staff_account`; `401` invalid token; `400 google_unverified_email`; `404` when off. RL: auth. Audit `auth.google.linked` / `auth.google.refused` ([security 03 §1a](../security/03-identity-authentication-sessions.md)) | Implemented (2026-11-06) |
 
 ### Staff
 

@@ -165,6 +165,13 @@
     "invalidCredentials": "L’e-mail ou le mot de passe n’est pas correct. Vérifiez-les et réessayez.",
     "guest": "Trouver des soins sans compte"
   },
+  "google": {
+    "or": "ou",
+    "failed": "La connexion avec Google n'a pas fonctionné. Réessayez.",
+    "consentTitle": "Créer votre compte avec Google",
+    "create": "Créer mon compte",
+    "cancel": "Annuler"
+  },
   "signup": {
     "title": "Créer votre compte",
     "intro": "Cela prend environ une minute. Vous pourrez ajouter votre assurance et votre famille plus tard.",

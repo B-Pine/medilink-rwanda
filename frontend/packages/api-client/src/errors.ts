@@ -9,6 +9,8 @@ export interface ApiErrorInit {
   retryAfter?: number | null;
   /** Other top-level keys of the error body, e.g. S5 `alternatives` on `409 slot_taken`. */
   extra?: Record<string, unknown>;
+  /** `error.current`: the state behind a 409 (e.g. Google `consent_required`). */
+  current?: unknown;
 }
 
 /**
@@ -23,6 +25,7 @@ export class ApiError extends Error {
   /** Seconds from the `Retry-After` header (429). */
   readonly retryAfter: number | null;
   readonly extra: Record<string, unknown>;
+  readonly current: unknown;
 
   constructor(init: ApiErrorInit) {
     super(init.message);
@@ -33,6 +36,7 @@ export class ApiError extends Error {
     this.requestId = init.requestId ?? null;
     this.retryAfter = init.retryAfter ?? null;
     this.extra = init.extra ?? {};
+    this.current = init.current;
   }
 
   get isValidationError(): boolean {
@@ -113,6 +117,7 @@ export async function parseErrorResponse(response: Response): Promise<ApiError> 
       requestId: body.error.request_id ?? headerRequestId,
       retryAfter,
       extra: Object.fromEntries(Object.entries(body).filter(([key]) => key !== "error")),
+      current: body.error.current,
     });
   }
   return new ApiError({

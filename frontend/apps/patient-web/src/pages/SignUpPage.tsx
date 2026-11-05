@@ -22,7 +22,9 @@ import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router";
 import { z } from "zod";
 
+import { paths } from "../app/paths";
 import { useApi } from "../app/services";
+import { GoogleSignIn } from "../auth/GoogleSignIn";
 import { applyFieldErrors, describeApiError, translator } from "../forms/api-errors";
 import {
   EMAIL_PATTERN,
@@ -350,6 +352,7 @@ export function SignUpPage() {
             </div>
           </div>
         </form>
+        {step === 1 && <GoogleSignIn returnTo={paths.overview} text="signup_with" />}
 
         <div aria-hidden="true" className="border-t border-border" />
         <p className="m-0 text-center text-body-sm text-fg-secondary">

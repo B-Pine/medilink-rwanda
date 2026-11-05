@@ -186,6 +186,27 @@ export interface PatientRegisterRequest {
   research_consent: boolean;
 }
 
+/** Upgrade 17: Sign in with Google (patients). `client_id` is public; "" when off. */
+export interface GoogleConfig {
+  enabled: boolean;
+  client_id: string;
+}
+
+/** Google's ID token; the consents only after a 409 `consent_required` (first sign-in). */
+export interface GoogleSignInRequest {
+  id_token: string;
+  preferred_language?: LanguageCode;
+  accepted_terms_version?: string;
+  accepted_privacy_version?: string;
+  research_consent?: boolean;
+}
+
+/** `error.current` of the 409 `consent_required` answer. */
+export interface GoogleConsentRequired {
+  email: string;
+  full_name: string;
+}
+
 /** 202 body of sign-up and password reset: the same text whether or not the account exists. */
 export interface DetailResponse {
   detail: string;
@@ -235,5 +256,7 @@ export interface ApiErrorBody {
     message: string;
     fields?: Record<string, string[]>;
     request_id?: string;
+    /** The current state behind a 409 (e.g. Google `consent_required`: {email, full_name}). */
+    current?: unknown;
   };
 }

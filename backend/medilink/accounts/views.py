@@ -8,6 +8,7 @@ Audiences:  /api/v1/staff/auth/*   staff session cookie
 from __future__ import annotations
 
 import logging
+from typing import Any
 from uuid import UUID
 
 from django.conf import settings
@@ -15,6 +16,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.tokens import default_token_generator
 from django.db import IntegrityError, transaction
+from django.utils import timezone
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import gettext_lazy as _
@@ -24,7 +26,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from medilink.accounts import mfa, verification
+from medilink.accounts import google, mfa, verification
 from medilink.accounts.authentication import (
     PatientSessionAuthentication,
     StaffSessionAuthentication,
@@ -35,11 +37,14 @@ from medilink.accounts.lockout import (
     notify_on_lock,
     reset_email_allowed,
 )
-from medilink.accounts.models import User
+from medilink.accounts.middleware import is_app_request
+from medilink.accounts.models import GoogleIdentity, Language, User, normalize_email
 from medilink.accounts.principal import Principal, PrincipalState, is_staff_member
 from medilink.accounts.serializers import (
     ActiveFacilitySerializer,
     DetailSerializer,
+    GoogleConfigSerializer,
+    GoogleSignInSerializer,
     LoginResultSerializer,
     MfaCodeSerializer,
     MfaConfirmResultSerializer,
@@ -84,11 +89,12 @@ from medilink.authz.permissions import (
     PublicEndpoint,
     get_principal,
 )
-from medilink.core.exceptions import RateLimited, error_response
+from medilink.core.exceptions import RateLimited, error_payload, error_response
 from medilink.core.serializers import ErrorSerializer
 from medilink.core.throttling import BurstRateThrottle, IPScopedRateThrottle
+from medilink.patients.models import ConsentChannel
 from medilink.patients.services import has_patient_profile, register_patient
-from medilink.tenancy.context import set_user_context
+from medilink.tenancy.context import rls_context, set_user_context
 from medilink.tenancy.services import active_membership
 
 logger = logging.getLogger(__name__)
@@ -590,6 +596,196 @@ class PatientLoginView(_AuthView):
         login_policy().reset(email)
         complete_patient_login(request, user)
         record(actions.LOGIN_SUCCESS, request=request, metadata={"audience": "patient"})
+        return Response(PatientMeSerializer(patient_me_data(user)).data)
+
+
+GOOGLE_INVALID = _("Google sign-in didn't work. Try again.")
+GOOGLE_UNVERIFIED = _("Google hasn't confirmed this email address. Sign in with your password.")
+GOOGLE_STAFF = _("Staff accounts sign in with their password and authenticator code.")
+GOOGLE_CONSENT = _("Accept the terms and the privacy notice to create your account.")
+
+
+class PatientGoogleView(_AuthView):
+    """Sign in with Google, patients only (upgrade 17, security 03 §5).
+
+    GET says whether it is on and which public client ID to use. POST takes Google's ID token:
+    a known Google account signs in; a verified email that matches a patient account links it and
+    signs in; a new person gets 409 consent_required, then sends the token again with the
+    sign-up consents. Staff and platform accounts are refused (they need MFA).
+    """
+
+    authentication_classes = [PatientSessionAuthentication]
+    permission_classes = [PublicEndpoint]
+    throttle_scope = "auth"
+
+    @extend_schema(
+        operation_id="patient_auth_google_config",
+        tags=["patient-auth"],
+        responses={200: GoogleConfigSerializer},
+        summary="Whether Sign in with Google is on, and the public OAuth client ID",
+    )
+    def get(self, request: Request) -> Response:
+        on = google.enabled()
+        body = {"enabled": on, "client_id": google.web_client_id() if on else ""}
+        return Response(GoogleConfigSerializer(body).data)
+
+    @extend_schema(
+        operation_id="patient_auth_google",
+        tags=["patient-auth"],
+        request=GoogleSignInSerializer,
+        responses={
+            200: PatientMeSerializer,
+            400: _err("validation_error; google_unverified_email"),
+            401: _err("not_authenticated: the Google token is invalid, expired or not ours"),
+            403: _err("staff_account: staff sign in with password + MFA"),
+            404: _err("not_found: Google sign-in is not configured"),
+            409: _err("consent_required: new account; error.current = {email, full_name}"),
+            429: _err("rate_limited"),
+        },
+        summary="Sign in (or sign up) with a Google ID token; rotates the session",
+    )
+    def post(self, request: Request) -> Response:
+        if not google.enabled():
+            raise exceptions.NotFound()
+        serializer = GoogleSignInSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        try:
+            claims = google.verify_id_token(data["id_token"])
+        except google.GoogleTokenError as exc:
+            record(
+                actions.GOOGLE_REFUSED,
+                request=request,
+                actor_role="",
+                metadata={"reason": "invalid_token", "detail": str(exc)[:64]},
+            )
+            return error_response(401, "not_authenticated", GOOGLE_INVALID)
+
+        identity = GoogleIdentity.objects.select_related("user").filter(subject=claims.sub).first()
+        user = identity.user if identity else None
+        if user is None:
+            if not claims.email_verified:
+                return error_response(400, "google_unverified_email", GOOGLE_UNVERIFIED)
+            user = User.objects.filter(email=normalize_email(claims.email)).first()
+        if user is not None:
+            return self._sign_in(request, user, claims, identity)
+        return self._sign_up(request, data, claims)
+
+    def _refuse(self, request: Request, user: User, reason: str) -> Response:
+        record(
+            actions.GOOGLE_REFUSED,
+            request=request,
+            actor=user,
+            actor_role="",
+            metadata={"reason": reason},
+        )
+        if reason == "staff_account":
+            return error_response(403, "staff_account", GOOGLE_STAFF)
+        return error_response(401, "not_authenticated", GOOGLE_INVALID)
+
+    def _sign_in(
+        self,
+        request: Request,
+        user: User,
+        claims: google.GoogleClaims,
+        identity: GoogleIdentity | None,
+    ) -> Response:
+        if not user.is_active:
+            return self._refuse(request, user, "inactive")
+        set_user_context(user.pk)
+        with rls_context(user_id=user.pk):
+            staff = user.is_platform_admin or is_staff_member(user)
+        if staff:
+            return self._refuse(request, user, "staff_account")
+        if not has_patient_profile(user):
+            return self._refuse(request, user, "no_patient_profile")
+        now = timezone.now()
+        if identity is None:
+            if hasattr(user, "google_identity"):
+                # The account is already tied to a different Google account: never re-point it.
+                return self._refuse(request, user, "other_google_account")
+            identity = GoogleIdentity.objects.create(user=user, subject=claims.sub)
+            record(actions.GOOGLE_LINKED, request=request, actor=user, actor_role="patient")
+        GoogleIdentity.objects.filter(pk=identity.pk).update(last_used_at=now)
+        if user.email_verification_pending or user.email_verified_at is None:
+            # Google proved the address, which is what the emailed link was for.
+            verification.mark_verified(user)
+        login_policy().reset(user.email)
+        complete_patient_login(request, user)
+        record(
+            actions.LOGIN_SUCCESS,
+            request=request,
+            metadata={"audience": "patient", "method": "google"},
+        )
+        return Response(PatientMeSerializer(patient_me_data(user)).data)
+
+    def _sign_up(
+        self, request: Request, data: dict[str, Any], claims: google.GoogleClaims
+    ) -> Response:
+        terms = data.get("accepted_terms_version")
+        privacy = data.get("accepted_privacy_version")
+        name = claims.name or claims.email.split("@")[0]
+        if not terms or not privacy:
+            return Response(
+                error_payload(
+                    "consent_required",
+                    GOOGLE_CONSENT,
+                    current={"email": normalize_email(claims.email), "full_name": name},
+                ),
+                status=409,
+            )
+        channel = ConsentChannel.MOBILE if is_app_request(request._request) else ConsentChannel.WEB
+        language = (
+            data.get("preferred_language")
+            or str(getattr(request._request, "LANGUAGE_CODE", ""))[:2]
+        )
+        if language not in Language.values:
+            language = Language.RW
+        try:
+            with transaction.atomic():
+                registration = register_patient(
+                    full_name=name,
+                    email=normalize_email(claims.email),
+                    password=None,  # Google-only until the patient sets one ("Forgot password")
+                    preferred_language=language,
+                    accepted_terms_version=terms,
+                    accepted_privacy_version=privacy,
+                    research_consent=bool(data.get("research_consent")),
+                    channel=channel,
+                )
+                user = registration.user
+                GoogleIdentity.objects.create(
+                    user=user, subject=claims.sub, last_used_at=timezone.now()
+                )
+                verification.mark_verified(user)
+        except IntegrityError:
+            # Signed up at the same moment by email or another tab: sign in the usual way.
+            existing = User.objects.filter(email=normalize_email(claims.email)).first()
+            if existing is None:
+                raise
+            return self._sign_in(request, existing, claims, None)
+        set_user_context(user.pk)
+        record(
+            actions.PATIENT_REGISTERED,
+            request=request,
+            actor=user,
+            actor_role="patient",
+            object_type="patient",
+            object_id=registration.patient.pk,
+            metadata={
+                "terms_version": terms,
+                "privacy_version": privacy,
+                "research_consent": bool(data.get("research_consent")),
+                "method": "google",
+            },
+        )
+        record(actions.GOOGLE_LINKED, request=request, actor=user, actor_role="patient")
+        complete_patient_login(request, user)
+        record(
+            actions.LOGIN_SUCCESS,
+            request=request,
+            metadata={"audience": "patient", "method": "google"},
+        )
         return Response(PatientMeSerializer(patient_me_data(user)).data)
 
 

@@ -9,6 +9,11 @@ extension MoreStrings on Strings {
 const _more = <String, Map<String, String>>{
   'en': {
     'markAllRead': 'Mark all read',
+    'google.or': 'or',
+    'google.continue': 'Continue with Google',
+    'google.failed': "Google sign-in didn't work. Try again.",
+    'google.consentTitle': 'Create your account with Google',
+    'google.researchHint': 'Optional. Saying no changes nothing about your care.',
     'needCare': 'Where do you need care?',
     'searchFacility': 'Search a facility',
     'mapShort': 'Map',
@@ -232,6 +237,11 @@ const _more = <String, Map<String, String>>{
   },
   'rw': {
     'markAllRead': 'Byose byasomwe',
+    'google.or': 'cyangwa',
+    'google.continue': 'Komeza ukoresheje Google',
+    'google.failed': 'Kwinjira ukoresheje Google ntibyakunze. Ongera ugerageze.',
+    'google.consentTitle': 'Fungura konti yawe ukoresheje Google',
+    'google.researchHint': "Si ngombwa. Kubyanga nta cyo bihindura ku buvuzi bwawe.",
     'needCare': 'Ukeneye kuvurirwa he?',
     'searchFacility': 'Shakisha ivuriro',
     'mapShort': 'Ikarita',

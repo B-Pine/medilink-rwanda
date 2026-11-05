@@ -20,6 +20,8 @@ EMAIL_VERIFIED = "auth.email.verified"
 ACCOUNT_LOCKED = "auth.account.locked"
 STAFF_ACCOUNT_UPDATED = "staff.account.updated"
 PASSWORD_CHANGED = "auth.password.changed"  # noqa: S105 (not a secret)
+GOOGLE_LINKED = "auth.google.linked"
+GOOGLE_REFUSED = "auth.google.refused"
 
 # Mutable on purpose: `extend_actions()` adds sprint actions in place, so `record()` sees them.
 ACTIONS: set[str] = set(
@@ -38,6 +40,8 @@ ACTIONS: set[str] = set(
         ACCOUNT_LOCKED,
         STAFF_ACCOUNT_UPDATED,
         PASSWORD_CHANGED,
+        GOOGLE_LINKED,
+        GOOGLE_REFUSED,
     }
 )
 

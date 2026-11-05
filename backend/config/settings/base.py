@@ -232,6 +232,12 @@ EMAIL_VERIFICATION_TIMEOUT = 3 * 24 * 3600  # sign-up link: 3 days, single use (
 # Testing only: false lets a patient sign in straight after sign-up, with no email sent.
 # Keep true in production (security 03 §6).
 PATIENT_SIGNUP_EMAIL_VERIFICATION = env.bool("PATIENT_SIGNUP_EMAIL_VERIFICATION", default=True)
+# Sign in with Google, patients only (upgrade 17). Empty = the button is hidden. The web client ID
+# is also the Android app's serverClientId; extra audiences (e.g. a future iOS client) go in
+# GOOGLE_OAUTH_CLIENT_IDS. Client IDs are public, not secrets.
+GOOGLE_OAUTH_WEB_CLIENT_ID = env("GOOGLE_OAUTH_WEB_CLIENT_ID", default="")
+GOOGLE_OAUTH_CLIENT_IDS = env.list("GOOGLE_OAUTH_CLIENT_IDS", default=[])
+GOOGLE_JWKS_URL = env("GOOGLE_JWKS_URL", default="https://www.googleapis.com/oauth2/v3/certs")
 
 OTP_TOTP_ISSUER = env("MFA_TOTP_ISSUER", default="MediLink Rwanda")
 # TOTP secrets are encrypted at rest (medilink.accounts.totp_crypto): "1:<base64url 32 bytes>,…"
@@ -593,7 +599,8 @@ def mailers_config(email_url: str) -> dict[str, dict[str, Any]]:
         raise ImproperlyConfigured(f"Unsupported EMAIL_URL scheme {url.scheme!r}.")
     return {
         "default": {
-            "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
+            # Django's SMTP backend + the MediLink HTML layout on plain-only messages
+            "BACKEND": "medilink.core.mail.BrandedSMTPBackend",
             "OPTIONS": {
                 "host": url.hostname or "localhost",
                 "port": url.port or (465 if url.scheme == "smtp+ssl" else 25),
@@ -607,6 +614,9 @@ def mailers_config(email_url: str) -> dict[str, dict[str, Any]]:
     }
 
 
+# Gmail with an app password (decision 2026-11-05):
+#   EMAIL_URL=smtp+tls://you%40gmail.com:<16-letter app password>@smtp.gmail.com:587
+#   DEFAULT_FROM_EMAIL=MediLink Rwanda <you@gmail.com>   (Gmail sends only from its own address)
 MAILERS = mailers_config(env("EMAIL_URL", default="smtp://127.0.0.1:1025"))
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="MediLink Rwanda <no-reply@medilink.test>")
 

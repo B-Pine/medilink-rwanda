@@ -18,6 +18,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   hints show data only (next date, last visit, facility). Remaining messages are shorter in rw, en
   and fr; the safety lines stay (late cancellation, reception confirms a remote arrival).
 
+### Sign in with Google (2026-11-06, upgrade 17)
+
+- Added: "Continue with Google" on login and sign-up (patient site), shown only when the API has it
+  on; a first Google sign-in shows the sign-up consents before the account exists. API client
+  `patientAuth.googleConfig()` / `google()`, `ApiError.current`; mocks keep it off. The patient
+  site's CSP allows Google Identity Services under `https://accounts.google.com/gsi/` only.
+
 ### Patient profile photo (2026-11-05)
 
 - Added (patient web): a "Profile photo" card at the top of a profile (self and guardian): add,

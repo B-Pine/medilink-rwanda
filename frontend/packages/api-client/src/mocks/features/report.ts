@@ -6,6 +6,7 @@ import type { FacilityReport, ReportGroup, ReportTable } from "../../features/qu
 import { SETUP_IDS } from "./setup";
 
 const DAY = 86_400_000;
+const KIGALI_OFFSET = 2 * 3_600_000;
 export const REPORT_GROUPS: readonly ReportGroup[] = ["day", "week", "month"];
 export const REPORT_TABLES: readonly ReportTable[] = [
   "visits",
@@ -35,7 +36,9 @@ export function bucket(date: string, group: ReportGroup): string {
 export function reportPeriod(
   url: URL,
 ): { from: string; to: string; group: ReportGroup } | { errors: Record<string, string> } {
-  const today = iso(Date.now());
+  // Kigali's date (UTC+2, no daylight saving), like the server: in UTC, "today" in Kigali is
+  // still tomorrow between 00:00 and 02:00, which wrongly refused the current day then.
+  const today = iso(Date.now() + KIGALI_OFFSET);
   const errors: Record<string, string> = {};
   const read = (name: string, fallback: string) => {
     const raw = url.searchParams.get(name);

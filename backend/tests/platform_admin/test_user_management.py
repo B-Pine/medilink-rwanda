@@ -10,6 +10,7 @@ from django.core.cache import cache
 from rest_framework.test import APIClient
 
 from medilink.accounts.lockout import login_policy
+from medilink.accounts.tasks import TEXTS
 from medilink.audit.models import AuditEntry
 from medilink.tenancy.context import rls_context
 from medilink.tenancy.models import FacilityMembership
@@ -142,7 +143,7 @@ def test_help_emails(
         sent = client.post(f"{url}send-password-reset/", WHY, format="json")
     assert sent.status_code == 200
     assert mailoutbox[-1].to == [receptionist.email]
-    assert mailoutbox[-1].subject == "Reset your MediLink password"
+    assert mailoutbox[-1].subject == TEXTS["reset"][receptionist.preferred_language][0]
     for _ in range(2):
         client.post(f"{url}send-password-reset/", WHY, format="json")
     limited = client.post(f"{url}send-password-reset/", WHY, format="json")

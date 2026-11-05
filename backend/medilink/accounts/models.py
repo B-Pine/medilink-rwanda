@@ -131,6 +131,20 @@ class RecoveryCode(models.Model):
         return f"recovery code {self.pk}"
 
 
+class GoogleIdentity(models.Model):
+    """A patient account's Google sign-in (upgrade 17): only Google's stable account ID is kept,
+    never a Google token. One Google account opens one MediLink account and vice versa."""
+
+    id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="google_identity")
+    subject = models.CharField(max_length=255, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_used_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self) -> str:
+        return f"google identity {self.pk}"
+
+
 class UserSession(AbstractBaseSession):
     """Server-side session row, tagged with its audience and user so sessions can be listed and
     revoked per user (password reset, deactivation)."""

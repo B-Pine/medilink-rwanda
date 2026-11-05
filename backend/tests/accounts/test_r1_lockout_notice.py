@@ -9,6 +9,7 @@ import pytest
 from rest_framework.test import APIClient
 
 from medilink.accounts.lockout import LockoutPolicy
+from medilink.accounts.tasks import TEXTS
 from medilink.audit import actions
 from medilink.audit.models import AuditEntry
 
@@ -39,7 +40,9 @@ def test_login_lock_emails_the_owner_once(
         _fail(api, STAFF_LOGIN, staff_user.email, 2, clock)  # refused while locked: no new email
     assert len(mailoutbox) == 1
     assert mailoutbox[0].to == [staff_user.email]
-    assert "locked for 15 minutes" in mailoutbox[0].body
+    # in the account's language (upgrade 17); the lock length is in every version
+    assert mailoutbox[0].subject == TEXTS["locked"][staff_user.preferred_language][0]
+    assert " 15 " in mailoutbox[0].body
     entry = AuditEntry.objects.get(action=actions.ACCOUNT_LOCKED)
     assert entry.actor_id == staff_user.pk and entry.metadata == {"kind": "login"}
 

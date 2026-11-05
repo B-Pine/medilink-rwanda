@@ -18,6 +18,7 @@ import { z } from "zod";
 
 import { paths } from "../app/paths";
 import { useApi } from "../app/services";
+import { GoogleSignIn } from "../auth/GoogleSignIn";
 import { patientMeKey } from "../auth/queries";
 import { applyFieldErrors, describeApiError, translator } from "../forms/api-errors";
 import { EMAIL_PATTERN } from "../forms/validation";
@@ -185,6 +186,7 @@ export function LoginPage() {
             {step === "email" ? t("login.continue") : t("login.submit")}
           </Button>
         </form>
+        {step === "email" && <GoogleSignIn returnTo={safeReturnPath(from)} />}
 
         <div aria-hidden="true" className="border-t border-border" />
         <p className="m-0 flex flex-wrap items-center justify-center gap-x-2 text-center text-body-sm text-fg-secondary">

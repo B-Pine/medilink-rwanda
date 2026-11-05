@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 ## [Unreleased]
 
+### 1.0.7 (2026-11-06)
+
+- Added: "Continue with Google" under sign-in and sign-up (shown only when the server has it on).
+  The first time, a sheet asks for the terms and privacy consent (research optional) before the
+  account is created; an existing account with the same Gmail address is opened directly.
+  Signing out also forgets the Google account on this phone, so the picker shows next time.
+- Fixed: notifications whose link moved to the website's `/dashboard` pages opened nothing; they
+  open the appointment, ticket, medications or documents again.
+
 ### 1.0.6 (2026-11-05)
 
 Everything the website's patient dashboard does, in the app (no more "complete on the website"):

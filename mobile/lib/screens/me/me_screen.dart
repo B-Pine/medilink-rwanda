@@ -4,11 +4,14 @@ import 'package:go_router/go_router.dart';
 import '../../ui/icons.dart';
 
 import '../../app/strings.dart';
+import '../../app/strings_more.dart';
 import '../../app/theme.dart';
+import '../../data/profile.dart';
 import '../../data/providers.dart';
 import '../../data/session.dart';
 import '../../ui/band.dart';
 import '../../ui/feedback.dart';
+import 'profile_screen.dart';
 
 /// Everything a sidebar would hold, as one clean list under the profile (upgrade 15 §1).
 class MeScreen extends ConsumerWidget {
@@ -21,6 +24,14 @@ class MeScreen extends ConsumerWidget {
     final me = ref.watch(meProvider).value;
     final top = MediaQuery.paddingOf(context).top;
 
+    final selfId = me?.profiles.where((p) => p.relationship == 'self').firstOrNull?.patientId;
+    final self = selfId == null ? null : ref.watch(profileDetailProvider(selfId)).value;
+
+    final mine = [
+      (s.t('myProfile'), PhosphorIconsRegular.userCircle, () => context.go('/me/profile')),
+      (s.t('notificationSettings'), PhosphorIconsRegular.bell, () => context.go('/me/settings/notifications')),
+      (s.t('claimTitle'), PhosphorIconsRegular.identificationCard, () => context.go('/me/claim')),
+    ];
     final health = [
       (s.records, PhosphorIconsRegular.clipboardText, () => context.go('/me/records')),
       (s.medications, PhosphorIconsRegular.pill, () => context.go('/me/medications')),
@@ -45,13 +56,17 @@ class MeScreen extends ConsumerWidget {
                 padding: EdgeInsets.fromLTRB(Space.xl, top + Space.xl, Space.xl, 0),
                 child: Row(
                   children: [
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundColor: Palette.forestRaised,
-                      child: me == null
-                          ? null
-                          : Text(me.initials, style: theme.textTheme.titleLarge?.copyWith(color: Palette.onForestAccent)),
-                    ),
+                    if (selfId == null || me == null)
+                      const CircleAvatar(radius: 30, backgroundColor: Palette.forestRaised)
+                    else
+                      ProfilePhoto(
+                        patientId: selfId,
+                        name: me.fullName,
+                        hasPhoto: self?.hasPhoto ?? false,
+                        size: 60,
+                        editable: true,
+                        onTap: () => context.go('/me/profile'),
+                      ),
                     const SizedBox(width: Space.lg),
                     Expanded(
                       child: Column(
@@ -81,6 +96,8 @@ class MeScreen extends ConsumerWidget {
               ),
             ],
           ),
+          if (self != null && self.percent < 100) _CompleteBanner(percent: self.percent),
+          _Group(items: mine),
           _Group(items: health),
           _Group(items: account),
           Padding(
@@ -98,6 +115,51 @@ class MeScreen extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// "Complete your profile": what the website said, now done here.
+class _CompleteBanner extends StatelessWidget {
+  const _CompleteBanner({required this.percent});
+  final int percent;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = S.of(context);
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(Space.lg, Space.lg, Space.lg, 0),
+      child: SoftCard(
+        onTap: () => context.go('/me/profile'),
+        color: Palette.brandSubtle,
+        child: Padding(
+          padding: const EdgeInsets.all(Space.lg),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 44,
+                height: 44,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    CircularProgressIndicator(
+                      value: percent / 100,
+                      strokeWidth: 4,
+                      backgroundColor: Colors.white,
+                      strokeCap: StrokeCap.round,
+                    ),
+                    Center(child: Text('$percent%', style: theme.textTheme.labelSmall)),
+                  ],
+                ),
+              ),
+              const SizedBox(width: Space.md),
+              Expanded(child: Text(s.t('profileTodo'), style: theme.textTheme.titleSmall)),
+              const Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.brand),
+            ],
+          ),
+        ),
       ),
     );
   }

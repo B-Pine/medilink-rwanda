@@ -21,6 +21,12 @@ import 'package:medilink/screens/care/doctor_screen.dart';
 import 'package:medilink/screens/care/facility_screen.dart';
 import 'package:medilink/screens/care/map_screen.dart';
 import 'package:medilink/screens/home/home_screen.dart';
+import 'package:medilink/data/profile.dart';
+import 'package:medilink/screens/me/claim_screen.dart';
+import 'package:medilink/screens/me/family_screen.dart';
+import 'package:medilink/screens/me/me_screen.dart';
+import 'package:medilink/screens/me/notification_settings_screen.dart';
+import 'package:medilink/screens/me/profile_screen.dart';
 
 import 'sample.dart';
 
@@ -223,5 +229,55 @@ void main() {
         await tester.pump(const Duration(milliseconds: 300));
       },
     );
+  }, skip: _out.isEmpty);
+
+  final profile = [
+    ...base,
+    profileDetailProvider.overrideWith((ref, id) async => sampleProfile),
+    identifiersProvider.overrideWith((ref, id) async => sampleIdentifiers),
+    insuranceProvider.overrideWith((ref, id) async => sampleInsurance),
+    healthProvider.overrideWith((ref, id) async => sampleHealth),
+    photoUrlProvider.overrideWith((ref, id) async => null),
+    notificationPrefsProvider.overrideWith((ref) async => samplePrefs),
+    delegationsProvider.overrideWith((ref) async => sampleDelegations),
+  ];
+
+  for (final lang in ['en', 'rw']) {
+    testWidgets('profile ($lang)', (tester) async {
+      await _shoot(tester, 'profile-$lang', const ProfileScreen(patientId: 'p1'), profile, lang: lang);
+    }, skip: _out.isEmpty);
+  }
+
+  testWidgets('profile (scrolled)', (tester) async {
+    await _shoot(
+      tester,
+      'profile-scrolled',
+      const ProfileScreen(patientId: 'p1'),
+      profile,
+      lang: 'en',
+      act: (tester) async {
+        await tester.drag(find.byType(Scrollable).first, const Offset(0, -900));
+        for (var i = 0; i < 4; i++) {
+          await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 60)));
+          await tester.pump(const Duration(milliseconds: 300));
+        }
+      },
+    );
+  }, skip: _out.isEmpty);
+
+  testWidgets('me', (tester) async {
+    await _shoot(tester, 'me', const MeScreen(), profile, lang: 'en');
+  }, skip: _out.isEmpty);
+
+  testWidgets('notification settings', (tester) async {
+    await _shoot(tester, 'notification-settings', const NotificationSettingsScreen(), profile, lang: 'en');
+  }, skip: _out.isEmpty);
+
+  testWidgets('claim', (tester) async {
+    await _shoot(tester, 'claim', const ClaimScreen(), profile, lang: 'en');
+  }, skip: _out.isEmpty);
+
+  testWidgets('family', (tester) async {
+    await _shoot(tester, 'family', const FamilyScreen(), profile, lang: 'en');
   }, skip: _out.isEmpty);
 }

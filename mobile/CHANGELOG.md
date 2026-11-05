@@ -18,6 +18,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
   the days they work as a Monday-first week, their services, bio and languages when public, and
   "Book with this doctor", which shows only their services and times (the filter can be removed).
 - Fixed: selected chips (service, who it is for) showed white text on pale green.
+- Added: accepted insurance on facilities. "Near you" and map cards show 2 insurers, Care cards
+  3 (then "+N"), and the facility page lists them all under "Insurance accepted". Only whether it
+  is accepted, never a price (U-01). Facilities with none say "No insurance listed yet".
 
 ### 1.0.2 (2026-11-05)
 

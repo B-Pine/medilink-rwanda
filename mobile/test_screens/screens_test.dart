@@ -18,6 +18,7 @@ import 'package:medilink/data/providers.dart';
 import 'package:medilink/screens/care/book_screen.dart';
 import 'package:medilink/screens/care/care_screen.dart';
 import 'package:medilink/screens/care/doctor_screen.dart';
+import 'package:medilink/screens/care/facility_screen.dart';
 import 'package:medilink/screens/care/map_screen.dart';
 import 'package:medilink/screens/home/home_screen.dart';
 
@@ -189,6 +190,10 @@ void main() {
         await tester.pump(const Duration(milliseconds: 300)); // let the bar title fade in
       },
     );
+  }, skip: _out.isEmpty);
+
+  testWidgets('facility', (tester) async {
+    await _shoot(tester, 'facility', const FacilityScreen(slug: 'kibagabaga-hospital'), facility, lang: 'en');
   }, skip: _out.isEmpty);
 
   testWidgets('book with a doctor', (tester) async {

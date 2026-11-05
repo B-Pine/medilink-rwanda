@@ -8,6 +8,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Sign-up email switch for testing (2026-11-05)
+
+- Added: `PATIENT_SIGNUP_EMAIL_VERIFICATION` (default `true`). Set to `false` on a test
+  deployment only: patient sign-up sends no email, the account can sign in straight away, and
+  accounts still waiting for their link can sign in too. The `202` sign-up body gains
+  `email_verification` (`false` while the switch is off) so the web and app show "account ready".
+
 ### Patient mobile app sessions (2026-11-05, upgrade 15)
 
 - Added: the patient mobile app carries its patient session in a header. Requests with

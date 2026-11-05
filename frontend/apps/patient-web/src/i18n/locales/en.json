@@ -196,7 +196,9 @@
     "login": "Log in",
     "checkEmailTitle": "Check your email",
     "checkEmailBody": "We sent a message to {{email}}. Open the link in it to finish creating your account. The link works for 3 days.",
-    "checkEmailHint": "No email after a few minutes? Check your spam folder, or sign up again to get a new link."
+    "checkEmailHint": "No email after a few minutes? Check your spam folder, or sign up again to get a new link.",
+    "readyTitle": "Your account is ready",
+    "readyBody": "Sign in with {{email}} and your password."
   },
   "verifyEmail": {
     "title": "Confirm your email",

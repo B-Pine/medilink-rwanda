@@ -191,6 +191,11 @@ export interface DetailResponse {
   detail: string;
 }
 
+/** 202 body of sign-up. `email_verification` is false only on a test server: sign in straight away. */
+export interface SignupResponse extends DetailResponse {
+  email_verification?: boolean;
+}
+
 export interface VerifyEmailRequest {
   token: string;
 }

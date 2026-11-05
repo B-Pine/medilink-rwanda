@@ -9,13 +9,19 @@ from __future__ import annotations
 
 from typing import Any
 
+from django.conf import settings
 from django.contrib.auth.backends import ModelBackend
 
 
 class EmailBackend(ModelBackend):
     def user_can_authenticate(self, user: Any) -> bool:
-        """Inactive accounts and self sign-ups whose email isn't verified yet can't sign in."""
+        """Inactive accounts and self sign-ups whose email isn't verified yet can't sign in.
+
+        With PATIENT_SIGNUP_EMAIL_VERIFICATION off (testing only), pending sign-ups can sign in.
+        """
         pending = getattr(user, "email_verification_pending", False)
+        if not settings.PATIENT_SIGNUP_EMAIL_VERIFICATION:
+            pending = False
         return super().user_can_authenticate(user) and not pending
 
     def get_user_permissions(self, user_obj: Any, obj: Any = None) -> set[str]:

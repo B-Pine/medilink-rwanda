@@ -196,7 +196,9 @@
     "login": "Injira",
     "checkEmailTitle": "Reba imeyili yawe",
     "checkEmailBody": "Twohereje ubutumwa kuri {{email}}. Fungura ihuriro riri muri ubwo butumwa kugira ngo urangize gufungura konti. Iryo huriro rimara iminsi 3.",
-    "checkEmailHint": "Nta meyili wabonye nyuma y’iminota mike? Reba mu butumwa bwa spam, cyangwa wongere wiyandikishe ubone irindi huriro."
+    "checkEmailHint": "Nta meyili wabonye nyuma y’iminota mike? Reba mu butumwa bwa spam, cyangwa wongere wiyandikishe ubone irindi huriro.",
+    "readyTitle": "Konti yawe yiteguye",
+    "readyBody": "Injira ukoresheje {{email}} n’ijambo ry’ibanga ryawe."
   },
   "verifyEmail": {
     "title": "Emeza imeyili yawe",

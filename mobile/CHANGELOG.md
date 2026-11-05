@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 ## [Unreleased]
 
+### 1.0.3 (2026-11-05)
+
+- Added: when the server has the sign-up email check off (test servers,
+  `PATIENT_SIGNUP_EMAIL_VERIFICATION=false`), sign-up shows "Account ready" and the patient
+  signs in straight away instead of waiting for an email.
+
 ### 1.0.2 (2026-11-05)
 
 - Added: Home shows facilities ("Near you" once the patient allows approximate location, sorted

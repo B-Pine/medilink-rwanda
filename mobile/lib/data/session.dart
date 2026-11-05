@@ -83,12 +83,13 @@ class AuthController extends Notifier<AuthPhase> {
     return me;
   }
 
-  Future<void> register({
+  /// Returns true when the account can sign in straight away (a test server sends no email).
+  Future<bool> register({
     required String fullName,
     required String email,
     required String password,
   }) async {
-    await _api.post('/api/v1/patient/auth/register/', {
+    final data = await _api.post('/api/v1/patient/auth/register/', {
       'full_name': fullName,
       'email': email,
       'password': password,
@@ -97,6 +98,7 @@ class AuthController extends Notifier<AuthPhase> {
       'accepted_privacy_version': AppConfig.privacyVersion,
       'research_consent': false,
     });
+    return data is Map && data['email_verification'] == false;
   }
 
   Future<void> savePin(String pin, {required bool biometrics}) async {

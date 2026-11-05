@@ -17,8 +17,9 @@ TOTP can be phished: a fake login page can relay the code. That's why **passkeys
 
 | Rule | Value | Source |
 |---|---|---|
-| Minimum length, password-only accounts (patients without 2FA) | **15 characters** (passphrase encouraged: "three words you can remember") | NIST 800-63B-4 |
-| Minimum length with MFA (staff, patients with 2FA) | **12 characters** | NIST allows 8; we choose 12 |
+| Minimum length, patients | **8 characters** (decision 2026-11-05: 15 was too hard to type on a phone; NIST 800-63B-4 recommends 15 for single-factor accounts, so this is an accepted risk, offset by the breached/context blocklists, login throttling and lockout) | Product decision |
+| Minimum length, staff and platform admins (MFA mandatory) | **12 characters** | NIST allows 8; we choose 12 |
+| Change while signed in | Patients: current password + new one (`POST /api/v1/patient/auth/password/`). A wrong current password counts as a failed login (same lockout); success ends every other session, rotates this one and emails the owner | |
 | Maximum length | ≥ 64 characters accepted | NIST |
 | Composition rules (must have symbol, etc.) | **None** | NIST says verifiers shall not impose them |
 | Forced periodic change | **No**; change only on evidence of compromise | NIST |
@@ -35,7 +36,7 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.PBKDF2PasswordHasher",  # only to upgrade legacy hashes
 ]
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "medilink.security.validators.ContextualMinimumLengthValidator"},  # 15 or 12 depending on MFA
+    {"NAME": "medilink.security.validators.ContextualMinimumLengthValidator"},  # 12 for staff/admins, 8 for patients
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "medilink.security.validators.BreachedPasswordValidator"},          # offline list
 ]

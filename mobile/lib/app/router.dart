@@ -21,6 +21,7 @@ import '../screens/me/help_screen.dart';
 import '../screens/me/me_screen.dart';
 import '../screens/me/privacy_screen.dart';
 import '../screens/me/record_lists.dart';
+import '../screens/me/password_screen.dart';
 import '../screens/me/settings_screen.dart';
 import '../screens/shell.dart';
 import '../screens/visits/booking_screen.dart';
@@ -177,7 +178,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                 GoRoute(path: 'medications', pageBuilder: (_, state) => slide(state, const MedicationsScreen())),
                 GoRoute(path: 'documents', pageBuilder: (_, state) => slide(state, const DocumentsScreen())),
                 GoRoute(path: 'results', pageBuilder: (_, state) => slide(state, const ResultsScreen())),
-                GoRoute(path: 'settings', pageBuilder: (_, state) => slide(state, const SettingsScreen())),
+                GoRoute(
+                  path: 'settings',
+                  pageBuilder: (_, state) => slide(state, const SettingsScreen()),
+                  routes: [
+                    GoRoute(path: 'password', pageBuilder: (_, state) => slide(state, const PasswordScreen())),
+                  ],
+                ),
                 GoRoute(path: 'privacy', pageBuilder: (_, state) => slide(state, const PrivacyScreen())),
                 GoRoute(
                   path: 'family',

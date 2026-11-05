@@ -37,7 +37,7 @@ class _ForgotScreenState extends ConsumerState<ForgotScreen> {
       setState(() => _sent = true);
       return true;
     } on ApiException catch (e) {
-      setState(() => _error = e.message.isNotEmpty ? e.message : S.of(context).somethingWrong);
+      setState(() => _error = e.detail.isNotEmpty ? e.detail : S.of(context).somethingWrong);
       return false;
     }
   }

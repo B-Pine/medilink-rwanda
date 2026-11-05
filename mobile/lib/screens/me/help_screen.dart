@@ -245,7 +245,7 @@ class _NewSupportScreenState extends ConsumerState<NewSupportScreen> {
       });
       return true;
     } on ApiException catch (e) {
-      setState(() => _error = e.message.isNotEmpty ? e.message : S.of(context).somethingWrong);
+      setState(() => _error = e.detail.isNotEmpty ? e.detail : S.of(context).somethingWrong);
       return false;
     }
   }
@@ -334,7 +334,7 @@ class _SupportThreadScreenState extends ConsumerState<SupportThreadScreen> {
     } on ApiException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message.isNotEmpty ? e.message : S.of(context).somethingWrong)),
+          SnackBar(content: Text(e.detail.isNotEmpty ? e.detail : S.of(context).somethingWrong)),
         );
       }
     } finally {

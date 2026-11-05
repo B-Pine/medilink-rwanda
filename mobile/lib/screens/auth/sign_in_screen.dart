@@ -47,7 +47,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             ApiFailure.offline => s.offline.split('·').first.trim(),
             ApiFailure.slow => s.slowConnection,
             ApiFailure.unauthenticated || ApiFailure.invalid => s.signInFailed,
-            _ => e.message.isNotEmpty ? e.message : s.somethingWrong,
+            _ => e.detail.isNotEmpty ? e.detail : s.somethingWrong,
           });
       return false;
     }

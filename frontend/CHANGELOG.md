@@ -9,6 +9,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Patient passwords (2026-11-05)
+
+- Changed: patient forms ask for at least 8 characters (was 15).
+- Added: Settings → Security changes the password in place (current + new) instead of sending a
+  reset email; "Forgot your current password?" still links to the reset flow.
+  `patientAuth.changePassword` in the API client, with a mock handler.
+
 ### Sign-up without email on test servers (2026-11-05)
 
 - Added: patient sign-up shows "Your account is ready" with a sign-in button when the API answers

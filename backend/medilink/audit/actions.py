@@ -19,6 +19,7 @@ PATIENT_REGISTERED = "patient.registered"
 EMAIL_VERIFIED = "auth.email.verified"
 ACCOUNT_LOCKED = "auth.account.locked"
 STAFF_ACCOUNT_UPDATED = "staff.account.updated"
+PASSWORD_CHANGED = "auth.password.changed"  # noqa: S105 (not a secret)
 
 # Mutable on purpose: `extend_actions()` adds sprint actions in place, so `record()` sees them.
 ACTIONS: set[str] = set(
@@ -36,6 +37,7 @@ ACTIONS: set[str] = set(
         EMAIL_VERIFIED,
         ACCOUNT_LOCKED,
         STAFF_ACCOUNT_UPDATED,
+        PASSWORD_CHANGED,
     }
 )
 

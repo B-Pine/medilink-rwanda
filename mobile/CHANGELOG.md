@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 ## [Unreleased]
 
+### 1.0.5 (2026-11-05)
+
+- Changed: passwords need at least 8 characters (was 15).
+- Added: Me → Settings → Change password (current password, new one twice; other phones and
+  browsers are signed out).
+- Fixed: errors now say what to fix (the server's field message, e.g. "password too short")
+  instead of "some fields need attention".
+
 ### 1.0.3 (2026-11-05)
 
 - Added: when the server has the sign-up email check off (test servers,

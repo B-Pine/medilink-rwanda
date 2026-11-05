@@ -310,7 +310,7 @@ class _ConfirmSheetState extends ConsumerState<_ConfirmSheet> {
       });
       return true;
     } on ApiException catch (e) {
-      setState(() => _error = e.kind == ApiFailure.conflict ? s.noTimes : (e.message.isNotEmpty ? e.message : s.somethingWrong));
+      setState(() => _error = e.kind == ApiFailure.conflict ? s.noTimes : (e.detail.isNotEmpty ? e.detail : s.somethingWrong));
       return false;
     }
   }

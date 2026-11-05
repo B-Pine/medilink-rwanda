@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5991.
+Keys: 5995.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -259,7 +259,7 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `validation.emailRequired` | Andika imeyili yawe | Enter your email address | needs native-speaker review |
 | `validation.emailInvalid` | Andika imeyili yanditse neza, urugero: izina@example.rw | Enter an email address in the correct format, like name@example.rw | needs native-speaker review |
 | `validation.passwordRequired` | Andika ijambo ry’ibanga | Enter your password | needs native-speaker review |
-| `validation.passwordLength` | Koresha nibura inyuguti 15 | Use at least 15 characters | needs native-speaker review |
+| `validation.passwordLength` | Koresha nibura inyuguti 8 | Use at least 8 characters | needs native-speaker review |
 | `validation.nameRequired` | Andika amazina yawe | Enter your names | needs native-speaker review |
 | `validation.termsRequired` | Emera amabwiriza yo gukoresha kugira ngo ufungure konti | Accept the terms of use to create an account | needs native-speaker review |
 | `validation.privacyRequired` | Emera itangazo ry’ibanga kugira ngo ufungure konti | Accept the privacy notice to create an account | needs native-speaker review |
@@ -370,8 +370,8 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `signup.fullNameHint` | Nk’uko yanditse ku ndangamuntu yawe. | As written on your ID. | needs native-speaker review |
 | `signup.email` | Imeyili | Email | needs native-speaker review |
 | `signup.password` | Ijambo ry’ibanga | Password | needs native-speaker review |
-| `signup.passwordHint` | Koresha nibura inyuguti 15. Interuro ngufi yoroshye kwibuka kandi igoye gukeka. | Use at least 15 characters. A short sentence is easy to remember and hard to guess. | needs native-speaker review |
-| `signup.passwordRule` | Nibura inyuguti 15 | At least 15 characters | needs native-speaker review |
+| `signup.passwordHint` | Koresha nibura inyuguti 8. Interuro ngufi yoroshye kwibuka kandi igoye gukeka. | Use at least 8 characters. A short sentence is easy to remember and hard to guess. | needs native-speaker review |
+| `signup.passwordRule` | Nibura inyuguti 8 | At least 8 characters | needs native-speaker review |
 | `signup.passwordRuleMet` | byuzuye | done | needs native-speaker review |
 | `signup.passwordRuleNotMet` | ntibiruzura | not yet | needs native-speaker review |
 | `signup.language` | Ururimi rw’ubutumwa | Language for messages | needs native-speaker review |
@@ -503,7 +503,7 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `forgot.back` | Subira ku kwinjira | Back to log in | needs native-speaker review |
 | `reset.title` | Shyiraho ijambo ry’ibanga rishya | Set a new password | needs native-speaker review |
 | `reset.newPassword` | Ijambo ry’ibanga rishya | New password | needs native-speaker review |
-| `reset.hint` | Nibura inyuguti 15. Interuro ngufi yoroshye kwibuka kandi igoye gukeka. | At least 15 characters. A short sentence is easy to remember and hard to guess. | needs native-speaker review |
+| `reset.hint` | Nibura inyuguti 8. Interuro ngufi yoroshye kwibuka kandi igoye gukeka. | At least 8 characters. A short sentence is easy to remember and hard to guess. | needs native-speaker review |
 | `reset.submit` | Bika ijambo ry’ibanga rishya | Save new password | needs native-speaker review |
 | `reset.doneTitle` | Ijambo ry’ibanga ryahinduwe | Password changed | needs native-speaker review |
 | `reset.doneBody` | Ijambo ry’ibanga ryahinduwe kandi wasohowe ahantu hose. Injira ukoresheje ijambo ry’ibanga rishya. | Your password was changed and you were logged out everywhere. Log in with your new password. | needs native-speaker review |
@@ -4773,8 +4773,12 @@ File: `apps/patient-web/src/features/dashboard/locales/rw.json`
 | `settings.privacy.delegates` | Abafite uburenganzira | People with access | needs native-speaker review |
 | `settings.security.title` | Umutekano | Security | needs native-speaker review |
 | `settings.security.body` | Rinda konti yawe. | Keep your account safe. | needs native-speaker review |
-| `settings.security.password` | Kugira ngo uhindure ijambo ry'ibanga, tukoherereza umurongo wizewe kuri imeyili, kugira ngo ari wowe wenyine urishyiraho. | To change your password we email you a secure link, so only you can set a new one. | needs native-speaker review |
+| `settings.security.password` | Andika ijambo ry'ibanga usanganywe, hanyuma irishya. Andi materefone na mudasobwa bizasohoka. | Enter your current password, then a new one. Other phones and browsers will be signed out. | needs native-speaker review |
 | `settings.security.change` | Hindura ijambo ry'ibanga | Change password | needs native-speaker review |
+| `settings.security.current` | Ijambo ry'ibanga usanganywe | Current password | needs native-speaker review |
+| `settings.security.new` | Ijambo ry'ibanga rishya | New password | needs native-speaker review |
+| `settings.security.done` | Ijambo ry'ibanga ryahinduwe. Andi materefone na mudasobwa byasohotse. | Password changed. Other phones and browsers are signed out. | needs native-speaker review |
+| `settings.security.forgot` | Wibagiwe ijambo ry'ibanga usanganywe? | Forgot your current password? | needs native-speaker review |
 | `settings.security.later` | Ibikoresho winjiriyemo no kwinjira mu ntambwe ebyiri bizongerwa hano. | Signed-in devices and two-step sign-in will be added here. | needs native-speaker review |
 | `settings.alerts.title` | Ubutumwa wifuza | Notification preferences | needs native-speaker review |
 | `settings.alerts.body` | Ubutumwa wakira, aho bukugeraho n'amasaha yo gutuza. | Which alerts you get, on which channel, and quiet hours. | needs native-speaker review |

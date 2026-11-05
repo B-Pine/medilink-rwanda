@@ -101,7 +101,6 @@ export function DocumentsPage() {
     <div className="flex flex-col gap-6">
       <PageHeader
         title={t("documents.title")}
-        subtitle={t("documents.intro")}
         actions={
           all.length > 0 && (
             <Button
@@ -168,11 +167,7 @@ export function DocumentsPage() {
           ))}
         </RowList>
       ) : (
-        <EmptyState
-          icon={FileText}
-          title={t("documents.empty")}
-          description={t("documents.emptyBody")}
-        />
+        <EmptyState icon={FileText} title={t("documents.empty")} />
       )}
     </div>
   );

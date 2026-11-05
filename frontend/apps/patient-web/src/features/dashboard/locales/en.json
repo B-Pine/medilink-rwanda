@@ -55,7 +55,7 @@
     "title": "Search MediLink",
     "placeholder": "Search care, appointments, documents",
     "shortcut": "Ctrl K",
-    "empty": "Nothing found. Try a facility, a doctor or a service.",
+    "empty": "Nothing found",
     "hints": "↑ ↓ move · Enter open · Esc close",
     "findCare": "Find care for “{{query}}”",
     "groups": {
@@ -90,14 +90,14 @@
     "greeting_evening": "Good evening, {{name}}",
     "subtitle": "Here's your healthcare overview.",
     "verifyTitle": "Confirm your email",
-    "verifyBody": "We sent a link to {{email}}. Open it to keep your account safe.",
+    "verifyBody": "Link sent to {{email}}",
     "nextAppointment": "Next appointment",
     "currentVisit": "Current visit",
     "viewDetails": "View details",
     "allTickets": "My queue",
     "moreTickets_one": "{{count}} more ticket today",
     "moreTickets_other": "{{count}} more tickets today",
-    "startTitle": "Your healthcare starts here.",
+    "startTitle": "Where do you need care?",
     "startBody": "Find a healthcare facility, explore available services or book your next visit.",
     "explore": "Explore facilities",
     "quick": "Quick actions",
@@ -204,9 +204,9 @@
     },
     "failed": "We couldn't load your appointments.",
     "empty": {
-      "upcoming": "You don't have upcoming appointments.",
-      "past": "No past appointments yet.",
-      "cancelled": "No cancelled appointments."
+      "upcoming": "No upcoming appointments",
+      "past": "No past appointments",
+      "cancelled": "No cancelled appointments"
     },
     "emptyBody": "Find a facility and book a time that suits you.",
     "for": "for {{name}}",
@@ -221,7 +221,7 @@
     "actionFailed": "We couldn't update your appointment. Please try again.",
     "back": "All appointments",
     "notFound": "Appointment not found",
-    "notFoundBody": "We couldn't load this appointment. It may belong to another account.",
+    "notFoundBody": "It may belong to another account.",
     "info": "Appointment",
     "date": "Date",
     "time": "Time",
@@ -251,7 +251,7 @@
     "reference": "Booking reference",
     "showCode": "Show this code at reception.",
     "changeUntil": "You can change or cancel until {{time}}.",
-    "changeClosed": "Changes are closed. Cancelling now counts as a late cancellation.",
+    "changeClosed": "Cancelling now counts as late.",
     "directions": "Get directions"
   },
   "reschedule": {
@@ -262,12 +262,12 @@
     "later": "Later",
     "days": "Days with free times",
     "times": "Free times",
-    "none": "No free times this week. Try the next week.",
+    "none": "No free times this week",
     "loadFailed": "We couldn't load free times.",
     "from": "Current time",
     "to": "New time",
     "held": "We're keeping this time for you for",
-    "expired": "The time we kept for you has run out. Choose a time again.",
+    "expired": "Time ran out. Choose again.",
     "oldFreed": "Your current time is released only when the new one is confirmed.",
     "otherTime": "Choose another time",
     "confirm": "Confirm new time"
@@ -278,9 +278,9 @@
     "join": "Join a queue",
     "today": "Today",
     "failed": "We couldn't load your tickets.",
-    "none": "You're not currently in a queue.",
+    "none": "Not in a queue",
     "noneBody": "Join a queue from a facility that allows it, or check in at reception.",
-    "remoteNote": "Joining from your phone is not the same as checking in. Reception confirms your arrival when you get there.",
+    "remoteNote": "Reception confirms your arrival.",
     "previous": "Previous visits",
     "previousTitle": "Past tickets aren't listed here yet",
     "previousBody": "After a visit, the doctor's signed record appears in Medical records.",
@@ -349,7 +349,7 @@
   "records": {
     "search": "Search by facility, doctor or diagnosis",
     "signed": "Signed",
-    "noMatch": "No records match your search.",
+    "noMatch": "No matches",
     "emptyBody": "Your medical records will appear here when they become available."
   },
   "medications": {

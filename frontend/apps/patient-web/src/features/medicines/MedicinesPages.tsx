@@ -40,7 +40,7 @@ export function MedicinesPage() {
   const nameOf = (id: string) => people.find((p) => p.patient_id === id)?.display_name;
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title={t("dashboard.medications.title")} subtitle={t("medicines.intro")} />
+      <PageHeader title={t("dashboard.medications.title")} />
       {people.length > 1 && (
         <SelectField
           label={t("medicines.whose")}

@@ -233,7 +233,6 @@ function WelcomePanel() {
         <h2 id="journey" className="m-0 font-heading text-h2 font-bold text-fg">
           {t("dashboard.overview.startTitle")}
         </h2>
-        <p className="m-0 text-fg-secondary">{t("dashboard.overview.startBody")}</p>
         <div className="mt-2 flex flex-wrap gap-2">
           <Link to={paths.findCare} className={buttonClassName({})}>
             <MagnifyingGlass aria-hidden="true" className="size-icon" />
@@ -498,9 +497,6 @@ function Attention() {
             <CheckCircle weight="duotone" className="size-7" />
           </span>
           <p className="m-0 font-semibold text-fg">{t("dashboard.overview.attention.allSet")}</p>
-          <p className="m-0 max-w-[16rem] text-body-sm text-fg-secondary">
-            {t("dashboard.overview.attention.allSetBody")}
-          </p>
         </div>
       )}
     </WidgetCard>
@@ -535,11 +531,7 @@ function AtAGlance() {
             label={t("dashboard.overview.glance.upcoming")}
             value={value(upcoming.data ? rows.length : undefined, upcoming.isError)}
             hint={
-              next
-                ? t("dashboard.overview.glance.next", {
-                    when: `${day(next.starts_at, lang, "short")} · ${time(next.starts_at, lang)}`,
-                  })
-                : t("dashboard.overview.glance.upcomingNone")
+              next ? `${day(next.starts_at, lang, "short")} · ${time(next.starts_at, lang)}` : undefined
             }
           />
         </li>
@@ -550,11 +542,7 @@ function AtAGlance() {
             tone="violet"
             label={t("dashboard.overview.glance.medicines")}
             value={value(medicines.data?.count, medicines.isError)}
-            hint={
-              firstMedicine
-                ? t("dashboard.overview.glance.from", { facility: firstMedicine.facility_name })
-                : t("dashboard.overview.glance.medicinesNone")
-            }
+            hint={firstMedicine?.facility_name}
           />
         </li>
         <li>
@@ -564,11 +552,7 @@ function AtAGlance() {
             tone="info"
             label={t("dashboard.overview.glance.records")}
             value={value(records.data?.count, records.isError)}
-            hint={
-              lastRecord
-                ? t("dashboard.overview.glance.lastVisit", { date: short(lastRecord.service_date) })
-                : t("dashboard.overview.glance.recordsNone")
-            }
+            hint={lastRecord ? short(lastRecord.service_date) : undefined}
           />
         </li>
         <li>
@@ -578,11 +562,6 @@ function AtAGlance() {
             tone="attention"
             label={t("dashboard.overview.glance.unread")}
             value={value(unreadCount, unread.isError)}
-            hint={
-              unreadCount
-                ? t("dashboard.overview.glance.unreadHint")
-                : t("dashboard.overview.glance.unreadNone")
-            }
           />
         </li>
       </ul>
@@ -624,7 +603,6 @@ function UpcomingCard() {
         <CardEmpty
           icon={CalendarCheck}
           title={t("dashboard.appointments.empty.upcoming")}
-          body={t("dashboard.appointments.emptyBody")}
           action={
             <Link
               to={`${paths.findCare}?mode=booking`}
@@ -682,7 +660,6 @@ function RecentVisitsCard() {
         <CardEmpty
           icon={FileText}
           title={t("dashboard.overview.visits.empty")}
-          body={t("dashboard.overview.visits.emptyBody")}
         />
       )}
     </WidgetCard>
@@ -772,12 +749,8 @@ function LatestMeasurementsCard() {
               weight="duotone"
               className="mt-px size-4 shrink-0 text-brand"
             />
-            <span>
-              {t("dashboard.overview.vitals.recorded", {
-                date: short(latest.service_date),
-                facility: latest.facility_name,
-              })}{" "}
-              {t("dashboard.overview.vitals.note")}
+            <span className="tabular-nums">
+              {short(latest.service_date)} · {latest.facility_name}
             </span>
           </div>
         </>
@@ -785,7 +758,6 @@ function LatestMeasurementsCard() {
         <CardEmpty
           icon={Heartbeat}
           title={t("dashboard.overview.vitals.empty")}
-          body={t("dashboard.overview.vitals.emptyBody")}
         />
       )}
     </WidgetCard>
@@ -901,7 +873,6 @@ export function HomePage() {
           >
             {t(`dashboard.overview.greeting_${partOfDay(now)}`, { name: me.full_name })}
           </PageHeading>
-          <p className="m-0 text-fg-secondary">{t("dashboard.overview.subtitle")}</p>
         </div>
         <div className="hidden shrink-0 gap-2 md:flex">
           <Link to={paths.findCare} className={buttonClassName({ variant: "secondary" })}>

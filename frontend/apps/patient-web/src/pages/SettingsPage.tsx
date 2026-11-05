@@ -46,19 +46,16 @@ function SettingsSection({ id, children }: { id: (typeof SECTIONS)[number]; chil
       aria-labelledby={`settings-${id}-title`}
       className={cx(panelClass, "scroll-mt-24 overflow-hidden")}
     >
-      <div className="flex items-start gap-3 border-b border-border px-5 py-4">
+      <div className="flex items-center gap-3 border-b border-border px-5 py-4">
         <span
           aria-hidden="true"
           className="grid size-9 shrink-0 place-items-center rounded-lg bg-brand-subtle text-brand"
         >
           <SectionIcon weight="duotone" className="size-5" />
         </span>
-        <div className="flex flex-col gap-0.5">
-          <h2 id={`settings-${id}-title`} className="m-0 font-heading text-body font-bold">
-            {t(`dashboard.settings.${id}.title`)}
-          </h2>
-          <p className="m-0 text-body-sm text-fg-secondary">{t(`dashboard.settings.${id}.body`)}</p>
-        </div>
+        <h2 id={`settings-${id}-title`} className="m-0 font-heading text-body font-bold">
+          {t(`dashboard.settings.${id}.title`)}
+        </h2>
       </div>
       <div className="flex flex-col divide-y divide-border">{children}</div>
     </section>
@@ -100,7 +97,7 @@ export function SettingsPage() {
   const { data: me } = usePatientMe();
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title={t("settings.title")} subtitle={t("dashboard.settings.subtitle")} />
+      <PageHeader title={t("settings.title")} />
       <div className="grid items-start gap-6 lg:grid-cols-[14rem_minmax(0,1fr)]">
         <SectionAnchors
           label={t("dashboard.settings.sections")}
@@ -144,9 +141,8 @@ export function SettingsPage() {
             <SettingRow label={t("dashboard.nav.language")}>
               <LanguageSwitcher pill />
             </SettingRow>
-            <div className="flex flex-col gap-2 px-5 py-4">
+            <div className="px-5 py-4">
               <TextSizeToggle />
-              <p className="m-0 text-body-sm text-fg-muted">{t("settings.textSizeHint")}</p>
             </div>
             <div className="px-5 py-4">
               <ThemeToggle />
@@ -175,28 +171,25 @@ export function SettingsPage() {
           </SettingsSection>
 
           <SettingsSection id="security">
-            <SettingRow hint={t("dashboard.settings.security.password")}>
+            <SettingRow label={t("dashboard.settings.security.change")}>
               <Link
                 to="/forgot-password"
                 state={{ email: me?.email }}
                 className={buttonClassName({ variant: "secondary", size: "sm" })}
               >
-                {t("dashboard.settings.security.change")}
+                {t("dashboard.settings.alerts.openShort")}
+                <CaretRight aria-hidden="true" className="size-4" />
               </Link>
             </SettingRow>
-            <p className="m-0 flex flex-wrap items-center gap-2 px-5 py-4 text-body-sm text-fg-muted">
-              <Badge tone="neutral">{t("common.comingSoon")}</Badge>
-              {t("dashboard.settings.security.later")}
-            </p>
           </SettingsSection>
 
           <SettingsSection id="alerts">
-            <SettingRow hint={t("settings.travelBody")}>
+            <SettingRow label={t("dashboard.settings.alerts.open")}>
               <Link
                 to={paths.notificationSettings}
                 className={buttonClassName({ variant: "secondary", size: "sm" })}
               >
-                {t("dashboard.settings.alerts.open")}
+                {t("dashboard.settings.alerts.openShort")}
                 <CaretRight aria-hidden="true" className="size-4" />
               </Link>
             </SettingRow>

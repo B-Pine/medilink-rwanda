@@ -276,7 +276,8 @@ export function StatCard({
   label: string;
   /** Undefined while loading; null when the count could not be loaded (shown as a dash). */
   value: number | null | undefined;
-  hint: string;
+  /** Data only (the next date, the last visit); no explaining words. */
+  hint?: string | undefined;
   tone?: StatTone;
 }) {
   return (
@@ -307,7 +308,7 @@ export function StatCard({
             {value ?? "—"}
           </span>
         )}
-        <span className="truncate text-caption text-fg-muted">{hint}</span>
+        {hint && <span className="truncate text-caption text-fg-muted">{hint}</span>}
       </span>
       <ArrowUpRight
         aria-hidden="true"
@@ -552,7 +553,8 @@ export function QuickActionTile({
   to: string;
   icon: Icon;
   title: string;
-  description: string;
+  /** Optional; the patient app shows the label alone, and so does the overview. */
+  description?: string | undefined;
 }) {
   return (
     <Link
@@ -568,7 +570,7 @@ export function QuickActionTile({
       </span>
       <span className="flex min-w-0 flex-col">
         <span className="truncate text-body-sm font-semibold">{title}</span>
-        <span className="truncate text-caption text-fg-muted">{description}</span>
+        {description && <span className="truncate text-caption text-fg-muted">{description}</span>}
       </span>
       <ArrowUpRight
         aria-hidden="true"

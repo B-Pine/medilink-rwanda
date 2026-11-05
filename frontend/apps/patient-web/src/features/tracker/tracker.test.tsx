@@ -50,7 +50,7 @@ describe("live tracker", () => {
     await user.click(within(dialog).getByRole("button", { name: "Yes, cancel" }));
     // cancelling returns to My queue, without the ticket
     await screen.findByRole("heading", { level: 1, name: "My queue" });
-    expect(await screen.findByText("You're not currently in a queue.")).toBeInTheDocument();
+    expect(await screen.findByText("Not in a queue")).toBeInTheDocument();
     expect(screen.queryByText("G-020")).not.toBeInTheDocument();
   });
 

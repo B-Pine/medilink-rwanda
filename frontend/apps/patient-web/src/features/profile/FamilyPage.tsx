@@ -115,7 +115,6 @@ export function FamilyPage() {
     <div className="flex flex-col gap-6">
       <PageHeader
         title={t("dashboard.family.title")}
-        subtitle={t("dashboard.family.subtitle")}
         actions={<AddDependent onDone={refresh} />}
       />
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">

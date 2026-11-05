@@ -9,6 +9,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Fewer words on the patient dashboard (2026-11-05)
+
+- Changed: the signed-in pages read like the patient app: labels and data, no explaining
+  sentences. Page subtitles and intros are gone (overview, appointments, queue, family, records,
+  medications, documents, help, settings, privacy, access history), as are empty-state bodies,
+  settings section blurbs, quick-action descriptions and the "How the queue works" panel. Stat
+  hints show data only (next date, last visit, facility). Remaining messages are shorter in rw, en
+  and fr; the safety lines stay (late cancellation, reception confirms a remote arrival).
+
 ### Sign-up without email on test servers (2026-11-05)
 
 - Added: patient sign-up shows "Your account is ready" with a sign-in button when the API answers

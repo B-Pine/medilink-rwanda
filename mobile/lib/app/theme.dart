@@ -37,6 +37,44 @@ abstract final class Space {
   static const xxl = 32.0;
   static const radius = 12.0;
   static const radiusSm = 8.0;
+  static const radiusLg = 20.0;
+}
+
+/// Soft, tinted shadows (forest, low alpha) instead of Material's grey elevation.
+abstract final class Shadows {
+  static final card = [
+    BoxShadow(color: Palette.forest.withValues(alpha: 0.06), blurRadius: 2, offset: const Offset(0, 1)),
+    BoxShadow(color: Palette.forest.withValues(alpha: 0.07), blurRadius: 16, offset: const Offset(0, 6)),
+  ];
+  static final raised = [
+    BoxShadow(color: Palette.forest.withValues(alpha: 0.08), blurRadius: 3, offset: const Offset(0, 1)),
+    BoxShadow(color: Palette.forest.withValues(alpha: 0.14), blurRadius: 32, offset: const Offset(0, 14)),
+  ];
+}
+
+/// A white surface with the soft shadow: the Home cards.
+class SoftCard extends StatelessWidget {
+  const SoftCard({super.key, required this.child, this.onTap, this.raised = false, this.radius = Space.radiusLg, this.color});
+
+  final Widget child;
+  final VoidCallback? onTap;
+  final bool raised;
+  final double radius;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(radius),
+          boxShadow: raised ? Shadows.raised : Shadows.card,
+        ),
+        child: Material(
+          color: color ?? Palette.surface,
+          borderRadius: BorderRadius.circular(radius),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(onTap: onTap, child: child),
+        ),
+      );
 }
 
 ThemeData buildTheme() {

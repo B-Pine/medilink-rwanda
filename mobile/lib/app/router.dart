@@ -11,6 +11,7 @@ import '../screens/auth/splash_screen.dart';
 import '../screens/care/book_screen.dart';
 import '../screens/care/care_screen.dart';
 import '../screens/care/facility_screen.dart';
+import '../screens/care/map_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/home/notifications_screen.dart';
 import '../screens/home/symptoms_screen.dart';
@@ -110,6 +111,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               path: '/home',
               builder: (_, _) => const HomeScreen(),
               routes: [
+                GoRoute(path: 'map', pageBuilder: (_, state) => slide(state, const MapScreen())),
                 GoRoute(path: 'notifications', pageBuilder: (_, state) => slide(state, const NotificationsScreen())),
                 GoRoute(path: 'symptoms', pageBuilder: (_, state) => slide(state, const SymptomsScreen())),
               ],
@@ -120,6 +122,8 @@ final routerProvider = Provider<GoRouter>((ref) {
               path: '/care',
               builder: (_, _) => const CareScreen(),
               routes: [
+                // Before ':slug', so "map" is never read as a facility.
+                GoRoute(path: 'map', pageBuilder: (_, state) => slide(state, const MapScreen())),
                 GoRoute(
                   path: ':slug',
                   pageBuilder: (_, state) => slide(state, FacilityScreen(slug: state.pathParameters['slug']!)),

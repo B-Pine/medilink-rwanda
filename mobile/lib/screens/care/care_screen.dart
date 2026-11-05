@@ -13,6 +13,9 @@ import '../../ui/building.dart';
 import '../../ui/feedback.dart';
 import '../../ui/heartbeat_refresh.dart';
 import '../../ui/page_header.dart';
+import '../../app/strings_more.dart';
+import '../../data/location.dart';
+import 'facility_mini_card.dart';
 import 'directions.dart';
 
 class CareScreen extends ConsumerStatefulWidget {
@@ -29,7 +32,10 @@ class _CareScreenState extends ConsumerState<CareScreen> {
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
-    final results = ref.watch(facilitySearchProvider(_query));
+    final here = ref.watch(locationProvider).point;
+    // Sorted by distance once the phone's location is known (rounded to ~1 km).
+    final query = _query.copyWith(lat: here?.latitude, lng: here?.longitude);
+    final results = ref.watch(facilitySearchProvider(query));
     final needle = _text.trim().toLowerCase();
     List<FacilitySummary> filter(List<FacilitySummary> list) => needle.isEmpty
         ? list
@@ -38,8 +44,8 @@ class _CareScreenState extends ConsumerState<CareScreen> {
     return Scaffold(
       body: HeartbeatRefresh(
         onRefresh: () async {
-          ref.invalidate(facilitySearchProvider(_query));
-          await ref.read(facilitySearchProvider(_query).future).catchError((_) => <FacilitySummary>[]);
+          ref.invalidate(facilitySearchProvider(query));
+          await ref.read(facilitySearchProvider(query).future).catchError((_) => <FacilitySummary>[]);
         },
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -47,6 +53,11 @@ class _CareScreenState extends ConsumerState<CareScreen> {
             SliverToBoxAdapter(
               child: BandHeader(
                 title: s.care,
+                trailing: IconButton(
+                  tooltip: s.t('map'),
+                  onPressed: () => context.go('/care/map'),
+                  icon: const Icon(PhosphorIconsRegular.mapTrifold, color: Colors.white),
+                ),
                 bottom: TextField(
                   onChanged: (v) => setState(() => _text = v),
                   textInputAction: TextInputAction.search,
@@ -81,7 +92,7 @@ class _CareScreenState extends ConsumerState<CareScreen> {
               ],
               error: (e, _) => [
                 SliverToBoxAdapter(
-                  child: ErrorState(error: e, onRetry: () => ref.invalidate(facilitySearchProvider(_query))),
+                  child: ErrorState(error: e, onRetry: () => ref.invalidate(facilitySearchProvider(query))),
                 ),
               ],
               data: (list) {
@@ -299,10 +310,7 @@ class FacilityCard extends StatelessWidget {
                 Positioned(
                   left: Space.md,
                   top: Space.md,
-                  child: StatusPill(
-                    text: facility.openNow ? s.openNow : s.closed,
-                    tone: facility.openNow ? PillTone.brand : PillTone.muted,
-                  ),
+                  child: OpenBadge(open: facility.openNow),
                 ),
               ],
             ),

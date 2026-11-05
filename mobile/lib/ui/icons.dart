@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 abstract final class PhosphorIconsRegular {
   static const arrowClockwise = IconData(0xe036, fontFamily: 'PhosphorRegular');
   static const arrowLeft = IconData(0xe058, fontFamily: 'PhosphorRegular');
+  static const arrowRight = IconData(0xe06c, fontFamily: 'PhosphorRegular');
   static const backspace = IconData(0xe0ae, fontFamily: 'PhosphorRegular');
   static const bell = IconData(0xe0ce, fontFamily: 'PhosphorRegular');
   static const buildings = IconData(0xe102, fontFamily: 'PhosphorRegular');
@@ -19,6 +20,7 @@ abstract final class PhosphorIconsRegular {
   static const chatsCircle = IconData(0xe17e, fontFamily: 'PhosphorRegular');
   static const clipboardText = IconData(0xe198, fontFamily: 'PhosphorRegular');
   static const clock = IconData(0xe19a, fontFamily: 'PhosphorRegular');
+  static const crosshair = IconData(0xe1d6, fontFamily: 'PhosphorRegular');
   static const envelopeOpen = IconData(0xe216, fontFamily: 'PhosphorRegular');
   static const envelopeSimple = IconData(0xe218, fontFamily: 'PhosphorRegular');
   static const eye = IconData(0xe220, fontFamily: 'PhosphorRegular');
@@ -36,6 +38,7 @@ abstract final class PhosphorIconsRegular {
   static const lockKey = IconData(0xe2fe, fontFamily: 'PhosphorRegular');
   static const magnifyingGlass = IconData(0xe30c, fontFamily: 'PhosphorRegular');
   static const mapPin = IconData(0xe316, fontFamily: 'PhosphorRegular');
+  static const mapTrifold = IconData(0xe31a, fontFamily: 'PhosphorRegular');
   static const navigationArrow = IconData(0xeade, fontFamily: 'PhosphorRegular');
   static const phone = IconData(0xe3b8, fontFamily: 'PhosphorRegular');
   static const phoneCall = IconData(0xe3ba, fontFamily: 'PhosphorRegular');
@@ -57,9 +60,13 @@ abstract final class PhosphorIconsRegular {
 }
 
 abstract final class PhosphorIconsFill {
+  static const bellRinging = IconData(0xe5e8, fontFamily: 'PhosphorFill');
   static const checkCircle = IconData(0xe184, fontFamily: 'PhosphorFill');
+  static const crosshair = IconData(0xe1d6, fontFamily: 'PhosphorFill');
+  static const firstAid = IconData(0xe56e, fontFamily: 'PhosphorFill');
   static const firstAidKit = IconData(0xe570, fontFamily: 'PhosphorFill');
   static const house = IconData(0xe2c2, fontFamily: 'PhosphorFill');
+  static const mapTrifold = IconData(0xe31a, fontFamily: 'PhosphorFill');
   static const paperPlaneRight = IconData(0xe396, fontFamily: 'PhosphorFill');
   static const phoneCall = IconData(0xe3ba, fontFamily: 'PhosphorFill');
   static const ticket = IconData(0xe490, fontFamily: 'PhosphorFill');

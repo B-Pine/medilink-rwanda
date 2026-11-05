@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 - Fixed: booking failed with "some fields need attention" because the app sent no symptoms (the
   API needs 1–5). The confirm sheet now asks "What brings you in?" with symptom chips (red flags
   warn to call 912), plus an optional note.
+- Added: doctor page. Tap a doctor on a facility: initials (no photo), specialty, "here today",
+  the days they work as a Monday-first week, their services, bio and languages when public, and
+  "Book with this doctor", which shows only their services and times (the filter can be removed).
+- Fixed: selected chips (service, who it is for) showed white text on pale green.
 
 ### 1.0.2 (2026-11-05)
 

@@ -75,3 +75,72 @@ final sampleFacilities = [
       'lng': lng,
     }),
 ];
+
+final sampleFacility = Facility.fromJson({
+  'slug': 'kibagabaga-hospital',
+  'name': 'Kibagabaga Hospital',
+  'type': 'district_hospital',
+  'emergency_department': true,
+  'address': 'KG 19 Ave, Kibagabaga',
+  'phone': '+250788000000',
+  'district': 'Gasabo',
+  'sector': 'Kimironko',
+  'open_now': true,
+  'hours': [
+    ['Mon–Fri', '07:00–17:00'],
+    ['Sat', '08:00–12:00'],
+  ],
+  'services': [
+    {'id': 's-gp', 'name_i18n': {'en': 'General consultation', 'rw': 'Isuzuma rusange'}, 'bookable': true, 'waiting': 4},
+    {'id': 's-paed', 'name_i18n': {'en': 'Paediatrics', 'rw': "Ubuvuzi bw'abana"}, 'bookable': true},
+  ],
+  'doctors': [
+    {
+      'membership_id': 'm-1',
+      'name': 'Dr Aline Mukamana',
+      'specialty': 'Paediatrician',
+      'days': [0, 1, 3, 4],
+      'service_ids': ['s-gp', 's-paed'],
+      'bio_i18n': {
+        'en': 'Cares for children from birth to 15, with a focus on asthma and nutrition.',
+        'rw': "Avura abana kuva bavutse kugeza ku myaka 15, cyane cyane asima n'imirire.",
+      },
+      'languages': ['rw', 'en', 'fr'],
+    },
+    {'membership_id': 'm-2', 'name': 'Dr Eric Habimana', 'specialty': 'General practitioner', 'days': [2, 5], 'service_ids': ['s-gp']},
+  ],
+});
+
+final sampleSlots = [
+  for (var d = 1; d <= 5; d++)
+    SlotDay(DateTime(2026, 11, 5 + d), [
+      for (final (h, m) in [(8, 'm-1'), (9, 'm-2'), (10, 'm-1'), (11, 'm-1'), (14, 'm-2'), (15, 'm-1')])
+        Slot.fromJson({
+          'id': 'slot-$d-$h',
+          'starts_at': DateTime(2026, 11, 5 + d, h).toIso8601String(),
+          'doctor': m == 'm-1' ? 'Dr Aline Mukamana' : 'Dr Eric Habimana',
+          'membership_id': m,
+          'open_places': 1,
+        }),
+    ]),
+];
+
+final sampleSymptoms = [
+  for (final (code, en, rw, red) in [
+    ('chest_pain', 'Chest pain', 'Kubabara mu gatuza', true),
+    ('fever', 'Fever', 'Umuriro', false),
+    ('cough', 'Cough', 'Inkorora', false),
+    ('headache', 'Headache', 'Kurwara umutwe', false),
+    ('stomach_pain', 'Stomach pain', 'Kuribwa mu nda', false),
+    ('rash', 'Rash', 'Uduheri', false),
+    ('diarrhoea', 'Diarrhoea', 'Impiswi', false),
+    ('vomiting', 'Vomiting', 'Kuruka', false),
+    ('back_pain', 'Back pain', 'Kubabara umugongo', false),
+    ('sore_throat', 'Sore throat', 'Kubabara mu muhogo', false),
+    ('ear_pain', 'Ear pain', 'Kubabara ugutwi', false),
+    ('tiredness', 'Tiredness', 'Umunaniro', false),
+    ('eye_problem', 'Eye problem', "Ikibazo cy'amaso", false),
+    ('joint_pain', 'Joint pain', 'Kubabara ingingo', false),
+  ])
+    Symptom.fromJson({'code': code, 'name_i18n': {'en': en, 'rw': rw}, 'body_system': 'general', 'is_red_flag': red}),
+];

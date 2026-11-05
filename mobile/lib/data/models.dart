@@ -139,9 +139,21 @@ class Doctor {
       : id = j['membership_id'] as String,
         name = j['name'] as String? ?? '',
         specialty = j['specialty'] as String? ?? '',
-        days = (j['days'] as List? ?? const []).whereType<int>().toList();
+        days = (j['days'] as List? ?? const []).whereType<int>().toList()..sort(),
+        serviceIds = _strings(j['service_ids']),
+        bio = _map(j['bio_i18n']),
+        languages = _strings(j['languages']);
   final String id, name, specialty;
+
+  /// Weekdays they work here, 0 = Monday.
   final List<int> days;
+  final List<String> serviceIds, languages;
+
+  /// Written by the doctor, shown only when they made it public (upgrade 05 §3).
+  final Json bio;
+
+  String get initials =>
+      name.split(RegExp(r'\s+')).where((p) => p.isNotEmpty).take(2).map((p) => p[0].toUpperCase()).join();
 }
 
 class Facility {
@@ -177,14 +189,16 @@ class Slot {
       : id = j['id'] as String,
         startsAt = _date(j['starts_at']) ?? DateTime.now(),
         doctor = j['doctor'] as String?,
+        membershipId = j['membership_id'] as String?,
         openPlaces = j['open_places'] as int? ?? 0;
   final String id;
   final DateTime startsAt;
-  final String? doctor;
+  final String? doctor, membershipId;
   final int openPlaces;
 }
 
 class SlotDay {
+  SlotDay(this.date, this.slots);
   SlotDay.fromJson(Json j)
       : date = DateTime.parse(j['date'] as String),
         slots = _list(j['slots']).map(Slot.fromJson).toList();

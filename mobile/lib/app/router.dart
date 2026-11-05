@@ -10,6 +10,7 @@ import '../screens/auth/sign_up_screen.dart';
 import '../screens/auth/splash_screen.dart';
 import '../screens/care/book_screen.dart';
 import '../screens/care/care_screen.dart';
+import '../screens/care/doctor_screen.dart';
 import '../screens/care/facility_screen.dart';
 import '../screens/care/map_screen.dart';
 import '../screens/home/home_screen.dart';
@@ -135,7 +136,15 @@ final routerProvider = Provider<GoRouter>((ref) {
                         BookScreen(
                           slug: state.pathParameters['slug']!,
                           serviceId: state.uri.queryParameters['service'],
+                          doctorId: state.uri.queryParameters['doctor'],
                         ),
+                      ),
+                    ),
+                    GoRoute(
+                      path: 'doctor/:id',
+                      pageBuilder: (_, state) => slide(
+                        state,
+                        DoctorScreen(slug: state.pathParameters['slug']!, doctorId: state.pathParameters['id']!),
                       ),
                     ),
                   ],

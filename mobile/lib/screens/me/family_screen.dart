@@ -13,7 +13,7 @@ import '../../data/providers.dart';
 import '../../data/session.dart';
 import '../../ui/feedback.dart';
 import '../../ui/icons.dart';
-import '../../ui/secure_screen.dart';
+import 'family_sharing.dart';
 
 /// Consent text versions the API expects (GET /patient/consents/ current_versions).
 final consentVersionsProvider = FutureProvider.autoDispose<Map<String, String>>((ref) async {
@@ -77,98 +77,8 @@ class FamilyScreen extends ConsumerWidget {
               ),
               const SizedBox(height: Space.sm),
             ],
+            const FamilySharing(),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-/// One person's profile (read-only; full editing stays on the website for now).
-class MemberScreen extends ConsumerWidget {
-  const MemberScreen({super.key, required this.patientId});
-
-  final String patientId;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final s = S.of(context);
-    final theme = Theme.of(context);
-    final profile = ref.watch(profileProvider(patientId));
-    return SecureScreen(
-      child: Scaffold(
-        appBar: AppBar(title: Text(profile.value?['full_name'] as String? ?? '')),
-        body: profile.when(
-          loading: () => const Padding(padding: EdgeInsets.all(Space.lg), child: SkeletonList(count: 3)),
-          error: (e, _) => ErrorState(error: e, onRetry: () => ref.invalidate(profileProvider(patientId))),
-          data: (p) {
-            final completion = (p['completion'] as Map?)?.cast<String, dynamic>() ?? const {};
-            final done = completion.values.where((v) => v == true).length;
-            final total = completion.isEmpty ? 1 : completion.length;
-            final born = DateTime.tryParse(p['date_of_birth'] as String? ?? '');
-            final contact = (p['emergency_contact'] as Map?)?.cast<String, dynamic>();
-            final rows = <(IconData, String, String)>[
-              (PhosphorIconsRegular.identificationCard, s.t('medilinkNumber'), p['medilink_number'] as String? ?? ''),
-              (PhosphorIconsRegular.cake, s.t('dateOfBirth'), born == null ? '' : fmt.day(born, s, relative: false)),
-              (PhosphorIconsRegular.genderIntersex, s.t('sex'), s.t(p['sex'] as String? ?? '')),
-              (PhosphorIconsRegular.phone, s.t('phone'), p['phone_e164'] as String? ?? ''),
-              (PhosphorIconsRegular.mapPin, s.t('address'), p['address'] as String? ?? ''),
-              if (contact != null)
-                (PhosphorIconsRegular.phoneCall, s.t('emergencyContact'), '${contact['name'] ?? ''} · ${contact['phone_e164'] ?? ''}'),
-            ].where((r) => r.$3.isNotEmpty && r.$3 != r.$2).toList();
-            return ListView(
-              padding: const EdgeInsets.all(Space.lg),
-              children: [
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(Space.xl),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 56,
-                          height: 56,
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              CircularProgressIndicator(
-                                value: done / total,
-                                strokeWidth: 5,
-                                backgroundColor: Palette.brandSubtle,
-                                strokeCap: StrokeCap.round,
-                              ),
-                              Center(child: Text('${(done * 100 / total).round()}%', style: theme.textTheme.labelSmall)),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: Space.lg),
-                        Expanded(
-                          child: Text(
-                            done == total ? s.t('profileDone') : s.t('profileTodo'),
-                            style: theme.textTheme.titleMedium,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: Space.lg),
-                Card(
-                  child: Column(
-                    children: [
-                      for (final (i, (icon, label, value)) in rows.indexed) ...[
-                        if (i > 0) const Divider(indent: 56),
-                        ListTile(
-                          leading: Icon(icon, color: Palette.brand),
-                          title: Text(label, style: theme.textTheme.labelMedium),
-                          subtitle: Text(value, style: theme.textTheme.bodyLarge),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
-            );
-          },
         ),
       ),
     );
@@ -227,7 +137,7 @@ class _AddMemberSheetState extends ConsumerState<_AddMemberSheet> {
       });
       return true;
     } on ApiException catch (e) {
-      setState(() => _error = e.message.isNotEmpty ? e.message : s.somethingWrong);
+      setState(() => _error = e.detail.isNotEmpty ? e.detail : s.somethingWrong);
       return false;
     }
   }

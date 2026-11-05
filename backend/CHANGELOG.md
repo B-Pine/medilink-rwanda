@@ -8,6 +8,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Patient profile photo (2026-11-05)
+
+- Added: `Patient.photo_file` (migration `patients.0006`) and upload purpose `patient_photo`
+  (JPEG/PNG/HEIC, 5 MB, data class C3, scanned before use).
+- Added: `POST`/`DELETE /api/v1/patient/profiles/{id}/photo/` and
+  `POST .../photo/download-links/` for the patient (self or guardian); profiles show `has_photo`.
+- Added: `POST /api/v1/staff/patients/{fp_id}/photo/download-links/` (`patients.view`, record at
+  this facility) and `has_photo` on the facility patient record. Each staff view is audited.
+
+### Patient passwords (2026-11-05)
+
+- Changed: patient passwords need at least 8 characters (was 15; product decision, security 03
+  §2). Staff and platform admins stay at 12. A patient who turns on two-step verification keeps 8.
+- Added: `POST /api/v1/patient/auth/password/` changes the password while signed in. The current
+  password is checked like a login (a wrong one counts towards lockout); success ends every
+  other session, rotates this one, emails the owner and audits `auth.password.changed`.
+
 ### Sign-up email switch for testing (2026-11-05)
 
 - Added: `PATIENT_SIGNUP_EMAIL_VERIFICATION` (default `true`). Set to `false` on a test

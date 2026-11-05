@@ -7,7 +7,9 @@ Status: v0.1 · Addresses OWASP A04:2025 (Cryptographic Failures), ASVS 5.0 Cryp
 | Class | Examples | Handling |
 |---|---|---|
 | **C4 · Restricted clinical** | Restricted (sensitive) diagnoses, private clinical notes | Field-level encryption; strictest access; never in notifications, logs, exports by default |
-| **C3 · Clinical / sensitive identity** | Consultations, prescriptions, results, national ID, insurance numbers, documents | Encrypted at rest (disk + object store); national ID field-encrypted; access logged |
+| **C3 · Clinical / sensitive identity** | Consultations, prescriptions, results, national ID, insurance numbers, documents, patient profile photos | Encrypted at rest (disk + object store); national ID field-encrypted; access logged |
+
+**Patient profile photo** (decision 2026-11-05): optional, added by the patient or their guardian. Seen by the patient's linked accounts and by staff with `patients.view` at facilities where the patient has an active record (to recognise them at the desk); each staff view is audited (`patients.photo.viewed`). Stored through the upload pipeline (type sniffed, malware-scanned, 5 MB max), served only by 5-minute links, removable by the patient at any time. The privacy notice must say this before the feature reaches real patients.
 | **C2 · Personal** | Names, phone, email, bookings, bills | Encrypted at rest (disk); access controlled; minimised |
 | **C1 · Internal** | Facility configuration, tariffs, anonymised metrics | Access controlled |
 | **C0 · Public** | Facility profiles, public pages | Integrity protected |

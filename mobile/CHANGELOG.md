@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 ## [Unreleased]
 
+### 1.0.6 (2026-11-05)
+
+Everything the website's patient dashboard does, in the app (no more "complete on the website"):
+
+- Added: My profile (Me → My profile, or tap your photo): profile photo (camera or phone,
+  removable; seen by you, people you share with and staff where you have a file), completion
+  with what is missing, details (names, birth date, sex, phone, email, address), emergency
+  contact, ID documents (masked), insurance cards (add; long-press to stop using) and health
+  (allergies, conditions, medicines; "no known allergies"). Family members open the same page.
+- Added: Notification settings (Me): channels per level, quiet hours, visit reminders, family
+  alerts.
+- Added: Link my facility file (Me): find a record a facility made, then confirm with the code
+  sent to its contact, or a reference for reception.
+- Added: Family → Sharing: make a one-time code to share a profile (password confirms), enter a
+  code, stop sharing.
+
+### 1.0.5 (2026-11-05)
+
+- Changed: passwords need at least 8 characters (was 15).
+- Added: Me → Settings → Change password (current password, new one twice; other phones and
+  browsers are signed out).
+- Fixed: errors now say what to fix (the server's field message, e.g. "password too short")
+  instead of "some fields need attention".
+
 ### 1.0.4 (2026-11-05)
 
 - Fixed: the symptom assistant asked yes/no questions with no way to answer them but typing.

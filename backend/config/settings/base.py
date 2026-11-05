@@ -213,7 +213,8 @@ PASSWORD_HASHERS = [
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "medilink.accounts.validators.ContextualMinimumLengthValidator",
-        "OPTIONS": {"staff_min_length": 12, "patient_min_length": 15},
+        # patients 8: decision 2026-11-05 (15 was too hard on phones); staff 12 with MFA
+        "OPTIONS": {"staff_min_length": 12, "patient_min_length": 8},
     },
     {"NAME": "medilink.accounts.validators.MaximumLengthValidator", "OPTIONS": {"max_length": 256}},
     {

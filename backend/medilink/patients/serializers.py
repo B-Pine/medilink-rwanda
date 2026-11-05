@@ -387,6 +387,8 @@ class FacilityPatientDetailSerializer(PatientSummarySerializer):
     open_claim_reference = serializers.CharField(allow_null=True)
     is_active = serializers.BooleanField()
     merged_into_facility_patient_id = serializers.UUIDField(allow_null=True)
+    # the patient's own photo (decision 2026-11-05): POST .../photo/download-links/ for a link
+    has_photo = serializers.BooleanField()
     version = serializers.IntegerField()
     patient_version = serializers.IntegerField()
 
@@ -417,6 +419,7 @@ def facility_patient_detail_data(fp: FacilityPatient) -> dict[str, Any]:
             "open_claim_reference": claim.reference if claim else None,
             "is_active": fp.is_active,
             "merged_into_facility_patient_id": fp.merged_into_id,
+            "has_photo": patient.photo_file_id is not None,
             "version": fp.version,
             "patient_version": patient.version,
         }

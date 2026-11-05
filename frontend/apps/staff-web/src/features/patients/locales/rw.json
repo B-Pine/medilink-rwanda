@@ -119,6 +119,10 @@
     }
   },
   "record": {
+    "photoHint": "Umurwayi yashyizeho ifoto kugira ngo mumumenye. Buri gihe iyirebwe biranditswa.",
+    "showPhoto": "Erekana ifoto",
+    "photoAlt": "Ifoto ya {{name}}",
+    "photoUnavailable": "Ifoto ntiboneka ubu.",
     "merged": "Yahujwe",
     "staffMember": "Umukozi",
     "hasAccount": "Afite konti ya MediLink",

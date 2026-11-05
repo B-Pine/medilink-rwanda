@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../ui/icons.dart';
 
 import '../../app/strings.dart';
+import '../../app/config.dart';
 import '../../app/strings_more.dart';
 import '../../app/theme.dart';
 import '../../data/api.dart';
@@ -36,7 +37,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   }
 
   bool get _ready =>
-      _accepted && _name.text.trim().isNotEmpty && _email.text.contains('@') && _password.text.length >= 15;
+      _accepted && _name.text.trim().isNotEmpty && _email.text.contains('@') && _password.text.length >= AppConfig.passwordMin;
 
   Future<bool> _submit() async {
     setState(() => _error = null);
@@ -52,7 +53,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       });
       return true;
     } on ApiException catch (e) {
-      setState(() => _error = e.message.isNotEmpty ? e.message : S.of(context).somethingWrong);
+      setState(() => _error = e.detail.isNotEmpty ? e.detail : S.of(context).somethingWrong);
       return false;
     }
   }
@@ -108,7 +109,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             labelText: s.password,
             helperText: s.passwordRule,
             prefixIcon: const Icon(PhosphorIconsRegular.lockKey),
-            suffixIcon: _password.text.length >= 15
+            suffixIcon: _password.text.length >= AppConfig.passwordMin
                 ? const Icon(PhosphorIconsFill.checkCircle, color: Palette.brand)
                 : null,
           ),

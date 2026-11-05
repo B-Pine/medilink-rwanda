@@ -388,8 +388,12 @@
     "security": {
       "title": "Umutekano",
       "body": "Rinda konti yawe.",
-      "password": "Kugira ngo uhindure ijambo ry'ibanga, tukoherereza umurongo wizewe kuri imeyili, kugira ngo ari wowe wenyine urishyiraho.",
+      "password": "Andika ijambo ry'ibanga usanganywe, hanyuma irishya. Andi materefone na mudasobwa bizasohoka.",
       "change": "Hindura ijambo ry'ibanga",
+      "current": "Ijambo ry'ibanga usanganywe",
+      "new": "Ijambo ry'ibanga rishya",
+      "done": "Ijambo ry'ibanga ryahinduwe. Andi materefone na mudasobwa byasohotse.",
+      "forgot": "Wibagiwe ijambo ry'ibanga usanganywe?",
       "later": "Ibikoresho winjiriyemo no kwinjira mu ntambwe ebyiri bizongerwa hano."
     },
     "alerts": {

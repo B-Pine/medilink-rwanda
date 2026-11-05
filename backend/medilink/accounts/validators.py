@@ -18,8 +18,7 @@ from django.utils.translation import ngettext
 
 
 def requires_mfa(user: Any) -> bool:
-    """Accounts with mandatory MFA (staff, platform admins) or a confirmed TOTP device may use a
-    12-character minimum; password-only accounts need 15."""
+    """Accounts with mandatory MFA (staff, platform admins) or a confirmed TOTP device."""
     if user is None:
         return False
     audience = getattr(user, "_password_audience", None)
@@ -42,13 +41,35 @@ def requires_mfa(user: Any) -> bool:
         return is_staff_member(user)
 
 
+def is_staff_account(user: Any) -> bool:
+    """Staff and platform admins (the accounts that hold other people's records)."""
+    if user is None:
+        return False
+    audience = getattr(user, "_password_audience", None)
+    if audience in ("staff", "patient"):
+        return audience == "staff"
+    if getattr(user, "is_platform_admin", False):
+        return True
+    if not getattr(user, "pk", None) or getattr(user._state, "adding", True):
+        return False
+    from medilink.accounts.principal import is_staff_member
+    from medilink.tenancy.context import rls_context
+
+    with rls_context(user_id=user.pk):
+        return is_staff_member(user)
+
+
 class ContextualMinimumLengthValidator:
-    def __init__(self, staff_min_length: int = 12, patient_min_length: int = 15) -> None:
+    """Staff and admins: 12 (with MFA). Patients: 8 (decision 2026-11-05, security 03 §2):
+    15 was too hard for patients to type on a phone; breached and context-word checks and
+    login throttling still apply."""
+
+    def __init__(self, staff_min_length: int = 12, patient_min_length: int = 8) -> None:
         self.staff_min_length = staff_min_length
         self.patient_min_length = patient_min_length
 
     def min_length_for(self, user: Any) -> int:
-        return self.staff_min_length if requires_mfa(user) else self.patient_min_length
+        return self.staff_min_length if is_staff_account(user) else self.patient_min_length
 
     def validate(self, password: str, user: Any = None) -> None:
         min_length = self.min_length_for(user)
@@ -66,8 +87,8 @@ class ContextualMinimumLengthValidator:
 
     def get_help_text(self) -> str:
         return _(
-            "Use at least %(patient)d characters (%(staff)d for accounts with two-step "
-            "verification). A few words you can remember work well."
+            "Use at least %(patient)d characters (%(staff)d for staff accounts). A few words "
+            "you can remember work well."
         ) % {"patient": self.patient_min_length, "staff": self.staff_min_length}
 
 

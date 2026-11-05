@@ -18,6 +18,21 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   hints show data only (next date, last visit, facility). Remaining messages are shorter in rw, en
   and fr; the safety lines stay (late cancellation, reception confirms a remote arrival).
 
+### Patient profile photo (2026-11-05)
+
+- Added (patient web): a "Profile photo" card at the top of a profile (self and guardian): add,
+  change or remove a JPEG/PNG/HEIC photo up to 5 MB, with who can see it.
+- Added (staff web): the patient record shows "Show photo" when the patient added one; the photo
+  loads only on request (each view is audited server-side).
+- API client: `profile.uploadPhoto/removePhoto/photoLink`, `patients.photoLink`, `has_photo`.
+
+### Patient passwords (2026-11-05)
+
+- Changed: patient forms ask for at least 8 characters (was 15).
+- Added: Settings → Security changes the password in place (current + new) instead of sending a
+  reset email; "Forgot your current password?" still links to the reset flow.
+  `patientAuth.changePassword` in the API client, with a mock handler.
+
 ### Sign-up without email on test servers (2026-11-05)
 
 - Added: patient sign-up shows "Your account is ready" with a sign-in button when the API answers

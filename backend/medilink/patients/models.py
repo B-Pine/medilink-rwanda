@@ -78,6 +78,10 @@ class Patient(TimeStampedModel):
         "self", on_delete=models.PROTECT, null=True, blank=True, related_name="+"
     )
     merged_at = models.DateTimeField(null=True, blank=True)
+    # decision 2026-11-05: seen by the patient's accounts and by staff where they have a record
+    photo_file = models.ForeignKey(
+        "uploads.UploadedFile", on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
+    )
 
     class Meta:
         indexes = [

@@ -89,7 +89,7 @@ def test_patient_reset_link_points_to_patient_app(patient_user: Any) -> None:
 def test_reset_rejects_weak_new_password(api: APIClient, patient_user: Any) -> None:
     uid = urlsafe_base64_encode(force_bytes(str(patient_user.pk)))
     token = default_token_generator.make_token(patient_user)
-    response = api.post(CONFIRM, {"uid": uid, "token": token, "new_password": "too short"})
+    response = api.post(CONFIRM, {"uid": uid, "token": token, "new_password": "short7!"})
     assert response.status_code == 400
     assert "new_password" in response.json()["error"]["fields"]
 

@@ -150,20 +150,20 @@ describe("sign-up with consent", () => {
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Email")).toHaveValue("diane@example.rw");
 
-    // Step 1 validation: names and a 15+ character password.
+    // Step 1 validation: names and an 8+ character password.
     await user.click(screen.getByRole("button", { name: "Continue" }));
     let summary = await screen.findByRole("alert");
     expect(within(summary).getByRole("link", { name: "Enter your names" })).toBeInTheDocument();
     expect(
-      within(summary).getByRole("link", { name: "Use at least 15 characters" }),
+      within(summary).getByRole("link", { name: "Use at least 8 characters" }),
     ).toBeInTheDocument();
 
     await user.type(screen.getByLabelText("Your names"), "Uwera Diane");
     const password = screen.getByLabelText("Password");
     expect(password).toHaveAttribute("autocomplete", "new-password");
-    expect(screen.getByText("At least 15 characters")).toHaveTextContent("not yet");
+    expect(screen.getByText("At least 8 characters")).toHaveTextContent("not yet");
     await user.type(password, "a-long-passphrase-2026");
-    expect(screen.getByText("At least 15 characters")).toHaveTextContent("done");
+    expect(screen.getByText("At least 8 characters")).toHaveTextContent("done");
     await user.click(screen.getByRole("button", { name: "Continue" }));
 
     // Step 2: consent.

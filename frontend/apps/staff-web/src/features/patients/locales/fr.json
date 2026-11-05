@@ -119,6 +119,10 @@
     }
   },
   "record": {
+    "photoHint": "Le patient a ajouté une photo pour vous aider à le reconnaître. Chaque consultation est enregistrée.",
+    "showPhoto": "Afficher la photo",
+    "photoAlt": "Photo de {{name}}",
+    "photoUnavailable": "La photo n'est pas disponible pour le moment.",
     "merged": "Fusionné",
     "staffMember": "Membre du personnel",
     "hasAccount": "A un compte MediLink",

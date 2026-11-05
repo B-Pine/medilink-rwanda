@@ -388,8 +388,12 @@
     "security": {
       "title": "Security",
       "body": "Keep your account safe.",
-      "password": "To change your password we email you a secure link, so only you can set a new one.",
+      "password": "Enter your current password, then a new one. Other phones and browsers will be signed out.",
       "change": "Change password",
+      "current": "Current password",
+      "new": "New password",
+      "done": "Password changed. Other phones and browsers are signed out.",
+      "forgot": "Forgot your current password?",
       "later": "Signed-in devices and two-step sign-in will be added here."
     },
     "alerts": {

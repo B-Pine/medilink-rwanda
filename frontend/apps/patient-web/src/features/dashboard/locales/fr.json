@@ -388,8 +388,12 @@
     "security": {
       "title": "Sécurité",
       "body": "Protégez votre compte.",
-      "password": "Pour changer votre mot de passe, nous vous envoyons un lien sécurisé par e-mail : vous seul pouvez en définir un nouveau.",
+      "password": "Saisissez votre mot de passe actuel, puis le nouveau. Les autres téléphones et navigateurs seront déconnectés.",
       "change": "Changer le mot de passe",
+      "current": "Mot de passe actuel",
+      "new": "Nouveau mot de passe",
+      "done": "Mot de passe changé. Les autres téléphones et navigateurs sont déconnectés.",
+      "forgot": "Mot de passe actuel oublié ?",
       "later": "Les appareils connectés et la connexion en deux étapes seront ajoutés ici."
     },
     "alerts": {

@@ -253,7 +253,7 @@ describe("patient auth", () => {
     expect(existing).toEqual(fresh);
   });
 
-  it("register validation: password >= 15, consents required", async () => {
+  it("register validation: password >= 8, consents required", async () => {
     const error = await failure(
       api.patientAuth.register({ ...registration, password: "short", accepted_terms_version: "" }),
     );

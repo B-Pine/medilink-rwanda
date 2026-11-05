@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../ui/icons.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-import '../../app/config.dart';
 import '../../app/strings.dart';
 import '../../app/theme.dart';
 import '../../data/api.dart';
@@ -118,10 +116,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               Expanded(child: Text(s.acceptTerms)),
               IconButton(
                 tooltip: s.privacy,
-                onPressed: () => launchUrl(
-                  Uri.parse('${AppConfig.webBaseUrl}/privacy'),
-                  mode: LaunchMode.externalApplication,
-                ),
+                onPressed: () => context.push('/legal/privacy'),
                 icon: const Icon(PhosphorIconsRegular.info, color: Palette.muted),
               ),
             ],

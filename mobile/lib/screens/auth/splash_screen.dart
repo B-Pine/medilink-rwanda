@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../app/theme.dart';
 import '../../ui/band.dart';
+import '../../ui/logo.dart';
 
-/// Forest with the zigzag; the MediLink cross draws itself in one stroke, then the name fades in.
+/// Forest with the zigzag; the MediLink badge settles in (same as the launch screen), then the
+/// wordmark rises in under it.
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -33,22 +35,16 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
             child: AnimatedBuilder(
               animation: _c,
               builder: (context, _) {
-                final draw = Curves.easeOut.transform((_c.value / 0.75).clamp(0, 1));
-                final name = Curves.easeOut.transform(((_c.value - 0.55) / 0.45).clamp(0, 1));
+                final badge = Curves.easeOutBack.transform((_c.value / 0.6).clamp(0, 1));
+                final name = Curves.easeOut.transform(((_c.value - 0.45) / 0.55).clamp(0, 1));
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    CrossMark(size: 64, progress: draw),
+                    Transform.scale(scale: 0.9 + 0.1 * badge, child: const BrandBadge(size: 96)),
                     const SizedBox(height: Space.xl),
                     Opacity(
                       opacity: name,
-                      child: Text(
-                        'MediLink',
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineMedium
-                            ?.copyWith(color: Colors.white, letterSpacing: 0.4),
-                      ),
+                      child: Transform.translate(offset: Offset(0, 10 * (1 - name)), child: const Wordmark(height: 40)),
                     ),
                   ],
                 );

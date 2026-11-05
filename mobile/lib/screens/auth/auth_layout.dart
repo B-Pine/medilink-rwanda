@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../app/theme.dart';
 import '../../ui/band.dart';
+import '../../ui/logo.dart';
 
-/// Sign-in and sign-up: a forest band with the cross and the title, a white form below.
+/// Sign-in and sign-up: a forest band with the logo and the title, a white form below.
 class AuthLayout extends StatelessWidget {
   const AuthLayout({super.key, required this.title, required this.children, this.leading});
 
@@ -32,7 +33,13 @@ class AuthLayout extends StatelessWidget {
                     children: [
                       SizedBox(height: 40, child: leading),
                       const SizedBox(height: Space.lg),
-                      const CrossMark(size: 40),
+                      const Row(
+                        children: [
+                          BrandBadge(size: 44),
+                          SizedBox(width: Space.md),
+                          Wordmark(height: 30),
+                        ],
+                      ),
                       const SizedBox(height: Space.lg),
                       Text(
                         title,

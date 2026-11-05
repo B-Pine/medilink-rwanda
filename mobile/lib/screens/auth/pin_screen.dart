@@ -7,6 +7,7 @@ import '../../app/strings.dart';
 import '../../app/theme.dart';
 import '../../data/session.dart';
 import '../../ui/band.dart';
+import '../../ui/logo.dart';
 
 const _pinLength = 4;
 
@@ -119,7 +120,7 @@ class _PinScreenState extends ConsumerState<PinScreen> with SingleTickerProvider
             child: Column(
               children: [
                 const Spacer(flex: 2),
-                const CrossMark(size: 44),
+                const BrandBadge(size: 64),
                 const SizedBox(height: Space.xl),
                 Text(title, style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.white)),
                 const SizedBox(height: Space.xl),

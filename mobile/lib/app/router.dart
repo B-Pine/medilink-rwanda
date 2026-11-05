@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../data/session.dart';
+import '../screens/auth/forgot_screen.dart';
 import '../screens/auth/pin_screen.dart';
 import '../screens/auth/sign_in_screen.dart';
 import '../screens/auth/sign_up_screen.dart';
@@ -11,7 +12,12 @@ import '../screens/care/book_screen.dart';
 import '../screens/care/care_screen.dart';
 import '../screens/care/facility_screen.dart';
 import '../screens/home/home_screen.dart';
+import '../screens/home/notifications_screen.dart';
+import '../screens/home/symptoms_screen.dart';
+import '../screens/me/family_screen.dart';
+import '../screens/me/help_screen.dart';
 import '../screens/me/me_screen.dart';
+import '../screens/me/privacy_screen.dart';
 import '../screens/me/record_lists.dart';
 import '../screens/me/settings_screen.dart';
 import '../screens/shell.dart';
@@ -19,7 +25,10 @@ import '../screens/visits/booking_screen.dart';
 import '../screens/visits/ticket_screen.dart';
 import '../screens/visits/visits_screen.dart';
 
-const _authRoutes = {'/sign-in', '/sign-up'};
+const _authRoutes = {'/sign-in', '/sign-up', '/forgot-password'};
+
+/// Pages open whether signed in or not (the privacy notice and terms).
+bool _public(String path) => path.startsWith('/legal/');
 
 /// Where an app-icon shortcut asked to go; opened once the app is unlocked.
 final pendingRouteProvider = NotifierProvider<PendingRoute, String?>(PendingRoute.new);
@@ -63,7 +72,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         case AuthPhase.starting:
           return here == '/splash' ? null : '/splash';
         case AuthPhase.signedOut:
-          return _authRoutes.contains(here) ? null : '/sign-in';
+          return _authRoutes.contains(here) || _public(here) ? null : '/sign-in';
         case AuthPhase.setPin:
           return here == '/pin-setup' ? null : '/pin-setup';
         case AuthPhase.locked:
@@ -84,6 +93,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/splash', builder: (_, _) => const SplashScreen()),
       GoRoute(path: '/sign-in', builder: (_, _) => const SignInScreen()),
       GoRoute(path: '/sign-up', pageBuilder: (_, state) => slide(state, const SignUpScreen())),
+      GoRoute(path: '/forgot-password', pageBuilder: (_, state) => slide(state, const ForgotScreen())),
+      GoRoute(
+        path: '/legal/:doc',
+        pageBuilder: (_, state) => slide(state, LegalScreen(doc: state.pathParameters['doc']!)),
+      ),
       GoRoute(path: '/pin-setup', builder: (_, _) => const PinScreen(setup: true)),
       GoRoute(path: '/lock', builder: (_, _) => const PinScreen(setup: false)),
       StatefulShellRoute(
@@ -92,7 +106,14 @@ final routerProvider = Provider<GoRouter>((ref) {
             FadeThroughBranches(index: shell.currentIndex, children: children),
         branches: [
           StatefulShellBranch(routes: [
-            GoRoute(path: '/home', builder: (_, _) => const HomeScreen()),
+            GoRoute(
+              path: '/home',
+              builder: (_, _) => const HomeScreen(),
+              routes: [
+                GoRoute(path: 'notifications', pageBuilder: (_, state) => slide(state, const NotificationsScreen())),
+                GoRoute(path: 'symptoms', pageBuilder: (_, state) => slide(state, const SymptomsScreen())),
+              ],
+            ),
           ]),
           StatefulShellBranch(routes: [
             GoRoute(
@@ -144,6 +165,38 @@ final routerProvider = Provider<GoRouter>((ref) {
                 GoRoute(path: 'documents', pageBuilder: (_, state) => slide(state, const DocumentsScreen())),
                 GoRoute(path: 'results', pageBuilder: (_, state) => slide(state, const ResultsScreen())),
                 GoRoute(path: 'settings', pageBuilder: (_, state) => slide(state, const SettingsScreen())),
+                GoRoute(path: 'privacy', pageBuilder: (_, state) => slide(state, const PrivacyScreen())),
+                GoRoute(
+                  path: 'family',
+                  pageBuilder: (_, state) => slide(state, const FamilyScreen()),
+                  routes: [
+                    GoRoute(
+                      path: ':id',
+                      pageBuilder: (_, state) => slide(state, MemberScreen(patientId: state.pathParameters['id']!)),
+                    ),
+                  ],
+                ),
+                GoRoute(
+                  path: 'help',
+                  pageBuilder: (_, state) => slide(state, const HelpScreen()),
+                  routes: [
+                    GoRoute(
+                      path: ':slug',
+                      pageBuilder: (_, state) => slide(state, ArticleScreen(slug: state.pathParameters['slug']!)),
+                    ),
+                  ],
+                ),
+                GoRoute(
+                  path: 'support',
+                  pageBuilder: (_, state) => slide(state, const SupportListScreen()),
+                  routes: [
+                    GoRoute(path: 'new', pageBuilder: (_, state) => slide(state, const NewSupportScreen())),
+                    GoRoute(
+                      path: ':id',
+                      pageBuilder: (_, state) => slide(state, SupportThreadScreen(requestId: state.pathParameters['id']!)),
+                    ),
+                  ],
+                ),
               ],
             ),
           ]),

@@ -214,7 +214,7 @@ class _LoadingButtonState extends State<LoadingButton> {
   Widget build(BuildContext context) {
     final child = switch (_state) {
       _ButtonState.idle => Text(widget.label, key: const ValueKey('label')),
-      _ButtonState.busy => const _Dots(key: ValueKey('dots')),
+      _ButtonState.busy => const LoadingDots(key: ValueKey('dots')),
       _ButtonState.done => const Icon(PhosphorIconsBold.check, key: ValueKey('done'), size: 22),
     };
     return FilledButton(
@@ -225,14 +225,15 @@ class _LoadingButtonState extends State<LoadingButton> {
   }
 }
 
-class _Dots extends StatefulWidget {
-  const _Dots({super.key});
+/// Three pulsing dots (busy buttons, the assistant typing).
+class LoadingDots extends StatefulWidget {
+  const LoadingDots({super.key});
 
   @override
-  State<_Dots> createState() => _DotsState();
+  State<LoadingDots> createState() => _DotsState();
 }
 
-class _DotsState extends State<_Dots> with SingleTickerProviderStateMixin {
+class _DotsState extends State<LoadingDots> with SingleTickerProviderStateMixin {
   late final AnimationController _c =
       AnimationController(vsync: this, duration: const Duration(milliseconds: 900))..repeat();
 

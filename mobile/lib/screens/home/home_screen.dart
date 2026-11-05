@@ -16,6 +16,7 @@ import '../../data/providers.dart';
 import '../../ui/band.dart';
 import '../../ui/feedback.dart';
 import '../../ui/heartbeat_refresh.dart';
+import '../../ui/logo.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -187,10 +188,7 @@ class _Greeting extends ConsumerWidget {
         ),
         IconButton(
           tooltip: s.notifications,
-          onPressed: () => launchUrl(
-            Uri.parse('${AppConfig.webBaseUrl}/dashboard/notifications'),
-            mode: LaunchMode.externalApplication,
-          ),
+          onPressed: () => context.go('/home/notifications'),
           icon: Badge(
             isLabelVisible: unread > 0,
             label: Text(unread > 9 ? '9+' : '$unread'),
@@ -506,7 +504,7 @@ class _QuickTiles extends StatelessWidget {
       (
         s.symptoms,
         PhosphorIconsRegular.stethoscope,
-        () => launchUrl(Uri.parse('${AppConfig.webBaseUrl}/#symptoms'), mode: LaunchMode.externalApplication),
+        () => context.go('/home/symptoms'),
       ),
       (s.records, PhosphorIconsRegular.clipboardText, () => context.go('/me/records')),
     ];
@@ -702,7 +700,9 @@ class _CollapsedBar extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(Space.xl, top + Space.sm, Space.lg, Space.md),
       child: Row(
         children: [
-          Text('MediLink', style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white)),
+          const BrandBadge(size: 30),
+          const SizedBox(width: Space.sm),
+          const Wordmark(height: 20),
           const Spacer(),
           if (visit != null)
             InkWell(

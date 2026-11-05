@@ -645,7 +645,8 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
       const csrf = csrfFailure(request, lang);
       if (csrf) return csrf;
       const session = patientSession();
-      if (!session) return errorResponse(401, "not_authenticated", message("notAuthenticated", lang));
+      if (!session)
+        return errorResponse(401, "not_authenticated", message("notAuthenticated", lang));
       const body = await readJson(request);
       const patient = findPatient(session.me.email);
       const next = asString(body.new_password);

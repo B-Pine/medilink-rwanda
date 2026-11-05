@@ -46,3 +46,9 @@ pywebpush>=2.0
 # Pure drawing API, no HTML or URL fetching, no system libraries (WeasyPrint needs Pango).
 reportlab>=4.2
 # [/S7]
+# [Upgrade U17]
+# Sign in with Google (patients): verify Google ID tokens (RS256 signature against Google's
+# published keys, issuer, audience, expiry). Pure Python, uses the cryptography package above;
+# the standard JWT library, so the check is not hand-written.
+PyJWT>=2.10
+# [/Upgrade U17]

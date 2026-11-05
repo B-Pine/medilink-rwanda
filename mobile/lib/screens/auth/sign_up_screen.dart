@@ -11,6 +11,7 @@ import '../../data/api.dart';
 import '../../data/session.dart';
 import '../../ui/feedback.dart';
 import 'auth_layout.dart';
+import 'google_button.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
   const SignUpScreen({super.key});
@@ -137,6 +138,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
           ),
         const SizedBox(height: Space.sm),
         LoadingButton(label: s.createAccount, onPressed: _ready ? _submit : null),
+        GoogleButton(onError: (message) => setState(() => _error = message)),
       ],
     );
   }

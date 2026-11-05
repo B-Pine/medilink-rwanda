@@ -8,6 +8,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Email and Sign in with Google (2026-11-06, upgrade 17)
+
+- Added: `GET`/`POST /api/v1/patient/auth/google/` (patients only). The ID token is verified with
+  PyJWT (new dependency: RS256 against Google's keys, issuer, audience, expiry); `GoogleIdentity`
+  keeps Google's account ID (migration `accounts.0010`). A verified matching email links the
+  patient account; a new person gets 409 `consent_required`, then an account without a password;
+  staff accounts get 403 `staff_account`. Audit actions `auth.google.linked`, `auth.google.refused`.
+  Settings `GOOGLE_OAUTH_WEB_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_IDS`, `GOOGLE_JWKS_URL`.
+- Added: one branded email layout (`medilink.core.mail`); account emails in rw/en/fr by the
+  account language; notification emails use it; `BrandedSMTPBackend` adds it to plain
+  `send_mail()` messages. `manage.py send_test_email <address>` checks the mail settings.
+  Deploy checks `medilink.W006` (EMAIL_URL is the local catcher) and `medilink.W007` (Gmail sender
+  differs from the login). `.env.example` documents Gmail.
+
 ### Patient profile photo (2026-11-05)
 
 - Added: `Patient.photo_file` (migration `patients.0006`) and upload purpose `patient_photo`

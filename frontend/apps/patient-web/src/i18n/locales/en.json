@@ -165,6 +165,13 @@
     "invalidCredentials": "The email or password is not right. Check them and try again.",
     "guest": "Find care without an account"
   },
+  "google": {
+    "or": "or",
+    "failed": "Google sign-in didn't work. Try again.",
+    "consentTitle": "Create your account with Google",
+    "create": "Create my account",
+    "cancel": "Cancel"
+  },
   "signup": {
     "title": "Create your account",
     "intro": "It takes about a minute. You can add insurance and family members later.",

@@ -8,10 +8,24 @@ Status: v0.1 · Standards: NIST SP 800-63B-4 (final, July 2025), OWASP ASVS 5.0 
 |---|---|---|
 | **Super admin** | Password + **passkey / FIDO2 security key (mandatory)**; access only via VPN or admin IP allowlist | Highest (phishing-resistant, AAL3-like) |
 | **Facility staff** (admin, receptionist, doctor, pharmacist) | Password + **MFA mandatory**: passkey preferred, TOTP authenticator app as fallback | AAL2 (phishing-resistant where passkeys are used) |
-| **Patient** | Password **or** email magic link; optional TOTP / passkey; phone OTP from P3 | AAL1, with step-up for sensitive actions |
+| **Patient** | Password **or** Sign in with Google (upgrade 17) **or** email magic link; optional TOTP / passkey; phone OTP from P3 | AAL1, with step-up for sensitive actions |
 | **Display device** | Revocable, read-only device token scoped to one facility / service | Not a user |
 
 TOTP can be phished: a fake login page can relay the code. That's why **passkeys are the target for all staff**. Synced passkeys are recognised at AAL2 in NIST 800-63B-4.
+
+### 1a. Sign in with Google (patients only, decision 2026-11-05)
+
+| Rule | Value |
+|---|---|
+| Who | Patients on the website and the app. **Staff and platform accounts are refused** (403 `staff_account`): their sign-in needs MFA, which Google sign-in would skip |
+| What the client sends | Only Google's **ID token** (`POST /api/v1/patient/auth/google/`). No access token is requested, no Google scope beyond the basic profile |
+| What the API checks | RS256 signature against Google's published keys (cached 1 h), issuer `accounts.google.com`, audience = our OAuth client IDs (`GOOGLE_OAUTH_WEB_CLIENT_ID` [+ `GOOGLE_OAUTH_CLIENT_IDS`]), expiry with 60 s leeway, and an email Google has verified (`PyJWT`, not hand-written) |
+| What is stored | Google's stable account ID (`sub`) on `GoogleIdentity`, one per account, plus last use. Never a Google token |
+| Same email | A verified Google email that matches a patient account **links it automatically** (decision 2026-11-05), audited `auth.google.linked`, and confirms a pending sign-up email. An account already tied to another Google account is never re-pointed. An unverified Google email never links or creates |
+| New person | 409 `consent_required` first: the client shows the sign-up consents (terms, privacy required; research optional), then sends the token again. The account has no usable password; "Forgot password" sets one |
+| Refusals | Invalid, forged, expired or foreign tokens answer 401 and are audited `auth.google.refused`; throttled like login |
+| Browser | Google Identity Services script, frame and styles allowed only under `https://accounts.google.com/gsi/` and only on the patient site's CSP |
+| Off switch | Empty `GOOGLE_OAUTH_WEB_CLIENT_ID`: the button is hidden and the endpoint answers 404 |
 
 ## 2. Passwords
 

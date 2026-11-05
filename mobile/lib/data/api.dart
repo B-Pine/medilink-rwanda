@@ -5,12 +5,22 @@ import 'secure_store.dart';
 
 /// Why a call failed, in the app's terms.
 class ApiException implements Exception {
-  ApiException(this.kind, {this.status, this.code = '', this.message = '', this.fields = const {}});
+  ApiException(
+    this.kind, {
+    this.status,
+    this.code = '',
+    this.message = '',
+    this.fields = const {},
+    this.current,
+  });
 
   final ApiFailure kind;
   final int? status;
   final String code;
   final String message;
+
+  /// `error.current`: the state behind a 409 (e.g. Google `consent_required`: email, full_name).
+  final Object? current;
 
   /// Per-field messages of a validation error (`error.fields`), e.g. {'new_password': [...]}.
   final Map<String, List<String>> fields;
@@ -133,6 +143,13 @@ class Api {
         for (final MapEntry(:key, :value) in raw.entries)
           '$key': value is List ? [for (final m in value) '$m'] : ['$value'],
     };
-    return ApiException(kind, status: status, code: code, message: message, fields: fields);
+    return ApiException(
+      kind,
+      status: status,
+      code: code,
+      message: message,
+      fields: fields,
+      current: error is Map ? error['current'] : null,
+    );
   }
 }

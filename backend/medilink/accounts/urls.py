@@ -20,6 +20,8 @@ patient_auth_urlpatterns = [
     path("register/", views.PatientRegisterView.as_view(), name="patient-auth-register"),
     path("verify-email/", views.PatientVerifyEmailView.as_view(), name="patient-auth-verify-email"),
     path("login/", views.PatientLoginView.as_view(), name="patient-auth-login"),
+    # Upgrade 17: Sign in with Google (GET config, POST ID token)
+    path("google/", views.PatientGoogleView.as_view(), name="patient-auth-google"),
     path("logout/", views.PatientLogoutView.as_view(), name="patient-auth-logout"),
     path("me/", views.PatientMeView.as_view(), name="patient-auth-me"),
     path("password/", views.PatientPasswordChangeView.as_view(), name="patient-auth-password"),

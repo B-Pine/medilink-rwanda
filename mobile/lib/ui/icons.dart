@@ -23,6 +23,7 @@ abstract final class PhosphorIconsRegular {
   static const crosshair = IconData(0xe1d6, fontFamily: 'PhosphorRegular');
   static const envelopeOpen = IconData(0xe216, fontFamily: 'PhosphorRegular');
   static const envelopeSimple = IconData(0xe218, fontFamily: 'PhosphorRegular');
+  static const googleLogo = IconData(0xe292, fontFamily: 'PhosphorRegular');
   static const eye = IconData(0xe220, fontFamily: 'PhosphorRegular');
   static const eyeSlash = IconData(0xe224, fontFamily: 'PhosphorRegular');
   static const fileText = IconData(0xe23a, fontFamily: 'PhosphorRegular');

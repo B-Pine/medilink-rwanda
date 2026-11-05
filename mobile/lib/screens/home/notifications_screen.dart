@@ -29,13 +29,27 @@ class AppNotification {
   final bool read, withdrawn;
   final DateTime createdAt;
 
-  /// The app page for a notification's link (the API's paths are the website's).
+  /// The app page for a notification's link (the API's paths are the website's; since upgrade 12
+  /// they start with /dashboard: `/dashboard/appointments/{id}`, `/dashboard/queue/{id}`,
+  /// `/dashboard/medications/{id}`, `/dashboard/documents/{id}`).
   String? get appRoute {
     final path = actionPath ?? '';
-    if (path.contains('prescription')) return '/me/medications';
-    if (path.contains('consultation')) return '/me/records';
+    final booking = RegExp(r'/appointments/([0-9a-fA-F-]{8,})').firstMatch(path);
+    if (booking != null) return '/visits/booking/${booking.group(1)}';
+    final ticket = RegExp(r'/queue/([0-9a-fA-F-]{8,})').firstMatch(path);
+    if (ticket != null) return '/visits/ticket/${ticket.group(1)}';
+    if (path.contains('prescription') || path.contains('medication') || path.contains('medicine')) {
+      return '/me/medications';
+    }
+    if (path.contains('document')) return '/me/documents';
+    if (path.contains('consultation') || path.contains('/records')) return '/me/records';
     if (path.contains('result') || path.contains('lab')) return '/me/results';
-    if (path.contains('booking') || path.contains('visit') || path.contains('queue')) return '/visits';
+    if (path.contains('booking') ||
+        path.contains('appointment') ||
+        path.contains('visit') ||
+        path.contains('queue')) {
+      return '/visits';
+    }
     return null;
   }
 }

@@ -9,8 +9,8 @@ import smtplib
 from typing import Any, ClassVar
 
 from django.core.mail import EmailMultiAlternatives
-from django.template import Context, Engine
 
+from medilink.core.mail import LANGUAGE_HEADER, brand_html
 from medilink.notifications.channels import Message, SendResult, Target
 from medilink.notifications.templates import LIMITS, TextLimits
 
@@ -21,14 +21,7 @@ FOOTER = {
     "en": "Open the message in MediLink",
     "fr": "Ouvrir le message dans MediLink",
 }
-_ENGINE = Engine(autoescape=True)
-_HTML = _ENGINE.from_string(
-    '<!doctype html><html lang="{{ language }}">'
-    '<body style="font-family:sans-serif;line-height:1.5">'
-    '<h1 style="font-size:18px">{{ subject }}</h1>'
-    "{% for line in lines %}<p>{{ line }}</p>{% endfor %}"
-    '<p><a href="{{ url }}">{{ footer }}</a></p></body></html>'
-)
+BUTTON = {"rw": "Fungura ubutumwa", "en": "Open the message", "fr": "Ouvrir le message"}
 
 
 class EmailAdapter:
@@ -46,18 +39,19 @@ class EmailAdapter:
     def send(self, message: Message, target: Target) -> SendResult:
         footer = FOOTER.get(message.language, FOOTER["en"])
         text = f"{message.body}\n\n{footer}: {message.url}\n"
-        html = _HTML.render(
-            Context(
-                {
-                    "language": message.language,
-                    "subject": message.subject,
-                    "lines": [line for line in message.body.split("\n") if line.strip()],
-                    "url": message.url,
-                    "footer": footer,
-                }
-            )
+        # the branded layout (upgrade 17); the link on its own line becomes the button
+        html = brand_html(
+            message.subject,
+            f"{message.body}\n\n{message.url}",
+            message.language,
+            action=BUTTON.get(message.language, BUTTON["en"]),
         )
-        mail = EmailMultiAlternatives(subject=message.subject, body=text, to=[target.address])
+        mail = EmailMultiAlternatives(
+            subject=message.subject,
+            body=text,
+            to=[target.address],
+            headers={LANGUAGE_HEADER: message.language},
+        )
         mail.attach_alternative(html, "text/html")
         try:
             mail.send()

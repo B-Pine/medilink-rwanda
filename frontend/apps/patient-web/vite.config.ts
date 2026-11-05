@@ -39,7 +39,8 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       tailwindcss(),
-      medilinkCsp(appEnv),
+      // upgrade 17: the patient site loads Google's sign-in button (staff sites never do)
+      medilinkCsp({ ...appEnv, googleSignIn: true }),
       medilinkMockWorker(appEnv),
       // Order matters: the shell is copied before the prerender plugin rewrites index.html.
       appShell(),

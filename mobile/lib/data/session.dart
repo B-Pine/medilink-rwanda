@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,6 +10,13 @@ import 'models.dart';
 import 'secure_store.dart';
 
 enum AuthPhase { starting, signedOut, setPin, locked, ready }
+
+/// One Google sign-in attempt: the ID token is kept so the consent step can send it again.
+class GoogleTicket {
+  GoogleTicket(this.idToken);
+  final String idToken;
+  Me? me;
+}
 
 final secureStoreProvider = Provider<SecureStore>((ref) => SecureStore());
 
@@ -101,6 +109,61 @@ class AuthController extends Notifier<AuthPhase> {
 
   Future<Me> signIn(String email, String password) async {
     final data = await _api.post('/api/v1/patient/auth/login/', {'email': email, 'password': password});
+    return _signedIn(data);
+  }
+
+  static const _googlePath = '/api/v1/patient/auth/google/';
+  bool _googleReady = false;
+
+  /// Whether the server has Sign in with Google on (upgrade 17); the button shows only then.
+  Future<String?> googleClientId() async {
+    try {
+      final data = await _api.get(_googlePath) as Json;
+      final id = '${data['client_id'] ?? ''}';
+      return data['enabled'] == true && id.isNotEmpty ? id : null;
+    } on ApiException {
+      return null;
+    }
+  }
+
+  /// Google's account picker; returns null when the person closed it. Then call [finishGoogle]:
+  /// a first Google sign-in throws `consent_required` (ApiException.current holds email and
+  /// full_name), so show the consents and call it again with `consent: true`.
+  Future<GoogleTicket?> pickGoogleAccount(String clientId) async {
+    final google = GoogleSignIn.instance;
+    if (!_googleReady) {
+      await google.initialize(serverClientId: clientId);
+      _googleReady = true;
+    }
+    final GoogleSignInAccount account;
+    try {
+      account = await google.authenticate();
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) return null;
+      rethrow;
+    }
+    final token = account.authentication.idToken;
+    if (token == null) throw ApiException(ApiFailure.server, message: 'No Google ID token');
+    return GoogleTicket(token);
+  }
+
+  /// Sends the Google ID token, with the sign-up consents when [consent] is true.
+  Future<Me> finishGoogle(GoogleTicket ticket, {bool consent = false, bool research = false}) async {
+    final data = await _api.post(_googlePath, {
+      'id_token': ticket.idToken,
+      'preferred_language': ref.read(languageProvider),
+      if (consent) ...{
+        'accepted_terms_version': AppConfig.termsVersion,
+        'accepted_privacy_version': AppConfig.privacyVersion,
+        'research_consent': research,
+      },
+    });
+    final me = await _signedIn(data);
+    ticket.me = me;
+    return me;
+  }
+
+  Future<Me> _signedIn(Object? data) async {
     if (_store.sessionKey == null) {
       throw ApiException(ApiFailure.server, message: 'No session key returned');
     }
@@ -190,6 +253,10 @@ class AuthController extends Notifier<AuthPhase> {
       await _api.post('/api/v1/patient/auth/logout/');
     } on ApiException {
       // Offline or already ended: the phone forgets the session either way.
+    }
+    if (_googleReady) {
+      // next Google sign-in shows the account picker again (another family member, say)
+      await GoogleSignIn.instance.signOut().catchError((_) {});
     }
     await _store.wipe();
     state = AuthPhase.signedOut;

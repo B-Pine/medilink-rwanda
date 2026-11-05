@@ -616,6 +616,12 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
       return HttpResponse.json(patient.me);
     }),
 
+    // Upgrade 17: Sign in with Google needs a real Google client, so it is off in mock mode
+    http.get(`${API}/patient/auth/google/`, async () => {
+      await settle();
+      return HttpResponse.json({ enabled: false, client_id: "" });
+    }),
+
     http.post(`${API}/patient/auth/logout/`, async ({ request }) => {
       await settle();
       const lang = languageFrom(request);

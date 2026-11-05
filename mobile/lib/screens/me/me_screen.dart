@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../ui/icons.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-import '../../app/config.dart';
 import '../../app/strings.dart';
 import '../../app/theme.dart';
 import '../../data/providers.dart';
@@ -23,19 +21,16 @@ class MeScreen extends ConsumerWidget {
     final me = ref.watch(meProvider).value;
     final top = MediaQuery.paddingOf(context).top;
 
-    void web(String path) =>
-        launchUrl(Uri.parse('${AppConfig.webBaseUrl}$path'), mode: LaunchMode.externalApplication);
-
     final health = [
       (s.records, PhosphorIconsRegular.clipboardText, () => context.go('/me/records')),
       (s.medications, PhosphorIconsRegular.pill, () => context.go('/me/medications')),
       (s.results, PhosphorIconsRegular.flask, () => context.go('/me/results')),
       (s.documents, PhosphorIconsRegular.fileText, () => context.go('/me/documents')),
-      (s.family, PhosphorIconsRegular.usersThree, () => web('/dashboard/family')),
+      (s.family, PhosphorIconsRegular.usersThree, () => context.go('/me/family')),
     ];
     final account = [
-      (s.privacy, PhosphorIconsRegular.shieldCheck, () => web('/dashboard/privacy')),
-      (s.help, PhosphorIconsRegular.question, () => web('/help')),
+      (s.privacy, PhosphorIconsRegular.shieldCheck, () => context.go('/me/privacy')),
+      (s.help, PhosphorIconsRegular.question, () => context.go('/me/help')),
       (s.settings, PhosphorIconsRegular.gearSix, () => context.go('/me/settings')),
     ];
 

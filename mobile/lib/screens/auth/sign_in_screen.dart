@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../ui/icons.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-import '../../app/config.dart';
 import '../../app/strings.dart';
 import '../../app/theme.dart';
 import '../../data/api.dart';
@@ -115,10 +113,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         Align(
           alignment: Alignment.centerRight,
           child: TextButton(
-            onPressed: () => launchUrl(
-              Uri.parse('${AppConfig.webBaseUrl}/forgot-password'),
-              mode: LaunchMode.externalApplication,
-            ),
+            onPressed: () => context.push('/forgot-password'),
             child: Text(s.forgotPassword),
           ),
         ),

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Forest, like the app's splash, so starting the app shows no white flash. -->
+<!-- Forest with the MediLink badge, like the app's splash, so starting shows no white flash. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@color/forest" />
+    <item>
+        <bitmap android:gravity="center" android:src="@drawable/launch_mark" />
+    </item>
 </layer-list>

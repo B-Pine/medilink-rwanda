@@ -1,0 +1,71 @@
+{
+ "summaryTitle": "Muri make",
+ "privacy": {
+  "title": "Itangazo ry'ibanga",
+  "summary": "Dukusanya gusa ibikenewe mu gutegura no kwandika ubuvuzi bwawe, tubirinda kandi tubibika mu Rwanda, tubyereka abakuvura gusa, kandi ushobora kubireba, kubikosora no kubikuramo.",
+  "sections": [
+   {
+    "title": "Who is responsible",
+    "body": "The operator of MediLink ([To confirm]) and each health facility that cares for you are responsible for your data, under Law No. 058/2021 on the protection of personal data and privacy."
+   },
+   {
+    "title": "What we collect",
+    "body": "Your name, contact details, date of birth, sex, identifiers such as your national ID or insurance number, your bookings and queue tickets, and the records health facilities write about your visits."
+   },
+   {
+    "title": "Why we use it",
+    "body": "To find and book care, run the queue, keep your health records, bill and claim insurance, send you reminders, and keep the service safe. We never sell your data or use it for advertising."
+   },
+   {
+    "title": "Where it is kept",
+    "body": "On servers in Rwanda, encrypted in transit and at rest. Health records can be opened only by staff at a facility that is caring for you, and every opening is logged."
+   },
+   {
+    "title": "Your rights",
+    "body": "You can see who opened your record, download your data, ask for corrections, and close your account. Facilities must keep medical records for the period the law requires."
+   },
+   {
+    "title": "How long we keep it",
+    "body": "Medical records are kept as long as the law requires ([To confirm]); other data is deleted or anonymised when no longer needed."
+   },
+   {
+    "title": "Contact",
+    "body": "Questions or complaints: our data protection officer at [To confirm]. You can also contact the National Cyber Security Authority."
+   }
+  ]
+ },
+ "terms": {
+  "title": "Amabwiriza yo gukoresha",
+  "summary": "MediLink igufasha gushaka, gufata gahunda no gukurikirana ubuvuzi. Ubuvuzi butangwa n'ikigo cy'ubuvuzi. MediLink si iy'ibyihutirwa kandi isuzuma ry'ibimenyetso ritanga inama, si isuzuma rya muganga.",
+  "sections": [
+   {
+    "title": "Your account",
+    "body": "Keep your password private. You may manage profiles for your children and people you care for, and share access with others you trust."
+   },
+   {
+    "title": "Bookings and the queue",
+    "body": "Arrive on time or cancel before the deadline. If you arrive late, you are checked in as a walk-in. Bookings you miss without cancelling count as no-shows, and repeated no-shows can limit new bookings for a while."
+   },
+   {
+    "title": "Not for emergencies",
+    "body": "In an emergency call 912 or go to the nearest emergency department."
+   },
+   {
+    "title": "Guidance, not diagnosis",
+    "body": "The symptom checker suggests how soon to seek care and which kind. It does not diagnose. Only a clinician can."
+   },
+   {
+    "title": "Facilities and care",
+    "body": "Health facilities are independent and responsible for the care they give, their prices and their records."
+   },
+   {
+    "title": "Fair use",
+    "body": "Do not misuse the service, impersonate others or try to access data that is not yours."
+   },
+   {
+    "title": "Liability and law",
+    "body": "[To confirm] These terms are governed by the laws of Rwanda."
+   }
+  ]
+ }
+}

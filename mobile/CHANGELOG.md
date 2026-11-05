@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 ## [Unreleased]
 
+### 1.0.1 (2026-11-05)
+
+- Fixed: going back to Home (or any tab) left the previous tab painted on top: its fade-out
+  froze when the tab stopped animating. Hidden tabs are now offstage. Android back returns to
+  Home before leaving the app.
+- Changed: the real MediLink logo (pin, cross, zigzag) replaces the drawn cross on the splash,
+  sign-in, PIN screen and header; launcher icon, themed icon and launch screen use it too.
+- Added: in-app pages instead of website links: notifications (mark read, open the related
+  page), symptom checker (chat with red flags first; rules checklist when the chat is off),
+  family (members, profile, add a child or an adult you help), privacy (choices, who opened my
+  record, privacy notice and terms), help (articles, search, support requests and replies),
+  reset password.
+
 ### 1.0.0 (2026-11-05, upgrade 15)
 
 - Added: the patient Android app (Flutter). Sign in, PIN and fingerprint unlock, auto-lock after

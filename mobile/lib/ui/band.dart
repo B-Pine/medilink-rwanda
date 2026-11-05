@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 
 import '../app/theme.dart';
@@ -79,58 +77,4 @@ class _ZigzagPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_ZigzagPainter oldDelegate) => oldDelegate.offset != offset;
-}
-
-/// The MediLink cross, drawn as one stroke. [progress] 0→1 animates the drawing (splash).
-class CrossMark extends StatelessWidget {
-  const CrossMark({super.key, this.size = 56, this.progress = 1, this.color = Palette.onForestAccent});
-
-  final double size;
-  final double progress;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) =>
-      CustomPaint(size: Size.square(size), painter: _CrossPainter(progress, color));
-}
-
-class _CrossPainter extends CustomPainter {
-  const _CrossPainter(this.progress, this.color);
-  final double progress;
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final s = size.width;
-    final t = s * 0.3; // arm width
-    final a = (s - t) / 2;
-    final outline = Path()
-      ..moveTo(a, 0)
-      ..lineTo(a + t, 0)
-      ..lineTo(a + t, a)
-      ..lineTo(s, a)
-      ..lineTo(s, a + t)
-      ..lineTo(a + t, a + t)
-      ..lineTo(a + t, s)
-      ..lineTo(a, s)
-      ..lineTo(a, a + t)
-      ..lineTo(0, a + t)
-      ..lineTo(0, a)
-      ..lineTo(a, a)
-      ..close();
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = math.max(2, s * 0.05)
-      ..strokeJoin = StrokeJoin.round
-      ..strokeCap = StrokeCap.round;
-    final metric = outline.computeMetrics().first;
-    canvas.drawPath(metric.extractPath(0, metric.length * progress.clamp(0, 1)), paint);
-    if (progress >= 1) {
-      canvas.drawPath(outline, Paint()..color = color.withValues(alpha: 0.16));
-    }
-  }
-
-  @override
-  bool shouldRepaint(_CrossPainter oldDelegate) => oldDelegate.progress != progress;
 }

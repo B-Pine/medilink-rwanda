@@ -5,15 +5,18 @@
 import 'package:flutter/widgets.dart';
 
 abstract final class PhosphorIconsRegular {
+  static const arrowClockwise = IconData(0xe036, fontFamily: 'PhosphorRegular');
   static const arrowLeft = IconData(0xe058, fontFamily: 'PhosphorRegular');
   static const backspace = IconData(0xe0ae, fontFamily: 'PhosphorRegular');
   static const bell = IconData(0xe0ce, fontFamily: 'PhosphorRegular');
   static const buildings = IconData(0xe102, fontFamily: 'PhosphorRegular');
+  static const cake = IconData(0xe780, fontFamily: 'PhosphorRegular');
   static const calendarCheck = IconData(0xe712, fontFamily: 'PhosphorRegular');
   static const calendarPlus = IconData(0xe714, fontFamily: 'PhosphorRegular');
   static const calendarX = IconData(0xe10c, fontFamily: 'PhosphorRegular');
   static const caretDown = IconData(0xe136, fontFamily: 'PhosphorRegular');
   static const caretRight = IconData(0xe13a, fontFamily: 'PhosphorRegular');
+  static const chatsCircle = IconData(0xe17e, fontFamily: 'PhosphorRegular');
   static const clipboardText = IconData(0xe198, fontFamily: 'PhosphorRegular');
   static const clock = IconData(0xe19a, fontFamily: 'PhosphorRegular');
   static const envelopeOpen = IconData(0xe216, fontFamily: 'PhosphorRegular');
@@ -26,14 +29,18 @@ abstract final class PhosphorIconsRegular {
   static const firstAidKit = IconData(0xe570, fontFamily: 'PhosphorRegular');
   static const flask = IconData(0xe79e, fontFamily: 'PhosphorRegular');
   static const gearSix = IconData(0xe272, fontFamily: 'PhosphorRegular');
+  static const genderIntersex = IconData(0xe6e6, fontFamily: 'PhosphorRegular');
   static const house = IconData(0xe2c2, fontFamily: 'PhosphorRegular');
+  static const identificationCard = IconData(0xe2c8, fontFamily: 'PhosphorRegular');
   static const info = IconData(0xe2ce, fontFamily: 'PhosphorRegular');
   static const lockKey = IconData(0xe2fe, fontFamily: 'PhosphorRegular');
   static const magnifyingGlass = IconData(0xe30c, fontFamily: 'PhosphorRegular');
   static const mapPin = IconData(0xe316, fontFamily: 'PhosphorRegular');
   static const navigationArrow = IconData(0xeade, fontFamily: 'PhosphorRegular');
   static const phone = IconData(0xe3b8, fontFamily: 'PhosphorRegular');
+  static const phoneCall = IconData(0xe3ba, fontFamily: 'PhosphorRegular');
   static const pill = IconData(0xe700, fontFamily: 'PhosphorRegular');
+  static const plus = IconData(0xe3d4, fontFamily: 'PhosphorRegular');
   static const question = IconData(0xe3e8, fontFamily: 'PhosphorRegular');
   static const shieldCheck = IconData(0xe40c, fontFamily: 'PhosphorRegular');
   static const signOut = IconData(0xe42a, fontFamily: 'PhosphorRegular');
@@ -42,6 +49,7 @@ abstract final class PhosphorIconsRegular {
   static const translate = IconData(0xe4a2, fontFamily: 'PhosphorRegular');
   static const user = IconData(0xe4c2, fontFamily: 'PhosphorRegular');
   static const userCircle = IconData(0xe4c4, fontFamily: 'PhosphorRegular');
+  static const userPlus = IconData(0xe4d0, fontFamily: 'PhosphorRegular');
   static const usersThree = IconData(0xe68e, fontFamily: 'PhosphorRegular');
   static const warningCircle = IconData(0xe4e2, fontFamily: 'PhosphorRegular');
   static const wifiSlash = IconData(0xe4f2, fontFamily: 'PhosphorRegular');
@@ -52,6 +60,7 @@ abstract final class PhosphorIconsFill {
   static const checkCircle = IconData(0xe184, fontFamily: 'PhosphorFill');
   static const firstAidKit = IconData(0xe570, fontFamily: 'PhosphorFill');
   static const house = IconData(0xe2c2, fontFamily: 'PhosphorFill');
+  static const paperPlaneRight = IconData(0xe396, fontFamily: 'PhosphorFill');
   static const phoneCall = IconData(0xe3ba, fontFamily: 'PhosphorFill');
   static const ticket = IconData(0xe490, fontFamily: 'PhosphorFill');
   static const userCircle = IconData(0xe4c4, fontFamily: 'PhosphorFill');

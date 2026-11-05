@@ -19,6 +19,7 @@ owner on 2026-11-05.
 | Navigation | Bottom bar, 4 tabs: Home · Care · Visits · Me. No drawer. Tablets: a navigation rail |
 | Icons | Phosphor (the web's set), its icon fonts bundled in `mobile/assets/fonts` (the `phosphor_flutter` package no longer compiles): Regular everywhere, Fill for the active tab and status |
 | Unlock | PIN (4–6 digits) and fingerprint; auto-lock after 2 min in the background |
+| Logo | The MediLink pin (brand/logo/source), on a white badge over the forest band; launcher icon on white |
 | Languages | Kinyarwanda first, English |
 | Oldest Android | 8.0 (API 26); APK under 25 MB |
 | Distribution | Signed release APK shared as a download; Play Store later |
@@ -87,8 +88,9 @@ slides. A family switcher on Home acts for a dependent.
 
 | Version | Scope |
 |---|---|
-| **v1** (built 2026-11-05) | Everything above. Live updates by polling (15 s while a ticket is open). Notifications, family, privacy, help, symptoms and forgot-password open the website for now |
-| v1.1 | In-app notifications, family and privacy pages; symptom checker; update prompt (the app checks a version file and offers the new APK); bottom bar hiding on long lists |
+| **v1** (built 2026-11-05) | Everything above. Live updates by polling (15 s while a ticket is open) |
+| **v1.0.1** (2026-11-05) | Real logo; in-app notifications, symptom checker (chat, rules checklist fallback), family, privacy (choices, access history, notices), help and support, reset password; tab and back-button fixes |
+| v1.1 | Update prompt (the app checks a version file and offers the new APK); profile editing in the app; bottom bar hiding on long lists |
 | v2 | Push notifications (FCM; content-free messages), WebSocket live updates for the app, home-screen widget, QR ticket and check-in scanning by staff |
 
 ## 6. Build

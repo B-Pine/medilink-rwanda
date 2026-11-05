@@ -166,6 +166,13 @@ final resultsProvider = FutureProvider<List<LabResult>>((ref) async {
   return resultsOf(data).map(LabResult.fromJson).toList();
 });
 
+/// The symptom catalogue, red flags first. Booking needs 1–5 of these.
+final symptomsProvider = FutureProvider<List<Symptom>>((ref) async {
+  final data = await ref.read(apiProvider).get('/api/v1/public/symptoms/');
+  return resultsOf(data).map(Symptom.fromJson).toList()
+    ..sort((a, b) => (b.redFlag ? 1 : 0).compareTo(a.redFlag ? 1 : 0));
+});
+
 /// Drops every patient-specific result; called after each sign-in so no earlier account shows.
 void invalidatePatientData(WidgetRef ref) {
   ref

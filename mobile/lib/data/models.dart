@@ -250,3 +250,15 @@ class LabResult {
   final DateTime? releasedAt;
   final bool abnormal;
 }
+
+/// A symptom from the public catalogue (`/api/v1/public/symptoms/`).
+class Symptom {
+  Symptom.fromJson(Json j)
+      : code = j['code'] as String,
+        name = (j['name_i18n'] as Map?)?.cast<String, dynamic>() ?? const {},
+        group = j['body_system'] as String? ?? '',
+        redFlag = j['is_red_flag'] as bool? ?? false;
+  final String code, group;
+  final Json name;
+  final bool redFlag;
+}

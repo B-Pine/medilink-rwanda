@@ -11,6 +11,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 - Added: when the server has the sign-up email check off (test servers,
   `PATIENT_SIGNUP_EMAIL_VERIFICATION=false`), sign-up shows "Account ready" and the patient
   signs in straight away instead of waiting for an email.
+- Fixed: booking failed with "some fields need attention" because the app sent no symptoms (the
+  API needs 1–5). The confirm sheet now asks "What brings you in?" with symptom chips (red flags
+  warn to call 912), plus an optional note.
 
 ### 1.0.2 (2026-11-05)
 

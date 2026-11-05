@@ -10,6 +10,7 @@ import '../../app/strings_more.dart';
 import '../../app/theme.dart';
 import '../../data/api.dart';
 import '../../data/models.dart';
+import '../../data/providers.dart';
 import '../../data/session.dart';
 import '../../ui/feedback.dart';
 import '../../ui/icons.dart';
@@ -333,22 +334,6 @@ class _Typing extends StatelessWidget {
       );
 }
 
-class _Symptom {
-  _Symptom.fromJson(Json j)
-      : code = j['code'] as String,
-        name = (j['name_i18n'] as Map?)?.cast<String, dynamic>() ?? const {},
-        redFlag = j['is_red_flag'] as bool? ?? false;
-  final String code;
-  final Json name;
-  final bool redFlag;
-}
-
-final _symptomsProvider = FutureProvider.autoDispose<List<_Symptom>>((ref) async {
-  final data = await ref.read(apiProvider).get('/api/v1/public/symptoms/');
-  final list = resultsOf(data).map(_Symptom.fromJson).toList()
-    ..sort((a, b) => (b.redFlag ? 1 : 0).compareTo(a.redFlag ? 1 : 0));
-  return list;
-});
 
 /// The rules checklist: symptoms, how long, age group → urgency and where to go.
 class _Checklist extends ConsumerStatefulWidget {
@@ -388,7 +373,7 @@ class _ChecklistState extends ConsumerState<_Checklist> {
   Widget build(BuildContext context) {
     final s = S.of(context);
     final theme = Theme.of(context);
-    final symptoms = ref.watch(_symptomsProvider);
+    final symptoms = ref.watch(symptomsProvider);
     Widget choices(String label, List<String> options, String value, String prefix, ValueChanged<String> onPick) =>
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -420,7 +405,7 @@ class _ChecklistState extends ConsumerState<_Checklist> {
         const SizedBox(height: Space.sm),
         symptoms.when(
           loading: () => const SkeletonList(count: 2),
-          error: (e, _) => ErrorState(error: e, onRetry: () => ref.invalidate(_symptomsProvider)),
+          error: (e, _) => ErrorState(error: e, onRetry: () => ref.invalidate(symptomsProvider)),
           data: (list) => Wrap(
             spacing: Space.sm,
             runSpacing: Space.sm,

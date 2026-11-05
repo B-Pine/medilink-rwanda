@@ -6,6 +6,7 @@ import '../../ui/icons.dart';
 
 import '../../app/format.dart' as fmt;
 import '../../app/strings.dart';
+import '../../app/strings_more.dart';
 import '../../app/theme.dart';
 import '../../data/api.dart';
 import '../../data/models.dart';
@@ -234,14 +235,30 @@ class _ConfirmSheet extends ConsumerStatefulWidget {
 }
 
 class _ConfirmSheetState extends ConsumerState<_ConfirmSheet> {
+  static const _maxSymptoms = 5; // the API takes 1–5
+  static const _shortList = 12;
+
   String? _patientId;
   String? _error;
+  final _chosen = <String>{};
+  final _reason = TextEditingController();
+  bool _allSymptoms = false;
+
+  @override
+  void dispose() {
+    _reason.dispose();
+    super.dispose();
+  }
+
+  void _toggle(String code) => setState(() {
+        if (!_chosen.remove(code) && _chosen.length < _maxSymptoms) _chosen.add(code);
+      });
 
   Future<bool> _book() async {
     final s = S.of(context);
     final api = ref.read(apiProvider);
     final patientId = _patientId;
-    if (patientId == null) return false;
+    if (patientId == null || _chosen.isEmpty) return false;
     setState(() => _error = null);
     try {
       final hold = await api.post('/api/v1/patient/slots/${widget.slot.id}/hold/');
@@ -249,7 +266,8 @@ class _ConfirmSheetState extends ConsumerState<_ConfirmSheet> {
       final booking = await api.post('/api/v1/patient/bookings/', {
         'hold_id': holdId,
         'patient_id': patientId,
-        'symptoms': <Object>[],
+        'symptoms': [for (final code in _chosen) {'code': code}],
+        if (_reason.text.trim().isNotEmpty) 'reason_text': _reason.text.trim(),
       });
       final id = (booking! as Json)['id'] as String;
       Future<void>.delayed(const Duration(milliseconds: 650), () {
@@ -268,9 +286,24 @@ class _ConfirmSheetState extends ConsumerState<_ConfirmSheet> {
     final theme = Theme.of(context);
     final profiles = ref.watch(meProvider).value?.profiles ?? const <Profile>[];
     _patientId ??= profiles.firstOrNull?.patientId;
+    final symptoms = ref.watch(symptomsProvider);
+    final catalogue = symptoms.value ?? const <Symptom>[];
+    final redFlag = catalogue.any((x) => x.redFlag && _chosen.contains(x.code));
+    // chosen ones stay visible when the list is short
+    final shown = _allSymptoms
+        ? catalogue
+        : [
+            ...catalogue.take(_shortList),
+            ...catalogue.skip(_shortList).where((x) => _chosen.contains(x.code)),
+          ];
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(Space.xl, 0, Space.xl, Space.xl),
+      child: SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(
+          Space.xl,
+          0,
+          Space.xl,
+          Space.xl + MediaQuery.viewInsetsOf(context).bottom,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -307,12 +340,77 @@ class _ConfirmSheetState extends ConsumerState<_ConfirmSheet> {
                 ],
               ),
             ],
+            const SizedBox(height: Space.xl),
+            Row(
+              children: [
+                Expanded(child: Text(s.t('whatsWrong'), style: theme.textTheme.titleSmall)),
+                Text('${_chosen.length}/$_maxSymptoms', style: theme.textTheme.bodySmall),
+              ],
+            ),
+            const SizedBox(height: Space.sm),
+            symptoms.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.all(Space.lg),
+                child: Center(child: LoadingDots()),
+              ),
+              error: (e, _) => ErrorState(error: e, onRetry: () => ref.invalidate(symptomsProvider)),
+              data: (_) => Wrap(
+                spacing: Space.sm,
+                runSpacing: Space.sm,
+                children: [
+                  for (final x in shown)
+                    FilterChip(
+                      label: Text(s.pick(x.name)),
+                      selected: _chosen.contains(x.code),
+                      showCheckmark: false,
+                      selectedColor: x.redFlag ? Palette.dangerSubtle : Palette.brandSubtle,
+                      onSelected: (_) => _toggle(x.code),
+                    ),
+                  if (!_allSymptoms && catalogue.length > _shortList)
+                    ActionChip(
+                      avatar: const Icon(PhosphorIconsRegular.plus, size: 16),
+                      label: Text(s.t('moreSymptoms')),
+                      onPressed: () => setState(() => _allSymptoms = true),
+                    ),
+                ],
+              ),
+            ),
+            if (redFlag) ...[
+              const SizedBox(height: Space.md),
+              Container(
+                padding: const EdgeInsets.all(Space.md),
+                decoration: BoxDecoration(
+                  color: Palette.dangerSubtle,
+                  borderRadius: BorderRadius.circular(Space.radius),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(PhosphorIconsFill.firstAid, color: Palette.danger),
+                    const SizedBox(width: Space.sm),
+                    Expanded(child: Text(s.t('redFlagBook'))),
+                  ],
+                ),
+              ),
+            ],
+            const SizedBox(height: Space.md),
+            TextField(
+              controller: _reason,
+              maxLength: 500,
+              minLines: 1,
+              maxLines: 3,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: InputDecoration(hintText: s.t('anythingElse'), counterText: ''),
+            ),
             if (_error != null) ...[
               const SizedBox(height: Space.md),
               Text(_error!, style: const TextStyle(color: Palette.danger), textAlign: TextAlign.center),
             ],
-            const SizedBox(height: Space.xl),
-            LoadingButton(label: s.confirm, onPressed: _patientId == null ? null : _book),
+            const SizedBox(height: Space.lg),
+            LoadingButton(
+              label: s.confirm,
+              onPressed: _patientId == null || _chosen.isEmpty ? null : _book,
+            ),
           ],
         ),
       ),

@@ -75,6 +75,7 @@ export const paths = {
   patientLogin: "/api/v1/patient/auth/login/",
   patientLogout: "/api/v1/patient/auth/logout/",
   patientMe: "/api/v1/patient/auth/me/",
+  patientPassword: "/api/v1/patient/auth/password/",
   passwordReset: "/api/v1/auth/password-reset/",
   passwordResetConfirm: "/api/v1/auth/password-reset/confirm/",
   schema: "/api/v1/schema/",
@@ -134,6 +135,9 @@ export function createMediLinkApi(client: ApiClient) {
       /** 401 when not logged in (handled by the caller, not the global hook). */
       me: (signal?: AbortSignal) =>
         client.get<PatientMe>(paths.patientMe, signal ? { signal, ...authCall } : authCall),
+      /** Current + new password; other sessions end and this one rotates (security 03 §6). */
+      changePassword: (body: { current_password: string; new_password: string }) =>
+        client.post<PatientMe>(paths.patientPassword, body, sessionChange),
     },
 
     passwordReset: {

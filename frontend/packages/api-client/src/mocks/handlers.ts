@@ -121,7 +121,7 @@ export interface MockApi {
 
 const API = "*/api/v1";
 const STAFF_PASSWORD_MIN = 12;
-const PATIENT_PASSWORD_MIN = 15;
+const PATIENT_PASSWORD_MIN = 8;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function randomId(): string {
@@ -636,6 +636,30 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
           message("notAuthenticated", languageFrom(request)),
         );
       }
+      return HttpResponse.json(session.me);
+    }),
+
+    http.post(`${API}/patient/auth/password/`, async ({ request }) => {
+      await settle();
+      const lang = languageFrom(request);
+      const csrf = csrfFailure(request, lang);
+      if (csrf) return csrf;
+      const session = patientSession();
+      if (!session)
+        return errorResponse(401, "not_authenticated", message("notAuthenticated", lang));
+      const body = await readJson(request);
+      const patient = findPatient(session.me.email);
+      const next = asString(body.new_password);
+      if (!patient || asString(body.current_password) !== patient.password) {
+        return validationError(lang, { current_password: "invalidCredentials" });
+      }
+      if (next.length < PATIENT_PASSWORD_MIN) {
+        return validationError(lang, {
+          new_password: [message("passwordTooShort", lang, { min: PATIENT_PASSWORD_MIN })],
+        });
+      }
+      patient.password = next;
+      rotate();
       return HttpResponse.json(session.me);
     }),
 

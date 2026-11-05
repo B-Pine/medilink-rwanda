@@ -24,7 +24,7 @@
     "emailRequired": "Saisissez votre adresse e-mail",
     "emailInvalid": "Saisissez une adresse e-mail au bon format, par exemple nom@example.rw",
     "passwordRequired": "Saisissez votre mot de passe",
-    "passwordLength": "Utilisez au moins 15 caractères",
+    "passwordLength": "Utilisez au moins 8 caractères",
     "nameRequired": "Saisissez vos noms",
     "termsRequired": "Acceptez les conditions d’utilisation pour créer un compte",
     "privacyRequired": "Acceptez l’avis de confidentialité pour créer un compte"
@@ -173,8 +173,8 @@
     "fullNameHint": "Comme sur votre pièce d’identité.",
     "email": "E-mail",
     "password": "Mot de passe",
-    "passwordHint": "Utilisez au moins 15 caractères. Une courte phrase est facile à retenir et difficile à deviner.",
-    "passwordRule": "Au moins 15 caractères",
+    "passwordHint": "Utilisez au moins 8 caractères. Une courte phrase est facile à retenir et difficile à deviner.",
+    "passwordRule": "Au moins 8 caractères",
     "passwordRuleMet": "fait",
     "passwordRuleNotMet": "pas encore",
     "language": "Langue des messages",
@@ -338,7 +338,7 @@
   "reset": {
     "title": "Choisir un nouveau mot de passe",
     "newPassword": "Nouveau mot de passe",
-    "hint": "Au moins 15 caractères. Une courte phrase est facile à retenir et difficile à deviner.",
+    "hint": "Au moins 8 caractères. Une courte phrase est facile à retenir et difficile à deviner.",
     "submit": "Enregistrer le mot de passe",
     "doneTitle": "Mot de passe modifié",
     "doneBody": "Votre mot de passe a été modifié et vous avez été déconnecté partout. Connectez-vous avec le nouveau mot de passe.",

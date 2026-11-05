@@ -45,6 +45,7 @@ from medilink.accounts.serializers import (
     MfaConfirmResultSerializer,
     MfaSetupSerializer,
     MfaVerifySerializer,
+    PasswordChangeSerializer,
     PasswordResetConfirmSerializer,
     PasswordResetSerializer,
     PatientLoginSerializer,
@@ -93,6 +94,7 @@ from medilink.tenancy.services import active_membership
 logger = logging.getLogger(__name__)
 
 INVALID_CREDENTIALS = _("Email or password is incorrect.")
+WRONG_CURRENT_PASSWORD = _("That is not your current password.")
 INVALID_CODE = _("That code didn't work. Check your authenticator app and try again.")
 INVALID_RECOVERY_CODE = _("That recovery code didn't work.")
 INVALID_RESET_LINK = _("This link is invalid or has expired. Ask for a new link.")
@@ -623,6 +625,69 @@ class PatientMeView(_AuthView):
     )
     def get(self, request: Request) -> Response:
         return Response(PatientMeSerializer(patient_me_data(_principal_user(request))).data)
+
+
+class PatientPasswordChangeView(_AuthView):
+    """A signed-in patient changes their password (security 03 §6): the current password is
+    checked like a login (same lockout), every other session ends, this one rotates, and the
+    owner gets a "password changed" email."""
+
+    authentication_classes = [PatientSessionAuthentication]
+    permission_classes = [IsPatientAuthenticated]
+    throttle_scope = "auth"
+
+    @extend_schema(
+        operation_id="patient_auth_password_change",
+        tags=["patient-auth"],
+        request=PasswordChangeSerializer,
+        responses={
+            200: PatientMeSerializer,
+            400: _err("validation_error: current_password wrong, or new_password rejected"),
+            401: _err("not_authenticated"),
+            429: _err("rate_limited, with Retry-After"),
+        },
+        summary="Change password; ends other sessions and rotates this one",
+    )
+    def post(self, request: Request) -> Response:
+        serializer = PasswordChangeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        user = _principal_user(request)
+        _check_login_lockout(user.email)
+        if not user.check_password(data["current_password"]):
+            login_policy().register_failure(
+                user.email, on_lock=notify_on_lock(request, user, "login")
+            )
+            record(
+                actions.LOGIN_FAILURE,
+                request=request,
+                metadata={"audience": "patient", "reason": "password_change_wrong_current"},
+            )
+            # returned, not raised: the failure audit entry must be kept
+            return error_response(
+                400,
+                "validation_error",
+                fields={"current_password": [str(WRONG_CURRENT_PASSWORD)]},
+            )
+        try:
+            run_password_validators(data["new_password"], user)
+        except serializers.ValidationError as exc:
+            raise serializers.ValidationError({"new_password": exc.detail}) from exc
+        user.set_password(data["new_password"])
+        user.save(update_fields=["password", "updated_at"])
+        revoked = revoke_all_sessions(user)
+        login_policy().reset(user.email)
+        complete_patient_login(request, user)  # a fresh session for this device only
+        record(
+            actions.PASSWORD_CHANGED,
+            request=request,
+            object_type="user",
+            object_id=user.pk,
+            metadata={"audience": "patient", "sessions_revoked": revoked},
+        )
+        user_id = str(user.pk)
+        transaction.on_commit(lambda: send_password_changed_email.delay(user_id))
+        return Response(PatientMeSerializer(patient_me_data(user)).data)
 
 
 # --------------------------------------------------------------------------------------------

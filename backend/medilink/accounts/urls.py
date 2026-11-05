@@ -22,6 +22,7 @@ patient_auth_urlpatterns = [
     path("login/", views.PatientLoginView.as_view(), name="patient-auth-login"),
     path("logout/", views.PatientLogoutView.as_view(), name="patient-auth-logout"),
     path("me/", views.PatientMeView.as_view(), name="patient-auth-me"),
+    path("password/", views.PatientPasswordChangeView.as_view(), name="patient-auth-password"),
 ]
 
 account_urlpatterns = [

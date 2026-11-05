@@ -24,7 +24,7 @@
     "emailRequired": "Andika imeyili yawe",
     "emailInvalid": "Andika imeyili yanditse neza, urugero: izina@example.rw",
     "passwordRequired": "Andika ijambo ry’ibanga",
-    "passwordLength": "Koresha nibura inyuguti 15",
+    "passwordLength": "Koresha nibura inyuguti 8",
     "nameRequired": "Andika amazina yawe",
     "termsRequired": "Emera amabwiriza yo gukoresha kugira ngo ufungure konti",
     "privacyRequired": "Emera itangazo ry’ibanga kugira ngo ufungure konti"
@@ -173,8 +173,8 @@
     "fullNameHint": "Nk’uko yanditse ku ndangamuntu yawe.",
     "email": "Imeyili",
     "password": "Ijambo ry’ibanga",
-    "passwordHint": "Koresha nibura inyuguti 15. Interuro ngufi yoroshye kwibuka kandi igoye gukeka.",
-    "passwordRule": "Nibura inyuguti 15",
+    "passwordHint": "Koresha nibura inyuguti 8. Interuro ngufi yoroshye kwibuka kandi igoye gukeka.",
+    "passwordRule": "Nibura inyuguti 8",
     "passwordRuleMet": "byuzuye",
     "passwordRuleNotMet": "ntibiruzura",
     "language": "Ururimi rw’ubutumwa",
@@ -338,7 +338,7 @@
   "reset": {
     "title": "Shyiraho ijambo ry’ibanga rishya",
     "newPassword": "Ijambo ry’ibanga rishya",
-    "hint": "Nibura inyuguti 15. Interuro ngufi yoroshye kwibuka kandi igoye gukeka.",
+    "hint": "Nibura inyuguti 8. Interuro ngufi yoroshye kwibuka kandi igoye gukeka.",
     "submit": "Bika ijambo ry’ibanga rishya",
     "doneTitle": "Ijambo ry’ibanga ryahinduwe",
     "doneBody": "Ijambo ry’ibanga ryahinduwe kandi wasohowe ahantu hose. Injira ukoresheje ijambo ry’ibanga rishya.",

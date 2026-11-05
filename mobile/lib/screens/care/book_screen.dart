@@ -16,10 +16,13 @@ import '../../ui/feedback.dart';
 
 /// Book: service → day → time, then confirm in a bottom sheet (hold the slot, then book it).
 class BookScreen extends ConsumerStatefulWidget {
-  const BookScreen({super.key, required this.slug, this.serviceId});
+  const BookScreen({super.key, required this.slug, this.serviceId, this.doctorId});
 
   final String slug;
   final String? serviceId;
+
+  /// From a doctor's page: only their services and times, until the patient removes the filter.
+  final String? doctorId;
 
   @override
   ConsumerState<BookScreen> createState() => _BookScreenState();
@@ -27,12 +30,14 @@ class BookScreen extends ConsumerStatefulWidget {
 
 class _BookScreenState extends ConsumerState<BookScreen> {
   String? _serviceId;
+  String? _doctorId;
   int _day = 0;
 
   @override
   void initState() {
     super.initState();
     _serviceId = widget.serviceId;
+    _doctorId = widget.doctorId;
   }
 
   @override
@@ -45,13 +50,39 @@ class _BookScreenState extends ConsumerState<BookScreen> {
         loading: () => const Padding(padding: EdgeInsets.all(Space.lg), child: SkeletonList(count: 3)),
         error: (e, _) => ErrorState(error: e, onRetry: () => ref.invalidate(facilityProvider(widget.slug))),
         data: (f) {
-          final services = f.services.where((x) => x.bookable).toList();
+          final doctor = f.doctors.where((d) => d.id == _doctorId).firstOrNull;
+          final services = f.services
+              .where((x) => x.bookable)
+              .where((x) => doctor == null || doctor.serviceIds.isEmpty || doctor.serviceIds.contains(x.id))
+              .toList();
           if (services.isEmpty) return EmptyState(icon: PhosphorIconsRegular.calendarX, text: s.noTimes);
           final service = services.where((x) => x.id == _serviceId).firstOrNull;
           return ListView(
             padding: const EdgeInsets.all(Space.lg),
             children: [
               Text(f.name, style: Theme.of(context).textTheme.titleLarge),
+              if (doctor != null) ...[
+                const SizedBox(height: Space.md),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: InputChip(
+                    avatar: CircleAvatar(
+                      backgroundColor: Palette.brand,
+                      child: Text(
+                        doctor.initials,
+                        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                    label: Text(doctor.name),
+                    backgroundColor: Palette.brandSubtle,
+                    side: BorderSide.none,
+                    onDeleted: () => setState(() {
+                      _doctorId = null;
+                      _day = 0;
+                    }),
+                  ),
+                ),
+              ],
               const SizedBox(height: Space.xl),
               _Step(number: 1, title: s.chooseService),
               Wrap(
@@ -59,19 +90,13 @@ class _BookScreenState extends ConsumerState<BookScreen> {
                 runSpacing: Space.sm,
                 children: [
                   for (final x in services)
-                    ChoiceChip(
-                      label: Text(s.pick(x.name)),
+                    _PickChip(
+                      label: s.pick(x.name),
                       selected: x.id == _serviceId,
-                      showCheckmark: false,
-                      selectedColor: Palette.brandSubtle,
-                      side: BorderSide(color: x.id == _serviceId ? Palette.brand : Palette.hairline),
-                      onSelected: (_) {
-                        HapticFeedback.selectionClick();
-                        setState(() {
-                          _serviceId = x.id;
-                          _day = 0;
-                        });
-                      },
+                      onTap: () => setState(() {
+                        _serviceId = x.id;
+                        _day = 0;
+                      }),
                     ),
                 ],
               ),
@@ -82,6 +107,7 @@ class _BookScreenState extends ConsumerState<BookScreen> {
                   slug: widget.slug,
                   service: service,
                   facility: f,
+                  doctorId: doctor?.id,
                   day: _day,
                   onDay: (i) => setState(() => _day = i),
                 ),
@@ -121,6 +147,7 @@ class _Slots extends ConsumerWidget {
     required this.slug,
     required this.service,
     required this.facility,
+    required this.doctorId,
     required this.day,
     required this.onDay,
   });
@@ -128,6 +155,7 @@ class _Slots extends ConsumerWidget {
   final String slug;
   final FacilityService service;
   final Facility facility;
+  final String? doctorId;
   final int day;
   final ValueChanged<int> onDay;
 
@@ -142,7 +170,14 @@ class _Slots extends ConsumerWidget {
             children: [for (var i = 0; i < 8; i++) const Skeleton(width: 76, height: 40, radius: 10)],
           ),
           error: (e, _) => ErrorState(error: e, onRetry: () => ref.invalidate(slotsProvider(query))),
-          data: (days) {
+          data: (all) {
+            final days = doctorId == null
+                ? all
+                : [
+                    for (final d in all)
+                      if (d.slots.any((x) => x.membershipId == doctorId))
+                        SlotDay(d.date, d.slots.where((x) => x.membershipId == doctorId).toList()),
+                  ];
             if (days.isEmpty) return EmptyState(icon: PhosphorIconsRegular.calendarX, text: s.noTimes);
             final selected = days[day.clamp(0, days.length - 1)];
             return Column(
@@ -330,12 +365,10 @@ class _ConfirmSheetState extends ConsumerState<_ConfirmSheet> {
                 spacing: Space.sm,
                 children: [
                   for (final p in profiles)
-                    ChoiceChip(
-                      label: Text(p.displayName),
+                    _PickChip(
+                      label: p.displayName,
                       selected: p.patientId == _patientId,
-                      showCheckmark: false,
-                      selectedColor: Palette.brandSubtle,
-                      onSelected: (_) => setState(() => _patientId = p.patientId),
+                      onTap: () => setState(() => _patientId = p.patientId),
                     ),
                 ],
               ),
@@ -359,12 +392,11 @@ class _ConfirmSheetState extends ConsumerState<_ConfirmSheet> {
                 runSpacing: Space.sm,
                 children: [
                   for (final x in shown)
-                    FilterChip(
-                      label: Text(s.pick(x.name)),
+                    _PickChip(
+                      label: s.pick(x.name),
                       selected: _chosen.contains(x.code),
-                      showCheckmark: false,
-                      selectedColor: x.redFlag ? Palette.dangerSubtle : Palette.brandSubtle,
-                      onSelected: (_) => _toggle(x.code),
+                      danger: x.redFlag,
+                      onTap: () => _toggle(x.code),
                     ),
                   if (!_allSymptoms && catalogue.length > _shortList)
                     ActionChip(
@@ -412,6 +444,45 @@ class _ConfirmSheetState extends ConsumerState<_ConfirmSheet> {
               onPressed: _patientId == null || _chosen.isEmpty ? null : _book,
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// A choice with fixed colours: white on brand (or red for an urgent sign) when picked.
+class _PickChip extends StatelessWidget {
+  const _PickChip({required this.label, required this.selected, required this.onTap, this.danger = false});
+  final String label;
+  final bool selected, danger;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final fill = !selected ? Palette.surface : (danger ? Palette.danger : Palette.brand);
+    return Semantics(
+      button: true,
+      selected: selected,
+      child: Material(
+        color: fill,
+        shape: StadiumBorder(side: BorderSide(color: selected ? fill : Palette.hairline)),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: () {
+            HapticFeedback.selectionClick();
+            onTap();
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+            child: Text(
+              label,
+              style: TextStyle(
+                color: selected ? Colors.white : (danger ? Palette.danger : Palette.ink),
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+            ),
+          ),
         ),
       ),
     );

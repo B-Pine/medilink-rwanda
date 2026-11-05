@@ -101,7 +101,10 @@ class FacilityScreen extends ConsumerWidget {
                           scrollDirection: Axis.horizontal,
                           itemCount: f.doctors.length,
                           separatorBuilder: (_, _) => const SizedBox(width: Space.md),
-                          itemBuilder: (context, i) => _DoctorCard(doctor: f.doctors[i]),
+                          itemBuilder: (context, i) => _DoctorCard(
+                            doctor: f.doctors[i],
+                            onTap: () => context.go('/care/$slug/doctor/${f.doctors[i].id}'),
+                          ),
                         ),
                       ),
                       const SizedBox(height: Space.xl),
@@ -222,22 +225,21 @@ class _ServiceRow extends StatelessWidget {
 }
 
 class _DoctorCard extends StatelessWidget {
-  const _DoctorCard({required this.doctor});
+  const _DoctorCard({required this.doctor, required this.onTap});
   final Doctor doctor;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final initials = doctor.name
-        .split(RegExp(r'\s+'))
-        .where((p) => p.isNotEmpty)
-        .take(2)
-        .map((p) => p[0].toUpperCase())
-        .join();
+    final initials = doctor.initials;
     return SizedBox(
       width: 150,
       child: Card(
-        child: Padding(
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
           padding: const EdgeInsets.all(Space.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -251,6 +253,7 @@ class _DoctorCard extends StatelessWidget {
               Text(doctor.name, style: theme.textTheme.titleSmall, maxLines: 1, overflow: TextOverflow.ellipsis),
               Text(doctor.specialty, style: theme.textTheme.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
             ],
+          ),
           ),
         ),
       ),

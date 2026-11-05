@@ -15,7 +15,9 @@ import 'package:latlong2/latlong.dart';
 import 'package:medilink/data/location.dart';
 import 'package:medilink/data/models.dart';
 import 'package:medilink/data/providers.dart';
+import 'package:medilink/screens/care/book_screen.dart';
 import 'package:medilink/screens/care/care_screen.dart';
+import 'package:medilink/screens/care/doctor_screen.dart';
 import 'package:medilink/screens/care/map_screen.dart';
 import 'package:medilink/screens/home/home_screen.dart';
 
@@ -158,5 +160,63 @@ void main() {
 
   testWidgets('care', (tester) async {
     await _shoot(tester, 'care', const CareScreen(), [...base, activeVisitsProvider.overrideWith((ref) async => const Cached(<ActiveVisit>[]))]);
+  }, skip: _out.isEmpty);
+
+  final facility = [
+    ...base,
+    facilityProvider.overrideWith((ref, slug) async => sampleFacility),
+    slotsProvider.overrideWith((ref, q) async => sampleSlots),
+    symptomsProvider.overrideWith((ref) async => sampleSymptoms),
+  ];
+
+  for (final lang in ['rw', 'en']) {
+    testWidgets('doctor ($lang)', (tester) async {
+      await _shoot(tester, 'doctor-$lang', const DoctorScreen(slug: 'kibagabaga-hospital', doctorId: 'm-1'), facility,
+          lang: lang);
+    }, skip: _out.isEmpty);
+  }
+
+  testWidgets('doctor (scrolled)', (tester) async {
+    await _shoot(
+      tester,
+      'doctor-scrolled',
+      const DoctorScreen(slug: 'kibagabaga-hospital', doctorId: 'm-1'),
+      facility,
+      lang: 'en',
+      act: (tester) async {
+        await tester.drag(find.byType(Scrollable).first, const Offset(0, -500));
+        await tester.pump(const Duration(milliseconds: 500));
+        await tester.pump(const Duration(milliseconds: 300)); // let the bar title fade in
+      },
+    );
+  }, skip: _out.isEmpty);
+
+  testWidgets('book with a doctor', (tester) async {
+    await _shoot(
+      tester,
+      'book-doctor',
+      const BookScreen(slug: 'kibagabaga-hospital', serviceId: 's-gp', doctorId: 'm-1'),
+      facility,
+      lang: 'en',
+    );
+  }, skip: _out.isEmpty);
+
+  testWidgets('book confirm sheet', (tester) async {
+    await _shoot(
+      tester,
+      'book-confirm',
+      const BookScreen(slug: 'kibagabaga-hospital', serviceId: 's-gp'),
+      facility,
+      lang: 'en',
+      act: (tester) async {
+        await tester.tap(find.text('08:00'));
+        for (var i = 0; i < 6; i++) {
+          await tester.pump(const Duration(milliseconds: 300));
+        }
+        await tester.tap(find.text('Chest pain'));
+        await tester.tap(find.text('Fever'));
+        await tester.pump(const Duration(milliseconds: 300));
+      },
+    );
   }, skip: _out.isEmpty);
 }

@@ -221,7 +221,9 @@ export function RescheduleDialog({ booking, onClose }: { booking: Booking; onClo
       onOpenChange={(open) => !open && close()}
       title={reviewing ? t("dashboard.reschedule.reviewTitle") : t("dashboard.reschedule.title")}
       description={
-        reviewing ? undefined : `${pick(booking.service_name_i18n, lang)} · ${booking.facility_name}`
+        reviewing
+          ? undefined
+          : `${pick(booking.service_name_i18n, lang)} · ${booking.facility_name}`
       }
       closeLabel={t("dashboard.close")}
       footer={

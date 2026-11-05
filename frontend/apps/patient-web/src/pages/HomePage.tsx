@@ -531,7 +531,9 @@ function AtAGlance() {
             label={t("dashboard.overview.glance.upcoming")}
             value={value(upcoming.data ? rows.length : undefined, upcoming.isError)}
             hint={
-              next ? `${day(next.starts_at, lang, "short")} · ${time(next.starts_at, lang)}` : undefined
+              next
+                ? `${day(next.starts_at, lang, "short")} · ${time(next.starts_at, lang)}`
+                : undefined
             }
           />
         </li>
@@ -657,10 +659,7 @@ function RecentVisitsCard() {
           })}
         </RowList>
       ) : (
-        <CardEmpty
-          icon={FileText}
-          title={t("dashboard.overview.visits.empty")}
-        />
+        <CardEmpty icon={FileText} title={t("dashboard.overview.visits.empty")} />
       )}
     </WidgetCard>
   );
@@ -755,10 +754,7 @@ function LatestMeasurementsCard() {
           </div>
         </>
       ) : (
-        <CardEmpty
-          icon={Heartbeat}
-          title={t("dashboard.overview.vitals.empty")}
-        />
+        <CardEmpty icon={Heartbeat} title={t("dashboard.overview.vitals.empty")} />
       )}
     </WidgetCard>
   );

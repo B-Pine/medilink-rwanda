@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 6006.
+Keys: 6011.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -363,6 +363,11 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `login.createAccount` | Fungura konti ukoresheje iyi meyili | Create an account with this email | needs native-speaker review |
 | `login.invalidCredentials` | Imeyili cyangwa ijambo ry’ibanga si byo. Bisuzume wongere ugerageze. | The email or password is not right. Check them and try again. | needs native-speaker review |
 | `login.guest` | Shaka ubuvuzi nta konti | Find care without an account | needs native-speaker review |
+| `google.or` | cyangwa | or | needs native-speaker review |
+| `google.failed` | Kwinjira ukoresheje Google ntibyakunze. Ongera ugerageze. | Google sign-in didn't work. Try again. | needs native-speaker review |
+| `google.consentTitle` | Fungura konti yawe ukoresheje Google | Create your account with Google | needs native-speaker review |
+| `google.create` | Fungura konti yanjye | Create my account | needs native-speaker review |
+| `google.cancel` | Reka | Cancel | needs native-speaker review |
 | `signup.title` | Fungura konti yawe | Create your account | needs native-speaker review |
 | `signup.intro` | Bifata nk’umunota umwe. Ubwishingizi n’abagize umuryango wabyongeraho nyuma. | It takes about a minute. You can add insurance and family members later. | needs native-speaker review |
 | `signup.step` | Intambwe ya {{current}} kuri {{total}} | Step {{current}} of {{total}} | needs native-speaker review |

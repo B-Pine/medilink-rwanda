@@ -9,6 +9,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Patient app updates on phones (2026-11-05)
+
+- Fixed: a phone that resumed the patient app from the background kept the old version, because
+  the browser only checks for a new service worker on a page load. The app now checks when it
+  comes back into view and every hour; the new version then reloads the page as before.
+
 ### Vercel staging without a custom domain (2026-11-05)
 
 - Fixed: on `*.vercel.app` every API `POST` failed with `403 csrf_failed`, because the browser

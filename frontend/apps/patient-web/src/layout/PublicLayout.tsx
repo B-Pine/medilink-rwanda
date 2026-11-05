@@ -42,7 +42,8 @@ export function PublicLayout({
         id={MAIN_CONTENT_ID}
         tabIndex={-1}
         className={cx(
-          "w-full flex-1",
+          // clip: the full-width page bands never add a sideways scroll
+          "w-full flex-1 overflow-x-clip",
           narrow && "mx-auto max-w-[40rem] px-4 py-8 sm:px-6 sm:py-12",
         )}
       >

@@ -9,6 +9,23 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Public site look (2026-11-04, upgrade 14)
+
+- Changed: facilities show as cards with a drawing of their kind of building (referral hospital,
+  district hospital, health centre, polyclinic, clinic; a red cross sign for a 24-hour emergency
+  department) on home, `/facilities`, find care and search; same facts, links and buttons. The
+  drawing and the name flow into the facility page, which shows the same building in its header.
+- Changed: every inner page header sits on a white band the width of the screen with a hairline
+  and a faint drawn pattern; one type scale for page and block titles (`text-page-title`,
+  `text-title`).
+- Changed: doctors as profile cards; how it works as numbered cards on a line; About as five
+  numbered cards; help topics as chips; for facilities with the board drawing and the first steps
+  in the header, questions and "continue" side by side.
+- Changed: the current page's pill in the header glides between items; the emergency line and the
+  footer stay still while a page changes; FAQ answers open smoothly; loading shapes shimmer; the
+  footer wordmark is one flat tint. Reduced motion and data saver keep everything still.
+- Audit and plan: `docs/upgrade/14-public-site-look.md`.
+
 ### National aggregate report (2026-11-04, #208)
 
 - Added: **National report** in the platform console (`/platform/reports`, menu item for platform

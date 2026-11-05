@@ -280,19 +280,21 @@ function DoctorEntry({
     .map((part) => part.charAt(0).toUpperCase())
     .join("");
   return (
-    <li className="grid grid-cols-[3rem_minmax(0,1fr)] gap-x-4 gap-y-3 border-b border-hairline px-5 py-5 transition-colors duration-200 last:border-b-0 hover:bg-page/60 sm:px-6 @3xl:grid-cols-[3rem_minmax(0,1fr)_14rem] @3xl:items-center @3xl:gap-x-6">
+    // a profile card (upgrade 14 §3): the initials in a ring, who, where, the days; the whole card
+    // answers the pointer, the name is the link
+    <li className="ml-card group/row relative flex min-w-0 flex-col gap-4 rounded-panel bg-surface p-5">
       <span
         aria-hidden="true"
-        className="grid size-12 place-items-center rounded-full bg-[linear-gradient(140deg,var(--color-brand-subtle),var(--color-surface))] font-heading text-body-sm font-bold text-on-brand-subtle shadow-e1"
+        className="grid size-14 place-items-center rounded-full bg-brand-subtle font-heading text-body font-bold text-on-brand-subtle shadow-[0_0_0_4px_var(--color-surface),0_0_0_5px_var(--site-hairline-strong)]"
       >
         {initials}
       </span>
-      <div className="flex min-w-0 flex-col gap-1">
-        <h3 className="m-0 font-heading text-[1.0625rem] leading-snug font-bold">
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <h3 className="m-0 font-heading text-[1.125rem] leading-snug font-bold">
           <Link
             to={`/doctors/${doctor.slug}`}
             viewTransition
-            className="text-fg no-underline decoration-2 underline-offset-4 transition-colors duration-150 hover:text-link hover:underline"
+            className="text-fg no-underline transition-colors duration-150 after:absolute after:inset-0 after:content-[''] group-hover/row:text-link"
           >
             {doctor.name}
           </Link>
@@ -308,8 +310,8 @@ function DoctorEntry({
           {doctor.facility.district && ` · ${doctor.facility.district}`}
         </p>
       </div>
-      <div className="col-start-2 flex flex-wrap items-center gap-2 text-body-sm @3xl:col-start-auto @3xl:flex-col @3xl:items-start">
-        <span className="rounded-md bg-surface px-2 py-0.5 font-semibold text-fg tabular-nums shadow-e1">
+      <div className="flex flex-wrap items-center gap-2 border-t border-hairline pt-4 text-body-sm">
+        <span className="rounded-md bg-page px-2 py-0.5 font-semibold text-fg tabular-nums shadow-e1">
           <span className="sr-only">{t("site.doctors.days")}: </span>
           {daysText(doctor.days, lang)}
         </span>
@@ -418,21 +420,28 @@ export function DoctorsPage() {
               )}
             </div>
           </div>
-          <Panel as="div" className="@container overflow-hidden">
-            {isPending ? (
-              <LoadingRows rows={6} />
-            ) : isError ? (
-              <ErrorState onRetry={refetch} />
-            ) : rows.length === 0 ? (
-              <EmptyState title={t("site.doctors.none")} />
-            ) : (
-              <ul aria-label={t("site.doctors.title")} className="m-0 list-none p-0">
+          {isPending || isError || rows.length === 0 ? (
+            <Panel as="div" className="overflow-hidden">
+              {isPending ? (
+                <LoadingRows rows={6} />
+              ) : isError ? (
+                <ErrorState onRetry={refetch} />
+              ) : (
+                <EmptyState title={t("site.doctors.none")} />
+              )}
+            </Panel>
+          ) : (
+            <div className="@container">
+              <ul
+                aria-label={t("site.doctors.title")}
+                className="ml-stagger m-0 grid list-none gap-5 p-0 @xl:grid-cols-2 @5xl:grid-cols-3 @7xl:grid-cols-4"
+              >
                 {rows.map((d) => (
                   <DoctorEntry key={d.slug} doctor={d} today={todayIndex} />
                 ))}
               </ul>
-            )}
-          </Panel>
+            </div>
+          )}
           <p className="m-0 text-caption text-fg-muted">{t("site.doctors.source")}</p>
         </div>
       </PageContainer>

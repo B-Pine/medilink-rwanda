@@ -57,7 +57,7 @@ function LanguageSelect({ className }: { className?: string }) {
 function EmergencyStrip() {
   const { t } = useTranslation();
   return (
-    <div className="border-b border-danger/10 bg-danger-bg/70 print:hidden">
+    <div className="ml-site-strip border-b border-danger/10 bg-danger-bg/70 print:hidden">
       <div className="mx-auto flex min-h-9 max-w-[88rem] flex-wrap items-center justify-between gap-x-4 px-4 text-caption sm:px-6">
         <p className="m-0 flex items-center gap-2 text-fg-secondary">
           <Siren aria-hidden="true" weight="bold" className="size-3.5 shrink-0 text-danger" />
@@ -149,12 +149,23 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
                     end={item.end}
                     viewTransition
                     className={cx(
-                      "inline-flex h-9 items-center rounded-full px-4 text-body-sm font-medium whitespace-nowrap text-fg-secondary no-underline",
-                      "transition-[color,background-color,box-shadow] duration-200 ease-out-quint hover:text-fg",
-                      "aria-[current=page]:bg-surface aria-[current=page]:font-semibold aria-[current=page]:text-fg aria-[current=page]:shadow-e1",
+                      "relative inline-flex h-9 items-center rounded-full px-4 text-body-sm font-medium whitespace-nowrap text-fg-secondary no-underline",
+                      "transition-colors duration-200 ease-out-quint hover:text-fg",
+                      "aria-[current=page]:font-semibold aria-[current=page]:text-fg",
                     )}
                   >
-                    {t(item.key)}
+                    {({ isActive }) => (
+                      <>
+                        {/* the raised pill of the current page glides between items */}
+                        {isActive && (
+                          <span
+                            aria-hidden="true"
+                            className="ml-nav-pill absolute inset-0 rounded-full bg-surface shadow-[var(--site-edge),var(--shadow-e1)]"
+                          />
+                        )}
+                        <span className="relative">{t(item.key)}</span>
+                      </>
+                    )}
                   </NavLink>
                 </li>
               ))}

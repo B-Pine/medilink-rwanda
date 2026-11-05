@@ -6,6 +6,7 @@ import {
   Flask,
   Hospital,
   List as ListIcon,
+  MapPin,
   MapTrifold,
   Siren,
   Stethoscope,
@@ -16,20 +17,20 @@ import { lazy, Suspense, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
+import { FacilityBuilding } from "./buildings";
 import { pinKind } from "../booking/discovery";
 import { env } from "../../env";
 import { insurerNames, MapCard, useWide, waitText } from "../booking/Places";
 
 /**
- * Facilities as a directory, not a shop (public design brief 2026-11-04, second pass): one
- * surface on the site elevation, one aligned row per place: what it is (a type mark), where,
- * the tags that matter (24-hour emergency, insurers), open or busy with the live wait as a bar,
- * and one next step. No photos, no prices (U-01).
+ * Facilities as places, not a shop (upgrade 14 §4): one card per place with a drawing of its kind
+ * of building, then what it is, where, open or busy with the live wait as a bar, the tags that
+ * matter (24-hour emergency, insurers) and one next step. No photos, no prices (U-01).
  */
 
 /** The kind of place as a quiet mark: hospital, health centre, dental, eye, lab or clinic. */
 function TypeMark({ type }: { type: string }) {
-  const props = { weight: "duotone", className: "size-6" } as const;
+  const props = { weight: "duotone", className: "size-4" } as const;
   if (type.includes("hospital")) return <Hospital {...props} />;
   if (type.startsWith("health_")) return <FirstAidKit {...props} />;
   if (type.includes("dental")) return <Tooth {...props} />;
@@ -92,9 +93,9 @@ function Status({ result }: { result: FacilityResult }) {
 const SHOWN_INSURERS = 3;
 
 /**
- * One facility in the directory. Narrow lists stack in reading order; from 48 rem of list width
- * the row aligns in columns (mark, place, status and wait, next step), so the eye runs down one
- * column to compare waits.
+ * One facility card: the building drawing with the status on it, the name (the link to the
+ * facility page; the whole card answers the pointer), where, the live wait, the tags and the next
+ * step. The drawing and the name carry a view-transition name, so they flow into the facility page.
  */
 export function FacilityEntry({
   result,
@@ -125,51 +126,61 @@ export function FacilityEntry({
       onMouseEnter={onActivate}
       onFocus={onActivate}
       className={cx(
-        "group/row relative grid grid-cols-[3rem_minmax(0,1fr)] gap-x-4 gap-y-4 px-5 py-5 sm:px-6",
-        // medium lists: status and the next step stacked on the right; wide lists: four columns
-        "@3xl:grid-cols-[3rem_minmax(0,1fr)_15.5rem] @3xl:gap-x-6 @3xl:gap-y-3",
-        "@5xl:grid-cols-[3rem_minmax(0,1fr)_12rem_15.5rem] @5xl:items-center",
-        "transition-colors duration-200 ease-out-quint",
-        selected ? "bg-brand-subtle/40" : "hover:bg-page/60",
+        "ml-card group/row relative flex min-w-0 flex-col overflow-hidden rounded-panel bg-surface",
+        selected && "ml-card-selected",
       )}
     >
-      {selected && (
-        <span
-          aria-hidden="true"
-          className="absolute inset-y-3 left-0 w-1 rounded-r-full bg-primary"
+      <div className="relative aspect-[16/7] overflow-hidden border-b border-hairline">
+        <FacilityBuilding
+          type={result.type}
+          emergency={result.emergency_department}
+          className="ml-card-art size-full"
+          style={{ viewTransitionName: `facility-art-${result.slug}` }}
         />
-      )}
-      <span
-        aria-hidden="true"
-        className="grid size-12 place-items-center rounded-xl bg-[linear-gradient(140deg,var(--color-brand-subtle),var(--color-surface))] text-on-brand-subtle shadow-e1"
-      >
-        <TypeMark type={result.type} />
-      </span>
+        <span className="absolute top-3 left-3 rounded-full shadow-e1">
+          <Status result={result} />
+        </span>
+      </div>
 
-      <div className="flex min-w-0 flex-col gap-1.5 @3xl:row-span-2 @5xl:row-span-1">
+      <div className="flex flex-1 flex-col gap-3 p-5">
+        <p className="m-0 inline-flex items-center gap-1.5 text-caption font-semibold tracking-[0.06em] text-fg-muted uppercase">
+          <span aria-hidden="true" className="text-primary">
+            <TypeMark type={result.type} />
+          </span>
+          {t(`booking.types.${result.type}`, { defaultValue: result.type })}
+        </p>
         <h3
           id={`place-${result.slug}`}
-          className="m-0 font-heading text-[1.0625rem] leading-snug font-bold"
+          className="m-0 font-heading text-[1.1875rem] leading-snug font-bold text-balance"
         >
           <Link
             to={`/facilities/${result.slug}`}
             viewTransition
-            className="text-fg no-underline decoration-2 underline-offset-4 transition-colors duration-150 hover:text-link hover:underline"
+            className="text-fg no-underline decoration-2 underline-offset-4 transition-colors duration-150 after:absolute after:inset-0 after:content-[''] hover:text-link"
+            style={{ viewTransitionName: `facility-name-${result.slug}` }}
           >
             {result.name}
           </Link>
         </h3>
-        <p className="m-0 text-body-sm text-fg-secondary">
-          {t(`booking.types.${result.type}`, { defaultValue: result.type })}
-          {place && ` · ${place}`}
-          {result.distance_km !== null && (
-            <span className="font-semibold text-fg tabular-nums">
-              {" · "}
-              {t("site.home.away", { km: result.distance_km })}
-            </span>
-          )}
-        </p>
-        <p className="m-0 flex flex-wrap items-center gap-1.5 pt-0.5">
+        {(place || result.distance_km !== null) && (
+          <p className="m-0 -mt-1 inline-flex flex-wrap items-center gap-x-1.5 text-body-sm text-fg-secondary">
+            <MapPin aria-hidden="true" weight="duotone" className="size-4 shrink-0 text-fg-muted" />
+            {place}
+            {result.distance_km !== null && (
+              <span className="font-semibold text-fg tabular-nums">
+                {place && "· "}
+                {t("site.home.away", { km: result.distance_km })}
+              </span>
+            )}
+          </p>
+        )}
+        {wait && (
+          <div className="flex flex-col gap-1.5">
+            <span className="text-body-sm font-semibold text-fg tabular-nums">{wait}</span>
+            <WaitMeter result={result} />
+          </div>
+        )}
+        <p className="m-0 flex flex-wrap items-center gap-1.5">
           {result.emergency_department && (
             <span className="inline-flex items-center gap-1 rounded-md bg-danger-bg px-2 py-0.5 text-caption font-semibold text-danger">
               <Siren aria-hidden="true" weight="bold" className="size-3.5" />
@@ -195,19 +206,8 @@ export function FacilityEntry({
         </p>
       </div>
 
-      <div className="col-start-2 flex flex-col gap-2 @3xl:col-start-3 @5xl:col-start-auto">
-        <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-          <Status result={result} />
-          {wait && (
-            <span className="text-body-sm font-semibold whitespace-nowrap text-fg tabular-nums">
-              {wait}
-            </span>
-          )}
-        </span>
-        {result.open_now && <WaitMeter result={result} className="max-w-[12rem]" />}
-      </div>
-
-      <div className="col-start-2 flex items-center gap-2 @3xl:col-start-3 @5xl:col-start-auto @5xl:justify-end">
+      {/* the controls sit above the card's link layer */}
+      <div className="relative z-10 flex items-center gap-2 border-t border-hairline px-5 py-3.5">
         {(join || book) && (
           <Link
             to={`/book/${result.slug}`}
@@ -232,6 +232,10 @@ export function FacilityEntry({
             <MapTrifold aria-hidden="true" className="size-[1.125rem]" />
           </button>
         )}
+        <ArrowRight
+          aria-hidden="true"
+          className="ml-auto size-5 text-fg-muted transition-[transform,color] duration-200 ease-out-quint group-hover/row:translate-x-1 group-hover/row:text-primary"
+        />
       </div>
     </li>
   );
@@ -256,27 +260,29 @@ export function FacilityEntries({
   className?: string;
 }) {
   const { t } = useTranslation();
-  const surface = cx("@container overflow-hidden rounded-panel bg-surface shadow-e2", className);
+  // cards: one column on phones, two from 36 rem of list width, three from 64 rem
+  const surface = cx("@container", className);
+  const grid = "m-0 grid list-none gap-5 p-0 @xl:grid-cols-2 @5xl:grid-cols-3";
   if (loading)
     return (
       <div role="status" aria-label={t("site.loading")} className={surface}>
-        {Array.from({ length: 4 }, (_, i) => (
-          <div
-            key={i}
-            className="flex items-center gap-4 border-b border-hairline px-6 py-5 last:border-b-0"
-          >
-            <Skeleton className="size-12 shrink-0 rounded-xl" />
-            <div className="flex flex-1 flex-col gap-2.5">
-              <Skeleton className="h-5 w-2/5 rounded-sm" />
-              <Skeleton className="h-4 w-3/5 rounded-sm" />
+        <div className={grid}>
+          {Array.from({ length: 4 }, (_, i) => (
+            <div key={i} className="ml-card flex flex-col overflow-hidden rounded-panel bg-surface">
+              <Skeleton className="aspect-[16/7] h-auto w-full rounded-none" />
+              <div className="flex flex-col gap-2.5 p-5">
+                <Skeleton className="h-3 w-1/3 rounded-sm" />
+                <Skeleton className="h-5 w-3/5 rounded-sm" />
+                <Skeleton className="h-4 w-4/5 rounded-sm" />
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     );
   return (
     <div className={surface}>
-      <ul aria-label={label} className="m-0 list-none divide-y divide-hairline p-0">
+      <ul aria-label={label} className={cx(grid, "ml-stagger")}>
         {rows.map((result) => (
           <FacilityEntry
             key={result.slug}

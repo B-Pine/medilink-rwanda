@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5989.
+Keys: 5991.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -394,6 +394,8 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `signup.checkEmailTitle` | Reba imeyili yawe | Check your email | needs native-speaker review |
 | `signup.checkEmailBody` | Twohereje ubutumwa kuri {{email}}. Fungura ihuriro riri muri ubwo butumwa kugira ngo urangize gufungura konti. Iryo huriro rimara iminsi 3. | We sent a message to {{email}}. Open the link in it to finish creating your account. The link works for 3 days. | needs native-speaker review |
 | `signup.checkEmailHint` | Nta meyili wabonye nyuma y’iminota mike? Reba mu butumwa bwa spam, cyangwa wongere wiyandikishe ubone irindi huriro. | No email after a few minutes? Check your spam folder, or sign up again to get a new link. | needs native-speaker review |
+| `signup.readyTitle` | Konti yawe yiteguye | Your account is ready | needs native-speaker review |
+| `signup.readyBody` | Injira ukoresheje {{email}} n’ijambo ry’ibanga ryawe. | Sign in with {{email}} and your password. | needs native-speaker review |
 | `verifyEmail.title` | Emeza imeyili yawe | Confirm your email | needs native-speaker review |
 | `verifyEmail.working` | Turimo kwemeza imeyili yawe… | Confirming your email… | needs native-speaker review |
 | `verifyEmail.failedTitle` | Ntitwashoboye kwemeza imeyili yawe | We couldn't confirm your email | needs native-speaker review |

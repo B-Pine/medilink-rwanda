@@ -73,7 +73,8 @@ Recent strong authentication (≤ 5 minutes) is required for:
 | Concurrent sessions | Visible list; "sign out other sessions" | same |
 | Logout / deactivation | Server-side session deleted; WebSocket connections closed immediately | same |
 
-- **No JWT in `localStorage`** for web apps: browser storage is readable by any XSS. The mobile app (P3) will use short-lived access tokens + refresh tokens in the platform's secure storage.
+- **No JWT in `localStorage`** for web apps: browser storage is readable by any XSS.
+- **Patient mobile app** ([upgrade 15](../upgrade/15-mobile-app.md), decision 2026-11-05): the app uses the *same server-side patient session*, carried in a header instead of a cookie. Requests marked `X-MediLink-Client: app` send `Authorization: Bearer <session key>`; a login, rotation or logout returns the new key (or an empty one) in `X-Session-Token`. These requests never read or set a cookie, so there is no ambient credential and CSRF does not apply; browsers cannot add the custom header cross-site (the CORS allowlist refuses it in the preflight). The key lives in the Android Keystore (`flutter_secure_storage`); the app locks itself with a PIN or fingerprint. Idle timeout `PATIENT_APP_SESSION_IDLE_TIMEOUT` (default 30 days), absolute 30 days, rotated on login, deleted on logout, revocable server-side like any session. This replaces the earlier plan of access + refresh tokens: one revocable session is simpler and keeps one audit and logout path. Staff and admin sessions never accept the header.
 - **CSRF:** Django's CSRF middleware. The SPA reads the CSRF cookie and sends `X-CSRFToken`. `CSRF_TRUSTED_ORIGINS` lists only our app origins.
 - **The PIN unlock** (4–6 digits, staff only) unlocks an *existing* session on the same device for the same user. It's rate-limited (5 tries → full login) and never replaces MFA at login.
 

@@ -8,6 +8,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Patient mobile app sessions (2026-11-05, upgrade 15)
+
+- Added: the patient mobile app carries its patient session in a header. Requests with
+  `X-MediLink-Client: app` send `Authorization: Bearer <session key>` and never read or set a
+  cookie, so CSRF does not apply to them; login, rotation and logout return the new key (empty
+  when ended) in `X-Session-Token`. Patients only: staff and admin paths stay anonymous for app
+  requests. App sessions idle out after `PATIENT_APP_SESSION_IDLE_TIMEOUT` (default 30 days; the
+  app locks itself with a PIN). Security 03 §5 records the decision.
+
 ### Railway deployment (2026-11-04)
 
 - Fixed: `railway.json` runs `migrate` as the owner role (`MEDILINK_DB_ROLE=owner`); the app

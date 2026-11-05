@@ -268,6 +268,9 @@ def session_audiences(cookie_prefix: str) -> dict[str, dict[str, Any]]:
             "COOKIE_NAME": env("PATIENT_SESSION_COOKIE_NAME", default=f"{cookie_prefix}ml_patient"),
             "IDLE_TIMEOUT": env.int("PATIENT_SESSION_IDLE_TIMEOUT", default=12 * 3600),
             "ABSOLUTE_TIMEOUT": env.int("PATIENT_SESSION_ABSOLUTE_TIMEOUT", default=30 * 86400),
+            # Mobile app sessions (header transport, upgrade 15): the app locks itself with a PIN,
+            # so its session lasts until the absolute timeout. 0 turns the app transport off.
+            "APP_IDLE_TIMEOUT": env.int("PATIENT_APP_SESSION_IDLE_TIMEOUT", default=30 * 86400),
             "PATH_PREFIXES": ["/api/v1/patient/", "/ws/v1/patient/"],
         },
         "admin": {

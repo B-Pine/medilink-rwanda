@@ -85,7 +85,7 @@ Recent strong authentication (≤ 5 minutes) is required for:
 | Credential stuffing | Per-account and per-device throttling with progressive delays; breached-password checks; MFA |
 | Brute force | After 5 failures: delay grows; after 10: account soft-locked 15 min + email to owner; staff lock alerts the facility admin |
 | Shared IPs (mobile carrier NAT, a whole facility behind one IP) | **IP limits are high and only one signal**; account, device and behaviour signals carry more weight, so a busy facility isn't blocked |
-| Account enumeration | Same response and timing for "wrong password" and "no account" on login and reset; sign-up says "check your email" in both cases |
+| Account enumeration | Same response and timing for "wrong password" and "no account" on login and reset; sign-up says "check your email" in both cases. A test deployment may set `PATIENT_SIGNUP_EMAIL_VERIFICATION=false` (decision 2026-11-05, testing only): no sign-up email is sent and the reply says "your account is ready", which gives up this protection; production keeps it `true` |
 | Magic-link abuse | Single use, 15-minute expiry, bound to the requesting browser (state cookie), stored hashed, invalidated after use or new request |
 | Invite links | Single use, 7-day expiry, bound to the invited email, hashed at rest |
 | Password reset | Single-use token, 30-minute expiry, all sessions revoked after reset, notification email |

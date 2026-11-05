@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../ui/icons.dart';
 
 import '../../app/strings.dart';
+import '../../app/strings_more.dart';
 import '../../app/theme.dart';
 import '../../data/api.dart';
 import '../../data/session.dart';
@@ -23,6 +24,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final _password = TextEditingController();
   bool _accepted = false;
   bool _sent = false;
+  bool _noEmail = false; // test server: no email, sign in now
   String? _error;
 
   @override
@@ -39,12 +41,15 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Future<bool> _submit() async {
     setState(() => _error = null);
     try {
-      await ref.read(authProvider.notifier).register(
+      final ready = await ref.read(authProvider.notifier).register(
             fullName: _name.text.trim(),
             email: _email.text.trim(),
             password: _password.text,
           );
-      setState(() => _sent = true);
+      setState(() {
+        _sent = true;
+        _noEmail = ready;
+      });
       return true;
     } on ApiException catch (e) {
       setState(() => _error = e.message.isNotEmpty ? e.message : S.of(context).somethingWrong);
@@ -61,10 +66,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     );
     if (_sent) {
       return AuthLayout(
-        title: s.checkEmail,
+        title: _noEmail ? s.t('accountReady') : s.checkEmail,
         leading: Align(alignment: Alignment.centerLeft, child: back),
         children: [
-          EmptyState(icon: PhosphorIconsRegular.envelopeOpen, text: s.checkEmailBody),
+          _noEmail
+              ? EmptyState(icon: PhosphorIconsFill.checkCircle, text: s.t('accountReadyBody'))
+              : EmptyState(icon: PhosphorIconsRegular.envelopeOpen, text: s.checkEmailBody),
           FilledButton(onPressed: () => context.pop(), child: Text(s.signIn)),
         ],
       );

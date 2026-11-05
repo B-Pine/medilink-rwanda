@@ -9,6 +9,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Sign-up without email on test servers (2026-11-05)
+
+- Added: patient sign-up shows "Your account is ready" with a sign-in button when the API answers
+  `email_verification: false` (test servers with `PATIENT_SIGNUP_EMAIL_VERIFICATION=false`).
+  `patientAuth.register` now returns `SignupResponse`.
+
 ### Patient app updates on phones (2026-11-05)
 
 - Fixed: a phone that resumed the patient app from the background kept the old version, because

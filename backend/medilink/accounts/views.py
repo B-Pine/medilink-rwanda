@@ -50,6 +50,7 @@ from medilink.accounts.serializers import (
     PatientLoginSerializer,
     PatientMeSerializer,
     PatientRegisterSerializer,
+    SignupAcceptedSerializer,
     StaffAccountUpdateSerializer,
     StaffLoginSerializer,
     StaffMeSerializer,
@@ -99,6 +100,7 @@ INVALID_VERIFY_LINK = _(
     "This link is invalid, expired or already used. Sign up again for a new one."
 )
 SIGNUP_ACCEPTED = _("Check your email to finish creating your account.")
+SIGNUP_READY = _("Your account is ready. Sign in with your email and password.")
 RESET_ACCEPTED = _("If an account exists for this email, we sent a link to reset the password.")
 
 ERR = ErrorSerializer
@@ -467,13 +469,15 @@ class PatientRegisterView(_AuthView):
         tags=["patient-auth"],
         request=PatientRegisterSerializer,
         responses={
-            202: DetailSerializer,
+            202: SignupAcceptedSerializer,
             400: _err("validation_error (never for an email that already has an account)"),
             429: _err("rate_limited"),
         },
         summary=(
             "Patient sign-up: always 202 'check your email' (no account enumeration); "
-            "a new account signs in only after the emailed link is opened"
+            "a new account signs in only after the emailed link is opened. With "
+            "PATIENT_SIGNUP_EMAIL_VERIFICATION off (testing only) no email is sent, "
+            "email_verification is false and the account signs in straight away"
         ),
     )
     def post(self, request: Request) -> Response:
@@ -481,13 +485,14 @@ class PatientRegisterView(_AuthView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         email = data["email"]
+        verify = bool(settings.PATIENT_SIGNUP_EMAIL_VERIFICATION)
         existing = User.objects.filter(email=email).only("pk").first()
         if existing is None:
             try:
                 with transaction.atomic():
                     registration = register_patient(**data)
                     User.objects.filter(pk=registration.user.pk).update(
-                        email_verification_pending=True
+                        email_verification_pending=verify
                     )
             except IntegrityError:  # same email registered concurrently: treat as existing
                 existing = User.objects.filter(email=email).only("pk").first()
@@ -505,15 +510,19 @@ class PatientRegisterView(_AuthView):
                         "research_consent": data["research_consent"],
                     },
                 )
-                if reset_email_allowed(email, kind="signup"):
+                if verify and reset_email_allowed(email, kind="signup"):
                     new_id = str(registration.user.pk)
                     transaction.on_commit(lambda: send_verify_email.delay(new_id))
         if existing is not None:
             make_password(data["password"])  # same hashing cost as creating an account
-            if reset_email_allowed(email, kind="signup"):
+            if verify and reset_email_allowed(email, kind="signup"):
                 existing_id = str(existing.pk)
                 transaction.on_commit(lambda: send_account_exists_email.delay(existing_id))
-        return Response(DetailSerializer({"detail": str(SIGNUP_ACCEPTED)}).data, status=202)
+        body = {
+            "detail": str(SIGNUP_ACCEPTED if verify else SIGNUP_READY),
+            "email_verification": verify,
+        }
+        return Response(SignupAcceptedSerializer(body).data, status=202)
 
 
 class PatientVerifyEmailView(_AuthView):

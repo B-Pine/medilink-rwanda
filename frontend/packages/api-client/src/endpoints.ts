@@ -4,6 +4,7 @@ import type {
   CsrfResponse,
   DetailResponse,
   HealthResponse,
+  SignupResponse,
   MfaConfirmResponse,
   MfaSetupResponse,
   MfaVerifyRequest,
@@ -121,10 +122,11 @@ export function createMediLinkApi(client: ApiClient) {
     patientAuth: {
       /**
        * Always 202 "check your email", whether or not the email has an account (no enumeration).
-       * The new account signs in only through `verifyEmail` with the emailed link's token.
+       * The new account signs in only through `verifyEmail` with the emailed link's token, unless
+       * the server answers `email_verification: false` (test server: no email, sign in now).
        */
       register: (body: PatientRegisterRequest) =>
-        client.post<DetailResponse>(paths.patientRegister, body, authCall),
+        client.post<SignupResponse>(paths.patientRegister, body, authCall),
       /** Confirms the sign-up email (single-use token) and signs the patient in. */
       verifyEmail: (body: VerifyEmailRequest) =>
         client.post<PatientMe>(paths.patientVerifyEmail, body, sessionChange),

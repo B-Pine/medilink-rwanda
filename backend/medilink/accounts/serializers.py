@@ -267,3 +267,8 @@ class PasswordResetConfirmSerializer(StrictSerializer):
 
 class DetailSerializer(serializers.Serializer):
     detail = serializers.CharField()
+
+
+class SignupAcceptedSerializer(DetailSerializer):
+    # False only while PATIENT_SIGNUP_EMAIL_VERIFICATION is off (testing): sign in straight away.
+    email_verification = serializers.BooleanField()

@@ -228,6 +228,9 @@ AUTH_PASSWORD_VALIDATORS = [
 PASSWORD_BREACHED_HASHES_FILE = env("PASSWORD_BREACHED_HASHES_FILE", default="")
 PASSWORD_RESET_TIMEOUT = 30 * 60  # 30 minutes, single use (security 03 §6)
 EMAIL_VERIFICATION_TIMEOUT = 3 * 24 * 3600  # sign-up link: 3 days, single use (security 03 §6)
+# Testing only: false lets a patient sign in straight after sign-up, with no email sent.
+# Keep true in production (security 03 §6).
+PATIENT_SIGNUP_EMAIL_VERIFICATION = env.bool("PATIENT_SIGNUP_EMAIL_VERIFICATION", default=True)
 
 OTP_TOTP_ISSUER = env("MFA_TOTP_ISSUER", default="MediLink Rwanda")
 # TOTP secrets are encrypted at rest (medilink.accounts.totp_crypto): "1:<base64url 32 bytes>,…"

@@ -49,6 +49,10 @@
     }
   },
   "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://medilink-rwanda-production.up.railway.app/api/$1"
+    },
     { "source": "/staff", "destination": { "service": "staff-web" } },
     { "source": "/staff/(.*)", "destination": { "service": "staff-web" } },
     { "source": "/(.*)", "destination": { "service": "patient-web" } }

@@ -9,6 +9,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Vercel staging without a custom domain (2026-11-05)
+
+- Fixed: on `*.vercel.app` every API `POST` failed with `403 csrf_failed`, because the browser
+  does not send the API's `SameSite=Lax` cookies from `*.vercel.app` to `*.up.railway.app`.
+  `frontend/vercel.json` now forwards `/api/*` to the Railway API, so the apps call the API on
+  their own origin (`VITE_API_BASE_URL` = the Vercel URL). Live updates over WebSockets do not
+  pass through Vercel, so they stop until the API has a custom domain
+  ([docs/operations/railway.md](../docs/operations/railway.md) §4).
+
 ### Public site look (2026-11-04, upgrade 14)
 
 - Changed: facilities show as cards with a drawing of their kind of building (referral hospital,

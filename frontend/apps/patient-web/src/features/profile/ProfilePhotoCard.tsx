@@ -95,9 +95,10 @@ export function ProfilePhotoCard({ profile }: { profile: PatientProfileDetail })
             ref={input}
             type="file"
             accept={ACCEPT}
-            className="sr-only"
+            // the button below opens it; hidden, so it is not a second, unlabelled control
+            hidden
+            aria-label={t("profile.photo.add")}
             aria-describedby={hintId}
-            tabIndex={-1}
             onChange={(e) => {
               onFile(e.target.files?.[0]);
               e.target.value = "";

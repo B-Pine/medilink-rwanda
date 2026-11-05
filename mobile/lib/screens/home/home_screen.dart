@@ -727,15 +727,15 @@ class _NearYouState extends ConsumerState<_NearYou> {
           const SizedBox(height: Space.lg),
         ],
         SizedBox(
-          height: 248,
+          height: 272,
           child: results.when(
             loading: () => ListView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: Space.lg),
               children: const [
-                SizedBox(width: 260, child: Skeleton(height: 248, radius: Space.radiusLg)),
+                SizedBox(width: 260, child: Skeleton(height: 272, radius: Space.radiusLg)),
                 SizedBox(width: Space.md),
-                SizedBox(width: 260, child: Skeleton(height: 248, radius: Space.radiusLg)),
+                SizedBox(width: 260, child: Skeleton(height: 272, radius: Space.radiusLg)),
               ],
             ),
             error: (e, _) => ErrorState(error: e, onRetry: () => ref.invalidate(facilitySearchProvider)),

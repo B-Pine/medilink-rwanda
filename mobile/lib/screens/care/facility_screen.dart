@@ -5,11 +5,13 @@ import '../../ui/icons.dart';
 
 import '../../app/format.dart' as fmt;
 import '../../app/strings.dart';
+import '../../app/strings_more.dart';
 import '../../app/theme.dart';
 import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../ui/building.dart';
 import '../../ui/feedback.dart';
+import '../../ui/insurers.dart';
 import 'directions.dart';
 
 /// A facility: its building, where it is, what it offers, and Book.
@@ -78,6 +80,14 @@ class FacilityScreen extends ConsumerWidget {
                     Text(f.address.isNotEmpty ? f.address : f.place, style: Theme.of(context).textTheme.bodySmall),
                     const SizedBox(height: Space.xl),
                     _Actions(facility: f),
+                    const SizedBox(height: Space.xl),
+                    _SectionTitle(s.t('insuranceAccepted')),
+                    SoftCard(
+                      child: Padding(
+                        padding: const EdgeInsets.all(Space.lg),
+                        child: InsurerPills(codes: f.insurers, wrap: true),
+                      ),
+                    ),
                     const SizedBox(height: Space.xl),
                     if (f.services.isNotEmpty) ...[
                       _SectionTitle(s.services),

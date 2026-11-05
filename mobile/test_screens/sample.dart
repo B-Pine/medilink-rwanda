@@ -73,6 +73,11 @@ final sampleFacilities = [
       'wait_range': waiting == null ? null : {'min': waiting * 2, 'max': waiting * 3},
       'lat': lat,
       'lng': lng,
+      'insurers': switch (type) {
+        'private_clinic' => ['private_other', 'mmi'],
+        'polyclinic' => <String>[],
+        _ => ['mutuelle', 'rama', 'mmi', 'private_other'],
+      },
     }),
 ];
 
@@ -91,8 +96,8 @@ final sampleFacility = Facility.fromJson({
     ['Sat', '08:00–12:00'],
   ],
   'services': [
-    {'id': 's-gp', 'name_i18n': {'en': 'General consultation', 'rw': 'Isuzuma rusange'}, 'bookable': true, 'waiting': 4},
-    {'id': 's-paed', 'name_i18n': {'en': 'Paediatrics', 'rw': "Ubuvuzi bw'abana"}, 'bookable': true},
+    {'id': 's-gp', 'name_i18n': {'en': 'General consultation', 'rw': 'Isuzuma rusange'}, 'bookable': true, 'waiting': 4, 'insurers': ['mutuelle', 'rama', 'mmi']},
+    {'id': 's-paed', 'name_i18n': {'en': 'Paediatrics', 'rw': "Ubuvuzi bw'abana"}, 'bookable': true, 'insurers': ['mutuelle', 'private_other']},
   ],
   'doctors': [
     {

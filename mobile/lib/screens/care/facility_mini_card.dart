@@ -7,9 +7,10 @@ import '../../app/theme.dart';
 import '../../data/models.dart';
 import '../../ui/building.dart';
 import '../../ui/icons.dart';
+import '../../ui/insurers.dart';
 
 /// A facility as a compact card (Home "Near you", the map): its building, name, distance,
-/// open or closed, and the queue right now.
+/// open or closed, the queue right now, and the insurers it accepts.
 class FacilityMiniCard extends StatelessWidget {
   const FacilityMiniCard({super.key, required this.facility, this.onTap});
 
@@ -78,6 +79,8 @@ class FacilityMiniCard extends StatelessWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: Space.sm),
+                SizedBox(height: 22, child: InsurerPills(codes: f.insurers, max: 2)),
               ],
             ),
           ),

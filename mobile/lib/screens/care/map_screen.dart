@@ -107,7 +107,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               right: 0,
               // Above the map attribution line.
               bottom: MediaQuery.paddingOf(context).bottom + Space.xl + Space.sm,
-              height: 250,
+              height: 272,
               child: PageView.builder(
                 controller: _pages,
                 itemCount: list.length,

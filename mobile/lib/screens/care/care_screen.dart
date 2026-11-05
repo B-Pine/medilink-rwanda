@@ -12,6 +12,7 @@ import '../../data/providers.dart';
 import '../../ui/building.dart';
 import '../../ui/feedback.dart';
 import '../../ui/heartbeat_refresh.dart';
+import '../../ui/insurers.dart';
 import '../../ui/page_header.dart';
 import '../../app/strings_more.dart';
 import '../../data/location.dart';
@@ -338,6 +339,8 @@ class FacilityCard extends StatelessWidget {
                       ),
                     ],
                   ),
+                  const SizedBox(height: Space.md),
+                  SizedBox(height: 22, child: InsurerPills(codes: facility.insurers)),
                   if (facility.waiting != null || wait != null) ...[
                     const SizedBox(height: Space.md),
                     Row(

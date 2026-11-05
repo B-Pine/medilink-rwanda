@@ -108,7 +108,8 @@ class FacilitySummary {
         queueLoad = j['queue_load'] as String?,
         nextSlotAt = _date(j['next_slot_at']),
         lat = (j['lat'] as num?)?.toDouble(),
-        lng = (j['lng'] as num?)?.toDouble();
+        lng = (j['lng'] as num?)?.toDouble(),
+        insurers = _strings(j['insurers']).where((c) => c.isNotEmpty).toList();
   final String slug, name, type, district, sector;
   final bool emergency, openNow;
   final double? distanceKm, lat, lng;
@@ -116,6 +117,9 @@ class FacilitySummary {
   final Estimate? waitRange;
   final String? queueLoad;
   final DateTime? nextSlotAt;
+
+  /// Insurer codes accepted here (contract PT §2.1); no prices or shares (U-01).
+  final List<String> insurers;
 
   String get place => [sector, district].where((s) => s.isNotEmpty).join(', ');
 }
@@ -126,12 +130,14 @@ class FacilityService {
         name = _map(j['name_i18n']),
         bookable = j['bookable'] as bool? ?? false,
         waiting = j['waiting'] as int?,
-        nextSlotAt = _date(j['next_slot_at']);
+        nextSlotAt = _date(j['next_slot_at']),
+        insurers = _strings(j['insurers']).where((c) => c.isNotEmpty).toList();
   final String id;
   final Json name;
   final bool bookable;
   final int? waiting;
   final DateTime? nextSlotAt;
+  final List<String> insurers;
 }
 
 class Doctor {
@@ -182,6 +188,9 @@ class Facility {
   final List<Doctor> doctors;
 
   String get place => [sector, district].where((s) => s.isNotEmpty).join(', ');
+
+  /// Every insurer accepted for at least one service, in first-seen order.
+  List<String> get insurers => {for (final x in services) ...x.insurers}.toList();
 }
 
 class Slot {

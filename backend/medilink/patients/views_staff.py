@@ -491,6 +491,33 @@ class CardDownloadLinkView(_InsuranceMixin):
         return card_link(request, self.profile(fp, profile_id), side)
 
 
+class PhotoLinkView(StaffView):
+    """The patient's own profile photo, to recognise them at the desk (decision 2026-11-05).
+    Same rule as card photos: patients.view where the patient has a record here."""
+
+    permission_classes = [Needs("patients.view")]
+
+    @extend_schema(
+        operation_id="staff_patients_photo_link",
+        tags=TAGS,
+        request=None,
+        responses={
+            200: OpenApiResponse(description="{url, expires_at}"),
+            404: _err("not_found: no photo"),
+        },
+        summary="A 5-minute link to the patient's profile photo",
+    )
+    def post(self, request: Request, fp_id: Any) -> Response:
+        from medilink.patients.views_patient import photo_link_response
+
+        fp = self.record(fp_id)
+        response = photo_link_response(request, fp.patient, self.principal())
+        record_patient_event(
+            "patients.photo.viewed", request=request, patient=fp.patient, object_id=fp.pk
+        )
+        return response
+
+
 def card_link(request: Request, profile: InsuranceProfile, side: str) -> Response:
     if side not in ("front", "back"):
         raise Http404

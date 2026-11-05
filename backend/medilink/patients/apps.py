@@ -26,12 +26,16 @@ class PatientsConfig(AppConfig):
         from medilink.patients import checks  # noqa: F401  (registers system checks)
         from medilink.patients.cards import register_insurance_card_purpose
         from medilink.patients.insurance import on_upload_scanned
+        from medilink.patients.photos import on_upload_scanned as on_photo_scanned
+        from medilink.patients.photos import register_photo_purpose
         from medilink.uploads.services import upload_scanned
 
         post_migrate.connect(_grant_functions, sender=self)
         app.conf.beat_schedule = {**(app.conf.beat_schedule or {}), **BEAT_SCHEDULE}
         register_insurance_card_purpose()
+        register_photo_purpose()
         upload_scanned.connect(on_upload_scanned, dispatch_uid="patients.insurance_card")
+        upload_scanned.connect(on_photo_scanned, dispatch_uid="patients.photo")
 
 
 def _grant_functions(sender: Any = None, using: str = "default", **kwargs: Any) -> None:

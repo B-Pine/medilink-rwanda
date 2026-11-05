@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 ## [Unreleased]
 
+### 1.0.4 (2026-11-05)
+
+- Fixed: the symptom assistant asked yes/no questions with no way to answer them but typing.
+  Yes / No / Not sure buttons now follow each question.
+- Fixed: the assistant's answer said "the facilities below can help you" and showed none. It now
+  lists facilities offering the suggested service (nearest first when location is on), with
+  "More places". The possible cause shows only when the server allows naming it.
+- Fixed: notifications came in Kinyarwanda while the app was in English. Changing the language in
+  the app now saves it to the account (notification preferences), and signing in keeps the
+  language picked on the phone.
+
 ### 1.0.3 (2026-11-05)
 
 - Added: when the server has the sign-up email check off (test servers,

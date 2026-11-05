@@ -77,19 +77,37 @@ final unreadProvider = FutureProvider<int>((ref) async {
 });
 
 class SearchQuery {
-  const SearchQuery({this.openNow = false, this.emergency = false, this.availableToday = false, this.lat, this.lng});
+  const SearchQuery({
+    this.openNow = false,
+    this.emergency = false,
+    this.availableToday = false,
+    this.lat,
+    this.lng,
+    this.serviceCode,
+  });
   final bool openNow, emergency, availableToday;
 
   /// The phone's position, rounded to about 1 km before it leaves the phone.
   final double? lat, lng;
 
-  SearchQuery copyWith({bool? openNow, bool? emergency, bool? availableToday, double? lat, double? lng}) =>
+  /// Only facilities offering this service (e.g. the symptom assistant's suggestion).
+  final String? serviceCode;
+
+  SearchQuery copyWith({
+    bool? openNow,
+    bool? emergency,
+    bool? availableToday,
+    double? lat,
+    double? lng,
+    String? serviceCode,
+  }) =>
       SearchQuery(
         openNow: openNow ?? this.openNow,
         emergency: emergency ?? this.emergency,
         availableToday: availableToday ?? this.availableToday,
         lat: lat ?? this.lat,
         lng: lng ?? this.lng,
+        serviceCode: serviceCode ?? this.serviceCode,
       );
 
   Json toJson() => {
@@ -97,6 +115,7 @@ class SearchQuery {
         if (emergency) 'emergency': true,
         if (availableToday) 'available_today': true,
         if (lat != null && lng != null) 'near': {'lat': lat, 'lng': lng},
+        if (serviceCode != null && serviceCode!.isNotEmpty) 'service_code': serviceCode,
       };
 
   @override
@@ -106,10 +125,11 @@ class SearchQuery {
       other.emergency == emergency &&
       other.availableToday == availableToday &&
       other.lat == lat &&
-      other.lng == lng;
+      other.lng == lng &&
+      other.serviceCode == serviceCode;
 
   @override
-  int get hashCode => Object.hash(openNow, emergency, availableToday, lat, lng);
+  int get hashCode => Object.hash(openNow, emergency, availableToday, lat, lng, serviceCode);
 }
 
 /// Facilities sorted by distance when the phone's location is known (Home "Near you", Care).

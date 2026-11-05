@@ -1,0 +1,66 @@
+name: medilink
+description: "MediLink Rwanda patient app (docs/upgrade/15-mobile-app.md)"
+publish_to: 'none'
+
+# versionName+versionCode of the APK; raise both for every APK you share.
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  dio: ^5.11.1
+  flutter_riverpod: ^3.4.3
+  flutter_secure_storage: ^11.2.0
+  flutter_svg: ^2.3.2
+  go_router: ^18.1.3
+  local_auth: ^3.0.2
+  quick_actions: ^1.1.1
+  shared_preferences: ^2.5.6
+  url_launcher: ^6.3.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Figtree (titles, numbers) and Inter (text), the website's fonts as static weights
+  # (Latin subset, SIL Open Font License: assets/fonts/*-OFL.txt).
+  fonts:
+    - family: Figtree
+      fonts:
+        - asset: assets/fonts/Figtree-500.ttf
+          weight: 500
+        - asset: assets/fonts/Figtree-600.ttf
+          weight: 600
+        - asset: assets/fonts/Figtree-700.ttf
+          weight: 700
+        - asset: assets/fonts/Figtree-800.ttf
+          weight: 800
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-400.ttf
+          weight: 400
+        - asset: assets/fonts/Inter-500.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-600.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-700.ttf
+          weight: 700
+    # Phosphor icons (MIT), the website's icon set; see lib/ui/icons.dart.
+    - family: PhosphorRegular
+      fonts:
+        - asset: assets/fonts/Phosphor-Regular.ttf
+    - family: PhosphorFill
+      fonts:
+        - asset: assets/fonts/Phosphor-Fill.ttf
+    - family: PhosphorBold
+      fonts:
+        - asset: assets/fonts/Phosphor-Bold.ttf

@@ -60,8 +60,11 @@ function loadGsi(): Promise<GoogleId> {
   return gsiLoading;
 }
 
-/** Google's own button language: Kinyarwanda isn't one, so it falls back to English there. */
-const GOOGLE_LOCALE: Record<string, string> = { rw: "rw", en: "en", fr: "fr" };
+/**
+ * Google's own button language. Kinyarwanda isn't one: passing "rw" made Google fall back to
+ * French, so a Kinyarwanda page shows the English button.
+ */
+const GOOGLE_LOCALE: Record<string, string> = { rw: "en", en: "en", fr: "fr" };
 
 /**
  * "Continue with Google" for patients (upgrade 17). Hidden unless the API says it is on.

@@ -40,7 +40,6 @@ export function LabelsPage() {
       <div className="print:hidden">
         <PageHeader
           title={t("pharmacy.labels.title")}
-          description={t("pharmacy.labels.description")}
           back={{
             to: `/pharmacy/prescriptions/${prescriptionId}`,
             label: t("pharmacy.dispense.title"),

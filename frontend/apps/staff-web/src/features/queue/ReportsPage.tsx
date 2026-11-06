@@ -111,7 +111,6 @@ export function ReportsPage() {
     <div className="flex flex-col gap-6">
       <PageHeader
         title={t("queue.reports.title")}
-        description={t("queue.report.intro")}
         badges={<Badge tone="neutral">{t("queue.report.noNames")}</Badge>}
       />
       <PeriodControls
@@ -367,7 +366,6 @@ function ReportBody({ data, query }: { data: FacilityReport; query: ReportQuery 
 
       <Section
         title={t("queue.report.waits.title")}
-        description={t("queue.report.waits.intro")}
         tables={["waits"]}
         query={query}
         icon={<ClockCountdown aria-hidden="true" weight="bold" />}
@@ -509,7 +507,6 @@ function ReportBody({ data, query }: { data: FacilityReport; query: ReportQuery 
 
       <Section
         title={t("queue.report.stock.title")}
-        description={t("queue.report.stock.intro")}
         tables={["stock"]}
         query={query}
         icon={<Pill aria-hidden="true" weight="bold" />}

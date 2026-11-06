@@ -232,7 +232,6 @@ function Facilities() {
     <div className="flex flex-col gap-5">
       <PageHeader
         title={t("platform.facilities.title")}
-        description={t("platform.facilities.intro")}
         actions={
           <ExportButton
             params={{

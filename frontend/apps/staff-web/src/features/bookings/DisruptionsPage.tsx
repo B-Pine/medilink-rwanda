@@ -98,7 +98,6 @@ function Disruptions() {
     <div className="flex flex-col gap-5">
       <PageHeader
         title={t("bookings.disruptions.title")}
-        description={t("bookings.disruptions.description")}
         actions={
           <Button onClick={() => setCreating(true)}>
             <Plus aria-hidden="true" />

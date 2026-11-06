@@ -258,7 +258,7 @@ export function DispenseHistoryPage() {
   const rows = list.data ?? [];
   return (
     <div className="flex flex-col gap-5">
-      <PageHeader title={t("pharmacy.history.title")} description={t("pharmacy.history.intro")} />
+      <PageHeader title={t("pharmacy.history.title")} />
       <div className="flex flex-wrap items-end gap-3">
         <Tabs value={String(days)} onValueChange={(v) => setDays(Number(v) as 1 | 7 | 30)}>
           <TabsList aria-label={t("pharmacy.history.period")}>
@@ -390,7 +390,7 @@ export function VerifyPrescriptionPage() {
   const valid = doc && ["active", "dispensed", "valid"].includes(doc.status);
   return (
     <div className="flex max-w-3xl flex-col gap-5">
-      <PageHeader title={t("pharmacy.verify.title")} description={t("pharmacy.verify.intro")} />
+      <PageHeader title={t("pharmacy.verify.title")} />
       <form
         noValidate
         onSubmit={submit}

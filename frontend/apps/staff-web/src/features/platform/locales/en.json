@@ -264,7 +264,6 @@
     "identifiersHint": "The Ministry of Health facility code (FOSA ID) and the RRA tax number. They appear in the facility list for the government.",
     "saveIdentifiers": "Save",
     "identifiersSaved": "Saved.",
-    "intro": "Every facility, its identifiers, place and people. Export the list for the Ministry of Health.",
     "noCode": "No FOSA ID yet",
     "place": "Place",
     "inCharge": "In charge",
@@ -300,7 +299,6 @@
   },
   "flags": {
     "title": "Feature flags",
-    "intro": "Defaults apply to every facility unless a facility has its own setting.",
     "names": {
       "security.pin_unlock": "PIN unlock"
     },
@@ -432,7 +430,6 @@
   "form": {
     "newTitle": "Register a facility",
     "editTitle": "Edit {{name}}",
-    "intro": "For a facility that applies by phone or at a visit. Fill in what you know; the applicant gets a link to check it, add the documents and submit.",
     "back": "Back to applications",
     "facility": "Facility",
     "facilityName": "Facility name",

@@ -264,7 +264,6 @@
     "identifiersHint": "Le code de l’établissement au Ministère de la Santé (FOSA ID) et le numéro fiscal RRA. Ils figurent dans la liste des établissements pour le gouvernement.",
     "saveIdentifiers": "Enregistrer",
     "identifiersSaved": "Enregistré.",
-    "intro": "Chaque établissement, ses identifiants, son emplacement et son personnel. Exportez la liste pour le Ministère de la Santé.",
     "noCode": "Pas encore de FOSA ID",
     "place": "Lieu",
     "inCharge": "Responsable",
@@ -300,7 +299,6 @@
   },
   "flags": {
     "title": "Fonctionnalités",
-    "intro": "Les valeurs par défaut s'appliquent à tous les établissements, sauf réglage propre à un établissement.",
     "names": {
       "security.pin_unlock": "Déverrouillage par code PIN"
     },
@@ -432,7 +430,6 @@
   "form": {
     "newTitle": "Enregistrer un établissement",
     "editTitle": "Modifier {{name}}",
-    "intro": "Pour un établissement qui postule par téléphone ou lors d’une visite. Remplissez ce que vous savez ; le demandeur reçoit un lien pour vérifier, ajouter les documents et envoyer.",
     "back": "Retour aux demandes",
     "facility": "Établissement",
     "facilityName": "Nom de l’établissement",

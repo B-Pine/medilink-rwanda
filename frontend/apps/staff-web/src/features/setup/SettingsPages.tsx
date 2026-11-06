@@ -97,7 +97,6 @@ export function SettingsHomePage() {
       <div className="flex flex-col gap-8">
         <PageHeader
           title={t("setup.settings.title")}
-          description={t("setup.settings.intro")}
           actions={
             <Link to="/setup" className={buttonClassName({ variant: "secondary", pill: true })}>
               <ClipboardText aria-hidden="true" />
@@ -181,7 +180,6 @@ export function ProfilePage() {
       <div className="flex max-w-4xl flex-col gap-6">
         <PageHeader
           title={t("setup.settings.sections.profile.title")}
-          description={t("setup.profile.intro")}
           back={back(t)}
           actions={
             facility.data?.status === "live" && (
@@ -561,11 +559,7 @@ export function RulesPage() {
   return (
     <SetupGate codes={["facility.configure"]}>
       <div className="flex max-w-4xl flex-col gap-6">
-        <PageHeader
-          title={t("setup.settings.sections.rules.title")}
-          description={t("setup.rules.intro")}
-          back={back(t)}
-        />
+        <PageHeader title={t("setup.settings.sections.rules.title")} back={back(t)} />
         <QueryState query={settings}>
           {(data) => (
             <Tabs defaultValue="queue">
@@ -797,11 +791,7 @@ export function HistoryPage() {
   return (
     <SetupGate codes={["facility.configure"]}>
       <div className="flex flex-col gap-6">
-        <PageHeader
-          title={t("setup.settings.sections.history.title")}
-          description={t("setup.history.intro")}
-          back={back(t)}
-        />
+        <PageHeader title={t("setup.settings.sections.history.title")} back={back(t)} />
         <SelectField
           label={t("setup.history.entity")}
           value={entity}

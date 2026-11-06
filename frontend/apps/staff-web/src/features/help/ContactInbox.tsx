@@ -67,7 +67,7 @@ function Inbox() {
 
   return (
     <div className="flex max-w-4xl flex-col gap-5">
-      <PageHeader title={t("help.contact.title")} description={t("help.contact.intro")} />
+      <PageHeader title={t("help.contact.title")} />
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div role="group" aria-label={t("help.contact.tabs.label")} className="flex gap-2">
           {TABS.map((s) => (

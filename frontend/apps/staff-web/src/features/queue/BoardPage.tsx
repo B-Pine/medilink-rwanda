@@ -156,7 +156,6 @@ export function BoardPage() {
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <PageHeading title={t("queue.board.title")}>{t("queue.board.title")}</PageHeading>
         <LiveBadge />
-        <p className="m-0 basis-full text-fg-muted">{t("queue.board.intro")}</p>
       </div>
 
       <DeskBar

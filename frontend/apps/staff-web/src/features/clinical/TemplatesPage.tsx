@@ -395,7 +395,6 @@ export function TemplatesPage() {
     <div className="flex flex-col gap-5">
       <PageHeader
         title={t("clinical.templates.title")}
-        description={t("clinical.templates.intro")}
         actions={
           <Button pill onClick={() => setEditing("new")}>
             <Plus aria-hidden="true" weight="bold" />

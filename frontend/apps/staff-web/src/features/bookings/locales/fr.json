@@ -100,7 +100,6 @@
   "calendar": {
     "title": "Calendrier",
     "mineTitle": "Mon calendrier",
-    "description": "Séances et réservations par service et par médecin.",
     "view": "Affichage",
     "dayView": "Jour",
     "weekView": "Semaine",
@@ -132,7 +131,6 @@
   },
   "disruptions": {
     "title": "Perturbations",
-    "description": "Quand un médecin est absent ou l'établissement fermé, déplacez les réservations concernées en une fois.",
     "new": "Nouvelle perturbation",
     "wizardTitle": "Perturbation",
     "back": "Toutes les perturbations",

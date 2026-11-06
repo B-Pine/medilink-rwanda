@@ -152,17 +152,22 @@ export function Sidebar({
       {!collapsed && (
         <div className="mb-2 hidden items-center gap-3 rounded-2xl border border-border/70 bg-page px-3 py-2.5 lg:flex">
           <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary font-heading text-body-sm font-bold text-on-primary">
-            {(membership?.facility.name ?? "MediLink").slice(0, 2).toUpperCase()}
+            {(membership?.facility.name ?? t("shell.platformAdmin"))
+              .split(/\s+/)
+              .slice(0, 2)
+              .map((word) => word[0])
+              .join("")
+              .toUpperCase()}
           </span>
           <span className="flex min-w-0 flex-col">
             <span className="truncate text-body-sm font-semibold text-fg">
               {membership?.facility.name ?? t("shell.platformAdmin")}
             </span>
-            <span className="truncate text-caption text-fg-muted">
-              {membership
-                ? membership.roles.map((role) => roleLabel(role, t)).join(" · ")
-                : t("today.platform")}
-            </span>
+            {membership && (
+              <span className="truncate text-caption text-fg-muted">
+                {membership.roles.map((role) => roleLabel(role, t)).join(" · ")}
+              </span>
+            )}
           </span>
         </div>
       )}

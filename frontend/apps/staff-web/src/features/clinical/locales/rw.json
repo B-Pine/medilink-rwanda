@@ -94,7 +94,6 @@
   },
   "start": {
     "title": "Isuzuma",
-    "description": "Umurwayi urimo kuvura ubu, uhereye ku murongo wanjye.",
     "open": "Fungura isuzuma",
     "none": "Nta murwayi uri kumwe nawe ubu",
     "noneBody": "Hamagara umurwayi ukurikira ku murongo wawe, hanyuma ufungure isuzuma hano.",
@@ -289,7 +288,6 @@
   },
   "unsigned": {
     "title": "Dosiye zitarasinywa",
-    "description": "Inyandiko z'agateganyo zitegereje gusinywa. Zirangize buri munsi: uruzinduko ntirushobora kurangira inyandiko yarwo itarasinywa.",
     "mineOnly": "Izanjye gusa",
     "started": "{{name}} · yatangiye {{time}}",
     "overdue": "Zirengeje amasaha 24",
@@ -366,7 +364,6 @@
   "toQueue": "Umurongo wanjye",
   "results": {
     "title": "Ibisubizo",
-    "intro": "Ibisubizo bya laboratwari n'amafoto byaturutse hanze wahawe. Bifungure, hanyuma wemeze ko wabisuzumye.",
     "tabs": {
       "pending": "Ibyo gusuzuma",
       "reviewed": "Byasuzumwe"
@@ -412,7 +409,6 @@
   },
   "questions": {
     "title": "Ibibazo bya farumasi",
-    "intro": "Ibibazo farumasi ibaza ku mpapuro z'imiti wanditse. Igisubizo cyawe cyongerwa muri dosiye nk'inyandiko isinywe.",
     "tabs": {
       "open": "Bigutegereje",
       "answered": "Byasubijwe"
@@ -438,7 +434,6 @@
   },
   "followUps": {
     "title": "Gusubira kwa muganga",
-    "intro": "Abarwayi wasabye kugaruka. Abatagarutse bakeneye guhamagarwa n'ababakira cyangwa gahunda nshya.",
     "state": {
       "missed": "Ntibagarutse",
       "today": "Uyu munsi",
@@ -467,7 +462,6 @@
   },
   "activity": {
     "title": "Ibikorwa byanjye",
-    "intro": "Imibare yawe bwite, kuri wowe. Nta mazina y'abarwayi ari hano.",
     "period": "Igihe",
     "days_one": "Umunsi {{count}}",
     "days_other": "Iminsi {{count}}",
@@ -488,7 +482,6 @@
   },
   "templates": {
     "title": "Inyandiko ngenderwaho",
-    "intro": "Inyandiko zawe, amasuzuma n'imiti usanzwe utanga ku nshuro zisanzwe. Gukanda rimwe byuzuza isuzuma.",
     "new": "Inyandiko nshya",
     "edit": "Hindura inyandiko",
     "delete": "Siba",

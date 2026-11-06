@@ -264,7 +264,6 @@
     "identifiersHint": "Kode y’ikigo muri Minisiteri y’Ubuzima (FOSA ID) na nimero y’imisoro ya RRA. Bigaragara ku rutonde rw’ibigo rwa Leta.",
     "saveIdentifiers": "Bika",
     "identifiersSaved": "Byabitswe.",
-    "intro": "Buri kigo, ibikiranga, aho kiri n’abakozi bacyo. Ohereza urutonde kuri Minisiteri y’Ubuzima.",
     "noCode": "Nta FOSA ID irahabwa",
     "place": "Aho kiri",
     "inCharge": "Ushinzwe",
@@ -300,7 +299,6 @@
   },
   "flags": {
     "title": "Imikorere",
-    "intro": "Agaciro gasanzwe gakora ku bigo byose keretse ikigo gifite icyo cyihariye.",
     "names": {
       "security.pin_unlock": "Gufungura ukoresheje PIN"
     },
@@ -432,7 +430,6 @@
   "form": {
     "newTitle": "Andikisha ikigo",
     "editTitle": "Hindura {{name}}",
-    "intro": "Ku kigo gisaba kuri telefoni cyangwa mu ruzinduko. Uzuza ibyo uzi; usaba ahabwa link yo kubisuzuma, kongeraho inyandiko no kohereza.",
     "back": "Subira ku busabe",
     "facility": "Ikigo",
     "facilityName": "Izina ry’ikigo",

@@ -60,11 +60,6 @@ export function TodayPage() {
               name: me.full_name.split(" ")[0] ?? me.full_name,
             })}
           </PageHeading>
-          <p className="m-0 flex flex-wrap items-center gap-x-2 gap-y-1 text-on-forest-muted">
-            {membership
-              ? t("today.facility", { facility: membership.facility.name })
-              : t("today.platform")}
-          </p>
           {membership && (
             <ul
               aria-label={t("today.rolesLabel")}

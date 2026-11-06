@@ -34,10 +34,7 @@ export function AvailabilityPage() {
 
   return (
     <div className="flex max-w-3xl flex-col gap-5">
-      <PageHeader
-        title={t("pharmacy.availability.title")}
-        description={t("pharmacy.availability.description")}
-      />
+      <PageHeader title={t("pharmacy.availability.title")} />
       <TextField
         type="search"
         label={t("pharmacy.availability.search")}

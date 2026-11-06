@@ -117,7 +117,6 @@ export function SchedulesPage() {
       <div className="flex flex-col gap-6">
         <PageHeader
           title={t("setup.settings.sections.schedules.title")}
-          description={t("setup.schedules.intro")}
           back={canManage ? { to: "/settings", label: t("setup.settings.title") } : undefined}
         />
         <QueryState query={overview}>
@@ -724,7 +723,6 @@ export function MySchedulePage() {
       <div className="flex flex-col gap-6">
         <PageHeader
           title={t("setup.mine.title")}
-          description={t("setup.mine.intro")}
           actions={
             me && (
               <Button onClick={() => setRequesting(true)}>

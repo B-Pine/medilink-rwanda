@@ -43,10 +43,7 @@ export function FollowUpsPage() {
       : when.date(r.due_on);
   return (
     <div className="flex flex-col gap-5">
-      <PageHeader
-        title={t("clinical.followUps.title")}
-        description={t("clinical.followUps.intro")}
-      />
+      <PageHeader title={t("clinical.followUps.title")} />
       <div
         role="group"
         aria-label={t("clinical.followUps.title")}

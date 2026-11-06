@@ -73,7 +73,6 @@ function Search() {
     <div className="flex max-w-5xl flex-col gap-5">
       <PageHeader
         title={t("patients.search.title")}
-        description={t("patients.search.shortcuts")}
         actions={
           canRegister && (
             <Button onClick={() => void navigate("/patients/register")}>

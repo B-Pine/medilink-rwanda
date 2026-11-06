@@ -119,7 +119,6 @@
     "reject": "Anga",
     "rejectNote": "Kuki wanze?",
     "viewBill": "Reba fagitire",
-    "intro": "Ibyifuzo by'abakozi n'amasanduku yafunzwe. Icyemezo cyose kirandikwa.",
     "tabs": {
       "requests": "Ibyifuzo",
       "shifts": "Amasanduku"
@@ -160,7 +159,6 @@
   },
   "claims": {
     "title": "Ibisabwa abishingizi",
-    "intro": "Abivuje bafite ubwishingizi bw’umwishingizi umwe mu kwezi. Kuramo urutonde rwo koherereza umwishingizi, hanyuma werekane niba buri gisabwa cyishyuwe cyangwa cyanzwe.",
     "insurer": "Umwishingizi",
     "month": "Ukwezi kwo kwivuza",
     "totals": "Ibisabwa by’uku kwezi",

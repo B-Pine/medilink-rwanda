@@ -115,7 +115,6 @@
     "locked": "Yafunzwe",
     "lastLogin": "Aheruka kwinjira",
     "never": "Ntarinjira",
-    "lead": "Every account on MediLink: the platform team, facility staff and patients. Patients appear as accounts only, never with their health records.",
     "search": "Shakisha izina, imeri cyangwa telefoni",
     "facility": "Ikigo",
     "oneFacility": "Ikigo kimwe",
@@ -269,7 +268,6 @@
   },
   "bg": {
     "title": "Isuzuma ry’uburenganzira bwihutirwa",
-    "lead": "Emergency access to records, reviewed by a second admin.",
     "tab": {
       "review": "Ibyo gusuzuma",
       "all": "Byose"
@@ -291,7 +289,6 @@
   },
   "national": {
     "title": "Raporo y'igihugu",
-    "intro": "Uko urusobe rwakoze mu gihe runaka: abarwayi mu karere no mu ivuriro, igihe cyo gutegereza muganga, indwara zikunze kuboneka n'imiti yashize. Imibare gusa, nta murwayi n'umwe.",
     "smallGroups": "Amatsinda ari munsi ya 10 arahishwa",
     "failed": "Raporo ntiyabonetse. Ongera ugerageze.",
     "hidden": "Byahishwe",
@@ -317,26 +314,21 @@
       "medicines_other": "Imiti {{count}} yashize ahantu"
     },
     "districts": {
-      "title": "Abarwayi mu karere",
-      "intro": "Abaje kwivuza n'igihe kuva bageze kugeza muganga abahamagaye."
+      "title": "Abarwayi mu karere"
     },
     "facilitiesTable": {
-      "title": "Abarwayi mu ivuriro",
-      "intro": "Umubare w'ivuriro rito urahishwa, n'uw'irikurikiraho mu gito mu karere, kugira ngo igiteranyo cy'akarere kitawugaragaza."
+      "title": "Abarwayi mu ivuriro"
     },
     "trend": {
       "title": "Uko gutegereza guhinduka",
-      "intro": "Igihe cyo hagati n'ijanisha rya 90 cyo gutegereza muganga, mu mavuriro yose.",
       "hiddenPeriods_one": "Igihe {{count}} cyahishwe: abahamagawe bari munsi ya 10.",
       "hiddenPeriods_other": "Ibihe {{count}} byahishwe: abahamagawe bari munsi ya 10."
     },
     "diagnoses": {
-      "title": "Indwara zikunze kuboneka mu karere",
-      "intro": "Ibyasinywe; indwara zabonetse inshuro 10 cyangwa zirenga gusa, izihariye ntizigaragazwa."
+      "title": "Indwara zikunze kuboneka mu karere"
     },
     "stockouts": {
       "title": "Imiti yashize ubu",
-      "intro": "Imiti idafite ububiko bukoreshwa uyu munsi, aho ububiko bukurikiranwa.",
       "facilities": "Amavuriro yashizemo umuti",
       "medicines": "Imiti yashize",
       "medicine": "Umuti",

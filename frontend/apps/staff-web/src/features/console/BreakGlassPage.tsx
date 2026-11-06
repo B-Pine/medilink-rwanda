@@ -27,7 +27,7 @@ export function BreakGlassPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title={t("console.bg.title")} description={t("console.bg.lead")} />
+      <PageHeader title={t("console.bg.title")} />
       <div className="inline-flex gap-1 self-start rounded-full bg-subtle p-1">
         {(["review", "all"] as const).map((key) => (
           <button

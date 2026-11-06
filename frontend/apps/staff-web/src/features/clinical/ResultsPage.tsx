@@ -221,7 +221,7 @@ export function ResultsPage() {
   if (!allowed) return <NoAccessContent />;
   return (
     <div className="flex flex-col gap-5">
-      <PageHeader title={t("clinical.results.title")} description={t("clinical.results.intro")} />
+      <PageHeader title={t("clinical.results.title")} />
       <LabInbox />
       <Tabs defaultValue="pending">
         <TabsList aria-label={t("clinical.results.title")}>

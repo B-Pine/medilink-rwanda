@@ -64,7 +64,7 @@ export function ReordersPage() {
   const list = rows.data?.results ?? [];
   return (
     <div className="flex flex-col gap-5">
-      <PageHeader title={t("queue.reorders.title")} description={t("queue.reorders.intro")} />
+      <PageHeader title={t("queue.reorders.title")} />
       <Tabs
         value={onlyOpen ? "open" : "all"}
         onValueChange={(value) => setOnlyOpen(value === "open")}
@@ -211,7 +211,6 @@ export function DisplaysPage() {
     <div className="flex flex-col gap-5">
       <PageHeader
         title={t("queue.displays.title")}
-        description={t("queue.displays.intro")}
         back={{ to: "/settings", label: t("setup.settings.title") }}
         actions={
           <Button onClick={() => setCreating(true)}>

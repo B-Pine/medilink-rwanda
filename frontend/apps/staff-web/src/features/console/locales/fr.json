@@ -115,7 +115,6 @@
     "locked": "Bloqué",
     "lastLogin": "Dernière connexion",
     "never": "Jamais",
-    "lead": "Tous les comptes MediLink : l’équipe de la plateforme, le personnel des établissements et les patients. Les patients n’apparaissent que comme comptes, jamais avec leur dossier médical.",
     "search": "Rechercher par nom, e-mail ou téléphone",
     "facility": "Établissement",
     "oneFacility": "Un établissement",
@@ -269,7 +268,6 @@
   },
   "bg": {
     "title": "Revues bris de glace",
-    "lead": "Accès d’urgence aux dossiers, revus par un second administrateur.",
     "tab": {
       "review": "À revoir",
       "all": "Tous"
@@ -291,7 +289,6 @@
   },
   "national": {
     "title": "Rapport national",
-    "intro": "Comment le réseau a fonctionné sur une période : charge par district et par établissement, attente avant le médecin, diagnostics les plus fréquents et médicaments en rupture. Des chiffres seulement, jamais un patient.",
     "smallGroups": "Groupes de moins de 10 masqués",
     "failed": "Le rapport n'a pas pu se charger. Réessayez.",
     "hidden": "Masqué",
@@ -317,26 +314,21 @@
       "medicines_other": "{{count}} médicaments en rupture quelque part"
     },
     "districts": {
-      "title": "Charge par district",
-      "intro": "Visites et attente entre l'arrivée et l'appel du médecin."
+      "title": "Charge par district"
     },
     "facilitiesTable": {
-      "title": "Charge par établissement",
-      "intro": "Les visites d'un petit établissement sont masquées, ainsi que celles du plus petit suivant du district, pour que le total du district ne les révèle pas."
+      "title": "Charge par établissement"
     },
     "trend": {
       "title": "Évolution de l'attente",
-      "intro": "Attente médiane et 90e centile avant le médecin, tous établissements confondus.",
       "hiddenPeriods_one": "{{count}} période est masquée : moins de 10 patients appelés.",
       "hiddenPeriods_other": "{{count}} périodes sont masquées : moins de 10 patients appelés."
     },
     "diagnoses": {
-      "title": "Diagnostics principaux par district",
-      "intro": "Visites signées ; seulement les diagnostics vus 10 fois ou plus, jamais les diagnostics sensibles."
+      "title": "Diagnostics principaux par district"
     },
     "stockouts": {
       "title": "Ruptures de stock actuelles",
-      "intro": "Médicaments sans stock utilisable aujourd'hui, là où le stock est suivi.",
       "facilities": "Établissements en rupture",
       "medicines": "Médicaments en rupture",
       "medicine": "Médicament",

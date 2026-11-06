@@ -10,7 +10,6 @@ import {
   Phone,
   Plus,
   UserMinus,
-  UsersThree,
   type Icon,
 } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
@@ -104,7 +103,6 @@ export function ReceptionTodayCard() {
   if (!allowed) return null;
 
   const queues = board.data?.queues ?? [];
-  const waiting = queues.reduce((n, q) => n + q.waiting.length, 0);
   const rows = bookings.data?.results ?? [];
   const expected = rows.filter((b) => b.status === "confirmed").length;
   const late = rows.filter((b) => b.status === "confirmed" && b.late).length;
@@ -164,10 +162,9 @@ export function ReceptionTodayCard() {
 
       <ul
         aria-label={t("queue.reception.numbers")}
-        className="m-0 grid list-none grid-cols-2 gap-3 p-0 md:grid-cols-3 xl:grid-cols-5"
+        className="m-0 grid list-none grid-cols-2 gap-3 p-0 md:grid-cols-3"
       >
-        <Stat icon={UsersThree} label={t("queue.reception.waiting")} value={waiting} />
-        <Stat icon={CalendarCheck} label={t("queue.reception.expected")} value={expected} />
+        {/* waiting and expected are in the flow strip above; these are the desk's own counts */}
         <Stat
           icon={HandWaving}
           label={t("queue.reception.claims")}

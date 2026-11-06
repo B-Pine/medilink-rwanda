@@ -68,7 +68,6 @@
   },
   "queue": {
     "title": "Pharmacy",
-    "description": "Prescriptions to give at this facility, oldest first.",
     "tabs": "Prescriptions by state",
     "tab": {
       "ready": "Ready",
@@ -180,7 +179,6 @@
   },
   "availability": {
     "title": "Medicine availability",
-    "description": "Switch off what is out of stock. Doctors then see \"Not in stock here\" when they prescribe.",
     "search": "Find a medicine",
     "summary_one": "{{count}} medicine out of stock",
     "summary_other": "{{count}} medicines out of stock",
@@ -192,7 +190,6 @@
   },
   "labels": {
     "title": "Dosing labels",
-    "description": "One label per medicine given, 62 mm wide.",
     "print": "Print labels",
     "language": "Label language",
     "languages": {
@@ -278,7 +275,6 @@
   },
   "history": {
     "title": "Dispensing history",
-    "intro": "What was given at this pharmacy, by whom and when. Open a line for the full prescription.",
     "period": "Period",
     "days": {
       "1": "Today",
@@ -305,7 +301,6 @@
   },
   "verify": {
     "title": "Verify a prescription",
-    "intro": "A prescription from another facility: check the code, then open the medicines with the patient's date of birth.",
     "code": "Verification code",
     "codeHint": "Printed under the QR code on the prescription",
     "check": "Check",
@@ -334,7 +329,6 @@
   },
   "stock": {
     "title": "Stock",
-    "description": "What is on the shelf, batch by batch. Giving medicines takes the earliest expiry first.",
     "tabs": "Stock views",
     "tab": {
       "all": "All medicines",
@@ -405,7 +399,6 @@
     "thresholdInvalid": "Give a whole number, 0 or more.",
     "saveThreshold": "Save",
     "back": "All stock",
-    "detailIntro": "Batches on the shelf and the latest movements.",
     "batches": "Batches on the shelf",
     "noBatches": "No units left. Receive a batch to restock.",
     "noSupplier": "No supplier given",

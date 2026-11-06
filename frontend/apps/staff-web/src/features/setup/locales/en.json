@@ -54,7 +54,6 @@
   },
   "checklist": {
     "title": "Setup checklist",
-    "intro": "Patients can book and join queues once every step is done and the facility goes live.",
     "progress": "{{done}} of {{total}} steps done",
     "nextStep": "Next: {{step}}",
     "allDone": "Every step is done. You can go live.",
@@ -106,7 +105,6 @@
   },
   "settings": {
     "title": "Settings",
-    "intro": "How your facility works: what you offer, when, at what price, and who works here.",
     "checklistLink": "Setup checklist",
     "sections": {
       "profile": {
@@ -154,7 +152,6 @@
     }
   },
   "profile": {
-    "intro": "Patients see this on your public page.",
     "identity": "Registration",
     "name": "Name",
     "type": "Type",
@@ -194,7 +191,6 @@
     "emergencyHint": "Turn on only if you receive emergencies day and night. Your facility is then listed first on the public Emergency page."
   },
   "catalogue": {
-    "intro": "Services are what patients book or queue for. Each has a ticket prefix, such as G for G-023.",
     "services": "Services",
     "departments": "Departments",
     "points": "Rooms and desks",
@@ -242,7 +238,6 @@
     "noPoints": "Add the rooms and desks where patients are seen or served."
   },
   "hours": {
-    "intro": "Set your weekly hours, then add closures. The preview shows what patients will see.",
     "scope": "Hours for",
     "wholeFacility": "Whole facility",
     "week": "Weekly hours",
@@ -282,7 +277,6 @@
     "dateOrder": "The end date must be on or after the start date."
   },
   "schedules": {
-    "intro": "Each doctor's weekly sessions. Bookable slots come from these sessions.",
     "doctors": "Doctors",
     "weeklyHours": "Hours per week",
     "sessions": "Weekly sessions",
@@ -337,7 +331,6 @@
   },
   "mine": {
     "title": "My schedule",
-    "intro": "Your sessions this week and your leave requests.",
     "week": "My week",
     "requestLeave": "Request leave",
     "requestHint": "Your facility admin approves or rejects it.",
@@ -351,7 +344,6 @@
     "noSchedule": "Your facility admin has not planned your sessions yet."
   },
   "tariffs": {
-    "intro": "Prices in Rwandan francs. A change starts on a date you choose; earlier visits keep the old price.",
     "add": "Add price",
     "all": "All",
     "item": "Item",
@@ -381,7 +373,6 @@
     "empty": "Add a price for each service so patients see costs before they come."
   },
   "insurers": {
-    "intro": "For each insurer: what it covers here and what the patient pays.",
     "add": "Add insurer rule",
     "insurer": "Insurer",
     "since": "From {{date}}",
@@ -404,7 +395,6 @@
     "empty": "Add the insurers you accept, or switch on “no insurers” in the billing rules."
   },
   "rules": {
-    "intro": "Fine-tune how queues, bookings, payments, documents and reminders work here.",
     "sections": {
       "queue": "Queue",
       "booking": "Booking",
@@ -453,7 +443,6 @@
     "footer": "Footer text"
   },
   "history": {
-    "intro": "Every configuration change, newest first. Personal data is never recorded here.",
     "entity": "Show changes to",
     "entities": {
       "all": "Everything",
@@ -478,7 +467,6 @@
   },
   "staff": {
     "title": "Staff",
-    "intro": "Who works here, what they can do, and pending invitations.",
     "invite": "Invite staff",
     "inviteHint": "They get an email link valid for 7 days.",
     "activeMembers": "Active members",
@@ -569,7 +557,6 @@
   },
   "clinician": {
     "title": "My clinician profile",
-    "intro": "Your profession, licence and qualifications. Your facility admin checks your licence before you can be scheduled or sign; the Ministry of Health counts staff by profession.",
     "council": "Council",
     "licence": "Licence number",
     "specialty": "Specialty",
@@ -635,7 +622,6 @@
   "account": {
     "menu": "My details",
     "title": "My details",
-    "intro": "Your name, work phone and language. Your facility admin sees your phone on the team list.",
     "email": "Email",
     "emailHint": "You sign in with this address. Ask MediLink support to change it.",
     "fullName": "Full name",

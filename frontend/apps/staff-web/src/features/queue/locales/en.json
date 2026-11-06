@@ -206,7 +206,6 @@
   },
   "board": {
     "title": "Queue",
-    "intro": "Everyone on site, in calling order. Select a ticket for actions.",
     "checkIn": "Check in patient",
     "services": "Services",
     "allServices": "All services",
@@ -305,7 +304,6 @@
   },
   "reorders": {
     "title": "Queue reviews",
-    "intro": "Every time someone moved a patient up the queue, with the reason. Review them to keep the queue fair.",
     "onlyOpen": "Show only moves not yet reviewed",
     "columns": {
       "when": "When",
@@ -327,7 +325,6 @@
   },
   "displays": {
     "title": "Waiting-room screens",
-    "intro": "Open a link on the waiting-room TV. It shows ticket numbers and rooms, never names.",
     "add": "Add screen",
     "label": "Screen name",
     "services": "Services shown",
@@ -454,7 +451,6 @@
     "more": "More"
   },
   "report": {
-    "intro": "How your facility ran over a period: patients, waits, diagnoses, money, the laboratory and stock.",
     "noNames": "Totals only, no patient names",
     "periodLabel": "Report period",
     "range": "Period",
@@ -523,7 +519,6 @@
     },
     "waits": {
       "title": "Waiting time by stage",
-      "intro": "From joining the stage's queue on site to the first call. The dark bar is the median, the light bar is when 9 in 10 were called.",
       "median": "Median",
       "p90": "9 in 10",
       "tickets_one": "{{count}} ticket",
@@ -568,7 +563,6 @@
     },
     "stock": {
       "title": "Pharmacy stock",
-      "intro": "Out of stock and low are as of now; units received and dispensed are for the period.",
       "out": "Out of stock now",
       "low": "Low on stock now",
       "received": "Units received",
@@ -626,8 +620,6 @@
     "title": "Front desk",
     "openBoard": "Open the queue board",
     "numbers": "Today at the front desk",
-    "waiting": "Waiting now",
-    "expected": "Still expected",
     "claims": "\"I'm here\" to confirm",
     "missed": "Missed today",
     "late_one": "{{count}} booking running late",

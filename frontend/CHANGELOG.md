@@ -9,6 +9,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Fewer words on the staff dashboards (2026-11-06)
+
+- Changed: staff pages read like the app. The 45 page-header subtitles and the report section
+  intros are gone (rw, en, fr; unused keys removed), as is the queue board intro. Today drops
+  the "You are working at…" line; reception Today drops the "Waiting now" and "Still expected"
+  tiles that repeated the flow strip (and could show a different number). The sidebar card shows
+  the facility's initials and no platform-admin sentence.
+- Changed: staff dark mode follows the device setting. The top-bar light/dark switch and the
+  theme choice in the account menu are gone.
+- Fixed: the doctor's "In your room" card no longer squeezes the patient's name; the Open record
+  button drops below it.
+
 ### Fewer words on the public site (2026-11-06)
 
 - Changed: the public pages read like the app. Page-header intros are gone on facilities,

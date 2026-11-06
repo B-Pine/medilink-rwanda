@@ -47,6 +47,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   on; a first Google sign-in shows the sign-up consents before the account exists. API client
   `patientAuth.googleConfig()` / `google()`, `ApiError.current`; mocks keep it off. The patient
   site's CSP allows Google Identity Services under `https://accounts.google.com/gsi/` only.
+- Fixed: on a Kinyarwanda page the Google button showed in French (Google has no Kinyarwanda);
+  it shows in English now.
 
 ### Patient profile photo (2026-11-05)
 

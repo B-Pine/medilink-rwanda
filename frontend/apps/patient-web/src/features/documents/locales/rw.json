@@ -54,7 +54,7 @@
   },
   "verify": {
     "title": "Genzura inyandiko",
-    "intro": "Farumasi, abakoresha n'amashuri bashobora kugenzura hano inyandiko ya MediLink. Andika kode iri munsi ya kode ya QR.",
+    "intro": "Andika kode iri munsi ya QR code.",
     "code": "Kode yo kugenzura",
     "codeHint": "Inyuguti n'imibare 10",
     "check": "Genzura",

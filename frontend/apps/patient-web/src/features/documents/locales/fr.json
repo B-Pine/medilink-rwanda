@@ -54,7 +54,7 @@
   },
   "verify": {
     "title": "Vérifier un document",
-    "intro": "Pharmacies, employeurs et écoles peuvent vérifier ici un document MediLink. Saisissez le code imprimé sous son code QR.",
+    "intro": "Saisissez le code imprimé sous le QR code.",
     "code": "Code de vérification",
     "codeHint": "10 lettres et chiffres",
     "check": "Vérifier",

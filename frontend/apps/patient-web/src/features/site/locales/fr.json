@@ -63,14 +63,12 @@
   },
   "care": {
     "title": "Trouver des soins",
-    "lead": "Cherchez par établissement, service, spécialité ou symptôme.",
     "results": "Résultats",
     "emergencyFilter": "Urgences (hôpitaux)",
     "checkSymptoms": "Vérifier plutôt vos symptômes"
   },
   "facilities": {
     "title": "Établissements de santé",
-    "lead": "Tous les établissements vérifiés sur MediLink.",
     "type": "Type d’établissement",
     "service": "Service",
     "anyService": "Tous les services",
@@ -138,7 +136,6 @@
   },
   "doctors": {
     "title": "Médecins",
-    "lead": "Trouvez un médecin par nom, service ou établissement.",
     "searchName": "Rechercher par nom",
     "specialty": "Service",
     "anySpecialty": "Tous les services",
@@ -181,7 +178,6 @@
   },
   "services": {
     "title": "Explorer les services de santé",
-    "lead": "Services proposés par les établissements sur MediLink.",
     "search": "Rechercher un service",
     "none": "Aucun service ne correspond à votre recherche",
     "categories": {
@@ -219,7 +215,6 @@
   },
   "how": {
     "title": "Comment fonctionne MediLink",
-    "lead": "De la recherche à votre visite, étape par étape.",
     "steps": {
       "search": {
         "title": "Chercher des soins",
@@ -248,10 +243,10 @@
     },
     "goodTitle": "Bon à savoir",
     "good": {
-      "noAccount": "Vous pouvez explorer établissements, services et médecins sans compte.",
-      "walkIn": "Les patients sans rendez-vous peuvent toujours être enregistrés sur place.",
-      "reception": "L’accueil confirme votre présence avant que vous soyez appelé.",
-      "noPhone": "Pas de smartphone ? L’établissement vous remet un ticket imprimé, affiche votre numéro à l’écran et l’annonce à voix haute."
+      "noAccount": "Pas besoin de compte pour chercher.",
+      "walkIn": "Les patients sans rendez-vous sont toujours reçus.",
+      "reception": "L'accueil confirme votre arrivée.",
+      "noPhone": "Sans téléphone ? Vous recevez un ticket imprimé et votre numéro est appelé."
     },
     "start": "Trouver des soins"
   },
@@ -277,7 +272,6 @@
   },
   "help": {
     "title": "Aide et assistance",
-    "lead": "Réponses aux questions fréquentes.",
     "search": "Rechercher dans l’aide",
     "none": "Aucune réponse ne correspond à votre recherche",
     "articles": "Autres articles d’aide",
@@ -345,33 +339,32 @@
   },
   "about": {
     "title": "À propos de MediLink",
-    "lead": "MediLink relie les habitants du Rwanda aux établissements de santé, pour que les soins soient plus faciles à trouver et à planifier.",
+    "lead": "Les établissements de santé du Rwanda, au même endroit.",
     "sections": {
       "what": {
         "title": "Ce qu’est MediLink",
-        "body": "Une plateforme nationale où les patients trouvent établissements, services et médecins, voient l’attente en direct et rejoignent une file ou réservent. Les établissements l’utilisent pour gérer la visite, de l’accueil à la pharmacie."
+        "body": "Trouvez établissements, services et médecins. Voyez l'attente. Rejoignez la file ou réservez."
       },
       "problem": {
         "title": "Le problème traité",
-        "body": "On se déplace souvent sans savoir si l’établissement est ouvert, combien de temps on attendra ou s’il accepte son assurance. Les établissements, eux, voient mal qui attend."
+        "body": "Fini les trajets sans savoir si c'est ouvert, combien de temps attendre ou si votre assurance est acceptée."
       },
       "how": {
         "title": "Comment elle relie patients et établissements",
-        "body": "Les établissements publient leurs services, horaires et file en direct. Les patients choisissent avec des informations réelles et arrivent au bon moment ; l’accueil confirme chaque arrivée."
+        "body": "Les établissements publient horaires, services et file en direct. L'accueil confirme chaque arrivée."
       },
       "access": {
         "title": "Accessible à tous",
-        "body": "La recherche ne demande aucun compte. MediLink fonctionne en kinyarwanda, anglais et français, sur petits téléphones et connexions lentes, et les personnes sans téléphone sont servies sur place avec ticket imprimé et appel vocal."
+        "body": "Aucun compte pour chercher. Trois langues. Fonctionne sur petits téléphones. Sans téléphone ? Ticket imprimé et appel à voix haute."
       },
       "privacy": {
         "title": "Protéger les informations des patients",
-        "body": "Les informations de santé sont traitées selon la loi rwandaise sur la protection des données (loi 058/2021). Les établissements voient seulement ce qui est utile à vos soins, et chaque accès à un dossier est enregistré."
+        "body": "Protégé par la loi rwandaise sur les données (058/2021). Le personnel ne voit que ce qu'exigent vos soins ; chaque accès est enregistré."
       }
     }
   },
   "contact": {
     "title": "Contact",
-    "lead": "Questions, problèmes ou suggestions.",
     "infoTitle": "Assistance",
     "infoBody": "Pour un problème lié à une visite, contactez d’abord l’établissement. Pour MediLink, utilisez ce formulaire.",
     "emergency": "En cas d’urgence, appelez le {{number}}. Ce formulaire n’est pas suivi en continu.",
@@ -394,27 +387,26 @@
   },
   "accessibility": {
     "title": "Déclaration d’accessibilité",
-    "lead": "MediLink doit être utilisable par tous.",
     "sections": {
       "standard": {
         "title": "Notre référence",
-        "body": "Nous visons le niveau AA des WCAG 2.2 sur toutes les pages publiques et dans l’application patient."
+        "body": "WCAG 2.2 AA sur les pages publiques et l'app patient."
       },
       "features": {
         "title": "Ce que nous faisons",
-        "body": "Trois langues, grandes zones tactiles, réglage de la taille du texte, accès au clavier, focus visible, libellés pour lecteurs d’écran, contraste suffisant, aucune information par la couleur seule et mouvements réduits si votre appareil le demande."
+        "body": "Trois langues, grandes zones tactiles, taille du texte, clavier, lecteurs d'écran, bon contraste, animations réduites."
       },
       "offline": {
         "title": "Au-delà du site",
-        "body": "Les patients sans téléphone sont servis sur place avec ticket imprimé, écran de salle d’attente et appel vocal."
+        "body": "Sans téléphone : ticket imprimé, écran en salle d'attente, appels à voix haute."
       },
       "limits": {
         "title": "Limites connues",
-        "body": "Certaines traductions sont encore relues par des locuteurs natifs. La carte demande un pointeur ou le toucher ; la liste à côté donne les mêmes informations. [To confirm]"
+        "body": "Certaines traductions sont encore en relecture. La carte demande le toucher ou une souris ; la liste montre la même chose."
       },
       "feedback": {
         "title": "Dites-le-nous",
-        "body": "Si quelque chose est difficile à utiliser, écrivez-nous via la page Contact et nous vous répondrons."
+        "body": "Difficile à utiliser ? Écrivez-nous via la page contact."
       }
     }
   },
@@ -429,7 +421,7 @@
   },
   "home2": {
     "title": "Trouvez les bons soins, sans longue attente.",
-    "lead": "Comparez les cliniques et hôpitaux proches, voyez qui est ouvert et l’attente, puis rejoignez la file ou réservez.",
+    "lead": "Qui est ouvert, l'attente. Rejoignez ou réservez.",
     "searchPlaceholder": "Service, établissement ou symptôme",
     "search": "Rechercher",
     "chips": {
@@ -440,30 +432,28 @@
       "symptoms": "Pas sûr ? Vérifiez vos symptômes"
     },
     "careTitle": "De quels soins avez-vous besoin ?",
-    "careLead": "Choisissez un service pour voir les lieux qui l’offrent.",
     "allServices": "Tous les services",
     "facilityCount_one": "{{count}} établissement",
     "facilityCount_other": "{{count}} établissements",
     "nearTitle": "Ouverts près de vous",
     "howTitle": "De la recherche à la consultation, en trois étapes",
-    "howLead": "Pas de compte pour chercher ; un compte pour rejoindre une file ou réserver.",
     "stepLabel": "Étape {{n}}",
     "steps": {
       "search": {
         "title": "Cherchez et comparez",
-        "body": "Voyez qui est ouvert, l’attente, la distance et les assurances acceptées."
+        "body": "Ouvert, attente, distance, assurance."
       },
       "join": {
         "title": "Rejoignez la file ou réservez",
-        "body": "Rejoignez la file du jour depuis votre téléphone, ou réservez une heure."
+        "body": "La file du jour ou une heure."
       },
       "arrive": {
         "title": "Arrivez à votre tour",
-        "body": "Suivez votre place en direct et venez quand vous approchez."
+        "body": "Venez quand votre tour approche."
       }
     },
     "facilitiesTitle": "Une salle d’attente plus calme.",
-    "facilitiesLead": "Les patients voient votre attente avant de venir. Vous voyez la file, le flux et la journée sur un tableau de bord.",
+    "facilitiesLead": "Les patients voient votre attente avant de venir.",
     "facilitiesAction": "MediLink pour les établissements"
   },
   "home3": {
@@ -480,16 +470,13 @@
     "trustLabel": "Ce sur quoi vous pouvez compter",
     "trust": {
       "noAccount": {
-        "title": "Pas de compte pour regarder",
-        "body": "Voyez qui est ouvert et l’attente avant de vous connecter."
+        "title": "Pas de compte pour regarder"
       },
       "languages": {
-        "title": "Kinyarwanda, English, Français",
-        "body": "Chaque page dans la langue que vous lisez le mieux."
+        "title": "Kinyarwanda, English, Français"
       },
       "dataHome": {
-        "title": "Vos données de santé restent au Rwanda",
-        "body": "Stockées au Rwanda et partagées seulement avec les soins que vous choisissez."
+        "title": "Vos données de santé restent au Rwanda"
       }
     },
     "facilityPoints": {
@@ -502,9 +489,7 @@
       "openHint_one": "sur {{count}} établissement sur MediLink",
       "openHint_other": "sur {{count}} établissements sur MediLink",
       "waiting": "Personnes en attente",
-      "waitingHint": "dans les files des lieux ouverts",
       "typical": "Attente habituelle",
-      "typicalHint": "le milieu des attentes en direct du jour",
       "minutes_one": "{{count}} min",
       "minutes_other": "{{count}} min"
     },

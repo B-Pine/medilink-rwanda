@@ -270,11 +270,7 @@ export function CarePage() {
   return (
     <PublicLayout>
       <PageContainer>
-        <PageHeader
-          crumbs={[{ label: t("nav.findCare") }]}
-          title={t("site.care.title")}
-          lead={t("site.care.lead")}
-        />
+        <PageHeader crumbs={[{ label: t("nav.findCare") }]} title={t("site.care.title")} />
         {inDashboard ? (
           // Dashboard: one search card (search, near me, filters, then the one-tap filters),
           // since the sidebar leaves no room for a filter column (upgrade 12 §7)

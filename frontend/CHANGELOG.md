@@ -9,6 +9,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Fewer words on the public site (2026-11-06)
+
+- Changed: the public pages read like the app. Page-header intros are gone on facilities,
+  doctors, services, find care, how it works, help, contact and accessibility (the emergency
+  warning stays). Home drops the section intros, figure hints and trust-strip sentences; the hero,
+  steps and facilities lines are shorter. About, "Good to know" and accessibility text is cut to
+  short lines, and the "[To confirm]" marker is gone. Document verification intro is one line.
+  All in rw, en and fr; unused keys removed.
+
 ### Fewer words on the patient dashboard (2026-11-05)
 
 - Changed: the signed-in pages read like the patient app: labels and data, no explaining

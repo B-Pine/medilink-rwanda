@@ -144,7 +144,7 @@ export function PharmacistTodayCard() {
       ) : (
         <ul
           aria-label={t("pharmacy.today.numbers")}
-          className="m-0 grid list-none grid-cols-2 gap-3 p-0 md:grid-cols-3 xl:grid-cols-6"
+          className="m-0 grid list-none grid-cols-2 gap-3 p-0 md:grid-cols-3"
         >
           <Stat icon={Pill} label={t("pharmacy.today.ready")} value={d.ready} to="/pharmacy" />
           <Stat

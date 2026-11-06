@@ -19,7 +19,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 - Changed: staff dark mode follows the device setting. The top-bar light/dark switch and the
   theme choice in the account menu are gone.
 - Fixed: the doctor's "In your room" card no longer squeezes the patient's name; the Open record
-  button drops below it.
+  button drops below it. Today's quick actions no longer repeat a page (pharmacist saw
+  "Pharmacy" twice), and the pharmacy counter tiles sit three per row so their labels are not
+  cut off.
 
 ### Fewer words on the public site (2026-11-06)
 

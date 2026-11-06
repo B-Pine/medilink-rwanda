@@ -42,8 +42,11 @@ export function TodayPage() {
   const actions = FEATURE_COMMANDS()
     .flatMap((provider) => provider.actions?.(me, t) ?? [])
     .filter((action) => !NOT_ON_TODAY.has(action.id));
+  // a shortcut that repeats an action (same page or same label) is left out
+  const taken = new Set(actions.flatMap((a) => [a.to.split("?")[0], a.label]));
   const shortcuts = visibleNavItems(me, BUILT_PATHS())
     .filter((item) => item.key !== "today" && navSection(item) === "work")
+    .filter((item) => !taken.has(item.path) && !taken.has(t(navLabelKey(item))))
     .slice(0, Math.max(0, 5 - actions.length));
   const cards = FEATURE_TODAY_CARDS();
 

@@ -67,7 +67,6 @@
     "results": "Search results",
     "noResults": "No patient at this facility matches. Check the spelling, or search by phone or ID.",
     "register": "Register walk-in",
-    "shortcuts": "Press / to search and N for a new walk-in.",
     "button": "Search",
     "noResultsTitle": "No patient found"
   },

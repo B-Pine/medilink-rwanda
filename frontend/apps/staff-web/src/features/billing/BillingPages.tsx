@@ -911,7 +911,7 @@ export function ApprovalsPage() {
     ) : null;
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title={t("billing.approvals.title")} description={t("billing.approvals.intro")} />
+      <PageHeader title={t("billing.approvals.title")} />
       <Tabs
         value={tab}
         onValueChange={(value) => setSearch(value === "shifts" ? { tab: "shifts" } : {})}

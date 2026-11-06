@@ -122,10 +122,6 @@
     "openMenu": "Fungura menu",
     "closeMenu": "Funga menu",
     "platformAdmin": "Umuyobozi w’urubuga",
-    "theme": {
-      "toLight": "Hindura ujye ku mabara y’umunsi",
-      "toDark": "Hindura ujye ku mabara y’ijoro"
-    },
     "nav": {
       "today": "Uyu munsi",
       "queue": "Umurongo",
@@ -148,7 +144,6 @@
     "userMenu": {
       "label": "Menu ya konti",
       "signedInAs": "Winjiye nka",
-      "theme": "Imigaragarire",
       "language": "Ururimi",
       "logout": "Sohoka",
       "loggingOut": "Urasohoka…"
@@ -177,8 +172,6 @@
   "today": {
     "title": "Uyu munsi",
     "greeting": "Muraho, {{name}}",
-    "facility": "Ukorera kuri {{facility}}.",
-    "platform": "Winjiye nk’umuyobozi w’urubuga.",
     "rolesLabel": "Inshingano zawe hano",
     "greeting_morning": "Mwaramutse, {{name}}",
     "greeting_afternoon": "Mwiriwe, {{name}}",

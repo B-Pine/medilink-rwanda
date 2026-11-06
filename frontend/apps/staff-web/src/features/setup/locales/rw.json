@@ -54,7 +54,6 @@
   },
   "checklist": {
     "title": "Intambwe zo gutangira",
-    "intro": "Abarwayi bashobora gufata gahunda no kujya ku murongo iyo intambwe zose zarangiye ikigo kigatangira gukora.",
     "progress": "Intambwe {{done}} kuri {{total}} zarangiye",
     "nextStep": "Ikurikira: {{step}}",
     "allDone": "Intambwe zose zarangiye. Ushobora gutangira gukora.",
@@ -106,7 +105,6 @@
   },
   "settings": {
     "title": "Igenamiterere",
-    "intro": "Uko ikigo cyawe gikora: ibyo mutanga, igihe, ibiciro n'abakozi.",
     "checklistLink": "Intambwe zo gutangira",
     "sections": {
       "profile": {
@@ -154,7 +152,6 @@
     }
   },
   "profile": {
-    "intro": "Abarwayi babona ibi ku rupapuro rwanyu rusange.",
     "identity": "Iyandikwa",
     "name": "Izina",
     "type": "Ubwoko",
@@ -194,7 +191,6 @@
     "emergencyHint": "Bikore gusa niba mwakira indembe ku manywa na nijoro. Ivuriro ryanyu rizagaragara mbere ku rupapuro rw'ubutabazi."
   },
   "catalogue": {
-    "intro": "Serivisi ni byo abarwayi bafatira gahunda cyangwa bategerereza. Buri imwe igira inyuguti ya tike, nka G kuri G-023.",
     "services": "Serivisi",
     "departments": "Amashami",
     "points": "Ibyumba n'ameza",
@@ -242,7 +238,6 @@
     "noPoints": "Ongeraho ibyumba n'ameza abarwayi bakirirwamo."
   },
   "hours": {
-    "intro": "Shyiraho amasaha y'icyumweru, hanyuma wongereho iminsi ifunze. Ishusho y'imbere yerekana ibyo abarwayi babona.",
     "scope": "Amasaha ya",
     "wholeFacility": "Ikigo cyose",
     "week": "Amasaha y'icyumweru",
@@ -282,7 +277,6 @@
     "dateOrder": "Itariki yo kurangiza igomba kuba ku itariki yo gutangira cyangwa nyuma yayo."
   },
   "schedules": {
-    "intro": "Ibihe bya buri muganga mu cyumweru. Amasaha yo gufatirwaho gahunda ava muri ibi bihe.",
     "doctors": "Abaganga",
     "weeklyHours": "Amasaha mu cyumweru",
     "sessions": "Ibihe by'icyumweru",
@@ -337,7 +331,6 @@
   },
   "mine": {
     "title": "Gahunda yanjye",
-    "intro": "Ibihe byawe by'iki cyumweru n'ubusabe bwawe bw'ikiruhuko.",
     "week": "Icyumweru cyanjye",
     "requestLeave": "Saba ikiruhuko",
     "requestHint": "Umuyobozi w'ikigo arabwemeza cyangwa akabwanga.",
@@ -351,7 +344,6 @@
     "noSchedule": "Umuyobozi ntarategura ibihe byawe."
   },
   "tariffs": {
-    "intro": "Ibiciro mu mafaranga y'u Rwanda. Impinduka itangira ku itariki uhitamo; ibyabaye mbere bigumana igiciro cya kera.",
     "add": "Ongeraho igiciro",
     "all": "Byose",
     "item": "Ikintu",
@@ -381,7 +373,6 @@
     "empty": "Ongeraho igiciro cya buri serivisi kugira ngo abarwayi babone ikiguzi mbere yo kuza."
   },
   "insurers": {
-    "intro": "Kuri buri bwishingizi: ibyo bwishyura hano n'ibyo umurwayi yishyura.",
     "add": "Ongeraho itegeko ry'ubwishingizi",
     "insurer": "Ubwishingizi",
     "since": "Guhera {{date}}",
@@ -404,7 +395,6 @@
     "empty": "Ongeraho ubwishingizi mwakira, cyangwa ukoreshe “nta bwishingizi” mu mabwiriza yo kwishyuza."
   },
   "rules": {
-    "intro": "Hindura uko umurongo, gahunda, kwishyura, inyandiko n'ibibutsa bikora hano.",
     "sections": {
       "queue": "Umurongo",
       "booking": "Gahunda",
@@ -453,7 +443,6 @@
     "footer": "Amagambo yo hasi"
   },
   "history": {
-    "intro": "Buri mpinduka y'igenamiterere, iya vuba mbere. Nta makuru bwite yandikwa hano.",
     "entity": "Erekana impinduka za",
     "entities": {
       "all": "Byose",
@@ -478,7 +467,6 @@
   },
   "staff": {
     "title": "Abakozi",
-    "intro": "Abakora hano, ibyo buri wese ashobora gukora, n'ubutumire butegereje.",
     "invite": "Tumira umukozi",
     "inviteHint": "Ahabwa link kuri imeyili imara iminsi 7.",
     "activeMembers": "Abakozi bakora",
@@ -569,7 +557,6 @@
   },
   "clinician": {
     "title": "Umwirondoro wanjye w’umwuga",
-    "intro": "Umwuga wawe, uruhushya n’impamyabumenyi. Umuyobozi w’ikigo agenzura uruhushya rwawe mbere y’uko ushyirwa kuri gahunda cyangwa usinya; Minisiteri y’Ubuzima ibara abakozi hakurikijwe imyuga.",
     "council": "Urugaga",
     "licence": "Nimero y'uruhushya",
     "specialty": "Ubuhanga bwihariye",
@@ -635,7 +622,6 @@
   "account": {
     "menu": "Amakuru yanjye",
     "title": "Amakuru yanjye",
-    "intro": "Izina ryawe, telefoni y’akazi n’ururimi. Umuyobozi w’ikigo cyawe abona telefoni yawe ku rutonde rw’abakozi.",
     "email": "Imeyili",
     "emailHint": "Winjira ukoresheje iyi aderesi. Saba ubufasha bwa MediLink kuyihindura.",
     "fullName": "Amazina yose",

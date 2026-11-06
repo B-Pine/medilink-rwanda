@@ -94,7 +94,6 @@
   },
   "start": {
     "title": "Consultation",
-    "description": "Le patient que vous voyez maintenant, depuis Ma file.",
     "open": "Ouvrir la consultation",
     "none": "Aucun patient avec vous en ce moment",
     "noneBody": "Appelez le patient suivant depuis Ma file, puis ouvrez la consultation ici.",
@@ -289,7 +288,6 @@
   },
   "unsigned": {
     "title": "Dossiers non signés",
-    "description": "Brouillons en attente de signature. Videz la liste chaque jour : une visite ne peut pas se terminer tant que son brouillon est ouvert.",
     "mineOnly": "Seulement mes brouillons",
     "started": "{{name}} · commencé le {{time}}",
     "overdue": "Plus de 24 heures",
@@ -366,7 +364,6 @@
   "toQueue": "Ma file",
   "results": {
     "title": "Résultats",
-    "intro": "Résultats de laboratoire et d’imagerie externes qui vous sont attribués. Ouvrez-les, puis marquez-les examinés.",
     "tabs": {
       "pending": "À examiner",
       "reviewed": "Examinés"
@@ -412,7 +409,6 @@
   },
   "questions": {
     "title": "Questions de la pharmacie",
-    "intro": "Questions de la pharmacie sur vos ordonnances. Votre réponse est ajoutée au dossier en note signée.",
     "tabs": {
       "open": "En attente",
       "answered": "Répondues"
@@ -438,7 +434,6 @@
   },
   "followUps": {
     "title": "Suivis",
-    "intro": "Les patients que vous avez fait revenir. Les absents ont besoin d’un appel de l’accueil ou d’un nouveau rendez-vous.",
     "state": {
       "missed": "Manqués",
       "today": "Aujourd’hui",
@@ -467,7 +462,6 @@
   },
   "activity": {
     "title": "Mon activité",
-    "intro": "Vos propres chiffres, pour vous. Aucun nom de patient ici.",
     "period": "Période",
     "days_one": "{{count}} jour",
     "days_other": "{{count}} jours",
@@ -488,7 +482,6 @@
   },
   "templates": {
     "title": "Modèles",
-    "intro": "Vos notes, diagnostics et ordonnances habituelles pour les visites courantes. Un clic remplit la consultation.",
     "new": "Nouveau modèle",
     "edit": "Modifier le modèle",
     "delete": "Supprimer",

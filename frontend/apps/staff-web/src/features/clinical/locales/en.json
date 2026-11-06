@@ -94,7 +94,6 @@
   },
   "start": {
     "title": "Consultation",
-    "description": "The patient you are seeing now, from My queue.",
     "open": "Open consultation",
     "none": "No patient with you right now",
     "noneBody": "Call the next patient from My queue, then open the consultation here.",
@@ -289,7 +288,6 @@
   },
   "unsigned": {
     "title": "Unsigned records",
-    "description": "Drafts waiting for a signature. Clear them every day: a visit cannot finish while its draft is open.",
     "mineOnly": "Only my drafts",
     "started": "{{name}} · started {{time}}",
     "overdue": "Over 24 hours",
@@ -366,7 +364,6 @@
   "toQueue": "My queue",
   "results": {
     "title": "Results",
-    "intro": "Outside lab and imaging results assigned to you. Open each one, then mark it reviewed.",
     "tabs": {
       "pending": "To review",
       "reviewed": "Reviewed"
@@ -412,7 +409,6 @@
   },
   "questions": {
     "title": "Pharmacy questions",
-    "intro": "Questions from the pharmacy about your prescriptions. Your answer is added to the record as a signed note.",
     "tabs": {
       "open": "Waiting for you",
       "answered": "Answered"
@@ -438,7 +434,6 @@
   },
   "followUps": {
     "title": "Follow-ups",
-    "intro": "Patients you asked to come back. Missed ones need a call from reception or a new booking.",
     "state": {
       "missed": "Missed",
       "today": "Today",
@@ -467,7 +462,6 @@
   },
   "activity": {
     "title": "My activity",
-    "intro": "Your own numbers, for you. No patient names here.",
     "period": "Period",
     "days_one": "{{count}} day",
     "days_other": "{{count}} days",
@@ -488,7 +482,6 @@
   },
   "templates": {
     "title": "Templates",
-    "intro": "Your notes, diagnoses and usual prescriptions for common visits. One click fills the consultation.",
     "new": "New template",
     "edit": "Edit template",
     "delete": "Delete",

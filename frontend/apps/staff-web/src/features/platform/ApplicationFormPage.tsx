@@ -220,7 +220,6 @@ function ApplicationForm({ app }: { app?: PlatformApplication }) {
     <div className="flex max-w-4xl flex-col gap-6">
       <PageHeader
         title={title}
-        description={t("platform.form.intro")}
         back={{
           to: app ? `/platform/applications/${app.id}` : "/platform/applications",
           label: t("platform.form.back"),

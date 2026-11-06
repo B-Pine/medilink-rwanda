@@ -49,10 +49,7 @@ export function UnsignedPage() {
   if (!allowed) return <NoAccessContent />;
   return (
     <div className="flex max-w-5xl flex-col gap-5">
-      <PageHeader
-        title={t("clinical.unsigned.title")}
-        description={t("clinical.unsigned.description")}
-      />
+      <PageHeader title={t("clinical.unsigned.title")} />
       {isAdmin && (
         <SwitchField
           label={t("clinical.unsigned.mineOnly")}

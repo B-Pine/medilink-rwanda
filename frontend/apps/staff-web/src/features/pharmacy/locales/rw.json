@@ -68,7 +68,6 @@
   },
   "queue": {
     "title": "Farumasi",
-    "description": "Resept zo gutanga muri iki kigo, izabanje mbere.",
     "tabs": "Resept hakurikijwe uko zimeze",
     "tab": {
       "ready": "Ziteguye",
@@ -180,7 +179,6 @@
   },
   "availability": {
     "title": "Imiti iboneka",
-    "description": "Zimya imiti yashize. Abaganga babona \"Ntuboneka hano\" iyo bandika resept.",
     "search": "Shaka umuti",
     "summary_one": "Umuti {{count}} washize",
     "summary_other": "Imiti {{count}} yashize",
@@ -192,7 +190,6 @@
   },
   "labels": {
     "title": "Ibirango by'imiti",
-    "description": "Ikirango kimwe kuri buri muti watanzwe, mm 62 z'ubugari.",
     "print": "Capa ibirango",
     "language": "Ururimi rw'ibirango",
     "languages": {
@@ -278,7 +275,6 @@
   },
   "history": {
     "title": "Amateka yo gutanga imiti",
-    "intro": "Imiti yatanzwe kuri iyi farumasi, uwayitanze n'igihe. Fungura umurongo ubone urupapuro rwose.",
     "period": "Igihe",
     "days": {
       "1": "Uyu munsi",
@@ -305,7 +301,6 @@
   },
   "verify": {
     "title": "Genzura urupapuro rw'imiti",
-    "intro": "Urupapuro rw'imiti ruvuye ahandi: genzura kode, hanyuma ufungure imiti ukoresheje itariki y'amavuko y'umurwayi.",
     "code": "Kode yo kugenzura",
     "codeHint": "Yanditse munsi ya QR ku rupapuro",
     "check": "Genzura",
@@ -334,7 +329,6 @@
   },
   "stock": {
     "title": "Ububiko",
-    "description": "Ibiri ku gipangu, icyiciro ku kindi. Gutanga imiti bihera ku izarangira mbere.",
     "tabs": "Uko ububiko bugaragara",
     "tab": {
       "all": "Imiti yose",
@@ -405,7 +399,6 @@
     "thresholdInvalid": "Tanga umubare wuzuye, 0 cyangwa urenga.",
     "saveThreshold": "Bika",
     "back": "Ububiko bwose",
-    "detailIntro": "Ibyiciro biri ku gipangu n'ibyahindutse vuba.",
     "batches": "Ibyiciro biri ku gipangu",
     "noBatches": "Nta muti usigaye. Akira icyiciro kugira ngo wongere.",
     "noSupplier": "Uwatanze ntiyavuzwe",

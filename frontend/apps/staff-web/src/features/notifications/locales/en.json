@@ -61,7 +61,6 @@
   "settings": {
     "link": "Settings",
     "title": "Notification settings",
-    "intro": "How MediLink tells you about new notifications on this device.",
     "conflictTitle": "These settings changed somewhere else",
     "conflict": "Your choices are still here. Load the latest version, then save again.",
     "reload": "Load the latest version",

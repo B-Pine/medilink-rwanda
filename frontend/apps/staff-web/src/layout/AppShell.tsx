@@ -1,13 +1,5 @@
-import { List, MagnifyingGlass, Moon, Sun, X } from "@phosphor-icons/react";
-import {
-  cx,
-  Logo,
-  MAIN_CONTENT_ID,
-  readPreference,
-  SkipLink,
-  useTheme,
-  writePreference,
-} from "@medilink/ui";
+import { List, MagnifyingGlass, X } from "@phosphor-icons/react";
+import { cx, Logo, MAIN_CONTENT_ID, readPreference, SkipLink, writePreference } from "@medilink/ui";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router";
@@ -29,32 +21,6 @@ function useSidebarCollapsed(): [boolean, () => void] {
     setCollapsed(!collapsed);
   };
   return [collapsed, toggle];
-}
-
-/** One-tap light/dark switch in the top bar (the user menu keeps the full choice with System). */
-function ThemeSwitch() {
-  const { t } = useTranslation();
-  const { theme, setTheme } = useTheme();
-  const dark =
-    theme === "dark" ||
-    (theme === "system" &&
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-color-scheme: dark)").matches);
-  return (
-    <button
-      type="button"
-      onClick={() => setTheme(dark ? "light" : "dark")}
-      aria-label={dark ? t("shell.theme.toLight") : t("shell.theme.toDark")}
-      title={dark ? t("shell.theme.toLight") : t("shell.theme.toDark")}
-      className="relative inline-flex size-10 cursor-pointer items-center justify-center rounded-xl text-fg-secondary transition-[background-color,color,transform] duration-200 ease-out-quint hover:bg-subtle hover:text-fg active:scale-[0.94] motion-reduce:active:scale-100"
-    >
-      {dark ? (
-        <Sun aria-hidden="true" className="size-5 animate-enter" />
-      ) : (
-        <Moon aria-hidden="true" className="size-5 animate-enter" />
-      )}
-    </button>
-  );
 }
 
 /**
@@ -132,7 +98,6 @@ export function AppShell() {
             </kbd>
           </button>
           <div className="flex items-center gap-1.5">
-            <ThemeSwitch />
             {FEATURE_HEADER_ITEMS().map((Item, index) => (
               <Item key={index} />
             ))}

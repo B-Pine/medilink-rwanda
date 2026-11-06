@@ -162,7 +162,6 @@ export function SettingsPage() {
     <div className="flex flex-col gap-5">
       <PageHeader
         title={t("notifications.settings.title")}
-        description={t("notifications.settings.intro")}
         back={{ to: "/notifications", label: t("notifications.inbox.back") }}
       />
       <OfflineNotice />

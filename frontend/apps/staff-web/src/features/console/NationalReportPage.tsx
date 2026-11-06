@@ -60,7 +60,6 @@ export function NationalReportPage() {
     <div className="flex flex-col gap-6">
       <PageHeader
         title={t("console.national.title")}
-        description={t("console.national.intro")}
         badges={<Badge tone="neutral">{t("console.national.smallGroups")}</Badge>}
       />
       <PeriodControls {...period} fetching={report.isFetching && !report.isPending} />
@@ -140,7 +139,6 @@ function NationalBody({ data, query }: { data: NationalReport; query: ReportQuer
 
       <Section
         title={t("console.national.districts.title")}
-        description={t("console.national.districts.intro")}
         table="districts"
         query={query}
         icon={<MapTrifold aria-hidden="true" weight="bold" />}
@@ -168,7 +166,6 @@ function NationalBody({ data, query }: { data: NationalReport; query: ReportQuer
 
       <Section
         title={t("console.national.facilitiesTable.title")}
-        description={t("console.national.facilitiesTable.intro")}
         table="facilities"
         query={query}
         icon={<Buildings aria-hidden="true" weight="bold" />}
@@ -194,7 +191,6 @@ function NationalBody({ data, query }: { data: NationalReport; query: ReportQuer
 
       <Section
         title={t("console.national.trend.title")}
-        description={t("console.national.trend.intro")}
         table="waits"
         query={query}
         icon={<ClockCountdown aria-hidden="true" weight="bold" />}
@@ -226,7 +222,6 @@ function NationalBody({ data, query }: { data: NationalReport; query: ReportQuer
       <div className="grid gap-6 xl:grid-cols-2">
         <Section
           title={t("console.national.diagnoses.title")}
-          description={t("console.national.diagnoses.intro")}
           table="diagnoses"
           query={query}
           icon={<Stethoscope aria-hidden="true" weight="bold" />}
@@ -251,7 +246,6 @@ function NationalBody({ data, query }: { data: NationalReport; query: ReportQuer
         </Section>
         <Section
           title={t("console.national.stockouts.title")}
-          description={t("console.national.stockouts.intro")}
           table="stockouts"
           query={query}
           icon={<Pill aria-hidden="true" weight="bold" />}

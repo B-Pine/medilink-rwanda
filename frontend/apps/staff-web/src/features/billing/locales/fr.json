@@ -119,7 +119,6 @@
     "reject": "Refuser",
     "rejectNote": "Motif du refus",
     "viewBill": "Voir la facture",
-    "intro": "Demandes de l’équipe et caisses clôturées. Chaque décision est enregistrée.",
     "tabs": {
       "requests": "Demandes",
       "shifts": "Caisses"
@@ -160,7 +159,6 @@
   },
   "claims": {
     "title": "Demandes aux assureurs",
-    "intro": "Les visites assurées d’un assureur pour un mois. Téléchargez la liste pour l’assureur, puis indiquez pour chaque demande si elle est payée ou refusée.",
     "insurer": "Assureur",
     "month": "Mois des visites",
     "totals": "Demandes du mois",

@@ -62,7 +62,6 @@
   "shownIn": "Shown in {{language}}: not written in your language yet.",
   "support": {
     "title": "Help and support",
-    "description": "Guides for your work at the facility, and questions to MediLink support.",
     "guides": "Guides",
     "mine": "My requests",
     "facility": "Facility requests",
@@ -208,7 +207,6 @@
   },
   "contact": {
     "title": "Website messages",
-    "intro": "Sent from the public Contact page. Answer on the visitor's email or phone, then mark the message handled.",
     "tabs": {
       "label": "Message status",
       "new": "New",

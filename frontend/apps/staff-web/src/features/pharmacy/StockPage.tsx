@@ -55,7 +55,6 @@ export function StockPage() {
     <div className="flex max-w-5xl flex-col gap-5">
       <PageHeader
         title={t("pharmacy.stock.title")}
-        description={t("pharmacy.stock.description")}
         actions={
           canChange ? (
             <Button onClick={() => setReceiving(true)}>
@@ -579,7 +578,6 @@ export function StockDetailPage() {
       {back}
       <PageHeader
         title={d.display}
-        description={t("pharmacy.stock.detailIntro")}
         actions={
           canChange ? (
             <Button onClick={() => setReceiving(true)}>

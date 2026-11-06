@@ -68,7 +68,6 @@
   },
   "queue": {
     "title": "Pharmacie",
-    "description": "Les ordonnances à délivrer dans cet établissement, les plus anciennes d'abord.",
     "tabs": "Ordonnances par état",
     "tab": {
       "ready": "Prêtes",
@@ -180,7 +179,6 @@
   },
   "availability": {
     "title": "Disponibilité des médicaments",
-    "description": "Désactivez ce qui est en rupture. Les médecins voient alors « Pas en stock ici » en prescrivant.",
     "search": "Trouver un médicament",
     "summary_one": "{{count}} médicament en rupture",
     "summary_other": "{{count}} médicaments en rupture",
@@ -192,7 +190,6 @@
   },
   "labels": {
     "title": "Étiquettes de posologie",
-    "description": "Une étiquette par médicament délivré, 62 mm de large.",
     "print": "Imprimer les étiquettes",
     "language": "Langue des étiquettes",
     "languages": {
@@ -278,7 +275,6 @@
   },
   "history": {
     "title": "Historique de délivrance",
-    "intro": "Ce qui a été délivré dans cette pharmacie, par qui et quand. Ouvrez une ligne pour l’ordonnance complète.",
     "period": "Période",
     "days": {
       "1": "Aujourd’hui",
@@ -305,7 +301,6 @@
   },
   "verify": {
     "title": "Vérifier une ordonnance",
-    "intro": "Une ordonnance d’un autre établissement : vérifiez le code, puis ouvrez les médicaments avec la date de naissance du patient.",
     "code": "Code de vérification",
     "codeHint": "Imprimé sous le QR code de l’ordonnance",
     "check": "Vérifier",
@@ -334,7 +329,6 @@
   },
   "stock": {
     "title": "Stock",
-    "description": "Ce qui est en rayon, lot par lot. La délivrance prend d'abord la péremption la plus proche.",
     "tabs": "Vues du stock",
     "tab": {
       "all": "Tous les médicaments",
@@ -405,7 +399,6 @@
     "thresholdInvalid": "Indiquez un nombre entier, 0 ou plus.",
     "saveThreshold": "Enregistrer",
     "back": "Tout le stock",
-    "detailIntro": "Lots en rayon et derniers mouvements.",
     "batches": "Lots en rayon",
     "noBatches": "Plus aucune unité. Recevez un lot pour réapprovisionner.",
     "noSupplier": "Fournisseur non indiqué",

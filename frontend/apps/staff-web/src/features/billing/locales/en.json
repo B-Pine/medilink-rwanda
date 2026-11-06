@@ -119,7 +119,6 @@
     "reject": "Reject",
     "rejectNote": "Why reject?",
     "viewBill": "View bill",
-    "intro": "Requests from your team and closed cash shifts. Every decision is recorded.",
     "tabs": {
       "requests": "Requests",
       "shifts": "Cash shifts"
@@ -160,7 +159,6 @@
   },
   "claims": {
     "title": "Insurance claims",
-    "intro": "Each insurer's insured visits for a month. Download the list for the insurer, then mark each claim paid or rejected.",
     "insurer": "Insurer",
     "month": "Month of the visits",
     "totals": "Claims this month",

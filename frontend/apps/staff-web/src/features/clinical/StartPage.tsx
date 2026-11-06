@@ -48,7 +48,7 @@ export function StartPage() {
   const current = mine.data?.current ?? null;
   return (
     <div className="flex max-w-4xl flex-col gap-5">
-      <PageHeader title={t("clinical.start.title")} description={t("clinical.start.description")} />
+      <PageHeader title={t("clinical.start.title")} />
       {day.data && <MyDayStrip data={day.data} />}
       {mine.isPending ? (
         <LoadingState label={t("clinical.loading")} />

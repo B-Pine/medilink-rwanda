@@ -80,7 +80,6 @@ export function HoursPage() {
       <div className="flex flex-col gap-6">
         <PageHeader
           title={t("setup.settings.sections.hours.title")}
-          description={t("setup.hours.intro")}
           back={{ to: "/settings", label: t("setup.settings.title") }}
         />
         {canConfigure && (

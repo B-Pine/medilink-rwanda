@@ -245,11 +245,7 @@ function Users() {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader
-        title={t("console.users.title")}
-        description={t("console.users.lead")}
-        actions={<ExportButton filters={filters} />}
-      />
+      <PageHeader title={t("console.users.title")} actions={<ExportButton filters={filters} />} />
 
       <div className="flex flex-col gap-3">
         <div

@@ -85,7 +85,7 @@ export function QueuePage() {
 
   return (
     <div className="flex max-w-4xl flex-col gap-5">
-      <PageHeader title={t("pharmacy.queue.title")} description={t("pharmacy.queue.description")} />
+      <PageHeader title={t("pharmacy.queue.title")} />
       <TextField
         type="search"
         label={t("pharmacy.queue.search")}

@@ -78,7 +78,7 @@ export function ClaimsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title={t("billing.claims.title")} description={t("billing.claims.intro")} />
+      <PageHeader title={t("billing.claims.title")} />
 
       <div className="flex flex-wrap items-end gap-4 rounded-2xl bg-surface p-5 shadow-card">
         <SelectField

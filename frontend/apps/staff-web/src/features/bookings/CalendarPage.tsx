@@ -204,7 +204,6 @@ function Calendar() {
     <div className="flex flex-col gap-5">
       <PageHeader
         title={data?.only_own ? t("bookings.calendar.mineTitle") : t("bookings.calendar.title")}
-        description={t("bookings.calendar.description")}
       />
       <div className="flex flex-wrap items-end gap-3">
         <div role="group" aria-label={t("bookings.calendar.view")} className="flex gap-1">

@@ -206,7 +206,6 @@
   },
   "board": {
     "title": "Umurongo",
-    "intro": "Abari hano bose, uko bazahamagarwa. Hitamo tike ngo ukore igikorwa.",
     "checkIn": "Andika umurwayi",
     "services": "Serivisi",
     "allServices": "Serivisi zose",
@@ -305,7 +304,6 @@
   },
   "reorders": {
     "title": "Igenzura ry’umurongo",
-    "intro": "Igihe cyose umurwayi yimuwe imbere ku murongo, n’impamvu. Bigenzure kugira ngo umurongo ube uw’ukuri.",
     "onlyOpen": "Erekana gusa ibitaragenzurwa",
     "columns": {
       "when": "Ryari",
@@ -327,7 +325,6 @@
   },
   "displays": {
     "title": "Televiziyo z’aho bategerereza",
-    "intro": "Fungura link kuri televiziyo y’aho bategerereza. Yerekana nimero n’ibyumba gusa, nta mazina.",
     "add": "Ongeraho televiziyo",
     "label": "Izina rya televiziyo",
     "services": "Serivisi zigaragara",
@@ -454,7 +451,6 @@
     "more": "Benshi"
   },
   "report": {
-    "intro": "Uko ikigo cyawe cyakoze mu gihe runaka: abarwayi, gutegereza, indwara, amafaranga, laboratwari n’imiti iri mu bubiko.",
     "noNames": "Imibare gusa, nta mazina y’abarwayi",
     "periodLabel": "Igihe cya raporo",
     "range": "Igihe",
@@ -523,7 +519,6 @@
     },
     "waits": {
       "title": "Igihe cyo gutegereza kuri buri cyiciro",
-      "intro": "Kuva umurwayi ageze ku murongo w’icyiciro kugeza ahamagawe bwa mbere. Umurongo wijimye ni hagati, umweru ni igihe 9 kuri 10 bahamagawe.",
       "median": "Hagati",
       "p90": "9 kuri 10",
       "tickets_one": "Itike {{count}}",
@@ -568,7 +563,6 @@
     },
     "stock": {
       "title": "Imiti iri mu bubiko bwa farumasi",
-      "intro": "Iyashize n’iyenda gushira ni uko bimeze ubu; iyakiriwe n’iyatanzwe ni iy’iki gihe.",
       "out": "Iyashize ubu",
       "low": "Iyenda gushira ubu",
       "received": "Ibyakiriwe",
@@ -626,8 +620,6 @@
     "title": "Kwakira abarwayi",
     "openBoard": "Fungura ikibaho cy'umurongo",
     "numbers": "Uyu munsi ku kwakira",
-    "waiting": "Bategereje ubu",
-    "expected": "Bagitegerejwe",
     "claims": "\"Ndahari\" byo kwemeza",
     "missed": "Abataje uyu munsi",
     "late_one": "Gahunda {{count}} yatinze",

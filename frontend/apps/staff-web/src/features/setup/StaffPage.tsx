@@ -130,7 +130,6 @@ export function StaffPage() {
       <div className="flex flex-col gap-6">
         <PageHeader
           title={t("setup.staff.title")}
-          description={t("setup.staff.intro")}
           actions={
             <Button onClick={() => setInviting(true)}>
               <UserPlus aria-hidden="true" weight="bold" />
@@ -819,7 +818,7 @@ export function ClinicianPage() {
   });
   return (
     <div className="flex max-w-5xl flex-col gap-6">
-      <PageHeader title={t("setup.clinician.title")} description={t("setup.clinician.intro")} />
+      <PageHeader title={t("setup.clinician.title")} />
       <section aria-labelledby="licence-title" className="flex flex-col gap-3">
         <h2 id="licence-title" className="m-0 font-heading text-h3 tracking-tight">
           {t("setup.clinician.licenceTitle")}

@@ -62,7 +62,6 @@
   "shownIn": "Affiché en {{language}} : pas encore écrit dans votre langue.",
   "support": {
     "title": "Aide et support",
-    "description": "Guides pour votre travail dans l'établissement et questions au support MediLink.",
     "guides": "Guides",
     "mine": "Mes demandes",
     "facility": "Demandes de l'établissement",
@@ -208,7 +207,6 @@
   },
   "contact": {
     "title": "Messages du site",
-    "intro": "Envoyés depuis la page Contact publique. Répondez par l’e-mail ou le téléphone du visiteur, puis marquez le message traité.",
     "tabs": {
       "label": "Statut des messages",
       "new": "Nouveaux",

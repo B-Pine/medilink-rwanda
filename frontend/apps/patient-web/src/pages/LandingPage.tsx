@@ -81,7 +81,8 @@ function SectionHead({
 }: {
   id: string;
   title: string;
-  lead: ReactNode;
+  /** Only when it carries state (e.g. "sorted by distance"); titles speak for themselves. */
+  lead?: ReactNode;
   action?: ReactNode;
 }) {
   return (
@@ -90,7 +91,7 @@ function SectionHead({
         <h2 id={id} className="m-0 font-heading text-section font-bold text-fg">
           {title}
         </h2>
-        <p className="m-0 text-[1.0625rem] leading-relaxed text-fg-secondary">{lead}</p>
+        {lead && <p className="m-0 text-[1.0625rem] leading-relaxed text-fg-secondary">{lead}</p>}
       </div>
       {action}
     </div>
@@ -139,7 +140,7 @@ function Figure({
   icon: Icon;
   label: string;
   value: string;
-  hint: string;
+  hint?: string | undefined;
 }) {
   return (
     <div className="flex min-h-40 flex-col justify-between gap-6 rounded-panel bg-surface p-6 shadow-e2">
@@ -149,7 +150,7 @@ function Figure({
       </span>
       <span className="flex flex-col gap-1">
         <span className="font-heading text-kpi font-bold text-fg tabular-nums">{value}</span>
-        <span className="text-body-sm text-fg-secondary">{hint}</span>
+        {hint && <span className="text-body-sm text-fg-secondary">{hint}</span>}
       </span>
     </div>
   );
@@ -364,7 +365,6 @@ export function LandingPage() {
               icon={UsersThree}
               label={t("site.home3.kpi.waiting")}
               value={all.data ? String(waitingNow) : "–"}
-              hint={t("site.home3.kpi.waitingHint")}
             />
             <LivePanel
               rows={live}
@@ -375,7 +375,6 @@ export function LandingPage() {
               icon={Hourglass}
               label={t("site.home3.kpi.typical")}
               value={typical === null ? "–" : t("site.home3.kpi.minutes", { count: typical })}
-              hint={t("site.home3.kpi.typicalHint")}
             />
             <Link
               to="/check-symptoms"
@@ -413,7 +412,6 @@ export function LandingPage() {
           <SectionHead
             id="care-title"
             title={t("site.home2.careTitle")}
-            lead={t("site.home2.careLead")}
             action={<MoreLink to="/services">{t("site.home2.allServices")}</MoreLink>}
           />
           <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
@@ -451,13 +449,13 @@ export function LandingPage() {
             id="open-title"
             title={t("site.home3.openTitle")}
             lead={
-              <span role="status">
-                {locating === "denied"
-                  ? t("home.locationDenied")
-                  : near
-                    ? t("site.home.sortedByDistance")
-                    : t("site.home3.openLead")}
-              </span>
+              locating === "denied" || near ? (
+                <span role="status">
+                  {locating === "denied"
+                    ? t("home.locationDenied")
+                    : t("site.home.sortedByDistance")}
+                </span>
+              ) : undefined
             }
             action={
               <button
@@ -493,7 +491,6 @@ export function LandingPage() {
           <SectionHead
             id="how-title"
             title={t("site.home2.howTitle")}
-            lead={t("site.home2.howLead")}
             action={<MoreLink to="/how-it-works">{t("site.home.how")}</MoreLink>}
           />
           <ol className="relative m-0 grid list-none gap-4 p-0 md:grid-cols-3">
@@ -531,18 +528,13 @@ export function LandingPage() {
           className="site-reveal m-0 grid list-none gap-px overflow-hidden rounded-panel bg-hairline p-0 shadow-e1 sm:grid-cols-3"
         >
           {TRUST.map(({ key, icon: TrustIcon }) => (
-            <li key={key} className="flex items-start gap-4 bg-surface p-6">
+            <li key={key} className="flex items-center gap-4 bg-surface p-6">
               <TrustIcon
                 aria-hidden="true"
                 weight="duotone"
-                className="mt-0.5 size-6 shrink-0 text-primary"
+                className="size-6 shrink-0 text-primary"
               />
-              <span className="flex flex-col gap-0.5">
-                <span className="font-semibold text-fg">{t(`site.home3.trust.${key}.title`)}</span>
-                <span className="text-body-sm text-fg-secondary">
-                  {t(`site.home3.trust.${key}.body`)}
-                </span>
-              </span>
+              <span className="font-semibold text-fg">{t(`site.home3.trust.${key}.title`)}</span>
             </li>
           ))}
         </ul>

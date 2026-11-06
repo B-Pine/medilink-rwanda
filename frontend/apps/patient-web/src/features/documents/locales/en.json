@@ -54,7 +54,7 @@
   },
   "verify": {
     "title": "Verify a document",
-    "intro": "Pharmacies, employers and schools can check a MediLink document here. Type the code printed under its QR code.",
+    "intro": "Type the code printed under the QR code.",
     "code": "Verification code",
     "codeHint": "10 letters and numbers",
     "check": "Check",

@@ -223,10 +223,7 @@ export function RescheduleDialog({ booking, onClose }: { booking: Booking; onClo
       description={
         reviewing
           ? undefined
-          : t("dashboard.reschedule.body", {
-              service: pick(booking.service_name_i18n, lang),
-              facility: booking.facility_name,
-            })
+          : `${pick(booking.service_name_i18n, lang)} · ${booking.facility_name}`
       }
       closeLabel={t("dashboard.close")}
       footer={
@@ -285,7 +282,6 @@ export function RescheduleDialog({ booking, onClose }: { booking: Booking; onClo
               </span>
             </p>
           )}
-          <p className="m-0 text-body-sm text-fg-secondary">{t("dashboard.reschedule.oldFreed")}</p>
           {confirm.isError && (
             <Alert tone="danger" role="alert">
               {failure(confirm.error)}
@@ -554,7 +550,6 @@ export function AppointmentsPage() {
     <div className="flex flex-col gap-6">
       <PageHeader
         title={t("dashboard.appointments.title")}
-        subtitle={t("dashboard.appointments.subtitle")}
         actions={
           <Link
             to={`${paths.findCare}?mode=booking`}
@@ -624,7 +619,6 @@ export function AppointmentsPage() {
           <EmptyState
             icon={CalendarBlank}
             title={t(`dashboard.appointments.empty.${tab}`)}
-            description={tab === "upcoming" ? t("dashboard.appointments.emptyBody") : undefined}
             action={
               tab === "upcoming" ? (
                 <Link to={paths.findCare} className={buttonClassName({})}>

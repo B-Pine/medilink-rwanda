@@ -80,12 +80,9 @@ export function ComingUpSection({ className }: { className?: string }) {
   if (!items.length) return null;
   return (
     <section aria-labelledby="coming-up" className={className}>
-      <div className="mb-3 flex flex-col gap-1">
-        <h2 id="coming-up" className="m-0 font-heading text-h3 tracking-tight">
-          {t("dashboard.comingUp.title")}
-        </h2>
-        <p className="m-0 text-body-sm text-fg-secondary">{t("dashboard.comingUp.intro")}</p>
-      </div>
+      <h2 id="coming-up" className="m-0 mb-3 font-heading text-h3 tracking-tight">
+        {t("dashboard.comingUp.title")}
+      </h2>
       <div className={cx(panelClass, "overflow-hidden")}>
         <ComingUpList items={items} />
       </div>

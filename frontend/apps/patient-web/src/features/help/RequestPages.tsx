@@ -77,7 +77,6 @@ export function RequestsPage() {
         <EmptyState
           icon={Tray}
           title={t("help.requests.empty")}
-          description={t("help.requests.emptyBody")}
           action={
             <Link to={paths.newRequest} className={buttonClassName({})}>
               {t("help.requests.new")}

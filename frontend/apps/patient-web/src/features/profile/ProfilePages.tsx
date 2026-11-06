@@ -161,7 +161,6 @@ function Hub({ profile }: { profile: PatientProfileDetail }) {
                     to={link.to}
                     icon={link.icon}
                     title={t(`dashboard.nav.${link.key}`)}
-                    description={t(`dashboard.family.links.${link.key}`)}
                   />
                 </li>
               ))}
@@ -774,7 +773,6 @@ export function AccessHistoryPage() {
   const items = history.data?.pages.flatMap((page) => page.results) ?? [];
   return (
     <ProfileLayout title={t("profile.sections.history")} back={useBack()}>
-      <p className="m-0 text-fg-secondary">{t("profile.history.intro")}</p>
       {history.isPending && <LoadingState />}
       {history.isError && (
         <Alert tone="danger">{errorText(history.error, t("profile.error"))}</Alert>

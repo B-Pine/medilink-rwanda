@@ -42,7 +42,7 @@ export function PrivacyPage() {
   const self = managed.find((p) => p.relationship === "self");
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title={t("profile.privacy.title")} subtitle={t("profile.privacy.later")} />
+      <PageHeader title={t("profile.privacy.title")} />
       {state.isPending && <LoadingState />}
       {give.isError && (
         <Alert tone="danger" role="alert">

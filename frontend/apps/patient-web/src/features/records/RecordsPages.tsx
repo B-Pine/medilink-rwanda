@@ -71,7 +71,7 @@ export function RecordsPage() {
   const years = [...new Set(rows.map((r) => r.service_date.slice(0, 4)))];
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title={t("records.title")} subtitle={t("records.intro")} />
+      <PageHeader title={t("records.title")} />
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
         <TextField
           type="search"
@@ -157,7 +157,6 @@ export function RecordsPage() {
         <EmptyState
           icon={FileText}
           title={q ? t("dashboard.records.noMatch") : t("records.empty")}
-          description={q ? undefined : t("dashboard.records.emptyBody")}
         />
       )}
     </div>
@@ -193,12 +192,9 @@ function LabResults({
       : t(`records.lab.choices.${item.value}`, { defaultValue: item.value });
   return (
     <section aria-labelledby="lab-results" className="flex flex-col gap-3">
-      <div className="flex flex-col gap-1">
-        <h2 id="lab-results" className="m-0 font-heading text-h2 tracking-tight">
-          {t("records.lab.title")}
-        </h2>
-        <p className="m-0 text-fg-secondary">{t("records.lab.intro")}</p>
-      </div>
+      <h2 id="lab-results" className="m-0 font-heading text-h2 tracking-tight">
+        {t("records.lab.title")}
+      </h2>
       <ul className="m-0 flex list-none flex-col gap-3 p-0">
         {results.data.map((r) => (
           <li key={r.id} className={cx(panelClass, "flex flex-col gap-4 p-4 sm:p-5")}>

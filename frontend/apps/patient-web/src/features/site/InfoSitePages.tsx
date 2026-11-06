@@ -113,11 +113,7 @@ export function HowItWorksPage() {
   return (
     <PublicLayout>
       <PageContainer narrow className="pb-16">
-        <PageHeader
-          crumbs={[{ label: t("nav.howItWorks") }]}
-          title={t("site.how.title")}
-          lead={t("site.how.lead")}
-        />
+        <PageHeader crumbs={[{ label: t("nav.howItWorks") }]} title={t("site.how.title")} />
         <div className="flex flex-col gap-12">
           <ol className="m-0 flex list-none flex-col p-0">
             {JOURNEY.map((key, index) => (
@@ -453,11 +449,7 @@ export function HelpPage() {
   return (
     <PublicLayout>
       <PageContainer className="pb-16">
-        <PageHeader
-          crumbs={[{ label: t("footer.help") }]}
-          title={t("site.help.title")}
-          lead={t("site.help.lead")}
-        />
+        <PageHeader crumbs={[{ label: t("footer.help") }]} title={t("site.help.title")} />
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-4 rounded-panel bg-surface shadow-e2 p-4 sm:p-5">
             <SearchBar
@@ -681,11 +673,7 @@ export function ContactPage() {
   return (
     <PublicLayout>
       <PageContainer className="pb-16">
-        <PageHeader
-          crumbs={[{ label: t("footer.contact") }]}
-          title={t("site.contact.title")}
-          lead={t("site.contact.lead")}
-        />
+        <PageHeader crumbs={[{ label: t("footer.contact") }]} title={t("site.contact.title")} />
         <div className="grid gap-6 lg:grid-cols-[20rem_minmax(0,1fr)]">
           <Panel as="aside" className="flex flex-col gap-4 self-start p-6">
             <h2 className="m-0 text-h3">{t("site.contact.infoTitle")}</h2>
@@ -775,7 +763,6 @@ export function AccessibilityPage() {
         <PageHeader
           crumbs={[{ label: t("footer.accessibility") }]}
           title={t("site.accessibility.title")}
-          lead={t("site.accessibility.lead")}
         />
         <Document>
           <Updated />

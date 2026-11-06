@@ -10,6 +10,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Email and Sign in with Google (2026-11-06, upgrade 17)
 
+- Fixed: `GOOGLE_OAUTH_WEB_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_IDS`, `EMAIL_URL` and
+  `DEFAULT_FROM_EMAIL` are trimmed, so a trailing newline pasted into the host's variable editor
+  no longer breaks Google sign-in (wrong audience) or email headers.
+
 - Added: `GET`/`POST /api/v1/patient/auth/google/` (patients only). The ID token is verified with
   PyJWT (new dependency: RS256 against Google's keys, issuer, audience, expiry); `GoogleIdentity`
   keeps Google's account ID (migration `accounts.0010`). A verified matching email links the

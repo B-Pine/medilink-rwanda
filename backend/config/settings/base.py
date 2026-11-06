@@ -235,8 +235,11 @@ PATIENT_SIGNUP_EMAIL_VERIFICATION = env.bool("PATIENT_SIGNUP_EMAIL_VERIFICATION"
 # Sign in with Google, patients only (upgrade 17). Empty = the button is hidden. The web client ID
 # is also the Android app's serverClientId; extra audiences (e.g. a future iOS client) go in
 # GOOGLE_OAUTH_CLIENT_IDS. Client IDs are public, not secrets.
-GOOGLE_OAUTH_WEB_CLIENT_ID = env("GOOGLE_OAUTH_WEB_CLIENT_ID", default="")
-GOOGLE_OAUTH_CLIENT_IDS = env.list("GOOGLE_OAUTH_CLIENT_IDS", default=[])
+# Values pasted into a host's variable editor often carry a trailing newline: strip them.
+GOOGLE_OAUTH_WEB_CLIENT_ID = env("GOOGLE_OAUTH_WEB_CLIENT_ID", default="").strip()
+GOOGLE_OAUTH_CLIENT_IDS = [
+    cid.strip() for cid in env.list("GOOGLE_OAUTH_CLIENT_IDS", default=[]) if cid.strip()
+]
 GOOGLE_JWKS_URL = env("GOOGLE_JWKS_URL", default="https://www.googleapis.com/oauth2/v3/certs")
 
 OTP_TOTP_ISSUER = env("MFA_TOTP_ISSUER", default="MediLink Rwanda")
@@ -617,8 +620,10 @@ def mailers_config(email_url: str) -> dict[str, dict[str, Any]]:
 # Gmail with an app password (decision 2026-11-05):
 #   EMAIL_URL=smtp+tls://you%40gmail.com:<16-letter app password>@smtp.gmail.com:587
 #   DEFAULT_FROM_EMAIL=MediLink Rwanda <you@gmail.com>   (Gmail sends only from its own address)
-MAILERS = mailers_config(env("EMAIL_URL", default="smtp://127.0.0.1:1025"))
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="MediLink Rwanda <no-reply@medilink.test>")
+MAILERS = mailers_config(env("EMAIL_URL", default="smtp://127.0.0.1:1025").strip())
+DEFAULT_FROM_EMAIL = env(
+    "DEFAULT_FROM_EMAIL", default="MediLink Rwanda <no-reply@medilink.test>"
+).strip()
 
 # Daily audit anchor (medilink.audit.anchor): log | email | file
 AUDIT_ANCHOR_SINK = env("AUDIT_ANCHOR_SINK", default="log")

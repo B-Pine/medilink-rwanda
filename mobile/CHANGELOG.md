@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 ## [Unreleased]
 
+### 1.0.8 (2026-11-06)
+
+- Changed: rebuilt from `main` after the website and staff updates (#250, #255, #256). Same
+  screens as 1.0.7; the new number lets phones with 1.0.7 install it as an update.
+
 ### 1.0.7 (2026-11-06)
 
 - Added: "Continue with Google" under sign-in and sign-up (shown only when the server has it on).

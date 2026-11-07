@@ -9,6 +9,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Dark mode like the app, cards that read as cards (2026-11-07)
+
+- Changed: dark mode on both web apps uses the patient app's palette (`mobile/lib/app/theme.dart`):
+  neutral charcoal (page #111315, cards #1b1e21, lines #2d3135) instead of green-tinted
+  charcoal; green only for actions and accents. Browser theme colour follows.
+- Fixed: in light mode the dashboards' cards blended into the page. The page is now a clear step
+  below white (#eef2ef), card edges are stronger, and the patient dashboard's panels take the
+  soft card shadow (as the staff app's).
+- Fixed: the overview's dispute reminder said "Open ticket"; it says "Open".
+
 ### Pre-launch cleanup (2026-11-07)
 
 - Added: **disputes** screens (S10b-F1..F3, FR-DSP-01..10). Patients: Disputes list; "Report a

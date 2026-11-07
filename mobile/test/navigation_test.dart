@@ -44,8 +44,13 @@ void main() {
     const id = '0196f0a1-2b3c-7d4e-8f90-123456789abc';
     expect(n('/dashboard/appointments/$id').appRoute, '/visits/booking/$id');
     expect(n('/dashboard/queue/$id').appRoute, '/visits/ticket/$id');
-    expect(n('/dashboard/medications/$id').appRoute, '/me/medications');
+    expect(n('/dashboard/medications/$id').appRoute, '/me/medications/$id');
     expect(n('/dashboard/documents/$id').appRoute, '/me/documents');
+    // v1.1.2: bills, disputes and record details open in the app too
+    expect(n('/dashboard/records/$id').appRoute, '/me/records/$id');
+    expect(n('/dashboard/bills/$id').appRoute, '/me/bills/$id');
+    expect(n('/dashboard/disputes/$id').appRoute, '/me/disputes/$id');
+    expect(n('/dashboard/disputes').appRoute, '/me/disputes');
   });
 
   test('every new label exists in Kinyarwanda and English', () {

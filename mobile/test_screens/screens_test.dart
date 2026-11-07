@@ -29,6 +29,8 @@ import 'package:medilink/screens/me/me_screen.dart';
 import 'package:medilink/screens/me/settings_screen.dart';
 import 'package:medilink/screens/me/notification_settings_screen.dart';
 import 'package:medilink/screens/me/profile_screen.dart';
+import 'package:medilink/screens/me/health_details.dart';
+import 'package:medilink/screens/me/money_disputes.dart';
 
 import 'sample.dart';
 
@@ -135,7 +137,7 @@ void main() {
     // Settings reads the phone's saved choices and fingerprint support; nothing is saved here.
     // ignore: invalid_use_of_visible_for_testing_member (this folder is a test, outside test/)
     SharedPreferences.setMockInitialValues({});
-    for (final channel in ['plugins.it_nomads.com/flutter_secure_storage', 'plugins.flutter.io/local_auth_android']) {
+    for (final channel in ['plugins.it_nomads.com/flutter_secure_storage', 'plugins.flutter.io/local_auth_android', 'rw.medilink/secure']) {
       messenger.setMockMethodCallHandler(MethodChannel(channel), (_) async => null);
     }
     await _loadFonts();
@@ -402,4 +404,77 @@ void main() {
       },
     );
   }, skip: _out.isEmpty);
+
+  // ---- v1.1.2: dashboard parity (bills, disputes, record and medicine details)
+  final bill = <String, dynamic>{
+    'id': 'b1', 'patient_id': 'p1', 'facility_name': 'Kicukiro Health Center', 'service_date': '2026-10-26',
+    'status': 'partly_paid', 'total_rwf': 11000, 'insurer_share_rwf': 9350, 'patient_share_rwf': 1650,
+    'paid_rwf': 1000, 'balance_rwf': 650,
+    'lines': [
+      {'name': 'Antenatal visit', 'quantity': 1, 'total_rwf': 3000, 'insurer_share_rwf': 2550, 'patient_share_rwf': 450},
+      {'name': 'Ultrasound', 'quantity': 1, 'total_rwf': 8000, 'insurer_share_rwf': 6800, 'patient_share_rwf': 1200},
+    ],
+    'payments': [
+      {'method': 'mtn_momo', 'amount_rwf': 1000, 'received_at': '2026-10-26T09:12:00Z', 'status': 'recorded', 'receipt_number': 'RC-2026-000184'},
+    ],
+  };
+  final bills = [
+    {...bill, 'id': 'b0', 'facility_name': 'Kigali Clinic', 'service_date': '2026-11-07', 'status': 'open', 'balance_rwf': 1200},
+    bill,
+    {...bill, 'id': 'b2', 'facility_name': 'Kibagabaga District Hospital', 'service_date': '2026-10-08', 'status': 'paid', 'balance_rwf': 0},
+  ];
+  final dispute = <String, dynamic>{
+    'id': 'd1', 'patient_id': 'p1', 'facility_name': 'Kigali Clinic', 'subject_type': 'document',
+    'subject_snapshot': {'number': 'DOC-2026-000412'}, 'status': 'resolved', 'outcome': 'correction_refused',
+    'description': 'My certificate says three days of rest; the doctor told me five days.',
+    'decision_reason': 'The signed consultation records three days of rest.',
+    'created_at': '2026-10-29T08:00:00Z', 'acknowledge_by': '2026-11-01T08:00:00Z', 'decide_by': null,
+    'can_accept': true, 'can_escalate': true, 'can_reopen': false, 'can_add_statement': true, 'statement': '',
+    'version': 4,
+    'messages': [
+      {'id': 'm1', 'author_name': 'Mutesi Diane', 'author_role': 'handler', 'body': 'We read the signed record with Dr Uwimana.', 'created_at': '2026-11-04T10:00:00Z'},
+      {'id': 'm2', 'author_name': 'Mukamana Jeanne', 'author_role': 'patient', 'body': 'Thank you.', 'created_at': '2026-11-04T11:00:00Z'},
+    ],
+  };
+  final prescription = <String, dynamic>{
+    'id': 'rx1', 'patient_id': 'p1', 'number': 'RX-2026-000101', 'facility_name': 'Kigali Clinic',
+    'status': 'ready_to_dispense', 'expires_at': '2026-12-07T00:00:00Z',
+    'items': [
+      {'drug_display': 'Paracetamol 500 mg tablet', 'dose': '2 tablets', 'frequency_code': 'tds', 'duration_days': 5,
+       'quantity': 30, 'dispensed_quantity': 0, 'instructions': 'After food', 'status': 'issued', 'substitute_display': ''},
+      {'drug_display': 'Amoxicillin 500 mg capsule', 'dose': '1 capsule', 'frequency_code': 'bd', 'duration_days': 7,
+       'quantity': 14, 'dispensed_quantity': 14, 'instructions': '', 'status': 'dispensed', 'substitute_display': ''},
+    ],
+  };
+  final record = <String, dynamic>{
+    'id': 'c1', 'facility_name': 'Kigali Clinic', 'service_date': '2026-10-18', 'doctor_name': 'Dr Uwimana Keza',
+    'diagnoses': [{'plain_language': 'High blood pressure', 'display': 'Essential hypertension'}],
+    'patient_instructions_text': 'Take the tablets every morning. Come back in 4 weeks.', 'plan_text': '',
+    'vitals': {'temperature_c': 36.8, 'systolic_mmhg': 152, 'diastolic_mmhg': 96, 'pulse_bpm': 84, 'weight_kg': 71},
+    'addenda': [],
+  };
+
+  for (final dark in [false, true]) {
+    final tag = dark ? '-dark' : '';
+    testWidgets('parity bills$tag', (tester) async {
+      await _shoot(tester, 'bills$tag', const BillsScreen(), [...base, billsProvider.overrideWith((ref) async => bills)],
+          lang: 'en', dark: dark);
+    }, skip: _out.isEmpty);
+    testWidgets('parity bill$tag', (tester) async {
+      await _shoot(tester, 'bill$tag', const BillScreen(billId: 'b1'),
+          [...base, billProvider.overrideWith((ref, id) async => bill)], lang: 'en', dark: dark);
+    }, skip: _out.isEmpty);
+    testWidgets('parity dispute$tag', (tester) async {
+      await _shoot(tester, 'dispute$tag', const DisputeScreen(disputeId: 'd1'),
+          [...base, disputeProvider.overrideWith((ref, id) async => dispute)], lang: 'en', dark: dark);
+    }, skip: _out.isEmpty);
+    testWidgets('parity medication$tag', (tester) async {
+      await _shoot(tester, 'medication$tag', const MedicationScreen(prescriptionId: 'rx1'),
+          [...base, prescriptionProvider.overrideWith((ref, id) async => prescription)], dark: dark);
+    }, skip: _out.isEmpty);
+    testWidgets('parity record$tag', (tester) async {
+      await _shoot(tester, 'record$tag', const RecordScreen(recordId: 'c1'),
+          [...base, recordProvider.overrideWith((ref, id) async => record)], lang: 'en', dark: dark);
+    }, skip: _out.isEmpty);
+  }
 }

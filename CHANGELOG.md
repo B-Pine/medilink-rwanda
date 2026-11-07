@@ -8,6 +8,8 @@ This root changelog covers documentation and repository-wide changes (CI, toolin
 
 ### Added
 
+- Pre-launch cleanup (2026-11-07): README and docs index status brought up to date (every M1 sprint built; staging, sign-offs and the Kinyarwanda review left); the close-the-books record gains the closure of #137, #140 and #263; acceptance records S6-F7, S8-F, S10b-F and the traceability rows FR-PAT-10, FR-BIL-12, FR-DSP-01..10 updated with the PRs that built them.
+
 - Upgrade 17 (`docs/upgrade/17-email-and-google-signin.md`): branded emails in rw/en/fr through Gmail and Sign in with Google for patients, with setup steps; security 03 §1a, the API catalogue and FR-PAT-02 updated.
 
 - W9 (#208): API catalogue rows for the national aggregate report and its CSV export; traceability FR-RPT-05 updated.

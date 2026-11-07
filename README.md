@@ -12,7 +12,7 @@ Facilities onboard their own staff and run the whole visit electronically:
 - billing and receipts
 - disputes
 
-> Status: **S0 verified; S1–S4 and S5a (booking core) implemented**, not yet on staging ([#17](https://github.com/B-Pine/medilink-rwanda/issues/17)). Next: S5b, S9 (notifications) and S10 part 1 (help), following the [M1 completion plan](docs/superpowers/plans/2026-10-31-m1-completion-master-plan.md) and the [sprint contracts](docs/architecture/contracts/README.md). Analysis, design research, security and architecture are documented. Phase 1 is a web platform; frontend and backend are hosted separately. The mobile app, SMS, WhatsApp and USSD follow later.
+> Status (2026-11-07): **every M1 sprint is built** (S0–S11): onboarding, facility setup, patients, the live queue with triage and the laboratory loop, booking, clinical records with the legacy register import, pharmacy and documents, billing with the patient's bills, notifications, help and disputes, the super admin console, the public website and the Android patient app. Tests run in CI against the contract mocks and, for the API, PostgreSQL with row-level security. **Not yet live:** the staging environment in Rwanda ([#17](https://github.com/B-Pine/medilink-rwanda/issues/17)) and its checks, the legal and clinical sign-offs ([M1 milestone](https://github.com/B-Pine/medilink-rwanda/milestone/1)), and a native-speaker review of the Kinyarwanda text ([#11](https://github.com/B-Pine/medilink-rwanda/issues/11)). What stays open after each build is listed in the [close-the-books record](docs/qa/close-the-books-2026-11.md).
 
 ## Documentation
 
@@ -31,8 +31,8 @@ backend/                 Django API → api.medilink.rw (REST, WebSockets, backg
 frontend/                pnpm workspace → static hosting
   apps/staff-web/        Admin, reception, doctor, pharmacy, display → staff.medilink.rw
   apps/patient-web/      Public pages + patient PWA → medilink.rw
-  apps/patient-mobile/   Android app (phase 3)
   packages/              Shared UI kit, API client, config
+mobile/                  Flutter patient app (Android)
 ml/symptom-checker/      ML pipelines for the triage model (phase 2+)
 brand/                   Logos, icons, video sources
 docs/                    Analysis, design, security, architecture, roadmap, decisions

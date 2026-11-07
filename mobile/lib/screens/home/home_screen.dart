@@ -343,7 +343,7 @@ class _Footer extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         color: Palette.page,
         padding: const EdgeInsets.symmetric(horizontal: Space.xl, vertical: Space.md + 2),
-        child: Row(children: children),
+        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: children),
       );
 }
 
@@ -425,14 +425,22 @@ class TicketCard extends StatelessWidget {
                 const Icon(PhosphorIconsRegular.mapPin, size: 18, color: Palette.brand),
                 const SizedBox(width: 6),
                 Expanded(
-                  child: Text(
-                    visit.facilityName,
-                    style: theme.textTheme.titleSmall,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        visit.facilityName,
+                        style: theme.textTheme.titleSmall,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (wait != null && !called) ...[
+                        const SizedBox(height: Space.xs),
+                        _WaitChip(text: wait),
+                      ],
+                    ],
                   ),
                 ),
-                if (wait != null && !called) _WaitChip(text: wait),
               ],
             ),
           ],
@@ -538,11 +546,13 @@ class _NextVisitCard extends StatelessWidget {
               const Icon(PhosphorIconsRegular.mapPin, size: 18, color: Palette.brand),
               const SizedBox(width: 6),
               Expanded(
-                child: Text(booking.facilityName, style: theme.textTheme.titleSmall, maxLines: 1, overflow: TextOverflow.ellipsis),
-              ),
-              const SizedBox(width: Space.sm),
-              Flexible(
-                child: Text(s.pick(booking.service), style: theme.textTheme.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(booking.facilityName, style: theme.textTheme.titleSmall, maxLines: 2, overflow: TextOverflow.ellipsis),
+                    Text(s.pick(booking.service), style: theme.textTheme.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  ],
+                ),
               ),
             ],
           ),
@@ -601,7 +611,7 @@ class _FindCareCard extends StatelessWidget {
   }
 }
 
-/// Four actions, bank-app style: an icon tile and a short label under it.
+/// Four actions in one quiet row inside a single card: an icon and a one-line label each.
 class _QuickActions extends StatelessWidget {
   const _QuickActions();
 
@@ -615,42 +625,48 @@ class _QuickActions extends StatelessWidget {
       (s.records, PhosphorIconsRegular.clipboardText, () => context.go('/me/records')),
     ];
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Space.md),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (final (label, icon, onTap) in actions)
-            Expanded(
-              child: InkWell(
-                borderRadius: BorderRadius.circular(Space.radius),
-                onTap: onTap,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: Space.xs),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 58,
-                        height: 58,
-                        decoration: BoxDecoration(
-                          color: Palette.surface,
-                          borderRadius: BorderRadius.circular(18),
-                          boxShadow: Shadows.card,
+      padding: const EdgeInsets.symmetric(horizontal: Space.lg),
+      child: SoftCard(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: Space.xs, vertical: Space.xs),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (final (label, icon, onTap) in actions)
+                Expanded(
+                  child: Semantics(
+                    button: true,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(Space.radius),
+                      onTap: onTap,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 72),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: Space.md),
+                          child: Column(
+                            children: [
+                              Icon(icon, size: 26, color: Palette.brand),
+                              const SizedBox(height: Space.sm),
+                              // One line always; a long word shrinks a little instead of breaking.
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  label,
+                                  maxLines: 1,
+                                  softWrap: false,
+                                  style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Palette.ink),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        child: Icon(icon, size: 26, color: Palette.brand),
                       ),
-                      const SizedBox(height: Space.sm),
-                      Text(
-                        label,
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Palette.ink, height: 1.2),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-        ],
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -664,7 +680,8 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(Space.xl, 0, Space.md, Space.md),
+        // Title and link line up with the cards' 16 px edges.
+        padding: const EdgeInsets.fromLTRB(Space.lg, 0, Space.xs, Space.sm),
         child: Row(
           children: [
             Expanded(child: Text(title, style: Theme.of(context).textTheme.titleLarge)),
@@ -690,14 +707,6 @@ class _NearYou extends ConsumerStatefulWidget {
 }
 
 class _NearYouState extends ConsumerState<_NearYou> {
-  final _pages = PageController(viewportFraction: 0.74);
-
-  @override
-  void dispose() {
-    _pages.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
@@ -730,20 +739,56 @@ class _NearYouState extends ConsumerState<_NearYou> {
             error: (e, _) => ErrorState(error: e, onRetry: () => ref.invalidate(facilitySearchProvider)),
             data: (list) => list.isEmpty
                 ? EmptyState(icon: PhosphorIconsRegular.buildings, text: s.noResults)
-                : PageView.builder(
-                    controller: _pages,
-                    padEnds: false,
-                    itemCount: list.take(10).length,
-                    itemBuilder: (context, i) => Padding(
-                      padding: EdgeInsets.fromLTRB(i == 0 ? Space.lg : Space.xs + 2, 2, Space.xs + 2, Space.md),
-                      child: FacilityMiniCard(facility: list[i]),
-                    ),
+                : LayoutBuilder(
+                    builder: (context, box) {
+                      // The next card peeks past the right edge; 16 px at both ends of the row.
+                      final width = (box.maxWidth - 2 * Space.lg) * 0.82;
+                      return ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        clipBehavior: Clip.none,
+                        physics: const _SnapPhysics(),
+                        padding: const EdgeInsets.fromLTRB(Space.lg, 2, Space.lg, Space.md),
+                        itemCount: list.take(10).length,
+                        separatorBuilder: (_, _) => const SizedBox(width: Space.md),
+                        itemBuilder: (context, i) => SizedBox(width: width, child: FacilityMiniCard(facility: list[i])),
+                      );
+                    },
                   ),
           ),
         ),
       ],
     );
   }
+}
+
+/// Lets the carousel settle with a card's left edge at the 16 px gutter.
+class _SnapPhysics extends ScrollPhysics {
+  const _SnapPhysics({super.parent});
+
+  @override
+  _SnapPhysics applyTo(ScrollPhysics? ancestor) => _SnapPhysics(parent: buildParent(ancestor));
+
+  @override
+  Simulation? createBallisticSimulation(ScrollMetrics position, double velocity) {
+    final extent = position.viewportDimension;
+    // Card width + gap, as laid out in _NearYou.
+    final step = (extent - 2 * Space.lg) * 0.82 + Space.md;
+    final tolerance = toleranceFor(position);
+    var page = position.pixels / step;
+    if (velocity < -tolerance.velocity) {
+      page = page.floorToDouble();
+    } else if (velocity > tolerance.velocity) {
+      page = page.ceilToDouble();
+    } else {
+      page = page.roundToDouble();
+    }
+    final target = (page * step).clamp(position.minScrollExtent, position.maxScrollExtent);
+    if ((target - position.pixels).abs() < tolerance.distance) return super.createBallisticSimulation(position, velocity);
+    return ScrollSpringSimulation(spring, position.pixels, target, velocity, tolerance: tolerance);
+  }
+
+  @override
+  bool get allowImplicitScrolling => false;
 }
 
 class _LocationPrompt extends ConsumerWidget {

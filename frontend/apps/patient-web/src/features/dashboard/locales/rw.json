@@ -39,7 +39,8 @@
       "findCare": "Ubuvuzi",
       "appointments": "Gahunda",
       "records": "Amadosiye"
-    }
+    },
+    "bills": "Inyemezabuguzi"
   },
   "account": {
     "label": "Menyu ya konti ya {{name}}",
@@ -177,7 +178,9 @@
     "open": "Fungura tike",
     "result": "Igisubizo gishya kiriteguye",
     "readResult": "Gisome",
-    "planned": "{{what}} iregereje"
+    "planned": "{{what}} iregereje",
+    "bill": "Usigaje kwishyura {{amount}}",
+    "seeBill": "Reba inyemezabuguzi"
   },
   "comingUp": {
     "title": "Byateganyijwe n'ivuriro ryawe",

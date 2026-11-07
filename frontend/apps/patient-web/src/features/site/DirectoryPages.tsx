@@ -13,7 +13,7 @@ import {
   Tooth,
 } from "@phosphor-icons/react";
 import { Button, buttonClassName, cx, StatusPill } from "@medilink/ui";
-import { kigaliDate } from "@medilink/ui/i18n";
+import { dateFormat, kigaliDate } from "@medilink/ui/i18n";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -78,10 +78,10 @@ function ServiceMark({ code }: { code: string }) {
 }
 
 function weekday(index: number, language: string, style: "short" | "long" = "short") {
-  return new Intl.DateTimeFormat(language === "rw" ? "en" : language, {
-    weekday: style,
-    timeZone: "UTC",
-  }).format(new Date(WEEKDAY_BASE + index * 86_400_000));
+  // dateFormat: Kinyarwanda day names in every browser (#9)
+  return dateFormat(language, { weekday: style, timeZone: "UTC" }).format(
+    new Date(WEEKDAY_BASE + index * 86_400_000),
+  );
 }
 
 /** "Mon–Fri", "Mon–Wed · Sat": consecutive days read as a range. */

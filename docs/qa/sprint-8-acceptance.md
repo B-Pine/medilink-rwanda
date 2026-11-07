@@ -29,7 +29,9 @@ Evidence collected on 2026-11-02 on PostgreSQL 16, suite run as the runtime role
 
 | # | Check | Evidence | Result |
 |---|---|---|---|
-| S8-F1..F7 | Staff and patient screens | Not started | Pending |
+| S8-F1..F5 | Staff screens: bills and bill page, payment stage panel, shifts, approvals, receipt print | `apps/staff-web/src/features/billing/cashier.test.tsx`, `claims.test.tsx` (#219) | Pass (mocks) |
+| S8-F6 | Patient My bills, balance first; bill detail with lines, shares, payments and receipt numbers; overview reminder | `apps/patient-web/src/features/bills/bills.test.tsx` (order, overview link, totals, lines, receipt, axe, other account's bill) | Pass (mocks) |
+| S8-F7 | Mocks for PB1 and PB2; `bills` namespace in rw/en/fr; amounts through `formatMoney()`, dates through `dateFormat()` | `packages/api-client/src/mocks/features/billing.ts`; `i18n-review.md` | Pass |
 
 ## Integration checks
 

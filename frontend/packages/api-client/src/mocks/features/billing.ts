@@ -12,11 +12,13 @@ import {
   type ExemptionReason,
   type MethodTotals,
   type PaymentMethod,
+  type PatientBill,
+  type PatientBillRow,
   type Receipt,
 } from "../../features/billing";
 import type { LanguageCode } from "../../types";
 import type { FeatureMockFactory } from "../features";
-import { id, now, page } from "./s1-common";
+import { id, now, page, stableId } from "./s1-common";
 
 /**
  * S8 mocks (sprint-08 §3.1), Kigali Clinic, today. Reception (reception@medilink.test) and the
@@ -30,7 +32,12 @@ const today = () => now().slice(0, 10);
 
 interface MockBill {
   bill: Bill;
+  /** The patient's own id (S3), for the patient's My bills (PB1, PB2). */
+  patient_id?: string;
 }
+
+/** patient@medilink.test (mocks/data.ts PATIENTS): Mukamana Jeanne. */
+const MUKAMANA = "9b2f1c3d-1111-4000-8000-000000000001";
 
 function line(
   name: string,
@@ -143,11 +150,15 @@ function seed() {
   const mutuelle = { code: "mutuelle", display: "Mutuelle de Santé", bp: 1_000 };
   const bills: MockBill[] = [
     {
-      bill: makeBill("Mukamana Jeanne", "G-012", rama, [
-        ["General consultation", "CONS-GEN", "service", 5_000, 1],
-        ["Malaria RDT", "LAB-RDT", "procedure", 2_000, 1],
-        ["Paracetamol 500 mg", "PARA500", "medicine", 50, 20],
-      ]),
+      bill: {
+        ...makeBill("Mukamana Jeanne", "G-012", rama, [
+          ["General consultation", "CONS-GEN", "service", 5_000, 1],
+          ["Malaria RDT", "LAB-RDT", "procedure", 2_000, 1],
+          ["Paracetamol 500 mg", "PARA500", "medicine", 50, 20],
+        ]),
+        id: stableId("bill/mukamana/today"),
+      },
+      patient_id: MUKAMANA,
     },
     {
       bill: makeBill("Habimana Eric", "G-014", null, [
@@ -299,6 +310,7 @@ function seed() {
   };
   return {
     bills,
+    patientHistory: patientHistory(),
     receipts,
     approvals: [request],
     shift: null as CashShift | null,
@@ -307,6 +319,88 @@ function seed() {
     claims,
     icd10,
   };
+}
+
+/**
+ * Mukamana's earlier bills at other facilities (patient side only, PB1/PB2): one paid in full with
+ * a receipt, one partly paid. Stable ids, so the detail page survives a reload.
+ */
+function patientHistory(): PatientBill[] {
+  const daysAgo = (n: number) => new Date(Date.now() - n * 86_400_000).toISOString();
+  const lineOf = (name: string, total: number, insurer: number, quantity = 1) => ({
+    name,
+    quantity,
+    total_rwf: total,
+    insurer_share_rwf: insurer,
+    patient_share_rwf: total - insurer,
+  });
+  const bill = (
+    key: string,
+    facility: string,
+    at: string,
+    lines: PatientBill["lines"],
+    payments: PatientBill["payments"],
+  ): PatientBill => {
+    const total = lines.reduce((sum, l) => sum + l.total_rwf, 0);
+    const insurer = lines.reduce((sum, l) => sum + l.insurer_share_rwf, 0);
+    const share = total - insurer;
+    const paid = payments
+      .filter((p) => p.status === "recorded")
+      .reduce((s, p) => s + p.amount_rwf, 0);
+    const balance = Math.max(0, share - paid);
+    return {
+      id: stableId(`bill/mukamana/${key}`),
+      patient_id: MUKAMANA,
+      facility_name: facility,
+      service_date: at.slice(0, 10),
+      status: balance === 0 ? "paid" : paid > 0 ? "partly_paid" : "open",
+      total_rwf: total,
+      patient_share_rwf: share,
+      paid_rwf: paid,
+      balance_rwf: balance,
+      insurer_share_rwf: insurer,
+      exempted_rwf: 0,
+      credited_rwf: 0,
+      refunded_rwf: 0,
+      lines,
+      payments,
+      credit_notes: [],
+    };
+  };
+  const antenatal = daysAgo(12);
+  const lab = daysAgo(30);
+  return [
+    bill(
+      "antenatal",
+      "Kicukiro Health Center",
+      antenatal,
+      [lineOf("Antenatal visit", 3_000, 2_550), lineOf("Ultrasound", 8_000, 6_800)],
+      [
+        {
+          method: "mtn_momo",
+          amount_rwf: 1_000,
+          received_at: antenatal,
+          status: "recorded",
+          receipt_number: "RC-2026-000184",
+        },
+      ],
+    ),
+    bill(
+      "lab",
+      "Kibagabaga District Hospital",
+      lab,
+      [lineOf("Specialist consultation", 10_000, 8_500), lineOf("Full blood count", 4_000, 3_400)],
+      [
+        {
+          method: "cash",
+          amount_rwf: 2_100,
+          received_at: lab,
+          status: "recorded",
+          receipt_number: "RC-2026-000097",
+        },
+      ],
+    ),
+  ];
 }
 
 interface Ledger {
@@ -490,7 +584,104 @@ export const billingMocks: FeatureMockFactory = (context) => {
     };
   };
 
+  // ---- S8 §3.2 patient (PB1, PB2): own and dependants' bills, any facility
+  const toPatient = (m: MockBill): PatientBill => {
+    const b = m.bill;
+    const lines = b.lines.filter((l) => !l.removed);
+    return {
+      id: b.id,
+      patient_id: m.patient_id!,
+      facility_name: FACILITY,
+      service_date: b.service_date,
+      status: b.status,
+      total_rwf: b.totals.total_rwf,
+      patient_share_rwf: b.totals.patient_share_rwf,
+      paid_rwf: b.totals.paid_rwf,
+      balance_rwf: b.totals.balance_rwf,
+      insurer_share_rwf: b.totals.insurer_share_rwf,
+      exempted_rwf: b.totals.exempted_rwf,
+      credited_rwf: b.totals.credited_rwf,
+      refunded_rwf: b.totals.refunded_rwf,
+      lines: lines.map((l) => ({
+        name: l.name,
+        quantity: l.quantity,
+        total_rwf: l.total_rwf,
+        insurer_share_rwf: l.insurer_share_rwf,
+        patient_share_rwf: l.patient_share_rwf,
+      })),
+      payments: b.payments.map((p) => ({
+        method: p.method,
+        amount_rwf: p.amount_rwf,
+        received_at: p.received_at,
+        status: p.status,
+        receipt_number: p.receipt?.number ?? null,
+      })),
+      credit_notes: b.credit_notes.map((c) => ({
+        number: c.number,
+        amount_rwf: c.amount_rwf,
+        issued_at: now(),
+      })),
+    };
+  };
+  const patientBills = (profiles: Set<string>): PatientBill[] =>
+    [
+      ...db.bills.filter((m) => m.patient_id && profiles.has(m.patient_id)).map(toPatient),
+      ...db.patientHistory.filter((b) => profiles.has(b.patient_id)),
+    ].filter((b) => b.status !== "voided");
+  const patientRow = ({
+    id: billId,
+    patient_id,
+    facility_name,
+    service_date,
+    status,
+    total_rwf,
+    patient_share_rwf,
+    paid_rwf,
+    balance_rwf,
+  }: PatientBill): PatientBillRow => ({
+    id: billId,
+    patient_id,
+    facility_name,
+    service_date,
+    status,
+    total_rwf,
+    patient_share_rwf,
+    paid_rwf,
+    balance_rwf,
+  });
+
   const handlers = [
+    http.get(`${api}/patient/bills/`, async ({ request }) => {
+      await context.settle();
+      const lang = context.languageFrom(request);
+      const auth = context.authenticatedPatient(lang);
+      if ("error" in auth) return auth.error;
+      const url = new URL(request.url);
+      const wanted = url.searchParams.get("patient_id");
+      const hasBalance = url.searchParams.get("has_balance");
+      const rows = patientBills(new Set(auth.me.profiles.map((p) => p.patient_id)))
+        .filter((b) => !wanted || b.patient_id === wanted)
+        .filter((b) =>
+          hasBalance === "true"
+            ? b.balance_rwf > 0
+            : hasBalance === "false"
+              ? b.balance_rwf === 0
+              : true,
+        )
+        .sort((x, y) => y.service_date.localeCompare(x.service_date))
+        .map(patientRow);
+      return HttpResponse.json(page(rows, url));
+    }),
+    http.get(`${api}/patient/bills/:id/`, async ({ request, params }) => {
+      await context.settle();
+      const lang = context.languageFrom(request);
+      const auth = context.authenticatedPatient(lang);
+      if ("error" in auth) return auth.error;
+      const bill = patientBills(new Set(auth.me.profiles.map((p) => p.patient_id))).find(
+        (b) => b.id === params.id,
+      );
+      return bill ? HttpResponse.json(bill) : notFound(lang);
+    }),
     http.get(`${S}/bills/`, ({ request }) => {
       const ok = staff(request, READ);
       if ("error" in ok) return ok.error;

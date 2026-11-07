@@ -270,6 +270,46 @@ export interface ClaimList {
   results: ClaimRow[];
 }
 
+/** PB1: one of my (or a dependant's) bills, any facility, newest first. */
+export interface PatientBillRow {
+  id: Uuid;
+  patient_id: Uuid;
+  facility_name: string;
+  service_date: string;
+  status: BillStatus;
+  total_rwf: number;
+  patient_share_rwf: number;
+  paid_rwf: number;
+  balance_rwf: number;
+}
+
+export interface PatientBillLine {
+  name: string;
+  quantity: number;
+  total_rwf: number;
+  insurer_share_rwf: number;
+  patient_share_rwf: number;
+}
+
+export interface PatientPayment {
+  method: PaymentMethod;
+  amount_rwf: number;
+  received_at: string;
+  status: "recorded" | "voided";
+  receipt_number: string | null;
+}
+
+/** PB2: the bill with its lines, payments (receipt numbers) and credit notes. */
+export interface PatientBill extends PatientBillRow {
+  insurer_share_rwf: number;
+  exempted_rwf: number;
+  credited_rwf: number;
+  refunded_rwf: number;
+  lines: PatientBillLine[];
+  payments: PatientPayment[];
+  credit_notes: { number: string; amount_rwf: number; issued_at: string }[];
+}
+
 export interface PaymentInput {
   version: number;
   method: PaymentMethod;
@@ -301,6 +341,8 @@ export const billingPaths = {
   claimsExport: (params: { insurer: string; month: string; kind?: "csv" | "pdf" }) =>
     `${STF}/insurance-claims/export/${query({ ...params })}`,
   markClaim: (billId: Uuid) => `${STF}/bills/${billId}/claim/`,
+  patientBills: "/api/v1/patient/bills/",
+  patientBill: (id: Uuid) => `/api/v1/patient/bills/${id}/`,
 };
 
 function query(params: Record<string, string | number | boolean | undefined | null>): string {
@@ -368,6 +410,14 @@ export function createBillingApi(client: ApiClient) {
       billId: Uuid,
       body: { version: number; status: "paid" | "rejected"; reason?: string; reference?: string },
     ) => client.post<ClaimRow>(billingPaths.markClaim(billId), body),
+    /** S8 §3.2: the signed-in patient's own and dependants' bills (S8-F6). */
+    patient: {
+      /** PB1 */
+      list: (params: { patient_id?: Uuid; has_balance?: boolean; page?: number } = {}) =>
+        client.get<Paginated<PatientBillRow>>(billingPaths.patientBills + query(params)),
+      /** PB2: `404` for another account's bill. */
+      get: (id: Uuid) => client.get<PatientBill>(billingPaths.patientBill(id)),
+    },
   };
 }
 

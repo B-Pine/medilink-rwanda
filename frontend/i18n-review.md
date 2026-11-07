@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5967.
+Keys: 6001.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -4250,6 +4250,44 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `specialties.public_health` | Ubuzima rusange | Public health | needs native-speaker review |
 | `specialties.other` | Ibindi | Other | needs native-speaker review |
 
+## patient-web feature: bills (namespace bills)
+
+File: `apps/patient-web/src/features/bills/locales/rw.json`
+
+| Key | Kinyarwanda (draft) | English source | Status |
+|---|---|---|---|
+| `title` | Inyemezabuguzi | Bills | needs native-speaker review |
+| `whose` | Inyemezabuguzi za | Whose bills | needs native-speaker review |
+| `everyone` | Bose | Everyone | needs native-speaker review |
+| `failed` | Ntitwashoboye kubona inyemezabuguzi zawe. | We couldn't load your bills. | needs native-speaker review |
+| `toPay` | Ugomba kwishyura | To pay | needs native-speaker review |
+| `left` | {{amount}} zo kwishyura | {{amount}} to pay | needs native-speaker review |
+| `empty` | Nta nyemezabuguzi uragira | No bills yet | needs native-speaker review |
+| `back` | Inyemezabuguzi | Bills | needs native-speaker review |
+| `notFound` | Inyemezabuguzi ntiyabonetse | Bill not found | needs native-speaker review |
+| `total` | Igiteranyo | Total | needs native-speaker review |
+| `insurer` | Ubwishingizi bwishyura | Insurance pays | needs native-speaker review |
+| `share` | Uruhare rwawe | Your share | needs native-speaker review |
+| `exempted` | Wasonewe | Exempted | needs native-speaker review |
+| `credited` | Wasubijwe | Credited | needs native-speaker review |
+| `paid` | Wishyuye | Paid | needs native-speaker review |
+| `balance` | Ugisigaje kwishyura | Left to pay | needs native-speaker review |
+| `lines` | Ibyo wahawe | Items | needs native-speaker review |
+| `item` | Icyo wahawe | Item | needs native-speaker review |
+| `quantity` | Umubare | Qty | needs native-speaker review |
+| `payments` | Ubwishyu | Payments | needs native-speaker review |
+| `receipt` | Inyemezabwishyu | Receipt | needs native-speaker review |
+| `voided` | Byahagaritswe | Cancelled | needs native-speaker review |
+| `status.open` | Kwishyura | To pay | needs native-speaker review |
+| `status.partly_paid` | Wishyuye igice | Partly paid | needs native-speaker review |
+| `status.paid` | Byishyuwe | Paid | needs native-speaker review |
+| `status.voided` | Byahagaritswe | Cancelled | needs native-speaker review |
+| `status.credited` | Wasubijwe | Credited | needs native-speaker review |
+| `method.cash` | Amafaranga mu ntoki | Cash | needs native-speaker review |
+| `method.mtn_momo` | MTN MoMo | MTN MoMo | needs native-speaker review |
+| `method.airtel_money` | Airtel Money | Airtel Money | needs native-speaker review |
+| `method.card` | Ikarita | Card | needs native-speaker review |
+
 ## patient-web feature: booking (namespace booking)
 
 File: `apps/patient-web/src/features/booking/locales/rw.json`
@@ -4469,6 +4507,7 @@ File: `apps/patient-web/src/features/dashboard/locales/rw.json`
 | `nav.short.findCare` | Ubuvuzi | Find care | needs native-speaker review |
 | `nav.short.appointments` | Gahunda | Visits | needs native-speaker review |
 | `nav.short.records` | Amadosiye | Records | needs native-speaker review |
+| `nav.bills` | Inyemezabuguzi | Bills | needs native-speaker review |
 | `account.label` | Menyu ya konti ya {{name}} | Account menu for {{name}} | needs native-speaker review |
 | `account.subtitle` | Konti y'umurwayi | Patient account | needs native-speaker review |
 | `account.profile` | Umwirondoro wanjye | My profile | needs native-speaker review |
@@ -4581,6 +4620,8 @@ File: `apps/patient-web/src/features/dashboard/locales/rw.json`
 | `reminders.result` | Igisubizo gishya kiriteguye | A new result is ready | needs native-speaker review |
 | `reminders.readResult` | Gisome | Read it | needs native-speaker review |
 | `reminders.planned` | {{what}} iregereje | {{what}} is coming up | needs native-speaker review |
+| `reminders.bill` | Usigaje kwishyura {{amount}} | {{amount}} left to pay | needs native-speaker review |
+| `reminders.seeBill` | Reba inyemezabuguzi | See the bill | needs native-speaker review |
 | `comingUp.title` | Byateganyijwe n'ivuriro ryawe | Planned by your clinic | needs native-speaker review |
 | `comingUp.intro` | Amatariki ivuriro ryawe ryateganyije. Tukwibutsa umunsi ubanziriza n'icyo gitondo. | Dates your clinic planned. We remind you the day before and on the morning. | needs native-speaker review |
 | `comingUp.types.vaccination` | Urukingo | Vaccination | needs native-speaker review |

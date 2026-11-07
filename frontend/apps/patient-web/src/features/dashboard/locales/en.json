@@ -39,7 +39,8 @@
       "findCare": "Find care",
       "appointments": "Visits",
       "records": "Records"
-    }
+    },
+    "bills": "Bills"
   },
   "account": {
     "label": "Account menu for {{name}}",
@@ -177,7 +178,9 @@
     "open": "Open ticket",
     "result": "A new result is ready",
     "readResult": "Read it",
-    "planned": "{{what}} is coming up"
+    "planned": "{{what}} is coming up",
+    "bill": "{{amount}} left to pay",
+    "seeBill": "See the bill"
   },
   "comingUp": {
     "title": "Planned by your clinic",

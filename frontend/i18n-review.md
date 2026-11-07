@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5936.
+Keys: 5937.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -204,6 +204,7 @@ File: `apps/staff-web/src/i18n/locales/rw.json`
 | `today.greeting_afternoon` | Mwiriwe, {{name}} | Good afternoon, {{name}} | needs native-speaker review |
 | `today.greeting_evening` | Muraho, {{name}} | Good evening, {{name}} | needs native-speaker review |
 | `today.quickActions` | Ibikorwa byihuse | Quick actions | needs native-speaker review |
+| `today.moreActions` | Ibindi ({{count}}) | More ({{count}}) | needs native-speaker review |
 | `placeholder.title` | {{section}} | {{section}} | needs native-speaker review |
 | `placeholder.body` | Iki gice kizakorwa mu cyiciro gikurikira. | This workspace is planned for a later sprint. | needs native-speaker review |
 | `placeholder.back` | Subira ku Uyu munsi | Back to Today | needs native-speaker review |

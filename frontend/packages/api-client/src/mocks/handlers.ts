@@ -1,3 +1,4 @@
+import { mockId } from "./ids";
 import { delay, http, HttpResponse, type HttpHandler, type WebSocketHandler } from "msw";
 
 import type {
@@ -125,7 +126,7 @@ const PATIENT_PASSWORD_MIN = 8;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function randomId(): string {
-  return crypto.randomUUID();
+  return mockId();
 }
 
 function randomBase32(length: number): string {

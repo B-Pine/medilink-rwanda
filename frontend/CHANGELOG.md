@@ -9,6 +9,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+
+### Dashboards · fixes and accessibility (#262)
+
+- Fixed: mock records keep the same id on every page load (`mocks/ids.ts`), so refreshing or
+  opening a link to a bill, consultation, appointment, application or queue ticket works in mock
+  mode and e2e.
+- Fixed: the platform Command centre no longer links "Escalated disputes" to a missing page (the
+  disputes screens are #263).
+- Fixed (WCAG 2.5.3): the search button, account menu and profile switcher are named by their
+  visible text; tabs used as filters no longer point `aria-controls` at missing panels; the year
+  on patient date badges meets contrast; map credit links are underlined.
 ### Fewer words on the staff dashboards (2026-11-06)
 
 - Changed: staff pages read like the app. The 45 page-header subtitles and the report section

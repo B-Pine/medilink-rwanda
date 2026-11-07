@@ -82,7 +82,6 @@ export function AppShell() {
           <button
             type="button"
             onClick={() => setPaletteOpen(true)}
-            aria-label={t("shell.palette.open")}
             aria-keyshortcuts="Control+K Meta+K"
             className={cx(
               "ml-auto inline-flex min-h-10 min-w-10 cursor-pointer items-center justify-center gap-2.5 rounded-xl",
@@ -92,8 +91,14 @@ export function AppShell() {
             )}
           >
             <MagnifyingGlass aria-hidden="true" className="size-[1.125rem] shrink-0" />
-            <span className="hidden flex-1 text-left md:inline">{t("shell.palette.open")}</span>
-            <kbd className="hidden rounded-md border border-border/70 bg-surface px-1.5 py-0.5 font-sans text-caption font-semibold text-fg-muted shadow-card md:inline">
+            {/* the visible text names the button (WCAG 2.5.3); the key hint is decoration */}
+            <span className="sr-only flex-1 text-left md:not-sr-only">
+              {t("shell.palette.open")}
+            </span>
+            <kbd
+              aria-hidden="true"
+              className="hidden rounded-md border border-border/70 bg-surface px-1.5 py-0.5 font-sans text-caption font-semibold text-fg-muted shadow-card md:inline"
+            >
               {t("shell.palette.shortcut")}
             </kbd>
           </button>

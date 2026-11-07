@@ -31,7 +31,7 @@ const PROFILE = /^\/dashboard\/profile\/.+/;
 describe("patient profile", () => {
   it("home links to the profile; hub shows completion and the next step", async () => {
     const { user, router, container } = await signIn();
-    await user.click(screen.getByRole("button", { name: /^Account menu for/ }));
+    await user.click(screen.getByRole("button", { name: /Account menu$/ }));
     await user.click(await screen.findByRole("menuitem", { name: "My profile" }));
     await waitFor(() => expect(router.state.location.pathname).toMatch(PROFILE));
     expect(await screen.findByText("Complete your profile")).toBeInTheDocument();
@@ -44,7 +44,7 @@ describe("patient profile", () => {
     await waitFor(() => expect(router.state.location.pathname).toMatch(PROFILE));
     // jsdom renders the phone layout: the switcher is in the More drawer
     await user.click(screen.getByRole("button", { name: "More" }));
-    const trigger = await screen.findByRole("button", { name: /^Switch profile:/ });
+    const trigger = await screen.findByRole("button", { name: /Switch profile$/ });
     await user.click(trigger);
     await user.click(await screen.findByRole("menuitem", { name: /Keza Uwase/ }));
     expect(
@@ -53,7 +53,7 @@ describe("patient profile", () => {
     // the drawer closed with the new page; reopen it to read the switcher
     await user.click(screen.getByRole("button", { name: "More" }));
     expect(
-      await screen.findByRole("button", { name: /^Switch profile: Keza Uwase/ }),
+      await screen.findByRole("button", { name: /^Keza Uwase.*Switch profile$/ }),
     ).toHaveTextContent("Your child");
   });
 

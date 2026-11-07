@@ -221,14 +221,15 @@ function AccountMenu() {
   ];
   return (
     <Menu>
-      <MenuTrigger
-        aria-label={t("dashboard.account.label", { name: me.full_name })}
-        className="inline-flex min-h-target cursor-pointer items-center gap-2 rounded-xl px-2 text-fg transition-colors duration-150 hover:bg-subtle data-[state=open]:bg-subtle"
-      >
-        <Avatar name={me.full_name} size="sm" />
-        <span className="hidden max-w-40 truncate text-body-sm font-semibold lg:inline">
+      {/* named by its content (WCAG 2.5.3): the visible name first, then "Account menu" */}
+      <MenuTrigger className="inline-flex min-h-target cursor-pointer items-center gap-2 rounded-xl px-2 text-fg transition-colors duration-150 hover:bg-subtle data-[state=open]:bg-subtle">
+        <span aria-hidden="true" className="contents">
+          <Avatar name={me.full_name} size="sm" />
+        </span>
+        <span className="sr-only max-w-40 truncate text-body-sm font-semibold lg:not-sr-only">
           {me.full_name}
         </span>
+        <span className="sr-only">, {t("dashboard.nav.account")}</span>
         <CaretDown aria-hidden="true" className="hidden size-4 text-fg-muted sm:block" />
       </MenuTrigger>
       <MenuContent>
@@ -422,7 +423,6 @@ function SearchButton({ onOpen, wide }: { onOpen: () => void; wide: boolean }) {
     <button
       type="button"
       onClick={onOpen}
-      aria-label={t("dashboard.search.open")}
       aria-keyshortcuts="Control+K Meta+K"
       className={cx(
         "mx-auto inline-flex min-h-10 w-full max-w-md cursor-pointer items-center gap-2.5 rounded-xl",
@@ -431,9 +431,8 @@ function SearchButton({ onOpen, wide }: { onOpen: () => void; wide: boolean }) {
       )}
     >
       <MagnifyingGlass aria-hidden="true" className="size-[1.125rem] shrink-0" />
-      <span aria-hidden="true" className="flex-1 truncate">
-        {t("dashboard.search.placeholder")}
-      </span>
+      {/* the visible text names the button (WCAG 2.5.3) */}
+      <span className="flex-1 truncate">{t("dashboard.search.placeholder")}</span>
       <kbd
         aria-hidden="true"
         className="rounded-md border border-border/70 bg-surface px-1.5 py-0.5 font-sans text-caption font-semibold text-fg-muted shadow-card"

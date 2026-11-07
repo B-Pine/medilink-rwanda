@@ -286,7 +286,7 @@ describe("clinician profile (2026-11-03)", () => {
     const { user, container } = await signIn("doctor@medilink.test", "/profile/clinician");
     // three facilities: choose one first
     await user.click(await screen.findByRole("button", { name: "Work at Kigali Clinic" }));
-    await user.click(await screen.findByRole("button", { name: /^Account menu/ }));
+    await user.click(await screen.findByRole("button", { name: /Account menu$/ }));
     await user.click(await screen.findByRole("menuitem", { name: "My doctor profile" }));
     expect(
       await screen.findByRole("heading", { level: 1, name: "My clinician profile" }),

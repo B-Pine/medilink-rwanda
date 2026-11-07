@@ -20,6 +20,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 - Fixed (WCAG 2.5.3): the search button, account menu and profile switcher are named by their
   visible text; tabs used as filters no longer point `aria-controls` at missing panels; the year
   on patient date badges meets contrast; map credit links are underlined.
+- Changed: the signed-in apps load into an outline of the dashboard (`ShellSkeleton`) instead of a
+  blank page with "Loading…".
+- Fixed: `Skeleton` no longer forces `height: 1em` over height classes, so sized placeholders
+  (cards, lists) show at their real size.
+- Fixed: on phones the staff top bar fits: the "Live" chip shows its icon only (its own
+  `inline-flex` beat `hidden`, so it wrapped over three lines), and the menu button is icon-only.
 ### Fewer words on the staff dashboards (2026-11-06)
 
 - Changed: staff pages read like the app. The 45 page-header subtitles and the report section

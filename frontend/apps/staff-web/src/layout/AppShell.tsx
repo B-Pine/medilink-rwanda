@@ -64,7 +64,10 @@ export function AppShell() {
             ) : (
               <List aria-hidden="true" className="size-icon" />
             )}
-            <span>{menuOpen ? t("shell.closeMenu") : t("shell.openMenu")}</span>
+            {/* icon only on phones (the bar is crowded); the name stays for assistive tech */}
+            <span className="sr-only sm:not-sr-only">
+              {menuOpen ? t("shell.closeMenu") : t("shell.openMenu")}
+            </span>
           </button>
         </div>
         <Sidebar

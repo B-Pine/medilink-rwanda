@@ -9,6 +9,20 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Dashboards · work screens (#262)
+
+- Changed: the doctor's current patient shows three main actions (Open record, Finish and call
+  next, Complete visit); sending to pharmacy or payment and waiting for results are under "More"
+  (there were seven buttons of equal weight).
+- Added: `ChoiceGroup` (a short list of choices as pills, a native radio group). Lab results with
+  up to six choices (Negative, Trace, +, ++, +++) are one tap each instead of a drop-down.
+- Added: `DateParts` (Day / Month / Year in every language). The walk-in date of birth uses it; a
+  native date input showed the browser's region order (mm/dd/yyyy), easy to swap at the desk.
+- Changed: Patients opens with what to search by, the "N" walk-in shortcut and a link to today's
+  queue instead of an empty page.
+- Changed: patient dashboard: the AI assistant button is icon-only so it covers less, and the
+  account button is avatar-only (the sidebar card already shows whose portal it is).
+
 ### Dashboards · fixes and accessibility (#262)
 
 - Fixed: mock records keep the same id on every page load (`mocks/ids.ts`), so refreshing or

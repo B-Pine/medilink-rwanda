@@ -300,7 +300,8 @@
     "waiting": "En attente",
     "nextUp": "Ensuite",
     "openRecord": "Ouvrir le dossier",
-    "finishAndNext": "Terminer et appeler le suivant"
+    "finishAndNext": "Terminer et appeler le suivant",
+    "more": "Plus"
   },
   "reorders": {
     "title": "Contrôle de la file",

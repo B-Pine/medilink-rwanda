@@ -49,5 +49,10 @@
     "hideTable": "Hisha imbonerahamwe",
     "keyboardHint": "Koresha utubuto tw’imyambi y’ibumoso n’iburyo kugira ngo usome agaciro kamwe kamwe.",
     "tableOf": "Imibare y’igishushanyo: {{title}}"
+  },
+  "dateParts": {
+    "day": "Umunsi",
+    "month": "Ukwezi",
+    "year": "Umwaka"
   }
 }

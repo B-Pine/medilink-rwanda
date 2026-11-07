@@ -7,12 +7,17 @@ import {
   cx,
   EmptyState,
   ImigongoPattern,
+  Menu,
+  MenuContent,
+  MenuItem,
+  MenuTrigger,
   QueueStateBadge,
   SelectField,
   TicketNumber,
 } from "@medilink/ui";
 import {
   ArrowRight,
+  CaretDown,
   CheckCircle,
   Coffee,
   Flask,
@@ -294,24 +299,32 @@ export function MyQueuePage() {
                       <CheckCircle aria-hidden="true" weight="fill" />
                       {t("queue.mine.complete")}
                     </Button>
-                    <Button
-                      variant="secondary"
-                      onClick={() => run(current, "next-stage", { stage: "pharmacy" })}
-                    >
-                      <ArrowRight aria-hidden="true" />
-                      {t("queue.mine.toPharmacy")}
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      onClick={() => run(current, "next-stage", { stage: "payment" })}
-                    >
-                      <ArrowRight aria-hidden="true" />
-                      {t("queue.mine.toPayment")}
-                    </Button>
-                    <Button variant="ghost" onClick={() => run(current, "hold")}>
-                      <Flask aria-hidden="true" />
-                      {t("queue.mine.hold")}
-                    </Button>
+                    {/* the three main actions in view; sending on or holding under "More" (there
+                        were seven buttons of equal weight) */}
+                    <Menu>
+                      <MenuTrigger
+                        className={buttonClassName({ variant: "secondary", size: "lg" })}
+                      >
+                        {t("queue.mine.more")}
+                        <CaretDown aria-hidden="true" className="size-4" />
+                      </MenuTrigger>
+                      <MenuContent align="start">
+                        <MenuItem
+                          onSelect={() => run(current, "next-stage", { stage: "pharmacy" })}
+                        >
+                          <ArrowRight aria-hidden="true" className="size-5 text-fg-muted" />
+                          {t("queue.mine.toPharmacy")}
+                        </MenuItem>
+                        <MenuItem onSelect={() => run(current, "next-stage", { stage: "payment" })}>
+                          <ArrowRight aria-hidden="true" className="size-5 text-fg-muted" />
+                          {t("queue.mine.toPayment")}
+                        </MenuItem>
+                        <MenuItem onSelect={() => run(current, "hold")}>
+                          <Flask aria-hidden="true" className="size-5 text-fg-muted" />
+                          {t("queue.mine.hold")}
+                        </MenuItem>
+                      </MenuContent>
+                    </Menu>
                     {/* S5b (contract R8, D-4): follow-up on the visit being served */}
                     <FollowUpAction visitId={current.visit_id} name={current.display_name} />
                   </>

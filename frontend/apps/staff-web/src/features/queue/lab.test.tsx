@@ -60,7 +60,9 @@ describe("lab technician", () => {
     });
     await user.click(within(form).getByRole("button", { name: "Save result" }));
     expect(within(form).getByText("Enter this result.")).toBeInTheDocument();
-    await user.selectOptions(within(form).getByLabelText("Result"), "positive");
+    // a few choices are pills (radio group), not a drop-down
+    const result = within(form).getByRole("group", { name: "Result" });
+    await user.click(within(result).getByRole("radio", { name: "Positive" }));
     expect(within(form).getByText("Abnormal")).toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
     await user.click(within(form).getByRole("button", { name: "Save result" }));

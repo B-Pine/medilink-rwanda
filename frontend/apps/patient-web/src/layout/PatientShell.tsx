@@ -226,9 +226,8 @@ function AccountMenu() {
         <span aria-hidden="true" className="contents">
           <Avatar name={me.full_name} size="sm" />
         </span>
-        <span className="sr-only max-w-40 truncate text-body-sm font-semibold lg:not-sr-only">
-          {me.full_name}
-        </span>
+        {/* avatar only: the sidebar card already shows whose portal this is */}
+        <span className="sr-only">{me.full_name}</span>
         <span className="sr-only">, {t("dashboard.nav.account")}</span>
         <CaretDown aria-hidden="true" className="hidden size-4 text-fg-muted sm:block" />
       </MenuTrigger>
@@ -803,7 +802,7 @@ export function PatientShell() {
                 <Outlet />
               </div>
               {/* inside <main> so links from the answer open the in-shell pages */}
-              <AssistantLauncher raised={!md} />
+              <AssistantLauncher raised={!md} compact />
             </main>
           </div>
 

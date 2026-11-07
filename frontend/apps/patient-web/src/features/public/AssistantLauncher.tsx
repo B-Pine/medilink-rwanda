@@ -13,9 +13,12 @@ import { useAssistantPanel } from "./assistantState";
  */
 export function AssistantLauncher({
   raised = false,
+  compact = false,
 }: {
   /** Above the phone tab bar of the dashboard. */
   raised?: boolean;
+  /** Icon only (the dashboard): the labelled pill covered tiles and list rows. */
+  compact?: boolean;
 }) {
   const { t } = useTranslation();
   const { pathname } = useLocation();
@@ -50,9 +53,11 @@ export function AssistantLauncher({
           )}
         </span>
         {/* the label folds away once the page scrolls, so the button stops covering content */}
-        <span className="ml-fab-label hidden overflow-hidden pr-3 font-semibold whitespace-nowrap sm:inline-block">
-          {t("public.assistant.launcherShort")}
-        </span>
+        {!compact && (
+          <span className="ml-fab-label hidden overflow-hidden pr-3 font-semibold whitespace-nowrap sm:inline-block">
+            {t("public.assistant.launcherShort")}
+          </span>
+        )}
       </button>
 
       <SidePanel

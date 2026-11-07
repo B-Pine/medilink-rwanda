@@ -9,6 +9,22 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Public site audit, phase 5: quality bar (2026-11-07)
+
+- Changed: the public pages and the patient dashboard follow the system dark mode (as the staff
+  app); Settings can still pin light or dark. The map credit and the hero words read in both.
+- Added: each page has its own search description (rw/en/fr), a canonical address and Open Graph
+  tags; facility pages carry schema.org `Hospital` or `MedicalClinic` data and doctor pages
+  `Physician` (static facts only, no waits or times). `VITE_SITE_URL` sets the canonical origin.
+- Added: How it works, Help, Privacy, Terms and Accessibility are pre-rendered with their tags.
+- Added: an offline line on the public pages, as in the dashboard.
+- Fixed: the document check said nothing when sent empty; it now shows an inline error, and the
+  details request can't be sent twice.
+- Changed: the assistant button's code loads only when the public assistant is on (108 kB less
+  on every public page).
+- Tests: e2e search → facility → book signed out → sign in → back on the booking; the home page
+  when everything is closed; the phone menu (Escape, focus return, no sideways scroll).
+
 ### Public site audit, phase 4: page by page (2026-11-07)
 
 - Changed: Find care and Facilities share one filter bar: search and place; filters inline on wide

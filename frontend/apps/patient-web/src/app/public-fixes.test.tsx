@@ -1,5 +1,5 @@
-import { screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { act, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 
 import { parseBookingPath } from "../auth/booking-intent";
 import { safeReturnPath } from "../auth/return-to";
@@ -94,5 +94,24 @@ describe("pages whose record is gone", () => {
     expect(
       await screen.findByRole("heading", { level: 1, name: "Dental care" }),
     ).toBeInTheDocument();
+  });
+});
+
+describe("offline (phase 5)", () => {
+  it("says so on the public pages when the connection drops, and clears when it is back", async () => {
+    renderApp("/how-it-works");
+    await screen.findByRole("heading", { level: 1, name: "How MediLink works" });
+    const onLine = vi.spyOn(navigator, "onLine", "get").mockReturnValue(false);
+    try {
+      act(() => void window.dispatchEvent(new Event("offline")));
+      expect(
+        await screen.findByText("You are offline. Showing what was last loaded."),
+      ).toBeInTheDocument();
+      onLine.mockReturnValue(true);
+      act(() => void window.dispatchEvent(new Event("online")));
+      expect(screen.queryByText(/You are offline/)).not.toBeInTheDocument();
+    } finally {
+      onLine.mockRestore();
+    }
   });
 });

@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5964.
+Keys: 5965.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -6112,6 +6112,7 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `meta.terms` | Amabwiriza yo gukoresha MediLink ku barwayi no ku mavuriro. | The terms for using MediLink as a patient or a facility. | needs native-speaker review |
 | `meta.forFacilities` | Shyira ivuriro ryawe kuri MediLink: umurongo uhita ugaragara, gahunda n’abaje batayifite mu igenamigambi rimwe. | Put your facility on MediLink: live queue, bookings and walk-ins in one day plan, records in one place. | needs native-speaker review |
 | `meta.checkSymptoms` | Subiza ibibazo bike umenye serivisi n’ivuriro bijyanye n’ibimenyetso byawe. | Answer a few questions to find which service and facility fit your symptoms. | needs native-speaker review |
+| `offline` | Nta interineti ufite. Urabona ibyaherukaga kugera. | You are offline. Showing what was last loaded. | needs native-speaker review |
 
 ## patient-web feature: tracker (namespace tracker)
 

@@ -492,5 +492,6 @@
     "terms": "The terms for using MediLink as a patient or a facility.",
     "forFacilities": "Put your facility on MediLink: live queue, bookings and walk-ins in one day plan, records in one place.",
     "checkSymptoms": "Answer a few questions to find which service and facility fit your symptoms."
-  }
+  },
+  "offline": "You are offline. Showing what was last loaded."
 }

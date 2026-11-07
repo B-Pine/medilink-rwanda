@@ -492,5 +492,6 @@
     "terms": "Les conditions d’utilisation de MediLink pour les patients et les établissements.",
     "forFacilities": "Mettez votre établissement sur MediLink : file en direct, rendez-vous et patients sans rendez-vous dans un seul planning.",
     "checkSymptoms": "Répondez à quelques questions pour trouver le service et l’établissement adaptés à vos symptômes."
-  }
+  },
+  "offline": "Vous êtes hors ligne. Affichage des dernières données chargées."
 }

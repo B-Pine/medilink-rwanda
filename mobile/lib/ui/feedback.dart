@@ -302,29 +302,62 @@ class _LiveDotState extends State<LiveDot> with SingleTickerProviderStateMixin {
       );
 }
 
-/// A small coloured status pill.
+/// The one status pill: open, busy, closed, emergency, a waiting count. Always a word, never
+/// colour alone. [onImage] gives it a white back for use over a drawing or a map.
 class StatusPill extends StatelessWidget {
-  const StatusPill({super.key, required this.text, this.tone = PillTone.brand});
+  const StatusPill({super.key, required this.text, this.tone = PillTone.brand, this.icon, this.dot = false, this.onImage = false});
+
+  /// Open now / closed.
+  factory StatusPill.open({Key? key, required bool open, required String text, bool onImage = false}) =>
+      StatusPill(key: key, text: text, tone: open ? PillTone.brand : PillTone.muted, dot: true, onImage: onImage);
 
   final String text;
   final PillTone tone;
+  final IconData? icon;
+  final bool dot;
+  final bool onImage;
 
   @override
   Widget build(BuildContext context) {
     final (bg, fg) = switch (tone) {
       PillTone.brand => (Palette.brandSubtle, Palette.brand),
-      PillTone.ochre => (const Color(0xFFFEF3C7), Palette.ochreText),
+      PillTone.ochre => (Palette.ochreSubtle, Palette.ochreText),
       PillTone.danger => (Palette.dangerSubtle, Palette.danger),
-      PillTone.muted => (Palette.page, Palette.muted),
+      PillTone.muted => (Palette.skeleton, Palette.muted),
     };
+    final ink = onImage && tone == PillTone.brand ? Palette.forest : fg;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(99)),
-      child: Text(text, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: fg)),
+      decoration: BoxDecoration(
+        color: onImage ? Palette.surface : bg,
+        borderRadius: BorderRadius.circular(Space.pill),
+        boxShadow: onImage ? Shadows.card : null,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (dot) ...[
+            Container(width: 7, height: 7, decoration: BoxDecoration(color: fg, shape: BoxShape.circle)),
+            const SizedBox(width: 6),
+          ] else if (icon != null) ...[
+            Icon(icon, size: 14, color: fg),
+            const SizedBox(width: 4),
+          ],
+          Flexible(
+            child: Text(
+              text,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(color: ink).tabular,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
+/// brand: open, verified · ochre: busy, waiting · danger: emergency · muted: closed.
 enum PillTone { brand, ochre, danger, muted }
 
 /// Ask before something that cannot be undone (red, upgrade 15 §3).

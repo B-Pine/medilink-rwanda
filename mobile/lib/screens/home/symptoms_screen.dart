@@ -126,7 +126,6 @@ class _SymptomsScreenState extends ConsumerState<SymptomsScreen> {
             IconButton(tooltip: s.t('newChat'), onPressed: _reset, icon: const Icon(PhosphorIconsRegular.arrowClockwise)),
           TextButton(
             onPressed: () => setState(() => _checklist = !_checklist),
-            style: TextButton.styleFrom(foregroundColor: Colors.white),
             child: Text(_checklist ? s.symptoms : s.t('checklist')),
           ),
         ],
@@ -274,7 +273,7 @@ class _Bubble extends StatelessWidget {
               Text(turn.condition!, style: theme.textTheme.titleMedium?.copyWith(color: Palette.brand)),
               const SizedBox(height: Space.xs),
             ],
-            Text(turn.text, style: TextStyle(color: mine ? Colors.white : Palette.ink, fontSize: 15, height: 1.4)),
+            Text(turn.text, style: theme.textTheme.bodyLarge?.copyWith(color: mine ? Colors.white : Palette.ink)),
             if (turn.kind == 'answer') ...[
               const SizedBox(height: Space.sm),
               Text(s.t('seeDoctor'), style: theme.textTheme.bodySmall),

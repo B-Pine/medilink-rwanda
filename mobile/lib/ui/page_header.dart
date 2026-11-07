@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../app/theme.dart';
 import 'band.dart';
+import 'icons.dart';
 
 /// The short forest band behind a tab's title (Care, Visits, Me), with optional content below
-/// the title (search, filters, profile).
+/// the title (search, filters, profile). Same curve as every band.
 class BandHeader extends StatelessWidget {
   const BandHeader({super.key, required this.title, this.bottom, this.trailing, this.leading, this.height = 120});
 
@@ -19,25 +20,28 @@ class BandHeader extends StatelessWidget {
     final top = MediaQuery.paddingOf(context).top;
     return Stack(
       children: [
-        Positioned.fill(child: ForestBand(height: height + top, curve: 18)),
+        Positioned.fill(child: ForestBand(height: height + top)),
         Padding(
-          padding: EdgeInsets.fromLTRB(Space.lg, top + Space.md, Space.lg, Space.xl + Space.sm),
+          padding: EdgeInsets.fromLTRB(Space.lg, top + Space.md, Space.lg, Space.curve + Space.lg),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Row(
-                children: [
-                  if (leading != null) leading! else const SizedBox(width: Space.sm),
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+              ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 48),
+                child: Row(
+                  children: [
+                    if (leading != null) leading! else const SizedBox(width: Space.sm),
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ),
-                  ?trailing,
-                ],
+                    ?trailing,
+                  ],
+                ),
               ),
               if (bottom != null) ...[const SizedBox(height: Space.md), bottom!],
             ],
@@ -54,7 +58,8 @@ class BandBack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => IconButton(
+        tooltip: MaterialLocalizations.of(context).backButtonTooltip,
         onPressed: () => Navigator.of(context).maybePop(),
-        icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+        icon: const Icon(PhosphorIconsRegular.arrowLeft, color: Colors.white),
       );
 }

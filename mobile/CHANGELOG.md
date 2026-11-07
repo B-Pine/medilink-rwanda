@@ -6,6 +6,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 ## [Unreleased]
 
+Design polish (#260), no API or data changes:
+
+- Changed: three depth levels only. Cards are white with a hairline and no shadow; only what
+  floats over content (the card over the band, the map overlays, sheets) has one soft shadow.
+  The grey "ledge" under the Home card, the ticket and the facility insurance card is gone.
+- Changed: one type scale (display, title, headline, body, label, caption); Figtree for headings
+  and big numbers, Inter for the rest; times, ticket numbers, waits, distances and counts use
+  tabular figures.
+- Changed: Me, Profile, Family, Notification settings, Settings, Records and the doctor and
+  facility Services lists are inset grouped lists (muted label, one white group, hairlines).
+- Changed: sub-pages (Profile, Family, Notification settings, Link my facility file, Records,
+  Settings) have a light header with a large title that collapses into the bar; the other
+  sub-pages get the same light bar. Main tabs keep the forest band, with one curve everywhere;
+  the doctor and facility headers end in the same curve.
+- Changed: the main action sits in a fixed bar at the bottom: Book, Book with this doctor,
+  Confirm, Find my file, Add a member (replaces the floating button).
+- Added: segmented control (Link my facility file, Add a member), one status pill (open, busy,
+  closed, emergency, waiting: always a word), brand-green switches with a clear "off", and date
+  and time fields that look like inputs.
+- Fixed: Confirm (booking) shows white on green when it can be pressed and grey with "Choose at
+  least one" when it cannot.
+- Fixed: the facility name no longer sits white on the pale drawing; the drawing is no longer
+  cropped (stray circle at the top right).
+- Fixed: the doctor's days show the full day names, "Here" on their days and "Today" on today.
+- Fixed: Family "Stop sharing" is a labelled action (it asks first, as before).
+- Fixed: facility cards allow two lines for the name and put the wait on its own line.
+
 ### 1.0.8 (2026-11-06)
 
 - Changed: rebuilt from `main` after the website and staff updates (#250, #255, #256). Same

@@ -6,16 +6,23 @@ import '../../app/strings.dart';
 import '../../app/theme.dart';
 import '../../data/models.dart';
 import '../../ui/building.dart';
+import '../../ui/feedback.dart';
 import '../../ui/icons.dart';
 import '../../ui/insurers.dart';
 
 /// A facility as a compact card (Home "Near you", the map): its building, name, distance,
 /// open or closed, the queue right now, and the insurers it accepts.
 class FacilityMiniCard extends StatelessWidget {
-  const FacilityMiniCard({super.key, required this.facility, this.onTap});
+  const FacilityMiniCard({super.key, required this.facility, this.onTap, this.raised = false, this.hero = true});
 
   final FacilitySummary facility;
   final VoidCallback? onTap;
+
+  /// Over the map: floating depth.
+  final bool raised;
+
+  /// Whether the drawing flies into the facility page (one card per facility on a page).
+  final bool hero;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +30,9 @@ class FacilityMiniCard extends StatelessWidget {
     final theme = Theme.of(context);
     final f = facility;
     final wait = f.waitRange == null ? null : fmt.waitRange(f.waitRange!.min, f.waitRange!.max, s);
+    final building = FacilityBuilding(type: f.type, emergency: f.emergency);
     return SoftCard(
+      raised: raised,
       onTap: onTap ?? () => context.go('/care/${f.slug}'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,18 +41,17 @@ class FacilityMiniCard extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                FacilityBuilding(type: f.type, emergency: f.emergency),
-                Positioned(left: Space.md, top: Space.md, child: OpenBadge(open: f.openNow)),
+                hero ? Hero(tag: 'building-${f.slug}', child: building) : building,
+                Positioned(
+                  left: Space.md,
+                  top: Space.md,
+                  child: StatusPill.open(open: f.openNow, text: f.openNow ? s.openNow : s.closed, onImage: true),
+                ),
                 if (f.distanceKm != null)
                   Positioned(
                     right: Space.md,
                     top: Space.md,
-                    child: _Glass(
-                      child: Text(
-                        '${f.distanceKm!.toStringAsFixed(1)} km',
-                        style: theme.textTheme.labelSmall?.copyWith(color: Palette.forest),
-                      ),
-                    ),
+                    child: StatusPill(text: '${f.distanceKm!.toStringAsFixed(1)} km', tone: PillTone.brand, onImage: true),
                   ),
               ],
             ),
@@ -53,32 +61,42 @@ class FacilityMiniCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(f.name, style: theme.textTheme.titleMedium, maxLines: 1, overflow: TextOverflow.ellipsis),
-                const SizedBox(height: 2),
+                Text(f.name, style: theme.textTheme.titleMedium, maxLines: 2, overflow: TextOverflow.ellipsis),
                 Text(f.place, style: theme.textTheme.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
                 const SizedBox(height: Space.sm),
                 Row(
                   children: [
-                    Icon(PhosphorIconsRegular.usersThree,
-                        size: 16, color: f.waiting == null ? Palette.muted : Palette.ochreText),
-                    const SizedBox(width: 4),
-                    Expanded(
+                    Icon(PhosphorIconsRegular.usersThree, size: 16, color: f.waiting == null ? Palette.muted : Palette.ochreText),
+                    const SizedBox(width: Space.xs),
+                    Flexible(
                       child: Text(
-                        f.waiting == null
-                            ? '—'
-                            : [
-                                '${f.waiting} ${s.waiting}',
-                                if (wait != null) '~$wait',
-                              ].join(' · '),
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: f.waiting == null ? Palette.muted : Palette.ochreText,
-                        ),
+                        f.waiting == null ? '—' : '${f.waiting} ${s.waiting}',
+                        style: theme.textTheme.labelMedium
+                            ?.copyWith(color: f.waiting == null ? Palette.muted : Palette.ochreText, fontWeight: FontWeight.w600)
+                            .tabular,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
                 ),
+                if (wait != null) ...[
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      const Icon(PhosphorIconsRegular.clock, size: 16, color: Palette.muted),
+                      const SizedBox(width: Space.xs),
+                      Flexible(
+                        child: Text(
+                          '~$wait',
+                          style: theme.textTheme.labelMedium?.tabular,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: Space.sm),
                 SizedBox(height: 22, child: InsurerPills(codes: f.insurers, max: 2)),
               ],
@@ -90,7 +108,7 @@ class FacilityMiniCard extends StatelessWidget {
   }
 }
 
-/// Open or closed, readable on the drawing: a white pill with a coloured dot.
+/// Open or closed, readable on the drawing.
 class OpenBadge extends StatelessWidget {
   const OpenBadge({super.key, required this.open});
 
@@ -99,38 +117,6 @@ class OpenBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
-    return _Glass(
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 7,
-            height: 7,
-            decoration: BoxDecoration(color: open ? Palette.brand : Palette.muted, shape: BoxShape.circle),
-          ),
-          const SizedBox(width: 6),
-          Text(
-            open ? s.openNow : s.closed,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(color: open ? Palette.forest : Palette.muted),
-          ),
-        ],
-      ),
-    );
+    return StatusPill.open(open: open, text: open ? s.openNow : s.closed, onImage: true);
   }
-}
-
-class _Glass extends StatelessWidget {
-  const _Glass({required this.child});
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.94),
-          borderRadius: BorderRadius.circular(99),
-          boxShadow: [BoxShadow(color: Palette.forest.withValues(alpha: 0.10), blurRadius: 6, offset: const Offset(0, 2))],
-        ),
-        child: child,
-      );
 }

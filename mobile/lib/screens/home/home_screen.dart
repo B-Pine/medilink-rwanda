@@ -108,7 +108,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    ForestBand(height: bandHeight + top, curve: 34, parallax: _offset),
+                    ForestBand(height: bandHeight + top, parallax: _offset),
                     Positioned(
                       left: Space.xl,
                       right: Space.lg,
@@ -186,7 +186,7 @@ class _Greeting extends ConsumerWidget {
                   ? const Skeleton(width: 140, height: 26, onForest: true)
                   : Text(
                       me!.firstName,
-                      style: theme.textTheme.headlineMedium?.copyWith(color: Colors.white, fontSize: 28),
+                      style: theme.textTheme.headlineMedium?.copyWith(color: Colors.white),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -263,7 +263,7 @@ class _FamilySwitcher extends ConsumerWidget {
             const SizedBox(width: 6),
             Text(
               current?.displayName ?? S.of(context).family,
-              style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
             ),
             const Icon(PhosphorIconsRegular.caretDown, size: 14, color: Palette.onForestMuted),
           ],
@@ -405,7 +405,7 @@ class TicketCard extends StatelessWidget {
                         FittedBox(
                           fit: BoxFit.scaleDown,
                           alignment: Alignment.centerLeft,
-                          child: Text(visit.ticket, style: theme.textTheme.displayMedium?.copyWith(fontSize: 42, color: Palette.forest)),
+                          child: Text(visit.ticket, style: theme.textTheme.displayMedium?.copyWith(color: Palette.forest)),
                         ),
                         Text(
                           s.pick(visit.service),
@@ -468,7 +468,7 @@ class _AheadRing extends StatelessWidget {
               position: Tween(begin: const Offset(0, 0.6), end: Offset.zero).animate(animation),
               child: FadeTransition(opacity: animation, child: child),
             ),
-            child: Text('$ahead', key: ValueKey(ahead), style: theme.textTheme.headlineMedium?.copyWith(color: Palette.forest)),
+            child: Text('$ahead', key: ValueKey(ahead), style: theme.textTheme.headlineMedium?.copyWith(color: Palette.forest).tabular),
           ),
         ),
         const SizedBox(height: 4),
@@ -483,18 +483,7 @@ class _WaitChip extends StatelessWidget {
   final String text;
 
   @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(color: const Color(0xFFFEF3C7), borderRadius: BorderRadius.circular(99)),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(PhosphorIconsRegular.clock, size: 14, color: Palette.ochreText),
-            const SizedBox(width: 4),
-            Text(text, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Palette.ochreText)),
-          ],
-        ),
-      );
+  Widget build(BuildContext context) => StatusPill(text: text, tone: PillTone.ochre, icon: PhosphorIconsRegular.clock);
 }
 
 class _NextVisitCard extends StatelessWidget {
@@ -520,12 +509,12 @@ class _NextVisitCard extends StatelessWidget {
                 Container(
                   width: 64,
                   height: 72,
-                  decoration: BoxDecoration(color: Palette.forest, borderRadius: BorderRadius.circular(14)),
+                  decoration: BoxDecoration(color: Palette.forest, borderRadius: BorderRadius.circular(Space.radius)),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(fmt.monthShort(d, s), style: theme.textTheme.labelSmall?.copyWith(color: Palette.onForestAccent, letterSpacing: 1)),
-                      Text('${d.day}', style: theme.textTheme.headlineMedium?.copyWith(color: Colors.white, height: 1.1)),
+                      Text('${d.day}', style: theme.textTheme.headlineMedium?.copyWith(color: Colors.white, height: 1.1).tabular),
                     ],
                   ),
                 ),
@@ -536,7 +525,7 @@ class _NextVisitCard extends StatelessWidget {
                     children: [
                       _Eyebrow(s.nextVisit),
                       const SizedBox(height: 2),
-                      Text(fmt.time(d), style: theme.textTheme.displayMedium?.copyWith(fontSize: 36, color: Palette.brand)),
+                      Text(fmt.time(d), style: theme.textTheme.displayMedium?.copyWith(color: Palette.brand)),
                       Text(fmt.day(d, s), style: theme.textTheme.bodySmall),
                     ],
                   ),
@@ -938,7 +927,6 @@ class BookingTile extends StatelessWidget {
     final theme = Theme.of(context);
     final cancelled = booking.status.contains('cancel') || booking.status == 'no_show';
     return SoftCard(
-      radius: 16,
       onTap: () => context.go('/visits/booking/${booking.id}'),
       child: Padding(
         padding: const EdgeInsets.all(Space.md),
@@ -1022,11 +1010,10 @@ class _CollapsedBar extends StatelessWidget {
                     if (!visit!.isCalled) ...[const LiveDot(), const SizedBox(width: 6)],
                     Text(
                       visit!.isCalled ? '${visit!.ticket} · ${s.yourTurn}' : '${visit!.ticket} · ${visit!.ahead} ${s.ahead}',
-                      style: TextStyle(
-                        color: visit!.isCalled ? Palette.forest : Colors.white,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13,
-                      ),
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            color: visit!.isCalled ? Palette.forest : Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ).tabular,
                     ),
                   ],
                 ),

@@ -114,14 +114,95 @@ abstract final class Motion {
 
   /// [d], or zero when animations are off.
   static Duration of(BuildContext context, Duration d) => off(context) ? Duration.zero : d;
+
+  /// The one page transition (shared axis): the new page slides in a little from the right
+  /// while it fades in; the page underneath drifts left. Nothing moves when animations are off.
+  static Widget sharedAxis(BuildContext context, Animation<double> animation, Animation<double> secondary, Widget child) {
+    if (off(context)) return child;
+    final enter = CurvedAnimation(parent: animation, curve: ease, reverseCurve: Curves.easeInCubic);
+    final fade = CurvedAnimation(parent: animation, curve: const Interval(0, 0.6, curve: Curves.easeOut));
+    final leave = CurvedAnimation(parent: secondary, curve: ease, reverseCurve: Curves.easeInCubic);
+    return SlideTransition(
+      position: Tween(begin: Offset.zero, end: const Offset(-0.06, 0)).animate(leave),
+      child: FadeTransition(
+        opacity: fade,
+        child: SlideTransition(
+          position: Tween(begin: const Offset(0.08, 0), end: Offset.zero).animate(enter),
+          child: child,
+        ),
+      ),
+    );
+  }
 }
 
-/// A white surface at [Depth.card] (hairline, no shadow) or, with [raised], [Depth.floating].
-class SoftCard extends StatelessWidget {
-  const SoftCard({super.key, required this.child, this.onTap, this.raised = false, this.radius = Space.radiusLg, this.color});
+/// [Motion.sharedAxis] for routes built by the theme (MaterialPageRoute).
+class SharedAxisPageTransitionsBuilder extends PageTransitionsBuilder {
+  const SharedAxisPageTransitionsBuilder();
+
+  @override
+  Duration get transitionDuration => Motion.slow;
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) =>
+      Motion.sharedAxis(context, animation, secondaryAnimation, child);
+}
+
+/// Cards and tiles: shrink to 0.98 while pressed (120 ms, ease out) instead of an ink ripple.
+/// Keeps keyboard focus and semantics from [InkWell].
+class Pressable extends StatefulWidget {
+  const Pressable({super.key, required this.child, required this.onTap, this.onLongPress, this.borderRadius});
 
   final Widget child;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
+  final BorderRadius? borderRadius;
+
+  @override
+  State<Pressable> createState() => _PressableState();
+}
+
+class _PressableState extends State<Pressable> {
+  bool _down = false;
+
+  @override
+  Widget build(BuildContext context) => AnimatedScale(
+        scale: _down ? 0.98 : 1,
+        duration: Motion.of(context, Motion.fast),
+        curve: Curves.easeOut,
+        child: InkWell(
+          onTap: widget.onTap,
+          onLongPress: widget.onLongPress,
+          borderRadius: widget.borderRadius,
+          splashFactory: NoSplash.splashFactory,
+          highlightColor: Colors.transparent,
+          onHighlightChanged: (down) => setState(() => _down = down),
+          child: widget.child,
+        ),
+      );
+}
+
+/// A white surface at [Depth.card] (hairline, no shadow) or, with [raised], [Depth.floating].
+/// Tappable cards shrink a little while pressed ([Pressable]).
+class SoftCard extends StatelessWidget {
+  const SoftCard({
+    super.key,
+    required this.child,
+    this.onTap,
+    this.onLongPress,
+    this.raised = false,
+    this.radius = Space.radiusLg,
+    this.color,
+  });
+
+  final Widget child;
+  final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
   final bool raised;
   final double radius;
   final Color? color;
@@ -133,18 +214,15 @@ class SoftCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(radius),
       side: raised || fill != Palette.surface ? BorderSide.none : const BorderSide(color: Palette.hairline),
     );
-    return DecoratedBox(
+    final card = DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(radius),
         boxShadow: Shadows.of(raised ? Depth.floating : Depth.card),
       ),
-      child: Material(
-        color: fill,
-        shape: shape,
-        clipBehavior: Clip.antiAlias,
-        child: onTap == null ? child : InkWell(onTap: onTap, child: child),
-      ),
+      child: Material(color: fill, shape: shape, clipBehavior: Clip.antiAlias, child: child),
     );
+    if (onTap == null && onLongPress == null) return card;
+    return Pressable(onTap: onTap, onLongPress: onLongPress, borderRadius: BorderRadius.circular(radius), child: card);
   }
 }
 
@@ -217,7 +295,9 @@ ThemeData buildTheme() {
     scaffoldBackgroundColor: Palette.page,
     fontFamily: Fonts.body,
     textTheme: text,
-    splashFactory: InkSparkle.splashFactory,
+    // No ink ripples: rows tint softly while pressed, cards shrink (Pressable), buttons darken.
+    splashFactory: NoSplash.splashFactory,
+    highlightColor: Palette.forest.withValues(alpha: 0.05),
     materialTapTargetSize: MaterialTapTargetSize.padded,
     // The website's arrow, also where the Material icon font is not loaded (screen renders).
     actionIconTheme: ActionIconThemeData(
@@ -369,7 +449,10 @@ ThemeData buildTheme() {
     dividerTheme: const DividerThemeData(color: Palette.hairline, space: 1, thickness: 1),
     progressIndicatorTheme: const ProgressIndicatorThemeData(color: Palette.brand, linearTrackColor: Palette.brandSubtle),
     pageTransitionsTheme: const PageTransitionsTheme(
-      builders: {TargetPlatform.android: PredictiveBackPageTransitionsBuilder()},
+      builders: {
+        TargetPlatform.android: SharedAxisPageTransitionsBuilder(),
+        TargetPlatform.iOS: SharedAxisPageTransitionsBuilder(),
+      },
     ),
     snackBarTheme: SnackBarThemeData(
       behavior: SnackBarBehavior.floating,

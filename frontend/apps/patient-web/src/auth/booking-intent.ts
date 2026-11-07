@@ -10,14 +10,19 @@ export function parseBookingPath(
   from: string | undefined,
 ): { slug: string; service: string | null; join: boolean } | null {
   if (!from) return null;
-  const url = new URL(from, "https://medilink.invalid");
-  const match = new RegExp(`^(?:${DASHBOARD})?/book/([^/]+)/?$`).exec(url.pathname);
-  if (!match?.[1]) return null;
-  return {
-    slug: decodeURIComponent(match[1]),
-    service: url.searchParams.get("service"),
-    join: url.searchParams.get("today") === "1",
-  };
+  try {
+    const url = new URL(from, "https://medilink.invalid");
+    const match = new RegExp(`^(?:${DASHBOARD})?/book/([^/]+)/?$`).exec(url.pathname);
+    if (!match?.[1]) return null;
+    return {
+      slug: decodeURIComponent(match[1]),
+      service: url.searchParams.get("service"),
+      join: url.searchParams.get("today") === "1",
+    };
+  } catch {
+    // a malformed address (bad % escape): no context line, sign-in still works
+    return null;
+  }
 }
 
 /**

@@ -15,6 +15,7 @@ import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../data/session.dart';
 import '../../ui/band.dart';
+import '../../ui/controls.dart';
 import '../../ui/feedback.dart';
 
 /// The live tracker: the ticket grows into this page. Refreshes every 15 s while open.
@@ -190,15 +191,10 @@ class _Stat extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 350),
-                transitionBuilder: (child, a) => SlideTransition(
-                  position: Tween(begin: const Offset(0, 0.5), end: Offset.zero).animate(a),
-                  child: FadeTransition(opacity: a, child: child),
-                ),
+              Rolling(
+                value: value,
                 child: Text(
                   value,
-                  key: ValueKey(value),
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         color: accent ? Palette.ochre : Colors.white,
                       ).tabular,

@@ -15,6 +15,7 @@ import '../../data/location.dart';
 import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../ui/band.dart';
+import '../../ui/controls.dart';
 import '../../ui/facility_map.dart';
 import '../../ui/feedback.dart';
 import '../../ui/heartbeat_refresh.dart';
@@ -147,7 +148,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ignoring: !collapsed,
               child: AnimatedOpacity(
                 opacity: collapsed ? 1 : 0,
-                duration: const Duration(milliseconds: 160),
+                duration: Motion.of(context, Motion.fast),
                 child: _CollapsedBar(visit: active.isEmpty ? null : active.first),
               ),
             ),
@@ -296,7 +297,7 @@ class _MainCard extends StatelessWidget {
     } else {
       child = const _FindCareCard();
     }
-    return AnimatedSwitcher(duration: const Duration(milliseconds: 250), child: child);
+    return AnimatedSwitcher(duration: Motion.of(context, Motion.normal), child: child);
   }
 }
 
@@ -470,13 +471,9 @@ class _AheadRing extends StatelessWidget {
             border: Border.all(color: Palette.brand.withValues(alpha: 0.25), width: 2),
           ),
           alignment: Alignment.center,
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 350),
-            transitionBuilder: (child, animation) => SlideTransition(
-              position: Tween(begin: const Offset(0, 0.6), end: Offset.zero).animate(animation),
-              child: FadeTransition(opacity: animation, child: child),
-            ),
-            child: Text('$ahead', key: ValueKey(ahead), style: theme.textTheme.headlineMedium?.copyWith(color: Palette.forest).tabular),
+          child: Rolling(
+            value: ahead,
+            child: Text('$ahead', style: theme.textTheme.headlineMedium?.copyWith(color: Palette.forest).tabular),
           ),
         ),
         const SizedBox(height: 4),
@@ -491,7 +488,8 @@ class _WaitChip extends StatelessWidget {
   final String text;
 
   @override
-  Widget build(BuildContext context) => StatusPill(text: text, tone: PillTone.ochre, icon: PhosphorIconsRegular.clock);
+  Widget build(BuildContext context) =>
+      Rolling(value: text, child: StatusPill(text: text, tone: PillTone.ochre, icon: PhosphorIconsRegular.clock));
 }
 
 class _NextVisitCard extends StatelessWidget {
@@ -636,7 +634,7 @@ class _QuickActions extends StatelessWidget {
                 Expanded(
                   child: Semantics(
                     button: true,
-                    child: InkWell(
+                    child: Pressable(
                       borderRadius: BorderRadius.circular(Space.radius),
                       onTap: onTap,
                       child: ConstrainedBox(

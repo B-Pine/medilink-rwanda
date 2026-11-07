@@ -56,6 +56,7 @@ describe("booking from a public page", () => {
     });
     expect(parseBookingPath("/dashboard/records")).toBeNull();
     expect(parseBookingPath(undefined)).toBeNull();
+    expect(parseBookingPath("/dashboard/book/%E0%A4%A")).toBeNull();
   });
 
   it("only returns to addresses on this site", () => {

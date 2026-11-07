@@ -32,6 +32,14 @@ Design polish (#260), no API or data changes:
 - Fixed: the doctor's days show the full day names, "Here" on their days and "Today" on today.
 - Fixed: Family "Stop sharing" is a labelled action (it asks first, as before).
 - Fixed: facility cards allow two lines for the name and put the wait on its own line.
+- Fixed: Home ticket and next-visit cards no longer cut the facility name; the wait sits on its
+  own line under it.
+- Changed: Home quick actions are plain icons with one-line labels in a single card (no boxed
+  tiles); "Near you" cards keep 16 px at both ends, the next card peeks, and the title and
+  "See all" line up with the cards.
+- Fixed: the OpenStreetMap credit stays visible on the map (top right, under the bar) and also
+  shows on the Home map preview, as the licence asks.
+- Fixed: back arrows on the doctor and facility pages are the app's own icon on a white circle.
 
 ### 1.0.8 (2026-11-06)
 

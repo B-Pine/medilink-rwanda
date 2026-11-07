@@ -18,7 +18,12 @@ class FacilityMap extends StatelessWidget {
     this.onPin,
     this.interactive = true,
     this.controller,
+    this.attributionTop,
   });
+
+  /// Puts the OpenStreetMap credit at the top right, this far below the safe area (under a
+  /// floating bar), so cards at the bottom never cover it. Bottom right when null.
+  final double? attributionTop;
 
   final List<FacilitySummary> facilities;
   final LatLng? here;
@@ -71,8 +76,15 @@ class FacilityMap extends StatelessWidget {
         if (here != null)
           MarkerLayer(markers: [Marker(point: here!, width: 28, height: 28, child: const _HereDot())]),
         MarkerLayer(markers: pins),
-        if (interactive)
-          const SimpleAttributionWidget(source: Text('OpenStreetMap'), backgroundColor: Color(0xCCFFFFFF)),
+        // The OpenStreetMap licence asks for the credit wherever the tiles show.
+        Padding(
+          padding: EdgeInsets.only(top: attributionTop ?? 0),
+          child: SimpleAttributionWidget(
+            source: const Text('OpenStreetMap'),
+            backgroundColor: Palette.surface.withValues(alpha: 0.85),
+            alignment: attributionTop == null ? Alignment.bottomRight : Alignment.topRight,
+          ),
+        ),
       ],
     );
   }

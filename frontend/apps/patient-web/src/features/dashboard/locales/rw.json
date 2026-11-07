@@ -183,7 +183,8 @@
     "bill": "Usigaje kwishyura {{amount}}",
     "seeBill": "Reba inyemezabuguzi",
     "disputeQuestion": "Ivuriro rifite icyo rikubaza ku kirego cyawe",
-    "disputeAnswer": "Ikirego cyawe cyasubijwe"
+    "disputeAnswer": "Ikirego cyawe cyasubijwe",
+    "openDispute": "Fungura"
   },
   "comingUp": {
     "title": "Byateganyijwe n'ivuriro ryawe",

@@ -479,7 +479,7 @@ function useReminders(): Reminder[] {
         when: `${short(d.created_at)} · ${d.facility_name}`,
         who: d.patient_display_name,
         to: paths.dispute(d.id),
-        action: t("dashboard.reminders.open"),
+        action: t("dashboard.reminders.openDispute"),
       });
   for (const v of visits.data?.results ?? [])
     if (arrivalKey(v) === "notYet" && v.state === "waiting")

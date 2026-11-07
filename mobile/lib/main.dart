@@ -101,9 +101,10 @@ class _MediLinkAppState extends ConsumerState<MediLinkApp> with WidgetsBindingOb
       debugShowCheckedModeBanner: false,
       theme: buildTheme(),
       routerConfig: router,
-      // Material widgets have no Kinyarwanda: they use English; the app's own text follows S.
-      locale: const Locale('en'),
-      supportedLocales: const [Locale('en')],
+      // Material widgets (date and time pickers) have no Kinyarwanda: they use English then; in
+      // French they follow. The app's own text follows S.
+      locale: Locale(strings.code == 'fr' ? 'fr' : 'en'),
+      supportedLocales: const [Locale('en'), Locale('fr')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       builder: (context, child) => S(strings: strings, child: child ?? const SizedBox.shrink()),
     );

@@ -5,7 +5,9 @@ import 'heartbeat_refresh.dart';
 
 /// A sub-page (Profile, Family, settings, records…): a light header with a large title that
 /// collapses into a standard bar on scroll. No dark band; the bands belong to the main tabs.
-class SubPage extends StatelessWidget {
+/// The large title may wrap (long Kinyarwanda or French words, large text); the bar shows the
+/// title on one line once the large one has scrolled away.
+class SubPage extends StatefulWidget {
   const SubPage({
     super.key,
     required this.title,
@@ -38,25 +40,64 @@ class SubPage extends StatelessWidget {
   final Color backgroundColor;
 
   @override
+  State<SubPage> createState() => _SubPageState();
+}
+
+class _SubPageState extends State<SubPage> {
+  final _collapsed = ValueNotifier(false);
+
+  @override
+  void dispose() {
+    _collapsed.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final scroll = CustomScrollView(
-      physics: const AlwaysScrollableScrollPhysics(),
-      slivers: [
-        SliverAppBar.large(
-          title: Text(title, maxLines: 1, overflow: TextOverflow.ellipsis),
-          actions: actions,
-          bottom: busy
-              ? const PreferredSize(preferredSize: Size.fromHeight(2), child: LinearProgressIndicator(minHeight: 2))
-              : null,
-        ),
-        if (children != null) SliverPadding(padding: padding, sliver: SliverList.list(children: children!)),
-        ...?slivers,
-      ],
+    final theme = Theme.of(context);
+    final scroll = NotificationListener<ScrollUpdateNotification>(
+      onNotification: (n) {
+        if (n.depth == 0) _collapsed.value = n.metrics.pixels > Space.lg + context.scaled(24);
+        return false;
+      },
+      child: CustomScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          SliverAppBar(
+            pinned: true,
+            actions: widget.actions,
+            title: ValueListenableBuilder<bool>(
+              valueListenable: _collapsed,
+              builder: (context, collapsed, child) => AnimatedOpacity(
+                opacity: collapsed ? 1 : 0,
+                duration: Motion.of(context, Motion.fast),
+                child: child,
+              ),
+              child: Text(widget.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+            ),
+            bottom: widget.busy
+                ? const PreferredSize(preferredSize: Size.fromHeight(2), child: LinearProgressIndicator(minHeight: 2))
+                : null,
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(Space.lg, Space.xs, Space.lg, Space.lg),
+              child: Semantics(
+                header: true,
+                child: Text(widget.title, style: theme.textTheme.headlineMedium),
+              ),
+            ),
+          ),
+          if (widget.children != null)
+            SliverPadding(padding: widget.padding, sliver: SliverList.list(children: widget.children!)),
+          ...?widget.slivers,
+        ],
+      ),
     );
     return Scaffold(
-      backgroundColor: backgroundColor,
-      body: onRefresh == null ? scroll : HeartbeatRefresh(onRefresh: onRefresh!, child: scroll),
-      bottomNavigationBar: bottomBar,
+      backgroundColor: widget.backgroundColor,
+      body: widget.onRefresh == null ? scroll : HeartbeatRefresh(onRefresh: widget.onRefresh!, child: scroll),
+      bottomNavigationBar: widget.bottomBar,
     );
   }
 }

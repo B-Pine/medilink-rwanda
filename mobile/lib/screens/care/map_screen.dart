@@ -108,7 +108,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               left: 0,
               right: 0,
               bottom: MediaQuery.paddingOf(context).bottom + Space.lg,
-              height: 272,
+              height: 160 + context.scaled(112),
               child: PageView.builder(
                 controller: _pages,
                 itemCount: list.length,

@@ -45,7 +45,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       children: [
         GroupedSection(
           children: [
-            for (final (code, label) in const [('rw', 'Kinyarwanda'), ('en', 'English')])
+            for (final (code, label) in Strings.languages)
               GroupedRow(
                 icon: PhosphorIconsRegular.translate,
                 title: label,

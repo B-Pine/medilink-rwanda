@@ -62,6 +62,8 @@ Future<void> _shoot(
   Widget screen,
   List<dynamic> overrides, {
   String lang = 'rw',
+  double textScale = 1,
+  bool dark = false,
   Future<void> Function(WidgetTester)? act,
 }) async {
   tester.view.physicalSize = const Size(1080, 2340);
@@ -84,7 +86,12 @@ Future<void> _shoot(
           debugShowCheckedModeBanner: false,
           routerConfig: router,
           builder: (context, child) => MediaQuery(
-            data: MediaQuery.of(context).copyWith(padding: const EdgeInsets.only(top: 32), disableAnimations: true),
+            data: MediaQuery.of(context).copyWith(
+              padding: const EdgeInsets.only(top: 32),
+              disableAnimations: true,
+              textScaler: TextScaler.linear(textScale),
+              platformBrightness: dark ? Brightness.dark : Brightness.light,
+            ),
             child: S(strings: Strings.forCode(lang), child: child!),
           ),
         ),
@@ -311,5 +318,44 @@ void main() {
 
   testWidgets('family', (tester) async {
     await _shoot(tester, 'family', const FamilyScreen(), profile, lang: 'en');
+  }, skip: _out.isEmpty);
+
+  // Every language and large text on the key screens. An overflow fails the test, so long
+  // Kinyarwanda or French words and 1.3x / 1.6x text must fit.
+  final ticket = [
+    ...base,
+    activeVisitsProvider.overrideWith((ref) async => Cached([sampleVisit])),
+    bookingsProvider.overrideWith((ref, when) async => Cached(sampleBookings)),
+  ];
+  final keyScreens = <(String, Widget, List<dynamic>)>[
+    ('home-ticket', const HomeScreen(), ticket),
+    ('care', const CareScreen(), [...base, activeVisitsProvider.overrideWith((ref) async => const Cached(<ActiveVisit>[]))]),
+    ('facility', const FacilityScreen(slug: 'kibagabaga-hospital'), facility),
+    ('doctor', const DoctorScreen(slug: 'kibagabaga-hospital', doctorId: 'm-1'), facility),
+    ('me', const MeScreen(), profile),
+    ('notification-settings', const NotificationSettingsScreen(), profile),
+    ('claim', const ClaimScreen(), profile),
+    ('family', const FamilyScreen(), profile),
+  ];
+  for (final (name, screen, overrides) in keyScreens) {
+    for (final (lang, scale) in [('rw', 1.0), ('fr', 1.0), ('rw', 1.3), ('rw', 1.6), ('fr', 1.3)]) {
+      final tag = scale == 1 ? lang : '$lang-x$scale';
+      testWidgets('$name ($tag)', (tester) async {
+        await _shoot(tester, '$name-$tag', screen, overrides, lang: lang, textScale: scale);
+      }, skip: _out.isEmpty);
+    }
+  }
+  testWidgets('book confirm sheet (fr)', (tester) async {
+    await _shoot(
+      tester,
+      'book-confirm-empty-fr',
+      const BookScreen(slug: 'kibagabaga-hospital', serviceId: 's-gp'),
+      facility,
+      lang: 'fr',
+      act: (tester) async {
+        await tester.tap(find.text('08:00'));
+        await _settle(tester);
+      },
+    );
   }, skip: _out.isEmpty);
 }

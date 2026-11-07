@@ -205,7 +205,7 @@ class _Greeting extends ConsumerWidget {
             customBorder: const CircleBorder(),
             onTap: () => context.go('/home/notifications'),
             child: Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(12), // 48 × 48
               child: Badge(
                 isLabelVisible: unread > 0,
                 label: Text(unread > 9 ? '9+' : '$unread'),
@@ -254,20 +254,28 @@ class _FamilySwitcher extends ConsumerWidget {
           ),
         ),
       ),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(color: Palette.forestRaised, borderRadius: BorderRadius.circular(99)),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(PhosphorIconsRegular.usersThree, size: 16, color: Palette.onForestMuted),
-            const SizedBox(width: 6),
-            Text(
-              current?.displayName ?? S.of(context).family,
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
+      // The pill stays small; the tap area is 48 tall.
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 48),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          widthFactor: 1,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(color: Palette.forestRaised, borderRadius: BorderRadius.circular(Space.pill)),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(PhosphorIconsRegular.usersThree, size: 16, color: Palette.onForestMuted),
+                const SizedBox(width: 6),
+                Text(
+                  current?.displayName ?? S.of(context).family,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
+                ),
+                const Icon(PhosphorIconsRegular.caretDown, size: 14, color: Palette.onForestMuted),
+              ],
             ),
-            const Icon(PhosphorIconsRegular.caretDown, size: 14, color: Palette.onForestMuted),
-          ],
+          ),
         ),
       ),
     );
@@ -411,7 +419,7 @@ class TicketCard extends StatelessWidget {
                         Text(
                           s.pick(visit.service),
                           style: theme.textTheme.bodySmall,
-                          maxLines: 1,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ],
@@ -622,48 +630,50 @@ class _QuickActions extends StatelessWidget {
       (s.symptoms, PhosphorIconsRegular.stethoscope, () => context.go('/home/symptoms')),
       (s.records, PhosphorIconsRegular.clipboardText, () => context.go('/me/records')),
     ];
+    final cells = [
+      for (final (label, icon, onTap) in actions)
+        Expanded(
+          child: Semantics(
+            button: true,
+            child: Pressable(
+              borderRadius: BorderRadius.circular(Space.radius),
+              onTap: onTap,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 72),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: Space.md),
+                  child: Column(
+                    children: [
+                      Icon(icon, size: 26, color: Palette.brand),
+                      const SizedBox(height: Space.sm),
+                      // One line always; a long word shrinks a little rather than break.
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          label,
+                          maxLines: 1,
+                          softWrap: false,
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Palette.ink),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+    ];
+    Widget row(List<Widget> children) => Row(crossAxisAlignment: CrossAxisAlignment.start, children: children);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: Space.lg),
       child: SoftCard(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: Space.xs, vertical: Space.xs),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (final (label, icon, onTap) in actions)
-                Expanded(
-                  child: Semantics(
-                    button: true,
-                    child: Pressable(
-                      borderRadius: BorderRadius.circular(Space.radius),
-                      onTap: onTap,
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(minHeight: 72),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: Space.md),
-                          child: Column(
-                            children: [
-                              Icon(icon, size: 26, color: Palette.brand),
-                              const SizedBox(height: Space.sm),
-                              // One line always; a long word shrinks a little instead of breaking.
-                              FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  label,
-                                  maxLines: 1,
-                                  softWrap: false,
-                                  style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Palette.ink),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
+          padding: const EdgeInsets.all(Space.xs),
+          // One row of four; two rows of two when the text is large.
+          child: context.largeText
+              ? Column(children: [row(cells.sublist(0, 2)), row(cells.sublist(2))])
+              : row(cells),
         ),
       ),
     );
@@ -723,7 +733,7 @@ class _NearYouState extends ConsumerState<_NearYou> {
           const SizedBox(height: Space.lg),
         ],
         SizedBox(
-          height: 272,
+          height: 160 + context.scaled(112),
           child: results.when(
             loading: () => ListView(
               scrollDirection: Axis.horizontal,

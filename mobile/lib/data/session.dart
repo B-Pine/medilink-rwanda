@@ -172,7 +172,7 @@ class AuthController extends Notifier<AuthPhase> {
     final picked = await language.chosen();
     if (picked == null) {
       // first time on this phone: use the account's language
-      await language.set(me.language == 'en' ? 'en' : 'rw');
+      await language.set(const ['en', 'fr'].contains(me.language) ? me.language : 'rw');
     } else if (picked != me.language) {
       // the patient picked a language here: the account follows, so messages match the app
       await language.saveOnServer(picked);

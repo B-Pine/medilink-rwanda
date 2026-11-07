@@ -48,6 +48,14 @@ abstract final class TypeScale {
   static const caption = 12.0; // secondary lines
 }
 
+extension TextSize on BuildContext {
+  /// [size] grown with the phone's text size, for boxes that hold text and need a fixed height.
+  double scaled(double size) => MediaQuery.textScalerOf(this).scale(size);
+
+  /// True when the phone's text is large (1.3x or more): layouts stack instead of squeezing.
+  bool get largeText => MediaQuery.textScalerOf(this).scale(10) >= 13;
+}
+
 extension Tabular on TextStyle {
   /// The same style with tabular figures.
   TextStyle get tabular => copyWith(fontFeatures: Fonts.tabular);

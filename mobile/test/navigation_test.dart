@@ -54,4 +54,18 @@ void main() {
       expect(Strings.en.t(key), isNot(key));
     }
   });
+
+  test('Kinyarwanda, English and French have the same labels', () {
+    final en = MoreStrings.keysFor('en').toSet();
+    expect(en, isNotEmpty);
+    for (final code in ['rw', 'fr']) {
+      final keys = MoreStrings.keysFor(code).toSet();
+      expect(en.difference(keys), isEmpty, reason: 'missing in $code');
+      expect(keys.difference(en), isEmpty, reason: 'only in $code');
+    }
+    for (final s in [Strings.rw, Strings.fr]) {
+      expect(s.stateLabels.keys.toSet(), Strings.en.stateLabels.keys.toSet(), reason: s.code);
+    }
+    expect(Strings.forCode('fr').code, 'fr');
+  });
 }

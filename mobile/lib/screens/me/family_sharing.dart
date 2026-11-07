@@ -66,7 +66,7 @@ class FamilySharing extends ConsumerWidget {
                     icon: mine ? PhosphorIconsFill.paperPlaneRight : PhosphorIconsRegular.usersThree,
                     title: '${r['profile_name'] ?? ''}',
                     subtitle: mine ? '${s.t('sharedWith')} ${r['holder_name'] ?? ''}' : s.t('sharedWithMe'),
-                    trailing: r['can_revoke'] == true
+                    action: r['can_revoke'] == true
                         ? TextButton(
                             style: TextButton.styleFrom(foregroundColor: Palette.danger),
                             onPressed: () async {

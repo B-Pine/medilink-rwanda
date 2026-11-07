@@ -13,7 +13,7 @@ import {
   SealCheck,
   Siren,
 } from "@phosphor-icons/react";
-import { buttonClassName, cx, Skeleton } from "@medilink/ui";
+import { buttonClassName, cx, Lightbox, Skeleton } from "@medilink/ui";
 import { dateFormat, kigaliDate } from "@medilink/ui/i18n";
 import { useQuery } from "@tanstack/react-query";
 import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
@@ -28,6 +28,7 @@ import { doctorSlug, EMERGENCY, isHospital, serviceSlug } from "../site/data";
 import {
   EmptyState,
   FacilityStatus,
+  NotFoundState,
   PageContainer,
   PageHeader,
   Panel,
@@ -97,18 +98,11 @@ export function FacilityPage() {
   if (facility.isError || !facility.data)
     return (
       <PublicLayout>
-        <PageContainer narrow className="py-16">
-          <EmptyState
+        <PageContainer narrow>
+          <NotFoundState
             title={t("site.facility.notFound")}
-            action={
-              <Link
-                to="/facilities"
-                viewTransition
-                className={buttonClassName({ variant: "secondary", pill: true })}
-              >
-                {t("site.facility.back")}
-              </Link>
-            }
+            reason={t("site.facility.notFoundReason")}
+            back={{ to: "/facilities", label: t("site.facility.back") }}
           />
         </PageContainer>
       </PublicLayout>
@@ -531,33 +525,59 @@ function webLink(value: string): { href: string; host: string } | null {
 }
 
 /**
- * The facility's own photos, after the facts: a plain row of up to four, each opening full size.
- * A place is described, not merchandised (public design brief 2026-11-04).
+ * The facility's own photos, after the facts: a plain row of up to four, each opening full size in
+ * a lightbox (never a bare image file). A photo that fails to load is left out, so no grey tile
+ * stays behind. A place is described, not merchandised (public design brief 2026-11-04).
  */
 function Photos({ name, photos }: { name: string; photos: string[] }) {
   const { t } = useTranslation();
-  if (photos.length === 0) return null;
+  const [broken, setBroken] = useState<string[]>([]);
+  const [open, setOpen] = useState<number | null>(null);
+  const shown = photos.filter((src) => !broken.includes(src)).slice(0, 4);
+  if (shown.length === 0) return null;
+  const images = shown.map((src, index) => ({
+    src,
+    alt: t("site.facility.photoAlt", { name, n: index + 1, total: shown.length }),
+  }));
   return (
     <section aria-labelledby="photos" className="flex flex-col gap-3">
       <h2 id="photos" className="m-0 font-heading text-h2">
         {t("site.facility.photos")}
       </h2>
       <ul className="m-0 grid list-none grid-cols-2 gap-2 p-0 sm:grid-cols-4">
-        {photos.slice(0, 4).map((src, index) => (
-          <li key={src} className="overflow-hidden rounded-md bg-subtle">
-            <a href={src} target="_blank" rel="noreferrer" className="block">
+        {images.map((image, index) => (
+          <li key={image.src} className="overflow-hidden rounded-md bg-subtle">
+            <button
+              type="button"
+              onClick={() => setOpen(index)}
+              aria-label={t("site.facility.openPhoto", { n: index + 1, total: images.length })}
+              className="block w-full cursor-zoom-in focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+            >
               <img
-                src={src}
-                alt={t("site.facility.photoAlt", { name, n: index + 1, total: photos.length })}
-                loading="lazy"
+                src={image.src}
+                alt={image.alt}
+                // the first two are near the fold on phones; the rest wait for the scroll
+                loading={index < 2 ? "eager" : "lazy"}
                 decoding="async"
-                className="block aspect-[4/3] size-full object-cover"
+                width={400}
+                height={300}
+                onError={() => setBroken((list) => [...list, image.src])}
+                className="block aspect-[4/3] size-full object-cover transition-transform duration-200 ease-out hover:scale-[1.03] motion-reduce:hover:scale-100"
               />
-              <span className="sr-only"> {t("common.opensInNewTab")}</span>
-            </a>
+            </button>
           </li>
         ))}
       </ul>
+      <Lightbox
+        images={images}
+        index={open}
+        onIndexChange={setOpen}
+        labels={{
+          close: t("common.close"),
+          previous: t("site.facility.previousPhoto"),
+          next: t("site.facility.nextPhoto"),
+        }}
+      />
     </section>
   );
 }

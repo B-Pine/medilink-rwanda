@@ -79,7 +79,8 @@
     "clear": "Effacer les filtres"
   },
   "facility": {
-    "notFound": "Cet établissement n’est pas sur MediLink",
+    "notFound": "Établissement introuvable",
+    "notFoundReason": "Le lien est peut-être ancien, ou l’établissement a quitté MediLink.",
     "back": "Retour aux établissements",
     "verified": "Vérifié",
     "directions": "Itinéraire",
@@ -105,6 +106,9 @@
     "noDescription": "L’établissement n’a pas encore ajouté de description.",
     "photos": "Photos",
     "photoAlt": "{{name}}, photo {{n}} sur {{total}}",
+    "openPhoto": "Ouvrir la photo {{n}} sur {{total}}",
+    "previousPhoto": "Photo précédente",
+    "nextPhoto": "Photo suivante",
     "contact": "Contact",
     "address": "Adresse",
     "phone": "Téléphone",
@@ -154,7 +158,9 @@
     "places_other": "{{name}} + {{count}} autres"
   },
   "doctor": {
-    "notFound": "Ce médecin n’est pas listé",
+    "notFound": "Médecin introuvable",
+    "notFoundReason": "Le lien est peut-être ancien, ou ce médecin ne travaille plus ici.",
+    "allDoctors": "Tous les médecins",
     "at": "À {{facility}}",
     "worksIn": "Services",
     "presentDays": "Jours dans cet établissement",
@@ -193,7 +199,9 @@
     "jump": "Aller à une catégorie"
   },
   "service": {
-    "notFound": "Ce service n’est pas au catalogue",
+    "notFound": "Service introuvable",
+    "notFoundReason": "Le lien est peut-être ancien, ou le nom a changé.",
+    "allServices": "Tous les services",
     "about": "À propos de ce service",
     "aboutGeneric": "Un service proposé par des établissements sur MediLink. Demandez à l’établissement comment se déroule la visite.",
     "offering": "Établissements proposant ce service",
@@ -412,6 +420,7 @@
   },
   "onThisPage": "Sur cette page",
   "card": {
+    "nextTime": "Prochain créneau {{day}} {{time}}",
     "open": "Ouvert",
     "busy": "Chargé",
     "closed": "Fermé pour le moment",
@@ -465,7 +474,10 @@
     "waitingNow_other": "{{count}} personnes en attente",
     "live": "En direct",
     "seePlaces": "Voir les lieux",
-    "openTitle": "Ouverts maintenant",
+    "openTitle": "Établissements près de vous",
+    "allClosed": "Tous les établissements sont fermés",
+    "nextOpeningToday": "prochaine ouverture à {{time}}, {{name}}",
+    "nextOpening": "prochaine ouverture {{day}} à {{time}}, {{name}}",
     "openLead": "Les lieux sur MediLink avec leur attente en direct. Touchez « Près de moi » pour trier par distance.",
     "trustLabel": "Ce sur quoi vous pouvez compter",
     "trust": {

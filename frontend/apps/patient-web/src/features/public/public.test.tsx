@@ -98,14 +98,15 @@ describe("information pages (PT-F4, PT-F5)", () => {
 describe("care near you on the home page (PT-F1)", () => {
   it("the home page lists facilities with the live queue and accepted insurers", async () => {
     const { container } = renderApp("/");
-    const section = await screen.findByRole("region", { name: "Open right now" });
-    const list = await within(section).findByRole("list", { name: "Open right now" });
+    // named for what it holds at any hour: open places first, closed ones too (audit 2026-11-07)
+    const section = await screen.findByRole("region", { name: "Facilities near you" });
+    const list = await within(section).findByRole("list", { name: "Facilities near you" });
     const rows = within(list).getAllByRole("heading", { level: 3 });
     expect(rows.length).toBeGreaterThan(0);
     expect(within(section).getAllByText(/RAMA/).length).toBeGreaterThan(0);
-    expect(screen.getByRole("link", { name: "View all facilities" })).toHaveAttribute(
+    expect(within(rows[0]!).getByRole("link")).toHaveAttribute(
       "href",
-      "/facilities",
+      expect.stringMatching(/^\/facilities\//),
     );
     expect(await axe(container)).toHaveNoViolations();
   });

@@ -75,6 +75,8 @@ export type {
 } from "./components/CommandPalette";
 export { ConfirmDialog, Dialog } from "./components/Dialog";
 export type { ConfirmDialogProps, DialogProps } from "./components/Dialog";
+export { Lightbox } from "./components/Lightbox";
+export type { LightboxImage, LightboxProps } from "./components/Lightbox";
 export { DocumentViewer } from "./components/DocumentViewer";
 export { EmptyState } from "./components/EmptyState";
 export type { EmptyStateProps } from "./components/EmptyState";

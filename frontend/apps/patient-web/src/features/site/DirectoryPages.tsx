@@ -25,9 +25,11 @@ import { DISTRICT_CODES, day, pick, time, type DistrictKey } from "../booking/di
 import { FILTER, FilterSelect, TYPES, useNearMe } from "../booking/Places";
 import { FacilityEntries, FacilityExplorer } from "./FacilityDirectory";
 import {
+  categoryOf,
   doctorsOf,
   parseDoctorSlug,
   SERVICE_CATEGORIES,
+  type CatalogueService,
   serviceCode,
   serviceSlug,
   useCatalogue,
@@ -40,6 +42,7 @@ import {
   ErrorState,
   LoadingRows,
   LocationSelector,
+  NotFoundState,
   PageContainer,
   PageHeader,
   Panel,
@@ -213,6 +216,7 @@ export function FacilitiesPage() {
           </div>
 
           <FacilityExplorer
+            headingLevel={2}
             label={t("site.facilities.title")}
             rows={rows}
             loading={pages.isPending}
@@ -286,7 +290,8 @@ function DoctorEntry({
         {initials}
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <h3 className="m-0 font-heading text-[1.125rem] leading-snug font-bold">
+        {/* h2: the list sits right under the page's <h1> */}
+        <h2 className="m-0 font-heading text-[1.125rem] leading-snug font-bold">
           <Link
             to={`/doctors/${doctor.slug}`}
             viewTransition
@@ -294,7 +299,7 @@ function DoctorEntry({
           >
             {doctor.name}
           </Link>
-        </h3>
+        </h2>
         {work && <p className="m-0 text-body-sm text-fg">{work}</p>}
         <p className="m-0 text-body-sm text-fg-secondary">
           {doctor.facilities.length > 1
@@ -474,18 +479,11 @@ export function DoctorPage() {
   if (parsed === null || profile.isError || (profile.isSuccess && !doctor)) {
     return (
       <PublicLayout>
-        <PageContainer narrow className="py-16">
-          <EmptyState
+        <PageContainer narrow>
+          <NotFoundState
             title={t("site.doctor.notFound")}
-            action={
-              <Link
-                to="/doctors"
-                viewTransition
-                className={buttonClassName({ variant: "secondary", pill: true })}
-              >
-                {t("nav.doctors")}
-              </Link>
-            }
+            reason={t("site.doctor.notFoundReason")}
+            back={{ to: "/doctors", label: t("site.doctor.allDoctors") }}
           />
         </PageContainer>
       </PublicLayout>
@@ -789,24 +787,29 @@ export function ServicePage() {
   const { slug = "" } = useParams();
   const code = serviceCode(slug);
   const catalogue = useCatalogue(lang);
-  const service = catalogue.data?.find((s) => s.code === code);
-  const offering = useFacilitiesOffering(service ? code : "");
+  const offering = useFacilitiesOffering(code);
+  // a service facilities offer but the catalogue has not caught up with still gets its page, named
+  // from the facility's own service
+  const offered = offering.data?.find((f) => f.service_code === code);
+  const service: CatalogueService | undefined =
+    catalogue.data?.find((s) => s.code === code) ??
+    (offered
+      ? {
+          code,
+          name: pick(offered.service_name_i18n, lang) || code,
+          category: categoryOf(code),
+          description: "",
+        }
+      : undefined);
 
-  if (catalogue.isSuccess && !service) {
+  if (catalogue.isSuccess && offering.isSuccess && !service) {
     return (
       <PublicLayout>
-        <PageContainer narrow className="py-16">
-          <EmptyState
+        <PageContainer narrow>
+          <NotFoundState
             title={t("site.service.notFound")}
-            action={
-              <Link
-                to="/services"
-                viewTransition
-                className={buttonClassName({ variant: "secondary", pill: true })}
-              >
-                {t("nav.services")}
-              </Link>
-            }
+            reason={t("site.service.notFoundReason")}
+            back={{ to: "/services", label: t("site.service.allServices") }}
           />
         </PageContainer>
       </PublicLayout>
@@ -861,7 +864,18 @@ export function ServicePage() {
               </Panel>
             ) : !offering.data?.length ? (
               <Panel as="div">
-                <EmptyState title={t("site.service.noneOffering")} />
+                <EmptyState
+                  title={t("site.service.noneOffering")}
+                  action={
+                    <Link
+                      to="/services"
+                      viewTransition
+                      className={buttonClassName({ variant: "secondary", pill: true })}
+                    >
+                      {t("site.service.allServices")}
+                    </Link>
+                  }
+                />
               </Panel>
             ) : (
               <FacilityEntries

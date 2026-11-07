@@ -156,6 +156,25 @@ export function page<T>(items: T[], url: URL) {
 export const now = () => new Date().toISOString();
 export const id = () => crypto.randomUUID();
 
+/**
+ * The same UUID for the same seed on every page load. Public records a visitor can link to
+ * (facility services, doctors, slots) need it: a fresh mock database is built on each load, and a
+ * random id in a shared link would point at nothing after a reload.
+ */
+export function stableId(seed: string): string {
+  let hex = "";
+  for (let round = 0; round < 4; round++) {
+    // FNV-1a, a different offset per round, 8 hex digits each
+    let hash = (0x811c9dc5 ^ (round * 0x9e3779b9)) >>> 0;
+    for (let i = 0; i < seed.length; i++) {
+      hash ^= seed.charCodeAt(i);
+      hash = Math.imul(hash, 0x01000193) >>> 0;
+    }
+    hex += hash.toString(16).padStart(8, "0");
+  }
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-8${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
+}
+
 /** A request value as text: strings and numbers as is, anything else empty. */
 export function str(value: unknown): string {
   if (typeof value === "string") return value;

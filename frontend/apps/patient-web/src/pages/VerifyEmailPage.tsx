@@ -8,6 +8,7 @@ import { Link, useNavigate, useSearchParams } from "react-router";
 import { paths } from "../app/paths";
 import { useApi } from "../app/services";
 import { patientMeKey } from "../auth/queries";
+import { safeReturnPath, takeReturnTo } from "../auth/return-to";
 import { describeApiError } from "../forms/api-errors";
 import { AuthLayout, AuthTitle } from "../layout/AuthLayout";
 
@@ -32,7 +33,8 @@ export function VerifyEmailPage() {
       .verifyEmail({ token })
       .then(async (me) => {
         queryClient.setQueryData(patientMeKey, me);
-        await navigate(paths.overview, { replace: true });
+        // back to the booking that led to sign-up, when there was one
+        await navigate(safeReturnPath(takeReturnTo(), paths.overview), { replace: true });
       })
       .catch((caught: unknown) => {
         setError(

@@ -57,7 +57,11 @@ function LanguageSelect({ className }: { className?: string }) {
 function EmergencyStrip() {
   const { t } = useTranslation();
   return (
-    <div className="ml-site-strip border-b border-danger/10 bg-danger-bg/70 print:hidden">
+    // a landmark of its own, so screen-reader users can jump to it and nothing sits outside one
+    <aside
+      aria-label={t("nav.strip.label")}
+      className="ml-site-strip border-b border-danger/10 bg-danger-bg/70 print:hidden"
+    >
       <div className="mx-auto flex min-h-9 max-w-[88rem] flex-wrap items-center justify-between gap-x-4 px-4 text-caption sm:px-6">
         <p className="m-0 flex items-center gap-2 text-fg-secondary">
           <Siren aria-hidden="true" weight="bold" className="size-3.5 shrink-0 text-danger" />
@@ -81,7 +85,7 @@ function EmergencyStrip() {
           <ArrowRight aria-hidden="true" weight="bold" className="size-3.5" />
         </Link>
       </div>
-    </div>
+    </aside>
   );
 }
 

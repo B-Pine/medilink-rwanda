@@ -1,0 +1,142 @@
+{
+  "nav": {
+    "disputes": "Litiges",
+    "platform": "Litiges"
+  },
+  "title": "Litiges",
+  "platformTitle": "Litiges escaladés",
+  "failed": "Impossible de charger les litiges.",
+  "retry": "Réessayer",
+  "notFound": "Litige introuvable",
+  "flagged": "Souvent rejeté",
+  "overdue": "En retard",
+  "system": "Système",
+  "tabs": {
+    "label": "Afficher",
+    "open": "Ouverts",
+    "overdue": "En retard",
+    "all": "Tous"
+  },
+  "empty": {
+    "open": "Aucun litige ouvert",
+    "overdue": "Rien en retard",
+    "all": "Aucun litige",
+    "platform": "Aucun litige escaladé"
+  },
+  "channel": {
+    "app": "Application",
+    "counter": "Guichet"
+  },
+  "facts": {
+    "title": "Faits",
+    "patient": "Patient",
+    "facility": "Établissement",
+    "channel": "Ouvert via",
+    "raised": "Ouvert le",
+    "answerBy": "Accuser réception avant",
+    "decideBy": "Décider avant",
+    "what": "Ce que le patient a écrit"
+  },
+  "snapshot": {
+    "status": "Statut",
+    "total_rwf": "Total (RWF)",
+    "patient_share_rwf": "Part du patient (RWF)",
+    "paid_rwf": "Payé (RWF)",
+    "balance_rwf": "Solde (RWF)",
+    "number": "Numéro",
+    "booking_code": "Code du rendez-vous",
+    "starts_at": "Rendez-vous",
+    "occurred_at": "Absence notée",
+    "reversed_at": "Annulée",
+    "ticket_number": "Ticket",
+    "state": "État",
+    "service_date": "Date de service",
+    "issued_at": "Émise",
+    "kind": "Type",
+    "document_date": "Date du document"
+  },
+  "evidence": "Journal d’audit",
+  "history": "Historique",
+  "thread": "Échanges",
+  "noMessages": "Aucun message",
+  "visibility": {
+    "internal": "Note interne",
+    "staff_comment": "Commentaire du personnel"
+  },
+  "action": {
+    "pending": "À faire : {{what}}",
+    "done": "Fait : {{what}}"
+  },
+  "statement": "Déclaration du patient",
+  "closedNote": "Ce litige est clos.",
+  "involved": "Vous êtes concerné par ce litige : vous pouvez commenter, pas décider.",
+  "acknowledgeHint": "Accusez réception pour lancer les 10 jours de décision.",
+  "acknowledge": "Accuser réception",
+  "messageKind": {
+    "label": "Type de message",
+    "thread": "Répondre au patient",
+    "internal": "Note interne",
+    "ask": "Demander une information au patient"
+  },
+  "message": "Message",
+  "internalHint": "Seul le personnel de l’établissement la voit.",
+  "send": "Envoyer",
+  "toPatient": "Message au patient",
+  "colleague": {
+    "title": "Demander à un collègue",
+    "who": "Collègue",
+    "choose": "Choisir…",
+    "ask": "Demander un commentaire",
+    "answered": "a répondu",
+    "waiting": "en attente",
+    "yourComment": "Votre commentaire",
+    "commentHint": "On vous a demandé un commentaire. Seul le personnel le voit."
+  },
+  "decide": {
+    "title": "Décision",
+    "finalTitle": "Décision finale",
+    "outcome": "Issue",
+    "choose": "Choisir…",
+    "reason": "Motif",
+    "reasonHint": "Le patient le lit.",
+    "submit": "Résoudre",
+    "finalSubmit": "Enregistrer la décision finale"
+  },
+  "done": {
+    "acknowledged": "Réception accusée.",
+    "message": "Envoyé.",
+    "asked": "Question envoyée au patient.",
+    "commentAsked": "Commentaire demandé.",
+    "commented": "Commentaire ajouté.",
+    "decided": "Décision enregistrée."
+  },
+  "subject": {
+    "visit": "Visite",
+    "ticket": "Ticket de file",
+    "booking": "Rendez-vous",
+    "no_show_strike": "Absence",
+    "prescription": "Ordonnance",
+    "bill": "Facture",
+    "document": "Document"
+  },
+  "status": {
+    "open": "Nouveau",
+    "acknowledged": "Accusé",
+    "under_review": "En examen",
+    "info_requested": "En attente du patient",
+    "resolved": "Résolu",
+    "escalated": "Escaladé",
+    "final_decision": "Décision finale",
+    "closed": "Clos",
+    "reopened": "Rouvert"
+  },
+  "outcome": {
+    "no_show_reversed": "Absence annulée",
+    "record_corrected": "Dossier à corriger",
+    "correction_refused": "Correction refusée",
+    "refund": "Remboursement",
+    "bill_correction": "Correction de facture",
+    "rebooking": "Nouveau rendez-vous",
+    "rejected": "Rejeté"
+  }
+}

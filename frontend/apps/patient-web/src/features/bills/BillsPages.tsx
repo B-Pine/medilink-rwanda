@@ -1,10 +1,10 @@
 import type { BillStatus, PatientBill, PatientBillRow } from "@medilink/api-client";
 import { Alert, Badge, cx, EmptyState, SelectField, Skeleton, type BadgeTone } from "@medilink/ui";
-import { Receipt } from "@phosphor-icons/react";
+import { Receipt, Scales } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 
 import { paths } from "../../app/paths";
 import { useApi } from "../../app/services";
@@ -18,6 +18,7 @@ import {
   RowsSkeleton,
 } from "../dashboard/kit";
 import { useProfiles } from "../profile/ProfileLayout";
+import { reportProblemTo } from "../disputes";
 import { useDate } from "../records/RecordsPages";
 import { billsKeys, useRwf } from "./shared";
 
@@ -159,6 +160,13 @@ export function BillDetailPage() {
       <Totals bill={b} />
       <Lines bill={b} />
       {b.payments.length > 0 && <Payments bill={b} />}
+      <Link
+        to={reportProblemTo("bill", b.id, b.patient_id)}
+        className="inline-flex items-center gap-1.5 self-start text-body-sm font-semibold text-link"
+      >
+        <Scales aria-hidden="true" className="size-4" />
+        {t("disputes.report")}
+      </Link>
     </div>
   );
 }

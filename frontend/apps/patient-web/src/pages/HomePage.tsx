@@ -18,6 +18,7 @@ import {
   WarningCircle,
   type Icon,
   Receipt,
+  Scales,
 } from "@phosphor-icons/react";
 import { Alert, Button, buttonClassName, cx, Skeleton } from "@medilink/ui";
 import { dateFormat, kigaliHour } from "@medilink/ui/i18n";
@@ -34,6 +35,7 @@ import { day, directionsUrl, pick, time } from "../features/booking/discovery";
 import { useUpcoming } from "../features/booking/Upcoming";
 import { AppointmentMenu, AppointmentRow } from "../features/dashboard/AppointmentsPages";
 import { useUnpaidBills, useRwf } from "../features/bills/shared";
+import { useMyDisputes } from "../features/disputes/shared";
 import { useComingUp } from "../features/dashboard/ComingUp";
 import {
   AppointmentBadge,
@@ -395,6 +397,7 @@ function useReminders(): Reminder[] {
   const results = useLabResults();
   const coming = useComingUp();
   const unpaid = useUnpaidBills();
+  const disputes = useMyDisputes();
   const rwf = useRwf();
   const profiles = useProfiles();
   const nameOf = (id: string) =>
@@ -462,6 +465,22 @@ function useReminders(): Reminder[] {
       to: paths.bill(b.id),
       action: t("dashboard.reminders.seeBill"),
     });
+  // a dispute that waits for my answer (S10b): a question from the facility, or its decision
+  for (const d of disputes.data?.results ?? [])
+    if (d.status === "info_requested" || d.status === "resolved" || d.status === "final_decision")
+      reminders.push({
+        id: `dispute-${d.id}`,
+        icon: Scales,
+        title: t(
+          d.status === "info_requested"
+            ? "dashboard.reminders.disputeQuestion"
+            : "dashboard.reminders.disputeAnswer",
+        ),
+        when: `${short(d.created_at)} · ${d.facility_name}`,
+        who: d.patient_display_name,
+        to: paths.dispute(d.id),
+        action: t("dashboard.reminders.open"),
+      });
   for (const v of visits.data?.results ?? [])
     if (arrivalKey(v) === "notYet" && v.state === "waiting")
       reminders.push({

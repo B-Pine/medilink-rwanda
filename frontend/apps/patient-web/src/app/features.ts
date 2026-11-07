@@ -35,6 +35,9 @@ import { recordsFeature } from "../features/records";
 import { documentsFeature } from "../features/documents";
 import { medicinesFeature } from "../features/medicines";
 // [/S7 imports]
+// [S8 imports]
+import { billsFeature } from "../features/bills";
+// [/S8 imports]
 // [Upgrade U12 imports]
 import { dashboardFeature } from "../features/dashboard";
 // [/Upgrade U12 imports]
@@ -91,6 +94,9 @@ export const FEATURES: FeatureRoutes[] = [
   medicinesFeature,
   documentsFeature,
   // [/S7]
+  // [S8]
+  billsFeature,
+  // [/S8]
   // [Upgrade U12]
   dashboardFeature,
   // [/Upgrade U12]

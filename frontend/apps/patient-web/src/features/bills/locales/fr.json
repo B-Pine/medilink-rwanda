@@ -1,0 +1,37 @@
+{
+  "title": "Factures",
+  "whose": "Factures de",
+  "everyone": "Tout le monde",
+  "failed": "Impossible de charger vos factures.",
+  "toPay": "À payer",
+  "left": "{{amount}} à payer",
+  "empty": "Aucune facture",
+  "back": "Factures",
+  "notFound": "Facture introuvable",
+  "total": "Total",
+  "insurer": "Part de l’assurance",
+  "share": "Votre part",
+  "exempted": "Exonéré",
+  "credited": "Avoir",
+  "paid": "Payé",
+  "balance": "Reste à payer",
+  "lines": "Articles",
+  "item": "Article",
+  "quantity": "Qté",
+  "payments": "Paiements",
+  "receipt": "Reçu",
+  "voided": "Annulé",
+  "status": {
+    "open": "À payer",
+    "partly_paid": "Payé en partie",
+    "paid": "Payé",
+    "voided": "Annulée",
+    "credited": "Avoir émis"
+  },
+  "method": {
+    "cash": "Espèces",
+    "mtn_momo": "MTN MoMo",
+    "airtel_money": "Airtel Money",
+    "card": "Carte"
+  }
+}

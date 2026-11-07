@@ -9,6 +9,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Pre-launch cleanup (2026-11-07)
+
+- Added: patient **Bills** (S8-F6, FR-BIL-12) at `/dashboard/bills`: what is left to pay across
+  facilities, bills with a balance first, then the newest; the bill with its lines (insurer and
+  patient share), payments and receipt numbers; an overview reminder for each unpaid bill. In the
+  sidebar, the phone More menu and search; `/bills` redirects. API client `billing.patient` and
+  mocks for PB1 and PB2 (stable ids, two earlier bills at other facilities).
+- Fixed: eight screens showed English day and month names on Kinyarwanda screens (doctor days,
+  legal page date, receipt, payment times, claims, shift summary, doctor's day, console); they use
+  `dateFormat()` now (#9).
+
 ### Public site audit, phase 5: quality bar (2026-11-07)
 
 - Changed: the public pages and the patient dashboard follow the system dark mode (as the staff

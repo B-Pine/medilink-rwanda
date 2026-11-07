@@ -234,7 +234,7 @@ Source: [08 · Billing, payments, insurance](../analysis/08-billing-payments-and
 | FR-BIL-09 | Voids, refunds, credit notes with approval and separation of duties | P1 | S8 | Both | BR, AZ | In progress |
 | FR-BIL-10 | Shift open/close with expected vs counted totals | P1 | S8, W4 | Both | BR | In progress (W4: end-of-shift summary by payment method) |
 | FR-BIL-11 | Exemptions and waivers with approval thresholds | P1 | S8 | Both | BR | In progress |
-| FR-BIL-12 | Unpaid balances per patient per facility | P1 | S8 | Both | API, RLS | In progress |
+| FR-BIL-12 | Unpaid balances per patient per facility | P1 | S8 | Both | API, RLS | In progress (patient My bills and overview reminder, `bills.test.tsx`; staging S8-I1 open) |
 | FR-BIL-13 | Optional EBM receipt number on payments | P1 | S8 | Both | API | In progress |
 | FR-BIL-14 | Monthly insurance claim list with claim status | P2 | W4 (#203) | Both | API | In progress (CSV and PDF; paid or rejected with a reason; electronic submission stays FR-BIL-18) |
 | FR-BIL-15 | Platform subscriptions, invoices, grace and listing rules | P2 | — | Both | BR | Not started |

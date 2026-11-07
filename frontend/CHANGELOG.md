@@ -9,6 +9,24 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Public site audit, phase 3: say each thing once (2026-11-07)
+
+- Changed: the patient journey is told once, on How it works: four steps with drawings (search,
+  join or book, follow your place, arrive), then three "Good to know" points. Home drops its
+  three-step band and trust strip for one line ("New here? How MediLink works"); About is one
+  paragraph and the facts (live facility count, languages, data in Rwanda, when an account is
+  needed).
+- Changed: home is four bands: hero, kinds of care, facilities near you, and a slim For facilities
+  band with one line and one button.
+- Changed: Help opens with the search, then the five most asked questions with their answers in
+  view; the rest are grouped and folded. While searching, every match shows its answer.
+- Changed: the footer has three short groups (Explore, Information, Help); legal links sit in the
+  bottom bar; no hover arrows. "Check symptoms" is named "Not sure where to go?" everywhere.
+- Changed: the AI assistant is off the public site (`VITE_PUBLIC_ASSISTANT`, off by default): it
+  runs on a test model. `/assistant` opens the guided questions; the floating button and the
+  "Try the AI assistant" link are hidden. Signed-in patients keep it in the dashboard.
+- Changed: shorter leads on For facilities and the symptom checker.
+
 ### Public site audit, phase 2: one design system with the app (2026-11-07)
 
 - Changed: the public site uses the patient app's system. Radii are 8 / 12 / 20; cards are white

@@ -112,11 +112,12 @@
     "copyright": "© {{year}} MediLink Rwanda",
     "about": "Ibyerekeye MediLink",
     "emergency": "Ibyihutirwa",
-    "checkSymptoms": "Suzuma ibimenyetso",
+    "checkSymptoms": "Ntuzi aho wajya?",
     "groups": {
       "explore": "Shakisha",
       "information": "Amakuru",
-      "legal": "Amategeko"
+      "legal": "Amategeko",
+      "support": "Ubufasha"
     },
     "tagline": "Duhuza abantu n’ibigo by’ubuvuzi mu Rwanda hose.",
     "trust": "Shakisha udafite konti. Aho uri bikoreshwa mu gushakisha gusa kandi ntibibikwa.",

@@ -1,7 +1,7 @@
 {
   "public": {
     "title": "MediLink pour les établissements de santé",
-    "problem": "Les patients perdent des heures dans les files d'attente et transportent des dossiers papier d'un établissement à l'autre. MediLink offre à votre établissement la prise de rendez-vous en ligne, une file d'attente en direct, des dossiers numériques et la gestion des assurances dans un seul système, en kinyarwanda, en anglais et en français.",
+    "problem": "Réservations, file en direct et dossiers dans un seul système.",
     "register": "Inscrire votre établissement",
     "continue": "Reprendre une demande",
     "sessionEnded": "Votre demande est enregistrée. Nous vous avons envoyé un lien pour la reprendre plus tard.",

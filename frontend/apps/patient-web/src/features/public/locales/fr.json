@@ -3,7 +3,7 @@
   "checker": {
     "eyebrow": "Vérificateur de symptômes",
     "title": "Vous ne savez pas où aller ?",
-    "intro": "Répondez à quelques questions. Nous vous indiquons dans quel délai consulter et quel type de soins, puis des établissements près de chez vous.",
+    "intro": "Quatre questions, puis les bons soins près de vous.",
     "loadFailed": "Impossible de charger les questions. Vérifiez votre connexion et réessayez.",
     "dangerTitle": "D'abord : l'un de ces signes est-il présent maintenant ?",
     "dangerIntro": "Choisissez ceux qui s'appliquent. Sinon, continuez.",

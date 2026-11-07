@@ -225,36 +225,27 @@
     "title": "Comment fonctionne MediLink",
     "steps": {
       "search": {
-        "title": "Chercher des soins",
+        "title": "Chercher",
         "body": "Par service, établissement ou ce que vous ressentez."
       },
-      "select": {
-        "title": "Choisir un établissement",
-        "body": "Comparez distance, attente en direct et assurance."
-      },
       "join": {
-        "title": "Rejoindre une file ou réserver",
-        "body": "Rejoignez la file du jour ou choisissez un rendez-vous."
-      },
-      "confirm": {
-        "title": "Recevoir une confirmation",
-        "body": "Vous recevez un numéro de ticket ou un code de réservation."
-      },
-      "arrive": {
-        "title": "Arriver et s’enregistrer",
-        "body": "L’accueil confirme votre arrivée."
+        "title": "Rejoindre ou réserver",
+        "body": "La file du jour, ou une heure qui vous convient."
       },
       "follow": {
-        "title": "Suivre votre visite",
-        "body": "Voyez votre place dans la file et quand entrer."
+        "title": "Suivre votre place",
+        "body": "Voyez combien de personnes avant vous et quand partir."
+      },
+      "arrive": {
+        "title": "Arriver à votre tour",
+        "body": "L’accueil confirme votre arrivée."
       }
     },
     "goodTitle": "Bon à savoir",
     "good": {
-      "noAccount": "Pas besoin de compte pour chercher.",
-      "walkIn": "Les patients sans rendez-vous sont toujours reçus.",
-      "reception": "L'accueil confirme votre arrivée.",
-      "noPhone": "Sans téléphone ? Vous recevez un ticket imprimé et votre numéro est appelé."
+      "noAccount": "Pas de compte pour consulter.",
+      "walkIn": "Les patients sans rendez-vous restent bienvenus.",
+      "noPhone": "Pas besoin de smartphone : un ticket imprimé et votre numéro appelé."
     },
     "start": "Trouver des soins"
   },
@@ -284,7 +275,6 @@
     "none": "Aucune réponse ne correspond à votre recherche",
     "articles": "Autres articles d’aide",
     "contactTitle": "Encore besoin d’aide ?",
-    "contactLead": "Écrivez-nous, nous vous répondrons.",
     "contactAction": "Contacter l’assistance",
     "categories": {
       "finding": {
@@ -343,31 +333,28 @@
         "q2": "Je ne reçois pas les alertes.",
         "a2": "Autorisez les notifications de MediLink dans votre navigateur et activez les alertes dans vos réglages."
       }
-    }
+    },
+    "top": "Les plus demandées",
+    "more": "Autres questions",
+    "results_one": "{{count}} réponse",
+    "results_other": "{{count}} réponses"
   },
   "about": {
     "title": "À propos de MediLink",
-    "lead": "Les établissements de santé du Rwanda, au même endroit.",
-    "sections": {
-      "what": {
-        "title": "Ce qu’est MediLink",
-        "body": "Trouvez établissements, services et médecins. Voyez l'attente. Rejoignez la file ou réservez."
+    "body": "MediLink réunit les établissements de santé du Rwanda en un seul endroit : où ils sont, ce qu’ils proposent, les assurances acceptées et l’attente du moment. Les patients rejoignent une file ou réservent une heure ; les établissements gèrent leur journée avec le même système.",
+    "facts": {
+      "facilities": "Établissements sur MediLink",
+      "languages": {
+        "label": "Langues",
+        "value": "Kinyarwanda, English, Français"
       },
-      "problem": {
-        "title": "Le problème traité",
-        "body": "Fini les trajets sans savoir si c'est ouvert, combien de temps attendre ou si votre assurance est acceptée."
+      "data": {
+        "label": "Vos données",
+        "value": "Stockées au Rwanda, loi 058/2021"
       },
-      "how": {
-        "title": "Comment elle relie patients et établissements",
-        "body": "Les établissements publient horaires, services et file en direct. L'accueil confirme chaque arrivée."
-      },
-      "access": {
-        "title": "Accessible à tous",
-        "body": "Aucun compte pour chercher. Trois langues. Fonctionne sur petits téléphones. Sans téléphone ? Ticket imprimé et appel à voix haute."
-      },
-      "privacy": {
-        "title": "Protéger les informations des patients",
-        "body": "Protégé par la loi rwandaise sur les données (058/2021). Le personnel ne voit que ce qu'exigent vos soins ; chaque accès est enregistré."
+      "account": {
+        "label": "Compte",
+        "value": "Seulement pour rejoindre une file ou réserver"
       }
     }
   },
@@ -445,22 +432,7 @@
     "facilityCount_one": "{{count}} établissement",
     "facilityCount_other": "{{count}} établissements",
     "nearTitle": "Ouverts près de vous",
-    "howTitle": "De la recherche à la consultation, en trois étapes",
     "stepLabel": "Étape {{n}}",
-    "steps": {
-      "search": {
-        "title": "Cherchez et comparez",
-        "body": "Ouvert, attente, distance, assurance."
-      },
-      "join": {
-        "title": "Rejoignez la file ou réservez",
-        "body": "La file du jour ou une heure."
-      },
-      "arrive": {
-        "title": "Arrivez à votre tour",
-        "body": "Venez quand votre tour approche."
-      }
-    },
     "facilitiesTitle": "Une salle d’attente plus calme.",
     "facilitiesLead": "Les patients voient votre attente avant de venir.",
     "facilitiesAction": "MediLink pour les établissements"
@@ -479,23 +451,6 @@
     "nextOpeningToday": "prochaine ouverture à {{time}}, {{name}}",
     "nextOpening": "prochaine ouverture {{day}} à {{time}}, {{name}}",
     "openLead": "Les lieux sur MediLink avec leur attente en direct. Touchez « Près de moi » pour trier par distance.",
-    "trustLabel": "Ce sur quoi vous pouvez compter",
-    "trust": {
-      "noAccount": {
-        "title": "Pas de compte pour regarder"
-      },
-      "languages": {
-        "title": "Kinyarwanda, English, Français"
-      },
-      "dataHome": {
-        "title": "Vos données de santé restent au Rwanda"
-      }
-    },
-    "facilityPoints": {
-      "queue": "Une file en direct que les patients suivent depuis chez eux",
-      "bookings": "Rendez-vous et patients sans rendez-vous dans un seul planning",
-      "records": "Dossiers, ordonnances et paiements au même endroit"
-    },
     "kpi": {
       "open": "Ouverts maintenant",
       "openHint_one": "sur {{count}} établissement sur MediLink",
@@ -508,6 +463,7 @@
     "symptoms": {
       "title": "Vous ne savez pas où aller ?",
       "action": "Vérifiez vos symptômes"
-    }
+    },
+    "howLine": "Nouveau ici ?"
   }
 }

@@ -26,6 +26,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { useApi } from "../../app/services";
+import { env } from "../../env";
 import { PageHeading } from "../../components/PageHeading";
 import { PublicLayout } from "../../layout/PublicLayout";
 import { Breadcrumbs } from "../site/kit";
@@ -177,18 +178,20 @@ export function SymptomCheckerPage() {
             {title}
           </PageHeading>
           <p className="m-0 text-fg-muted">{t("public.checker.intro")}</p>
-          <Link
-            to="/assistant"
-            viewTransition
-            className="group inline-flex items-center gap-2 self-start rounded-full border border-violet/30 bg-violet-bg px-4 py-2 text-body-sm font-semibold text-violet no-underline transition-colors duration-150 hover:border-violet"
-          >
-            <Sparkle aria-hidden="true" weight="fill" className="size-4" />
-            {t("public.assistant.tryIt")}
-            <ArrowRight
-              aria-hidden="true"
-              className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
-            />
-          </Link>
+          {env.publicAssistant && (
+            <Link
+              to="/assistant"
+              viewTransition
+              className="group inline-flex items-center gap-2 self-start rounded-full border border-violet/30 bg-violet-bg px-4 py-2 text-body-sm font-semibold text-violet no-underline transition-colors duration-150 hover:border-violet"
+            >
+              <Sparkle aria-hidden="true" weight="fill" className="size-4" />
+              {t("public.assistant.tryIt")}
+              <ArrowRight
+                aria-hidden="true"
+                className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
+              />
+            </Link>
+          )}
         </div>
         <Progress step={step} />
 

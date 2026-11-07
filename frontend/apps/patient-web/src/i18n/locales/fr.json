@@ -112,11 +112,12 @@
     "copyright": "© {{year}} MediLink Rwanda",
     "about": "À propos de MediLink",
     "emergency": "Urgence",
-    "checkSymptoms": "Vérifier mes symptômes",
+    "checkSymptoms": "Vous ne savez pas où aller ?",
     "groups": {
       "explore": "Explorer",
       "information": "Informations",
-      "legal": "Mentions légales"
+      "legal": "Mentions légales",
+      "support": "Aide"
     },
     "tagline": "Relier les personnes aux établissements de santé partout au Rwanda.",
     "trust": "Cherchez sans compte. Votre position sert seulement à votre recherche et n’est jamais conservée.",

@@ -1,6 +1,7 @@
 import { cx, MAIN_CONTENT_ID, SkipLink } from "@medilink/ui";
 import { useEffect, type ReactNode } from "react";
 
+import { env } from "../env";
 import { AssistantLauncher } from "../features/public/AssistantLauncher";
 import { useInDashboard } from "./DashboardContext";
 import { PublicFooter } from "./PublicFooter";
@@ -50,7 +51,8 @@ export function PublicLayout({
         {children}
       </main>
       <PublicFooter />
-      <AssistantLauncher />
+      {/* the AI assistant stays off the public site until it is ready (env.publicAssistant) */}
+      {env.publicAssistant && <AssistantLauncher />}
     </div>
   );
 }

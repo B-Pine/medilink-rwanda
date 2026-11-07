@@ -52,7 +52,10 @@ describe("facility disputes (S10b-F2)", () => {
     // a missed-visit dispute can't become a refund
     expect(within(outcome).queryByRole("option", { name: "Refund" })).not.toBeInTheDocument();
     await user.selectOptions(outcome, "no_show_reversed");
-    await user.type(screen.getByLabelText("Reason"), "The patient was waiting; the call was missed.");
+    await user.type(
+      screen.getByLabelText("Reason"),
+      "The patient was waiting; the call was missed.",
+    );
     await user.click(screen.getByRole("button", { name: "Resolve" }));
     expect(await screen.findByText("Decision recorded.")).toBeInTheDocument();
     expect(screen.getByText("Done: Missed visit reversed")).toBeInTheDocument();
@@ -81,7 +84,10 @@ describe("platform disputes (S10b-F2)", () => {
     expect(await axe(container)).toHaveNoViolations();
 
     await user.selectOptions(screen.getByLabelText("Outcome"), "rebooking");
-    await user.type(screen.getByLabelText("Reason"), "Two moves without consent; offer a priority slot.");
+    await user.type(
+      screen.getByLabelText("Reason"),
+      "Two moves without consent; offer a priority slot.",
+    );
     await user.click(screen.getByRole("button", { name: "Record final decision" }));
     expect(await screen.findByText("Decision recorded.")).toBeInTheDocument();
     expect(screen.getByText("To do: Rebooking")).toBeInTheDocument();

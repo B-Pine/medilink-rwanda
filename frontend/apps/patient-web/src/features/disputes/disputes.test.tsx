@@ -31,7 +31,10 @@ describe("My disputes (S10b-F1)", () => {
     expect(screen.queryByText(/no RDT recorded/)).not.toBeInTheDocument();
     expect(screen.getByText("Decision by")).toBeInTheDocument();
 
-    await user.type(screen.getByLabelText("Message"), "The receipt says RDT but no blood was taken.");
+    await user.type(
+      screen.getByLabelText("Message"),
+      "The receipt says RDT but no blood was taken.",
+    );
     await user.click(screen.getByRole("button", { name: "Send" }));
     expect(await screen.findByText("Message sent.")).toBeInTheDocument();
     expect(screen.getByText("The receipt says RDT but no blood was taken.")).toBeInTheDocument();

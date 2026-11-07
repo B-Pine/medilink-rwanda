@@ -1,7 +1,7 @@
 import { isApiError } from "@medilink/api-client";
 import { Alert, Button, buttonClassName, Card, ErrorSummary, TextField } from "@medilink/ui";
 import { isLanguage } from "@medilink/ui/i18n";
-import { ChartLineUp, Pill, Stethoscope, Users, type Icon } from "@phosphor-icons/react";
+import { ChartLineUp, Stethoscope, Users, type Icon } from "@phosphor-icons/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
@@ -13,16 +13,21 @@ import { describeApiError } from "../../forms/api-errors";
 import { EMAIL_PATTERN } from "../../forms/validation";
 import { PublicLayout } from "../../layout/PublicLayout";
 import { FacilityBoardIllustration } from "../site/illustrations";
-import { Faq, PageContainer, PageHeader, Panel } from "../site/kit";
+import {
+  Faq,
+  ON_FOREST_PRIMARY,
+  ON_FOREST_SECONDARY,
+  PageContainer,
+  PageHeader,
+  Panel,
+} from "../site/kit";
 import { applicationKey, firstIncompleteStep, useApplication } from "./data";
 
-const ROLES = ["admin", "reception", "doctor", "pharmacy"] as const;
-const ROLE_ICONS = {
-  admin: ChartLineUp,
-  reception: Users,
-  doctor: Stethoscope,
-  pharmacy: Pill,
-} as const satisfies Record<(typeof ROLES)[number], Icon>;
+const BENEFITS: { key: string; icon: Icon }[] = [
+  { key: "queue", icon: Users },
+  { key: "day", icon: ChartLineUp },
+  { key: "records", icon: Stethoscope },
+];
 const PHASES = ["apply", "verify", "setup", "live"] as const;
 const FAQ = ["cost", "documents", "time", "data"] as const;
 
@@ -43,6 +48,7 @@ export function ForFacilitiesPage() {
           {/* the one public page template: breadcrumb → H1 → lead, the two first steps and the
               facility board drawing on the band (upgrade 14 §3) */}
           <PageHeader
+            tone="forest"
             crumbs={[{ label: t("facilityApplication.public.title") }]}
             title={t("facilityApplication.public.title")}
             lead={t("facilityApplication.public.problem")}
@@ -54,16 +60,10 @@ export function ForFacilitiesPage() {
             }
             actions={
               <>
-                <Link
-                  to="/for-facilities/apply"
-                  className={buttonClassName({ size: "lg", pill: true })}
-                >
+                <Link to="/for-facilities/apply" className={ON_FOREST_PRIMARY}>
                   {t("facilityApplication.public.register")}
                 </Link>
-                <a
-                  href="#continue"
-                  className={buttonClassName({ size: "lg", variant: "secondary", pill: true })}
-                >
+                <a href="#continue" className={ON_FOREST_SECONDARY}>
                   {t("facilityApplication.public.continue")}
                 </a>
               </>
@@ -71,33 +71,27 @@ export function ForFacilitiesPage() {
           />
         </section>
 
-        <section aria-labelledby="roles-title" className="flex flex-col gap-4">
-          <h2 id="roles-title" className="m-0 font-heading text-h2">
-            {t("facilityApplication.public.rolesTitle")}
+        {/* three benefits, a word each, no paragraph */}
+        <section aria-labelledby="benefits-title" className="flex flex-col gap-4">
+          <h2 id="benefits-title" className="m-0 font-heading text-h2">
+            {t("facilityApplication.public.benefitsTitle")}
           </h2>
-          {/* one surface, hairlines between the teams (public design brief 2026-11-04) */}
-          <ul className="m-0 grid list-none gap-px overflow-hidden rounded-panel bg-hairline p-0 shadow-e2 sm:grid-cols-2">
-            {ROLES.map((role) => {
-              const RoleIcon = ROLE_ICONS[role];
-              return (
-                <li key={role} className="flex gap-4 bg-surface p-5 sm:p-6">
-                  <span
-                    aria-hidden="true"
-                    className="grid size-11 shrink-0 place-items-center rounded-xl bg-[linear-gradient(140deg,var(--color-brand-subtle),var(--color-surface))] text-on-brand-subtle shadow-e1"
-                  >
-                    <RoleIcon weight="duotone" className="size-5" />
-                  </span>
-                  <span className="flex flex-col gap-1.5">
-                    <h3 className="m-0 font-heading text-h3 font-bold">
-                      {t(`facilityApplication.public.roles.${role}.title`)}
-                    </h3>
-                    <p className="m-0 text-fg-secondary">
-                      {t(`facilityApplication.public.roles.${role}.body`)}
-                    </p>
-                  </span>
-                </li>
-              );
-            })}
+          <ul className="m-0 grid list-none gap-3 p-0 md:grid-cols-3">
+            {BENEFITS.map(({ key, icon: BenefitIcon }) => (
+              <li
+                key={key}
+                className="flex items-start gap-3 rounded-panel bg-surface p-5 shadow-e1"
+              >
+                <BenefitIcon
+                  aria-hidden="true"
+                  weight="duotone"
+                  className="size-6 shrink-0 text-brand"
+                />
+                <span className="font-semibold text-fg">
+                  {t(`facilityApplication.public.benefits.${key}`)}
+                </span>
+              </li>
+            ))}
           </ul>
         </section>
 
@@ -136,8 +130,12 @@ export function ForFacilitiesPage() {
               {t("facilityApplication.public.faqTitle")}
             </h2>
             <Panel as="div" className="overflow-hidden">
-              {FAQ.map((item) => (
-                <Faq key={item} question={t(`facilityApplication.public.faq.${item}.q`)}>
+              {FAQ.map((item, index) => (
+                <Faq
+                  key={item}
+                  open={index === 0}
+                  question={t(`facilityApplication.public.faq.${item}.q`)}
+                >
                   {t(`facilityApplication.public.faq.${item}.a`)}
                 </Faq>
               ))}

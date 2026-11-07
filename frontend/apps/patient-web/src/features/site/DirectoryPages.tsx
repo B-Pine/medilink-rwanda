@@ -12,7 +12,7 @@ import {
   Syringe,
   Tooth,
 } from "@phosphor-icons/react";
-import { Button, buttonClassName, cx } from "@medilink/ui";
+import { Button, buttonClassName, cx, StatusPill } from "@medilink/ui";
 import { kigaliDate } from "@medilink/ui/i18n";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -310,14 +310,15 @@ function DoctorEntry({
   return (
     // a profile card (upgrade 14 §3): the initials in a ring, who, where, the days; the whole card
     // answers the pointer, the name is the link
-    <li className="ml-card group/row relative flex min-w-0 flex-col gap-4 rounded-panel bg-surface p-5">
+    // phones: a compact row (initials, who, where, "here today"); wider: a card with the days
+    <li className="ml-card group/row relative flex min-w-0 flex-row items-center gap-3 rounded-panel bg-surface p-4 sm:flex-col sm:items-stretch sm:gap-4 sm:p-5">
       <span
         aria-hidden="true"
-        className="grid size-14 place-items-center rounded-full bg-brand-subtle font-heading text-body font-bold text-on-brand-subtle shadow-[0_0_0_4px_var(--color-surface),0_0_0_5px_var(--site-hairline-strong)]"
+        className="grid size-11 shrink-0 place-items-center rounded-full bg-brand-subtle font-heading text-body-sm font-bold text-on-brand-subtle sm:size-14 sm:text-body"
       >
         {initials}
       </span>
-      <div className="flex min-w-0 flex-1 flex-col gap-1">
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5 sm:gap-1">
         {/* h2: the list sits right under the page's <h1> */}
         <h2 className="m-0 font-heading text-[1.125rem] leading-snug font-bold">
           <Link
@@ -328,8 +329,8 @@ function DoctorEntry({
             {doctor.name}
           </Link>
         </h2>
-        {work && <p className="m-0 text-body-sm text-fg">{work}</p>}
-        <p className="m-0 text-body-sm text-fg-secondary">
+        {work && <p className="m-0 truncate text-body-sm text-fg sm:whitespace-normal">{work}</p>}
+        <p className="m-0 truncate text-body-sm text-fg-secondary sm:whitespace-normal">
           {doctor.facilities.length > 1
             ? t("site.doctors.places", {
                 name: doctor.facility.name,
@@ -339,17 +340,17 @@ function DoctorEntry({
           {doctor.facility.district && ` · ${doctor.facility.district}`}
         </p>
       </div>
-      <div className="flex flex-wrap items-center gap-2 border-t border-hairline pt-4 text-body-sm">
+      {here && (
+        <span className="shrink-0 sm:hidden">
+          <StatusPill tone="open">{t("site.doctors.today")}</StatusPill>
+        </span>
+      )}
+      <div className="hidden flex-wrap items-center gap-2 border-t border-hairline pt-4 text-body-sm sm:flex">
         <span className="rounded-md bg-page px-2 py-0.5 font-semibold text-fg tabular-nums shadow-e1">
           <span className="sr-only">{t("site.doctors.days")}: </span>
           {daysText(doctor.days, lang)}
         </span>
-        {here && (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-success-bg px-2.5 py-0.5 text-caption font-semibold text-success">
-            <span aria-hidden="true" className="size-1.5 rounded-full bg-success" />
-            {t("site.doctors.today")}
-          </span>
-        )}
+        {here && <StatusPill tone="open">{t("site.doctors.today")}</StatusPill>}
       </div>
     </li>
   );
@@ -395,60 +396,91 @@ export function DoctorsPage() {
           title={t("site.doctors.title")}
         />
         <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-3 rounded-panel bg-surface shadow-e2 p-4 sm:p-5">
-            <SearchBar
-              id="doctor-search"
-              label={t("site.doctors.searchName")}
-              value={text}
-              onChange={setText}
-              placeholder={t("site.doctors.searchName")}
-            />
-            <div
-              role="group"
-              aria-label={t("care.filters")}
-              className="flex flex-wrap items-center gap-2"
-            >
-              <FilterSelect
-                id="doctor-service"
-                label={t("site.doctors.specialty")}
-                value={service}
-                onChange={setService}
-              >
-                <option value="">{t("site.doctors.anySpecialty")}</option>
-                {services.map(([code, name]) => (
-                  <option key={code} value={code}>
-                    {name}
-                  </option>
-                ))}
-              </FilterSelect>
-              <FilterSelect
-                id="doctor-facility"
-                label={t("site.doctors.facility")}
-                value={facility}
-                onChange={setFacility}
-              >
-                <option value="">{t("site.doctors.anyFacility")}</option>
-                {facilities.map((f) => (
-                  <option key={f.slug} value={f.slug}>
-                    {f.name}
-                  </option>
-                ))}
-              </FilterSelect>
-              <button
-                type="button"
-                aria-pressed={todayOnly}
-                onClick={() => setTodayOnly((on) => !on)}
-                className={FILTER}
-              >
-                {t("site.doctors.today")}
-              </button>
-              {!isPending && (
-                <span role="status" className="ml-auto text-body-sm text-fg-muted tabular-nums">
-                  {t("site.doctors.count", { count: rows.length })}
-                </span>
-              )}
-            </div>
-          </div>
+          <FilterBar
+            search={
+              <SearchBar
+                id="doctor-search"
+                label={t("site.doctors.searchName")}
+                value={text}
+                onChange={setText}
+                placeholder={t("site.doctors.searchName")}
+              />
+            }
+            filters={
+              <>
+                <FilterSelect
+                  id="doctor-service"
+                  label={t("site.doctors.specialty")}
+                  value={service}
+                  onChange={setService}
+                >
+                  <option value="">{t("site.doctors.anySpecialty")}</option>
+                  {services.map(([code, name]) => (
+                    <option key={code} value={code}>
+                      {name}
+                    </option>
+                  ))}
+                </FilterSelect>
+                <FilterSelect
+                  id="doctor-facility"
+                  label={t("site.doctors.facility")}
+                  value={facility}
+                  onChange={setFacility}
+                >
+                  <option value="">{t("site.doctors.anyFacility")}</option>
+                  {facilities.map((f) => (
+                    <option key={f.slug} value={f.slug}>
+                      {f.name}
+                    </option>
+                  ))}
+                </FilterSelect>
+                <button
+                  type="button"
+                  aria-pressed={todayOnly}
+                  onClick={() => setTodayOnly((on) => !on)}
+                  className={FILTER}
+                >
+                  {t("site.doctors.today")}
+                </button>
+              </>
+            }
+            active={[
+              ...(service
+                ? [
+                    {
+                      key: "service",
+                      label: services.find(([c]) => c === service)?.[1] ?? service,
+                      onRemove: () => setService(""),
+                    },
+                  ]
+                : []),
+              ...(facility
+                ? [
+                    {
+                      key: "facility",
+                      label: facilities.find((x) => x.slug === facility)?.name ?? facility,
+                      onRemove: () => setFacility(""),
+                    },
+                  ]
+                : []),
+              ...(todayOnly
+                ? [
+                    {
+                      key: "today",
+                      label: t("site.doctors.today"),
+                      onRemove: () => setTodayOnly(false),
+                    },
+                  ]
+                : []),
+            ]}
+            onClear={() => {
+              setText("");
+              setService("");
+              setFacility("");
+              setTodayOnly(false);
+            }}
+            count={isPending ? undefined : t("site.doctors.count", { count: rows.length })}
+          />
           {isPending || isError || rows.length === 0 ? (
             <Panel as="div" className="overflow-hidden">
               {isPending ? (
@@ -463,7 +495,7 @@ export function DoctorsPage() {
             <div className="@container">
               <ul
                 aria-label={t("site.doctors.title")}
-                className="ml-stagger m-0 grid list-none gap-5 p-0 @xl:grid-cols-2 @5xl:grid-cols-3 @7xl:grid-cols-4"
+                className="ml-stagger m-0 grid list-none gap-3 p-0 sm:gap-5 @xl:grid-cols-2 @5xl:grid-cols-3 @7xl:grid-cols-4"
               >
                 {rows.map((d) => (
                   <DoctorEntry key={d.slug} doctor={d} today={todayIndex} />
@@ -781,25 +813,19 @@ export function ServicesPage() {
                   >
                     {t(`site.services.categories.${key}`)}
                   </h2>
-                  <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2">
+                  {/* the full width: two columns, three on wide screens; the whole card is the link */}
+                  <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2 xl:grid-cols-3">
                     {services.map((s) => (
                       <li key={s.code}>
                         <Link
                           to={`/services/${serviceSlug(s.code)}`}
                           viewTransition
-                          className="group flex items-center gap-4 rounded-panel bg-surface p-4 no-underline shadow-e1 transition-[box-shadow,transform] duration-300 ease-out-quint hover:-translate-y-0.5 hover:shadow-e3 motion-reduce:hover:translate-y-0"
+                          className="ml-card flex min-h-16 items-center gap-3 rounded-panel bg-surface px-4 py-3 no-underline"
                         >
-                          <span
-                            aria-hidden="true"
-                            className="grid size-11 shrink-0 place-items-center rounded-xl bg-[linear-gradient(140deg,var(--color-brand-subtle),var(--color-surface))] text-on-brand-subtle shadow-e1"
-                          >
+                          <span aria-hidden="true" className="flex shrink-0 text-brand">
                             <ServiceMark code={s.code} />
                           </span>
                           <span className="min-w-0 flex-1 font-semibold text-fg">{s.name}</span>
-                          <ArrowRight
-                            aria-hidden="true"
-                            className="size-5 text-fg-muted transition-[transform,color] duration-300 ease-out-quint group-hover:translate-x-1 group-hover:text-primary"
-                          />
                         </Link>
                       </li>
                     ))}

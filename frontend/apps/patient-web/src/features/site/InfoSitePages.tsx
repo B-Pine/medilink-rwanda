@@ -272,7 +272,18 @@ export function EmergencyPage() {
         />
         <div className="grid gap-x-10 gap-y-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
           <div className="flex min-w-0 flex-col gap-8">
-            {/* the urgent care card: what to look for, and the call */}
+            {/* the call first and largest on the page (audit 2026-11-07) */}
+            <div className="flex flex-col gap-2">
+              <a
+                href={`tel:${EMERGENCY.number}`}
+                className="ml-press inline-flex min-h-20 w-full items-center justify-center gap-3 rounded-shell bg-danger-solid px-6 font-heading text-[1.75rem] leading-tight font-extrabold whitespace-nowrap sm:gap-4 sm:px-8 sm:text-display text-on-danger-solid no-underline tabular-nums transition-[filter] duration-150 hover:brightness-110 sm:w-auto sm:self-start"
+              >
+                <Phone aria-hidden="true" weight="fill" className="size-9 shrink-0" />
+                {t("site.emergency.callNow", { number: EMERGENCY.number })}
+              </a>
+              <span className="text-body-sm text-fg-secondary">{t("site.emergency.callNote")}</span>
+            </div>
+            {/* the urgent care card: what to look for */}
             <section
               aria-labelledby="signs"
               className="overflow-hidden rounded-lg border border-danger-solid bg-surface"
@@ -290,18 +301,6 @@ export function EmergencyPage() {
                     <li key={sign}>{t(`public.emergency.signs.${sign}`)}</li>
                   ))}
                 </ul>
-                <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-hairline pt-5">
-                  <a
-                    href={`tel:${EMERGENCY.number}`}
-                    className="inline-flex min-h-14 items-center gap-3 rounded-md bg-danger-solid px-6 font-heading text-[1.375rem] font-bold text-on-danger-solid no-underline transition-[filter] duration-150 hover:brightness-110"
-                  >
-                    <Phone aria-hidden="true" weight="fill" className="size-6" />
-                    {t("site.emergency.callNow", { number: EMERGENCY.number })}
-                  </a>
-                  <span className="text-body-sm text-fg-secondary">
-                    {t("site.emergency.callNote")}
-                  </span>
-                </div>
               </div>
             </section>
 

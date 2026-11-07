@@ -5,25 +5,6 @@
     "register": "Inscrire votre établissement",
     "continue": "Reprendre une demande",
     "sessionEnded": "Votre demande est enregistrée. Nous vous avons envoyé un lien pour la reprendre plus tard.",
-    "rolesTitle": "Ce que chaque équipe y gagne",
-    "roles": {
-      "admin": {
-        "title": "Administrateurs de l'établissement",
-        "body": "Configurez les services, les horaires et les comptes du personnel, et suivez l'activité de l'établissement."
-      },
-      "reception": {
-        "title": "Accueil",
-        "body": "Enregistrez les arrivées, gérez la file d'attente et saisissez les paiements et les assurances."
-      },
-      "doctor": {
-        "title": "Médecins et infirmiers",
-        "body": "Voyez les patients du jour et leur historique, rédigez les consultations et les ordonnances."
-      },
-      "pharmacy": {
-        "title": "Pharmacie",
-        "body": "Recevez les ordonnances électroniques et enregistrez ce qui a été délivré."
-      }
-    },
     "howTitle": "Comment se passe l'inscription",
     "phases": {
       "apply": {
@@ -61,6 +42,12 @@
         "q": "Qui peut voir les données de nos patients ?",
         "a": "Seulement votre personnel et les patients eux-mêmes. Les données restent au Rwanda et chaque accès est journalisé."
       }
+    },
+    "benefitsTitle": "Ce qui change pour vous",
+    "benefits": {
+      "queue": "Les patients voient votre attente avant de venir",
+      "day": "Rendez-vous et patients sans rendez-vous dans un seul planning",
+      "records": "Dossiers, ordonnances et paiements au même endroit"
     }
   },
   "start": {

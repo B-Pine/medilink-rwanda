@@ -38,6 +38,8 @@ import {
   FacilityStatus,
   InsuranceList,
   NotFoundState,
+  ON_FOREST_PRIMARY,
+  ON_FOREST_SECONDARY,
   PageContainer,
   PageHeader,
   Panel,
@@ -467,12 +469,6 @@ export function FacilityPage() {
     </PublicLayout>
   );
 }
-
-/** Buttons on the forest band: white for the main action, a white outline for the other. */
-const ON_FOREST_PRIMARY =
-  "ml-press inline-flex min-h-11 items-center gap-2 rounded-full bg-on-forest px-5 font-semibold text-forest no-underline transition-[filter] duration-150 hover:brightness-95";
-const ON_FOREST_SECONDARY =
-  "ml-press inline-flex min-h-11 items-center gap-2 rounded-full px-5 font-semibold text-on-forest no-underline shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-on-forest)_45%,transparent)] transition-colors duration-150 hover:bg-forest-raised";
 
 /** One fact of today's summary: the label on the left, the answer on the right (NHS summary list). */
 function Summary({ label, children }: { label: string; children: ReactNode }) {

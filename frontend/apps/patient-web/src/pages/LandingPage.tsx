@@ -320,7 +320,7 @@ export function LandingPage() {
               <PageHeading
                 id="hero-title"
                 title={`${t("site.home3.titleA")} ${t("site.home3.titleB")}`}
-                className="m-0 max-w-[14ch] font-heading text-hero font-bold text-balance text-fg"
+                className="m-0 max-w-[24ch] font-heading text-hero font-bold text-balance text-fg"
               >
                 {t("site.home3.titleA")}{" "}
                 <span className="bg-[linear-gradient(100deg,var(--color-forest),var(--color-primary))] bg-clip-text text-transparent">

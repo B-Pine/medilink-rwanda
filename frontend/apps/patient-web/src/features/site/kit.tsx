@@ -23,6 +23,12 @@ import { EmptyIllustration } from "./illustrations";
  * so widths, headings, states and facility facts look the same everywhere.
  */
 
+/** Buttons on the forest band: white for the main action, a white outline for the other. */
+export const ON_FOREST_PRIMARY =
+  "ml-press inline-flex min-h-11 items-center gap-2 rounded-full bg-on-forest px-5 font-semibold text-forest no-underline transition-[filter] duration-150 hover:brightness-95";
+export const ON_FOREST_SECONDARY =
+  "ml-press inline-flex min-h-11 items-center gap-2 rounded-full px-5 font-semibold text-on-forest no-underline shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-on-forest)_45%,transparent)] transition-colors duration-150 hover:bg-forest-raised";
+
 /** Page width and side gutters; `narrow` for reading pages (help, legal, about). */
 export function PageContainer({
   children,

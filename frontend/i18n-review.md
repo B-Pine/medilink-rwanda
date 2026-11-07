@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5955.
+Keys: 5950.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -4844,15 +4844,6 @@ File: `apps/patient-web/src/features/facilityApplication/locales/rw.json`
 | `public.register` | Andikisha ikigo cyawe | Register your facility | needs native-speaker review |
 | `public.continue` | Komeza ubusabe | Continue an application | needs native-speaker review |
 | `public.sessionEnded` | Ubusabe bwawe bwabitswe. Twakoherereje link yo kubukomeza nyuma. | Your application is saved. We emailed you a link to continue it later. | needs native-speaker review |
-| `public.rolesTitle` | Icyo buri tsinda ryungukira | What each team gets | needs native-speaker review |
-| `public.roles.admin.title` | Abayobozi b'ikigo | Facility administrators | needs native-speaker review |
-| `public.roles.admin.body` | Shyiraho serivisi, gahunda n'konti z'abakozi, ukurikirane imikorere y'ikigo. | Set up services, schedules and staff accounts, and follow the facility's performance. | needs native-speaker review |
-| `public.roles.reception.title` | Kwakira abarwayi | Reception | needs native-speaker review |
-| `public.roles.reception.body` | Andika abaje, uyobore umurongo, wandike ubwishyu n'ubwishingizi. | Check patients in, run the queue and record payments and insurance. | needs native-speaker review |
-| `public.roles.doctor.title` | Abaganga n'abaforomo | Doctors and nurses | needs native-speaker review |
-| `public.roles.doctor.body` | Reba abarwayi b'uyu munsi n'amateka yabo, wandike isuzuma n'imiti. | See today's patients, their history and write consultations and prescriptions. | needs native-speaker review |
-| `public.roles.pharmacy.title` | Farumasi | Pharmacy | needs native-speaker review |
-| `public.roles.pharmacy.body` | Akira impapuro z'imiti z'ikoranabuhanga, wandike imiti yatanzwe. | Receive electronic prescriptions and record what was dispensed. | needs native-speaker review |
 | `public.howTitle` | Uko kwiyandikisha bigenda | How onboarding works | needs native-speaker review |
 | `public.phases.apply.title` | Gusaba | Apply | needs native-speaker review |
 | `public.phases.apply.body` | Tubwire ibijyanye n'ikigo, wohereze uruhushya n'impapuro zo kwiyandikisha. | Tell us about the facility and upload its licence and registration documents. | needs native-speaker review |
@@ -4871,6 +4862,10 @@ File: `apps/patient-web/src/features/facilityApplication/locales/rw.json`
 | `public.faq.time.a` | Akenshi iminsi mike y'akazi nyuma yo kohereza ubusabe bwuzuye. | Usually a few working days after you submit a complete application. | needs native-speaker review |
 | `public.faq.data.q` | Ni nde ushobora kubona amakuru y'abarwayi bacu? | Who can see our patients' data? | needs native-speaker review |
 | `public.faq.data.a` | Abakozi bawe gusa n'abarwayi ubwabo. Amakuru aguma mu Rwanda kandi buri gusura kurandikwa. | Only your staff, and the patients themselves. Data stays in Rwanda and access is logged. | needs native-speaker review |
+| `public.benefitsTitle` | Icyo bihindura kuri mwe | What changes for you | needs native-speaker review |
+| `public.benefits.queue` | Abarwayi babona igihe cyo gutegereza mbere yo kuza | Patients see your wait before they come | needs native-speaker review |
+| `public.benefits.day` | Gahunda n’abaje batayifite mu igenamigambi rimwe ry’umunsi | Bookings and walk-ins in one day plan | needs native-speaker review |
+| `public.benefits.records` | Amadosiye, imiti yanditswe n’ubwishyu ahantu hamwe | Records, prescriptions and payments in one place | needs native-speaker review |
 | `start.title` | Andikisha ikigo cyawe | Register your facility | needs native-speaker review |
 | `start.intro` | Tangira n'amakuru make. Ushobora kubika ugakomeza nyuma: tukoherereza link kuri imeyili. | Start with a few details. You can save and continue later: we email you a link. | needs native-speaker review |
 | `start.emailHint` | Link yo gukomeza ubusabe tuyohereza kuri iyi meyili. | We send the link to continue your application to this address. | needs native-speaker review |

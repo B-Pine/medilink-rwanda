@@ -5,25 +5,6 @@
     "register": "Andikisha ikigo cyawe",
     "continue": "Komeza ubusabe",
     "sessionEnded": "Ubusabe bwawe bwabitswe. Twakoherereje link yo kubukomeza nyuma.",
-    "rolesTitle": "Icyo buri tsinda ryungukira",
-    "roles": {
-      "admin": {
-        "title": "Abayobozi b'ikigo",
-        "body": "Shyiraho serivisi, gahunda n'konti z'abakozi, ukurikirane imikorere y'ikigo."
-      },
-      "reception": {
-        "title": "Kwakira abarwayi",
-        "body": "Andika abaje, uyobore umurongo, wandike ubwishyu n'ubwishingizi."
-      },
-      "doctor": {
-        "title": "Abaganga n'abaforomo",
-        "body": "Reba abarwayi b'uyu munsi n'amateka yabo, wandike isuzuma n'imiti."
-      },
-      "pharmacy": {
-        "title": "Farumasi",
-        "body": "Akira impapuro z'imiti z'ikoranabuhanga, wandike imiti yatanzwe."
-      }
-    },
     "howTitle": "Uko kwiyandikisha bigenda",
     "phases": {
       "apply": {
@@ -61,6 +42,12 @@
         "q": "Ni nde ushobora kubona amakuru y'abarwayi bacu?",
         "a": "Abakozi bawe gusa n'abarwayi ubwabo. Amakuru aguma mu Rwanda kandi buri gusura kurandikwa."
       }
+    },
+    "benefitsTitle": "Icyo bihindura kuri mwe",
+    "benefits": {
+      "queue": "Abarwayi babona igihe cyo gutegereza mbere yo kuza",
+      "day": "Gahunda n’abaje batayifite mu igenamigambi rimwe ry’umunsi",
+      "records": "Amadosiye, imiti yanditswe n’ubwishyu ahantu hamwe"
     }
   },
   "start": {

@@ -11,6 +11,7 @@ import {
   Alert,
   Badge,
   Button,
+  ChoiceGroup,
   EmptyState,
   QueueStateBadge,
   SelectField,
@@ -47,6 +48,9 @@ import { useWhen } from "../clinical/shared";
 import { queueKeys, usePollInterval, useQueueSocket } from "./live";
 import { LiveBadge } from "./LiveIndicator";
 import { actionError, minutesSince, useServiceNames, useTicketAction } from "./shared";
+
+/** Result choices shown as one row of pills; longer lists keep the drop-down. */
+const MAX_CHOICE_PILLS = 6;
 
 const mineKey = [...queueKeys.mine, "lab"] as const;
 
@@ -538,6 +542,18 @@ function ResultForm({
                   value={value}
                   error={error}
                   onChange={(e) => set(e.target.value)}
+                />
+              ) : item.choices.length <= MAX_CHOICE_PILLS ? (
+                // a few results (Negative / Trace / + / ++ / +++): one tap each, no drop-down
+                <ChoiceGroup
+                  label={label}
+                  value={value}
+                  error={error}
+                  onChange={set}
+                  options={item.choices.map((choice) => ({
+                    value: choice,
+                    label: t(`clinical.lab.choices.${choice}`),
+                  }))}
                 />
               ) : (
                 <SelectField

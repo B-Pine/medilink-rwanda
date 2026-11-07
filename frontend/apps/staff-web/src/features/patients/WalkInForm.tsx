@@ -14,6 +14,7 @@ import {
   Card,
   CheckboxField,
   cx,
+  DateParts,
   PhoneField,
   SelectField,
   TextField,
@@ -203,13 +204,13 @@ export function WalkInForm({ onRegistered }: WalkInFormProps) {
               <option value="months">{t("patients.register.ageModes.months")}</option>
             </SelectField>
             {form.ageMode === "dob" ? (
-              <TextField
-                type="date"
+              // Day / Month / Year in every language: a native date input showed the browser's
+              // region order (mm/dd/yyyy), easy to swap at the desk
+              <DateParts
                 label={t("patients.fields.dateOfBirth")}
                 value={form.date_of_birth}
-                onChange={(e) => set("date_of_birth", e.target.value)}
+                onChange={(iso) => set("date_of_birth", iso)}
                 error={errors.date_of_birth}
-                className="w-56"
               />
             ) : (
               <TextField

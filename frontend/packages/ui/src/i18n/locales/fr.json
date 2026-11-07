@@ -49,5 +49,10 @@
     "hideTable": "Masquer le tableau",
     "keyboardHint": "Utilisez les flèches gauche et droite pour lire chaque valeur.",
     "tableOf": "Données du graphique : {{title}}"
+  },
+  "dateParts": {
+    "day": "Jour",
+    "month": "Mois",
+    "year": "Année"
   }
 }

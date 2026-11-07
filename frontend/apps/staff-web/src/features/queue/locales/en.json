@@ -300,7 +300,8 @@
     "waiting": "Waiting",
     "nextUp": "Next up",
     "openRecord": "Open record",
-    "finishAndNext": "Finish and call next"
+    "finishAndNext": "Finish and call next",
+    "more": "More"
   },
   "reorders": {
     "title": "Queue reviews",

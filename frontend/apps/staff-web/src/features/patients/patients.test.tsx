@@ -58,7 +58,10 @@ describe("staff patients", () => {
     const form = await screen.findByRole("form", { name: "Register a walk-in" });
     await user.type(within(form).getByLabelText(/Names/), "Jeanne Mukamana");
     await user.click(within(form).getByRole("radio", { name: "Female" }));
-    await user.type(within(form).getByLabelText("Date of birth"), "1984-01-01");
+    const dob = within(form).getByRole("group", { name: "Date of birth" });
+    await user.type(within(dob).getByLabelText("Day"), "01");
+    await user.type(within(dob).getByLabelText("Month"), "01");
+    await user.type(within(dob).getByLabelText("Year"), "1984");
     const aside = screen.getByRole("complementary", { name: "Possible matches" });
     expect(
       (await within(aside).findAllByText("Very likely the same person", {}, { timeout: 3000 }))

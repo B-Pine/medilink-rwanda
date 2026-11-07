@@ -7,6 +7,7 @@ import {
 import {
   Alert,
   Button,
+  buttonClassName,
   Card,
   CheckboxField,
   Dialog,
@@ -15,7 +16,7 @@ import {
   TextField,
   type SearchType,
 } from "@medilink/ui";
-import { MagnifyingGlass, Plus } from "@phosphor-icons/react";
+import { MagnifyingGlass, Plus, UsersThree } from "@phosphor-icons/react";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -58,6 +59,7 @@ function Search() {
   const api = useApi();
   const navigate = useNavigate();
   const canRegister = useCan("patient.register");
+  const canSeeQueue = useCan("queue.operate", "queue.call");
   const [query, setQuery] = useState("");
   const [result, setResult] = useState<SearchResult | null>(null);
   const [adding, setAdding] = useState<ExternalMatch | null>(null);
@@ -104,6 +106,21 @@ function Search() {
         <Alert tone="danger" role="alert">
           {actionError(search.error, t("errors.generic"))}
         </Alert>
+      )}
+      {/* before a search: what to search by, the walk-in shortcut and today's queue */}
+      {!result && !search.isPending && !search.isError && (
+        <EmptyState
+          icon={UsersThree}
+          title={t("patients.search.startTitle")}
+          description={t("patients.search.startBody")}
+          action={
+            canSeeQueue && (
+              <Link to="/queue" className={buttonClassName({ variant: "secondary" })}>
+                {t("patients.search.startQueue")}
+              </Link>
+            )
+          }
+        />
       )}
       {result && (
         <Results

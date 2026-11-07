@@ -74,7 +74,9 @@
     "dob": "Date de naissance du patient",
     "showDetails": "Afficher le contenu",
     "dobMismatch": "Cette date de naissance ne correspond pas à ce document.",
-    "for": "Pour {{name}}"
+    "for": "Pour {{name}}",
+    "codeRequired": "Saisissez le code du document.",
+    "dobRequired": "Saisissez la date de naissance."
   },
   "shared": {
     "title": "Document partagé",

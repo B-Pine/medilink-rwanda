@@ -42,8 +42,8 @@ async function registerPwa() {
 }
 
 async function bootstrap() {
-  // light-first (public redesign "clinical calm"); dark stays one tap away
-  initTheme("light");
+  // follows the system like the staff app (audit 2026-11-07, phase 5); Settings can pin one
+  initTheme("system");
   initTextSize();
   await enableMocks();
   const services = createServices();

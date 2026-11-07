@@ -323,7 +323,7 @@ export function LandingPage() {
                 className="m-0 max-w-[24ch] font-heading text-hero font-bold text-balance text-fg"
               >
                 {t("site.home3.titleA")}{" "}
-                <span className="bg-[linear-gradient(100deg,var(--color-forest),var(--color-primary))] bg-clip-text text-transparent">
+                <span className="bg-[linear-gradient(100deg,var(--site-hero-ink),var(--color-primary))] bg-clip-text text-transparent">
                   {t("site.home3.titleB")}
                 </span>
               </PageHeading>

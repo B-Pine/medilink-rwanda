@@ -114,9 +114,15 @@ export function PageHeader({
   art,
   titleTransition,
   tone = "light",
+  description,
+  jsonLd,
 }: {
   title: string;
   lead?: ReactNode;
+  /** Search description; defaults to the page's own (`site.meta`), else the site's. */
+  description?: string;
+  /** Structured data for search engines (schema.org), e.g. a facility. */
+  jsonLd?: Record<string, unknown> | null;
   crumbs?: Crumb[];
   actions?: ReactNode;
   /** A decorative drawing on the right of the band (wide screens), e.g. the facility building. */
@@ -134,7 +140,12 @@ export function PageHeader({
       <div className="flex flex-col gap-3 pb-5">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="flex max-w-[44rem] flex-col gap-2">
-            <PageHeading title={title} className="text-h1 tracking-tight text-fg">
+            <PageHeading
+              title={title}
+              description={description}
+              jsonLd={jsonLd}
+              className="text-h1 tracking-tight text-fg"
+            >
               {title}
             </PageHeading>
             {lead && <p className="m-0 text-body text-fg-secondary">{lead}</p>}
@@ -160,6 +171,8 @@ export function PageHeader({
           <div className="flex max-w-[48rem] flex-col gap-3">
             <PageHeading
               title={title}
+              description={description}
+              jsonLd={jsonLd}
               className={cx(
                 "font-heading text-page-title font-bold text-balance",
                 forest ? "text-on-forest" : "text-fg",

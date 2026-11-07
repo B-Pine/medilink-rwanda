@@ -1,5 +1,5 @@
-import { screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { act, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 
 import { parseBookingPath } from "../auth/booking-intent";
 import { safeReturnPath } from "../auth/return-to";
@@ -94,5 +94,36 @@ describe("pages whose record is gone", () => {
     expect(
       await screen.findByRole("heading", { level: 1, name: "Dental care" }),
     ).toBeInTheDocument();
+  });
+});
+
+describe("offline (phase 5)", () => {
+  it("says so on the public pages when the connection drops, and clears when it is back", async () => {
+    renderApp("/how-it-works");
+    await screen.findByRole("heading", { level: 1, name: "How MediLink works" });
+    const onLine = vi.spyOn(navigator, "onLine", "get").mockReturnValue(false);
+    try {
+      act(() => void window.dispatchEvent(new Event("offline")));
+      expect(
+        await screen.findByText("You are offline. Showing what was last loaded."),
+      ).toBeInTheDocument();
+      onLine.mockReturnValue(true);
+      act(() => void window.dispatchEvent(new Event("online")));
+      expect(screen.queryByText(/You are offline/)).not.toBeInTheDocument();
+    } finally {
+      onLine.mockRestore();
+    }
+  });
+});
+
+describe("forms say what is missing (phase 5)", () => {
+  it("document check: an empty code shows an inline error instead of doing nothing", async () => {
+    const { user } = renderApp("/verify");
+    await screen.findByRole("heading", { level: 1 });
+    await user.click(screen.getByRole("button", { name: "Check" }));
+    expect(await screen.findByText("Enter the code on the document.")).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Verification code/)).toHaveAttribute("aria-invalid", "true");
+    await user.type(screen.getByLabelText(/^Verification code/), "A");
+    expect(screen.queryByText("Enter the code on the document.")).not.toBeInTheDocument();
   });
 });

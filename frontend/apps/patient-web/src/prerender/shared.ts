@@ -6,7 +6,16 @@ import { matchRoutes, type RouteObject } from "react-router";
  * plugin writes `dist/<path>/index.html` for each path below, rendered in Kinyarwanda. The browser
  * then hydrates the static pages, or replaces the snapshot when it can't match it exactly.
  */
-export const PRERENDERED_PATHS = ["/", "/for-facilities"] as const;
+export const PRERENDERED_PATHS = [
+  "/",
+  "/for-facilities",
+  // reading pages with no live data (audit 2026-11-07, phase 5)
+  "/how-it-works",
+  "/help",
+  "/privacy",
+  "/terms",
+  "/accessibility",
+] as const;
 /** Facility profiles, one page per facility found at build time (`/facilities/<slug>`). */
 export const FACILITY_PATH = /^\/facilities\/[^/]+$/;
 

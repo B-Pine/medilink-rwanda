@@ -47,6 +47,87 @@ test("hydration keeps the pre-rendered landing page as it is", async ({ page }) 
   expect(errors.filter((e) => /hydrat|did not match/i.test(e))).toEqual([]);
 });
 
+/** English, so names and messages are matched in one language (the site defaults to Kinyarwanda). */
+const ENGLISH = `localStorage.setItem("medilink.language", "en")`;
+// MOCK_PASSWORD in packages/api-client/src/mocks/data.ts (test fixture)
+const PASSWORD = "MediLink-demo-2026";
+
+/**
+ * Public site audit 2026-11-07, phase 5: search → facility → book (signed out) → sign in → back on
+ * the booking, with the sign-in page saying what was being booked.
+ */
+test("search, open a facility, book, sign in and land back on the booking", async ({ page }) => {
+  // Monday 10:00 in Kigali: facilities are open
+  await page.clock.setFixedTime(new Date("2026-11-09T08:00:00Z"));
+  await page.addInitScript({ content: ENGLISH });
+  await page.goto(PATIENT + "/");
+  await page.getByRole("searchbox").first().fill("Kigali Clinic");
+  await page.getByRole("button", { name: "Search", exact: true }).click();
+  await expect(page).toHaveURL(/\/find-care/);
+  await page
+    .getByRole("link", { name: /Kigali Clinic/ })
+    .first()
+    .click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Kigali Clinic");
+
+  await page
+    .getByRole("link", { name: /^(Book appointment|Join today's queue)$/i })
+    .first()
+    .click();
+  await expect(page).toHaveURL(/\/login/);
+  await expect(
+    page.getByText(/^Sign in to (book|join the queue for) .*Kigali Clinic/),
+  ).toBeVisible();
+
+  await page.getByLabel("Email").fill("patient@medilink.test");
+  await page.getByRole("button", { name: "Continue" }).click();
+  await page.getByLabel("Password").fill(PASSWORD);
+  await page.getByRole("button", { name: "Log in" }).click();
+  await expect(page).toHaveURL(/\/book\/kigali-clinic\?/);
+  await expect(page.getByText(/^Step 1 of \d$/)).toBeVisible();
+});
+
+test("the home page says when everything is closed, with no empty figures", async ({ page }) => {
+  // Sunday 23:00 in Kigali: every mock facility is closed
+  await page.clock.setFixedTime(new Date("2026-11-08T21:00:00Z"));
+  await page.addInitScript({ content: ENGLISH });
+  await page.goto(PATIENT + "/");
+  await expect(page.getByText("All facilities are closed now")).toBeVisible();
+  await expect(page.getByRole("link", { name: /next opening Mon/ })).toBeVisible();
+  await expect(page.getByText("People waiting")).toHaveCount(0);
+  await expect(page.getByText("Typical wait")).toHaveCount(0);
+});
+
+test.describe("phone width", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test("the menu opens full screen, closes with Escape and navigates", async ({ page }) => {
+    await page.addInitScript({ content: ENGLISH });
+    await page.goto(PATIENT + "/");
+    const button = page.getByRole("button", { name: "Menu" });
+    const menu = page.getByRole("dialog", { name: "Menu" });
+    // the home page is pre-rendered: a tap before React attaches does nothing, so retry
+    await expect(async () => {
+      await button.click();
+      await expect(menu).toBeVisible({ timeout: 1_000 });
+    }).toPass({ timeout: 15_000 });
+    await page.keyboard.press("Escape");
+    await expect(menu).toBeHidden();
+    await expect(button).toBeFocused();
+
+    await button.click();
+    await menu.getByRole("link", { name: "Doctors" }).click();
+    await expect(page).toHaveURL(/\/doctors$/);
+    await expect(menu).toBeHidden();
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    // nothing wider than the screen
+    const overflow = await page.evaluate<number>(
+      "document.documentElement.scrollWidth - document.documentElement.clientWidth",
+    );
+    expect(overflow).toBeLessThanOrEqual(0);
+  });
+});
+
 /**
  * Public site audit 2026-11-07 (A1 #1–2): every doctor and service link on the directories opens a
  * real page with its own <h1>, never "not found".

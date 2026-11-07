@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5950.
+Keys: 5967.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -4828,6 +4828,8 @@ File: `apps/patient-web/src/features/documents/locales/rw.json`
 | `verify.showDetails` | Erekana ibiyirimo | Show the content | needs native-speaker review |
 | `verify.dobMismatch` | Iyo tariki y'amavuko ntihuye n'iyi nyandiko. | That date of birth doesn't match this document. | needs native-speaker review |
 | `verify.for` | Ya {{name}} | For {{name}} | needs native-speaker review |
+| `verify.codeRequired` | Andika kode iri ku nyandiko. | Enter the code on the document. | needs native-speaker review |
+| `verify.dobRequired` | Andika itariki y’amavuko. | Enter the date of birth. | needs native-speaker review |
 | `shared.title` | Inyandiko yasangijwe | Shared document | needs native-speaker review |
 | `shared.gone` | Iri huza ntirigikora | This link no longer works | needs native-speaker review |
 | `shared.goneBody` | Igihe cyaryo cyarangiye cyangwa umurwayi yarihagaritse. Musabe irindi huza. | It expired or the patient stopped it. Ask them for a new link. | needs native-speaker review |
@@ -6098,6 +6100,21 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `sort.open` | Ibikora mbere | Open first | needs native-speaker review |
 | `sort.soonest` | Gutegereza bike | Shortest wait | needs native-speaker review |
 | `sort.nearest` | Ibikwegereye | Nearest | needs native-speaker review |
+| `meta.findCare` | Shaka ivuriro mu Rwanda ukurikije serivisi, aho riri n’ubwishingizi. Reba afunguye n’igihe cyo gutegereza. | Search facilities in Rwanda by service, place and insurance. See who is open and the wait now. | needs native-speaker review |
+| `meta.facilities` | Amavuriro yose ari kuri MediLink: afunguye ubu, igihe cyo gutegereza, ubwishingizi yakira, amasaha n’inzira. | Every health facility on MediLink: open now, live waits, insurance accepted, hours and directions. | needs native-speaker review |
+| `meta.doctors` | Abaganga bo ku mavuriro ya MediLink: serivisi batanga, iminsi bakora n’aho wafata gahunda. | Doctors at MediLink facilities: their service, the days they work and where to book. | needs native-speaker review |
+| `meta.services` | Serivisi z’ubuzima kuri MediLink, kuva ku kwisuzumisha kugeza ku bizamini, n’amavuriro azitanga. | Health services on MediLink, from consultations to lab tests, and the facilities that offer them. | needs native-speaker review |
+| `meta.how` | Shaka, jya ku murongo cyangwa ufate gahunda, kurikira igihe cyawe kuri telefoni, uze igihe cyawe cyegereje. | Search, join the queue or book, follow your turn on your phone, arrive when it is nearly time. | needs native-speaker review |
+| `meta.emergency` | Ubutabazi bwihutirwa mu Rwanda: hamagara 912 (SAMU), ni ubuntu, amasaha 24. Ibitaro bifite serivisi y’ubutabazi. | Life-threatening emergency in Rwanda: call 912 for SAMU, free, 24 hours. Hospitals with an emergency department. | needs native-speaker review |
+| `meta.help` | Ibisubizo ku makonti, gahunda, umurongo, ubwishingizi n’amadosiye yawe kuri MediLink. | Answers about accounts, bookings, the queue, insurance and your records on MediLink. | needs native-speaker review |
+| `meta.about` | MediLink ihuza abarwayi bo mu Rwanda n’amavuriro: igihe cyo gutegereza, imirongo na gahunda ahantu hamwe. | MediLink connects patients in Rwanda with health facilities: live waits, queues and bookings in one place. | needs native-speaker review |
+| `meta.contact` | Vugana n’itsinda rya MediLink ukoresheje imeri cyangwa telefoni. | Contact the MediLink team by email or phone. | needs native-speaker review |
+| `meta.accessibility` | Uko MediLink ikora hamwe na porogaramu isoma ecran, mwandikisho, inyandiko nini na interineti itihuta. | How MediLink works with screen readers, keyboards, larger text and slow connections. | needs native-speaker review |
+| `meta.privacy` | Ibyo MediLink ikusanya, impamvu, aho bibikwa n’uburenganzira bwawe hakurikijwe itegeko ryo kurinda amakuru mu Rwanda. | What MediLink collects, why, where it is stored and your rights under Rwanda's data protection law. | needs native-speaker review |
+| `meta.terms` | Amabwiriza yo gukoresha MediLink ku barwayi no ku mavuriro. | The terms for using MediLink as a patient or a facility. | needs native-speaker review |
+| `meta.forFacilities` | Shyira ivuriro ryawe kuri MediLink: umurongo uhita ugaragara, gahunda n’abaje batayifite mu igenamigambi rimwe. | Put your facility on MediLink: live queue, bookings and walk-ins in one day plan, records in one place. | needs native-speaker review |
+| `meta.checkSymptoms` | Subiza ibibazo bike umenye serivisi n’ivuriro bijyanye n’ibimenyetso byawe. | Answer a few questions to find which service and facility fit your symptoms. | needs native-speaker review |
+| `offline` | Nta interineti ufite. Urabona ibyaherukaga kugera. | You are offline. Showing what was last loaded. | needs native-speaker review |
 
 ## patient-web feature: tracker (namespace tracker)
 

@@ -157,8 +157,10 @@
  * Public site "clinical calm" (redesign 2026-11): off-white ground, deep green for actions only,
  * status tints that always come with a word. Light theme only; dark keeps its own palette.
  * Contrast on white: ink 17.5:1, muted 6.6:1, brand 6.9:1 (white on brand 6.9:1), danger 6.4:1.
+ * The site follows the system theme (audit 2026-11-07, phase 5). `:where` keeps this rule at the
+ * weight of `:root`, so the dark block below still wins when the system is dark.
  */
-:root[data-surface="site"][data-theme="light"] {
+:root:where([data-surface="site"]:not([data-theme="dark"])) {
   --ml-bg-page: #f6f8f7;
   --ml-bg-surface: #ffffff;
   --ml-bg-raised: #ffffff;

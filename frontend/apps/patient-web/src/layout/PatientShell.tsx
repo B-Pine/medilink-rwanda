@@ -60,6 +60,7 @@ import {
 } from "../features/profile/ProfileLayout";
 import { InDashboardContext } from "./DashboardContext";
 import { ToastProvider } from "./Toasts";
+import { useOnline } from "./useOnline";
 
 interface NavItem {
   to: string;
@@ -124,20 +125,7 @@ function useMedia(query: string): boolean {
   );
 }
 
-export function useOnline() {
-  const [online, setOnline] = useState(() => navigator.onLine);
-  useEffect(() => {
-    const on = () => setOnline(true);
-    const off = () => setOnline(false);
-    window.addEventListener("online", on);
-    window.addEventListener("offline", off);
-    return () => {
-      window.removeEventListener("online", on);
-      window.removeEventListener("offline", off);
-    };
-  }, []);
-  return online;
-}
+export { useOnline };
 
 function useSignOut() {
   const navigate = useNavigate();

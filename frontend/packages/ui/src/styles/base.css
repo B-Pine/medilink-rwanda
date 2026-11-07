@@ -518,3 +518,14 @@ html:has(.ml-soft) {
   text-decoration: underline;
   text-underline-offset: 2px;
 }
+/* The credit strip takes the theme's solid surface and text, so it stays readable over any tile in
+   both themes (WCAG 1.4.3). The container prefix outweighs leaflet.css, which loads later. */
+.leaflet-container .leaflet-control-attribution {
+  background: var(--color-surface);
+  color: var(--color-fg-secondary);
+}
+.leaflet-container .leaflet-control-attribution a {
+  color: var(--color-link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}

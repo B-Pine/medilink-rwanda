@@ -74,7 +74,9 @@
     "dob": "Itariki y'amavuko y'umurwayi",
     "showDetails": "Erekana ibiyirimo",
     "dobMismatch": "Iyo tariki y'amavuko ntihuye n'iyi nyandiko.",
-    "for": "Ya {{name}}"
+    "for": "Ya {{name}}",
+    "codeRequired": "Andika kode iri ku nyandiko.",
+    "dobRequired": "Andika itariki y’amavuko."
   },
   "shared": {
     "title": "Inyandiko yasangijwe",

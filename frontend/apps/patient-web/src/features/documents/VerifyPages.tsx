@@ -34,14 +34,19 @@ export function VerifyPage() {
   const details = useMutation({
     mutationFn: () => api.documents.public.details(code, dob),
   });
+  // inline errors once a form was sent empty (phase 5: no silent submits)
+  const [codeMissing, setCodeMissing] = useState(false);
+  const [dobMissing, setDobMissing] = useState(false);
   const lookUp = (event: FormEvent) => {
     event.preventDefault();
     const clean = typed.replace(/[^a-z0-9]/gi, "").toUpperCase();
+    setCodeMissing(!clean);
     if (clean) void navigate(`/verify/${clean}`);
   };
   const askDetails = (event: FormEvent) => {
     event.preventDefault();
-    if (dob) details.mutate();
+    setDobMissing(!dob);
+    if (dob && !details.isPending) details.mutate();
   };
   const notFound = isApiError(found.error) && found.error.status === 404;
   const limited = isApiError(found.error) && found.error.status === 429;
@@ -62,10 +67,14 @@ export function VerifyPage() {
             label={t("documents.verify.code")}
             hint={t("documents.verify.codeHint")}
             value={typed}
+            error={codeMissing ? t("documents.verify.codeRequired") : undefined}
             autoCapitalize="characters"
             autoComplete="off"
             spellCheck={false}
-            onChange={(e) => setTyped(e.target.value)}
+            onChange={(e) => {
+              setTyped(e.target.value);
+              setCodeMissing(false);
+            }}
             className="min-w-56 flex-1"
           />
           <Button type="submit">
@@ -176,7 +185,11 @@ export function VerifyPage() {
                     type="date"
                     label={t("documents.verify.dob")}
                     value={dob}
-                    onChange={(e) => setDob(e.target.value)}
+                    error={dobMissing ? t("documents.verify.dobRequired") : undefined}
+                    onChange={(e) => {
+                      setDob(e.target.value);
+                      setDobMissing(false);
+                    }}
                     className="w-56"
                   />
                   <Button type="submit" variant="secondary" loading={details.isPending}>

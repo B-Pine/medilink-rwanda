@@ -5,7 +5,14 @@ import { createStaticHandler, createStaticRouter, StaticRouterProvider } from "r
 
 import { AppProviders, createServices } from "../app/services";
 import { routes } from "../app/routes";
-import { FACILITY_PATH, isPrerenderedPath, PRERENDER_DATA_ID, scriptJson } from "./shared";
+import { canonicalUrl, facilityJsonLd, JSON_LD_ID, pageDescriptionKey } from "../features/site/seo";
+import {
+  FACILITY_PATH,
+  isPrerenderedPath,
+  PRERENDERED_PATHS,
+  PRERENDER_DATA_ID,
+  scriptJson,
+} from "./shared";
 import type { PrerenderData } from "./shared";
 
 /**
@@ -166,7 +173,11 @@ export async function prerender({ url }: { url: string }): Promise<PrerenderResu
   });
   const { api, queryClient, i18n } = services;
 
-  let description = i18n.t("home.description");
+  const own = pageDescriptionKey(path);
+  let description = own ? i18n.t(own) : i18n.t("home.description");
+  const origin = (import.meta.env.VITE_SITE_URL ?? "").replace(/\/$/, "");
+  const pageUrl = origin ? canonicalUrl(origin, path) : "";
+  let jsonLd: Record<string, unknown> | null = null;
   const facility = FACILITY_PATH.test(path);
   if (facility) {
     const slug = decodeURIComponent(path.split("/")[2]!);
@@ -178,6 +189,7 @@ export async function prerender({ url }: { url: string }): Promise<PrerenderResu
       });
       const about = data.description_i18n[LANGUAGE] || data.description_i18n.en;
       if (about) description = about;
+      jsonLd = facilityJsonLd(data, pageUrl, about ?? "");
     } catch {
       console.warn(`[prerender] skipped ${path}: the facility could not be loaded`);
       return null;
@@ -211,13 +223,8 @@ export async function prerender({ url }: { url: string }): Promise<PrerenderResu
   const links =
     path === "/"
       ? new Set([
-          "/for-facilities",
           // static public pages (upgrade 11 §9: pre-rendering where supported)
-          "/how-it-works",
-          "/about",
-          "/privacy",
-          "/terms",
-          "/accessibility",
+          ...PRERENDERED_PATHS.filter((p) => p !== "/"),
           ...(await facilityPaths(api)),
         ])
       : new Set<string>();
@@ -227,13 +234,27 @@ export async function prerender({ url }: { url: string }): Promise<PrerenderResu
   const suffix = i18n.t("app.titleSuffix");
   const title = heading ? `${text(heading)} · ${suffix}` : suffix;
 
+  const elements = new Set<{ type: string; props: Record<string, string> }>([
+    { type: "meta", props: { name: "description", content: description } },
+    { type: "meta", props: { property: "og:title", content: title } },
+    { type: "meta", props: { property: "og:description", content: description } },
+    { type: "meta", props: { property: "og:type", content: "website" } },
+    { type: "meta", props: { property: "og:site_name", content: suffix } },
+    { type: "meta", props: { property: "og:locale", content: "rw_RW" } },
+  ]);
+  if (pageUrl) {
+    elements.add({ type: "link", props: { rel: "canonical", href: pageUrl } });
+    elements.add({ type: "meta", props: { property: "og:url", content: pageUrl } });
+  }
+  if (jsonLd)
+    elements.add({
+      type: "script",
+      props: { type: "application/ld+json", id: JSON_LD_ID, textContent: scriptJson(jsonLd) },
+    });
+
   return {
     html: `${markup}<script type="application/json" id="${PRERENDER_DATA_ID}">${scriptJson(data)}</script>`,
     links,
-    head: {
-      lang: LANGUAGE,
-      title,
-      elements: new Set([{ type: "meta", props: { name: "description", content: description } }]),
-    },
+    head: { lang: LANGUAGE, title, elements },
   };
 }

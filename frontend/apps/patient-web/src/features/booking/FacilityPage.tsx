@@ -45,6 +45,7 @@ import {
   Panel,
   WaitingTime,
 } from "../site/kit";
+import { canonicalUrl, facilityJsonLd, siteOrigin } from "../site/seo";
 import { day, directionsUrl, pick, pinKind, time } from "./discovery";
 import { insurerNames } from "./Places";
 import { rememberPlace } from "./recent";
@@ -133,6 +134,10 @@ export function FacilityPage() {
   const insurers = [...new Set(f.services.flatMap((s) => s.insurers))].sort();
   const hospital = isHospital(f.type);
   const place = [f.sector, f.district].filter(Boolean).join(", ");
+  const about = pick(f.description_i18n, lang);
+  const summary =
+    about ||
+    [t(`booking.types.${f.type}`, { defaultValue: f.type }), place].filter(Boolean).join(" · ");
 
   return (
     <PublicLayout>
@@ -141,6 +146,8 @@ export function FacilityPage() {
           tone="forest"
           crumbs={[{ to: "/facilities", label: t("nav.facilities") }, { label: f.name }]}
           title={f.name}
+          description={summary}
+          jsonLd={facilityJsonLd(f, canonicalUrl(siteOrigin(), `/facilities/${f.slug}`), summary)}
           titleTransition={`facility-name-${f.slug}`}
           art={
             <FacilityBuilding
@@ -344,7 +351,7 @@ export function FacilityPage() {
                 {t("site.facility.about")}
               </h2>
               <p className="m-0 max-w-[68ch] whitespace-pre-line text-fg">
-                {pick(f.description_i18n, lang) || (
+                {about || (
                   <span className="text-fg-secondary">{t("site.facility.noDescription")}</span>
                 )}
               </p>

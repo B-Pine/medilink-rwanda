@@ -33,6 +33,8 @@ const DECIDE_WITHIN = 10 * DAY;
 const DISAGREE_WITHIN = 14 * DAY;
 const REOPEN_WITHIN = 30 * DAY;
 const MAX_OPEN = 5;
+/** A JSON body field as text ("" when missing or not a string). */
+const str = (value: unknown): string => (typeof value === "string" ? value : "");
 const CLOSED: DisputeStatus[] = ["closed", "final_decision"];
 
 const MEMBER_NAMES: Record<string, string> = {
@@ -455,8 +457,8 @@ export const disputesMocks: FeatureMockFactory = (context) => {
   ): Response | null => {
     const allowed: DisputeStatus[] = final ? ["escalated"] : ["under_review", "info_requested"];
     if (!allowed.includes(m.d.status)) return say(lang, "wrongStatus");
-    const outcome = String(body.outcome) as DisputeOutcome;
-    const reason = String(body.reason ?? "").trim();
+    const outcome = str(body.outcome) as DisputeOutcome;
+    const reason = str(body.reason).trim();
     if (reason.length < 5) return context.validationError(lang, { reason: ["Give a reason."] });
     if (
       !outcomesFor(m.d.subject_type, Boolean(m.d.subject_snapshot.consultation_id)).includes(
@@ -522,10 +524,10 @@ export const disputesMocks: FeatureMockFactory = (context) => {
       const ok = patient(request);
       if ("error" in ok) return ok.error;
       const body = await context.readJson(request);
-      const patientId = String(body.patient_id ?? "");
-      const subjectType = String(body.subject_type ?? "") as DisputeSubjectType;
-      const subjectId = String(body.subject_id ?? "");
-      const text = String(body.description ?? "").trim();
+      const patientId = str(body.patient_id);
+      const subjectType = str(body.subject_type) as DisputeSubjectType;
+      const subjectId = str(body.subject_id);
+      const text = str(body.description).trim();
       if (!ok.profiles.has(patientId) || !(subjectType in DISPUTE_TYPE_OF) || !subjectId)
         return notFound(ok.lang);
       if (text.length < 10)
@@ -594,7 +596,7 @@ export const disputesMocks: FeatureMockFactory = (context) => {
     }),
     patientStep("messages", (m, body, lang, who) => {
       if (m.d.status === "closed") return say(lang, "wrongStatus");
-      const text = String(body.body ?? "").trim();
+      const text = str(body.body).trim();
       if (text.length < 2) return context.validationError(lang, { body: ["Write a message."] });
       m.d.messages.push(message(who, "patient", "thread", text));
       if (m.d.status === "info_requested") move(m, "under_review", who, "patient replied");
@@ -626,7 +628,7 @@ export const disputesMocks: FeatureMockFactory = (context) => {
     }),
     patientStep("disagreement", (m, body, lang) => {
       if (m.d.outcome !== "correction_refused" || m.d.statement) return say(lang, "noStatement");
-      const text = String(body.statement ?? "").trim();
+      const text = str(body.statement).trim();
       if (text.length < 10)
         return context.validationError(lang, { statement: ["Write at least 10 characters."] });
       m.d.statement = text;
@@ -666,7 +668,7 @@ export const disputesMocks: FeatureMockFactory = (context) => {
     staffStep("request-info", "handle", (m, body, lang, who) => {
       if (m.d.status !== "under_review" && m.d.status !== "escalated")
         return say(lang, "wrongStatus");
-      const text = String(body.body ?? "").trim();
+      const text = str(body.body).trim();
       if (text.length < 2) return context.validationError(lang, { body: ["Write what you need."] });
       m.d.messages.push(message(who.name, "handler", "thread", text));
       move(m, "info_requested", who.name);
@@ -674,14 +676,14 @@ export const disputesMocks: FeatureMockFactory = (context) => {
     }),
     staffStep("messages", "handle", (m, body, lang, who) => {
       if (m.d.status === "closed") return say(lang, "wrongStatus");
-      const text = String(body.body ?? "").trim();
+      const text = str(body.body).trim();
       if (text.length < 2) return context.validationError(lang, { body: ["Write a message."] });
       const internal = body.visibility === "internal";
       m.d.messages.push(message(who.name, "handler", internal ? "internal" : "thread", text));
       return null;
     }),
     staffStep("comment-requests", "handle", (m, body, lang) => {
-      const member = String(body.membership_id ?? "");
+      const member = str(body.membership_id);
       const name = MEMBER_NAMES[member];
       if (!name)
         return context.validationError(lang, { membership_id: ["Choose a member of staff."] });
@@ -698,7 +700,7 @@ export const disputesMocks: FeatureMockFactory = (context) => {
       const mine = MEMBERSHIP_BY_EMAIL[who.email];
       const request = m.d.comment_requests.find((r) => r.membership_id === mine && !r.responded_at);
       if (!request) return forbidden(lang);
-      const text = String(body.body ?? "").trim();
+      const text = str(body.body).trim();
       if (text.length < 2) return context.validationError(lang, { body: ["Write your comment."] });
       m.d.messages.push(message(who.name, "staff", "staff_comment", text));
       request.responded_at = now();
@@ -742,7 +744,7 @@ export const disputesMocks: FeatureMockFactory = (context) => {
         if (!m) return notFound(ok.lang);
         const body = await context.readJson(request);
         if (step === "messages") {
-          const text = String(body.body ?? "").trim();
+          const text = str(body.body).trim();
           if (text.length < 2)
             return context.validationError(ok.lang, { body: ["Write a message."] });
           m.d.messages.push(message(ok.name, "platform", "thread", text));

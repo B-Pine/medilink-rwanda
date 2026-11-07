@@ -33,14 +33,15 @@
   /* Palette from the public website brief (upgrade 11 §2, 2026-11-02): forest #123D2B, emerald
      #168451 (white 4.72:1), link #11744A (AA on the page), text #17231D, page #F7F9F7,
      light green #EDF5EF. Neutrals (design 02 §2): leaning toward the forest green, so structure and brand share a hue */
-  --ml-bg-page: #f7f9f7;
+  /* a clear step below white, so cards read as cards (product owner, 2026-11-07) */
+  --ml-bg-page: #eef2ef;
   --ml-bg-surface: #ffffff;
   --ml-bg-raised: #ffffff;
-  --ml-bg-subtle: #edf2ee;
+  --ml-bg-subtle: #e6ece8;
   --ml-text-primary: #17231d;
   --ml-text-secondary: #4a5a51;
   --ml-text-muted: #5d6a62;
-  --ml-border-subtle: #e1e8e3;
+  --ml-border-subtle: #dae2dd;
   --ml-border-input: #7b8a83;
 
   /* Semantic (design 02 §3) */
@@ -283,7 +284,8 @@
 }
 
 /* ---- Dark theme: system preference (unless the user picked light) ----
-   Softer dark (product owner, 2026-11-02): charcoal green instead of near-black, off-white text
+   The app's dark (mobile/lib/app/theme.dart, product owner 2026-11-07): neutral charcoal surfaces
+   (page #111315, cards #1b1e21), green only for actions and accents. Earlier: charcoal green, off-white text
    (11.5:1 on raised, not ~16:1), a muted emerald #5fc59a instead of neon #34d399, and hairlines
    that read. Every pair still passes the ratios checked in tokens.test.ts. */
 @media (prefers-color-scheme: dark) {
@@ -298,48 +300,48 @@
     --ml-seq-2: #047857;
     --ml-seq-3: #10b981;
     --ml-seq-4: #34d399;
-    --ml-chart-grid: #2c3631;
-    --ml-bg-page: #141a17;
-    --ml-bg-surface: #1b221e;
-    --ml-bg-raised: #212924;
-    --ml-bg-subtle: #212924;
-    --ml-text-primary: #dce4df;
-    --ml-text-secondary: #aab6af;
-    --ml-text-muted: #8c9891;
-    --ml-border-subtle: #2c3631;
-    --ml-border-input: #66756d;
+    --ml-chart-grid: #2d3135;
+    --ml-bg-page: #111315;
+    --ml-bg-surface: #1b1e21;
+    --ml-bg-raised: #212427;
+    --ml-bg-subtle: #24282b;
+    --ml-text-primary: #e6e8ea;
+    --ml-text-secondary: #b1b6bb;
+    --ml-text-muted: #979da2;
+    --ml-border-subtle: #2d3135;
+    --ml-border-input: #737a80;
     --ml-brand: #5fc59a;
     --ml-action-primary: #5fc59a;
     --ml-action-primary-hover: #7fd3ae;
     --ml-action-primary-text: #0e2219;
-    --ml-brand-subtle-bg: #1c2e25;
+    --ml-brand-subtle-bg: #1f2925;
     --ml-brand-subtle-text: #8fdbb8;
     /* deep bands (footer, sign-in panel): charcoal with a green cast, not a green slab */
-    --ml-forest: #111915;
-    --ml-forest-raised: #19231e;
+    --ml-forest: #17191b;
+    --ml-forest-raised: #212427;
     --ml-on-forest: #e8efeb;
-    --ml-on-forest-muted: #a9b8b0;
+    --ml-on-forest-muted: #a7adb2;
     --ml-on-forest-accent: #5fc59a;
     --ml-link: #5fc59a;
     --ml-focus-ring: #5fc59a;
     --ml-accent: #fbbf24;
     --ml-accent-text: #0f172a;
-    --ml-attention-bg: color-mix(in srgb, #f0b443 14%, #1b221e);
+    --ml-attention-bg: color-mix(in srgb, #f0b443 14%, #1b1e21);
     --ml-attention-text: #f6c66c;
     --ml-attention-solid: #f0b443;
     --ml-attention-solid-text: #1b1405;
     --ml-success-text: #4ade80;
-    --ml-success-bg: color-mix(in srgb, #4ade80 14%, #1b221e);
+    --ml-success-bg: color-mix(in srgb, #4ade80 14%, #1b1e21);
     --ml-warning-text: #fbbf24;
-    --ml-warning-bg: color-mix(in srgb, #fbbf24 14%, #1b221e);
+    --ml-warning-bg: color-mix(in srgb, #fbbf24 14%, #1b1e21);
     --ml-danger-text: #f87171;
-    --ml-danger-bg: color-mix(in srgb, #f87171 14%, #1b221e);
+    --ml-danger-bg: color-mix(in srgb, #f87171 14%, #1b1e21);
     --ml-info-text: #60a5fa;
-    --ml-info-bg: color-mix(in srgb, #60a5fa 14%, #1b221e);
+    --ml-info-bg: color-mix(in srgb, #60a5fa 14%, #1b1e21);
     --ml-danger-solid: #f87171;
     --ml-danger-solid-text: #0f172a;
     --ml-violet-text: #c4b5fd;
-    --ml-violet-bg: color-mix(in srgb, #a78bfa 14%, #1b221e);
+    --ml-violet-bg: color-mix(in srgb, #a78bfa 14%, #1b1e21);
     --ml-violet-solid: #a78bfa;
     --ml-violet-solid-text: #0f172a;
     --ml-shadow-raised: 0 8px 24px rgb(0 0 0 / 0.5), 0 2px 6px rgb(0 0 0 / 0.4);
@@ -359,48 +361,48 @@
   --ml-seq-2: #047857;
   --ml-seq-3: #10b981;
   --ml-seq-4: #34d399;
-  --ml-chart-grid: #2c3631;
-  --ml-bg-page: #141a17;
-  --ml-bg-surface: #1b221e;
-  --ml-bg-raised: #212924;
-  --ml-bg-subtle: #212924;
-  --ml-text-primary: #dce4df;
-  --ml-text-secondary: #aab6af;
-  --ml-text-muted: #8c9891;
-  --ml-border-subtle: #2c3631;
-  --ml-border-input: #66756d;
+  --ml-chart-grid: #2d3135;
+  --ml-bg-page: #111315;
+  --ml-bg-surface: #1b1e21;
+  --ml-bg-raised: #212427;
+  --ml-bg-subtle: #24282b;
+  --ml-text-primary: #e6e8ea;
+  --ml-text-secondary: #b1b6bb;
+  --ml-text-muted: #979da2;
+  --ml-border-subtle: #2d3135;
+  --ml-border-input: #737a80;
   --ml-brand: #5fc59a;
   --ml-action-primary: #5fc59a;
   --ml-action-primary-hover: #7fd3ae;
   --ml-action-primary-text: #0e2219;
-  --ml-brand-subtle-bg: #1c2e25;
+  --ml-brand-subtle-bg: #1f2925;
   --ml-brand-subtle-text: #8fdbb8;
   /* deep bands (footer, sign-in panel): charcoal with a green cast, not a green slab */
-  --ml-forest: #111915;
-  --ml-forest-raised: #19231e;
+  --ml-forest: #17191b;
+  --ml-forest-raised: #212427;
   --ml-on-forest: #e8efeb;
-  --ml-on-forest-muted: #a9b8b0;
+  --ml-on-forest-muted: #a7adb2;
   --ml-on-forest-accent: #5fc59a;
   --ml-link: #5fc59a;
   --ml-focus-ring: #5fc59a;
   --ml-accent: #fbbf24;
   --ml-accent-text: #0f172a;
-  --ml-attention-bg: color-mix(in srgb, #f0b443 14%, #1b221e);
+  --ml-attention-bg: color-mix(in srgb, #f0b443 14%, #1b1e21);
   --ml-attention-text: #f6c66c;
   --ml-attention-solid: #f0b443;
   --ml-attention-solid-text: #1b1405;
   --ml-success-text: #4ade80;
-  --ml-success-bg: color-mix(in srgb, #4ade80 14%, #1b221e);
+  --ml-success-bg: color-mix(in srgb, #4ade80 14%, #1b1e21);
   --ml-warning-text: #fbbf24;
-  --ml-warning-bg: color-mix(in srgb, #fbbf24 14%, #1b221e);
+  --ml-warning-bg: color-mix(in srgb, #fbbf24 14%, #1b1e21);
   --ml-danger-text: #f87171;
-  --ml-danger-bg: color-mix(in srgb, #f87171 14%, #1b221e);
+  --ml-danger-bg: color-mix(in srgb, #f87171 14%, #1b1e21);
   --ml-info-text: #60a5fa;
-  --ml-info-bg: color-mix(in srgb, #60a5fa 14%, #1b221e);
+  --ml-info-bg: color-mix(in srgb, #60a5fa 14%, #1b1e21);
   --ml-danger-solid: #f87171;
   --ml-danger-solid-text: #0f172a;
   --ml-violet-text: #c4b5fd;
-  --ml-violet-bg: color-mix(in srgb, #a78bfa 14%, #1b221e);
+  --ml-violet-bg: color-mix(in srgb, #a78bfa 14%, #1b1e21);
   --ml-violet-solid: #a78bfa;
   --ml-violet-solid-text: #0f172a;
   --ml-shadow-raised: 0 8px 24px rgb(0 0 0 / 0.5), 0 2px 6px rgb(0 0 0 / 0.4);

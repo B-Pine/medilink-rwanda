@@ -183,7 +183,8 @@
     "bill": "{{amount}} restent à payer",
     "seeBill": "Voir la facture",
     "disputeQuestion": "L’établissement vous pose une question sur votre litige",
-    "disputeAnswer": "Votre litige a une réponse"
+    "disputeAnswer": "Votre litige a une réponse",
+    "openDispute": "Ouvrir"
   },
   "comingUp": {
     "title": "Prévu par votre établissement",

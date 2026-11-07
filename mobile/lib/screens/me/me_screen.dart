@@ -38,10 +38,12 @@ class MeScreen extends ConsumerWidget {
       (s.medications, PhosphorIconsRegular.pill, () => context.go('/me/medications')),
       (s.results, PhosphorIconsRegular.flask, () => context.go('/me/results')),
       (s.documents, PhosphorIconsRegular.fileText, () => context.go('/me/documents')),
+      (s.t('bills'), PhosphorIconsRegular.receipt, () => context.go('/me/bills')),
       (s.family, PhosphorIconsRegular.usersThree, () => context.go('/me/family')),
     ];
     final account = [
       (s.privacy, PhosphorIconsRegular.shieldCheck, () => context.go('/me/privacy')),
+      (s.t('disputes'), PhosphorIconsRegular.scales, () => context.go('/me/disputes')),
       (s.help, PhosphorIconsRegular.question, () => context.go('/me/help')),
       (s.settings, PhosphorIconsRegular.gearSix, () => context.go('/me/settings')),
     ];

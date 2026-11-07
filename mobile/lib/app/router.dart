@@ -22,6 +22,8 @@ import '../screens/me/help_screen.dart';
 import '../screens/me/me_screen.dart';
 import '../screens/me/privacy_screen.dart';
 import '../screens/me/record_lists.dart';
+import '../screens/me/health_details.dart';
+import '../screens/me/money_disputes.dart';
 import '../screens/me/claim_screen.dart';
 import '../screens/me/notification_settings_screen.dart';
 import '../screens/me/password_screen.dart';
@@ -171,8 +173,59 @@ final routerProvider = Provider<GoRouter>((ref) {
               path: '/me',
               builder: (_, _) => const MeScreen(),
               routes: [
-                GoRoute(path: 'records', pageBuilder: (_, state) => slide(state, const RecordsScreen())),
-                GoRoute(path: 'medications', pageBuilder: (_, state) => slide(state, const MedicationsScreen())),
+                GoRoute(
+                  path: 'records',
+                  pageBuilder: (_, state) => slide(state, const RecordsScreen()),
+                  routes: [
+                    GoRoute(
+                      path: ':id',
+                      pageBuilder: (_, state) => slide(state, RecordScreen(recordId: state.pathParameters['id']!)),
+                    ),
+                  ],
+                ),
+                GoRoute(
+                  path: 'medications',
+                  pageBuilder: (_, state) => slide(state, const MedicationsScreen()),
+                  routes: [
+                    GoRoute(
+                      path: ':id',
+                      pageBuilder: (_, state) =>
+                          slide(state, MedicationScreen(prescriptionId: state.pathParameters['id']!)),
+                    ),
+                  ],
+                ),
+                GoRoute(
+                  path: 'bills',
+                  pageBuilder: (_, state) => slide(state, const BillsScreen()),
+                  routes: [
+                    GoRoute(
+                      path: ':id',
+                      pageBuilder: (_, state) => slide(state, BillScreen(billId: state.pathParameters['id']!)),
+                    ),
+                  ],
+                ),
+                GoRoute(
+                  path: 'disputes',
+                  pageBuilder: (_, state) => slide(state, const DisputesScreen()),
+                  routes: [
+                    // Before ':id', so "new" is never read as a dispute.
+                    GoRoute(
+                      path: 'new',
+                      pageBuilder: (_, state) => slide(
+                        state,
+                        NewDisputeScreen(
+                          subjectType: state.uri.queryParameters['subject_type'] ?? '',
+                          subjectId: state.uri.queryParameters['subject_id'] ?? '',
+                          patientId: state.uri.queryParameters['patient_id'] ?? '',
+                        ),
+                      ),
+                    ),
+                    GoRoute(
+                      path: ':id',
+                      pageBuilder: (_, state) => slide(state, DisputeScreen(disputeId: state.pathParameters['id']!)),
+                    ),
+                  ],
+                ),
                 GoRoute(path: 'documents', pageBuilder: (_, state) => slide(state, const DocumentsScreen())),
                 GoRoute(path: 'results', pageBuilder: (_, state) => slide(state, const ResultsScreen())),
                 GoRoute(path: 'profile', pageBuilder: (_, state) => slide(state, const MyProfileScreen())),

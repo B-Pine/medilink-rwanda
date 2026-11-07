@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 ## [Unreleased]
 
+### 1.1.2 (2026-11-07)
+
+Everything the patient dashboard on the website shows, the app shows too:
+
+- Added: Me → **Bills**: what is left to pay, bills with a balance first; each bill with its
+  items (insurance and your share), payments and receipt numbers.
+- Added: Me → **Disputes**: Report a problem from a bill or a prescription, follow the
+  facility's answer, reply, accept, disagree (sent to MediLink) or reopen once, and add your
+  statement after a refused correction.
+- Added: tap a record for the visit: diagnoses in plain words, what to do, vitals and later
+  additions.
+- Added: tap a prescription for the code to show at the pharmacy and each medicine in words
+  (dose, how often, how long, what was given, instructions).
+- Added: tap a document to open it (a 5-minute link from the API, in the phone's viewer).
+- Changed: notification links open the bill, dispute, record or prescription they are about.
+- All new text in Kinyarwanda, English and French.
+
 ### 1.1.1 (2026-11-07)
 
 - Added: Me → Settings → Appearance: Like the phone (default), Light or Dark. The choice is

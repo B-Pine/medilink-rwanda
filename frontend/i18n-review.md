@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 6243.
+Keys: 6244.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -4823,6 +4823,7 @@ File: `apps/patient-web/src/features/dashboard/locales/rw.json`
 | `reminders.seeBill` | Reba inyemezabuguzi | See the bill | needs native-speaker review |
 | `reminders.disputeQuestion` | Ivuriro rifite icyo rikubaza ku kirego cyawe | The facility asked you about your dispute | needs native-speaker review |
 | `reminders.disputeAnswer` | Ikirego cyawe cyasubijwe | Your dispute has an answer | needs native-speaker review |
+| `reminders.openDispute` | Fungura | Open | needs native-speaker review |
 | `comingUp.title` | Byateganyijwe n'ivuriro ryawe | Planned by your clinic | needs native-speaker review |
 | `comingUp.intro` | Amatariki ivuriro ryawe ryateganyije. Tukwibutsa umunsi ubanziriza n'icyo gitondo. | Dates your clinic planned. We remind you the day before and on the morning. | needs native-speaker review |
 | `comingUp.types.vaccination` | Urukingo | Vaccination | needs native-speaker review |

@@ -183,7 +183,8 @@
     "bill": "{{amount}} left to pay",
     "seeBill": "See the bill",
     "disputeQuestion": "The facility asked you about your dispute",
-    "disputeAnswer": "Your dispute has an answer"
+    "disputeAnswer": "Your dispute has an answer",
+    "openDispute": "Open"
   },
   "comingUp": {
     "title": "Planned by your clinic",

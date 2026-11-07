@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../ui/icons.dart';
 
 import '../../app/format.dart' as fmt;
@@ -11,6 +12,7 @@ import '../../ui/feedback.dart';
 import '../../ui/grouped.dart';
 import '../../ui/secure_screen.dart';
 import '../../ui/sub_page.dart';
+import 'health_details.dart';
 
 /// A secure list page: no screenshots, skeletons, empty and error states, pull to refresh.
 class _SecureList<T> extends ConsumerWidget {
@@ -56,11 +58,12 @@ class _SecureList<T> extends ConsumerWidget {
 }
 
 class _Row extends StatelessWidget {
-  const _Row({required this.icon, required this.title, required this.subtitle, this.trailing});
+  const _Row({required this.icon, required this.title, required this.subtitle, this.trailing, this.onTap});
 
   final IconData icon;
   final String title, subtitle;
   final Widget? trailing;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) => GroupedRow(
@@ -73,6 +76,7 @@ class _Row extends StatelessWidget {
         title: title,
         subtitle: subtitle,
         trailing: trailing,
+        onTap: onTap,
       );
 }
 
@@ -93,6 +97,7 @@ class RecordsScreen extends ConsumerWidget {
         icon: PhosphorIconsRegular.stethoscope,
         title: r.diagnoses.isEmpty ? r.facilityName : r.diagnoses.map((d) => d.text).join(', '),
         subtitle: [_when(r.date, s), r.facilityName, r.doctor].where((t) => t.isNotEmpty).join(' · '),
+        onTap: () => context.go('/me/records/${r.id}'),
       ),
     );
   }
@@ -119,6 +124,7 @@ class MedicationsScreen extends ConsumerWidget {
           text: s.state(p.status),
           tone: p.status == 'ready_to_dispense' ? PillTone.ochre : PillTone.brand,
         ),
+        onTap: () => context.go('/me/medications/${p.id}'),
       ),
     );
   }
@@ -140,6 +146,7 @@ class DocumentsScreen extends ConsumerWidget {
         title: d.number,
         subtitle: [_when(d.date, s), d.facilityName, d.author].where((t) => t.isNotEmpty).join(' · '),
         trailing: StatusPill(text: s.state(d.status), tone: PillTone.muted),
+        onTap: () => openDocument(context, ref, d.id),
       ),
     );
   }

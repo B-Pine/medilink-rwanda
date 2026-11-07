@@ -25,7 +25,8 @@ import { PageHeading } from "../../components/PageHeading";
  *  - QuickActionTile: compact white tile, icon + title + one line
  */
 
-export const panelClass = "rounded-2xl border border-border bg-surface";
+/** A card: white on the grey page, a hairline and the soft card shadow (as the app). */
+export const panelClass = "rounded-2xl border border-border bg-surface shadow-card";
 
 export function initials(name: string): string {
   return name

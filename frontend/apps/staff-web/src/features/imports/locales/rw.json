@@ -1,0 +1,98 @@
+{
+  "nav": "Kwinjiza abarwayi",
+  "title": "Kwinjiza abarwayi",
+  "failed": "Hari ikitagenze neza. Ongera ugerageze.",
+  "retry": "Ongera ugerageze",
+  "notFound": "Iyinjiza ntiribonetse",
+  "earlier": "Ibyinjijwe mbere",
+  "none": "Nta byinjijwe biraba",
+  "rows_one": "Umurongo {{count}}",
+  "rows_other": "Imirongo {{count}}",
+  "upload": {
+    "label": "Dosiye y’igitabo (CSV)",
+    "drop": "Shyira CSV hano",
+    "browse": "Hitamo dosiye",
+    "hint": "Umurwayi umwe ku murongo, umurongo w’imitwe ubanza. Ntirenze MB 5 n’imirongo 5,000.",
+    "remove": "Kuraho",
+    "working": "Birohereza…",
+    "scanning": "Dosiye irasuzumwa…",
+    "infected": "Dosiye yahagaritswe.",
+    "rejected": "Dosiye yanzwe.",
+    "tooLarge": "Dosiye irarenze MB 5.",
+    "wrongType": "Hitamo dosiye ya CSV."
+  },
+  "status": {
+    "uploaded": "Huza inkingi",
+    "previewed": "Byasuzumwe",
+    "confirmed": "Byinjijwe",
+    "rolled_back": "Byakuweho",
+    "failed": "Byanze"
+  },
+  "mapping": {
+    "title": "Inkingi irimo iki?",
+    "required": "Birakenewe",
+    "none": "Ntibiri muri dosiye",
+    "check": "Suzuma imirongo"
+  },
+  "field": {
+    "full_name": "Amazina yose",
+    "sex": "Igitsina",
+    "date_of_birth": "Itariki y’amavuko",
+    "phone": "Telefoni",
+    "file_number": "Nimero ya dosiye",
+    "national_id": "Indangamuntu"
+  },
+  "count": {
+    "rows": "Imirongo",
+    "valid": "Byiteguye",
+    "error": "Bifite ibibazo",
+    "duplicate": "Bishobora kuba bisanzwe",
+    "created": "Byinjijwe"
+  },
+  "confirmHint_one": "Umurwayi {{count}} ariteguye. Imirongo ifite ibibazo n’ishobora kuba isanzwe ntiyinjizwa.",
+  "confirmHint_other": "Abarwayi {{count}} biteguye. Imirongo ifite ibibazo n’ishobora kuba isanzwe ntiyinjizwa.",
+  "nothingReady": "Nta murongo witeguye. Kosora dosiye cyangwa inkingi wongere wohereze.",
+  "confirm_one": "Injiza umurwayi {{count}}",
+  "confirm_other": "Injiza abarwayi {{count}}",
+  "rollbackHint": "Ushobora gukuraho iri yinjiza kugeza {{date}}, igihe nta murwayi winjijwe ufite uruzinduko.",
+  "rollbackClosed": "Iri yinjiza ntirigishobora gukurwaho.",
+  "rollback": "Kuraho iri yinjiza",
+  "rolledBackOn": "Ryakuweho ku wa {{date}}.",
+  "done": {
+    "checked": "Imirongo yasuzumwe.",
+    "confirmed_one": "Umurwayi {{count}} yinjijwe.",
+    "confirmed_other": "Abarwayi {{count}} binjijwe.",
+    "rolledBack": "Iyinjiza ryakuweho."
+  },
+  "rowsTitle": "Imirongo",
+  "filter": "Erekana imirongo",
+  "filters": {
+    "all": "Yose",
+    "error": "Ibibazo",
+    "duplicate": "Bisanzwe",
+    "valid": "Byiteguye"
+  },
+  "col": {
+    "row": "Umurongo",
+    "status": "Imiterere"
+  },
+  "rowStatus": {
+    "pending": "Ntirasuzumwa",
+    "valid": "Uriteguye",
+    "error": "Ikibazo",
+    "duplicate": "Ashobora kuba asanzwe",
+    "created": "Yinjijwe",
+    "rolled_back": "Yakuweho"
+  },
+  "problem": {
+    "required": "kirabura",
+    "invalid": "ntibyemewe",
+    "out_of_range": "ntibishoboka",
+    "taken": "byakoreshejwe kabiri"
+  },
+  "sex": {
+    "male": "Gabo",
+    "female": "Gore"
+  },
+  "noRows": "Nta mirongo ihari."
+}

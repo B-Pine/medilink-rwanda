@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 6169.
+Keys: 6243.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -2013,6 +2013,87 @@ File: `apps/staff-web/src/features/help/locales/rw.json`
 | `contact.cancel` | Reka | Cancel | needs native-speaker review |
 | `contact.replyEmail` | Subiza {{reach}} | Reply to {{reach}} | needs native-speaker review |
 | `contact.call` | Hamagara {{reach}} | Call {{reach}} | needs native-speaker review |
+
+## staff-web feature: imports (namespace imports)
+
+File: `apps/staff-web/src/features/imports/locales/rw.json`
+
+| Key | Kinyarwanda (draft) | English source | Status |
+|---|---|---|---|
+| `nav` | Kwinjiza abarwayi | Import patients | needs native-speaker review |
+| `title` | Kwinjiza abarwayi | Import patients | needs native-speaker review |
+| `failed` | Hari ikitagenze neza. Ongera ugerageze. | Something went wrong. Try again. | needs native-speaker review |
+| `retry` | Ongera ugerageze | Try again | needs native-speaker review |
+| `notFound` | Iyinjiza ntiribonetse | Import not found | needs native-speaker review |
+| `earlier` | Ibyinjijwe mbere | Earlier imports | needs native-speaker review |
+| `none` | Nta byinjijwe biraba | No imports yet | needs native-speaker review |
+| `rows_one` | Umurongo {{count}} | {{count}} row | needs native-speaker review |
+| `rows_other` | Imirongo {{count}} | {{count}} rows | needs native-speaker review |
+| `upload.label` | Dosiye y’igitabo (CSV) | Register file (CSV) | needs native-speaker review |
+| `upload.drop` | Shyira CSV hano | Drop the CSV here | needs native-speaker review |
+| `upload.browse` | Hitamo dosiye | Choose a file | needs native-speaker review |
+| `upload.hint` | Umurwayi umwe ku murongo, umurongo w’imitwe ubanza. Ntirenze MB 5 n’imirongo 5,000. | One patient per row, a header row first. At most 5 MB and 5,000 rows. | needs native-speaker review |
+| `upload.remove` | Kuraho | Remove | needs native-speaker review |
+| `upload.working` | Birohereza… | Uploading… | needs native-speaker review |
+| `upload.scanning` | Dosiye irasuzumwa… | Checking the file… | needs native-speaker review |
+| `upload.infected` | Dosiye yahagaritswe. | The file was blocked. | needs native-speaker review |
+| `upload.rejected` | Dosiye yanzwe. | The file was refused. | needs native-speaker review |
+| `upload.tooLarge` | Dosiye irarenze MB 5. | The file is larger than 5 MB. | needs native-speaker review |
+| `upload.wrongType` | Hitamo dosiye ya CSV. | Choose a CSV file. | needs native-speaker review |
+| `status.uploaded` | Huza inkingi | Columns to map | needs native-speaker review |
+| `status.previewed` | Byasuzumwe | Checked | needs native-speaker review |
+| `status.confirmed` | Byinjijwe | Imported | needs native-speaker review |
+| `status.rolled_back` | Byakuweho | Rolled back | needs native-speaker review |
+| `status.failed` | Byanze | Failed | needs native-speaker review |
+| `mapping.title` | Inkingi irimo iki? | Which column holds what? | needs native-speaker review |
+| `mapping.required` | Birakenewe | Required | needs native-speaker review |
+| `mapping.none` | Ntibiri muri dosiye | Not in the file | needs native-speaker review |
+| `mapping.check` | Suzuma imirongo | Check the rows | needs native-speaker review |
+| `field.full_name` | Amazina yose | Full name | needs native-speaker review |
+| `field.sex` | Igitsina | Sex | needs native-speaker review |
+| `field.date_of_birth` | Itariki y’amavuko | Date of birth | needs native-speaker review |
+| `field.phone` | Telefoni | Phone | needs native-speaker review |
+| `field.file_number` | Nimero ya dosiye | File number | needs native-speaker review |
+| `field.national_id` | Indangamuntu | National ID | needs native-speaker review |
+| `count.rows` | Imirongo | Rows | needs native-speaker review |
+| `count.valid` | Byiteguye | Ready | needs native-speaker review |
+| `count.error` | Bifite ibibazo | With problems | needs native-speaker review |
+| `count.duplicate` | Bishobora kuba bisanzwe | Likely duplicates | needs native-speaker review |
+| `count.created` | Byinjijwe | Imported | needs native-speaker review |
+| `confirmHint_one` | Umurwayi {{count}} ariteguye. Imirongo ifite ibibazo n’ishobora kuba isanzwe ntiyinjizwa. | {{count}} patient is ready. Rows with problems and likely duplicates are left out. | needs native-speaker review |
+| `confirmHint_other` | Abarwayi {{count}} biteguye. Imirongo ifite ibibazo n’ishobora kuba isanzwe ntiyinjizwa. | {{count}} patients are ready. Rows with problems and likely duplicates are left out. | needs native-speaker review |
+| `nothingReady` | Nta murongo witeguye. Kosora dosiye cyangwa inkingi wongere wohereze. | No row is ready. Fix the file or the columns and upload again. | needs native-speaker review |
+| `confirm_one` | Injiza umurwayi {{count}} | Import {{count}} patient | needs native-speaker review |
+| `confirm_other` | Injiza abarwayi {{count}} | Import {{count}} patients | needs native-speaker review |
+| `rollbackHint` | Ushobora gukuraho iri yinjiza kugeza {{date}}, igihe nta murwayi winjijwe ufite uruzinduko. | You can undo this import until {{date}}, while no imported patient has a visit. | needs native-speaker review |
+| `rollbackClosed` | Iri yinjiza ntirigishobora gukurwaho. | This import can no longer be undone. | needs native-speaker review |
+| `rollback` | Kuraho iri yinjiza | Undo this import | needs native-speaker review |
+| `rolledBackOn` | Ryakuweho ku wa {{date}}. | Undone on {{date}}. | needs native-speaker review |
+| `done.checked` | Imirongo yasuzumwe. | Rows checked. | needs native-speaker review |
+| `done.confirmed_one` | Umurwayi {{count}} yinjijwe. | {{count}} patient imported. | needs native-speaker review |
+| `done.confirmed_other` | Abarwayi {{count}} binjijwe. | {{count}} patients imported. | needs native-speaker review |
+| `done.rolledBack` | Iyinjiza ryakuweho. | Import undone. | needs native-speaker review |
+| `rowsTitle` | Imirongo | Rows | needs native-speaker review |
+| `filter` | Erekana imirongo | Show rows | needs native-speaker review |
+| `filters.all` | Yose | All | needs native-speaker review |
+| `filters.error` | Ibibazo | Problems | needs native-speaker review |
+| `filters.duplicate` | Bisanzwe | Duplicates | needs native-speaker review |
+| `filters.valid` | Byiteguye | Ready | needs native-speaker review |
+| `col.row` | Umurongo | Row | needs native-speaker review |
+| `col.status` | Imiterere | Status | needs native-speaker review |
+| `rowStatus.pending` | Ntirasuzumwa | Not checked | needs native-speaker review |
+| `rowStatus.valid` | Uriteguye | Ready | needs native-speaker review |
+| `rowStatus.error` | Ikibazo | Problem | needs native-speaker review |
+| `rowStatus.duplicate` | Ashobora kuba asanzwe | Likely duplicate | needs native-speaker review |
+| `rowStatus.created` | Yinjijwe | Imported | needs native-speaker review |
+| `rowStatus.rolled_back` | Yakuweho | Undone | needs native-speaker review |
+| `problem.required` | kirabura | missing | needs native-speaker review |
+| `problem.invalid` | ntibyemewe | not valid | needs native-speaker review |
+| `problem.out_of_range` | ntibishoboka | not possible | needs native-speaker review |
+| `problem.taken` | byakoreshejwe kabiri | used twice | needs native-speaker review |
+| `sex.male` | Gabo | Male | needs native-speaker review |
+| `sex.female` | Gore | Female | needs native-speaker review |
+| `noRows` | Nta mirongo ihari. | No rows here. | needs native-speaker review |
 
 ## staff-web feature: lock (namespace lock)
 

@@ -109,7 +109,7 @@ Source: [04 · Patient identity and medical history](../analysis/04-patient-iden
 | FR-PAT-07 | Identifiers: national ID, passport, insurance, file no., MediLink no. | P1 | S3 | Backend | UT, API | In progress |
 | FR-PAT-08 | Health profile with verified / unverified status | P1 | S3 | Both | API, CMP | In progress |
 | FR-PAT-09 | History timeline, filters, problem summary, search | P1 | S3, S6* | Both | API, PERF, E2E | In progress |
-| FR-PAT-10 | Legacy register import: preview, validation, duplicates, rollback | P1 | S6b | Both | BR, API, E2E | Not started |
+| FR-PAT-10 | Legacy register import: preview, validation, duplicates, rollback | P1 | S6b | Both | BR, API, E2E | In progress (backend L1 with `test_s6b_import.py`; staff import wizard `imports.test.tsx`; staging open) |
 | FR-PAT-11 | Scanned legacy records attached to patients | P1 | S6b | Both | API | In progress |
 | FR-PAT-12 | Structured back-entry labelled as historical | P1 | S6b | Both | API, CMP | In progress |
 | FR-PAT-13 | Patient sees own and dependents' records except private notes | P1 | S3, S6* | Both | AZ, E2E | In progress |

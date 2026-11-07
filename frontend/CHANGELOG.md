@@ -21,6 +21,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   final decision (step-up). The Command centre's "Escalated disputes" and the facility Operations
   "disputes open" now open these screens (were a dead counter and the Help page). API client
   `disputes` module and MSW mocks with the backend's state machine.
+- Added: **Import patients** (S6-F7, FR-PAT-10) at `/settings/patient-import` for members with
+  `records.import`: upload a register CSV (scanned), columns suggested from the header row, check
+  every row (problems per field, likely duplicates; nothing created), import the ready rows
+  (step-up), undo within 7 days while no imported patient has a visit; earlier imports listed.
+  API client `patientImports` and MSW mocks that parse the real file with the backend's rules.
 
 - Added: patient **Bills** (S8-F6, FR-BIL-12) at `/dashboard/bills`: what is left to pay across
   facilities, bills with a balance first, then the newest; the bill with its lines (insurer and

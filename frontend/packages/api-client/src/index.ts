@@ -38,6 +38,7 @@ export * from "./features/booking";
 // [/S5]
 // [S6]
 export * from "./features/clinical";
+export * from "./features/patient-imports";
 // [/S6]
 // [S7]
 export * from "./features/documents";

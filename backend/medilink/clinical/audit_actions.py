@@ -28,5 +28,9 @@ ACTIONS: frozenset[str] = frozenset(
         "clinical.lab_order.resulted",
         "clinical.lab_order.reviewed",
         "clinical.lab_order.released",
+        "patients.import.uploaded",
+        "patients.import.previewed",
+        "patients.import.confirmed",
+        "patients.import.rolled_back",
     }
 )

@@ -235,8 +235,7 @@ function ActionInbox({ data }: { data: CommandCenter }) {
       key: "disputes",
       count: a.disputes_escalated,
       icon: Gavel,
-      // no platform disputes screen yet (sprint 10b frontend): a counter, not a dead link
-      to: undefined,
+      to: "/platform/disputes",
       tone: "danger" as const,
     },
     {

@@ -1,0 +1,142 @@
+{
+  "nav": {
+    "disputes": "Disputes",
+    "platform": "Disputes"
+  },
+  "title": "Disputes",
+  "platformTitle": "Escalated disputes",
+  "failed": "We couldn't load the disputes.",
+  "retry": "Try again",
+  "notFound": "Dispute not found",
+  "flagged": "Often rejected",
+  "overdue": "Overdue",
+  "system": "System",
+  "tabs": {
+    "label": "Show",
+    "open": "Open",
+    "overdue": "Overdue",
+    "all": "All"
+  },
+  "empty": {
+    "open": "No open disputes",
+    "overdue": "Nothing overdue",
+    "all": "No disputes yet",
+    "platform": "No escalated disputes"
+  },
+  "channel": {
+    "app": "App",
+    "counter": "Counter"
+  },
+  "facts": {
+    "title": "Facts",
+    "patient": "Patient",
+    "facility": "Facility",
+    "channel": "Raised at",
+    "raised": "Raised",
+    "answerBy": "Acknowledge by",
+    "decideBy": "Decide by",
+    "what": "What the patient wrote"
+  },
+  "snapshot": {
+    "status": "Status",
+    "total_rwf": "Total (RWF)",
+    "patient_share_rwf": "Patient share (RWF)",
+    "paid_rwf": "Paid (RWF)",
+    "balance_rwf": "Balance (RWF)",
+    "number": "Number",
+    "booking_code": "Booking code",
+    "starts_at": "Appointment",
+    "occurred_at": "Marked missed",
+    "reversed_at": "Reversed",
+    "ticket_number": "Ticket",
+    "state": "State",
+    "service_date": "Service date",
+    "issued_at": "Issued",
+    "kind": "Kind",
+    "document_date": "Document date"
+  },
+  "evidence": "Audit trail",
+  "history": "History",
+  "thread": "Thread",
+  "noMessages": "No messages yet",
+  "visibility": {
+    "internal": "Internal note",
+    "staff_comment": "Staff comment"
+  },
+  "action": {
+    "pending": "To do: {{what}}",
+    "done": "Done: {{what}}"
+  },
+  "statement": "Patient's statement",
+  "closedNote": "This dispute is closed.",
+  "involved": "You are involved in this dispute: you can comment, not decide.",
+  "acknowledgeHint": "Acknowledge to start the 10-day decision time.",
+  "acknowledge": "Acknowledge",
+  "messageKind": {
+    "label": "Message type",
+    "thread": "Reply to the patient",
+    "internal": "Internal note",
+    "ask": "Ask the patient for information"
+  },
+  "message": "Message",
+  "internalHint": "Only the facility's staff see it.",
+  "send": "Send",
+  "toPatient": "Message to the patient",
+  "colleague": {
+    "title": "Ask a colleague",
+    "who": "Colleague",
+    "choose": "Choose…",
+    "ask": "Ask for a comment",
+    "answered": "answered",
+    "waiting": "waiting",
+    "yourComment": "Your comment",
+    "commentHint": "You were asked for a comment. Only staff see it."
+  },
+  "decide": {
+    "title": "Decision",
+    "finalTitle": "Final decision",
+    "outcome": "Outcome",
+    "choose": "Choose…",
+    "reason": "Reason",
+    "reasonHint": "The patient reads this.",
+    "submit": "Resolve",
+    "finalSubmit": "Record final decision"
+  },
+  "done": {
+    "acknowledged": "Acknowledged.",
+    "message": "Sent.",
+    "asked": "Question sent to the patient.",
+    "commentAsked": "Comment requested.",
+    "commented": "Comment added.",
+    "decided": "Decision recorded."
+  },
+  "subject": {
+    "visit": "Visit",
+    "ticket": "Queue ticket",
+    "booking": "Booking",
+    "no_show_strike": "Missed visit",
+    "prescription": "Prescription",
+    "bill": "Bill",
+    "document": "Document"
+  },
+  "status": {
+    "open": "New",
+    "acknowledged": "Acknowledged",
+    "under_review": "Under review",
+    "info_requested": "Waiting for patient",
+    "resolved": "Resolved",
+    "escalated": "Escalated",
+    "final_decision": "Final decision",
+    "closed": "Closed",
+    "reopened": "Reopened"
+  },
+  "outcome": {
+    "no_show_reversed": "Missed visit reversed",
+    "record_corrected": "Record to be corrected",
+    "correction_refused": "Correction refused",
+    "refund": "Refund",
+    "bill_correction": "Bill correction",
+    "rebooking": "Rebooking",
+    "rejected": "Rejected"
+  }
+}

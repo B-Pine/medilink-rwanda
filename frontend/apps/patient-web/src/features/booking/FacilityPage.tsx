@@ -13,7 +13,15 @@ import {
   SealCheck,
   Siren,
 } from "@phosphor-icons/react";
-import { buttonClassName, cx, Lightbox, Skeleton } from "@medilink/ui";
+import {
+  buttonClassName,
+  cx,
+  Lightbox,
+  Skeleton,
+  StatusPill,
+  StickyActionBar,
+  StickyActionBarSpacer,
+} from "@medilink/ui";
 import { dateFormat, kigaliDate } from "@medilink/ui/i18n";
 import { useQuery } from "@tanstack/react-query";
 import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
@@ -28,6 +36,7 @@ import { doctorSlug, EMERGENCY, isHospital, serviceSlug } from "../site/data";
 import {
   EmptyState,
   FacilityStatus,
+  InsuranceList,
   NotFoundState,
   PageContainer,
   PageHeader,
@@ -49,13 +58,14 @@ function weekdayName(index: number, language: string): string {
   );
 }
 
-/** Join today's queue where a service allows it, otherwise book; nothing if neither. */
+/** Join today's queue while open where a service allows it, otherwise book; nothing if neither. */
 function primaryAction(f: PublicFacility, wanted: string | null) {
   const ordered = [...f.services].sort(
     (a, b) =>
       Number(b.code === wanted || b.id === wanted) - Number(a.code === wanted || a.id === wanted),
   );
-  const join = ordered.find((s) => s.remote_join);
+  // today's queue only while the facility is open; otherwise a time can still be booked
+  const join = f.open_now ? ordered.find((s) => s.remote_join) : undefined;
   if (join) return { kind: "join" as const, to: `/book/${f.slug}?service=${join.id}&today=1` };
   const book = ordered.find((s) => s.bookable);
   if (book) return { kind: "book" as const, to: `/book/${f.slug}?service=${book.id}` };
@@ -126,6 +136,7 @@ export function FacilityPage() {
     <PublicLayout>
       <PageContainer className="pb-16">
         <PageHeader
+          tone="forest"
           crumbs={[{ to: "/facilities", label: t("nav.facilities") }, { label: f.name }]}
           title={f.name}
           titleTransition={`facility-name-${f.slug}`}
@@ -148,13 +159,10 @@ export function FacilityPage() {
               )}
               <FacilityStatus open={f.open_now} />
               {f.emergency_department && (
-                <span className="inline-flex items-center gap-1 font-semibold text-danger">
-                  <Siren aria-hidden="true" weight="bold" className="size-4" />
-                  {t("site.emergency.department")}
-                </span>
+                <StatusPill tone="emergency">{t("site.emergency.department")}</StatusPill>
               )}
               {f.verified && (
-                <span className="inline-flex items-center gap-1 font-semibold text-primary">
+                <span className="inline-flex items-center gap-1 font-semibold text-on-forest">
                   <SealCheck aria-hidden="true" weight="fill" className="size-4" />
                   {t("site.facility.verified")}
                 </span>
@@ -168,24 +176,27 @@ export function FacilityPage() {
                   href={directions}
                   target="_blank"
                   rel="noreferrer"
-                  className={buttonClassName({ variant: "secondary", pill: true })}
+                  className={ON_FOREST_SECONDARY}
                 >
                   <NavigationArrow aria-hidden="true" className="size-4" />
                   {t("site.facility.directions")}
                   <span className="sr-only"> {t("common.opensInNewTab")}</span>
                 </a>
               )}
+              {/* phones have it in the sticky bar at the bottom instead */}
               {action && (
-                <Link to={action.to} viewTransition className={buttonClassName({ pill: true })}>
-                  {action.kind === "join" ? (
-                    <PersonSimpleWalk aria-hidden="true" className="size-4" />
-                  ) : (
-                    <CalendarPlus aria-hidden="true" className="size-4" />
-                  )}
-                  {action.kind === "join"
-                    ? t("site.facility.joinQueue")
-                    : t("site.facility.bookAppointment")}
-                </Link>
+                <span className="hidden md:contents">
+                  <Link to={action.to} viewTransition className={ON_FOREST_PRIMARY}>
+                    {action.kind === "join" ? (
+                      <PersonSimpleWalk aria-hidden="true" className="size-4" />
+                    ) : (
+                      <CalendarPlus aria-hidden="true" className="size-4" />
+                    )}
+                    {action.kind === "join"
+                      ? t("site.facility.joinQueue")
+                      : t("site.facility.bookAppointment")}
+                  </Link>
+                </span>
               )}
             </>
           }
@@ -217,14 +228,21 @@ export function FacilityPage() {
                     {live.length === 0 ? (
                       <span className="text-fg-secondary">{t("site.facility.waitUnknown")}</span>
                     ) : (
-                      <ul className="m-0 flex list-none flex-col gap-1 p-0">
-                        {live.map((s) => (
-                          <li key={s.id} className="flex flex-wrap items-baseline gap-x-3">
-                            <span>{pick(s.name_i18n, lang)}</span>
-                            <WaitingTime result={s} />
-                          </li>
-                        ))}
-                      </ul>
+                      <table className="w-full border-collapse text-body-sm">
+                        <caption className="sr-only">{t("site.facility.liveWait")}</caption>
+                        <tbody>
+                          {live.map((s) => (
+                            <tr key={s.id} className="border-b border-hairline last:border-b-0">
+                              <th scope="row" className="py-1.5 pr-4 text-left font-normal">
+                                {pick(s.name_i18n, lang)}
+                              </th>
+                              <td className="py-1.5 text-right tabular-nums">
+                                <WaitingTime result={s} />
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     )}
                   </Summary>
                   <Summary label={t("site.facility.queue")}>
@@ -232,16 +250,6 @@ export function FacilityPage() {
                   </Summary>
                   <Summary label={t("site.facility.booking")}>
                     <Availability on={f.services.some((s) => s.bookable)} />
-                  </Summary>
-                  <Summary label={t("site.facility.insurance")}>
-                    {insurers.length > 0
-                      ? insurerNames(insurers, t).join(", ")
-                      : t("site.facility.notListed")}
-                    {f.level_of_care !== "primary" && (
-                      <span className="mt-1 block text-body-sm text-fg-secondary">
-                        {t("site.facility.referral")}
-                      </span>
-                    )}
                   </Summary>
                 </dl>
                 {(hospital || f.emergency_department) && (
@@ -290,33 +298,43 @@ export function FacilityPage() {
                     {f.doctors.map((d) => (
                       <li
                         key={d.membership_id}
-                        className="flex flex-col gap-1 border-b border-hairline px-5 py-4 last:border-b-0 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6 sm:px-6"
+                        className="border-b border-hairline last:border-b-0"
                       >
-                        <span className="flex min-w-0 flex-col gap-0.5">
-                          <Link
-                            to={`/doctors/${doctorSlug(f.slug, d.membership_id)}`}
-                            viewTransition
-                            className="font-semibold text-link no-underline hover:underline"
-                          >
-                            {d.name}
-                          </Link>
-                          <span className="text-body-sm text-fg-secondary">
-                            {f.services
-                              .filter((s) => d.service_ids.includes(s.id))
-                              .map((s) => pick(s.name_i18n, lang))
+                        <Link
+                          to={`/doctors/${doctorSlug(f.slug, d.membership_id)}`}
+                          viewTransition
+                          className="ml-press flex min-h-14 flex-col gap-1 px-5 py-3.5 text-fg no-underline transition-colors duration-150 hover:bg-page sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6"
+                        >
+                          <span className="flex min-w-0 flex-col gap-0.5">
+                            <span className="font-semibold text-link">{d.name}</span>
+                            <span className="text-body-sm text-fg-secondary">
+                              {f.services
+                                .filter((s) => d.service_ids.includes(s.id))
+                                .map((s) => pick(s.name_i18n, lang))
+                                .join(" · ")}
+                            </span>
+                          </span>
+                          <span className="text-body-sm font-semibold text-fg tabular-nums">
+                            {WEEKDAYS.filter((w) => d.days.includes(w))
+                              .map((w) => weekdayName(w, lang))
                               .join(" · ")}
                           </span>
-                        </span>
-                        <span className="text-body-sm font-semibold text-fg tabular-nums">
-                          {WEEKDAYS.filter((w) => d.days.includes(w))
-                            .map((w) => weekdayName(w, lang))
-                            .join(" · ")}
-                        </span>
+                        </Link>
                       </li>
                     ))}
                   </ul>
                 )}
               </Panel>
+            </section>
+
+            <section aria-labelledby="insurance" className="flex flex-col gap-3">
+              <h2 id="insurance" className="m-0 font-heading text-h2">
+                {t("site.facility.insurance")}
+              </h2>
+              <InsuranceList codes={insurers} />
+              {f.level_of_care !== "primary" && (
+                <p className="m-0 text-body-sm text-fg-secondary">{t("site.facility.referral")}</p>
+              )}
             </section>
 
             <section aria-labelledby="about" className="flex flex-col gap-3">
@@ -333,7 +351,7 @@ export function FacilityPage() {
             <Photos name={f.name} photos={f.photos} />
           </div>
 
-          <aside className="flex flex-col gap-6 lg:pt-11">
+          <aside className="flex flex-col gap-6 lg:sticky lg:top-24 lg:self-start lg:pt-11">
             <Panel aria-labelledby="location" className="overflow-hidden">
               {f.lat !== null && f.lng !== null && (
                 <Suspense fallback={<Skeleton className="h-44 rounded-none" />}>
@@ -425,10 +443,36 @@ export function FacilityPage() {
             </Panel>
           </aside>
         </div>
+        {action && <StickyActionBarSpacer />}
       </PageContainer>
+      {action && (
+        <StickyActionBar
+          summary={
+            <span className="flex flex-col">
+              <span className="truncate font-semibold text-fg">{f.name}</span>
+              <span className="tabular-nums">
+                {f.open_now ? t("site.open") : t("site.closed")}
+                {todayHours ? ` · ${todayHours}` : ""}
+              </span>
+            </span>
+          }
+        >
+          <Link to={action.to} viewTransition className={buttonClassName({ pill: true })}>
+            {action.kind === "join"
+              ? t("site.facility.joinQueue")
+              : t("site.facility.bookAppointment")}
+          </Link>
+        </StickyActionBar>
+      )}
     </PublicLayout>
   );
 }
+
+/** Buttons on the forest band: white for the main action, a white outline for the other. */
+const ON_FOREST_PRIMARY =
+  "ml-press inline-flex min-h-11 items-center gap-2 rounded-full bg-on-forest px-5 font-semibold text-forest no-underline transition-[filter] duration-150 hover:brightness-95";
+const ON_FOREST_SECONDARY =
+  "ml-press inline-flex min-h-11 items-center gap-2 rounded-full px-5 font-semibold text-on-forest no-underline shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-on-forest)_45%,transparent)] transition-colors duration-150 hover:bg-forest-raised";
 
 /** One fact of today's summary: the label on the left, the answer on the right (NHS summary list). */
 function Summary({ label, children }: { label: string; children: ReactNode }) {

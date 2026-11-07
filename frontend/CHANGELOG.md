@@ -9,6 +9,22 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Public site audit, phase 4: page by page (2026-11-07)
+
+- Changed: Find care and Facilities share one filter bar: search and place; filters inline on wide
+  screens and in a Filters sheet on phones; removable active-filter chips; the count; sort by open
+  first, shortest wait or nearest. Both show the same cards beside a full-height map.
+- Changed: the facility page opens on the forest band (drawing, status, Directions, Join or Book;
+  Join only while open). Today is a compact table; insurance has its own section of chips; doctors
+  are whole-row links; on phones Join or Book sits in a bar at the bottom.
+- Changed: doctors are compact rows on phones; services fill the width in three columns; For
+  facilities has a short hero, three benefits, four steps and the first answer open; Emergency puts
+  "Call 912" first and largest; the home headline fits two lines.
+- Changed: the header shows the emergency strip on wide screens and one emergency button on phones;
+  the menu is a full-height sheet with a focus trap. Sign-in pages use the RW / EN / FR code select,
+  so nothing is cut off at 390 px.
+- Changed: "facility" instead of "place" in counts and labels (en, fr, rw).
+
 ### Public site audit, phase 3: say each thing once (2026-11-07)
 
 - Changed: the patient journey is told once, on How it works: four steps with drawings (search,

@@ -114,7 +114,10 @@ class _FadeThroughBranchesState extends State<FadeThroughBranches> with SingleTi
   @override
   void didUpdateWidget(FadeThroughBranches oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.index != widget.index) _fade.forward(from: 0);
+    if (oldWidget.index != widget.index) {
+      // Tabs fade through; no motion when the system asks for none.
+      Motion.off(context) ? _fade.value = 1 : _fade.forward(from: 0);
+    }
   }
 
   @override

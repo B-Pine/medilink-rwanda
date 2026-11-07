@@ -199,6 +199,7 @@ class _LoadingButtonState extends State<LoadingButton> {
 
   Future<void> _run() async {
     if (_state != _ButtonState.idle || widget.onPressed == null) return;
+    HapticFeedback.selectionClick();
     setState(() => _state = _ButtonState.busy);
     var ok = false;
     try {
@@ -237,8 +238,15 @@ class LoadingDots extends StatefulWidget {
 }
 
 class _DotsState extends State<LoadingDots> with SingleTickerProviderStateMixin {
-  late final AnimationController _c =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 900))..repeat();
+  // Made in initState, not lazily: the still version never touches it, and dispose must not
+  // create one.
+  late final AnimationController _c;
+
+  @override
+  void initState() {
+    super.initState();
+    _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 900))..repeat();
+  }
 
   @override
   void dispose() {
@@ -249,6 +257,20 @@ class _DotsState extends State<LoadingDots> with SingleTickerProviderStateMixin 
   @override
   Widget build(BuildContext context) {
     final color = DefaultTextStyle.of(context).style.color ?? Colors.white;
+    if (Motion.off(context)) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var i = 0; i < 3; i++)
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 3),
+              width: 7,
+              height: 7,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            ),
+        ],
+      );
+    }
     return AnimatedBuilder(
       animation: _c,
       builder: (context, _) => Row(
@@ -282,8 +304,13 @@ class LiveDot extends StatefulWidget {
 }
 
 class _LiveDotState extends State<LiveDot> with SingleTickerProviderStateMixin {
-  late final AnimationController _c =
-      AnimationController(vsync: this, duration: const Duration(milliseconds: 1600))..repeat(reverse: true);
+  late final AnimationController _c;
+
+  @override
+  void initState() {
+    super.initState();
+    _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1600))..repeat(reverse: true);
+  }
 
   @override
   void dispose() {
@@ -293,7 +320,7 @@ class _LiveDotState extends State<LiveDot> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) => FadeTransition(
-        opacity: Tween<double>(begin: 0.35, end: 1).animate(_c),
+        opacity: Motion.off(context) ? kAlwaysCompleteAnimation : Tween<double>(begin: 0.35, end: 1).animate(_c),
         child: Container(
           width: 8,
           height: 8,

@@ -40,6 +40,13 @@ Design polish (#260), no API or data changes:
 - Fixed: the OpenStreetMap credit stays visible on the map (top right, under the bar) and also
   shows on the Home map preview, as the licence asks.
 - Fixed: back arrows on the doctor and facility pages are the app's own icon on a white circle.
+- Changed: cards and quick actions shrink slightly while pressed (no ink ripple); rows tint
+  softly; primary buttons darken. Toggles, chips and main buttons give a light tap.
+- Changed: one page transition everywhere (the new page slides in a little and fades in).
+- Changed: people ahead and wait times roll into place when they change (Home ticket, ticket
+  page); a facility's drawing flies from the Care list into its page.
+- Changed: every animation, including loading dots and the live dot, stops when the phone's
+  "remove animations" setting is on.
 
 ### 1.0.8 (2026-11-06)
 

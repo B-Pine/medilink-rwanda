@@ -115,3 +115,15 @@ describe("offline (phase 5)", () => {
     }
   });
 });
+
+describe("forms say what is missing (phase 5)", () => {
+  it("document check: an empty code shows an inline error instead of doing nothing", async () => {
+    const { user } = renderApp("/verify");
+    await screen.findByRole("heading", { level: 1 });
+    await user.click(screen.getByRole("button", { name: "Check" }));
+    expect(await screen.findByText("Enter the code on the document.")).toBeInTheDocument();
+    expect(screen.getByLabelText(/^Verification code/)).toHaveAttribute("aria-invalid", "true");
+    await user.type(screen.getByLabelText(/^Verification code/), "A");
+    expect(screen.queryByText("Enter the code on the document.")).not.toBeInTheDocument();
+  });
+});

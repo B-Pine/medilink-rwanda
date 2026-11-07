@@ -74,7 +74,9 @@
     "dob": "Patient's date of birth",
     "showDetails": "Show the content",
     "dobMismatch": "That date of birth doesn't match this document.",
-    "for": "For {{name}}"
+    "for": "For {{name}}",
+    "codeRequired": "Enter the code on the document.",
+    "dobRequired": "Enter the date of birth."
   },
   "shared": {
     "title": "Shared document",

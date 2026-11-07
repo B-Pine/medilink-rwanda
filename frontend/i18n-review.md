@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5965.
+Keys: 5967.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -4828,6 +4828,8 @@ File: `apps/patient-web/src/features/documents/locales/rw.json`
 | `verify.showDetails` | Erekana ibiyirimo | Show the content | needs native-speaker review |
 | `verify.dobMismatch` | Iyo tariki y'amavuko ntihuye n'iyi nyandiko. | That date of birth doesn't match this document. | needs native-speaker review |
 | `verify.for` | Ya {{name}} | For {{name}} | needs native-speaker review |
+| `verify.codeRequired` | Andika kode iri ku nyandiko. | Enter the code on the document. | needs native-speaker review |
+| `verify.dobRequired` | Andika itariki y’amavuko. | Enter the date of birth. | needs native-speaker review |
 | `shared.title` | Inyandiko yasangijwe | Shared document | needs native-speaker review |
 | `shared.gone` | Iri huza ntirigikora | This link no longer works | needs native-speaker review |
 | `shared.goneBody` | Igihe cyaryo cyarangiye cyangwa umurwayi yarihagaritse. Musabe irindi huza. | It expired or the patient stopped it. Ask them for a new link. | needs native-speaker review |

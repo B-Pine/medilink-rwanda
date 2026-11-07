@@ -151,7 +151,7 @@ class _PinScreenState extends ConsumerState<PinScreen> with SingleTickerProvider
                 SizedBox(
                   height: 36,
                   child: Center(
-                    child: Text(_error ?? '', style: const TextStyle(color: Palette.ochre, fontWeight: FontWeight.w600)),
+                    child: Text(_error ?? '', style: TextStyle(color: Palette.ochre, fontWeight: FontWeight.w600)),
                   ),
                 ),
                 if (widget.setup && _biometricsAvailable)

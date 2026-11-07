@@ -211,7 +211,7 @@ class _AddMemberSheetState extends ConsumerState<_AddMemberSheet> {
               if (_error != null)
                 Padding(
                   padding: const EdgeInsets.only(top: Space.md),
-                  child: Text(_error!, style: const TextStyle(color: Palette.danger)),
+                  child: Text(_error!, style: TextStyle(color: Palette.danger)),
                 ),
               const SizedBox(height: Space.xl),
               LoadingButton(label: s.t('add'), onPressed: _ready ? _save : null),

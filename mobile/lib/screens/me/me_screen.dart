@@ -58,7 +58,7 @@ class MeScreen extends ConsumerWidget {
                 child: Row(
                   children: [
                     if (selfId == null || me == null)
-                      const CircleAvatar(radius: 30, backgroundColor: Palette.forestRaised)
+                      CircleAvatar(radius: 30, backgroundColor: Palette.forestRaised)
                     else
                       ProfilePhoto(
                         patientId: selfId,
@@ -161,16 +161,16 @@ class _CompleteBanner extends StatelessWidget {
                     CircularProgressIndicator(
                       value: percent / 100,
                       strokeWidth: 4,
-                      backgroundColor: Colors.white,
+                      backgroundColor: Palette.surface,
                       strokeCap: StrokeCap.round,
                     ),
-                    Center(child: Text('$percent%', style: theme.textTheme.labelSmall?.copyWith(color: Palette.forest).tabular)),
+                    Center(child: Text('$percent%', style: theme.textTheme.labelSmall?.copyWith(color: Palette.forestInk).tabular)),
                   ],
                 ),
               ),
               const SizedBox(width: Space.md),
               Expanded(child: Text(s.t('profileTodo'), style: theme.textTheme.titleSmall)),
-              const Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.brand),
+              Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.brand),
             ],
           ),
         ),

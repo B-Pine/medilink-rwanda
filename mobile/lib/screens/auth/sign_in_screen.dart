@@ -121,10 +121,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   padding: const EdgeInsets.only(top: Space.md),
                   child: Row(
                     children: [
-                      const Icon(PhosphorIconsFill.warningCircle, color: Palette.danger, size: 18),
+                      Icon(PhosphorIconsFill.warningCircle, color: Palette.danger, size: 18),
                       const SizedBox(width: Space.sm),
                       Expanded(
-                        child: Text(_error!, style: const TextStyle(color: Palette.danger)),
+                        child: Text(_error!, style: TextStyle(color: Palette.danger)),
                       ),
                     ],
                   ),

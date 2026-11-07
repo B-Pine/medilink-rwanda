@@ -71,7 +71,7 @@ class _BookScreenState extends ConsumerState<BookScreen> {
                       backgroundColor: Palette.brand,
                       child: Text(
                         doctor.initials,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white),
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Palette.onBrand),
                       ),
                     ),
                     label: Text(doctor.name),
@@ -134,7 +134,7 @@ class _Step extends StatelessWidget {
             CircleAvatar(
               radius: 13,
               backgroundColor: Palette.brand,
-              child: Text('$number', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
+              child: Text('$number', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Palette.onBrand, fontWeight: FontWeight.w700)),
             ),
             const SizedBox(width: Space.sm),
             Text(title, style: Theme.of(context).textTheme.titleMedium),
@@ -213,7 +213,7 @@ class _Slots extends ConsumerWidget {
                               ),
                               Text(
                                 '${d.day}',
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(color: on ? Colors.white : Palette.ink).tabular,
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(color: on ? Palette.onBrand : Palette.ink).tabular,
                               ),
                             ],
                           ),
@@ -420,7 +420,7 @@ class _ConfirmSheetState extends ConsumerState<_ConfirmSheet> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(PhosphorIconsFill.firstAid, color: Palette.danger),
+                    Icon(PhosphorIconsFill.firstAid, color: Palette.danger),
                     const SizedBox(width: Space.sm),
                     Expanded(child: Text(s.t('redFlagBook'))),
                   ],
@@ -483,7 +483,7 @@ class _PickChip extends StatelessWidget {
               child: Text(
                 label,
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: selected ? Colors.white : (danger ? Palette.danger : Palette.ink),
+                      color: selected ? (danger ? Palette.onDanger : Palette.onBrand) : (danger ? Palette.danger : Palette.ink),
                     ),
               ),
             ),

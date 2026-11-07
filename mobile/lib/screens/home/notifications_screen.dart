@@ -210,7 +210,7 @@ class _Row extends StatelessWidget {
                 margin: const EdgeInsets.only(left: Space.sm, top: 6),
                 width: 8,
                 height: 8,
-                decoration: const BoxDecoration(color: Palette.brand, shape: BoxShape.circle),
+                decoration: BoxDecoration(color: Palette.brand, shape: BoxShape.circle),
               ),
           ],
         ),

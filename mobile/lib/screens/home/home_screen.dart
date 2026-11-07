@@ -243,7 +243,7 @@ class _FamilySwitcher extends ConsumerWidget {
                   leading: Icon(p == null ? PhosphorIconsRegular.usersThree : PhosphorIconsRegular.user),
                   title: Text(p?.displayName ?? S.of(context).family),
                   trailing: (p?.patientId == selected)
-                      ? const Icon(PhosphorIconsFill.checkCircle, color: Palette.brand)
+                      ? Icon(PhosphorIconsFill.checkCircle, color: Palette.brand)
                       : null,
                   onTap: () {
                     ref.read(activePatientProvider.notifier).select(p?.patientId);
@@ -266,13 +266,13 @@ class _FamilySwitcher extends ConsumerWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(PhosphorIconsRegular.usersThree, size: 16, color: Palette.onForestMuted),
+                Icon(PhosphorIconsRegular.usersThree, size: 16, color: Palette.onForestMuted),
                 const SizedBox(width: 6),
                 Text(
                   current?.displayName ?? S.of(context).family,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
                 ),
-                const Icon(PhosphorIconsRegular.caretDown, size: 14, color: Palette.onForestMuted),
+                Icon(PhosphorIconsRegular.caretDown, size: 14, color: Palette.onForestMuted),
               ],
             ),
           ),
@@ -383,7 +383,7 @@ class TicketCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: Space.xl, vertical: Space.sm + 2),
                 child: Row(
                   children: [
-                    const Icon(PhosphorIconsFill.bellRinging, size: 18, color: Palette.forest),
+                    Icon(PhosphorIconsFill.bellRinging, size: 18, color: Palette.forest),
                     const SizedBox(width: Space.sm),
                     Text(s.yourTurn, style: theme.textTheme.titleSmall?.copyWith(color: Palette.forest)),
                     const Spacer(),
@@ -405,7 +405,7 @@ class TicketCard extends StatelessWidget {
                           children: [
                             _Eyebrow(s.ticket),
                             const SizedBox(width: Space.sm),
-                            const LiveDot(color: Palette.brand),
+                            LiveDot(color: Palette.brand),
                             const SizedBox(width: 4),
                             Text(s.live, style: theme.textTheme.labelSmall?.copyWith(color: Palette.brand)),
                           ],
@@ -414,7 +414,7 @@ class TicketCard extends StatelessWidget {
                         FittedBox(
                           fit: BoxFit.scaleDown,
                           alignment: Alignment.centerLeft,
-                          child: Text(visit.ticket, style: theme.textTheme.displayMedium?.copyWith(color: Palette.forest)),
+                          child: Text(visit.ticket, style: theme.textTheme.displayMedium?.copyWith(color: Palette.forestInk)),
                         ),
                         Text(
                           s.pick(visit.service),
@@ -431,7 +431,7 @@ class TicketCard extends StatelessWidget {
             ),
             _Footer(
               children: [
-                const Icon(PhosphorIconsRegular.mapPin, size: 18, color: Palette.brand),
+                Icon(PhosphorIconsRegular.mapPin, size: 18, color: Palette.brand),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Column(
@@ -481,7 +481,7 @@ class _AheadRing extends StatelessWidget {
           alignment: Alignment.center,
           child: Rolling(
             value: ahead,
-            child: Text('$ahead', style: theme.textTheme.headlineMedium?.copyWith(color: Palette.forest).tabular),
+            child: Text('$ahead', style: theme.textTheme.headlineMedium?.copyWith(color: Palette.forestInk).tabular),
           ),
         ),
         const SizedBox(height: 4),
@@ -549,7 +549,7 @@ class _NextVisitCard extends StatelessWidget {
           ),
           _Footer(
             children: [
-              const Icon(PhosphorIconsRegular.mapPin, size: 18, color: Palette.brand),
+              Icon(PhosphorIconsRegular.mapPin, size: 18, color: Palette.brand),
               const SizedBox(width: 6),
               Expanded(
                 child: Column(
@@ -597,13 +597,13 @@ class _FindCareCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: Space.md + 2),
                   child: Row(
                     children: [
-                      const Icon(PhosphorIconsRegular.magnifyingGlass, color: Palette.muted),
+                      Icon(PhosphorIconsRegular.magnifyingGlass, color: Palette.muted),
                       const SizedBox(width: Space.md),
                       Expanded(child: Text(s.t('searchFacility'), style: theme.textTheme.bodyLarge?.copyWith(color: Palette.muted))),
                       Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(color: Palette.brand, borderRadius: BorderRadius.circular(8)),
-                        child: const Icon(PhosphorIconsRegular.arrowRight, color: Colors.white, size: 16),
+                        child: Icon(PhosphorIconsRegular.arrowRight, color: Palette.onBrand, size: 16),
                       ),
                     ],
                   ),
@@ -817,18 +817,18 @@ class _LocationPrompt extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: Space.md),
           child: Row(
             children: [
-              const Icon(PhosphorIconsRegular.crosshair, color: Palette.brand),
+              Icon(PhosphorIconsRegular.crosshair, color: Palette.brand),
               const SizedBox(width: Space.md),
               Expanded(
                 child: Text(
                   here.blocked ? s.t('locationOff') : s.t('useLocation'),
-                  style: theme.textTheme.titleSmall?.copyWith(color: Palette.forest),
+                  style: theme.textTheme.titleSmall?.copyWith(color: Palette.forestInk),
                 ),
               ),
               if (here.busy)
-                const DefaultTextStyle(style: TextStyle(color: Palette.brand), child: LoadingDots())
+                DefaultTextStyle(style: TextStyle(color: Palette.brand), child: LoadingDots())
               else
-                const Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.brand),
+                Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.brand),
             ],
           ),
         ),
@@ -867,18 +867,18 @@ class _MapPreview extends ConsumerWidget {
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [Colors.white.withValues(alpha: 0), Colors.white.withValues(alpha: 0.96)],
+                      colors: [Palette.surface.withValues(alpha: 0), Palette.surface.withValues(alpha: 0.96)],
                     ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(PhosphorIconsFill.mapTrifold, color: Palette.brand, size: 20),
+                      Icon(PhosphorIconsFill.mapTrifold, color: Palette.brand, size: 20),
                       const SizedBox(width: Space.sm),
                       Expanded(child: Text(s.t('map'), style: theme.textTheme.titleSmall)),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(color: Palette.brand, borderRadius: BorderRadius.circular(99)),
-                        child: Text(s.t('openMap'), style: theme.textTheme.labelMedium?.copyWith(color: Colors.white)),
+                        child: Text(s.t('openMap'), style: theme.textTheme.labelMedium?.copyWith(color: Palette.onBrand)),
                       ),
                     ],
                   ),
@@ -911,8 +911,8 @@ class _EmergencyRow extends StatelessWidget {
               Container(
                 width: 40,
                 height: 40,
-                decoration: const BoxDecoration(color: Palette.dangerSubtle, shape: BoxShape.circle),
-                child: const Icon(PhosphorIconsFill.phoneCall, color: Palette.danger, size: 20),
+                decoration: BoxDecoration(color: Palette.dangerSubtle, shape: BoxShape.circle),
+                child: Icon(PhosphorIconsFill.phoneCall, color: Palette.danger, size: 20),
               ),
               const SizedBox(width: Space.md),
               Expanded(
@@ -929,7 +929,7 @@ class _EmergencyRow extends StatelessWidget {
                 decoration: BoxDecoration(color: Palette.danger, borderRadius: BorderRadius.circular(99)),
                 child: Text(
                   AppConfig.emergencyNumber,
-                  style: theme.textTheme.titleSmall?.copyWith(color: Colors.white, letterSpacing: 1),
+                  style: theme.textTheme.titleSmall?.copyWith(color: Palette.onDanger, letterSpacing: 1),
                 ),
               ),
             ],
@@ -1021,7 +1021,7 @@ class BookingTile extends StatelessWidget {
             if (booking.status != 'confirmed')
               StatusPill(text: s.state(booking.status), tone: cancelled ? PillTone.muted : PillTone.brand)
             else
-              const Icon(PhosphorIconsRegular.caretRight, color: Palette.muted, size: 18),
+              Icon(PhosphorIconsRegular.caretRight, color: Palette.muted, size: 18),
           ],
         ),
       ),

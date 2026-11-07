@@ -6,7 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 ## [Unreleased]
 
+### 1.1.0 (2026-11-07)
+
 Design polish (#260), no API or data changes:
+
+- Added: dark mode. The app follows the phone's light or dark setting, like the staff website,
+  with the website's dark colours (forest surfaces, light text, light-green buttons with dark
+  text). The facility drawings and map tiles keep their colours.
 
 - Changed: three depth levels only. Cards are white with a hairline and no shadow; only what
   floats over content (the card over the band, the map overlays, sheets) has one soft shadow.

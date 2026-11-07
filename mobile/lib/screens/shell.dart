@@ -61,7 +61,7 @@ class AppShell extends ConsumerWidget {
       body = Scaffold(
         body: shell,
         bottomNavigationBar: DecoratedBox(
-          decoration: const BoxDecoration(border: Border(top: BorderSide(color: Palette.hairline))),
+          decoration: BoxDecoration(border: Border(top: BorderSide(color: Palette.hairline))),
           child: NavigationBar(
             selectedIndex: shell.currentIndex,
             onDestinationSelected: _go,

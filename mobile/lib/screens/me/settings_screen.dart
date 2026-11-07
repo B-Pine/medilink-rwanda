@@ -49,7 +49,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               GroupedRow(
                 icon: PhosphorIconsRegular.translate,
                 title: label,
-                trailing: code == language ? const Icon(PhosphorIconsFill.checkCircle, color: Palette.brand) : null,
+                trailing: code == language ? Icon(PhosphorIconsFill.checkCircle, color: Palette.brand) : null,
                 chevron: false,
                 onTap: () => ref.read(languageProvider.notifier).set(code),
               ),

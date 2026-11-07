@@ -35,6 +35,23 @@ class _MediLinkAppState extends ConsumerState<MediLinkApp> with WidgetsBindingOb
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _quickActions.initialize(_onShortcut);
+    Palette.dark = WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark;
+  }
+
+  /// Dark mode follows the phone, like the staff website. Screens read [Palette] in build, so
+  /// every element rebuilds once (state, scroll and the open page stay as they are).
+  @override
+  void didChangePlatformBrightness() {
+    final dark = WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark;
+    if (dark == Palette.dark) return;
+    Palette.dark = dark;
+    setState(() {});
+    void rebuild(Element element) {
+      element.markNeedsBuild();
+      element.visitChildren(rebuild);
+    }
+
+    (context as Element).visitChildren(rebuild);
   }
 
   @override

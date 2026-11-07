@@ -79,8 +79,8 @@ Future<void> showBookingMenu(BuildContext context, WidgetRef ref, Booking bookin
           ),
           if (booking.canChange)
             ListTile(
-              leading: const Icon(PhosphorIconsRegular.xCircle, color: Palette.danger),
-              title: Text(s.cancel, style: const TextStyle(color: Palette.danger)),
+              leading: Icon(PhosphorIconsRegular.xCircle, color: Palette.danger),
+              title: Text(s.cancel, style: TextStyle(color: Palette.danger)),
               onTap: () => Navigator.pop(context, 'cancel'),
             ),
         ],

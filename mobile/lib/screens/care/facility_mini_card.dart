@@ -86,7 +86,7 @@ class FacilityMiniCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Row(
                     children: [
-                      const Icon(PhosphorIconsRegular.clock, size: 16, color: Palette.muted),
+                      Icon(PhosphorIconsRegular.clock, size: 16, color: Palette.muted),
                       const SizedBox(width: Space.xs),
                       Flexible(
                         child: Text(

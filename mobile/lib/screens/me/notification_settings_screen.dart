@@ -150,7 +150,7 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
                     selected: p.reminders.contains(minutes),
                     showCheckmark: false,
                     labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color: p.reminders.contains(minutes) ? Colors.white : Palette.ink,
+                          color: p.reminders.contains(minutes) ? Palette.onBrand : Palette.ink,
                           fontWeight: FontWeight.w600,
                         ),
                     onSelected: _saving

@@ -4,25 +4,44 @@ import 'package:flutter/services.dart';
 import '../ui/icons.dart';
 
 /// MediLink colours (docs/upgrade/15-mobile-app.md §1): the website palette, nothing new.
+/// Light and dark come from the website's tokens (frontend/packages/ui/src/styles/tokens.css,
+/// `prefers-color-scheme: dark`). [dark] follows the phone (main.dart); read the colours in
+/// build so they follow it too.
 abstract final class Palette {
-  static const forest = Color(0xFF123D2B);
-  static const forestRaised = Color(0xFF1A4D37);
-  static const brand = Color(0xFF17694D);
-  static const brandPressed = Color(0xFF0F4F3A);
-  static const brandSubtle = Color(0xFFE7F3ED);
-  static const onForestMuted = Color(0xFFB9D6C4);
-  static const onForestAccent = Color(0xFF6EE7B7);
-  static const ochre = Color(0xFFFBBF24);
-  static const ochreText = Color(0xFF8A5A00);
-  static const ochreSubtle = Color(0xFFFEF3C7);
-  static const page = Color(0xFFF6F8F7);
-  static const surface = Color(0xFFFFFFFF);
-  static const ink = Color(0xFF14231C);
-  static const muted = Color(0xFF5B6B63);
-  static const hairline = Color(0xFFE3E9E6);
-  static const skeleton = Color(0xFFE9EEEB);
-  static const danger = Color(0xFFB42318);
-  static const dangerSubtle = Color(0xFFFDECEA);
+  static bool dark = false;
+  static Color _pick(Color light, Color night) => dark ? night : light;
+
+  /// The band and other forest backgrounds.
+  static Color get forest => _pick(const Color(0xFF123D2B), const Color(0xFF111915));
+  static Color get forestRaised => _pick(const Color(0xFF1A4D37), const Color(0xFF19231E));
+
+  /// Dark-green text and icons on light surfaces (ticket number, insurer pills). Light green in
+  /// dark mode, where [forest] is a background.
+  static Color get forestInk => _pick(const Color(0xFF123D2B), const Color(0xFF8FDBB8));
+
+  /// Brand fills (buttons, selected chips) and brand text or icons.
+  static Color get brand => _pick(const Color(0xFF17694D), const Color(0xFF5FC59A));
+  static Color get brandPressed => _pick(const Color(0xFF0F4F3A), const Color(0xFF7FD3AE));
+
+  /// Text and icons on a [brand] fill.
+  static Color get onBrand => _pick(const Color(0xFFFFFFFF), const Color(0xFF0E2219));
+  static Color get brandSubtle => _pick(const Color(0xFFE7F3ED), const Color(0xFF1C2E25));
+  static Color get onForestMuted => _pick(const Color(0xFFB9D6C4), const Color(0xFFA9B8B0));
+  static Color get onForestAccent => _pick(const Color(0xFF6EE7B7), const Color(0xFF5FC59A));
+  static Color get ochre => const Color(0xFFFBBF24);
+  static Color get ochreText => _pick(const Color(0xFF8A5A00), const Color(0xFFF6C66C));
+  static Color get ochreSubtle => _pick(const Color(0xFFFEF3C7), const Color(0xFF393623));
+  static Color get page => _pick(const Color(0xFFF6F8F7), const Color(0xFF141A17));
+  static Color get surface => _pick(const Color(0xFFFFFFFF), const Color(0xFF1B221E));
+  static Color get ink => _pick(const Color(0xFF14231C), const Color(0xFFDCE4DF));
+  static Color get muted => _pick(const Color(0xFF5B6B63), const Color(0xFFAAB6AF));
+  static Color get hairline => _pick(const Color(0xFFE3E9E6), const Color(0xFF2C3631));
+  static Color get skeleton => _pick(const Color(0xFFE9EEEB), const Color(0xFF212924));
+  static Color get danger => _pick(const Color(0xFFB42318), const Color(0xFFF87171));
+
+  /// Text on a [danger] fill.
+  static Color get onDanger => _pick(const Color(0xFFFFFFFF), const Color(0xFF0F172A));
+  static Color get dangerSubtle => _pick(const Color(0xFFFDECEA), const Color(0xFF3A2D2A));
 }
 
 abstract final class Fonts {
@@ -220,7 +239,7 @@ class SoftCard extends StatelessWidget {
     final fill = color ?? Palette.surface;
     final shape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(radius),
-      side: raised || fill != Palette.surface ? BorderSide.none : const BorderSide(color: Palette.hairline),
+      side: raised || fill != Palette.surface ? BorderSide.none : BorderSide(color: Palette.hairline),
     );
     final card = DecoratedBox(
       decoration: BoxDecoration(
@@ -234,23 +253,31 @@ class SoftCard extends StatelessWidget {
   }
 }
 
+/// The theme for the current [Palette.dark]: set it first, then build.
 ThemeData buildTheme() {
-  const scheme = ColorScheme.light(
+  final scheme = ColorScheme(
+    brightness: Palette.dark ? Brightness.dark : Brightness.light,
     primary: Palette.brand,
-    onPrimary: Colors.white,
+    onPrimary: Palette.onBrand,
     primaryContainer: Palette.brandSubtle,
-    onPrimaryContainer: Palette.forest,
-    secondary: Palette.forest,
-    onSecondary: Colors.white,
+    onPrimaryContainer: Palette.forestInk,
+    secondary: Palette.forestInk,
+    onSecondary: Palette.surface,
     tertiary: Palette.ochre,
+    onTertiary: Palette.forest,
     error: Palette.danger,
-    onError: Colors.white,
+    onError: Palette.onDanger,
     surface: Palette.surface,
     onSurface: Palette.ink,
     onSurfaceVariant: Palette.muted,
     outline: Palette.hairline,
     outlineVariant: Palette.hairline,
     surfaceContainerHighest: Palette.skeleton,
+    surfaceContainerHigh: Palette.surface,
+    surfaceContainer: Palette.surface,
+    surfaceContainerLow: Palette.surface,
+    inverseSurface: Palette.forest,
+    onInverseSurface: Colors.white,
   );
 
   TextStyle h(double size, FontWeight weight, {double height = 1.2}) => TextStyle(
@@ -261,12 +288,12 @@ ThemeData buildTheme() {
         color: Palette.ink,
         letterSpacing: -0.2,
       );
-  TextStyle b(double size, FontWeight weight, {Color color = Palette.ink, double height = 1.4}) => TextStyle(
+  TextStyle b(double size, FontWeight weight, {Color? color, double height = 1.4}) => TextStyle(
         fontFamily: Fonts.body,
         fontSize: size,
         fontWeight: weight,
         height: height,
-        color: color,
+        color: color ?? Palette.ink,
       );
 
   // Every text style is one of the six sizes of [TypeScale].
@@ -322,7 +349,8 @@ ThemeData buildTheme() {
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: false,
-      systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent),
+      systemOverlayStyle: (Palette.dark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark)
+          .copyWith(statusBarColor: Colors.transparent),
       // No titleTextStyle: the bar title is titleLarge (18) and a large title headlineMedium (24).
     ),
     cardTheme: CardThemeData(
@@ -331,7 +359,7 @@ ThemeData buildTheme() {
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(Space.radiusLg),
-        side: const BorderSide(color: Palette.hairline),
+        side: BorderSide(color: Palette.hairline),
       ),
     ),
     // Enabled: white on brand, darker while pressed. Disabled: clearly grey.
@@ -359,7 +387,7 @@ ThemeData buildTheme() {
       style: OutlinedButton.styleFrom(
         minimumSize: const Size.fromHeight(Space.action),
         shape: shape,
-        side: const BorderSide(color: Palette.hairline),
+        side: BorderSide(color: Palette.hairline),
         backgroundColor: Palette.surface,
         foregroundColor: Palette.ink,
         textStyle: b(TypeScale.body, FontWeight.w600),
@@ -410,13 +438,13 @@ ThemeData buildTheme() {
     ),
     checkboxTheme: CheckboxThemeData(
       fillColor: WidgetStateColor.resolveWith((s) => s.contains(WidgetState.selected) ? Palette.brand : Colors.transparent),
-      side: const BorderSide(color: Palette.muted, width: 1.5),
+      side: BorderSide(color: Palette.muted, width: 1.5),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
     ),
     chipTheme: ChipThemeData(
       backgroundColor: Palette.surface,
       selectedColor: Palette.brand,
-      side: const BorderSide(color: Palette.hairline),
+      side: BorderSide(color: Palette.hairline),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Space.pill)),
       labelStyle: b(TypeScale.label, FontWeight.w600),
       padding: const EdgeInsets.symmetric(horizontal: Space.sm, vertical: Space.xs),
@@ -454,8 +482,8 @@ ThemeData buildTheme() {
       titleTextStyle: headline,
       contentTextStyle: text.bodyMedium,
     ),
-    dividerTheme: const DividerThemeData(color: Palette.hairline, space: 1, thickness: 1),
-    progressIndicatorTheme: const ProgressIndicatorThemeData(color: Palette.brand, linearTrackColor: Palette.brandSubtle),
+    dividerTheme: DividerThemeData(color: Palette.hairline, space: 1, thickness: 1),
+    progressIndicatorTheme: ProgressIndicatorThemeData(color: Palette.brand, linearTrackColor: Palette.brandSubtle),
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: {
         TargetPlatform.android: SharedAxisPageTransitionsBuilder(),

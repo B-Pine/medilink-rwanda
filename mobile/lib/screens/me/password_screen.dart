@@ -114,7 +114,7 @@ class _PasswordScreenState extends ConsumerState<PasswordScreen> {
             _Rule(done: _same, text: s.t('passwordsMatch')),
             if (_error != null) ...[
               const SizedBox(height: Space.md),
-              Text(_error!, style: const TextStyle(color: Palette.danger)),
+              Text(_error!, style: TextStyle(color: Palette.danger)),
             ],
             const SizedBox(height: Space.xl),
             LoadingButton(label: s.t('changePassword'), onPressed: _ready ? _save : null),

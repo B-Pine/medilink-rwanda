@@ -49,7 +49,7 @@ class _SkeletonState extends State<Skeleton> with SingleTickerProviderStateMixin
         shaderCallback: (rect) => LinearGradient(
           begin: Alignment(-1 + _shine.value * 3, 0),
           end: Alignment(_shine.value * 3, 0),
-          colors: [base, Colors.white.withValues(alpha: widget.onForest ? 0.10 : 0.55), base],
+          colors: [base, Colors.white.withValues(alpha: widget.onForest ? 0.10 : (Palette.dark ? 0.06 : 0.55)), base],
           stops: const [0.35, 0.5, 0.65],
         ).createShader(rect),
         child: child,
@@ -124,7 +124,7 @@ class EmptyState extends StatelessWidget {
           Container(
             width: 64,
             height: 64,
-            decoration: const BoxDecoration(color: Palette.brandSubtle, shape: BoxShape.circle),
+            decoration: BoxDecoration(color: Palette.brandSubtle, shape: BoxShape.circle),
             child: Icon(icon, color: Palette.brand, size: 28),
           ),
           const SizedBox(height: Space.lg),
@@ -171,7 +171,7 @@ class OfflineBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: Space.lg),
       child: Row(
         children: [
-          const Icon(PhosphorIconsRegular.wifiSlash, size: 16, color: Palette.muted),
+          Icon(PhosphorIconsRegular.wifiSlash, size: 16, color: Palette.muted),
           const SizedBox(width: Space.sm),
           Text(S.of(context).offline, style: Theme.of(context).textTheme.labelMedium),
         ],
@@ -222,7 +222,7 @@ class _LoadingButtonState extends State<LoadingButton> {
       _ButtonState.done => const Icon(PhosphorIconsBold.check, key: ValueKey('done'), size: 22),
     };
     return FilledButton(
-      style: widget.danger ? FilledButton.styleFrom(backgroundColor: Palette.danger) : null,
+      style: widget.danger ? FilledButton.styleFrom(backgroundColor: Palette.danger, foregroundColor: Palette.onDanger) : null,
       onPressed: widget.onPressed == null ? null : _run,
       child: AnimatedSwitcher(duration: const Duration(milliseconds: 180), child: child),
     );
@@ -296,8 +296,10 @@ class _DotsState extends State<LoadingDots> with SingleTickerProviderStateMixin 
 
 /// A breathing green dot next to live numbers.
 class LiveDot extends StatefulWidget {
-  const LiveDot({super.key, this.color = Palette.onForestAccent});
-  final Color color;
+  const LiveDot({super.key, this.color});
+
+  /// The band's accent when null.
+  final Color? color;
 
   @override
   State<LiveDot> createState() => _LiveDotState();
@@ -324,7 +326,7 @@ class _LiveDotState extends State<LiveDot> with SingleTickerProviderStateMixin {
         child: Container(
           width: 8,
           height: 8,
-          decoration: BoxDecoration(color: widget.color, shape: BoxShape.circle),
+          decoration: BoxDecoration(color: widget.color ?? Palette.onForestAccent, shape: BoxShape.circle),
         ),
       );
 }
@@ -352,7 +354,7 @@ class StatusPill extends StatelessWidget {
       PillTone.danger => (Palette.dangerSubtle, Palette.danger),
       PillTone.muted => (Palette.skeleton, Palette.muted),
     };
-    final ink = onImage && tone == PillTone.brand ? Palette.forest : fg;
+    final ink = onImage && tone == PillTone.brand ? Palette.forestInk : fg;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(

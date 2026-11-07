@@ -9,13 +9,10 @@ import {
   HandHeart,
   Hourglass,
   MagnifyingGlass,
-  ShieldCheck,
   Sparkle,
   Stethoscope,
   Syringe,
   Tooth,
-  Translate,
-  UserCircleCheck,
   UsersThree,
   type Icon,
 } from "@phosphor-icons/react";
@@ -38,11 +35,7 @@ import { FILTER, sortResults, useNearMe, waitText, type Sort } from "../features
 import { FacilityBuilding } from "../features/site/buildings";
 import { kigaliNow, nextOpening, useAllFacilities, useProfiles } from "../features/site/data";
 import { FacilityExplorer, WaitMeter } from "../features/site/FacilityDirectory";
-import {
-  FacilityBoardIllustration,
-  HillsideCareIllustration,
-  StepIllustration,
-} from "../features/site/illustrations";
+import { HillsideCareIllustration } from "../features/site/illustrations";
 import { LocationSelector, PageContainer, SearchBar } from "../features/site/kit";
 import { PublicLayout } from "../layout/PublicLayout";
 
@@ -60,14 +53,6 @@ const CARE: { key: ServiceKey; icon: Icon }[] = [
   { key: "dental", icon: Tooth },
   { key: "eye", icon: Eye },
   { key: "vaccination", icon: Syringe },
-];
-
-const STEPS = ["search", "join", "arrive"] as const;
-
-const TRUST: { key: string; icon: Icon }[] = [
-  { key: "noAccount", icon: UserCircleCheck },
-  { key: "languages", icon: Translate },
-  { key: "dataHome", icon: ShieldCheck },
 ];
 
 /** How many open places the live panel shows. */
@@ -268,12 +253,10 @@ function LivePanel({
 }
 
 /**
- * Home `/` (second pass, 2026-11-04): clean means ordered, not bare. A two-column hero (one
- * command search beside an illustration of care on Rwanda's hills), then a bento of live
- * figures and the places open now; services with their icons; everything open on a list or a
- * map; the three steps as small pictures; and a forest band for facilities. Built on the site
- * tokens (elevation e1–e3, hairlines, fluid display type); brand greens with one ochre for long
- * waits; every number is real or not shown.
+ * Home `/`: the hero with the search and what is open (or one honest line when nothing is), the
+ * kinds of care, the facilities near you on a list or a map, one line to How it works, and a slim
+ * forest band for facilities. The journey is told once, on How it works (audit 2026-11-07).
+ * Every number is real or not shown.
  */
 export function LandingPage() {
   const { t } = useTranslation();
@@ -544,61 +527,16 @@ export function LandingPage() {
           />
         </section>
 
-        {/* 4 · Three steps, each a small picture */}
-        <section aria-labelledby="how-title" className="site-reveal flex flex-col gap-10">
-          <SectionHead
-            id="how-title"
-            title={t("site.home2.howTitle")}
-            action={<MoreLink to="/how-it-works">{t("site.home.how")}</MoreLink>}
-          />
-          <ol className="relative m-0 grid list-none gap-4 p-0 md:grid-cols-3">
-            <span
-              aria-hidden="true"
-              className="absolute top-[5.25rem] right-[17%] left-[17%] -z-10 hidden border-t-2 border-dashed border-primary/25 md:block"
-            />
-            {STEPS.map((key, index) => (
-              <li
-                key={key}
-                className="flex flex-col items-center gap-3 rounded-panel bg-surface px-6 pt-5 pb-7 text-center shadow-e1"
-              >
-                <StepIllustration step={key} className="h-32 w-auto" />
-                <span
-                  aria-hidden="true"
-                  className="grid size-7 place-items-center rounded-full bg-forest font-heading text-caption font-bold text-on-forest tabular-nums"
-                >
-                  {index + 1}
-                </span>
-                <h3 className="m-0 font-heading text-h3 font-bold">
-                  <span className="sr-only">{t("site.home2.stepLabel", { n: index + 1 })}: </span>
-                  {t(`site.home2.steps.${key}.title`)}
-                </h3>
-                <p className="m-0 max-w-[30ch] text-fg-secondary">
-                  {t(`site.home2.steps.${key}.body`)}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        {/* 5 · What people can count on */}
-        <ul
-          aria-label={t("site.home3.trustLabel")}
-          className="site-reveal m-0 grid list-none gap-px overflow-hidden rounded-panel bg-hairline p-0 shadow-e1 sm:grid-cols-3"
-        >
-          {TRUST.map(({ key, icon: TrustIcon }) => (
-            <li key={key} className="flex items-center gap-4 bg-surface p-6">
-              <TrustIcon
-                aria-hidden="true"
-                weight="duotone"
-                className="size-6 shrink-0 text-primary"
-              />
-              <span className="font-semibold text-fg">{t(`site.home3.trust.${key}.title`)}</span>
-            </li>
-          ))}
-        </ul>
+        {/* the journey is told once, on How it works: one line here */}
+        <p className="m-0 text-body text-fg-secondary">
+          {t("site.home3.howLine")}{" "}
+          <Link to="/how-it-works" viewTransition className="font-semibold text-link">
+            {t("site.home.how")}
+          </Link>
+        </p>
       </PageContainer>
 
-      {/* 6 · For facilities: the forest band */}
+      {/* 4 · For facilities: one slim forest band, one line and one button */}
       <section
         aria-labelledby="facilities-title"
         className="relative isolate overflow-hidden bg-forest text-on-forest"
@@ -606,47 +544,27 @@ export function LandingPage() {
         <div aria-hidden="true" className="absolute inset-0 -z-10 text-on-forest-accent">
           <ImigongoPattern opacity={0.06} />
         </div>
-        <div
-          aria-hidden="true"
-          className="absolute -top-40 right-0 -z-10 size-[36rem] rounded-full bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--color-on-forest-accent)_18%,transparent),transparent)]"
-        />
-        <PageContainer className="grid items-center gap-12 py-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:py-24">
-          <div className="site-reveal flex max-w-[38rem] flex-col items-start gap-5">
+        <PageContainer className="flex flex-wrap items-center justify-between gap-6 py-12">
+          <div className="flex max-w-[40rem] flex-col gap-2">
             <h2
               id="facilities-title"
               className="m-0 font-heading text-section font-bold text-on-forest"
             >
               {t("site.home2.facilitiesTitle")}
             </h2>
-            <p className="m-0 text-[1.125rem] leading-relaxed text-on-forest-muted">
-              {t("site.home2.facilitiesLead")}
-            </p>
-            <ul className="m-0 flex list-none flex-col gap-2.5 p-0 text-on-forest">
-              {(["queue", "bookings", "records"] as const).map((key) => (
-                <li key={key} className="flex items-center gap-3">
-                  <span
-                    aria-hidden="true"
-                    className="grid size-5 place-items-center rounded-full bg-on-forest/10"
-                  >
-                    <span className="size-1.5 rounded-full bg-on-forest-accent" />
-                  </span>
-                  {t(`site.home3.facilityPoints.${key}`)}
-                </li>
-              ))}
-            </ul>
-            <Link
-              to="/for-facilities"
-              viewTransition
-              className="group mt-3 inline-flex min-h-12 items-center gap-2 rounded-full bg-on-forest px-6 font-semibold text-forest no-underline transition-[filter] duration-150 hover:brightness-95"
-            >
-              {t("site.home2.facilitiesAction")}
-              <ArrowRight
-                aria-hidden="true"
-                className="size-4 transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5"
-              />
-            </Link>
+            <p className="m-0 text-body text-on-forest-muted">{t("site.home2.facilitiesLead")}</p>
           </div>
-          <FacilityBoardIllustration className="site-reveal hidden h-auto w-full lg:block" />
+          <Link
+            to="/for-facilities"
+            viewTransition
+            className="ml-press group inline-flex min-h-12 items-center gap-2 rounded-full bg-on-forest px-6 font-semibold text-forest no-underline transition-[filter] duration-150 hover:brightness-95"
+          >
+            {t("site.home2.facilitiesAction")}
+            <ArrowRight
+              aria-hidden="true"
+              className="size-4 transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5"
+            />
+          </Link>
         </PageContainer>
       </section>
     </PublicLayout>

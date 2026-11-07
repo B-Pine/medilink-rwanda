@@ -1,12 +1,26 @@
 import { screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 
 import { renderApp } from "../../test/render";
 
 /** AI symptom assistant, test phase (issue #159), against the scripted mock. */
 
-describe("AI symptom assistant", () => {
+describe("the public site without the assistant (the default)", () => {
+  it("/assistant opens the guided questions; no floating button, no link to it", async () => {
+    renderApp("/assistant");
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "Not sure where to go?" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Open the AI assistant" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /Try the AI assistant/ })).not.toBeInTheDocument();
+  });
+});
+
+describe("AI symptom assistant (switched on)", () => {
+  beforeEach(() => vi.stubEnv("VITE_PUBLIC_ASSISTANT", "true"));
+  afterEach(() => vi.unstubAllEnvs());
+
   it("asks a follow-up, then names a possible cause and shows places for the service", async () => {
     const { user, container } = renderApp("/assistant");
     expect(

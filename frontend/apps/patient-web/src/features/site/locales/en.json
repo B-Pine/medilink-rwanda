@@ -225,36 +225,27 @@
     "title": "How MediLink works",
     "steps": {
       "search": {
-        "title": "Search for healthcare",
-        "body": "Search by service, facility or what you feel."
-      },
-      "select": {
-        "title": "Select a facility",
-        "body": "Compare distance, live waiting time and insurance."
+        "title": "Search",
+        "body": "By service, facility or what you feel."
       },
       "join": {
-        "title": "Join a queue or book",
-        "body": "Join today’s queue or pick an appointment time."
-      },
-      "confirm": {
-        "title": "Receive confirmation",
-        "body": "You get a ticket number or a booking code."
-      },
-      "arrive": {
-        "title": "Arrive and check in",
-        "body": "Reception confirms that you have arrived."
+        "title": "Join or book",
+        "body": "Today's queue, or a time that suits you."
       },
       "follow": {
-        "title": "Follow your visit",
-        "body": "See your place in the queue and when to go in."
+        "title": "Follow your place",
+        "body": "See how many are ahead and when to leave."
+      },
+      "arrive": {
+        "title": "Arrive when it's your turn",
+        "body": "Reception confirms you're there."
       }
     },
     "goodTitle": "Good to know",
     "good": {
-      "noAccount": "No account needed to search.",
+      "noAccount": "No account needed to look.",
       "walkIn": "Walk-ins are still welcome.",
-      "reception": "Reception confirms you've arrived.",
-      "noPhone": "No phone? You get a printed ticket and your number is called."
+      "noPhone": "No smartphone needed: a printed ticket and your number called."
     },
     "start": "Find care now"
   },
@@ -284,7 +275,6 @@
     "none": "No answers match your search",
     "articles": "More help articles",
     "contactTitle": "Still need help?",
-    "contactLead": "Send us a message and we will answer.",
     "contactAction": "Contact support",
     "categories": {
       "finding": {
@@ -343,31 +333,28 @@
         "q2": "I do not receive alerts.",
         "a2": "Allow notifications for MediLink in your browser and turn alerts on in your settings."
       }
-    }
+    },
+    "top": "Most asked",
+    "more": "More questions",
+    "results_one": "{{count}} answer",
+    "results_other": "{{count}} answers"
   },
   "about": {
     "title": "About MediLink",
-    "lead": "Rwanda's health facilities, in one place.",
-    "sections": {
-      "what": {
-        "title": "What MediLink is",
-        "body": "Find facilities, services and doctors. See the wait. Join a queue or book."
+    "body": "MediLink puts Rwanda's health facilities in one place: where they are, what they offer, which insurance they take and how long the wait is now. Patients join a queue or book a time; facilities run their day from the same system.",
+    "facts": {
+      "facilities": "Facilities on MediLink",
+      "languages": {
+        "label": "Languages",
+        "value": "Kinyarwanda, English, Français"
       },
-      "problem": {
-        "title": "The problem it addresses",
-        "body": "No more travelling without knowing if it's open, how long the wait is, or if your insurance works."
+      "data": {
+        "label": "Your data",
+        "value": "Stored in Rwanda, under Law 058/2021"
       },
-      "how": {
-        "title": "How it connects patients and facilities",
-        "body": "Facilities publish hours, services and their live queue. Reception confirms every arrival."
-      },
-      "access": {
-        "title": "Accessible to everyone",
-        "body": "No account to search. Three languages. Works on small phones. No phone? A printed ticket and spoken calls."
-      },
-      "privacy": {
-        "title": "Protecting patient information",
-        "body": "Covered by Rwanda's data protection law (058/2021). Staff see only what your care needs; every access is logged."
+      "account": {
+        "label": "Account",
+        "value": "Only to join a queue or book"
       }
     }
   },
@@ -445,22 +432,7 @@
     "facilityCount_one": "{{count}} facility",
     "facilityCount_other": "{{count}} facilities",
     "nearTitle": "Open near you",
-    "howTitle": "From search to seen, in three steps",
     "stepLabel": "Step {{n}}",
-    "steps": {
-      "search": {
-        "title": "Search and compare",
-        "body": "Open now, wait, distance, insurance."
-      },
-      "join": {
-        "title": "Join the queue or book",
-        "body": "Today's queue or a set time."
-      },
-      "arrive": {
-        "title": "Arrive when it's your turn",
-        "body": "Come when you're near the front."
-      }
-    },
     "facilitiesTitle": "Run a calmer waiting room.",
     "facilitiesLead": "Patients see your wait before they come.",
     "facilitiesAction": "MediLink for facilities"
@@ -479,23 +451,6 @@
     "nextOpeningToday": "next opening {{time}} at {{name}}",
     "nextOpening": "next opening {{day}} {{time}} at {{name}}",
     "openLead": "Places on MediLink with their live wait. Tap Near me to sort by distance.",
-    "trustLabel": "What you can count on",
-    "trust": {
-      "noAccount": {
-        "title": "No account to look"
-      },
-      "languages": {
-        "title": "Kinyarwanda, English, Français"
-      },
-      "dataHome": {
-        "title": "Your health data stays in Rwanda"
-      }
-    },
-    "facilityPoints": {
-      "queue": "A live queue patients can follow from home",
-      "bookings": "Bookings and walk-ins in one day plan",
-      "records": "Records, prescriptions and payments in one place"
-    },
     "kpi": {
       "open": "Open now",
       "openHint_one": "of {{count}} place on MediLink",
@@ -508,6 +463,7 @@
     "symptoms": {
       "title": "Not sure where to go?",
       "action": "Check your symptoms"
-    }
+    },
+    "howLine": "New here?"
   }
 }

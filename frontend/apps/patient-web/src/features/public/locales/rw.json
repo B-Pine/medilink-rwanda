@@ -3,7 +3,7 @@
   "checker": {
     "eyebrow": "Isuzuma ry'ibimenyetso",
     "title": "Ntuzi aho wajya?",
-    "intro": "Subiza ibibazo bike. Tukubwira igihe ukwiye kubonana n'umuganga n'ubwoko bw'ubuvuzi, hanyuma tukakwereka aho wajya hafi yawe.",
+    "intro": "Ibibazo bine, hanyuma ubuvuzi bukwiye hafi yawe.",
     "loadFailed": "Ntitwashoboye kuzana ibibazo. Reba interineti wongere ugerageze.",
     "dangerTitle": "Mbere na mbere: hari kimwe muri ibi kiri kuba ubu?",
     "dangerIntro": "Hitamo ibihari. Niba ntacyo, komeza.",

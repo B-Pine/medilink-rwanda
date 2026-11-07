@@ -28,14 +28,14 @@ describe("landing page", () => {
     ).toBeInTheDocument();
   });
 
-  it("has the three steps, the emergency strip, a sign-in link and the footer", async () => {
+  it("links to How it works once, has the emergency strip, a sign-in link and the footer", async () => {
     renderApp("/");
-    expect(
-      await screen.findByRole("heading", {
-        level: 2,
-        name: "From search to seen, in three steps",
-      }),
-    ).toBeInTheDocument();
+    // the journey is told on How it works, not again on home (audit 2026-11-07)
+    expect(await screen.findByRole("link", { name: "How MediLink works" })).toHaveAttribute(
+      "href",
+      "/how-it-works",
+    );
+    expect(screen.queryByText("From search to seen, in three steps")).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Emergency guide" })).toHaveAttribute(
       "href",
       "/emergency",

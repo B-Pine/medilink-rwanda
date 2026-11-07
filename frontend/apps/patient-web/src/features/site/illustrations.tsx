@@ -140,12 +140,15 @@ export function HillsideCareIllustration({ className }: { className?: string }) 
   );
 }
 
-/** The three steps on the home page: search the map, join from the phone, arrive at the door. */
+/**
+ * The patient journey (How it works): search the map, join from the phone, follow the queue,
+ * arrive at the door.
+ */
 export function StepIllustration({
   step,
   className,
 }: {
-  step: "search" | "join" | "arrive";
+  step: "search" | "join" | "follow" | "arrive";
   className?: string;
 }) {
   return (
@@ -192,6 +195,25 @@ export function StepIllustration({
             strokeLinecap="round"
             strokeLinejoin="round"
           />
+        </>
+      )}
+      {step === "follow" && (
+        <>
+          {/* a clock and the queue: three people waiting, the patient's place marked */}
+          <circle cx="64" cy="64" r="30" fill={C.surface} stroke={C.forest} strokeWidth="5" />
+          <path
+            d="M64 46v18l12 8"
+            stroke={C.forest}
+            strokeWidth="5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <rect x="34" y="108" width="140" height="4" rx="2" fill={C.line} />
+          <circle cx="116" cy="88" r="9" fill={C.line} />
+          <circle cx="140" cy="88" r="9" fill={C.line} />
+          <circle cx="164" cy="88" r="11" fill={C.ochre} />
+          <path d="M108 104h16M132 104h16" stroke={C.line} strokeWidth="6" strokeLinecap="round" />
+          <path d="M155 104h18" stroke={C.ochre} strokeWidth="7" strokeLinecap="round" />
         </>
       )}
       {step === "arrive" && (

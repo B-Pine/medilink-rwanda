@@ -39,7 +39,8 @@
       "findCare": "Soins",
       "appointments": "Visites",
       "records": "Dossier"
-    }
+    },
+    "bills": "Factures"
   },
   "account": {
     "label": "Menu du compte de {{name}}",
@@ -177,7 +178,9 @@
     "open": "Ouvrir le ticket",
     "result": "Un nouveau résultat est prêt",
     "readResult": "Le lire",
-    "planned": "{{what}} approche"
+    "planned": "{{what}} approche",
+    "bill": "{{amount}} restent à payer",
+    "seeBill": "Voir la facture"
   },
   "comingUp": {
     "title": "Prévu par votre établissement",

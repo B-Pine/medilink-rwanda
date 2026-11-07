@@ -1,5 +1,6 @@
 import type { MyDay } from "@medilink/api-client";
 import { buttonClassName, cx, Skeleton, StatTile, TicketNumber } from "@medilink/ui";
+import { dateFormat } from "@medilink/ui/i18n";
 import {
   CaretRight,
   ChatCircleDots,
@@ -114,7 +115,7 @@ interface NeedItem {
 function NeedsYou({ data }: { data: MyDay }) {
   const { t, i18n } = useTranslation();
   const time = (iso: string) =>
-    new Intl.DateTimeFormat(i18n.resolvedLanguage === "rw" ? "en" : i18n.resolvedLanguage, {
+    dateFormat(i18n.resolvedLanguage ?? "rw", {
       hour: "2-digit",
       minute: "2-digit",
       timeZone: "Africa/Kigali",

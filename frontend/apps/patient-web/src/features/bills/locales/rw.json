@@ -1,0 +1,37 @@
+{
+  "title": "Inyemezabuguzi",
+  "whose": "Inyemezabuguzi za",
+  "everyone": "Bose",
+  "failed": "Ntitwashoboye kubona inyemezabuguzi zawe.",
+  "toPay": "Ugomba kwishyura",
+  "left": "{{amount}} zo kwishyura",
+  "empty": "Nta nyemezabuguzi uragira",
+  "back": "Inyemezabuguzi",
+  "notFound": "Inyemezabuguzi ntiyabonetse",
+  "total": "Igiteranyo",
+  "insurer": "Ubwishingizi bwishyura",
+  "share": "Uruhare rwawe",
+  "exempted": "Wasonewe",
+  "credited": "Wasubijwe",
+  "paid": "Wishyuye",
+  "balance": "Ugisigaje kwishyura",
+  "lines": "Ibyo wahawe",
+  "item": "Icyo wahawe",
+  "quantity": "Umubare",
+  "payments": "Ubwishyu",
+  "receipt": "Inyemezabwishyu",
+  "voided": "Byahagaritswe",
+  "status": {
+    "open": "Kwishyura",
+    "partly_paid": "Wishyuye igice",
+    "paid": "Byishyuwe",
+    "voided": "Byahagaritswe",
+    "credited": "Wasubijwe"
+  },
+  "method": {
+    "cash": "Amafaranga mu ntoki",
+    "mtn_momo": "MTN MoMo",
+    "airtel_money": "Airtel Money",
+    "card": "Ikarita"
+  }
+}

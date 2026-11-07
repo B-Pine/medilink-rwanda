@@ -1,0 +1,37 @@
+{
+  "title": "Bills",
+  "whose": "Whose bills",
+  "everyone": "Everyone",
+  "failed": "We couldn't load your bills.",
+  "toPay": "To pay",
+  "left": "{{amount}} to pay",
+  "empty": "No bills yet",
+  "back": "Bills",
+  "notFound": "Bill not found",
+  "total": "Total",
+  "insurer": "Insurance pays",
+  "share": "Your share",
+  "exempted": "Exempted",
+  "credited": "Credited",
+  "paid": "Paid",
+  "balance": "Left to pay",
+  "lines": "Items",
+  "item": "Item",
+  "quantity": "Qty",
+  "payments": "Payments",
+  "receipt": "Receipt",
+  "voided": "Cancelled",
+  "status": {
+    "open": "To pay",
+    "partly_paid": "Partly paid",
+    "paid": "Paid",
+    "voided": "Cancelled",
+    "credited": "Credited"
+  },
+  "method": {
+    "cash": "Cash",
+    "mtn_momo": "MTN MoMo",
+    "airtel_money": "Airtel Money",
+    "card": "Card"
+  }
+}

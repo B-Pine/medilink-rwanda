@@ -19,6 +19,7 @@ import {
   Ticket,
   UsersThree,
   type Icon,
+  Receipt,
 } from "@phosphor-icons/react";
 import {
   CountBadge,
@@ -86,6 +87,7 @@ const MAIN_NAV: NavItem[] = [
   { to: paths.records, key: "records", icon: FileText },
   { to: paths.medications, key: "medications", icon: Pill },
   { to: paths.documents, key: "documents", icon: Files },
+  { to: paths.bills, key: "bills", icon: Receipt },
 ];
 const ACCOUNT_NAV: NavItem[] = [
   { to: paths.notifications, key: "notifications", icon: Bell },
@@ -100,6 +102,7 @@ const MORE_NAV: NavItem[] = [
   MAIN_NAV[4]!,
   MAIN_NAV[6]!,
   MAIN_NAV[7]!,
+  MAIN_NAV[8]!,
   ...ACCOUNT_NAV,
 ];
 

@@ -15,7 +15,7 @@ import {
   SelectField,
   TextField,
 } from "@medilink/ui";
-import { formatMoney } from "@medilink/ui/i18n";
+import { dateFormat, formatMoney } from "@medilink/ui/i18n";
 import { CheckCircle, DownloadSimple, ShieldCheck, XCircle } from "@phosphor-icons/react";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -300,10 +300,10 @@ function ClaimItem({
         await queryClient.invalidateQueries({ queryKey: ["billing", "claims"] });
     },
   });
-  const date = new Intl.DateTimeFormat(
-    i18n.resolvedLanguage === "rw" ? "en" : i18n.resolvedLanguage,
-    { dateStyle: "medium", timeZone: "Africa/Kigali" },
-  ).format(new Date(`${row.service_date}T12:00:00`));
+  const date = dateFormat(i18n.resolvedLanguage ?? "rw", {
+    dateStyle: "medium",
+    timeZone: "Africa/Kigali",
+  }).format(new Date(`${row.service_date}T12:00:00`));
   return (
     <li className="flex animate-enter flex-col gap-4 rounded-2xl bg-surface p-5 shadow-card">
       <div className="flex flex-wrap items-start justify-between gap-4">

@@ -1,6 +1,7 @@
 import type { ConsoleEvent, UserKind } from "@medilink/api-client";
 import { CheckCircle, Info, WarningCircle, type Icon } from "@phosphor-icons/react";
 import { cx } from "@medilink/ui";
+import { dateFormat } from "@medilink/ui/i18n";
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -23,8 +24,7 @@ export function useRelative() {
 
 export function useDateTime() {
   const { i18n } = useTranslation();
-  const lang = i18n.resolvedLanguage === "rw" ? "en-GB" : (i18n.resolvedLanguage ?? "en");
-  const format = new Intl.DateTimeFormat(lang, {
+  const format = dateFormat(i18n.resolvedLanguage ?? "rw", {
     dateStyle: "medium",
     timeStyle: "short",
     timeZone: "Africa/Kigali",

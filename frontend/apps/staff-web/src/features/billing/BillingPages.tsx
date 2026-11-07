@@ -29,7 +29,7 @@ import {
   TextField,
   TicketNumber,
 } from "@medilink/ui";
-import { formatMoney } from "@medilink/ui/i18n";
+import { dateFormat, formatMoney } from "@medilink/ui/i18n";
 import {
   ArrowRight,
   CashRegister,
@@ -834,14 +834,11 @@ export function ReceiptPage() {
   if (receipt.isError || !receipt.data)
     return <Alert tone="danger">{errorText(receipt.error, t("billing.failed"))}</Alert>;
   const r = receipt.data;
-  const when = new Intl.DateTimeFormat(
-    i18n.resolvedLanguage === "rw" ? "en" : i18n.resolvedLanguage,
-    {
-      dateStyle: "medium",
-      timeStyle: "short",
-      timeZone: "Africa/Kigali",
-    },
-  ).format(new Date(r.issued_at));
+  const when = dateFormat(i18n.resolvedLanguage ?? "rw", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Africa/Kigali",
+  }).format(new Date(r.issued_at));
   const line = (label: string, value: ReactNode) => (
     <div className="flex justify-between gap-4">
       <span>{label}</span>
@@ -980,7 +977,7 @@ function ShiftReviewItem({ shift }: { shift: CashShift }) {
   });
   const time = (iso: string | null) =>
     iso
-      ? new Intl.DateTimeFormat(i18n.resolvedLanguage === "rw" ? "en" : i18n.resolvedLanguage, {
+      ? dateFormat(i18n.resolvedLanguage ?? "rw", {
           weekday: "short",
           hour: "2-digit",
           minute: "2-digit",

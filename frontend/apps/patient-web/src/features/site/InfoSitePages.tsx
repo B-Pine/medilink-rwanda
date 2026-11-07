@@ -8,6 +8,7 @@ import {
   Siren,
 } from "@phosphor-icons/react";
 import { Alert, Button, buttonClassName, cx, TextareaField, TextField } from "@medilink/ui";
+import { dateFormat } from "@medilink/ui/i18n";
 import { useQuery } from "@tanstack/react-query";
 import { useState, type FormEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -59,12 +60,9 @@ function withoutDraftMarkers(text: string): string {
 
 function Updated() {
   const { t, i18n } = useTranslation();
-  const date = new Intl.DateTimeFormat(
-    i18n.resolvedLanguage === "rw" ? "en" : i18n.resolvedLanguage,
-    {
-      dateStyle: "long",
-    },
-  ).format(new Date(`${DOCS_UPDATED}T12:00:00Z`));
+  const date = dateFormat(i18n.resolvedLanguage ?? "rw", { dateStyle: "long" }).format(
+    new Date(`${DOCS_UPDATED}T12:00:00Z`),
+  );
   return <p className="m-0 text-body-sm text-fg-muted">{t("site.lastUpdated", { date })}</p>;
 }
 

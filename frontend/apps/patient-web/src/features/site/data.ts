@@ -105,6 +105,38 @@ export function useProfiles(slugs: string[]) {
   });
 }
 
+/** Kigali wall-clock time as "YYYY-MM-DDTHH:MM" (Kigali is UTC+2, no daylight saving). */
+export const kigaliNow = (now = Date.now()) =>
+  new Date(now + 2 * 3600_000).toISOString().slice(0, 16);
+
+export interface Opening {
+  name: string;
+  slug: string;
+  /** Kigali date, YYYY-MM-DD. */
+  date: string;
+  /** Kigali time, HH:MM. */
+  time: string;
+}
+
+/**
+ * The earliest opening after now among these profiles, from their published hours
+ * ([date, opens, closes], Kigali time); null when none is published for the week.
+ */
+export function nextOpening(
+  profiles: Pick<PublicFacility, "name" | "slug" | "hours">[],
+  now = Date.now(),
+): Opening | null {
+  const after = kigaliNow(now);
+  let best: Opening | null = null;
+  for (const profile of profiles)
+    for (const [date, opens] of profile.hours) {
+      const at = `${date}T${opens}`;
+      if (at > after && (!best || at < `${best.date}T${best.time}`))
+        best = { name: profile.name, slug: profile.slug, date, time: opens };
+    }
+  return best;
+}
+
 // ---- doctors ----
 
 export interface PublicDoctor {

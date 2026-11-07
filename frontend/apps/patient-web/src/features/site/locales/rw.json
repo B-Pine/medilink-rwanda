@@ -79,7 +79,8 @@
     "clear": "Kuraho ibyatoranyijwe"
   },
   "facility": {
-    "notFound": "Iki kigo ntikiri kuri MediLink",
+    "notFound": "Iki kigo ntikibonetse",
+    "notFoundReason": "Iyi link ishobora kuba ishaje, cyangwa iki kigo cyavuye kuri MediLink.",
     "back": "Subira ku bigo",
     "verified": "Cyemejwe",
     "directions": "Inzira",
@@ -105,6 +106,9 @@
     "noDescription": "Ikigo ntikirashyiraho ibisobanuro.",
     "photos": "Amafoto",
     "photoAlt": "{{name}}, ifoto ya {{n}} kuri {{total}}",
+    "openPhoto": "Fungura ifoto ya {{n}} kuri {{total}}",
+    "previousPhoto": "Ifoto ibanza",
+    "nextPhoto": "Ifoto ikurikira",
     "contact": "Itumanaho",
     "address": "Aderesi",
     "phone": "Telefoni",
@@ -154,7 +158,9 @@
     "places_other": "{{name}} n'ahandi {{count}}"
   },
   "doctor": {
-    "notFound": "Uyu muganga ntagaragara",
+    "notFound": "Uyu muganga ntabonetse",
+    "notFoundReason": "Iyi link ishobora kuba ishaje, cyangwa uyu muganga ntagikora hano.",
+    "allDoctors": "Abaganga bose",
     "at": "Kuri {{facility}}",
     "worksIn": "Serivisi",
     "presentDays": "Iminsi ari kuri iki kigo",
@@ -193,7 +199,9 @@
     "jump": "Jya ku cyiciro"
   },
   "service": {
-    "notFound": "Iyi serivisi ntiri ku rutonde",
+    "notFound": "Iyi serivisi ntibonetse",
+    "notFoundReason": "Iyi link ishobora kuba ishaje, cyangwa izina ryarahindutse.",
+    "allServices": "Serivisi zose",
     "about": "Ibyerekeye iyi serivisi",
     "aboutGeneric": "Serivisi itangwa n’ibigo biri kuri MediLink. Baza ikigo uko isura igenda.",
     "offering": "Ibigo bitanga iyi serivisi",
@@ -412,6 +420,7 @@
   },
   "onThisPage": "Kuri iyi paji",
   "card": {
+    "nextTime": "Igihe gikurikira: {{day}} {{time}}",
     "open": "Irakora",
     "busy": "Hari benshi",
     "closed": "Ifunze ubu",
@@ -465,7 +474,10 @@
     "waitingNow_other": "Abantu {{count}} bategereje",
     "live": "Ako kanya",
     "seePlaces": "Reba aho bitangirwa",
-    "openTitle": "Bifunguye ubu",
+    "openTitle": "Ibigo bikwegereye",
+    "allClosed": "Ibigo byose bifunze ubu",
+    "nextOpeningToday": "ikizafungura mbere: {{name}}, {{time}}",
+    "nextOpening": "ikizafungura mbere: {{name}}, {{day}} {{time}}",
     "openLead": "Ibigo biri kuri MediLink n'igihe cyo gutegereza ako kanya. Kanda \"Hafi yanjye\" ubitondeke ukurikije intera.",
     "trustLabel": "Ibyo wakwizera",
     "trust": {

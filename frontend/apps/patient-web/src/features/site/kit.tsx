@@ -1,6 +1,6 @@
 import type { FacilityResult } from "@medilink/api-client";
 import { CaretDown, CaretRight, MagnifyingGlass, MapPin } from "@phosphor-icons/react";
-import { Button, cx, Skeleton } from "@medilink/ui";
+import { Button, buttonClassName, cx, Skeleton } from "@medilink/ui";
 import type { FormEvent, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
@@ -218,6 +218,37 @@ export function EmptyState({ title, action }: { title: string; action?: ReactNod
       <EmptyIllustration className="h-24 w-auto" />
       <p className="m-0 max-w-sm font-semibold text-fg">{title}</p>
       {action}
+    </div>
+  );
+}
+
+/**
+ * A page whose record does not exist (a doctor, service or facility link gone stale): the page
+ * still has its <h1>, one line why, and a way back to the list.
+ */
+export function NotFoundState({
+  title,
+  reason,
+  back,
+}: {
+  title: string;
+  reason: string;
+  back: { to: string; label: string };
+}) {
+  return (
+    <div className="flex flex-col items-center gap-4 px-6 py-16 text-center">
+      <EmptyIllustration className="h-24 w-auto" />
+      <PageHeading title={title} className="font-heading text-h1 font-bold text-balance text-fg">
+        {title}
+      </PageHeading>
+      <p className="m-0 max-w-sm text-fg-secondary">{reason}</p>
+      <Link
+        to={back.to}
+        viewTransition
+        className={buttonClassName({ variant: "secondary", pill: true })}
+      >
+        {back.label}
+      </Link>
     </div>
   );
 }

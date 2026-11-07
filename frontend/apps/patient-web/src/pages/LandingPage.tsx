@@ -28,6 +28,7 @@ import { Link, useNavigate } from "react-router";
 import { useApi } from "../app/services";
 import { PageHeading } from "../components/PageHeading";
 import {
+  day,
   DISTRICT_CODES,
   SERVICE_CODES,
   type DistrictKey,
@@ -35,7 +36,7 @@ import {
 } from "../features/booking/discovery";
 import { FILTER, sortResults, useNearMe, waitText, type Sort } from "../features/booking/Places";
 import { FacilityBuilding } from "../features/site/buildings";
-import { useAllFacilities } from "../features/site/data";
+import { kigaliNow, nextOpening, useAllFacilities, useProfiles } from "../features/site/data";
 import { FacilityExplorer, WaitMeter } from "../features/site/FacilityDirectory";
 import {
   FacilityBoardIllustration,
@@ -128,6 +129,44 @@ function typicalWait(rows: FacilityResult[]): number | null {
     .sort((a, b) => a - b);
   if (!mids.length) return null;
   return Math.round(mids[Math.floor(mids.length / 2)]! / 5) * 5;
+}
+
+/**
+ * Nothing open anywhere (nights, weekends): one plain line instead of zeros as headlines, with the
+ * next place to open when the hours are published.
+ */
+function ClosedNotice({ rows, className }: { rows: FacilityResult[]; className?: string }) {
+  const { t, i18n } = useTranslation();
+  const lang = i18n.resolvedLanguage ?? "rw";
+  const profiles = useProfiles(rows.map((r) => r.slug));
+  const next = nextOpening(profiles.data);
+  const today = kigaliNow().slice(0, 10);
+  return (
+    <div
+      role="status"
+      className={cx(
+        "flex flex-wrap items-center gap-x-3 gap-y-1 rounded-panel bg-surface px-6 py-5 shadow-e2",
+        className,
+      )}
+    >
+      <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-fg-muted" />
+      <span className="font-semibold text-fg">{t("site.home3.allClosed")}</span>
+      {next && (
+        <span className="text-fg-secondary tabular-nums">
+          {"· "}
+          <Link to={`/facilities/${next.slug}`} viewTransition className="text-link">
+            {next.date === today
+              ? t("site.home3.nextOpeningToday", { time: next.time, name: next.name })
+              : t("site.home3.nextOpening", {
+                  day: day(next.date, lang, "short"),
+                  time: next.time,
+                  name: next.name,
+                })}
+          </Link>
+        </span>
+      )}
+    </div>
+  );
 }
 
 /** A live figure in the bento: icon and label, one large number, and what it counts. */
@@ -266,6 +305,7 @@ export function LandingPage() {
   const openNow = everywhere.filter((r) => r.open_now).length;
   const waitingNow = everywhere.reduce((sum, r) => sum + (r.open_now ? (r.waiting ?? 0) : 0), 0);
   const typical = typicalWait(everywhere);
+  const allClosed = Boolean(all.data) && everywhere.length > 0 && openNow === 0;
   const countFor = (key: ServiceKey) =>
     new Set(
       (all.data ?? []).filter((r) => r.service_code === SERVICE_CODES[key]).map((r) => r.slug),
@@ -353,29 +393,47 @@ export function LandingPage() {
             </div>
           </div>
 
-          {/* the bento: live figures, places open now, and help choosing */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 lg:grid-rows-[auto_auto]">
-            <Figure
-              icon={Buildings}
-              label={t("site.home3.kpi.open")}
-              value={all.data ? String(openNow) : "–"}
-              hint={t("site.home3.kpi.openHint", { count: everywhere.length })}
-            />
-            <Figure
-              icon={UsersThree}
-              label={t("site.home3.kpi.waiting")}
-              value={all.data ? String(waitingNow) : "–"}
-            />
-            <LivePanel
-              rows={live}
-              loading={results.isPending}
-              className="md:col-span-2 lg:row-span-2"
-            />
-            <Figure
-              icon={Hourglass}
-              label={t("site.home3.kpi.typical")}
-              value={typical === null ? "–" : t("site.home3.kpi.minutes", { count: typical })}
-            />
+          {/*
+           * the bento: live figures, places open now, and help choosing. Big numbers only while
+           * something is open; when everything is closed, one honest line says so instead.
+           */}
+          <div
+            className={cx(
+              "grid gap-4",
+              allClosed
+                ? "md:grid-cols-[minmax(0,3fr)_minmax(0,1fr)]"
+                : "md:grid-cols-2 lg:grid-cols-4 lg:grid-rows-[auto_auto]",
+            )}
+          >
+            {allClosed ? (
+              <ClosedNotice rows={everywhere} />
+            ) : (
+              <>
+                <Figure
+                  icon={Buildings}
+                  label={t("site.home3.kpi.open")}
+                  value={all.data ? String(openNow) : "–"}
+                  hint={t("site.home3.kpi.openHint", { count: everywhere.length })}
+                />
+                <Figure
+                  icon={UsersThree}
+                  label={t("site.home3.kpi.waiting")}
+                  value={all.data ? String(waitingNow) : "–"}
+                />
+                <LivePanel
+                  rows={live}
+                  loading={results.isPending}
+                  className="md:col-span-2 lg:row-span-2"
+                />
+                {typical !== null && (
+                  <Figure
+                    icon={Hourglass}
+                    label={t("site.home3.kpi.typical")}
+                    value={t("site.home3.kpi.minutes", { count: typical })}
+                  />
+                )}
+              </>
+            )}
             <Link
               to="/check-symptoms"
               viewTransition

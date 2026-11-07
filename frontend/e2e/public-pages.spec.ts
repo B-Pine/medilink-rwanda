@@ -46,3 +46,29 @@ test("hydration keeps the pre-rendered landing page as it is", async ({ page }) 
   }).toPass({ timeout: 15_000 });
   expect(errors.filter((e) => /hydrat|did not match/i.test(e))).toEqual([]);
 });
+
+/**
+ * Public site audit 2026-11-07 (A1 #1–2): every doctor and service link on the directories opens a
+ * real page with its own <h1>, never "not found".
+ */
+for (const [list, prefix, missing] of [
+  ["/doctors", "/doctors/", "Doctor not found"],
+  ["/services", "/services/", "Service not found"],
+] as const) {
+  test(`every link on ${list} opens its page`, async ({ page }) => {
+    // English names, so "not found" is matched in one language (the site defaults to Kinyarwanda)
+    await page.addInitScript({ content: `localStorage.setItem("medilink.language", "en")` });
+    await page.goto(PATIENT + list);
+    const links = page.locator(`main a[href^="${prefix}"]`);
+    await expect(links.first()).toBeVisible();
+    const hrefs = new Set<string>();
+    for (const link of await links.all()) hrefs.add((await link.getAttribute("href")) ?? "");
+    expect(hrefs.size).toBeGreaterThan(3);
+    for (const href of hrefs) {
+      await page.goto(PATIENT + href);
+      const heading = page.getByRole("heading", { level: 1 });
+      await expect(heading).toHaveCount(1);
+      await expect(heading, href).not.toHaveText(missing);
+    }
+  });
+}

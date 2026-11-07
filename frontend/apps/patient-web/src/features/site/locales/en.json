@@ -79,7 +79,8 @@
     "clear": "Clear filters"
   },
   "facility": {
-    "notFound": "This facility is not on MediLink",
+    "notFound": "Facility not found",
+    "notFoundReason": "The link may be old, or the facility has left MediLink.",
     "back": "Back to facilities",
     "verified": "Verified",
     "directions": "Directions",
@@ -105,6 +106,9 @@
     "noDescription": "The facility has not added a description yet.",
     "photos": "Photos",
     "photoAlt": "{{name}}, photo {{n}} of {{total}}",
+    "openPhoto": "Open photo {{n}} of {{total}}",
+    "previousPhoto": "Previous photo",
+    "nextPhoto": "Next photo",
     "contact": "Contact",
     "address": "Address",
     "phone": "Phone",
@@ -154,7 +158,9 @@
     "places_other": "{{name}} + {{count}} more"
   },
   "doctor": {
-    "notFound": "This doctor is not listed",
+    "notFound": "Doctor not found",
+    "notFoundReason": "The link may be old, or the doctor no longer works here.",
+    "allDoctors": "All doctors",
     "at": "At {{facility}}",
     "worksIn": "Services",
     "presentDays": "Days at this facility",
@@ -193,7 +199,9 @@
     "jump": "Jump to a category"
   },
   "service": {
-    "notFound": "This service is not in the catalogue",
+    "notFound": "Service not found",
+    "notFoundReason": "The link may be old, or the name has changed.",
+    "allServices": "All services",
     "about": "About this service",
     "aboutGeneric": "A service offered by facilities on MediLink. Ask the facility what the visit involves.",
     "offering": "Facilities offering this service",
@@ -412,6 +420,7 @@
   },
   "onThisPage": "On this page",
   "card": {
+    "nextTime": "Next time {{day}} {{time}}",
     "open": "Open",
     "busy": "Busy",
     "closed": "Closed now",
@@ -465,7 +474,10 @@
     "waitingNow_other": "{{count}} people waiting",
     "live": "Live",
     "seePlaces": "See the places",
-    "openTitle": "Open right now",
+    "openTitle": "Facilities near you",
+    "allClosed": "All facilities are closed now",
+    "nextOpeningToday": "next opening {{time}} at {{name}}",
+    "nextOpening": "next opening {{day}} {{time}} at {{name}}",
     "openLead": "Places on MediLink with their live wait. Tap Near me to sort by distance.",
     "trustLabel": "What you can count on",
     "trust": {

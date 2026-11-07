@@ -53,12 +53,14 @@ describe("front-end security rules (F6)", () => {
     const storage = read(resolve(frontend, "packages/ui/src/preferences/storage.ts"));
     const keys = [...storage.matchAll(/"(medilink\.[\w.]+)"/g)].map((m) => m[1]);
     // discoveryChoice: last district and insurer filter; recentPlaces: names and slugs of public
-    // facility pages opened (upgrade 11). UI conveniences only, no health data.
+    // facility pages opened (upgrade 11); returnTo: the site path to open after a sign-up email
+    // link (public audit 2026-11-07), read once. UI conveniences only, no health data.
     expect(keys.sort()).toEqual([
       "medilink.discoveryChoice",
       "medilink.language",
       "medilink.pushBannerDismissedUntil",
       "medilink.recentPlaces",
+      "medilink.returnTo",
       "medilink.sidebarCollapsed",
       "medilink.tableDensity",
       "medilink.textSize",

@@ -3,9 +3,6 @@ import { LanguageSwitcher, Logo, ThemeSwitch } from "@medilink/ui";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
-/** The brand wordmark: decorative, hidden from assistive tech, the same in every language. */
-const WORDMARK = "MediLink";
-
 const GROUPS = [
   {
     key: "explore",
@@ -40,8 +37,9 @@ const GROUPS = [
 
 /**
  * Public footer (second pass, 2026-11-04): a hairline top, the brand column (logo, one line, the
- * 912 line) beside three quiet link columns, a slim bottom bar (copyright, data in Rwanda,
- * language, theme), and the MediLink wordmark set very large and faint as the signature.
+ * 912 line) beside three quiet link columns, and a slim bottom bar (copyright, data in Rwanda,
+ * language, theme). No giant faint wordmark: it was empty space below the content and failed
+ * contrast (public site audit 2026-11-07).
  */
 export function PublicFooter() {
   const { t } = useTranslation();
@@ -120,13 +118,6 @@ export function PublicFooter() {
           </div>
         </div>
       </div>
-      {/* the signature: the wordmark, large and quiet, engraved in one flat tint (upgrade 14 G10) */}
-      <p
-        aria-hidden="true"
-        className="pointer-events-none m-0 px-4 pb-6 text-center font-heading text-[clamp(4rem,13vw,12rem)] leading-[0.9] font-bold tracking-[-0.05em] text-[color-mix(in_srgb,var(--color-primary)_9%,transparent)] select-none"
-      >
-        {WORDMARK}
-      </p>
     </footer>
   );
 }

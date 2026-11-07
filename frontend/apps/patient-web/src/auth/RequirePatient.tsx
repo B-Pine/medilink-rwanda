@@ -10,12 +10,14 @@ export function RequirePatient() {
   const { t } = useTranslation();
   const location = useLocation();
   const me = usePatientMe();
+  // the whole address, so a booking keeps its service, doctor and day through sign-in
+  const toLogin = (
+    <Navigate to="/login" replace state={{ from: `${location.pathname}${location.search}` }} />
+  );
 
   if (me.isPending) return <ShellSkeleton />;
   if (me.isError) {
-    if (isApiError(me.error) && me.error.status === 401) {
-      return <Navigate to="/login" replace state={{ from: location.pathname }} />;
-    }
+    if (isApiError(me.error) && me.error.status === 401) return toLogin;
     return (
       <main className="mx-auto flex min-h-dvh max-w-lg flex-col justify-center gap-4 p-6">
         <Alert tone="danger" role="alert" title={t("errors.loadFailed")}>

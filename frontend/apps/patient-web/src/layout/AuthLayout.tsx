@@ -42,7 +42,11 @@ export function AuthLayout({
   return (
     <div className="grid min-h-dvh bg-surface text-fg lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)]">
       <SkipLink />
-      <div className="relative isolate hidden overflow-hidden bg-forest text-on-forest lg:flex lg:flex-col lg:justify-between lg:p-10 xl:p-14 print:hidden">
+      {/* a landmark, so nothing on the page sits outside one (axe "region") */}
+      <aside
+        aria-label={t("authAside.label")}
+        className="relative isolate hidden overflow-hidden bg-forest text-on-forest lg:flex lg:flex-col lg:justify-between lg:p-10 xl:p-14 print:hidden"
+      >
         <Link
           to="/"
           viewTransition
@@ -75,7 +79,7 @@ export function AuthLayout({
           <ShieldCheck aria-hidden="true" weight="bold" className="mt-px size-4 shrink-0" />
           {t("authAside.trust")}
         </p>
-      </div>
+      </aside>
 
       <div className="flex min-h-dvh flex-col">
         <header className="flex items-center gap-2 px-4 py-4 sm:px-8 print:hidden">

@@ -18,7 +18,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { FacilityBuilding } from "./buildings";
-import { pinKind } from "../booking/discovery";
+import { day, pinKind, time } from "../booking/discovery";
 import { env } from "../../env";
 import { insurerNames, MapCard, useWide, waitText } from "../booking/Places";
 
@@ -102,8 +102,11 @@ export function FacilityEntry({
   selected = false,
   onActivate,
   onShowOnMap,
+  headingLevel = 3,
 }: {
   result: FacilityResult;
+  /** 2 when the list sits right under the page's <h1>, so no heading level is skipped. */
+  headingLevel?: 2 | 3;
   /** Its pin is selected on the map beside. */
   selected?: boolean;
   /** Pointer or focus on the row: the map highlights the pin. */
@@ -117,8 +120,17 @@ export function FacilityEntry({
   const insurers = insurerNames(result.insurers, t);
   const place = [result.sector, result.district].filter(Boolean).join(", ");
   const join = result.allows_remote_join && result.open_now;
-  const book = Boolean(result.next_slot_at);
+  // closed now: no "Book a time" on the card, the next free time instead (the facility page books)
+  const book = Boolean(result.next_slot_at) && result.open_now;
+  const nextTime =
+    !result.open_now && result.next_slot_at
+      ? t("site.card.nextTime", {
+          day: day(result.next_slot_at, lang, "short"),
+          time: time(result.next_slot_at, lang),
+        })
+      : "";
   const more = insurers.length - SHOWN_INSURERS;
+  const Heading = headingLevel === 2 ? "h2" : "h3";
   return (
     // Pointer and focus only highlight the map pin; the links and buttons inside are the controls.
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
@@ -149,7 +161,7 @@ export function FacilityEntry({
           </span>
           {t(`booking.types.${result.type}`, { defaultValue: result.type })}
         </p>
-        <h3
+        <Heading
           id={`place-${result.slug}`}
           className="m-0 font-heading text-[1.1875rem] leading-snug font-bold text-balance"
         >
@@ -161,7 +173,7 @@ export function FacilityEntry({
           >
             {result.name}
           </Link>
-        </h3>
+        </Heading>
         {(place || result.distance_km !== null) && (
           <p className="m-0 -mt-1 inline-flex flex-wrap items-center gap-x-1.5 text-body-sm text-fg-secondary">
             <MapPin aria-hidden="true" weight="duotone" className="size-4 shrink-0 text-fg-muted" />
@@ -221,6 +233,9 @@ export function FacilityEntry({
             />
           </Link>
         )}
+        {nextTime && (
+          <span className="text-body-sm text-fg-secondary tabular-nums">{nextTime}</span>
+        )}
         {onShowOnMap && result.lat !== null && result.lng !== null && (
           <button
             type="button"
@@ -250,10 +265,12 @@ export function FacilityEntries({
   onSelect,
   onShowOnMap,
   className,
+  headingLevel,
 }: {
   label: string;
   rows: FacilityResult[];
   loading: boolean;
+  headingLevel?: 2 | 3;
   selected?: string | null;
   onSelect?: (slug: string) => void;
   onShowOnMap?: (slug: string) => void;
@@ -287,6 +304,7 @@ export function FacilityEntries({
           <FacilityEntry
             key={result.slug}
             result={result}
+            headingLevel={headingLevel}
             selected={selected === result.slug}
             onActivate={onSelect && (() => onSelect(result.slug))}
             onShowOnMap={onShowOnMap && (() => onShowOnMap(result.slug))}
@@ -315,7 +333,10 @@ export function FacilityExplorer({
   near = null,
   empty,
   switchable = false,
+  headingLevel,
 }: {
+  /** See FacilityEntry: 2 right under the page's <h1>. */
+  headingLevel?: 2 | 3;
   label: string;
   rows: FacilityResult[];
   loading: boolean;
@@ -413,6 +434,7 @@ export function FacilityExplorer({
             label={label}
             rows={rows}
             loading={loading}
+            headingLevel={headingLevel}
             selected={selected}
             onSelect={setSelected}
             onShowOnMap={(slug) => {

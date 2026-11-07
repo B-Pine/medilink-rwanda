@@ -1,0 +1,142 @@
+{
+  "nav": {
+    "disputes": "Ibirego",
+    "platform": "Ibirego"
+  },
+  "title": "Ibirego",
+  "platformTitle": "Ibirego byazamuwe",
+  "failed": "Ntitwashoboye kubona ibirego.",
+  "retry": "Ongera ugerageze",
+  "notFound": "Ikirego ntikibonetse",
+  "flagged": "Akenshi byanzwe",
+  "overdue": "Byarengeje igihe",
+  "system": "Sisitemu",
+  "tabs": {
+    "label": "Erekana",
+    "open": "Bifunguye",
+    "overdue": "Byarengeje igihe",
+    "all": "Byose"
+  },
+  "empty": {
+    "open": "Nta kirego gifunguye",
+    "overdue": "Nta cyarengeje igihe",
+    "all": "Nta kirego",
+    "platform": "Nta kirego cyazamuwe"
+  },
+  "channel": {
+    "app": "Porogaramu",
+    "counter": "Ku kwakira"
+  },
+  "facts": {
+    "title": "Amakuru",
+    "patient": "Umurwayi",
+    "facility": "Ivuriro",
+    "channel": "Cyatangiwe",
+    "raised": "Cyatanzwe",
+    "answerBy": "Kwakira bitarenze",
+    "decideBy": "Gufata icyemezo bitarenze",
+    "what": "Ibyo umurwayi yanditse"
+  },
+  "snapshot": {
+    "status": "Imiterere",
+    "total_rwf": "Igiteranyo (RWF)",
+    "patient_share_rwf": "Uruhare rw’umurwayi (RWF)",
+    "paid_rwf": "Byishyuwe (RWF)",
+    "balance_rwf": "Ibisigaye (RWF)",
+    "number": "Nimero",
+    "booking_code": "Kode ya gahunda",
+    "starts_at": "Gahunda",
+    "occurred_at": "Yanditswe ko atitabiriye",
+    "reversed_at": "Byavanyweho",
+    "ticket_number": "Itike",
+    "state": "Imiterere",
+    "service_date": "Itariki ya serivisi",
+    "issued_at": "Yatanzwe",
+    "kind": "Ubwoko",
+    "document_date": "Itariki y’inyandiko"
+  },
+  "evidence": "Ibyanditswe mu igenzura",
+  "history": "Amateka",
+  "thread": "Ubutumwa",
+  "noMessages": "Nta butumwa buraza",
+  "visibility": {
+    "internal": "Icyitonderwa cy’imbere",
+    "staff_comment": "Igitekerezo cy’umukozi"
+  },
+  "action": {
+    "pending": "Ibisigaye gukorwa: {{what}}",
+    "done": "Byakozwe: {{what}}"
+  },
+  "statement": "Ibisobanuro by’umurwayi",
+  "closedNote": "Iki kirego cyafunzwe.",
+  "involved": "Uri muri iki kirego: ushobora gutanga igitekerezo, ntushobora gufata icyemezo.",
+  "acknowledgeHint": "Emeza ko wakiriye kugira ngo iminsi 10 yo gufata icyemezo itangire.",
+  "acknowledge": "Emeza ko wakiriye",
+  "messageKind": {
+    "label": "Ubwoko bw’ubutumwa",
+    "thread": "Subiza umurwayi",
+    "internal": "Icyitonderwa cy’imbere",
+    "ask": "Baza umurwayi amakuru"
+  },
+  "message": "Ubutumwa",
+  "internalHint": "Abakozi b’ivuriro ni bo bonyine babibona.",
+  "send": "Ohereza",
+  "toPatient": "Ubutumwa ku murwayi",
+  "colleague": {
+    "title": "Baza mugenzi wawe",
+    "who": "Mugenzi wawe",
+    "choose": "Hitamo…",
+    "ask": "Saba igitekerezo",
+    "answered": "yasubije",
+    "waiting": "aracyategerejwe",
+    "yourComment": "Igitekerezo cyawe",
+    "commentHint": "Wasabwe igitekerezo. Abakozi ni bo bonyine bakibona."
+  },
+  "decide": {
+    "title": "Icyemezo",
+    "finalTitle": "Icyemezo cya nyuma",
+    "outcome": "Icyemezo",
+    "choose": "Hitamo…",
+    "reason": "Impamvu",
+    "reasonHint": "Umurwayi arabisoma.",
+    "submit": "Kemura",
+    "finalSubmit": "Andika icyemezo cya nyuma"
+  },
+  "done": {
+    "acknowledged": "Cyakiriwe.",
+    "message": "Byoherejwe.",
+    "asked": "Ikibazo cyoherejwe ku murwayi.",
+    "commentAsked": "Igitekerezo cyasabwe.",
+    "commented": "Igitekerezo cyongeweho.",
+    "decided": "Icyemezo cyanditswe."
+  },
+  "subject": {
+    "visit": "Uruzinduko",
+    "ticket": "Itike y’umurongo",
+    "booking": "Gahunda",
+    "no_show_strike": "Kutitabira",
+    "prescription": "Urupapuro rw’imiti",
+    "bill": "Inyemezabuguzi",
+    "document": "Inyandiko"
+  },
+  "status": {
+    "open": "Gishya",
+    "acknowledged": "Cyakiriwe",
+    "under_review": "Kirasuzumwa",
+    "info_requested": "Gitegereje umurwayi",
+    "resolved": "Cyakemuwe",
+    "escalated": "Cyazamuwe",
+    "final_decision": "Icyemezo cya nyuma",
+    "closed": "Cyafunzwe",
+    "reopened": "Cyongeye gufungurwa"
+  },
+  "outcome": {
+    "no_show_reversed": "Kutitabira kwavanyweho",
+    "record_corrected": "Idosiye izakosorwa",
+    "correction_refused": "Gukosora byanzwe",
+    "refund": "Gusubiza amafaranga",
+    "bill_correction": "Gukosora inyemezabuguzi",
+    "rebooking": "Gahunda nshya",
+    "rejected": "Cyanzwe"
+  }
+}

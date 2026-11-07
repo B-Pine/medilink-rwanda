@@ -38,6 +38,9 @@ import { medicinesFeature } from "../features/medicines";
 // [S8 imports]
 import { billsFeature } from "../features/bills";
 // [/S8 imports]
+// [S10b imports]
+import { disputesFeature } from "../features/disputes";
+// [/S10b imports]
 // [Upgrade U12 imports]
 import { dashboardFeature } from "../features/dashboard";
 // [/Upgrade U12 imports]
@@ -97,6 +100,9 @@ export const FEATURES: FeatureRoutes[] = [
   // [S8]
   billsFeature,
   // [/S8]
+  // [S10b]
+  disputesFeature,
+  // [/S10b]
   // [Upgrade U12]
   dashboardFeature,
   // [/Upgrade U12]

@@ -37,6 +37,9 @@ import { pharmacyFeature } from "../features/pharmacy";
 // [S8 imports]
 import { billingFeature } from "../features/billing";
 // [/S8 imports]
+// [S10b imports]
+import { disputesFeature } from "../features/disputes";
+// [/S10b imports]
 
 /** What a feature module contributes (each feature lives in `src/features/<feature>/`). */
 export interface FeatureRoutes {
@@ -108,4 +111,7 @@ export const FEATURES: FeatureRoutes[] = [
   // [S8]
   billingFeature,
   // [/S8]
+  // [S10b]
+  disputesFeature,
+  // [/S10b]
 ];

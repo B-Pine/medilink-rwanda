@@ -45,6 +45,9 @@ import medicinesRw from "../features/medicines/locales/rw.json";
 import billsEn from "../features/bills/locales/en.json";
 import billsFr from "../features/bills/locales/fr.json";
 import billsRw from "../features/bills/locales/rw.json";
+import disputesEn from "../features/disputes/locales/en.json";
+import disputesFr from "../features/disputes/locales/fr.json";
+import disputesRw from "../features/disputes/locales/rw.json";
 import documentsEn from "../features/documents/locales/en.json";
 import documentsFr from "../features/documents/locales/fr.json";
 import documentsRw from "../features/documents/locales/rw.json";
@@ -104,6 +107,9 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   // [S8]
   bills: { rw: billsRw, en: billsEn, fr: billsFr },
   // [/S8]
+  // [S10b]
+  disputes: { rw: disputesRw, en: disputesEn, fr: disputesFr },
+  // [/S10b]
   // [Upgrade U2]
   site: { rw: siteRw, en: siteEn, fr: siteFr },
   // [/Upgrade U2]

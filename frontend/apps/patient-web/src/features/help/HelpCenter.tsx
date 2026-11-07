@@ -160,6 +160,10 @@ export function ContactCard({ openCount = 0 }: { openCount?: number }) {
               </span>
             )}
           </Link>
+          {/* S10b: complaints about a visit, bill, prescription or document */}
+          <Link to={paths.disputes} className={buttonClassName({ variant: "secondary" })}>
+            {t("dashboard.nav.disputes")}
+          </Link>
         </div>
       </div>
     </Card>

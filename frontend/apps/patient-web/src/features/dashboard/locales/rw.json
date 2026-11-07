@@ -40,7 +40,8 @@
       "appointments": "Gahunda",
       "records": "Amadosiye"
     },
-    "bills": "Inyemezabuguzi"
+    "bills": "Inyemezabuguzi",
+    "disputes": "Ibirego"
   },
   "account": {
     "label": "Menyu ya konti ya {{name}}",
@@ -180,7 +181,9 @@
     "readResult": "Gisome",
     "planned": "{{what}} iregereje",
     "bill": "Usigaje kwishyura {{amount}}",
-    "seeBill": "Reba inyemezabuguzi"
+    "seeBill": "Reba inyemezabuguzi",
+    "disputeQuestion": "Ivuriro rifite icyo rikubaza ku kirego cyawe",
+    "disputeAnswer": "Ikirego cyawe cyasubijwe"
   },
   "comingUp": {
     "title": "Byateganyijwe n'ivuriro ryawe",

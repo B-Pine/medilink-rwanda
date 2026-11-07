@@ -40,7 +40,8 @@
       "appointments": "Visites",
       "records": "Dossier"
     },
-    "bills": "Factures"
+    "bills": "Factures",
+    "disputes": "Litiges"
   },
   "account": {
     "label": "Menu du compte de {{name}}",
@@ -180,7 +181,9 @@
     "readResult": "Le lire",
     "planned": "{{what}} approche",
     "bill": "{{amount}} restent à payer",
-    "seeBill": "Voir la facture"
+    "seeBill": "Voir la facture",
+    "disputeQuestion": "L’établissement vous pose une question sur votre litige",
+    "disputeAnswer": "Votre litige a une réponse"
   },
   "comingUp": {
     "title": "Prévu par votre établissement",

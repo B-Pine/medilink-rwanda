@@ -1,0 +1,75 @@
+{
+  "title": "Litiges",
+  "failed": "Impossible de charger vos litiges.",
+  "empty": "Aucun litige",
+  "notFound": "Litige introuvable",
+  "report": "Signaler un problème",
+  "subject": {
+    "visit": "Visite",
+    "ticket": "Ticket de file",
+    "booking": "Rendez-vous",
+    "no_show_strike": "Absence",
+    "prescription": "Ordonnance",
+    "bill": "Facture",
+    "document": "Document"
+  },
+  "status": {
+    "open": "Envoyé",
+    "acknowledged": "Reçu",
+    "under_review": "En cours d’examen",
+    "info_requested": "Votre réponse attendue",
+    "resolved": "Réponse donnée",
+    "escalated": "Chez MediLink",
+    "final_decision": "Décision finale",
+    "closed": "Clos",
+    "reopened": "Rouvert"
+  },
+  "outcome": {
+    "no_show_reversed": "Absence annulée",
+    "record_corrected": "Dossier à corriger",
+    "correction_refused": "Correction refusée",
+    "refund": "Remboursement accordé",
+    "bill_correction": "Facture à corriger",
+    "rebooking": "Nouveau rendez-vous accordé",
+    "rejected": "Non retenu"
+  },
+  "new": {
+    "title": "Signaler un problème",
+    "fromSubject": "Ouvrez la facture, l’ordonnance ou le document concerné et choisissez Signaler un problème.",
+    "what": "Qu’est-ce qui ne va pas ?",
+    "hint": "Au moins {{min}} caractères.",
+    "send": "Envoyer"
+  },
+  "facts": {
+    "facility": "Établissement",
+    "raised": "Envoyé",
+    "answerBy": "Réponse avant le",
+    "decisionBy": "Décision avant le",
+    "what": "Ce que vous avez écrit"
+  },
+  "actions": {
+    "accept": "Accepter",
+    "escalate": "Contester : envoyer à MediLink",
+    "reopen": "Rouvrir"
+  },
+  "done": {
+    "accept": "Clos.",
+    "escalate": "Envoyé à MediLink.",
+    "reopen": "Rouvert.",
+    "statement": "Déclaration ajoutée à votre dossier.",
+    "message": "Message envoyé."
+  },
+  "statement": {
+    "label": "Votre déclaration",
+    "hint": "Conservée dans votre dossier à côté de celle de l’établissement.",
+    "send": "Ajouter la déclaration",
+    "yours": "Votre déclaration"
+  },
+  "thread": {
+    "title": "Messages",
+    "you": "Vous",
+    "reply": "Message",
+    "send": "Envoyer",
+    "infoRequested": "L’établissement vous a posé une question."
+  }
+}

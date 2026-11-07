@@ -1,0 +1,75 @@
+{
+  "title": "Ibirego",
+  "failed": "Ntitwashoboye kubona ibirego byawe.",
+  "empty": "Nta kirego",
+  "notFound": "Ikirego ntikibonetse",
+  "report": "Tanga ikibazo",
+  "subject": {
+    "visit": "Uruzinduko",
+    "ticket": "Itike y’umurongo",
+    "booking": "Gahunda",
+    "no_show_strike": "Kutitabira",
+    "prescription": "Urupapuro rw’imiti",
+    "bill": "Inyemezabuguzi",
+    "document": "Inyandiko"
+  },
+  "status": {
+    "open": "Cyoherejwe",
+    "acknowledged": "Cyakiriwe",
+    "under_review": "Kirasuzumwa",
+    "info_requested": "Igisubizo cyawe kirakenewe",
+    "resolved": "Cyasubijwe",
+    "escalated": "Kiri kwa MediLink",
+    "final_decision": "Icyemezo cya nyuma",
+    "closed": "Cyafunzwe",
+    "reopened": "Cyongeye gufungurwa"
+  },
+  "outcome": {
+    "no_show_reversed": "Kutitabira kwavanyweho",
+    "record_corrected": "Idosiye izakosorwa",
+    "correction_refused": "Gukosora byanzwe",
+    "refund": "Uzasubizwa amafaranga",
+    "bill_correction": "Inyemezabuguzi izakosorwa",
+    "rebooking": "Gahunda nshya yemejwe",
+    "rejected": "Ntibyemewe"
+  },
+  "new": {
+    "title": "Tanga ikibazo",
+    "fromSubject": "Fungura inyemezabuguzi, urupapuro rw’imiti cyangwa inyandiko bireba, uhitemo Tanga ikibazo.",
+    "what": "Ni iki kitagenze neza?",
+    "hint": "Nibura inyuguti {{min}}.",
+    "send": "Ohereza"
+  },
+  "facts": {
+    "facility": "Ivuriro",
+    "raised": "Cyoherejwe",
+    "answerBy": "Igisubizo bitarenze",
+    "decisionBy": "Icyemezo bitarenze",
+    "what": "Ibyo wanditse"
+  },
+  "actions": {
+    "accept": "Emera",
+    "escalate": "Ntiwemera: ohereza kwa MediLink",
+    "reopen": "Ongera ufungure"
+  },
+  "done": {
+    "accept": "Cyafunzwe.",
+    "escalate": "Cyoherejwe kwa MediLink.",
+    "reopen": "Cyongeye gufungurwa.",
+    "statement": "Ibisobanuro byawe byongewe ku idosiye.",
+    "message": "Ubutumwa bwoherejwe."
+  },
+  "statement": {
+    "label": "Ibisobanuro byawe",
+    "hint": "Bibikwa mu idosiye yawe iruhande rw’ibyo ivuriro ryanditse.",
+    "send": "Ongeraho ibisobanuro",
+    "yours": "Ibisobanuro byawe"
+  },
+  "thread": {
+    "title": "Ubutumwa",
+    "you": "Wowe",
+    "reply": "Ubutumwa",
+    "send": "Ohereza",
+    "infoRequested": "Ivuriro ryakubajije ikibazo."
+  }
+}

@@ -11,6 +11,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 ### Pre-launch cleanup (2026-11-07)
 
+- Added: **disputes** screens (S10b-F1..F3, FR-DSP-01..10). Patients: Disputes list; "Report a
+  problem" on a bill and a prescription; the thread (never the facility's internal notes);
+  accept, disagree (sent to MediLink) and reopen once; a statement after a refused correction; an
+  overview reminder when a dispute waits for an answer. Staff (`disputes.handle`): the queue (Open,
+  Overdue, All) with flagged patients; a dispute with its audit trail, history, internal notes,
+  comment requests, acknowledge, ask the patient, and resolve with only the outcomes that fit the
+  subject; a colleague asked for a comment answers in place. Platform: escalated cases and the
+  final decision (step-up). The Command centre's "Escalated disputes" and the facility Operations
+  "disputes open" now open these screens (were a dead counter and the Help page). API client
+  `disputes` module and MSW mocks with the backend's state machine.
 - Added: **Import patients** (S6-F7, FR-PAT-10) at `/settings/patient-import` for members with
   `records.import`: upload a register CSV (scanned), columns suggested from the header row, check
   every row (problems per field, likely duplicates; nothing created), import the ready rows

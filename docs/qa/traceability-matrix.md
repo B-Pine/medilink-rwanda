@@ -269,16 +269,16 @@ Source: [10 · Disputes, complaints, support](../analysis/10-disputes-complaints
 
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
-| FR-DSP-01 | Raise a dispute from an item, with context and audit events | P1 | S10 | Both | API, E2E | In progress (S10b backend) |
-| FR-DSP-02 | Dispute types, routing and escalation | P1 | S10 | Backend | BR | In progress (S10b backend) |
-| FR-DSP-03 | Lifecycle with deadlines and auto-escalation | P1 | S10 | Backend | BR | In progress (S10b backend) |
-| FR-DSP-04 | Thread, internal notes, staff comments | P1 | S10 | Both | AZ, API | In progress (S10b backend) |
-| FR-DSP-05 | Evidence view of the audit trail | P1 | S10 | Both | API | In progress (S10b backend) |
-| FR-DSP-06 | Outcomes create linked actions | P1 | S10 | Backend | BR | In progress (S10b backend) |
-| FR-DSP-07 | Disagreement statement attached when correction is refused | P1 | S10 | Both | API | In progress (S10b backend) |
-| FR-DSP-08 | Conflict of interest; one-person facility to super admin | P1 | S10 | Backend | BR | In progress (S10b backend) |
-| FR-DSP-09 | Disputes raised by guardians and at the counter | P1 | S10 | Both | AZ, API | In progress (S10b backend) |
-| FR-DSP-10 | Abuse protection: limits, duplicates, flags | P1 | S10 | Backend | BR | In progress (S10b backend) |
+| FR-DSP-01 | Raise a dispute from an item, with context and audit events | P1 | S10 | Both | API, E2E | In progress (S10b backend and screens on mocks; staging open) |
+| FR-DSP-02 | Dispute types, routing and escalation | P1 | S10 | Backend | BR | In progress (S10b backend and screens on mocks; staging open) |
+| FR-DSP-03 | Lifecycle with deadlines and auto-escalation | P1 | S10 | Backend | BR | In progress (S10b backend and screens on mocks; staging open) |
+| FR-DSP-04 | Thread, internal notes, staff comments | P1 | S10 | Both | AZ, API | In progress (S10b backend and screens on mocks; staging open) |
+| FR-DSP-05 | Evidence view of the audit trail | P1 | S10 | Both | API | In progress (S10b backend and screens on mocks; staging open) |
+| FR-DSP-06 | Outcomes create linked actions | P1 | S10 | Backend | BR | In progress (S10b backend and screens on mocks; staging open) |
+| FR-DSP-07 | Disagreement statement attached when correction is refused | P1 | S10 | Both | API | In progress (S10b backend and screens on mocks; staging open) |
+| FR-DSP-08 | Conflict of interest; one-person facility to super admin | P1 | S10 | Backend | BR | In progress (S10b backend and screens on mocks; staging open) |
+| FR-DSP-09 | Disputes raised by guardians and at the counter | P1 | S10 | Both | AZ, API | In progress (S10b backend and screens on mocks; staging open) |
+| FR-DSP-10 | Abuse protection: limits, duplicates, flags | P1 | S10 | Backend | BR | In progress (S10b backend and screens on mocks; staging open) |
 | FR-DSP-11 | Help center, support requests and the public Contact page inbox | P1 | S10 (part 1) | Both | API, E2E | In progress |
 | FR-DSP-12 | Ratings with one reply, moderation, completed-visit rule | P2 | — | Both | BR | Not started |
 | FR-DSP-13 | Complaints flow | P2 | — | Both | API | Not started |

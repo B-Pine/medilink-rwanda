@@ -1,6 +1,6 @@
 import type { FacilityResult } from "@medilink/api-client";
 import { CaretDown, CaretRight, MagnifyingGlass, MapPin } from "@phosphor-icons/react";
-import { Button, buttonClassName, cx, Skeleton } from "@medilink/ui";
+import { Button, buttonClassName, cx, Select, Skeleton, StatusPill } from "@medilink/ui";
 import type { FormEvent, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
@@ -47,11 +47,16 @@ export interface Crumb {
   label: string;
 }
 
-export function Breadcrumbs({ items }: { items: Crumb[] }) {
+export function Breadcrumbs({ items, onForest = false }: { items: Crumb[]; onForest?: boolean }) {
   const { t } = useTranslation();
   return (
     <nav aria-label={t("site.breadcrumb")}>
-      <ol className="m-0 flex list-none flex-wrap items-center gap-1 p-0 text-body-sm text-fg-muted">
+      <ol
+        className={cx(
+          "m-0 flex list-none flex-wrap items-center gap-1 p-0 text-body-sm",
+          onForest ? "text-on-forest-muted" : "text-fg-muted",
+        )}
+      >
         {items.map((item, index) => (
           <li key={`${item.label}-${index}`} className="flex items-center gap-1">
             {index > 0 && <CaretRight aria-hidden="true" className="size-3.5" />}
@@ -59,12 +64,20 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
               <Link
                 to={item.to}
                 viewTransition
-                className="text-fg-muted no-underline hover:text-fg hover:underline"
+                className={cx(
+                  "no-underline hover:underline",
+                  onForest
+                    ? "text-on-forest-muted hover:text-on-forest"
+                    : "text-fg-muted hover:text-fg",
+                )}
               >
                 {item.label}
               </Link>
             ) : (
-              <span aria-current="page" className="text-fg-secondary">
+              <span
+                aria-current="page"
+                className={onForest ? "text-on-forest" : "text-fg-secondary"}
+              >
                 {item.label}
               </span>
             )}
@@ -75,7 +88,11 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
   );
 }
 
-/** Breadcrumb, the page <h1> (document title, focus after navigation), one line, actions. */
+/**
+ * Breadcrumb, the page <h1> (document title, focus after navigation), at most one short line, and
+ * one optional action. `forest` on the main pages (the app's deep-green band, Imigongo texture,
+ * one rounded foot); `light` on reading pages (help, legal, about), at the same left edge.
+ */
 export function PageHeader({
   title,
   lead,
@@ -83,6 +100,7 @@ export function PageHeader({
   actions,
   art,
   titleTransition,
+  tone = "light",
 }: {
   title: string;
   lead?: ReactNode;
@@ -92,7 +110,9 @@ export function PageHeader({
   art?: ReactNode;
   /** View-transition name of the title, so a card's name flows into it. */
   titleTransition?: string;
+  tone?: "forest" | "light";
 }) {
+  const forest = tone === "forest";
   const { t } = useTranslation();
   // Inside the dashboard the shell shows the breadcrumb and the top spacing
   const inDashboard = useInDashboard();
@@ -110,29 +130,39 @@ export function PageHeader({
         </div>
       </div>
     );
-  // public pages (one template, upgrade 14 G3): breadcrumb → fluid H1 → one-line lead on a white
-  // band the width of the screen, a hairline under it
+  // public pages: breadcrumb → H1 → one short line, on a band the width of the screen
   return (
     <div
       className={cx(
-        "ml-page-band mb-10 grid gap-x-10 pt-10 pb-10 sm:pt-14 sm:pb-12",
+        forest ? "ml-forest-band mb-8 sm:mb-10" : "ml-page-band mb-8 sm:mb-10",
+        "grid gap-x-10 pt-8 pb-9 sm:pt-12 sm:pb-12",
         Boolean(art) && "lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end",
       )}
     >
-      <div className="flex min-w-0 flex-col gap-5">
-        {crumbs && <Breadcrumbs items={[{ to: "/", label: t("nav.home") }, ...crumbs]} />}
+      <div className="flex min-w-0 flex-col gap-4">
+        {crumbs && (
+          <Breadcrumbs onForest={forest} items={[{ to: "/", label: t("nav.home") }, ...crumbs]} />
+        )}
         <div className="flex animate-enter flex-wrap items-end justify-between gap-6">
-          <div className="flex max-w-[48rem] flex-col gap-4">
+          <div className="flex max-w-[48rem] flex-col gap-3">
             <PageHeading
               title={title}
-              className="font-heading text-page-title font-bold text-balance text-fg"
+              className={cx(
+                "font-heading text-page-title font-bold text-balance",
+                forest ? "text-on-forest" : "text-fg",
+              )}
             >
               <span style={titleTransition ? { viewTransitionName: titleTransition } : undefined}>
                 {title}
               </span>
             </PageHeading>
             {lead && (
-              <p className="m-0 max-w-[42rem] text-[1.125rem] leading-relaxed text-pretty text-fg-secondary">
+              <p
+                className={cx(
+                  "ml-measure m-0 text-body leading-relaxed text-pretty",
+                  forest ? "text-on-forest-muted" : "text-fg-secondary",
+                )}
+              >
                 {lead}
               </p>
             )}
@@ -141,10 +171,7 @@ export function PageHeader({
         </div>
       </div>
       {art && (
-        <div
-          aria-hidden="true"
-          className="hidden overflow-hidden rounded-panel shadow-[var(--site-edge),var(--shadow-e2)] lg:block"
-        >
+        <div aria-hidden="true" className="hidden overflow-hidden rounded-shell shadow-e2 lg:block">
           {art}
         </div>
       )}
@@ -253,22 +280,13 @@ export function NotFoundState({
   );
 }
 
-/** Open or closed, always with a word and a dot, never colour alone. */
+/** Open or closed: the shared status pill, always with a word. */
 export function FacilityStatus({ open }: { open: boolean }) {
   const { t } = useTranslation();
   return (
-    <span
-      className={cx(
-        "inline-flex items-center gap-1.5 text-body-sm font-semibold whitespace-nowrap",
-        open ? "text-success" : "text-fg-muted",
-      )}
-    >
-      <span
-        aria-hidden="true"
-        className={open ? "ml-live-dot" : "size-1.5 rounded-full bg-current"}
-      />
+    <StatusPill tone={open ? "open" : "closed"} live={open}>
       {open ? t("site.open") : t("site.closed")}
-    </span>
+    </StatusPill>
   );
 }
 
@@ -382,40 +400,22 @@ export function LocationSelector({
   className?: string;
 }) {
   const { t } = useTranslation();
+  // the shared select: the same look in every browser (the native one did not match the site)
   return (
-    <div
-      className={cx(
-        "relative flex min-h-12 items-center rounded-full bg-surface shadow-e1",
-        "transition-[box-shadow] duration-200 ease-out-quint hover:shadow-e2",
-        "focus-within:shadow-[0_0_0_1px_var(--color-primary),0_0_0_4px_color-mix(in_srgb,var(--color-primary)_16%,transparent)]",
-        className,
-      )}
-    >
-      <MapPin
-        aria-hidden="true"
-        className="pointer-events-none absolute left-4 size-5 text-fg-muted"
-      />
-      <label htmlFor={id} className="sr-only">
-        {t("site.location")}
-      </label>
-      <select
-        id={id}
-        value={value}
-        onChange={(event) => onChange(event.target.value as DistrictKey | "")}
-        className="min-h-11 w-full cursor-pointer appearance-none rounded-full border-0 bg-transparent pr-10 pl-11 text-body text-fg outline-none"
-      >
-        <option value="">{t("site.allRwanda")}</option>
-        {DISTRICT_KEYS.map((key) => (
-          <option key={key} value={key}>
-            {t(`landing.districts.${key}`)}
-          </option>
-        ))}
-      </select>
-      <CaretDown
-        aria-hidden="true"
-        className="pointer-events-none absolute right-4 size-4 text-fg-muted"
-      />
-    </div>
+    <Select<DistrictKey | "">
+      id={id}
+      label={t("site.location")}
+      hideLabel
+      shape="pill"
+      icon={<MapPin className="size-5" />}
+      value={value}
+      onChange={onChange}
+      options={[
+        { value: "", label: t("site.allRwanda") },
+        ...DISTRICT_KEYS.map((key) => ({ value: key, label: t(`landing.districts.${key}`) })),
+      ]}
+      className={cx("[&>button]:min-h-12", className)}
+    />
   );
 }
 
@@ -438,13 +438,10 @@ export function LinkRow({
       <Link
         to={to}
         viewTransition
-        className="group flex items-center gap-4 px-5 py-4 text-fg no-underline transition-colors duration-200 ease-out-quint hover:bg-page/70"
+        className="ml-press group flex min-h-14 items-center gap-4 px-5 py-3.5 text-fg no-underline transition-colors duration-150 ease-out-quint hover:bg-page"
       >
-        {icon && (
-          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-[linear-gradient(140deg,var(--color-brand-subtle),var(--color-surface))] text-on-brand-subtle shadow-e1">
-            {icon}
-          </span>
-        )}
+        {/* a plain brand icon, no tile on every row */}
+        {icon && <span className="flex shrink-0 text-brand [&_svg]:size-6">{icon}</span>}
         <span className="flex min-w-0 flex-1 flex-col gap-0.5">
           <span className="truncate font-semibold">{title}</span>
           {detail && <span className="text-body-sm text-fg-secondary">{detail}</span>}
@@ -461,20 +458,29 @@ export function LinkRow({
   );
 }
 
-/** Expandable question (native details: keyboard and screen readers for free). */
-export function Faq({ question, children }: { question: string; children: ReactNode }) {
+/**
+ * Expandable question (native details: keyboard and screen readers for free), the look of the
+ * shared Accordion. `open` for the first one of a list, so a list never reads as a wall.
+ */
+export function Faq({
+  question,
+  children,
+  open,
+}: {
+  question: string;
+  children: ReactNode;
+  open?: boolean;
+}) {
   return (
-    <details className="ml-faq group border-b border-hairline last:border-b-0">
-      <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-4 px-6 py-4 font-semibold text-fg transition-colors duration-150 hover:bg-page/70 [&::-webkit-details-marker]:hidden">
+    <details open={open} className="ml-faq group border-b border-hairline last:border-b-0">
+      <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-5 py-3 font-semibold text-fg transition-colors duration-150 hover:bg-page focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus [&::-webkit-details-marker]:hidden">
         {question}
-        <span
+        <CaretDown
           aria-hidden="true"
-          className="grid size-8 shrink-0 place-items-center rounded-full bg-subtle text-fg-secondary transition-[transform,background-color] duration-200 ease-out-quint group-open:rotate-180 group-open:bg-brand-subtle group-open:text-on-brand-subtle"
-        >
-          <CaretDown className="size-4" />
-        </span>
+          className="size-4 shrink-0 text-fg-muted transition-transform duration-200 ease-out-quint group-open:rotate-180"
+        />
       </summary>
-      <div className="animate-enter px-6 pb-6 leading-relaxed text-fg-secondary">{children}</div>
+      <div className="ml-measure px-5 pb-5 leading-relaxed text-fg-secondary">{children}</div>
     </details>
   );
 }

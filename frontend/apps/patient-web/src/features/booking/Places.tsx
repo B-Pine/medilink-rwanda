@@ -6,11 +6,20 @@ import {
   cx,
   FacilityList,
   FacilityRow,
+  Select,
   type MapPoint,
   Skeleton,
 } from "@medilink/ui";
 import type { TFunction } from "i18next";
-import { lazy, Suspense, useState, useSyncExternalStore, type ReactNode } from "react";
+import {
+  Children,
+  isValidElement,
+  lazy,
+  Suspense,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
@@ -51,22 +60,44 @@ export function FilterSelect({
   disabled?: boolean;
   children: ReactNode;
 }) {
-  return (
-    <>
-      <label htmlFor={id} className="sr-only">
-        {label}
-      </label>
-      <select
-        id={id}
-        value={value}
-        disabled={disabled}
-        onChange={(event) => onChange(event.target.value)}
-        className={cx(FILTER, value && "border-primary bg-brand-subtle text-on-brand-subtle")}
-      >
-        {children}
-      </select>
-    </>
+  // the shared select (same look in every browser); callers keep writing <option>s
+  const options = Children.toArray(children).flatMap((child) =>
+    isValidElement<{ value?: string; children?: ReactNode }>(child)
+      ? [{ value: String(child.props.value ?? ""), label: textOf(child.props.children) }]
+      : [],
   );
+  if (disabled) {
+    const current = options.find((o) => o.value === value) ?? options[0];
+    return (
+      <span aria-disabled="true" className={cx(FILTER, "inline-flex items-center opacity-60")}>
+        <span className="sr-only">{label}: </span>
+        {current?.label}
+      </span>
+    );
+  }
+  return (
+    <Select
+      id={id}
+      label={label}
+      hideLabel
+      shape="pill"
+      value={value}
+      onChange={onChange}
+      options={options}
+      className={cx(
+        "min-w-[10rem] [&>button]:min-h-11 [&>button]:text-body-sm [&>button]:font-semibold",
+        value &&
+          "[&>button]:bg-brand-subtle [&>button]:text-on-brand-subtle [&>button]:shadow-[0_0_0_1px_var(--color-primary)]",
+      )}
+    />
+  );
+}
+
+/** The text of an <option>'s children (strings and numbers). */
+function textOf(node: ReactNode): string {
+  return Children.toArray(node)
+    .map((part) => (typeof part === "string" || typeof part === "number" ? String(part) : ""))
+    .join("");
 }
 
 /** Facility types offered as a filter (S1 types; upgrade 03 §3). */
@@ -366,10 +397,6 @@ export function PlacesView({
               loading={false}
               selected={selected}
               onSelect={setSelected}
-              onShowOnMap={(slug) => {
-                setSelected(slug);
-                setView("map");
-              }}
             />
           ) : (
             <FacilityList

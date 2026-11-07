@@ -113,7 +113,11 @@ export function HowItWorksPage() {
   return (
     <PublicLayout>
       <PageContainer narrow className="pb-16">
-        <PageHeader crumbs={[{ label: t("nav.howItWorks") }]} title={t("site.how.title")} />
+        <PageHeader
+          tone="forest"
+          crumbs={[{ label: t("nav.howItWorks") }]}
+          title={t("site.how.title")}
+        />
         <div className="flex flex-col gap-12">
           <ol className="m-0 flex list-none flex-col p-0">
             {JOURNEY.map((key, index) => (

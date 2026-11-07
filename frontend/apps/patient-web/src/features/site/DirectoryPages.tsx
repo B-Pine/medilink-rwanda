@@ -127,7 +127,11 @@ export function FacilitiesPage() {
   return (
     <PublicLayout>
       <PageContainer className="pb-20">
-        <PageHeader crumbs={[{ label: t("nav.facilities") }]} title={t("site.facilities.title")} />
+        <PageHeader
+          tone="forest"
+          crumbs={[{ label: t("nav.facilities") }]}
+          title={t("site.facilities.title")}
+        />
         <div className="flex flex-col gap-6">
           {/* search and every filter in one card above the results */}
           <div className="flex flex-col gap-3 rounded-panel bg-surface shadow-e2 p-4 sm:p-5">
@@ -361,7 +365,11 @@ export function DoctorsPage() {
   return (
     <PublicLayout>
       <PageContainer className="pb-16">
-        <PageHeader crumbs={[{ label: t("nav.doctors") }]} title={t("site.doctors.title")} />
+        <PageHeader
+          tone="forest"
+          crumbs={[{ label: t("nav.doctors") }]}
+          title={t("site.doctors.title")}
+        />
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-3 rounded-panel bg-surface shadow-e2 p-4 sm:p-5">
             <SearchBar
@@ -687,7 +695,11 @@ export function ServicesPage() {
   return (
     <PublicLayout>
       <PageContainer className="pb-16">
-        <PageHeader crumbs={[{ label: t("nav.services") }]} title={t("site.services.title")} />
+        <PageHeader
+          tone="forest"
+          crumbs={[{ label: t("nav.services") }]}
+          title={t("site.services.title")}
+        />
         <div className="grid gap-x-12 gap-y-8 lg:grid-cols-[15rem_minmax(0,1fr)]">
           <div className="flex flex-col gap-6 lg:sticky lg:top-24 lg:self-start">
             <SearchBar

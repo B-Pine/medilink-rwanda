@@ -12,7 +12,10 @@ import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../data/session.dart';
 import '../../ui/feedback.dart';
+import '../../ui/controls.dart';
+import '../../ui/grouped.dart';
 import '../../ui/icons.dart';
+import '../../ui/sub_page.dart';
 import 'family_sharing.dart';
 
 /// Consent text versions the API expects (GET /patient/consents/ current_versions).
@@ -27,11 +30,7 @@ final profileProvider = FutureProvider.autoDispose.family<Json, String>((ref, pa
   return data! as Json;
 });
 
-String initialsOf(String name) {
-  final parts = name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
-  if (parts.isEmpty) return '?';
-  return (parts.first[0] + (parts.length > 1 ? parts.last[0] : '')).toUpperCase();
-}
+String initialsOf(String name) => Avatar.initialsOf(name);
 
 /// Everyone this account manages: the patient and their family members.
 class FamilyScreen extends ConsumerWidget {
@@ -41,45 +40,41 @@ class FamilyScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final s = S.of(context);
     final me = ref.watch(meProvider);
-    return Scaffold(
-      appBar: AppBar(title: Text(s.family)),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          final added = await showModalBottomSheet<bool>(
-            context: context,
-            isScrollControlled: true,
-            builder: (_) => const _AddMemberSheet(),
-          );
-          if (added ?? false) ref.invalidate(meProvider);
-        },
-        icon: const Icon(PhosphorIconsRegular.userPlus),
-        label: Text(s.t('addMember')),
+    return SubPage(
+      title: s.family,
+      bottomBar: BottomActionBar(
+        child: FilledButton.icon(
+          onPressed: () async {
+            HapticFeedback.selectionClick();
+            final added = await showModalBottomSheet<bool>(
+              context: context,
+              isScrollControlled: true,
+              builder: (_) => const _AddMemberSheet(),
+            );
+            if (added ?? false) ref.invalidate(meProvider);
+          },
+          icon: const Icon(PhosphorIconsRegular.userPlus),
+          label: Text(s.t('addMember')),
+        ),
       ),
-      body: me.when(
-        loading: () => const Padding(padding: EdgeInsets.all(Space.lg), child: SkeletonList(count: 3)),
-        error: (e, _) => ErrorState(error: e, onRetry: () => ref.invalidate(meProvider)),
-        data: (me) => ListView(
-          padding: const EdgeInsets.fromLTRB(Space.lg, Space.lg, Space.lg, 96),
-          children: [
-            for (final p in me.profiles) ...[
-              Card(
-                child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: Space.xs),
-                  leading: CircleAvatar(
-                    backgroundColor: Palette.brandSubtle,
-                    child: Text(initialsOf(p.displayName), style: const TextStyle(color: Palette.brand, fontWeight: FontWeight.w700)),
-                  ),
-                  title: Text(p.displayName, style: Theme.of(context).textTheme.titleSmall),
-                  subtitle: Text(s.t(p.relationship == 'self' ? 'you' : p.relationship)),
-                  trailing: const Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.muted),
+      children: me.when(
+        loading: () => const [SkeletonList(count: 3)],
+        error: (e, _) => [ErrorState(error: e, onRetry: () => ref.invalidate(meProvider))],
+        data: (me) => [
+          GroupedSection(
+            inset: Space.lg + Avatar.medium + Space.lg,
+            children: [
+              for (final p in me.profiles)
+                GroupedRow(
+                  leading: Avatar(name: p.displayName),
+                  title: p.displayName,
+                  subtitle: s.t(p.relationship == 'self' ? 'you' : p.relationship),
                   onTap: () => context.go('/me/family/${p.patientId}'),
                 ),
-              ),
-              const SizedBox(height: Space.sm),
             ],
-            const FamilySharing(),
-          ],
-        ),
+          ),
+          const FamilySharing(),
+        ],
       ),
     );
   }
@@ -146,13 +141,6 @@ class _AddMemberSheetState extends ConsumerState<_AddMemberSheet> {
   Widget build(BuildContext context) {
     final s = S.of(context);
     final theme = Theme.of(context);
-    Widget choice(String value, String group, ValueChanged<String> onPick) => ChoiceChip(
-          label: Text(s.t(value)),
-          selected: value == group,
-          showCheckmark: false,
-          selectedColor: Palette.brandSubtle,
-          onSelected: (_) => onPick(value),
-        );
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: SafeArea(
@@ -163,10 +151,11 @@ class _AddMemberSheetState extends ConsumerState<_AddMemberSheet> {
             children: [
               Text(s.t('addMember'), style: theme.textTheme.titleLarge),
               const SizedBox(height: Space.lg),
-              Wrap(spacing: Space.sm, children: [
-                choice('guardian', _relationship, (v) => setState(() => _relationship = v)),
-                choice('delegate', _relationship, (v) => setState(() => _relationship = v)),
-              ]),
+              SegmentedControl<String>(
+                options: [for (final v in const ['guardian', 'delegate']) (v, s.t(v))],
+                value: _relationship,
+                onChanged: (v) => setState(() => _relationship = v),
+              ),
               const SizedBox(height: Space.lg),
               TextField(
                 controller: _name,
@@ -177,9 +166,11 @@ class _AddMemberSheetState extends ConsumerState<_AddMemberSheet> {
               const SizedBox(height: Space.lg),
               Text(s.t('sex'), style: theme.textTheme.labelMedium),
               const SizedBox(height: Space.sm),
-              Wrap(spacing: Space.sm, children: [
-                for (final v in const ['female', 'male', 'other']) choice(v, _sex, (x) => setState(() => _sex = x)),
-              ]),
+              SegmentedControl<String>(
+                options: [for (final v in const ['female', 'male', 'other']) (v, s.t(v))],
+                value: _sex,
+                onChanged: (v) => setState(() => _sex = v),
+              ),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text(s.t('knowsBirthDate')),
@@ -187,8 +178,10 @@ class _AddMemberSheetState extends ConsumerState<_AddMemberSheet> {
                 onChanged: (v) => setState(() => _knowsDate = v),
               ),
               if (_knowsDate)
-                OutlinedButton.icon(
-                  onPressed: () async {
+                FieldButton(
+                  label: s.t('dateOfBirth'),
+                  value: _born == null ? null : fmt.day(_born!, s, relative: false),
+                  onTap: () async {
                     final now = DateTime.now();
                     final picked = await showDatePicker(
                       context: context,
@@ -198,8 +191,6 @@ class _AddMemberSheetState extends ConsumerState<_AddMemberSheet> {
                     );
                     if (picked != null) setState(() => _born = picked);
                   },
-                  icon: const Icon(PhosphorIconsRegular.cake),
-                  label: Text(_born == null ? s.t('dateOfBirth') : fmt.day(_born!, s, relative: false)),
                 )
               else
                 TextField(

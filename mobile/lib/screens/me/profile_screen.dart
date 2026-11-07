@@ -13,10 +13,13 @@ import '../../data/api.dart';
 import '../../data/profile.dart';
 import '../../data/providers.dart';
 import '../../data/session.dart';
+import '../../ui/controls.dart';
 import '../../ui/feedback.dart';
+import '../../ui/grouped.dart';
 import '../../ui/icons.dart';
 import '../../ui/insurers.dart';
 import '../../ui/secure_screen.dart';
+import '../../ui/sub_page.dart';
 
 /// A profile, fully editable in the app (same as the website's dashboard): photo, details,
 /// emergency contact, identity documents, insurance cards and health profile.
@@ -30,24 +33,20 @@ class ProfileScreen extends ConsumerWidget {
     final s = S.of(context);
     final profile = ref.watch(profileDetailProvider(patientId));
     return SecureScreen(
-      child: Scaffold(
-        backgroundColor: Palette.page,
-        appBar: AppBar(
-          title: Text(profile.value == null || profile.value!.isSelf ? s.t('myProfile') : profile.value!.fullName),
-        ),
-        body: profile.when(
-          loading: () => const Padding(padding: EdgeInsets.all(Space.lg), child: SkeletonList(count: 4)),
-          error: (e, _) => ErrorState(error: e, onRetry: () => ref.invalidate(profileDetailProvider(patientId))),
-          data: (p) => RefreshIndicator(
-            onRefresh: () async {
-              refreshProfile(ref, patientId);
-              await ref.read(profileDetailProvider(patientId).future);
-            },
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(Space.lg, Space.lg, Space.lg, Space.xxl),
-              children: [
+      child: SubPage(
+        title: profile.value == null || profile.value!.isSelf ? s.t('myProfile') : profile.value!.fullName,
+        onRefresh: profile.hasValue
+            ? () async {
+                refreshProfile(ref, patientId);
+                await ref.read(profileDetailProvider(patientId).future);
+              }
+            : null,
+        children: profile.when(
+          loading: () => const [SkeletonList(count: 4)],
+          error: (e, _) => [ErrorState(error: e, onRetry: () => ref.invalidate(profileDetailProvider(patientId)))],
+          data: (p) => [
                 _Header(profile: p),
-                const SizedBox(height: Space.lg),
+                const SizedBox(height: Space.xl),
                 _Completion(profile: p),
                 _Section(
                   title: s.t('details'),
@@ -77,9 +76,7 @@ class ProfileScreen extends ConsumerWidget {
                   title: s.t('healthProfile'),
                   child: _Health(patientId: patientId, profile: p),
                 ),
-              ],
-            ),
-          ),
+          ],
         ),
       ),
     );
@@ -191,7 +188,7 @@ class ProfilePhoto extends ConsumerWidget {
       ),
       alignment: Alignment.center,
       child: url == null
-          ? Text(initials, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: size * 0.32))
+          ? Text(initials, style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white))
           : null,
     );
     if (!editable) return circle;
@@ -393,27 +390,11 @@ class _Section extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: Space.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: Space.xs, bottom: Space.sm),
-              child: Row(
-                children: [
-                  Expanded(child: Text(title, style: Theme.of(context).textTheme.titleMedium)),
-                  if (action != null)
-                    TextButton(onPressed: onAction, child: Text(action!)),
-                ],
-              ),
-            ),
-            SoftCard(child: child),
-          ],
-        ),
-      );
+  Widget build(BuildContext context) =>
+      GroupedSection(label: title, action: action, onAction: onAction, children: [child]);
 }
 
+/// A detail: its label above its value, in the grouped-row layout.
 class _Row extends StatelessWidget {
   const _Row({required this.icon, required this.label, required this.value});
   final IconData icon;
@@ -422,10 +403,29 @@ class _Row extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return ListTile(
-      leading: Icon(icon, color: Palette.brand),
-      title: Text(label, style: theme.textTheme.labelMedium?.copyWith(color: Palette.muted)),
-      subtitle: Text(value.isEmpty ? '—' : value, style: theme.textTheme.bodyLarge),
+    return MergeSemantics(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: Space.row),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: Space.md),
+          child: Row(
+            children: [
+              SizedBox(width: 24, child: Icon(icon, size: 22, color: Palette.brand)),
+              const SizedBox(width: Space.lg),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(label, style: theme.textTheme.bodySmall),
+                    const SizedBox(height: 2),
+                    Text(value.isEmpty ? '—' : value, style: theme.textTheme.bodyLarge),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -503,10 +503,10 @@ class _Identifiers extends ConsumerWidget {
                   children: [
                     for (final (i, d) in list.indexed) ...[
                       if (i > 0) const Divider(height: 1, indent: 56),
-                      ListTile(
-                        leading: const Icon(PhosphorIconsRegular.identificationCard, color: Palette.brand),
-                        title: Text(s.t(d.kind)),
-                        subtitle: Text(d.masked, style: const TextStyle(fontFeatures: [FontFeature.tabularFigures()])),
+                      GroupedRow(
+                        icon: PhosphorIconsRegular.identificationCard,
+                        title: s.t(d.kind),
+                        subtitle: d.masked,
                         trailing: d.verified
                             ? StatusPill(text: s.t('verified'), tone: PillTone.brand)
                             : StatusPill(text: s.t('notVerified'), tone: PillTone.muted),
@@ -539,16 +539,14 @@ class _Insurance extends ConsumerWidget {
                   children: [
                     for (final (i, c) in cards.indexed) ...[
                       if (i > 0) const Divider(height: 1, indent: 56),
-                      ListTile(
-                        leading: const Icon(PhosphorIconsRegular.shieldCheck, color: Palette.brand),
-                        title: Text(c.insurerName.isNotEmpty ? c.insurerName : insurerName(c.insurerCode, s)),
-                        subtitle: Text(
-                          [
-                            c.memberNumber,
-                            if (!c.isPrincipal && c.principalName != null) c.principalName!,
-                            if (c.validUntil != null) '${s.t('validUntil')} ${fmt.day(c.validUntil!, s, relative: false)}',
-                          ].join(' · '),
-                        ),
+                      GroupedRow(
+                        icon: PhosphorIconsRegular.shieldCheck,
+                        title: c.insurerName.isNotEmpty ? c.insurerName : insurerName(c.insurerCode, s),
+                        subtitle: [
+                          c.memberNumber,
+                          if (!c.isPrincipal && c.principalName != null) c.principalName!,
+                          if (c.validUntil != null) '${s.t('validUntil')} ${fmt.day(c.validUntil!, s, relative: false)}',
+                        ].join(' · '),
                         trailing: StatusPill(
                           text: c.isExpired ? s.t('expired') : s.t(c.status),
                           tone: c.isExpired || c.status == 'rejected'
@@ -778,8 +776,10 @@ class _DetailsSheetState extends ConsumerState<_DetailsSheet> with _Saving {
       children: [
         TextField(controller: _name, textCapitalization: TextCapitalization.words, decoration: InputDecoration(labelText: s.t('fullName'))),
         const SizedBox(height: Space.md),
-        OutlinedButton.icon(
-          onPressed: () async {
+        FieldButton(
+          label: s.t('dateOfBirth'),
+          value: _born == null ? null : fmt.day(_born!, s, relative: false),
+          onTap: () async {
             final picked = await showDatePicker(
               context: context,
               initialDate: _born ?? DateTime(1995),
@@ -788,8 +788,6 @@ class _DetailsSheetState extends ConsumerState<_DetailsSheet> with _Saving {
             );
             if (picked != null) setState(() => _born = picked);
           },
-          icon: const Icon(PhosphorIconsRegular.cake),
-          label: Text(_born == null ? s.t('dateOfBirth') : fmt.day(_born!, s, relative: false)),
         ),
         const SizedBox(height: Space.md),
         _Choice(
@@ -1032,8 +1030,10 @@ class _InsuranceSheetState extends ConsumerState<_InsuranceSheet> with _Saving {
           ),
         ],
         const SizedBox(height: Space.md),
-        OutlinedButton.icon(
-          onPressed: () async {
+        FieldButton(
+          label: _until == null ? s.t('validUntilOptional') : s.t('validUntil'),
+          value: _until == null ? null : fmt.day(_until!, s, relative: false),
+          onTap: () async {
             final now = DateTime.now();
             final picked = await showDatePicker(
               context: context,
@@ -1043,8 +1043,6 @@ class _InsuranceSheetState extends ConsumerState<_InsuranceSheet> with _Saving {
             );
             if (picked != null) setState(() => _until = picked);
           },
-          icon: const Icon(PhosphorIconsRegular.calendarCheck),
-          label: Text(_until == null ? s.t('validUntilOptional') : '${s.t('validUntil')} ${fmt.day(_until!, s, relative: false)}'),
         ),
         errorText(),
         const SizedBox(height: Space.xl),

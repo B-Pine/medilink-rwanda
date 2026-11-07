@@ -10,6 +10,10 @@ const _daysRw = [
   'Ku wa gatanu', 'Ku wa gatandatu', 'Ku cyumweru',
 ];
 const _daysEn = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const _daysEnFull = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+/// The full name of a weekday, Monday = 0.
+String weekday(int index, Strings s) => (s.code == 'rw' ? _daysRw : _daysEnFull)[index % 7];
 
 String two(int n) => n.toString().padLeft(2, '0');
 

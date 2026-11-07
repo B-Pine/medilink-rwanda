@@ -81,7 +81,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                     decoration: BoxDecoration(
                       color: Palette.surface,
                       borderRadius: BorderRadius.circular(24),
-                      boxShadow: Shadows.card,
+                      boxShadow: Shadows.floating,
                     ),
                     child: Text(s.t('map'), style: Theme.of(context).textTheme.titleMedium),
                   ),
@@ -140,7 +140,7 @@ class _RoundButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => DecoratedBox(
-        decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: Shadows.card),
+        decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: Shadows.floating),
         child: Material(
           color: Palette.surface,
           shape: const CircleBorder(),

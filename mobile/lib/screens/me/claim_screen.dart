@@ -10,8 +10,10 @@ import '../../data/models.dart';
 import '../../data/profile.dart';
 import '../../data/providers.dart';
 import '../../data/session.dart';
+import '../../ui/controls.dart';
 import '../../ui/feedback.dart';
 import '../../ui/icons.dart';
+import '../../ui/sub_page.dart';
 
 /// Link a record a facility already made for you (contract §3.2 claims): find it, then a code sent
 /// to the contact on that record, or a check at reception.
@@ -91,37 +93,31 @@ class _ClaimScreenState extends ConsumerState<ClaimScreen> {
     final s = S.of(context);
     final theme = Theme.of(context);
     final claim = _claim;
-    return Scaffold(
-      appBar: AppBar(title: Text(s.t('claimTitle'))),
-      body: ListView(
-        padding: const EdgeInsets.all(Space.lg),
-        children: [
+    final Widget? action = _done || (claim != null && claim['status'] == 'awaiting_reception')
+        ? null
+        : claim == null
+            ? LoadingButton(label: s.t('findMyRecord'), onPressed: _ready ? _find : null)
+            : LoadingButton(label: s.t('confirm'), onPressed: _code.text.trim().length >= 4 ? _verify : null);
+    return SubPage(
+      title: s.t('claimTitle'),
+      bottomBar: action == null ? null : BottomActionBar(child: action),
+      children: [
           if (_done)
             EmptyState(icon: PhosphorIconsFill.checkCircle, text: s.t('claimDone'))
           else if (claim == null) ...[
             Text(s.t('claimIntro'), style: theme.textTheme.bodyMedium),
             const SizedBox(height: Space.lg),
-            Wrap(
-              spacing: Space.sm,
-              runSpacing: Space.sm,
-              children: [
-                for (final (way, label) in [
-                  ('medilink_number', s.t('medilinkNumber')),
-                  ('national_id', s.t('national_id')),
-                  ('phone', s.t('phone')),
-                ])
-                  ChoiceChip(
-                    label: Text(label, style: TextStyle(color: way == _way ? Colors.white : Palette.ink, fontWeight: FontWeight.w600)),
-                    selected: way == _way,
-                    showCheckmark: false,
-                    selectedColor: Palette.brand,
-                    backgroundColor: Palette.surface,
-                    onSelected: (_) => setState(() {
-                      _way = way;
-                      _value.clear();
-                    }),
-                  ),
+            SegmentedControl<String>(
+              options: [
+                ('medilink_number', s.t('medilinkNumber')),
+                ('national_id', s.t('national_id')),
+                ('phone', s.t('phone')),
               ],
+              value: _way,
+              onChanged: (way) => setState(() {
+                _way = way;
+                _value.clear();
+              }),
             ),
             const SizedBox(height: Space.lg),
             TextField(
@@ -147,8 +143,10 @@ class _ClaimScreenState extends ConsumerState<ClaimScreen> {
               ),
             ],
             const SizedBox(height: Space.md),
-            OutlinedButton.icon(
-              onPressed: () async {
+            FieldButton(
+              label: s.t('dateOfBirth'),
+              value: _born == null ? null : fmt.day(_born!, s, relative: false),
+              onTap: () async {
                 final picked = await showDatePicker(
                   context: context,
                   initialDate: _born ?? DateTime(1995),
@@ -157,22 +155,18 @@ class _ClaimScreenState extends ConsumerState<ClaimScreen> {
                 );
                 if (picked != null) setState(() => _born = picked);
               },
-              icon: const Icon(PhosphorIconsRegular.cake),
-              label: Text(_born == null ? s.t('dateOfBirth') : fmt.day(_born!, s, relative: false)),
             ),
             if (_error != null) ...[
               const SizedBox(height: Space.md),
-              Text(_error!, style: const TextStyle(color: Palette.danger)),
+              Text(_error!, style: theme.textTheme.bodyMedium?.copyWith(color: Palette.danger)),
             ],
-            const SizedBox(height: Space.xl),
-            LoadingButton(label: s.t('findMyRecord'), onPressed: _ready ? _find : null),
           ] else if (claim['status'] == 'awaiting_reception') ...[
             EmptyState(icon: PhosphorIconsRegular.buildings, text: s.t('claimAtReception')),
             const SizedBox(height: Space.lg),
             Center(
               child: SelectableText(
                 '${claim['reference'] ?? ''}',
-                style: theme.textTheme.headlineMedium?.copyWith(color: Palette.brand, letterSpacing: 2),
+                style: theme.textTheme.headlineMedium?.copyWith(color: Palette.brand, letterSpacing: 2).tabular,
               ),
             ),
           ] else ...[
@@ -186,19 +180,15 @@ class _ClaimScreenState extends ConsumerState<ClaimScreen> {
               keyboardType: TextInputType.number,
               autofillHints: const [AutofillHints.oneTimeCode],
               onChanged: (_) => setState(() {}),
-              style: theme.textTheme.headlineSmall?.copyWith(letterSpacing: 6),
-              textAlign: TextAlign.center,
+              style: theme.textTheme.titleLarge?.copyWith(letterSpacing: 6).tabular,
               decoration: InputDecoration(labelText: s.t('code')),
             ),
             if (_error != null) ...[
               const SizedBox(height: Space.md),
-              Text(_error!, style: const TextStyle(color: Palette.danger)),
+              Text(_error!, style: theme.textTheme.bodyMedium?.copyWith(color: Palette.danger)),
             ],
-            const SizedBox(height: Space.xl),
-            LoadingButton(label: s.t('confirm'), onPressed: _code.text.trim().length >= 4 ? _verify : null),
           ],
-        ],
-      ),
+      ],
     );
   }
 }

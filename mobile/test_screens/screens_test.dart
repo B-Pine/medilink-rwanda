@@ -66,6 +66,8 @@ Future<void> _shoot(
 }) async {
   tester.view.physicalSize = const Size(1080, 2340);
   tester.view.devicePixelRatio = 3;
+  // flutter_test paints shadows without blur (a solid strip); show them as a phone does.
+  debugDisableShadows = false;
   final key = GlobalKey();
   final router = GoRouter(
     initialLocation: '/x',
@@ -102,10 +104,27 @@ Future<void> _shoot(
   });
   await tester.pumpWidget(const SizedBox());
   await tester.pump(const Duration(seconds: 1));
+  debugDisableShadows = true;
+}
+
+/// Lets in-flight animations (a button's colour, a sheet) finish before the picture.
+Future<void> _settle(WidgetTester tester) async {
+  for (var i = 0; i < 6; i++) {
+    await tester.pump(const Duration(milliseconds: 100));
+  }
 }
 
 void main() {
-  setUpAll(_loadFonts);
+  TestWidgetsFlutterBinding.ensureInitialized();
+  setUpAll(() async {
+    // flutter_map's tile cache asks path_provider for a folder; there is no plugin in tests.
+    final cache = Directory.systemTemp.createTempSync('medilink-shots');
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('plugins.flutter.io/path_provider'),
+      (_) async => cache.path,
+    );
+    await _loadFonts();
+  });
 
   final base = [
     meProvider.overrideWith((ref) async => sampleMe),
@@ -226,7 +245,20 @@ void main() {
         }
         await tester.tap(find.text('Chest pain'));
         await tester.tap(find.text('Fever'));
-        await tester.pump(const Duration(milliseconds: 300));
+        await _settle(tester);
+      },
+    );
+  }, skip: _out.isEmpty);
+
+  testWidgets('book confirm sheet, nothing chosen yet', (tester) async {
+    await _shoot(
+      tester,
+      'book-confirm-empty',
+      const BookScreen(slug: 'kibagabaga-hospital', serviceId: 's-gp'),
+      facility,
+      act: (tester) async {
+        await tester.tap(find.text('08:00'));
+        await _settle(tester);
       },
     );
   }, skip: _out.isEmpty);

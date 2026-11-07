@@ -13,6 +13,7 @@ import '../../data/profile.dart';
 import '../../data/providers.dart';
 import '../../data/session.dart';
 import '../../ui/feedback.dart';
+import '../../ui/grouped.dart';
 import '../../ui/icons.dart';
 
 /// Sharing a profile with another MediLink account (delegation, contract §3.2): make a one-time
@@ -28,30 +29,22 @@ class FamilySharing extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(Space.xs, Space.lg, Space.xs, Space.sm),
-          child: Text(s.t('sharing'), style: theme.textTheme.titleMedium),
+        GroupedSection(
+          label: s.t('sharing'),
+          margin: const EdgeInsets.only(bottom: Space.md),
+          children: [
+            GroupedRow(
+              icon: PhosphorIconsFill.paperPlaneRight,
+              title: s.t('shareProfile'),
+              onTap: () => _open(context, const _InviteSheet()),
+            ),
+            GroupedRow(
+              icon: PhosphorIconsRegular.ticket,
+              title: s.t('enterCode'),
+              onTap: () => _open(context, const _AcceptSheet()),
+            ),
+          ],
         ),
-        SoftCard(
-          child: Column(
-            children: [
-              ListTile(
-                leading: const Icon(PhosphorIconsFill.paperPlaneRight, color: Palette.brand),
-                title: Text(s.t('shareProfile')),
-                trailing: const Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.muted),
-                onTap: () => _open(context, const _InviteSheet()),
-              ),
-              const Divider(height: 1, indent: 56),
-              ListTile(
-                leading: const Icon(PhosphorIconsRegular.ticket, color: Palette.brand),
-                title: Text(s.t('enterCode')),
-                trailing: const Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.muted),
-                onTap: () => _open(context, const _AcceptSheet()),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: Space.md),
         data.when(
           loading: () => const LinearProgressIndicator(),
           error: (e, _) => ErrorState(error: e, onRetry: () => ref.invalidate(delegationsProvider)),
@@ -61,48 +54,41 @@ class FamilySharing extends ConsumerWidget {
               for (final r in d.received) (r, false),
             ];
             if (rows.isEmpty && d.pending.isEmpty) {
-              return Text(s.t('sharingEmpty'), style: theme.textTheme.bodySmall);
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: Space.lg),
+                child: Text(s.t('sharingEmpty'), style: theme.textTheme.bodySmall),
+              );
             }
-            return SoftCard(
-              child: Column(
-                children: [
-                  for (final (i, (r, mine)) in rows.indexed) ...[
-                    if (i > 0) const Divider(height: 1, indent: 56),
-                    ListTile(
-                      leading: Icon(
-                        mine ? PhosphorIconsFill.paperPlaneRight : PhosphorIconsRegular.usersThree,
-                        color: Palette.brand,
-                      ),
-                      title: Text('${r['profile_name'] ?? ''}'),
-                      subtitle: Text(
-                        mine ? '${s.t('sharedWith')} ${r['holder_name'] ?? ''}' : s.t('sharedWithMe'),
-                      ),
-                      trailing: r['can_revoke'] == true
-                          ? IconButton(
-                              tooltip: s.t('stopSharing'),
-                              onPressed: () async {
-                                if (await confirmDanger(context, title: s.t('stopSharingQ'), action: s.t('stopSharing'))) {
-                                  await ref.read(apiProvider).post('/api/v1/patient/delegations/${r['id']}/revoke/');
-                                  ref
-                                    ..invalidate(delegationsProvider)
-                                    ..invalidate(meProvider);
-                                }
-                              },
-                              icon: const Icon(PhosphorIconsRegular.xCircle, color: Palette.danger),
-                            )
-                          : null,
-                    ),
-                  ],
-                  for (final p in d.pending)
-                    ListTile(
-                      leading: const Icon(PhosphorIconsRegular.clock, color: Palette.ochreText),
-                      title: Text('${p['profile_name'] ?? ''}'),
-                      subtitle: Text(
-                        '${s.t('codeWaiting')} ${_until(p['expires_at'], s)}',
-                      ),
-                    ),
-                ],
-              ),
+            return GroupedSection(
+              children: [
+                for (final (r, mine) in rows)
+                  GroupedRow(
+                    icon: mine ? PhosphorIconsFill.paperPlaneRight : PhosphorIconsRegular.usersThree,
+                    title: '${r['profile_name'] ?? ''}',
+                    subtitle: mine ? '${s.t('sharedWith')} ${r['holder_name'] ?? ''}' : s.t('sharedWithMe'),
+                    trailing: r['can_revoke'] == true
+                        ? TextButton(
+                            style: TextButton.styleFrom(foregroundColor: Palette.danger),
+                            onPressed: () async {
+                              if (await confirmDanger(context, title: s.t('stopSharingQ'), action: s.t('stopSharing'))) {
+                                await ref.read(apiProvider).post('/api/v1/patient/delegations/${r['id']}/revoke/');
+                                ref
+                                  ..invalidate(delegationsProvider)
+                                  ..invalidate(meProvider);
+                              }
+                            },
+                            child: Text(s.t('stopSharing')),
+                          )
+                        : null,
+                  ),
+                for (final p in d.pending)
+                  GroupedRow(
+                    icon: PhosphorIconsRegular.clock,
+                    iconColor: Palette.ochreText,
+                    title: '${p['profile_name'] ?? ''}',
+                    subtitle: '${s.t('codeWaiting')} ${_until(p['expires_at'], s)}',
+                  ),
+              ],
             );
           },
         ),

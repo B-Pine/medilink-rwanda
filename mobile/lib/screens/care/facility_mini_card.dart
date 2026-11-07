@@ -86,7 +86,7 @@ class FacilityMiniCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Row(
                     children: [
-                      const Icon(PhosphorIconsRegular.clock, size: 16, color: Palette.muted),
+                      Icon(PhosphorIconsRegular.clock, size: 16, color: Palette.muted),
                       const SizedBox(width: Space.xs),
                       Flexible(
                         child: Text(
@@ -100,7 +100,7 @@ class FacilityMiniCard extends StatelessWidget {
                   ),
                 ],
                 const SizedBox(height: Space.sm),
-                SizedBox(height: 22, child: InsurerPills(codes: f.insurers, max: 2)),
+                SizedBox(height: context.scaled(22), child: InsurerPills(codes: f.insurers, max: 2)),
               ],
             ),
           ),

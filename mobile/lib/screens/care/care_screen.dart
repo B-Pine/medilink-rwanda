@@ -324,7 +324,7 @@ class FacilityCard extends StatelessWidget {
                   const SizedBox(height: Space.xs),
                   Row(
                     children: [
-                      const Icon(PhosphorIconsRegular.mapPin, size: 16, color: Palette.muted),
+                      Icon(PhosphorIconsRegular.mapPin, size: 16, color: Palette.muted),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
@@ -340,7 +340,7 @@ class FacilityCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: Space.md),
-                  SizedBox(height: 22, child: InsurerPills(codes: facility.insurers)),
+                  SizedBox(height: context.scaled(22), child: InsurerPills(codes: facility.insurers)),
                   if (facility.waiting != null || wait != null) ...[
                     const SizedBox(height: Space.md),
                     Wrap(

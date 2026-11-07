@@ -6,7 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 ## [Unreleased]
 
+### 1.1.0 (2026-11-07)
+
 Design polish (#260), no API or data changes:
+
+- Added: dark mode. The app follows the phone's light or dark setting, like the staff website,
+  with the website's dark colours (forest surfaces, light text, light-green buttons with dark
+  text). The facility drawings and map tiles keep their colours.
 
 - Changed: three depth levels only. Cards are white with a hairline and no shadow; only what
   floats over content (the card over the band, the map overlays, sheets) has one soft shadow.
@@ -47,6 +53,14 @@ Design polish (#260), no API or data changes:
   page); a facility's drawing flies from the Care list into its page.
 - Changed: every animation, including loading dots and the live dot, stops when the phone's
   "remove animations" setting is on.
+- Added: French. Choose Français in Me → Settings or on the sign-in screen; dates, days and the
+  date picker follow, and an account set to French opens the app in French. (Wording needs a
+  native-speaker check.)
+- Fixed: large text (1.3x, 1.6x) no longer cuts or overlaps: card heights, insurer pills and the
+  doctor header grow with the text, quick actions go two by two, facility actions stack, a long
+  sub-page title wraps, and "Stop sharing" moves under the name.
+- Fixed: every tap target is at least 48 × 48 (notifications bell, family switcher, segments).
+- Checked: all text colours reach 4.5:1 on their backgrounds (now a test).
 
 ### 1.0.8 (2026-11-06)
 

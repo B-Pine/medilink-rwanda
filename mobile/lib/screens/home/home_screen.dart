@@ -205,7 +205,7 @@ class _Greeting extends ConsumerWidget {
             customBorder: const CircleBorder(),
             onTap: () => context.go('/home/notifications'),
             child: Padding(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(12), // 48 × 48
               child: Badge(
                 isLabelVisible: unread > 0,
                 label: Text(unread > 9 ? '9+' : '$unread'),
@@ -243,7 +243,7 @@ class _FamilySwitcher extends ConsumerWidget {
                   leading: Icon(p == null ? PhosphorIconsRegular.usersThree : PhosphorIconsRegular.user),
                   title: Text(p?.displayName ?? S.of(context).family),
                   trailing: (p?.patientId == selected)
-                      ? const Icon(PhosphorIconsFill.checkCircle, color: Palette.brand)
+                      ? Icon(PhosphorIconsFill.checkCircle, color: Palette.brand)
                       : null,
                   onTap: () {
                     ref.read(activePatientProvider.notifier).select(p?.patientId);
@@ -254,20 +254,28 @@ class _FamilySwitcher extends ConsumerWidget {
           ),
         ),
       ),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(color: Palette.forestRaised, borderRadius: BorderRadius.circular(99)),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(PhosphorIconsRegular.usersThree, size: 16, color: Palette.onForestMuted),
-            const SizedBox(width: 6),
-            Text(
-              current?.displayName ?? S.of(context).family,
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
+      // The pill stays small; the tap area is 48 tall.
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 48),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          widthFactor: 1,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(color: Palette.forestRaised, borderRadius: BorderRadius.circular(Space.pill)),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(PhosphorIconsRegular.usersThree, size: 16, color: Palette.onForestMuted),
+                const SizedBox(width: 6),
+                Text(
+                  current?.displayName ?? S.of(context).family,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
+                ),
+                Icon(PhosphorIconsRegular.caretDown, size: 14, color: Palette.onForestMuted),
+              ],
             ),
-            const Icon(PhosphorIconsRegular.caretDown, size: 14, color: Palette.onForestMuted),
-          ],
+          ),
         ),
       ),
     );
@@ -375,7 +383,7 @@ class TicketCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: Space.xl, vertical: Space.sm + 2),
                 child: Row(
                   children: [
-                    const Icon(PhosphorIconsFill.bellRinging, size: 18, color: Palette.forest),
+                    Icon(PhosphorIconsFill.bellRinging, size: 18, color: Palette.forest),
                     const SizedBox(width: Space.sm),
                     Text(s.yourTurn, style: theme.textTheme.titleSmall?.copyWith(color: Palette.forest)),
                     const Spacer(),
@@ -397,7 +405,7 @@ class TicketCard extends StatelessWidget {
                           children: [
                             _Eyebrow(s.ticket),
                             const SizedBox(width: Space.sm),
-                            const LiveDot(color: Palette.brand),
+                            LiveDot(color: Palette.brand),
                             const SizedBox(width: 4),
                             Text(s.live, style: theme.textTheme.labelSmall?.copyWith(color: Palette.brand)),
                           ],
@@ -406,12 +414,12 @@ class TicketCard extends StatelessWidget {
                         FittedBox(
                           fit: BoxFit.scaleDown,
                           alignment: Alignment.centerLeft,
-                          child: Text(visit.ticket, style: theme.textTheme.displayMedium?.copyWith(color: Palette.forest)),
+                          child: Text(visit.ticket, style: theme.textTheme.displayMedium?.copyWith(color: Palette.forestInk)),
                         ),
                         Text(
                           s.pick(visit.service),
                           style: theme.textTheme.bodySmall,
-                          maxLines: 1,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ],
@@ -423,7 +431,7 @@ class TicketCard extends StatelessWidget {
             ),
             _Footer(
               children: [
-                const Icon(PhosphorIconsRegular.mapPin, size: 18, color: Palette.brand),
+                Icon(PhosphorIconsRegular.mapPin, size: 18, color: Palette.brand),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Column(
@@ -473,7 +481,7 @@ class _AheadRing extends StatelessWidget {
           alignment: Alignment.center,
           child: Rolling(
             value: ahead,
-            child: Text('$ahead', style: theme.textTheme.headlineMedium?.copyWith(color: Palette.forest).tabular),
+            child: Text('$ahead', style: theme.textTheme.headlineMedium?.copyWith(color: Palette.forestInk).tabular),
           ),
         ),
         const SizedBox(height: 4),
@@ -541,7 +549,7 @@ class _NextVisitCard extends StatelessWidget {
           ),
           _Footer(
             children: [
-              const Icon(PhosphorIconsRegular.mapPin, size: 18, color: Palette.brand),
+              Icon(PhosphorIconsRegular.mapPin, size: 18, color: Palette.brand),
               const SizedBox(width: 6),
               Expanded(
                 child: Column(
@@ -589,13 +597,13 @@ class _FindCareCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: Space.md + 2),
                   child: Row(
                     children: [
-                      const Icon(PhosphorIconsRegular.magnifyingGlass, color: Palette.muted),
+                      Icon(PhosphorIconsRegular.magnifyingGlass, color: Palette.muted),
                       const SizedBox(width: Space.md),
                       Expanded(child: Text(s.t('searchFacility'), style: theme.textTheme.bodyLarge?.copyWith(color: Palette.muted))),
                       Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(color: Palette.brand, borderRadius: BorderRadius.circular(8)),
-                        child: const Icon(PhosphorIconsRegular.arrowRight, color: Colors.white, size: 16),
+                        child: Icon(PhosphorIconsRegular.arrowRight, color: Palette.onBrand, size: 16),
                       ),
                     ],
                   ),
@@ -622,48 +630,50 @@ class _QuickActions extends StatelessWidget {
       (s.symptoms, PhosphorIconsRegular.stethoscope, () => context.go('/home/symptoms')),
       (s.records, PhosphorIconsRegular.clipboardText, () => context.go('/me/records')),
     ];
+    final cells = [
+      for (final (label, icon, onTap) in actions)
+        Expanded(
+          child: Semantics(
+            button: true,
+            child: Pressable(
+              borderRadius: BorderRadius.circular(Space.radius),
+              onTap: onTap,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 72),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: Space.md),
+                  child: Column(
+                    children: [
+                      Icon(icon, size: 26, color: Palette.brand),
+                      const SizedBox(height: Space.sm),
+                      // One line always; a long word shrinks a little rather than break.
+                      FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          label,
+                          maxLines: 1,
+                          softWrap: false,
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Palette.ink),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+    ];
+    Widget row(List<Widget> children) => Row(crossAxisAlignment: CrossAxisAlignment.start, children: children);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: Space.lg),
       child: SoftCard(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: Space.xs, vertical: Space.xs),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (final (label, icon, onTap) in actions)
-                Expanded(
-                  child: Semantics(
-                    button: true,
-                    child: Pressable(
-                      borderRadius: BorderRadius.circular(Space.radius),
-                      onTap: onTap,
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(minHeight: 72),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: Space.md),
-                          child: Column(
-                            children: [
-                              Icon(icon, size: 26, color: Palette.brand),
-                              const SizedBox(height: Space.sm),
-                              // One line always; a long word shrinks a little instead of breaking.
-                              FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  label,
-                                  maxLines: 1,
-                                  softWrap: false,
-                                  style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Palette.ink),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
+          padding: const EdgeInsets.all(Space.xs),
+          // One row of four; two rows of two when the text is large.
+          child: context.largeText
+              ? Column(children: [row(cells.sublist(0, 2)), row(cells.sublist(2))])
+              : row(cells),
         ),
       ),
     );
@@ -723,7 +733,7 @@ class _NearYouState extends ConsumerState<_NearYou> {
           const SizedBox(height: Space.lg),
         ],
         SizedBox(
-          height: 272,
+          height: 160 + context.scaled(112),
           child: results.when(
             loading: () => ListView(
               scrollDirection: Axis.horizontal,
@@ -807,18 +817,18 @@ class _LocationPrompt extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: Space.md),
           child: Row(
             children: [
-              const Icon(PhosphorIconsRegular.crosshair, color: Palette.brand),
+              Icon(PhosphorIconsRegular.crosshair, color: Palette.brand),
               const SizedBox(width: Space.md),
               Expanded(
                 child: Text(
                   here.blocked ? s.t('locationOff') : s.t('useLocation'),
-                  style: theme.textTheme.titleSmall?.copyWith(color: Palette.forest),
+                  style: theme.textTheme.titleSmall?.copyWith(color: Palette.forestInk),
                 ),
               ),
               if (here.busy)
-                const DefaultTextStyle(style: TextStyle(color: Palette.brand), child: LoadingDots())
+                DefaultTextStyle(style: TextStyle(color: Palette.brand), child: LoadingDots())
               else
-                const Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.brand),
+                Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.brand),
             ],
           ),
         ),
@@ -857,18 +867,18 @@ class _MapPreview extends ConsumerWidget {
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [Colors.white.withValues(alpha: 0), Colors.white.withValues(alpha: 0.96)],
+                      colors: [Palette.surface.withValues(alpha: 0), Palette.surface.withValues(alpha: 0.96)],
                     ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(PhosphorIconsFill.mapTrifold, color: Palette.brand, size: 20),
+                      Icon(PhosphorIconsFill.mapTrifold, color: Palette.brand, size: 20),
                       const SizedBox(width: Space.sm),
                       Expanded(child: Text(s.t('map'), style: theme.textTheme.titleSmall)),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(color: Palette.brand, borderRadius: BorderRadius.circular(99)),
-                        child: Text(s.t('openMap'), style: theme.textTheme.labelMedium?.copyWith(color: Colors.white)),
+                        child: Text(s.t('openMap'), style: theme.textTheme.labelMedium?.copyWith(color: Palette.onBrand)),
                       ),
                     ],
                   ),
@@ -901,8 +911,8 @@ class _EmergencyRow extends StatelessWidget {
               Container(
                 width: 40,
                 height: 40,
-                decoration: const BoxDecoration(color: Palette.dangerSubtle, shape: BoxShape.circle),
-                child: const Icon(PhosphorIconsFill.phoneCall, color: Palette.danger, size: 20),
+                decoration: BoxDecoration(color: Palette.dangerSubtle, shape: BoxShape.circle),
+                child: Icon(PhosphorIconsFill.phoneCall, color: Palette.danger, size: 20),
               ),
               const SizedBox(width: Space.md),
               Expanded(
@@ -919,7 +929,7 @@ class _EmergencyRow extends StatelessWidget {
                 decoration: BoxDecoration(color: Palette.danger, borderRadius: BorderRadius.circular(99)),
                 child: Text(
                   AppConfig.emergencyNumber,
-                  style: theme.textTheme.titleSmall?.copyWith(color: Colors.white, letterSpacing: 1),
+                  style: theme.textTheme.titleSmall?.copyWith(color: Palette.onDanger, letterSpacing: 1),
                 ),
               ),
             ],
@@ -1011,7 +1021,7 @@ class BookingTile extends StatelessWidget {
             if (booking.status != 'confirmed')
               StatusPill(text: s.state(booking.status), tone: cancelled ? PillTone.muted : PillTone.brand)
             else
-              const Icon(PhosphorIconsRegular.caretRight, color: Palette.muted, size: 18),
+              Icon(PhosphorIconsRegular.caretRight, color: Palette.muted, size: 18),
           ],
         ),
       ),

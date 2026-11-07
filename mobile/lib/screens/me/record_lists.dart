@@ -160,7 +160,7 @@ class ResultsScreen extends ConsumerWidget {
         icon: PhosphorIconsRegular.flask,
         title: r.testName,
         subtitle: [_when(r.releasedAt, s), r.facilityName].where((t) => t.isNotEmpty).join(' · '),
-        trailing: r.abnormal ? const Icon(PhosphorIconsFill.warningCircle, color: Palette.ochre) : null,
+        trailing: r.abnormal ? Icon(PhosphorIconsFill.warningCircle, color: Palette.ochre) : null,
       ),
     );
   }

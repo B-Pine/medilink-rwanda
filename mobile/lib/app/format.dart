@@ -11,9 +11,16 @@ const _daysRw = [
 ];
 const _daysEn = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const _daysEnFull = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const _monthsFr = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+const _daysFr = ['lun.', 'mar.', 'mer.', 'jeu.', 'ven.', 'sam.', 'dim.'];
+const _daysFrFull = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+
+List<String> _months(Strings s) => switch (s.code) { 'rw' => _monthsRw, 'fr' => _monthsFr, _ => _monthsEn };
+List<String> _days(Strings s) => switch (s.code) { 'rw' => _daysRw, 'fr' => _daysFr, _ => _daysEn };
 
 /// The full name of a weekday, Monday = 0.
-String weekday(int index, Strings s) => (s.code == 'rw' ? _daysRw : _daysEnFull)[index % 7];
+String weekday(int index, Strings s) =>
+    (switch (s.code) { 'rw' => _daysRw, 'fr' => _daysFrFull, _ => _daysEnFull })[index % 7];
 
 String two(int n) => n.toString().padLeft(2, '0');
 
@@ -24,21 +31,20 @@ String time(DateTime d) => '${two(d.hour)}:${two(d.minute)}';
 String day(DateTime d, Strings s, {bool relative = true}) {
   final now = DateTime.now();
   if (relative && d.year == now.year && d.month == now.month && d.day == now.day) return s.today;
-  final rw = s.code == 'rw';
-  final weekday = (rw ? _daysRw : _daysEn)[d.weekday - 1];
-  final month = (rw ? _monthsRw : _monthsEn)[d.month - 1];
+  final weekday = _days(s)[d.weekday - 1];
+  final month = _months(s)[d.month - 1];
   final year = d.year == now.year ? '' : ' ${d.year}';
   return '$weekday ${d.day} $month$year';
 }
 
-String dayShort(DateTime d, Strings s) {
-  final rw = s.code == 'rw';
-  return '${d.day} ${(rw ? _monthsRw : _monthsEn)[d.month - 1]}';
-}
+String dayShort(DateTime d, Strings s) => '${d.day} ${_months(s)[d.month - 1]}';
 
+const _monthsFrTag = ['JAN', 'FÉV', 'MAR', 'AVR', 'MAI', 'JUN', 'JUL', 'AOÛ', 'SEP', 'OCT', 'NOV', 'DÉC'];
+
+/// Three capitals for the calendar tag ("NOV").
 String monthShort(DateTime d, Strings s) {
-  final name = (s.code == 'rw' ? _monthsRw : _monthsEn)[d.month - 1];
-  return name.substring(0, 3).toUpperCase();
+  if (s.code == 'fr') return _monthsFrTag[d.month - 1];
+  return _months(s)[d.month - 1].substring(0, 3).toUpperCase();
 }
 
 /// "12–20 min" from an estimate; null when unknown.

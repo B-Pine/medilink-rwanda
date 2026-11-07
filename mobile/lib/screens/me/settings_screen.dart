@@ -45,11 +45,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       children: [
         GroupedSection(
           children: [
-            for (final (code, label) in const [('rw', 'Kinyarwanda'), ('en', 'English')])
+            for (final (code, label) in Strings.languages)
               GroupedRow(
                 icon: PhosphorIconsRegular.translate,
                 title: label,
-                trailing: code == language ? const Icon(PhosphorIconsFill.checkCircle, color: Palette.brand) : null,
+                trailing: code == language ? Icon(PhosphorIconsFill.checkCircle, color: Palette.brand) : null,
                 chevron: false,
                 onTap: () => ref.read(languageProvider.notifier).set(code),
               ),

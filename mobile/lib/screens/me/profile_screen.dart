@@ -212,7 +212,7 @@ class ProfilePhoto extends ConsumerWidget {
                   shape: BoxShape.circle,
                   border: Border.all(color: Palette.forest, width: 2),
                 ),
-                child: const Icon(PhosphorIconsRegular.plus, size: 16, color: Palette.forest),
+                child: Icon(PhosphorIconsRegular.plus, size: 16, color: Palette.forest),
               ),
             ),
           ],
@@ -278,23 +278,23 @@ class _PhotoSheetState extends ConsumerState<_PhotoSheet> {
         if (_busy) const Padding(padding: EdgeInsets.all(Space.lg), child: Center(child: LoadingDots())),
         if (!_busy) ...[
           ListTile(
-            leading: const Icon(PhosphorIconsRegular.userCircle, color: Palette.brand),
+            leading: Icon(PhosphorIconsRegular.userCircle, color: Palette.brand),
             title: Text(s.t('takePhoto')),
             onTap: () => _pick(ImageSource.camera),
           ),
           ListTile(
-            leading: const Icon(PhosphorIconsRegular.fileText, color: Palette.brand),
+            leading: Icon(PhosphorIconsRegular.fileText, color: Palette.brand),
             title: Text(s.t('choosePhoto')),
             onTap: () => _pick(ImageSource.gallery),
           ),
           if (widget.profile.hasPhoto)
             ListTile(
-              leading: const Icon(PhosphorIconsRegular.xCircle, color: Palette.danger),
-              title: Text(s.t('removePhoto'), style: const TextStyle(color: Palette.danger)),
+              leading: Icon(PhosphorIconsRegular.xCircle, color: Palette.danger),
+              title: Text(s.t('removePhoto'), style: TextStyle(color: Palette.danger)),
               onTap: _remove,
             ),
         ],
-        if (_error != null) Text(_error!, style: const TextStyle(color: Palette.danger)),
+        if (_error != null) Text(_error!, style: TextStyle(color: Palette.danger)),
       ],
     );
   }
@@ -356,7 +356,7 @@ class _Completion extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(PhosphorIconsRegular.plus, size: 14, color: Palette.ochreText),
+                          Icon(PhosphorIconsRegular.plus, size: 14, color: Palette.ochreText),
                           const SizedBox(width: 4),
                           Text(s.t(_labels[key] ?? key), style: theme.textTheme.labelMedium),
                         ],
@@ -605,7 +605,7 @@ class _Health extends ConsumerWidget {
                           IconButton(
                             tooltip: s.t('add'),
                             onPressed: () => _sheet(context, _HealthSheet(patientId: patientId, kind: kind, title: title)),
-                            icon: const Icon(PhosphorIconsRegular.plus, color: Palette.brand),
+                            icon: Icon(PhosphorIconsRegular.plus, color: Palette.brand),
                           ),
                         ],
                       ),
@@ -629,7 +629,7 @@ class _Health extends ConsumerWidget {
                             InputChip(
                               label: Text(item.label),
                               avatar: item.fromClinician
-                                  ? const Icon(PhosphorIconsRegular.stethoscope, size: 16, color: Palette.brand)
+                                  ? Icon(PhosphorIconsRegular.stethoscope, size: 16, color: Palette.brand)
                                   : null,
                               backgroundColor: Palette.page,
                               side: BorderSide.none,
@@ -704,7 +704,7 @@ mixin _Saving<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       ? const SizedBox.shrink()
       : Padding(
           padding: const EdgeInsets.only(top: Space.md),
-          child: Text(error!, style: const TextStyle(color: Palette.danger)),
+          child: Text(error!, style: TextStyle(color: Palette.danger)),
         );
 }
 
@@ -721,7 +721,7 @@ class _Choice extends StatelessWidget {
         children: [
           for (final (code, label) in options)
             ChoiceChip(
-              label: Text(label, style: TextStyle(color: code == value ? Colors.white : Palette.ink, fontWeight: FontWeight.w600)),
+              label: Text(label, style: TextStyle(color: code == value ? Palette.onBrand : Palette.ink, fontWeight: FontWeight.w600)),
               selected: code == value,
               showCheckmark: false,
               selectedColor: Palette.brand,

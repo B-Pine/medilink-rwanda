@@ -32,17 +32,19 @@ class ForestBand extends StatelessWidget {
 /// The band's curved foot in the page colour, laid over the bottom of a picture or a coloured
 /// header (doctor, facility) so detail pages end in the same curve as the main tabs.
 class BandFoot extends StatelessWidget {
-  const BandFoot({super.key, this.depth = Space.curve, this.color = Palette.page});
+  const BandFoot({super.key, this.depth = Space.curve, this.color});
 
   final double depth;
-  final Color color;
+
+  /// The page colour when null.
+  final Color? color;
 
   @override
   Widget build(BuildContext context) => IgnorePointer(
         child: SizedBox(
           height: depth,
           width: double.infinity,
-          child: CustomPaint(painter: _FootPainter(color)),
+          child: CustomPaint(painter: _FootPainter(color ?? Palette.page)),
         ),
       );
 }

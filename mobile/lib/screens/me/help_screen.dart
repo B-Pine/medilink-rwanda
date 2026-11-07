@@ -77,10 +77,10 @@ class _HelpScreenState extends ConsumerState<HelpScreen> {
           const SizedBox(height: Space.lg),
           Card(
             child: ListTile(
-              leading: const Icon(PhosphorIconsRegular.chatsCircle, color: Palette.brand),
+              leading: Icon(PhosphorIconsRegular.chatsCircle, color: Palette.brand),
               title: Text(s.t('contactSupport'), style: theme.textTheme.titleSmall),
               subtitle: Text(s.t('myRequests')),
-              trailing: const Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.muted),
+              trailing: Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.muted),
               onTap: () => context.go('/me/support'),
             ),
           ),
@@ -102,7 +102,7 @@ class _HelpScreenState extends ConsumerState<HelpScreen> {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            trailing: const Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.muted),
+                            trailing: Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.muted),
                             onTap: () => context.go('/me/help/${a['slug']}'),
                           ),
                         ],
@@ -292,7 +292,7 @@ class _NewSupportScreenState extends ConsumerState<NewSupportScreen> {
           if (_error != null)
             Padding(
               padding: const EdgeInsets.only(top: Space.md),
-              child: Text(_error!, style: const TextStyle(color: Palette.danger)),
+              child: Text(_error!, style: TextStyle(color: Palette.danger)),
             ),
           const SizedBox(height: Space.xl),
           LoadingButton(label: s.t('send'), onPressed: ready ? _send : null),

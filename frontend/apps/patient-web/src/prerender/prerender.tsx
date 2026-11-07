@@ -6,7 +6,13 @@ import { createStaticHandler, createStaticRouter, StaticRouterProvider } from "r
 import { AppProviders, createServices } from "../app/services";
 import { routes } from "../app/routes";
 import { canonicalUrl, facilityJsonLd, JSON_LD_ID, pageDescriptionKey } from "../features/site/seo";
-import { FACILITY_PATH, isPrerenderedPath, PRERENDER_DATA_ID, scriptJson } from "./shared";
+import {
+  FACILITY_PATH,
+  isPrerenderedPath,
+  PRERENDERED_PATHS,
+  PRERENDER_DATA_ID,
+  scriptJson,
+} from "./shared";
 import type { PrerenderData } from "./shared";
 
 /**
@@ -217,13 +223,8 @@ export async function prerender({ url }: { url: string }): Promise<PrerenderResu
   const links =
     path === "/"
       ? new Set([
-          "/for-facilities",
           // static public pages (upgrade 11 §9: pre-rendering where supported)
-          "/how-it-works",
-          "/about",
-          "/privacy",
-          "/terms",
-          "/accessibility",
+          ...PRERENDERED_PATHS.filter((p) => p !== "/"),
           ...(await facilityPaths(api)),
         ])
       : new Set<string>();

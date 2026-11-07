@@ -27,15 +27,14 @@ export function ProfileSwitcher({ profiles, currentId, onSelect, label }: Profil
   if (!current) return null;
   return (
     <Menu>
-      <MenuTrigger
-        aria-label={`${label}: ${current.name}`}
-        className="inline-flex min-h-11 max-w-full min-w-0 items-center gap-2 rounded-full bg-surface px-3 text-body-sm text-fg shadow-card"
-      >
+      {/* named by its content (WCAG 2.5.3): the visible name and relationship, then the label */}
+      <MenuTrigger className="inline-flex min-h-11 max-w-full min-w-0 items-center gap-2 rounded-full bg-surface px-3 text-body-sm text-fg shadow-card">
         <UserCircle aria-hidden="true" size={22} className="shrink-0" />
         <span className="truncate font-medium whitespace-nowrap">{current.name}</span>
         <span className="hidden sm:inline">
           <Badge tone="neutral">{current.relationship}</Badge>
         </span>
+        <span className="sr-only">, {label}</span>
         <CaretDown aria-hidden="true" />
       </MenuTrigger>
       <MenuContent align="start">

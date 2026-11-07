@@ -42,7 +42,8 @@ interface ActionItem {
   key: string;
   count: number;
   icon: Icon;
-  to: string;
+  /** Where the row leads; none while the screen does not exist yet. */
+  to?: string;
   tone: "danger" | "attention" | "info";
 }
 
@@ -234,7 +235,8 @@ function ActionInbox({ data }: { data: CommandCenter }) {
       key: "disputes",
       count: a.disputes_escalated,
       icon: Gavel,
-      to: "/platform/disputes",
+      // no platform disputes screen yet (sprint 10b frontend): a counter, not a dead link
+      to: undefined,
       tone: "danger" as const,
     },
     {
@@ -286,36 +288,60 @@ function ActionInbox({ data }: { data: CommandCenter }) {
       <ul className="m-0 flex list-none flex-col p-2">
         {items.map(({ key, count, icon: ItemIcon, to, tone }) => (
           <li key={key}>
-            <Link
-              to={to}
-              className={cx(
-                "group flex items-center gap-3 rounded-xl px-3 py-3 no-underline transition-colors duration-200 ease-out-quint hover:bg-subtle/70",
-                count === 0 && "opacity-55",
-              )}
-            >
-              <span
-                className={cx(
-                  "grid size-10 shrink-0 place-items-center rounded-xl",
-                  count === 0
-                    ? "bg-subtle text-fg-muted"
-                    : tone === "danger"
-                      ? "bg-danger-bg text-danger"
-                      : tone === "attention"
-                        ? "bg-attention-bg text-attention"
-                        : "bg-info-bg text-info",
-                )}
-              >
-                <ItemIcon aria-hidden="true" weight="bold" className="size-5" />
-              </span>
-              <span className="min-w-0 flex-1 text-body-sm font-semibold text-fg">
-                {t(`console.cc.items.${key}`, { count })}
-              </span>
-              <span className="font-heading text-h3 font-bold text-fg tabular-nums">{count}</span>
-              <CaretRight
-                aria-hidden="true"
-                className="size-4 text-fg-muted transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5"
-              />
-            </Link>
+            {(() => {
+              const body = (
+                <>
+                  <span
+                    className={cx(
+                      "grid size-10 shrink-0 place-items-center rounded-xl",
+                      count === 0
+                        ? "bg-subtle text-fg-muted"
+                        : tone === "danger"
+                          ? "bg-danger-bg text-danger"
+                          : tone === "attention"
+                            ? "bg-attention-bg text-attention"
+                            : "bg-info-bg text-info",
+                    )}
+                  >
+                    <ItemIcon aria-hidden="true" weight="bold" className="size-5" />
+                  </span>
+                  <span className="min-w-0 flex-1 text-body-sm font-semibold text-fg">
+                    {t(`console.cc.items.${key}`, { count })}
+                  </span>
+                  <span className="font-heading text-h3 font-bold text-fg tabular-nums">
+                    {count}
+                  </span>
+                  {to && (
+                    <CaretRight
+                      aria-hidden="true"
+                      className="size-4 text-fg-muted transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5"
+                    />
+                  )}
+                </>
+              );
+              return to ? (
+                <Link
+                  to={to}
+                  className={cx(
+                    "group flex items-center gap-3 rounded-xl px-3 py-3 no-underline transition-colors duration-200 ease-out-quint",
+                    to && "hover:bg-subtle/70",
+                    count === 0 && "opacity-55",
+                  )}
+                >
+                  {body}
+                </Link>
+              ) : (
+                <div
+                  className={cx(
+                    "group flex items-center gap-3 rounded-xl px-3 py-3 no-underline transition-colors duration-200 ease-out-quint",
+                    to && "hover:bg-subtle/70",
+                    count === 0 && "opacity-55",
+                  )}
+                >
+                  {body}
+                </div>
+              );
+            })()}
           </li>
         ))}
       </ul>

@@ -1,5 +1,5 @@
 import { isApiError } from "@medilink/api-client";
-import { Alert, Button, LoadingState } from "@medilink/ui";
+import { Alert, Button, ShellSkeleton } from "@medilink/ui";
 import { useTranslation } from "react-i18next";
 import { Navigate, Outlet, useLocation } from "react-router";
 
@@ -11,7 +11,7 @@ export function RequirePatient() {
   const location = useLocation();
   const me = usePatientMe();
 
-  if (me.isPending) return <LoadingState className="min-h-dvh" />;
+  if (me.isPending) return <ShellSkeleton />;
   if (me.isError) {
     if (isApiError(me.error) && me.error.status === 401) {
       return <Navigate to="/login" replace state={{ from: location.pathname }} />;

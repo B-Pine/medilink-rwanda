@@ -149,7 +149,7 @@ describe("ProfileSwitcher", () => {
       />,
     );
     expect(await axe(container)).toHaveNoViolations();
-    await user.click(screen.getByRole("button", { name: "Switch profile: Mukamana Jeanne" }));
+    await user.click(screen.getByRole("button", { name: /^Mukamana Jeanne.*Switch profile$/ }));
     await user.click(await screen.findByRole("menuitem", { name: /Keza Uwase/ }));
     expect(onSelect).toHaveBeenCalledWith("child");
   });

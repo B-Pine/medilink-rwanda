@@ -176,7 +176,8 @@
     "greeting_morning": "Mwaramutse, {{name}}",
     "greeting_afternoon": "Mwiriwe, {{name}}",
     "greeting_evening": "Muraho, {{name}}",
-    "quickActions": "Ibikorwa byihuse"
+    "quickActions": "Ibikorwa byihuse",
+    "moreActions": "Ibindi ({{count}})"
   },
   "placeholder": {
     "title": "{{section}}",

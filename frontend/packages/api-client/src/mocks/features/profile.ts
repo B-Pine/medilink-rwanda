@@ -1,3 +1,4 @@
+import { mockId } from "../ids";
 import { http, HttpResponse } from "msw";
 
 import type { HealthKind, InsuranceProfile } from "../../features/patients";
@@ -340,7 +341,7 @@ export const profileMocks: FeatureMockFactory = (context) => {
         if (current?.is_verified) return rule(a.lang, "locked", "kind");
         a.patient.identifiers = a.patient.identifiers.filter((i) => i.kind !== kind);
         const identifier = {
-          id: crypto.randomUUID(),
+          id: mockId(),
           kind: kind as MockPatient["identifiers"][number]["kind"],
           issuing_country: kind === "national_id" ? "RW" : str(body.issuing_country).toUpperCase(),
           masked_value: mask(value.slice(-4)),
@@ -469,7 +470,7 @@ export const profileMocks: FeatureMockFactory = (context) => {
           return rule(a.lang, "delegateAge");
         if (str(body.consent_version) !== CONSENT_VERSION)
           return outdated(a.lang, "consent_version");
-        const patientId = crypto.randomUUID();
+        const patientId = mockId();
         const patient: MockPatient = {
           ...emptyPatient(s.nextSeed++),
           id: patientId,
@@ -480,7 +481,7 @@ export const profileMocks: FeatureMockFactory = (context) => {
           // add_dependent() records the guardian or delegation consent in the same transaction
           consents: [
             {
-              id: crypto.randomUUID(),
+              id: mockId(),
               kind: body.relationship === "guardian" ? "guardian" : "delegation",
               patient_id: patientId,
               granted: true,
@@ -492,7 +493,7 @@ export const profileMocks: FeatureMockFactory = (context) => {
         };
         s.patients.set(patient.id, patient);
         const link: MockLink = {
-          id: crypto.randomUUID(),
+          id: mockId(),
           account_email: a.me.email,
           holder_name: a.me.full_name,
           patient_id: patient.id,
@@ -581,7 +582,7 @@ export const profileMocks: FeatureMockFactory = (context) => {
           () => "0123456789ABCDEFGHJKMNPQRSTVWXYZ"[Math.floor(Math.random() * 32)],
         ).join("");
         const invite = {
-          id: crypto.randomUUID(),
+          id: mockId(),
           code: `${code.slice(0, 4)}-${code.slice(4)}`,
           patient_id: link.patient_id,
           relationship: (link.relationship === "self"
@@ -625,7 +626,7 @@ export const profileMocks: FeatureMockFactory = (context) => {
         if (existing) return context.errorResponse(409, "conflict", s1("conflict", a.lang));
         invite.used = true;
         const link: MockLink = {
-          id: crypto.randomUUID(),
+          id: mockId(),
           account_email: a.me.email,
           holder_name: a.me.full_name,
           patient_id: invite.patient_id,
@@ -700,7 +701,7 @@ export const profileMocks: FeatureMockFactory = (context) => {
             open.status = "cancelled";
         const byCode = Boolean(target.email);
         const claim: MockClaim = {
-          id: crypto.randomUUID(),
+          id: mockId(),
           account_email: a.me.email,
           patient_id: target.id,
           status: byCode ? "code_sent" : "awaiting_reception",
@@ -795,7 +796,7 @@ export const profileMocks: FeatureMockFactory = (context) => {
           patientId = link.patient_id;
         } else if (kind === "care") patientId = own?.id ?? null;
         const record = {
-          id: crypto.randomUUID(),
+          id: mockId(),
           kind,
           patient_id: patientId,
           granted: Boolean(body.granted),
@@ -914,7 +915,7 @@ function publicClaim(claim: ReturnType<typeof patientsStore>["claims"][number]) 
 
 function emptyPatient(seed: number): MockPatient {
   return {
-    id: crypto.randomUUID(),
+    id: mockId(),
     medilink_number: medilinkNumber(seed),
     full_name: "",
     preferred_name: null,

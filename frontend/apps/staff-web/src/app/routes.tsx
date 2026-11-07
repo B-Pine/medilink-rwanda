@@ -1,4 +1,4 @@
-import { LoadingState } from "@medilink/ui";
+import { ShellSkeleton } from "@medilink/ui";
 import type { ComponentType } from "react";
 import type { RouteObject } from "react-router";
 
@@ -20,7 +20,7 @@ const page =
 /** Route table, shared by the browser router (main.tsx) and the memory router (tests). */
 export const routes: RouteObject[] = [
   {
-    HydrateFallback: () => <LoadingState className="min-h-dvh" />,
+    HydrateFallback: () => <ShellSkeleton />,
     children: [
       { path: "/login", lazy: page(() => import("../pages/LoginPage"), "LoginPage") },
       {

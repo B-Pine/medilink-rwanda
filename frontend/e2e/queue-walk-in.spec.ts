@@ -19,7 +19,7 @@ async function logIn(page: Page, email: string) {
 }
 
 async function logOut(page: Page) {
-  await page.getByRole("button", { name: /^Account menu: / }).click();
+  await page.getByRole("button", { name: /Account menu$/ }).click();
   await page.getByRole("menuitem", { name: "Log out" }).click();
   await expect(page.getByLabel("Email")).toBeVisible();
 }

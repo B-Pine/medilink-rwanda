@@ -439,7 +439,7 @@ export function DateBlock({ iso, size = "md" }: { iso: string; size?: "md" | "lg
       >
         {part({ day: "numeric" })}
       </span>
-      <span className="text-caption tabular-nums opacity-80">
+      <span className="text-caption tabular-nums">
         {size === "md" ? part({ year: "numeric" }) : part({ weekday: "short" })}
       </span>
     </span>

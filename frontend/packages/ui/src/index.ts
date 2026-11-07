@@ -30,6 +30,7 @@ export { PasswordField } from "./components/PasswordField";
 export type { PasswordFieldProps } from "./components/PasswordField";
 export { SelectField } from "./components/SelectField";
 export type { SelectFieldProps } from "./components/SelectField";
+export { ShellSkeleton } from "./components/ShellSkeleton";
 export { Skeleton } from "./components/Skeleton";
 export { MAIN_CONTENT_ID, SkipLink } from "./components/SkipLink";
 export { LoadingState, Spinner } from "./components/Spinner";

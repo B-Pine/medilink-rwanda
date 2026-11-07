@@ -1,3 +1,4 @@
+import { mockId } from "../ids";
 import type { LanguageCode } from "../../types";
 import type { MockContext } from "../handlers";
 
@@ -154,7 +155,7 @@ export function page<T>(items: T[], url: URL) {
 }
 
 export const now = () => new Date().toISOString();
-export const id = () => crypto.randomUUID();
+export const id = () => mockId();
 
 /** A request value as text: strings and numbers as is, anything else empty. */
 export function str(value: unknown): string {

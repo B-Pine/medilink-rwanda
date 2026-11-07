@@ -10,7 +10,8 @@
     "logout": "Se déconnecter",
     "loggingOut": "Déconnexion…",
     "opensInNewTab": "(s’ouvre dans un nouvel onglet)",
-    "comingSoon": "Bientôt disponible"
+    "comingSoon": "Bientôt disponible",
+    "close": "Fermer"
   },
   "errors": {
     "generic": "Un problème est survenu. Réessayez.",
@@ -46,6 +47,7 @@
     "closeMenu": "Fermer le menu",
     "homeLabel": "Accueil MediLink Rwanda",
     "strip": {
+      "label": "Urgence",
       "long": "Urgence vitale ?",
       "short": "Urgence ?",
       "call": "Appelez le 912",
@@ -131,6 +133,7 @@
     "dataInRwanda": "Données de santé hébergées au Rwanda"
   },
   "authAside": {
+    "label": "Pourquoi un compte",
     "title": "Moins de temps à attendre, plus de temps pour guérir.",
     "lead": "Un seul compte pour vous et votre famille, dans chaque établissement sur MediLink.",
     "points": {
@@ -150,6 +153,14 @@
     "trust": "Vos données de santé sont protégées par la loi rwandaise sur la protection des données et ne sont partagées qu’avec votre accord."
   },
   "login": {
+    "intent": {
+      "book": "Connectez-vous pour réserver {{service}} à {{facility}}",
+      "bookAt": "Connectez-vous pour réserver à {{facility}}",
+      "bookAny": "Connectez-vous pour réserver",
+      "join": "Connectez-vous pour rejoindre la file pour {{service}} à {{facility}}",
+      "joinAt": "Connectez-vous pour rejoindre la file à {{facility}}",
+      "joinAny": "Connectez-vous pour rejoindre la file"
+    },
     "title": "Se connecter ou créer un compte",
     "intro": "Réservez vos soins et évitez la longue attente.",
     "email": "E-mail",

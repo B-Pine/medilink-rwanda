@@ -10,7 +10,8 @@
     "logout": "Log out",
     "loggingOut": "Logging out…",
     "opensInNewTab": "(opens in a new tab)",
-    "comingSoon": "Coming soon"
+    "comingSoon": "Coming soon",
+    "close": "Close"
   },
   "errors": {
     "generic": "Something went wrong. Try again.",
@@ -46,6 +47,7 @@
     "closeMenu": "Close menu",
     "homeLabel": "MediLink Rwanda home",
     "strip": {
+      "label": "Emergency",
       "long": "Life-threatening emergency?",
       "short": "Emergency?",
       "call": "Call 912",
@@ -131,6 +133,7 @@
     "dataInRwanda": "Health data stored in Rwanda"
   },
   "authAside": {
+    "label": "Why an account",
     "title": "Spend less time waiting and more time getting better.",
     "lead": "One account for you and your family, at every facility on MediLink.",
     "points": {
@@ -150,6 +153,14 @@
     "trust": "Your health data is protected under Rwanda’s data protection law and is only shared when you allow it."
   },
   "login": {
+    "intent": {
+      "book": "Sign in to book {{service}} at {{facility}}",
+      "bookAt": "Sign in to book at {{facility}}",
+      "bookAny": "Sign in to book",
+      "join": "Sign in to join the queue for {{service}} at {{facility}}",
+      "joinAt": "Sign in to join the queue at {{facility}}",
+      "joinAny": "Sign in to join the queue"
+    },
     "title": "Log in or create an account",
     "intro": "Book care and skip the long wait.",
     "email": "Email",

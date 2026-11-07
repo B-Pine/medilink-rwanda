@@ -9,6 +9,30 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Public site audit, phase 1: what was broken (2026-11-07)
+
+- Fixed: doctor links from facility, service and Doctors pages open the doctor (15 of 17 said
+  "not listed"). The mock gave doctors, services and slots new random ids on every page load;
+  they are now derived from the facility and service, so a link survives a reload.
+- Fixed: dental care, eye care and the other services facilities offer open their page. The mock
+  catalogue had 4 of the 16 seeded services; it now mirrors the backend seed, and a service page
+  still opens from facility data when the catalogue lags.
+- Fixed: home no longer shows "Open now 0", "People waiting 0" and "Typical wait —" at night. When
+  every facility is closed, one line says so with the next opening; the list below is now
+  "Facilities near you", open ones first.
+- Fixed: facility cards hide "Book a time" while the facility is closed and show the next free
+  time instead.
+- Added: signing in from a booking says what was being booked ("Sign in to book General
+  consultation at Kigali Clinic") and returns there after sign-in, Google sign-in, sign-up and the
+  email link, with the service, doctor and day kept. A browser known to be signed out goes
+  straight to sign-in, so no 401 is logged.
+- Added: facility photos open in a lightbox (`Lightbox` in `@medilink/ui`: Esc, arrow keys, alt
+  text, focus back to the thumbnail). Photos that fail to load are left out, no grey tiles.
+- Fixed: doctor, service and facility "not found" pages have an `<h1>`, a reason and a link back.
+- Fixed (accessibility): the footer's faint giant wordmark is gone (contrast 1.13:1); the
+  emergency strip and the sign-in brand panel are `<aside>` landmarks; facility and doctor cards
+  on Facilities and Doctors are `<h2>` under the page `<h1>`; map credit links are underlined.
+
 ### Dashboards · work screens (#262)
 
 - Changed: the doctor's current patient shows three main actions (Open record, Finish and call

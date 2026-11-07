@@ -380,6 +380,12 @@ html:has(.ml-soft) {
   background: var(--color-subtle);
 }
 
+/* Map credits: links inside the attribution line are underlined, not told apart by colour only
+   (WCAG 1.4.1, axe "link-in-text-block"). */
+.leaflet-container .leaflet-control-attribution a {
+  text-decoration: underline;
+}
+
 /* Public site: map zoom buttons are 44 px targets, like every other control. */
 :root[data-surface="site"] .leaflet-touch .leaflet-bar a,
 :root[data-surface="site"] .leaflet-bar a {

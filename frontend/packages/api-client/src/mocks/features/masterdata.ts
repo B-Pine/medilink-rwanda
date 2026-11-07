@@ -114,36 +114,73 @@ function seed(): Record<MasterDataKind, Row[]> {
       ["polyclinic", "secondary", tr("Polikilinike", "Polyclinic", "Polyclinique")],
       ["dental_clinic", "primary", tr("Ivuriro ry'amenyo", "Dental clinic", "Cabinet dentaire")],
     ].map(([code, level, name]) => row({ code, level_of_care: level, name_i18n: name })),
-    "service-catalogue-items": [
+    // the backend seed (masterdata/migrations/_seed_0002.py SERVICES), so every service a mock
+    // facility offers has a catalogue entry and a public page
+    "service-catalogue-items": (
       [
-        "general_consultation",
-        tr("Isuzumwa rusange", "General consultation", "Consultation générale"),
-      ],
-      ["antenatal_care", tr("Kwipimisha utwite", "Antenatal care", "Consultation prénatale")],
-      ["vaccination", tr("Gukingira", "Vaccination", "Vaccination")],
-      [
-        "laboratory_tests",
-        tr("Ibizamini bya laboratwari", "Laboratory tests", "Analyses de laboratoire"),
-      ],
-    ].map(([code, name]) =>
-      row({
-        code,
-        name_i18n: name,
-        synonyms_i18n: {},
-        // one written description, as a platform admin would add in master data
-        description_i18n:
-          code === "vaccination"
-            ? tr(
-                "Inkingo zirinda abana n'abakuru indwara zikomeye.",
-                "Vaccines protect children and adults from serious diseases.",
-                "Les vaccins protègent enfants et adultes contre des maladies graves.",
-              )
-            : {},
-        min_age_months: null,
-        max_age_months: null,
-        sex_restriction: null,
-      }),
-    ),
+        [
+          "general_consultation",
+          "Isuzumwa rusange",
+          "General consultation",
+          "Consultation générale",
+        ],
+        [
+          "paediatric_consultation",
+          "Isuzumwa ry'abana",
+          "Paediatric consultation",
+          "Consultation pédiatrique",
+        ],
+        ["antenatal_care", "Kwipimisha utwite", "Antenatal care", "Consultation prénatale"],
+        ["postnatal_care", "Gukurikirana nyuma yo kubyara", "Postnatal care", "Soins postnatals"],
+        ["delivery", "Kubyaza", "Delivery (maternity)", "Accouchement (maternité)"],
+        ["family_planning", "Kuboneza urubyaro", "Family planning", "Planification familiale"],
+        ["vaccination", "Gukingira", "Vaccination", "Vaccination"],
+        [
+          "laboratory_tests",
+          "Ibizamini bya laboratwari",
+          "Laboratory tests",
+          "Analyses de laboratoire",
+        ],
+        ["malaria_test", "Ikizamini cya malariya", "Malaria test", "Test du paludisme"],
+        ["dental_care", "Kuvura amenyo", "Dental care", "Soins dentaires"],
+        ["eye_care", "Kuvura amaso", "Eye care", "Soins ophtalmologiques"],
+        [
+          "internal_medicine",
+          "Indwara zo mu mubiri imbere",
+          "Internal medicine consultation",
+          "Consultation de médecine interne",
+        ],
+        [
+          "mental_health",
+          "Ubuzima bwo mu mutwe",
+          "Mental health consultation",
+          "Consultation de santé mentale",
+        ],
+        ["xray", "Iradiyo (X-ray)", "X-ray", "Radiographie"],
+        ["ultrasound", "Ekografi", "Ultrasound", "Échographie"],
+        ["emergency_care", "Ubutabazi bwihuse", "Emergency care", "Soins d'urgence"],
+      ] as const
+    )
+      .map(([code, rw, en, fr]) => [code, tr(rw, en, fr)] as const)
+      .map(([code, name]) =>
+        row({
+          code,
+          name_i18n: name,
+          synonyms_i18n: {},
+          // one written description, as a platform admin would add in master data
+          description_i18n:
+            code === "vaccination"
+              ? tr(
+                  "Inkingo zirinda abana n'abakuru indwara zikomeye.",
+                  "Vaccines protect children and adults from serious diseases.",
+                  "Les vaccins protègent enfants et adultes contre des maladies graves.",
+                )
+              : {},
+          min_age_months: null,
+          max_age_months: null,
+          sex_restriction: null,
+        }),
+      ),
     insurers: [
       ["mutuelle", "RSSB Community-Based Health Insurance (Mutuelle de santé)", "community", true],
       ["rama", "RSSB Medical Scheme (RAMA)", "social", true],

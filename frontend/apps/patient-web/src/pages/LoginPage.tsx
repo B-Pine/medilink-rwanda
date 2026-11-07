@@ -18,8 +18,10 @@ import { z } from "zod";
 
 import { paths } from "../app/paths";
 import { useApi } from "../app/services";
+import { useBookingIntent } from "../auth/booking-intent";
 import { GoogleSignIn } from "../auth/GoogleSignIn";
 import { patientMeKey } from "../auth/queries";
+import { safeReturnPath } from "../auth/return-to";
 import { applyFieldErrors, describeApiError, translator } from "../forms/api-errors";
 import { EMAIL_PATTERN } from "../forms/validation";
 import { AuthLayout, AuthTitle } from "../layout/AuthLayout";
@@ -43,12 +45,6 @@ type Values = z.infer<typeof schema>;
 
 const FIELD_IDS = { email: "login-email", password: "login-password" } as const;
 
-function safeReturnPath(from: unknown): string {
-  return typeof from === "string" && from.startsWith("/") && !from.startsWith("//")
-    ? from
-    : paths.overview;
-}
-
 /**
  * Email-first login (design 05 §2): email, then password, with a clear way to create an account
  * with the same email. The API has no "does this email exist" endpoint (it would enable account
@@ -60,7 +56,10 @@ export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
-  const from = (location.state as { from?: string } | null)?.from;
+  const state = location.state as { from?: string } | null;
+  const from = state?.from;
+  const returnTo = safeReturnPath(from, paths.overview);
+  const intent = useBookingIntent(from);
 
   const [attempt, setAttempt] = useState(0);
   const [formError, setFormError] = useState<string | null>(null);
@@ -93,7 +92,7 @@ export function LoginPage() {
     try {
       const me = await api.patientAuth.login({ email: values.email, password: values.password });
       queryClient.setQueryData(patientMeKey, me);
-      await navigate(safeReturnPath(from), { replace: true });
+      await navigate(returnTo, { replace: true });
     } catch (error) {
       const applied =
         isApiError(error) &&
@@ -132,7 +131,18 @@ export function LoginPage() {
       }
     >
       <div className="flex flex-col gap-5">
-        <AuthTitle title={title} hint={step === "email" ? t("login.intro") : undefined} />
+        {intent && (
+          <p
+            role="status"
+            className="m-0 rounded-lg bg-brand-subtle px-4 py-3 font-semibold text-on-brand-subtle"
+          >
+            {intent}
+          </p>
+        )}
+        <AuthTitle
+          title={title}
+          hint={step === "email" && !intent ? t("login.intro") : undefined}
+        />
         <ErrorSummary items={summary} focusKey={attempt} />
         <form
           noValidate
@@ -186,14 +196,14 @@ export function LoginPage() {
             {step === "email" ? t("login.continue") : t("login.submit")}
           </Button>
         </form>
-        {step === "email" && <GoogleSignIn returnTo={safeReturnPath(from)} />}
+        {step === "email" && <GoogleSignIn returnTo={returnTo} />}
 
         <div aria-hidden="true" className="border-t border-border" />
         <p className="m-0 flex flex-wrap items-center justify-center gap-x-2 text-center text-body-sm text-fg-secondary">
           {t("login.newHere")}
           <Link
             to="/signup"
-            state={{ email }}
+            state={{ email, from }}
             className="inline-flex min-h-target items-center gap-1 font-semibold"
           >
             {t("login.createAccount")}

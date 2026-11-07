@@ -21,7 +21,7 @@ import { NO_SHOW_REVERSAL_REASONS } from "../../features/booking";
 import { FACILITIES } from "../data";
 import { patientsStore } from "./patients";
 import type { FeatureMockFactory } from "../features";
-import { id, str } from "./s1-common";
+import { id, stableId, str } from "./s1-common";
 import { MEMBERSHIP_BY_EMAIL, SETUP_IDS } from "./setup";
 
 /**
@@ -99,7 +99,25 @@ const GENERAL = [
   "Consultation générale",
 ] as const;
 
+/**
+ * Doctors and services outside the setup fixtures get ids from their facility and catalogue code,
+ * so a doctor or booking link copied from one page load still opens after a reload.
+ */
 function facilities(): MockFacility[] {
+  const fixed = new Set<string>(Object.values(SETUP_IDS));
+  return seedFacilities().map((f) => ({
+    ...f,
+    services: f.services.map((s) => ({
+      ...s,
+      id: fixed.has(s.id) ? s.id : stableId(`${f.slug}/${s.code}/service`),
+      membership_id: fixed.has(s.membership_id)
+        ? s.membership_id
+        : stableId(`${f.slug}/${s.code}/doctor`),
+    })),
+  }));
+}
+
+function seedFacilities(): MockFacility[] {
   return [
     {
       slug: FACILITIES.kigaliClinic.slug,
@@ -371,7 +389,7 @@ function makeSlots(all: MockFacility[]): MockSlot[] {
           // every fourth slot is full, so the grid has gaps like a real week
           const full = (day * 7 + h / s.minutes) % 4 === 3;
           out.push({
-            id: id(),
+            id: stableId(`${f.slug}/${s.id}/${start.toISOString()}`),
             slug: f.slug,
             service_id: s.id,
             starts_at: start.toISOString(),

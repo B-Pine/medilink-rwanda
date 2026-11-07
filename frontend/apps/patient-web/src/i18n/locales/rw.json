@@ -10,7 +10,8 @@
     "logout": "Sohoka",
     "loggingOut": "Urasohoka…",
     "opensInNewTab": "(bifungukira mu idirishya rishya)",
-    "comingSoon": "Biraza vuba"
+    "comingSoon": "Biraza vuba",
+    "close": "Funga"
   },
   "errors": {
     "generic": "Hari ikitagenze neza. Ongera ugerageze.",
@@ -46,6 +47,7 @@
     "closeMenu": "Funga ibikubiyemo",
     "homeLabel": "Ahabanza ha MediLink Rwanda",
     "strip": {
+      "label": "Ubutabazi bwihuse",
       "long": "Ubuzima buri mu kaga?",
       "short": "Byihutirwa?",
       "call": "Hamagara 912",
@@ -131,6 +133,7 @@
     "dataInRwanda": "Amakuru y'ubuzima abikwa mu Rwanda"
   },
   "authAside": {
+    "label": "Akamaro ka konti",
     "title": "Tegereza igihe gito, ubone umwanya wo gukira.",
     "lead": "Konti imwe yawe n’umuryango wawe, mu kigo cyose kiri kuri MediLink.",
     "points": {
@@ -150,6 +153,14 @@
     "trust": "Amakuru yawe y’ubuzima arinzwe n’itegeko ry’u Rwanda rirengera amakuru bwite, kandi asangizwa gusa ubyemeye."
   },
   "login": {
+    "intent": {
+      "book": "Injira ufate igihe cya {{service}} kuri {{facility}}",
+      "bookAt": "Injira ufate igihe kuri {{facility}}",
+      "bookAny": "Injira ufate igihe",
+      "join": "Injira ujye ku murongo wa {{service}} kuri {{facility}}",
+      "joinAt": "Injira ujye ku murongo kuri {{facility}}",
+      "joinAny": "Injira ujye ku murongo"
+    },
     "title": "Injira cyangwa ufungure konti",
     "intro": "Fata igihe cyo kwivuza wirinde gutegereza igihe kirekire.",
     "email": "Imeyili",

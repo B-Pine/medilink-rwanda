@@ -24,7 +24,9 @@ import { z } from "zod";
 
 import { paths } from "../app/paths";
 import { useApi } from "../app/services";
+import { useBookingIntent } from "../auth/booking-intent";
 import { GoogleSignIn } from "../auth/GoogleSignIn";
+import { rememberReturnTo, safeReturnPath } from "../auth/return-to";
 import { applyFieldErrors, describeApiError, translator } from "../forms/api-errors";
 import {
   EMAIL_PATTERN,
@@ -70,7 +72,11 @@ export function SignUpPage() {
   const { t, i18n } = useTranslation();
   const api = useApi();
   const location = useLocation();
-  const initialEmail = (location.state as { email?: string } | null)?.email ?? "";
+  const state = location.state as { email?: string; from?: string } | null;
+  const initialEmail = state?.email ?? "";
+  // a booking that sent the visitor here comes back after sign-up (or after the email link)
+  const from = state?.from ? safeReturnPath(state.from, "") || undefined : undefined;
+  const intent = useBookingIntent(from);
   const uiLanguage = i18n.resolvedLanguage;
 
   const [step, setStep] = useState<1 | 2>(1);
@@ -131,6 +137,7 @@ export function SignUpPage() {
         research_consent: values.research_consent,
       });
       setReady(result.email_verification === false);
+      rememberReturnTo(from);
       setSentTo(values.email.trim());
     } catch (error) {
       if (isApiError(error) && error.isValidationError) {
@@ -160,7 +167,11 @@ export function SignUpPage() {
           <Alert tone="success" role="status" title={t("signup.readyTitle")}>
             {t("signup.readyBody", { email: sentTo })}
           </Alert>
-          <Link to="/login" className={buttonClassName({ size: "lg", fullWidth: true })}>
+          <Link
+            to="/login"
+            state={{ from }}
+            className={buttonClassName({ size: "lg", fullWidth: true })}
+          >
             {t("signup.login")}
           </Link>
         </div>
@@ -195,6 +206,14 @@ export function SignUpPage() {
   return (
     <AuthLayout wide>
       <div className="flex flex-col gap-5">
+        {intent && (
+          <p
+            role="status"
+            className="m-0 rounded-lg bg-brand-subtle px-4 py-3 font-semibold text-on-brand-subtle"
+          >
+            {intent}
+          </p>
+        )}
         <div ref={headingRef}>
           {/* two-step progress: a short bar per step, filled as the person moves on */}
           <div
@@ -352,12 +371,12 @@ export function SignUpPage() {
             </div>
           </div>
         </form>
-        {step === 1 && <GoogleSignIn returnTo={paths.overview} text="signup_with" />}
+        {step === 1 && <GoogleSignIn returnTo={from ?? paths.overview} text="signup_with" />}
 
         <div aria-hidden="true" className="border-t border-border" />
         <p className="m-0 text-center text-body-sm text-fg-secondary">
           {t("signup.haveAccount")}{" "}
-          <Link to="/login" className="font-semibold">
+          <Link to="/login" state={{ from }} className="font-semibold">
             {t("signup.login")}
           </Link>
         </p>

@@ -1,20 +1,33 @@
 import type { FacilityResult } from "@medilink/api-client";
-import { CaretDown, CaretRight, MagnifyingGlass, MapPin } from "@phosphor-icons/react";
-import { Button, buttonClassName, cx, Select, Skeleton, StatusPill } from "@medilink/ui";
-import type { FormEvent, ReactNode } from "react";
+import {
+  CaretDown,
+  CaretRight,
+  MagnifyingGlass,
+  MapPin,
+  SlidersHorizontal,
+  X,
+} from "@phosphor-icons/react";
+import { Button, buttonClassName, cx, Select, Sheet, Skeleton, StatusPill } from "@medilink/ui";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { PageHeading } from "../../components/PageHeading";
 import { useInDashboard } from "../../layout/DashboardContext";
 import { DISTRICT_KEYS, type DistrictKey } from "../booking/discovery";
-import { insurerNames } from "../booking/Places";
+import { FILTER, insurerNames, useWide } from "../booking/Places";
 import { EmptyIllustration } from "./illustrations";
 
 /**
  * Shared building blocks of the public site (upgrade 11 §10). Every public page composes these,
  * so widths, headings, states and facility facts look the same everywhere.
  */
+
+/** Buttons on the forest band: white for the main action, a white outline for the other. */
+export const ON_FOREST_PRIMARY =
+  "ml-press inline-flex min-h-11 items-center gap-2 rounded-full bg-on-forest px-5 font-semibold text-forest no-underline transition-[filter] duration-150 hover:brightness-95";
+export const ON_FOREST_SECONDARY =
+  "ml-press inline-flex min-h-11 items-center gap-2 rounded-full px-5 font-semibold text-on-forest no-underline shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--color-on-forest)_45%,transparent)] transition-colors duration-150 hover:bg-forest-raised";
 
 /** Page width and side gutters; `narrow` for reading pages (help, legal, about). */
 export function PageContainer({
@@ -501,6 +514,124 @@ export function SectionTitle({
         {children}
       </h2>
       {action}
+    </div>
+  );
+}
+
+export interface ActiveFilter {
+  key: string;
+  label: string;
+  onRemove: () => void;
+}
+
+/**
+ * The one filter bar of the directories (Find care, Facilities, Doctors): the search and the place
+ * on top; the filters inline on wide screens, behind one "Filters" button (a bottom sheet) on
+ * phones; the active filters as chips that remove themselves; the result count and the sort.
+ * The filters are rendered once at a time, so their ids never repeat.
+ */
+export function FilterBar({
+  search,
+  filters,
+  active,
+  onClear,
+  count,
+  sort,
+}: {
+  search: ReactNode;
+  /** The filter controls (selects, toggles). */
+  filters: ReactNode;
+  active: ActiveFilter[];
+  onClear: () => void;
+  /** "6 facilities", once loaded. */
+  count?: string;
+  sort?: ReactNode;
+}) {
+  const { t } = useTranslation();
+  const wide = useWide("(min-width: 48rem)");
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="flex flex-col gap-3 rounded-panel bg-surface p-3 shadow-e1 sm:p-4">
+      {search}
+      <div className="flex flex-wrap items-center gap-2">
+        {wide ? (
+          <div role="group" aria-label={t("care.filters")} className="contents">
+            {filters}
+          </div>
+        ) : (
+          <>
+            <button
+              type="button"
+              onClick={() => setOpen(true)}
+              className={cx(FILTER, "inline-flex items-center gap-1.5")}
+            >
+              <SlidersHorizontal aria-hidden="true" className="size-4" />
+              {t("site.filters.button")}
+              {active.length > 0 && (
+                <span className="grid size-5 place-items-center rounded-full bg-primary text-caption font-bold text-on-primary tabular-nums">
+                  {active.length}
+                </span>
+              )}
+            </button>
+            <Sheet
+              open={open}
+              onOpenChange={setOpen}
+              title={t("site.filters.button")}
+              closeLabel={t("common.close")}
+              footer={
+                <Button fullWidth size="lg" onClick={() => setOpen(false)}>
+                  {count ?? t("site.filters.show")}
+                </Button>
+              }
+            >
+              <div
+                role="group"
+                aria-label={t("care.filters")}
+                className="flex flex-col gap-3 [&>*]:w-full [&_button]:w-full"
+              >
+                {filters}
+              </div>
+            </Sheet>
+          </>
+        )}
+        <div className="ml-auto flex flex-wrap items-center gap-3">
+          {count && (
+            <span role="status" className="text-body-sm text-fg-muted tabular-nums">
+              {count}
+            </span>
+          )}
+          {sort}
+        </div>
+      </div>
+      {active.length > 0 && (
+        <ul
+          aria-label={t("site.filters.active")}
+          className="m-0 flex list-none flex-wrap items-center gap-2 p-0"
+        >
+          {active.map((filter) => (
+            <li key={filter.key}>
+              <button
+                type="button"
+                onClick={filter.onRemove}
+                aria-label={t("site.filters.remove", { name: filter.label })}
+                className="inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-full bg-brand-subtle pr-2.5 pl-3 text-body-sm font-semibold text-on-brand-subtle transition-colors duration-150 hover:bg-[color-mix(in_srgb,var(--color-primary)_18%,var(--color-surface))]"
+              >
+                {filter.label}
+                <X aria-hidden="true" weight="bold" className="size-3.5" />
+              </button>
+            </li>
+          ))}
+          <li>
+            <button
+              type="button"
+              onClick={onClear}
+              className="min-h-9 cursor-pointer rounded-full px-2 text-body-sm font-semibold text-link hover:underline"
+            >
+              {t("site.facilities.clear")}
+            </button>
+          </li>
+        </ul>
+      )}
     </div>
   );
 }

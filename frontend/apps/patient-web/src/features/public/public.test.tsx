@@ -34,7 +34,7 @@ describe("symptom checker (PT-F3)", () => {
 
     expect(await screen.findByText("See a clinician today")).toBeInTheDocument();
     expect(screen.getByText("A fever needs a malaria test the same day.")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /See places near me/ })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /See facilities near me/ })).toHaveAttribute(
       "href",
       "/find-care?service=general",
     );

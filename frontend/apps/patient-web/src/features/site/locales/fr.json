@@ -465,5 +465,16 @@
       "action": "Vérifiez vos symptômes"
     },
     "howLine": "Nouveau ici ?"
+  },
+  "filters": {
+    "button": "Filtres",
+    "show": "Voir les résultats",
+    "active": "Filtres actifs",
+    "remove": "Retirer le filtre : {{name}}"
+  },
+  "sort": {
+    "open": "Ouverts d’abord",
+    "soonest": "Attente la plus courte",
+    "nearest": "Les plus proches"
   }
 }

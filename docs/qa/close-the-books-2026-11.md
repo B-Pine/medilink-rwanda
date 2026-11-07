@@ -24,6 +24,18 @@ An issue is closed when only staging checks and evidence remain. It stays open w
 | #137 | S8 · Billing, payments, insurance | Backend (#139); staff screens: bills and bill page, payment stage, shifts, approvals, receipt print (S8-F1..F5); claims and shift summary (#219) | **Gap:** patient My bills in patient-web (S8-F6; the API exists). Staging: S8-I1, I2. The S8-F row of the acceptance record says "Not started" and is stale | Keep open |
 | #140 | S6b · Results inbox, import, back-entry, break-glass | Results inbox, scans, back-entry, health attributes, break-glass console | **Gap:** legacy register import with preview, confirm and rollback (S6-B19) and its import wizard (S6-F7). Staging: S6-I2, I3 | Keep open |
 
+## Update · 2026-11-07 (pre-launch cleanup)
+
+The two gaps above are built, and the disputes screens with them:
+
+| Issue | Was left | Built | Now |
+|---|---|---|---|
+| #137 | Patient My bills (S8-F6) | `/dashboard/bills`, balance first; bill detail with shares, payments and receipt numbers; overview reminder (#283) | Closed. Staging S8-I1, I2 stay in #17 |
+| #140 | Legacy register import (S6-B19) and its wizard (S6-F7) | Backend from the 2026-11-02 branch, migrations renumbered after the lab loop; staff import wizard (#285) | Closed. Staging S6-I2, I3 stay in #17 |
+| #263 | Disputes screens (S10b-F1..F3) | Patient, staff and platform screens, mocks and tests (#284) | Closed |
+
+Kinyarwanda day and month names now go through `dateFormat()` on every screen (#283, closes #9).
+
 ## Staging checks moved to #17
 
 S1-I4 · S2-I2, I3 · S4-I2, I4 · S5-I2, I3 · S6-I2, I3 · S7-I1, I2 · S8-I1, I2 · S9-I2, I4

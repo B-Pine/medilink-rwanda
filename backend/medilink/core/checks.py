@@ -52,6 +52,22 @@ def check_deploy_cookies(app_configs: Any = None, **kwargs: Any) -> list[CheckMe
 
 
 @register(Tags.security, deploy=True)
+def check_deploy_bootstrap_url(app_configs: Any = None, **kwargs: Any) -> list[CheckMessage]:
+    """The Railway role bootstrap needs the Postgres superuser URL once; left on the running
+    service, any code execution in the app gets a role that bypasses RLS."""
+    import os
+
+    if os.environ.get("BOOTSTRAP_DATABASE_URL"):
+        return [
+            Warning(
+                "Remove BOOTSTRAP_DATABASE_URL from the service once the database roles exist.",
+                id="medilink.W005",
+            )
+        ]
+    return []
+
+
+@register(Tags.security, deploy=True)
 def check_deploy_mfa(app_configs: Any = None, **kwargs: Any) -> list[CheckMessage]:
     if getattr(settings, "DEV_SKIP_STAFF_MFA", False):
         return [
@@ -61,3 +77,30 @@ def check_deploy_mfa(app_configs: Any = None, **kwargs: Any) -> list[CheckMessag
             )
         ]
     return []
+
+
+@register(deploy=True)
+def check_deploy_email(app_configs: Any = None, **kwargs: Any) -> list[CheckMessage]:
+    """Emails (sign-up links, password resets, invitations) need a real mail server (upgrade 17).
+    The development default (Mailpit on 127.0.0.1:1025) silently delivers nowhere in production."""
+    options = settings.MAILERS.get("default", {}).get("OPTIONS", {})
+    host = str(options.get("host", ""))
+    messages: list[CheckMessage] = []
+    if host in {"", "localhost", "127.0.0.1", "mailpit"}:
+        messages.append(
+            Warning(
+                "EMAIL_URL points at a local mail catcher: no email reaches anyone. Set "
+                "EMAIL_URL (e.g. smtp+tls://you%40gmail.com:<app password>@smtp.gmail.com:587).",
+                id="medilink.W006",
+            )
+        )
+    sender = str(settings.DEFAULT_FROM_EMAIL).lower()
+    if host == "smtp.gmail.com" and str(options.get("username", "")).lower() not in sender:
+        messages.append(
+            Warning(
+                "Gmail sends only from the signed-in address: set DEFAULT_FROM_EMAIL to "
+                "'MediLink Rwanda <that address>'.",
+                id="medilink.W007",
+            )
+        )
+    return messages

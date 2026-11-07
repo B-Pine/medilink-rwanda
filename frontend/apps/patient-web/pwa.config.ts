@@ -52,7 +52,8 @@ export const pwaOptions: Partial<VitePWAOptions> = {
       "**/server.browser-*.js",
     ],
     navigateFallback: APP_SHELL,
-    navigateFallbackDenylist: [/^\/api\//],
+    // /staff/ is the staff app on the same host (vercel.json, ADR 0009): never this app's shell
+    navigateFallbackDenylist: [/^\/api\//, /^\/staff(\/|$)/],
     cleanupOutdatedCaches: true,
     // Extra service-worker scripts (e.g. web push handlers): ONLY between the sprint's markers.
     importScripts: [

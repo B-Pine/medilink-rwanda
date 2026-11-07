@@ -55,7 +55,7 @@
     "title": "Shakisha muri MediLink",
     "placeholder": "Shakisha ubuvuzi, gahunda, inyandiko",
     "shortcut": "Ctrl K",
-    "empty": "Nta cyabonetse. Gerageza ikigo, umuganga cyangwa serivisi.",
+    "empty": "Nta cyabonetse",
     "hints": "↑ ↓ kwimuka · Enter gufungura · Esc gufunga",
     "findCare": "Shaka ubuvuzi bwa “{{query}}”",
     "groups": {
@@ -90,14 +90,14 @@
     "greeting_evening": "Mwiriwe, {{name}}",
     "subtitle": "Dore incamake y'ubuvuzi bwawe.",
     "verifyTitle": "Emeza imeyili yawe",
-    "verifyBody": "Twohereje umurongo kuri {{email}}. Uwufungure kugira ngo konti yawe irindwe.",
+    "verifyBody": "Umurongo woherejwe kuri {{email}}",
     "nextAppointment": "Gahunda ikurikira",
     "currentVisit": "Uruzinduko rwa none",
     "viewDetails": "Reba ibisobanuro",
     "allTickets": "Umurongo wanjye",
     "moreTickets_one": "Indi tike {{count}} uyu munsi",
     "moreTickets_other": "Izindi tike {{count}} uyu munsi",
-    "startTitle": "Ubuvuzi bwawe butangirira hano.",
+    "startTitle": "Ukeneye kuvurirwa he?",
     "startBody": "Shaka ikigo cy'ubuvuzi, urebe serivisi zihari cyangwa ufate gahunda y'uruzinduko rukurikira.",
     "explore": "Reba ibigo by'ubuvuzi",
     "quick": "Ibikorwa byihuse",
@@ -174,7 +174,21 @@
     "reply": "Subiza",
     "soon": "{{service}} iregereje",
     "arrive": "Bwira abakira abarwayi ko wahageze (tike {{ticket}})",
-    "open": "Fungura tike"
+    "open": "Fungura tike",
+    "result": "Igisubizo gishya kiriteguye",
+    "readResult": "Gisome",
+    "planned": "{{what}} iregereje"
+  },
+  "comingUp": {
+    "title": "Byateganyijwe n'ivuriro ryawe",
+    "intro": "Amatariki ivuriro ryawe ryateganyije. Tukwibutsa umunsi ubanziriza n'icyo gitondo.",
+    "types": {
+      "vaccination": "Urukingo",
+      "antenatal": "Isuzuma ry'umubyeyi utwite",
+      "follow_up": "Kugaruka kwa muganga"
+    },
+    "book": "Fata isaha",
+    "failed": "Ntibyakunze kubona amatariki ivuriro ryawe ryateganyije."
   },
   "appointments": {
     "title": "Gahunda zanjye",
@@ -190,9 +204,9 @@
     },
     "failed": "Ntitwashoboye kubona gahunda zawe.",
     "empty": {
-      "upcoming": "Nta gahunda itegerejwe ufite.",
-      "past": "Nta gahunda yashize iraboneka.",
-      "cancelled": "Nta gahunda yahagaritswe."
+      "upcoming": "Nta gahunda itegerejwe",
+      "past": "Nta gahunda yashize",
+      "cancelled": "Nta gahunda yahagaritswe"
     },
     "emptyBody": "Shaka ikigo ufate isaha ikunogeye.",
     "for": "ya {{name}}",
@@ -207,7 +221,7 @@
     "actionFailed": "Ntitwashoboye guhindura gahunda yawe. Ongera ugerageze.",
     "back": "Gahunda zose",
     "notFound": "Gahunda ntiyabonetse",
-    "notFoundBody": "Ntitwashoboye kubona iyi gahunda. Ishobora kuba ari iya konti indi.",
+    "notFoundBody": "Ishobora kuba ari iya konti indi.",
     "info": "Gahunda",
     "date": "Itariki",
     "time": "Isaha",
@@ -237,7 +251,7 @@
     "reference": "Kode ya gahunda",
     "showCode": "Erekana iyi kode ku kwakira abarwayi.",
     "changeUntil": "Ushobora guhindura cyangwa guhagarika kugeza {{time}}.",
-    "changeClosed": "Igihe cyo guhindura cyarangiye. Guhagarika ubu bibarwa nko guhagarika bitinze.",
+    "changeClosed": "Guhagarika ubu bibarwa nko guhagarika bitinze.",
     "directions": "Inzira ijyayo"
   },
   "reschedule": {
@@ -248,12 +262,12 @@
     "later": "Nyuma",
     "days": "Iminsi ifite amasaha ari ubusa",
     "times": "Amasaha ari ubusa",
-    "none": "Nta saha iri ubusa iki cyumweru. Gerageza icyumweru gikurikira.",
+    "none": "Nta saha iri ubusa iki cyumweru",
     "loadFailed": "Ntitwashoboye kubona amasaha ari ubusa.",
     "from": "Isaha ufite ubu",
     "to": "Isaha nshya",
     "held": "Iyi saha turayikubikiye mu gihe cya",
-    "expired": "Igihe twari tuyikubikiye cyarangiye. Ongera uhitemo isaha.",
+    "expired": "Igihe cyarangiye. Ongera uhitemo.",
     "oldFreed": "Isaha ufite ubu irekurwa gusa iyo inshya yemejwe.",
     "otherTime": "Hitamo indi saha",
     "confirm": "Emeza isaha nshya"
@@ -264,9 +278,9 @@
     "join": "Jya ku murongo",
     "today": "Uyu munsi",
     "failed": "Ntitwashoboye kubona tike zawe.",
-    "none": "Nturi ku murongo ubu.",
+    "none": "Nturi ku murongo",
     "noneBody": "Jya ku murongo w'ikigo kibyemera, cyangwa wiyandikishe ku kwakira abarwayi.",
-    "remoteNote": "Kujya ku murongo ukoresheje telefoni si kimwe no kwakirwa. Abakira abarwayi bemeza ko wahageze iyo uhageze.",
+    "remoteNote": "Abakira abarwayi bemeza ko wahageze.",
     "previous": "Ingendo zabanje",
     "previousTitle": "Tike zabanje ntiziragaragara hano",
     "previousBody": "Nyuma y'uruzinduko, dosiye umuganga yasinye igaragara mu Madosiye y'ubuzima.",
@@ -335,7 +349,7 @@
   "records": {
     "search": "Shakisha ukoresheje ikigo, umuganga cyangwa indwara",
     "signed": "Yasinywe",
-    "noMatch": "Nta dosiye ihuye n'ibyo washatse.",
+    "noMatch": "Nta cyabonetse",
     "emptyBody": "Amadosiye yawe y'ubuzima azagaragara hano igihe azaba abonetse."
   },
   "medications": {
@@ -374,8 +388,12 @@
     "security": {
       "title": "Umutekano",
       "body": "Rinda konti yawe.",
-      "password": "Kugira ngo uhindure ijambo ry'ibanga, tukoherereza umurongo wizewe kuri imeyili, kugira ngo ari wowe wenyine urishyiraho.",
+      "password": "Andika ijambo ry'ibanga usanganywe, hanyuma irishya. Andi materefone na mudasobwa bizasohoka.",
       "change": "Hindura ijambo ry'ibanga",
+      "current": "Ijambo ry'ibanga usanganywe",
+      "new": "Ijambo ry'ibanga rishya",
+      "done": "Ijambo ry'ibanga ryahinduwe. Andi materefone na mudasobwa byasohotse.",
+      "forgot": "Wibagiwe ijambo ry'ibanga usanganywe?",
       "later": "Ibikoresho winjiriyemo no kwinjira mu ntambwe ebyiri bizongerwa hano."
     },
     "alerts": {

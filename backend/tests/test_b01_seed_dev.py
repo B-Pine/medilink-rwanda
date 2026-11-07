@@ -29,13 +29,21 @@ def test_b1_seed_dev_creates_demo_data_and_is_idempotent() -> None:
     call_command("seed_dev", "--password", "a fixed dev-only passphrase", stdout=out)
     kigali = Facility.objects.get(slug="kigali-demo-clinic")
     assert kigali.name == "Kigali Demo Clinic" and kigali.status == "live"
-    assert User.objects.filter(email__endswith="@demo.medilink.test").count() == 7
+    assert User.objects.filter(email__endswith="@demo.medilink.test").count() == 9
     assert User.objects.get(email="platform.admin@demo.medilink.test").is_platform_admin
     with rls_context(facility_id=kigali.pk):
         roles = sorted(
             FacilityMembership.objects.filter(facility=kigali).values_list("roles__code", flat=True)
         )
-    assert roles == ["cashier", "doctor", "facility_admin", "pharmacist", "receptionist"]
+    assert roles == [
+        "cashier",
+        "doctor",
+        "facility_admin",
+        "lab_technician",
+        "pharmacist",
+        "receptionist",
+        "triage_nurse",
+    ]
     patient = User.objects.get(email="patient@demo.medilink.test")
     assert patient.check_password("a fixed dev-only passphrase")
     assert "a fixed dev-only passphrase" in out.getvalue()

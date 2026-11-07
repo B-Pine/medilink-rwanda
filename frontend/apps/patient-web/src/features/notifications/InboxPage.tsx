@@ -235,7 +235,6 @@ export function InboxPage() {
           <EmptyState
             icon={BellSimple}
             title={t("notifications.inbox.empty")}
-            description={t("notifications.inbox.emptyBody")}
             action={<PushOptIn compact />}
           />
         ) : (

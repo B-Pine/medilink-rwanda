@@ -143,6 +143,92 @@ paths:
               schema:
                 $ref: '#/components/schemas/Health'
           description: ''
+  /api/v1/patient/auth/google/:
+    get:
+      operationId: patient_auth_google_config
+      description: |-
+        Sign in with Google, patients only (upgrade 17, security 03 §5).
+
+        GET says whether it is on and which public client ID to use. POST takes Google's ID token:
+        a known Google account signs in; a verified email that matches a patient account links it and
+        signs in; a new person gets 409 consent_required, then sends the token again with the
+        sign-up consents. Staff and platform accounts are refused (they need MFA).
+      summary: Whether Sign in with Google is on, and the public OAuth client ID
+      tags:
+      - patient-auth
+      security:
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GoogleConfig'
+          description: ''
+    post:
+      operationId: patient_auth_google
+      description: |-
+        Sign in with Google, patients only (upgrade 17, security 03 §5).
+
+        GET says whether it is on and which public client ID to use. POST takes Google's ID token:
+        a known Google account signs in; a verified email that matches a patient account links it and
+        signs in; a new person gets 409 consent_required, then sends the token again with the
+        sign-up consents. Staff and platform accounts are refused (they need MFA).
+      summary: Sign in (or sign up) with a Google ID token; rotates the session
+      tags:
+      - patient-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoogleSignInRequest'
+        required: true
+      security:
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientMe'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: validation_error; google_unverified_email
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'not_authenticated: the Google token is invalid, expired or
+            not ours'
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'staff_account: staff sign in with password + MFA'
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'not_found: Google sign-in is not configured'
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'consent_required: new account; error.current = {email, full_name}'
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: rate_limited
   /api/v1/patient/auth/login/:
     post:
       operationId: patient_auth_login
@@ -214,11 +300,57 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: not_authenticated
+  /api/v1/patient/auth/password/:
+    post:
+      operationId: patient_auth_password_change
+      description: |-
+        A signed-in patient changes their password (security 03 §6): the current password is
+        checked like a login (same lockout), every other session ends, this one rotates, and the
+        owner gets a "password changed" email.
+      summary: Change password; ends other sessions and rotates this one
+      tags:
+      - patient-auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordChangeRequest'
+        required: true
+      security:
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientMe'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'validation_error: current_password wrong, or new_password
+            rejected'
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: not_authenticated
+        '429':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: rate_limited, with Retry-After
   /api/v1/patient/auth/register/:
     post:
       operationId: patient_auth_register
       summary: 'Patient sign-up: always 202 ''check your email'' (no account enumeration);
-        a new account signs in only after the emailed link is opened'
+        a new account signs in only after the emailed link is opened. With PATIENT_SIGNUP_EMAIL_VERIFICATION
+        off (testing only) no email is sent, email_verification is false and the account
+        signs in straight away'
       tags:
       - patient-auth
       requestBody:
@@ -234,7 +366,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Detail'
+                $ref: '#/components/schemas/SignupAccepted'
           description: ''
         '400':
           content:
@@ -589,6 +721,23 @@ paths:
       responses:
         '204':
           description: No response body
+  /api/v1/patient/care-schedule/:
+    get:
+      operationId: patient_care_schedule
+      summary: 'Coming up: planned vaccinations and antenatal visits, and follow-up
+        dates the doctor set without a booking, soonest first (W7)'
+      tags:
+      - booking
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComingUp'
+          description: ''
   /api/v1/patient/consents/:
     get:
       operationId: patient_consents_retrieve
@@ -1841,6 +1990,89 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: same card exists
+  /api/v1/patient/profiles/{patient_id}/photo/:
+    post:
+      operationId: patient_profile_photo_upload
+      description: 'Profile photo (decision 2026-11-05): JPEG, PNG or HEIC up to 5
+        MB, scanned before use.'
+      summary: Add or replace the profile photo (self or guardian)
+      parameters:
+      - in: path
+        name: patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PhotoUploadRequest'
+        required: true
+      security:
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientProfileDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: validation_error
+    delete:
+      operationId: patient_profile_photo_remove
+      description: 'Profile photo (decision 2026-11-05): JPEG, PNG or HEIC up to 5
+        MB, scanned before use.'
+      summary: Remove the profile photo
+      parameters:
+      - in: path
+        name: patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      security:
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientProfileDetail'
+          description: ''
+  /api/v1/patient/profiles/{patient_id}/photo/download-links/:
+    post:
+      operationId: patient_profile_photo_link
+      summary: A 5-minute link to the profile photo
+      parameters:
+      - in: path
+        name: patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      security:
+      - patientSession: []
+      responses:
+        '200':
+          description: '{url, expires_at}'
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'not_found: no photo'
   /api/v1/patient/push-subscriptions/:
     get:
       operationId: patient_push_subscriptions_list
@@ -2054,6 +2286,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PatientRecord'
+          description: ''
+  /api/v1/patient/results/:
+    get:
+      operationId: patient_lab_results
+      summary: Lab results the doctor released, newest first (FR-CLN-11)
+      tags:
+      - patient-records
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PatientLabResult'
           description: ''
   /api/v1/patient/slots/{slot_id}/hold/:
     post:
@@ -3155,6 +3405,11 @@ paths:
           - missing
           - valid
       - in: query
+        name: missing_code
+        schema:
+          type: boolean
+        description: Only facilities without a FOSA ID
+      - in: query
         name: ordering
         schema:
           type: string
@@ -3164,6 +3419,10 @@ paths:
           - created_at
           - name
           - next_licence_expiry
+      - in: query
+        name: ownership
+        schema:
+          type: string
       - name: page
         required: false
         in: query
@@ -3789,6 +4048,50 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Status or failing go-live checks
+  /api/v1/platform/facilities/export/:
+    get:
+      operationId: platform_facilities_export
+      description: The facility list for the Ministry of Health, as CSV, with the
+        list's filters.
+      summary: Export the facility list (CSV, UTF-8); audit-logged
+      parameters:
+      - in: query
+        name: district
+        schema:
+          type: string
+      - in: query
+        name: facility_type
+        schema:
+          type: string
+      - in: query
+        name: licence_state
+        schema:
+          type: string
+          enum:
+          - expired
+          - expiring
+          - missing
+          - valid
+      - in: query
+        name: ownership
+        schema:
+          type: string
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+      tags:
+      - platform
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          description: One row per facility
   /api/v1/platform/facility-applications/:
     get:
       operationId: platform_facility_applications_list
@@ -7205,6 +7508,98 @@ paths:
               schema:
                 $ref: '#/components/schemas/Overview'
           description: ''
+  /api/v1/platform/reports/national/:
+    get:
+      operationId: platform_national_report
+      summary: 'National aggregate report: load by facility and district, wait trend,
+        top diagnoses by district, stock-outs; groups under 10 suppressed (#208)'
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+          format: date
+        description: First day; 29 days ago by default
+      - in: query
+        name: group
+        schema:
+          type: string
+          enum:
+          - day
+          - month
+          - week
+        description: day by default
+      - in: query
+        name: to
+        schema:
+          type: string
+          format: date
+        description: Last day; today by default
+      tags:
+      - platform-admin
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NationalReport'
+          description: ''
+        '400':
+          description: Bad dates
+  /api/v1/platform/reports/national/export/:
+    get:
+      operationId: platform_national_report_export
+      summary: Download one table of the national report as CSV; audit-logged (#208)
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+          format: date
+        description: First day; 29 days ago by default
+      - in: query
+        name: group
+        schema:
+          type: string
+          enum:
+          - day
+          - month
+          - week
+        description: day by default
+      - in: query
+        name: table
+        schema:
+          type: string
+          enum:
+          - diagnoses
+          - districts
+          - facilities
+          - stockouts
+          - waits
+        required: true
+      - in: query
+        name: to
+        schema:
+          type: string
+          format: date
+        description: Last day; today by default
+      tags:
+      - platform-admin
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            text/csv:
+              schema:
+                type: string
+          description: One table, UTF-8 with BOM
+        '400':
+          description: Bad dates, grouping or table
   /api/v1/platform/security-events/:
     get:
       operationId: platform_security_events
@@ -7502,6 +7897,11 @@ paths:
       operationId: platform_users
       parameters:
       - in: query
+        name: facility
+        schema:
+          type: string
+        description: 'Facility ID: its staff, active or not'
+      - in: query
         name: kind
         schema:
           type: string
@@ -7524,6 +7924,12 @@ paths:
         name: q
         schema:
           type: string
+        description: Name, email or phone
+      - in: query
+        name: role
+        schema:
+          type: string
+        description: Role code at any (or the chosen) facility
       - in: query
         name: status
         schema:
@@ -7531,6 +7937,12 @@ paths:
           enum:
           - active
           - locked
+      - in: query
+        name: verification
+        schema:
+          type: string
+          enum:
+          - pending
       tags:
       - platform-admin
       security:
@@ -7567,9 +7979,139 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserDetail'
           description: ''
+    patch:
+      operationId: platform_user_update
+      summary: Correct the name, work phone or language (step-up, reason; audit-logged)
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAccountUpdateRequest'
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
+  /api/v1/platform/users/{user_id}/clear-sign-in-block/:
+    post:
+      operationId: platform_user_sign_in_unblock
+      description: Ends the temporary block after too many failed passwords or MFA
+        codes (security 03 §6).
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRow'
+          description: ''
+  /api/v1/platform/users/{user_id}/facilities/{facility_id}/{action}/:
+    post:
+      operationId: platform_user_facility_access
+      description: |-
+        Remove or restore a person's access to one facility, for example a facility admin who
+        left. The facility keeps at least one active facility admin.
+      parameters:
+      - in: path
+        name: action
+        schema:
+          type: string
+          enum:
+          - remove
+          - restore
+        required: true
+      - in: path
+        name: facility_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+          description: ''
   /api/v1/platform/users/{user_id}/lock/:
     post:
       operationId: platform_user_lock
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRow'
+          description: ''
+  /api/v1/platform/users/{user_id}/resend-verification/:
+    post:
+      operationId: platform_user_verification_resend
       parameters:
       - in: path
         name: user_id
@@ -7651,6 +8193,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserRow'
           description: ''
+  /api/v1/platform/users/{user_id}/send-password-reset/:
+    post:
+      operationId: platform_user_password_reset
+      description: |-
+        For someone who calls for help: the reset link goes to their own address, never to the
+        admin, and the admin never sees or sets the password.
+      parameters:
+      - in: path
+        name: user_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - platform-admin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountReasonRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRow'
+          description: ''
   /api/v1/platform/users/{user_id}/unlock/:
     post:
       operationId: platform_user_unlock
@@ -7678,6 +8251,79 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserRow'
+          description: ''
+  /api/v1/platform/users/export/:
+    get:
+      operationId: platform_users_export
+      description: 'Who has access to MediLink, for an access review: staff and platform
+        admins only.'
+      summary: Export staff and platform accounts (CSV, UTF-8; never patients); audit-logged
+      parameters:
+      - in: query
+        name: facility
+        schema:
+          type: string
+        description: 'Facility ID: its staff, active or not'
+      - in: query
+        name: kind
+        schema:
+          type: string
+          enum:
+          - patient
+          - platform
+          - staff
+      - in: query
+        name: mfa
+        schema:
+          type: string
+          enum:
+          - 'off'
+          - 'on'
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: Name, email or phone
+      - in: query
+        name: role
+        schema:
+          type: string
+        description: Role code at any (or the chosen) facility
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - active
+          - locked
+      - in: query
+        name: verification
+        schema:
+          type: string
+          enum:
+          - pending
+      tags:
+      - platform-admin
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          description: One row per account
+  /api/v1/platform/users/summary/:
+    get:
+      operationId: platform_users_summary
+      tags:
+      - platform-admin
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSummary'
           description: ''
   /api/v1/public/assistant/:
     post:
@@ -9495,6 +10141,47 @@ paths:
               schema:
                 $ref: '#/components/schemas/Bill'
           description: ''
+  /api/v1/staff/bills/{bill_id}/claim/:
+    post:
+      operationId: staff_claim_mark
+      summary: Mark a bill's claim paid, or rejected with the insurer's reason (#203)
+      parameters:
+      - in: path
+        name: bill_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - billing
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClaimMarkRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClaimRow'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'Stale version: reload and try again'
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not a verified insured bill, or a rejection without a reason
   /api/v1/staff/bills/{bill_id}/exemptions/:
     post:
       operationId: staff_bill_exemption
@@ -9849,11 +10536,116 @@ paths:
               schema:
                 $ref: '#/components/schemas/StaffCalendar'
           description: ''
+  /api/v1/staff/care-schedule/{entry_id}/cancel/:
+    post:
+      operationId: staff_care_schedule_cancel
+      summary: Cancel a planned entry; no more reminders go out for it (W7)
+      parameters:
+      - in: path
+        name: entry_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - booking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CareScheduleCancelRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CareScheduleEntry'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Already cancelled
+  /api/v1/staff/care-schedule/patients/{facility_patient_id}/:
+    get:
+      operationId: staff_patient_care_schedule
+      summary: Planned vaccinations and antenatal visits of a patient at this facility
+        (W7)
+      parameters:
+      - in: path
+        name: facility_patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - booking
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CareScheduleList'
+          description: ''
+    post:
+      operationId: staff_patient_care_schedule_create
+      summary: Plan a dated vaccination or antenatal visit; the patient gets reminders
+        (W7)
+      parameters:
+      - in: path
+        name: facility_patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - booking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CareScheduleCreateRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CareScheduleEntry'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: due_on in the past or too far
   /api/v1/staff/cash-shifts/:
     get:
       operationId: staff_cash_shifts
       summary: 'Shifts: my own, or every shift for approvers (B18)'
       parameters:
+      - in: query
+        name: mine
+        schema:
+          type: boolean
+        description: Only my own shifts (approvers too)
       - in: query
         name: page
         schema:
@@ -10042,6 +10834,25 @@ paths:
                 $ref: '#/components/schemas/Error'
           description: 'access_reason_required: give a reason for this patient first
             (A1)'
+  /api/v1/staff/clinical/favourites/:
+    get:
+      operationId: staff_clinical_favourites
+      description: 'W3 (#202): what the doctor uses most, shown first in the diagnosis
+        and medicine search.'
+      summary: My most used diagnoses and medicines here (last 180 days, used twice
+        or more)
+      tags:
+      - clinical
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Favourites'
+          description: ''
   /api/v1/staff/clinical/my-activity/:
     get:
       operationId: staff_clinical_my_activity
@@ -10949,6 +11760,75 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Not the author or already marked
+  /api/v1/staff/consultations/{consultation_id}/lab-orders/:
+    get:
+      operationId: staff_consultation_lab_orders
+      summary: The visit's lab tests and their results
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - laboratory
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LabOrder'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason for this patient first
+            (A1)'
+    post:
+      operationId: staff_consultation_lab_orders_create
+      summary: Order tests in my draft consultation (each priced test goes on the
+        bill)
+      parameters:
+      - in: path
+        name: consultation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - laboratory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabOrderInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LabOrder'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not the author, not a draft, unknown or already ordered test
   /api/v1/staff/consultations/{consultation_id}/lab-requests/:
     get:
       operationId: staff_consultation_lab_requests
@@ -12514,6 +13394,94 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: Not published
+  /api/v1/staff/insurance-claims/:
+    get:
+      operationId: staff_claims
+      summary: The monthly claim list for one insurer, with totals; audit-logged (#203)
+      parameters:
+      - in: query
+        name: insurer
+        schema:
+          type: string
+        description: Insurer code
+        required: true
+      - in: query
+        name: month
+        schema:
+          type: string
+        description: YYYY-MM (visit dates)
+        required: true
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClaimList'
+          description: ''
+  /api/v1/staff/insurance-claims/export/:
+    get:
+      operationId: staff_claims_export
+      summary: Download the monthly claim list (CSV UTF-8, or PDF); audit-logged (#203)
+      parameters:
+      - in: query
+        name: insurer
+        schema:
+          type: string
+        description: Insurer code
+        required: true
+      - in: query
+        name: kind
+        schema:
+          type: string
+          enum:
+          - csv
+          - pdf
+        description: csv by default
+      - in: query
+        name: month
+        schema:
+          type: string
+        description: YYYY-MM (visit dates)
+        required: true
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            text/csv:
+              schema:
+                type: string
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+          description: One row per visit, then the total
+  /api/v1/staff/insurance-claims/insurers/:
+    get:
+      operationId: staff_claim_insurers
+      summary: 'Insurers to list claims for: accepted here or verified on a bill (#203)'
+      tags:
+      - billing
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClaimInsurer'
+          description: ''
   /api/v1/staff/insurer-rules/:
     get:
       operationId: staff_insurer_rules_list
@@ -12672,6 +13640,284 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Invitation'
+          description: ''
+  /api/v1/staff/lab-orders/{order_id}/cancel/:
+    post:
+      operationId: staff_lab_order_cancel
+      summary: Take back a test the lab has not sampled
+      parameters:
+      - in: path
+        name: order_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - laboratory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabVersionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabOrder'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Sampled already, or not the ordering doctor
+  /api/v1/staff/lab-orders/{order_id}/release/:
+    post:
+      operationId: staff_lab_order_release
+      summary: Release a reviewed result to the patient
+      parameters:
+      - in: path
+        name: order_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - laboratory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabVersionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabOrder'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason for this patient first
+            (A1)'
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not reviewed
+  /api/v1/staff/lab-orders/{order_id}/result/:
+    post:
+      operationId: staff_lab_order_result
+      summary: Enter the result; the last one of the visit sends the patient back
+        to the doctor
+      parameters:
+      - in: path
+        name: order_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - laboratory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabResultInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabOrder'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: A value is missing, not a number or not one of the answers
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: No sample yet, or already resulted
+  /api/v1/staff/lab-orders/{order_id}/review/:
+    post:
+      operationId: staff_lab_order_review
+      summary: Review a result, with a note for the patient
+      parameters:
+      - in: path
+        name: order_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - laboratory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabReviewInputRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabOrder'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'access_reason_required: give a reason for this patient first
+            (A1)'
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not resulted
+  /api/v1/staff/lab-orders/{order_id}/sample/:
+    post:
+      operationId: staff_lab_order_sample
+      summary: Record that the sample was taken
+      parameters:
+      - in: path
+        name: order_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - laboratory
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabVersionRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabOrder'
+          description: ''
+        '409':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Stale version
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Not now
+  /api/v1/staff/lab/queue/:
+    get:
+      operationId: staff_lab_queue
+      summary: 'Lab requests: waiting for a sample, in progress, done today'
+      tags:
+      - laboratory
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LabQueue'
+          description: ''
+  /api/v1/staff/lab/results/:
+    get:
+      operationId: staff_lab_results_inbox
+      summary: Results of the tests I ordered, waiting for my review or release
+      tags:
+      - laboratory
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LabInboxRow'
+          description: ''
+  /api/v1/staff/lab/tests/:
+    get:
+      operationId: staff_lab_tests
+      summary: The lab test catalogue, with result items and reference ranges
+      tags:
+      - laboratory
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LabCatalogueTest'
           description: ''
   /api/v1/staff/master-data/diagnosis-codes/:
     get:
@@ -14089,6 +15335,33 @@ paths:
               schema:
                 $ref: '#/components/schemas/InsuranceProfile'
           description: ''
+  /api/v1/staff/patients/{fp_id}/photo/download-links/:
+    post:
+      operationId: staff_patients_photo_link
+      description: |-
+        The patient's own profile photo, to recognise them at the desk (decision 2026-11-05).
+        Same rule as card photos: patients.view where the patient has a record here.
+      summary: A 5-minute link to the patient's profile photo
+      parameters:
+      - in: path
+        name: fp_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - staff-patients
+      security:
+      - staffSession: []
+      responses:
+        '200':
+          description: '{url, expires_at}'
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'not_found: no photo'
   /api/v1/staff/patients/{fp_id}/reveal/:
     post:
       operationId: staff_patients_reveal
@@ -14293,6 +15566,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/AvailabilityRow'
           description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: 'The medicine follows its stock count (W5): receive or adjust
+            instead'
   /api/v1/staff/pharmacy/history/:
     get:
       operationId: staff_pharmacy_history
@@ -14383,6 +15663,236 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedPharmacyQueueRowList'
           description: ''
+  /api/v1/staff/pharmacy/stock/:
+    get:
+      operationId: staff_pharmacy_stock
+      summary: 'Medicines with stock here: units, level and next expiry (W5)'
+      parameters:
+      - in: query
+        name: level
+        schema:
+          type: string
+          enum:
+          - low
+          - out
+          - short
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: Medicine name or code
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStockCardList'
+          description: ''
+  /api/v1/staff/pharmacy/stock/{drug_code}/:
+    get:
+      operationId: staff_pharmacy_stock_detail
+      summary: 'A medicine''s stock: batches on the shelf and the last 50 movements
+        (W5)'
+      parameters:
+      - in: path
+        name: drug_code
+        schema:
+          type: string
+        required: true
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockDetail'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: No stock card for this medicine
+    put:
+      operationId: staff_pharmacy_stock_threshold
+      summary: Set the low-stock threshold of a medicine (W5)
+      parameters:
+      - in: path
+        name: drug_code
+        schema:
+          type: string
+        required: true
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StockThresholdRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockDetail'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: No stock card for this medicine
+  /api/v1/staff/pharmacy/stock/batches/{batch_id}/adjust/:
+    post:
+      operationId: staff_pharmacy_stock_adjust
+      summary: 'Adjust a batch with a reason: count correction, damaged, expired (W5)'
+      parameters:
+      - in: path
+        name: batch_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StockAdjustRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockDetail'
+          description: ''
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Below zero, or damaged/expired stock added instead of removed
+  /api/v1/staff/pharmacy/stock/expiring/:
+    get:
+      operationId: staff_pharmacy_stock_expiring
+      summary: Batches with units left expiring soon (default 60 days), expired first
+        (W5)
+      parameters:
+      - in: query
+        name: days
+        schema:
+          type: integer
+          enum:
+          - 30
+          - 60
+          - 90
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StockBatch'
+          description: ''
+  /api/v1/staff/pharmacy/stock/movements/:
+    get:
+      operationId: staff_pharmacy_stock_movements
+      summary: Stock movements at my facility, newest first (W5)
+      parameters:
+      - in: query
+        name: kind
+        schema:
+          type: string
+          enum:
+          - adjusted
+          - dispensed
+          - received
+      - in: query
+        name: page
+        schema:
+          type: integer
+      - in: query
+        name: page_size
+        schema:
+          type: integer
+      tags:
+      - pharmacy
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStockMovementList'
+          description: ''
+  /api/v1/staff/pharmacy/stock/receive/:
+    post:
+      operationId: staff_pharmacy_stock_receive
+      summary: 'Receive a batch: number, expiry, units, optional supplier (W5)'
+      tags:
+      - pharmacy
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StockReceiveRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StockDetail'
+          description: ''
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Unknown medicine
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Batch already expired, or quantity out of range
   /api/v1/staff/prescription-items/{item_id}/:
     patch:
       operationId: staff_prescription_item_update
@@ -14806,6 +16316,17 @@ paths:
   /api/v1/staff/queue/mine/:
     get:
       operationId: staff_queue_mine
+      parameters:
+      - in: query
+        name: stage
+        schema:
+          type: string
+          enum:
+          - consultation
+          - lab
+          - triage
+        description: '`triage` for the triage nurse (#200), `lab` for the lab technician
+          (#201); default the doctor''s queue'
       tags:
       - queue
       security:
@@ -14911,6 +16432,109 @@ paths:
       responses:
         '202':
           description: No response body
+  /api/v1/staff/reports/facility/:
+    get:
+      operationId: staff_reports_facility
+      summary: 'Facility report for a period: visits, waits, diagnoses, money, lab,
+        stock (#205)'
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+          format: date
+        description: First day; 29 days ago by default
+      - in: query
+        name: group
+        schema:
+          type: string
+          enum:
+          - day
+          - month
+          - week
+        description: day by default
+      - in: query
+        name: to
+        schema:
+          type: string
+          format: date
+        description: Last day; today by default
+      tags:
+      - queue
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityReport'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad dates or grouping
+  /api/v1/staff/reports/facility/export/:
+    get:
+      operationId: staff_reports_facility_export
+      summary: Download one table of the facility report as CSV; audit-logged (#205)
+      parameters:
+      - in: query
+        name: from
+        schema:
+          type: string
+          format: date
+        description: First day; 29 days ago by default
+      - in: query
+        name: group
+        schema:
+          type: string
+          enum:
+          - day
+          - month
+          - week
+        description: day by default
+      - in: query
+        name: table
+        schema:
+          type: string
+          enum:
+          - diagnoses
+          - lab
+          - money
+          - services
+          - sources
+          - stock
+          - visits
+          - waits
+        required: true
+      - in: query
+        name: to
+        schema:
+          type: string
+          format: date
+        description: Last day; today by default
+      tags:
+      - queue
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            text/csv:
+              schema:
+                type: string
+          description: One report table, UTF-8 with BOM
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Bad dates, grouping or table
   /api/v1/staff/reports/operations/:
     get:
       operationId: staff_reports_operations
@@ -17125,8 +18749,16 @@ components:
           type: string
         district_code:
           type: string
+        district_name:
+          type: string
         applicant_name:
           type: string
+        proposed_admin_name:
+          type: string
+        documents_count:
+          type: integer
+        missing_count:
+          type: integer
         created_by_platform:
           type: boolean
         submitted_at:
@@ -17145,10 +18777,14 @@ components:
       - applicant_name
       - created_by_platform
       - district_code
+      - district_name
+      - documents_count
       - facility_name
       - facility_type
       - id
       - last_activity_at
+      - missing_count
+      - proposed_admin_name
       - reviewer
       - status
       - submitted_at
@@ -17481,10 +19117,19 @@ components:
           type: string
           format: date-time
           nullable: true
+        follows_stock:
+          type: boolean
+        stock_level:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/StockLevelEnum'
+          - $ref: '#/components/schemas/NullEnum'
       required:
       - display
       - drug_code
+      - follows_stock
       - is_available
+      - stock_level
       - updated_at
     AvailabilityWriteRequest:
       type: object
@@ -18400,6 +20045,82 @@ components:
       required:
       - granted
       - version
+    CareScheduleCancelRequest:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 1
+      required:
+      - version
+    CareScheduleCreateRequest:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/CareScheduleKindEnum'
+        due_on:
+          type: string
+          format: date
+        note:
+          type: string
+          default: ''
+          maxLength: 80
+      required:
+      - due_on
+      - kind
+    CareScheduleEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          $ref: '#/components/schemas/CareScheduleKindEnum'
+        due_on:
+          type: string
+          format: date
+        note:
+          type: string
+        status:
+          $ref: '#/components/schemas/CareScheduleStatusEnum'
+        created_at:
+          type: string
+          format: date-time
+        version:
+          type: integer
+      required:
+      - created_at
+      - due_on
+      - id
+      - kind
+      - note
+      - status
+      - version
+    CareScheduleKindEnum:
+      enum:
+      - vaccination
+      - antenatal
+      type: string
+      description: |-
+        * `vaccination` - Vaccination
+        * `antenatal` - Antenatal visit
+    CareScheduleList:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/CareScheduleEntry'
+      required:
+      - results
+    CareScheduleStatusEnum:
+      enum:
+      - due
+      - cancelled
+      type: string
+      description: |-
+        * `due` - Due
+        * `cancelled` - Cancelled
     CashShift:
       type: object
       properties:
@@ -18423,7 +20144,10 @@ components:
           format: date-time
           nullable: true
         expected_totals:
-          $ref: '#/components/schemas/MethodTotals'
+          allOf:
+          - $ref: '#/components/schemas/MethodTotals'
+          description: What the drawer should hold per method; cash includes the opening
+            float.
         counted_totals:
           allOf:
           - $ref: '#/components/schemas/MethodTotals'
@@ -18435,6 +20159,10 @@ components:
           type: string
         payment_count:
           type: integer
+        by_method:
+          type: array
+          items:
+            $ref: '#/components/schemas/ShiftMethod'
         reviewed_by_name:
           type: string
           nullable: true
@@ -18449,6 +20177,7 @@ components:
         version:
           type: integer
       required:
+      - by_method
       - cashier_name
       - closed_at
       - counted_totals
@@ -18665,6 +20394,62 @@ components:
       required:
       - date_of_birth
       - lookup
+    ClaimInsurer:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+      required:
+      - code
+      - name
+    ClaimLine:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        kind:
+          $ref: '#/components/schemas/TariffKindEnum'
+        quantity:
+          type: integer
+        total_rwf:
+          type: integer
+        insurer_share_rwf:
+          type: integer
+        patient_share_rwf:
+          type: integer
+        is_covered:
+          type: boolean
+      required:
+      - code
+      - insurer_share_rwf
+      - is_covered
+      - kind
+      - name
+      - patient_share_rwf
+      - quantity
+      - total_rwf
+    ClaimList:
+      type: object
+      properties:
+        insurer_code:
+          type: string
+        month:
+          type: string
+        summary:
+          $ref: '#/components/schemas/ClaimSummary'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClaimRow'
+      required:
+      - insurer_code
+      - month
+      - results
+      - summary
     ClaimLookupRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -18684,6 +20469,139 @@ components:
           type: string
           minLength: 1
           maxLength: 200
+    ClaimMarkRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 0
+        status:
+          $ref: '#/components/schemas/ClaimMarkStatusEnum'
+        reason:
+          type: string
+          default: ''
+          maxLength: 300
+        reference:
+          type: string
+          default: ''
+          maxLength: 60
+      required:
+      - status
+      - version
+    ClaimMarkStatusEnum:
+      enum:
+      - paid
+      - rejected
+      type: string
+      description: |-
+        * `paid` - paid
+        * `rejected` - rejected
+    ClaimRow:
+      type: object
+      properties:
+        bill_id:
+          type: string
+          format: uuid
+        visit_id:
+          type: string
+          format: uuid
+        service_date:
+          type: string
+          format: date
+        patient_display_name:
+          type: string
+        member_number:
+          type: string
+        icd10_codes:
+          type: array
+          items:
+            type: string
+          description: Signed notes only; the primary diagnosis first.
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClaimLine'
+        total_rwf:
+          type: integer
+        insurer_share_rwf:
+          type: integer
+        patient_share_rwf:
+          type: integer
+        status:
+          $ref: '#/components/schemas/ClaimRowStatusEnum'
+        reason:
+          type: string
+        reference:
+          type: string
+        decided_by_name:
+          type: string
+          nullable: true
+        decided_at:
+          type: string
+          format: date-time
+          nullable: true
+        version:
+          type: integer
+          description: 0 until the claim is first marked.
+      required:
+      - bill_id
+      - decided_at
+      - decided_by_name
+      - icd10_codes
+      - insurer_share_rwf
+      - lines
+      - member_number
+      - patient_display_name
+      - patient_share_rwf
+      - reason
+      - reference
+      - service_date
+      - status
+      - total_rwf
+      - version
+      - visit_id
+    ClaimRowStatusEnum:
+      enum:
+      - pending
+      - paid
+      - rejected
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `paid` - Paid
+        * `rejected` - Rejected
+    ClaimSummary:
+      type: object
+      properties:
+        count:
+          type: integer
+        total_rwf:
+          type: integer
+        insurer_share_rwf:
+          type: integer
+        patient_share_rwf:
+          type: integer
+        pending_count:
+          type: integer
+        paid_count:
+          type: integer
+        paid_rwf:
+          type: integer
+        rejected_count:
+          type: integer
+        rejected_rwf:
+          type: integer
+      required:
+      - count
+      - insurer_share_rwf
+      - paid_count
+      - paid_rwf
+      - patient_share_rwf
+      - pending_count
+      - rejected_count
+      - rejected_rwf
+      - total_rwf
     ClaimVerified:
       type: object
       properties:
@@ -18910,6 +20828,50 @@ components:
           maxLength: 20
       required:
       - code
+    ComingUp:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComingUpItem'
+      required:
+      - results
+    ComingUpItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/ComingUpTypeEnum'
+        due_on:
+          type: string
+          format: date
+        note:
+          type: string
+        facility_name:
+          type: string
+        patient_id:
+          type: string
+          format: uuid
+      required:
+      - due_on
+      - facility_name
+      - id
+      - note
+      - patient_id
+      - type
+    ComingUpTypeEnum:
+      enum:
+      - vaccination
+      - antenatal
+      - follow_up
+      type: string
+      description: |-
+        * `vaccination` - vaccination
+        * `antenatal` - antenatal
+        * `follow_up` - follow_up
     CommandCenter:
       type: object
       properties:
@@ -19310,6 +21272,16 @@ components:
         * `npc` - National Pharmacy Council
         * `rahpc` - Rwanda Allied Health Professions Council
         * `other` - Other council
+    CountAmount:
+      type: object
+      properties:
+        count:
+          type: integer
+        amount_rwf:
+          type: integer
+      required:
+      - amount_rwf
+      - count
     CountedRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -19921,6 +21893,19 @@ components:
       required:
       - code
       - title_i18n
+    DiagnosisCount:
+      type: object
+      properties:
+        code:
+          type: string
+        display:
+          type: string
+        count:
+          type: integer
+      required:
+      - code
+      - count
+      - display
     DiagnosisInputRequest:
       type: object
       properties:
@@ -20664,6 +22649,22 @@ components:
       - district_code
       - facilities
       - province
+    DistrictDiagnoses:
+      type: object
+      properties:
+        district_code:
+          type: string
+        district:
+          type: string
+        top:
+          type: array
+          items:
+            $ref: '#/components/schemas/NationalDiagnosis'
+          description: 10 or more visits each; never sensitive
+      required:
+      - district
+      - district_code
+      - top
     Document:
       type: object
       properties:
@@ -20920,6 +22921,21 @@ components:
           type: string
         frequency:
           type: string
+        frequency_code:
+          $ref: '#/components/schemas/FrequencyCodeEnum'
+        times:
+          type: array
+          items:
+            $ref: '#/components/schemas/TimesEnum'
+          description: Times of day to take it, for the pictograms; empty for once
+            or when needed
+        meal_timing:
+          oneOf:
+          - $ref: '#/components/schemas/MealTimingEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        meal:
+          type: string
+          description: meal_timing in the label language
         route:
           type: string
         duration:
@@ -20942,13 +22958,17 @@ components:
       - duration
       - facility_name
       - frequency
+      - frequency_code
       - instructions
       - language
       - line_id
+      - meal
+      - meal_timing
       - patient_name
       - prescription_number
       - quantity
       - route
+      - times
     DownloadLink:
       type: object
       properties:
@@ -20999,6 +23019,11 @@ components:
           type: boolean
         available_here:
           type: boolean
+        stock_level:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/StockLevelEnum'
+          - $ref: '#/components/schemas/NullEnum'
       required:
       - available_here
       - code
@@ -21006,6 +23031,7 @@ components:
       - form
       - generic_name
       - is_controlled
+      - stock_level
       - strength
     DrugsItem:
       type: object
@@ -21755,6 +23781,42 @@ components:
         * `public_programme` - Public programme
         * `waiver` - Waiver
         * `other` - Other
+    ExemptionTotal:
+      type: object
+      properties:
+        reason:
+          type: string
+        count:
+          type: integer
+        amount_rwf:
+          type: integer
+      required:
+      - amount_rwf
+      - count
+      - reason
+    ExpiringBatch:
+      type: object
+      properties:
+        drug_code:
+          type: string
+        display:
+          type: string
+        batch_number:
+          type: string
+        expiry_date:
+          type: string
+          format: date
+        quantity_on_hand:
+          type: integer
+        is_expired:
+          type: boolean
+      required:
+      - batch_number
+      - display
+      - drug_code
+      - expiry_date
+      - is_expired
+      - quantity_on_hand
     ExternalMatch:
       type: object
       properties:
@@ -21812,6 +23874,24 @@ components:
       - ownership
       - phone
       - tin
+    FacilityContact:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          description: Opens the person in the user directory.
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+      required:
+      - email
+      - name
+      - phone
+      - user_id
     FacilityFeatureFlag:
       type: object
       properties:
@@ -21905,6 +23985,17 @@ components:
             pattern: ^\d{9}$
           - type: string
             maxLength: 0
+    FacilityOption:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+      required:
+      - id
+      - name
     FacilityPatientDetail:
       type: object
       properties:
@@ -21980,6 +24071,8 @@ components:
           type: string
           format: uuid
           nullable: true
+        has_photo:
+          type: boolean
         version:
           type: integer
         patient_version:
@@ -21995,6 +24088,7 @@ components:
       - full_name
       - has_account
       - has_care_consent
+      - has_photo
       - identifiers
       - insurance
       - is_active
@@ -22012,6 +24106,25 @@ components:
       - reception_notes
       - sex
       - version
+    FacilityPlace:
+      type: object
+      properties:
+        province:
+          type: string
+        district:
+          type: string
+        sector:
+          type: string
+        cell:
+          type: string
+        village:
+          type: string
+      required:
+      - cell
+      - district
+      - province
+      - sector
+      - village
     FacilityProfile:
       type: object
       properties:
@@ -22092,6 +24205,41 @@ components:
       required:
       - id
       - name
+    FacilityReport:
+      type: object
+      properties:
+        to:
+          type: string
+          format: date
+        group:
+          $ref: '#/components/schemas/GroupEnum'
+        visits:
+          $ref: '#/components/schemas/ReportVisits'
+        waits:
+          type: array
+          items:
+            $ref: '#/components/schemas/StageWait'
+        diagnoses:
+          $ref: '#/components/schemas/ReportDiagnoses'
+        money:
+          $ref: '#/components/schemas/ReportMoney'
+        lab:
+          $ref: '#/components/schemas/ReportLab'
+        stock:
+          $ref: '#/components/schemas/ReportStock'
+        from:
+          type: string
+          format: date
+      required:
+      - diagnoses
+      - from
+      - group
+      - lab
+      - money
+      - stock
+      - to
+      - visits
+      - waits
     FacilitySearchPage:
       type: object
       properties:
@@ -22403,6 +24551,74 @@ components:
       - code
       - level_of_care
       - name_i18n
+    FavouriteDiagnosis:
+      type: object
+      properties:
+        code:
+          type: string
+        display:
+          type: string
+        plain_language:
+          type: string
+        count:
+          type: integer
+      required:
+      - code
+      - count
+      - display
+      - plain_language
+    FavouriteMedicine:
+      type: object
+      properties:
+        drug_code:
+          type: string
+        free_text_drug:
+          type: string
+        drug_display:
+          type: string
+        is_controlled:
+          type: boolean
+        available_here:
+          type: boolean
+        dose:
+          type: string
+        frequency_code:
+          type: string
+        route:
+          type: string
+        duration_days:
+          type: integer
+          nullable: true
+        count:
+          type: integer
+      required:
+      - available_here
+      - count
+      - dose
+      - drug_code
+      - drug_display
+      - duration_days
+      - free_text_drug
+      - frequency_code
+      - is_controlled
+      - route
+    Favourites:
+      type: object
+      properties:
+        window_days:
+          type: integer
+        diagnoses:
+          type: array
+          items:
+            $ref: '#/components/schemas/FavouriteDiagnosis'
+        medicines:
+          type: array
+          items:
+            $ref: '#/components/schemas/FavouriteMedicine'
+      required:
+      - diagnoses
+      - medicines
+      - window_days
     FeatureFlag:
       type: object
       properties:
@@ -22480,6 +24696,16 @@ components:
       - id
       - original_filename
       - status
+    FlagEnum:
+      enum:
+      - low
+      - high
+      - abnormal
+      type: string
+      description: |-
+        * `low` - low
+        * `high` - high
+        * `abnormal` - abnormal
     FollowUp:
       type: object
       properties:
@@ -22578,6 +24804,51 @@ components:
             version.
       required:
       - version
+    GoogleConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        client_id:
+          type: string
+      required:
+      - client_id
+      - enabled
+    GoogleSignInRequest:
+      type: object
+      description: |-
+        Google's ID token, plus the consents a first Google sign-in needs to create an account
+        (the same as sign-up; asked only after the API answers 409 consent_required).
+      properties:
+        id_token:
+          type: string
+          minLength: 1
+          maxLength: 4096
+        preferred_language:
+          $ref: '#/components/schemas/LanguageEnum'
+        accepted_terms_version:
+          type: string
+          minLength: 1
+          maxLength: 32
+        accepted_privacy_version:
+          type: string
+          minLength: 1
+          maxLength: 32
+        research_consent:
+          type: boolean
+          default: false
+      required:
+      - id_token
+    GroupEnum:
+      enum:
+      - day
+      - week
+      - month
+      type: string
+      description: |-
+        * `day` - day
+        * `week` - week
+        * `month` - month
     Health:
       type: object
       properties:
@@ -23668,6 +25939,25 @@ components:
       required:
       - insurer_code
       - patient_share_bp
+    InsurerTotal:
+      type: object
+      properties:
+        insurer_code:
+          type: string
+        insurer_name:
+          type: string
+        bills:
+          type: integer
+        insurer_share_rwf:
+          type: integer
+        patient_share_rwf:
+          type: integer
+      required:
+      - bills
+      - insurer_code
+      - insurer_name
+      - insurer_share_rwf
+      - patient_share_rwf
     InsurersItem:
       type: object
       properties:
@@ -24013,6 +26303,11 @@ components:
           maximum: 365
           minimum: 1
           nullable: true
+        meal_timing:
+          default: ''
+          oneOf:
+          - $ref: '#/components/schemas/MealTimingEnum'
+          - $ref: '#/components/schemas/BlankEnum'
         quantity:
           type: integer
           maximum: 10000
@@ -24037,6 +26332,245 @@ components:
       - dose
       - frequency_code
       - route
+    LabCatalogueItem:
+      type: object
+      properties:
+        code:
+          type: string
+        label:
+          type: string
+        kind:
+          $ref: '#/components/schemas/LabResultKindEnum'
+        unit:
+          type: string
+        low:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          nullable: true
+        high:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          nullable: true
+        choices:
+          type: array
+          items:
+            type: string
+        normal:
+          type: string
+          nullable: true
+      required:
+      - choices
+      - code
+      - high
+      - kind
+      - label
+      - low
+      - normal
+      - unit
+    LabCatalogueTest:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        specimen:
+          $ref: '#/components/schemas/SpecimenEnum'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabCatalogueItem'
+      required:
+      - code
+      - items
+      - name
+      - specimen
+    LabInboxRow:
+      type: object
+      properties:
+        order:
+          $ref: '#/components/schemas/LabOrder'
+        patient:
+          $ref: '#/components/schemas/LabPatient'
+        facility_patient_id:
+          type: string
+          format: uuid
+      required:
+      - facility_patient_id
+      - order
+      - patient
+    LabOrder:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        visit_id:
+          type: string
+          format: uuid
+        consultation_id:
+          type: string
+          format: uuid
+        test_code:
+          type: string
+        test_name:
+          type: string
+        specimen:
+          type: string
+        state:
+          $ref: '#/components/schemas/LabOrderStateEnum'
+        reason:
+          type: string
+          description: Why the doctor asks (encrypted).
+        ordered_at:
+          type: string
+          format: date-time
+        ordered_by_name:
+          type: string
+          nullable: true
+        sample_taken_at:
+          type: string
+          format: date-time
+          nullable: true
+        sample_taken_by_name:
+          type: string
+          nullable: true
+        resulted_at:
+          type: string
+          format: date-time
+          nullable: true
+        resulted_by_name:
+          type: string
+          nullable: true
+        result:
+          allOf:
+          - $ref: '#/components/schemas/LabResult'
+          nullable: true
+        is_abnormal:
+          type: boolean
+        reviewed_at:
+          type: string
+          format: date-time
+          nullable: true
+        reviewed_by_name:
+          type: string
+          nullable: true
+        review_note:
+          type: string
+          description: The clinician's note for the patient; empty for the lab.
+        released_at:
+          type: string
+          format: date-time
+          nullable: true
+        version:
+          type: integer
+      required:
+      - consultation_id
+      - id
+      - is_abnormal
+      - ordered_at
+      - ordered_by_name
+      - reason
+      - released_at
+      - result
+      - resulted_at
+      - resulted_by_name
+      - review_note
+      - reviewed_at
+      - reviewed_by_name
+      - sample_taken_at
+      - sample_taken_by_name
+      - specimen
+      - state
+      - test_code
+      - test_name
+      - version
+      - visit_id
+    LabOrderInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        tests:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 20
+          maxItems: 10
+          minItems: 1
+        reason:
+          type: string
+          maxLength: 500
+      required:
+      - tests
+    LabOrderStateEnum:
+      enum:
+      - ordered
+      - sample_taken
+      - resulted
+      - reviewed
+      - released
+      - cancelled
+      type: string
+      description: |-
+        * `ordered` - Ordered
+        * `sample_taken` - Sample taken
+        * `resulted` - Resulted
+        * `reviewed` - Reviewed
+        * `released` - Released
+        * `cancelled` - Cancelled
+    LabPatient:
+      type: object
+      description: What the lab needs to confirm who the patient is (upgrade 06 §3).
+      properties:
+        full_name:
+          type: string
+        display_name:
+          type: string
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        age_years:
+          type: integer
+          nullable: true
+        sex:
+          type: string
+          nullable: true
+        medilink_number:
+          type: string
+          nullable: true
+      required:
+      - age_years
+      - date_of_birth
+      - display_name
+      - full_name
+      - medilink_number
+      - sex
+    LabQueue:
+      type: object
+      properties:
+        waiting:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabVisit'
+          description: At least one sample to take.
+        in_progress:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabVisit'
+          description: Samples taken, results to enter.
+        done_today:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabVisit'
+          description: Every test resulted today.
+      required:
+      - done_today
+      - in_progress
+      - waiting
     LabRequest:
       type: object
       properties:
@@ -24083,6 +26617,93 @@ components:
       required:
       - reason
       - tests
+    LabResult:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabResultItem'
+        comment:
+          type: string
+      required:
+      - comment
+      - items
+    LabResultInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        values:
+          type: object
+          additionalProperties:
+            type: string
+            maxLength: 40
+        comment:
+          type: string
+          maxLength: 500
+      required:
+      - values
+      - version
+    LabResultItem:
+      type: object
+      properties:
+        code:
+          type: string
+        label:
+          type: string
+        kind:
+          $ref: '#/components/schemas/LabResultKindEnum'
+        value:
+          type: string
+        unit:
+          type: string
+        low:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          nullable: true
+        high:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,6}(?:\.\d{0,2})?$
+          nullable: true
+        flag:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/FlagEnum'
+          - $ref: '#/components/schemas/NullEnum'
+      required:
+      - code
+      - flag
+      - high
+      - kind
+      - label
+      - low
+      - unit
+      - value
+    LabResultKindEnum:
+      enum:
+      - number
+      - choice
+      type: string
+      description: |-
+        * `number` - number
+        * `choice` - choice
+    LabReviewInputRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+        note:
+          type: string
+          maxLength: 1000
+      required:
+      - version
     LabTest:
       type: object
       properties:
@@ -24108,6 +26729,61 @@ components:
           maxLength: 120
       required:
       - name
+    LabTestTotal:
+      type: object
+      properties:
+        code:
+          type: string
+        name:
+          type: string
+        count:
+          type: integer
+        abnormal:
+          type: integer
+        median_turnaround_min:
+          type: integer
+          nullable: true
+      required:
+      - abnormal
+      - code
+      - count
+      - median_turnaround_min
+      - name
+    LabVersionRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        version:
+          type: integer
+          minimum: 1
+      required:
+      - version
+    LabVisit:
+      type: object
+      properties:
+        visit_id:
+          type: string
+          format: uuid
+        ticket:
+          allOf:
+          - $ref: '#/components/schemas/TicketRow'
+          nullable: true
+          description: The lab ticket; null until the doctor sends the patient.
+        patient:
+          $ref: '#/components/schemas/LabPatient'
+        unpaid:
+          type: boolean
+          description: Something is still to pay on the visit's bill.
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabOrder'
+      required:
+      - orders
+      - patient
+      - ticket
+      - unpaid
+      - visit_id
     Labels:
       type: object
       properties:
@@ -24652,6 +27328,16 @@ components:
       - sample_changes
       - summary
       - upload
+    MealTimingEnum:
+      enum:
+      - before_food
+      - with_food
+      - after_food
+      type: string
+      description: |-
+        * `before_food` - Before food
+        * `with_food` - With food
+        * `after_food` - After food
     Membership:
       type: object
       properties:
@@ -24678,7 +27364,15 @@ components:
             type: string
         is_active:
           type: boolean
+        deactivated_at:
+          type: string
+          format: date-time
+          nullable: true
+        deactivation_reason:
+          type: string
       required:
+      - deactivated_at
+      - deactivation_reason
       - facility_id
       - facility_name
       - is_active
@@ -24887,6 +27581,19 @@ components:
       - password_totp
       type: string
       description: '* `password_totp` - password_totp'
+    MethodTotal:
+      type: object
+      properties:
+        method:
+          type: string
+        count:
+          type: integer
+        amount_rwf:
+          type: integer
+      required:
+      - amount_rwf
+      - count
+      - method
     MethodTotals:
       type: object
       properties:
@@ -25179,6 +27886,133 @@ components:
         * `today` - today
         * `upcoming` - upcoming
         * `attended` - attended
+    NationalDiagnosis:
+      type: object
+      properties:
+        code:
+          type: string
+        display:
+          type: string
+        count:
+          type: integer
+      required:
+      - code
+      - count
+      - display
+    NationalDistrictRow:
+      type: object
+      properties:
+        district_code:
+          type: string
+          description: 'Blank: location unknown'
+        district:
+          type: string
+        facilities:
+          type: integer
+        visits:
+          $ref: '#/components/schemas/SuppressedCount'
+        wait:
+          $ref: '#/components/schemas/WaitFigures'
+        medicines_out:
+          type: integer
+      required:
+      - district
+      - district_code
+      - facilities
+      - medicines_out
+      - visits
+      - wait
+    NationalFacilityRow:
+      type: object
+      properties:
+        facility_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        district_code:
+          type: string
+        district:
+          type: string
+        visits:
+          $ref: '#/components/schemas/SuppressedCount'
+        wait:
+          $ref: '#/components/schemas/WaitFigures'
+        medicines_out:
+          type: integer
+      required:
+      - district
+      - district_code
+      - facility_id
+      - medicines_out
+      - name
+      - visits
+      - wait
+    NationalReport:
+      type: object
+      properties:
+        to:
+          type: string
+          format: date
+        group:
+          $ref: '#/components/schemas/GroupEnum'
+        min_group_size:
+          type: integer
+        totals:
+          $ref: '#/components/schemas/NationalTotals'
+        facilities:
+          type: array
+          items:
+            $ref: '#/components/schemas/NationalFacilityRow'
+        districts:
+          type: array
+          items:
+            $ref: '#/components/schemas/NationalDistrictRow'
+        wait_trend:
+          type: array
+          items:
+            $ref: '#/components/schemas/WaitTrendRow'
+        diagnoses:
+          type: array
+          items:
+            $ref: '#/components/schemas/DistrictDiagnoses'
+        stockouts:
+          type: array
+          items:
+            $ref: '#/components/schemas/StockOutRow'
+        from:
+          type: string
+          format: date
+      required:
+      - diagnoses
+      - districts
+      - facilities
+      - from
+      - group
+      - min_group_size
+      - stockouts
+      - to
+      - totals
+      - wait_trend
+    NationalTotals:
+      type: object
+      properties:
+        facilities:
+          type: integer
+        districts:
+          type: integer
+        visits:
+          $ref: '#/components/schemas/SuppressedCount'
+        wait:
+          $ref: '#/components/schemas/WaitFigures'
+        facilities_with_stockouts:
+          type: integer
+      required:
+      - districts
+      - facilities
+      - facilities_with_stockouts
+      - visits
+      - wait
     NearRequest:
       type: object
       properties:
@@ -25256,6 +28090,30 @@ components:
       - revoked_at
       - token
       - url
+    NextVisit:
+      type: object
+      properties:
+        due_on:
+          type: string
+          format: date
+        service_id:
+          type: string
+          format: uuid
+        starts_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Set when it is booked
+        booking_code:
+          type: string
+        doctor_name:
+          type: string
+      required:
+      - booking_code
+      - doctor_name
+      - due_on
+      - service_id
+      - starts_at
     NoteInputRequest:
       type: object
       properties:
@@ -25298,21 +28156,31 @@ components:
           type: array
           items:
             type: string
+        diagnoses:
+          type: array
+          items:
+            $ref: '#/components/schemas/TemplateDiagnosis'
         items:
           type: array
           items:
             $ref: '#/components/schemas/NoteTemplateItem'
+        tests:
+          type: array
+          items:
+            $ref: '#/components/schemas/NoteTemplateTest'
         use_count:
           type: integer
         updated_at:
           type: string
           format: date-time
       required:
+      - diagnoses
       - diagnosis_codes
       - id
       - items
       - name
       - sections
+      - tests
       - updated_at
       - use_count
     NoteTemplateInputRequest:
@@ -25336,6 +28204,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/NoteTemplateItemRequest'
+        tests:
+          type: array
+          items:
+            $ref: '#/components/schemas/NoteTemplateTestRequest'
       required:
       - name
     NoteTemplateItem:
@@ -25463,6 +28335,35 @@ components:
           type: string
           default: ''
           maxLength: 4000
+    NoteTemplateTest:
+      type: object
+      description: A lab test on an order set (W3 extension point for W2 lab orders;
+        not ordered yet).
+      properties:
+        code:
+          type: string
+          maxLength: 40
+        name:
+          type: string
+          default: ''
+          maxLength: 200
+      required:
+      - code
+    NoteTemplateTestRequest:
+      type: object
+      description: A lab test on an order set (W3 extension point for W2 lab orders;
+        not ordered yet).
+      properties:
+        code:
+          type: string
+          minLength: 1
+          maxLength: 40
+        name:
+          type: string
+          default: ''
+          maxLength: 200
+      required:
+      - code
     Notification:
       type: object
       properties:
@@ -25605,6 +28506,23 @@ components:
     NullEnum:
       enum:
       - null
+    NurseTriage:
+      type: object
+      properties:
+        urgency:
+          $ref: '#/components/schemas/TriageUrgencyEnum'
+        note:
+          type: string
+        by_name:
+          type: string
+        at:
+          type: string
+          format: date-time
+      required:
+      - at
+      - by_name
+      - note
+      - urgency
     OnDuty:
       type: object
       properties:
@@ -26630,6 +29548,50 @@ components:
       - next
       - previous
       - results
+    PaginatedStockCardList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StockCard'
+      required:
+      - count
+      - next
+      - previous
+      - results
+    PaginatedStockMovementList:
+      type: object
+      properties:
+        count:
+          type: integer
+        next:
+          type: string
+          format: uri
+          nullable: true
+        previous:
+          type: string
+          format: uri
+          nullable: true
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/StockMovement'
+      required:
+      - count
+      - next
+      - previous
+      - results
     PaginatedSupportRequestListList:
       type: object
       required:
@@ -26699,6 +29661,23 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SymptomsPlatformItem'
+    PasswordChangeRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        current_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 1024
+        new_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 1024
+      required:
+      - current_password
+      - new_password
     PasswordResetConfirmRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -26731,6 +29710,24 @@ components:
           maxLength: 254
       required:
       - email
+    PatchedAccountUpdateRequest:
+      type: object
+      description: What a platform admin may correct on an account; never the email
+        or the password.
+      properties:
+        reason:
+          type: string
+          minLength: 5
+          maxLength: 300
+        full_name:
+          type: string
+          minLength: 2
+          maxLength: 150
+        phone:
+          type: string
+          maxLength: 20
+        preferred_language:
+          $ref: '#/components/schemas/LanguageEnum'
     PatchedAnnouncementPatchRequest:
       type: object
       properties:
@@ -27240,6 +30237,11 @@ components:
           maximum: 365
           minimum: 1
           nullable: true
+        meal_timing:
+          default: ''
+          oneOf:
+          - $ref: '#/components/schemas/MealTimingEnum'
+          - $ref: '#/components/schemas/BlankEnum'
         quantity:
           type: integer
           maximum: 10000
@@ -28096,6 +31098,50 @@ components:
       - route
       - status
       - substitute_display
+    PatientLabResult:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        patient_id:
+          type: string
+          format: uuid
+        facility_name:
+          type: string
+        test_code:
+          type: string
+        test_name:
+          type: string
+        ordered_at:
+          type: string
+          format: date-time
+        released_at:
+          type: string
+          format: date-time
+        doctor_name:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabResultItem'
+        is_abnormal:
+          type: boolean
+        note:
+          type: string
+          description: The doctor's note with the result.
+      required:
+      - doctor_name
+      - facility_name
+      - id
+      - is_abnormal
+      - items
+      - note
+      - ordered_at
+      - patient_id
+      - released_at
+      - test_code
+      - test_name
     PatientLoginRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -28333,6 +31379,8 @@ components:
           type: boolean
         completion:
           $ref: '#/components/schemas/Completion'
+        has_photo:
+          type: boolean
         version:
           type: integer
       required:
@@ -28343,6 +31391,7 @@ components:
       - emergency_contact
       - full_name
       - has_care_consent
+      - has_photo
       - is_birth_date_estimated
       - medilink_number
       - no_known_allergies
@@ -28816,6 +31865,30 @@ components:
       required:
       - amount_rwf
       - method
+    PendingInvitation:
+      type: object
+      properties:
+        facility_id:
+          type: string
+          format: uuid
+        facility_name:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+        invited_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - expires_at
+      - facility_id
+      - facility_name
+      - invited_at
+      - roles
     PendingInvite:
       type: object
       properties:
@@ -28838,6 +31911,30 @@ components:
       - patient_id
       - profile_name
       - relationship
+    PeriodRow:
+      type: object
+      properties:
+        start:
+          type: string
+          format: date
+          description: First day of the day, week (Monday) or month
+        patients:
+          type: integer
+        completed:
+          type: integer
+        left_without_service:
+          type: integer
+        emergencies:
+          type: integer
+        no_shows:
+          type: integer
+      required:
+      - completed
+      - emergencies
+      - left_without_service
+      - no_shows
+      - patients
+      - start
     Person:
       type: object
       properties:
@@ -28873,6 +31970,12 @@ components:
           type: integer
         out_of_stock:
           type: integer
+        low_stock:
+          type: integer
+          description: 'W5: medicines below their low-stock threshold'
+        expiring_soon:
+          type: integer
+          description: 'W5: batches expiring within 60 days'
         updated_at:
           type: string
           format: date-time
@@ -28880,6 +31983,8 @@ components:
       - date
       - dispensed_by_me
       - dispensed_today
+      - expiring_soon
+      - low_stock
       - not_available_today
       - out_of_stock
       - partly
@@ -28935,6 +32040,15 @@ components:
       - raised_by_name
       - status
     PhotoRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        file:
+          type: string
+          format: binary
+      required:
+      - file
+    PhotoUploadRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
       properties:
@@ -29098,6 +32212,9 @@ components:
         * `handled` - Handled
     PlatformCreateInputRequest:
       type: object
+      description: |-
+        The super admin onboards a facility by phone or visit: everything known so far, then the
+        applicant gets a link to check, add the documents and submit (2026-11-03: all groups).
       properties:
         applicant:
           $ref: '#/components/schemas/ApplicantInputRequest'
@@ -29105,6 +32222,15 @@ components:
           $ref: '#/components/schemas/FacilityInputRequest'
         location:
           $ref: '#/components/schemas/LocationInputRequest'
+        proposed_admin:
+          $ref: '#/components/schemas/AdminInputRequest'
+        claimed_insurer_codes:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 40
+          maxItems: 20
         send_link:
           type: boolean
           default: false
@@ -29131,6 +32257,40 @@ components:
           type: string
         tin:
           type: string
+        organization_name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        address:
+          type: string
+        latitude:
+          type: number
+          format: double
+          nullable: true
+        longitude:
+          type: number
+          format: double
+          nullable: true
+        photo_count:
+          type: integer
+        location:
+          $ref: '#/components/schemas/FacilityPlace'
+        admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/FacilityContact'
+        staff_count:
+          type: integer
+        doctor_count:
+          type: integer
+        doctors_attested:
+          type: integer
+        staff_by_profession:
+          type: object
+          additionalProperties:
+            type: integer
         status:
           $ref: '#/components/schemas/FacilityStatusEnum'
         district:
@@ -29153,18 +32313,31 @@ components:
         version:
           type: integer
       required:
+      - address
+      - admins
       - application_id
       - created_at
       - district
+      - doctor_count
+      - doctors_attested
+      - email
       - facility_type
       - id
+      - latitude
       - level_of_care
       - licence_state
+      - location
+      - longitude
       - moh_facility_code
       - name
       - next_licence_expiry
+      - organization_name
       - ownership
+      - phone
+      - photo_count
       - slug
+      - staff_by_profession
+      - staff_count
       - status
       - tin
       - version
@@ -29188,6 +32361,40 @@ components:
           type: string
         tin:
           type: string
+        organization_name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        address:
+          type: string
+        latitude:
+          type: number
+          format: double
+          nullable: true
+        longitude:
+          type: number
+          format: double
+          nullable: true
+        photo_count:
+          type: integer
+        location:
+          $ref: '#/components/schemas/FacilityPlace'
+        admins:
+          type: array
+          items:
+            $ref: '#/components/schemas/FacilityContact'
+        staff_count:
+          type: integer
+        doctor_count:
+          type: integer
+        doctors_attested:
+          type: integer
+        staff_by_profession:
+          type: object
+          additionalProperties:
+            type: integer
         status:
           $ref: '#/components/schemas/FacilityStatusEnum'
         district:
@@ -29218,20 +32425,33 @@ components:
           items:
             $ref: '#/components/schemas/Licence'
       required:
+      - address
+      - admins
       - application
       - application_id
       - created_at
       - district
+      - doctor_count
+      - doctors_attested
+      - email
       - facility_type
       - id
+      - latitude
       - level_of_care
       - licence_state
       - licences
+      - location
+      - longitude
       - moh_facility_code
       - name
       - next_licence_expiry
+      - organization_name
       - ownership
+      - phone
+      - photo_count
       - slug
+      - staff_by_profession
+      - staff_count
       - status
       - tin
       - version
@@ -29725,6 +32945,11 @@ components:
           type: boolean
         available_here:
           type: boolean
+        stock_level:
+          nullable: true
+          oneOf:
+          - $ref: '#/components/schemas/StockLevelEnum'
+          - $ref: '#/components/schemas/NullEnum'
         dose:
           type: string
         frequency_code:
@@ -29734,6 +32959,10 @@ components:
         duration_days:
           type: integer
           nullable: true
+        meal_timing:
+          oneOf:
+          - $ref: '#/components/schemas/MealTimingEnum'
+          - $ref: '#/components/schemas/BlankEnum'
         quantity:
           type: integer
         dispensed_quantity:
@@ -29769,10 +32998,12 @@ components:
       - instructions
       - is_controlled
       - is_off_catalogue
+      - meal_timing
       - quantity
       - replaces_item_id
       - route
       - status
+      - stock_level
       - strength
       - substitution_allowed
     PrescriptionItemStatusEnum:
@@ -30755,7 +33986,13 @@ components:
           allOf:
           - $ref: '#/components/schemas/TriageHint'
           nullable: true
+        nurse_triage:
+          allOf:
+          - $ref: '#/components/schemas/NurseTriage'
+          nullable: true
+          description: The triage nurse's urgency and note (#200); null when none.
       required:
+      - nurse_triage
       - patient_words
       - symptoms
       - triage
@@ -31158,6 +34395,154 @@ components:
       - reason_text
       - reviewed
       - ticket_number
+    ReportDiagnoses:
+      type: object
+      properties:
+        signed_with_diagnosis:
+          type: integer
+        sensitive_count:
+          type: integer
+          description: Counted, never named
+        top:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiagnosisCount'
+        referrals_out:
+          type: integer
+        referrals_by_specialty:
+          type: array
+          items:
+            $ref: '#/components/schemas/SpecialtyCount'
+      required:
+      - referrals_by_specialty
+      - referrals_out
+      - sensitive_count
+      - signed_with_diagnosis
+      - top
+    ReportLab:
+      type: object
+      properties:
+        ordered:
+          type: integer
+        cancelled:
+          type: integer
+        resulted:
+          type: integer
+        waiting:
+          type: integer
+        median_turnaround_min:
+          type: integer
+          nullable: true
+        p90_turnaround_min:
+          type: integer
+          nullable: true
+        by_test:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabTestTotal'
+      required:
+      - by_test
+      - cancelled
+      - median_turnaround_min
+      - ordered
+      - p90_turnaround_min
+      - resulted
+      - waiting
+    ReportMoney:
+      type: object
+      properties:
+        collected_rwf:
+          type: integer
+        billed_rwf:
+          type: integer
+        by_method:
+          type: array
+          items:
+            $ref: '#/components/schemas/MethodTotal'
+        by_insurer:
+          type: array
+          items:
+            $ref: '#/components/schemas/InsurerTotal'
+        exemptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExemptionTotal'
+        voided_payments:
+          $ref: '#/components/schemas/CountAmount'
+        voided_bills:
+          type: integer
+        credit_notes:
+          $ref: '#/components/schemas/CountAmount'
+        refunds_paid_rwf:
+          type: integer
+      required:
+      - billed_rwf
+      - by_insurer
+      - by_method
+      - collected_rwf
+      - credit_notes
+      - exemptions
+      - refunds_paid_rwf
+      - voided_bills
+      - voided_payments
+    ReportStock:
+      type: object
+      properties:
+        tracked:
+          type: integer
+        out_now:
+          type: integer
+        low_now:
+          type: integer
+        out_medicines:
+          type: array
+          items:
+            type: string
+        received_units:
+          type: integer
+        dispensed_units:
+          type: integer
+        adjusted_units:
+          type: integer
+          description: 'Net: corrections up, removals down'
+        expiring:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExpiringBatch'
+        expiring_window_days:
+          type: integer
+      required:
+      - adjusted_units
+      - dispensed_units
+      - expiring
+      - expiring_window_days
+      - low_now
+      - out_medicines
+      - out_now
+      - received_units
+      - tracked
+    ReportVisits:
+      type: object
+      properties:
+        periods:
+          type: array
+          items:
+            $ref: '#/components/schemas/PeriodRow'
+        totals:
+          $ref: '#/components/schemas/VisitTotals'
+        by_source:
+          type: array
+          items:
+            $ref: '#/components/schemas/SourceCount'
+        by_service:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceCount'
+      required:
+      - by_service
+      - by_source
+      - periods
+      - totals
     RequestChangesInputRequest:
       type: object
       properties:
@@ -31351,6 +34736,8 @@ components:
       - doctor
       - pharmacist
       - cashier
+      - triage_nurse
+      - lab_technician
       type: string
       description: |-
         * `facility_admin` - Facility admin
@@ -31358,6 +34745,8 @@ components:
         * `doctor` - Doctor / clinician
         * `pharmacist` - Pharmacist
         * `cashier` - Cashier
+        * `triage_nurse` - Triage nurse
+        * `lab_technician` - Laboratory technician
     RouteEnum:
       enum:
       - oral
@@ -31854,6 +35243,21 @@ components:
       required:
       - code
       - name_i18n
+    ServiceCount:
+      type: object
+      properties:
+        service_id:
+          type: string
+          format: uuid
+        name_i18n:
+          type: object
+          additionalProperties: {}
+        count:
+          type: integer
+      required:
+      - count
+      - name_i18n
+      - service_id
     ServiceLoad:
       type: object
       properties:
@@ -32124,6 +35528,38 @@ components:
       - facility_name
       - kind
       - number
+    ShiftMethod:
+      type: object
+      description: '#203 end-of-shift summary row for one payment method.'
+      properties:
+        method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        payment_count:
+          type: integer
+        received_rwf:
+          type: integer
+        paid_out_rwf:
+          type: integer
+          description: Refunds paid back in this shift.
+        expected_rwf:
+          type: integer
+          description: Cash includes the opening float.
+        counted_rwf:
+          type: integer
+          nullable: true
+          description: Null while open.
+        difference_rwf:
+          type: integer
+          nullable: true
+          description: Counted minus expected.
+      required:
+      - counted_rwf
+      - difference_rwf
+      - expected_rwf
+      - method
+      - paid_out_rwf
+      - payment_count
+      - received_rwf
     ShiftStatusEnum:
       enum:
       - open
@@ -32190,6 +35626,16 @@ components:
       description: |-
         * `front` - front
         * `back` - back
+    SignupAccepted:
+      type: object
+      properties:
+        detail:
+          type: string
+        email_verification:
+          type: boolean
+      required:
+      - detail
+      - email_verification
     SlotDay:
       type: object
       properties:
@@ -32230,6 +35676,17 @@ components:
       required:
       - days
       - service_id
+    SourceCount:
+      type: object
+      properties:
+        source:
+          type: string
+          description: Visit source, e.g. walk_in, online_booking
+        count:
+          type: integer
+      required:
+      - count
+      - source
     SpecialtyCodeEnum:
       enum:
       - anaesthesiology
@@ -32276,6 +35733,26 @@ components:
         * `public_health` - public_health
         * `radiology` - radiology
         * `urology` - urology
+    SpecialtyCount:
+      type: object
+      properties:
+        specialty:
+          type: string
+        count:
+          type: integer
+      required:
+      - count
+      - specialty
+    SpecimenEnum:
+      enum:
+      - blood
+      - urine
+      - stool
+      type: string
+      description: |-
+        * `blood` - blood
+        * `urine` - urine
+        * `stool` - stool
     StaffBookRequest:
       type: object
       properties:
@@ -33012,14 +36489,42 @@ components:
       enum:
       - reception
       - payment
+      - triage
       - consultation
+      - lab
       - pharmacy
       type: string
       description: |-
         * `reception` - Reception
         * `payment` - Payment
+        * `triage` - Triage
         * `consultation` - Consultation
+        * `lab` - Laboratory
         * `pharmacy` - Pharmacy
+    StageWait:
+      type: object
+      properties:
+        stage:
+          type: string
+        tickets:
+          type: integer
+        called:
+          type: integer
+        median_wait_min:
+          type: integer
+          nullable: true
+        p90_wait_min:
+          type: integer
+          nullable: true
+        left_without_service:
+          type: integer
+      required:
+      - called
+      - left_without_service
+      - median_wait_min
+      - p90_wait_min
+      - stage
+      - tickets
     StartApplicationInputRequest:
       type: object
       properties:
@@ -33106,6 +36611,277 @@ components:
           format: date-time
       required:
       - step_up_valid_until
+    StockAdjustReasonEnum:
+      enum:
+      - count_correction
+      - damaged
+      - expired
+      type: string
+      description: |-
+        * `count_correction` - Count correction
+        * `damaged` - Damaged
+        * `expired` - Expired
+    StockAdjustRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        quantity_change:
+          type: integer
+          maximum: 100000
+          minimum: -100000
+        reason:
+          $ref: '#/components/schemas/StockAdjustReasonEnum'
+        note:
+          type: string
+          default: ''
+          maxLength: 300
+      required:
+      - quantity_change
+      - reason
+    StockBatch:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        drug_code:
+          type: string
+        display:
+          type: string
+        batch_number:
+          type: string
+        expiry_date:
+          type: string
+          format: date
+        quantity_on_hand:
+          type: integer
+        supplier:
+          type: string
+        is_expired:
+          type: boolean
+        received_at:
+          type: string
+          format: date-time
+      required:
+      - batch_number
+      - display
+      - drug_code
+      - expiry_date
+      - id
+      - is_expired
+      - quantity_on_hand
+      - received_at
+      - supplier
+    StockCard:
+      type: object
+      properties:
+        drug_code:
+          type: string
+        display:
+          type: string
+        is_controlled:
+          type: boolean
+        on_hand:
+          type: integer
+          description: Units in batches that have not expired
+        expired_on_hand:
+          type: integer
+          description: Units in expired batches, to remove
+        low_stock_threshold:
+          type: integer
+        stock_level:
+          $ref: '#/components/schemas/StockLevelEnum'
+        next_expiry:
+          type: string
+          format: date
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - display
+      - drug_code
+      - expired_on_hand
+      - is_controlled
+      - low_stock_threshold
+      - next_expiry
+      - on_hand
+      - stock_level
+      - updated_at
+    StockDetail:
+      type: object
+      properties:
+        drug_code:
+          type: string
+        display:
+          type: string
+        is_controlled:
+          type: boolean
+        on_hand:
+          type: integer
+          description: Units in batches that have not expired
+        expired_on_hand:
+          type: integer
+          description: Units in expired batches, to remove
+        low_stock_threshold:
+          type: integer
+        stock_level:
+          $ref: '#/components/schemas/StockLevelEnum'
+        next_expiry:
+          type: string
+          format: date
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+        batches:
+          type: array
+          items:
+            $ref: '#/components/schemas/StockBatch'
+        movements:
+          type: array
+          items:
+            $ref: '#/components/schemas/StockMovement'
+      required:
+      - batches
+      - display
+      - drug_code
+      - expired_on_hand
+      - is_controlled
+      - low_stock_threshold
+      - movements
+      - next_expiry
+      - on_hand
+      - stock_level
+      - updated_at
+    StockLevelEnum:
+      enum:
+      - in_stock
+      - low
+      - out
+      type: string
+      description: |-
+        * `in_stock` - in_stock
+        * `low` - low
+        * `out` - out
+    StockMovement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        drug_code:
+          type: string
+        display:
+          type: string
+        batch_id:
+          type: string
+          format: uuid
+        batch_number:
+          type: string
+        kind:
+          $ref: '#/components/schemas/StockMovementKindEnum'
+        quantity:
+          type: integer
+          description: 'Signed: + received, - dispensed or removed'
+        balance_after:
+          type: integer
+          description: Units left in the batch afterwards
+        reason:
+          type: string
+        note:
+          type: string
+        prescription_id:
+          type: string
+          format: uuid
+          nullable: true
+        by_name:
+          type: string
+        occurred_at:
+          type: string
+          format: date-time
+      required:
+      - balance_after
+      - batch_id
+      - batch_number
+      - by_name
+      - display
+      - drug_code
+      - id
+      - kind
+      - note
+      - occurred_at
+      - prescription_id
+      - quantity
+      - reason
+    StockMovementKindEnum:
+      enum:
+      - received
+      - dispensed
+      - adjusted
+      type: string
+      description: |-
+        * `received` - Received
+        * `dispensed` - Dispensed
+        * `adjusted` - Adjusted
+    StockOutRow:
+      type: object
+      properties:
+        medicine:
+          type: string
+        facilities:
+          type: integer
+        districts:
+          type: array
+          items:
+            type: string
+      required:
+      - districts
+      - facilities
+      - medicine
+    StockReceiveRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        drug_code:
+          type: string
+          minLength: 1
+          maxLength: 40
+        batch_number:
+          type: string
+          minLength: 1
+          maxLength: 40
+        expiry_date:
+          type: string
+          format: date
+        quantity:
+          type: integer
+          maximum: 100000
+          minimum: 1
+        supplier:
+          type: string
+          default: ''
+          maxLength: 120
+        low_stock_threshold:
+          type: integer
+          maximum: 100000
+          minimum: 0
+          nullable: true
+      required:
+      - batch_number
+      - drug_code
+      - expiry_date
+      - quantity
+    StockThresholdRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        low_stock_threshold:
+          type: integer
+          maximum: 100000
+          minimum: 0
+      required:
+      - low_stock_threshold
     SubmitInputRequest:
       type: object
       properties:
@@ -33422,6 +37198,20 @@ components:
         * `facility_setup` - Facility setup
         * `technical` - Something doesn't work
         * `other` - Other
+    SuppressedCount:
+      type: object
+      properties:
+        value:
+          type: integer
+          nullable: true
+          description: null when suppressed
+        suppressed:
+          type: boolean
+          description: A group of fewer than 10, or a figure it could be worked back
+            from
+      required:
+      - suppressed
+      - value
     Symptom:
       type: object
       properties:
@@ -33751,6 +37541,27 @@ components:
       - valid_to
       - version
       - weekday
+    TemplateDiagnosis:
+      type: object
+      properties:
+        code:
+          type: string
+        display:
+          type: string
+        plain_language:
+          type: string
+        is_sensitive:
+          type: boolean
+        is_known:
+          type: boolean
+          description: 'False when the code is not an active ICD-10 code: applying
+            skips it.'
+      required:
+      - code
+      - display
+      - is_known
+      - is_sensitive
+      - plain_language
     TemplateRef:
       type: object
       properties:
@@ -33892,6 +37703,14 @@ components:
         client_occurred_at:
           type: string
           format: date-time
+        urgency:
+          $ref: '#/components/schemas/TriageUrgencyEnum'
+        note:
+          type: string
+          maxLength: 500
+        no_vitals_reason:
+          type: string
+          maxLength: 200
       required:
       - version
     TicketEvent:
@@ -34000,10 +37819,15 @@ components:
           type: array
           items:
             type: string
+        allergies:
+          type: array
+          items:
+            type: string
         version:
           type: integer
       required:
       - age_years
+      - allergies
       - arrival_at
       - assigned_membership_id
       - called_at
@@ -34052,6 +37876,18 @@ components:
         * `cancelled` - Cancelled
         * `left_without_service` - Left without service
         * `completed` - Completed
+    TimesEnum:
+      enum:
+      - morning
+      - noon
+      - evening
+      - night
+      type: string
+      description: |-
+        * `morning` - morning
+        * `noon` - noon
+        * `evening` - evening
+        * `night` - night
     TokenInputRequest:
       type: object
       properties:
@@ -34218,6 +38054,16 @@ components:
       - service_code
       - signed_off
       - urgency
+    TriageUrgencyEnum:
+      enum:
+      - normal
+      - priority
+      - emergency
+      type: string
+      description: |-
+        * `normal` - normal
+        * `priority` - priority
+        * `emergency` - emergency
     UndoRequest:
       type: object
       description: Rejects unknown fields instead of silently ignoring them.
@@ -34372,6 +38218,13 @@ components:
           type: string
         email:
           type: string
+        phone:
+          type: string
+        profession:
+          type: string
+        licence_state:
+          type: string
+          nullable: true
         kind:
           $ref: '#/components/schemas/UserKindEnum'
         is_active:
@@ -34391,15 +38244,35 @@ components:
           format: date-time
         email_verified:
           type: boolean
+        verification_pending:
+          type: boolean
+          description: 'Signed up and has not opened the confirmation link yet: cannot
+            sign in.'
+        preferred_language:
+          type: string
+        sign_in_blocked_for:
+          type: integer
+          description: Seconds left of the block after failed sign-ins or MFA codes
+            (0 = none).
         sessions:
           type: array
           items:
             $ref: '#/components/schemas/SessionRow'
+        invitations:
+          type: array
+          items:
+            $ref: '#/components/schemas/PendingInvitation'
         events:
           type: array
           items:
             $ref: '#/components/schemas/EventRow'
+        changes:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventRow'
+          description: What admins changed on this account and its facility access.
       required:
+      - changes
       - created_at
       - email
       - email_verified
@@ -34407,11 +38280,18 @@ components:
       - facilities
       - full_name
       - id
+      - invitations
       - is_active
       - kind
       - last_login
+      - licence_state
       - mfa_enabled
+      - phone
+      - preferred_language
+      - profession
       - sessions
+      - sign_in_blocked_for
+      - verification_pending
     UserKindEnum:
       enum:
       - platform
@@ -34432,6 +38312,13 @@ components:
           type: string
         email:
           type: string
+        phone:
+          type: string
+        profession:
+          type: string
+        licence_state:
+          type: string
+          nullable: true
         kind:
           $ref: '#/components/schemas/UserKindEnum'
         is_active:
@@ -34458,7 +38345,42 @@ components:
       - is_active
       - kind
       - last_login
+      - licence_state
       - mfa_enabled
+      - phone
+      - profession
+    UserSummary:
+      type: object
+      properties:
+        total:
+          type: integer
+        platform:
+          type: integer
+        staff:
+          type: integer
+        patient:
+          type: integer
+        locked:
+          type: integer
+        without_mfa:
+          type: integer
+          description: Staff and platform admins.
+        verification_pending:
+          type: integer
+        facilities:
+          type: array
+          items:
+            $ref: '#/components/schemas/FacilityOption'
+          description: Facilities that have staff.
+      required:
+      - facilities
+      - locked
+      - patient
+      - platform
+      - staff
+      - total
+      - verification_pending
+      - without_mfa
     ValueEnum:
       enum:
       - A+
@@ -34643,11 +38565,17 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TicketEvent'
+        follow_up:
+          allOf:
+          - $ref: '#/components/schemas/NextVisit'
+          nullable: true
+          description: The follow-up the doctor set in this visit (#207)
       required:
       - checked_in_at
       - display_name
       - events
       - facility_patient_id
+      - follow_up
       - id
       - is_emergency
       - priority_class
@@ -34672,6 +38600,32 @@ components:
         * `walk_in` - Walk-in
         * `referral` - Referral
         * `emergency` - Emergency
+    VisitTotals:
+      type: object
+      properties:
+        patients:
+          type: integer
+        completed:
+          type: integer
+        left_without_service:
+          type: integer
+        emergencies:
+          type: integer
+        bookings_expected:
+          type: integer
+        no_shows:
+          type: integer
+        no_show_rate_pct:
+          type: integer
+          nullable: true
+      required:
+      - bookings_expected
+      - completed
+      - emergencies
+      - left_without_service
+      - no_show_rate_pct
+      - no_shows
+      - patients
     Vitals:
       type: object
       properties:
@@ -34819,6 +38773,22 @@ components:
           maxLength: 300
       required:
       - reason_text
+    WaitFigures:
+      type: object
+      properties:
+        median_min:
+          type: integer
+          nullable: true
+        p90_min:
+          type: integer
+          nullable: true
+        suppressed:
+          type: boolean
+          description: Fewer than 10 patients were called
+      required:
+      - median_min
+      - p90_min
+      - suppressed
     WaitRange:
       type: object
       properties:
@@ -34829,6 +38799,27 @@ components:
       required:
       - max
       - min
+    WaitTrendRow:
+      type: object
+      properties:
+        median_min:
+          type: integer
+          nullable: true
+        p90_min:
+          type: integer
+          nullable: true
+        suppressed:
+          type: boolean
+          description: Fewer than 10 patients were called
+        start:
+          type: string
+          format: date
+          description: First day of the day, week (Monday) or month
+      required:
+      - median_min
+      - p90_min
+      - start
+      - suppressed
     Warning:
       type: object
       properties:

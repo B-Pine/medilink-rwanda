@@ -7,6 +7,7 @@ Status: v0.1 · How we prove that what is built matches what is documented. Proc
 | Document | Purpose |
 |---|---|
 | [traceability-matrix.md](traceability-matrix.md) | Every `FR-*` and `NFR-*` requirement with its sprint, side, verification method and status |
+| [close-the-books-2026-11.md](close-the-books-2026-11.md) | W10 (#209): which M1 sprint issues are built, what is truly left (staging, evidence, gaps), and which were closed |
 | [sprint-0-acceptance.md](sprint-0-acceptance.md) | Acceptance record of Sprint 0: checks B1–B17 and F1–F12 with evidence |
 | [sprint-1-acceptance.md](sprint-1-acceptance.md) | Sprint 1 (platform and onboarding): 40 checks with evidence; open for independent verification |
 | [sprint-2-acceptance.md](sprint-2-acceptance.md) | Sprint 2 (facility setup and staff): backend and frontend evidence; real-API checks wait for staging |

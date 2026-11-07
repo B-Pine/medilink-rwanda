@@ -6,7 +6,13 @@ import type { ApiClient } from "../client";
 import type { Uuid } from "../types";
 import type { SymptomInput } from "./booking";
 
-export type Stage = "reception" | "payment" | "consultation" | "pharmacy";
+/**
+ * `triage` (upgrade 06 §2, #200): optional, between check-in and the doctor. `lab` (#201): a loop
+ * out of the consultation; the patient comes back to the doctor when every result is in.
+ */
+export type Stage = "reception" | "payment" | "triage" | "consultation" | "lab" | "pharmacy";
+/** The triage nurse's decision (#200); not the symptom checker's `TriageUrgency`. */
+export type NurseUrgency = "normal" | "priority" | "emergency";
 export type TicketState =
   | "waiting"
   | "called"
@@ -37,7 +43,14 @@ export type TicketAction =
   | "emergency"
   /** S5 (R4 #102): reception confirms a remote joiner is on site; `{version}`. */
   | "confirm-arrival"
-  | "reorder";
+  | "reorder"
+  /** #200: the triage nurse sets the urgency and sends the patient to the doctor. */
+  | "triage"
+  /**
+   * #201: the doctor sends the patient in service to the lab (`422` without an ordered test).
+   * The consultation stays a draft; the patient comes back when every result is in.
+   */
+  | "send-to-lab";
 
 export interface TicketRow {
   id: Uuid;
@@ -75,6 +88,8 @@ export interface TicketRow {
   /** upgrade 05 §2: the patient's own words at booking or check-in, and their symptoms. */
   reason_text: string;
   symptoms: string[];
+  /** #200: known allergies, on triage tickets only (empty elsewhere). */
+  allergies: string[];
   version: number;
 }
 
@@ -150,6 +165,14 @@ export interface TicketActionInput {
   before_ticket_id?: Uuid;
   /** When the action happened, for actions retried after a connection loss (FR-QUE-16). */
   client_occurred_at?: string;
+  /**
+   * `triage` (#200): the urgency (a priority needs `priority_class` and `reason_code`, an
+   * emergency a reason), a short note, and why no vitals were taken when none were (`422`
+   * otherwise).
+   */
+  urgency?: NurseUrgency;
+  note?: string;
+  no_vitals_reason?: string;
 }
 
 export interface TicketEventRow {
@@ -174,6 +197,17 @@ export interface VisitDetail {
   checked_in_at: string | null;
   tickets: TicketRow[];
   events: TicketEventRow[];
+  /** The follow-up the doctor set in this visit, for the printed card (#207). */
+  follow_up: NextVisit | null;
+}
+
+export interface NextVisit {
+  due_on: string;
+  service_id: Uuid;
+  /** Set when the follow-up was booked. */
+  starts_at: string | null;
+  booking_code: string;
+  doctor_name: string;
 }
 
 export interface ReorderRow {
@@ -290,6 +324,125 @@ export type OperationsAttentionKey =
   | "staff_without_mfa"
   | "licence_days_left";
 
+export type ReportGroup = "day" | "week" | "month";
+export type ReportTable =
+  "visits" | "sources" | "services" | "waits" | "diagnoses" | "money" | "lab" | "stock";
+export interface ReportQuery {
+  from?: string;
+  to?: string;
+  group?: ReportGroup;
+}
+
+/**
+ * Facility report for a period (#205, upgrade 13 W6), for `reports.view`. Aggregates only, never
+ * a patient name; sensitive diagnoses are counted, never named. Stock levels are now; stock
+ * movements are for the period.
+ */
+export interface FacilityReport {
+  from: string;
+  to: string;
+  group: ReportGroup;
+  visits: {
+    /** One row per day, ISO week (starts Monday) or month; `start` is its first day. */
+    periods: {
+      start: string;
+      patients: number;
+      completed: number;
+      left_without_service: number;
+      emergencies: number;
+      no_shows: number;
+    }[];
+    totals: {
+      patients: number;
+      completed: number;
+      left_without_service: number;
+      emergencies: number;
+      bookings_expected: number;
+      no_shows: number;
+      no_show_rate_pct: number | null;
+    };
+    by_source: { source: string; count: number }[];
+    by_service: {
+      service_id: Uuid;
+      name_i18n: Partial<Record<"rw" | "en" | "fr", string>>;
+      count: number;
+    }[];
+  };
+  /** Joining the stage's queue on site to the first call. */
+  waits: {
+    stage: Stage;
+    tickets: number;
+    called: number;
+    median_wait_min: number | null;
+    p90_wait_min: number | null;
+    left_without_service: number;
+  }[];
+  diagnoses: {
+    signed_with_diagnosis: number;
+    sensitive_count: number;
+    top: { code: string; display: string; count: number }[];
+    referrals_out: number;
+    referrals_by_specialty: { specialty: string; count: number }[];
+  };
+  money: {
+    collected_rwf: number;
+    billed_rwf: number;
+    by_method: { method: string; count: number; amount_rwf: number }[];
+    by_insurer: {
+      insurer_code: string;
+      insurer_name: string;
+      bills: number;
+      insurer_share_rwf: number;
+      patient_share_rwf: number;
+    }[];
+    exemptions: { reason: string; count: number; amount_rwf: number }[];
+    voided_payments: { count: number; amount_rwf: number };
+    voided_bills: number;
+    credit_notes: { count: number; amount_rwf: number };
+    refunds_paid_rwf: number;
+  };
+  lab: {
+    ordered: number;
+    cancelled: number;
+    resulted: number;
+    waiting: number;
+    median_turnaround_min: number | null;
+    p90_turnaround_min: number | null;
+    by_test: {
+      code: string;
+      name: string;
+      count: number;
+      abnormal: number;
+      median_turnaround_min: number | null;
+    }[];
+  };
+  stock: {
+    tracked: number;
+    out_now: number;
+    low_now: number;
+    out_medicines: string[];
+    received_units: number;
+    dispensed_units: number;
+    adjusted_units: number;
+    expiring: {
+      drug_code: string;
+      display: string;
+      batch_number: string;
+      expiry_date: string;
+      quantity_on_hand: number;
+      is_expired: boolean;
+    }[];
+    expiring_window_days: number;
+  };
+}
+
+function reportQuery(params: ReportQuery & { table?: ReportTable }): string {
+  const q = new URLSearchParams();
+  for (const [k, v] of Object.entries(params) as [string, string | undefined][]) if (v) q.set(k, v);
+  const s = q.toString();
+  return s ? `?${s}` : "";
+}
+
 const S = "/api/v1/staff";
 export const queuePaths = {
   checkIn: `${S}/visits/check-in/`,
@@ -302,6 +455,10 @@ export const queuePaths = {
   ticket: (id: Uuid, action: TicketAction) => `${S}/tickets/${id}/${action}/`,
   duty: `${S}/duty-status/`,
   operations: `${S}/reports/operations/`,
+  report: (params: ReportQuery = {}) => `${S}/reports/facility/${reportQuery(params)}`,
+  /** CSV of one table, UTF-8 with BOM; audit-logged on the server. */
+  reportExport: (table: ReportTable, params: ReportQuery = {}) =>
+    `${S}/reports/facility/export/${reportQuery({ ...params, table })}`,
   displayLinks: `${S}/display-links/`,
   revokeDisplay: (id: Uuid) => `${S}/display-links/${id}/revoke/`,
   display: (token: string) => `/api/v1/display/${encodeURIComponent(token)}/`,
@@ -333,7 +490,9 @@ export function createQueueApi(client: ApiClient) {
         version: ticket.version,
       }),
     board: () => client.get<QueueBoard>(queuePaths.board),
-    mine: () => client.get<MyQueue>(queuePaths.mine),
+    /** The doctor's queue, the triage nurse's with `"triage"` (#200), the lab's with `"lab"` (#201). */
+    mine: (stage?: "triage" | "lab") =>
+      client.get<MyQueue>(stage ? `${queuePaths.mine}?stage=${stage}` : queuePaths.mine),
     /** `null` when nobody is waiting (204). */
     callNext: (body: { service_id: Uuid; stage?: Stage; service_point_id?: Uuid | null }) =>
       client
@@ -343,6 +502,7 @@ export function createQueueApi(client: ApiClient) {
       client.post<TicketRow>(queuePaths.ticket(id, action), body),
     duty: () => client.get<DutyRow>(queuePaths.duty),
     operations: () => client.get<Operations>(queuePaths.operations),
+    report: (params: ReportQuery = {}) => client.get<FacilityReport>(queuePaths.report(params)),
     setDuty: (body: {
       state: DutyState;
       service_point_id?: Uuid | null;

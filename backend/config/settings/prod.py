@@ -22,6 +22,9 @@ if env("MEDILINK_DB_ROLE", default="app") != "owner":
 SECRET_KEY = env("DJANGO_SECRET_KEY")  # required, no default
 SECRET_KEY_FALLBACKS = env.list("DJANGO_SECRET_KEY_FALLBACKS", default=[])
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS")  # required, e.g. api.medilink.rw
+# Railway sets RAILWAY_ENVIRONMENT_NAME and sends its deploy healthcheck with this Host header.
+if env("RAILWAY_ENVIRONMENT_NAME", default="") and "healthcheck.railway.app" not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append("healthcheck.railway.app")
 
 CORS_ALLOWED_ORIGINS, CSRF_TRUSTED_ORIGINS, WS_ALLOWED_ORIGINS = origin_settings(
     [], require_https=True
@@ -31,6 +34,8 @@ if not CORS_ALLOWED_ORIGINS:
 
 # HTTPS everywhere (TLS terminates at the proxy, which overwrites X-Forwarded-Proto).
 SECURE_SSL_REDIRECT = True
+# Platform healthchecks (Railway) call /api/v1/health/ over plain HTTP inside the network.
+SECURE_REDIRECT_EXEMPT = [r"^api/v1/health/$"]
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_HSTS_SECONDS = 31_536_000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True

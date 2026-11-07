@@ -16,7 +16,7 @@ import { Link } from "react-router";
 
 import { env } from "../../env";
 import { useInDashboard } from "../../layout/DashboardContext";
-import { FacilityCardGrid } from "../site/FacilityCards";
+import { FacilityEntries } from "../site/FacilityDirectory";
 import { EmptyState } from "../site/kit";
 import { INSURER_CODES, INSURER_KEYS, pinKind, time, type InsurerKey } from "./discovery";
 
@@ -216,7 +216,7 @@ export function PlacesView({
   onSort,
   empty,
   toolbar,
-  cards = false,
+  directory = false,
 }: {
   heading: string;
   headingId: string;
@@ -233,8 +233,8 @@ export function PlacesView({
   empty: ReactNode;
   /** Extra controls in the title row (e.g. the Filters button). */
   toolbar?: ReactNode;
-  /** Cards instead of table rows (Find care, product owner 2026-11-03). */
-  cards?: boolean;
+  /** The public directory rows instead of the table (Find care, public design brief 2026-11-04). */
+  directory?: boolean;
 }) {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage ?? "rw";
@@ -243,6 +243,8 @@ export function PlacesView({
   const [view, setView] = useState<"list" | "map">("list");
   const [selected, setSelected] = useState<string | null>(null);
   const Heading = headingLevel === 1 ? "h1" : "h2";
+  // the directory brings its own surface; loading, failure and empty states sit on this one
+  const ownSurface = directory && state === "success" && rows.length > 0;
 
   const points: MapPoint[] = rows.flatMap((r) =>
     r.lat !== null && r.lng !== null
@@ -328,10 +330,11 @@ export function PlacesView({
         <div
           className={cx(
             "min-w-0",
-            // cards carry their own surface; the table rows sit on one
-            !cards && "overflow-hidden bg-surface",
-            !cards &&
-              (inDashboard ? "rounded-2xl border border-border" : "rounded-3xl shadow-card"),
+            !ownSurface && "overflow-hidden bg-surface",
+            !ownSurface &&
+              (inDashboard || directory
+                ? "rounded-2xl border border-border"
+                : "rounded-3xl shadow-card"),
             "transition-opacity duration-200 ease-out-quint",
             busy && "opacity-60",
             !wide && view === "map" && "hidden",
@@ -356,12 +359,11 @@ export function PlacesView({
             ) : (
               empty
             )
-          ) : cards ? (
-            <FacilityCardGrid
+          ) : directory ? (
+            <FacilityEntries
               label={heading}
               rows={rows}
               loading={false}
-              compact
               selected={selected}
               onSelect={setSelected}
               onShowOnMap={(slug) => {

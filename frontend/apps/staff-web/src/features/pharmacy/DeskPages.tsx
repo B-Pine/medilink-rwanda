@@ -23,6 +23,7 @@ import {
   QrCode,
   Storefront,
   UserCircle,
+  Warehouse,
   WarningOctagon,
   type Icon,
 } from "@phosphor-icons/react";
@@ -143,7 +144,7 @@ export function PharmacistTodayCard() {
       ) : (
         <ul
           aria-label={t("pharmacy.today.numbers")}
-          className="m-0 grid list-none grid-cols-2 gap-3 p-0 md:grid-cols-3 xl:grid-cols-5"
+          className="m-0 grid list-none grid-cols-2 gap-3 p-0 md:grid-cols-3"
         >
           <Stat icon={Pill} label={t("pharmacy.today.ready")} value={d.ready} to="/pharmacy" />
           <Stat
@@ -172,6 +173,14 @@ export function PharmacistTodayCard() {
             value={d.out_of_stock}
             to="/pharmacy/availability"
             tone={d.out_of_stock > 0 ? "danger" : "brand"}
+          />
+          {/* W5: medicines low on stock, and batches expiring within 60 days */}
+          <Stat
+            icon={Warehouse}
+            label={t("pharmacy.today.lowStock", { count: d.expiring_soon })}
+            value={d.low_stock}
+            to="/pharmacy/stock"
+            tone={d.low_stock + d.expiring_soon > 0 ? "attention" : "brand"}
           />
         </ul>
       )}
@@ -249,7 +258,7 @@ export function DispenseHistoryPage() {
   const rows = list.data ?? [];
   return (
     <div className="flex flex-col gap-5">
-      <PageHeader title={t("pharmacy.history.title")} description={t("pharmacy.history.intro")} />
+      <PageHeader title={t("pharmacy.history.title")} />
       <div className="flex flex-wrap items-end gap-3">
         <Tabs value={String(days)} onValueChange={(v) => setDays(Number(v) as 1 | 7 | 30)}>
           <TabsList aria-label={t("pharmacy.history.period")}>
@@ -381,7 +390,7 @@ export function VerifyPrescriptionPage() {
   const valid = doc && ["active", "dispensed", "valid"].includes(doc.status);
   return (
     <div className="flex max-w-3xl flex-col gap-5">
-      <PageHeader title={t("pharmacy.verify.title")} description={t("pharmacy.verify.intro")} />
+      <PageHeader title={t("pharmacy.verify.title")} />
       <form
         noValidate
         onSubmit={submit}

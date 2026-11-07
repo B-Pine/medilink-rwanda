@@ -260,6 +260,93 @@ def _add_line(
     )
 
 
+# ---- lines from other apps (#203) --------------------------------------------------------------
+# The one way for another app (lab tests, procedures) to put a priced item on a visit's bill.
+
+
+def current_tariff(
+    facility_id: Any, tariff_code: str, kinds: tuple[str, ...] | None = None
+) -> TariffItem | None:
+    """The facility's tariff item with this code valid today, optionally of one of `kinds`."""
+    rows = TariffItem.objects.filter(
+        current_q(timezone.localdate()), facility_id=facility_id, code=tariff_code
+    )
+    if kinds:
+        rows = rows.filter(kind__in=kinds)
+    return rows.order_by("-valid_from").first()
+
+
+OTHER_APP_KINDS = (TariffKind.PROCEDURE, TariffKind.OTHER)
+
+
+def add_tariff_line(
+    visit: Any,
+    *,
+    tariff_code: str,
+    quantity: int = 1,
+    name: str | None = None,
+    kinds: tuple[str, ...] = OTHER_APP_KINDS,
+    membership: Any = None,
+    request: Any = None,
+) -> BillLine | None:
+    """Put one priced item on the visit's bill (#203), for apps such as the lab (W2) or procedures.
+
+    - Opens the bill when the visit has none yet.
+    - Prices the line from the facility's tariff item with `tariff_code`, valid today, of one of
+      `kinds` (procedure or other by default; medicines come from prescriptions, never here).
+    - Runs in one transaction under the bill lock, then rebuilds the insurer/patient split and
+      the totals; audited as `billing.bill.line_added`.
+    - Returns the new line, or `None` when the code has no current price (the cashier adds it from
+      the price list) or the bill is void. The caller keeps the line id to take it off again with
+      `remove_tariff_line`.
+    """
+    if quantity < 1:
+        raise ValueError("quantity must be at least 1")
+    if TariffKind.MEDICINE in kinds:
+        raise ValueError("medicine lines come from prescriptions")
+    item = current_tariff(visit.facility_id, tariff_code, kinds)
+    if item is None:
+        return None
+    opened = open_bill(visit, request=request)
+    with transaction.atomic():
+        bill = _locked(opened.pk)
+        if bill.status == BillStatus.VOIDED:
+            return None
+        line = _add_line(bill, item, quantity=quantity, membership=membership, name=name)
+        recompute(bill, request=request)
+        _audit("billing.bill.line_added", request, bill, line_id=line.pk, tariff_code=item.code)
+    return line
+
+
+def remove_tariff_line(
+    line_id: Any, *, reason: str, membership: Any = None, request: Any = None
+) -> bool:
+    """Take a line added by `add_tariff_line` off its bill (#203), for example a cancelled test.
+
+    Only while nothing is paid on the bill (a refund corrects it afterwards). Returns whether the
+    line was removed. `reason` is a short code kept on the line, such as `lab_order_cancelled`.
+    """
+    line = BillLine.objects.filter(pk=line_id, removed_at__isnull=True).first()
+    if line is None or line.prescription_item_id is not None:
+        return False
+    with transaction.atomic():
+        bill = _locked(line.bill_id)
+        line = BillLine.objects.select_for_update().get(pk=line.pk)
+        if line.removed_at is not None or bill.status == BillStatus.VOIDED:
+            return False
+        if bill.payments.filter(status=PaymentStatus.RECORDED).exists():
+            return False
+        line.removed_at = timezone.now()
+        line.removed_by_membership = membership
+        line.removed_reason = (reason or "removed")[:300]
+        line.save(
+            update_fields=["removed_at", "removed_by_membership", "removed_reason", "updated_at"]
+        )
+        recompute(bill, request=request)
+        _audit("billing.bill.line_removed", request, bill, line_id=line.pk)
+    return True
+
+
 def _rule_applies(bill: Bill) -> bool:
     rule = bill.insurer_rule
     if rule is None or bill.insurance_status != VerificationResult.VERIFIED:
@@ -468,13 +555,7 @@ def add_line(
         bill = _locked(bill_id, version)
         if bill.status == BillStatus.VOIDED:
             raise BusinessRuleViolation(VOIDED)
-        item = (
-            TariffItem.objects.filter(
-                current_q(timezone.localdate()), facility_id=bill.facility_id, code=tariff_code
-            )
-            .order_by("-valid_from")
-            .first()
-        )
+        item = current_tariff(bill.facility_id, tariff_code)
         if item is None:
             raise FieldRule("tariff_code", UNKNOWN_TARIFF)
         if item.kind not in (TariffKind.PROCEDURE, TariffKind.OTHER):
@@ -503,6 +584,31 @@ def remove_line(line_id: Any, *, version: Any, reason: str, membership: Any, req
         recompute(bill, request=request)
         _audit("billing.bill.line_removed", request, bill, line_id=line.pk)
     return bill
+
+
+def lab_price(facility_id: Any, test_code: str) -> TariffItem | None:
+    """#201: the tariff item of kind `procedure` or `other` whose code is the lab test code (as
+    medicines, contract D-3)."""
+    return current_tariff(facility_id, test_code, OTHER_APP_KINDS)
+
+
+def add_lab_line(
+    visit: Any, *, test_code: str, test_name: str, membership: Any, request: Any = None
+) -> Any:
+    """#201: a line on the visit's bill for one ordered lab test. Returns the line id, or None
+    when the test has no price (the cashier adds it from the price list) or the bill is void.
+    The lab's name for `add_tariff_line` (#203)."""
+    line = add_tariff_line(
+        visit, tariff_code=test_code, name=test_name, membership=membership, request=request
+    )
+    return line.pk if line is not None else None
+
+
+def remove_lab_line(line_id: Any, *, membership: Any, request: Any = None) -> bool:
+    """#201: take a cancelled test off the bill while nothing is paid (a refund otherwise)."""
+    return remove_tariff_line(
+        line_id, reason="lab_order_cancelled", membership=membership, request=request
+    )
 
 
 # ---- insurance verification -------------------------------------------------------------------
@@ -610,6 +716,39 @@ def expected_totals(shift: CashShift) -> dict[str, int]:
         totals[method] -= amount
     totals[PaymentMethod.CASH] += shift.opening_float_rwf
     return totals
+
+
+def by_method(shift: CashShift) -> list[dict[str, Any]]:
+    """#203 end-of-shift summary: per payment method, what came in, what was paid back, what the
+    drawer should hold (cash with the opening float) and, once closed, what was counted."""
+    received = dict.fromkeys(METHODS, 0)
+    counts = dict.fromkeys(METHODS, 0)
+    paid_out = dict.fromkeys(METHODS, 0)
+    for method, amount in shift.payments.filter(status=PaymentStatus.RECORDED).values_list(
+        "method", "amount_rwf"
+    ):
+        received[method] += amount
+        counts[method] += 1
+    for method, amount in shift.payouts.values_list("method", "amount_rwf"):
+        paid_out[method] += amount
+    expected = shift.expected_totals if shift.status != ShiftStatus.OPEN else expected_totals(shift)
+    counted = shift.counted_totals or None
+    rows = []
+    for method in METHODS:
+        want = int(expected.get(method, 0))
+        got = int(counted.get(method, 0)) if counted is not None else None
+        rows.append(
+            {
+                "method": method,
+                "payment_count": counts[method],
+                "received_rwf": received[method],
+                "paid_out_rwf": paid_out[method],
+                "expected_rwf": want,
+                "counted_rwf": got,
+                "difference_rwf": got - want if got is not None else None,
+            }
+        )
+    return rows
 
 
 def open_shift(*, membership: Any, opening_float_rwf: int, request: Any) -> CashShift:

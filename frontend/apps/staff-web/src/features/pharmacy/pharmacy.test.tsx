@@ -137,6 +137,11 @@ describe("dispensing (S7-F3, F4)", () => {
     ).toBeInTheDocument();
     expect(await screen.findByText("Panadol 500 mg tablet")).toBeInTheDocument();
     expect(screen.getByText(/Gatatu ku munsi/)).toBeInTheDocument();
+    // #207: the times of day as pictures with their words, in the label language
+    const schedules = screen.getAllByRole("list", { name: "Igihe cyo kuwunywa" });
+    expect(schedules.length).toBeGreaterThan(0);
+    expect(within(schedules[0]!).getAllByRole("listitem")).toHaveLength(4);
+    expect(within(schedules[0]!).getByText("Mu gitondo")).toBeInTheDocument();
   });
 
   it("a controlled medicine needs the extra confirmation; not available is recorded", async () => {

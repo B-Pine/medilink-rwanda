@@ -3,6 +3,7 @@
 from django.urls import path
 
 from medilink.scheduling import views_booking as v
+from medilink.scheduling import views_care as care
 from medilink.scheduling import views_s5b as b
 
 urlpatterns = [
@@ -38,4 +39,6 @@ urlpatterns = [
         name="patient-booking-respond",
     ),
     path("calendar-feed/", b.PatientCalendarFeedView.as_view(), name="patient-calendar-feed"),
+    # W7: coming up (care schedule and follow-up dates)
+    path("care-schedule/", care.PatientComingUpView.as_view(), name="patient-care-schedule"),
 ]

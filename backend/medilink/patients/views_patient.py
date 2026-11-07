@@ -19,7 +19,7 @@ from medilink.core.exceptions import error_response
 from medilink.core.pagination import DefaultPagination
 from medilink.core.serializers import ErrorSerializer
 from medilink.core.throttling import BurstRateThrottle
-from medilink.patients import claims, health, identity, insurance
+from medilink.patients import claims, health, identity, insurance, photos
 from medilink.patients import self_service as svc
 from medilink.patients import serializers as s
 from medilink.patients.audit import record_patient_event
@@ -83,6 +83,8 @@ class PatientProfileDetailSerializer(serializers.Serializer):
     no_known_allergies = serializers.BooleanField(allow_null=True)
     has_care_consent = serializers.BooleanField()
     completion = CompletionSerializer()
+    # a 5-minute link comes from POST .../photo/download-links/ (decision 2026-11-05)
+    has_photo = serializers.BooleanField()
     version = serializers.IntegerField()
 
 
@@ -288,6 +290,88 @@ class ProfileDetailView(PatientView):
         body.is_valid(raise_exception=True)
         svc.update_profile(link, dict(body.validated_data), request=request)
         return Response(PatientProfileDetailSerializer(svc.profile_data(link)).data)
+
+
+class PhotoUploadSerializer(StrictSerializer):
+    file = serializers.FileField()
+
+
+class ProfilePhotoView(PatientView):
+    """Profile photo (decision 2026-11-05): JPEG, PNG or HEIC up to 5 MB, scanned before use."""
+
+    parser_classes = [MultiPartParser, FormParser]
+    throttle_classes = [BurstRateThrottle, UploadRateThrottle]
+
+    @extend_schema(
+        operation_id="patient_profile_photo_upload",
+        tags=TAGS,
+        request={"multipart/form-data": PhotoUploadSerializer},
+        responses={201: PatientProfileDetailSerializer, 400: _err("validation_error")},
+        summary="Add or replace the profile photo (self or guardian)",
+    )
+    def post(self, request: Request, patient_id: Any) -> Response:
+        link = self.link(patient_id, "edit_contacts")
+        body = PhotoUploadSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        try:
+            photos.set_photo(
+                link.patient,
+                django_file=body.validated_data["file"],
+                actor=request.user,
+                audience="patient",
+                request=request,
+            )
+        except uploads.UploadRejected as exc:
+            raise rejected(exc) from None
+        record_patient_event("patients.photo.updated", request=request, patient=link.patient)
+        return Response(
+            PatientProfileDetailSerializer(svc.profile_data(link)).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+    @extend_schema(
+        operation_id="patient_profile_photo_remove",
+        tags=TAGS,
+        request=None,
+        responses={200: PatientProfileDetailSerializer},
+        summary="Remove the profile photo",
+    )
+    def delete(self, request: Request, patient_id: Any) -> Response:
+        link = self.link(patient_id, "edit_contacts")
+        if photos.remove_photo(link.patient):
+            record_patient_event("patients.photo.removed", request=request, patient=link.patient)
+        return Response(PatientProfileDetailSerializer(svc.profile_data(link)).data)
+
+
+class ProfilePhotoLinkView(PatientView):
+    @extend_schema(
+        operation_id="patient_profile_photo_link",
+        tags=TAGS,
+        request=None,
+        responses={
+            200: OpenApiResponse(description="{url, expires_at}"),
+            404: _err("not_found: no photo"),
+        },
+        summary="A 5-minute link to the profile photo",
+    )
+    def post(self, request: Request, patient_id: Any) -> Response:
+        from medilink.authz.permissions import get_principal
+
+        link = self.link(patient_id)
+        return photo_link_response(request, link.patient, get_principal(request))
+
+
+def photo_link_response(request: Request, patient: Any, principal: Any) -> Response:
+    try:
+        link = photos.photo_link(patient, principal=principal, request=request)
+    except uploads.NotClean:
+        from medilink.core.exceptions import BusinessRuleViolation
+        from medilink.uploads.views import NOT_CLEAN
+
+        raise BusinessRuleViolation(NOT_CLEAN) from None
+    if link is None:
+        raise Http404
+    return Response({"url": link.url, "expires_at": link.expires_at})
 
 
 class IdentifierListView(PatientView):

@@ -36,6 +36,7 @@ import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
 import { AccessReasonPrompt, isAccessReasonRequired } from "./AccessReason";
+import { CareSchedule } from "./CareSchedule";
 // [S7 imports]
 import { PatientDocuments } from "../documents";
 // [/S7 imports]
@@ -79,6 +80,7 @@ function Record() {
   const age = useAge();
   const canHealth = useCan("clinical.view", "prescription.view");
   const canDocuments = useCan("clinical.view", "documents.print"); // [S7]
+  const canCareSchedule = useCan("care_schedule.manage"); // W7
   if (record.isPending) return <LoadingState />;
   if (isAccessReasonRequired(record.error))
     return (
@@ -124,6 +126,7 @@ function Record() {
           </Link>
         </Alert>
       )}
+      {p.has_photo && <PatientPhoto fpId={fpId} name={p.full_name} />}
       {/* ?tab=insurance opens that tab (the queue board's "Check insurance") */}
       <Tabs defaultValue={TABS.has(search.get("tab") ?? "") ? search.get("tab")! : "details"}>
         <TabsList aria-label={t("patients.record.sections")}>
@@ -139,6 +142,9 @@ function Record() {
             <TabsTrigger value="documents">{t("documents.patient.title")}</TabsTrigger>
           )}
           {/* [/S7] */}
+          {canCareSchedule && (
+            <TabsTrigger value="care-schedule">{t("patients.careSchedule.tab")}</TabsTrigger>
+          )}
         </TabsList>
         <TabsContent value="details">
           <Details record={p} />
@@ -164,6 +170,11 @@ function Record() {
           </TabsContent>
         )}
         {/* [/S7] */}
+        {canCareSchedule && (
+          <TabsContent value="care-schedule">
+            <CareSchedule record={p} />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );
@@ -877,7 +888,7 @@ function Insurance({ record }: { record: FacilityPatientDetail }) {
   );
 }
 
-const TABS = new Set(["details", "identifiers", "insurance", "health"]);
+const TABS = new Set(["details", "identifiers", "insurance", "health", "care-schedule"]);
 
 const KINDS: HealthKind[] = ["allergies", "conditions", "medications"];
 
@@ -1175,5 +1186,58 @@ function ReportDuplicate({
         )}
       </div>
     </Dialog>
+  );
+}
+
+/**
+ * The patient's own profile photo (decision 2026-11-05), to recognise them at the desk. Shown on
+ * request only: each view is audited and the link lasts five minutes.
+ */
+function PatientPhoto({ fpId, name }: { fpId: string; name: string }) {
+  const { t } = useTranslation();
+  const api = useApi();
+  const [shown, setShown] = useState(false);
+  const link = useQuery({
+    queryKey: ["patients", "photo", fpId],
+    queryFn: () => api.patients.photoLink(fpId),
+    enabled: shown,
+    staleTime: 4 * 60_000,
+    retry: false,
+  });
+  return (
+    <Card className="flex items-center gap-4 p-4">
+      {shown && link.data ? (
+        <img
+          src={link.data.url}
+          alt={t("patients.record.photoAlt", { name })}
+          className="size-24 shrink-0 rounded-full object-cover ring-2 ring-brand/30"
+        />
+      ) : (
+        <span
+          aria-hidden="true"
+          className="inline-flex size-24 shrink-0 items-center justify-center rounded-full bg-brand-subtle text-on-brand-subtle"
+        >
+          <Camera className="size-8" />
+        </span>
+      )}
+      <div className="flex min-w-0 flex-col gap-2">
+        <p className="m-0 text-body-sm text-fg-secondary">{t("patients.record.photoHint")}</p>
+        {link.isError && (
+          <Alert tone="warning" role="status">
+            {t("patients.record.photoUnavailable")}
+          </Alert>
+        )}
+        {!shown && (
+          <Button
+            size="sm"
+            variant="secondary"
+            className="self-start"
+            onClick={() => setShown(true)}
+          >
+            {t("patients.record.showPhoto")}
+          </Button>
+        )}
+      </div>
+    </Card>
   );
 }

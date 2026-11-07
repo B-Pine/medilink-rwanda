@@ -8,6 +8,7 @@ import type { ApiClient } from "../client";
 import type { Uuid } from "../types";
 import type { I18nText } from "./masterdata";
 import type { AccessReasonCode } from "./patients";
+import type { TicketRow } from "./queue";
 
 declare module "../types" {
   interface PermissionCodes {
@@ -68,6 +69,13 @@ export interface ReasonForVisit {
     red_flags: string[];
     rules_version: string;
     signed_off: boolean;
+  } | null;
+  /** The triage nurse's urgency and note (#200); null when the patient was not triaged. */
+  nurse_triage: {
+    urgency: "normal" | "priority" | "emergency";
+    note: string;
+    by_name: string;
+    at: string;
   } | null;
 }
 
@@ -398,20 +406,66 @@ export type TemplateSections = Record<
   string
 >;
 
-/** My note template, with diagnoses and a favourite prescription; follows me across facilities. */
+/** A diagnosis on a template, labelled in the request language (W3, #202). */
+export interface TemplateDiagnosis {
+  code: string;
+  display: string;
+  plain_language: string;
+  is_sensitive: boolean;
+  /** False when the code is not an active ICD-10 code: applying skips it and says so. */
+  is_known: boolean;
+}
+
+/**
+ * A lab test on an order set: the extension point for W2 lab orders. Stored and returned, but
+ * not ordered yet; applying the order set lists the tests to order by hand.
+ */
+export interface TemplateTest {
+  code: string;
+  name?: string;
+}
+
+/**
+ * My note template, used as an order set (W3): diagnoses, plan, instructions and a prescription
+ * applied in one click; follows me across facilities.
+ */
 export interface NoteTemplate {
   id: Uuid;
   name: string;
   sections: TemplateSections;
   diagnosis_codes: string[];
+  diagnoses: TemplateDiagnosis[];
   items: NoteTemplateItem[];
+  tests: TemplateTest[];
   use_count: number;
   updated_at: string;
 }
 
 export type NoteTemplateInput = Pick<NoteTemplate, "name" | "diagnosis_codes" | "items"> & {
   sections: Partial<TemplateSections>;
+  tests?: TemplateTest[];
 };
+
+/** A medicine I prescribe often, with the dosing of its latest use (W3, #202). */
+export interface FavouriteMedicine {
+  drug_code: string;
+  free_text_drug: string;
+  drug_display: string;
+  is_controlled: boolean;
+  available_here: boolean;
+  dose: string;
+  frequency_code: string;
+  route: string;
+  duration_days: number | null;
+  count: number;
+}
+
+/** My most used diagnoses and medicines here: from my signed work, last 180 days, used twice+. */
+export interface ClinicalFavourites {
+  window_days: number;
+  diagnoses: { code: string; display: string; plain_language: string; count: number }[];
+  medicines: FavouriteMedicine[];
+}
 
 /** Patient view (PR1/PR2): no private notes, no examination. */
 export interface PatientRecordDiagnosis {
@@ -441,6 +495,126 @@ export interface PatientRecord extends PatientRecordRow {
   addenda: { author_name: string; reason: string; body: string; signed_at: string }[];
 }
 
+// ---- upgrade 06 §3 (#201, FR-CLN-11): the laboratory loop ------------------------------------
+
+/** `cancelled` only from `ordered`, by the ordering doctor. */
+export type LabOrderState =
+  "ordered" | "sample_taken" | "resulted" | "reviewed" | "released" | "cancelled";
+export type LabSpecimen = "blood" | "urine" | "stool";
+/** Against the reference: a number below or above the range, or an unexpected answer. */
+export type LabFlag = "low" | "high" | "abnormal";
+
+/** A test of the catalogue: a number with a unit and an adult range, or fixed answers. */
+export interface LabCatalogueItem {
+  code: string;
+  label: string;
+  kind: "number" | "choice";
+  unit: string;
+  /** Decimal strings; null when not judged. */
+  low: string | null;
+  high: string | null;
+  /** Answer codes of a `choice` item (`negative`, `positive`, `invalid`, `trace`, …). */
+  choices: string[];
+  /** The expected answer; anything else is flagged. Null when none is expected. */
+  normal: string | null;
+}
+
+/** Not the documents `LabTest` (a line of a lab request letter). */
+export interface LabCatalogueTest {
+  code: string;
+  name: string;
+  specimen: LabSpecimen;
+  items: LabCatalogueItem[];
+}
+
+export interface LabResultItem {
+  code: string;
+  label: string;
+  kind: "number" | "choice";
+  value: string;
+  unit: string;
+  low: string | null;
+  high: string | null;
+  flag: LabFlag | null;
+}
+
+export interface LabOrder {
+  id: Uuid;
+  visit_id: Uuid;
+  consultation_id: Uuid;
+  test_code: string;
+  test_name: string;
+  specimen: LabSpecimen | "";
+  state: LabOrderState;
+  /** Why the doctor asks; the lab sees it. */
+  reason: string;
+  ordered_at: string;
+  ordered_by_name: string | null;
+  sample_taken_at: string | null;
+  sample_taken_by_name: string | null;
+  resulted_at: string | null;
+  resulted_by_name: string | null;
+  result: { items: LabResultItem[]; comment: string } | null;
+  is_abnormal: boolean;
+  reviewed_at: string | null;
+  reviewed_by_name: string | null;
+  /** The clinician's note for the patient; always empty for the lab. */
+  review_note: string;
+  released_at: string | null;
+  version: number;
+}
+
+/** What the lab needs to confirm who the patient is. */
+export interface LabPatient {
+  full_name: string;
+  display_name: string;
+  date_of_birth: string | null;
+  age_years: number | null;
+  sex: string | null;
+  medilink_number: string | null;
+}
+
+/** One visit at the lab: its lab ticket (null until the doctor sends the patient) and tests. */
+export interface LabVisit {
+  visit_id: Uuid;
+  ticket: TicketRow | null;
+  patient: LabPatient;
+  /** Something is still to pay on the visit's bill. */
+  unpaid: boolean;
+  orders: LabOrder[];
+}
+
+export interface LabQueue {
+  /** At least one sample to take. */
+  waiting: LabVisit[];
+  /** Samples taken, results to enter. */
+  in_progress: LabVisit[];
+  /** Every test resulted today. */
+  done_today: LabVisit[];
+}
+
+export interface LabInboxRow {
+  order: LabOrder;
+  patient: LabPatient;
+  facility_patient_id: Uuid;
+}
+
+/** A released result, as the patient sees it (never before release). */
+export interface PatientLabResult {
+  id: Uuid;
+  patient_id: Uuid;
+  facility_name: string;
+  test_code: string;
+  test_name: string;
+  ordered_at: string;
+  released_at: string;
+  doctor_name: string;
+  items: LabResultItem[];
+  is_abnormal: boolean;
+  /** The doctor's note with the result. */
+  note: string;
+}
+
 const STF = "/api/v1/staff";
 const PAT = "/api/v1/patient";
 
@@ -466,6 +640,7 @@ export const clinicalPaths = {
   templates: `${STF}/clinical/templates/`,
   template: (id: Uuid) => `${STF}/clinical/templates/${id}/`,
   templateUsed: (id: Uuid) => `${STF}/clinical/templates/${id}/used/`,
+  favourites: `${STF}/clinical/favourites/`,
   results: `${STF}/results-inbox/`,
   reviewResult: (id: Uuid) => `${STF}/results-inbox/${id}/review/`,
   scans: (fpId: Uuid) => `${STF}/clinical/patients/${fpId}/scans/`,
@@ -473,6 +648,14 @@ export const clinicalPaths = {
   historyEntries: (fpId: Uuid) => `${STF}/clinical/patients/${fpId}/history-entries/`,
   records: `${PAT}/records/`,
   record: (id: Uuid) => `${PAT}/records/${id}/`,
+  // #201: the laboratory loop
+  labTests: `${STF}/lab/tests/`,
+  labQueue: `${STF}/lab/queue/`,
+  labInbox: `${STF}/lab/results/`,
+  labOrders: (consultationId: Uuid) => `${STF}/consultations/${consultationId}/lab-orders/`,
+  labOrder: (id: Uuid, step: "sample" | "result" | "review" | "release" | "cancel") =>
+    `${STF}/lab-orders/${id}/${step}/`,
+  labResults: `${PAT}/results/`,
 };
 
 function query(params: Record<string, string | number | boolean | undefined | null>): string {
@@ -530,6 +713,8 @@ export function createClinicalApi(client: ApiClient) {
       client.request<NoteTemplate>("PUT", clinicalPaths.template(id), { body }),
     deleteTemplate: (id: Uuid) => client.request<void>("DELETE", clinicalPaths.template(id)),
     templateUsed: (id: Uuid) => client.post<NoteTemplate>(clinicalPaths.templateUsed(id), {}),
+    /** W3: my most used diagnoses and medicines, shown first in the pickers. */
+    favourites: () => client.get<ClinicalFavourites>(clinicalPaths.favourites),
     /** R1: outside results assigned to me, oldest first. */
     results: (params: { status?: "pending" | "reviewed"; page?: number } = {}) =>
       client.get<Paginated<ResultReview>>(clinicalPaths.results + query(params)),
@@ -540,10 +725,46 @@ export function createClinicalApi(client: ApiClient) {
     scanLink: (id: Uuid) =>
       client.post<{ url: string; expires_at: string }>(clinicalPaths.scanLink(id), {}),
     historyEntries: (fpId: Uuid) => client.get<HistoryEntry[]>(clinicalPaths.historyEntries(fpId)),
+    /** #201 (FR-CLN-11): order, sample, result, review, release. */
+    lab: {
+      tests: () => client.get<LabCatalogueTest[]>(clinicalPaths.labTests),
+      /** The visit's tests (cancelled ones left out). */
+      orders: (consultationId: Uuid) =>
+        client.get<LabOrder[]>(clinicalPaths.labOrders(consultationId)),
+      /** In my draft consultation; `422` for an unknown or already ordered test. */
+      order: (consultationId: Uuid, body: { tests: string[]; reason?: string }) =>
+        client.post<LabOrder[]>(clinicalPaths.labOrders(consultationId), body),
+      queue: () => client.get<LabQueue>(clinicalPaths.labQueue),
+      sample: (o: Pick<LabOrder, "id" | "version">) =>
+        client.post<LabOrder>(clinicalPaths.labOrder(o.id, "sample"), { version: o.version }),
+      /** `values` per item code; `400` names the item (`values.<code>`). */
+      result: (
+        o: Pick<LabOrder, "id" | "version">,
+        body: { values: Record<string, string>; comment?: string },
+      ) =>
+        client.post<LabOrder>(clinicalPaths.labOrder(o.id, "result"), {
+          version: o.version,
+          ...body,
+        }),
+      review: (o: Pick<LabOrder, "id" | "version">, note = "") =>
+        client.post<LabOrder>(clinicalPaths.labOrder(o.id, "review"), {
+          version: o.version,
+          note,
+        }),
+      release: (o: Pick<LabOrder, "id" | "version">) =>
+        client.post<LabOrder>(clinicalPaths.labOrder(o.id, "release"), { version: o.version }),
+      cancel: (o: Pick<LabOrder, "id" | "version">) =>
+        client.post<LabOrder>(clinicalPaths.labOrder(o.id, "cancel"), { version: o.version }),
+      /** Results of the tests I ordered, waiting for my review or release. */
+      inbox: () => client.get<LabInboxRow[]>(clinicalPaths.labInbox),
+    },
     patient: {
       records: (params: { patient_id?: Uuid; page?: number } = {}) =>
         client.get<Paginated<PatientRecordRow>>(clinicalPaths.records + query(params)),
       record: (id: Uuid) => client.get<PatientRecord>(clinicalPaths.record(id)),
+      /** #201: lab results the doctor released (never before), newest first. */
+      labResults: (params: { patient_id?: Uuid } = {}) =>
+        client.get<PatientLabResult[]>(clinicalPaths.labResults + query(params)),
     },
   };
 }

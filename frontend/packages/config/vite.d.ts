@@ -9,6 +9,13 @@ export interface AppEnv {
 
 export declare function resolveAppEnv(mode: string, env: Record<string, string>): AppEnv;
 export declare function defineAppEnv(appEnv: AppEnv): Record<string, string>;
-export declare function contentSecurityPolicy(options: { apiBaseUrl: string }): string;
-export declare function medilinkCsp(options: { apiBaseUrl: string }): Plugin;
+export interface CspOptions {
+  apiBaseUrl: string;
+  mapTilesUrl?: string;
+  /** Upgrade 17: allow Google Identity Services (patient app only). */
+  googleSignIn?: boolean;
+}
+
+export declare function contentSecurityPolicy(options: CspOptions): string;
+export declare function medilinkCsp(options: CspOptions): Plugin;
 export declare function medilinkMockWorker(options: { useMocks: boolean }): Plugin;

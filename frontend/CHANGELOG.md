@@ -9,6 +9,366 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Fewer words on the staff dashboards (2026-11-06)
+
+- Changed: staff pages read like the app. The 45 page-header subtitles and the report section
+  intros are gone (rw, en, fr; unused keys removed), as is the queue board intro. Today drops
+  the "You are working at…" line; reception Today drops the "Waiting now" and "Still expected"
+  tiles that repeated the flow strip (and could show a different number). The sidebar card shows
+  the facility's initials and no platform-admin sentence.
+- Changed: staff dark mode follows the device setting. The top-bar light/dark switch and the
+  theme choice in the account menu are gone.
+- Fixed: the doctor's "In your room" card no longer squeezes the patient's name; the Open record
+  button drops below it. Today's quick actions no longer repeat a page (pharmacist saw
+  "Pharmacy" twice), and the pharmacy counter tiles sit three per row so their labels are not
+  cut off.
+
+### Fewer words on the public site (2026-11-06)
+
+- Changed: the public pages read like the app. Page-header intros are gone on facilities,
+  doctors, services, find care, how it works, help, contact and accessibility (the emergency
+  warning stays). Home drops the section intros, figure hints and trust-strip sentences; the hero,
+  steps and facilities lines are shorter. About, "Good to know" and accessibility text is cut to
+  short lines, and the "[To confirm]" marker is gone. Document verification intro is one line.
+  All in rw, en and fr; unused keys removed.
+
+### Fewer words on the patient dashboard (2026-11-05)
+
+- Changed: the signed-in pages read like the patient app: labels and data, no explaining
+  sentences. Page subtitles and intros are gone (overview, appointments, queue, family, records,
+  medications, documents, help, settings, privacy, access history), as are empty-state bodies,
+  settings section blurbs, quick-action descriptions and the "How the queue works" panel. Stat
+  hints show data only (next date, last visit, facility). Remaining messages are shorter in rw, en
+  and fr; the safety lines stay (late cancellation, reception confirms a remote arrival).
+
+### Sign in with Google (2026-11-06, upgrade 17)
+
+- Added: "Continue with Google" on login and sign-up (patient site), shown only when the API has it
+  on; a first Google sign-in shows the sign-up consents before the account exists. API client
+  `patientAuth.googleConfig()` / `google()`, `ApiError.current`; mocks keep it off. The patient
+  site's CSP allows Google Identity Services under `https://accounts.google.com/gsi/` only.
+- Fixed: on a Kinyarwanda page the Google button showed in French (Google has no Kinyarwanda);
+  it shows in English now.
+
+### Patient profile photo (2026-11-05)
+
+- Added (patient web): a "Profile photo" card at the top of a profile (self and guardian): add,
+  change or remove a JPEG/PNG/HEIC photo up to 5 MB, with who can see it.
+- Added (staff web): the patient record shows "Show photo" when the patient added one; the photo
+  loads only on request (each view is audited server-side).
+- API client: `profile.uploadPhoto/removePhoto/photoLink`, `patients.photoLink`, `has_photo`.
+
+### Patient passwords (2026-11-05)
+
+- Changed: patient forms ask for at least 8 characters (was 15).
+- Added: Settings → Security changes the password in place (current + new) instead of sending a
+  reset email; "Forgot your current password?" still links to the reset flow.
+  `patientAuth.changePassword` in the API client, with a mock handler.
+
+### Sign-up without email on test servers (2026-11-05)
+
+- Added: patient sign-up shows "Your account is ready" with a sign-in button when the API answers
+  `email_verification: false` (test servers with `PATIENT_SIGNUP_EMAIL_VERIFICATION=false`).
+  `patientAuth.register` now returns `SignupResponse`.
+
+### Patient app updates on phones (2026-11-05)
+
+- Fixed: a phone that resumed the patient app from the background kept the old version, because
+  the browser only checks for a new service worker on a page load. The app now checks when it
+  comes back into view and every hour; the new version then reloads the page as before.
+
+### Vercel staging without a custom domain (2026-11-05)
+
+- Fixed: on `*.vercel.app` every API `POST` failed with `403 csrf_failed`, because the browser
+  does not send the API's `SameSite=Lax` cookies from `*.vercel.app` to `*.up.railway.app`.
+  `frontend/vercel.json` now forwards `/api/*` to the Railway API, so the apps call the API on
+  their own origin (`VITE_API_BASE_URL` = the Vercel URL). Live updates over WebSockets do not
+  pass through Vercel, so they stop until the API has a custom domain
+  ([docs/operations/railway.md](../docs/operations/railway.md) §4).
+
+### Public site look (2026-11-04, upgrade 14)
+
+- Changed: facilities show as cards with a drawing of their kind of building (referral hospital,
+  district hospital, health centre, polyclinic, clinic; a red cross sign for a 24-hour emergency
+  department) on home, `/facilities`, find care and search; same facts, links and buttons. The
+  drawing and the name flow into the facility page, which shows the same building in its header.
+- Changed: every inner page header sits on a white band the width of the screen with a hairline
+  and a faint drawn pattern; one type scale for page and block titles (`text-page-title`,
+  `text-title`).
+- Changed: doctors as profile cards; how it works as numbered cards on a line; About as five
+  numbered cards; help topics as chips; for facilities with the board drawing and the first steps
+  in the header, questions and "continue" side by side.
+- Changed: the current page's pill in the header glides between items; the emergency line and the
+  footer stay still while a page changes; FAQ answers open smoothly; loading shapes shimmer; the
+  footer wordmark is one flat tint. Reduced motion and data saver keep everything still.
+- Audit and plan: `docs/upgrade/14-public-site-look.md`.
+
+### National aggregate report (2026-11-04, #208)
+
+- Added: **National report** in the platform console (`/platform/reports`, menu item for platform
+  admins): headline figures, load by district and by facility, the wait trend, top diagnoses by
+  district and stock-outs now, each table with a CSV download. Suppressed figures read
+  **Hidden** with the reason on hover and for screen readers. Same period controls as the
+  facility report (shared `PeriodControls`).
+- Added: API client `console.nationalReport()` and `consolePaths.nationalExport()` with MSW
+  mocks (seven facilities in four districts, small ones hidden as the server does). Strings in en
+  and fr with draft rw.
+
+### Patient follow-through (2026-11-04, #206)
+
+- Added: **Planned by your clinic** on My appointments (upcoming): planned vaccinations and
+  antenatal visits with their note, and the return visit a doctor asked for with **Book a time**.
+- Added: **Needs your attention** on the overview shows a result released in the last week (**Read
+  it**) and a planned date within two days.
+- Changed: on My health records the released lab results come first, with an error state when
+  they fail to load.
+- Added: **Care schedule** tab on the staff patient record (`care_schedule.manage`, doctors): plan
+  a vaccination or antenatal visit with a date and optional note, cancel with a confirmation.
+- Added: API client `booking.comingUp()`, `booking.staff.careSchedule()`,
+  `addCareSchedule()` and `cancelCareSchedule()` with MSW mocks (one planned vaccination and one
+  follow-up date for patient@medilink.test). Strings in en and fr with draft rw.
+
+### Close the books (2026-11-04, #209)
+
+- Added: the **full-visit** end-to-end test (`e2e/full-visit.spec.ts`) on the staff-web mock
+  build, in one session: reception checks in a walk-in; the triage nurse records vitals and sends
+  the next patient to the doctor; the doctor orders a malaria test and sends the patient to the
+  lab; the lab technician takes the sample and enters the result; the patient comes back to the
+  same doctor first (after emergencies), who reviews and releases the result; the pharmacist
+  gives a prescription and prints the labels with their pictograms.
+
+### Patients without a phone (2026-11-04, #207)
+
+- Added: **label pictograms**. Each dosing label shows the four times of the day (morning, noon,
+  evening, night) with the ones to take marked and the dose, and before, with or after food as
+  a picture with its word, in the label language. Black on white for thermal printers.
+- Added: the doctor picks **with food?** (any time, before, with or after food) when
+  prescribing.
+- Changed: the **spoken call** on the waiting-room display reads each call in the languages set
+  on the screen link (`?voice=rw,fr`), twice by default (`?repeat=1..3`), skips a language this
+  device has no voice for, and falls back to English or French so a call is never silent. A
+  **Test sound** button plays a sample call once sound is on.
+- Added: **next-visit card** (`/queue/visits/:visitId/card`): when the doctor set a follow-up,
+  reception prints the date (and booked time and code), service and doctor on the 80 mm slip,
+  from a button on the queue panel.
+
+### Facility reports (2026-11-04, #205)
+
+- Changed: **Reports** (`/reports`, `reports.view`) is now the facility report for a period.
+  Pick last 7, 30 or 90 days, this or last month, or your own dates, and show it by day, week
+  or month (kept in the URL). Figures for patients, the doctor wait, money collected and
+  no-shows; patients over the period; how patients came and by service; waiting time per stage
+  (median and 9 in 10); top diagnoses and referrals; the laboratory; money by method and
+  insurer, exemptions and voids; pharmacy stock and expiring batches. Each section downloads
+  its table as CSV. Arrivals by hour and the 14-day wait trend stay below.
+- Added: `api.queue.report()`, `queuePaths.report` and `queuePaths.reportExport` with the
+  `FacilityReport` types, and MSW mocks with the server's period rules.
+
+### Pharmacy stock, lite (2026-11-04, #204)
+
+- Added: **Stock** for the pharmacist (`/pharmacy/stock`, menu item for `pharmacy.stock` or
+  `pharmacy.dispense`): every medicine with stock, its usable units, level (in stock, low, out)
+  and next expiry, with search; tabs for low or out, batches expiring within 60 days (expired
+  first) and all movements. **Receive stock** takes the medicine, batch number, expiry date,
+  units, an optional supplier and an optional low-stock threshold.
+- Added: one medicine's page (`/pharmacy/stock/:drugCode`): usable units, a warning for expired
+  units still on the shelf, the threshold, batches with **Adjust** (count correction by the number
+  counted, or damaged/expired by the units taken off, with a note) and the last movements.
+- Changed: doctors see "Low stock here" next to "Not in stock here" when they choose a medicine;
+  Medicine availability shows the stock level for medicines with stock and locks their switch;
+  Pharmacist Today adds "Low on stock" with the batches expiring soon.
+- Added: api-client `pharmacy.stock.*`, the stock types and `stock_level` on drug rows,
+  prescription items and availability rows; MSW mocks for every stock endpoint, with FEFO
+  deduction and the "only N left" refusal in the dispense mock.
+
+### Cashier and insurance finish (2026-11-04, #203)
+
+- Added: **Insurance claims** (`/claims`, menu for `billing.approve` or `reports.view`): choose an
+  insurer and a month, see the totals (to claim, not settled, paid, rejected), each insured visit
+  with member number, ICD-10 codes, services and shares, download the list as CSV or PDF, and mark
+  each claim paid (optional reference) or rejected with the insurer's reason.
+- Added: the end-of-shift summary by payment method: on Payments under the open shift, on the
+  cash desk card, as "Your last shift" on Payments once the shift is closed (expected, counted,
+  difference per method, and whether it was accepted), and on the shift review in Approvals.
+- Fixed: the opening float was counted twice: the shift's expected cash already holds it, so the
+  close dialog pre-filled and compared cash with the float added again, and "Collected" included
+  the float. Collected is now the payments only (`shiftCollected`).
+- Changed: api-client `CashShift.by_method`, `billing.claimInsurers`, `claims`, `markClaim`,
+  `billingPaths.claimsExport`, `shifts({ mine })`; MSW mocks for all of them (the mock's expected
+  cash now holds the float, as the API does).
+
+### Doctor's quick note: order sets and favourites (2026-11-04, #202)
+
+- Changed: **Use a template** applies an order set in one click: diagnoses (provisional, with
+  their names and the sensitive flag), plan, instructions and medicines. The panel then lists
+  what was added, what was already there (never added twice) and what needs the doctor (unknown
+  codes, medicines that failed, lab tests to order by hand). The note stays a draft until signed.
+- Changed: **Save as template** keeps the draft prescription's medicines too, so a finished
+  visit becomes an order set.
+- Added: **Your frequent diagnoses** as one-click chips under the ICD-10 search, and **your
+  frequent medicines** above the drug search (one click fills the dose, frequency, route and days
+  of the latest use); both also come first in search results (`clinical.favourites()`).
+- Added: lab tests on templates show as chips; the editor keeps them (no editor for them yet).
+- Fixed: applying a template refreshes the prescription section straight away.
+
+### Public site: every page on the new tokens (2026-11-04)
+
+- Changed: the shared page kit: a larger fluid page heading with no rule under it; panels on
+  the site elevation (`rounded-panel`, `shadow-e2`) instead of hard borders; hairline dividers;
+  search and location fields, link rows, FAQ rows and insurer tags in the same style.
+- Changed: **Doctors** rows have an initials mark, the days as a tag and "Here today" as a pill;
+  **Services** are icon tiles; **For facilities** has icons per team, numbered step cards and
+  the "Continue an application" form on a raised panel. The facility, emergency, help, about,
+  legal, find care, symptom checker, assistant and verify pages follow the same surfaces.
+
+### Laboratory loop (2026-11-04, #201)
+
+- Added: **Tests** in the consultation: the doctor picks tests from the catalogue with a reason,
+  sends the patient to the lab, and later reads each result with its flags, writes a note for
+  the patient, marks it reviewed and releases it. A test not yet sampled can be cancelled.
+- Added: **Laboratory** for the lab technician (`/lab`): call the next patient, check who they
+  are (full name, date of birth, MediLink number) and whether the visit is paid, record each
+  sample, then enter each result with out-of-range values flagged as they are typed. The last
+  result sends the patient back to the doctor. The technician's Today shows waiting, results to
+  enter and done today; the menu shows Laboratory and nothing of the desk, clinical work or
+  payments.
+- Added: **Lab results** at the top of the doctor's Results page.
+- Added: patient-web **Lab results** in My health records, once the doctor released them, with
+  the doctor's note.
+- Changed: staff invitations and the user directory know the lab technician role; the queue
+  board names the laboratory stage.
+
+### Public site: a richer, cleaner second pass (2026-11-04)
+
+- Added: public site tokens in `apps/patient-web/src/styles.css`: elevation `shadow-e1`–`e3`,
+  hairlines (`border-hairline`), `rounded-panel` and `rounded-shell`, fluid `text-hero`,
+  `text-section` and `text-kpi`, a brand glow and scroll reveal (off with reduced motion).
+- Changed: **Home** has a two-column hero (headline, command search, common needs with icons,
+  an illustration of a health centre on Rwanda's hills) and a bento of live figures (open now,
+  people waiting, typical wait), the places open now with a wait bar each, and "Not sure where
+  to go?"; services as icon tiles; the three steps as small illustrations; a trust row; a forest
+  band for facilities with an abstract live-board illustration. Every number is real.
+- Changed: **facility rows** everywhere: a type mark, insurers as tags, a status pill with the
+  live wait bar, one action button and a round map button, aligned in columns.
+- Changed: the **header** is a translucent bar with the pages as one segmented group and a solid
+  Sign in; the **footer** has quiet columns, a slim bottom bar and a large faint wordmark.
+
+### Triage nurse (2026-11-04, #200)
+
+- Added: **Triage** for the triage nurse (`/triage`): call the next patient, see their words,
+  symptoms and allergies, record vitals, choose normal, priority or emergency, add a note for the
+  doctor and send them on. The nurse's Today shows who waits for triage; the menu shows Triage and
+  nothing of the desk, clinical work or payments.
+- Changed: the consultation shows the nurse's urgency and note above the patient's words.
+- Changed: staff invitations and the user directory know the triage nurse role; facility rules
+  have the switch "Patients see a triage nurse before the doctor".
+
+### Super admin user management (2026-11-04, #198)
+
+- Changed: **Users** shows the number of accounts of each type, links to the accounts that need
+  attention (locked, staff without two-step login, email not confirmed), filters by facility,
+  role and email confirmation, searches by phone, and keeps the filters in the address.
+- Added: **Export staff accounts**: a CSV of staff and the platform team (never patients) for an
+  access review.
+- Added: a page for each person (`/platform/users/:id`) instead of the side panel: what needs
+  attention with the action that fixes it, account facts, facility access with **Remove access**
+  and **Restore access**, invitations not accepted yet, changes by admins and sign-in activity.
+  Account actions add **Send password reset link**, **Resend confirmation email** and **Clear
+  sign-in block**; **Correct details** fixes the name, work phone or language. Each asks for a
+  reason and a re-confirmed identity.
+- Changed: the platform facility page links its facility admins to their account and its staff to
+  the filtered user list.
+
+### Public site: finishing pass and design record (2026-11-04)
+
+- Changed: **For facilities** shows the four teams on one surface with hairlines, the questions as
+  the site's FAQ rows (no native ▶ markers) and pill buttons like the rest of the site; onboarding
+  steps use outlined numbers.
+- Changed: **Check symptoms** and the **AI assistant** have a breadcrumb instead of an uppercase
+  eyebrow or badge above the title; the assistant's chat sits on a bordered surface. The sign-in
+  side panel loses its uppercase eyebrow (`authAside.eyebrow` removed).
+- Changed: on phones, Emergency's hospital rows stack the name above Directions.
+- Added: `apps/patient-web/DESIGN.md` (the public site's design rules) and the audit record
+  `docs/design/public-site-audit-2026-11-04.md`.
+
+### Public site: reading pages and the emergency page (2026-11-04)
+
+- Changed: **Emergency** opens with an urgent care card (NHS pattern): a red heading bar, the
+  danger signs as a plain list and one "Call 912 now" button; then hospitals near you (directions,
+  24-hour emergency marked in words) and the steps to take as a numbered list. The illustration,
+  the pulsing icon and the decorative circle are gone.
+- Changed: **How it works** is a step-by-step list in one reading column (numbered circles joined
+  by a hairline) and "Good to know" is a plain bulleted list; **About** is one document with five
+  sections instead of icon cards; legal pages' "On this page" is a plain list with a hairline.
+- Changed: **Help** jump links are text links and "Still need help?" is a bordered row; document
+  body text is the primary text colour at a 68-character measure; footer column headings are in
+  sentence case.
+- Fixed: legal pages no longer show "()" or "at ." where a draft "[To confirm]" marker was hidden:
+  a bracketed marker goes with its brackets and a sentence that needs the missing fact is left out.
+
+### Public site: a facility page that reads as a record (2026-11-04)
+
+- Changed: the facility page has no tabs: **Today** is a summary list (hours and status, live
+  wait per service, queue, appointments, insurance, the referral note, the hospital emergency
+  note), then **Services** (ways in, live wait or next time, insurance, "Join today's queue" and
+  "Book a time" as links), **Doctors**, **About** and **Photos**; the location and contact, the
+  week's hours and what to bring sit beside.
+- Changed: facility photos come after the facts as a row of up to four, not a product-style
+  gallery under the name; no icon tiles in the facts or doctor rows.
+- Removed: unused strings `site.facility.tabs.label|overview|insurance|hours` and
+  `site.facility.insuranceLead`.
+
+### Public site: doctors and services as directories (2026-11-04)
+
+- Changed: **Doctors** lists each doctor as a row on one surface (name link, specialty and
+  services, facility and district, days in words, "Here today") instead of cards with initials
+  avatars and a seven-day chip strip.
+- Changed: the doctor page's facts are a summary list (no avatar tile, no uppercase labels;
+  services as links, not chips); day buttons are in sentence case.
+- Changed: **Services** is an index: search and the categories (with counts) in a column on the
+  left, each category a heading over its services as a list of links. No icon tiles, no boxed
+  links. A service page lists where it is offered with the facility directory rows, and "What to
+  bring" without an icon tile.
+
+### Public site: a landing page for a public service (2026-11-04)
+
+- Changed: the home page's first view is the question and the answer: the heading, one search and
+  the common needs as links on the left; on the right the places open near the visitor, live
+  (status, wait, type, district, accepted insurance) with Near me and "View all facilities".
+- Changed: "What care do you need?" is an index of service links with real facility counts (no
+  icon tiles); the three steps are a numbered list in words (no phone mock-ups); facilities get
+  one quiet row with a link (the dark band and its sample dashboard numbers are gone).
+- Removed: the illustrated hero and its unused strings (`site.home2.tag`, `float`, `trust`,
+  `phone`, `dash`, `photos`, `popular`). Added `site.home2.allServices`.
+
+### Public site: facilities as a directory, not products (2026-11-04)
+
+- Changed: **Facilities**, **Find care**, the home page list and the assistant's suggestions show
+  facilities as directory rows on one bordered surface (name link, type and place, emergency
+  department, insurance in words, open/busy/closed, the live wait, and "Join today's queue" or
+  "Book a time" as a link) instead of product cards with chips and Book pills.
+  `FacilityCards.tsx` is now `FacilityDirectory.tsx` (`FacilityEntry`, `FacilityEntries`,
+  `FacilityExplorer`); `PlacesView`'s `cards` prop is now `directory`.
+- Changed: public page headings are Figtree 700 at 40 px (was 800 at 44 px); the eyebrow label
+  above a page title is gone (the service page shows its category in the breadcrumb); filter
+  panels and panels use a hairline border instead of a shadow.
+- Removed: the scroll reveal (`.ml-reveal`): content is visible from the first paint.
+- Changed: the floating AI assistant button is smaller (48 px).
+
+### Super admin pages show what MediLink holds (2026-11-03)
+
+- Added: **Register a facility** (`/platform/applications/new`) replaces the three-field dialog:
+  facility, identifiers, province-to-village picker, map pin, applicant, facility admin and
+  insurers. `/platform/applications/:id/edit` completes a draft; the review page has **Edit
+  details** and adds documents for the facility while editable.
+- Changed: the applications table shows type, district, the proposed admin and progress; the
+  facilities table shows the FOSA ID, ownership, place, who is in charge and staff, with type,
+  ownership, licence and "without a FOSA ID" filters and **Export CSV**; the facility page shows
+  identity, contact and place, the people in charge and staff by profession.
+- Changed: users show phone, profession and licence; master data Locations shows level and parent
+  with a level filter.
+- Fixed: badges break between words only, never inside one (they split as "Liv e" in tables).
+
 ### Clinician profile: full professional details (2026-11-03)
 
 - Changed: **My clinician profile** (`/profile/clinician`) holds profession, specialty (list), sex,
@@ -52,6 +412,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 - Fixed: sign-in, sign-up and password screens use the public site's palette (the button green
   matches the site), the logo no longer squashes on phones, and the top bar fits 360 px (the
   theme switch moves to wider screens; the theme follows the system on phones).
+
+### Vercel services (ADR 0009)
+
+- Added: `frontend/vercel.json`: one Vercel project, `patient-web` at `/` and `staff-web` at
+  `/staff` (built with `--base /staff/`); security and cache headers per service.
+- Changed: staff-web router basename and the display link follow `import.meta.env.BASE_URL`;
+  the patient service worker never serves its shell for `/staff`.
 
 ### Upgrade U2 · Cashier role (upgrade 06 §4)
 

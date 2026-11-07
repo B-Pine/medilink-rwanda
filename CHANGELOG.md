@@ -8,6 +8,12 @@ This root changelog covers documentation and repository-wide changes (CI, toolin
 
 ### Added
 
+- Upgrade 17 (`docs/upgrade/17-email-and-google-signin.md`): branded emails in rw/en/fr through Gmail and Sign in with Google for patients, with setup steps; security 03 §1a, the API catalogue and FR-PAT-02 updated.
+
+- W9 (#208): API catalogue rows for the national aggregate report and its CSV export; traceability FR-RPT-05 updated.
+
+- W7 (#206): API catalogue rows for the care schedule and the patient's planned dates; sprint-09 contract event table gains the W7 events; traceability FR-SCH-15, FR-SCH-16, FR-CLN-11 and FR-NOT-07 updated.
+
 - `docs/upgrade/`: the system upgrade specification (product direction U-01…U-12, design system, public site, patient app, staff workspaces, new roles, symptom checker and AI, patients without a phone, audit method, implementation plan).
 
 - Upgrade 12 (`docs/upgrade/12-patient-dashboard.md`): the signed-in patient dashboard under `/dashboard`, its shell, pages, surfaces, safety rules and open backend items; traceability rows FR-PAT-03, FR-SCH-08 and FR-QUE-11 updated.

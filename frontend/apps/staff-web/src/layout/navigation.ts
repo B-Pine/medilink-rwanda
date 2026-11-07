@@ -33,7 +33,7 @@ import { CalendarDots, ClipboardText } from "@phosphor-icons/react";
 import { Article, EnvelopeSimple, Headset, Lifebuoy } from "@phosphor-icons/react";
 // [/S10 imports]
 // [S4 imports]
-import { ArrowsDownUp } from "@phosphor-icons/react";
+import { ArrowsDownUp, Stethoscope, TestTube } from "@phosphor-icons/react";
 // [/S4 imports]
 // [S5 imports]
 import { CalendarX } from "@phosphor-icons/react";
@@ -50,11 +50,17 @@ import {
 } from "@phosphor-icons/react";
 // [/S6 imports]
 // [S7 imports]
-import { Storefront } from "@phosphor-icons/react";
+import { Package, Storefront } from "@phosphor-icons/react";
 // [/S7 imports]
 // [S11 imports]
 import { Fingerprint, ShieldCheck, Siren, UsersThree } from "@phosphor-icons/react";
 // [/S11 imports]
+// [S8 imports]
+import { Files } from "@phosphor-icons/react";
+// [/S8 imports]
+// [W9 imports]
+import { MapTrifold } from "@phosphor-icons/react";
+// [/W9 imports]
 
 /** Sections of the Sprint 0 shell (labels in `shell.nav.<key>`). Features use their own keys. */
 export type CoreNavKey =
@@ -305,6 +311,24 @@ export const NAV_ITEMS: readonly NavItem[] = [
   },
   // [/S10]
   // [S4]
+  // upgrade 06 §2 (#200): the triage nurse's station
+  {
+    key: "triage",
+    path: "/triage",
+    icon: Stethoscope,
+    group: "facility",
+    labelKey: "queue.nav.triage",
+    visible: hasAny("triage.operate"),
+  },
+  // upgrade 06 §3 (#201): the laboratory technician's station
+  {
+    key: "lab",
+    path: "/lab",
+    icon: TestTube,
+    group: "facility",
+    labelKey: "queue.nav.lab",
+    visible: hasAny("lab.operate", "lab.result.enter"),
+  },
   {
     key: "queueReorders",
     path: "/queue/reorders",
@@ -407,6 +431,14 @@ export const NAV_ITEMS: readonly NavItem[] = [
     labelKey: "pharmacy.nav.availability",
     visible: hasAny("pharmacy.availability"),
   },
+  {
+    key: "pharmacyStock",
+    path: "/pharmacy/stock",
+    icon: Package,
+    group: "facility",
+    labelKey: "pharmacy.nav.stock",
+    visible: hasAny("pharmacy.stock", "pharmacy.dispense"),
+  },
   // [/S7]
   // [S11]
   {
@@ -442,6 +474,27 @@ export const NAV_ITEMS: readonly NavItem[] = [
     visible: (me: StaffMe) => me.is_platform_admin,
   },
   // [/S11]
+  // [W9]
+  {
+    key: "platformNationalReport",
+    path: "/platform/reports",
+    icon: MapTrifold,
+    group: "platform",
+    labelKey: "console.nav.nationalReport",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
+  // [/W9]
+  // [S8]
+  // #203: the monthly claim list per insurer
+  {
+    key: "insuranceClaims",
+    path: "/claims",
+    icon: Files,
+    group: "facility",
+    labelKey: "billing.nav.claims",
+    visible: hasAny("billing.approve", "reports.view"),
+  },
+  // [/S8]
 ];
 
 /** Translation key of a nav item's label. */
@@ -457,6 +510,7 @@ export type NavSection = "work" | "practice" | "manage" | "help";
 const PRACTICE_KEYS = new Set<string>(["clinicalActivity", "clinicalTemplates"]);
 const MANAGE_KEYS = new Set<string>([
   "approvals",
+  "insuranceClaims",
   "reports",
   "staff",
   "setup",
@@ -495,11 +549,13 @@ const ORDER = [
   "pharmacyHistory",
   "pharmacyVerify",
   // [S7]
+  "pharmacyStock",
   "pharmacyAvailability",
   // [/S7]
   "payments",
   "reports",
   "approvals",
+  "insuranceClaims",
   "staff",
   "doctorSchedules",
   "setup",

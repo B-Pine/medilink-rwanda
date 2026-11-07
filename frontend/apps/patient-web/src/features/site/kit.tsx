@@ -81,13 +81,17 @@ export function PageHeader({
   lead,
   crumbs,
   actions,
-  eyebrow,
+  art,
+  titleTransition,
 }: {
   title: string;
   lead?: ReactNode;
   crumbs?: Crumb[];
   actions?: ReactNode;
-  eyebrow?: string;
+  /** A decorative drawing on the right of the band (wide screens), e.g. the facility building. */
+  art?: ReactNode;
+  /** View-transition name of the title, so a card's name flows into it. */
+  titleTransition?: string;
 }) {
   const { t } = useTranslation();
   // Inside the dashboard the shell shows the breadcrumb and the top spacing
@@ -106,32 +110,44 @@ export function PageHeader({
         </div>
       </div>
     );
-  // public pages (one template): breadcrumb → H1 (Figtree 44 px, 800) → one-line lead, on a band
-  // with the brand mesh and the Imigongo pattern fading in on the right (base.css .ml-band)
+  // public pages (one template, upgrade 14 G3): breadcrumb → fluid H1 → one-line lead on a white
+  // band the width of the screen, a hairline under it
   return (
-    <div className="mb-8 flex animate-enter flex-col gap-4 border-b border-border pt-8 pb-8 sm:pt-12 sm:pb-10">
-      {crumbs && <Breadcrumbs items={[{ to: "/", label: t("nav.home") }, ...crumbs]} />}
-      <div className="flex flex-wrap items-end justify-between gap-6">
-        <div className="flex max-w-[46rem] flex-col gap-3">
-          {eyebrow && (
-            <p className="m-0 text-caption font-semibold tracking-[0.14em] text-primary uppercase">
-              {eyebrow}
-            </p>
-          )}
-          <PageHeading
-            title={title}
-            className="font-heading text-[2rem] leading-[1.12] font-extrabold tracking-tight text-balance text-fg sm:text-[2.75rem]"
-          >
-            {title}
-          </PageHeading>
-          {lead && (
-            <p className="m-0 max-w-[40rem] text-[1.0625rem] leading-relaxed text-pretty text-fg-secondary">
-              {lead}
-            </p>
-          )}
+    <div
+      className={cx(
+        "ml-page-band mb-10 grid gap-x-10 pt-10 pb-10 sm:pt-14 sm:pb-12",
+        Boolean(art) && "lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end",
+      )}
+    >
+      <div className="flex min-w-0 flex-col gap-5">
+        {crumbs && <Breadcrumbs items={[{ to: "/", label: t("nav.home") }, ...crumbs]} />}
+        <div className="flex animate-enter flex-wrap items-end justify-between gap-6">
+          <div className="flex max-w-[48rem] flex-col gap-4">
+            <PageHeading
+              title={title}
+              className="font-heading text-page-title font-bold text-balance text-fg"
+            >
+              <span style={titleTransition ? { viewTransitionName: titleTransition } : undefined}>
+                {title}
+              </span>
+            </PageHeading>
+            {lead && (
+              <p className="m-0 max-w-[42rem] text-[1.125rem] leading-relaxed text-pretty text-fg-secondary">
+                {lead}
+              </p>
+            )}
+          </div>
+          {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
         </div>
-        {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
       </div>
+      {art && (
+        <div
+          aria-hidden="true"
+          className="hidden overflow-hidden rounded-panel shadow-[var(--site-edge),var(--shadow-e2)] lg:block"
+        >
+          {art}
+        </div>
+      )}
     </div>
   );
 }
@@ -148,14 +164,11 @@ export function Panel({
   as?: "section" | "div" | "aside";
   "aria-labelledby"?: string;
 }) {
-  // inside the dashboard, the dashboard's surfaces: a hairline border instead of a shadow
-  const inDashboard = useInDashboard();
+  // the site elevation: a hairline ring and a soft layered shadow (e2), no hard border
   return (
     <Tag
       className={cx(
-        "rounded-2xl bg-surface",
-        // public panels rise into view as the page scrolls (base.css .ml-reveal)
-        inDashboard ? "border border-border" : "ml-reveal border border-border",
+        "rounded-panel bg-surface shadow-[var(--site-edge),var(--shadow-e2)]",
         className,
       )}
       {...rest}
@@ -173,7 +186,7 @@ export function LoadingRows({ rows = 4, className }: { rows?: number; className?
       {Array.from({ length: rows }, (_, i) => (
         <div
           key={i}
-          className="flex flex-col gap-2 border-b border-border/50 px-5 py-4 last:border-b-0"
+          className="flex flex-col gap-2 border-b border-hairline px-5 py-4 last:border-b-0"
         >
           <Skeleton className="h-5 w-1/3 rounded-md" />
           <Skeleton className="h-4 w-2/3 rounded-md" />
@@ -260,7 +273,7 @@ export function InsuranceList({ codes, className }: { codes: string[]; className
       {insurerNames(codes, t).map((name) => (
         <li
           key={name}
-          className="rounded-full bg-brand-subtle px-2.5 py-0.5 text-caption font-semibold text-on-brand-subtle"
+          className="rounded-md bg-surface px-2 py-0.5 text-caption font-medium text-fg-secondary shadow-e1"
         >
           {name}
         </li>
@@ -301,9 +314,9 @@ export function SearchBar({
           }
         : {})}
       className={cx(
-        "flex min-h-12 items-center gap-2 rounded-full border border-border-input bg-surface pr-1.5 pl-4",
-        "transition-[border-color,box-shadow] duration-200 ease-out-quint",
-        "focus-within:border-primary focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary)_18%,transparent)]",
+        "flex min-h-12 items-center gap-2 rounded-full bg-surface pr-1.5 pl-4 shadow-e1",
+        "transition-[box-shadow] duration-200 ease-out-quint hover:shadow-e2",
+        "focus-within:shadow-[0_0_0_1px_var(--color-primary),0_0_0_4px_color-mix(in_srgb,var(--color-primary)_16%,transparent)]",
         className,
       )}
     >
@@ -341,8 +354,9 @@ export function LocationSelector({
   return (
     <div
       className={cx(
-        "relative flex min-h-12 items-center rounded-full border border-border-input bg-surface",
-        "transition-[border-color] duration-200 ease-out-quint focus-within:border-primary",
+        "relative flex min-h-12 items-center rounded-full bg-surface shadow-e1",
+        "transition-[box-shadow] duration-200 ease-out-quint hover:shadow-e2",
+        "focus-within:shadow-[0_0_0_1px_var(--color-primary),0_0_0_4px_color-mix(in_srgb,var(--color-primary)_16%,transparent)]",
         className,
       )}
     >
@@ -389,14 +403,14 @@ export function LinkRow({
   meta?: ReactNode;
 }) {
   return (
-    <li className="border-b border-border/50 last:border-b-0">
+    <li className="border-b border-hairline last:border-b-0">
       <Link
         to={to}
         viewTransition
-        className="group flex items-center gap-4 px-5 py-4 text-fg no-underline transition-colors duration-200 ease-out-quint hover:bg-subtle/60"
+        className="group flex items-center gap-4 px-5 py-4 text-fg no-underline transition-colors duration-200 ease-out-quint hover:bg-page/70"
       >
         {icon && (
-          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-subtle text-on-brand-subtle">
+          <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-[linear-gradient(140deg,var(--color-brand-subtle),var(--color-surface))] text-on-brand-subtle shadow-e1">
             {icon}
           </span>
         )}
@@ -419,15 +433,17 @@ export function LinkRow({
 /** Expandable question (native details: keyboard and screen readers for free). */
 export function Faq({ question, children }: { question: string; children: ReactNode }) {
   return (
-    <details className="group border-b border-border/60 last:border-b-0">
-      <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-5 py-3 font-semibold text-fg [&::-webkit-details-marker]:hidden">
+    <details className="ml-faq group border-b border-hairline last:border-b-0">
+      <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-4 px-6 py-4 font-semibold text-fg transition-colors duration-150 hover:bg-page/70 [&::-webkit-details-marker]:hidden">
         {question}
-        <CaretDown
+        <span
           aria-hidden="true"
-          className="size-4 shrink-0 text-fg-muted transition-transform duration-200 ease-out-quint group-open:rotate-180"
-        />
+          className="grid size-8 shrink-0 place-items-center rounded-full bg-subtle text-fg-secondary transition-[transform,background-color] duration-200 ease-out-quint group-open:rotate-180 group-open:bg-brand-subtle group-open:text-on-brand-subtle"
+        >
+          <CaretDown className="size-4" />
+        </span>
       </summary>
-      <div className="animate-enter px-5 pb-5 text-fg-secondary">{children}</div>
+      <div className="animate-enter px-6 pb-6 leading-relaxed text-fg-secondary">{children}</div>
     </details>
   );
 }
@@ -443,8 +459,8 @@ export function SectionTitle({
   action?: ReactNode;
 }) {
   return (
-    <div className="ml-reveal mb-5 flex flex-wrap items-end justify-between gap-3">
-      <h2 id={id} className="m-0 text-h2 tracking-tight text-balance">
+    <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+      <h2 id={id} className="m-0 font-heading text-title font-bold text-balance">
         {children}
       </h2>
       {action}

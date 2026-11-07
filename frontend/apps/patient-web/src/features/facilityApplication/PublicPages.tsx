@@ -1,6 +1,7 @@
 import { isApiError } from "@medilink/api-client";
 import { Alert, Button, buttonClassName, Card, ErrorSummary, TextField } from "@medilink/ui";
 import { isLanguage } from "@medilink/ui/i18n";
+import { ChartLineUp, Pill, Stethoscope, Users, type Icon } from "@phosphor-icons/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
@@ -11,10 +12,17 @@ import { PageHeading } from "../../components/PageHeading";
 import { describeApiError } from "../../forms/api-errors";
 import { EMAIL_PATTERN } from "../../forms/validation";
 import { PublicLayout } from "../../layout/PublicLayout";
-import { PageContainer, PageHeader } from "../site/kit";
+import { FacilityBoardIllustration } from "../site/illustrations";
+import { Faq, PageContainer, PageHeader, Panel } from "../site/kit";
 import { applicationKey, firstIncompleteStep, useApplication } from "./data";
 
 const ROLES = ["admin", "reception", "doctor", "pharmacy"] as const;
+const ROLE_ICONS = {
+  admin: ChartLineUp,
+  reception: Users,
+  doctor: Stethoscope,
+  pharmacy: Pill,
+} as const satisfies Record<(typeof ROLES)[number], Icon>;
 const PHASES = ["apply", "verify", "setup", "live"] as const;
 const FAQ = ["cost", "documents", "time", "data"] as const;
 
@@ -32,39 +40,64 @@ export function ForFacilitiesPage() {
           </Alert>
         )}
         <section className="flex flex-col gap-4">
-          {/* the one public page template: breadcrumb → H1 → lead */}
+          {/* the one public page template: breadcrumb → H1 → lead, the two first steps and the
+              facility board drawing on the band (upgrade 14 §3) */}
           <PageHeader
             crumbs={[{ label: t("facilityApplication.public.title") }]}
             title={t("facilityApplication.public.title")}
             lead={t("facilityApplication.public.problem")}
+            art={
+              // the board is drawn for the forest ground
+              <div className="bg-forest p-5">
+                <FacilityBoardIllustration className="block aspect-[16/10] w-full" />
+              </div>
+            }
+            actions={
+              <>
+                <Link
+                  to="/for-facilities/apply"
+                  className={buttonClassName({ size: "lg", pill: true })}
+                >
+                  {t("facilityApplication.public.register")}
+                </Link>
+                <a
+                  href="#continue"
+                  className={buttonClassName({ size: "lg", variant: "secondary", pill: true })}
+                >
+                  {t("facilityApplication.public.continue")}
+                </a>
+              </>
+            }
           />
-          <div className="flex flex-wrap gap-3">
-            <Link to="/for-facilities/apply" className={buttonClassName({ size: "lg" })}>
-              {t("facilityApplication.public.register")}
-            </Link>
-            <a href="#continue" className={buttonClassName({ size: "lg", variant: "secondary" })}>
-              {t("facilityApplication.public.continue")}
-            </a>
-          </div>
         </section>
 
         <section aria-labelledby="roles-title" className="flex flex-col gap-4">
           <h2 id="roles-title" className="m-0 font-heading text-h2">
             {t("facilityApplication.public.rolesTitle")}
           </h2>
-          <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2">
-            {ROLES.map((role) => (
-              <li key={role}>
-                <Card className="h-full">
-                  <h3 className="m-0 font-heading text-h3">
-                    {t(`facilityApplication.public.roles.${role}.title`)}
-                  </h3>
-                  <p className="mt-2 mb-0 text-fg-secondary">
-                    {t(`facilityApplication.public.roles.${role}.body`)}
-                  </p>
-                </Card>
-              </li>
-            ))}
+          {/* one surface, hairlines between the teams (public design brief 2026-11-04) */}
+          <ul className="m-0 grid list-none gap-px overflow-hidden rounded-panel bg-hairline p-0 shadow-e2 sm:grid-cols-2">
+            {ROLES.map((role) => {
+              const RoleIcon = ROLE_ICONS[role];
+              return (
+                <li key={role} className="flex gap-4 bg-surface p-5 sm:p-6">
+                  <span
+                    aria-hidden="true"
+                    className="grid size-11 shrink-0 place-items-center rounded-xl bg-[linear-gradient(140deg,var(--color-brand-subtle),var(--color-surface))] text-on-brand-subtle shadow-e1"
+                  >
+                    <RoleIcon weight="duotone" className="size-5" />
+                  </span>
+                  <span className="flex flex-col gap-1.5">
+                    <h3 className="m-0 font-heading text-h3 font-bold">
+                      {t(`facilityApplication.public.roles.${role}.title`)}
+                    </h3>
+                    <p className="m-0 text-fg-secondary">
+                      {t(`facilityApplication.public.roles.${role}.body`)}
+                    </p>
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         </section>
 
@@ -72,12 +105,16 @@ export function ForFacilitiesPage() {
           <h2 id="how-title" className="m-0 font-heading text-h2">
             {t("facilityApplication.public.howTitle")}
           </h2>
-          <ol className="m-0 grid list-none gap-4 p-0 sm:grid-cols-4">
+          <ol className="relative m-0 grid list-none gap-4 p-0 sm:grid-cols-4">
+            <span
+              aria-hidden="true"
+              className="absolute top-[1.75rem] right-[12%] left-[12%] -z-10 hidden border-t-2 border-dashed border-primary/25 sm:block"
+            />
             {PHASES.map((phase, index) => (
-              <li key={phase} className="flex flex-col gap-2">
+              <li key={phase} className="ml-card flex flex-col gap-2 rounded-panel bg-surface p-5">
                 <span
                   aria-hidden="true"
-                  className="inline-flex size-9 items-center justify-center rounded-full bg-brand-subtle font-bold text-on-brand-subtle"
+                  className="inline-flex size-8 items-center justify-center rounded-full bg-forest font-heading text-body-sm font-bold text-on-forest tabular-nums"
                 >
                   {index + 1}
                 </span>
@@ -92,25 +129,25 @@ export function ForFacilitiesPage() {
           </ol>
         </section>
 
-        <section aria-labelledby="faq-title" className="flex flex-col gap-3">
-          <h2 id="faq-title" className="m-0 font-heading text-h2">
-            {t("facilityApplication.public.faqTitle")}
-          </h2>
-          {FAQ.map((item) => (
-            <details key={item} className="rounded-md border border-border bg-surface px-4 py-3">
-              <summary className="cursor-pointer font-semibold">
-                {t(`facilityApplication.public.faq.${item}.q`)}
-              </summary>
-              <p className="mt-2 mb-0 text-fg-secondary">
-                {t(`facilityApplication.public.faq.${item}.a`)}
-              </p>
-            </details>
-          ))}
-        </section>
+        {/* the questions and "continue an application" side by side on wide screens */}
+        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+          <section aria-labelledby="faq-title" className="flex flex-col gap-3">
+            <h2 id="faq-title" className="m-0 font-heading text-h2">
+              {t("facilityApplication.public.faqTitle")}
+            </h2>
+            <Panel as="div" className="overflow-hidden">
+              {FAQ.map((item) => (
+                <Faq key={item} question={t(`facilityApplication.public.faq.${item}.q`)}>
+                  {t(`facilityApplication.public.faq.${item}.a`)}
+                </Faq>
+              ))}
+            </Panel>
+          </section>
 
-        <section id="continue" aria-labelledby="continue-title" className="max-w-xl">
-          <ResumeLinkForm headingId="continue-title" />
-        </section>
+          <section id="continue" aria-labelledby="continue-title" className="lg:mt-11">
+            <ResumeLinkForm headingId="continue-title" />
+          </section>
+        </div>
       </PageContainer>
     </PublicLayout>
   );
@@ -144,8 +181,8 @@ function ResumeLinkForm({ headingId }: { headingId: string }) {
   }
 
   return (
-    <Card>
-      <h2 id={headingId} className="m-0 font-heading text-h3">
+    <Card className="rounded-panel border-0 shadow-e2">
+      <h2 id={headingId} className="m-0 font-heading text-h3 font-bold">
         {t("facilityApplication.resume.linkTitle")}
       </h2>
       <p className="mt-2 text-fg-secondary">{t("facilityApplication.resume.linkBody")}</p>

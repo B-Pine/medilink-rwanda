@@ -41,7 +41,7 @@ function Flags() {
   });
   return (
     <div className="flex max-w-3xl flex-col gap-5">
-      <PageHeader title={t("platform.flags.title")} description={t("platform.flags.intro")} />
+      <PageHeader title={t("platform.flags.title")} />
       {flags.isPending && <LoadingState />}
       {error && (
         <Alert tone="danger" role="alert">

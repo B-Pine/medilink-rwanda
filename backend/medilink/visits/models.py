@@ -70,6 +70,13 @@ class Visit(TimeStampedModel):
     checked_in_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, blank=True, related_name="+"
     )
+    # Upgrade 06 §2 (#200): the triage nurse's urgency and short note (C3, like the reason)
+    triaged_at = models.DateTimeField(null=True, blank=True)
+    triaged_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, blank=True, related_name="+"
+    )
+    triage_urgency = models.CharField(max_length=12, blank=True)
+    triage_note_encrypted = models.BinaryField(null=True, blank=True)
 
     class Meta:
         db_table = "visits_visit"
@@ -97,7 +104,11 @@ class Visit(TimeStampedModel):
 class Stage(models.TextChoices):
     RECEPTION = "reception", "Reception"
     PAYMENT = "payment", "Payment"
+    # upgrade 06 §2: optional, between check-in and the doctor (queue setting `triage_enabled`)
+    TRIAGE = "triage", "Triage"
     CONSULTATION = "consultation", "Consultation"
+    # upgrade 06 §3 (#201): a loop out of the consultation; the patient comes back to the doctor
+    LAB = "lab", "Laboratory"
     PHARMACY = "pharmacy", "Pharmacy"
 
 
@@ -121,6 +132,9 @@ ACTIVE_STATES = (
     TicketState.NO_RESPONSE,
     TicketState.ON_HOLD,
 )
+
+# The triage nurse's decision (upgrade 06 §2, #200)
+TRIAGE_URGENCIES = ("normal", "priority", "emergency")
 
 # priority_rank values (contract §2.1): lower is called first
 RANK_EMERGENCY, RANK_RETURN, RANK_PRIORITY, RANK_NORMAL = 0, 1, 2, 3

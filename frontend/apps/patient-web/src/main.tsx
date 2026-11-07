@@ -18,11 +18,27 @@ async function enableMocks() {
   await startMockWorker({ serviceWorkerUrl: `${import.meta.env.BASE_URL}mockServiceWorker.js` });
 }
 
+const UPDATE_CHECK_MS = 60 * 60 * 1000;
+
 async function registerPwa() {
   // Production only, and never together with the MSW worker (same scope).
   if (!import.meta.env.PROD || import.meta.env.VITE_USE_MOCKS === "true") return;
   const { registerSW } = await import("virtual:pwa-register");
-  registerSW({ immediate: true });
+  registerSW({
+    immediate: true,
+    // Phones resume a backgrounded tab or installed app without a navigation, so the browser never
+    // checks for a new worker on its own: check when the app comes back into view and hourly.
+    onRegisteredSW(_url, registration) {
+      if (!registration) return;
+      const check = () => {
+        if (navigator.onLine) void registration.update().catch(() => undefined);
+      };
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") check();
+      });
+      setInterval(check, UPDATE_CHECK_MS);
+    },
+  });
 }
 
 async function bootstrap() {

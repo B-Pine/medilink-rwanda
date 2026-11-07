@@ -53,6 +53,7 @@ import {
   RowList,
 } from "../dashboard/kit";
 import { can, ProfileLayout, rememberedProfile, useProfiles } from "./ProfileLayout";
+import { ProfilePhotoCard } from "./ProfilePhotoCard";
 import { errorText, fieldErrors, formatDateTime, useLocale } from "./shared";
 
 const COMPLETION_STEPS: { key: keyof ProfileCompletion; to: string }[] = [
@@ -128,6 +129,7 @@ function Hub({ profile }: { profile: PatientProfileDetail }) {
   return (
     <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
       <div className="flex min-w-0 flex-col gap-6">
+        {profile.relationship !== "delegate" && <ProfilePhotoCard profile={profile} />}
         {profile.relationship !== "self" && (
           // upgrade 12 §9: it must be unmistakable whose information is on screen
           <section
@@ -159,7 +161,6 @@ function Hub({ profile }: { profile: PatientProfileDetail }) {
                     to={link.to}
                     icon={link.icon}
                     title={t(`dashboard.nav.${link.key}`)}
-                    description={t(`dashboard.family.links.${link.key}`)}
                   />
                 </li>
               ))}
@@ -772,7 +773,6 @@ export function AccessHistoryPage() {
   const items = history.data?.pages.flatMap((page) => page.results) ?? [];
   return (
     <ProfileLayout title={t("profile.sections.history")} back={useBack()}>
-      <p className="m-0 text-fg-secondary">{t("profile.history.intro")}</p>
       {history.isPending && <LoadingState />}
       {history.isError && (
         <Alert tone="danger">{errorText(history.error, t("profile.error"))}</Alert>

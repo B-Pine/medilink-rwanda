@@ -17,6 +17,9 @@ PERMISSIONS: dict[str, str] = {
     "patient.register": "Register walk-in patients",
     "queue.operate": "Check in, issue tickets, set priority, reorder the queue with a reason",
     "queue.call": "Call next and start consultations",
+    "triage.operate": "Call patients to triage, record their vitals and set their urgency",
+    "lab.operate": "See the lab requests, call patients to the lab and record samples",
+    "lab.result.enter": "Enter laboratory results",
     "vitals.record": "Record vitals",
     "visit.reason.view": "View the reason for visit",
     "clinical.view": "View clinical records at the facility",
@@ -48,6 +51,10 @@ ROLES: dict[str, str] = {
     "pharmacist": "Pharmacist",
     # upgrade 06 §4: takes payments, nothing else (no queue control, no clinical data)
     "cashier": "Cashier",
+    # upgrade 06 §2: sees patients between check-in and the doctor (no diagnoses, notes or bills)
+    "triage_nurse": "Triage nurse",
+    # upgrade 06 §3: samples and results only (no diagnoses, notes or other visits)
+    "lab_technician": "Laboratory technician",
 }
 
 ROLE_GRANTS: dict[str, frozenset[str]] = {
@@ -109,6 +116,18 @@ ROLE_GRANTS: dict[str, frozenset[str]] = {
         {"prescription.view", "pharmacy.dispense", "disputes.comment", "reports.view_own"}
     ),
     "cashier": frozenset({"billing.record_payment", "disputes.comment", "reports.view_own"}),
+    "triage_nurse": frozenset(
+        {
+            "triage.operate",
+            "vitals.record",
+            "visit.reason.view",
+            "disputes.comment",
+            "reports.view_own",
+        }
+    ),
+    "lab_technician": frozenset(
+        {"lab.operate", "lab.result.enter", "disputes.comment", "reports.view_own"}
+    ),
 }
 
 
@@ -170,3 +189,8 @@ from medilink.pharmacy import permissions as _s7  # noqa: E402
 extend(_s7.PERMISSIONS, _s7.ROLE_GRANTS)
 extend(_s7b.PERMISSIONS, _s7b.ROLE_GRANTS)
 # [/S7]
+# [W7]
+from medilink.scheduling import permissions as _w7  # noqa: E402
+
+extend(_w7.PERMISSIONS, _w7.ROLE_GRANTS)
+# [/W7]

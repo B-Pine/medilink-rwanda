@@ -40,7 +40,9 @@ describe("staff login → MFA verify → facility picker → shell", () => {
       await screen.findByRole("heading", { level: 1, name: /^Good (morning|afternoon|evening)/ }),
     ).toBeInTheDocument();
     expect(router.state.location.pathname).toBe("/today");
-    expect(screen.getByText("You are working at Remera Health Center.")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Current facility: Remera Health Center/ }),
+    ).toBeInTheDocument();
     const nav = screen.getByRole("navigation", { name: "Main menu" });
     for (const name of ["Today", "Queue", "Patients", "Reports", "Staff", "Settings"]) {
       expect(within(nav).getByRole("link", { name })).toBeInTheDocument();
@@ -69,7 +71,9 @@ describe("staff login → MFA verify → facility picker → shell", () => {
     await user.keyboard("{Enter}");
     await user.click(await screen.findByRole("menuitemradio", { name: /Kigali Clinic/ }));
 
-    expect(await screen.findByText("You are working at Kigali Clinic.")).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: /Current facility: Kigali Clinic/ }),
+    ).toBeInTheDocument();
     const nav = screen.getByRole("navigation", { name: "Main menu" });
     await waitFor(() =>
       expect(within(nav).queryByRole("link", { name: "Approvals" })).not.toBeInTheDocument(),
@@ -90,7 +94,7 @@ describe("staff login → MFA verify → facility picker → shell", () => {
     expect(
       await screen.findByRole("heading", { level: 1, name: /^Good (morning|afternoon|evening)/ }),
     ).toBeInTheDocument();
-    expect(screen.getByText("You are working at Kigali Clinic.")).toBeInTheDocument();
+    expect(screen.getAllByText("Kigali Clinic").length).toBeGreaterThan(0);
     const nav = screen.getByRole("navigation", { name: "Main menu" });
     expect(within(nav).getByRole("link", { name: "Queue" })).toBeInTheDocument();
     expect(within(nav).queryByRole("link", { name: "Pharmacy" })).not.toBeInTheDocument();
@@ -265,7 +269,7 @@ describe("shell: user menu, language, theme, logout", () => {
     return screen.findByRole("menu");
   }
 
-  it("changes language (html lang follows) and theme from the user menu", async () => {
+  it("changes language from the user menu (html lang follows); the theme follows the system", async () => {
     const { user } = await signIn();
     let menu = await openUserMenu(user);
     await user.click(within(menu).getByRole("menuitemradio", { name: "Français" }));
@@ -275,8 +279,8 @@ describe("shell: user menu, language, theme, logout", () => {
     ).toBeInTheDocument();
 
     menu = await openUserMenu(user, /Menu du compte/);
-    await user.click(within(menu).getByRole("menuitemradio", { name: "Sombre" }));
-    expect(document.documentElement.dataset.theme).toBe("dark");
+    expect(within(menu).queryByRole("menuitemradio", { name: "Sombre" })).not.toBeInTheDocument();
+    expect(document.documentElement.dataset.theme).toBeUndefined();
   });
 
   it("logs out and returns to login; the session is gone", async () => {
@@ -316,6 +320,7 @@ describe("shell: user menu, language, theme, logout", () => {
       "Break-glass reviews",
       "Security log",
       "Record access log",
+      "National report",
       "Feature flags",
     ];
     expect(links).toEqual(expect.arrayContaining(expected));

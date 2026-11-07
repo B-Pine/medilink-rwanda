@@ -143,7 +143,7 @@ export function VerifyPage() {
             )}
 
             {details.data ? (
-              <div className="flex flex-col gap-2 border-t border-border pt-4">
+              <div className="flex flex-col gap-2 border-t border-hairline pt-4">
                 <h3 className="m-0 text-body font-semibold">
                   {t("documents.verify.for", { name: details.data.patient_name })}
                 </h3>
@@ -166,7 +166,7 @@ export function VerifyPage() {
               <form
                 noValidate
                 onSubmit={askDetails}
-                className="flex flex-col gap-3 border-t border-border pt-4"
+                className="flex flex-col gap-3 border-t border-hairline pt-4"
               >
                 <p className="m-0 text-body-sm text-fg-secondary">
                   {t("documents.verify.detailsIntro")}

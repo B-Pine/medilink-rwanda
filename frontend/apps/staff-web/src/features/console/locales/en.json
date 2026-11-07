@@ -3,7 +3,8 @@
     "users": "Users",
     "breakGlass": "Break-glass reviews",
     "securityLog": "Security log",
-    "accessLog": "Record access log"
+    "accessLog": "Record access log",
+    "nationalReport": "National report"
   },
   "failed": "Could not load. Try again.",
   "refresh": "Refresh",
@@ -18,7 +19,11 @@
     "staff": "Facility staff",
     "patient": "Patients"
   },
-  "audience": { "staff": "Staff app", "patient": "Patient app", "platform": "Console" },
+  "audience": {
+    "staff": "Staff app",
+    "patient": "Patient app",
+    "platform": "Console"
+  },
   "actions": {
     "auth_login_success": "Signed in",
     "auth_login_failure": "Sign-in failed",
@@ -38,6 +43,13 @@
     "platform_user_mfa_reset": "Second factor reset by admin",
     "platform_user_sessions_revoked": "Sessions ended by admin",
     "platform_user_viewed": "Profile viewed by admin",
+    "platform_user_updated": "Details corrected by admin",
+    "platform_user_password_reset_sent": "Password reset link sent by admin",
+    "platform_user_verification_resent": "Confirmation email sent again by admin",
+    "platform_user_sign_in_unblocked": "Sign-in block cleared by admin",
+    "platform_user_list_exported": "Account list exported",
+    "staff_membership_deactivated": "Facility access removed",
+    "staff_membership_updated": "Facility access changed",
     "staff_mfa_reset": "Second factor reset",
     "patients_record_viewed": "Record opened",
     "clinical_access_reason_given": "Reason given to open a record",
@@ -61,7 +73,12 @@
     "map": "Network map",
     "waitingCount_one": "{{count}} waiting",
     "waitingCount_other": "{{count}} waiting",
-    "legend": { "low": "Calm", "medium": "Busy", "high": "Very busy", "stale": "No live data" },
+    "legend": {
+      "low": "Calm",
+      "medium": "Busy",
+      "high": "Very busy",
+      "stale": "No live data"
+    },
     "inbox": "Needs your action",
     "items": {
       "breakGlass_one": "Break-glass access to review",
@@ -96,36 +113,116 @@
     "status": "Status",
     "active": "Active",
     "locked": "Locked",
-    "inactive": "Inactive",
     "lastLogin": "Last sign-in",
-    "profile": "Account",
-    "verified": "Verified",
-    "unverified": "Not verified",
-    "facts": {
-      "lastLogin": "Last sign-in",
-      "since": "Member since",
-      "mfa": "Two-step login",
-      "email": "Email"
+    "never": "Never",
+    "search": "Search by name, email or phone",
+    "facility": "Facility",
+    "oneFacility": "One facility",
+    "role": "Role",
+    "emailState": "Email",
+    "pending": "Not confirmed yet",
+    "confirmed": "Confirmed",
+    "pendingFilter": "Email not confirmed",
+    "mfaOnFilter": "Two-step login on",
+    "mfaOffFilter": "Two-step login off",
+    "noActiveAccess": "No active access",
+    "attention": "Needs attention:",
+    "attentionItems": {
+      "locked_one": "{{count}} locked account",
+      "locked_other": "{{count}} locked accounts",
+      "withoutMfa_one": "{{count}} staff account without two-step login",
+      "withoutMfa_other": "{{count}} staff accounts without two-step login",
+      "pending_one": "{{count}} email not confirmed",
+      "pending_other": "{{count}} emails not confirmed"
     },
+    "export": "Export staff accounts",
+    "exportHint": "CSV of staff and the platform team, never patients.",
+    "exportFailed": "The export did not download. Try again.",
+    "back": "All users",
+    "account": "Account",
+    "facts": {
+      "email": "Email",
+      "emailState": "Email confirmed",
+      "phone": "Work phone",
+      "mfa": "Two-step login",
+      "profession": "Profession",
+      "licence": "Practising licence",
+      "language": "Language",
+      "lastLogin": "Last sign-in",
+      "since": "Account created"
+    },
+    "patientNote": "This is a patient account. MediLink shows only the account here: the patient's records stay with the facilities that care for them.",
+    "access": {
+      "title": "Facility access",
+      "lead": "Where this person works and what they can do there. Facility admins manage roles; you can remove or restore access.",
+      "none": "No facility access.",
+      "active": "Active",
+      "removed": "Access removed",
+      "removedOn": "Access removed {{date}}",
+      "remove": "Remove access",
+      "restore": "Restore access",
+      "removeConfirm": "{{name}} can no longer work at {{facility}}. Their other facilities and their account stay as they are.",
+      "restoreConfirm": "{{name}} can work at {{facility}} again, with the roles they had."
+    },
+    "invitations": "Invitations not accepted yet",
+    "invited": "Sent {{sent}} · expires {{expires}}",
+    "changes": "Changes by admins",
+    "noChanges": "No admin has changed this account.",
+    "activity": "Sign-in activity",
     "sessions_one": "{{count}} active session",
     "sessions_other": "{{count}} active sessions",
     "noSessions": "No active session",
     "started": "Started {{time}}",
     "events": "Recent security events",
+    "edit": "Correct details",
+    "editLead": "Correct the name, work phone or language. The email address and the password can't be changed here.",
+    "fullName": "Full name",
+    "phoneHint": "A Rwandan mobile number, for example 0788 123 456.",
+    "save": "Save",
     "reason": "Reason",
     "reasonHint": "Recorded in the audit log. At least 5 characters.",
+    "actionsTitle": "Account actions",
+    "actionsNote": "Each action asks you to confirm your identity again and is recorded with your reason.",
+    "notice": {
+      "self": "This is your own account. Change your details and security from your profile.",
+      "locked": "This account is locked: the person can't sign in.",
+      "blocked_one": "Sign-in is blocked for {{count}} more minute after too many failed attempts.",
+      "blocked_other": "Sign-in is blocked for {{count}} more minutes after too many failed attempts.",
+      "pending": "The person signed up but hasn't opened the confirmation link, so they can't sign in yet.",
+      "mfa": "Two-step login isn't set up. The person is asked to set it up at the next sign-in."
+    },
     "actions": {
       "lock": "Lock account",
       "unlock": "Unlock account",
       "reset-mfa": "Reset two-step login",
-      "revoke-sessions": "Sign out everywhere"
+      "revoke-sessions": "Sign out everywhere",
+      "send-password-reset": "Send password reset link",
+      "resend-verification": "Resend confirmation email",
+      "clear-sign-in-block": "Clear sign-in block"
+    },
+    "hints": {
+      "lock": "Stops every sign-in until you unlock it.",
+      "unlock": "Lets the person sign in again.",
+      "reset-mfa": "For a lost or new phone: they set it up again at the next sign-in.",
+      "revoke-sessions": "Ends every session on every device.",
+      "send-password-reset": "Emails a one-time link to their own address. You never see the password.",
+      "resend-verification": "Sends the sign-up confirmation link again.",
+      "clear-sign-in-block": "Lets them try again now instead of waiting."
     },
     "confirm": {
       "lock": "{{name}} can't sign in until the account is unlocked. Every session ends now.",
       "unlock": "{{name}} can sign in again.",
       "reset-mfa": "{{name}} sets up two-step login again at the next sign-in. Every session ends now.",
-      "revoke-sessions": "{{name}} is signed out on every device."
-    }
+      "revoke-sessions": "{{name}} is signed out on every device.",
+      "send-password-reset": "{{name}} gets an email with a link to choose a new password. The link works once.",
+      "resend-verification": "{{name}} gets the sign-up confirmation email again.",
+      "clear-sign-in-block": "{{name}} can try to sign in again now. Confirm it is really them who asked."
+    },
+    "done": {
+      "send-password-reset": "Sent to {{email}}. Ask the person to check their inbox and spam folder.",
+      "resend-verification": "Sent to {{email}}. Ask the person to check their inbox and spam folder."
+    },
+    "clinician": "Clinician"
   },
   "logs": {
     "event": "Event",
@@ -171,14 +268,71 @@
   },
   "bg": {
     "title": "Break-glass reviews",
-    "lead": "Emergency access to records, reviewed by a second admin.",
-    "tab": { "review": "To review", "all": "All" },
+    "tab": {
+      "review": "To review",
+      "all": "All"
+    },
     "none": "No break-glass access to review",
     "duration": "{{minutes}} min",
     "note": "Review note",
     "appropriate": "Appropriate",
     "inappropriate": "Not appropriate",
-    "reason": { "emergency": "Emergency", "continuity": "Continuity of care", "other": "Other" },
-    "outcome": { "appropriate": "Judged appropriate", "inappropriate": "Judged not appropriate" }
+    "reason": {
+      "emergency": "Emergency",
+      "continuity": "Continuity of care",
+      "other": "Other"
+    },
+    "outcome": {
+      "appropriate": "Judged appropriate",
+      "inappropriate": "Judged not appropriate"
+    }
+  },
+  "national": {
+    "title": "National report",
+    "smallGroups": "Groups under 10 hidden",
+    "failed": "The report could not load. Try again.",
+    "hidden": "Hidden",
+    "hiddenWhy": "Fewer than 10 patients, or a figure that would reveal such a group.",
+    "minutes_one": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "unknownDistrict": "District not recorded",
+    "district": "District",
+    "facility": "Facility",
+    "facilities": "Facilities",
+    "visits": "Visits",
+    "median": "Median wait to the doctor",
+    "p90": "90th percentile",
+    "medicinesOut": "Medicines out now",
+    "kpi": {
+      "visits": "Visits",
+      "facilities_one": "{{count}} facility in {{districts}} districts",
+      "facilities_other": "{{count}} facilities in {{districts}} districts",
+      "wait": "Median wait to the doctor",
+      "districts": "Districts",
+      "stockouts": "Facilities with a stock-out",
+      "medicines_one": "{{count}} medicine out somewhere",
+      "medicines_other": "{{count}} medicines out somewhere"
+    },
+    "districts": {
+      "title": "Load by district"
+    },
+    "facilitiesTable": {
+      "title": "Load by facility"
+    },
+    "trend": {
+      "title": "Wait trend",
+      "hiddenPeriods_one": "{{count}} period is hidden: fewer than 10 patients were called.",
+      "hiddenPeriods_other": "{{count}} periods are hidden: fewer than 10 patients were called."
+    },
+    "diagnoses": {
+      "title": "Top diagnoses by district"
+    },
+    "stockouts": {
+      "title": "Stock-outs now",
+      "facilities": "Facilities with a stock-out",
+      "medicines": "Medicines out",
+      "medicine": "Medicine",
+      "where": "Districts"
+    }
   }
 }

@@ -13,6 +13,7 @@ import {
   PersonSimpleWalk,
   Pill,
   Stethoscope,
+  TestTube,
   UsersThree,
   WarningCircle,
   type Icon,
@@ -31,6 +32,7 @@ import { PageHeading } from "../components/PageHeading";
 import { day, directionsUrl, pick, time } from "../features/booking/discovery";
 import { useUpcoming } from "../features/booking/Upcoming";
 import { AppointmentMenu, AppointmentRow } from "../features/dashboard/AppointmentsPages";
+import { useComingUp } from "../features/dashboard/ComingUp";
 import {
   AppointmentBadge,
   Avatar,
@@ -105,6 +107,18 @@ function useActiveMedicines() {
     queryFn: () => api.pharmacy.patient.list({ status: "active" }),
   });
 }
+
+/** Released lab results, the Records page's cache (W7: a new one shows under Attention). */
+function useLabResults() {
+  const api = useApi();
+  return useQuery({
+    queryKey: recordsKeys.labResults(""),
+    queryFn: () => api.clinical.patient.labResults({}),
+  });
+}
+
+/** A released result counts as new for a week. */
+const RESULT_IS_NEW_MS = 7 * 24 * 3_600_000;
 
 // ---- small pieces inside cards ----------------------------------------------------------------
 
@@ -219,7 +233,6 @@ function WelcomePanel() {
         <h2 id="journey" className="m-0 font-heading text-h2 font-bold text-fg">
           {t("dashboard.overview.startTitle")}
         </h2>
-        <p className="m-0 text-fg-secondary">{t("dashboard.overview.startBody")}</p>
         <div className="mt-2 flex flex-wrap gap-2">
           <Link to={paths.findCare} className={buttonClassName({})}>
             <MagnifyingGlass aria-hidden="true" className="size-icon" />
@@ -368,17 +381,49 @@ interface Reminder {
 
 /**
  * Only real, actionable items: an offer waiting for an answer, a remote ticket that still needs
- * "I'm here", an appointment within a day. No medical reminders are invented (medication
- * reminders have no backend yet).
+ * "I'm here", an appointment within a day, a result released in the last week, and a date the
+ * clinic planned (W7) within two days. No medical reminders are invented (medication reminders
+ * have no backend yet).
  */
 function useReminders(): Reminder[] {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage ?? "rw";
   const upcoming = useUpcoming();
   const visits = useActiveVisits();
+  const results = useLabResults();
+  const coming = useComingUp();
+  const profiles = useProfiles();
+  const nameOf = (id: string) =>
+    profiles.data?.results.find((p) => p.patient_id === id)?.display_name ?? "";
+  const short = useShortDate();
   // read the clock once per mount, not on every render
-  const [soon] = useState(() => Date.now() + 24 * 3_600_000);
+  const [now] = useState(() => Date.now());
+  const soon = now + 24 * 3_600_000;
   const reminders: Reminder[] = [];
+  for (const r of results.data ?? [])
+    if (Date.parse(r.released_at) >= now - RESULT_IS_NEW_MS)
+      reminders.push({
+        id: `result-${r.id}`,
+        icon: TestTube,
+        title: t("dashboard.reminders.result"),
+        when: `${short(r.released_at)} · ${r.facility_name}`,
+        who: nameOf(r.patient_id),
+        to: paths.records,
+        action: t("dashboard.reminders.readResult"),
+      });
+  for (const c of coming.data?.results ?? [])
+    if (Date.parse(`${c.due_on}T23:59:00+02:00`) <= now + 2 * 24 * 3_600_000)
+      reminders.push({
+        id: `planned-${c.type}-${c.id}`,
+        icon: CalendarCheck,
+        title: t("dashboard.reminders.planned", {
+          what: t(`dashboard.comingUp.types.${c.type}`),
+        }),
+        when: `${short(c.due_on)} · ${c.facility_name}`,
+        who: nameOf(c.patient_id),
+        to: c.type === "follow_up" ? `${paths.findCare}?mode=booking` : paths.appointments,
+        action: c.type === "follow_up" ? t("dashboard.comingUp.book") : t("dashboard.viewDetails"),
+      });
   for (const b of (upcoming.data?.results ?? []).filter(live)) {
     const service = pick(b.service_name_i18n, lang);
     if (b.pending_change)
@@ -434,7 +479,7 @@ function Attention() {
               <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <p className="m-0 text-body-sm font-semibold text-pretty text-fg">{r.title}</p>
                 <p className="m-0 text-caption text-fg-secondary tabular-nums">
-                  {r.when} · {r.who}
+                  {[r.when, r.who].filter(Boolean).join(" · ")}
                 </p>
                 <Link to={r.to} className="mt-1 self-start text-body-sm font-semibold text-link">
                   {r.action}
@@ -452,9 +497,6 @@ function Attention() {
             <CheckCircle weight="duotone" className="size-7" />
           </span>
           <p className="m-0 font-semibold text-fg">{t("dashboard.overview.attention.allSet")}</p>
-          <p className="m-0 max-w-[16rem] text-body-sm text-fg-secondary">
-            {t("dashboard.overview.attention.allSetBody")}
-          </p>
         </div>
       )}
     </WidgetCard>
@@ -490,10 +532,8 @@ function AtAGlance() {
             value={value(upcoming.data ? rows.length : undefined, upcoming.isError)}
             hint={
               next
-                ? t("dashboard.overview.glance.next", {
-                    when: `${day(next.starts_at, lang, "short")} · ${time(next.starts_at, lang)}`,
-                  })
-                : t("dashboard.overview.glance.upcomingNone")
+                ? `${day(next.starts_at, lang, "short")} · ${time(next.starts_at, lang)}`
+                : undefined
             }
           />
         </li>
@@ -504,11 +544,7 @@ function AtAGlance() {
             tone="violet"
             label={t("dashboard.overview.glance.medicines")}
             value={value(medicines.data?.count, medicines.isError)}
-            hint={
-              firstMedicine
-                ? t("dashboard.overview.glance.from", { facility: firstMedicine.facility_name })
-                : t("dashboard.overview.glance.medicinesNone")
-            }
+            hint={firstMedicine?.facility_name}
           />
         </li>
         <li>
@@ -518,11 +554,7 @@ function AtAGlance() {
             tone="info"
             label={t("dashboard.overview.glance.records")}
             value={value(records.data?.count, records.isError)}
-            hint={
-              lastRecord
-                ? t("dashboard.overview.glance.lastVisit", { date: short(lastRecord.service_date) })
-                : t("dashboard.overview.glance.recordsNone")
-            }
+            hint={lastRecord ? short(lastRecord.service_date) : undefined}
           />
         </li>
         <li>
@@ -532,11 +564,6 @@ function AtAGlance() {
             tone="attention"
             label={t("dashboard.overview.glance.unread")}
             value={value(unreadCount, unread.isError)}
-            hint={
-              unreadCount
-                ? t("dashboard.overview.glance.unreadHint")
-                : t("dashboard.overview.glance.unreadNone")
-            }
           />
         </li>
       </ul>
@@ -578,7 +605,6 @@ function UpcomingCard() {
         <CardEmpty
           icon={CalendarCheck}
           title={t("dashboard.appointments.empty.upcoming")}
-          body={t("dashboard.appointments.emptyBody")}
           action={
             <Link
               to={`${paths.findCare}?mode=booking`}
@@ -633,11 +659,7 @@ function RecentVisitsCard() {
           })}
         </RowList>
       ) : (
-        <CardEmpty
-          icon={FileText}
-          title={t("dashboard.overview.visits.empty")}
-          body={t("dashboard.overview.visits.emptyBody")}
-        />
+        <CardEmpty icon={FileText} title={t("dashboard.overview.visits.empty")} />
       )}
     </WidgetCard>
   );
@@ -726,21 +748,13 @@ function LatestMeasurementsCard() {
               weight="duotone"
               className="mt-px size-4 shrink-0 text-brand"
             />
-            <span>
-              {t("dashboard.overview.vitals.recorded", {
-                date: short(latest.service_date),
-                facility: latest.facility_name,
-              })}{" "}
-              {t("dashboard.overview.vitals.note")}
+            <span className="tabular-nums">
+              {short(latest.service_date)} · {latest.facility_name}
             </span>
           </div>
         </>
       ) : (
-        <CardEmpty
-          icon={Heartbeat}
-          title={t("dashboard.overview.vitals.empty")}
-          body={t("dashboard.overview.vitals.emptyBody")}
-        />
+        <CardEmpty icon={Heartbeat} title={t("dashboard.overview.vitals.empty")} />
       )}
     </WidgetCard>
   );
@@ -855,7 +869,6 @@ export function HomePage() {
           >
             {t(`dashboard.overview.greeting_${partOfDay(now)}`, { name: me.full_name })}
           </PageHeading>
-          <p className="m-0 text-fg-secondary">{t("dashboard.overview.subtitle")}</p>
         </div>
         <div className="hidden shrink-0 gap-2 md:flex">
           <Link to={paths.findCare} className={buttonClassName({ variant: "secondary" })}>

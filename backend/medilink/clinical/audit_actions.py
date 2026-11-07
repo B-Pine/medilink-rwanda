@@ -21,5 +21,12 @@ ACTIONS: frozenset[str] = frozenset(
         "authz.break_glass.viewed",
         "authz.break_glass.ended",
         "authz.break_glass.reviewed",
+        # upgrade 06 §3 (#201): the laboratory loop
+        "clinical.lab_order.ordered",
+        "clinical.lab_order.cancelled",
+        "clinical.lab_order.sample_taken",
+        "clinical.lab_order.resulted",
+        "clinical.lab_order.reviewed",
+        "clinical.lab_order.released",
     }
 )

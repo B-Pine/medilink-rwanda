@@ -34,6 +34,7 @@ from medilink.visits.models import (
     RANK_NORMAL,
     RANK_PRIORITY,
     RANK_RETURN,
+    TRIAGE_URGENCIES,
     DisplayLink,
     DutyState,
     DutyStatus,
@@ -67,7 +68,16 @@ MAX_SYMPTOMS = 5
 
 REASON_CODES = ("clinical_urgency", "staff_error", "patient_request", "other")
 LEAVE_CODES = ("patient_left", "patient_request", "duplicate", "other")
-STAGE_ORDER = (Stage.RECEPTION, Stage.PAYMENT, Stage.CONSULTATION, Stage.PAYMENT, Stage.PHARMACY)
+STAGE_ORDER = (
+    Stage.RECEPTION,
+    Stage.PAYMENT,
+    Stage.TRIAGE,
+    Stage.CONSULTATION,
+    Stage.PAYMENT,
+    Stage.PHARMACY,
+)
+NEED_VITALS = _("Record at least one vital sign, or say why none could be taken.")
+NO_LAB_ORDERS = _("Order at least one test before sending the patient to the lab.")
 
 # Interface for S6 (open the consultation on `start`), S8 (bill on `check_in`) and S9 (notify on
 # `call`), contract sprint-04 §7. Sent after commit, once per ticket event. kwargs: event_id,
@@ -84,6 +94,25 @@ def queue_settings(facility_id: Any) -> dict[str, Any]:
 
     row = Settings.objects.filter(facility_id=facility_id).first()
     return with_defaults("queue", (row.queue if row else {}) or {})
+
+
+def needs_triage(visit: Visit, settings_: dict[str, Any]) -> bool:
+    """Upgrade 06 §2: with triage on, a patient sees the triage nurse once before the doctor.
+    Emergencies go straight to the doctor."""
+    return (
+        bool(settings_.get("triage_enabled"))
+        and not visit.is_emergency
+        and visit.triaged_at is None
+        and not visit.tickets.filter(stage=Stage.TRIAGE).exists()
+    )
+
+
+def first_stage(settings_: dict[str, Any], *, emergency: bool = False) -> str:
+    """Where a new visit starts: the configured stage, or triage instead of the doctor."""
+    stage = str(settings_["start_stage"])
+    if stage == Stage.CONSULTATION and settings_.get("triage_enabled") and not emergency:
+        return Stage.TRIAGE
+    return stage
 
 
 def _visit_changed(visit: Visit) -> None:
@@ -303,7 +332,7 @@ def check_in(
     now = timezone.now()
     rank = RANK_EMERGENCY if emergency else RANK_PRIORITY if priority_class else RANK_NORMAL
     settings_ = queue_settings(facility_id)
-    stage = settings_["start_stage"]
+    stage = first_stage(settings_, emergency=emergency)
     late = booking is not None and is_late(booking, settings_, now)
     if booking is not None:
         visit_source = BOOKING_SOURCE.get(booking.source, VisitSource.ONLINE_BOOKING)
@@ -793,15 +822,155 @@ def _place_after(ticket: Ticket, places: int) -> None:
     place_in_order(ticket, order, min(places, len(order)))
 
 
-def next_stages(ticket: Ticket) -> tuple[str, ...]:
+def next_stages(ticket: Ticket, settings_: dict[str, Any] | None = None) -> tuple[str, ...]:
     """Stages a ticket may move on to (contract sprint-04 §2.2 Stages): only forward in
-    `STAGE_ORDER`. `payment` is the second one once the visit had a consultation."""
+    `STAGE_ORDER`. `payment` is the second one once the visit had a consultation. With triage
+    on (#200), an untriaged patient goes to triage instead of the doctor; with it off, triage is
+    never offered."""
+    if ticket.stage == Stage.LAB:
+        return ()  # the lab sends the patient back to the doctor itself (#201)
+    settings_ = settings_ if settings_ is not None else queue_settings(ticket.facility_id)
     consulted = ticket.visit.tickets.filter(stage=Stage.CONSULTATION).exists()
     if ticket.stage == Stage.PAYMENT:
-        index = 3 if consulted else 1
+        index = 4 if consulted else 1
     else:
         index = STAGE_ORDER.index(Stage(ticket.stage))
-    return tuple(dict.fromkeys(STAGE_ORDER[index + 1 :]))
+    stages = tuple(dict.fromkeys(STAGE_ORDER[index + 1 :]))
+    if needs_triage(ticket.visit, settings_):
+        return tuple(s for s in stages if s != Stage.CONSULTATION)
+    return tuple(s for s in stages if s != Stage.TRIAGE)
+
+
+def _finish_triage(
+    ticket: Ticket, visit: Visit, data: dict[str, Any], actor: Actor, now: dt.datetime
+) -> Ticket:
+    """Record the triage on the visit and open the consultation ticket. The caller holds the
+    ticket lock. Vitals go through the clinical vitals endpoint before this; without any, the
+    nurse says why (a crying child, no equipment)."""
+    from medilink.clinical.models import Vitals
+
+    urgency = str(data.get("urgency") or "")
+    if urgency not in TRIAGE_URGENCIES:
+        raise FieldRule("urgency", NOT_ALLOWED)
+    reason_code = str(data.get("reason_code") or "")
+    reason_text = str(data.get("reason_text") or "").strip()
+    has_vitals = Vitals.objects.filter(visit=visit, entered_in_error_at__isnull=True).exists()
+    no_vitals = str(data.get("no_vitals_reason") or "").strip()
+    if not has_vitals and not no_vitals:
+        raise FieldRule("no_vitals_reason", NEED_VITALS)
+    rank = ticket.priority_rank
+    if urgency == "emergency":
+        if not (reason_code or reason_text):
+            raise FieldRule("reason_code", NEED_REASON)
+        visit.is_emergency = True
+        rank = RANK_EMERGENCY
+    elif urgency == "priority":
+        klass = data.get("priority_class")
+        if klass not in PriorityClass.values:
+            raise FieldRule("priority_class", NOT_ALLOWED)
+        if not reason_code:
+            raise FieldRule("reason_code", NEED_REASON)
+        visit.priority_class, visit.priority_reason_code = klass, reason_code
+        rank = min(rank, RANK_PRIORITY)
+    note = str(data.get("note") or "").strip()
+    if no_vitals:
+        note = f"{note}\n{no_vitals}".strip() if note else no_vitals
+    visit.triaged_at = now
+    visit.triaged_by = actor.user
+    visit.triage_urgency = urgency
+    visit.triage_note_encrypted = (
+        encrypt(note[:800], table="visits_visit", column="triage_note_encrypted", row_id=visit.pk)
+        if note
+        else None
+    )
+    visit.save(
+        update_fields=[
+            "triaged_at",
+            "triaged_by",
+            "triage_urgency",
+            "triage_note_encrypted",
+            "is_emergency",
+            "priority_class",
+            "priority_reason_code",
+            "updated_at",
+        ]
+    )
+    ticket.state = TicketState.MOVED_TO_NEXT_STAGE
+    ticket.ended_at = now
+    _save(ticket, "state", "ended_at")
+    return _new_ticket(
+        visit, ticket.service, Stage.CONSULTATION, rank=rank, arrival_at=visit.checked_in_at or now
+    )
+
+
+def triage_note(visit: Visit) -> str:
+    from medilink.patients.crypto.fields import decrypt
+
+    if not visit.triage_note_encrypted:
+        return ""
+    return decrypt(
+        bytes(visit.triage_note_encrypted),
+        table="visits_visit",
+        column="triage_note_encrypted",
+        row_id=visit.pk,
+    )
+
+
+def _lab_ticket(visit_id: Any) -> Ticket | None:
+    return (
+        Ticket.objects.select_for_update()
+        .select_related("visit", "service")
+        .filter(visit_id=visit_id, stage=Stage.LAB, state__in=ACTIVE_STATES)
+        .first()
+    )
+
+
+def lab_sampled(visit_id: Any, actor: Actor) -> None:
+    """Every test of the visit has its sample (#201): the patient waits for the results, so the
+    lab ticket goes on hold and the technician can call the next patient. Inside the caller's
+    transaction."""
+    ticket = _lab_ticket(visit_id)
+    if ticket is None or ticket.state not in (TicketState.CALLED, TicketState.IN_SERVICE):
+        return
+    before = ticket.state
+    ticket.state = TicketState.ON_HOLD
+    _save(ticket, "state")
+    _event(ticket, "sample_taken", before, actor)
+    _queue_changed(ticket)
+    _visit_changed(ticket.visit)
+
+
+def back_from_lab(visit_id: Any, *, doctor_membership_id: Any, actor: Actor) -> Ticket | None:
+    """Every test of the visit is resulted (#201): the lab ticket ends and the patient goes back
+    to the ordering doctor's queue, assigned to them, with return priority (queue setting
+    `return_priority`). None when the patient was never sent to the lab. Inside the caller's
+    transaction."""
+    ticket = _lab_ticket(visit_id)
+    if ticket is None:
+        return None
+    visit = ticket.visit
+    now = timezone.now()
+    before = ticket.state
+    ticket.state = TicketState.MOVED_TO_NEXT_STAGE
+    ticket.ended_at = now
+    _save(ticket, "state", "ended_at")
+    settings_ = queue_settings(ticket.facility_id)
+    rank = (
+        min(ticket.priority_rank, RANK_RETURN)
+        if settings_["return_priority"]
+        else ticket.priority_rank
+    )
+    result = _new_ticket(
+        visit, ticket.service, Stage.CONSULTATION, rank=rank, arrival_at=visit.checked_in_at or now
+    )
+    result.assigned_membership_id = doctor_membership_id
+    result.save(update_fields=["assigned_membership", "updated_at"])
+    _event(ticket, "lab_done", before, actor, next_ticket_id=result.pk)
+    _queue_changed(ticket)
+    _event(result, "opened", "", actor, from_ticket_id=ticket.pk)
+    _queue_changed(result)
+    _visit_changed(visit)
+    return result
 
 
 def act(
@@ -877,7 +1046,7 @@ def act(
             # Only from the consultation room or counter, and only forward (sprint-04 §2.2)
             _require(ticket, TicketState.IN_SERVICE)
             stage = str(data.get("stage") or "")
-            if stage not in next_stages(ticket):
+            if stage not in next_stages(ticket, settings_):
                 raise FieldRule("stage", NOT_ALLOWED)
             ticket.state = TicketState.MOVED_TO_NEXT_STAGE
             ticket.ended_at = now
@@ -889,6 +1058,31 @@ def act(
                 rank=ticket.priority_rank,
                 arrival_at=visit.checked_in_at or now,
             )
+            extra["next_ticket_id"] = result.pk
+        elif action == "triage":
+            # upgrade 06 §2 (#200): the nurse sets the urgency and sends the patient to the doctor
+            _require(ticket, TicketState.IN_SERVICE)
+            if ticket.stage != Stage.TRIAGE:
+                raise BusinessRuleViolation(NOT_ALLOWED)
+            result = _finish_triage(ticket, visit, data, actor, now)
+            extra["urgency"] = visit.triage_urgency
+            extra["next_ticket_id"] = result.pk
+        elif action == "send-to-lab":
+            # upgrade 06 §3 (#201): the doctor ordered tests; the consultation stays a draft
+            # and the patient comes back to this doctor when every result is in
+            _require(ticket, TicketState.IN_SERVICE)
+            if ticket.stage != Stage.CONSULTATION:
+                raise BusinessRuleViolation(NOT_ALLOWED)
+            from medilink.clinical.models import LabOrder, LabOrderState
+
+            if not LabOrder.objects.filter(visit=visit, state=LabOrderState.ORDERED).exists():
+                raise BusinessRuleViolation(NO_LAB_ORDERS)
+            ticket.state = TicketState.MOVED_TO_NEXT_STAGE
+            ticket.ended_at = now
+            setattr(ticket, "_lab_hand_off", True)  # read by the completion guard  # noqa: B010
+            _save(ticket, "state", "ended_at")
+            rank = RANK_NORMAL if ticket.priority_rank == RANK_RETURN else ticket.priority_rank
+            result = _new_ticket(visit, ticket.service, Stage.LAB, rank=rank, arrival_at=now)
             extra["next_ticket_id"] = result.pk
         elif action == "transfer":
             _require(ticket, TicketState.WAITING)
@@ -1027,7 +1221,7 @@ def act(
             reason_text=reason_text,
             **extra,
         )
-        if action in ("priority", "transfer", "emergency"):
+        if action in ("priority", "transfer", "emergency", "triage"):
             record(
                 f"visits.ticket.{action}",
                 request=actor.request,

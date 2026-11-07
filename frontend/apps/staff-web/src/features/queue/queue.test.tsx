@@ -1,6 +1,7 @@
 import {
   MOCK_DISPLAY_TOKEN,
   MOCK_FACILITY_ADMIN_EMAIL,
+  MOCK_LAB_VISITS,
   MOCK_PASSWORD,
   MOCK_TOTP_CODE,
 } from "@medilink/api-client/mocks";
@@ -145,7 +146,7 @@ describe("reception board (S4-F2, F3)", () => {
 
   it("checks in an existing patient with N and shows the ticket", async () => {
     const { user } = await signIn("reception@medilink.test", "/queue");
-    await screen.findByRole("table", { name: /General consultation/ });
+    await screen.findByRole("table", { name: /General consultation · Consultation/ });
     await user.keyboard("n");
     const dialog = await screen.findByRole("dialog", { name: "Check in a patient" });
     await user.type(
@@ -160,7 +161,7 @@ describe("reception board (S4-F2, F3)", () => {
 
   it("/ opens the check-in search; shortcuts are ignored while a panel is open", async () => {
     const { user } = await signIn("reception@medilink.test", "/queue");
-    const table = await screen.findByRole("table", { name: /General consultation/ });
+    const table = await screen.findByRole("table", { name: /General consultation · Consultation/ });
     await user.click(within(within(table).getAllByRole("row")[1]!).getByRole("button"));
     await screen.findByRole("dialog", { name: /Kamanzi O\./ });
     await user.keyboard("/");
@@ -223,6 +224,18 @@ describe("admin pages and display (S4-F1, F5)", () => {
     expect(await screen.findByText("P-004")).toBeInTheDocument();
     expect(screen.getByText("Room 2")).toBeInTheDocument();
     expect(container.textContent).not.toMatch(/Keza|Habimana|Mukamana|Nshimiyimana/);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("prints the next-visit card the doctor set, for a patient without a phone (#207)", async () => {
+    const { container } = await signIn(
+      MOCK_FACILITY_ADMIN_EMAIL,
+      `/queue/visits/${MOCK_LAB_VISITS.waiting}/card`,
+    );
+    expect(await screen.findByText("Your next visit")).toBeInTheDocument();
+    expect(screen.getByText("Uwimana Grace")).toBeInTheDocument();
+    expect(screen.getByText(/Come in the morning/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Print" })).toBeEnabled();
     expect(await axe(container)).toHaveNoViolations();
   });
 
@@ -289,17 +302,32 @@ describe("operations dashboard and reports (design 04 §3.4, analysis 13 §1)", 
     expect(await axe(container)).toHaveNoViolations();
   }, 40_000);
 
-  it("the reports page charts the last 14 days with readable tables behind the charts", async () => {
-    const { container } = await signIn(MOCK_FACILITY_ADMIN_EMAIL, "/reports");
+  it("the reports page shows the period report, each table downloadable, then arrivals", async () => {
+    const { container, user } = await signIn(MOCK_FACILITY_ADMIN_EMAIL, "/reports");
     expect(await screen.findByRole("heading", { level: 1, name: "Reports" })).toBeInTheDocument();
-    expect(await screen.findByRole("heading", { name: "Patients per day" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Wait to be seen (minutes)" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Patients seen" })).toBeInTheDocument();
+    for (const name of [
+      "Waiting time by stage",
+      "Top diagnoses",
+      "Laboratory",
+      "Money",
+      "Pharmacy stock",
+    ])
+      expect(screen.getByRole("heading", { level: 2, name })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Download Money as CSV" })).toBeInTheDocument();
+    expect(screen.getByText("Malaria, unspecified")).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "When patients arrive (last 4 weeks)" }),
+      await screen.findByRole("heading", { name: "When patients arrive (last 4 weeks)" }),
     ).toBeInTheDocument();
-    expect(screen.getAllByRole("table").length).toBeGreaterThanOrEqual(3);
     expect(await axe(container)).toHaveNoViolations();
-  });
+
+    // By month: one row per month in the chart's table, and the choice is kept in the URL
+    await user.selectOptions(screen.getByLabelText("Period"), "90");
+    await user.click(screen.getByRole("radio", { name: "Month" }));
+    await waitFor(() => expect(screen.getByRole("radio", { name: "Month" })).toBeChecked());
+    const chart = screen.getByRole("table", { name: /Patients over the period/ });
+    await waitFor(() => expect(within(chart).getAllByRole("row").length).toBeLessThanOrEqual(5));
+  }, 40_000);
 
   it("receptionists don't see the operations dashboard", async () => {
     await signIn("reception@medilink.test", "/today");

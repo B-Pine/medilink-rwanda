@@ -112,7 +112,9 @@
       "receptionist": "Receptionist",
       "doctor": "Doctor",
       "pharmacist": "Pharmacist",
-      "cashier": "Cashier"
+      "cashier": "Cashier",
+      "triage_nurse": "Triage nurse",
+      "lab_technician": "Lab technician"
     }
   },
   "shell": {
@@ -120,10 +122,6 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "platformAdmin": "Platform admin",
-    "theme": {
-      "toLight": "Switch to light mode",
-      "toDark": "Switch to dark mode"
-    },
     "nav": {
       "today": "Today",
       "queue": "Queue",
@@ -146,7 +144,6 @@
     "userMenu": {
       "label": "Account menu",
       "signedInAs": "Signed in as",
-      "theme": "Theme",
       "language": "Language",
       "logout": "Log out",
       "loggingOut": "Logging out…"
@@ -175,8 +172,6 @@
   "today": {
     "title": "Today",
     "greeting": "Hello, {{name}}",
-    "facility": "You are working at {{facility}}.",
-    "platform": "You are signed in as a platform admin.",
     "rolesLabel": "Your roles here",
     "greeting_morning": "Good morning, {{name}}",
     "greeting_afternoon": "Good afternoon, {{name}}",

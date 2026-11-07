@@ -1,8 +1,8 @@
 import type { PublicFacility, PublicService } from "@medilink/api-client";
 import {
+  ArrowRight,
   CalendarPlus,
   CheckCircle,
-  Clock,
   EnvelopeSimple,
   Globe,
   MapPin,
@@ -12,19 +12,8 @@ import {
   Phone,
   SealCheck,
   Siren,
-  Stethoscope,
-  UserCircle,
-  type Icon,
 } from "@phosphor-icons/react";
-import {
-  buttonClassName,
-  cx,
-  Skeleton,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@medilink/ui";
+import { buttonClassName, cx, Skeleton } from "@medilink/ui";
 import { dateFormat, kigaliDate } from "@medilink/ui/i18n";
 import { useQuery } from "@tanstack/react-query";
 import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
@@ -34,17 +23,18 @@ import { Link, useParams, useSearchParams } from "react-router";
 import { useApi } from "../../app/services";
 import { env } from "../../env";
 import { PublicLayout } from "../../layout/PublicLayout";
+import { FacilityBuilding } from "../site/buildings";
 import { doctorSlug, EMERGENCY, isHospital, serviceSlug } from "../site/data";
 import {
   EmptyState,
   FacilityStatus,
-  InsuranceList,
   PageContainer,
   PageHeader,
   Panel,
   WaitingTime,
 } from "../site/kit";
 import { day, directionsUrl, pick, pinKind, time } from "./discovery";
+import { insurerNames } from "./Places";
 import { rememberPlace } from "./recent";
 
 const FacilityMap = lazy(() => import("@medilink/ui/map"));
@@ -73,9 +63,10 @@ function primaryAction(f: PublicFacility, wanted: string | null) {
 
 /**
  * Facility profile (upgrade 11 §5): header with type, place, verified (only when true), open
- * status and directions; the **Today** panel (hours, live wait, queue and booking, insurers,
- * hospital note); tabs Overview · Services · Doctors · Insurance · Hours & Location; what to
- * bring. The primary action follows real availability. No prices (U-01). Public.
+ * status and directions; **Today** as a summary list (hours, live wait, queue and booking,
+ * insurers, hospital note); then services, doctors, about and photos on one page, with the
+ * location, the week and what to bring beside. The primary action follows real availability.
+ * No prices (U-01). Public.
  */
 export function FacilityPage() {
   const { t, i18n } = useTranslation();
@@ -143,6 +134,15 @@ export function FacilityPage() {
         <PageHeader
           crumbs={[{ to: "/facilities", label: t("nav.facilities") }, { label: f.name }]}
           title={f.name}
+          titleTransition={`facility-name-${f.slug}`}
+          art={
+            <FacilityBuilding
+              type={f.type}
+              emergency={f.emergency_department}
+              className="block aspect-[16/7] w-full"
+              style={{ viewTransitionName: `facility-art-${f.slug}` }}
+            />
+          }
           lead={
             <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
               <span>{t(`booking.types.${f.type}`, { defaultValue: f.type })}</span>
@@ -197,70 +197,61 @@ export function FacilityPage() {
           }
         />
 
-        {/* the facility shown like a product: its photos first, under the name */}
-        <Photos name={f.name} photos={f.photos} />
-
-        <div className="ml-stagger grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-          <div className="flex min-w-0 flex-col gap-6">
-            {/* Today: the most important part of the page; the four facts first, as tiles */}
-            <Panel aria-labelledby="today" className="overflow-hidden">
-              <div className="flex items-center justify-between gap-3 border-b border-border/60 px-5 py-4 sm:px-6">
-                <h2
-                  id="today"
-                  className="m-0 flex items-center gap-2 text-h3 font-bold tracking-tight"
-                >
-                  {t("site.facility.today")}
-                  {live.length > 0 && (
-                    <span aria-hidden="true" className="ml-live-dot text-success" />
-                  )}
-                </h2>
-                <FacilityStatus open={f.open_now} />
-              </div>
-              <dl className="m-0 grid grid-cols-2 gap-px bg-border/60 md:grid-cols-4">
-                <Fact icon={Clock} label={t("site.facility.hoursToday")}>
-                  <span className="tabular-nums">
-                    {todayHours ?? t("site.facility.closedToday")}
-                  </span>
-                </Fact>
-                <Fact icon={PersonSimpleWalk} label={t("site.facility.queue")}>
-                  <Availability on={f.services.some((s) => s.remote_join || s.walk_in)} />
-                </Fact>
-                <Fact icon={CalendarPlus} label={t("site.facility.booking")}>
-                  <Availability on={f.services.some((s) => s.bookable)} />
-                </Fact>
-                <Fact icon={Stethoscope} label={t("site.facility.tabs.doctors")}>
-                  <span className="tabular-nums">{f.doctors.length}</span>
-                </Fact>
-              </dl>
-              <div className="flex flex-col gap-5 border-t border-border/60 p-5 sm:p-6">
-                <div>
-                  <h3 className="m-0 text-caption font-semibold tracking-wide text-fg-muted uppercase">
-                    {t("site.facility.liveWait")}
-                  </h3>
-                  {live.length === 0 ? (
-                    <p className="m-0 mt-1 text-fg-secondary">{t("site.facility.waitUnknown")}</p>
-                  ) : (
-                    <ul className="m-0 mt-2 flex list-none flex-col p-0">
-                      {live.map((s) => (
-                        <li
-                          key={s.id}
-                          className="flex flex-wrap items-center justify-between gap-2 border-b border-border/50 py-2.5 last:border-b-0"
-                        >
-                          <span className="font-semibold">{pick(s.name_i18n, lang)}</span>
-                          <WaitingTime result={s} />
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-                <div className="flex flex-col gap-2">
-                  <h3 className="m-0 text-caption font-semibold tracking-wide text-fg-muted uppercase">
-                    {t("site.facility.insurance")}
-                  </h3>
-                  <InsuranceList codes={insurers} />
-                </div>
+        {/*
+         * One page, no tabs (public design brief 2026-11-04): today's facts as a summary list,
+         * then the services with their live waits, the doctors and the facility's own words; the
+         * place, the week's hours and what to bring beside. Photos, when the facility has added
+         * them, come after the facts, never as a hero.
+         */}
+        <div className="grid gap-x-10 gap-y-10 lg:grid-cols-[minmax(0,1fr)_22rem]">
+          <div className="flex min-w-0 flex-col gap-10">
+            <section aria-labelledby="today" className="flex flex-col gap-3">
+              <h2 id="today" className="m-0 font-heading text-h2">
+                {t("site.facility.today")}
+              </h2>
+              <Panel as="div" className="overflow-hidden">
+                <dl className="m-0">
+                  <Summary label={t("site.facility.hoursToday")}>
+                    <span className="inline-flex flex-wrap items-center gap-x-3 gap-y-1">
+                      <FacilityStatus open={f.open_now} />
+                      <span className="tabular-nums">
+                        {todayHours ?? t("site.facility.closedToday")}
+                      </span>
+                    </span>
+                  </Summary>
+                  <Summary label={t("site.facility.liveWait")}>
+                    {live.length === 0 ? (
+                      <span className="text-fg-secondary">{t("site.facility.waitUnknown")}</span>
+                    ) : (
+                      <ul className="m-0 flex list-none flex-col gap-1 p-0">
+                        {live.map((s) => (
+                          <li key={s.id} className="flex flex-wrap items-baseline gap-x-3">
+                            <span>{pick(s.name_i18n, lang)}</span>
+                            <WaitingTime result={s} />
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </Summary>
+                  <Summary label={t("site.facility.queue")}>
+                    <Availability on={f.services.some((s) => s.remote_join || s.walk_in)} />
+                  </Summary>
+                  <Summary label={t("site.facility.booking")}>
+                    <Availability on={f.services.some((s) => s.bookable)} />
+                  </Summary>
+                  <Summary label={t("site.facility.insurance")}>
+                    {insurers.length > 0
+                      ? insurerNames(insurers, t).join(", ")
+                      : t("site.facility.notListed")}
+                    {f.level_of_care !== "primary" && (
+                      <span className="mt-1 block text-body-sm text-fg-secondary">
+                        {t("site.facility.referral")}
+                      </span>
+                    )}
+                  </Summary>
+                </dl>
                 {(hospital || f.emergency_department) && (
-                  <p className="m-0 flex items-start gap-2 rounded-xl bg-danger-bg p-4 text-body-sm text-fg">
+                  <p className="m-0 flex items-start gap-2 border-t border-hairline bg-danger-bg px-5 py-4 text-body-sm text-fg sm:px-6">
                     <Siren
                       aria-hidden="true"
                       weight="bold"
@@ -271,145 +262,84 @@ export function FacilityPage() {
                       : t("site.facility.emergencyNote", { number: EMERGENCY.number })}
                   </p>
                 )}
-              </div>
-            </Panel>
+              </Panel>
+            </section>
 
-            <Tabs defaultValue="overview" className="flex flex-col">
-              <TabsList
-                aria-label={t("site.facility.tabs.label")}
-                className="flex-nowrap overflow-x-auto border-border/70"
-              >
-                {(["overview", "services", "doctors", "insurance", "hours"] as const).map((key) => (
-                  <TabsTrigger
-                    key={key}
-                    value={key}
-                    className="text-body-sm whitespace-nowrap transition-colors duration-150 ease-out-quint"
-                  >
-                    {t(`site.facility.tabs.${key}`)}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
+            <section aria-labelledby="services" className="flex flex-col gap-3">
+              <h2 id="services" className="m-0 font-heading text-h2">
+                {t("site.facility.tabs.services")}
+              </h2>
+              <Panel as="div" className="overflow-hidden">
+                {f.services.length === 0 ? (
+                  <EmptyState title={t("site.facility.noServices")} />
+                ) : (
+                  <ul className="m-0 list-none p-0">
+                    {f.services.map((s) => (
+                      <ServiceRow key={s.id} slug={f.slug} service={s} />
+                    ))}
+                  </ul>
+                )}
+              </Panel>
+            </section>
 
-              <TabsContent value="overview" className="animate-enter">
-                <Panel as="div" className="p-6">
-                  <h3 className="m-0 text-h3">{t("site.facility.about")}</h3>
-                  <p className="m-0 mt-2 text-fg-secondary">
-                    {pick(f.description_i18n, lang) || t("site.facility.noDescription")}
+            <section aria-labelledby="doctors" className="flex flex-col gap-3">
+              <h2 id="doctors" className="m-0 font-heading text-h2">
+                {t("site.facility.tabs.doctors")}
+              </h2>
+              <Panel as="div" className="overflow-hidden">
+                {f.doctors.length === 0 ? (
+                  <p className="m-0 px-5 py-4 text-fg-secondary sm:px-6">
+                    {t("site.facility.noDoctors")}
                   </p>
-                </Panel>
-              </TabsContent>
-
-              <TabsContent value="services" className="animate-enter">
-                <Panel as="div" className="overflow-hidden">
-                  {f.services.length === 0 ? (
-                    <EmptyState title={t("site.facility.noServices")} />
-                  ) : (
-                    <ul className="m-0 list-none p-0">
-                      {f.services.map((s) => (
-                        <ServiceRow key={s.id} slug={f.slug} service={s} />
-                      ))}
-                    </ul>
-                  )}
-                </Panel>
-              </TabsContent>
-
-              <TabsContent value="doctors" className="animate-enter">
-                <Panel as="div" className="overflow-hidden">
-                  {f.doctors.length === 0 ? (
-                    <EmptyState title={t("site.facility.noDoctors")} />
-                  ) : (
-                    <ul className="m-0 list-none p-0">
-                      {f.doctors.map((d) => (
-                        <li
-                          key={d.membership_id}
-                          className="border-b border-border/50 last:border-b-0"
-                        >
+                ) : (
+                  <ul className="m-0 list-none p-0">
+                    {f.doctors.map((d) => (
+                      <li
+                        key={d.membership_id}
+                        className="flex flex-col gap-1 border-b border-hairline px-5 py-4 last:border-b-0 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6 sm:px-6"
+                      >
+                        <span className="flex min-w-0 flex-col gap-0.5">
                           <Link
                             to={`/doctors/${doctorSlug(f.slug, d.membership_id)}`}
                             viewTransition
-                            className="flex items-center gap-4 px-5 py-4 text-fg no-underline transition-colors duration-200 ease-out-quint hover:bg-subtle/60"
+                            className="font-semibold text-link no-underline hover:underline"
                           >
-                            <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-subtle text-on-brand-subtle">
-                              <UserCircle aria-hidden="true" className="size-6" />
-                            </span>
-                            <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                              <span className="font-semibold">{d.name}</span>
-                              <span className="text-body-sm text-fg-secondary">
-                                {f.services
-                                  .filter((s) => d.service_ids.includes(s.id))
-                                  .map((s) => pick(s.name_i18n, lang))
-                                  .join(" · ")}
-                              </span>
-                            </span>
-                            <span className="hidden text-body-sm text-fg-muted sm:block">
-                              {WEEKDAYS.filter((w) => d.days.includes(w))
-                                .map((w) => weekdayName(w, lang))
-                                .join(" · ")}
-                            </span>
+                            {d.name}
                           </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </Panel>
-              </TabsContent>
-
-              <TabsContent value="insurance" className="animate-enter">
-                <Panel as="div" className="flex flex-col gap-4 p-6">
-                  <p className="m-0 text-fg-secondary">{t("site.facility.insuranceLead")}</p>
-                  <ul className="m-0 flex list-none flex-col p-0">
-                    {f.services.map((s) => (
-                      <li
-                        key={s.id}
-                        className="flex flex-wrap items-center justify-between gap-2 border-b border-border/50 py-3 last:border-b-0"
-                      >
-                        <span className="font-semibold">{pick(s.name_i18n, lang)}</span>
-                        <InsuranceList codes={s.insurers} />
+                          <span className="text-body-sm text-fg-secondary">
+                            {f.services
+                              .filter((s) => d.service_ids.includes(s.id))
+                              .map((s) => pick(s.name_i18n, lang))
+                              .join(" · ")}
+                          </span>
+                        </span>
+                        <span className="text-body-sm font-semibold text-fg tabular-nums">
+                          {WEEKDAYS.filter((w) => d.days.includes(w))
+                            .map((w) => weekdayName(w, lang))
+                            .join(" · ")}
+                        </span>
                       </li>
                     ))}
                   </ul>
-                  {f.level_of_care !== "primary" && (
-                    <p className="m-0 rounded-2xl bg-info-bg p-4 text-body-sm text-fg">
-                      {t("site.facility.referral")}
-                    </p>
-                  )}
-                </Panel>
-              </TabsContent>
+                )}
+              </Panel>
+            </section>
 
-              <TabsContent value="hours" className="animate-enter">
-                {/* the map, address and phone are in the location card beside */}
-                <Panel as="div" className="flex flex-col gap-3 p-6">
-                  <h3 className="m-0 text-h3">{t("site.facility.week")}</h3>
-                  <dl className="m-0 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
-                    {week.map(({ iso, hours }, index) => (
-                      <div key={iso} className="contents">
-                        <dt
-                          className={cx("first-letter:uppercase", index === 0 && "font-semibold")}
-                        >
-                          {day(iso, lang, "short")}
-                        </dt>
-                        <dd
-                          className={cx("m-0 text-right tabular-nums", !hours && "text-fg-muted")}
-                        >
-                          {hours ?? t("site.closed")}
-                        </dd>
-                      </div>
-                    ))}
-                  </dl>
-                  <h3 className="m-0 mt-3 text-body-sm font-semibold text-fg-muted">
-                    {t("site.facility.closures")}
-                  </h3>
-                  <p className="m-0 text-body-sm text-fg-secondary">
-                    {f.closures.length
-                      ? f.closures.map((c) => day(c.date, lang, "short")).join(", ")
-                      : t("site.facility.noClosures")}
-                  </p>
-                </Panel>
-              </TabsContent>
-            </Tabs>
+            <section aria-labelledby="about" className="flex flex-col gap-3">
+              <h2 id="about" className="m-0 font-heading text-h2">
+                {t("site.facility.about")}
+              </h2>
+              <p className="m-0 max-w-[68ch] whitespace-pre-line text-fg">
+                {pick(f.description_i18n, lang) || (
+                  <span className="text-fg-secondary">{t("site.facility.noDescription")}</span>
+                )}
+              </p>
+            </section>
+
+            <Photos name={f.name} photos={f.photos} />
           </div>
 
-          <aside className="flex flex-col gap-6">
+          <aside className="flex flex-col gap-6 lg:pt-11">
             <Panel aria-labelledby="location" className="overflow-hidden">
               {f.lat !== null && f.lng !== null && (
                 <Suspense fallback={<Skeleton className="h-44 rounded-none" />}>
@@ -440,11 +370,7 @@ export function FacilityPage() {
                     href={directions}
                     target="_blank"
                     rel="noreferrer"
-                    className={buttonClassName({
-                      variant: "secondary",
-
-                      fullWidth: true,
-                    })}
+                    className={buttonClassName({ variant: "secondary", fullWidth: true })}
                   >
                     <NavigationArrow aria-hidden="true" className="size-4" />
                     {t("site.facility.directions")}
@@ -453,11 +379,44 @@ export function FacilityPage() {
                 )}
               </div>
             </Panel>
+
+            <Panel aria-labelledby="week" className="p-5">
+              <h2 id="week" className="m-0 text-h3">
+                {t("site.facility.week")}
+              </h2>
+              <dl className="m-0 mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-body-sm">
+                {week.map(({ iso, hours }, index) => (
+                  <div key={iso} className="contents">
+                    <dt className={cx("first-letter:uppercase", index === 0 && "font-semibold")}>
+                      {day(iso, lang, "short")}
+                    </dt>
+                    <dd
+                      className={cx(
+                        "m-0 text-right tabular-nums",
+                        index === 0 && "font-semibold",
+                        !hours && "text-fg-muted",
+                      )}
+                    >
+                      {hours ?? t("site.closed")}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+              <h3 className="m-0 mt-4 text-body-sm font-semibold text-fg">
+                {t("site.facility.closures")}
+              </h3>
+              <p className="m-0 mt-1 text-body-sm text-fg-secondary">
+                {f.closures.length
+                  ? f.closures.map((c) => day(c.date, lang, "short")).join(", ")
+                  : t("site.facility.noClosures")}
+              </p>
+            </Panel>
+
             <Panel aria-labelledby="bring" className="p-5">
-              <h2 id="bring" className="m-0 text-h3 font-bold">
+              <h2 id="bring" className="m-0 text-h3">
                 {t("site.facility.bring.title")}
               </h2>
-              <ul className="m-0 mt-3 flex list-none flex-col gap-2.5 p-0 text-body-sm text-fg-secondary">
+              <ul className="m-0 mt-3 flex list-disc flex-col gap-2 pl-5 text-body-sm text-fg-secondary">
                 {[
                   t("site.facility.bring.insurance"),
                   t("site.facility.bring.id"),
@@ -466,14 +425,7 @@ export function FacilityPage() {
                 ]
                   .filter((item): item is string => Boolean(item))
                   .map((item) => (
-                    <li key={item} className="flex items-start gap-2.5">
-                      <CheckCircle
-                        aria-hidden="true"
-                        weight="fill"
-                        className="mt-0.5 size-4 shrink-0 text-primary"
-                      />
-                      {item}
-                    </li>
+                    <li key={item}>{item}</li>
                   ))}
               </ul>
             </Panel>
@@ -484,28 +436,12 @@ export function FacilityPage() {
   );
 }
 
-/** One fact of the Today strip: small icon tile, caption, value. */
-function Fact({
-  icon: FactIcon,
-  label,
-  children,
-}: {
-  icon: Icon;
-  label: string;
-  children: ReactNode;
-}) {
+/** One fact of today's summary: the label on the left, the answer on the right (NHS summary list). */
+function Summary({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="flex flex-col gap-1 bg-surface px-5 py-4">
-      <dt className="flex flex-col gap-2 text-caption font-semibold text-fg-muted">
-        <span
-          aria-hidden="true"
-          className="grid size-8 place-items-center rounded-lg bg-brand-subtle text-brand"
-        >
-          <FactIcon weight="duotone" className="size-[1.125rem]" />
-        </span>
-        {label}
-      </dt>
-      <dd className="m-0 font-heading font-bold text-fg">{children}</dd>
+    <div className="grid gap-1 border-b border-hairline px-5 py-3.5 last:border-b-0 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-6 sm:px-6">
+      <dt className="font-semibold text-fg">{label}</dt>
+      <dd className="m-0 text-fg">{children}</dd>
     </div>
   );
 }
@@ -595,47 +531,27 @@ function webLink(value: string): { href: string; host: string } | null {
 }
 
 /**
- * The admin's photos as the profile's hero gallery: the first one large, up to four beside it,
- * like a product page. Each opens full size.
+ * The facility's own photos, after the facts: a plain row of up to four, each opening full size.
+ * A place is described, not merchandised (public design brief 2026-11-04).
  */
 function Photos({ name, photos }: { name: string; photos: string[] }) {
   const { t } = useTranslation();
   if (photos.length === 0) return null;
   return (
-    <section aria-labelledby="photos" className="mb-6">
-      <h2 id="photos" className="sr-only">
+    <section aria-labelledby="photos" className="flex flex-col gap-3">
+      <h2 id="photos" className="m-0 font-heading text-h2">
         {t("site.facility.photos")}
       </h2>
-      <ul
-        className={cx(
-          "m-0 grid list-none gap-2 overflow-hidden rounded-3xl p-0",
-          photos.length > 1 && "grid-cols-2 sm:grid-cols-4",
-        )}
-      >
-        {photos.slice(0, 5).map((src, index) => (
-          <li
-            key={src}
-            className={cx(
-              photos.length > 1 && index === 0 && "col-span-2 row-span-2",
-              // two photos share the row; with three or more the first holds half the width
-              photos.length === 2 && "sm:col-span-2",
-              photos.length === 3 && index > 0 && "sm:col-span-2",
-              "overflow-hidden bg-subtle",
-            )}
-          >
-            <a href={src} target="_blank" rel="noreferrer" className="block h-full">
+      <ul className="m-0 grid list-none grid-cols-2 gap-2 p-0 sm:grid-cols-4">
+        {photos.slice(0, 4).map((src, index) => (
+          <li key={src} className="overflow-hidden rounded-md bg-subtle">
+            <a href={src} target="_blank" rel="noreferrer" className="block">
               <img
                 src={src}
                 alt={t("site.facility.photoAlt", { name, n: index + 1, total: photos.length })}
-                loading={index === 0 ? "eager" : "lazy"}
+                loading="lazy"
                 decoding="async"
-                className={cx(
-                  "block size-full object-cover transition-transform duration-300 ease-out-quint hover:scale-[1.03]",
-                  photos.length === 1 ? "aspect-[21/9]" : "aspect-[4/3]",
-                  // the large first photo fills both rows beside the small ones
-                  photos.length > 2 && index === 0 && "sm:aspect-auto",
-                  photos.length === 3 && index > 0 && "sm:aspect-[16/7]",
-                )}
+                className="block aspect-[4/3] size-full object-cover"
               />
               <span className="sr-only"> {t("common.opensInNewTab")}</span>
             </a>
@@ -646,6 +562,7 @@ function Photos({ name, photos }: { name: string; photos: string[] }) {
   );
 }
 
+/** A service: how to get it, the live wait or next time, the insurance, the next step as links. */
 function ServiceRow({ slug, service }: { slug: string; service: PublicService }) {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage ?? "rw";
@@ -654,52 +571,61 @@ function ServiceRow({ slug, service }: { slug: string; service: PublicService })
     service.bookable && t("site.facility.appointment"),
     service.remote_join && t("site.facility.remote"),
   ].filter(Boolean);
+  const insurers = insurerNames(service.insurers, t);
   return (
-    <li className="flex flex-col gap-3 border-b border-border/50 px-5 py-4 last:border-b-0 sm:flex-row sm:items-center">
-      <div className="flex min-w-0 flex-1 flex-col gap-1">
+    <li className="flex flex-col gap-1.5 border-b border-hairline px-5 py-4 last:border-b-0 sm:px-6">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
         <Link
           to={`/services/${serviceSlug(service.code)}`}
           viewTransition
-          className="font-semibold text-fg no-underline hover:underline"
+          className="font-semibold text-link no-underline hover:underline"
         >
           {pick(service.name_i18n, lang)}
         </Link>
-        <p className="m-0 flex flex-wrap items-center gap-x-3 gap-y-1 text-body-sm text-fg-secondary">
-          <span>{modes.join(" · ")}</span>
+        <span className="flex flex-wrap items-baseline gap-x-3 text-body-sm">
           <WaitingTime result={service} />
           {service.next_slot_at && (
-            <span>
+            <span className="text-fg-secondary tabular-nums">
               {t("site.facility.nextTime", {
                 day: day(service.next_slot_at, lang, "short"),
                 time: time(service.next_slot_at, lang),
               })}
             </span>
           )}
+        </span>
+      </div>
+      <p className="m-0 text-body-sm text-fg-secondary">
+        {[
+          modes.join(" · "),
+          insurers.length > 0 ? `${t("site.card.accepted")} ${insurers.join(", ")}` : "",
+        ]
+          .filter(Boolean)
+          .join(" — ")}
+      </p>
+      {(service.remote_join || service.bookable) && (
+        <p className="m-0 flex flex-wrap gap-x-6 text-body-sm">
+          {service.remote_join && (
+            <Link
+              to={`/book/${slug}?service=${service.id}&today=1`}
+              viewTransition
+              className="inline-flex min-h-target items-center gap-1.5 font-semibold text-link no-underline hover:underline"
+            >
+              {t("booking.facility.join")}
+              <ArrowRight aria-hidden="true" className="size-4" />
+            </Link>
+          )}
+          {service.bookable && (
+            <Link
+              to={`/book/${slug}?service=${service.id}`}
+              viewTransition
+              className="inline-flex min-h-target items-center gap-1.5 font-semibold text-link no-underline hover:underline"
+            >
+              {t("booking.facility.book")}
+              <ArrowRight aria-hidden="true" className="size-4" />
+            </Link>
+          )}
         </p>
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {service.remote_join && (
-          <Link
-            to={`/book/${slug}?service=${service.id}&today=1`}
-            viewTransition
-            className={buttonClassName({ pill: true })}
-          >
-            {t("site.facility.joinQueue")}
-          </Link>
-        )}
-        {service.bookable && (
-          <Link
-            to={`/book/${slug}?service=${service.id}`}
-            viewTransition
-            className={buttonClassName({
-              pill: true,
-              variant: service.remote_join ? "secondary" : "primary",
-            })}
-          >
-            {t("site.facility.bookAppointment")}
-          </Link>
-        )}
-      </div>
+      )}
     </li>
   );
 }

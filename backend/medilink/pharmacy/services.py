@@ -24,7 +24,7 @@ from medilink.facilities.settings_schema import with_defaults
 from medilink.masterdata.models import Drug
 from medilink.patients.crypto.fields import decrypt, encrypt
 from medilink.patients.errors import FieldRule
-from medilink.pharmacy import signals
+from medilink.pharmacy import signals, stock
 from medilink.pharmacy.models import (
     OPEN_ITEM,
     PER_DAY,
@@ -165,10 +165,16 @@ def query_message(query: PrescriptionQuery) -> str:
 
 
 def unavailable_codes(facility_id: Any, codes: list[str] | None = None) -> set[str]:
-    rows = DrugAvailability.objects.filter(facility_id=facility_id, is_available=False)
+    """Drug codes not available here: out of stock for medicines that follow their stock (W5),
+    else switched off by hand (S7a)."""
+    levels = stock.levels(facility_id, codes)
+    rows = DrugAvailability.objects.filter(facility_id=facility_id, is_available=False).exclude(
+        drug__code__in=list(levels)
+    )
     if codes is not None:
         rows = rows.filter(drug__code__in=codes)
-    return set(rows.values_list("drug__code", flat=True))
+    manual = set(rows.values_list("drug__code", flat=True))
+    return manual | {code for code, value in levels.items() if value == stock.Level.OUT}
 
 
 @dataclass
@@ -179,6 +185,7 @@ class ItemInput:
     frequency_code: str = ""
     route: str = ""
     duration_days: int | None = None
+    meal_timing: str = ""
     quantity: int | None = None
     instructions: str = ""
     substitution_allowed: bool = True
@@ -225,6 +232,7 @@ def _apply(item: PrescriptionItem, data: ItemInput) -> None:
     item.frequency_code = data.frequency_code
     item.route = data.route
     item.duration_days = data.duration_days
+    item.meal_timing = data.meal_timing
     quantity = data.quantity or default_quantity(item.dose, item.frequency_code, data.duration_days)
     if not quantity or quantity < 1:
         raise FieldRule("quantity", _("Give the quantity to dispense."))
@@ -654,6 +662,9 @@ def dispense(
             and not controlled_confirmed
         ):
             raise FieldRule("controlled_confirmed", CONTROLLED)
+        # W5: lock the stock cards of what is given (fixed order); untracked medicines skip
+        handed = [sub or item.drug for item, _l, quantity, sub in prepared if quantity]
+        cards = stock.lock_for_dispense(prescription.facility_id, [d for d in handed if d])
         record_row = DispenseRecord.objects.create(
             facility_id=prescription.facility_id,
             prescription=prescription,
@@ -663,7 +674,7 @@ def dispense(
             signed_at=timezone.now(),
         )
         for item, line, quantity, substitute in prepared:
-            DispenseLine.objects.create(
+            dispense_line = DispenseLine.objects.create(
                 facility_id=prescription.facility_id,
                 dispense_record=record_row,
                 prescription_item=item,
@@ -677,6 +688,10 @@ def dispense(
                 ),
                 substitution_reason=line.substitution_reason.strip()[:300] if substitute else "",
             )
+            drug_given = substitute or item.drug
+            card = cards.get(drug_given.pk) if drug_given is not None else None
+            if card is not None and quantity:
+                stock.deduct(card, quantity, line=dispense_line, membership=membership)
             before = item.status
             item.dispensed_quantity += quantity
             if line.outcome == DispenseOutcome.NOT_AVAILABLE:
@@ -809,6 +824,9 @@ def close_query(query_id: Any, *, request: Any) -> PrescriptionQuery:
 def set_availability(
     facility_id: Any, drug: Drug, *, is_available: bool, membership: Any, request: Any
 ) -> DrugAvailability:
+    if stock.is_tracked(facility_id, drug):
+        # W5: availability follows the stock count once the medicine has stock
+        raise BusinessRuleViolation(stock.FOLLOWS_STOCK)
     with transaction.atomic():
         row, _created = DrugAvailability.objects.select_for_update().get_or_create(
             facility_id=facility_id,

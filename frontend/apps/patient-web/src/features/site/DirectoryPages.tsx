@@ -1,19 +1,30 @@
 import type { PublicSlot } from "@medilink/api-client";
-import { ArrowRight, CalendarCheck, Crosshair, UserCircle } from "@phosphor-icons/react";
+import {
+  ArrowRight,
+  Baby,
+  CalendarCheck,
+  Crosshair,
+  Eye,
+  FirstAidKit,
+  Flask,
+  HandHeart,
+  Stethoscope,
+  Syringe,
+  Tooth,
+} from "@phosphor-icons/react";
 import { Button, buttonClassName, cx } from "@medilink/ui";
 import { kigaliDate } from "@medilink/ui/i18n";
 import { useQuery } from "@tanstack/react-query";
-import { createElement, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PublicLayout } from "../../layout/PublicLayout";
 import { DISTRICT_CODES, day, pick, time, type DistrictKey } from "../booking/discovery";
-import { FILTER, FilterSelect, TYPES, useNearMe, waitText } from "../booking/Places";
-import { FacilityExplorer } from "./FacilityCards";
+import { FILTER, FilterSelect, TYPES, useNearMe } from "../booking/Places";
+import { FacilityEntries, FacilityExplorer } from "./FacilityDirectory";
 import {
-  categoryIcon,
   doctorsOf,
   parseDoctorSlug,
   SERVICE_CATEGORIES,
@@ -27,7 +38,6 @@ import {
 import {
   EmptyState,
   ErrorState,
-  LinkRow,
   LoadingRows,
   LocationSelector,
   PageContainer,
@@ -38,6 +48,20 @@ import {
 } from "./kit";
 
 const WEEKDAY_BASE = Date.UTC(2024, 0, 1); // a Monday
+
+/** A quiet picture word for a service, from its code. */
+function ServiceMark({ code }: { code: string }) {
+  const props = { weight: "duotone", className: "size-5" } as const;
+  if (code.includes("antenatal") || code.includes("maternal")) return <HandHeart {...props} />;
+  if (code.includes("vaccin")) return <Syringe {...props} />;
+  if (code.includes("lab")) return <Flask {...props} />;
+  if (code.includes("dental")) return <Tooth {...props} />;
+  if (code.includes("eye")) return <Eye {...props} />;
+  if (code.includes("paed") || code.includes("pediatric") || code.includes("child"))
+    return <Baby {...props} />;
+  if (code.includes("consult")) return <Stethoscope {...props} />;
+  return <FirstAidKit {...props} />;
+}
 
 function weekday(index: number, language: string, style: "short" | "long" = "short") {
   return new Intl.DateTimeFormat(language === "rw" ? "en" : language, {
@@ -100,14 +124,10 @@ export function FacilitiesPage() {
   return (
     <PublicLayout>
       <PageContainer className="pb-20">
-        <PageHeader
-          crumbs={[{ label: t("nav.facilities") }]}
-          title={t("site.facilities.title")}
-          lead={t("site.facilities.lead")}
-        />
+        <PageHeader crumbs={[{ label: t("nav.facilities") }]} title={t("site.facilities.title")} />
         <div className="flex flex-col gap-6">
           {/* search and every filter in one card above the results */}
-          <div className="flex animate-rise flex-col gap-3 rounded-3xl bg-surface p-4 shadow-card sm:p-5">
+          <div className="flex flex-col gap-3 rounded-panel bg-surface shadow-e2 p-4 sm:p-5">
             <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_14rem]">
               <SearchBar
                 id="facility-search"
@@ -230,18 +250,12 @@ export function FacilitiesPage() {
 
 // ---- /doctors ----
 
-function initialsOf(name: string): string {
-  return name
-    .replace(/^Dr\.?\s+/i, "")
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]!.toUpperCase())
-    .join("");
-}
-
-/** One doctor: initials, name, services, facility, and the seven days with theirs filled. */
-function DoctorCard({
+/**
+ * One doctor in the directory (public design brief 2026-11-04): the name as a link, what they do,
+ * where they work, and the days they are there in words. No avatar, no day chips: a list a person
+ * reads down, like a hospital's own staff directory.
+ */
+function DoctorEntry({
   doctor,
   today,
 }: {
@@ -251,83 +265,60 @@ function DoctorCard({
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage ?? "rw";
   const here = doctor.days.includes(today);
+  const work = [doctor.specialty, ...doctor.services.map((s) => pick(s.name, lang))]
+    .filter(Boolean)
+    .join(" · ");
+  // initials as a quiet mark, never a photo (no faces published)
+  const initials = doctor.name
+    .replace(/^(Dr|Midwife)\.?\s+/i, "")
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("");
   return (
-    <Link
-      to={`/doctors/${doctor.slug}`}
-      viewTransition
-      className="group flex h-full flex-col gap-4 rounded-3xl border border-border/70 bg-surface p-5 text-fg no-underline transition-[box-shadow,translate,border-color] duration-300 ease-out-quint hover:-translate-y-1 hover:border-brand/40 hover:shadow-raised motion-reduce:hover:translate-y-0"
-    >
-      <span className="flex items-start gap-3">
-        <span
-          aria-hidden="true"
-          className="grid size-12 shrink-0 place-items-center rounded-2xl bg-brand-subtle font-heading font-bold text-on-brand-subtle"
-        >
-          {initialsOf(doctor.name)}
-        </span>
-        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <span className="font-heading text-h3 leading-snug font-bold">{doctor.name}</span>
-          {doctor.specialty && (
-            <span className="truncate text-body-sm font-semibold text-brand">
-              {doctor.specialty}
-            </span>
-          )}
-          <span className="truncate text-body-sm text-fg-secondary">
-            {doctor.services.map((s) => pick(s.name, lang)).join(" · ")}
-          </span>
-        </span>
+    // a profile card (upgrade 14 §3): the initials in a ring, who, where, the days; the whole card
+    // answers the pointer, the name is the link
+    <li className="ml-card group/row relative flex min-w-0 flex-col gap-4 rounded-panel bg-surface p-5">
+      <span
+        aria-hidden="true"
+        className="grid size-14 place-items-center rounded-full bg-brand-subtle font-heading text-body font-bold text-on-brand-subtle shadow-[0_0_0_4px_var(--color-surface),0_0_0_5px_var(--site-hairline-strong)]"
+      >
+        {initials}
       </span>
-      <span className="inline-flex items-center gap-1.5 text-body-sm text-fg-secondary">
-        <UserCircle aria-hidden="true" className="size-4 shrink-0" />
-        <span className="truncate">
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <h3 className="m-0 font-heading text-[1.125rem] leading-snug font-bold">
+          <Link
+            to={`/doctors/${doctor.slug}`}
+            viewTransition
+            className="text-fg no-underline transition-colors duration-150 after:absolute after:inset-0 after:content-[''] group-hover/row:text-link"
+          >
+            {doctor.name}
+          </Link>
+        </h3>
+        {work && <p className="m-0 text-body-sm text-fg">{work}</p>}
+        <p className="m-0 text-body-sm text-fg-secondary">
           {doctor.facilities.length > 1
             ? t("site.doctors.places", {
                 name: doctor.facility.name,
                 count: doctor.facilities.length - 1,
               })
             : doctor.facility.name}
-        </span>
-      </span>
-      <span className="mt-auto flex flex-col gap-2 border-t border-border/60 pt-4">
-        {/* the days in words (Mon–Fri), then chips for a glance; off days are labelled too */}
-        <span className="text-body-sm font-semibold text-fg">
+          {doctor.facility.district && ` · ${doctor.facility.district}`}
+        </p>
+      </div>
+      <div className="flex flex-wrap items-center gap-2 border-t border-hairline pt-4 text-body-sm">
+        <span className="rounded-md bg-page px-2 py-0.5 font-semibold text-fg tabular-nums shadow-e1">
           <span className="sr-only">{t("site.doctors.days")}: </span>
           {daysText(doctor.days, lang)}
         </span>
-        <span aria-hidden="true" className="grid grid-cols-7 gap-1">
-          {Array.from({ length: 7 }, (_, i) => (
-            <span
-              key={i}
-              className={cx(
-                "grid h-7 place-items-center rounded-md text-[0.6875rem] font-semibold",
-                doctor.days.includes(i)
-                  ? "bg-brand-subtle text-on-brand-subtle"
-                  : "bg-subtle text-fg-muted line-through",
-                i === today && "ring-2 ring-primary ring-offset-1 ring-offset-surface",
-              )}
-            >
-              {weekday(i, lang).slice(0, 2)}
-            </span>
-          ))}
-        </span>
-        <span className="flex items-center justify-between text-body-sm">
-          {here ? (
-            <span className="inline-flex items-center gap-1.5 font-semibold text-success">
-              <span aria-hidden="true" className="ml-live-dot" />
-              {t("site.doctors.today")}
-            </span>
-          ) : (
-            <span />
-          )}
-          <span className="inline-flex items-center gap-1 font-semibold text-link">
-            {t("site.doctors.viewProfile")}
-            <ArrowRight
-              aria-hidden="true"
-              className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
-            />
+        {here && (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-success-bg px-2.5 py-0.5 text-caption font-semibold text-success">
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-success" />
+            {t("site.doctors.today")}
           </span>
-        </span>
-      </span>
-    </Link>
+        )}
+      </div>
+    </li>
   );
 }
 
@@ -365,13 +356,9 @@ export function DoctorsPage() {
   return (
     <PublicLayout>
       <PageContainer className="pb-16">
-        <PageHeader
-          crumbs={[{ label: t("nav.doctors") }]}
-          title={t("site.doctors.title")}
-          lead={t("site.doctors.lead")}
-        />
+        <PageHeader crumbs={[{ label: t("nav.doctors") }]} title={t("site.doctors.title")} />
         <div className="flex flex-col gap-6">
-          <div className="flex animate-rise flex-col gap-3 rounded-3xl bg-surface p-4 shadow-card sm:p-5">
+          <div className="flex flex-col gap-3 rounded-panel bg-surface shadow-e2 p-4 sm:p-5">
             <SearchBar
               id="doctor-search"
               label={t("site.doctors.searchName")}
@@ -425,29 +412,28 @@ export function DoctorsPage() {
               )}
             </div>
           </div>
-          <Panel as="div" className="overflow-hidden">
-            {isPending ? (
-              <LoadingRows rows={6} />
-            ) : isError ? (
-              <ErrorState onRetry={refetch} />
-            ) : rows.length === 0 ? (
-              <EmptyState title={t("site.doctors.none")} />
-            ) : (
-              <ul className="m-0 grid list-none gap-4 p-4 sm:grid-cols-2 sm:p-5 xl:grid-cols-3">
-                {rows.map((d, index) => (
-                  <li
-                    key={d.slug}
-                    className="ml-reveal"
-                    style={{
-                      animationRange: `entry ${(index % 3) * 8}% entry ${55 + (index % 3) * 8}%`,
-                    }}
-                  >
-                    <DoctorCard doctor={d} today={todayIndex} />
-                  </li>
+          {isPending || isError || rows.length === 0 ? (
+            <Panel as="div" className="overflow-hidden">
+              {isPending ? (
+                <LoadingRows rows={6} />
+              ) : isError ? (
+                <ErrorState onRetry={refetch} />
+              ) : (
+                <EmptyState title={t("site.doctors.none")} />
+              )}
+            </Panel>
+          ) : (
+            <div className="@container">
+              <ul
+                aria-label={t("site.doctors.title")}
+                className="ml-stagger m-0 grid list-none gap-5 p-0 @xl:grid-cols-2 @5xl:grid-cols-3 @7xl:grid-cols-4"
+              >
+                {rows.map((d) => (
+                  <DoctorEntry key={d.slug} doctor={d} today={todayIndex} />
                 ))}
               </ul>
-            )}
-          </Panel>
+            </div>
+          )}
           <p className="m-0 text-caption text-fg-muted">{t("site.doctors.source")}</p>
         </div>
       </PageContainer>
@@ -530,14 +516,11 @@ export function DoctorPage() {
             <LoadingRows rows={3} />
           </Panel>
         ) : (
-          <div className="ml-stagger grid gap-6 lg:grid-cols-[20rem_minmax(0,1fr)]">
-            <Panel as="aside" className="flex flex-col gap-5 self-start p-6">
-              <div className="grid size-16 place-items-center rounded-2xl bg-brand-subtle text-on-brand-subtle">
-                <UserCircle aria-hidden="true" className="size-9" />
-              </div>
-              <dl className="m-0 flex flex-col gap-4">
+          <div className="grid gap-6 lg:grid-cols-[20rem_minmax(0,1fr)]">
+            <Panel as="aside" className="self-start p-6">
+              <dl className="m-0 flex flex-col divide-y divide-hairline [&>div]:py-3.5 [&>div:first-child]:pt-0 [&>div:last-child]:pb-0">
                 <div>
-                  <dt className="text-caption font-semibold text-fg-muted uppercase">
+                  <dt className="text-body-sm font-semibold text-fg-secondary">
                     {t("site.doctors.facility")}
                   </dt>
                   <dd className="m-0 mt-1">
@@ -554,31 +537,34 @@ export function DoctorPage() {
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-caption font-semibold text-fg-muted uppercase">
+                  <dt className="text-body-sm font-semibold text-fg-secondary">
                     {t("site.doctor.worksIn")}
                   </dt>
-                  <dd className="m-0 mt-1 flex flex-wrap gap-1.5">
-                    {doctor.services.map((s) => (
-                      <Link
-                        key={s.code}
-                        to={`/services/${serviceSlug(s.code)}`}
-                        viewTransition
-                        className="rounded-full bg-brand-subtle px-2.5 py-0.5 text-caption font-semibold text-on-brand-subtle no-underline"
-                      >
-                        {pick(s.name, lang)}
-                      </Link>
-                    ))}
+                  <dd className="m-0 mt-1">
+                    <ul className="m-0 flex list-none flex-col gap-0.5 p-0">
+                      {doctor.services.map((s) => (
+                        <li key={s.code}>
+                          <Link
+                            to={`/services/${serviceSlug(s.code)}`}
+                            viewTransition
+                            className="font-semibold"
+                          >
+                            {pick(s.name, lang)}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-caption font-semibold text-fg-muted uppercase">
+                  <dt className="text-body-sm font-semibold text-fg-secondary">
                     {t("site.doctor.presentDays")}
                   </dt>
                   <dd className="m-0 mt-1 font-semibold">{daysText(doctor.days, lang)}</dd>
                 </div>
                 {doctor.languages.length > 0 && (
                   <div>
-                    <dt className="text-caption font-semibold text-fg-muted uppercase">
+                    <dt className="text-body-sm font-semibold text-fg-secondary">
                       {t("site.doctor.languages")}
                     </dt>
                     <dd className="m-0 mt-1 font-semibold">
@@ -629,7 +615,7 @@ export function DoctorPage() {
                                 : "border-border bg-surface text-fg hover:border-fg-muted",
                             )}
                           >
-                            <span className="text-caption font-semibold uppercase">
+                            <span className="text-caption font-semibold">
                               {day(d.date, lang, "short")}
                             </span>
                             <span
@@ -657,7 +643,7 @@ export function DoctorPage() {
                     ) : (
                       <p className="m-0 text-fg-secondary">{t("site.doctor.noTimes")}</p>
                     )}
-                    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-hairline pt-4">
                       <p className="m-0 text-caption text-fg-muted">{t("site.doctor.privacy")}</p>
                       <Link
                         to={`/book/${doctor.facility.slug}?doctor=${doctor.membershipId}&service=${firstService.id}`}
@@ -681,7 +667,11 @@ export function DoctorPage() {
 
 // ---- /services ----
 
-/** Services directory (upgrade 11 §5): the public catalogue, searchable, grouped by category. */
+/**
+ * Services directory (upgrade 11 §5; public design brief 2026-11-04): the public catalogue as an
+ * index, the way a hospital lists its departments. Categories in a column on the left to jump
+ * to; each category a heading over its services as links on one surface with hairlines.
+ */
 export function ServicesPage() {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage ?? "rw";
@@ -691,17 +681,17 @@ export function ServicesPage() {
   const items = (catalogue.data ?? []).filter(
     (s) => !words || s.name.toLowerCase().includes(words),
   );
+  const categories = SERVICE_CATEGORIES.map(({ key }) => ({
+    key,
+    services: items.filter((s) => s.category === key),
+  })).filter((c) => c.services.length > 0);
 
   return (
     <PublicLayout>
       <PageContainer className="pb-16">
-        <PageHeader
-          crumbs={[{ label: t("nav.services") }]}
-          title={t("site.services.title")}
-          lead={t("site.services.lead")}
-        />
-        <div className="flex flex-col gap-8">
-          <div className="flex animate-rise flex-col gap-4 rounded-3xl bg-surface p-4 shadow-card sm:p-5">
+        <PageHeader crumbs={[{ label: t("nav.services") }]} title={t("site.services.title")} />
+        <div className="grid gap-x-12 gap-y-8 lg:grid-cols-[15rem_minmax(0,1fr)]">
+          <div className="flex flex-col gap-6 lg:sticky lg:top-24 lg:self-start">
             <SearchBar
               id="service-search"
               label={t("site.services.search")}
@@ -710,21 +700,18 @@ export function ServicesPage() {
               placeholder={t("site.services.search")}
             />
             {/* jump to a category; the page glides there (base.css smooth scrolling) */}
-            {!catalogue.isPending && items.length > 0 && (
+            {categories.length > 0 && (
               <nav aria-label={t("site.services.jump")}>
-                <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
-                  {SERVICE_CATEGORIES.filter(({ key }) =>
-                    items.some((s) => s.category === key),
-                  ).map(({ key, icon: CategoryIcon }) => (
+                <ul className="m-0 flex list-none flex-wrap gap-x-5 p-0 lg:flex-col lg:border-l lg:border-border">
+                  {categories.map(({ key, services }) => (
                     <li key={key}>
                       <a
                         href={`#cat-${key}`}
-                        className="inline-flex min-h-target items-center gap-2 rounded-full border border-border bg-page px-3.5 text-body-sm font-semibold text-fg no-underline transition-colors duration-150 hover:border-primary hover:bg-brand-subtle hover:text-on-brand-subtle"
+                        className="flex min-h-target items-center justify-between gap-3 text-body-sm font-semibold text-link no-underline hover:underline lg:-ml-px lg:border-l lg:border-transparent lg:pl-4 lg:hover:border-fg-muted"
                       >
-                        <CategoryIcon aria-hidden="true" className="size-4 text-primary" />
                         {t(`site.services.categories.${key}`)}
-                        <span className="text-caption text-fg-muted tabular-nums">
-                          {items.filter((s) => s.category === key).length}
+                        <span className="font-normal text-fg-muted tabular-nums">
+                          {services.length}
                         </span>
                       </a>
                     </li>
@@ -733,65 +720,60 @@ export function ServicesPage() {
               </nav>
             )}
           </div>
-          {catalogue.isPending ? (
-            <Panel as="div">
-              <LoadingRows rows={5} />
-            </Panel>
-          ) : catalogue.isError ? (
-            <Panel as="div">
-              <ErrorState onRetry={() => void catalogue.refetch()} />
-            </Panel>
-          ) : items.length === 0 ? (
-            <Panel as="div">
-              <EmptyState title={t("site.services.none")} />
-            </Panel>
-          ) : (
-            <div className="grid gap-6 lg:grid-cols-2">
-              {SERVICE_CATEGORIES.map(({ key, icon: CategoryIcon }) => {
-                const inCategory = items.filter((s) => s.category === key);
-                if (!inCategory.length) return null;
-                return (
-                  <Panel
-                    key={key}
-                    aria-labelledby={`cat-${key}`}
-                    className="scroll-mt-28 overflow-hidden"
+
+          <div className="flex min-w-0 flex-col gap-10">
+            {catalogue.isPending ? (
+              <Panel as="div">
+                <LoadingRows rows={5} />
+              </Panel>
+            ) : catalogue.isError ? (
+              <Panel as="div">
+                <ErrorState onRetry={() => void catalogue.refetch()} />
+              </Panel>
+            ) : categories.length === 0 ? (
+              <Panel as="div">
+                <EmptyState title={t("site.services.none")} />
+              </Panel>
+            ) : (
+              categories.map(({ key, services }) => (
+                <section
+                  key={key}
+                  aria-labelledby={`cat-${key}`}
+                  className="flex scroll-mt-28 flex-col gap-3"
+                >
+                  <h2
+                    id={`cat-${key}`}
+                    className="m-0 font-heading text-[1.5rem] leading-tight font-bold tracking-[-0.02em]"
                   >
-                    <div className="flex items-center gap-3 border-b border-border/60 px-5 py-4">
-                      <span
-                        aria-hidden="true"
-                        className="grid size-10 place-items-center rounded-xl bg-brand-subtle text-primary"
-                      >
-                        <CategoryIcon weight="duotone" className="size-5" />
-                      </span>
-                      <h2 id={`cat-${key}`} className="m-0 flex-1 text-h3">
-                        {t(`site.services.categories.${key}`)}
-                      </h2>
-                      <span className="text-body-sm text-fg-muted tabular-nums">
-                        {inCategory.length}
-                      </span>
-                    </div>
-                    <ul className="m-0 grid list-none gap-2 p-4 sm:grid-cols-2">
-                      {inCategory.map((s) => (
-                        <li key={s.code}>
-                          <Link
-                            to={`/services/${serviceSlug(s.code)}`}
-                            viewTransition
-                            className="group flex min-h-12 items-center justify-between gap-2 rounded-xl border border-border/60 px-3.5 py-2 text-body-sm font-semibold text-fg no-underline transition-[background-color,border-color] duration-150 hover:border-primary/40 hover:bg-brand-subtle/60"
+                    {t(`site.services.categories.${key}`)}
+                  </h2>
+                  <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2">
+                    {services.map((s) => (
+                      <li key={s.code}>
+                        <Link
+                          to={`/services/${serviceSlug(s.code)}`}
+                          viewTransition
+                          className="group flex items-center gap-4 rounded-panel bg-surface p-4 no-underline shadow-e1 transition-[box-shadow,transform] duration-300 ease-out-quint hover:-translate-y-0.5 hover:shadow-e3 motion-reduce:hover:translate-y-0"
+                        >
+                          <span
+                            aria-hidden="true"
+                            className="grid size-11 shrink-0 place-items-center rounded-xl bg-[linear-gradient(140deg,var(--color-brand-subtle),var(--color-surface))] text-on-brand-subtle shadow-e1"
                           >
-                            {s.name}
-                            <ArrowRight
-                              aria-hidden="true"
-                              className="size-4 shrink-0 text-fg-muted transition-[translate,color] duration-200 group-hover:translate-x-0.5 group-hover:text-primary"
-                            />
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </Panel>
-                );
-              })}
-            </div>
-          )}
+                            <ServiceMark code={s.code} />
+                          </span>
+                          <span className="min-w-0 flex-1 font-semibold text-fg">{s.name}</span>
+                          <ArrowRight
+                            aria-hidden="true"
+                            className="size-5 text-fg-muted transition-[transform,color] duration-300 ease-out-quint group-hover:translate-x-1 group-hover:text-primary"
+                          />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ))
+            )}
+          </div>
         </div>
       </PageContainer>
     </PublicLayout>
@@ -809,10 +791,6 @@ export function ServicePage() {
   const catalogue = useCatalogue(lang);
   const service = catalogue.data?.find((s) => s.code === code);
   const offering = useFacilitiesOffering(service ? code : "");
-  const icon = createElement(categoryIcon(service?.category ?? "general"), {
-    "aria-hidden": true,
-    className: "size-6",
-  });
 
   if (catalogue.isSuccess && !service) {
     return (
@@ -845,8 +823,18 @@ export function ServicePage() {
     <PublicLayout>
       <PageContainer className="pb-16">
         <PageHeader
-          crumbs={[{ to: "/services", label: t("nav.services") }, { label: service?.name ?? "…" }]}
-          eyebrow={service ? t(`site.services.categories.${service.category}`) : undefined}
+          crumbs={[
+            { to: "/services", label: t("nav.services") },
+            ...(service
+              ? [
+                  {
+                    to: `/services#cat-${service.category}`,
+                    label: t(`site.services.categories.${service.category}`),
+                  },
+                ]
+              : []),
+            { label: service?.name ?? "…" },
+          ]}
           title={service?.name ?? "…"}
           lead={explain}
           actions={
@@ -860,42 +848,41 @@ export function ServicePage() {
             </Link>
           }
         />
-        <div className="ml-stagger grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-          <Panel aria-labelledby="offering" className="overflow-hidden">
-            <h2 id="offering" className="m-0 border-b border-border/60 px-5 py-4 text-h3">
+        <div className="grid gap-x-10 gap-y-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
+          <section aria-labelledby="offering" className="flex min-w-0 flex-col gap-3">
+            <h2 id="offering" className="m-0 font-heading text-h2">
               {t("site.service.offering")}
             </h2>
             {offering.isPending ? (
-              <LoadingRows rows={3} />
+              <FacilityEntries label={t("site.service.offering")} rows={[]} loading />
             ) : offering.isError ? (
-              <ErrorState onRetry={() => void offering.refetch()} />
+              <Panel as="div">
+                <ErrorState onRetry={() => void offering.refetch()} />
+              </Panel>
             ) : !offering.data?.length ? (
-              <EmptyState title={t("site.service.noneOffering")} />
+              <Panel as="div">
+                <EmptyState title={t("site.service.noneOffering")} />
+              </Panel>
             ) : (
-              <ul className="m-0 list-none p-0">
-                {offering.data.map((r) => (
-                  <LinkRow
-                    key={r.slug}
-                    to={`/facilities/${r.slug}`}
-                    title={r.name}
-                    detail={`${t(`booking.types.${r.type}`, { defaultValue: r.type })} · ${r.district}`}
-                    meta={waitText(r, t, lang) || (r.open_now ? t("site.open") : t("site.closed"))}
-                  />
-                ))}
-              </ul>
+              <FacilityEntries
+                label={t("site.service.offering")}
+                rows={offering.data}
+                loading={false}
+              />
             )}
-          </Panel>
-          <Panel as="aside" className="flex flex-col gap-4 self-start p-6">
-            <span className="grid size-12 place-items-center rounded-2xl bg-brand-subtle text-on-brand-subtle">
-              {icon}
-            </span>
-            <h2 className="m-0 text-h3">{t("site.facility.bring.title")}</h2>
-            <ul className="m-0 flex flex-col gap-2 pl-5 text-fg-secondary">
-              <li>{t("site.facility.bring.insurance")}</li>
-              <li>{t("site.facility.bring.id")}</li>
-              <li>{t("site.facility.bring.documents")}</li>
-            </ul>
-          </Panel>
+          </section>
+          <aside aria-labelledby="bring" className="flex flex-col gap-3 lg:pt-11">
+            <Panel as="div" className="p-6">
+              <h2 id="bring" className="m-0 text-h3">
+                {t("site.facility.bring.title")}
+              </h2>
+              <ul className="m-0 mt-3 flex list-disc flex-col gap-2 pl-5 text-fg-secondary">
+                <li>{t("site.facility.bring.insurance")}</li>
+                <li>{t("site.facility.bring.id")}</li>
+                <li>{t("site.facility.bring.documents")}</li>
+              </ul>
+            </Panel>
+          </aside>
         </div>
       </PageContainer>
     </PublicLayout>

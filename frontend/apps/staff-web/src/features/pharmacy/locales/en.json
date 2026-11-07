@@ -3,7 +3,8 @@
   "nav": {
     "availability": "Medicine availability",
     "history": "Dispensing history",
-    "verify": "Verify a prescription"
+    "verify": "Verify a prescription",
+    "stock": "Stock"
   },
   "age_one": "{{count}} year",
   "age_other": "{{count}} years",
@@ -62,11 +63,11 @@
     "queried": "Question to the doctor",
     "notInStock": "Not in stock here",
     "offCatalogue": "Not in the catalogue",
-    "noSubstitution": "No substitution"
+    "noSubstitution": "No substitution",
+    "lowStock": "Low stock here"
   },
   "queue": {
     "title": "Pharmacy",
-    "description": "Prescriptions to give at this facility, oldest first.",
     "tabs": "Prescriptions by state",
     "tab": {
       "ready": "Ready",
@@ -178,18 +179,17 @@
   },
   "availability": {
     "title": "Medicine availability",
-    "description": "Switch off what is out of stock. Doctors then see \"Not in stock here\" when they prescribe.",
     "search": "Find a medicine",
     "summary_one": "{{count}} medicine out of stock",
     "summary_other": "{{count}} medicines out of stock",
     "in": "In stock",
     "out": "Out of stock",
     "since": "Out since {{date}}",
-    "none": "No medicine matches."
+    "none": "No medicine matches.",
+    "followsStock": "Follows its stock count. Receive or adjust it on the Stock page."
   },
   "labels": {
     "title": "Dosing labels",
-    "description": "One label per medicine given, 62 mm wide.",
     "print": "Print labels",
     "language": "Label language",
     "languages": {
@@ -197,7 +197,16 @@
       "en": "English",
       "fr": "Français"
     },
-    "none": "No labels yet: nothing has been given."
+    "none": "No labels yet: nothing has been given.",
+    "schedule": "When to take it",
+    "times": {
+      "morning": "Morning",
+      "noon": "Noon",
+      "evening": "Evening",
+      "night": "Night"
+    },
+    "whenNeeded": "When needed",
+    "once": "Once only"
   },
   "alert": {
     "allergy": "Allergy: {{substance}}",
@@ -239,7 +248,9 @@
     "cancelTitle": "Cancel {{name}}?",
     "cancelConsequences": "The pharmacy will not give it. The patient sees it as cancelled.",
     "changeTitle": "Change {{name}}?",
-    "changeConsequences": "This one is cancelled with your reason, then you add the new one."
+    "changeConsequences": "This one is cancelled with your reason, then you add the new one.",
+    "meal": "With food?",
+    "mealHint": "Shown as a picture on the label."
   },
   "pages": "Pages",
   "previous": "Previous",
@@ -258,11 +269,12 @@
     "next": "Next to give",
     "nothing": "No prescription waits. New ones appear here as doctors sign.",
     "items_one": "{{count}} medicine",
-    "items_other": "{{count}} medicines"
+    "items_other": "{{count}} medicines",
+    "lowStock_one": "Low on stock ({{count}} batch expiring soon)",
+    "lowStock_other": "Low on stock ({{count}} batches expiring soon)"
   },
   "history": {
     "title": "Dispensing history",
-    "intro": "What was given at this pharmacy, by whom and when. Open a line for the full prescription.",
     "period": "Period",
     "days": {
       "1": "Today",
@@ -289,7 +301,6 @@
   },
   "verify": {
     "title": "Verify a prescription",
-    "intro": "A prescription from another facility: check the code, then open the medicines with the patient's date of birth.",
     "code": "Verification code",
     "codeHint": "Printed under the QR code on the prescription",
     "check": "Check",
@@ -310,5 +321,112 @@
     "open": "Show medicines",
     "bornWrong": "The date of birth does not match."
   },
-  "failed": "Could not load. Try again."
+  "failed": "Could not load. Try again.",
+  "favourites": {
+    "title": "Your frequent medicines",
+    "days_one": "{{count}} day",
+    "days_other": "{{count}} days"
+  },
+  "stock": {
+    "title": "Stock",
+    "tabs": "Stock views",
+    "tab": {
+      "all": "All medicines",
+      "short": "Low or out",
+      "expiring": "Expiring soon",
+      "movements": "Movements"
+    },
+    "search": "Find a medicine",
+    "none": "No medicine has stock yet.",
+    "noneBody": "Receive a batch to start counting a medicine. Others keep the switch on Medicine availability.",
+    "noneShort": "Nothing is low or out of stock.",
+    "nextExpiry": "Next expiry {{date}}",
+    "noUsable": "No usable batch",
+    "expiredUnits_one": "{{count}} expired unit to remove",
+    "expiredUnits_other": "{{count}} expired units to remove",
+    "units_one": "{{count}} unit",
+    "units_other": "{{count}} units",
+    "level": {
+      "in_stock": "In stock",
+      "low": "Low stock",
+      "out": "Out of stock"
+    },
+    "expired": "Expired",
+    "expiringNone": "No batch expires in the next 60 days.",
+    "expiringIntro": "Batches with units left that expire within 60 days, expired ones first. Give these first, or take expired ones off the shelf.",
+    "columns": {
+      "medicine": "Medicine",
+      "batch": "Batch",
+      "expiry": "Expiry",
+      "units": "Units",
+      "when": "When",
+      "change": "Change",
+      "by": "By"
+    },
+    "movements": "Movements",
+    "movementsNone": "No movement yet.",
+    "kind": {
+      "received": "Received",
+      "dispensed": "Given",
+      "adjusted": "Adjusted"
+    },
+    "reason": {
+      "count_correction": "Count correction",
+      "damaged": "Damaged",
+      "expired": "Expired"
+    },
+    "prescription": "Prescription",
+    "balanceAfter_one": "{{count}} left in the batch",
+    "balanceAfter_other": "{{count}} left in the batch",
+    "receive": {
+      "open": "Receive stock",
+      "title": "Receive stock",
+      "description": "One batch at a time, as printed on the box.",
+      "save": "Add to stock",
+      "drugRequired": "Choose a medicine.",
+      "batchRequired": "Give the batch number.",
+      "expiryRequired": "Give the expiry date.",
+      "expiryPast": "This batch has already expired. Don't put it on the shelf.",
+      "quantityRequired": "Give the number of units, 1 or more.",
+      "batch": "Batch number",
+      "expiry": "Expiry date",
+      "quantity": "Units received",
+      "quantityHint": "Tablets, capsules, bottles: the unit you give.",
+      "supplier": "Supplier"
+    },
+    "threshold": "Low-stock threshold",
+    "thresholdHint": "\"Low stock\" below this number. 0 turns it off.",
+    "thresholdInvalid": "Give a whole number, 0 or more.",
+    "saveThreshold": "Save",
+    "back": "All stock",
+    "batches": "Batches on the shelf",
+    "noBatches": "No units left. Receive a batch to restock.",
+    "noSupplier": "No supplier given",
+    "summary": "Stock summary",
+    "onHand": "Usable units",
+    "expiredToRemove_one": "{{count}} expired unit is still on the shelf. Adjust its batch with the reason Expired.",
+    "expiredToRemove_other": "{{count}} expired units are still on the shelf. Adjust their batch with the reason Expired.",
+    "adjust": {
+      "open": "Adjust",
+      "title": "Adjust batch {{batch}}",
+      "description_one": "{{count}} unit in this batch now. Every change is recorded with your name.",
+      "description_other": "{{count}} units in this batch now. Every change is recorded with your name.",
+      "save": "Save the change",
+      "reason": "Reason",
+      "counted": "Units you counted",
+      "countedHint": "Count the batch on the shelf and type the number.",
+      "countedRequired": "Type the number you counted, 0 or more.",
+      "noChange": "That is the number already recorded.",
+      "difference": "Change: {{change}}",
+      "removed": "Units to take off",
+      "removeRange": "Take off between 1 and {{max}}.",
+      "note": "Note"
+    }
+  },
+  "meal": {
+    "any": "Any time",
+    "before_food": "Before food",
+    "with_food": "With food",
+    "after_food": "After food"
+  }
 }

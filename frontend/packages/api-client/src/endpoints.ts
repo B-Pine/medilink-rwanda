@@ -2,7 +2,8 @@ import type { ApiClient } from "./client";
 import type {
   Credentials,
   CsrfResponse,
-  DetailResponse,
+  GoogleConfig,
+  GoogleSignInRequest,
   HealthResponse,
   MfaConfirmResponse,
   MfaSetupResponse,
@@ -11,6 +12,7 @@ import type {
   PasswordResetRequest,
   PatientMe,
   PatientRegisterRequest,
+  SignupResponse,
   StaffAuthenticatedResult,
   StaffLoginResult,
   StaffMe,
@@ -75,6 +77,8 @@ export const paths = {
   patientLogin: "/api/v1/patient/auth/login/",
   patientLogout: "/api/v1/patient/auth/logout/",
   patientMe: "/api/v1/patient/auth/me/",
+  patientPassword: "/api/v1/patient/auth/password/",
+  patientGoogle: "/api/v1/patient/auth/google/",
   passwordReset: "/api/v1/auth/password-reset/",
   passwordResetConfirm: "/api/v1/auth/password-reset/confirm/",
   schema: "/api/v1/schema/",
@@ -121,10 +125,11 @@ export function createMediLinkApi(client: ApiClient) {
     patientAuth: {
       /**
        * Always 202 "check your email", whether or not the email has an account (no enumeration).
-       * The new account signs in only through `verifyEmail` with the emailed link's token.
+       * The new account signs in only through `verifyEmail` with the emailed link's token, unless
+       * the server answers `email_verification: false` (test server: no email, sign in now).
        */
       register: (body: PatientRegisterRequest) =>
-        client.post<DetailResponse>(paths.patientRegister, body, authCall),
+        client.post<SignupResponse>(paths.patientRegister, body, authCall),
       /** Confirms the sign-up email (single-use token) and signs the patient in. */
       verifyEmail: (body: VerifyEmailRequest) =>
         client.post<PatientMe>(paths.patientVerifyEmail, body, sessionChange),
@@ -133,6 +138,17 @@ export function createMediLinkApi(client: ApiClient) {
       /** 401 when not logged in (handled by the caller, not the global hook). */
       me: (signal?: AbortSignal) =>
         client.get<PatientMe>(paths.patientMe, signal ? { signal, ...authCall } : authCall),
+      /** Current + new password; other sessions end and this one rotates (security 03 §6). */
+      changePassword: (body: { current_password: string; new_password: string }) =>
+        client.post<PatientMe>(paths.patientPassword, body, sessionChange),
+      /** Upgrade 17: whether Sign in with Google is on, and the public OAuth client ID. */
+      googleConfig: () => client.get<GoogleConfig>(paths.patientGoogle, authCall),
+      /**
+       * Signs in with Google's ID token. A first sign-in answers 409 `consent_required` with
+       * `error.current = {email, full_name}`: show the consents, then call again with them.
+       */
+      google: (body: GoogleSignInRequest) =>
+        client.post<PatientMe>(paths.patientGoogle, body, sessionChange),
     },
 
     passwordReset: {

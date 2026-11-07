@@ -55,7 +55,7 @@
     "title": "Rechercher dans MediLink",
     "placeholder": "Soins, rendez-vous, documents",
     "shortcut": "Ctrl K",
-    "empty": "Aucun résultat. Essayez un établissement, un médecin ou un service.",
+    "empty": "Aucun résultat",
     "hints": "↑ ↓ se déplacer · Entrée ouvrir · Échap fermer",
     "findCare": "Trouver des soins pour « {{query}} »",
     "groups": {
@@ -90,14 +90,14 @@
     "greeting_evening": "Bonsoir, {{name}}",
     "subtitle": "Voici l'aperçu de vos soins.",
     "verifyTitle": "Confirmez votre e-mail",
-    "verifyBody": "Nous avons envoyé un lien à {{email}}. Ouvrez-le pour protéger votre compte.",
+    "verifyBody": "Lien envoyé à {{email}}",
     "nextAppointment": "Prochain rendez-vous",
     "currentVisit": "Visite en cours",
     "viewDetails": "Voir le détail",
     "allTickets": "Ma file d'attente",
     "moreTickets_one": "{{count}} autre ticket aujourd'hui",
     "moreTickets_other": "{{count}} autres tickets aujourd'hui",
-    "startTitle": "Vos soins commencent ici.",
+    "startTitle": "Où souhaitez-vous être soigné ?",
     "startBody": "Trouvez un établissement de santé, découvrez les services disponibles ou réservez votre prochaine visite.",
     "explore": "Voir les établissements",
     "quick": "Actions rapides",
@@ -174,7 +174,21 @@
     "reply": "Répondre",
     "soon": "{{service}} approche",
     "arrive": "Signalez votre arrivée à l'accueil (ticket {{ticket}})",
-    "open": "Ouvrir le ticket"
+    "open": "Ouvrir le ticket",
+    "result": "Un nouveau résultat est prêt",
+    "readResult": "Le lire",
+    "planned": "{{what}} approche"
+  },
+  "comingUp": {
+    "title": "Prévu par votre établissement",
+    "intro": "Les dates prévues par votre établissement. Nous vous le rappelons la veille et le matin même.",
+    "types": {
+      "vaccination": "Vaccination",
+      "antenatal": "Consultation prénatale",
+      "follow_up": "Visite de retour"
+    },
+    "book": "Choisir une heure",
+    "failed": "Impossible de charger les dates prévues par votre établissement."
   },
   "appointments": {
     "title": "Mes rendez-vous",
@@ -190,9 +204,9 @@
     },
     "failed": "Impossible de charger vos rendez-vous.",
     "empty": {
-      "upcoming": "Vous n'avez aucun rendez-vous à venir.",
-      "past": "Aucun rendez-vous passé pour l'instant.",
-      "cancelled": "Aucun rendez-vous annulé."
+      "upcoming": "Aucun rendez-vous à venir",
+      "past": "Aucun rendez-vous passé",
+      "cancelled": "Aucun rendez-vous annulé"
     },
     "emptyBody": "Trouvez un établissement et réservez l'heure qui vous convient.",
     "for": "pour {{name}}",
@@ -207,7 +221,7 @@
     "actionFailed": "Impossible de modifier votre rendez-vous. Veuillez réessayer.",
     "back": "Tous les rendez-vous",
     "notFound": "Rendez-vous introuvable",
-    "notFoundBody": "Impossible de charger ce rendez-vous. Il appartient peut-être à un autre compte.",
+    "notFoundBody": "Il appartient peut-être à un autre compte.",
     "info": "Rendez-vous",
     "date": "Date",
     "time": "Heure",
@@ -237,7 +251,7 @@
     "reference": "Référence de réservation",
     "showCode": "Montrez ce code à l'accueil.",
     "changeUntil": "Vous pouvez modifier ou annuler jusqu'au {{time}}.",
-    "changeClosed": "Les modifications sont fermées. Annuler maintenant compte comme une annulation tardive.",
+    "changeClosed": "Annuler maintenant compte comme tardif.",
     "directions": "Itinéraire"
   },
   "reschedule": {
@@ -248,12 +262,12 @@
     "later": "Plus tard",
     "days": "Jours avec des heures libres",
     "times": "Heures libres",
-    "none": "Aucune heure libre cette semaine. Essayez la semaine suivante.",
+    "none": "Aucune heure libre cette semaine",
     "loadFailed": "Impossible de charger les heures libres.",
     "from": "Heure actuelle",
     "to": "Nouvelle heure",
     "held": "Nous gardons cette heure pour vous pendant",
-    "expired": "Le délai est écoulé. Choisissez de nouveau une heure.",
+    "expired": "Délai écoulé. Choisissez à nouveau.",
     "oldFreed": "Votre heure actuelle n'est libérée qu'une fois la nouvelle confirmée.",
     "otherTime": "Choisir une autre heure",
     "confirm": "Confirmer la nouvelle heure"
@@ -264,9 +278,9 @@
     "join": "Rejoindre une file",
     "today": "Aujourd'hui",
     "failed": "Impossible de charger vos tickets.",
-    "none": "Vous n'êtes dans aucune file d'attente.",
+    "none": "Dans aucune file",
     "noneBody": "Rejoignez la file d'un établissement qui le permet, ou enregistrez-vous à l'accueil.",
-    "remoteNote": "Rejoindre depuis votre téléphone n'est pas un enregistrement. L'accueil confirme votre arrivée sur place.",
+    "remoteNote": "L'accueil confirme votre arrivée.",
     "previous": "Visites précédentes",
     "previousTitle": "Les anciens tickets ne sont pas encore listés ici",
     "previousBody": "Après une visite, le compte rendu signé du médecin apparaît dans le dossier médical.",
@@ -335,7 +349,7 @@
   "records": {
     "search": "Rechercher par établissement, médecin ou diagnostic",
     "signed": "Signé",
-    "noMatch": "Aucun dossier ne correspond à votre recherche.",
+    "noMatch": "Aucun résultat",
     "emptyBody": "Votre dossier médical apparaîtra ici dès qu'il sera disponible."
   },
   "medications": {
@@ -374,8 +388,12 @@
     "security": {
       "title": "Sécurité",
       "body": "Protégez votre compte.",
-      "password": "Pour changer votre mot de passe, nous vous envoyons un lien sécurisé par e-mail : vous seul pouvez en définir un nouveau.",
+      "password": "Saisissez votre mot de passe actuel, puis le nouveau. Les autres téléphones et navigateurs seront déconnectés.",
       "change": "Changer le mot de passe",
+      "current": "Mot de passe actuel",
+      "new": "Nouveau mot de passe",
+      "done": "Mot de passe changé. Les autres téléphones et navigateurs sont déconnectés.",
+      "forgot": "Mot de passe actuel oublié ?",
       "later": "Les appareils connectés et la connexion en deux étapes seront ajoutés ici."
     },
     "alerts": {

@@ -1,4 +1,64 @@
 {
+  "lab": {
+    "title": "Examens",
+    "none": "Aucun examen demandé pour cette visite.",
+    "order": "Demander des examens",
+    "choose": "Examens à demander",
+    "chooseOne": "Choisissez au moins un examen.",
+    "reason": "Pourquoi ces examens ? (le laboratoire le voit)",
+    "reasonHint": "Par exemple : fièvre depuis 3 jours, exclure le paludisme.",
+    "reasonShort": "Pourquoi :",
+    "submit": "Demander",
+    "send": "Envoyer au laboratoire",
+    "sendHint": "Le patient va au laboratoire. Vos notes restent ouvertes et le patient revient dans votre file quand tous les résultats sont prêts.",
+    "sent": "{{name}} va au laboratoire et revient dans votre file quand les résultats sont prêts.",
+    "orderedBy": "Demandé par {{name}} à {{time}}",
+    "resultedBy": "Résultat par {{name}} à {{time}}",
+    "labComment": "Commentaire du laboratoire :",
+    "note": "Note pour le patient",
+    "noteHint": "Le patient la lit avec le résultat.",
+    "review": "Marquer comme lu",
+    "release": "Transmettre au patient",
+    "releaseHint": "Désormais, le patient voit ce résultat dans son dossier.",
+    "cancel": "Annuler l'examen",
+    "range": "{{low}}–{{high}} {{unit}}",
+    "table": {
+      "item": "Examen",
+      "value": "Résultat",
+      "reference": "Valeurs normales"
+    },
+    "states": {
+      "ordered": "Demandé",
+      "sample_taken": "Échantillon prélevé",
+      "resulted": "Résultat prêt",
+      "reviewed": "Lu",
+      "released": "Transmis",
+      "cancelled": "Annulé"
+    },
+    "specimens": {
+      "blood": "Sang",
+      "urine": "Urine",
+      "stool": "Selles"
+    },
+    "flags": {
+      "low": "Bas",
+      "high": "Élevé",
+      "abnormal": "Anormal"
+    },
+    "choices": {
+      "negative": "Négatif",
+      "positive": "Positif",
+      "invalid": "Invalide",
+      "trace": "Traces",
+      "none_seen": "Aucun vu",
+      "seen": "Vus"
+    },
+    "inbox": {
+      "title": "Résultats de laboratoire",
+      "lead": "Résultats des examens que vous avez demandés. Lisez chacun, puis transmettez-le au patient.",
+      "open": "Ouvrir la consultation"
+    }
+  },
   "nav": {
     "consultation": "Consultation",
     "unsigned": "Dossiers non signés",
@@ -34,7 +94,6 @@
   },
   "start": {
     "title": "Consultation",
-    "description": "Le patient que vous voyez maintenant, depuis Ma file.",
     "open": "Ouvrir la consultation",
     "none": "Aucun patient avec vous en ce moment",
     "noneBody": "Appelez le patient suivant depuis Ma file, puis ouvrez la consultation ici.",
@@ -229,7 +288,6 @@
   },
   "unsigned": {
     "title": "Dossiers non signés",
-    "description": "Brouillons en attente de signature. Videz la liste chaque jour : une visite ne peut pas se terminer tant que son brouillon est ouvert.",
     "mineOnly": "Seulement mes brouillons",
     "started": "{{name}} · commencé le {{time}}",
     "overdue": "Plus de 24 heures",
@@ -274,6 +332,13 @@
     "results_other": "{{count}} résultats externes à examiner"
   },
   "reasonForVisit": {
+    "nurse": "Triage : {{urgency}}",
+    "nurseBy": "par {{name}} à {{time}}",
+    "nurseUrgency": {
+      "normal": "normale",
+      "priority": "prioritaire",
+      "emergency": "urgence"
+    },
     "title": "Motif de la visite",
     "short": "Motif",
     "none": "Aucun motif saisi à la réservation ou à l’accueil. Demandez au patient.",
@@ -299,7 +364,6 @@
   "toQueue": "Ma file",
   "results": {
     "title": "Résultats",
-    "intro": "Résultats de laboratoire et d’imagerie externes qui vous sont attribués. Ouvrez-les, puis marquez-les examinés.",
     "tabs": {
       "pending": "À examiner",
       "reviewed": "Examinés"
@@ -345,7 +409,6 @@
   },
   "questions": {
     "title": "Questions de la pharmacie",
-    "intro": "Questions de la pharmacie sur vos ordonnances. Votre réponse est ajoutée au dossier en note signée.",
     "tabs": {
       "open": "En attente",
       "answered": "Répondues"
@@ -371,7 +434,6 @@
   },
   "followUps": {
     "title": "Suivis",
-    "intro": "Les patients que vous avez fait revenir. Les absents ont besoin d’un appel de l’accueil ou d’un nouveau rendez-vous.",
     "state": {
       "missed": "Manqués",
       "today": "Aujourd’hui",
@@ -400,7 +462,6 @@
   },
   "activity": {
     "title": "Mon activité",
-    "intro": "Vos propres chiffres, pour vous. Aucun nom de patient ici.",
     "period": "Période",
     "days_one": "{{count}} jour",
     "days_other": "{{count}} jours",
@@ -421,7 +482,6 @@
   },
   "templates": {
     "title": "Modèles",
-    "intro": "Vos notes, diagnostics et ordonnances habituelles pour les visites courantes. Un clic remplit la consultation.",
     "new": "Nouveau modèle",
     "edit": "Modifier le modèle",
     "delete": "Supprimer",
@@ -452,8 +512,29 @@
     "emptyTitle": "Aucun modèle",
     "empty": "Créez-en un ici, ou enregistrez une consultation comme modèle pendant que vous l’écrivez.",
     "use": "Utiliser un modèle",
-    "useHint": "Le texte va dans les sections vides ou après ce que vous avez écrit. Les diagnostics sont ajoutés comme provisoires ; les médicaments vont dans l’ordonnance.",
-    "saveAs": "Enregistrer comme modèle",
-    "itemsFailed": "Ces médicaments demandent votre attention dans l’ordonnance : {{names}}"
+    "useHint": "Un clic ajoute le diagnostic, le plan, les consignes et les médicaments. Le texte va dans les sections vides ou après ce que vous avez écrit ; les diagnostics sont ajoutés comme provisoires. Vous pouvez tout modifier avant de signer.",
+    "saveAs": "Enregistrer comme modèle"
+  },
+  "orderSet": {
+    "applied": "« {{name}} » ajouté à la note",
+    "review": "Vérifiez-le pour ce patient, puis signez.",
+    "listLabel": "Ce que le modèle a changé",
+    "diagnosesAdded": "Diagnostic ajouté comme provisoire : {{names}}",
+    "diagnosesAlready": "Déjà dans la note, pas ajouté deux fois : {{names}}",
+    "diagnosesSkipped": "Non ajouté, code CIM-10 inconnu ou trop de diagnostics : {{names}}. Cherchez le bon code.",
+    "sections": "Texte ajouté à : {{names}}",
+    "medicinesAdded": "Ajouté à l’ordonnance : {{names}}",
+    "medicinesAlready": "Déjà sur l’ordonnance, pas ajouté deux fois : {{names}}",
+    "medicinesFailed": "Non ajouté, ajoutez-les vous-même à l’ordonnance : {{names}}",
+    "tests": "Les examens de laboratoire ne sont pas encore demandés depuis les modèles. Demandez-les vous-même : {{names}}",
+    "adding": "Ajout des médicaments…",
+    "needsYou": "Certains éléments vous attendent. La note n’est signée que lorsque vous la signez.",
+    "stillSign": "Rien n’a été omis. La note n’est signée que lorsque vous la signez.",
+    "done": "Retour à la note",
+    "another": "Utiliser un autre modèle"
+  },
+  "favourites": {
+    "diagnoses": "Vos diagnostics fréquents",
+    "add": "Ajouter {{name}}"
   }
 }

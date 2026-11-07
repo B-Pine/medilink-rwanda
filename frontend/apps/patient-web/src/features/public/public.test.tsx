@@ -98,10 +98,8 @@ describe("information pages (PT-F4, PT-F5)", () => {
 describe("care near you on the home page (PT-F1)", () => {
   it("the home page lists facilities with the live queue and accepted insurers", async () => {
     const { container } = renderApp("/");
-    const section = await screen.findByRole("region", { name: "Open near you" });
-    const list = await within(section).findByRole("list", {
-      name: "Healthcare facilities near you",
-    });
+    const section = await screen.findByRole("region", { name: "Open right now" });
+    const list = await within(section).findByRole("list", { name: "Open right now" });
     const rows = within(list).getAllByRole("heading", { level: 3 });
     expect(rows.length).toBeGreaterThan(0);
     expect(within(section).getAllByText(/RAMA/).length).toBeGreaterThan(0);
@@ -114,7 +112,7 @@ describe("care near you on the home page (PT-F1)", () => {
 
   it("links to the symptom checker and the new footer pages", async () => {
     renderApp("/");
-    expect(await screen.findByRole("link", { name: /Not sure\? Check symptoms/ })).toHaveAttribute(
+    expect(await screen.findByRole("link", { name: /Not sure where to go/ })).toHaveAttribute(
       "href",
       "/check-symptoms",
     );

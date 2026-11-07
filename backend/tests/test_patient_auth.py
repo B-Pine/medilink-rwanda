@@ -10,6 +10,7 @@ import pytest
 from rest_framework.test import APIClient
 
 from medilink.accounts.models import User
+from medilink.accounts.tasks import TEXTS
 from medilink.patients.models import ConsentRecord, PatientLink
 from tests.conftest import error_code
 
@@ -46,7 +47,10 @@ def test_register_creates_account_profile_link_and_consents(
     with django_capture_on_commit_callbacks(execute=True):
         response = api.post(REGISTER, _body())
     assert response.status_code == 202, response.content
-    assert response.json() == {"detail": "Check your email to finish creating your account."}
+    assert response.json() == {
+        "detail": "Check your email to finish creating your account.",
+        "email_verification": True,
+    }
     assert "ml_patient" not in response.cookies  # not signed in until the email is confirmed
 
     user = User.objects.get(email="claudine@example.test")
@@ -96,7 +100,8 @@ def test_register_existing_email_looks_the_same_and_emails_the_owner(
     assert patient_user.full_name != "Uwimana Claudine"  # nothing about the account changed
     assert patient_user.email_verification_pending is False
     assert len(mailoutbox) == 1 and mailoutbox[0].to == [patient_user.email]
-    assert "already have an account" in mailoutbox[0].body
+    # in the owner's language (upgrade 17)
+    assert mailoutbox[0].subject == TEXTS["exists"][patient_user.preferred_language][0]
     assert "/verify-email" not in mailoutbox[0].body
 
 
@@ -110,6 +115,37 @@ def test_register_again_before_confirming_resends_the_link(
     assert len(mailoutbox) == 2
     assert all("/verify-email?token=" in m.body for m in mailoutbox)
     assert User.objects.get(email="claudine@example.test").full_name == "Uwimana Claudine"
+
+
+def test_register_without_email_verification_signs_in_straight_away(
+    api: APIClient, mailoutbox: Any, django_capture_on_commit_callbacks: Any
+) -> None:
+    from django.test import override_settings
+
+    login = {"email": "claudine@example.test", "password": "amashyamba meza ya nyungwe"}
+    with override_settings(PATIENT_SIGNUP_EMAIL_VERIFICATION=False):
+        with django_capture_on_commit_callbacks(execute=True):
+            response = api.post(REGISTER, _body())
+            again = api.post(REGISTER, _body())  # existing email: no "account exists" email
+        assert response.status_code == again.status_code == 202
+        assert response.json() == {
+            "detail": "Your account is ready. Sign in with your email and password.",
+            "email_verification": False,
+        }
+        assert mailoutbox == []
+        user = User.objects.get(email="claudine@example.test")
+        assert user.email_verification_pending is False and user.email_verified_at is None
+        assert api.post(LOGIN, login).status_code == 200
+
+
+def test_turning_email_verification_off_lets_pending_sign_ups_sign_in(api: APIClient) -> None:
+    from django.test import override_settings
+
+    api.post(REGISTER, _body())
+    login = {"email": "claudine@example.test", "password": "amashyamba meza ya nyungwe"}
+    assert api.post(LOGIN, login).status_code == 401
+    with override_settings(PATIENT_SIGNUP_EMAIL_VERIFICATION=False):
+        assert api.post(LOGIN, login).status_code == 200
 
 
 def test_verify_email_rejects_bad_and_expired_tokens(

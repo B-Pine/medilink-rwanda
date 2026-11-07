@@ -45,6 +45,7 @@ FUNCTIONS = (
     "scheduling_find_feed(bytea)",
     "scheduling_feed_bookings(uuid)",
     "scheduling_disruption_facilities()",
+    "scheduling_patient_care_schedule(uuid)",  # W7
 )
 APPEND_ONLY = ("scheduling_booking_event",)
 

@@ -26,6 +26,7 @@ MFA_METHOD_KEY = "_ml_mfa_method"
 ACTIVE_FACILITY_KEY = "_ml_facility"  # staff: active facility id
 LOCKED_AT_KEY = "_ml_locked_at"  # staff: idle lock (S1, contract §2.5); the session stays alive
 LOCK_TRIGGER_KEY = "_ml_lock_trigger"  # "idle" until the lock is audited by the principal
+APP_SESSION_KEY = "_ml_app"  # carried by the mobile app in a header, never in a cookie
 # PENDING_KEY (re-exported): staff password verified, second factor pending {user_id, stage, at}
 
 LAST_SEEN_GRANULARITY = 60  # seconds; limits session writes to one per minute per session
@@ -39,6 +40,7 @@ class Audience:
     absolute_timeout: int
     path_prefixes: tuple[str, ...]
     lock_after: int = 0  # 0 = never locks (patients)
+    app_idle_timeout: int = 0  # >0: the mobile app may carry this session in a header (patients)
 
 
 def get_audiences() -> list[Audience]:
@@ -50,6 +52,7 @@ def get_audiences() -> list[Audience]:
             absolute_timeout=int(cfg["ABSOLUTE_TIMEOUT"]),
             path_prefixes=tuple(cfg["PATH_PREFIXES"]),
             lock_after=int(cfg.get("LOCK_AFTER", 0)),
+            app_idle_timeout=int(cfg.get("APP_IDLE_TIMEOUT", 0)),
         )
         for name, cfg in settings.SESSION_AUDIENCES.items()
     ]
@@ -106,10 +109,12 @@ def enforce_session_timeouts(
     if auth_at is None:
         return True
     last_seen = int(session.get(LAST_SEEN_KEY, auth_at))
-    if (
-        current - int(auth_at) > audience.absolute_timeout
-        or current - last_seen > audience.idle_timeout
-    ):
+    idle_timeout = (
+        audience.app_idle_timeout
+        if audience.app_idle_timeout and session.get(APP_SESSION_KEY)
+        else audience.idle_timeout
+    )
+    if current - int(auth_at) > audience.absolute_timeout or current - last_seen > idle_timeout:
         session.flush()
         return False
     if session.get(LOCKED_AT_KEY):

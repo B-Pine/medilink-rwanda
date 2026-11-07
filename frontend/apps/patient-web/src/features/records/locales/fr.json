@@ -32,5 +32,27 @@
   "date": "Date",
   "facility": "Établissement",
   "doctorLabel": "Médecin",
-  "signedOn": "Signé"
+  "signedOn": "Signé",
+  "lab": {
+    "title": "Résultats d'examens",
+    "failed": "Impossible de charger vos résultats d'examens.",
+    "intro": "Vos résultats apparaissent ici une fois que votre médecin les a lus, avec sa note.",
+    "item": "Examen",
+    "value": "Résultat",
+    "normal": "Valeurs normales",
+    "note": "Votre médecin dit :",
+    "flags": {
+      "low": "Sous la normale",
+      "high": "Au-dessus de la normale",
+      "abnormal": "Pas comme attendu"
+    },
+    "choices": {
+      "negative": "Négatif",
+      "positive": "Positif",
+      "invalid": "Illisible",
+      "trace": "Traces",
+      "none_seen": "Aucun vu",
+      "seen": "Vus"
+    }
+  }
 }

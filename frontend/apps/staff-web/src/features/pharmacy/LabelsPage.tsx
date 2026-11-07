@@ -9,6 +9,7 @@ import { useParams } from "react-router";
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
 import { NoAccessContent } from "../../pages/NotFoundPage";
+import { DoseSchedule, MealPictogram } from "./LabelPictograms";
 import { errorText, pharmacyKeys, useCan, useWhen } from "./shared";
 
 const LANGUAGES: LanguageCode[] = ["rw", "en", "fr"];
@@ -18,7 +19,7 @@ const LANGUAGES: LanguageCode[] = ["rw", "en", "fr"];
  * Kinyarwanda by default, printed from the browser at 62 mm (one label per page).
  */
 export function LabelsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const api = useApi();
   const { prescriptionId = "" } = useParams();
   const allowed = useCan("pharmacy.dispense");
@@ -31,13 +32,14 @@ export function LabelsPage() {
   });
   if (!allowed) return <NoAccessContent />;
   const list = labels.data?.labels ?? [];
+  // the pictogram words follow the label language, not the screen language
+  const labelT = i18n.getFixedT(language);
 
   return (
     <div className="flex max-w-3xl flex-col gap-5">
       <div className="print:hidden">
         <PageHeader
           title={t("pharmacy.labels.title")}
-          description={t("pharmacy.labels.description")}
           back={{
             to: `/pharmacy/prescriptions/${prescriptionId}`,
             label: t("pharmacy.dispense.title"),
@@ -81,6 +83,8 @@ export function LabelsPage() {
               <span>
                 {label.dose} · {label.frequency}
               </span>
+              <DoseSchedule label={label} t={labelT} />
+              <MealPictogram label={label} />
               <span>{[label.route, label.duration].filter(Boolean).join(" · ")}</span>
               {label.instructions && <span className="font-semibold">{label.instructions}</span>}
               <span className="mt-1 border-t border-black/30 pt-1 text-[9pt]">

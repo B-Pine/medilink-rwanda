@@ -233,7 +233,6 @@ function AccountMenu() {
       </MenuTrigger>
       <MenuContent>
         <div className="px-3 py-2">
-          <p className="m-0 text-body-sm text-fg-muted">{t("dashboard.account.subtitle")}</p>
           <p className="m-0 font-semibold">{me.full_name}</p>
           <p className="m-0 text-body-sm break-all text-fg-muted">{me.email}</p>
         </div>

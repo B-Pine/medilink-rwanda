@@ -10,8 +10,8 @@ Roles are permission sets, so adding a role must not change existing roles (FR-A
 
 | Role | Phase | Where | Main permission codes (proposed) |
 |---|---|---|---|
-| Triage nurse | P1 | staff-web | `triage.operate`, `vitals.record`, `visit.reason.view`, `queue.call` (triage stage only) |
-| Laboratory technician | P1 (lite) | staff-web | `lab.operate`, `lab.result.enter` |
+| Triage nurse | P1 (built, #200) | staff-web | `triage.operate` (calls and serves the triage stage only), `vitals.record`, `visit.reason.view` |
+| Laboratory technician | P1 (lite; built, #201) | staff-web | `lab.operate` (lab queue and samples), `lab.result.enter`; never releases a result |
 | Cashier | P1 (built) | staff-web | `billing.record_payment` without `queue.operate` |
 | Community health worker (Umujyanama w'Ubuzima) | P2 | patient-web, special account | `chw.follow` (linked patients only) |
 | Platform support agent | P2 | staff-web platform | `support.handle` |

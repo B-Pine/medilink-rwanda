@@ -26,7 +26,7 @@ export {
   MOCK_INVITATION_EXISTING_TOKEN,
   MOCK_INVITATION_TOKEN,
 } from "./features/setup";
-export { MOCK_DISPLAY_TOKEN } from "./features/queue";
+export { MOCK_DISPLAY_TOKEN, MOCK_LAB_VISITS } from "./features/queue";
 // [S6]
 export {
   MOCK_CLINICAL_FP,

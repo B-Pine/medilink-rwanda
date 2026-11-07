@@ -270,15 +270,11 @@ export function CarePage() {
   return (
     <PublicLayout>
       <PageContainer>
-        <PageHeader
-          crumbs={[{ label: t("nav.findCare") }]}
-          title={t("site.care.title")}
-          lead={t("site.care.lead")}
-        />
+        <PageHeader crumbs={[{ label: t("nav.findCare") }]} title={t("site.care.title")} />
         {inDashboard ? (
           // Dashboard: one search card (search, near me, filters, then the one-tap filters),
           // since the sidebar leaves no room for a filter column (upgrade 12 §7)
-          <div className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-3 sm:p-4">
+          <div className="flex flex-col gap-3 rounded-panel bg-surface shadow-e2 p-3 sm:p-4">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
               {search("flex-1")}
               <div className="flex shrink-0 gap-2">
@@ -414,7 +410,7 @@ export function CarePage() {
               )
             }
             empty={<NoMatch service={activeService} query={q} onClear={clearAll} />}
-            cards
+            directory
           />
         </div>
       </div>

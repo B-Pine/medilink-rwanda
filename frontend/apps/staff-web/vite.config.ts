@@ -8,7 +8,9 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig, loadEnv } from "vite";
 
-// Staff app: static build (dist/), served from its own host (ADR 0006).
+// Staff app: static build (dist/), served from its own host (ADR 0006) or under /staff/ on the
+// shared Vercel host (ADR 0009): there `vite build --base /staff/ --outDir dist/staff`, and the
+// router and links follow import.meta.env.BASE_URL.
 export default defineConfig(({ mode }) => {
   const appEnv = resolveAppEnv(mode, loadEnv(mode, import.meta.dirname, "VITE_"));
   return {

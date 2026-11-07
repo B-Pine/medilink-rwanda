@@ -44,7 +44,6 @@ export function ActivityPage() {
     <div className="flex flex-col gap-5">
       <PageHeader
         title={t("clinical.activity.title")}
-        description={t("clinical.activity.intro")}
         actions={
           <Tabs value={String(days)} onValueChange={(v) => setDays(v === "30" ? 30 : 7)}>
             <TabsList aria-label={t("clinical.activity.period")}>

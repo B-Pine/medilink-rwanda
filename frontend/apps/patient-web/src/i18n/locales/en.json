@@ -24,7 +24,7 @@
     "emailRequired": "Enter your email address",
     "emailInvalid": "Enter an email address in the correct format, like name@example.rw",
     "passwordRequired": "Enter your password",
-    "passwordLength": "Use at least 15 characters",
+    "passwordLength": "Use at least 8 characters",
     "nameRequired": "Enter your names",
     "termsRequired": "Accept the terms of use to create an account",
     "privacyRequired": "Accept the privacy notice to create an account"
@@ -131,7 +131,6 @@
     "dataInRwanda": "Health data stored in Rwanda"
   },
   "authAside": {
-    "eyebrow": "Your MediLink account",
     "title": "Spend less time waiting and more time getting better.",
     "lead": "One account for you and your family, at every facility on MediLink.",
     "points": {
@@ -166,6 +165,13 @@
     "invalidCredentials": "The email or password is not right. Check them and try again.",
     "guest": "Find care without an account"
   },
+  "google": {
+    "or": "or",
+    "failed": "Google sign-in didn't work. Try again.",
+    "consentTitle": "Create your account with Google",
+    "create": "Create my account",
+    "cancel": "Cancel"
+  },
   "signup": {
     "title": "Create your account",
     "intro": "It takes about a minute. You can add insurance and family members later.",
@@ -174,8 +180,8 @@
     "fullNameHint": "As written on your ID.",
     "email": "Email",
     "password": "Password",
-    "passwordHint": "Use at least 15 characters. A short sentence is easy to remember and hard to guess.",
-    "passwordRule": "At least 15 characters",
+    "passwordHint": "Use at least 8 characters. A short sentence is easy to remember and hard to guess.",
+    "passwordRule": "At least 8 characters",
     "passwordRuleMet": "done",
     "passwordRuleNotMet": "not yet",
     "language": "Language for messages",
@@ -197,7 +203,9 @@
     "login": "Log in",
     "checkEmailTitle": "Check your email",
     "checkEmailBody": "We sent a message to {{email}}. Open the link in it to finish creating your account. The link works for 3 days.",
-    "checkEmailHint": "No email after a few minutes? Check your spam folder, or sign up again to get a new link."
+    "checkEmailHint": "No email after a few minutes? Check your spam folder, or sign up again to get a new link.",
+    "readyTitle": "Your account is ready",
+    "readyBody": "Sign in with {{email}} and your password."
   },
   "verifyEmail": {
     "title": "Confirm your email",
@@ -337,7 +345,7 @@
   "reset": {
     "title": "Set a new password",
     "newPassword": "New password",
-    "hint": "At least 15 characters. A short sentence is easy to remember and hard to guess.",
+    "hint": "At least 8 characters. A short sentence is easy to remember and hard to guess.",
     "submit": "Save new password",
     "doneTitle": "Password changed",
     "doneBody": "Your password was changed and you were logged out everywhere. Log in with your new password.",

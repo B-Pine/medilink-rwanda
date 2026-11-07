@@ -2,6 +2,7 @@
 
 from django.urls import path
 
+from medilink.visits import report_views as r
 from medilink.visits import views as v
 
 urlpatterns = [
@@ -23,6 +24,12 @@ urlpatterns = [
     ),
     path("duty-status/", v.DutyView.as_view(), name="staff-duty-status"),
     path("reports/operations/", v.OperationsView.as_view(), name="staff-reports-operations"),
+    path("reports/facility/", r.FacilityReportView.as_view(), name="staff-reports-facility"),
+    path(
+        "reports/facility/export/",
+        r.FacilityReportExportView.as_view(),
+        name="staff-reports-facility-export",
+    ),
     path("display-links/", v.DisplayLinksView.as_view(), name="staff-display-links"),
     path(
         "display-links/<uuid:link_id>/revoke/",

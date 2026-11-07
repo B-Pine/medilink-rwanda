@@ -156,7 +156,6 @@ export function BoardPage() {
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <PageHeading title={t("queue.board.title")}>{t("queue.board.title")}</PageHeading>
         <LiveBadge />
-        <p className="m-0 basis-full text-fg-muted">{t("queue.board.intro")}</p>
       </div>
 
       <DeskBar
@@ -512,6 +511,19 @@ function TicketPanel({
           <Printer aria-hidden="true" />
           {t("queue.print.slip")}
         </Link>
+        {visit.data?.follow_up && (
+          <Link
+            to={`/queue/visits/${current.visit_id}/card`}
+            className={buttonClassName({
+              variant: "secondary",
+              pill: true,
+              className: "self-start",
+            })}
+          >
+            <CalendarCheck aria-hidden="true" />
+            {t("queue.print.nextCard")}
+          </Link>
+        )}
         {current.flags.includes("insurance_unverified") && visit.data && (
           <Link
             to={`/patients/${visit.data.facility_patient_id}?tab=insurance`}

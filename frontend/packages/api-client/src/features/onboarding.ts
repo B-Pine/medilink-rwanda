@@ -111,7 +111,12 @@ export interface ApplicationSummary {
   facility_name: string;
   facility_type: string;
   district_code: string;
+  district_name: string;
   applicant_name: string;
+  proposed_admin_name: string;
+  documents_count: number;
+  /** What still blocks submitting (drafts and changes requested only). */
+  missing_count: number;
   created_by_platform: boolean;
   submitted_at: string | null;
   last_activity_at: string | null;
@@ -135,6 +140,22 @@ export interface ApplicationEvent {
   occurred_on: string | null;
 }
 
+export interface FacilityPlace {
+  province: string;
+  district: string;
+  sector: string;
+  cell: string;
+  village: string;
+}
+
+export interface FacilityContact {
+  /** Opens the person in the platform user directory. */
+  user_id: Uuid;
+  name: string;
+  email: string;
+  phone: string;
+}
+
 export interface PlatformFacility {
   id: Uuid;
   name: string;
@@ -144,6 +165,21 @@ export interface PlatformFacility {
   ownership: string;
   moh_facility_code: string;
   tin: string;
+  organization_name: string;
+  phone: string;
+  email: string;
+  address: string;
+  latitude: number | null;
+  longitude: number | null;
+  photo_count: number;
+  location: FacilityPlace;
+  /** The facility admins: who is in charge. */
+  admins: FacilityContact[];
+  staff_count: number;
+  doctor_count: number;
+  doctors_attested: number;
+  /** Active clinicians by profession code ("unknown" when not given). */
+  staff_by_profession: Record<string, number>;
   status: FacilityStatus;
   district: { code: string; name: string } | null;
   application_id: Uuid | null;
@@ -290,6 +326,8 @@ export const onboardingPaths = {
     `${PLATFORM}${id}/documents/${doc}/${action}/`,
   facilities: FACILITIES,
   facility: (id: Uuid) => `${FACILITIES}${id}/`,
+  /** CSV of the facility list (same filters), for the Ministry of Health. */
+  facilitiesExport: `${FACILITIES}export/`,
   facilityAction: (id: Uuid, action: string) => `${FACILITIES}${id}/${action}/`,
   licence: (id: Uuid, licence: Uuid) => `${FACILITIES}${id}/licences/${licence}/`,
   facilityFlag: (id: Uuid, code: string) => `${FACILITIES}${id}/feature-flags/${code}/`,
@@ -366,11 +404,14 @@ export function createOnboardingApi(client: ApiClient) {
       overview: () => client.get<PlatformOverview>(onboardingPaths.overview),
       applications: (params?: ListParams & { status?: string }) =>
         client.get<Page<ApplicationSummary>>(onboardingPaths.applications + query(params)),
-      create: (body: {
-        applicant: { name: string; email: string; phone?: string; position?: string };
-        facility: { name: string };
-        send_link: boolean;
-      }) => client.post<PlatformApplication>(onboardingPaths.applications, body),
+      /** On behalf of a facility (by phone or visit): every group known so far. */
+      create: (
+        body: {
+          applicant: { name: string; email: string; phone?: string; position?: string };
+          facility: { name: string } & Partial<ApplicantApplication["facility"]>;
+          send_link: boolean;
+        } & Pick<ApplicationPatch, "location" | "proposed_admin" | "claimed_insurer_codes">,
+      ) => client.post<PlatformApplication>(onboardingPaths.applications, body),
       application: (id: Uuid) => client.get<PlatformApplication>(onboardingPaths.application(id)),
       update: (id: Uuid, body: ApplicationPatch) =>
         client.request<PlatformApplication>("PATCH", onboardingPaths.application(id), { body }),

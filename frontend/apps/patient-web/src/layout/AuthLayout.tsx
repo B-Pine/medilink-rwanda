@@ -52,9 +52,6 @@ export function AuthLayout({
         </Link>
         <div className="flex max-w-md flex-col gap-8">
           <div className="flex flex-col gap-3">
-            <p className="m-0 text-caption font-semibold tracking-wider text-on-forest-accent uppercase">
-              {t("authAside.eyebrow")}
-            </p>
             <p className="m-0 font-heading text-h1 tracking-tight text-balance text-on-forest">
               {t("authAside.title")}
             </p>

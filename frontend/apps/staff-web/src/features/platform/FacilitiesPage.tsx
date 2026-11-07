@@ -6,11 +6,13 @@ import {
   type LicenceKind,
   type PlatformFacility,
   type PlatformFacilityDetail,
+  onboardingPaths,
 } from "@medilink/api-client";
 import {
   Alert,
   Button,
   Card,
+  CheckboxField,
   ConfirmDialog,
   DataTable,
   Dialog,
@@ -27,12 +29,13 @@ import {
   type ColumnDef,
 } from "@medilink/ui";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams, useSearchParams } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
+import { env } from "../../env";
 import { useStepUp } from "../lock";
 import { ReasonSelect, useReasons } from "./ApplicationReviewPage";
 import {
@@ -61,6 +64,9 @@ function Facilities() {
   const [params, setParams] = useSearchParams();
   const status = params.get("status") ?? "";
   const licenceState = params.get("licence_state") ?? "";
+  const facilityType = params.get("facility_type") ?? "";
+  const ownership = params.get("ownership") ?? "";
+  const missingCode = params.get("missing_code") === "true";
   const q = params.get("q") ?? "";
   const page = Number(params.get("page") ?? 1);
   const labels = useTableLabels(t("platform.facilities.noun"));
@@ -74,11 +80,24 @@ function Facilities() {
     setParams(next, { replace: true });
   };
   const list = useQuery({
-    queryKey: ["platform", "facilities", status, licenceState, q, page],
+    queryKey: [
+      "platform",
+      "facilities",
+      status,
+      licenceState,
+      facilityType,
+      ownership,
+      missingCode,
+      q,
+      page,
+    ],
     queryFn: () =>
       api.onboarding.platform.facilities({
         status,
         licence_state: licenceState,
+        facility_type: facilityType,
+        ownership,
+        ...(missingCode ? { missing_code: true } : {}),
         q,
         page,
         page_size: 50,
@@ -87,7 +106,21 @@ function Facilities() {
   });
   const columns = useMemo<ColumnDef<PlatformFacility, unknown>[]>(
     () => [
-      { accessorKey: "name", header: t("platform.facilities.name"), enableSorting: false },
+      {
+        accessorKey: "name",
+        header: t("platform.facilities.name"),
+        enableSorting: false,
+        cell: ({ row }) => (
+          <span className="flex flex-col">
+            <span className="font-semibold">{row.original.name}</span>
+            <span className="text-body-sm text-fg-muted">
+              {row.original.moh_facility_code
+                ? `FOSA ${row.original.moh_facility_code}`
+                : t("platform.facilities.noCode")}
+            </span>
+          </span>
+        ),
+      },
       {
         accessorKey: "status",
         header: t("platform.applications.status"),
@@ -98,16 +131,67 @@ function Facilities() {
         accessorKey: "facility_type",
         header: t("platform.review.type"),
         enableSorting: false,
-        cell: ({ row }) =>
-          t(`facility.types.${row.original.facility_type}`, {
-            defaultValue: row.original.facility_type,
-          }),
+        cell: ({ row }) => (
+          <span className="flex flex-col">
+            <span>
+              {t(`facility.types.${row.original.facility_type}`, {
+                defaultValue: row.original.facility_type,
+              })}
+            </span>
+            <span className="text-body-sm text-fg-muted">
+              {t(`platform.ownership.${row.original.ownership}`, {
+                defaultValue: row.original.ownership,
+              })}
+            </span>
+          </span>
+        ),
       },
       {
         id: "district",
-        header: t("platform.facilities.district"),
+        header: t("platform.facilities.place"),
         enableSorting: false,
-        cell: ({ row }) => row.original.district?.name ?? "—",
+        cell: ({ row }) => (
+          <span className="flex flex-col">
+            <span>{row.original.location.district || row.original.district?.name || "—"}</span>
+            {row.original.location.sector && (
+              <span className="text-body-sm text-fg-muted">{row.original.location.sector}</span>
+            )}
+          </span>
+        ),
+      },
+      {
+        id: "in_charge",
+        header: t("platform.facilities.inCharge"),
+        enableSorting: false,
+        cell: ({ row }) => {
+          const admin = row.original.admins[0];
+          return admin ? (
+            <span className="flex flex-col">
+              <span>{admin.name}</span>
+              <span className="text-body-sm text-fg-muted">{admin.phone || admin.email}</span>
+            </span>
+          ) : (
+            <span className="text-fg-muted">{t("platform.facilities.noAdmin")}</span>
+          );
+        },
+      },
+      {
+        id: "staff",
+        header: t("platform.facilities.staff"),
+        enableSorting: false,
+        cell: ({ row }) => (
+          <span className="flex flex-col text-body-sm">
+            <span>{t("platform.facilities.staffCount", { count: row.original.staff_count })}</span>
+            {row.original.doctor_count > 0 && (
+              <span className="text-fg-muted">
+                {t("platform.facilities.doctorsChecked", {
+                  checked: row.original.doctors_attested,
+                  count: row.original.doctor_count,
+                })}
+              </span>
+            )}
+          </span>
+        ),
       },
       {
         accessorKey: "licence_state",
@@ -146,7 +230,20 @@ function Facilities() {
   ];
   return (
     <div className="flex flex-col gap-5">
-      <PageHeader title={t("platform.facilities.title")} />
+      <PageHeader
+        title={t("platform.facilities.title")}
+        actions={
+          <ExportButton
+            params={{
+              status,
+              licence_state: licenceState,
+              facility_type: facilityType,
+              ownership,
+              q,
+            }}
+          />
+        }
+      />
       <DataTable<PlatformFacility>
         caption={t("platform.facilities.title")}
         columns={columns}
@@ -160,20 +257,72 @@ function Facilities() {
         search={q}
         onSearchChange={(value) => update({ q: value })}
         filters={filters}
-        onClearFilters={() => update({ status: "", licence_state: "", q: "" })}
+        onClearFilters={() =>
+          update({
+            status: "",
+            licence_state: "",
+            facility_type: "",
+            ownership: "",
+            missing_code: "",
+            q: "",
+          })
+        }
         toolbar={
-          <SelectField
-            label={t("platform.applications.status")}
-            value={status}
-            onChange={(e) => update({ status: e.target.value })}
-          >
-            <option value="">{t("platform.applications.all")}</option>
-            {(["approved", "setup", "live", "suspended", "deactivated"] as const).map((s) => (
-              <option key={s} value={s}>
-                {t(`platform.status.facility.${s}`)}
-              </option>
-            ))}
-          </SelectField>
+          <>
+            <SelectField
+              label={t("platform.applications.status")}
+              value={status}
+              onChange={(e) => update({ status: e.target.value })}
+            >
+              <option value="">{t("platform.applications.all")}</option>
+              {(["approved", "setup", "live", "suspended", "deactivated"] as const).map((s) => (
+                <option key={s} value={s}>
+                  {t(`platform.status.facility.${s}`)}
+                </option>
+              ))}
+            </SelectField>
+            <SelectField
+              label={t("platform.review.type")}
+              value={facilityType}
+              onChange={(e) => update({ facility_type: e.target.value })}
+            >
+              <option value="">{t("platform.applications.all")}</option>
+              {FACILITY_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {t(`facility.types.${type}`, { defaultValue: type })}
+                </option>
+              ))}
+            </SelectField>
+            <SelectField
+              label={t("platform.review.ownership")}
+              value={ownership}
+              onChange={(e) => update({ ownership: e.target.value })}
+            >
+              <option value="">{t("platform.applications.all")}</option>
+              {(["public", "private", "faith_based", "ngo"] as const).map((o) => (
+                <option key={o} value={o}>
+                  {t(`platform.ownership.${o}`)}
+                </option>
+              ))}
+            </SelectField>
+            <SelectField
+              label={t("platform.facilities.licence")}
+              value={licenceState}
+              onChange={(e) => update({ licence_state: e.target.value })}
+            >
+              <option value="">{t("platform.applications.all")}</option>
+              {(["valid", "expiring", "expired", "missing"] as const).map((l) => (
+                <option key={l} value={l}>
+                  {t(`platform.status.licence.${l}`)}
+                </option>
+              ))}
+            </SelectField>
+            <CheckboxField
+              label={t("platform.facilities.missingCode")}
+              checked={missingCode}
+              onChange={(e) => update({ missing_code: e.target.checked ? "true" : "" })}
+            />
+          </>
         }
         rowActions={(row) => (
           <Link
@@ -187,8 +336,63 @@ function Facilities() {
         loading={list.isPending}
         error={list.isError}
         onRetry={() => void list.refetch()}
-        filtered={Boolean(q || status || licenceState)}
+        filtered={Boolean(q || status || licenceState || facilityType || ownership || missingCode)}
       />
+    </div>
+  );
+}
+
+const FACILITY_TYPES = [
+  "health_post",
+  "health_center",
+  "district_hospital",
+  "provincial_hospital",
+  "referral_hospital",
+  "private_clinic",
+  "polyclinic",
+  "private_hospital",
+  "dental_clinic",
+  "eye_clinic",
+  "diagnostic_center",
+] as const;
+
+/** The facility list as CSV for the Ministry of Health (the same filters; audit-logged). */
+function ExportButton({ params }: { params: Record<string, string> }) {
+  const { t } = useTranslation();
+  const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
+  async function download() {
+    setBusy(true);
+    setFailed(false);
+    try {
+      const query = new URLSearchParams(Object.entries(params).filter(([, v]) => v)).toString();
+      const response = await fetch(
+        `${env.apiBaseUrl}${onboardingPaths.facilitiesExport}${query ? `?${query}` : ""}`,
+        { credentials: "include" },
+      );
+      if (!response.ok) throw new Error(String(response.status));
+      const url = URL.createObjectURL(await response.blob());
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `medilink-facilities-${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      setFailed(true);
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <div className="flex flex-col items-end gap-1">
+      <Button variant="secondary" loading={busy} onClick={() => void download()}>
+        {t("platform.facilities.export")}
+      </Button>
+      {failed && (
+        <span role="alert" className="text-body-sm text-danger">
+          {t("platform.facilities.exportFailed")}
+        </span>
+      )}
     </div>
   );
 }
@@ -243,34 +447,7 @@ function FacilityDetail() {
           <TabsTrigger value="flags">{t("platform.facilities.tabs.flags")}</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="flex flex-col gap-4">
-          <dl className="m-0 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
-            <dt className="text-fg-muted">{t("platform.facilities.address")}</dt>
-            <dd className="m-0">{data.slug}</dd>
-            <dt className="text-fg-muted">{t("platform.review.type")}</dt>
-            <dd className="m-0">
-              {t(`facility.types.${data.facility_type}`, { defaultValue: data.facility_type })}
-            </dd>
-            <dt className="text-fg-muted">{t("platform.facilities.district")}</dt>
-            <dd className="m-0">{data.district?.name ?? "—"}</dd>
-            <dt className="text-fg-muted">{t("platform.review.mohCode")}</dt>
-            <dd className="m-0">{data.moh_facility_code || "—"}</dd>
-            <dt className="text-fg-muted">{t("platform.review.tin")}</dt>
-            <dd className="m-0">{data.tin || "—"}</dd>
-            <dt className="text-fg-muted">{t("platform.facilities.licence")}</dt>
-            <dd className="m-0">
-              <StatusBadge kind="licence" value={data.licence_state} />
-            </dd>
-            {data.application && (
-              <>
-                <dt className="text-fg-muted">{t("platform.facilities.application")}</dt>
-                <dd className="m-0">
-                  <Link to={`/platform/applications/${data.application.id}`}>
-                    {data.application.applicant_name}
-                  </Link>
-                </dd>
-              </>
-            )}
-          </dl>
+          <FacilityOverview facility={data} />
           <IdentifiersForm facility={data} />
           <div className="flex flex-wrap gap-2">
             {(ACTIONS[data.status] ?? []).map((a) => (
@@ -298,6 +475,153 @@ function FacilityDetail() {
         <StatusActionDialog facility={data} action={action} onClose={() => setAction(null)} />
       )}
     </div>
+  );
+}
+
+/** What MediLink holds about the facility: identity, contacts, place, people and staff. */
+function FacilityOverview({ facility }: { facility: PlatformFacilityDetail }) {
+  const { t } = useTranslation();
+  const place = facility.location;
+  const rows: [string, ReactNode][] = [
+    [t("platform.facilities.address"), facility.slug],
+    [
+      t("platform.review.type"),
+      t(`facility.types.${facility.facility_type}`, { defaultValue: facility.facility_type }),
+    ],
+    [
+      t("platform.review.ownership"),
+      t(`platform.ownership.${facility.ownership}`, { defaultValue: facility.ownership }),
+    ],
+    [
+      t("platform.review.levelOfCare"),
+      facility.level_of_care ? t(`platform.review.level.${facility.level_of_care}`) : "—",
+    ],
+    [t("platform.review.organization"), facility.organization_name || "—"],
+    [t("platform.review.mohCode"), facility.moh_facility_code || "—"],
+    [t("platform.review.tin"), facility.tin || "—"],
+    [
+      t("platform.facilities.licence"),
+      <StatusBadge key="licence" kind="licence" value={facility.licence_state} />,
+    ],
+  ];
+  const contact: [string, ReactNode][] = [
+    [
+      t("platform.form.phone"),
+      facility.phone ? <a href={`tel:${facility.phone}`}>{facility.phone}</a> : "—",
+    ],
+    [
+      t("platform.form.email"),
+      facility.email ? <a href={`mailto:${facility.email}`}>{facility.email}</a> : "—",
+    ],
+    [t("platform.form.address"), facility.address || "—"],
+    [
+      t("platform.review.location"),
+      [place.village, place.cell, place.sector, place.district, place.province]
+        .filter(Boolean)
+        .join(", ") || "—",
+    ],
+    [
+      t("platform.review.mapPin"),
+      facility.latitude !== null && facility.longitude !== null ? (
+        <a
+          href={`https://www.openstreetmap.org/?mlat=${facility.latitude}&mlon=${facility.longitude}#map=17/${facility.latitude}/${facility.longitude}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {`${facility.latitude}, ${facility.longitude}`}
+        </a>
+      ) : (
+        "—"
+      ),
+    ],
+    [t("platform.facilities.photos"), String(facility.photo_count)],
+  ];
+  const professions = Object.entries(facility.staff_by_profession);
+  return (
+    <div className="grid gap-4 lg:grid-cols-2">
+      <Card padding="md" className="flex flex-col gap-3">
+        <h2 className="m-0 font-heading text-h4 font-bold">{t("platform.facilities.identity")}</h2>
+        <Facts rows={rows} />
+      </Card>
+      <Card padding="md" className="flex flex-col gap-3">
+        <h2 className="m-0 font-heading text-h4 font-bold">{t("platform.facilities.contact")}</h2>
+        <Facts rows={contact} />
+      </Card>
+      <Card padding="md" className="flex flex-col gap-3">
+        <h2 className="m-0 font-heading text-h4 font-bold">{t("platform.facilities.inCharge")}</h2>
+        {facility.admins.length === 0 ? (
+          <p className="m-0 text-fg-muted">{t("platform.facilities.noAdmin")}</p>
+        ) : (
+          <ul className="m-0 flex list-none flex-col gap-2 p-0">
+            {facility.admins.map((a) => (
+              <li key={a.email} className="flex flex-col">
+                <Link to={`/platform/users/${a.user_id}`} className="font-semibold">
+                  {a.name}
+                </Link>
+                <span className="text-body-sm text-fg-secondary">
+                  <a href={`mailto:${a.email}`}>{a.email}</a>
+                  {a.phone && (
+                    <>
+                      {" · "}
+                      <a href={`tel:${a.phone}`}>{a.phone}</a>
+                    </>
+                  )}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+        {facility.application && (
+          <p className="m-0 text-body-sm text-fg-secondary">
+            {t("platform.facilities.application")}:{" "}
+            <Link to={`/platform/applications/${facility.application.id}`}>
+              {facility.application.applicant_name}
+            </Link>
+          </p>
+        )}
+      </Card>
+      <Card padding="md" className="flex flex-col gap-3">
+        <h2 className="m-0 font-heading text-h4 font-bold">{t("platform.facilities.staff")}</h2>
+        <p className="m-0 text-body-sm text-fg-secondary">
+          {t("platform.facilities.staffCount", { count: facility.staff_count })}
+          {facility.doctor_count > 0 &&
+            ` · ${t("platform.facilities.doctorsChecked", {
+              checked: facility.doctors_attested,
+              count: facility.doctor_count,
+            })}`}
+        </p>
+        {professions.length > 0 && (
+          <ul className="m-0 flex list-none flex-col gap-1 p-0 text-body-sm">
+            {professions.map(([code, count]) => (
+              <li key={code} className="flex justify-between gap-3">
+                <span>
+                  {t(`setup.professions.${code}`, {
+                    defaultValue: t("platform.facilities.professionUnknown"),
+                  })}
+                </span>
+                <span className="font-semibold">{count}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        <Link to={`/platform/users?facility=${facility.id}`} className="text-body-sm font-semibold">
+          {t("platform.facilities.seeStaff")}
+        </Link>
+      </Card>
+    </div>
+  );
+}
+
+function Facts({ rows }: { rows: [string, ReactNode][] }) {
+  return (
+    <dl className="m-0 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
+      {rows.map(([label, value]) => (
+        <div key={label} className="contents">
+          <dt className="text-fg-muted">{label}</dt>
+          <dd className="m-0 break-words">{value}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 

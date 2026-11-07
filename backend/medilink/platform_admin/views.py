@@ -4,20 +4,27 @@ need a recent step-up, a written reason, and are audited. Patients appear as acc
 
 from __future__ import annotations
 
+import csv
 import hashlib
+import io
 from datetime import timedelta
 from typing import Any
 
 from django.contrib.auth import get_user_model
+from django.db import transaction
 from django.db.models import Max, Q, Sum
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from django_otp.plugins.otp_totp.models import TOTPDevice
-from drf_spectacular.utils import OpenApiParameter, extend_schema
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema
+from rest_framework import exceptions
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from medilink.accounts.lockout import login_policy, mfa_policy, reset_email_allowed
 from medilink.accounts.models import RecoveryCode, UserSession
 from medilink.accounts.services import revoke_all_sessions
 from medilink.audit.models import AuditEntry
@@ -28,11 +35,18 @@ from medilink.core.exceptions import BusinessRuleViolation
 from medilink.core.pagination import DefaultPagination
 from medilink.facilities.models import PublicListing
 from medilink.onboarding.serializers import overview_data
+from medilink.platform_admin import national_report
 from medilink.platform_admin import serializers as s
 from medilink.tenancy.context import rls_context
-from medilink.tenancy.models import Facility, FacilityMembership, FacilityStatus
+from medilink.tenancy.models import Facility, FacilityMembership, FacilityStatus, Invitation
+from medilink.visits.report import GROUPS, parse_period
 
 TAG = ["platform-admin"]
+NO_PATIENT_PHONE = _("A patient's phone is kept on their patient record, not on the account.")
+LOCKED_FIRST = _("Unlock the account first.")
+TOO_MANY_EMAILS = _("This person was already sent 3 of these emails in the last hour. Try later.")
+ALREADY_CONFIRMED = _("This person has already confirmed their email.")
+CONFIRM_FIRST = _("This person hasn't confirmed their email yet: resend the confirmation email.")
 STALE_AFTER = timedelta(minutes=30)
 SECURITY_PREFIXES = ("auth.", "platform.user.", "staff.mfa.")
 ACCESS_ACTIONS = Q(action__startswith="authz.break_glass") | Q(
@@ -43,6 +57,11 @@ ACCESS_ACTIONS = Q(action__startswith="authz.break_glass") | Q(
     ]
 )
 FAILURE_WORDS = ("failure", "locked", "exhausted", "denied")
+REPORT_PARAMS = [
+    OpenApiParameter("from", OpenApiTypes.DATE, description="First day; 29 days ago by default"),
+    OpenApiParameter("to", OpenApiTypes.DATE, description="Last day; today by default"),
+    OpenApiParameter("group", str, enum=list(GROUPS), description="day by default"),
+]
 
 User = get_user_model()
 
@@ -60,13 +79,104 @@ def _memberships() -> dict[Any, list[dict[str, Any]]]:
             ):
                 out.setdefault(m.user_id, []).append(
                     {
+                        "membership_id": m.pk,
                         "facility_id": facility.pk,
                         "facility_name": facility.name,
                         "roles": sorted(r.code for r in m.roles.all()),
                         "is_active": m.is_active,
+                        "deactivated_at": m.deactivated_at,
+                        "deactivation_reason": m.deactivation_reason,
                     }
                 )
     return out
+
+
+def _invitations(email: str) -> list[dict[str, Any]]:
+    """Pending staff invitations sent to this email, read one facility at a time."""
+    now = timezone.now()
+    out: list[dict[str, Any]] = []
+    for facility in Facility.objects.only("pk", "name"):
+        with rls_context(facility_id=facility.pk):
+            for i in Invitation.objects.filter(
+                facility_id=facility.pk,
+                email__iexact=email,
+                accepted_at__isnull=True,
+                revoked_at__isnull=True,
+                expired_at__isnull=True,
+                expires_at__gt=now,
+            ):
+                out.append(
+                    {
+                        "facility_id": facility.pk,
+                        "facility_name": facility.name,
+                        "roles": sorted(i.role_codes),
+                        "invited_at": i.created_at,
+                        "expires_at": i.expires_at,
+                    }
+                )
+    return out
+
+
+def _phone_query(q: str) -> str:
+    """A typed phone number as stored (E.164): 0788… and 250788… find +250788…"""
+    digits = "".join(c for c in q if c.isdigit())
+    if len(digits) < 4 or len(digits) < len(q.replace(" ", "").lstrip("+")):
+        return ""
+    if digits.startswith("0"):
+        return "+250" + digits[1:]
+    return digits
+
+
+def _directory(params: Any, memberships: dict[Any, list[dict[str, Any]]]) -> Any:
+    """The users matching the list filters, filtered in the database (patients are many)."""
+    users = User.objects.order_by("full_name", "email")
+    q = params.get("q", "").strip()
+    if q:
+        match = Q(full_name__icontains=q) | Q(email__icontains=q)
+        phone = _phone_query(q)
+        if phone:
+            match |= Q(phone__contains=phone)
+        users = users.filter(match)
+    staff_ids = list(memberships)
+    kind = params.get("kind")
+    if kind == "platform":
+        users = users.filter(is_platform_admin=True)
+    elif kind == "staff":
+        users = users.filter(is_platform_admin=False, pk__in=staff_ids)
+    elif kind == "patient":
+        users = users.filter(is_platform_admin=False).exclude(pk__in=staff_ids)
+    facility, role = params.get("facility", ""), params.get("role", "")
+    if facility or role:
+        users = users.filter(
+            pk__in=[
+                uid
+                for uid, rows in memberships.items()
+                if any(
+                    (not facility or str(r["facility_id"]) == facility)
+                    and (not role or role in r["roles"])
+                    for r in rows
+                )
+            ]
+        )
+    if params.get("status") == "active":
+        users = users.filter(is_active=True)
+    elif params.get("status") == "locked":
+        users = users.filter(is_active=False)
+    mfa = params.get("mfa")
+    with_mfa = TOTPDevice.objects.filter(confirmed=True).values("user_id")
+    if mfa == "on":
+        users = users.filter(pk__in=with_mfa)
+    elif mfa == "off":  # two-step sign-in is for staff and platform admins, never patients
+        users = users.exclude(pk__in=with_mfa).filter(
+            Q(is_platform_admin=True) | Q(pk__in=staff_ids)
+        )
+    if params.get("verification") == "pending":
+        users = users.filter(email_verification_pending=True)
+    return users
+
+
+def _sign_in_blocked_for(user: Any) -> int:
+    return max(login_policy().retry_after(user.email), mfa_policy().retry_after(str(user.pk)))
 
 
 def _mfa_users() -> set[Any]:
@@ -79,11 +189,30 @@ def _kind(user: Any, memberships: dict[Any, list[dict[str, Any]]]) -> str:
     return "staff" if user.pk in memberships else "patient"
 
 
-def _row(user: Any, memberships: dict[Any, list[dict[str, Any]]], mfa: set[Any]) -> dict[str, Any]:
+def _clinicians(user_ids: list[Any]) -> dict[Any, Any]:
+    """The clinician profiles of these users (profession and licence for the list)."""
+    from medilink.accounts.models import ClinicianProfile
+
+    return {c.user_id: c for c in ClinicianProfile.objects.filter(user_id__in=user_ids)}
+
+
+def _row(
+    user: Any,
+    memberships: dict[Any, list[dict[str, Any]]],
+    mfa: set[Any],
+    clinicians: dict[Any, Any] | None = None,
+) -> dict[str, Any]:
+    from medilink.facilities.clinician import licence_state
+
+    clinician = (clinicians or {}).get(user.pk)
     return {
         "id": user.pk,
         "full_name": user.full_name,
         "email": user.email,
+        "phone": user.phone,
+        # staff who are clinicians: what the facility admins check
+        "profession": clinician.profession if clinician else "",
+        "licence_state": licence_state(clinician) if clinician else None,
         "kind": _kind(user, memberships),
         "is_active": user.is_active,
         "mfa_enabled": user.pk in mfa,
@@ -207,7 +336,9 @@ class _Action(_Platform):
     def done(self, request: Request, user: Any) -> Response:
         memberships = _memberships()
         user.refresh_from_db()
-        return Response(s.UserRowSerializer(_row(user, memberships, _mfa_users())).data)
+        return Response(
+            s.UserRowSerializer(_row(user, memberships, _mfa_users(), _clinicians([user.pk]))).data
+        )
 
 
 # ---- command centre ----------------------------------------------------------------------------
@@ -315,72 +446,247 @@ class CommandCenterView(_Platform):
 # ---- users ------------------------------------------------------------------------------------
 
 
+_DIRECTORY_PARAMS = [
+    OpenApiParameter("q", str, description="Name, email or phone"),
+    OpenApiParameter("kind", str, enum=list(s.USER_KINDS)),
+    OpenApiParameter("status", str, enum=["active", "locked"]),
+    OpenApiParameter("mfa", str, enum=["on", "off"]),
+    OpenApiParameter("facility", str, description="Facility ID: its staff, active or not"),
+    OpenApiParameter("role", str, description="Role code at any (or the chosen) facility"),
+    OpenApiParameter("verification", str, enum=["pending"]),
+]
+
+
 class UsersView(_Platform):
     @extend_schema(
         tags=TAG,
         operation_id="platform_users",
-        parameters=[
-            OpenApiParameter("q", str),
-            OpenApiParameter("kind", str, enum=list(s.USER_KINDS)),
-            OpenApiParameter("status", str, enum=["active", "locked"]),
-            OpenApiParameter("mfa", str, enum=["on", "off"]),
-            OpenApiParameter("page", int),
-        ],
+        parameters=[*_DIRECTORY_PARAMS, OpenApiParameter("page", int)],
         responses={200: s.UserRowSerializer(many=True)},
     )
     def get(self, request: Request) -> Response:
-        params = request.query_params
-        users = User.objects.order_by("full_name")
-        q = params.get("q", "").strip()
-        if q:
-            users = users.filter(Q(full_name__icontains=q) | Q(email__icontains=q))
-        if params.get("status") == "active":
-            users = users.filter(is_active=True)
-        elif params.get("status") == "locked":
-            users = users.filter(is_active=False)
         memberships = _memberships()
-        mfa = _mfa_users()
-        rows = [_row(u, memberships, mfa) for u in users]
-        if params.get("kind") in s.USER_KINDS:
-            rows = [r for r in rows if r["kind"] == params["kind"]]
-        if params.get("mfa") in ("on", "off"):
-            rows = [r for r in rows if r["mfa_enabled"] == (params["mfa"] == "on")]
         paginator = DefaultPagination()
-        page = paginator.paginate_queryset(rows, request, self) or []
-        return paginator.get_paginated_response(s.UserRowSerializer(page, many=True).data)
+        page: list[Any] = list(
+            paginator.paginate_queryset(
+                _directory(request.query_params, memberships), request, self
+            )
+            or []
+        )
+        mfa = _mfa_users()
+        clinicians = _clinicians([u.pk for u in page])
+        return paginator.get_paginated_response(
+            s.UserRowSerializer(
+                [_row(u, memberships, mfa, clinicians) for u in page], many=True
+            ).data
+        )
 
 
-class UserView(_Platform):
+class UsersSummaryView(_Platform):
+    @extend_schema(
+        tags=TAG, operation_id="platform_users_summary", responses={200: s.UserSummarySerializer}
+    )
+    def get(self, request: Request) -> Response:
+        memberships = _memberships()
+        staff_ids = list(memberships)
+        # counts only, for the platform admin: no rows leave this view
+        users = User.objects.all()  # nosemgrep: medilink-objects-all-in-view
+        with_mfa = TOTPDevice.objects.filter(confirmed=True).values("user_id")
+        facilities: dict[Any, str] = {}
+        for rows in memberships.values():
+            for r in rows:
+                facilities[r["facility_id"]] = r["facility_name"]
+        data = {
+            "total": users.count(),
+            "platform": users.filter(is_platform_admin=True).count(),
+            "staff": users.filter(is_platform_admin=False, pk__in=staff_ids).count(),
+            "patient": users.filter(is_platform_admin=False).exclude(pk__in=staff_ids).count(),
+            "locked": users.filter(is_active=False).count(),
+            "without_mfa": users.filter(Q(is_platform_admin=True) | Q(pk__in=staff_ids))
+            .exclude(pk__in=with_mfa)
+            .count(),
+            "verification_pending": users.filter(email_verification_pending=True).count(),
+            "facilities": [
+                {"id": pk, "name": name}
+                for pk, name in sorted(facilities.items(), key=lambda item: item[1].lower())
+            ],
+        }
+        return Response(s.UserSummarySerializer(data).data)
+
+
+EXPORT_COLUMNS = (
+    ("full_name", "Name"),
+    ("email", "Email"),
+    ("phone", "Work phone"),
+    ("kind", "Account"),
+    ("facilities", "Facilities and roles"),
+    ("profession", "Profession"),
+    ("licence_state", "Licence"),
+    ("mfa", "Two-step sign-in"),
+    ("status", "Status"),
+    ("last_login", "Last sign-in"),
+    ("created_at", "Account created"),
+)
+
+
+def _export_csv(rows: list[dict[str, Any]]) -> str:
+    """Staff and platform accounts as CSV (UTF-8 with BOM, formula-safe)."""
+    from medilink.onboarding.facility_report import safe_cell
+
+    buffer = io.StringIO()
+    writer = csv.writer(buffer, lineterminator="\r\n")
+    writer.writerow([label for _key, label in EXPORT_COLUMNS])
+    for row in rows:
+        flat = {
+            **row,
+            "facilities": "; ".join(
+                f"{f['facility_name']} ({', '.join(f['roles'])})"
+                + ("" if f["is_active"] else " - removed")
+                for f in row["facilities"]
+            ),
+            "licence_state": row["licence_state"] or "",
+            "mfa": "on" if row["mfa_enabled"] else "off",
+            "status": "active" if row["is_active"] else "locked",
+            "last_login": row["last_login"].isoformat(timespec="minutes")
+            if row["last_login"]
+            else "",
+            "created_at": row["created_at"].date().isoformat(),
+        }
+        writer.writerow([safe_cell(str(flat.get(key, ""))) for key, _l in EXPORT_COLUMNS])
+    return "﻿" + buffer.getvalue()
+
+
+class UsersExportView(_Platform):
+    """Who has access to MediLink, for an access review: staff and platform admins only."""
+
+    @extend_schema(
+        tags=TAG,
+        operation_id="platform_users_export",
+        parameters=_DIRECTORY_PARAMS,
+        responses={(200, "text/csv"): OpenApiResponse(description="One row per account")},
+        summary="Export staff and platform accounts (CSV, UTF-8; never patients); audit-logged",
+    )
+    def get(self, request: Request) -> HttpResponse:
+        memberships = _memberships()
+        users = list(
+            _directory(request.query_params, memberships).filter(
+                Q(is_platform_admin=True) | Q(pk__in=list(memberships))
+            )
+        )
+        mfa = _mfa_users()
+        clinicians = _clinicians([u.pk for u in users])
+        rows = [_row(u, memberships, mfa, clinicians) for u in users]
+        record(
+            "platform.user.list_exported",
+            request=request,
+            object_type="user",
+            metadata={"rows": len(rows)},
+        )
+        response = HttpResponse(_export_csv(rows), content_type="text/csv; charset=utf-8")
+        name = f"medilink-accounts-{timezone.localdate().isoformat()}.csv"
+        response["Content-Disposition"] = f'attachment; filename="{name}"'
+        response["Cache-Control"] = "no-store"
+        return response
+
+
+def _changes(user: Any, memberships: list[dict[str, Any]]) -> list[AuditEntry]:
+    """What admins did to the account and to its facility access, newest first."""
+    membership_ids = [str(m["membership_id"]) for m in memberships]
+    return list(
+        AuditEntry.objects.filter(
+            Q(object_type="user", object_id=str(user.pk), action__startswith="platform.user.")
+            | Q(
+                object_type="membership",
+                object_id__in=membership_ids,
+                action__startswith="staff.membership.",
+            )
+        )
+        .exclude(action__in=["platform.user.viewed", "platform.user.list_exported"])
+        .select_related("actor")
+        .order_by("-sequence")[:25]
+    )
+
+
+def _detail(user: Any) -> dict[str, Any]:
+    memberships = _memberships()
+    now = timezone.now()
+    data = _row(user, memberships, _mfa_users(), _clinicians([user.pk]))
+    data["email_verified"] = user.email_verified_at is not None
+    data["verification_pending"] = user.email_verification_pending
+    data["preferred_language"] = user.preferred_language
+    data["sign_in_blocked_for"] = _sign_in_blocked_for(user)
+    data["invitations"] = _invitations(user.email)
+    data["sessions"] = [
+        {
+            "ref": hashlib.sha256(x.session_key.encode()).hexdigest()[:10],
+            "audience": x.audience,
+            "created_at": x.created_at,
+            "expires_at": x.expire_date,
+        }
+        for x in UserSession.objects.filter(user=user, expire_date__gt=now).order_by("-created_at")
+    ]
+    names = _facility_names()
+    data["events"] = [
+        _event(e, names)
+        for e in AuditEntry.objects.filter(actor=user)
+        .filter(Q(action__startswith="auth.") | Q(action__startswith="platform."))
+        .select_related("actor")
+        .order_by("-sequence")[:25]
+    ]
+    data["changes"] = [_event(e, names) for e in _changes(user, data["facilities"])]
+    return data
+
+
+class UserView(_Action):
+    permission_classes = [PlatformAdmin, RecentAuthRequired(methods=("PATCH",))]
+
     @extend_schema(tags=TAG, operation_id="platform_user", responses={200: s.UserDetailSerializer})
     def get(self, request: Request, user_id: Any) -> Response:
         user = User.objects.filter(pk=user_id).first()
         if user is None:
             raise Http404
-        memberships = _memberships()
-        now = timezone.now()
-        data = _row(user, memberships, _mfa_users())
-        data["email_verified"] = user.email_verified_at is not None
-        data["sessions"] = [
-            {
-                "ref": hashlib.sha256(x.session_key.encode()).hexdigest()[:10],
-                "audience": x.audience,
-                "created_at": x.created_at,
-                "expires_at": x.expire_date,
-            }
-            for x in UserSession.objects.filter(user=user, expire_date__gt=now).order_by(
-                "-created_at"
-            )
-        ]
-        names = _facility_names()
-        data["events"] = [
-            _event(e, names)
-            for e in AuditEntry.objects.filter(actor=user)
-            .filter(Q(action__startswith="auth.") | Q(action__startswith="platform."))
-            .select_related("actor")
-            .order_by("-sequence")[:25]
-        ]
+        data = _detail(user)
         record("platform.user.viewed", request=request, object_type="user", object_id=user.pk)
         return Response(s.UserDetailSerializer(data).data)
+
+    @extend_schema(
+        tags=TAG,
+        operation_id="platform_user_update",
+        request=s.AccountUpdateSerializer,
+        responses={200: s.UserDetailSerializer},
+        summary="Correct the name, work phone or language (step-up, reason; audit-logged)",
+    )
+    def patch(self, request: Request, user_id: Any) -> Response:
+        from medilink.facilities.staff import work_phone
+
+        user = self.target(request, user_id)
+        body = s.AccountUpdateSerializer(data=request.data)
+        body.is_valid(raise_exception=True)
+        data = body.validated_data
+        changes: dict[str, Any] = {}
+        if "full_name" in data:
+            changes["full_name"] = data["full_name"].strip()
+        if "preferred_language" in data:
+            changes["preferred_language"] = data["preferred_language"]
+        if "phone" in data:
+            if _kind(user, _memberships()) == "patient":
+                # a patient's phone lives on their encrypted patient record, not the account
+                raise exceptions.ValidationError({"phone": [str(NO_PATIENT_PHONE)]})
+            changes["phone"] = work_phone(data["phone"])
+        changed = sorted(k for k, v in changes.items() if getattr(user, k) != v)
+        if changed:
+            for key in changed:
+                setattr(user, key, changes[key])
+            user.save(update_fields=[*changed, "updated_at"])
+            record(
+                "platform.user.updated",
+                request=request,
+                object_type="user",
+                object_id=user.pk,
+                reason=data["reason"],
+                metadata={"fields": changed},
+            )
+        return Response(s.UserDetailSerializer(_detail(user)).data)
 
 
 class LockUserView(_Action):
@@ -470,6 +776,126 @@ class RevokeSessionsView(_Action):
         return self.done(request, user)
 
 
+class SendPasswordResetView(_Action):
+    """For someone who calls for help: the reset link goes to their own address, never to the
+    admin, and the admin never sees or sets the password."""
+
+    @extend_schema(
+        tags=TAG,
+        operation_id="platform_user_password_reset",
+        request=s.AccountReasonSerializer,
+        responses={200: s.UserRowSerializer},
+    )
+    def post(self, request: Request, user_id: Any) -> Response:
+        from medilink.accounts.tasks import send_password_reset_email
+
+        user = self.target(request, user_id)
+        reason = self.reason(request)
+        if not user.is_active:
+            raise BusinessRuleViolation(LOCKED_FIRST)
+        if user.email_verification_pending:
+            raise BusinessRuleViolation(CONFIRM_FIRST)
+        if not reset_email_allowed(user.email):
+            raise BusinessRuleViolation(TOO_MANY_EMAILS)
+        user_ref = str(user.pk)
+        transaction.on_commit(lambda: send_password_reset_email.delay(user_ref))
+        record(
+            "platform.user.password_reset_sent",
+            request=request,
+            object_type="user",
+            object_id=user.pk,
+            reason=reason,
+        )
+        return self.done(request, user)
+
+
+class ResendVerificationView(_Action):
+    @extend_schema(
+        tags=TAG,
+        operation_id="platform_user_verification_resend",
+        request=s.AccountReasonSerializer,
+        responses={200: s.UserRowSerializer},
+    )
+    def post(self, request: Request, user_id: Any) -> Response:
+        from medilink.accounts.tasks import send_verify_email
+
+        user = self.target(request, user_id)
+        reason = self.reason(request)
+        if not user.email_verification_pending:
+            raise BusinessRuleViolation(ALREADY_CONFIRMED)
+        if not reset_email_allowed(user.email, kind="signup"):
+            raise BusinessRuleViolation(TOO_MANY_EMAILS)
+        user_ref = str(user.pk)
+        transaction.on_commit(lambda: send_verify_email.delay(user_ref))
+        record(
+            "platform.user.verification_resent",
+            request=request,
+            object_type="user",
+            object_id=user.pk,
+            reason=reason,
+        )
+        return self.done(request, user)
+
+
+class ClearSignInBlockView(_Action):
+    """Ends the temporary block after too many failed passwords or MFA codes (security 03 §6)."""
+
+    @extend_schema(
+        tags=TAG,
+        operation_id="platform_user_sign_in_unblock",
+        request=s.AccountReasonSerializer,
+        responses={200: s.UserRowSerializer},
+    )
+    def post(self, request: Request, user_id: Any) -> Response:
+        user = self.target(request, user_id)
+        reason = self.reason(request)
+        login_policy().reset(user.email)
+        mfa_policy().reset(str(user.pk))
+        record(
+            "platform.user.sign_in_unblocked",
+            request=request,
+            object_type="user",
+            object_id=user.pk,
+            reason=reason,
+        )
+        return self.done(request, user)
+
+
+class FacilityAccessView(_Action):
+    """Remove or restore a person's access to one facility, for example a facility admin who
+    left. The facility keeps at least one active facility admin."""
+
+    @extend_schema(
+        tags=TAG,
+        operation_id="platform_user_facility_access",
+        parameters=[
+            OpenApiParameter("action", str, OpenApiParameter.PATH, enum=["remove", "restore"])
+        ],
+        request=s.AccountReasonSerializer,
+        responses={200: s.UserDetailSerializer},
+    )
+    def post(self, request: Request, user_id: Any, facility_id: Any, action: str) -> Response:
+        from medilink.facilities import staff
+
+        if action not in ("remove", "restore"):
+            raise Http404
+        user = self.target(request, user_id)
+        reason = self.reason(request)
+        with rls_context(facility_id=facility_id):
+            membership = (
+                FacilityMembership.objects.filter(facility_id=facility_id, user=user)
+                .select_related("facility")
+                .first()
+            )
+            if membership is None:
+                raise Http404
+            if action == "remove":
+                staff.deactivate(membership, reason=reason, actor=request.user, request=request)
+            else:
+                staff.reactivate(membership, actor=request.user, request=request, reason=reason)
+        return Response(s.UserDetailSerializer(_detail(user)).data)
+
+
 # ---- logs -------------------------------------------------------------------------------------
 
 _LOG_PARAMS = [
@@ -503,3 +929,58 @@ class AccessEventsView(_Platform):
     )
     def get(self, request: Request) -> Response:
         return _paged_events(request, self, AuditEntry.objects.filter(ACCESS_ACTIONS))
+
+
+# ---- national aggregate report (#208, upgrade 13 W9) -------------------------------------------
+
+
+class NationalReportView(_Platform):
+    @extend_schema(
+        tags=TAG,
+        operation_id="platform_national_report",
+        parameters=REPORT_PARAMS,
+        responses={200: s.NationalReportSerializer, 400: OpenApiResponse(description="Bad dates")},
+        summary="National aggregate report: load by facility and district, wait trend, top "
+        "diagnoses by district, stock-outs; groups under 10 suppressed (#208)",
+    )
+    def get(self, request: Request) -> Response:
+        start, end, group = parse_period(request.query_params, timezone.localdate())
+        data = national_report.national_report(start, end, group)
+        return Response(s.NationalReportSerializer(data).data)
+
+
+class NationalReportExportView(_Platform):
+    @extend_schema(
+        tags=TAG,
+        operation_id="platform_national_report_export",
+        parameters=[
+            *REPORT_PARAMS,
+            OpenApiParameter("table", str, enum=list(national_report.TABLES), required=True),
+        ],
+        responses={
+            (200, "text/csv"): OpenApiResponse(
+                response=OpenApiTypes.STR, description="One table, UTF-8 with BOM"
+            ),
+            400: OpenApiResponse(description="Bad dates, grouping or table"),
+        },
+        summary="Download one table of the national report as CSV; audit-logged (#208)",
+    )
+    def get(self, request: Request) -> HttpResponse:
+        start, end, group = parse_period(request.query_params, timezone.localdate())
+        table = request.query_params.get("table", "")
+        if table not in national_report.TABLES:
+            raise exceptions.ValidationError({"table": ["Choose a report table."]})
+        data = national_report.national_report(start, end, group)
+        record(
+            "platform.report.exported",
+            request=request,
+            object_type="platform.national_report",
+            metadata={"table": table, "from": str(start), "to": str(end), "group": group},
+        )
+        response = HttpResponse(
+            national_report.export_csv(data, table), content_type="text/csv; charset=utf-8"
+        )
+        name = f"national-{table}-{start.isoformat()}-{end.isoformat()}.csv"
+        response["Content-Disposition"] = f'attachment; filename="{name}"'
+        response["Cache-Control"] = "no-store"
+        return response

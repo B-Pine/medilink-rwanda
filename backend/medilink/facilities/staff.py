@@ -501,7 +501,10 @@ def deactivate(
     return membership
 
 
-def reactivate(membership: FacilityMembership, *, actor: Any, request: Any) -> FacilityMembership:
+def reactivate(
+    membership: FacilityMembership, *, actor: Any, request: Any, reason: str = ""
+) -> FacilityMembership:
+    """`reason` is given when a platform admin restores the access (it is audited)."""
     if membership.is_active:
         return membership
     ensure_configurable(membership.facility)
@@ -523,6 +526,7 @@ def reactivate(membership: FacilityMembership, *, actor: Any, request: Any) -> F
         facility_id=membership.facility_id,
         object_type="membership",
         object_id=membership.pk,
+        reason=reason.strip()[:200],
         metadata={"fields": ["is_active"]},
     )
     return membership

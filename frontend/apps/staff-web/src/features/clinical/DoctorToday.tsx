@@ -255,7 +255,8 @@ function InTheRoom() {
       {current ? (
         <div className="flex flex-wrap items-center gap-4 rounded-xl bg-brand-subtle/60 p-4">
           <TicketNumber number={current.number} size="md" stub />
-          <span className="flex min-w-0 flex-1 flex-col">
+          {/* the name gets the row; the button drops below it rather than squeezing the name */}
+          <span className="flex min-w-0 flex-1 basis-40 flex-col">
             <span className="truncate font-heading text-h3 font-semibold">
               {current.display_name}
             </span>
@@ -270,7 +271,7 @@ function InTheRoom() {
           </span>
           <Link
             to={`/clinical/visits/${current.visit_id}/consultation`}
-            className={buttonClassName({ pill: true })}
+            className={cx(buttonClassName({ pill: true }), "w-full")}
           >
             <Notepad aria-hidden="true" weight="bold" />
             {t("clinical.today.openRecord")}

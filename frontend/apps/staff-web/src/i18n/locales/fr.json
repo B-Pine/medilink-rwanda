@@ -112,7 +112,9 @@
       "receptionist": "Réceptionniste",
       "doctor": "Médecin",
       "pharmacist": "Pharmacien",
-      "cashier": "Caissier"
+      "cashier": "Caissier",
+      "triage_nurse": "Infirmier de triage",
+      "lab_technician": "Technicien de laboratoire"
     }
   },
   "shell": {
@@ -120,10 +122,6 @@
     "openMenu": "Ouvrir le menu",
     "closeMenu": "Fermer le menu",
     "platformAdmin": "Administrateur de la plateforme",
-    "theme": {
-      "toLight": "Passer en mode clair",
-      "toDark": "Passer en mode sombre"
-    },
     "nav": {
       "today": "Aujourd’hui",
       "queue": "File d’attente",
@@ -146,7 +144,6 @@
     "userMenu": {
       "label": "Menu du compte",
       "signedInAs": "Connecté en tant que",
-      "theme": "Thème",
       "language": "Langue",
       "logout": "Se déconnecter",
       "loggingOut": "Déconnexion…"
@@ -175,8 +172,6 @@
   "today": {
     "title": "Aujourd’hui",
     "greeting": "Bonjour, {{name}}",
-    "facility": "Vous travaillez à {{facility}}.",
-    "platform": "Vous êtes connecté en tant qu’administrateur de la plateforme.",
     "rolesLabel": "Vos rôles ici",
     "greeting_morning": "Bonjour, {{name}}",
     "greeting_afternoon": "Bon après-midi, {{name}}",

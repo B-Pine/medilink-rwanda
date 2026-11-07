@@ -67,7 +67,6 @@
     "results": "Résultats de la recherche",
     "noResults": "Aucun patient de cet établissement ne correspond. Vérifiez l'orthographe ou cherchez par téléphone ou identité.",
     "register": "Enregistrer un patient",
-    "shortcuts": "Appuyez sur / pour chercher et N pour un nouveau patient.",
     "button": "Rechercher",
     "noResultsTitle": "Aucun patient trouvé"
   },
@@ -119,6 +118,10 @@
     }
   },
   "record": {
+    "photoHint": "Le patient a ajouté une photo pour vous aider à le reconnaître. Chaque consultation est enregistrée.",
+    "showPhoto": "Afficher la photo",
+    "photoAlt": "Photo de {{name}}",
+    "photoUnavailable": "La photo n'est pas disponible pour le moment.",
     "merged": "Fusionné",
     "staffMember": "Membre du personnel",
     "hasAccount": "A un compte MediLink",
@@ -309,5 +312,26 @@
     "newPhone": "Nouveau téléphone (vide pour le garder)",
     "relationship": "Lien",
     "relationshipHint": "Par exemple : fille, voisin, agent de santé communautaire"
+  },
+  "careSchedule": {
+    "tab": "Calendrier de soins",
+    "title": "Vaccinations et consultations prénatales prévues",
+    "intro": "Le patient reçoit un rappel la veille et le matin même. Le rappel ne dit jamais à quoi sert la visite ; la note n'apparaît que dans l'application du patient.",
+    "empty": "Rien de prévu.",
+    "failed": "Impossible de charger le calendrier de soins.",
+    "add": "Prévoir une date",
+    "kind": "Quoi",
+    "kinds": {
+      "vaccination": "Vaccination",
+      "antenatal": "Consultation prénatale"
+    },
+    "dueOn": "Date",
+    "note": "Note (facultative)",
+    "noteHint": "Par exemple : deuxième dose. 80 caractères au plus.",
+    "save": "Ajouter au calendrier",
+    "saved": "Ajouté. Le patient recevra des rappels.",
+    "cancel": "Annuler la date",
+    "cancelTitle": "Annuler cette date prévue ?",
+    "cancelConsequences": "Le patient ne reçoit aucun rappel pour le {{date}}. Pour déplacer la date, annulez-la et ajoutez la nouvelle."
   }
 }

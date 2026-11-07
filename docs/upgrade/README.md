@@ -28,6 +28,10 @@ Sprints S0–S10 delivered most of the M1 scope, but three things came out of a 
 | 10 | [Implementation plan](10-implementation-plan.md) | Phases, order of work, the older documents to update, and the definition of done |
 | 11 | [Public website](11-public-website.md) | The product owner's brief for every public page (2026-11-02); supersedes 03 where they differ |
 | 12 | [Patient dashboard](12-patient-dashboard.md) | The signed-in patient app under `/dashboard`: shell, overview, pages, surfaces and open backend items; supersedes 04 for layout and addresses |
+| 13 | [Full visit plan](13-full-visit-plan.md) | Every role end to end (2026-11-04): triage nurse, laboratory loop, quick note, cashier, stock, reports, patient follow-through, no-phone patients; workstreams W1–W10 |
+| 14 | [Public site: look audit](14-public-site-look.md) | Every public page audited (2026-11-04); same content, better look: facility cards with building drawings, page bands, type scale, motion |
+| 15 | [Patient mobile app](15-mobile-app.md) | The patient dashboard as a Flutter Android app (2026-11-05): look, screens, interaction, security, versions |
+| 17 | [Email and Sign in with Google](17-email-and-google-signin.md) | Branded emails in rw/en/fr through Gmail, and Google sign-in for patients (2026-11-06): setup steps for Gmail and Google Cloud |
 | — | [audit/](audit/) | Audit reports, one file per audit run |
 
 ## Order of work

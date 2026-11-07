@@ -1,4 +1,4 @@
-import { hasPermission, isApiError, type CashShift } from "@medilink/api-client";
+import { hasPermission, isApiError, shiftCollected, type CashShift } from "@medilink/api-client";
 import { buttonClassName, cx, Skeleton, TicketNumber } from "@medilink/ui";
 import { formatMoney } from "@medilink/ui/i18n";
 import {
@@ -48,12 +48,8 @@ export function CashierTodayCard() {
   });
   if (!show) return null;
   const s = shift.data;
-  const collected = s
-    ? s.expected_totals.cash +
-      s.expected_totals.mtn_momo +
-      s.expected_totals.airtel_money +
-      s.expected_totals.card
-    : 0;
+  // payments only: the expected totals also hold the opening float
+  const collected = s ? shiftCollected(s) : 0;
   const rows = due.data?.results ?? [];
   const partly = rows.filter((r) => r.status === "partly_paid").length;
 
@@ -122,6 +118,35 @@ export function CashierTodayCard() {
         />
         <Tile icon={CashRegister} label={t("billing.today.collected")} value={money(collected)} />
       </ul>
+
+      {s && (
+        <section
+          aria-labelledby="cashier-by-method"
+          className="flex flex-col gap-3 rounded-2xl bg-surface p-5 shadow-card"
+        >
+          <h3 id="cashier-by-method" className="m-0 font-heading text-h3 tracking-tight">
+            {t("billing.shift.byMethod.title")}
+          </h3>
+          <dl className="m-0 grid grid-cols-2 gap-3 md:grid-cols-4">
+            {s.by_method.map((row) => (
+              <div
+                key={row.method}
+                className="flex flex-col gap-0.5 rounded-xl bg-subtle px-3.5 py-3"
+              >
+                <dt className="text-caption text-fg-secondary">
+                  {t(`billing.method.${row.method}`)}
+                </dt>
+                <dd className="m-0 font-heading text-h3 leading-tight font-semibold tabular-nums">
+                  {money(row.received_rwf)}
+                </dd>
+                <dd className="m-0 text-caption text-fg-muted">
+                  {t("billing.today.inDrawer", { amount: money(row.expected_rwf) })}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
 
       <section
         aria-labelledby="cashier-next"

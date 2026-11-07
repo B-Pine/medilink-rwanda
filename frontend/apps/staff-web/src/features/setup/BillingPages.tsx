@@ -59,7 +59,6 @@ export function TariffsPage() {
       <div className="flex flex-col gap-6">
         <PageHeader
           title={t("setup.settings.sections.tariffs.title")}
-          description={t("setup.tariffs.intro")}
           back={back(t)}
           actions={
             <Button onClick={() => setAdding(true)}>
@@ -446,7 +445,6 @@ export function InsurersPage() {
       <div className="flex flex-col gap-6">
         <PageHeader
           title={t("setup.settings.sections.insurers.title")}
-          description={t("setup.insurers.intro")}
           back={back(t)}
           actions={
             <Button onClick={() => setEditing("new")}>

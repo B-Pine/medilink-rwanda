@@ -249,6 +249,35 @@ class VerifyEmailSerializer(StrictSerializer):
     token = serializers.CharField(max_length=512)
 
 
+class GoogleConfigSerializer(serializers.Serializer):
+    enabled = serializers.BooleanField()
+    # Public OAuth client ID for the web button and the app's serverClientId; "" when disabled.
+    client_id = serializers.CharField(allow_blank=True)
+
+
+class GoogleSignInSerializer(StrictSerializer):
+    """Google's ID token, plus the consents a first Google sign-in needs to create an account
+    (the same as sign-up; asked only after the API answers 409 consent_required)."""
+
+    id_token = serializers.CharField(max_length=4096)
+    preferred_language = serializers.ChoiceField(choices=Language.choices, required=False)
+    accepted_terms_version = serializers.CharField(max_length=32, required=False)
+    accepted_privacy_version = serializers.CharField(max_length=32, required=False)
+    research_consent = serializers.BooleanField(required=False, default=False)
+
+    def _validate_version(self, value: str) -> str:
+        value = value.strip()
+        if not VERSION_RE.fullmatch(value):
+            raise serializers.ValidationError(_("Accept the current version to continue."))
+        return value
+
+    def validate_accepted_terms_version(self, value: str) -> str:
+        return self._validate_version(value)
+
+    def validate_accepted_privacy_version(self, value: str) -> str:
+        return self._validate_version(value)
+
+
 # --- audience-neutral ------------------------------------------------------------------------
 
 
@@ -265,5 +294,15 @@ class PasswordResetConfirmSerializer(StrictSerializer):
     new_password = password_field()
 
 
+class PasswordChangeSerializer(StrictSerializer):
+    current_password = password_field()
+    new_password = password_field()
+
+
 class DetailSerializer(serializers.Serializer):
     detail = serializers.CharField()
+
+
+class SignupAcceptedSerializer(DetailSerializer):
+    # False only while PATIENT_SIGNUP_EMAIL_VERIFICATION is off (testing): sign in straight away.
+    email_verification = serializers.BooleanField()

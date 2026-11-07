@@ -28,7 +28,14 @@ export type FacilityType =
   | "diagnostic_center"
   | (string & {});
 
-export type RoleCode = "facility_admin" | "receptionist" | "doctor" | "pharmacist" | "cashier";
+export type RoleCode =
+  | "facility_admin"
+  | "receptionist"
+  | "doctor"
+  | "pharmacist"
+  | "cashier"
+  | "triage_nurse"
+  | "lab_technician";
 
 /**
  * Known permission codes. Feature modules add theirs by declaration merging in their own file,
@@ -46,6 +53,12 @@ export interface PermissionCodes {
   "queue.operate": true;
   "queue.call": true;
   "vitals.record": true;
+  /** #200: the triage nurse's queue, vitals and urgency. */
+  "triage.operate": true;
+  /** #201: the lab queue and samples. */
+  "lab.operate": true;
+  /** #201: enter lab results (never release them). */
+  "lab.result.enter": true;
   "visit.reason.view": true;
   "clinical.view": true;
   "clinical.write": true;
@@ -173,9 +186,35 @@ export interface PatientRegisterRequest {
   research_consent: boolean;
 }
 
+/** Upgrade 17: Sign in with Google (patients). `client_id` is public; "" when off. */
+export interface GoogleConfig {
+  enabled: boolean;
+  client_id: string;
+}
+
+/** Google's ID token; the consents only after a 409 `consent_required` (first sign-in). */
+export interface GoogleSignInRequest {
+  id_token: string;
+  preferred_language?: LanguageCode;
+  accepted_terms_version?: string;
+  accepted_privacy_version?: string;
+  research_consent?: boolean;
+}
+
+/** `error.current` of the 409 `consent_required` answer. */
+export interface GoogleConsentRequired {
+  email: string;
+  full_name: string;
+}
+
 /** 202 body of sign-up and password reset: the same text whether or not the account exists. */
 export interface DetailResponse {
   detail: string;
+}
+
+/** 202 body of sign-up. `email_verification` is false only on a test server: sign in straight away. */
+export interface SignupResponse extends DetailResponse {
+  email_verification?: boolean;
 }
 
 export interface VerifyEmailRequest {
@@ -217,5 +256,7 @@ export interface ApiErrorBody {
     message: string;
     fields?: Record<string, string[]>;
     request_id?: string;
+    /** The current state behind a 409 (e.g. Google `consent_required`: {email, full_name}). */
+    current?: unknown;
   };
 }

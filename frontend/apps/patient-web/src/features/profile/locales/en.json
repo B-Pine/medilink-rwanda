@@ -17,6 +17,15 @@
   },
   "medilinkNumber": "Your MediLink number",
   "sectionsLabel": "Profile sections",
+  "photo": {
+    "title": "Profile photo",
+    "who": "You, people you share this profile with, and staff at facilities where you have a file can see it. It helps them recognise you.",
+    "add": "Add a photo",
+    "change": "Change photo",
+    "remove": "Remove",
+    "alt": "Photo of {{name}}",
+    "tooBig": "Choose a photo smaller than 5 MB."
+  },
   "sections": {
     "details": "My details",
     "identifiers": "Identity documents",

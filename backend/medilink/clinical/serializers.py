@@ -18,6 +18,7 @@ from medilink.clinical.models import (
     ConsultationStatus,
     DiagnosisRank,
 )
+from medilink.visits.models import TRIAGE_URGENCIES
 
 TEXT_MAX = 20_000
 NOTES_MAX = 10_000
@@ -255,10 +256,20 @@ class TriageHintSerializer(serializers.Serializer):
     signed_off = serializers.BooleanField()
 
 
+class NurseTriageSerializer(serializers.Serializer):
+    urgency = serializers.ChoiceField(choices=list(TRIAGE_URGENCIES))
+    note = serializers.CharField(allow_blank=True)
+    by_name = serializers.CharField(allow_blank=True)
+    at = serializers.DateTimeField()
+
+
 class ReasonForVisitSerializer(serializers.Serializer):
     patient_words = serializers.CharField(allow_blank=True)
     symptoms = ReasonSymptomSerializer(many=True)
     triage = TriageHintSerializer(allow_null=True)
+    nurse_triage = NurseTriageSerializer(
+        allow_null=True, help_text="The triage nurse's urgency and note (#200); null when none."
+    )
 
 
 class ConsultationSerializer(serializers.Serializer):

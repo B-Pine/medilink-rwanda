@@ -169,10 +169,7 @@ export function QuestionsPage() {
   if (!allowed) return <NoAccessContent />;
   return (
     <div className="flex flex-col gap-5">
-      <PageHeader
-        title={t("clinical.questions.title")}
-        description={t("clinical.questions.intro")}
-      />
+      <PageHeader title={t("clinical.questions.title")} />
       <Tabs defaultValue="open">
         <TabsList aria-label={t("clinical.questions.title")}>
           <TabsTrigger value="open">{t("clinical.questions.tabs.open")}</TabsTrigger>

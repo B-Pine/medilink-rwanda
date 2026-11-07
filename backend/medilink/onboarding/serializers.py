@@ -135,9 +135,16 @@ class ApplicationPatchInput(StrictSerializer):
 
 
 class PlatformCreateInput(StrictSerializer):
+    """The super admin onboards a facility by phone or visit: everything known so far, then the
+    applicant gets a link to check, add the documents and submit (2026-11-03: all groups)."""
+
     applicant = ApplicantInput()
     facility = FacilityInput()
     location = LocationInput(required=False)
+    proposed_admin = AdminInput(required=False)
+    claimed_insurer_codes = serializers.ListField(
+        child=serializers.CharField(max_length=40), required=False, max_length=20
+    )
     send_link = serializers.BooleanField(default=False)
 
 
@@ -371,7 +378,11 @@ class ApplicationSummarySerializer(serializers.Serializer):
     facility_name = serializers.CharField()
     facility_type = serializers.CharField(allow_blank=True)
     district_code = serializers.CharField(allow_blank=True)
+    district_name = serializers.CharField(allow_blank=True)
     applicant_name = serializers.CharField()
+    proposed_admin_name = serializers.CharField(allow_blank=True)
+    documents_count = serializers.IntegerField()
+    missing_count = serializers.IntegerField()
     created_by_platform = serializers.BooleanField()
     submitted_at = serializers.DateTimeField(allow_null=True)
     last_activity_at = serializers.DateTimeField(allow_null=True)
@@ -399,6 +410,21 @@ class DistrictSerializer(serializers.Serializer):
     name = serializers.CharField()
 
 
+class FacilityPlaceSerializer(serializers.Serializer):
+    province = serializers.CharField(allow_blank=True)
+    district = serializers.CharField(allow_blank=True)
+    sector = serializers.CharField(allow_blank=True)
+    cell = serializers.CharField(allow_blank=True)
+    village = serializers.CharField(allow_blank=True)
+
+
+class FacilityContactSerializer(serializers.Serializer):
+    user_id = serializers.UUIDField(help_text="Opens the person in the user directory.")
+    name = serializers.CharField()
+    email = serializers.CharField()
+    phone = serializers.CharField(allow_blank=True)
+
+
 class PlatformFacilitySerializer(serializers.Serializer):
     id = serializers.UUIDField()
     name = serializers.CharField()
@@ -408,6 +434,19 @@ class PlatformFacilitySerializer(serializers.Serializer):
     ownership = serializers.CharField()
     moh_facility_code = serializers.CharField(allow_blank=True)
     tin = serializers.CharField(allow_blank=True)
+    organization_name = serializers.CharField(allow_blank=True)
+    phone = serializers.CharField(allow_blank=True)
+    email = serializers.CharField(allow_blank=True)
+    address = serializers.CharField(allow_blank=True)
+    latitude = serializers.FloatField(allow_null=True)
+    longitude = serializers.FloatField(allow_null=True)
+    photo_count = serializers.IntegerField()
+    location = FacilityPlaceSerializer()
+    admins = FacilityContactSerializer(many=True)
+    staff_count = serializers.IntegerField()
+    doctor_count = serializers.IntegerField()
+    doctors_attested = serializers.IntegerField()
+    staff_by_profession = serializers.DictField(child=serializers.IntegerField())
     status = serializers.ChoiceField(choices=FacilityStatus.choices)
     district = DistrictSerializer(allow_null=True)
     application_id = serializers.UUIDField(allow_null=True)
@@ -625,13 +664,29 @@ def application_data(
 
 
 def summary_data(application: Application) -> dict[str, Any]:
+    district = (
+        Location.objects.filter(code=application.district_code)
+        .values_list("name", flat=True)
+        .first()
+        if application.district_code
+        else None
+    )
     return {
         "id": application.pk,
         "status": application.status,
         "facility_name": application.facility_name,
         "facility_type": application.facility_type,
         "district_code": application.district_code,
+        "district_name": district or "",
         "applicant_name": application.applicant_name,
+        "proposed_admin_name": application.proposed_admin_name,
+        "documents_count": ApplicationDocument.objects.current()
+        .filter(application=application)
+        .count(),
+        # what still blocks submitting (drafts and changes requested only)
+        "missing_count": len(services.missing_for_submit(application))
+        if application.is_editable
+        else 0,
         "created_by_platform": application.created_by_platform_admin_id is not None,
         "submitted_at": application.submitted_at,
         "last_activity_at": application.last_activity_at,
@@ -689,16 +744,23 @@ def _district(application: Application | None) -> dict[str, str] | None:
 
 
 def facility_data(facility: Facility, *, detail: bool = False) -> dict[str, Any]:
+    from medilink.onboarding.facility_report import facility_profile
+
     application = Application.objects.filter(facility=facility).first()
     licences = _current_licences(facility)
     moh = [lic for lic in licences if lic.kind == LicenceKind.MOH_OPERATING]
+    profile = facility_profile(facility)
     data: dict[str, Any] = {
         "id": facility.pk,
         "name": facility.name,
         "slug": facility.slug,
         "facility_type": facility.facility_type,
-        "level_of_care": application.level_of_care if application else "",
+        # the facility's own (copied at approval), else the application's
+        "level_of_care": profile.pop("level_of_care")
+        or (application.level_of_care if application else ""),
         "ownership": facility.ownership,
+        "organization_name": facility.organization.name if facility.organization_id else "",
+        **profile,
         "moh_facility_code": facility.moh_facility_code,
         "tin": facility.tin,
         "status": facility.status,

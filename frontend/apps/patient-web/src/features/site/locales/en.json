@@ -63,14 +63,12 @@
   },
   "care": {
     "title": "Find healthcare",
-    "lead": "Search by facility, service, specialty or symptom.",
     "results": "Results",
     "emergencyFilter": "Emergency (hospitals)",
     "checkSymptoms": "Check your symptoms instead"
   },
   "facilities": {
     "title": "Healthcare facilities",
-    "lead": "Every verified facility on MediLink.",
     "type": "Facility type",
     "service": "Service",
     "anyService": "All services",
@@ -100,12 +98,8 @@
     "joinQueue": "Join Queue",
     "bookAppointment": "Book Appointment",
     "tabs": {
-      "label": "Facility information",
-      "overview": "Overview",
       "services": "Services",
-      "doctors": "Doctors",
-      "insurance": "Insurance",
-      "hours": "Hours & Location"
+      "doctors": "Doctors"
     },
     "about": "About",
     "noDescription": "The facility has not added a description yet.",
@@ -125,7 +119,6 @@
     "noServices": "No services published yet",
     "noDoctors": "No doctors published yet",
     "doctorDays": "Here {{days}}",
-    "insuranceLead": "Insurers accepted at this facility. Amounts are only on your bill after the visit.",
     "referral": "Mutuelle members need a transfer letter at this level of care.",
     "week": "This week",
     "closures": "Upcoming closures",
@@ -143,7 +136,6 @@
   },
   "doctors": {
     "title": "Doctors",
-    "lead": "Find a doctor by name, service or facility.",
     "searchName": "Search by doctor name",
     "specialty": "Service",
     "anySpecialty": "All services",
@@ -186,7 +178,6 @@
   },
   "services": {
     "title": "Explore healthcare services",
-    "lead": "Services offered by facilities on MediLink.",
     "search": "Search services",
     "none": "No services match your search",
     "categories": {
@@ -224,7 +215,6 @@
   },
   "how": {
     "title": "How MediLink works",
-    "lead": "From searching to your visit, step by step.",
     "steps": {
       "search": {
         "title": "Search for healthcare",
@@ -253,10 +243,10 @@
     },
     "goodTitle": "Good to know",
     "good": {
-      "noAccount": "You can explore facilities, services and doctors without an account.",
-      "walkIn": "Walk-in patients can still be registered at the facility.",
-      "reception": "Reception confirms your physical arrival before you are called.",
-      "noPhone": "No smartphone? The facility gives you a printed ticket, shows your number on the screen and calls it out loud."
+      "noAccount": "No account needed to search.",
+      "walkIn": "Walk-ins are still welcome.",
+      "reception": "Reception confirms you've arrived.",
+      "noPhone": "No phone? You get a printed ticket and your number is called."
     },
     "start": "Find care now"
   },
@@ -282,7 +272,6 @@
   },
   "help": {
     "title": "Help & Support",
-    "lead": "Answers to common questions.",
     "search": "Search help",
     "none": "No answers match your search",
     "articles": "More help articles",
@@ -350,33 +339,32 @@
   },
   "about": {
     "title": "About MediLink",
-    "lead": "MediLink connects people in Rwanda with healthcare facilities, so care is easier to find and to plan.",
+    "lead": "Rwanda's health facilities, in one place.",
     "sections": {
       "what": {
         "title": "What MediLink is",
-        "body": "A national platform where patients find facilities, services and doctors, see live waiting times and join a queue or book. Facilities use it to run the visit from check-in to pharmacy."
+        "body": "Find facilities, services and doctors. See the wait. Join a queue or book."
       },
       "problem": {
         "title": "The problem it addresses",
-        "body": "People often travel to a facility without knowing if it is open, how long the wait is or whether it accepts their insurance. Facilities lack a clear view of who is waiting."
+        "body": "No more travelling without knowing if it's open, how long the wait is, or if your insurance works."
       },
       "how": {
         "title": "How it connects patients and facilities",
-        "body": "Facilities publish their services, hours and live queue. Patients choose with real information and arrive at the right time; reception confirms every arrival."
+        "body": "Facilities publish hours, services and their live queue. Reception confirms every arrival."
       },
       "access": {
         "title": "Accessible to everyone",
-        "body": "Search needs no account. MediLink works in Kinyarwanda, English and French, on small phones and slow connections, and people without a phone are served at the facility with printed tickets and spoken calls."
+        "body": "No account to search. Three languages. Works on small phones. No phone? A printed ticket and spoken calls."
       },
       "privacy": {
         "title": "Protecting patient information",
-        "body": "Health information is handled under Rwanda’s data protection law (Law 058/2021). Facilities see only what they need for your care, and every access to a record is logged."
+        "body": "Covered by Rwanda's data protection law (058/2021). Staff see only what your care needs; every access is logged."
       }
     }
   },
   "contact": {
     "title": "Contact",
-    "lead": "Questions, problems or suggestions.",
     "infoTitle": "Support",
     "infoBody": "For a problem with a visit, contact the facility first. For MediLink itself, use this form.",
     "emergency": "For emergencies call {{number}}. This form is not watched around the clock.",
@@ -399,27 +387,26 @@
   },
   "accessibility": {
     "title": "Accessibility statement",
-    "lead": "MediLink should be usable by everyone.",
     "sections": {
       "standard": {
         "title": "Our standard",
-        "body": "We aim for WCAG 2.2 level AA on every public page and in the patient app."
+        "body": "WCAG 2.2 AA on public pages and the patient app."
       },
       "features": {
         "title": "What we do",
-        "body": "Three languages, large touch targets, a text-size setting, keyboard access, visible focus, screen-reader labels, enough colour contrast, no information by colour alone, and reduced motion when your device asks for it."
+        "body": "Three languages, large touch targets, text size, keyboard use, screen-reader labels, strong contrast, reduced motion."
       },
       "offline": {
         "title": "Beyond the website",
-        "body": "Patients without a phone are served at the facility with printed tickets, a waiting-room screen and spoken calls."
+        "body": "No phone: printed tickets, a waiting-room screen, spoken calls."
       },
       "limits": {
         "title": "Known limits",
-        "body": "Some translations are still being reviewed by native speakers. The map needs a pointer or touch; the list beside it offers the same information. [To confirm]"
+        "body": "Some translations are still under review. The map needs touch or a pointer; the list shows the same."
       },
       "feedback": {
         "title": "Tell us",
-        "body": "If something is hard to use, write to us through the contact page and we will answer."
+        "body": "Hard to use? Tell us on the contact page."
       }
     }
   },
@@ -433,12 +420,10 @@
     "details": "Details"
   },
   "home2": {
-    "tag": "Live waiting times at verified facilities",
     "title": "Find the right care, without the long wait.",
-    "lead": "Compare nearby clinics and hospitals, see who is open and how long the queue is, then join or book.",
+    "lead": "See who's open and the wait. Join or book.",
     "searchPlaceholder": "Service, facility or symptom",
     "search": "Search",
-    "popular": "Popular",
     "chips": {
       "general": "General consultation",
       "maternal": "Maternal care",
@@ -446,67 +431,71 @@
       "dental": "Dental",
       "symptoms": "Not sure? Check symptoms"
     },
-    "float": {
-      "queue": "You're 3rd in queue · about 12 min",
-      "insurance": "Accepted here: Mutuelle · RAMA · MMI",
-      "open": "Open now · closes 18:00"
-    },
-    "trust": {
-      "label": "MediLink in numbers",
-      "facilities": "verified facilities",
-      "districts": "districts you can search",
-      "languages": "languages: Kinyarwanda, English, French",
-      "noAccountValue": "Free",
-      "noAccount": "no account needed to search"
-    },
     "careTitle": "What care do you need?",
-    "careLead": "Pick a service to see the places that offer it.",
+    "allServices": "All services",
     "facilityCount_one": "{{count}} facility",
     "facilityCount_other": "{{count}} facilities",
     "nearTitle": "Open near you",
     "howTitle": "From search to seen, in three steps",
-    "howLead": "No account needed to look; one to join a queue or book.",
     "stepLabel": "Step {{n}}",
     "steps": {
       "search": {
         "title": "Search and compare",
-        "body": "See who is open, the wait, distance and the insurance accepted."
+        "body": "Open now, wait, distance, insurance."
       },
       "join": {
         "title": "Join the queue or book",
-        "body": "Join today's queue from your phone, or reserve a time."
+        "body": "Today's queue or a set time."
       },
       "arrive": {
         "title": "Arrive when it's your turn",
-        "body": "Follow your place live and come when you are close to the front."
+        "body": "Come when you're near the front."
       }
     },
-    "phone": {
-      "search": "Dental near me",
-      "place1": "Kacyiru Health Centre",
-      "wait1": "Open · ~15 min",
-      "place2": "Remera Clinic",
-      "wait2": "Busy · ~45 min",
-      "service": "General consultation",
-      "slot": "Today · 6 waiting",
-      "joinButton": "Join the queue",
-      "ticket": "Your ticket"
-    },
     "facilitiesTitle": "Run a calmer waiting room.",
-    "facilitiesLead": "Patients see your live wait before they come. You see the queue, the flow and the day in one dashboard.",
-    "facilitiesAction": "MediLink for facilities",
-    "dash": {
-      "title": "Today",
-      "live": "Live",
-      "queue": "In queue",
-      "wait": "Average wait",
-      "seen": "Seen today",
-      "note": "Arrivals by hour"
+    "facilitiesLead": "Patients see your wait before they come.",
+    "facilitiesAction": "MediLink for facilities"
+  },
+  "home3": {
+    "titleA": "Find the right care,",
+    "titleB": "without the long wait.",
+    "openNow_one": "{{count}} place open now",
+    "openNow_other": "{{count}} places open now",
+    "waitingNow_one": "{{count}} person waiting",
+    "waitingNow_other": "{{count}} people waiting",
+    "live": "Live",
+    "seePlaces": "See the places",
+    "openTitle": "Open right now",
+    "openLead": "Places on MediLink with their live wait. Tap Near me to sort by distance.",
+    "trustLabel": "What you can count on",
+    "trust": {
+      "noAccount": {
+        "title": "No account to look"
+      },
+      "languages": {
+        "title": "Kinyarwanda, English, Français"
+      },
+      "dataHome": {
+        "title": "Your health data stays in Rwanda"
+      }
     },
-    "photos": {
-      "main": "A health worker in a green uniform shows a woman how to use an app on her phone at a health centre desk.",
-      "entrance": "The covered entrance of a health centre, with patients waiting on benches.",
-      "hillside": "A brick health centre with a green roof among banana trees and green hills."
+    "facilityPoints": {
+      "queue": "A live queue patients can follow from home",
+      "bookings": "Bookings and walk-ins in one day plan",
+      "records": "Records, prescriptions and payments in one place"
+    },
+    "kpi": {
+      "open": "Open now",
+      "openHint_one": "of {{count}} place on MediLink",
+      "openHint_other": "of {{count}} places on MediLink",
+      "waiting": "People waiting",
+      "typical": "Typical wait",
+      "minutes_one": "{{count}} min",
+      "minutes_other": "{{count}} min"
+    },
+    "symptoms": {
+      "title": "Not sure where to go?",
+      "action": "Check your symptoms"
     }
   }
 }

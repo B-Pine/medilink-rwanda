@@ -62,7 +62,6 @@
   "shownIn": "Byerekanywe mu {{language}}: ntibirandikwa mu rurimi rwawe.",
   "support": {
     "title": "Ubufasha",
-    "description": "Amabwiriza y'akazi ku ivuriro, n'ibibazo ku bufasha bwa MediLink.",
     "guides": "Amabwiriza",
     "mine": "Ibibazo byanjye",
     "facility": "Ibibazo by'ivuriro",
@@ -208,7 +207,6 @@
   },
   "contact": {
     "title": "Ubutumwa bwo ku rubuga",
-    "intro": "Bwoherejwe ku rupapuro rwa Twandikire. Subiza kuri imeyili cyangwa telefoni y'uwanditse, hanyuma wemeze ko byakozwe.",
     "tabs": {
       "label": "Uko ubutumwa buhagaze",
       "new": "Bushya",

@@ -1,4 +1,64 @@
 {
+  "lab": {
+    "title": "Ibizamini",
+    "none": "Nta kizamini cyasabwe muri uru ruzinduko.",
+    "order": "Saba ibizamini",
+    "choose": "Ibizamini byo gusaba",
+    "chooseOne": "Hitamo nibura ikizamini kimwe.",
+    "reason": "Kubera iki? (laboratwari irabibona)",
+    "reasonHint": "Urugero: umuriro iminsi 3, kureba niba atari malariya.",
+    "reasonShort": "Impamvu:",
+    "submit": "Saba",
+    "send": "Ohereza muri laboratwari",
+    "sendHint": "Umurwayi ajya muri laboratwari. Inyandiko zawe zikomeza gufunguye, umurwayi akagaruka ku murongo wawe ibisubizo byose nibimara kuboneka.",
+    "sent": "{{name}} agiye muri laboratwari; azagaruka ku murongo wawe ibisubizo nibimara kuboneka.",
+    "orderedBy": "Byasabwe na {{name}} saa {{time}}",
+    "resultedBy": "Igisubizo cyatanzwe na {{name}} saa {{time}}",
+    "labComment": "Icyo laboratwari ivuga:",
+    "note": "Ubutumwa ku murwayi",
+    "noteHint": "Umurwayi abusoma hamwe n’igisubizo.",
+    "review": "Byasomwe",
+    "release": "Ohereza ku murwayi",
+    "releaseHint": "Guhera ubu umurwayi abona iki gisubizo muri dosiye ye.",
+    "cancel": "Hagarika ikizamini",
+    "range": "{{low}}–{{high}} {{unit}}",
+    "table": {
+      "item": "Ikizamini",
+      "value": "Igisubizo",
+      "reference": "Ibisanzwe"
+    },
+    "states": {
+      "ordered": "Cyasabwe",
+      "sample_taken": "Igipimo cyafashwe",
+      "resulted": "Igisubizo cyabonetse",
+      "reviewed": "Cyasomwe",
+      "released": "Cyoherejwe",
+      "cancelled": "Cyahagaritswe"
+    },
+    "specimens": {
+      "blood": "Amaraso",
+      "urine": "Inkari",
+      "stool": "Umwanda"
+    },
+    "flags": {
+      "low": "Biri hasi",
+      "high": "Biri hejuru",
+      "abnormal": "Ntibisanzwe"
+    },
+    "choices": {
+      "negative": "Nta bwandu",
+      "positive": "Afite ubwandu",
+      "invalid": "Ntibyasomwe",
+      "trace": "Bike cyane",
+      "none_seen": "Nta byabonetse",
+      "seen": "Byabonetse"
+    },
+    "inbox": {
+      "title": "Ibisubizo bya laboratwari",
+      "lead": "Ibisubizo by’ibizamini wasabye. Soma buri gisubizo, hanyuma ucyohereze ku murwayi.",
+      "open": "Fungura isuzuma"
+    }
+  },
   "nav": {
     "consultation": "Isuzuma",
     "unsigned": "Dosiye zitarasinywa",
@@ -34,7 +94,6 @@
   },
   "start": {
     "title": "Isuzuma",
-    "description": "Umurwayi urimo kuvura ubu, uhereye ku murongo wanjye.",
     "open": "Fungura isuzuma",
     "none": "Nta murwayi uri kumwe nawe ubu",
     "noneBody": "Hamagara umurwayi ukurikira ku murongo wawe, hanyuma ufungure isuzuma hano.",
@@ -229,7 +288,6 @@
   },
   "unsigned": {
     "title": "Dosiye zitarasinywa",
-    "description": "Inyandiko z'agateganyo zitegereje gusinywa. Zirangize buri munsi: uruzinduko ntirushobora kurangira inyandiko yarwo itarasinywa.",
     "mineOnly": "Izanjye gusa",
     "started": "{{name}} · yatangiye {{time}}",
     "overdue": "Zirengeje amasaha 24",
@@ -274,6 +332,13 @@
     "results_other": "Ibisubizo {{count}} byo hanze byo gusuzuma"
   },
   "reasonForVisit": {
+    "nurse": "Isuzuma ry’ibanze: {{urgency}}",
+    "nurseBy": "na {{name}} saa {{time}}",
+    "nurseUrgency": {
+      "normal": "bisanzwe",
+      "priority": "yihutishwa",
+      "emergency": "byihutirwa"
+    },
     "title": "Icyazanye umurwayi",
     "short": "Impamvu",
     "none": "Nta mpamvu yanditswe igihe cyo gufata gahunda cyangwa kwakirwa. Baza umurwayi.",
@@ -299,7 +364,6 @@
   "toQueue": "Umurongo wanjye",
   "results": {
     "title": "Ibisubizo",
-    "intro": "Ibisubizo bya laboratwari n'amafoto byaturutse hanze wahawe. Bifungure, hanyuma wemeze ko wabisuzumye.",
     "tabs": {
       "pending": "Ibyo gusuzuma",
       "reviewed": "Byasuzumwe"
@@ -345,7 +409,6 @@
   },
   "questions": {
     "title": "Ibibazo bya farumasi",
-    "intro": "Ibibazo farumasi ibaza ku mpapuro z'imiti wanditse. Igisubizo cyawe cyongerwa muri dosiye nk'inyandiko isinywe.",
     "tabs": {
       "open": "Bigutegereje",
       "answered": "Byasubijwe"
@@ -371,7 +434,6 @@
   },
   "followUps": {
     "title": "Gusubira kwa muganga",
-    "intro": "Abarwayi wasabye kugaruka. Abatagarutse bakeneye guhamagarwa n'ababakira cyangwa gahunda nshya.",
     "state": {
       "missed": "Ntibagarutse",
       "today": "Uyu munsi",
@@ -400,7 +462,6 @@
   },
   "activity": {
     "title": "Ibikorwa byanjye",
-    "intro": "Imibare yawe bwite, kuri wowe. Nta mazina y'abarwayi ari hano.",
     "period": "Igihe",
     "days_one": "Umunsi {{count}}",
     "days_other": "Iminsi {{count}}",
@@ -421,7 +482,6 @@
   },
   "templates": {
     "title": "Inyandiko ngenderwaho",
-    "intro": "Inyandiko zawe, amasuzuma n'imiti usanzwe utanga ku nshuro zisanzwe. Gukanda rimwe byuzuza isuzuma.",
     "new": "Inyandiko nshya",
     "edit": "Hindura inyandiko",
     "delete": "Siba",
@@ -452,8 +512,29 @@
     "emptyTitle": "Nta nyandiko ngenderwaho uragira",
     "empty": "Yikore hano, cyangwa ubike isuzuma nk'inyandiko ngenderwaho uri kuryandika.",
     "use": "Koresha inyandiko ngenderwaho",
-    "useHint": "Inyandiko ijya mu bice birimo ubusa cyangwa nyuma y'ibyo wanditse. Amasuzuma yongerwamo nk'ay'agateganyo; imiti ijya ku rupapuro rw'imiti.",
-    "saveAs": "Bika nk'inyandiko ngenderwaho",
-    "itemsFailed": "Iyi miti ikeneye ko uyireba ku rupapuro rw'imiti: {{names}}"
+    "useHint": "Gukanda rimwe byongeramo isuzuma, gahunda, amabwiriza n'imiti. Inyandiko ijya mu bice birimo ubusa cyangwa nyuma y'ibyo wanditse; amasuzuma yongerwamo nk'ay'agateganyo. Ushobora guhindura byose mbere yo gusinya.",
+    "saveAs": "Bika nk'inyandiko ngenderwaho"
+  },
+  "orderSet": {
+    "applied": "“{{name}}” yongewe mu nyandiko",
+    "review": "Bisuzume kuri uyu murwayi, hanyuma usinye.",
+    "listLabel": "Ibyo inyandiko ngenderwaho yahinduye",
+    "diagnosesAdded": "Isuzuma ryongewemo nk'iry'agateganyo: {{names}}",
+    "diagnosesAlready": "Byari bisanzwe mu nyandiko, ntibyongewe kabiri: {{names}}",
+    "diagnosesSkipped": "Ntibyongewemo, si kode ya ICD-10 izwi cyangwa amasuzuma ni menshi: {{names}}. Shaka kode nyayo.",
+    "sections": "Inyandiko yongewe muri: {{names}}",
+    "medicinesAdded": "Byongewe ku rupapuro rw'imiti: {{names}}",
+    "medicinesAlready": "Byari bisanzwe ku rupapuro rw'imiti, ntibyongewe kabiri: {{names}}",
+    "medicinesFailed": "Ntibyongewemo, ubyongere ubwawe ku rupapuro rw'imiti: {{names}}",
+    "tests": "Ibizamini bya laboratwari ntibirasabwa binyuze mu nyandiko ngenderwaho. Bisabe ubwawe: {{names}}",
+    "adding": "Turimo kongeramo imiti…",
+    "needsYou": "Hari ibikeneye ko ubireba. Inyandiko ntisinywa utayisinye.",
+    "stillSign": "Nta na kimwe cyasimbutswe. Inyandiko ntisinywa utayisinye.",
+    "done": "Garuka ku nyandiko",
+    "another": "Koresha indi nyandiko ngenderwaho"
+  },
+  "favourites": {
+    "diagnoses": "Amasuzuma ukunze gukoresha",
+    "add": "Ongeramo {{name}}"
   }
 }

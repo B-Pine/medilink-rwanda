@@ -7,11 +7,11 @@ import {
   type DisplayBoard,
 } from "@medilink/api-client";
 import { cx, ImigongoPattern, Logo, TicketNumber } from "@medilink/ui";
-import { ArrowRight, SpeakerHigh } from "@phosphor-icons/react";
+import { ArrowRight, SpeakerHigh, SpeakerSimpleHigh } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router";
+import { useParams, useSearchParams } from "react-router";
 
 import { useApi } from "../../app/services";
 import { env } from "../../env";
@@ -35,21 +35,75 @@ function chime(context: AudioContext) {
   }
 }
 
+type Lang = "rw" | "en" | "fr";
+const LANGS: readonly Lang[] = ["rw", "en", "fr"];
+const BCP47: Record<Lang, string> = { rw: "rw-RW", en: "en-GB", fr: "fr-FR" };
+
 /**
- * Spoken call (upgrade 08, proposed FR-QUE-21): the number and room read aloud after the chime with
- * the browser's own voice for the display language. Recorded Kinyarwanda voice files are open
- * decision OD-4; where no voice exists the chime alone plays.
+ * Spoken call languages (#207, upgrade 13 W8), from the screen link: `?voice=rw,fr` reads each
+ * call in Kinyarwanda then French; `?repeat=2` says it twice. By default the display language,
+ * twice. Recorded Kinyarwanda voice files are open decision OD-4.
  */
-function speak(number: string, room: string | null, language: string, template: string) {
+function callSettings(search: URLSearchParams, display: Lang): { langs: Lang[]; repeat: number } {
+  const asked = (search.get("voice") ?? "")
+    .split(",")
+    .map((l) => l.trim())
+    .filter((l): l is Lang => (LANGS as readonly string[]).includes(l));
+  const repeat = Number(search.get("repeat"));
+  return {
+    langs: asked.length ? [...new Set(asked)] : [display],
+    repeat: Number.isInteger(repeat) && repeat >= 1 && repeat <= 3 ? repeat : 2,
+  };
+}
+
+/** The browser voice for a language, if the device has one. */
+function voiceFor(lang: Lang): SpeechSynthesisVoice | undefined {
+  return window.speechSynthesis
+    .getVoices()
+    .find((v) => v.lang.toLowerCase().replace("_", "-").startsWith(lang));
+}
+
+/**
+ * Spoken call (upgrade 08, proposed FR-QUE-21): the number and room read aloud after the chime,
+ * in each chosen language that has a voice on this device. When none has one, English or French
+ * stands in (browsers ship those), so a call is never silent; the chime always plays.
+ */
+function speak(
+  number: string,
+  room: string | null,
+  langs: Lang[],
+  repeat: number,
+  sentence: (lang: Lang) => string,
+) {
   if (!("speechSynthesis" in window)) return;
+  let voiced = langs.filter((l) => voiceFor(l));
+  if (!voiced.length) voiced = (["en", "fr"] as const).filter((l) => voiceFor(l)).slice(0, 1);
   const spelled = number.replace("-", " ").split("").join(" ");
-  const utterance = new SpeechSynthesisUtterance(
-    template.replace("{{number}}", spelled).replace("{{room}}", room ?? ""),
-  );
-  utterance.lang = language === "rw" ? "rw-RW" : language === "fr" ? "fr-FR" : "en-GB";
-  utterance.rate = 0.9;
   window.speechSynthesis.cancel();
-  window.speechSynthesis.speak(utterance);
+  for (let round = 0; round < repeat; round++)
+    for (const lang of voiced) {
+      const utterance = new SpeechSynthesisUtterance(
+        sentence(lang)
+          .replace("{{number}}", spelled)
+          .replace("{{room}}", room ?? ""),
+      );
+      utterance.lang = BCP47[lang];
+      utterance.voice = voiceFor(lang) ?? null;
+      utterance.rate = 0.85;
+      window.speechSynthesis.speak(utterance);
+    }
+}
+
+/** Voices load after the page; re-render once they are there. */
+function useVoicesReady() {
+  const [, setCount] = useState(0);
+  useEffect(() => {
+    if (!("speechSynthesis" in window)) return;
+    const update = () => setCount(window.speechSynthesis.getVoices().length);
+    update();
+    window.speechSynthesis.addEventListener("voiceschanged", update);
+    return () => window.speechSynthesis.removeEventListener("voiceschanged", update);
+  }, []);
 }
 
 function useClock() {
@@ -81,7 +135,12 @@ export function DisplayPage() {
   const [flash, setFlash] = useState<string | null>(null);
   const seen = useRef<Set<string> | null>(null);
   const now = useClock();
-  const lang = (i18n.resolvedLanguage ?? "rw") as "rw" | "en" | "fr";
+  const lang = (i18n.resolvedLanguage ?? "rw") as Lang;
+  const [search] = useSearchParams();
+  const call = callSettings(search, lang);
+  useVoicesReady();
+  const sentence = (room: string | null) => (l: Lang) =>
+    i18n.getFixedT(l)(room ? "queue.display.spokenRoom" : "queue.display.spoken");
 
   useEffect(() => {
     if (env.useMocks || !token) return;
@@ -108,8 +167,7 @@ export function DisplayPage() {
           const room =
             data.services.flatMap((s) => s.now_serving).find((n) => n.number === fresh)
               ?.service_point ?? null;
-          const template = t(room ? "queue.display.spokenRoom" : "queue.display.spoken");
-          setTimeout(() => speak(fresh, room, lang, template), 900);
+          setTimeout(() => speak(fresh, room, call.langs, call.repeat, sentence(room)), 900);
         }
         const timer = setTimeout(() => setFlash(null), 1500);
         seen.current = new Set(called);
@@ -117,7 +175,7 @@ export function DisplayPage() {
       }
     }
     seen.current = new Set(called);
-    // t and lang only shape the spoken sentence; a language change must not replay a call
+    // the call settings only shape the spoken sentence; a change must not replay a call
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [board.data, soundOn]);
 
@@ -125,6 +183,11 @@ export function DisplayPage() {
     audio.current ??= new AudioContext();
     void audio.current.resume();
     setSoundOn(true);
+  };
+  const testSound = () => {
+    if (audio.current) chime(audio.current);
+    const room = t("queue.display.testRoom");
+    setTimeout(() => speak("A-001", room, call.langs, 1, sentence(room)), 900);
   };
 
   if (board.isError) {
@@ -148,7 +211,16 @@ export function DisplayPage() {
           </h1>
         </div>
         <div className="flex items-center gap-6">
-          {!soundOn && (
+          {soundOn ? (
+            <button
+              type="button"
+              onClick={testSound}
+              className="inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-[1.8vh] font-semibold text-on-forest-muted ring-1 ring-on-forest/15 transition-colors duration-200 ease-out-quint hover:bg-on-forest/10 hover:text-on-forest"
+            >
+              <SpeakerSimpleHigh aria-hidden="true" />
+              {t("queue.display.testSound")}
+            </button>
+          ) : (
             <button
               type="button"
               onClick={enableSound}

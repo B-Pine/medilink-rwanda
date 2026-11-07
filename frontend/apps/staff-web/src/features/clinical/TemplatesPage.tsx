@@ -20,7 +20,7 @@ import {
   TextareaField,
   TextField,
 } from "@medilink/ui";
-import { Notebook, PencilSimple, Pill, Plus, Trash, X } from "@phosphor-icons/react";
+import { Flask, Notebook, PencilSimple, Pill, Plus, Trash, X } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDeferredValue, useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
@@ -195,6 +195,8 @@ export function TemplateEditor({
           .filter(Boolean)
           .slice(0, 5),
         items,
+        // lab tests (W3 extension point) have no editor yet: keep what the template holds
+        tests: initial?.tests ?? [],
       };
       return initial?.id
         ? api.clinical.updateTemplate(initial.id, body)
@@ -336,14 +338,15 @@ function TemplateCard({
         </Button>
       </div>
       {preview && <p className="m-0 line-clamp-2 text-body-sm text-fg-secondary">{preview}</p>}
-      {(tpl.diagnosis_codes.length > 0 || tpl.items.length > 0) && (
+      {(tpl.diagnoses.length > 0 || tpl.items.length > 0 || tpl.tests.length > 0) && (
         <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
-          {tpl.diagnosis_codes.map((code) => (
+          {tpl.diagnoses.map((d) => (
             <li
-              key={code}
+              key={d.code}
+              title={d.display}
               className="rounded-md bg-subtle px-2 py-0.5 font-mono text-caption font-semibold"
             >
-              {code}
+              {d.code}
             </li>
           ))}
           {tpl.items.map((item, i) => (
@@ -353,6 +356,15 @@ function TemplateCard({
             >
               <Pill aria-hidden="true" className="size-3" />
               {itemName(item)}
+            </li>
+          ))}
+          {tpl.tests.map((test) => (
+            <li
+              key={test.code}
+              className="inline-flex items-center gap-1 rounded-full bg-subtle px-2.5 py-0.5 text-caption font-semibold text-fg-secondary"
+            >
+              <Flask aria-hidden="true" className="size-3" />
+              {test.name || test.code}
             </li>
           ))}
         </ul>
@@ -383,7 +395,6 @@ export function TemplatesPage() {
     <div className="flex flex-col gap-5">
       <PageHeader
         title={t("clinical.templates.title")}
-        description={t("clinical.templates.intro")}
         actions={
           <Button pill onClick={() => setEditing("new")}>
             <Plus aria-hidden="true" weight="bold" />

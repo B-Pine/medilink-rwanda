@@ -16,9 +16,6 @@ import {
   MenuRadioItem,
   MenuSeparator,
   MenuTrigger,
-  THEME_PREFERENCES,
-  useTheme,
-  type ThemePreference,
 } from "@medilink/ui";
 import { SUPPORTED_LANGUAGES } from "@medilink/ui/i18n";
 import { useTranslation } from "react-i18next";
@@ -40,7 +37,6 @@ function initials(name: string): string {
 /** Avatar menu: who is signed in, theme, language, log out (design 04 §2). */
 export function UserMenu({ me }: { me: StaffMe }) {
   const { t, i18n } = useTranslation();
-  const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const logout = useLogout();
   const { setPending } = useAuthFlow();
@@ -77,15 +73,6 @@ export function UserMenu({ me }: { me: StaffMe }) {
           <p className="m-0 font-semibold">{me.full_name}</p>
           <p className="m-0 text-body-sm break-all text-fg-muted">{me.email}</p>
         </div>
-        <MenuSeparator />
-        <MenuLabel>{t("shell.userMenu.theme")}</MenuLabel>
-        <MenuRadioGroup value={theme} onValueChange={(value) => setTheme(value as ThemePreference)}>
-          {THEME_PREFERENCES.map((option) => (
-            <MenuRadioItem key={option} value={option}>
-              {t(`theme.${option}`, { ns: "ui" })}
-            </MenuRadioItem>
-          ))}
-        </MenuRadioGroup>
         <MenuSeparator />
         <MenuLabel>{t("shell.userMenu.language")}</MenuLabel>
         <MenuRadioGroup

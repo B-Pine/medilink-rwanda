@@ -64,7 +64,7 @@ export function ReordersPage() {
   const list = rows.data?.results ?? [];
   return (
     <div className="flex flex-col gap-5">
-      <PageHeader title={t("queue.reorders.title")} description={t("queue.reorders.intro")} />
+      <PageHeader title={t("queue.reorders.title")} />
       <Tabs
         value={onlyOpen ? "open" : "all"}
         onValueChange={(value) => setOnlyOpen(value === "open")}
@@ -211,7 +211,6 @@ export function DisplaysPage() {
     <div className="flex flex-col gap-5">
       <PageHeader
         title={t("queue.displays.title")}
-        description={t("queue.displays.intro")}
         back={{ to: "/settings", label: t("setup.settings.title") }}
         actions={
           <Button onClick={() => setCreating(true)}>
@@ -290,7 +289,10 @@ function CreateDisplay({ onClose }: { onClose: () => void }) {
     mutationFn: () => api.queue.createDisplayLink({ label, service_ids: chosen }),
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: queueKeys.displays }),
   });
-  const url = create.data ? `${window.location.origin}/display/${create.data.token}` : "";
+  // BASE_URL keeps the /staff/ prefix when the app is served under one (vercel.json)
+  const url = create.data
+    ? `${window.location.origin}${import.meta.env.BASE_URL}display/${create.data.token}`
+    : "";
   return (
     <Dialog
       open

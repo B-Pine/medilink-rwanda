@@ -131,6 +131,20 @@ class RecoveryCode(models.Model):
         return f"recovery code {self.pk}"
 
 
+class GoogleIdentity(models.Model):
+    """A patient account's Google sign-in (upgrade 17): only Google's stable account ID is kept,
+    never a Google token. One Google account opens one MediLink account and vice versa."""
+
+    id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="google_identity")
+    subject = models.CharField(max_length=255, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_used_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self) -> str:
+        return f"google identity {self.pk}"
+
+
 class UserSession(AbstractBaseSession):
     """Server-side session row, tagged with its audience and user so sessions can be listed and
     revoked per user (password reset, deactivation)."""
@@ -260,6 +274,10 @@ class ClinicianTemplate(models.Model):
     Personal working text, never patient data, so it follows the clinician across facilities.
     `items` use the prescription item fields (drug_code or free_text_drug, dose, frequency_code,
     route, duration_days, quantity, instructions).
+
+    Used as an order set (W3, #202): applying it fills the draft in one step. `tests` is the
+    extension point for lab tests (`[{"code", "name"}]`, the W2 lab catalogue codes): stored and
+    returned, but not ordered yet; the consultation says so when a template carries tests.
     """
 
     id = models.UUIDField(primary_key=True, default=uuid7, editable=False)
@@ -268,6 +286,7 @@ class ClinicianTemplate(models.Model):
     sections = models.JSONField(default=dict, blank=True)
     diagnosis_codes = ArrayField(models.CharField(max_length=10), default=list, blank=True)
     items = models.JSONField(default=list, blank=True)
+    tests = models.JSONField(default=list, blank=True)
     use_count = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

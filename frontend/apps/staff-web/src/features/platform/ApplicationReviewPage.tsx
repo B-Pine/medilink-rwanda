@@ -13,6 +13,7 @@ import {
   TextareaField,
   Timeline,
   type DocumentViewerLabels,
+  buttonClassName,
 } from "@medilink/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent, type ReactNode } from "react";
@@ -21,6 +22,7 @@ import { Link, useParams } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
+import { AdminDocumentUpload } from "./AdminDocumentUpload";
 import { facilityTypeLabel } from "../../facility/labels";
 import { useStepUp } from "../lock";
 import {
@@ -97,6 +99,8 @@ function Review() {
   if (app.isError) return <Alert tone="danger">{t("platform.table.error")}</Alert>;
   const data = app.data;
   const underReview = data.status === "under_review";
+  // the super admin completes a draft (or what changes were asked for) on the facility's behalf
+  const editable = data.status === "draft" || data.status === "changes_requested";
   const allAccepted =
     data.documents.length > 0 && data.documents.every((d) => d.review_status === "accepted");
 
@@ -130,6 +134,14 @@ function Review() {
       )}
 
       <div className="flex flex-wrap gap-2">
+        {editable && (
+          <Link
+            to={`/platform/applications/${data.id}/edit`}
+            className={buttonClassName({ variant: "secondary" })}
+          >
+            {t("platform.form.editDetails")}
+          </Link>
+        )}
         {data.status === "submitted" && (
           <Button loading={startReview.isPending} onClick={() => startReview.mutate(data.version)}>
             {t("platform.review.start")}
@@ -311,6 +323,7 @@ function Review() {
               </li>
             ))}
           </ul>
+          {editable && <AdminDocumentUpload app={data} />}
         </Card>
       </div>
 

@@ -20,6 +20,7 @@ ACTIONS: frozenset[str] = frozenset(
         # Facilities
         "facility.status_changed",
         "facility.identifiers_updated",
+        "facility.list_exported",
         "facility.licence.recorded",
         "facility.licence.updated",
         "facility.licence.renewed",

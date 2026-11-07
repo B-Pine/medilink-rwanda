@@ -1,15 +1,18 @@
 import { http, HttpResponse } from "msw";
 
-import type {
-  ApprovalRequest,
-  Bill,
-  BillLine,
-  BillRow,
-  CashShift,
-  ExemptionReason,
-  MethodTotals,
-  PaymentMethod,
-  Receipt,
+import {
+  PAYMENT_METHODS,
+  type ApprovalRequest,
+  type Bill,
+  type BillLine,
+  type BillRow,
+  type CashShift,
+  type ClaimRow,
+  type ClaimStatus,
+  type ExemptionReason,
+  type MethodTotals,
+  type PaymentMethod,
+  type Receipt,
 } from "../../features/billing";
 import type { LanguageCode } from "../../types";
 import type { FeatureMockFactory } from "../features";
@@ -222,39 +225,45 @@ function seed() {
   };
   niyonsaba.approval_requests.push(request);
   // Yesterday's closed shifts wait for the admin's review (B22): one balanced, one 500 RWF short.
+  // Expected totals include the 10,000 RWF float in cash, as the API sends them.
+  const ledger: Record<string, Ledger> = {};
   const closed = (
     cashier: string,
     hoursAgo: number,
-    expected: MethodTotals,
+    received: MethodTotals,
     counted: MethodTotals,
     note: string,
   ): CashShift => {
     const opened = new Date(Date.now() - hoursAgo * 3_600_000);
-    const diff =
-      counted.cash -
-      (expected.cash + 10_000) +
-      (counted.mtn_momo - expected.mtn_momo) +
-      (counted.airtel_money - expected.airtel_money) +
-      (counted.card - expected.card);
-    return {
-      id: id(),
-      membership_id: id(),
-      cashier_name: cashier,
-      status: "closed",
-      opened_at: opened.toISOString(),
-      opening_float_rwf: 10_000,
-      closed_at: new Date(opened.getTime() + 8 * 3_600_000).toISOString(),
-      expected_totals: expected,
-      counted_totals: counted,
-      difference_rwf: diff,
-      note,
-      payment_count: 18 + (hoursAgo % 7),
-      reviewed_by_name: null,
-      reviewed_at: null,
-      review_note: "",
-      is_self_reviewed: false,
-      version: 2,
+    const expected = { ...received, cash: received.cash + 10_000 };
+    const shiftId = id();
+    ledger[shiftId] = {
+      received,
+      counts: { cash: 9, mtn_momo: 7, airtel_money: 2, card: received.card ? 1 : 0 },
     };
+    return summarize(
+      {
+        id: shiftId,
+        membership_id: id(),
+        cashier_name: cashier,
+        status: "closed",
+        opened_at: opened.toISOString(),
+        opening_float_rwf: 10_000,
+        closed_at: new Date(opened.getTime() + 8 * 3_600_000).toISOString(),
+        expected_totals: expected,
+        counted_totals: counted,
+        difference_rwf: sum(counted) - sum(expected),
+        note,
+        payment_count: 18 + (hoursAgo % 7),
+        by_method: [],
+        reviewed_by_name: null,
+        reviewed_at: null,
+        review_note: "",
+        is_self_reviewed: false,
+        version: 2,
+      },
+      ledger,
+    );
   };
   const history = [
     closed(
@@ -272,16 +281,75 @@ function seed() {
       "Gave change from my own pocket once; 500 short in the drawer.",
     ),
   ];
+  // #203: claims of this month; Niyonsaba's RAMA claim was already paid
+  const claims: Record<string, ClaimState> = {
+    [niyonsaba.id]: {
+      status: "paid",
+      reason: "",
+      reference: "RAMA-2026-10-118",
+      decided_by_name: "Mukamana Aline",
+      decided_at: now(),
+      version: 1,
+    },
+  };
+  const icd10: Record<string, string[]> = {
+    [bills[0]!.bill.id]: ["B54"],
+    [bills[2]!.bill.id]: ["J06.9", "R50.9"],
+    [niyonsaba.id]: ["K29.7"],
+  };
   return {
     bills,
     receipts,
     approvals: [request],
     shift: null as CashShift | null,
     history,
+    ledger,
+    claims,
+    icd10,
   };
 }
 
+interface Ledger {
+  received: MethodTotals;
+  counts: MethodTotals;
+}
+
+interface ClaimState {
+  status: ClaimStatus;
+  reason: string;
+  reference: string;
+  decided_by_name: string | null;
+  decided_at: string | null;
+  version: number;
+}
+
+const BOM = String.fromCharCode(0xfeff);
 const zero = (): MethodTotals => ({ cash: 0, mtn_momo: 0, airtel_money: 0, card: 0 });
+const sum = (t: MethodTotals) => t.cash + t.mtn_momo + t.airtel_money + t.card;
+
+/** The end-of-shift summary by method (#203), from what was received and counted. */
+function summarize(shift: CashShift, ledger: Record<string, Ledger>): CashShift {
+  const entry = ledger[shift.id] ?? { received: zero(), counts: zero() };
+  shift.by_method = PAYMENT_METHODS.map((method) => {
+    const counted = shift.counted_totals ? shift.counted_totals[method] : null;
+    return {
+      method,
+      payment_count: entry.counts[method],
+      received_rwf: entry.received[method],
+      paid_out_rwf: 0,
+      expected_rwf: shift.expected_totals[method],
+      counted_rwf: counted,
+      difference_rwf: counted === null ? null : counted - shift.expected_totals[method],
+    };
+  });
+  return shift;
+}
+
+const INSURERS = [
+  { code: "rama", name: "RAMA (RSSB)" },
+  { code: "mutuelle", name: "Mutuelle de Santé" },
+  { code: "mmi", name: "MMI" },
+];
 
 const MESSAGES = {
   noShift: {
@@ -303,6 +371,21 @@ const MESSAGES = {
     en: "A shift is already open.",
     rw: "Hari igihe cy’akazi gifunguye.",
     fr: "Une session est déjà ouverte.",
+  },
+  claimStale: {
+    en: "This claim was changed meanwhile. It was reloaded: check it and try again.",
+    rw: "Iki gisabwa cyahinduwe hagati aho. Cyongeye gufungurwa: kigenzure wongere ugerageze.",
+    fr: "Cette demande a été modifiée entre-temps. Elle a été rechargée : vérifiez et réessayez.",
+  },
+  claimReason: {
+    en: "Give the insurer's reason for the rejection.",
+    rw: "Andika impamvu umwishingizi yatanze yo kwanga.",
+    fr: "Indiquez le motif du refus donné par l’assureur.",
+  },
+  notClaimable: {
+    en: "This bill has no verified insurance share to claim.",
+    rw: "Iyi fagitire nta mugabane w’ubwishingizi wemejwe ufite wo gusaba.",
+    fr: "Cette facture n’a pas de part d’assurance vérifiée à réclamer.",
   },
 } as const;
 
@@ -346,6 +429,66 @@ export const billingMocks: FeatureMockFactory = (context) => {
     balance_rwf: b.totals.balance_rwf,
     version: b.version,
   });
+  const CLAIMS = ["billing.approve", "reports.view"];
+  const claimRow = (b: Bill): ClaimRow => {
+    const claim = db.claims[b.id];
+    return {
+      bill_id: b.id,
+      visit_id: b.visit_id,
+      service_date: b.service_date,
+      patient_display_name: b.patient_display_name,
+      member_number: b.insurance.member_number,
+      icd10_codes: db.icd10[b.id] ?? [],
+      lines: b.lines
+        .filter((l) => !l.removed)
+        .map((l) => ({
+          code: l.code,
+          name: l.name,
+          kind: l.kind,
+          quantity: l.quantity,
+          total_rwf: l.total_rwf,
+          insurer_share_rwf: l.insurer_share_rwf,
+          patient_share_rwf: l.patient_share_rwf,
+          is_covered: l.is_covered,
+        })),
+      total_rwf: b.totals.total_rwf,
+      insurer_share_rwf: b.totals.insurer_share_rwf,
+      patient_share_rwf: b.totals.patient_share_rwf,
+      status: claim?.status ?? "pending",
+      reason: claim?.reason ?? "",
+      reference: claim?.reference ?? "",
+      decided_by_name: claim?.decided_by_name ?? null,
+      decided_at: claim?.decided_at ?? null,
+      version: claim?.version ?? 0,
+    };
+  };
+  const claimRows = (insurer: string, month: string) =>
+    db.bills
+      .map((b) => b.bill)
+      .filter(
+        (b) =>
+          b.insurance.status === "verified" &&
+          b.insurance.insurer_code === insurer &&
+          b.service_date.startsWith(month) &&
+          b.totals.insurer_share_rwf > 0 &&
+          b.status !== "voided",
+      )
+      .map(claimRow);
+  const claimSummary = (rows: ClaimRow[]) => {
+    const of = (status: ClaimStatus) => rows.filter((r) => r.status === status);
+    const share = (list: ClaimRow[]) => list.reduce((s, r) => s + r.insurer_share_rwf, 0);
+    return {
+      count: rows.length,
+      total_rwf: rows.reduce((s, r) => s + r.total_rwf, 0),
+      insurer_share_rwf: share(rows),
+      patient_share_rwf: rows.reduce((s, r) => s + r.patient_share_rwf, 0),
+      pending_count: of("pending").length,
+      paid_count: of("paid").length,
+      paid_rwf: share(of("paid")),
+      rejected_count: of("rejected").length,
+      rejected_rwf: share(of("rejected")),
+    };
+  };
 
   const handlers = [
     http.get(`${S}/bills/`, ({ request }) => {
@@ -431,6 +574,10 @@ export const billingMocks: FeatureMockFactory = (context) => {
       });
       db.shift.expected_totals[body.method] += body.amount_rwf;
       db.shift.payment_count += 1;
+      const entry = (db.ledger[db.shift.id] ??= { received: zero(), counts: zero() });
+      entry.received[body.method] += body.amount_rwf;
+      entry.counts[body.method] += 1;
+      summarize(db.shift, db.ledger);
       return HttpResponse.json(bill, { status: 201 });
     }),
     http.post(`${S}/bills/:id/exemptions/`, async ({ request, params }) => {
@@ -539,7 +686,9 @@ export const billingMocks: FeatureMockFactory = (context) => {
       if ("error" in ok) return ok.error;
       const url = new URL(request.url);
       const status = url.searchParams.get("status");
-      const all = [...(db.shift ? [db.shift] : []), ...db.history];
+      // the signed-in person's own shift is the one opened here; the history is other cashiers'
+      const mine = url.searchParams.get("mine") === "true";
+      const all = [...(db.shift ? [db.shift] : []), ...(mine ? [] : db.history)];
       return HttpResponse.json(
         page(
           all.filter((s) => !status || s.status === status),
@@ -583,17 +732,19 @@ export const billingMocks: FeatureMockFactory = (context) => {
         opened_at: now(),
         opening_float_rwf: body.opening_float_rwf,
         closed_at: null,
-        expected_totals: zero(),
+        expected_totals: { ...zero(), cash: body.opening_float_rwf },
         counted_totals: null,
         difference_rwf: null,
         note: "",
         payment_count: 0,
+        by_method: [],
         reviewed_by_name: null,
         reviewed_at: null,
         review_note: "",
         is_self_reviewed: false,
         version: 1,
       };
+      summarize(db.shift, db.ledger);
       return HttpResponse.json(db.shift, { status: 201 });
     }),
     http.post(`${S}/cash-shifts/:id/close/`, async ({ request, params }) => {
@@ -601,20 +752,87 @@ export const billingMocks: FeatureMockFactory = (context) => {
       if ("error" in ok) return ok.error;
       if (!db.shift || db.shift.id !== params.id) return notFound(ok.lang);
       const body = (await request.json()) as { counted_totals: MethodTotals; note?: string };
-      const expected = db.shift.expected_totals;
-      const counted = body.counted_totals;
+      const counted = { ...zero(), ...body.counted_totals };
       db.shift.status = "closed";
       db.shift.closed_at = now();
       db.shift.counted_totals = counted;
-      db.shift.difference_rwf =
-        counted.cash -
-        (expected.cash + db.shift.opening_float_rwf) +
-        (counted.mtn_momo - expected.mtn_momo) +
-        (counted.airtel_money - expected.airtel_money) +
-        (counted.card - expected.card);
+      db.shift.difference_rwf = sum(counted) - sum(db.shift.expected_totals);
       db.shift.note = body.note ?? "";
       db.shift.version += 1;
+      summarize(db.shift, db.ledger);
       return HttpResponse.json(db.shift);
+    }),
+    // ---- #203 monthly claim list per insurer ----
+    http.get(`${S}/insurance-claims/insurers/`, ({ request }) => {
+      const ok = staff(request, CLAIMS);
+      if ("error" in ok) return ok.error;
+      return HttpResponse.json(INSURERS);
+    }),
+    http.get(`${S}/insurance-claims/`, ({ request }) => {
+      const ok = staff(request, CLAIMS);
+      if ("error" in ok) return ok.error;
+      const url = new URL(request.url);
+      const insurer = url.searchParams.get("insurer") ?? "";
+      const month = url.searchParams.get("month") ?? "";
+      const rows = claimRows(insurer, month);
+      return HttpResponse.json({
+        insurer_code: insurer,
+        month,
+        summary: claimSummary(rows),
+        results: rows,
+      });
+    }),
+    http.get(`${S}/insurance-claims/export/`, ({ request }) => {
+      const ok = staff(request, CLAIMS);
+      if ("error" in ok) return ok.error;
+      const url = new URL(request.url);
+      const rows = claimRows(
+        url.searchParams.get("insurer") ?? "",
+        url.searchParams.get("month") ?? "",
+      );
+      const csv = [
+        "Visit date,Member number,Patient,ICD-10,Insurer share (RWF),Status",
+        ...rows.map((r) =>
+          [
+            r.service_date,
+            r.member_number,
+            r.patient_display_name,
+            r.icd10_codes.join(" "),
+            r.insurer_share_rwf,
+            r.status,
+          ].join(","),
+        ),
+      ].join("\r\n");
+      return new HttpResponse(`${BOM}${csv}\r\n`, {
+        headers: { "Content-Type": "text/csv; charset=utf-8" },
+      });
+    }),
+    http.post(`${S}/bills/:id/claim/`, async ({ request, params }) => {
+      const ok = staff(request, ["billing.approve"]);
+      if ("error" in ok) return ok.error;
+      const bill = find(String(params.id));
+      if (!bill) return notFound(ok.lang);
+      if (bill.insurance.status !== "verified" || bill.totals.insurer_share_rwf <= 0)
+        return rule(ok.lang, "notClaimable");
+      const body = (await request.json()) as {
+        version: number;
+        status: "paid" | "rejected";
+        reason?: string;
+        reference?: string;
+      };
+      const current = db.claims[bill.id];
+      if (body.version !== (current?.version ?? 0)) return rule(ok.lang, "claimStale", 409);
+      const reason = (body.reason ?? "").trim();
+      if (body.status === "rejected" && reason.length < 5) return rule(ok.lang, "claimReason");
+      db.claims[bill.id] = {
+        status: body.status,
+        reason,
+        reference: (body.reference ?? "").trim(),
+        decided_by_name: ok.me.full_name,
+        decided_at: now(),
+        version: (current?.version ?? 0) + 1,
+      };
+      return HttpResponse.json(claimRow(bill));
     }),
   ];
   return {

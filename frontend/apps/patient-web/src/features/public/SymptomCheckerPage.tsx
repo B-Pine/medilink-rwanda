@@ -28,6 +28,7 @@ import { Link } from "react-router";
 import { useApi } from "../../app/services";
 import { PageHeading } from "../../components/PageHeading";
 import { PublicLayout } from "../../layout/PublicLayout";
+import { Breadcrumbs } from "../site/kit";
 import { pick, SERVICE_CODES } from "../booking/discovery";
 
 const AGE_GROUPS: TriageAgeGroup[] = ["infant", "child", "teen", "adult", "older"];
@@ -169,9 +170,9 @@ export function SymptomCheckerPage() {
     <PublicLayout>
       <div className="mx-auto flex w-full max-w-[40rem] flex-col gap-6 px-4 py-8 sm:px-6">
         <div className="flex flex-col gap-2">
-          <p className="m-0 text-caption font-semibold tracking-wide text-fg-muted uppercase">
-            {t("public.checker.eyebrow")}
-          </p>
+          <Breadcrumbs
+            items={[{ to: "/", label: t("nav.home") }, { label: t("public.checker.eyebrow") }]}
+          />
           <PageHeading title={title} className="text-h1 font-bold tracking-tight text-fg">
             {title}
           </PageHeading>

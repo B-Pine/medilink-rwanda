@@ -1,5 +1,5 @@
 import type { CashShift } from "@medilink/api-client";
-import { isApiError } from "@medilink/api-client";
+import { isApiError, shiftCollected } from "@medilink/api-client";
 import { buttonClassName, cx } from "@medilink/ui";
 import {
   CalendarCheck,
@@ -10,7 +10,6 @@ import {
   Phone,
   Plus,
   UserMinus,
-  UsersThree,
   type Icon,
 } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
@@ -104,19 +103,14 @@ export function ReceptionTodayCard() {
   if (!allowed) return null;
 
   const queues = board.data?.queues ?? [];
-  const waiting = queues.reduce((n, q) => n + q.waiting.length, 0);
   const rows = bookings.data?.results ?? [];
   const expected = rows.filter((b) => b.status === "confirmed").length;
   const late = rows.filter((b) => b.status === "confirmed" && b.late).length;
   const missed = rows.filter((b) => b.status === "no_show").length;
   const claims = unconfirmedRemote(queues, null).length;
   const myShift: CashShift | null | undefined = shift.data;
-  const collected: number | null = myShift
-    ? myShift.expected_totals.cash +
-      myShift.expected_totals.mtn_momo +
-      myShift.expected_totals.airtel_money +
-      myShift.expected_totals.card
-    : null;
+  // payments only: the expected totals also hold the opening float
+  const collected: number | null = myShift ? shiftCollected(myShift) : null;
 
   const deskLink =
     "inline-flex min-h-11 items-center gap-2 rounded-xl px-4 font-semibold no-underline transition-[transform,filter,background-color] duration-150 active:scale-[0.97]";
@@ -168,10 +162,9 @@ export function ReceptionTodayCard() {
 
       <ul
         aria-label={t("queue.reception.numbers")}
-        className="m-0 grid list-none grid-cols-2 gap-3 p-0 md:grid-cols-3 xl:grid-cols-5"
+        className="m-0 grid list-none grid-cols-2 gap-3 p-0 md:grid-cols-3"
       >
-        <Stat icon={UsersThree} label={t("queue.reception.waiting")} value={waiting} />
-        <Stat icon={CalendarCheck} label={t("queue.reception.expected")} value={expected} />
+        {/* waiting and expected are in the flow strip above; these are the desk's own counts */}
         <Stat
           icon={HandWaving}
           label={t("queue.reception.claims")}

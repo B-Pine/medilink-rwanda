@@ -7,6 +7,8 @@ import { QueueHeaderLive } from "./LiveIndicator";
 import { OperationsTodayCard } from "./Operations";
 import { ReceptionTodayCard } from "./ReceptionToday";
 import { OnSiteTodayCard } from "./TodayCard";
+import { LabTodayCard } from "./LabToday";
+import { TriageTodayCard } from "./TriageToday";
 
 const lazy =
   <K extends string>(load: () => Promise<Record<K, ComponentType>>, name: K) =>
@@ -20,21 +22,35 @@ export const queueFeature: FeatureRoutes = {
   shell: [
     { path: "/queue", lazy: lazy(() => import("./QueuePage"), "QueuePage") },
     { path: "/queue/mine", lazy: lazy(() => import("./MyQueuePage"), "MyQueuePage") },
+    // upgrade 06 §2 (#200): the triage nurse's station
+    { path: "/triage", lazy: lazy(() => import("./TriagePage"), "TriagePage") },
+    // upgrade 06 §3 (#201): the laboratory technician's station
+    { path: "/lab", lazy: lazy(() => import("./LabPage"), "LabPage") },
     // upgrade 08 §3: thermal prints for patients without a phone
     {
       path: "/queue/visits/:visitId/slip",
       lazy: lazy(() => import("./PrintPages"), "TicketSlipPage"),
     },
     {
+      path: "/queue/visits/:visitId/card",
+      lazy: lazy(() => import("./PrintPages"), "NextVisitCardPage"),
+    },
+    {
       path: "/bookings/card/:code",
       lazy: lazy(() => import("./PrintPages"), "AppointmentCardPage"),
     },
     { path: "/queue/reorders", lazy: lazy(admin, "ReordersPage") },
-    { path: "/reports", lazy: lazy(() => import("./Operations"), "ReportsPage") },
+    { path: "/reports", lazy: lazy(() => import("./ReportsPage"), "ReportsPage") },
     { path: "/settings/displays", lazy: lazy(admin, "DisplaysPage") },
   ],
   headerItems: [QueueHeaderLive],
-  todayCards: [OperationsTodayCard, ReceptionTodayCard, OnSiteTodayCard],
+  todayCards: [
+    OperationsTodayCard,
+    ReceptionTodayCard,
+    OnSiteTodayCard,
+    TriageTodayCard,
+    LabTodayCard,
+  ],
   commands: [
     {
       actions: (me, t) =>

@@ -35,16 +35,14 @@ export function AssistantLauncher({
         aria-expanded={open}
         aria-label={t("public.assistant.launcher")}
         className={cx(
-          "group fixed right-4 z-30 inline-flex min-h-14 cursor-pointer items-center gap-2 rounded-full bg-primary p-2 text-on-primary shadow-raised",
+          // small (48 px) so it covers as little of the page as it can; still a 44 px target
+          "group fixed right-4 z-30 inline-flex min-h-12 cursor-pointer items-center gap-1.5 rounded-full bg-primary p-2 text-on-primary shadow-raised",
           "transition-[translate,box-shadow] duration-200 ease-out hover:-translate-y-0.5 motion-reduce:transition-none",
           "sm:right-6",
           raised ? "bottom-[calc(5rem+env(safe-area-inset-bottom))]" : "bottom-4 sm:bottom-6",
         )}
       >
-        <span
-          aria-hidden="true"
-          className="relative grid size-10 place-items-center rounded-full bg-on-primary/15"
-        >
+        <span aria-hidden="true" className="relative grid size-8 place-items-center rounded-full">
           <Sparkle weight="fill" className="size-5" />
           {/* a conversation is waiting */}
           {chat.messages.length > 0 && (

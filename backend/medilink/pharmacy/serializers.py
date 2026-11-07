@@ -11,10 +11,13 @@ from medilink.accounts.models import Language
 from medilink.accounts.serializers import StrictSerializer
 from medilink.clinical.serializers import AlertSerializer as ClinicalAlertSerializer
 from medilink.pharmacy.models import (
+    AdjustmentReason,
     DispenseOutcome,
     Frequency,
     IdentityMethod,
     ItemStatus,
+    MealTiming,
+    MovementKind,
     PrescriptionStatus,
     QueryStatus,
     Route,
@@ -38,6 +41,9 @@ class ItemWriteSerializer(StrictSerializer):
     route = serializers.ChoiceField(choices=Route.choices)
     duration_days = serializers.IntegerField(
         min_value=1, max_value=365, required=False, allow_null=True
+    )
+    meal_timing = serializers.ChoiceField(
+        choices=MealTiming.choices, required=False, allow_blank=True, default=""
     )
     quantity = serializers.IntegerField(
         min_value=1, max_value=10000, required=False, allow_null=True
@@ -108,6 +114,13 @@ class AvailabilityWriteSerializer(StrictSerializer):
 
 # ---- output -----------------------------------------------------------------------------------
 
+STOCK_LEVELS = ["in_stock", "low", "out"]
+
+
+def stock_level_field() -> serializers.ChoiceField:
+    """W5: null when the medicine does not follow a stock count here."""
+    return serializers.ChoiceField(choices=STOCK_LEVELS, allow_null=True)
+
 
 class PrescriptionAlertSerializer(ClinicalAlertSerializer):
     item_id = serializers.UUIDField()
@@ -152,10 +165,12 @@ class PrescriptionItemSerializer(serializers.Serializer):
     is_off_catalogue = serializers.BooleanField()
     is_controlled = serializers.BooleanField()
     available_here = serializers.BooleanField()
+    stock_level = stock_level_field()
     dose = serializers.CharField()
     frequency_code = serializers.ChoiceField(choices=Frequency.choices)
     route = serializers.ChoiceField(choices=Route.choices)
     duration_days = serializers.IntegerField(allow_null=True)
+    meal_timing = serializers.ChoiceField(choices=MealTiming.choices, allow_blank=True)
     quantity = serializers.IntegerField()
     dispensed_quantity = serializers.IntegerField()
     instructions = serializers.CharField(allow_blank=True)
@@ -209,6 +224,7 @@ class DrugRowSerializer(serializers.Serializer):
     form = serializers.CharField()
     is_controlled = serializers.BooleanField()
     available_here = serializers.BooleanField()
+    stock_level = stock_level_field()
 
 
 class AvailabilityRowSerializer(serializers.Serializer):
@@ -216,6 +232,78 @@ class AvailabilityRowSerializer(serializers.Serializer):
     display = serializers.CharField()
     is_available = serializers.BooleanField()
     updated_at = serializers.DateTimeField(allow_null=True)
+    # W5: a medicine with stock follows its count; its switch is read-only
+    follows_stock = serializers.BooleanField()
+    stock_level = stock_level_field()
+
+
+# ---- W5 stock ---------------------------------------------------------------------------------
+
+
+class StockReceiveSerializer(StrictSerializer):
+    drug_code = serializers.CharField(max_length=40)
+    batch_number = serializers.CharField(max_length=40)
+    expiry_date = serializers.DateField()
+    quantity = serializers.IntegerField(min_value=1, max_value=100_000)
+    supplier = serializers.CharField(max_length=120, required=False, allow_blank=True, default="")
+    low_stock_threshold = serializers.IntegerField(
+        min_value=0, max_value=100_000, required=False, allow_null=True, default=None
+    )
+
+
+class StockAdjustSerializer(StrictSerializer):
+    quantity_change = serializers.IntegerField(min_value=-100_000, max_value=100_000)
+    reason = serializers.ChoiceField(choices=AdjustmentReason.choices)
+    note = serializers.CharField(max_length=300, required=False, allow_blank=True, default="")
+
+
+class StockThresholdSerializer(StrictSerializer):
+    low_stock_threshold = serializers.IntegerField(min_value=0, max_value=100_000)
+
+
+class StockCardSerializer(serializers.Serializer):
+    drug_code = serializers.CharField()
+    display = serializers.CharField()
+    is_controlled = serializers.BooleanField()
+    on_hand = serializers.IntegerField(help_text="Units in batches that have not expired")
+    expired_on_hand = serializers.IntegerField(help_text="Units in expired batches, to remove")
+    low_stock_threshold = serializers.IntegerField()
+    stock_level = serializers.ChoiceField(choices=STOCK_LEVELS)
+    next_expiry = serializers.DateField(allow_null=True)
+    updated_at = serializers.DateTimeField()
+
+
+class StockBatchSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    drug_code = serializers.CharField()
+    display = serializers.CharField()
+    batch_number = serializers.CharField()
+    expiry_date = serializers.DateField()
+    quantity_on_hand = serializers.IntegerField()
+    supplier = serializers.CharField(allow_blank=True)
+    is_expired = serializers.BooleanField()
+    received_at = serializers.DateTimeField()
+
+
+class StockMovementSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    drug_code = serializers.CharField()
+    display = serializers.CharField()
+    batch_id = serializers.UUIDField()
+    batch_number = serializers.CharField()
+    kind = serializers.ChoiceField(choices=MovementKind.choices)
+    quantity = serializers.IntegerField(help_text="Signed: + received, - dispensed or removed")
+    balance_after = serializers.IntegerField(help_text="Units left in the batch afterwards")
+    reason = serializers.CharField(allow_blank=True)
+    note = serializers.CharField(allow_blank=True)
+    prescription_id = serializers.UUIDField(allow_null=True)
+    by_name = serializers.CharField()
+    occurred_at = serializers.DateTimeField()
+
+
+class StockDetailSerializer(StockCardSerializer):
+    batches = StockBatchSerializer(many=True)
+    movements = StockMovementSerializer(many=True)
 
 
 class DosingLabelSerializer(serializers.Serializer):
@@ -225,6 +313,13 @@ class DosingLabelSerializer(serializers.Serializer):
     quantity = serializers.IntegerField()
     dose = serializers.CharField()
     frequency = serializers.CharField()
+    frequency_code = serializers.ChoiceField(choices=Frequency.choices)
+    times = serializers.ListField(
+        child=serializers.ChoiceField(choices=["morning", "noon", "evening", "night"]),
+        help_text="Times of day to take it, for the pictograms; empty for once or when needed",
+    )
+    meal_timing = serializers.ChoiceField(choices=MealTiming.choices, allow_blank=True)
+    meal = serializers.CharField(allow_blank=True, help_text="meal_timing in the label language")
     route = serializers.CharField()
     duration = serializers.CharField(allow_blank=True)
     instructions = serializers.CharField(allow_blank=True)

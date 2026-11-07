@@ -74,7 +74,6 @@ export function SupportPage() {
     <div className="flex flex-col gap-5">
       <PageHeader
         title={t("help.support.title")}
-        description={t("help.support.description")}
         actions={
           <Link to="/support/requests/new" className={buttonClassName({})}>
             {t("help.support.new")}

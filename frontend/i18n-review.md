@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5364.
+Keys: 5936.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -155,12 +155,12 @@ File: `apps/staff-web/src/i18n/locales/rw.json`
 | `facility.roles.doctor` | Muganga | Doctor | needs native-speaker review |
 | `facility.roles.pharmacist` | Umufarumasiye | Pharmacist | needs native-speaker review |
 | `facility.roles.cashier` | Ushinzwe kwishyuza | Cashier | needs native-speaker review |
+| `facility.roles.triage_nurse` | Umuforomo w’isuzuma ry’ibanze | Triage nurse | needs native-speaker review |
+| `facility.roles.lab_technician` | Umutekinisiye wa laboratwari | Lab technician | needs native-speaker review |
 | `shell.navLabel` | Menu nyamukuru | Main menu | needs native-speaker review |
 | `shell.openMenu` | Fungura menu | Open menu | needs native-speaker review |
 | `shell.closeMenu` | Funga menu | Close menu | needs native-speaker review |
 | `shell.platformAdmin` | Umuyobozi w’urubuga | Platform admin | needs native-speaker review |
-| `shell.theme.toLight` | Hindura ujye ku mabara y’umunsi | Switch to light mode | needs native-speaker review |
-| `shell.theme.toDark` | Hindura ujye ku mabara y’ijoro | Switch to dark mode | needs native-speaker review |
 | `shell.nav.today` | Uyu munsi | Today | needs native-speaker review |
 | `shell.nav.queue` | Umurongo | Queue | needs native-speaker review |
 | `shell.nav.calendar` | Kalendari | Calendar | needs native-speaker review |
@@ -178,7 +178,6 @@ File: `apps/staff-web/src/i18n/locales/rw.json`
 | `shell.connection.offline` | Nta murandasi | Offline | needs native-speaker review |
 | `shell.userMenu.label` | Menu ya konti | Account menu | needs native-speaker review |
 | `shell.userMenu.signedInAs` | Winjiye nka | Signed in as | needs native-speaker review |
-| `shell.userMenu.theme` | Imigaragarire | Theme | needs native-speaker review |
 | `shell.userMenu.language` | Ururimi | Language | needs native-speaker review |
 | `shell.userMenu.logout` | Sohoka | Log out | needs native-speaker review |
 | `shell.userMenu.loggingOut` | Urasohoka… | Logging out… | needs native-speaker review |
@@ -200,8 +199,6 @@ File: `apps/staff-web/src/i18n/locales/rw.json`
 | `shell.section.practice` | Akazi kanjye | My practice | needs native-speaker review |
 | `today.title` | Uyu munsi | Today | needs native-speaker review |
 | `today.greeting` | Muraho, {{name}} | Hello, {{name}} | needs native-speaker review |
-| `today.facility` | Ukorera kuri {{facility}}. | You are working at {{facility}}. | needs native-speaker review |
-| `today.platform` | Winjiye nk’umuyobozi w’urubuga. | You are signed in as a platform admin. | needs native-speaker review |
 | `today.rolesLabel` | Inshingano zawe hano | Your roles here | needs native-speaker review |
 | `today.greeting_morning` | Mwaramutse, {{name}} | Good morning, {{name}} | needs native-speaker review |
 | `today.greeting_afternoon` | Mwiriwe, {{name}} | Good afternoon, {{name}} | needs native-speaker review |
@@ -257,7 +254,7 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `validation.emailRequired` | Andika imeyili yawe | Enter your email address | needs native-speaker review |
 | `validation.emailInvalid` | Andika imeyili yanditse neza, urugero: izina@example.rw | Enter an email address in the correct format, like name@example.rw | needs native-speaker review |
 | `validation.passwordRequired` | Andika ijambo ry’ibanga | Enter your password | needs native-speaker review |
-| `validation.passwordLength` | Koresha nibura inyuguti 15 | Use at least 15 characters | needs native-speaker review |
+| `validation.passwordLength` | Koresha nibura inyuguti 8 | Use at least 8 characters | needs native-speaker review |
 | `validation.nameRequired` | Andika amazina yawe | Enter your names | needs native-speaker review |
 | `validation.termsRequired` | Emera amabwiriza yo gukoresha kugira ngo ufungure konti | Accept the terms of use to create an account | needs native-speaker review |
 | `validation.privacyRequired` | Emera itangazo ry’ibanga kugira ngo ufungure konti | Accept the privacy notice to create an account | needs native-speaker review |
@@ -338,7 +335,6 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `footer.cta.symptoms` | Ntuzi aho wajya? | Not sure where to go? | needs native-speaker review |
 | `footer.cta.call` | Ibyihutirwa · hamagara 912 | Emergency · call 912 | needs native-speaker review |
 | `footer.dataInRwanda` | Amakuru y'ubuzima abikwa mu Rwanda | Health data stored in Rwanda | needs native-speaker review |
-| `authAside.eyebrow` | Konti yawe ya MediLink | Your MediLink account | needs native-speaker review |
 | `authAside.title` | Tegereza igihe gito, ubone umwanya wo gukira. | Spend less time waiting and more time getting better. | needs native-speaker review |
 | `authAside.lead` | Konti imwe yawe n’umuryango wawe, mu kigo cyose kiri kuri MediLink. | One account for you and your family, at every facility on MediLink. | needs native-speaker review |
 | `authAside.points.book.title` | Fata umwanya mbere | Book ahead | needs native-speaker review |
@@ -362,6 +358,11 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `login.createAccount` | Fungura konti ukoresheje iyi meyili | Create an account with this email | needs native-speaker review |
 | `login.invalidCredentials` | Imeyili cyangwa ijambo ry’ibanga si byo. Bisuzume wongere ugerageze. | The email or password is not right. Check them and try again. | needs native-speaker review |
 | `login.guest` | Shaka ubuvuzi nta konti | Find care without an account | needs native-speaker review |
+| `google.or` | cyangwa | or | needs native-speaker review |
+| `google.failed` | Kwinjira ukoresheje Google ntibyakunze. Ongera ugerageze. | Google sign-in didn't work. Try again. | needs native-speaker review |
+| `google.consentTitle` | Fungura konti yawe ukoresheje Google | Create your account with Google | needs native-speaker review |
+| `google.create` | Fungura konti yanjye | Create my account | needs native-speaker review |
+| `google.cancel` | Reka | Cancel | needs native-speaker review |
 | `signup.title` | Fungura konti yawe | Create your account | needs native-speaker review |
 | `signup.intro` | Bifata nk’umunota umwe. Ubwishingizi n’abagize umuryango wabyongeraho nyuma. | It takes about a minute. You can add insurance and family members later. | needs native-speaker review |
 | `signup.step` | Intambwe ya {{current}} kuri {{total}} | Step {{current}} of {{total}} | needs native-speaker review |
@@ -369,8 +370,8 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `signup.fullNameHint` | Nk’uko yanditse ku ndangamuntu yawe. | As written on your ID. | needs native-speaker review |
 | `signup.email` | Imeyili | Email | needs native-speaker review |
 | `signup.password` | Ijambo ry’ibanga | Password | needs native-speaker review |
-| `signup.passwordHint` | Koresha nibura inyuguti 15. Interuro ngufi yoroshye kwibuka kandi igoye gukeka. | Use at least 15 characters. A short sentence is easy to remember and hard to guess. | needs native-speaker review |
-| `signup.passwordRule` | Nibura inyuguti 15 | At least 15 characters | needs native-speaker review |
+| `signup.passwordHint` | Koresha nibura inyuguti 8. Interuro ngufi yoroshye kwibuka kandi igoye gukeka. | Use at least 8 characters. A short sentence is easy to remember and hard to guess. | needs native-speaker review |
+| `signup.passwordRule` | Nibura inyuguti 8 | At least 8 characters | needs native-speaker review |
 | `signup.passwordRuleMet` | byuzuye | done | needs native-speaker review |
 | `signup.passwordRuleNotMet` | ntibiruzura | not yet | needs native-speaker review |
 | `signup.language` | Ururimi rw’ubutumwa | Language for messages | needs native-speaker review |
@@ -393,6 +394,8 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `signup.checkEmailTitle` | Reba imeyili yawe | Check your email | needs native-speaker review |
 | `signup.checkEmailBody` | Twohereje ubutumwa kuri {{email}}. Fungura ihuriro riri muri ubwo butumwa kugira ngo urangize gufungura konti. Iryo huriro rimara iminsi 3. | We sent a message to {{email}}. Open the link in it to finish creating your account. The link works for 3 days. | needs native-speaker review |
 | `signup.checkEmailHint` | Nta meyili wabonye nyuma y’iminota mike? Reba mu butumwa bwa spam, cyangwa wongere wiyandikishe ubone irindi huriro. | No email after a few minutes? Check your spam folder, or sign up again to get a new link. | needs native-speaker review |
+| `signup.readyTitle` | Konti yawe yiteguye | Your account is ready | needs native-speaker review |
+| `signup.readyBody` | Injira ukoresheje {{email}} n’ijambo ry’ibanga ryawe. | Sign in with {{email}} and your password. | needs native-speaker review |
 | `verifyEmail.title` | Emeza imeyili yawe | Confirm your email | needs native-speaker review |
 | `verifyEmail.working` | Turimo kwemeza imeyili yawe… | Confirming your email… | needs native-speaker review |
 | `verifyEmail.failedTitle` | Ntitwashoboye kwemeza imeyili yawe | We couldn't confirm your email | needs native-speaker review |
@@ -500,7 +503,7 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `forgot.back` | Subira ku kwinjira | Back to log in | needs native-speaker review |
 | `reset.title` | Shyiraho ijambo ry’ibanga rishya | Set a new password | needs native-speaker review |
 | `reset.newPassword` | Ijambo ry’ibanga rishya | New password | needs native-speaker review |
-| `reset.hint` | Nibura inyuguti 15. Interuro ngufi yoroshye kwibuka kandi igoye gukeka. | At least 15 characters. A short sentence is easy to remember and hard to guess. | needs native-speaker review |
+| `reset.hint` | Nibura inyuguti 8. Interuro ngufi yoroshye kwibuka kandi igoye gukeka. | At least 8 characters. A short sentence is easy to remember and hard to guess. | needs native-speaker review |
 | `reset.submit` | Bika ijambo ry’ibanga rishya | Save new password | needs native-speaker review |
 | `reset.doneTitle` | Ijambo ry’ibanga ryahinduwe | Password changed | needs native-speaker review |
 | `reset.doneBody` | Ijambo ry’ibanga ryahinduwe kandi wasohowe ahantu hose. Injira ukoresheje ijambo ry’ibanga rishya. | Your password was changed and you were logged out everywhere. Log in with your new password. | needs native-speaker review |
@@ -657,6 +660,18 @@ File: `apps/staff-web/src/features/billing/locales/rw.json`
 | `shift.difference` | Itandukaniro {{amount}} | Difference {{amount}} | needs native-speaker review |
 | `shift.note` | Icyitonderwa | Note | needs native-speaker review |
 | `shift.needed` | Banza ufungure igihe cy’akazi mbere yo kwandika ubwishyu. | Open a cash shift before recording payments. | needs native-speaker review |
+| `shift.byMethod.title` | Ukurikije uburyo bwo kwishyura | By payment method | needs native-speaker review |
+| `shift.byMethod.method` | Uburyo | Method | needs native-speaker review |
+| `shift.byMethod.payments` | Ubwishyu | Payments | needs native-speaker review |
+| `shift.byMethod.received` | Byakiriwe | Received | needs native-speaker review |
+| `shift.byMethod.paidOut` | Ayasubijwe | Refunds paid | needs native-speaker review |
+| `shift.byMethod.expected` | Biri mu isanduku | In the drawer | needs native-speaker review |
+| `shift.byMethod.counted` | Byabaruwe | Counted | needs native-speaker review |
+| `shift.byMethod.difference` | Itandukaniro | Difference | needs native-speaker review |
+| `shift.byMethod.total` | Igiteranyo | Total | needs native-speaker review |
+| `shift.last.title` | Igihe cy’akazi giheruka | Your last shift | needs native-speaker review |
+| `shift.last.waiting` | Gitegereje kugenzurwa | Waiting for review | needs native-speaker review |
+| `shift.last.accepted` | Cyemejwe na {{name}} | Accepted by {{name}} | needs native-speaker review |
 | `approvals.title` | Kwemeza | Approvals | needs native-speaker review |
 | `approvals.empty` | Nta bitegereje kwemezwa | Nothing waiting for approval | needs native-speaker review |
 | `approvals.by` | Byasabwe na {{name}} | Requested by {{name}} | needs native-speaker review |
@@ -667,7 +682,6 @@ File: `apps/staff-web/src/features/billing/locales/rw.json`
 | `approvals.reject` | Anga | Reject | needs native-speaker review |
 | `approvals.rejectNote` | Kuki wanze? | Why reject? | needs native-speaker review |
 | `approvals.viewBill` | Reba fagitire | View bill | needs native-speaker review |
-| `approvals.intro` | Ibyifuzo by'abakozi n'amasanduku yafunzwe. Icyemezo cyose kirandikwa. | Requests from your team and closed cash shifts. Every decision is recorded. | needs native-speaker review |
 | `approvals.tabs.requests` | Ibyifuzo | Requests | needs native-speaker review |
 | `approvals.tabs.shifts` | Amasanduku | Cash shifts | needs native-speaker review |
 | `approvals.shifts.empty` | Nta sanduku yafunzwe ikeneye kugenzurwa | No closed shifts to review | needs native-speaker review |
@@ -695,6 +709,41 @@ File: `apps/staff-web/src/features/billing/locales/rw.json`
 | `today.collected` | Ayakiriwe muri iki gihe | Collected this shift | needs native-speaker review |
 | `today.next` | Izikurikira kwishyurwa | Next to pay | needs native-speaker review |
 | `today.nothing` | Nta nyemezabuguzi itegereje kwishyurwa. Inshya ziza hano nyuma yo kwivuza. | No bill waits for payment. New bills appear here after the visit. | needs native-speaker review |
+| `today.inDrawer` | {{amount}} mu isanduku | {{amount}} in the drawer | needs native-speaker review |
+| `nav.claims` | Ibisabwa abishingizi | Insurance claims | needs native-speaker review |
+| `claims.title` | Ibisabwa abishingizi | Insurance claims | needs native-speaker review |
+| `claims.insurer` | Umwishingizi | Insurer | needs native-speaker review |
+| `claims.month` | Ukwezi kwo kwivuza | Month of the visits | needs native-speaker review |
+| `claims.totals` | Ibisabwa by’uku kwezi | Claims this month | needs native-speaker review |
+| `claims.visits_one` | Kwivuza {{count}} kwo gusaba | {{count}} visit to claim | needs native-speaker review |
+| `claims.visits_other` | Kwivuza {{count}} kwo gusaba | {{count}} visits to claim | needs native-speaker review |
+| `claims.toClaim` | Umugabane w’umwishingizi | Insurer share | needs native-speaker review |
+| `claims.claimsCount_one` | Igisabwa {{count}} | {{count}} claim | needs native-speaker review |
+| `claims.claimsCount_other` | Ibisabwa {{count}} | {{count}} claims | needs native-speaker review |
+| `claims.status.pending` | Ntikirishyurwa | Not settled | needs native-speaker review |
+| `claims.status.paid` | Cyishyuwe | Paid | needs native-speaker review |
+| `claims.status.rejected` | Cyanzwe | Rejected | needs native-speaker review |
+| `claims.all` | Byose | All | needs native-speaker review |
+| `claims.filter` | Ibisabwa ukurikije uko bihagaze | Claims by status | needs native-speaker review |
+| `claims.empty` | Nta bivuje bafite ubwishingizi bw’uyu mwishingizi muri uku kwezi | No insured visits for this insurer in this month | needs native-speaker review |
+| `claims.downloadCsv` | Kuramo CSV | Download CSV | needs native-speaker review |
+| `claims.downloadPdf` | Kuramo PDF | Download PDF | needs native-speaker review |
+| `claims.downloadFailed` | Gukuramo ntibyakunze. Ongera ugerageze. | The download did not work. Try again. | needs native-speaker review |
+| `claims.member` | Nimero y’umunyamuryango {{number}} | Member number {{number}} | needs native-speaker review |
+| `claims.icd10` | ICD-10 | ICD-10 | needs native-speaker review |
+| `claims.noDiagnosis` | Nta isuzuma ryashyizweho umukono | No signed diagnosis | needs native-speaker review |
+| `claims.lines_one` | Serivisi cyangwa ikintu {{count}} | {{count}} service or item | needs native-speaker review |
+| `claims.lines_other` | Serivisi n’ibintu {{count}} | {{count}} services and items | needs native-speaker review |
+| `claims.notCovered` | Ntibyishingiwe | Not covered | needs native-speaker review |
+| `claims.markedBy` | Byanditswe na {{name}} | Marked by {{name}} | needs native-speaker review |
+| `claims.referenceIs` | Nimero {{reference}} | Reference {{reference}} | needs native-speaker review |
+| `claims.reason` | Impamvu y’umwishingizi | The insurer's reason | needs native-speaker review |
+| `claims.reference` | Nimero y’ubwishyu | Payment reference | needs native-speaker review |
+| `claims.referenceHint` | Si ngombwa: nimero y’iyohereza cyangwa y’icyiciro by’umwishingizi | Optional: the insurer's transfer or batch number | needs native-speaker review |
+| `claims.confirmPaid` | Andika ko cyishyuwe | Mark paid | needs native-speaker review |
+| `claims.confirmRejected` | Andika ko cyanzwe | Mark rejected | needs native-speaker review |
+| `claims.markPaid` | Cyishyuwe | Paid | needs native-speaker review |
+| `claims.markRejected` | Cyanzwe | Rejected | needs native-speaker review |
 
 ## staff-web feature: bookings (namespace bookings)
 
@@ -780,7 +829,6 @@ File: `apps/staff-web/src/features/bookings/locales/rw.json`
 | `status.superseded` | Byimuwe | Moved | needs native-speaker review |
 | `calendar.title` | Kalendari | Calendar | needs native-speaker review |
 | `calendar.mineTitle` | Kalendari yanjye | My calendar | needs native-speaker review |
-| `calendar.description` | Amasaha y'akazi n'abafashe imyanya kuri buri serivisi na buri muganga. | Sessions and bookings per service and doctor. | needs native-speaker review |
 | `calendar.view` | Uko bigaragara | View | needs native-speaker review |
 | `calendar.dayView` | Umunsi | Day | needs native-speaker review |
 | `calendar.weekView` | Icyumweru | Week | needs native-speaker review |
@@ -810,7 +858,6 @@ File: `apps/staff-web/src/features/bookings/locales/rw.json`
 | `calendar.actions` | Ibikorwa | Actions | needs native-speaker review |
 | `calendar.openDay` | Fungura umunsi | Open the day | needs native-speaker review |
 | `disruptions.title` | Impinduka | Disruptions | needs native-speaker review |
-| `disruptions.description` | Iyo umuganga adahari cyangwa ikigo gifunze, imura abafashe imyanya bose icyarimwe. | When a doctor is away or the facility closes, move the affected bookings in one go. | needs native-speaker review |
 | `disruptions.new` | Impinduka nshya | New disruption | needs native-speaker review |
 | `disruptions.wizardTitle` | Impinduka | Disruption | needs native-speaker review |
 | `disruptions.back` | Impinduka zose | All disruptions | needs native-speaker review |
@@ -890,6 +937,52 @@ File: `apps/staff-web/src/features/clinical/locales/rw.json`
 
 | Key | Kinyarwanda (draft) | English source | Status |
 |---|---|---|---|
+| `lab.title` | Ibizamini | Tests | needs native-speaker review |
+| `lab.none` | Nta kizamini cyasabwe muri uru ruzinduko. | No test ordered for this visit. | needs native-speaker review |
+| `lab.order` | Saba ibizamini | Order tests | needs native-speaker review |
+| `lab.choose` | Ibizamini byo gusaba | Tests to order | needs native-speaker review |
+| `lab.chooseOne` | Hitamo nibura ikizamini kimwe. | Choose at least one test. | needs native-speaker review |
+| `lab.reason` | Kubera iki? (laboratwari irabibona) | Why these tests? (the lab sees this) | needs native-speaker review |
+| `lab.reasonHint` | Urugero: umuriro iminsi 3, kureba niba atari malariya. | For example: fever for 3 days, rule out malaria. | needs native-speaker review |
+| `lab.reasonShort` | Impamvu: | Why: | needs native-speaker review |
+| `lab.submit` | Saba | Order | needs native-speaker review |
+| `lab.send` | Ohereza muri laboratwari | Send to lab | needs native-speaker review |
+| `lab.sendHint` | Umurwayi ajya muri laboratwari. Inyandiko zawe zikomeza gufunguye, umurwayi akagaruka ku murongo wawe ibisubizo byose nibimara kuboneka. | The patient goes to the lab. Your notes stay open, and the patient comes back to your queue when every result is in. | needs native-speaker review |
+| `lab.sent` | {{name}} agiye muri laboratwari; azagaruka ku murongo wawe ibisubizo nibimara kuboneka. | {{name}} is on the way to the lab and comes back to your queue when the results are in. | needs native-speaker review |
+| `lab.orderedBy` | Byasabwe na {{name}} saa {{time}} | Ordered by {{name}} at {{time}} | needs native-speaker review |
+| `lab.resultedBy` | Igisubizo cyatanzwe na {{name}} saa {{time}} | Result by {{name}} at {{time}} | needs native-speaker review |
+| `lab.labComment` | Icyo laboratwari ivuga: | Lab comment: | needs native-speaker review |
+| `lab.note` | Ubutumwa ku murwayi | Note for the patient | needs native-speaker review |
+| `lab.noteHint` | Umurwayi abusoma hamwe n’igisubizo. | The patient reads it with the result. | needs native-speaker review |
+| `lab.review` | Byasomwe | Mark reviewed | needs native-speaker review |
+| `lab.release` | Ohereza ku murwayi | Release to the patient | needs native-speaker review |
+| `lab.releaseHint` | Guhera ubu umurwayi abona iki gisubizo muri dosiye ye. | From now on the patient sees this result in their record. | needs native-speaker review |
+| `lab.cancel` | Hagarika ikizamini | Cancel test | needs native-speaker review |
+| `lab.range` | {{low}}–{{high}} {{unit}} | {{low}}–{{high}} {{unit}} | needs native-speaker review |
+| `lab.table.item` | Ikizamini | Test | needs native-speaker review |
+| `lab.table.value` | Igisubizo | Result | needs native-speaker review |
+| `lab.table.reference` | Ibisanzwe | Normal range | needs native-speaker review |
+| `lab.states.ordered` | Cyasabwe | Ordered | needs native-speaker review |
+| `lab.states.sample_taken` | Igipimo cyafashwe | Sample taken | needs native-speaker review |
+| `lab.states.resulted` | Igisubizo cyabonetse | Result ready | needs native-speaker review |
+| `lab.states.reviewed` | Cyasomwe | Reviewed | needs native-speaker review |
+| `lab.states.released` | Cyoherejwe | Released | needs native-speaker review |
+| `lab.states.cancelled` | Cyahagaritswe | Cancelled | needs native-speaker review |
+| `lab.specimens.blood` | Amaraso | Blood | needs native-speaker review |
+| `lab.specimens.urine` | Inkari | Urine | needs native-speaker review |
+| `lab.specimens.stool` | Umwanda | Stool | needs native-speaker review |
+| `lab.flags.low` | Biri hasi | Low | needs native-speaker review |
+| `lab.flags.high` | Biri hejuru | High | needs native-speaker review |
+| `lab.flags.abnormal` | Ntibisanzwe | Abnormal | needs native-speaker review |
+| `lab.choices.negative` | Nta bwandu | Negative | needs native-speaker review |
+| `lab.choices.positive` | Afite ubwandu | Positive | needs native-speaker review |
+| `lab.choices.invalid` | Ntibyasomwe | Invalid | needs native-speaker review |
+| `lab.choices.trace` | Bike cyane | Trace | needs native-speaker review |
+| `lab.choices.none_seen` | Nta byabonetse | None seen | needs native-speaker review |
+| `lab.choices.seen` | Byabonetse | Seen | needs native-speaker review |
+| `lab.inbox.title` | Ibisubizo bya laboratwari | Lab results | needs native-speaker review |
+| `lab.inbox.lead` | Ibisubizo by’ibizamini wasabye. Soma buri gisubizo, hanyuma ucyohereze ku murwayi. | Results of the tests you ordered. Review each one, then release it to the patient. | needs native-speaker review |
+| `lab.inbox.open` | Fungura isuzuma | Open the consultation | needs native-speaker review |
 | `nav.consultation` | Isuzuma | Consultation | needs native-speaker review |
 | `nav.unsigned` | Dosiye zitarasinywa | Unsigned records | needs native-speaker review |
 | `nav.results` | Ibisubizo | Results | needs native-speaker review |
@@ -918,7 +1011,6 @@ File: `apps/staff-web/src/features/clinical/locales/rw.json`
 | `status.signed` | Yasinywe | Signed | needs native-speaker review |
 | `status.entered_in_error` | Yanditswe ku makosa | Entered in error | needs native-speaker review |
 | `start.title` | Isuzuma | Consultation | needs native-speaker review |
-| `start.description` | Umurwayi urimo kuvura ubu, uhereye ku murongo wanjye. | The patient you are seeing now, from My queue. | needs native-speaker review |
 | `start.open` | Fungura isuzuma | Open consultation | needs native-speaker review |
 | `start.none` | Nta murwayi uri kumwe nawe ubu | No patient with you right now | needs native-speaker review |
 | `start.noneBody` | Hamagara umurwayi ukurikira ku murongo wawe, hanyuma ufungure isuzuma hano. | Call the next patient from My queue, then open the consultation here. | needs native-speaker review |
@@ -1069,7 +1161,6 @@ File: `apps/staff-web/src/features/clinical/locales/rw.json`
 | `access.textRequired` | Sobanura impamvu ukeneye iyi dosiye. | Explain why you need this record. | needs native-speaker review |
 | `access.open` | Fungura dosiye | Open record | needs native-speaker review |
 | `unsigned.title` | Dosiye zitarasinywa | Unsigned records | needs native-speaker review |
-| `unsigned.description` | Inyandiko z'agateganyo zitegereje gusinywa. Zirangize buri munsi: uruzinduko ntirushobora kurangira inyandiko yarwo itarasinywa. | Drafts waiting for a signature. Clear them every day: a visit cannot finish while its draft is open. | needs native-speaker review |
 | `unsigned.mineOnly` | Izanjye gusa | Only my drafts | needs native-speaker review |
 | `unsigned.started` | {{name}} · yatangiye {{time}} | {{name}} · started {{time}} | needs native-speaker review |
 | `unsigned.overdue` | Zirengeje amasaha 24 | Over 24 hours | needs native-speaker review |
@@ -1108,6 +1199,11 @@ File: `apps/staff-web/src/features/clinical/locales/rw.json`
 | `today.weekCaption` | Iminsi 7 ishize | Last 7 days | needs native-speaker review |
 | `today.results_one` | Igisubizo {{count}} cyo hanze cyo gusuzuma | {{count}} outside result to review | needs native-speaker review |
 | `today.results_other` | Ibisubizo {{count}} byo hanze byo gusuzuma | {{count}} outside results to review | needs native-speaker review |
+| `reasonForVisit.nurse` | Isuzuma ry’ibanze: {{urgency}} | Triage: {{urgency}} | needs native-speaker review |
+| `reasonForVisit.nurseBy` | na {{name}} saa {{time}} | by {{name}} at {{time}} | needs native-speaker review |
+| `reasonForVisit.nurseUrgency.normal` | bisanzwe | normal | needs native-speaker review |
+| `reasonForVisit.nurseUrgency.priority` | yihutishwa | priority | needs native-speaker review |
+| `reasonForVisit.nurseUrgency.emergency` | byihutirwa | emergency | needs native-speaker review |
 | `reasonForVisit.title` | Icyazanye umurwayi | Why the patient came | needs native-speaker review |
 | `reasonForVisit.short` | Impamvu | Reason | needs native-speaker review |
 | `reasonForVisit.none` | Nta mpamvu yanditswe igihe cyo gufata gahunda cyangwa kwakirwa. Baza umurwayi. | No reason was recorded at booking or check-in. Ask the patient. | needs native-speaker review |
@@ -1127,7 +1223,6 @@ File: `apps/staff-web/src/features/clinical/locales/rw.json`
 | `reasonForVisit.provisional` | Amategeko {{version}} ategereje kwemezwa n'abaganga | Rules {{version}} awaiting clinical sign-off | needs native-speaker review |
 | `toQueue` | Umurongo wanjye | My queue | needs native-speaker review |
 | `results.title` | Ibisubizo | Results | needs native-speaker review |
-| `results.intro` | Ibisubizo bya laboratwari n'amafoto byaturutse hanze wahawe. Bifungure, hanyuma wemeze ko wabisuzumye. | Outside lab and imaging results assigned to you. Open each one, then mark it reviewed. | needs native-speaker review |
 | `results.tabs.pending` | Ibyo gusuzuma | To review | needs native-speaker review |
 | `results.tabs.reviewed` | Byasuzumwe | Reviewed | needs native-speaker review |
 | `results.untitled` | Igisubizo cyo hanze | Outside result | needs native-speaker review |
@@ -1159,7 +1254,6 @@ File: `apps/staff-web/src/features/clinical/locales/rw.json`
 | `paper.type.referral_letter` | Ibaruwa yo kohereza | Referral letter | needs native-speaker review |
 | `paper.type.other` | Inyandiko | Document | needs native-speaker review |
 | `questions.title` | Ibibazo bya farumasi | Pharmacy questions | needs native-speaker review |
-| `questions.intro` | Ibibazo farumasi ibaza ku mpapuro z'imiti wanditse. Igisubizo cyawe cyongerwa muri dosiye nk'inyandiko isinywe. | Questions from the pharmacy about your prescriptions. Your answer is added to the record as a signed note. | needs native-speaker review |
 | `questions.tabs.open` | Bigutegereje | Waiting for you | needs native-speaker review |
 | `questions.tabs.answered` | Byasubijwe | Answered | needs native-speaker review |
 | `questions.status.open` | Gitegereje | Waiting | needs native-speaker review |
@@ -1177,7 +1271,6 @@ File: `apps/staff-web/src/features/clinical/locales/rw.json`
 | `questions.empty.answered` | Nta kibazo cyasubijwe | No answered questions yet | needs native-speaker review |
 | `questions.emptyBody` | Iyo farumasi ibajije ku rupapuro rw'imiti wanditse, kiza hano. | When the pharmacy asks about one of your prescriptions, it shows here. | needs native-speaker review |
 | `followUps.title` | Gusubira kwa muganga | Follow-ups | needs native-speaker review |
-| `followUps.intro` | Abarwayi wasabye kugaruka. Abatagarutse bakeneye guhamagarwa n'ababakira cyangwa gahunda nshya. | Patients you asked to come back. Missed ones need a call from reception or a new booking. | needs native-speaker review |
 | `followUps.state.missed` | Ntibagarutse | Missed | needs native-speaker review |
 | `followUps.state.today` | Uyu munsi | Today | needs native-speaker review |
 | `followUps.state.upcoming` | Iminsi 14 iri imbere | Next 14 days | needs native-speaker review |
@@ -1196,7 +1289,6 @@ File: `apps/staff-web/src/features/clinical/locales/rw.json`
 | `followUps.empty.attended` | Nta muntu uragaruka | No one has come back yet | needs native-speaker review |
 | `followUps.emptyBody` | Shyiraho isubiramo uvuye ku Murongo wanjye urangije n'umurwayi. | Set a follow-up from My queue when you finish with a patient. | needs native-speaker review |
 | `activity.title` | Ibikorwa byanjye | My activity | needs native-speaker review |
-| `activity.intro` | Imibare yawe bwite, kuri wowe. Nta mazina y'abarwayi ari hano. | Your own numbers, for you. No patient names here. | needs native-speaker review |
 | `activity.period` | Igihe | Period | needs native-speaker review |
 | `activity.days_one` | Umunsi {{count}} | {{count}} day | needs native-speaker review |
 | `activity.days_other` | Iminsi {{count}} | {{count}} days | needs native-speaker review |
@@ -1215,7 +1307,6 @@ File: `apps/staff-web/src/features/clinical/locales/rw.json`
 | `activity.noDiagnoses` | Nta suzuma muri iki gihe. | No diagnoses in this period. | needs native-speaker review |
 | `activity.privacy` | Ni wowe wenyine ubona iyi paji. Ikigo kibona imibare rusange, ntikibona urutonde rw'umuganga umwe. | Only you see this page. The facility sees totals, never one doctor's list. | needs native-speaker review |
 | `templates.title` | Inyandiko ngenderwaho | Templates | needs native-speaker review |
-| `templates.intro` | Inyandiko zawe, amasuzuma n'imiti usanzwe utanga ku nshuro zisanzwe. Gukanda rimwe byuzuza isuzuma. | Your notes, diagnoses and usual prescriptions for common visits. One click fills the consultation. | needs native-speaker review |
 | `templates.new` | Inyandiko nshya | New template | needs native-speaker review |
 | `templates.edit` | Hindura inyandiko | Edit template | needs native-speaker review |
 | `templates.delete` | Siba | Delete | needs native-speaker review |
@@ -1244,9 +1335,26 @@ File: `apps/staff-web/src/features/clinical/locales/rw.json`
 | `templates.emptyTitle` | Nta nyandiko ngenderwaho uragira | No templates yet | needs native-speaker review |
 | `templates.empty` | Yikore hano, cyangwa ubike isuzuma nk'inyandiko ngenderwaho uri kuryandika. | Create one here, or save a consultation as a template while you write it. | needs native-speaker review |
 | `templates.use` | Koresha inyandiko ngenderwaho | Use a template | needs native-speaker review |
-| `templates.useHint` | Inyandiko ijya mu bice birimo ubusa cyangwa nyuma y'ibyo wanditse. Amasuzuma yongerwamo nk'ay'agateganyo; imiti ijya ku rupapuro rw'imiti. | Text goes into empty sections or after what you wrote. Diagnoses are added as provisional; medicines go to the prescription. | needs native-speaker review |
+| `templates.useHint` | Gukanda rimwe byongeramo isuzuma, gahunda, amabwiriza n'imiti. Inyandiko ijya mu bice birimo ubusa cyangwa nyuma y'ibyo wanditse; amasuzuma yongerwamo nk'ay'agateganyo. Ushobora guhindura byose mbere yo gusinya. | One click adds the diagnosis, plan, instructions and medicines. Text goes into empty sections or after what you wrote; diagnoses are added as provisional. You can still change everything before you sign. | needs native-speaker review |
 | `templates.saveAs` | Bika nk'inyandiko ngenderwaho | Save as template | needs native-speaker review |
-| `templates.itemsFailed` | Iyi miti ikeneye ko uyireba ku rupapuro rw'imiti: {{names}} | These medicines need your attention in the prescription: {{names}} | needs native-speaker review |
+| `orderSet.applied` | “{{name}}” yongewe mu nyandiko | “{{name}}” added to the note | needs native-speaker review |
+| `orderSet.review` | Bisuzume kuri uyu murwayi, hanyuma usinye. | Check it for this patient, then sign. | needs native-speaker review |
+| `orderSet.listLabel` | Ibyo inyandiko ngenderwaho yahinduye | What the template changed | needs native-speaker review |
+| `orderSet.diagnosesAdded` | Isuzuma ryongewemo nk'iry'agateganyo: {{names}} | Diagnosis added as provisional: {{names}} | needs native-speaker review |
+| `orderSet.diagnosesAlready` | Byari bisanzwe mu nyandiko, ntibyongewe kabiri: {{names}} | Already in the note, not added twice: {{names}} | needs native-speaker review |
+| `orderSet.diagnosesSkipped` | Ntibyongewemo, si kode ya ICD-10 izwi cyangwa amasuzuma ni menshi: {{names}}. Shaka kode nyayo. | Not added, not a known ICD-10 code or too many diagnoses: {{names}}. Search for the right code. | needs native-speaker review |
+| `orderSet.sections` | Inyandiko yongewe muri: {{names}} | Text added to: {{names}} | needs native-speaker review |
+| `orderSet.medicinesAdded` | Byongewe ku rupapuro rw'imiti: {{names}} | Added to the prescription: {{names}} | needs native-speaker review |
+| `orderSet.medicinesAlready` | Byari bisanzwe ku rupapuro rw'imiti, ntibyongewe kabiri: {{names}} | Already on the prescription, not added twice: {{names}} | needs native-speaker review |
+| `orderSet.medicinesFailed` | Ntibyongewemo, ubyongere ubwawe ku rupapuro rw'imiti: {{names}} | Not added, add them in the prescription yourself: {{names}} | needs native-speaker review |
+| `orderSet.tests` | Ibizamini bya laboratwari ntibirasabwa binyuze mu nyandiko ngenderwaho. Bisabe ubwawe: {{names}} | Lab tests are not ordered from templates yet. Order them yourself: {{names}} | needs native-speaker review |
+| `orderSet.adding` | Turimo kongeramo imiti… | Adding the medicines… | needs native-speaker review |
+| `orderSet.needsYou` | Hari ibikeneye ko ubireba. Inyandiko ntisinywa utayisinye. | Some items need you. The note is not signed until you sign it. | needs native-speaker review |
+| `orderSet.stillSign` | Nta na kimwe cyasimbutswe. Inyandiko ntisinywa utayisinye. | Nothing was skipped. The note is not signed until you sign it. | needs native-speaker review |
+| `orderSet.done` | Garuka ku nyandiko | Back to the note | needs native-speaker review |
+| `orderSet.another` | Koresha indi nyandiko ngenderwaho | Use another template | needs native-speaker review |
+| `favourites.diagnoses` | Amasuzuma ukunze gukoresha | Your frequent diagnoses | needs native-speaker review |
+| `favourites.add` | Ongeramo {{name}} | Add {{name}} | needs native-speaker review |
 
 ## staff-web feature: console (namespace console)
 
@@ -1258,6 +1366,7 @@ File: `apps/staff-web/src/features/console/locales/rw.json`
 | `nav.breakGlass` | Isuzuma ry’uburenganzira bwihutirwa | Break-glass reviews | needs native-speaker review |
 | `nav.securityLog` | Igitabo cy’umutekano | Security log | needs native-speaker review |
 | `nav.accessLog` | Igitabo cyo gufungura amadosiye | Record access log | needs native-speaker review |
+| `nav.nationalReport` | Raporo y'igihugu | National report | needs native-speaker review |
 | `failed` | Ntibyashobotse. Ongera ugerageze. | Could not load. Try again. | needs native-speaker review |
 | `refresh` | Vugurura | Refresh | needs native-speaker review |
 | `open` | Fungura | Open | needs native-speaker review |
@@ -1290,6 +1399,13 @@ File: `apps/staff-web/src/features/console/locales/rw.json`
 | `actions.platform_user_mfa_reset` | Second factor reset by admin | Second factor reset by admin | needs native-speaker review |
 | `actions.platform_user_sessions_revoked` | Sessions ended by admin | Sessions ended by admin | needs native-speaker review |
 | `actions.platform_user_viewed` | Profile viewed by admin | Profile viewed by admin | needs native-speaker review |
+| `actions.platform_user_updated` | Details corrected by admin | Details corrected by admin | needs native-speaker review |
+| `actions.platform_user_password_reset_sent` | Password reset link sent by admin | Password reset link sent by admin | needs native-speaker review |
+| `actions.platform_user_verification_resent` | Confirmation email sent again by admin | Confirmation email sent again by admin | needs native-speaker review |
+| `actions.platform_user_sign_in_unblocked` | Sign-in block cleared by admin | Sign-in block cleared by admin | needs native-speaker review |
+| `actions.platform_user_list_exported` | Account list exported | Account list exported | needs native-speaker review |
+| `actions.staff_membership_deactivated` | Facility access removed | Facility access removed | needs native-speaker review |
+| `actions.staff_membership_updated` | Facility access changed | Facility access changed | needs native-speaker review |
 | `actions.staff_mfa_reset` | Second factor reset | Second factor reset | needs native-speaker review |
 | `actions.patients_record_viewed` | Record opened | Record opened | needs native-speaker review |
 | `actions.clinical_access_reason_given` | Reason given to open a record | Reason given to open a record | needs native-speaker review |
@@ -1345,30 +1461,100 @@ File: `apps/staff-web/src/features/console/locales/rw.json`
 | `users.status` | Uko bimeze | Status | needs native-speaker review |
 | `users.active` | Arakora | Active | needs native-speaker review |
 | `users.locked` | Yafunzwe | Locked | needs native-speaker review |
-| `users.inactive` | Inactive | Inactive | needs native-speaker review |
 | `users.lastLogin` | Aheruka kwinjira | Last sign-in | needs native-speaker review |
-| `users.profile` | Konti | Account | needs native-speaker review |
-| `users.verified` | Verified | Verified | needs native-speaker review |
-| `users.unverified` | Not verified | Not verified | needs native-speaker review |
-| `users.facts.lastLogin` | Last sign-in | Last sign-in | needs native-speaker review |
-| `users.facts.since` | Member since | Member since | needs native-speaker review |
-| `users.facts.mfa` | Two-step login | Two-step login | needs native-speaker review |
-| `users.facts.email` | Email | Email | needs native-speaker review |
+| `users.never` | Ntarinjira | Never | needs native-speaker review |
+| `users.search` | Shakisha izina, imeri cyangwa telefoni | Search by name, email or phone | needs native-speaker review |
+| `users.facility` | Ikigo | Facility | needs native-speaker review |
+| `users.oneFacility` | Ikigo kimwe | One facility | needs native-speaker review |
+| `users.role` | Inshingano | Role | needs native-speaker review |
+| `users.emailState` | Imeri | Email | needs native-speaker review |
+| `users.pending` | Ntiyemejwe | Not confirmed yet | needs native-speaker review |
+| `users.confirmed` | Yemejwe | Confirmed | needs native-speaker review |
+| `users.pendingFilter` | Imeri itaremezwa | Email not confirmed | needs native-speaker review |
+| `users.mfaOnFilter` | Kwinjira kw’intambwe ebyiri birakora | Two-step login on | needs native-speaker review |
+| `users.mfaOffFilter` | Kwinjira kw’intambwe ebyiri ntibikora | Two-step login off | needs native-speaker review |
+| `users.noActiveAccess` | Nta kigo akorera ubu | No active access | needs native-speaker review |
+| `users.attention` | Ibikeneye kwitabwaho: | Needs attention: | needs native-speaker review |
+| `users.attentionItems.locked_one` | Konti {{count}} yafunzwe | {{count}} locked account | needs native-speaker review |
+| `users.attentionItems.locked_other` | Konti {{count}} zafunzwe | {{count}} locked accounts | needs native-speaker review |
+| `users.attentionItems.withoutMfa_one` | {{count}} staff account without two-step login | {{count}} staff account without two-step login | needs native-speaker review |
+| `users.attentionItems.withoutMfa_other` | {{count}} staff accounts without two-step login | {{count}} staff accounts without two-step login | needs native-speaker review |
+| `users.attentionItems.pending_one` | Imeri {{count}} itaremezwa | {{count}} email not confirmed | needs native-speaker review |
+| `users.attentionItems.pending_other` | Imeri {{count}} zitaremezwa | {{count}} emails not confirmed | needs native-speaker review |
+| `users.export` | Kuramo konti z’abakozi | Export staff accounts | needs native-speaker review |
+| `users.exportHint` | CSV of staff and the platform team, never patients. | CSV of staff and the platform team, never patients. | needs native-speaker review |
+| `users.exportFailed` | The export did not download. Try again. | The export did not download. Try again. | needs native-speaker review |
+| `users.back` | Abakoresha bose | All users | needs native-speaker review |
+| `users.account` | Konti | Account | needs native-speaker review |
+| `users.facts.email` | Imeri | Email | needs native-speaker review |
+| `users.facts.emailState` | Imeri yemejwe | Email confirmed | needs native-speaker review |
+| `users.facts.phone` | Telefoni y’akazi | Work phone | needs native-speaker review |
+| `users.facts.mfa` | Kwinjira kw’intambwe ebyiri | Two-step login | needs native-speaker review |
+| `users.facts.profession` | Umwuga | Profession | needs native-speaker review |
+| `users.facts.licence` | Uruhushya rwo gukora | Practising licence | needs native-speaker review |
+| `users.facts.language` | Ururimi | Language | needs native-speaker review |
+| `users.facts.lastLogin` | Aheruka kwinjira | Last sign-in | needs native-speaker review |
+| `users.facts.since` | Konti yafunguwe | Account created | needs native-speaker review |
+| `users.patientNote` | This is a patient account. MediLink shows only the account here: the patient's records stay with the facilities that care for them. | This is a patient account. MediLink shows only the account here: the patient's records stay with the facilities that care for them. | needs native-speaker review |
+| `users.access.title` | Uburenganzira ku bigo | Facility access | needs native-speaker review |
+| `users.access.lead` | Where this person works and what they can do there. Facility admins manage roles; you can remove or restore access. | Where this person works and what they can do there. Facility admins manage roles; you can remove or restore access. | needs native-speaker review |
+| `users.access.none` | Nta kigo afitiye uburenganzira. | No facility access. | needs native-speaker review |
+| `users.access.active` | Arakora | Active | needs native-speaker review |
+| `users.access.removed` | Uburenganzira bwakuweho | Access removed | needs native-speaker review |
+| `users.access.removedOn` | Uburenganzira bwakuweho {{date}} | Access removed {{date}} | needs native-speaker review |
+| `users.access.remove` | Kuraho uburenganzira | Remove access | needs native-speaker review |
+| `users.access.restore` | Subizaho uburenganzira | Restore access | needs native-speaker review |
+| `users.access.removeConfirm` | {{name}} can no longer work at {{facility}}. Their other facilities and their account stay as they are. | {{name}} can no longer work at {{facility}}. Their other facilities and their account stay as they are. | needs native-speaker review |
+| `users.access.restoreConfirm` | {{name}} can work at {{facility}} again, with the roles they had. | {{name}} can work at {{facility}} again, with the roles they had. | needs native-speaker review |
+| `users.invitations` | Ubutumire butaremezwa | Invitations not accepted yet | needs native-speaker review |
+| `users.invited` | Bwoherejwe {{sent}} · buzarangira {{expires}} | Sent {{sent}} · expires {{expires}} | needs native-speaker review |
+| `users.changes` | Ibyahinduwe n’abayobozi | Changes by admins | needs native-speaker review |
+| `users.noChanges` | Nta muyobozi wahinduye iyi konti. | No admin has changed this account. | needs native-speaker review |
+| `users.activity` | Kwinjira guheruka | Sign-in activity | needs native-speaker review |
 | `users.sessions_one` | {{count}} active session | {{count}} active session | needs native-speaker review |
 | `users.sessions_other` | {{count}} active sessions | {{count}} active sessions | needs native-speaker review |
 | `users.noSessions` | No active session | No active session | needs native-speaker review |
 | `users.started` | Started {{time}} | Started {{time}} | needs native-speaker review |
 | `users.events` | Recent security events | Recent security events | needs native-speaker review |
+| `users.edit` | Kosora amakuru | Correct details | needs native-speaker review |
+| `users.editLead` | Correct the name, work phone or language. The email address and the password can't be changed here. | Correct the name, work phone or language. The email address and the password can't be changed here. | needs native-speaker review |
+| `users.fullName` | Amazina yose | Full name | needs native-speaker review |
+| `users.phoneHint` | Nimero ya telefoni yo mu Rwanda, urugero 0788 123 456. | A Rwandan mobile number, for example 0788 123 456. | needs native-speaker review |
+| `users.save` | Bika | Save | needs native-speaker review |
 | `users.reason` | Impamvu | Reason | needs native-speaker review |
 | `users.reasonHint` | Recorded in the audit log. At least 5 characters. | Recorded in the audit log. At least 5 characters. | needs native-speaker review |
+| `users.actionsTitle` | Ibikorwa kuri konti | Account actions | needs native-speaker review |
+| `users.actionsNote` | Each action asks you to confirm your identity again and is recorded with your reason. | Each action asks you to confirm your identity again and is recorded with your reason. | needs native-speaker review |
+| `users.notice.self` | This is your own account. Change your details and security from your profile. | This is your own account. Change your details and security from your profile. | needs native-speaker review |
+| `users.notice.locked` | This account is locked: the person can't sign in. | This account is locked: the person can't sign in. | needs native-speaker review |
+| `users.notice.blocked_one` | Sign-in is blocked for {{count}} more minute after too many failed attempts. | Sign-in is blocked for {{count}} more minute after too many failed attempts. | needs native-speaker review |
+| `users.notice.blocked_other` | Sign-in is blocked for {{count}} more minutes after too many failed attempts. | Sign-in is blocked for {{count}} more minutes after too many failed attempts. | needs native-speaker review |
+| `users.notice.pending` | The person signed up but hasn't opened the confirmation link, so they can't sign in yet. | The person signed up but hasn't opened the confirmation link, so they can't sign in yet. | needs native-speaker review |
+| `users.notice.mfa` | Two-step login isn't set up. The person is asked to set it up at the next sign-in. | Two-step login isn't set up. The person is asked to set it up at the next sign-in. | needs native-speaker review |
 | `users.actions.lock` | Funga konti | Lock account | needs native-speaker review |
 | `users.actions.unlock` | Fungura konti | Unlock account | needs native-speaker review |
 | `users.actions.reset-mfa` | Subiramo kwinjira kw’intambwe ebyiri | Reset two-step login | needs native-speaker review |
 | `users.actions.revoke-sessions` | Sohora ahantu hose | Sign out everywhere | needs native-speaker review |
+| `users.actions.send-password-reset` | Ohereza umurongo wo guhindura ijambo ry’ibanga | Send password reset link | needs native-speaker review |
+| `users.actions.resend-verification` | Ongera wohereze imeri yo kwemeza | Resend confirmation email | needs native-speaker review |
+| `users.actions.clear-sign-in-block` | Kuraho ihagarikwa ryo kwinjira | Clear sign-in block | needs native-speaker review |
+| `users.hints.lock` | Stops every sign-in until you unlock it. | Stops every sign-in until you unlock it. | needs native-speaker review |
+| `users.hints.unlock` | Lets the person sign in again. | Lets the person sign in again. | needs native-speaker review |
+| `users.hints.reset-mfa` | For a lost or new phone: they set it up again at the next sign-in. | For a lost or new phone: they set it up again at the next sign-in. | needs native-speaker review |
+| `users.hints.revoke-sessions` | Ends every session on every device. | Ends every session on every device. | needs native-speaker review |
+| `users.hints.send-password-reset` | Emails a one-time link to their own address. You never see the password. | Emails a one-time link to their own address. You never see the password. | needs native-speaker review |
+| `users.hints.resend-verification` | Sends the sign-up confirmation link again. | Sends the sign-up confirmation link again. | needs native-speaker review |
+| `users.hints.clear-sign-in-block` | Lets them try again now instead of waiting. | Lets them try again now instead of waiting. | needs native-speaker review |
 | `users.confirm.lock` | {{name}} can't sign in until the account is unlocked. Every session ends now. | {{name}} can't sign in until the account is unlocked. Every session ends now. | needs native-speaker review |
 | `users.confirm.unlock` | {{name}} can sign in again. | {{name}} can sign in again. | needs native-speaker review |
 | `users.confirm.reset-mfa` | {{name}} sets up two-step login again at the next sign-in. Every session ends now. | {{name}} sets up two-step login again at the next sign-in. Every session ends now. | needs native-speaker review |
 | `users.confirm.revoke-sessions` | {{name}} is signed out on every device. | {{name}} is signed out on every device. | needs native-speaker review |
+| `users.confirm.send-password-reset` | {{name}} gets an email with a link to choose a new password. The link works once. | {{name}} gets an email with a link to choose a new password. The link works once. | needs native-speaker review |
+| `users.confirm.resend-verification` | {{name}} gets the sign-up confirmation email again. | {{name}} gets the sign-up confirmation email again. | needs native-speaker review |
+| `users.confirm.clear-sign-in-block` | {{name}} can try to sign in again now. Confirm it is really them who asked. | {{name}} can try to sign in again now. Confirm it is really them who asked. | needs native-speaker review |
+| `users.done.send-password-reset` | Sent to {{email}}. Ask the person to check their inbox and spam folder. | Sent to {{email}}. Ask the person to check their inbox and spam folder. | needs native-speaker review |
+| `users.done.resend-verification` | Sent to {{email}}. Ask the person to check their inbox and spam folder. | Sent to {{email}}. Ask the person to check their inbox and spam folder. | needs native-speaker review |
+| `users.clinician` | Umuvuzi | Clinician | needs native-speaker review |
 | `logs.event` | Event | Event | needs native-speaker review |
 | `logs.who` | Who | Who | needs native-speaker review |
 | `logs.device` | Device and IP | Device and IP | needs native-speaker review |
@@ -1402,7 +1588,6 @@ File: `apps/staff-web/src/features/console/locales/rw.json`
 | `logs.access.lead` | Who opened which record, with the reason given. Records are shown by reference only. | Who opened which record, with the reason given. Records are shown by reference only. | needs native-speaker review |
 | `logs.access.noun` | accesses | accesses | needs native-speaker review |
 | `bg.title` | Isuzuma ry’uburenganzira bwihutirwa | Break-glass reviews | needs native-speaker review |
-| `bg.lead` | Emergency access to records, reviewed by a second admin. | Emergency access to records, reviewed by a second admin. | needs native-speaker review |
 | `bg.tab.review` | Ibyo gusuzuma | To review | needs native-speaker review |
 | `bg.tab.all` | Byose | All | needs native-speaker review |
 | `bg.none` | No break-glass access to review | No break-glass access to review | needs native-speaker review |
@@ -1415,6 +1600,40 @@ File: `apps/staff-web/src/features/console/locales/rw.json`
 | `bg.reason.other` | Other | Other | needs native-speaker review |
 | `bg.outcome.appropriate` | Judged appropriate | Judged appropriate | needs native-speaker review |
 | `bg.outcome.inappropriate` | Judged not appropriate | Judged not appropriate | needs native-speaker review |
+| `national.title` | Raporo y'igihugu | National report | needs native-speaker review |
+| `national.smallGroups` | Amatsinda ari munsi ya 10 arahishwa | Groups under 10 hidden | needs native-speaker review |
+| `national.failed` | Raporo ntiyabonetse. Ongera ugerageze. | The report could not load. Try again. | needs native-speaker review |
+| `national.hidden` | Byahishwe | Hidden | needs native-speaker review |
+| `national.hiddenWhy` | Abarwayi bari munsi ya 10, cyangwa umubare wagaragaza itsinda nk'iryo. | Fewer than 10 patients, or a figure that would reveal such a group. | needs native-speaker review |
+| `national.minutes_one` | Umunota {{count}} | {{count}} min | needs native-speaker review |
+| `national.minutes_other` | Iminota {{count}} | {{count}} min | needs native-speaker review |
+| `national.unknownDistrict` | Akarere ntikanditswe | District not recorded | needs native-speaker review |
+| `national.district` | Akarere | District | needs native-speaker review |
+| `national.facility` | Ivuriro | Facility | needs native-speaker review |
+| `national.facilities` | Amavuriro | Facilities | needs native-speaker review |
+| `national.visits` | Abaje kwivuza | Visits | needs native-speaker review |
+| `national.median` | Igihe cyo hagati cyo gutegereza muganga | Median wait to the doctor | needs native-speaker review |
+| `national.p90` | Ijanisha rya 90 | 90th percentile | needs native-speaker review |
+| `national.medicinesOut` | Imiti yashize ubu | Medicines out now | needs native-speaker review |
+| `national.kpi.visits` | Abaje kwivuza | Visits | needs native-speaker review |
+| `national.kpi.facilities_one` | Ivuriro {{count}} mu turere {{districts}} | {{count}} facility in {{districts}} districts | needs native-speaker review |
+| `national.kpi.facilities_other` | Amavuriro {{count}} mu turere {{districts}} | {{count}} facilities in {{districts}} districts | needs native-speaker review |
+| `national.kpi.wait` | Igihe cyo hagati cyo gutegereza muganga | Median wait to the doctor | needs native-speaker review |
+| `national.kpi.districts` | Uturere | Districts | needs native-speaker review |
+| `national.kpi.stockouts` | Amavuriro yashizemo umuti | Facilities with a stock-out | needs native-speaker review |
+| `national.kpi.medicines_one` | Umuti {{count}} washize ahantu | {{count}} medicine out somewhere | needs native-speaker review |
+| `national.kpi.medicines_other` | Imiti {{count}} yashize ahantu | {{count}} medicines out somewhere | needs native-speaker review |
+| `national.districts.title` | Abarwayi mu karere | Load by district | needs native-speaker review |
+| `national.facilitiesTable.title` | Abarwayi mu ivuriro | Load by facility | needs native-speaker review |
+| `national.trend.title` | Uko gutegereza guhinduka | Wait trend | needs native-speaker review |
+| `national.trend.hiddenPeriods_one` | Igihe {{count}} cyahishwe: abahamagawe bari munsi ya 10. | {{count}} period is hidden: fewer than 10 patients were called. | needs native-speaker review |
+| `national.trend.hiddenPeriods_other` | Ibihe {{count}} byahishwe: abahamagawe bari munsi ya 10. | {{count}} periods are hidden: fewer than 10 patients were called. | needs native-speaker review |
+| `national.diagnoses.title` | Indwara zikunze kuboneka mu karere | Top diagnoses by district | needs native-speaker review |
+| `national.stockouts.title` | Imiti yashize ubu | Stock-outs now | needs native-speaker review |
+| `national.stockouts.facilities` | Amavuriro yashizemo umuti | Facilities with a stock-out | needs native-speaker review |
+| `national.stockouts.medicines` | Imiti yashize | Medicines out | needs native-speaker review |
+| `national.stockouts.medicine` | Umuti | Medicine | needs native-speaker review |
+| `national.stockouts.where` | Uturere | Districts | needs native-speaker review |
 
 ## staff-web feature: documents (namespace documents)
 
@@ -1521,7 +1740,6 @@ File: `apps/staff-web/src/features/help/locales/rw.json`
 | `languages.fr` | Gifaransa | French | needs native-speaker review |
 | `shownIn` | Byerekanywe mu {{language}}: ntibirandikwa mu rurimi rwawe. | Shown in {{language}}: not written in your language yet. | needs native-speaker review |
 | `support.title` | Ubufasha | Help and support | needs native-speaker review |
-| `support.description` | Amabwiriza y'akazi ku ivuriro, n'ibibazo ku bufasha bwa MediLink. | Guides for your work at the facility, and questions to MediLink support. | needs native-speaker review |
 | `support.guides` | Amabwiriza | Guides | needs native-speaker review |
 | `support.mine` | Ibibazo byanjye | My requests | needs native-speaker review |
 | `support.facility` | Ibibazo by'ivuriro | Facility requests | needs native-speaker review |
@@ -1647,7 +1865,6 @@ File: `apps/staff-web/src/features/help/locales/rw.json`
 | `editor.statusDraft` | Umushinga | Draft | needs native-speaker review |
 | `editor.statusPublished` | Yatangajwe | Published | needs native-speaker review |
 | `contact.title` | Ubutumwa bwo ku rubuga | Website messages | needs native-speaker review |
-| `contact.intro` | Bwoherejwe ku rupapuro rwa Twandikire. Subiza kuri imeyili cyangwa telefoni y'uwanditse, hanyuma wemeze ko byakozwe. | Sent from the public Contact page. Answer on the visitor's email or phone, then mark the message handled. | needs native-speaker review |
 | `contact.tabs.label` | Uko ubutumwa buhagaze | Message status | needs native-speaker review |
 | `contact.tabs.new` | Bushya | New | needs native-speaker review |
 | `contact.tabs.handled` | Bwakozweho | Handled | needs native-speaker review |
@@ -1772,7 +1989,6 @@ File: `apps/staff-web/src/features/notifications/locales/rw.json`
 | `inbox.open` | Fungura | Open | needs native-speaker review |
 | `settings.link` | Igenamiterere | Settings | needs native-speaker review |
 | `settings.title` | Igenamiterere ry'ubutumwa | Notification settings | needs native-speaker review |
-| `settings.intro` | Uko MediLink ikumenyesha ubutumwa bushya kuri iki gikoresho. | How MediLink tells you about new notifications on this device. | needs native-speaker review |
 | `settings.conflictTitle` | Iri genamiterere ryahinduriwe ahandi | These settings changed somewhere else | needs native-speaker review |
 | `settings.conflict` | Ibyo wahisemo biracyahari. Fungura verisiyo nshya, hanyuma wongere ubike. | Your choices are still here. Load the latest version, then save again. | needs native-speaker review |
 | `settings.reload` | Fungura verisiyo nshya | Load the latest version | needs native-speaker review |
@@ -1920,7 +2136,6 @@ File: `apps/staff-web/src/features/patients/locales/rw.json`
 | `search.results` | Ibyavuye mu ishakisha | Search results | needs native-speaker review |
 | `search.noResults` | Nta murwayi wo muri iki kigo uhuye n'ibi. Reba uko wanditse, cyangwa ushakishe ukoresheje telefoni cyangwa indangamuntu. | No patient at this facility matches. Check the spelling, or search by phone or ID. | needs native-speaker review |
 | `search.register` | Andika umurwayi mushya | Register walk-in | needs native-speaker review |
-| `search.shortcuts` | Kanda / ushakishe, na N wandike umurwayi mushya. | Press / to search and N for a new walk-in. | needs native-speaker review |
 | `search.button` | Shakisha | Search | needs native-speaker review |
 | `search.noResultsTitle` | Nta murwayi wabonetse | No patient found | needs native-speaker review |
 | `external.title` | Asanzwe kuri MediLink | Already on MediLink | needs native-speaker review |
@@ -1960,6 +2175,10 @@ File: `apps/staff-web/src/features/patients/locales/rw.json`
 | `register.another` | Andika undi | Register another | needs native-speaker review |
 | `register.sections.person` | Umuntu | Person | needs native-speaker review |
 | `register.sections.contact` | Aho abarizwa n'ubwishingizi | Contact and insurance | needs native-speaker review |
+| `record.photoHint` | Umurwayi yashyizeho ifoto kugira ngo mumumenye. Buri gihe iyirebwe biranditswa. | The patient added a photo to help you recognise them. Each view is logged. | needs native-speaker review |
+| `record.showPhoto` | Erekana ifoto | Show photo | needs native-speaker review |
+| `record.photoAlt` | Ifoto ya {{name}} | Photo of {{name}} | needs native-speaker review |
+| `record.photoUnavailable` | Ifoto ntiboneka ubu. | The photo is not available right now. | needs native-speaker review |
 | `record.merged` | Yahujwe | Merged | needs native-speaker review |
 | `record.staffMember` | Umukozi | Staff member | needs native-speaker review |
 | `record.hasAccount` | Afite konti ya MediLink | Has a MediLink account | needs native-speaker review |
@@ -2096,6 +2315,23 @@ File: `apps/staff-web/src/features/patients/locales/rw.json`
 | `contact.newPhone` | Telefone nshya (siga ubusa ngo igume) | New phone (leave empty to keep it) | needs native-speaker review |
 | `contact.relationship` | Isano | Relationship | needs native-speaker review |
 | `contact.relationshipHint` | Urugero: umukobwa, umuturanyi, umujyanama w'ubuzima | For example: daughter, neighbour, community health worker | needs native-speaker review |
+| `careSchedule.tab` | Gahunda y'ubuvuzi | Care schedule | needs native-speaker review |
+| `careSchedule.title` | Inkingo n'isuzuma ry'ababyeyi batwite biteganyijwe | Planned vaccinations and antenatal visits | needs native-speaker review |
+| `careSchedule.intro` | Umurwayi yibutswa umunsi ubanziriza n'icyo gitondo. Ubutumwa ntibuvuga icyo gahunda igamije; icyitonderwa kigaragara gusa muri porogaramu y'umurwayi. | The patient gets a reminder the day before and on the morning. The reminder never says what the visit is for; the note shows only in the patient's app. | needs native-speaker review |
+| `careSchedule.empty` | Nta gahunda iteganyijwe. | Nothing planned. | needs native-speaker review |
+| `careSchedule.failed` | Ntibyakunze kubona gahunda y'ubuvuzi. | We couldn't load the care schedule. | needs native-speaker review |
+| `careSchedule.add` | Teganya itariki | Plan a date | needs native-speaker review |
+| `careSchedule.kind` | Iki | What | needs native-speaker review |
+| `careSchedule.kinds.vaccination` | Urukingo | Vaccination | needs native-speaker review |
+| `careSchedule.kinds.antenatal` | Isuzuma ry'umubyeyi utwite | Antenatal visit | needs native-speaker review |
+| `careSchedule.dueOn` | Itariki | Date | needs native-speaker review |
+| `careSchedule.note` | Icyitonderwa (si ngombwa) | Note (optional) | needs native-speaker review |
+| `careSchedule.noteHint` | Urugero: doze ya kabiri. Inyuguti 80 ntarengwa. | For example: second dose. Up to 80 characters. | needs native-speaker review |
+| `careSchedule.save` | Ongeraho kuri gahunda | Add to the schedule | needs native-speaker review |
+| `careSchedule.saved` | Byongeweho. Umurwayi azibutswa. | Added. The patient will get reminders. | needs native-speaker review |
+| `careSchedule.cancel` | Hagarika itariki | Cancel date | needs native-speaker review |
+| `careSchedule.cancelTitle` | Guhagarika iyi tariki iteganyijwe? | Cancel this planned date? | needs native-speaker review |
+| `careSchedule.cancelConsequences` | Umurwayi ntazibutswa ku wa {{date}}. Kugira ngo uhindure itariki, yihagarike wongereho indi. | The patient gets no reminder for {{date}}. To move the date, cancel it and add the new one. | needs native-speaker review |
 
 ## staff-web feature: pharmacy (namespace pharmacy)
 
@@ -2107,6 +2343,7 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `nav.availability` | Imiti iboneka | Medicine availability | needs native-speaker review |
 | `nav.history` | Amateka yo gutanga imiti | Dispensing history | needs native-speaker review |
 | `nav.verify` | Genzura urupapuro rw'imiti | Verify a prescription | needs native-speaker review |
+| `nav.stock` | Ububiko | Stock | needs native-speaker review |
 | `age_one` | Umwaka {{count}} | {{count}} year | needs native-speaker review |
 | `age_other` | Imyaka {{count}} | {{count}} years | needs native-speaker review |
 | `days_one` | Umunsi {{count}} | {{count}} day | needs native-speaker review |
@@ -2156,8 +2393,8 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `flag.notInStock` | Ntuboneka hano | Not in stock here | needs native-speaker review |
 | `flag.offCatalogue` | Ntuba mu rutonde | Not in the catalogue | needs native-speaker review |
 | `flag.noSubstitution` | Nta gusimbuza | No substitution | needs native-speaker review |
+| `flag.lowStock` | Ububiko buke hano | Low stock here | needs native-speaker review |
 | `queue.title` | Farumasi | Pharmacy | needs native-speaker review |
-| `queue.description` | Resept zo gutanga muri iki kigo, izabanje mbere. | Prescriptions to give at this facility, oldest first. | needs native-speaker review |
 | `queue.tabs` | Resept hakurikijwe uko zimeze | Prescriptions by state | needs native-speaker review |
 | `queue.tab.ready` | Ziteguye | Ready | needs native-speaker review |
 | `queue.tab.partly` | Zatanzwe igice | Partly given | needs native-speaker review |
@@ -2251,7 +2488,6 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `query.bodyRequired` | Andika igisubizo. | Write the answer. | needs native-speaker review |
 | `query.answer` | Ohereza igisubizo | Send the answer | needs native-speaker review |
 | `availability.title` | Imiti iboneka | Medicine availability | needs native-speaker review |
-| `availability.description` | Zimya imiti yashize. Abaganga babona "Ntuboneka hano" iyo bandika resept. | Switch off what is out of stock. Doctors then see "Not in stock here" when they prescribe. | needs native-speaker review |
 | `availability.search` | Shaka umuti | Find a medicine | needs native-speaker review |
 | `availability.summary_one` | Umuti {{count}} washize | {{count}} medicine out of stock | needs native-speaker review |
 | `availability.summary_other` | Imiti {{count}} yashize | {{count}} medicines out of stock | needs native-speaker review |
@@ -2259,14 +2495,21 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `availability.out` | Washize | Out of stock | needs native-speaker review |
 | `availability.since` | Washize kuva {{date}} | Out since {{date}} | needs native-speaker review |
 | `availability.none` | Nta muti uhuye. | No medicine matches. | needs native-speaker review |
+| `availability.followsStock` | Bikurikira ibarura ry'ububiko. Byakire cyangwa ubihindure ku rupapuro rw'Ububiko. | Follows its stock count. Receive or adjust it on the Stock page. | needs native-speaker review |
 | `labels.title` | Ibirango by'imiti | Dosing labels | needs native-speaker review |
-| `labels.description` | Ikirango kimwe kuri buri muti watanzwe, mm 62 z'ubugari. | One label per medicine given, 62 mm wide. | needs native-speaker review |
 | `labels.print` | Capa ibirango | Print labels | needs native-speaker review |
 | `labels.language` | Ururimi rw'ibirango | Label language | needs native-speaker review |
 | `labels.languages.rw` | Ikinyarwanda | Kinyarwanda | needs native-speaker review |
 | `labels.languages.en` | Icyongereza | English | needs native-speaker review |
 | `labels.languages.fr` | Igifaransa | Français | needs native-speaker review |
 | `labels.none` | Nta birango biraboneka: nta kintu cyatanzwe. | No labels yet: nothing has been given. | needs native-speaker review |
+| `labels.schedule` | Igihe cyo kuwunywa | When to take it | needs native-speaker review |
+| `labels.times.morning` | Mu gitondo | Morning | needs native-speaker review |
+| `labels.times.noon` | Saa sita | Noon | needs native-speaker review |
+| `labels.times.evening` | Ku mugoroba | Evening | needs native-speaker review |
+| `labels.times.night` | Nijoro | Night | needs native-speaker review |
+| `labels.whenNeeded` | Igihe ubikeneye | When needed | needs native-speaker review |
+| `labels.once` | Rimwe gusa | Once only | needs native-speaker review |
 | `alert.allergy` | Aleriji: {{substance}} | Allergy: {{substance}} | needs native-speaker review |
 | `alert.dose` | Birenze umubare usanzwe ({{max}}) | More than the usual quantity ({{max}}) | needs native-speaker review |
 | `alert.duplicate` | Umuti umwe kabiri | Same medicine twice | needs native-speaker review |
@@ -2305,6 +2548,8 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `prescription.cancelConsequences` | Farumasi ntizawutanga. Umurwayi azabona ko wahagaritswe. | The pharmacy will not give it. The patient sees it as cancelled. | needs native-speaker review |
 | `prescription.changeTitle` | Hindura {{name}}? | Change {{name}}? | needs native-speaker review |
 | `prescription.changeConsequences` | Uyu urahagarikwa n'impamvu yawe, hanyuma wongeremo mushya. | This one is cancelled with your reason, then you add the new one. | needs native-speaker review |
+| `prescription.meal` | Bijyanye no kurya? | With food? | needs native-speaker review |
+| `prescription.mealHint` | Bigaragara nk’ishusho ku kirango. | Shown as a picture on the label. | needs native-speaker review |
 | `pages` | Amapaji | Pages | needs native-speaker review |
 | `previous` | Ibibanza | Previous | needs native-speaker review |
 | `next` | Ibikurikira | Next | needs native-speaker review |
@@ -2322,8 +2567,9 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `today.nothing` | Nta rupapuro rw'imiti rutegereje. Inshya ziza hano abaganga bamaze gusinya. | No prescription waits. New ones appear here as doctors sign. | needs native-speaker review |
 | `today.items_one` | Umuti {{count}} | {{count}} medicine | needs native-speaker review |
 | `today.items_other` | Imiti {{count}} | {{count}} medicines | needs native-speaker review |
+| `today.lowStock_one` | Ububiko buke (icyiciro {{count}} kirarangira vuba) | Low on stock ({{count}} batch expiring soon) | needs native-speaker review |
+| `today.lowStock_other` | Ububiko buke (ibyiciro {{count}} birarangira vuba) | Low on stock ({{count}} batches expiring soon) | needs native-speaker review |
 | `history.title` | Amateka yo gutanga imiti | Dispensing history | needs native-speaker review |
-| `history.intro` | Imiti yatanzwe kuri iyi farumasi, uwayitanze n'igihe. Fungura umurongo ubone urupapuro rwose. | What was given at this pharmacy, by whom and when. Open a line for the full prescription. | needs native-speaker review |
 | `history.period` | Igihe | Period | needs native-speaker review |
 | `history.days.1` | Uyu munsi | Today | needs native-speaker review |
 | `history.days.7` | Iminsi 7 | 7 days | needs native-speaker review |
@@ -2342,7 +2588,6 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `history.outcome.substituted` | Yasimbujwe | Substituted | needs native-speaker review |
 | `history.outcome.not_available` | Ntabonetse | Not available | needs native-speaker review |
 | `verify.title` | Genzura urupapuro rw'imiti | Verify a prescription | needs native-speaker review |
-| `verify.intro` | Urupapuro rw'imiti ruvuye ahandi: genzura kode, hanyuma ufungure imiti ukoresheje itariki y'amavuko y'umurwayi. | A prescription from another facility: check the code, then open the medicines with the patient's date of birth. | needs native-speaker review |
 | `verify.code` | Kode yo kugenzura | Verification code | needs native-speaker review |
 | `verify.codeHint` | Yanditse munsi ya QR ku rupapuro | Printed under the QR code on the prescription | needs native-speaker review |
 | `verify.check` | Genzura | Check | needs native-speaker review |
@@ -2361,6 +2606,93 @@ File: `apps/staff-web/src/features/pharmacy/locales/rw.json`
 | `verify.open` | Erekana imiti | Show medicines | needs native-speaker review |
 | `verify.bornWrong` | Itariki y'amavuko ntihuye. | The date of birth does not match. | needs native-speaker review |
 | `failed` | Ntibyashobotse. Ongera ugerageze. | Could not load. Try again. | needs native-speaker review |
+| `favourites.title` | Imiti ukunze kwandika | Your frequent medicines | needs native-speaker review |
+| `favourites.days_one` | Umunsi {{count}} | {{count}} day | needs native-speaker review |
+| `favourites.days_other` | Iminsi {{count}} | {{count}} days | needs native-speaker review |
+| `stock.title` | Ububiko | Stock | needs native-speaker review |
+| `stock.tabs` | Uko ububiko bugaragara | Stock views | needs native-speaker review |
+| `stock.tab.all` | Imiti yose | All medicines | needs native-speaker review |
+| `stock.tab.short` | Mike cyangwa yashize | Low or out | needs native-speaker review |
+| `stock.tab.expiring` | Izarangira vuba | Expiring soon | needs native-speaker review |
+| `stock.tab.movements` | Ibyahindutse | Movements | needs native-speaker review |
+| `stock.search` | Shaka umuti | Find a medicine | needs native-speaker review |
+| `stock.none` | Nta muti urafite ububiko. | No medicine has stock yet. | needs native-speaker review |
+| `stock.noneBody` | Akira icyiciro kugira ngo utangire kubara umuti. Indi miti igumana buto yo ku Kuboneka kw'imiti. | Receive a batch to start counting a medicine. Others keep the switch on Medicine availability. | needs native-speaker review |
+| `stock.noneShort` | Nta muti muke cyangwa washize. | Nothing is low or out of stock. | needs native-speaker review |
+| `stock.nextExpiry` | Irarangira {{date}} | Next expiry {{date}} | needs native-speaker review |
+| `stock.noUsable` | Nta cyiciro gikoreshwa | No usable batch | needs native-speaker review |
+| `stock.expiredUnits_one` | {{count}} yarangije igihe yo kuvanamo | {{count}} expired unit to remove | needs native-speaker review |
+| `stock.expiredUnits_other` | {{count}} zarangije igihe zo kuvanamo | {{count}} expired units to remove | needs native-speaker review |
+| `stock.units_one` | {{count}} | {{count}} unit | needs native-speaker review |
+| `stock.units_other` | {{count}} | {{count}} units | needs native-speaker review |
+| `stock.level.in_stock` | Irahari | In stock | needs native-speaker review |
+| `stock.level.low` | Ububiko buke | Low stock | needs native-speaker review |
+| `stock.level.out` | Yashize | Out of stock | needs native-speaker review |
+| `stock.expired` | Yarangije igihe | Expired | needs native-speaker review |
+| `stock.expiringNone` | Nta cyiciro kirangira mu minsi 60 iri imbere. | No batch expires in the next 60 days. | needs native-speaker review |
+| `stock.expiringIntro` | Ibyiciro bifite imiti isigaye birangira mu minsi 60, ibyarangiye mbere. Bitange mbere, cyangwa ukure ibyarangiye ku gipangu. | Batches with units left that expire within 60 days, expired ones first. Give these first, or take expired ones off the shelf. | needs native-speaker review |
+| `stock.columns.medicine` | Umuti | Medicine | needs native-speaker review |
+| `stock.columns.batch` | Icyiciro | Batch | needs native-speaker review |
+| `stock.columns.expiry` | Irangira | Expiry | needs native-speaker review |
+| `stock.columns.units` | Umubare | Units | needs native-speaker review |
+| `stock.columns.when` | Igihe | When | needs native-speaker review |
+| `stock.columns.change` | Impinduka | Change | needs native-speaker review |
+| `stock.columns.by` | Uwabikoze | By | needs native-speaker review |
+| `stock.movements` | Ibyahindutse | Movements | needs native-speaker review |
+| `stock.movementsNone` | Nta cyahindutse kugeza ubu. | No movement yet. | needs native-speaker review |
+| `stock.kind.received` | Byakiriwe | Received | needs native-speaker review |
+| `stock.kind.dispensed` | Byatanzwe | Given | needs native-speaker review |
+| `stock.kind.adjusted` | Byahinduwe | Adjusted | needs native-speaker review |
+| `stock.reason.count_correction` | Gukosora ibarura | Count correction | needs native-speaker review |
+| `stock.reason.damaged` | Byangiritse | Damaged | needs native-speaker review |
+| `stock.reason.expired` | Byarangije igihe | Expired | needs native-speaker review |
+| `stock.prescription` | Resept | Prescription | needs native-speaker review |
+| `stock.balanceAfter_one` | {{count}} isigaye mu cyiciro | {{count}} left in the batch | needs native-speaker review |
+| `stock.balanceAfter_other` | {{count}} zisigaye mu cyiciro | {{count}} left in the batch | needs native-speaker review |
+| `stock.receive.open` | Akira ububiko | Receive stock | needs native-speaker review |
+| `stock.receive.title` | Akira ububiko | Receive stock | needs native-speaker review |
+| `stock.receive.description` | Icyiciro kimwe icyarimwe, nk'uko cyanditse ku gakarito. | One batch at a time, as printed on the box. | needs native-speaker review |
+| `stock.receive.save` | Ongera mu bubiko | Add to stock | needs native-speaker review |
+| `stock.receive.drugRequired` | Hitamo umuti. | Choose a medicine. | needs native-speaker review |
+| `stock.receive.batchRequired` | Tanga nimero y'icyiciro. | Give the batch number. | needs native-speaker review |
+| `stock.receive.expiryRequired` | Tanga itariki birangiriraho. | Give the expiry date. | needs native-speaker review |
+| `stock.receive.expiryPast` | Iki cyiciro cyarangije igihe. Ntugishyire ku gipangu. | This batch has already expired. Don't put it on the shelf. | needs native-speaker review |
+| `stock.receive.quantityRequired` | Tanga umubare, 1 cyangwa urenga. | Give the number of units, 1 or more. | needs native-speaker review |
+| `stock.receive.batch` | Nimero y'icyiciro | Batch number | needs native-speaker review |
+| `stock.receive.expiry` | Itariki birangiriraho | Expiry date | needs native-speaker review |
+| `stock.receive.quantity` | Umubare wakiriwe | Units received | needs native-speaker review |
+| `stock.receive.quantityHint` | Ibinini, kapsule, amacupa: icyo utanga. | Tablets, capsules, bottles: the unit you give. | needs native-speaker review |
+| `stock.receive.supplier` | Uwatanze | Supplier | needs native-speaker review |
+| `stock.threshold` | Urugero rw'ububiko buke | Low-stock threshold | needs native-speaker review |
+| `stock.thresholdHint` | "Ububiko buke" munsi y'uyu mubare. 0 birabihagarika. | "Low stock" below this number. 0 turns it off. | needs native-speaker review |
+| `stock.thresholdInvalid` | Tanga umubare wuzuye, 0 cyangwa urenga. | Give a whole number, 0 or more. | needs native-speaker review |
+| `stock.saveThreshold` | Bika | Save | needs native-speaker review |
+| `stock.back` | Ububiko bwose | All stock | needs native-speaker review |
+| `stock.batches` | Ibyiciro biri ku gipangu | Batches on the shelf | needs native-speaker review |
+| `stock.noBatches` | Nta muti usigaye. Akira icyiciro kugira ngo wongere. | No units left. Receive a batch to restock. | needs native-speaker review |
+| `stock.noSupplier` | Uwatanze ntiyavuzwe | No supplier given | needs native-speaker review |
+| `stock.summary` | Incamake y'ububiko | Stock summary | needs native-speaker review |
+| `stock.onHand` | Ishobora gukoreshwa | Usable units | needs native-speaker review |
+| `stock.expiredToRemove_one` | {{count}} yarangije igihe iracyari ku gipangu. Hindura icyiciro cyayo ukoresheje impamvu Byarangije igihe. | {{count}} expired unit is still on the shelf. Adjust its batch with the reason Expired. | needs native-speaker review |
+| `stock.expiredToRemove_other` | {{count}} zarangije igihe ziracyari ku gipangu. Hindura icyiciro cyazo ukoresheje impamvu Byarangije igihe. | {{count}} expired units are still on the shelf. Adjust their batch with the reason Expired. | needs native-speaker review |
+| `stock.adjust.open` | Hindura | Adjust | needs native-speaker review |
+| `stock.adjust.title` | Hindura icyiciro {{batch}} | Adjust batch {{batch}} | needs native-speaker review |
+| `stock.adjust.description_one` | {{count}} iri muri iki cyiciro ubu. Buri mpinduka yandikwa n'izina ryawe. | {{count}} unit in this batch now. Every change is recorded with your name. | needs native-speaker review |
+| `stock.adjust.description_other` | {{count}} ziri muri iki cyiciro ubu. Buri mpinduka yandikwa n'izina ryawe. | {{count}} units in this batch now. Every change is recorded with your name. | needs native-speaker review |
+| `stock.adjust.save` | Bika impinduka | Save the change | needs native-speaker review |
+| `stock.adjust.reason` | Impamvu | Reason | needs native-speaker review |
+| `stock.adjust.counted` | Umubare wabaze | Units you counted | needs native-speaker review |
+| `stock.adjust.countedHint` | Bara icyiciro kiri ku gipangu wandike umubare. | Count the batch on the shelf and type the number. | needs native-speaker review |
+| `stock.adjust.countedRequired` | Andika umubare wabaze, 0 cyangwa urenga. | Type the number you counted, 0 or more. | needs native-speaker review |
+| `stock.adjust.noChange` | Ni wo mubare usanzwe wanditse. | That is the number already recorded. | needs native-speaker review |
+| `stock.adjust.difference` | Impinduka: {{change}} | Change: {{change}} | needs native-speaker review |
+| `stock.adjust.removed` | Umubare wo kuvanamo | Units to take off | needs native-speaker review |
+| `stock.adjust.removeRange` | Vanamo hagati ya 1 na {{max}}. | Take off between 1 and {{max}}. | needs native-speaker review |
+| `stock.adjust.note` | Icyitonderwa | Note | needs native-speaker review |
+| `meal.any` | Igihe icyo ari cyo cyose | Any time | needs native-speaker review |
+| `meal.before_food` | Mbere yo kurya | Before food | needs native-speaker review |
+| `meal.with_food` | Mu gihe urya | With food | needs native-speaker review |
+| `meal.after_food` | Nyuma yo kurya | After food | needs native-speaker review |
 
 ## staff-web feature: platform (namespace platform)
 
@@ -2443,11 +2775,17 @@ File: `apps/staff-web/src/features/platform/locales/rw.json`
 | `applications.review` | Suzuma | Review | needs native-speaker review |
 | `applications.back` | Subira ku busabe | Back to applications | needs native-speaker review |
 | `applications.byPlatform` | Byakozwe na sisitemu | Created by the platform | needs native-speaker review |
-| `applications.create` | Kora mu izina ry'ikigo | Create on behalf | needs native-speaker review |
+| `applications.create` | Andikisha ikigo | Register a facility | needs native-speaker review |
 | `applications.createHint` | Ku bigo byasabye kuri telefoni cyangwa imbonankubone. Babwuzuza bakoresheje link iboherezwa kuri imeyili. | For facilities that applied by phone or in person. They complete it with the emailed link. | needs native-speaker review |
 | `applications.createSubmit` | Kora ubusabe | Create the application | needs native-speaker review |
 | `applications.createRequired` | Andika izina ry'ikigo, izina ry'usaba n'imeyili yemewe. | Enter the facility name, the applicant's name and a valid email. | needs native-speaker review |
 | `applications.sendLink` | Oherereza usaba link yo kubwuzuza | Email the applicant a link to complete it | needs native-speaker review |
+| `applications.adminIs` | Umuyobozi: {{name}} | Admin: {{name}} | needs native-speaker review |
+| `applications.progress` | Aho bigeze | Progress | needs native-speaker review |
+| `applications.documents_one` | Inyandiko {{count}} | {{count}} document | needs native-speaker review |
+| `applications.documents_other` | Inyandiko {{count}} | {{count}} documents | needs native-speaker review |
+| `applications.missing_one` | Habura ikintu {{count}} | {{count}} item missing | needs native-speaker review |
+| `applications.missing_other` | Habura ibintu {{count}} | {{count}} items missing | needs native-speaker review |
 | `review.start` | Tangira gusuzuma | Start review | needs native-speaker review |
 | `review.requestChanges` | Saba impinduka | Request changes | needs native-speaker review |
 | `review.requestChangesHint` | Andika igitekerezo kimwe kuri buri kintu usaba kigomba gukosora. Akibona ku gice kireba. | Write one comment per item the applicant must fix. They see them on the matching fields. | needs native-speaker review |
@@ -2580,6 +2918,23 @@ File: `apps/staff-web/src/features/platform/locales/rw.json`
 | `facilities.identifiersHint` | Kode y’ikigo muri Minisiteri y’Ubuzima (FOSA ID) na nimero y’imisoro ya RRA. Bigaragara ku rutonde rw’ibigo rwa Leta. | The Ministry of Health facility code (FOSA ID) and the RRA tax number. They appear in the facility list for the government. | needs native-speaker review |
 | `facilities.saveIdentifiers` | Bika | Save | needs native-speaker review |
 | `facilities.identifiersSaved` | Byabitswe. | Saved. | needs native-speaker review |
+| `facilities.noCode` | Nta FOSA ID irahabwa | No FOSA ID yet | needs native-speaker review |
+| `facilities.place` | Aho kiri | Place | needs native-speaker review |
+| `facilities.inCharge` | Ushinzwe | In charge | needs native-speaker review |
+| `facilities.noAdmin` | Nta muyobozi w’ikigo urashyirwaho | No facility admin yet | needs native-speaker review |
+| `facilities.staff` | Abakozi | Staff | needs native-speaker review |
+| `facilities.seeStaff` | Reba abakozi mu rutonde rw’abakoresha | See the staff in the user list | needs native-speaker review |
+| `facilities.staffCount_one` | Umukozi {{count}} ukora | {{count}} active staff member | needs native-speaker review |
+| `facilities.staffCount_other` | Abakozi {{count}} bakora | {{count}} active staff | needs native-speaker review |
+| `facilities.doctorsChecked_one` | Uruhushya rwa muganga {{checked}} kuri {{count}} rwagenzuwe | {{checked}} of {{count}} doctor's licence checked | needs native-speaker review |
+| `facilities.doctorsChecked_other` | Impushya z’abaganga {{checked}} kuri {{count}} zagenzuwe | {{checked}} of {{count}} doctors' licences checked | needs native-speaker review |
+| `facilities.missingCode` | Nta FOSA ID | Without a FOSA ID | needs native-speaker review |
+| `facilities.export` | Ohereza CSV | Export CSV | needs native-speaker review |
+| `facilities.exportFailed` | Kohereza byanze. Ongera ugerageze. | The export failed. Try again. | needs native-speaker review |
+| `facilities.photos` | Amafoto | Photos | needs native-speaker review |
+| `facilities.identity` | Ibiranga ikigo | Identity | needs native-speaker review |
+| `facilities.contact` | Aho babarizwa n’aho kiri | Contact and place | needs native-speaker review |
+| `facilities.professionUnknown` | Umwuga ntiwatanzwe | Profession not given | needs native-speaker review |
 | `licences.add` | Ongeraho uruhushya | Add licence | needs native-speaker review |
 | `licences.renew` | Vugurura | Renew | needs native-speaker review |
 | `licences.correct` | Kosora | Correct | needs native-speaker review |
@@ -2592,7 +2947,6 @@ File: `apps/staff-web/src/features/platform/locales/rw.json`
 | `licences.kind.accreditation` | Icyemezo cy'ubuziranenge | Accreditation | needs native-speaker review |
 | `licences.kind.other` | Ibindi | Other | needs native-speaker review |
 | `flags.title` | Imikorere | Feature flags | needs native-speaker review |
-| `flags.intro` | Agaciro gasanzwe gakora ku bigo byose keretse ikigo gifite icyo cyihariye. | Defaults apply to every facility unless a facility has its own setting. | needs native-speaker review |
 | `flags.names.security.pin_unlock` | Gufungura ukoresheje PIN | PIN unlock | needs native-speaker review |
 | `flags.on` | Irakora | On | needs native-speaker review |
 | `flags.off` | Ntikora | Off | needs native-speaker review |
@@ -2696,10 +3050,53 @@ File: `apps/staff-web/src/features/platform/locales/rw.json`
 | `masterData.samples` | Ingero z'impinduka | Examples of changes | needs native-speaker review |
 | `masterData.confirm` | Kora impinduka | Apply the changes | needs native-speaker review |
 | `masterData.descriptionHint` | Icyo iyi serivisi ari cyo, mu magambo yoroshye. Bigaragara ku rupapuro rwa serivisi. | What the service is, in plain words. Shown on the public service page. | needs native-speaker review |
+| `masterData.level` | Urwego | Level | needs native-speaker review |
+| `masterData.parent` | Kode y’umubyeyi | Parent code | needs native-speaker review |
 | `upload.drop` | Kurura dosiye hano, cyangwa | Drag a file here, or | needs native-speaker review |
 | `upload.browse` | Hitamo dosiye | Choose a file | needs native-speaker review |
 | `upload.remove` | Kuraho | Remove | needs native-speaker review |
 | `upload.uploading` | Biroherezwa… | Uploading… | needs native-speaker review |
+| `form.newTitle` | Andikisha ikigo | Register a facility | needs native-speaker review |
+| `form.editTitle` | Hindura {{name}} | Edit {{name}} | needs native-speaker review |
+| `form.back` | Subira ku busabe | Back to applications | needs native-speaker review |
+| `form.facility` | Ikigo | Facility | needs native-speaker review |
+| `form.facilityName` | Izina ry’ikigo | Facility name | needs native-speaker review |
+| `form.choose` | Hitamo… | Choose… | needs native-speaker review |
+| `form.phone` | Telefoni | Phone | needs native-speaker review |
+| `form.email` | Imeyili | Email | needs native-speaker review |
+| `form.location` | Aho giherereye | Location | needs native-speaker review |
+| `form.locationHint` | Umudugudu, aderesi n’umuryango ku ikarita (abarwayi bayikoresha bashaka inzira). | The village, the street address and the entrance on the map (patients use it for directions). | needs native-speaker review |
+| `form.address` | Aderesi | Street address | needs native-speaker review |
+| `form.mapLabel` | Ikarita: kanda ushyireho ikigo | Map: tap to place the facility | needs native-speaker review |
+| `form.pinLabel` | Umuryango w’ikigo (kurura ugahindure) | Facility entrance (drag to move) | needs native-speaker review |
+| `form.latitude` | Latitude | Latitude | needs native-speaker review |
+| `form.longitude` | Longitude | Longitude | needs native-speaker review |
+| `form.levels.province` | Intara | Province | needs native-speaker review |
+| `form.levels.district` | Akarere | District | needs native-speaker review |
+| `form.levels.sector` | Umurenge | Sector | needs native-speaker review |
+| `form.levels.cell` | Akagari | Cell | needs native-speaker review |
+| `form.levels.village` | Umudugudu | Village | needs native-speaker review |
+| `form.applicant` | Usaba | Applicant | needs native-speaker review |
+| `form.applicantHint` | Umuntu uvugira ikigo. Ni we uhabwa link. | The person who speaks for the facility. They receive the link. | needs native-speaker review |
+| `form.name` | Amazina yose | Full name | needs native-speaker review |
+| `form.position` | Umwanya | Position | needs native-speaker review |
+| `form.admin` | Umuyobozi w’ikigo | Facility admin | needs native-speaker review |
+| `form.adminHint` | Uzakoresha MediLink mu kigo. Ahabwa ubutumire iyo ikigo cyemejwe. | Who runs MediLink at the facility. They get an invitation when the facility is approved. | needs native-speaker review |
+| `form.nextSteps` | Ibikurikira: usaba yohereza uruhushya n’inyandiko z’iyandikwa (cyangwa ukazongeraho ku rupapuro rw’ubusabe), akemera amabwiriza akohereza. | Next: the applicant uploads the licence and registration documents (or you add them on the application page), accepts the terms and submits. | needs native-speaker review |
+| `form.save` | Bika | Save changes | needs native-speaker review |
+| `form.editDetails` | Hindura amakuru | Edit details | needs native-speaker review |
+| `form.required` | Uzuza aha. | Fill this in. | needs native-speaker review |
+| `form.email_invalid` | Andika imeyili nyayo. | Enter a valid email address. | needs native-speaker review |
+| `form.tin` | TIN igira imibare 9. | A TIN has 9 digits. | needs native-speaker review |
+| `form.mohCode` | Koresha inyuguti, imibare na / . _ - gusa. | Use letters, digits and / . _ - only. | needs native-speaker review |
+| `form.outsideRwanda` | Aho hantu hari hanze y’u Rwanda. | That location is outside Rwanda. | needs native-speaker review |
+| `form.fix` | Hari aho ukwiye gukosora. | Some fields need attention. | needs native-speaker review |
+| `form.addDocument` | Ongeraho inyandiko y’ikigo | Add a document for the facility | needs native-speaker review |
+| `form.documentKind` | Inyandiko | Document | needs native-speaker review |
+| `form.licenceNumber` | Nimero y’uruhushya | Licence number | needs native-speaker review |
+| `form.expires` | Itariki izarangiriraho | Expiry date | needs native-speaker review |
+| `form.chooseFile` | Hitamo dosiye | Choose a file | needs native-speaker review |
+| `form.uploaded` | {{name}} yoherejwe. Irasuzumwa virusi mbere y’uko ifungurwa. | {{name}} uploaded. It is checked for viruses before anyone can open it. | needs native-speaker review |
 
 ## staff-web feature: queue (namespace queue)
 
@@ -2708,6 +3105,79 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | Key | Kinyarwanda (draft) | English source | Status |
 |---|---|---|---|
 | `nav.reorders` | Igenzura ry’umurongo | Queue reviews | needs native-speaker review |
+| `nav.triage` | Isuzuma ry’ibanze | Triage | needs native-speaker review |
+| `nav.lab` | Laboratwari | Laboratory | needs native-speaker review |
+| `lab.title` | Laboratwari | Laboratory | needs native-speaker review |
+| `lab.lead` | Hamagara umurwayi ukurikiyeho, fata ibipimo, wandike ibisubizo. Umurwayi asubira kwa muganga iyo ibisubizo byose byabonetse. | Call the next patient, take the samples and enter the results. The patient goes back to the doctor when every result is in. | needs native-speaker review |
+| `lab.open` | Fungura laboratwari | Open the lab | needs native-speaker review |
+| `lab.current` | Umurwayi uri kumwe nawe | Patient with you | needs native-speaker review |
+| `lab.start` | Tangira | Start | needs native-speaker review |
+| `lab.inLab` | Muri laboratwari | At the lab | needs native-speaker review |
+| `lab.nobody` | Nta muntu utegereje laboratwari. | Nobody is waiting for the lab. | needs native-speaker review |
+| `lab.waiting` | Bategereje gufatwa ibipimo | Waiting for a sample | needs native-speaker review |
+| `lab.inProgress` | Ibisubizo byo kwandika | Results to enter | needs native-speaker review |
+| `lab.inProgressNone` | Nta gipimo gitegereje igisubizo. | No sample is waiting for a result. | needs native-speaker review |
+| `lab.doneToday` | Byarangiye uyu munsi | Done today | needs native-speaker review |
+| `lab.identity` | Genzura uwo murwayi uwo ari we | Check who the patient is | needs native-speaker review |
+| `lab.fullName` | Amazina yose | Full name | needs native-speaker review |
+| `lab.born` | Itariki y’amavuko | Date of birth | needs native-speaker review |
+| `lab.medilinkNumber` | Nomero ya MediLink | MediLink number | needs native-speaker review |
+| `lab.payment` | Kwishyura | Payment | needs native-speaker review |
+| `lab.paid` | Yishyuye | Paid | needs native-speaker review |
+| `lab.unpaid` | Ntiyishyuye | Not paid | needs native-speaker review |
+| `lab.samples` | Ibipimo | Samples | needs native-speaker review |
+| `lab.sample` | Igipimo cyafashwe | Sample taken | needs native-speaker review |
+| `lab.orderedBy` | Byasabwe na {{name}} | Ordered by {{name}} | needs native-speaker review |
+| `lab.request` | Icyo muganga asaba: | Doctor's request: | needs native-speaker review |
+| `lab.loadingTests` | Turimo gushaka ibizamini… | Loading the tests… | needs native-speaker review |
+| `lab.samplesDone` | Ibipimo bya {{name}} byafashwe. Andika ibisubizo nibimara kuboneka. | Samples taken for {{name}}. Enter the results when they are ready. | needs native-speaker review |
+| `lab.enter` | Andika igisubizo | Enter the result | needs native-speaker review |
+| `lab.choose` | Hitamo… | Choose… | needs native-speaker review |
+| `lab.required` | Andika iki gisubizo. | Enter this result. | needs native-speaker review |
+| `lab.comment` | Icyo ubwira muganga (si ngombwa) | Comment for the doctor (optional) | needs native-speaker review |
+| `lab.save` | Bika igisubizo | Save result | needs native-speaker review |
+| `lab.saved` | Igisubizo cyabitswe: {{test}}. | Result saved: {{test}}. | needs native-speaker review |
+| `lab.backToDoctor` | Ibisubizo byose byabonetse. {{name}} asubiye kwa muganga. | Every result is in. {{name}} goes back to the doctor. | needs native-speaker review |
+| `lab.today.waiting` | Bategereje gufatwa ibipimo | Waiting for a sample | needs native-speaker review |
+| `lab.today.results` | Ibisubizo byo kwandika | Results to enter | needs native-speaker review |
+| `lab.today.done` | Byarangiye uyu munsi | Done today | needs native-speaker review |
+| `triage.title` | Isuzuma ry’ibanze | Triage | needs native-speaker review |
+| `triage.lead` | Fata ibipimo, menya uko byihutirwa, hanyuma wohereze umurwayi kwa muganga. | Take vitals, decide how urgent it is, and send the patient to the doctor. | needs native-speaker review |
+| `triage.open` | Fungura isuzuma ry’ibanze | Open triage | needs native-speaker review |
+| `triage.current` | Umurwayi uri kumwe nawe | Patient with you | needs native-speaker review |
+| `triage.start` | Tangira isuzuma | Start triage | needs native-speaker review |
+| `triage.inTriage` | Ari mu isuzuma ry’ibanze | In triage | needs native-speaker review |
+| `triage.nobody` | Nta muntu utegereje isuzuma ry’ibanze. | Nobody is waiting for triage. | needs native-speaker review |
+| `triage.waiting` | Bategereje isuzuma ry’ibanze | Waiting for triage | needs native-speaker review |
+| `triage.waitingCount_one` | {{count}} ategereje isuzuma ry’ibanze | {{count}} waiting for triage | needs native-speaker review |
+| `triage.waitingCount_other` | {{count}} bategereje isuzuma ry’ibanze | {{count}} waiting for triage | needs native-speaker review |
+| `triage.longest_one` | Uwategereje igihe kirekire: iminota {{count}} | Longest wait {{count}} min | needs native-speaker review |
+| `triage.longest_other` | Uwategereje igihe kirekire: iminota {{count}} | Longest wait {{count}} min | needs native-speaker review |
+| `triage.words` | Mu magambo ye | In their words | needs native-speaker review |
+| `triage.noWords` | Nta cyanditswe ku kwakira. | Nothing written at check-in. | needs native-speaker review |
+| `triage.symptoms` | Ibimenyetso | Symptoms | needs native-speaker review |
+| `triage.allergies` | Allergies | Allergies | needs native-speaker review |
+| `triage.noAllergies` | Nta na kimwe cyanditswe. Baza umurwayi. | None recorded. Ask the patient. | needs native-speaker review |
+| `triage.vitals` | Ibipimo | Vitals | needs native-speaker review |
+| `triage.decision` | Ohereza kwa muganga | Send to the doctor | needs native-speaker review |
+| `triage.urgency` | Byihutirwa bingana iki? | How urgent? | needs native-speaker review |
+| `triage.urgencies.normal` | Bisanzwe | Normal | needs native-speaker review |
+| `triage.urgencies.priority` | Yihutishwa | Priority | needs native-speaker review |
+| `triage.urgencies.emergency` | Byihutirwa | Emergency | needs native-speaker review |
+| `triage.urgencyHints.normal` | Ategereza igihe cye. | Waits in turn. | needs native-speaker review |
+| `triage.urgencyHints.priority` | Abonwa mbere y’umurongo usanzwe. | Seen before the normal queue. | needs native-speaker review |
+| `triage.urgencyHints.emergency` | Ni we ukurikiraho. Muganga abibona mbere. | Seen next. The doctor sees it first. | needs native-speaker review |
+| `triage.why` | Kuki yihutishwa? | Why priority? | needs native-speaker review |
+| `triage.danger` | Ni iki giteye impungenge? | What is dangerous? | needs native-speaker review |
+| `triage.dangerHint` | Urugero: kuribwa mu gatuza ari kubira ibyuya, SpO₂ 88%. | For example: chest pain with sweating, SpO₂ 88%. | needs native-speaker review |
+| `triage.dangerRequired` | Vuga igituma byihutirwa. | Say what makes it an emergency. | needs native-speaker review |
+| `triage.note` | Icyo muganga agomba kumenya | Note for the doctor | needs native-speaker review |
+| `triage.noteHint` | Si ngombwa. Icyo muganga agomba kumenya mbere. | Optional. What the doctor should know first. | needs native-speaker review |
+| `triage.noVitals` | Kuki nta bipimo? | Why no vitals? | needs native-speaker review |
+| `triage.noVitalsHint` | Fata nibura igipimo kimwe, cyangwa uvuge impamvu bitashobotse. | Take at least one vital sign, or say why you could not. | needs native-speaker review |
+| `triage.noVitalsRequired` | Andika igipimo hejuru, cyangwa uvuge impamvu nta na kimwe cyafashwe. | Record a vital sign above, or say why none could be taken. | needs native-speaker review |
+| `triage.send` | Ohereza kwa muganga | Send to the doctor | needs native-speaker review |
+| `triage.sent` | {{number}} ategereje muganga. | {{number}} is waiting for the doctor. | needs native-speaker review |
 | `loading` | Umurongo urafunguka… | Loading the queue… | needs native-speaker review |
 | `loadFailed` | Umurongo ntiwafungutse. Burongera kugerageza. | The queue could not load. It retries by itself. | needs native-speaker review |
 | `failed` | Ntibyakunze. Reba interineti wongere ugerageze. | That did not work. Check your connection and try again. | needs native-speaker review |
@@ -2738,7 +3208,9 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `states.completed` | Byarangiye | Completed | needs native-speaker review |
 | `stages.reception` | Kwakira | Reception | needs native-speaker review |
 | `stages.payment` | Kwishyura | Payment | needs native-speaker review |
+| `stages.triage` | Isuzuma ry’ibanze | Triage | needs native-speaker review |
 | `stages.consultation` | Kwa muganga | Consultation | needs native-speaker review |
+| `stages.lab` | Laboratwari | Laboratory | needs native-speaker review |
 | `stages.pharmacy` | Farumasi | Pharmacy | needs native-speaker review |
 | `flags.emergency` | Byihutirwa | Emergency | needs native-speaker review |
 | `flags.priority` | Yihutishwa | Priority | needs native-speaker review |
@@ -2780,6 +3252,7 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `actions.return` | Yagarutse ku murongo | Back in the queue | needs native-speaker review |
 | `actions.complete` | Byarangiye | Completed | needs native-speaker review |
 | `actions.next_stage` | Yakomeje ku ntambwe ikurikira | Moved to the next stage | needs native-speaker review |
+| `actions.triage` | Yasuzumwe mbere | Triaged | needs native-speaker review |
 | `actions.opened` | Tike nshya | New ticket | needs native-speaker review |
 | `actions.transfer` | Yimuriwe | Transferred | needs native-speaker review |
 | `actions.cancel` | Byahagaritswe | Cancelled | needs native-speaker review |
@@ -2803,7 +3276,6 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `live.offline_one` | Nta interineti · igikorwa {{count}} gitegereje | Offline · {{count}} action waiting | needs native-speaker review |
 | `live.offline_other` | Nta interineti · ibikorwa {{count}} bitegereje | Offline · {{count}} actions waiting | needs native-speaker review |
 | `board.title` | Umurongo | Queue | needs native-speaker review |
-| `board.intro` | Abari hano bose, uko bazahamagarwa. Hitamo tike ngo ukore igikorwa. | Everyone on site, in calling order. Select a ticket for actions. | needs native-speaker review |
 | `board.checkIn` | Andika umurwayi | Check in patient | needs native-speaker review |
 | `board.services` | Serivisi | Services | needs native-speaker review |
 | `board.allServices` | Serivisi zose | All services | needs native-speaker review |
@@ -2894,7 +3366,6 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `mine.openRecord` | Fungura dosiye | Open record | needs native-speaker review |
 | `mine.finishAndNext` | Soza uhamagare ukurikira | Finish and call next | needs native-speaker review |
 | `reorders.title` | Igenzura ry’umurongo | Queue reviews | needs native-speaker review |
-| `reorders.intro` | Igihe cyose umurwayi yimuwe imbere ku murongo, n’impamvu. Bigenzure kugira ngo umurongo ube uw’ukuri. | Every time someone moved a patient up the queue, with the reason. Review them to keep the queue fair. | needs native-speaker review |
 | `reorders.onlyOpen` | Erekana gusa ibitaragenzurwa | Show only moves not yet reviewed | needs native-speaker review |
 | `reorders.columns.when` | Ryari | When | needs native-speaker review |
 | `reorders.columns.ticket` | Tike | Ticket | needs native-speaker review |
@@ -2910,7 +3381,6 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `reorders.tabs.open` | Ibyo kugenzura | To review | needs native-speaker review |
 | `reorders.tabs.all` | Kwimura kose | All moves | needs native-speaker review |
 | `displays.title` | Televiziyo z’aho bategerereza | Waiting-room screens | needs native-speaker review |
-| `displays.intro` | Fungura link kuri televiziyo y’aho bategerereza. Yerekana nimero n’ibyumba gusa, nta mazina. | Open a link on the waiting-room TV. It shows ticket numbers and rooms, never names. | needs native-speaker review |
 | `displays.add` | Ongeraho televiziyo | Add screen | needs native-speaker review |
 | `displays.label` | Izina rya televiziyo | Screen name | needs native-speaker review |
 | `displays.services` | Serivisi zigaragara | Services shown | needs native-speaker review |
@@ -2934,6 +3404,8 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `display.spokenRoom` | Itike {{number}}, mwinjire muri {{room}} | Ticket {{number}}, please go to {{room}} | needs native-speaker review |
 | `display.invalid` | Iyi link ya televiziyo ntikora. Saba ikigo indi nshya. | This screen link is not valid. Ask the facility for a new one. | needs native-speaker review |
 | `display.footer` | Tega amatwi nimero yawe. Fata gahunda kuri interineti: medilink.rw | Listen for your number. Book online: medilink.rw | needs native-speaker review |
+| `display.testSound` | Gerageza ijwi | Test sound | needs native-speaker review |
+| `display.testRoom` | Icyumba 1 | Room 1 | needs native-speaker review |
 | `today.title` | Bari hano ubu | On site now | needs native-speaker review |
 | `today.summary` | {{waiting}} barategereje · {{serving}} bari kwa muganga | {{waiting}} waiting · {{serving}} with a doctor | needs native-speaker review |
 | `today.open` | Fungura umurongo | Open queue | needs native-speaker review |
@@ -3009,20 +3481,111 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `ops.team.state.emergency` | Ubutabazi | Emergency | needs native-speaker review |
 | `ops.team.state.off` | Ntari mu kazi | Off | needs native-speaker review |
 | `reports.title` | Raporo | Reports | needs native-speaker review |
-| `reports.intro` | Uko ikigo cyawe gihagaze: abarwayi, igihe cyo gutegereza n’igihe baza. Hakurikijwe ibisobanuro bya MediLink. | How your facility is doing: patients, waits and when people arrive. Figures follow the MediLink metric definitions. | needs native-speaker review |
-| `reports.period` | Iminsi 14 ishize | Last 14 days | needs native-speaker review |
-| `reports.patientsPerDay` | Abarwayi ku munsi | Patients per day | needs native-speaker review |
-| `reports.patients` | Abarwayi | Patients | needs native-speaker review |
 | `reports.waitToBeSeen` | Igihe cyo gutegereza muganga (iminota) | Wait to be seen (minutes) | needs native-speaker review |
 | `reports.median` | Hagati | Median | needs native-speaker review |
 | `reports.p90` | 9 kuri 10 babonye muganga mbere ya | 9 in 10 seen within | needs native-speaker review |
 | `reports.arrivals` | Igihe abarwayi baza (ibyumweru 4 bishize) | When patients arrive (last 4 weeks) | needs native-speaker review |
 | `reports.less` | Bake | Fewer | needs native-speaker review |
 | `reports.more` | Benshi | More | needs native-speaker review |
-| `reports.patients14` | Abarwayi, iminsi 14 | Patients, 14 days | needs native-speaker review |
-| `reports.avgConsult` | Igihe cyo kuvurwa uyu munsi (hagati) | Average consultation today | needs native-speaker review |
-| `reports.leftRate` | Abagiye batavuwe uyu munsi | Left without being seen today | needs native-speaker review |
-| `reports.emergencies` | Ibyihutirwa, iminsi 14 | Emergencies, 14 days | needs native-speaker review |
+| `report.noNames` | Imibare gusa, nta mazina y’abarwayi | Totals only, no patient names | needs native-speaker review |
+| `report.periodLabel` | Igihe cya raporo | Report period | needs native-speaker review |
+| `report.range` | Igihe | Period | needs native-speaker review |
+| `report.presets.7` | Iminsi 7 ishize | Last 7 days | needs native-speaker review |
+| `report.presets.30` | Iminsi 30 ishize | Last 30 days | needs native-speaker review |
+| `report.presets.90` | Iminsi 90 ishize | Last 90 days | needs native-speaker review |
+| `report.presets.thisMonth` | Uku kwezi | This month | needs native-speaker review |
+| `report.presets.lastMonth` | Ukwezi gushize | Last month | needs native-speaker review |
+| `report.presets.custom` | Hitamo amatariki | Choose dates | needs native-speaker review |
+| `report.from` | Kuva | From | needs native-speaker review |
+| `report.to` | Kugeza | To | needs native-speaker review |
+| `report.groupBy` | Erekana ku | Show by | needs native-speaker review |
+| `report.groups.day` | Munsi | Day | needs native-speaker review |
+| `report.groups.week` | Cyumweru | Week | needs native-speaker review |
+| `report.groups.month` | Kwezi | Month | needs native-speaker review |
+| `report.updating` | Birimo kuvugururwa… | Updating… | needs native-speaker review |
+| `report.periodText` | Kuva {{from}} kugeza {{to}} | {{from}} to {{to}} | needs native-speaker review |
+| `report.failed` | Raporo ntiyabonetse. Reba amatariki wongere ugerageze. | The report could not be loaded. Check the dates and try again. | needs native-speaker review |
+| `report.weekOf` | Icyumweru cya {{date}} | Week of {{date}} | needs native-speaker review |
+| `report.minutes_one` | Iminota {{count}} | {{count}} min | needs native-speaker review |
+| `report.minutes_other` | Iminota {{count}} | {{count}} min | needs native-speaker review |
+| `report.empty` | Nta kintu muri iki gihe. | Nothing in this period. | needs native-speaker review |
+| `report.download` | CSV | CSV | needs native-speaker review |
+| `report.downloadNamed` | Kuramo {{name}} nka CSV | Download {{name}} as CSV | needs native-speaker review |
+| `report.downloadFailed` | Kuramo byanze. Ongera ugerageze. | The download failed. Try again. | needs native-speaker review |
+| `report.kpi.patients` | Abarwayi | Patients | needs native-speaker review |
+| `report.kpi.completed_one` | Uruzinduko {{count}} rwarangiye | {{count}} visit completed | needs native-speaker review |
+| `report.kpi.completed_other` | Ingendo {{count}} zarangiye | {{count}} visits completed | needs native-speaker review |
+| `report.kpi.consultWait` | Igihe cyo gutegereza muganga (hagati) | Median wait for the doctor | needs native-speaker review |
+| `report.kpi.p90` | 9 kuri 10 mbere y’iminota {{minutes}} | 9 in 10 within {{minutes}} min | needs native-speaker review |
+| `report.kpi.collected` | Amafaranga yakiriwe | Collected | needs native-speaker review |
+| `report.kpi.billed` | {{amount}} byishyuzwa | {{amount}} billed | needs native-speaker review |
+| `report.kpi.noShows` | Abatitabiriye gahunda | Booking no-shows | needs native-speaker review |
+| `report.kpi.noShowCount_one` | {{count}} kuri gahunda {{expected}} | {{count}} of {{expected}} bookings | needs native-speaker review |
+| `report.kpi.noShowCount_other` | {{count}} kuri gahunda {{expected}} | {{count}} of {{expected}} bookings | needs native-speaker review |
+| `report.visits.title` | Abarwayi bakiriwe | Patients seen | needs native-speaker review |
+| `report.visits.chart` | Abarwayi muri iki gihe | Patients over the period | needs native-speaker review |
+| `report.visits.patients` | Abarwayi | Patients | needs native-speaker review |
+| `report.visits.completed` | Byarangiye | Completed | needs native-speaker review |
+| `report.visits.left` | Bagiye batavuwe | Left without service | needs native-speaker review |
+| `report.visits.emergencies` | Ibyihutirwa | Emergencies | needs native-speaker review |
+| `report.visits.expected` | Gahunda zari zitegerejwe | Bookings expected | needs native-speaker review |
+| `report.visits.noShows` | Ntibaje | No-shows | needs native-speaker review |
+| `report.sources.title` | Uko abarwayi baje | How patients came | needs native-speaker review |
+| `report.source.walk_in` | Baje nta gahunda | Walk-in | needs native-speaker review |
+| `report.source.online_booking` | Gahunda kuri interineti | Online booking | needs native-speaker review |
+| `report.source.phone_booking` | Gahunda kuri telefoni | Phone booking | needs native-speaker review |
+| `report.source.follow_up` | Gukurikiranwa | Follow-up | needs native-speaker review |
+| `report.source.remote_join` | Binjiye ku murongo bari mu rugo | Joined the queue from home | needs native-speaker review |
+| `report.source.referral` | Boherejwe | Referral | needs native-speaker review |
+| `report.source.emergency` | Ibyihutirwa | Emergency | needs native-speaker review |
+| `report.services.title` | Kuri serivisi | By service | needs native-speaker review |
+| `report.waits.title` | Igihe cyo gutegereza kuri buri cyiciro | Waiting time by stage | needs native-speaker review |
+| `report.waits.median` | Hagati | Median | needs native-speaker review |
+| `report.waits.p90` | 9 kuri 10 | 9 in 10 | needs native-speaker review |
+| `report.waits.tickets_one` | Itike {{count}} | {{count}} ticket | needs native-speaker review |
+| `report.waits.tickets_other` | Amatike {{count}} | {{count}} tickets | needs native-speaker review |
+| `report.diagnoses.title` | Indwara zibonetse cyane | Top diagnoses | needs native-speaker review |
+| `report.diagnoses.intro_one` | ICD-10, bivuye ku nyandiko {{count}} yasinywe. | ICD-10, from {{count}} signed note. | needs native-speaker review |
+| `report.diagnoses.intro_other` | ICD-10, bivuye ku nyandiko {{count}} zasinywe. | ICD-10, from {{count}} signed notes. | needs native-speaker review |
+| `report.diagnoses.referrals` | Boherejwe ahandi | Referred out | needs native-speaker review |
+| `report.diagnoses.sensitive` | Zihishwa, ntizivugwa | Sensitive, not named | needs native-speaker review |
+| `report.diagnoses.referredTo` | Boherejwe: {{list}} | Referred to: {{list}} | needs native-speaker review |
+| `report.lab.title` | Laboratwari | Laboratory | needs native-speaker review |
+| `report.lab.resulted` | Ibizamini byakozwe | Tests done | needs native-speaker review |
+| `report.lab.waiting` | Bitegereje | Still waiting | needs native-speaker review |
+| `report.lab.turnaround` | Igihe cy’ibisubizo (hagati) | Median turnaround | needs native-speaker review |
+| `report.lab.turnaroundP90` | 9 kuri 10 mbere ya | 9 in 10 within | needs native-speaker review |
+| `report.lab.byTest` | Ibizamini byakozwe ku bwoko | Tests done by test | needs native-speaker review |
+| `report.lab.test` | Ikizamini | Test | needs native-speaker review |
+| `report.lab.count` | Byakozwe | Done | needs native-speaker review |
+| `report.lab.abnormal` | Bidasanzwe | Abnormal | needs native-speaker review |
+| `report.lab.median` | Igihe (hagati) | Median turnaround | needs native-speaker review |
+| `report.money.title` | Amafaranga | Money | needs native-speaker review |
+| `report.money.byMethod` | Ayakiriwe ku buryo bwo kwishyura | Collected by payment method | needs native-speaker review |
+| `report.money.payments_one` | Ubwishyu {{count}} | {{count}} payment | needs native-speaker review |
+| `report.money.payments_other` | Ubwishyu {{count}} | {{count}} payments | needs native-speaker review |
+| `report.money.byInsurer` | Ingendo z’abafite ubwishingizi ku mwishingizi | Insured visits by insurer | needs native-speaker review |
+| `report.money.insurer` | Umwishingizi | Insurer | needs native-speaker review |
+| `report.money.bills` | Fagitire | Bills | needs native-speaker review |
+| `report.money.insurerShare` | Igice cy’umwishingizi | Insurer share | needs native-speaker review |
+| `report.money.patientShare` | Igice cy’umurwayi | Patient share | needs native-speaker review |
+| `report.money.exemptions` | Abasonewe | Exemptions | needs native-speaker review |
+| `report.money.voidedPayments` | Ubwishyu bwahagaritswe | Payments voided | needs native-speaker review |
+| `report.money.voidedBills` | Fagitire zahagaritswe | Bills voided | needs native-speaker review |
+| `report.money.refunds` | Amafaranga yasubijwe | Refunds paid | needs native-speaker review |
+| `report.money.creditNotes_one` | Inyemezabwishyu {{count}} yo gusubiza | {{count}} credit note | needs native-speaker review |
+| `report.money.creditNotes_other` | Inyemezabwishyu {{count}} zo gusubiza | {{count}} credit notes | needs native-speaker review |
+| `report.stock.title` | Imiti iri mu bubiko bwa farumasi | Pharmacy stock | needs native-speaker review |
+| `report.stock.out` | Iyashize ubu | Out of stock now | needs native-speaker review |
+| `report.stock.low` | Iyenda gushira ubu | Low on stock now | needs native-speaker review |
+| `report.stock.received` | Ibyakiriwe | Units received | needs native-speaker review |
+| `report.stock.dispensed` | Ibyatanzwe | Units dispensed | needs native-speaker review |
+| `report.stock.expiring` | Yarengeje igihe cyangwa izarengeza mu minsi {{days}} | Expired or expiring within {{days}} days | needs native-speaker review |
+| `report.stock.medicine` | Umuti | Medicine | needs native-speaker review |
+| `report.stock.batch` | Icyiciro | Batch | needs native-speaker review |
+| `report.stock.expiry` | Itariki irangiriraho | Expiry | needs native-speaker review |
+| `report.stock.units` | Ibisigaye | Units left | needs native-speaker review |
+| `report.stock.expired` | yarengeje igihe | expired | needs native-speaker review |
 | `flow.label` | Abarwayi muri buri cyiciro | Patients in each stage | needs native-speaker review |
 | `flow.expected` | Abategerejwe | Expected | needs native-speaker review |
 | `flow.waiting` | Bategereje | Waiting | needs native-speaker review |
@@ -3059,8 +3622,6 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `reception.title` | Kwakira abarwayi | Front desk | needs native-speaker review |
 | `reception.openBoard` | Fungura ikibaho cy'umurongo | Open the queue board | needs native-speaker review |
 | `reception.numbers` | Uyu munsi ku kwakira | Today at the front desk | needs native-speaker review |
-| `reception.waiting` | Bategereje ubu | Waiting now | needs native-speaker review |
-| `reception.expected` | Bagitegerejwe | Still expected | needs native-speaker review |
 | `reception.claims` | "Ndahari" byo kwemeza | "I'm here" to confirm | needs native-speaker review |
 | `reception.missed` | Abataje uyu munsi | Missed today | needs native-speaker review |
 | `reception.late_one` | Gahunda {{count}} yatinze | {{count}} booking running late | needs native-speaker review |
@@ -3083,6 +3644,10 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `print.bring` | Uzane iyi karita, ikarita y'ubwishingizi n'imiti yawe. | Bring this card, your insurance card and your medicines. | needs native-speaker review |
 | `print.slip` | Capa itike | Print ticket slip | needs native-speaker review |
 | `print.card` | Capa ikarita ya gahunda | Print appointment card | needs native-speaker review |
+| `print.nextCard` | Capa ikarita y’igihe cyo kugaruka | Print next-visit card | needs native-speaker review |
+| `print.nextVisit` | Igihe uzagarukira | Your next visit | needs native-speaker review |
+| `print.comeMorning` | Uzaze mu gitondo; ku kwakira bazaguha nimero. | Come in the morning; reception will give you a number. | needs native-speaker review |
+| `print.noFollowUp` | Muganga ntiyashyizeho igihe uyu murwayi azagarukira. | The doctor has not set a next visit for this patient. | needs native-speaker review |
 
 ## staff-web feature: setup (namespace setup)
 
@@ -3132,7 +3697,6 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `today.leaveCount_other` | Ubusabe {{count}} butegereje icyemezo cyawe | {{count}} requests wait for your decision | needs native-speaker review |
 | `today.review` | Reba ubusabe | Review requests | needs native-speaker review |
 | `checklist.title` | Intambwe zo gutangira | Setup checklist | needs native-speaker review |
-| `checklist.intro` | Abarwayi bashobora gufata gahunda no kujya ku murongo iyo intambwe zose zarangiye ikigo kigatangira gukora. | Patients can book and join queues once every step is done and the facility goes live. | needs native-speaker review |
 | `checklist.progress` | Intambwe {{done}} kuri {{total}} zarangiye | {{done}} of {{total}} steps done | needs native-speaker review |
 | `checklist.nextStep` | Ikurikira: {{step}} | Next: {{step}} | needs native-speaker review |
 | `checklist.allDone` | Intambwe zose zarangiye. Ushobora gutangira gukora. | Every step is done. You can go live. | needs native-speaker review |
@@ -3178,7 +3742,6 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `checklist.hints.licence_one` | Bigenzurwa ku ruhushya rwa MINISANTE | Checked from your MoH licence | needs native-speaker review |
 | `checklist.hints.licence_other` | Bigenzurwa ku ruhushya rwa MINISANTE | Checked from your MoH licence | needs native-speaker review |
 | `settings.title` | Igenamiterere | Settings | needs native-speaker review |
-| `settings.intro` | Uko ikigo cyawe gikora: ibyo mutanga, igihe, ibiciro n'abakozi. | How your facility works: what you offer, when, at what price, and who works here. | needs native-speaker review |
 | `settings.checklistLink` | Intambwe zo gutangira | Setup checklist | needs native-speaker review |
 | `settings.sections.profile.title` | Umwirondoro w'ikigo | Facility profile | needs native-speaker review |
 | `settings.sections.profile.description` | Aho mubarizwa, ahantu, amafoto n'ibisobanuro. | Contact details, location, photos and description. | needs native-speaker review |
@@ -3202,7 +3765,6 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `settings.groups.care` | Ubuvuzi na gahunda | Care and scheduling | needs native-speaker review |
 | `settings.groups.money` | Ibiciro n'ubwishingizi | Prices and insurance | needs native-speaker review |
 | `settings.groups.policy` | Amategeko n'amateka | Rules and history | needs native-speaker review |
-| `profile.intro` | Abarwayi babona ibi ku rupapuro rwanyu rusange. | Patients see this on your public page. | needs native-speaker review |
 | `profile.identity` | Iyandikwa | Registration | needs native-speaker review |
 | `profile.name` | Izina | Name | needs native-speaker review |
 | `profile.type` | Ubwoko | Type | needs native-speaker review |
@@ -3238,7 +3800,6 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `profile.emergencyTitle` | Ubutabazi bwihuse | Emergency care | needs native-speaker review |
 | `profile.emergency` | Serivisi y'ubutabazi bwihuse amasaha 24 | 24-hour emergency department | needs native-speaker review |
 | `profile.emergencyHint` | Bikore gusa niba mwakira indembe ku manywa na nijoro. Ivuriro ryanyu rizagaragara mbere ku rupapuro rw'ubutabazi. | Turn on only if you receive emergencies day and night. Your facility is then listed first on the public Emergency page. | needs native-speaker review |
-| `catalogue.intro` | Serivisi ni byo abarwayi bafatira gahunda cyangwa bategerereza. Buri imwe igira inyuguti ya tike, nka G kuri G-023. | Services are what patients book or queue for. Each has a ticket prefix, such as G for G-023. | needs native-speaker review |
 | `catalogue.services` | Serivisi | Services | needs native-speaker review |
 | `catalogue.departments` | Amashami | Departments | needs native-speaker review |
 | `catalogue.points` | Ibyumba n'ameza | Rooms and desks | needs native-speaker review |
@@ -3282,7 +3843,6 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `catalogue.noDepartments` | Amashami ahuza serivisi zanyu, urugero Ubuvuzi rusange cyangwa Ubuvuzi bw'abana. | Departments group your services, for example General OPD or Pediatrics. | needs native-speaker review |
 | `catalogue.noPointsTitle` | Nta byumba cyangwa ameza birahari | No rooms or desks yet | needs native-speaker review |
 | `catalogue.noPoints` | Ongeraho ibyumba n'ameza abarwayi bakirirwamo. | Add the rooms and desks where patients are seen or served. | needs native-speaker review |
-| `hours.intro` | Shyiraho amasaha y'icyumweru, hanyuma wongereho iminsi ifunze. Ishusho y'imbere yerekana ibyo abarwayi babona. | Set your weekly hours, then add closures. The preview shows what patients will see. | needs native-speaker review |
 | `hours.scope` | Amasaha ya | Hours for | needs native-speaker review |
 | `hours.wholeFacility` | Ikigo cyose | Whole facility | needs native-speaker review |
 | `hours.week` | Amasaha y'icyumweru | Weekly hours | needs native-speaker review |
@@ -3318,7 +3878,6 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `hours.to` | Kugeza | To | needs native-speaker review |
 | `hours.reason` | Impamvu | Reason | needs native-speaker review |
 | `hours.dateOrder` | Itariki yo kurangiza igomba kuba ku itariki yo gutangira cyangwa nyuma yayo. | The end date must be on or after the start date. | needs native-speaker review |
-| `schedules.intro` | Ibihe bya buri muganga mu cyumweru. Amasaha yo gufatirwaho gahunda ava muri ibi bihe. | Each doctor's weekly sessions. Bookable slots come from these sessions. | needs native-speaker review |
 | `schedules.doctors` | Abaganga | Doctors | needs native-speaker review |
 | `schedules.weeklyHours` | Amasaha mu cyumweru | Hours per week | needs native-speaker review |
 | `schedules.sessions` | Ibihe by'icyumweru | Weekly sessions | needs native-speaker review |
@@ -3367,7 +3926,6 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `schedules.rejectTitle` | Kwanga ubusabe bw'ikiruhuko | Reject leave request | needs native-speaker review |
 | `schedules.rejectReason` | Impamvu (umuganga arayibona) | Reason (the doctor sees it) | needs native-speaker review |
 | `mine.title` | Gahunda yanjye | My schedule | needs native-speaker review |
-| `mine.intro` | Ibihe byawe by'iki cyumweru n'ubusabe bwawe bw'ikiruhuko. | Your sessions this week and your leave requests. | needs native-speaker review |
 | `mine.week` | Icyumweru cyanjye | My week | needs native-speaker review |
 | `mine.requestLeave` | Saba ikiruhuko | Request leave | needs native-speaker review |
 | `mine.requestHint` | Umuyobozi w'ikigo arabwemeza cyangwa akabwanga. | Your facility admin approves or rejects it. | needs native-speaker review |
@@ -3379,7 +3937,6 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `mine.noLeave` | Ubusabe wohereje bugaragara hano hamwe n'icyemezo. | Requests you send appear here with their decision. | needs native-speaker review |
 | `mine.noScheduleTitle` | Nta bihe birahari | No sessions yet | needs native-speaker review |
 | `mine.noSchedule` | Umuyobozi ntarategura ibihe byawe. | Your facility admin has not planned your sessions yet. | needs native-speaker review |
-| `tariffs.intro` | Ibiciro mu mafaranga y'u Rwanda. Impinduka itangira ku itariki uhitamo; ibyabaye mbere bigumana igiciro cya kera. | Prices in Rwandan francs. A change starts on a date you choose; earlier visits keep the old price. | needs native-speaker review |
 | `tariffs.add` | Ongeraho igiciro | Add price | needs native-speaker review |
 | `tariffs.all` | Byose | All | needs native-speaker review |
 | `tariffs.item` | Ikintu | Item | needs native-speaker review |
@@ -3405,7 +3962,6 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `tariffs.current` | ubu | now | needs native-speaker review |
 | `tariffs.emptyTitle` | Nta biciro birahari | No prices yet | needs native-speaker review |
 | `tariffs.empty` | Ongeraho igiciro cya buri serivisi kugira ngo abarwayi babone ikiguzi mbere yo kuza. | Add a price for each service so patients see costs before they come. | needs native-speaker review |
-| `insurers.intro` | Kuri buri bwishingizi: ibyo bwishyura hano n'ibyo umurwayi yishyura. | For each insurer: what it covers here and what the patient pays. | needs native-speaker review |
 | `insurers.add` | Ongeraho itegeko ry'ubwishingizi | Add insurer rule | needs native-speaker review |
 | `insurers.insurer` | Ubwishingizi | Insurer | needs native-speaker review |
 | `insurers.since` | Guhera {{date}} | From {{date}} | needs native-speaker review |
@@ -3426,7 +3982,6 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `insurers.shareRange` | Andika umubare kuva kuri 0 kugeza 100. | Use a number from 0 to 100. | needs native-speaker review |
 | `insurers.emptyTitle` | Nta mategeko y'ubwishingizi arahari | No insurer rules yet | needs native-speaker review |
 | `insurers.empty` | Ongeraho ubwishingizi mwakira, cyangwa ukoreshe “nta bwishingizi” mu mabwiriza yo kwishyuza. | Add the insurers you accept, or switch on “no insurers” in the billing rules. | needs native-speaker review |
-| `rules.intro` | Hindura uko umurongo, gahunda, kwishyura, inyandiko n'ibibutsa bikora hano. | Fine-tune how queues, bookings, payments, documents and reminders work here. | needs native-speaker review |
 | `rules.sections.queue` | Umurongo | Queue | needs native-speaker review |
 | `rules.sections.booking` | Gahunda | Booking | needs native-speaker review |
 | `rules.sections.billing` | Kwishyuza | Billing | needs native-speaker review |
@@ -3441,6 +3996,7 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `rules.fields.queue.show_names_on_display` | Kwerekana amazina kuri televiziyo y'aho bategerereza | Show names on the waiting-room screen | needs native-speaker review |
 | `rules.fields.queue.call_repeat_seconds` | Gusubiramo guhamagara nyuma ya (amasegonda) | Repeat a call after (seconds) | needs native-speaker review |
 | `rules.fields.queue.priority_elderly_age` | Kwihutishwa guhera ku myaka | Priority from age | needs native-speaker review |
+| `rules.fields.queue.triage_enabled` | Abarwayi babanza kubonana n’umuforomo w’isuzuma ry’ibanze mbere ya muganga | Patients see a triage nurse before the doctor | needs native-speaker review |
 | `rules.fields.booking.enabled` | Gufata gahunda kuri interineti | Online booking | needs native-speaker review |
 | `rules.fields.booking.lead_time_hours` | Gufata gahunda nibura (amasaha mbere) | Book at least (hours ahead) | needs native-speaker review |
 | `rules.fields.booking.horizon_days` | Gufata gahunda kugeza (iminsi mbere) | Book up to (days ahead) | needs native-speaker review |
@@ -3456,7 +4012,6 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `rules.fields.notifications.sms_enabled` | Kohereza SMS zibutsa | Send SMS reminders | needs native-speaker review |
 | `rules.brandingHint` | Amagambo yo hasi acapwa ku nyemezabwishyu, impapuro z'imiti n'amabaruwa. | The footer printed on receipts, prescriptions and letters. | needs native-speaker review |
 | `rules.footer` | Amagambo yo hasi | Footer text | needs native-speaker review |
-| `history.intro` | Buri mpinduka y'igenamiterere, iya vuba mbere. Nta makuru bwite yandikwa hano. | Every configuration change, newest first. Personal data is never recorded here. | needs native-speaker review |
 | `history.entity` | Erekana impinduka za | Show changes to | needs native-speaker review |
 | `history.entities.all` | Byose | Everything | needs native-speaker review |
 | `history.entities.facility` | Umwirondoro w'ikigo | Facility profile | needs native-speaker review |
@@ -3475,7 +4030,6 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `history.emptyTitle` | Nta mpinduka irabaho | No changes yet | needs native-speaker review |
 | `history.empty` | Impinduka zigaragara hano iyo hari ubitse igenamiterere. | Changes appear here as soon as someone saves a setting. | needs native-speaker review |
 | `staff.title` | Abakozi | Staff | needs native-speaker review |
-| `staff.intro` | Abakora hano, ibyo buri wese ashobora gukora, n'ubutumire butegereje. | Who works here, what they can do, and pending invitations. | needs native-speaker review |
 | `staff.invite` | Tumira umukozi | Invite staff | needs native-speaker review |
 | `staff.inviteHint` | Ahabwa link kuri imeyili imara iminsi 7. | They get an email link valid for 7 days. | needs native-speaker review |
 | `staff.activeMembers` | Abakozi bakora | Active members | needs native-speaker review |
@@ -3556,7 +4110,6 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `staff.notSet` | Ntibyashyizweho | Not set | needs native-speaker review |
 | `staff.saveWork` | Bika | Save | needs native-speaker review |
 | `clinician.title` | Umwirondoro wanjye w’umwuga | My clinician profile | needs native-speaker review |
-| `clinician.intro` | Umwuga wawe, uruhushya n’impamyabumenyi. Umuyobozi w’ikigo agenzura uruhushya rwawe mbere y’uko ushyirwa kuri gahunda cyangwa usinya; Minisiteri y’Ubuzima ibara abakozi hakurikijwe imyuga. | Your profession, licence and qualifications. Your facility admin checks your licence before you can be scheduled or sign; the Ministry of Health counts staff by profession. | needs native-speaker review |
 | `clinician.council` | Urugaga | Council | needs native-speaker review |
 | `clinician.licence` | Nimero y'uruhushya | Licence number | needs native-speaker review |
 | `clinician.specialty` | Ubuhanga bwihariye | Specialty | needs native-speaker review |
@@ -3614,7 +4167,6 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `publicProfile.needLicence` | Banza ubike uruhushya rwawe; umwirondoro ugaragara ukurikira. | Save your licence first; the public profile follows. | needs native-speaker review |
 | `account.menu` | Amakuru yanjye | My details | needs native-speaker review |
 | `account.title` | Amakuru yanjye | My details | needs native-speaker review |
-| `account.intro` | Izina ryawe, telefoni y’akazi n’ururimi. Umuyobozi w’ikigo cyawe abona telefoni yawe ku rutonde rw’abakozi. | Your name, work phone and language. Your facility admin sees your phone on the team list. | needs native-speaker review |
 | `account.email` | Imeyili | Email | needs native-speaker review |
 | `account.emailHint` | Winjira ukoresheje iyi aderesi. Saba ubufasha bwa MediLink kuyihindura. | You sign in with this address. Ask MediLink support to change it. | needs native-speaker review |
 | `account.fullName` | Amazina yose | Full name | needs native-speaker review |
@@ -3910,7 +4462,7 @@ File: `apps/patient-web/src/features/dashboard/locales/rw.json`
 | `search.title` | Shakisha muri MediLink | Search MediLink | needs native-speaker review |
 | `search.placeholder` | Shakisha ubuvuzi, gahunda, inyandiko | Search care, appointments, documents | needs native-speaker review |
 | `search.shortcut` | Ctrl K | Ctrl K | needs native-speaker review |
-| `search.empty` | Nta cyabonetse. Gerageza ikigo, umuganga cyangwa serivisi. | Nothing found. Try a facility, a doctor or a service. | needs native-speaker review |
+| `search.empty` | Nta cyabonetse | Nothing found | needs native-speaker review |
 | `search.hints` | ↑ ↓ kwimuka · Enter gufungura · Esc gufunga | ↑ ↓ move · Enter open · Esc close | needs native-speaker review |
 | `search.findCare` | Shaka ubuvuzi bwa “{{query}}” | Find care for “{{query}}” | needs native-speaker review |
 | `search.groups.find` | Gushakisha | Search | needs native-speaker review |
@@ -3937,14 +4489,14 @@ File: `apps/patient-web/src/features/dashboard/locales/rw.json`
 | `overview.greeting_evening` | Mwiriwe, {{name}} | Good evening, {{name}} | needs native-speaker review |
 | `overview.subtitle` | Dore incamake y'ubuvuzi bwawe. | Here's your healthcare overview. | needs native-speaker review |
 | `overview.verifyTitle` | Emeza imeyili yawe | Confirm your email | needs native-speaker review |
-| `overview.verifyBody` | Twohereje umurongo kuri {{email}}. Uwufungure kugira ngo konti yawe irindwe. | We sent a link to {{email}}. Open it to keep your account safe. | needs native-speaker review |
+| `overview.verifyBody` | Umurongo woherejwe kuri {{email}} | Link sent to {{email}} | needs native-speaker review |
 | `overview.nextAppointment` | Gahunda ikurikira | Next appointment | needs native-speaker review |
 | `overview.currentVisit` | Uruzinduko rwa none | Current visit | needs native-speaker review |
 | `overview.viewDetails` | Reba ibisobanuro | View details | needs native-speaker review |
 | `overview.allTickets` | Umurongo wanjye | My queue | needs native-speaker review |
 | `overview.moreTickets_one` | Indi tike {{count}} uyu munsi | {{count}} more ticket today | needs native-speaker review |
 | `overview.moreTickets_other` | Izindi tike {{count}} uyu munsi | {{count}} more tickets today | needs native-speaker review |
-| `overview.startTitle` | Ubuvuzi bwawe butangirira hano. | Your healthcare starts here. | needs native-speaker review |
+| `overview.startTitle` | Ukeneye kuvurirwa he? | Where do you need care? | needs native-speaker review |
 | `overview.startBody` | Shaka ikigo cy'ubuvuzi, urebe serivisi zihari cyangwa ufate gahunda y'uruzinduko rukurikira. | Find a healthcare facility, explore available services or book your next visit. | needs native-speaker review |
 | `overview.explore` | Reba ibigo by'ubuvuzi | Explore facilities | needs native-speaker review |
 | `overview.quick` | Ibikorwa byihuse | Quick actions | needs native-speaker review |
@@ -4008,6 +4560,16 @@ File: `apps/patient-web/src/features/dashboard/locales/rw.json`
 | `reminders.soon` | {{service}} iregereje | {{service}} is coming up | needs native-speaker review |
 | `reminders.arrive` | Bwira abakira abarwayi ko wahageze (tike {{ticket}}) | Tell reception you've arrived (ticket {{ticket}}) | needs native-speaker review |
 | `reminders.open` | Fungura tike | Open ticket | needs native-speaker review |
+| `reminders.result` | Igisubizo gishya kiriteguye | A new result is ready | needs native-speaker review |
+| `reminders.readResult` | Gisome | Read it | needs native-speaker review |
+| `reminders.planned` | {{what}} iregereje | {{what}} is coming up | needs native-speaker review |
+| `comingUp.title` | Byateganyijwe n'ivuriro ryawe | Planned by your clinic | needs native-speaker review |
+| `comingUp.intro` | Amatariki ivuriro ryawe ryateganyije. Tukwibutsa umunsi ubanziriza n'icyo gitondo. | Dates your clinic planned. We remind you the day before and on the morning. | needs native-speaker review |
+| `comingUp.types.vaccination` | Urukingo | Vaccination | needs native-speaker review |
+| `comingUp.types.antenatal` | Isuzuma ry'umubyeyi utwite | Antenatal visit | needs native-speaker review |
+| `comingUp.types.follow_up` | Kugaruka kwa muganga | Return visit | needs native-speaker review |
+| `comingUp.book` | Fata isaha | Book a time | needs native-speaker review |
+| `comingUp.failed` | Ntibyakunze kubona amatariki ivuriro ryawe ryateganyije. | We couldn't load the dates your clinic planned. | needs native-speaker review |
 | `appointments.title` | Gahunda zanjye | My appointments | needs native-speaker review |
 | `appointments.subtitle` | Genzura gahunda zitegerejwe n'izashize. | Manage your upcoming and previous healthcare visits. | needs native-speaker review |
 | `appointments.book` | Fata gahunda | Book appointment | needs native-speaker review |
@@ -4018,9 +4580,9 @@ File: `apps/patient-web/src/features/dashboard/locales/rw.json`
 | `appointments.tabs.past` | Izashize | Past | needs native-speaker review |
 | `appointments.tabs.cancelled` | Izahagaritswe | Cancelled | needs native-speaker review |
 | `appointments.failed` | Ntitwashoboye kubona gahunda zawe. | We couldn't load your appointments. | needs native-speaker review |
-| `appointments.empty.upcoming` | Nta gahunda itegerejwe ufite. | You don't have upcoming appointments. | needs native-speaker review |
-| `appointments.empty.past` | Nta gahunda yashize iraboneka. | No past appointments yet. | needs native-speaker review |
-| `appointments.empty.cancelled` | Nta gahunda yahagaritswe. | No cancelled appointments. | needs native-speaker review |
+| `appointments.empty.upcoming` | Nta gahunda itegerejwe | No upcoming appointments | needs native-speaker review |
+| `appointments.empty.past` | Nta gahunda yashize | No past appointments | needs native-speaker review |
+| `appointments.empty.cancelled` | Nta gahunda yahagaritswe | No cancelled appointments | needs native-speaker review |
 | `appointments.emptyBody` | Shaka ikigo ufate isaha ikunogeye. | Find a facility and book a time that suits you. | needs native-speaker review |
 | `appointments.for` | ya {{name}} | for {{name}} | needs native-speaker review |
 | `appointments.view` | Reba gahunda | View appointment | needs native-speaker review |
@@ -4034,7 +4596,7 @@ File: `apps/patient-web/src/features/dashboard/locales/rw.json`
 | `appointments.actionFailed` | Ntitwashoboye guhindura gahunda yawe. Ongera ugerageze. | We couldn't update your appointment. Please try again. | needs native-speaker review |
 | `appointments.back` | Gahunda zose | All appointments | needs native-speaker review |
 | `appointments.notFound` | Gahunda ntiyabonetse | Appointment not found | needs native-speaker review |
-| `appointments.notFoundBody` | Ntitwashoboye kubona iyi gahunda. Ishobora kuba ari iya konti indi. | We couldn't load this appointment. It may belong to another account. | needs native-speaker review |
+| `appointments.notFoundBody` | Ishobora kuba ari iya konti indi. | It may belong to another account. | needs native-speaker review |
 | `appointments.info` | Gahunda | Appointment | needs native-speaker review |
 | `appointments.date` | Itariki | Date | needs native-speaker review |
 | `appointments.time` | Isaha | Time | needs native-speaker review |
@@ -4060,7 +4622,7 @@ File: `apps/patient-web/src/features/dashboard/locales/rw.json`
 | `appointments.reference` | Kode ya gahunda | Booking reference | needs native-speaker review |
 | `appointments.showCode` | Erekana iyi kode ku kwakira abarwayi. | Show this code at reception. | needs native-speaker review |
 | `appointments.changeUntil` | Ushobora guhindura cyangwa guhagarika kugeza {{time}}. | You can change or cancel until {{time}}. | needs native-speaker review |
-| `appointments.changeClosed` | Igihe cyo guhindura cyarangiye. Guhagarika ubu bibarwa nko guhagarika bitinze. | Changes are closed. Cancelling now counts as a late cancellation. | needs native-speaker review |
+| `appointments.changeClosed` | Guhagarika ubu bibarwa nko guhagarika bitinze. | Cancelling now counts as late. | needs native-speaker review |
 | `appointments.directions` | Inzira ijyayo | Get directions | needs native-speaker review |
 | `reschedule.title` | Hitamo isaha nshya | Choose a new time | needs native-speaker review |
 | `reschedule.body` | Amasaha ari ubusa ya {{service}} kuri {{facility}}. | Free times for {{service}} at {{facility}}. | needs native-speaker review |
@@ -4069,12 +4631,12 @@ File: `apps/patient-web/src/features/dashboard/locales/rw.json`
 | `reschedule.later` | Nyuma | Later | needs native-speaker review |
 | `reschedule.days` | Iminsi ifite amasaha ari ubusa | Days with free times | needs native-speaker review |
 | `reschedule.times` | Amasaha ari ubusa | Free times | needs native-speaker review |
-| `reschedule.none` | Nta saha iri ubusa iki cyumweru. Gerageza icyumweru gikurikira. | No free times this week. Try the next week. | needs native-speaker review |
+| `reschedule.none` | Nta saha iri ubusa iki cyumweru | No free times this week | needs native-speaker review |
 | `reschedule.loadFailed` | Ntitwashoboye kubona amasaha ari ubusa. | We couldn't load free times. | needs native-speaker review |
 | `reschedule.from` | Isaha ufite ubu | Current time | needs native-speaker review |
 | `reschedule.to` | Isaha nshya | New time | needs native-speaker review |
 | `reschedule.held` | Iyi saha turayikubikiye mu gihe cya | We're keeping this time for you for | needs native-speaker review |
-| `reschedule.expired` | Igihe twari tuyikubikiye cyarangiye. Ongera uhitemo isaha. | The time we kept for you has run out. Choose a time again. | needs native-speaker review |
+| `reschedule.expired` | Igihe cyarangiye. Ongera uhitemo. | Time ran out. Choose again. | needs native-speaker review |
 | `reschedule.oldFreed` | Isaha ufite ubu irekurwa gusa iyo inshya yemejwe. | Your current time is released only when the new one is confirmed. | needs native-speaker review |
 | `reschedule.otherTime` | Hitamo indi saha | Choose another time | needs native-speaker review |
 | `reschedule.confirm` | Emeza isaha nshya | Confirm new time | needs native-speaker review |
@@ -4083,9 +4645,9 @@ File: `apps/patient-web/src/features/dashboard/locales/rw.json`
 | `queue.join` | Jya ku murongo | Join a queue | needs native-speaker review |
 | `queue.today` | Uyu munsi | Today | needs native-speaker review |
 | `queue.failed` | Ntitwashoboye kubona tike zawe. | We couldn't load your tickets. | needs native-speaker review |
-| `queue.none` | Nturi ku murongo ubu. | You're not currently in a queue. | needs native-speaker review |
+| `queue.none` | Nturi ku murongo | Not in a queue | needs native-speaker review |
 | `queue.noneBody` | Jya ku murongo w'ikigo kibyemera, cyangwa wiyandikishe ku kwakira abarwayi. | Join a queue from a facility that allows it, or check in at reception. | needs native-speaker review |
-| `queue.remoteNote` | Kujya ku murongo ukoresheje telefoni si kimwe no kwakirwa. Abakira abarwayi bemeza ko wahageze iyo uhageze. | Joining from your phone is not the same as checking in. Reception confirms your arrival when you get there. | needs native-speaker review |
+| `queue.remoteNote` | Abakira abarwayi bemeza ko wahageze. | Reception confirms your arrival. | needs native-speaker review |
 | `queue.previous` | Ingendo zabanje | Previous visits | needs native-speaker review |
 | `queue.previousTitle` | Tike zabanje ntiziragaragara hano | Past tickets aren't listed here yet | needs native-speaker review |
 | `queue.previousBody` | Nyuma y'uruzinduko, dosiye umuganga yasinye igaragara mu Madosiye y'ubuzima. | After a visit, the doctor's signed record appears in Medical records. | needs native-speaker review |
@@ -4136,7 +4698,7 @@ File: `apps/patient-web/src/features/dashboard/locales/rw.json`
 | `family.links.documents` | Amabaruwa na raporo | Letters and reports | needs native-speaker review |
 | `records.search` | Shakisha ukoresheje ikigo, umuganga cyangwa indwara | Search by facility, doctor or diagnosis | needs native-speaker review |
 | `records.signed` | Yasinywe | Signed | needs native-speaker review |
-| `records.noMatch` | Nta dosiye ihuye n'ibyo washatse. | No records match your search. | needs native-speaker review |
+| `records.noMatch` | Nta cyabonetse | No matches | needs native-speaker review |
 | `records.emptyBody` | Amadosiye yawe y'ubuzima azagaragara hano igihe azaba abonetse. | Your medical records will appear here when they become available. | needs native-speaker review |
 | `medications.title` | Imiti yanjye | My medications | needs native-speaker review |
 | `documents.kinds` | Ubwoko bw'inyandiko | Document types | needs native-speaker review |
@@ -4160,8 +4722,12 @@ File: `apps/patient-web/src/features/dashboard/locales/rw.json`
 | `settings.privacy.delegates` | Abafite uburenganzira | People with access | needs native-speaker review |
 | `settings.security.title` | Umutekano | Security | needs native-speaker review |
 | `settings.security.body` | Rinda konti yawe. | Keep your account safe. | needs native-speaker review |
-| `settings.security.password` | Kugira ngo uhindure ijambo ry'ibanga, tukoherereza umurongo wizewe kuri imeyili, kugira ngo ari wowe wenyine urishyiraho. | To change your password we email you a secure link, so only you can set a new one. | needs native-speaker review |
+| `settings.security.password` | Andika ijambo ry'ibanga usanganywe, hanyuma irishya. Andi materefone na mudasobwa bizasohoka. | Enter your current password, then a new one. Other phones and browsers will be signed out. | needs native-speaker review |
 | `settings.security.change` | Hindura ijambo ry'ibanga | Change password | needs native-speaker review |
+| `settings.security.current` | Ijambo ry'ibanga usanganywe | Current password | needs native-speaker review |
+| `settings.security.new` | Ijambo ry'ibanga rishya | New password | needs native-speaker review |
+| `settings.security.done` | Ijambo ry'ibanga ryahinduwe. Andi materefone na mudasobwa byasohotse. | Password changed. Other phones and browsers are signed out. | needs native-speaker review |
+| `settings.security.forgot` | Wibagiwe ijambo ry'ibanga usanganywe? | Forgot your current password? | needs native-speaker review |
 | `settings.security.later` | Ibikoresho winjiriyemo no kwinjira mu ntambwe ebyiri bizongerwa hano. | Signed-in devices and two-step sign-in will be added here. | needs native-speaker review |
 | `settings.alerts.title` | Ubutumwa wifuza | Notification preferences | needs native-speaker review |
 | `settings.alerts.body` | Ubutumwa wakira, aho bukugeraho n'amasaha yo gutuza. | Which alerts you get, on which channel, and quiet hours. | needs native-speaker review |
@@ -4223,7 +4789,7 @@ File: `apps/patient-web/src/features/documents/locales/rw.json`
 | `share.opened_other` | Ryafunguwe inshuro {{count}} | Opened {{count}} times | needs native-speaker review |
 | `share.revoke` | Hagarika iri huza | Stop this link | needs native-speaker review |
 | `verify.title` | Genzura inyandiko | Verify a document | needs native-speaker review |
-| `verify.intro` | Farumasi, abakoresha n'amashuri bashobora kugenzura hano inyandiko ya MediLink. Andika kode iri munsi ya kode ya QR. | Pharmacies, employers and schools can check a MediLink document here. Type the code printed under its QR code. | needs native-speaker review |
+| `verify.intro` | Andika kode iri munsi ya QR code. | Type the code printed under the QR code. | needs native-speaker review |
 | `verify.code` | Kode yo kugenzura | Verification code | needs native-speaker review |
 | `verify.codeHint` | Inyuguti n'imibare 10 | 10 letters and numbers | needs native-speaker review |
 | `verify.check` | Genzura | Check | needs native-speaker review |
@@ -4736,6 +5302,13 @@ File: `apps/patient-web/src/features/profile/locales/rw.json`
 | `relationship.delegate` | Wasangijwe | Shared with you | needs native-speaker review |
 | `medilinkNumber` | Nomero yawe ya MediLink | Your MediLink number | needs native-speaker review |
 | `sectionsLabel` | Ibice by'umwirondoro | Profile sections | needs native-speaker review |
+| `photo.title` | Ifoto | Profile photo | needs native-speaker review |
+| `photo.who` | Uyibona ni wowe, abo usangira uyu mwirondoro, n'abakozi b'amavuriro ufitemo dosiye. Ibafasha kukumenya. | You, people you share this profile with, and staff at facilities where you have a file can see it. It helps them recognise you. | needs native-speaker review |
+| `photo.add` | Ongeraho ifoto | Add a photo | needs native-speaker review |
+| `photo.change` | Hindura ifoto | Change photo | needs native-speaker review |
+| `photo.remove` | Kuraho | Remove | needs native-speaker review |
+| `photo.alt` | Ifoto ya {{name}} | Photo of {{name}} | needs native-speaker review |
+| `photo.tooBig` | Hitamo ifoto iri munsi ya MB 5. | Choose a photo smaller than 5 MB. | needs native-speaker review |
 | `sections.details` | Amakuru yanjye | My details | needs native-speaker review |
 | `sections.identifiers` | Ibyangombwa | Identity documents | needs native-speaker review |
 | `sections.insurance` | Ubwishingizi | Insurance | needs native-speaker review |
@@ -5131,6 +5704,22 @@ File: `apps/patient-web/src/features/records/locales/rw.json`
 | `facility` | Ikigo cy'ubuvuzi | Facility | needs native-speaker review |
 | `doctorLabel` | Muganga | Doctor | needs native-speaker review |
 | `signedOn` | Byasinywe | Signed | needs native-speaker review |
+| `lab.title` | Ibisubizo by'ibizamini | Lab results | needs native-speaker review |
+| `lab.failed` | Ntibyakunze kubona ibisubizo by'ibizamini byawe. | We couldn't load your lab results. | needs native-speaker review |
+| `lab.intro` | Ibisubizo by'ibizamini byawe bigaragara hano muganga amaze kubisoma, hamwe n'ubutumwa bwe. | Your test results appear here once your doctor has read them, with their note. | needs native-speaker review |
+| `lab.item` | Ikizamini | Test | needs native-speaker review |
+| `lab.value` | Igisubizo | Result | needs native-speaker review |
+| `lab.normal` | Ibisanzwe | Normal range | needs native-speaker review |
+| `lab.note` | Muganga wawe aravuga: | Your doctor says: | needs native-speaker review |
+| `lab.flags.low` | Biri munsi y'ibisanzwe | Below normal | needs native-speaker review |
+| `lab.flags.high` | Biri hejuru y'ibisanzwe | Above normal | needs native-speaker review |
+| `lab.flags.abnormal` | Ntibisanzwe | Not as expected | needs native-speaker review |
+| `lab.choices.negative` | Nta bwandu | Negative | needs native-speaker review |
+| `lab.choices.positive` | Afite ubwandu | Positive | needs native-speaker review |
+| `lab.choices.invalid` | Ntibyasomwe | Could not be read | needs native-speaker review |
+| `lab.choices.trace` | Bike cyane | Trace | needs native-speaker review |
+| `lab.choices.none_seen` | Nta byabonetse | None seen | needs native-speaker review |
+| `lab.choices.seen` | Byabonetse | Seen | needs native-speaker review |
 
 ## patient-web feature: site (namespace site)
 
@@ -5187,12 +5776,10 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `home.view.list` | Amakarita | Cards | needs native-speaker review |
 | `home.view.map` | Ikarita | Map | needs native-speaker review |
 | `care.title` | Shaka ubuvuzi | Find healthcare | needs native-speaker review |
-| `care.lead` | Shakisha ukurikije ikigo, serivisi, ubuhanga cyangwa ikimenyetso. | Search by facility, service, specialty or symptom. | needs native-speaker review |
 | `care.results` | Ibyabonetse | Results | needs native-speaker review |
 | `care.emergencyFilter` | Ubutabazi (ibitaro) | Emergency (hospitals) | needs native-speaker review |
 | `care.checkSymptoms` | Ahubwo, suzuma ibimenyetso | Check your symptoms instead | needs native-speaker review |
 | `facilities.title` | Ibigo by’ubuvuzi | Healthcare facilities | needs native-speaker review |
-| `facilities.lead` | Buri kigo cyemejwe kiri kuri MediLink. | Every verified facility on MediLink. | needs native-speaker review |
 | `facilities.type` | Ubwoko bw’ikigo | Facility type | needs native-speaker review |
 | `facilities.service` | Serivisi | Service | needs native-speaker review |
 | `facilities.anyService` | Serivisi zose | All services | needs native-speaker review |
@@ -5219,12 +5806,8 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `facility.emergencyNote` | Ibitaro byakira ubutabazi bwihuse. Hamagara {{number}} niba ubuzima buri mu kaga. | Hospitals receive emergencies. Call {{number}} if life is at risk. | needs native-speaker review |
 | `facility.joinQueue` | Jya ku murongo | Join Queue | needs native-speaker review |
 | `facility.bookAppointment` | Fata gahunda | Book Appointment | needs native-speaker review |
-| `facility.tabs.label` | Amakuru y’ikigo | Facility information | needs native-speaker review |
-| `facility.tabs.overview` | Incamake | Overview | needs native-speaker review |
 | `facility.tabs.services` | Serivisi | Services | needs native-speaker review |
 | `facility.tabs.doctors` | Abaganga | Doctors | needs native-speaker review |
-| `facility.tabs.insurance` | Ubwishingizi | Insurance | needs native-speaker review |
-| `facility.tabs.hours` | Amasaha n’aho biri | Hours & Location | needs native-speaker review |
 | `facility.about` | Ibyerekeye | About | needs native-speaker review |
 | `facility.noDescription` | Ikigo ntikirashyiraho ibisobanuro. | The facility has not added a description yet. | needs native-speaker review |
 | `facility.photos` | Amafoto | Photos | needs native-speaker review |
@@ -5243,7 +5826,6 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `facility.noServices` | Nta serivisi zirashyirwaho | No services published yet | needs native-speaker review |
 | `facility.noDoctors` | Nta baganga barashyirwaho | No doctors published yet | needs native-speaker review |
 | `facility.doctorDays` | Ahaboneka {{days}} | Here {{days}} | needs native-speaker review |
-| `facility.insuranceLead` | Ubwishingizi bwemewe kuri iki kigo. Amafaranga agaragara gusa kuri fagitire nyuma y’isura. | Insurers accepted at this facility. Amounts are only on your bill after the visit. | needs native-speaker review |
 | `facility.referral` | Abanyamuryango ba Mutuelle bakeneye urupapuro rwo kohereza kuri uru rwego. | Mutuelle members need a transfer letter at this level of care. | needs native-speaker review |
 | `facility.week` | Iki cyumweru | This week | needs native-speaker review |
 | `facility.closures` | Iminsi izafungwa | Upcoming closures | needs native-speaker review |
@@ -5257,7 +5839,6 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `facility.insurance` | Ubwishingizi bwemewe | Insurance accepted | needs native-speaker review |
 | `facility.emergencyOpen` | Serivisi y'ubutabazi ikora ku manywa na nijoro. Hamagara {{number}} niba ubuzima buri mu kaga. | Emergency department open day and night. Call {{number}} if life is at risk. | needs native-speaker review |
 | `doctors.title` | Abaganga | Doctors | needs native-speaker review |
-| `doctors.lead` | Shaka umuganga ukurikije izina, serivisi cyangwa ikigo. | Find a doctor by name, service or facility. | needs native-speaker review |
 | `doctors.searchName` | Shakisha izina ry’umuganga | Search by doctor name | needs native-speaker review |
 | `doctors.specialty` | Serivisi | Service | needs native-speaker review |
 | `doctors.anySpecialty` | Serivisi zose | All services | needs native-speaker review |
@@ -5294,7 +5875,6 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `doctor.spoken.fr` | Igifaransa | French | needs native-speaker review |
 | `doctor.spoken.sw` | Igiswahili | Kiswahili | needs native-speaker review |
 | `services.title` | Menya serivisi z’ubuvuzi | Explore healthcare services | needs native-speaker review |
-| `services.lead` | Serivisi zitangwa n’ibigo biri kuri MediLink. | Services offered by facilities on MediLink. | needs native-speaker review |
 | `services.search` | Shakisha serivisi | Search services | needs native-speaker review |
 | `services.none` | Nta serivisi zihuye n’ibyo washatse | No services match your search | needs native-speaker review |
 | `services.categories.general` | Ubuvuzi rusange | General healthcare | needs native-speaker review |
@@ -5324,7 +5904,6 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `service.explain.family_planning` | Inama n’uburyo bwo kuboneza urubyaro. | Advice and methods to plan when to have children. | needs native-speaker review |
 | `service.explain.laboratory_tests` | Ibizamini by’amaraso, inkari n’ibindi bisabwa na muganga. | Blood, urine and other tests a clinician orders. | needs native-speaker review |
 | `how.title` | Uko MediLink ikora | How MediLink works | needs native-speaker review |
-| `how.lead` | Kuva ku gushakisha kugeza ku isura yawe, intambwe ku yindi. | From searching to your visit, step by step. | needs native-speaker review |
 | `how.steps.search.title` | Shakisha ubuvuzi | Search for healthcare | needs native-speaker review |
 | `how.steps.search.body` | Shakisha ukurikije serivisi, ikigo cyangwa uko wumva umeze. | Search by service, facility or what you feel. | needs native-speaker review |
 | `how.steps.select.title` | Hitamo ikigo | Select a facility | needs native-speaker review |
@@ -5338,10 +5917,10 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `how.steps.follow.title` | Kurikira isura yawe | Follow your visit | needs native-speaker review |
 | `how.steps.follow.body` | Reba umwanya wawe ku murongo n’igihe cyo kwinjira. | See your place in the queue and when to go in. | needs native-speaker review |
 | `how.goodTitle` | Ni byiza kumenya | Good to know | needs native-speaker review |
-| `how.good.noAccount` | Ushobora kureba ibigo, serivisi n’abaganga utagira konti. | You can explore facilities, services and doctors without an account. | needs native-speaker review |
-| `how.good.walkIn` | Abaje batiyandikishije baracyandikwa ku kigo. | Walk-in patients can still be registered at the facility. | needs native-speaker review |
-| `how.good.reception` | Abakira abantu bemeza ko wahageze mbere y’uko uhamagarwa. | Reception confirms your physical arrival before you are called. | needs native-speaker review |
-| `how.good.noPhone` | Nta telefoni igezweho? Ikigo kiguha itike yanditse, nimero yawe ikagaragara ku ikiganza cy’amashusho kandi ikavugwa mu ijwi. | No smartphone? The facility gives you a printed ticket, shows your number on the screen and calls it out loud. | needs native-speaker review |
+| `how.good.noAccount` | Gushakisha ntibisaba konti. | No account needed to search. | needs native-speaker review |
+| `how.good.walkIn` | Abaje batafashe gahunda barakirwa. | Walk-ins are still welcome. | needs native-speaker review |
+| `how.good.reception` | Abakira abantu bemeza ko wahageze. | Reception confirms you've arrived. | needs native-speaker review |
+| `how.good.noPhone` | Nta telefoni? Uhabwa itike yanditse, nimero yawe igahamagarwa. | No phone? You get a printed ticket and your number is called. | needs native-speaker review |
 | `how.start` | Shaka ubuvuzi ubu | Find care now | needs native-speaker review |
 | `emergency.title` | Ukeneye ubutabazi bwihuse? | Need emergency care? | needs native-speaker review |
 | `emergency.lead` | Niba ubuzima buri mu kaga, ntutegereze gahunda. Saba ubufasha cyangwa ujye ku bitaro bikwegereye ubu. | If a life is in danger, do not wait for an appointment. Call for help or go to the nearest hospital now. | needs native-speaker review |
@@ -5360,7 +5939,6 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `emergency.referral` | Ibitaro byoherezwamo abarwayi | Referral hospitals | needs native-speaker review |
 | `emergency.department` | Ubutabazi amasaha 24 | 24-hour emergency | needs native-speaker review |
 | `help.title` | Ubufasha | Help & Support | needs native-speaker review |
-| `help.lead` | Ibisubizo ku bibazo bikunze kubazwa. | Answers to common questions. | needs native-speaker review |
 | `help.search` | Shakisha mu bufasha | Search help | needs native-speaker review |
 | `help.none` | Nta bisubizo bihuye n’ibyo washatse | No answers match your search | needs native-speaker review |
 | `help.articles` | Izindi nyandiko z’ubufasha | More help articles | needs native-speaker review |
@@ -5408,19 +5986,18 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `help.categories.technical.q2` | Sinakira imenyesha. | I do not receive alerts. | needs native-speaker review |
 | `help.categories.technical.a2` | Emerera MediLink kohereza imenyesha muri mushakisha yawe kandi ufungure imenyesha mu igenamiterere. | Allow notifications for MediLink in your browser and turn alerts on in your settings. | needs native-speaker review |
 | `about.title` | Ibyerekeye MediLink | About MediLink | needs native-speaker review |
-| `about.lead` | MediLink ihuza abantu bo mu Rwanda n’ibigo by’ubuvuzi, kugira ngo ubuvuzi bworoshye kubona no gutegura. | MediLink connects people in Rwanda with healthcare facilities, so care is easier to find and to plan. | needs native-speaker review |
+| `about.lead` | Ibigo by’ubuvuzi byo mu Rwanda ahantu hamwe. | Rwanda's health facilities, in one place. | needs native-speaker review |
 | `about.sections.what.title` | MediLink ni iki | What MediLink is | needs native-speaker review |
-| `about.sections.what.body` | Urubuga rw’igihugu aho abarwayi babona ibigo, serivisi n’abaganga, bakareba igihe cyo gutegereza bakajya ku murongo cyangwa bagafata gahunda. Ibigo biyikoresha mu gucunga isura kuva ku kwakira kugeza kuri farumasi. | A national platform where patients find facilities, services and doctors, see live waiting times and join a queue or book. Facilities use it to run the visit from check-in to pharmacy. | needs native-speaker review |
+| `about.sections.what.body` | Shaka ibigo, serivisi n’abaganga. Reba igihe cyo gutegereza. Jya ku murongo cyangwa ufate gahunda. | Find facilities, services and doctors. See the wait. Join a queue or book. | needs native-speaker review |
 | `about.sections.problem.title` | Ikibazo ikemura | The problem it addresses | needs native-speaker review |
-| `about.sections.problem.body` | Akenshi abantu bajya ku kigo batazi niba gifunguye, igihe bazategereza cyangwa niba cyemera ubwishingizi bwabo. Ibigo nabyo ntibibona neza abategereje. | People often travel to a facility without knowing if it is open, how long the wait is or whether it accepts their insurance. Facilities lack a clear view of who is waiting. | needs native-speaker review |
+| `about.sections.problem.body` | Ntukongere kugenda utazi niba ikigo gifunguye, igihe uzategereza cyangwa niba cyemera ubwishingizi bwawe. | No more travelling without knowing if it's open, how long the wait is, or if your insurance works. | needs native-speaker review |
 | `about.sections.how.title` | Uko ihuza abarwayi n’ibigo | How it connects patients and facilities | needs native-speaker review |
-| `about.sections.how.body` | Ibigo bitangaza serivisi, amasaha n’umurongo w’ako kanya. Abarwayi bahitamo bafite amakuru y’ukuri bakagera ku gihe; abakira abantu bemeza buri wese uhageze. | Facilities publish their services, hours and live queue. Patients choose with real information and arrive at the right time; reception confirms every arrival. | needs native-speaker review |
+| `about.sections.how.body` | Ibigo bitangaza amasaha, serivisi n’umurongo w’ako kanya. Abakira abantu bemeza buri wese uhageze. | Facilities publish hours, services and their live queue. Reception confirms every arrival. | needs native-speaker review |
 | `about.sections.access.title` | Igera kuri buri wese | Accessible to everyone | needs native-speaker review |
-| `about.sections.access.body` | Gushakisha ntibisaba konti. MediLink ikora mu Kinyarwanda, Icyongereza n’Igifaransa, kuri telefoni nto no ku murongo udakomeye, kandi abadafite telefoni bakirirwa ku kigo bahabwa itike yanditse n’ihamagarwa mu ijwi. | Search needs no account. MediLink works in Kinyarwanda, English and French, on small phones and slow connections, and people without a phone are served at the facility with printed tickets and spoken calls. | needs native-speaker review |
+| `about.sections.access.body` | Gushakisha ntibisaba konti. Indimi eshatu. Ikora no kuri telefoni nto. Nta telefoni? Itike yanditse n’ihamagarwa mu ijwi. | No account to search. Three languages. Works on small phones. No phone? A printed ticket and spoken calls. | needs native-speaker review |
 | `about.sections.privacy.title` | Kurinda amakuru y’abarwayi | Protecting patient information | needs native-speaker review |
-| `about.sections.privacy.body` | Amakuru y’ubuzima acungwa hakurikijwe itegeko ryo kurinda amakuru bwite (Itegeko 058/2021). Ibigo bibona gusa ibikenewe mu kukuvura, kandi buri gihe amakuru afunguwe birandikwa. | Health information is handled under Rwanda’s data protection law (Law 058/2021). Facilities see only what they need for your care, and every access to a record is logged. | needs native-speaker review |
+| `about.sections.privacy.body` | Birinzwe n’itegeko ryo kurinda amakuru bwite (058/2021). Abakozi babona gusa ibikenewe mu kukuvura; buri gufungura kurandikwa. | Covered by Rwanda's data protection law (058/2021). Staff see only what your care needs; every access is logged. | needs native-speaker review |
 | `contact.title` | Twandikire | Contact | needs native-speaker review |
-| `contact.lead` | Ibibazo, ingorane cyangwa ibitekerezo. | Questions, problems or suggestions. | needs native-speaker review |
 | `contact.infoTitle` | Ubufasha | Support | needs native-speaker review |
 | `contact.infoBody` | Ku kibazo cy’isura, banza uvugane n’ikigo. Ku bijyanye na MediLink ubwayo, koresha iyi fomu. | For a problem with a visit, contact the facility first. For MediLink itself, use this form. | needs native-speaker review |
 | `contact.emergency` | Ku butabazi bwihuse hamagara {{number}}. Iyi fomu ntikurikiranwa amasaha yose. | For emergencies call {{number}}. This form is not watched around the clock. | needs native-speaker review |
@@ -5439,17 +6016,16 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `contact.errors.message` | Andika ubutumwa bwawe (nibura inyuguti 10) | Write your message (at least 10 characters) | needs native-speaker review |
 | `contact.reference` | Nimero yawe: {{reference}}. Yibike niwongera kwandika. | Your reference: {{reference}}. Keep it if you write again. | needs native-speaker review |
 | `accessibility.title` | Itangazo ku kugerwaho n’abantu bose | Accessibility statement | needs native-speaker review |
-| `accessibility.lead` | MediLink igomba gukoreshwa na buri wese. | MediLink should be usable by everyone. | needs native-speaker review |
 | `accessibility.sections.standard.title` | Igipimo dukurikiza | Our standard | needs native-speaker review |
-| `accessibility.sections.standard.body` | Duharanira WCAG 2.2 urwego AA ku mpapuro zose rusange no muri porogaramu y’abarwayi. | We aim for WCAG 2.2 level AA on every public page and in the patient app. | needs native-speaker review |
+| `accessibility.sections.standard.body` | WCAG 2.2 urwego AA ku mpapuro rusange no muri porogaramu y’abarwayi. | WCAG 2.2 AA on public pages and the patient app. | needs native-speaker review |
 | `accessibility.sections.features.title` | Ibyo dukora | What we do | needs native-speaker review |
-| `accessibility.sections.features.body` | Indimi eshatu, utubuto tunini, guhindura ingano y’inyuguti, gukoresha clavier, aho uri hagaragara, ibisobanuro ku basoma n’amatwi, amabara atandukanye bihagije, nta makuru atangwa n’ibara gusa, no kugabanya imyitwarire iyo igikoresho cyawe kibisabye. | Three languages, large touch targets, a text-size setting, keyboard access, visible focus, screen-reader labels, enough colour contrast, no information by colour alone, and reduced motion when your device asks for it. | needs native-speaker review |
+| `accessibility.sections.features.body` | Indimi eshatu, utubuto tunini, ingano y’inyuguti, clavier, ibisobanuro ku basoma n’amatwi, amabara agaragara neza, kugabanya imyitwarire. | Three languages, large touch targets, text size, keyboard use, screen-reader labels, strong contrast, reduced motion. | needs native-speaker review |
 | `accessibility.sections.offline.title` | Hanze y’urubuga | Beyond the website | needs native-speaker review |
-| `accessibility.sections.offline.body` | Abadafite telefoni bakirirwa ku kigo bahabwa itike yanditse, ikiganza cy’amashusho ry’aho bategerereza n’ihamagarwa mu ijwi. | Patients without a phone are served at the facility with printed tickets, a waiting-room screen and spoken calls. | needs native-speaker review |
+| `accessibility.sections.offline.body` | Nta telefoni: itike yanditse, ikiganza cy’amashusho aho bategerereza, ihamagarwa mu ijwi. | No phone: printed tickets, a waiting-room screen, spoken calls. | needs native-speaker review |
 | `accessibility.sections.limits.title` | Imbogamizi zizwi | Known limits | needs native-speaker review |
-| `accessibility.sections.limits.body` | Ibisobanuro bimwe biracyasuzumwa n’abavuga ururimi kavukire. Ikarita isaba imbeba cyangwa gukoraho; urutonde ruri iruhande rwayo rutanga amakuru amwe. [To confirm] | Some translations are still being reviewed by native speakers. The map needs a pointer or touch; the list beside it offers the same information. [To confirm] | needs native-speaker review |
+| `accessibility.sections.limits.body` | Ibisobanuro bimwe biracyasuzumwa. Ikarita isaba gukoraho cyangwa imbeba; urutonde rutanga amakuru amwe. | Some translations are still under review. The map needs touch or a pointer; the list shows the same. | needs native-speaker review |
 | `accessibility.sections.feedback.title` | Tubwire | Tell us | needs native-speaker review |
-| `accessibility.sections.feedback.body` | Niba hari ikigoye gukoresha, twandikire ukoresheje urupapuro rwo kutwandikira tuzagusubiza. | If something is hard to use, write to us through the contact page and we will answer. | needs native-speaker review |
+| `accessibility.sections.feedback.body` | Hari ikikugoye? Twandikire ku rupapuro rwo kutwandikira. | Hard to use? Tell us on the contact page. | needs native-speaker review |
 | `onThisPage` | Kuri iyi paji | On this page | needs native-speaker review |
 | `card.open` | Irakora | Open | needs native-speaker review |
 | `card.busy` | Hari benshi | Busy | needs native-speaker review |
@@ -5457,61 +6033,57 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `card.accepted` | Yakira | Accepts | needs native-speaker review |
 | `card.noInsurance` | Ubwishingizi: baza ku kwakira | Insurance: ask at the desk | needs native-speaker review |
 | `card.details` | Ibisobanuro | Details | needs native-speaker review |
-| `home2.tag` | Igihe cyo gutegereza kigaragara ako kanya mu bigo byemejwe | Live waiting times at verified facilities | needs native-speaker review |
 | `home2.title` | Bona ubuvuzi bukwiye, udategereje igihe kirekire. | Find the right care, without the long wait. | needs native-speaker review |
-| `home2.lead` | Gereranya amavuriro n'ibitaro biri hafi, urebe ibikora n'uko umurongo ureshya, hanyuma winjire ku murongo cyangwa ufate gahunda. | Compare nearby clinics and hospitals, see who is open and how long the queue is, then join or book. | needs native-speaker review |
+| `home2.lead` | Reba ibikora n'igihe cyo gutegereza. Injira cyangwa ufate isaha. | See who's open and the wait. Join or book. | needs native-speaker review |
 | `home2.searchPlaceholder` | Serivisi, ikigo cyangwa ikimenyetso | Service, facility or symptom | needs native-speaker review |
 | `home2.search` | Shakisha | Search | needs native-speaker review |
-| `home2.popular` | Ibikunze gushakwa | Popular | needs native-speaker review |
 | `home2.chips.general` | Kwisuzumisha rusange | General consultation | needs native-speaker review |
 | `home2.chips.maternal` | Ubuvuzi bw'ababyeyi | Maternal care | needs native-speaker review |
 | `home2.chips.lab` | Ibizamini | Lab tests | needs native-speaker review |
 | `home2.chips.dental` | Amenyo | Dental | needs native-speaker review |
 | `home2.chips.symptoms` | Ntubizi neza? Reba ibimenyetso | Not sure? Check symptoms | needs native-speaker review |
-| `home2.float.queue` | Uri uwa 3 ku murongo · iminota 12 | You're 3rd in queue · about 12 min | needs native-speaker review |
-| `home2.float.insurance` | Byakirwa hano: Mutuelle · RAMA · MMI | Accepted here: Mutuelle · RAMA · MMI | needs native-speaker review |
-| `home2.float.open` | Irakora ubu · ifunga saa 18:00 | Open now · closes 18:00 | needs native-speaker review |
-| `home2.trust.label` | MediLink mu mibare | MediLink in numbers | needs native-speaker review |
-| `home2.trust.facilities` | ibigo byemejwe | verified facilities | needs native-speaker review |
-| `home2.trust.districts` | uturere dushobora gushakishwamo | districts you can search | needs native-speaker review |
-| `home2.trust.languages` | indimi: Ikinyarwanda, Icyongereza, Igifaransa | languages: Kinyarwanda, English, French | needs native-speaker review |
-| `home2.trust.noAccountValue` | Ni ubuntu | Free | needs native-speaker review |
-| `home2.trust.noAccount` | nta konti ikenewe ngo ushakishe | no account needed to search | needs native-speaker review |
 | `home2.careTitle` | Ukeneye ubuhe buvuzi? | What care do you need? | needs native-speaker review |
-| `home2.careLead` | Hitamo serivisi urebe ahantu iboneka. | Pick a service to see the places that offer it. | needs native-speaker review |
+| `home2.allServices` | Serivisi zose | All services | needs native-speaker review |
 | `home2.facilityCount_one` | Ikigo {{count}} | {{count}} facility | needs native-speaker review |
 | `home2.facilityCount_other` | Ibigo {{count}} | {{count}} facilities | needs native-speaker review |
 | `home2.nearTitle` | Ibikora biri hafi yawe | Open near you | needs native-speaker review |
 | `home2.howTitle` | Kuva gushakisha kugeza kwakirwa, mu ntambwe eshatu | From search to seen, in three steps | needs native-speaker review |
-| `home2.howLead` | Nta konti ikenewe ngo urebe; konti ikenewe ngo winjire ku murongo cyangwa ufate gahunda. | No account needed to look; one to join a queue or book. | needs native-speaker review |
 | `home2.stepLabel` | Intambwe ya {{n}} | Step {{n}} | needs native-speaker review |
 | `home2.steps.search.title` | Shakisha kandi ugereranye | Search and compare | needs native-speaker review |
-| `home2.steps.search.body` | Reba ibikora, igihe cyo gutegereza, intera n'ubwishingizi bwakirwa. | See who is open, the wait, distance and the insurance accepted. | needs native-speaker review |
+| `home2.steps.search.body` | Ibikora, igihe, intera, ubwishingizi. | Open now, wait, distance, insurance. | needs native-speaker review |
 | `home2.steps.join.title` | Injira ku murongo cyangwa ufate gahunda | Join the queue or book | needs native-speaker review |
-| `home2.steps.join.body` | Injira ku murongo w'uyu munsi uri kuri telefone, cyangwa ufate isaha. | Join today's queue from your phone, or reserve a time. | needs native-speaker review |
+| `home2.steps.join.body` | Umurongo w'uyu munsi cyangwa isaha. | Today's queue or a set time. | needs native-speaker review |
 | `home2.steps.arrive.title` | Ngwino igihe cyawe kigeze | Arrive when it's your turn | needs native-speaker review |
-| `home2.steps.arrive.body` | Kurikira umwanya wawe ako kanya, uze igihe wegereje imbere. | Follow your place live and come when you are close to the front. | needs native-speaker review |
-| `home2.phone.search` | Amenyo hafi yanjye | Dental near me | needs native-speaker review |
-| `home2.phone.place1` | Ikigo nderabuzima cya Kacyiru | Kacyiru Health Centre | needs native-speaker review |
-| `home2.phone.wait1` | Irakora · ~iminota 15 | Open · ~15 min | needs native-speaker review |
-| `home2.phone.place2` | Ivuriro rya Remera | Remera Clinic | needs native-speaker review |
-| `home2.phone.wait2` | Hari benshi · ~iminota 45 | Busy · ~45 min | needs native-speaker review |
-| `home2.phone.service` | Kwisuzumisha rusange | General consultation | needs native-speaker review |
-| `home2.phone.slot` | Uyu munsi · 6 barategereje | Today · 6 waiting | needs native-speaker review |
-| `home2.phone.joinButton` | Injira ku murongo | Join the queue | needs native-speaker review |
-| `home2.phone.ticket` | Itike yawe | Your ticket | needs native-speaker review |
+| `home2.steps.arrive.body` | Uza igihe cyawe kiri hafi. | Come when you're near the front. | needs native-speaker review |
 | `home2.facilitiesTitle` | Icyumba cyo gutegereza gituje. | Run a calmer waiting room. | needs native-speaker review |
-| `home2.facilitiesLead` | Abarwayi babona igihe cyo gutegereza mbere yo kuza. Wowe ubona umurongo, urujya n'uruza n'umunsi wose ku kibaho kimwe. | Patients see your live wait before they come. You see the queue, the flow and the day in one dashboard. | needs native-speaker review |
+| `home2.facilitiesLead` | Abarwayi babona igihe cyo gutegereza mbere yo kuza. | Patients see your wait before they come. | needs native-speaker review |
 | `home2.facilitiesAction` | MediLink ku bigo by'ubuvuzi | MediLink for facilities | needs native-speaker review |
-| `home2.dash.title` | Uyu munsi | Today | needs native-speaker review |
-| `home2.dash.live` | Ako kanya | Live | needs native-speaker review |
-| `home2.dash.queue` | Ku murongo | In queue | needs native-speaker review |
-| `home2.dash.wait` | Igihe cyo gutegereza | Average wait | needs native-speaker review |
-| `home2.dash.seen` | Bakiriwe uyu munsi | Seen today | needs native-speaker review |
-| `home2.dash.note` | Abaje ku isaha | Arrivals by hour | needs native-speaker review |
-| `home2.photos.main` | Umukozi w'ubuzima wambaye umwambaro w'icyatsi yereka umugore uko akoresha porogaramu kuri telefone ye, ku kwakira kw'ikigo nderabuzima. | A health worker in a green uniform shows a woman how to use an app on her phone at a health centre desk. | needs native-speaker review |
-| `home2.photos.entrance` | Umuryango w'ikigo nderabuzima utwikiriye, abarwayi bategereje bicaye ku ntebe. | The covered entrance of a health centre, with patients waiting on benches. | needs native-speaker review |
-| `home2.photos.hillside` | Ikigo nderabuzima cyubakishije amatafari gifite igisenge cy'icyatsi, hagati y'insina n'imisozi itoshye. | A brick health centre with a green roof among banana trees and green hills. | needs native-speaker review |
+| `home3.titleA` | Bona ubuvuzi bukwiye, | Find the right care, | needs native-speaker review |
+| `home3.titleB` | udategereje igihe kirekire. | without the long wait. | needs native-speaker review |
+| `home3.openNow_one` | Ikigo {{count}} gifunguye ubu | {{count}} place open now | needs native-speaker review |
+| `home3.openNow_other` | Ibigo {{count}} bifunguye ubu | {{count}} places open now | needs native-speaker review |
+| `home3.waitingNow_one` | Umuntu {{count}} ategereje | {{count}} person waiting | needs native-speaker review |
+| `home3.waitingNow_other` | Abantu {{count}} bategereje | {{count}} people waiting | needs native-speaker review |
+| `home3.live` | Ako kanya | Live | needs native-speaker review |
+| `home3.seePlaces` | Reba aho bitangirwa | See the places | needs native-speaker review |
+| `home3.openTitle` | Bifunguye ubu | Open right now | needs native-speaker review |
+| `home3.openLead` | Ibigo biri kuri MediLink n'igihe cyo gutegereza ako kanya. Kanda "Hafi yanjye" ubitondeke ukurikije intera. | Places on MediLink with their live wait. Tap Near me to sort by distance. | needs native-speaker review |
+| `home3.trustLabel` | Ibyo wakwizera | What you can count on | needs native-speaker review |
+| `home3.trust.noAccount.title` | Nta konti ikenewe kugira ngo urebe | No account to look | needs native-speaker review |
+| `home3.trust.languages.title` | Kinyarwanda, English, Français | Kinyarwanda, English, Français | needs native-speaker review |
+| `home3.trust.dataHome.title` | Amakuru y'ubuzima bwawe aguma mu Rwanda | Your health data stays in Rwanda | needs native-speaker review |
+| `home3.facilityPoints.queue` | Umurongo abarwayi bakurikirana bari mu rugo | A live queue patients can follow from home | needs native-speaker review |
+| `home3.facilityPoints.bookings` | Gahunda na ba nyakuza mu igenamigambi rimwe ry'umunsi | Bookings and walk-ins in one day plan | needs native-speaker review |
+| `home3.facilityPoints.records` | Amadosiye, imiti yandikiwe n'ubwishyu ahantu hamwe | Records, prescriptions and payments in one place | needs native-speaker review |
+| `home3.kpi.open` | Bifunguye ubu | Open now | needs native-speaker review |
+| `home3.kpi.openHint_one` | mu kigo {{count}} kiri kuri MediLink | of {{count}} place on MediLink | needs native-speaker review |
+| `home3.kpi.openHint_other` | mu bigo {{count}} biri kuri MediLink | of {{count}} places on MediLink | needs native-speaker review |
+| `home3.kpi.waiting` | Abategereje | People waiting | needs native-speaker review |
+| `home3.kpi.typical` | Igihe gisanzwe cyo gutegereza | Typical wait | needs native-speaker review |
+| `home3.kpi.minutes_one` | Umunota {{count}} | {{count}} min | needs native-speaker review |
+| `home3.kpi.minutes_other` | Iminota {{count}} | {{count}} min | needs native-speaker review |
+| `home3.symptoms.title` | Ntuzi aho wajya? | Not sure where to go? | needs native-speaker review |
+| `home3.symptoms.action` | Suzuma ibimenyetso byawe | Check your symptoms | needs native-speaker review |
 
 ## patient-web feature: tracker (namespace tracker)
 

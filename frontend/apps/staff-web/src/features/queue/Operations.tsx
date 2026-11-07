@@ -1,6 +1,5 @@
 import type { DayFigures, Operations, OperationsAttentionKey } from "@medilink/api-client";
 import {
-  Badge,
   buttonClassName,
   cx,
   FlowStrip,
@@ -39,8 +38,6 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { useApi } from "../../app/services";
-import { PageHeader } from "../../components/PageHeader";
-import { NoAccessContent } from "../../pages/NotFoundPage";
 import { queueKeys, usePollInterval, useQueueSocket } from "./live";
 import { LiveBadge } from "./LiveIndicator";
 import { useTodayBookings } from "./ExpectedList";
@@ -626,99 +623,48 @@ export function OperationsTodayCard() {
   );
 }
 
-/** /reports (analysis 13 §2): trends, waits and arrivals; aggregates only. */
-export function ReportsPage() {
+/**
+ * Arrivals by weekday and hour over the last 4 weeks, with the last 14 days' waits (analysis 13
+ * §2), under the period report on /reports. Aggregates only.
+ */
+export function ArrivalsPanel() {
   const { t, i18n } = useTranslation();
   const allowed = useCan("reports.view");
   const ops = useOperations(allowed);
   const label = useDayLabel();
-  if (!allowed) return <NoAccessContent />;
   const data = ops.data;
-  const days = data?.trend ?? [];
+  if (!allowed || !data) return null;
+  const days = data.trend;
   const weekdays = Array.from({ length: 6 }, (_, i) =>
     dateFormat(i18n.resolvedLanguage ?? "rw", { weekday: "short", timeZone: "UTC" }).format(
       new Date(Date.UTC(2026, 0, 5 + i)),
     ),
   );
   const hours = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
-  const totals = days.reduce(
-    (acc, d) => ({
-      patients: acc.patients + d.patients,
-      emergencies: acc.emergencies + d.emergencies,
-    }),
-    { patients: 0, emergencies: 0 },
-  );
   return (
-    <div className="flex flex-col gap-6">
-      <PageHeader
-        title={t("queue.reports.title")}
-        description={t("queue.reports.intro")}
-        badges={<Badge tone="neutral">{t("queue.reports.period")}</Badge>}
-      />
-      {!data ? (
-        <DashboardSkeleton />
-      ) : (
-        <>
-          <KpiRow data={data} />
-          <div className="grid gap-4 xl:grid-cols-2">
-            <div className="rounded-2xl bg-surface shadow-card p-5">
-              <TrendChart
-                title={t("queue.reports.patientsPerDay")}
-                labels={days.map((d) => label(d.date))}
-                series={[
-                  { name: t("queue.reports.patients"), values: days.map((d) => d.patients) },
-                ]}
-              />
-            </div>
-            <div className="rounded-2xl bg-surface shadow-card p-5">
-              <TrendChart
-                title={t("queue.reports.waitToBeSeen")}
-                labels={days.map((d) => label(d.date))}
-                unit={` ${t("queue.ops.min")}`}
-                series={[
-                  { name: t("queue.reports.median"), values: days.map((d) => d.median_wait_min) },
-                  { name: t("queue.reports.p90"), values: days.map((d) => d.p90_wait_min) },
-                ]}
-              />
-            </div>
-          </div>
-          <div className="grid gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-            <div className="rounded-2xl bg-surface shadow-card p-5">
-              <HeatMap
-                title={t("queue.reports.arrivals")}
-                rows={weekdays}
-                columns={hours}
-                value={(r, c) =>
-                  data.arrivals_heatmap.find((x) => x.weekday === r && x.hour === c)?.count ?? 0
-                }
-                legend={{ less: t("queue.reports.less"), more: t("queue.reports.more") }}
-              />
-            </div>
-            <dl className="m-0 grid grid-cols-2 gap-3 self-start">
-              {[
-                [t("queue.reports.patients14"), totals.patients],
-                [
-                  t("queue.reports.avgConsult"),
-                  `${data.today.avg_consult_min ?? "—"} ${t("queue.ops.min")}`,
-                ],
-                [
-                  t("queue.reports.leftRate"),
-                  data.today.left_rate_pct === null ? "—" : `${data.today.left_rate_pct}%`,
-                ],
-                [t("queue.reports.emergencies"), totals.emergencies],
-              ].map(([k, v]) => (
-                <div
-                  key={String(k)}
-                  className={cx("flex flex-col gap-1 rounded-2xl bg-surface shadow-card p-4")}
-                >
-                  <dt className="text-body-sm font-semibold text-fg-secondary">{k}</dt>
-                  <dd className="m-0 font-heading text-h1 tabular-nums">{v}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-        </>
-      )}
+    <div className="grid gap-6 xl:grid-cols-2">
+      <div className="rounded-2xl bg-surface shadow-card p-5">
+        <HeatMap
+          title={t("queue.reports.arrivals")}
+          rows={weekdays}
+          columns={hours}
+          value={(r, c) =>
+            data.arrivals_heatmap.find((x) => x.weekday === r && x.hour === c)?.count ?? 0
+          }
+          legend={{ less: t("queue.reports.less"), more: t("queue.reports.more") }}
+        />
+      </div>
+      <div className="rounded-2xl bg-surface shadow-card p-5">
+        <TrendChart
+          title={t("queue.reports.waitToBeSeen")}
+          labels={days.map((d) => label(d.date))}
+          unit={` ${t("queue.ops.min")}`}
+          series={[
+            { name: t("queue.reports.median"), values: days.map((d) => d.median_wait_min) },
+            { name: t("queue.reports.p90"), values: days.map((d) => d.p90_wait_min) },
+          ]}
+        />
+      </div>
     </div>
   );
 }

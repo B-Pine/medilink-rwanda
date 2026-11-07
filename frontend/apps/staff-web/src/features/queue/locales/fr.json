@@ -1,6 +1,89 @@
 {
   "nav": {
-    "reorders": "Contrôle de la file"
+    "reorders": "Contrôle de la file",
+    "triage": "Triage",
+    "lab": "Laboratoire"
+  },
+  "lab": {
+    "title": "Laboratoire",
+    "lead": "Appelez le patient suivant, prélevez les échantillons et saisissez les résultats. Le patient retourne chez le médecin quand tous les résultats sont prêts.",
+    "open": "Ouvrir le laboratoire",
+    "current": "Patient avec vous",
+    "start": "Commencer",
+    "inLab": "Au laboratoire",
+    "nobody": "Personne n'attend le laboratoire.",
+    "waiting": "En attente de prélèvement",
+    "inProgress": "Résultats à saisir",
+    "inProgressNone": "Aucun échantillon n'attend de résultat.",
+    "doneToday": "Terminé aujourd'hui",
+    "identity": "Vérifiez l'identité du patient",
+    "fullName": "Nom complet",
+    "born": "Date de naissance",
+    "medilinkNumber": "Numéro MediLink",
+    "payment": "Paiement",
+    "paid": "Payé",
+    "unpaid": "Non payé",
+    "samples": "Prélèvements",
+    "sample": "Échantillon prélevé",
+    "orderedBy": "Demandé par {{name}}",
+    "request": "Demande du médecin :",
+    "loadingTests": "Chargement des examens…",
+    "samplesDone": "Échantillons prélevés pour {{name}}. Saisissez les résultats quand ils sont prêts.",
+    "enter": "Saisir le résultat",
+    "choose": "Choisir…",
+    "required": "Saisissez ce résultat.",
+    "comment": "Commentaire pour le médecin (facultatif)",
+    "save": "Enregistrer le résultat",
+    "saved": "Résultat enregistré : {{test}}.",
+    "backToDoctor": "Tous les résultats sont prêts. {{name}} retourne chez le médecin.",
+    "today": {
+      "waiting": "En attente de prélèvement",
+      "results": "Résultats à saisir",
+      "done": "Terminé aujourd'hui"
+    }
+  },
+  "triage": {
+    "title": "Triage",
+    "lead": "Prenez les constantes, décidez du degré d’urgence et envoyez le patient au médecin.",
+    "open": "Ouvrir le triage",
+    "current": "Patient avec vous",
+    "start": "Commencer le triage",
+    "inTriage": "Au triage",
+    "nobody": "Personne n’attend le triage.",
+    "waiting": "En attente du triage",
+    "waitingCount_one": "{{count}} en attente du triage",
+    "waitingCount_other": "{{count}} en attente du triage",
+    "longest_one": "Attente la plus longue {{count}} min",
+    "longest_other": "Attente la plus longue {{count}} min",
+    "words": "Avec ses mots",
+    "noWords": "Rien d’écrit à l’accueil.",
+    "symptoms": "Symptômes",
+    "allergies": "Allergies",
+    "noAllergies": "Aucune enregistrée. Demandez au patient.",
+    "vitals": "Constantes",
+    "decision": "Envoyer au médecin",
+    "urgency": "Quelle urgence ?",
+    "urgencies": {
+      "normal": "Normale",
+      "priority": "Prioritaire",
+      "emergency": "Urgence"
+    },
+    "urgencyHints": {
+      "normal": "Attend son tour.",
+      "priority": "Vu avant la file normale.",
+      "emergency": "Vu ensuite. Le médecin le voit en premier."
+    },
+    "why": "Pourquoi prioritaire ?",
+    "danger": "Qu’est-ce qui est dangereux ?",
+    "dangerHint": "Par exemple : douleur thoracique avec sueurs, SpO₂ 88 %.",
+    "dangerRequired": "Dites ce qui en fait une urgence.",
+    "note": "Note pour le médecin",
+    "noteHint": "Facultatif. Ce que le médecin doit savoir d’abord.",
+    "noVitals": "Pourquoi pas de constantes ?",
+    "noVitalsHint": "Prenez au moins une constante, ou dites pourquoi c’était impossible.",
+    "noVitalsRequired": "Enregistrez une constante ci-dessus, ou dites pourquoi aucune n’a pu être prise.",
+    "send": "Envoyer au médecin",
+    "sent": "{{number}} attend le médecin."
   },
   "loading": "Chargement de la file…",
   "loadFailed": "La file n’a pas pu se charger. Nouvel essai automatique.",
@@ -37,7 +120,9 @@
   "stages": {
     "reception": "Accueil",
     "payment": "Paiement",
+    "triage": "Triage",
     "consultation": "Consultation",
+    "lab": "Laboratoire",
     "pharmacy": "Pharmacie"
   },
   "flags": {
@@ -91,6 +176,7 @@
     "return": "De retour dans la file",
     "complete": "Terminé",
     "next_stage": "Étape suivante",
+    "triage": "Trié",
     "opened": "Nouveau ticket",
     "transfer": "Transféré",
     "cancel": "Annulé",
@@ -120,7 +206,6 @@
   },
   "board": {
     "title": "File d’attente",
-    "intro": "Toutes les personnes présentes, dans l’ordre d’appel. Choisissez un ticket pour agir.",
     "checkIn": "Enregistrer un patient",
     "services": "Services",
     "allServices": "Tous les services",
@@ -219,7 +304,6 @@
   },
   "reorders": {
     "title": "Contrôle de la file",
-    "intro": "Chaque fois qu’un patient a été avancé dans la file, avec le motif. Contrôlez-les pour garder une file juste.",
     "onlyOpen": "Afficher seulement les déplacements non contrôlés",
     "columns": {
       "when": "Quand",
@@ -241,7 +325,6 @@
   },
   "displays": {
     "title": "Écrans de la salle d’attente",
-    "intro": "Ouvrez un lien sur la télévision de la salle d’attente. Elle affiche les numéros et les salles, jamais les noms.",
     "add": "Ajouter un écran",
     "label": "Nom de l’écran",
     "services": "Services affichés",
@@ -266,7 +349,9 @@
     "spoken": "Ticket {{number}}",
     "spokenRoom": "Ticket {{number}}, veuillez vous rendre à {{room}}",
     "invalid": "Ce lien d’écran n’est pas valide. Demandez-en un nouveau.",
-    "footer": "Écoutez votre numéro. Réservez en ligne : medilink.rw"
+    "footer": "Écoutez votre numéro. Réservez en ligne : medilink.rw",
+    "testSound": "Tester le son",
+    "testRoom": "Salle 1"
   },
   "today": {
     "title": "Sur place maintenant",
@@ -358,20 +443,137 @@
   },
   "reports": {
     "title": "Rapports",
-    "intro": "L’activité de votre établissement : patients, attentes et heures d’arrivée, selon les définitions MediLink.",
-    "period": "14 derniers jours",
-    "patientsPerDay": "Patients par jour",
-    "patients": "Patients",
     "waitToBeSeen": "Attente avant consultation (minutes)",
     "median": "Médiane",
     "p90": "9 sur 10 vus en moins de",
     "arrivals": "Heures d’arrivée (4 dernières semaines)",
     "less": "Moins",
-    "more": "Plus",
-    "patients14": "Patients, 14 jours",
-    "avgConsult": "Consultation moyenne aujourd’hui",
-    "leftRate": "Partis sans consultation aujourd’hui",
-    "emergencies": "Urgences, 14 jours"
+    "more": "Plus"
+  },
+  "report": {
+    "noNames": "Totaux seulement, aucun nom de patient",
+    "periodLabel": "Période du rapport",
+    "range": "Période",
+    "presets": {
+      "7": "7 derniers jours",
+      "30": "30 derniers jours",
+      "90": "90 derniers jours",
+      "thisMonth": "Ce mois-ci",
+      "lastMonth": "Le mois dernier",
+      "custom": "Choisir les dates"
+    },
+    "from": "Du",
+    "to": "Au",
+    "groupBy": "Afficher par",
+    "groups": {
+      "day": "Jour",
+      "week": "Semaine",
+      "month": "Mois"
+    },
+    "updating": "Mise à jour…",
+    "periodText": "Du {{from}} au {{to}}",
+    "failed": "Le rapport n’a pas pu être chargé. Vérifiez les dates et réessayez.",
+    "weekOf": "Semaine du {{date}}",
+    "minutes_one": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "empty": "Rien sur cette période.",
+    "download": "CSV",
+    "downloadNamed": "Télécharger {{name}} en CSV",
+    "downloadFailed": "Le téléchargement a échoué. Réessayez.",
+    "kpi": {
+      "patients": "Patients",
+      "completed_one": "{{count}} visite terminée",
+      "completed_other": "{{count}} visites terminées",
+      "consultWait": "Attente médiane avant le médecin",
+      "p90": "9 sur 10 en moins de {{minutes}} min",
+      "collected": "Encaissé",
+      "billed": "{{amount}} facturé",
+      "noShows": "Rendez-vous non honorés",
+      "noShowCount_one": "{{count}} sur {{expected}} rendez-vous",
+      "noShowCount_other": "{{count}} sur {{expected}} rendez-vous"
+    },
+    "visits": {
+      "title": "Patients reçus",
+      "chart": "Patients sur la période",
+      "patients": "Patients",
+      "completed": "Terminées",
+      "left": "Partis sans service",
+      "emergencies": "Urgences",
+      "expected": "Rendez-vous attendus",
+      "noShows": "Absents"
+    },
+    "sources": {
+      "title": "Comment les patients sont venus"
+    },
+    "source": {
+      "walk_in": "Sans rendez-vous",
+      "online_booking": "Rendez-vous en ligne",
+      "phone_booking": "Rendez-vous par téléphone",
+      "follow_up": "Suivi",
+      "remote_join": "File rejointe depuis la maison",
+      "referral": "Référence",
+      "emergency": "Urgence"
+    },
+    "services": {
+      "title": "Par service"
+    },
+    "waits": {
+      "title": "Temps d’attente par étape",
+      "median": "Médiane",
+      "p90": "9 sur 10",
+      "tickets_one": "{{count}} ticket",
+      "tickets_other": "{{count}} tickets"
+    },
+    "diagnoses": {
+      "title": "Diagnostics les plus fréquents",
+      "intro_one": "CIM-10, à partir de {{count}} note signée.",
+      "intro_other": "CIM-10, à partir de {{count}} notes signées.",
+      "referrals": "Références sortantes",
+      "sensitive": "Sensibles, non nommés",
+      "referredTo": "Références vers : {{list}}"
+    },
+    "lab": {
+      "title": "Laboratoire",
+      "resulted": "Examens faits",
+      "waiting": "En attente",
+      "turnaround": "Délai médian",
+      "turnaroundP90": "9 sur 10 en moins de",
+      "byTest": "Examens faits par type",
+      "test": "Examen",
+      "count": "Faits",
+      "abnormal": "Anormaux",
+      "median": "Délai médian"
+    },
+    "money": {
+      "title": "Argent",
+      "byMethod": "Encaissé par mode de paiement",
+      "payments_one": "{{count}} paiement",
+      "payments_other": "{{count}} paiements",
+      "byInsurer": "Visites assurées par assureur",
+      "insurer": "Assureur",
+      "bills": "Factures",
+      "insurerShare": "Part assureur",
+      "patientShare": "Part patient",
+      "exemptions": "Exonérations",
+      "voidedPayments": "Paiements annulés",
+      "voidedBills": "Factures annulées",
+      "refunds": "Remboursements payés",
+      "creditNotes_one": "{{count}} avoir",
+      "creditNotes_other": "{{count}} avoirs"
+    },
+    "stock": {
+      "title": "Stock de la pharmacie",
+      "out": "En rupture maintenant",
+      "low": "Stock bas maintenant",
+      "received": "Unités reçues",
+      "dispensed": "Unités délivrées",
+      "expiring": "Périmés ou expirant dans les {{days}} jours",
+      "medicine": "Médicament",
+      "batch": "Lot",
+      "expiry": "Péremption",
+      "units": "Unités restantes",
+      "expired": "périmé"
+    }
   },
   "flow": {
     "label": "Patients à chaque étape",
@@ -418,8 +620,6 @@
     "title": "Accueil",
     "openBoard": "Ouvrir le tableau de la file",
     "numbers": "Aujourd’hui à l’accueil",
-    "waiting": "En attente",
-    "expected": "Encore attendus",
     "claims": "« Je suis là » à confirmer",
     "missed": "Absents aujourd’hui",
     "late_one": "{{count}} réservation en retard",
@@ -443,6 +643,10 @@
     "code": "Code de réservation",
     "bring": "Apportez cette carte, votre carte d’assurance et vos médicaments.",
     "slip": "Imprimer le ticket",
-    "card": "Imprimer la carte de rendez-vous"
+    "card": "Imprimer la carte de rendez-vous",
+    "nextCard": "Imprimer la carte du prochain rendez-vous",
+    "nextVisit": "Votre prochaine visite",
+    "comeMorning": "Venez le matin ; l’accueil vous donnera un numéro.",
+    "noFollowUp": "Le médecin n’a pas fixé de prochaine visite pour ce patient."
   }
 }

@@ -4,6 +4,7 @@ import { isApiError } from "@medilink/api-client";
 import {
   Alert,
   Button,
+  buttonClassName,
   CheckboxField,
   cx,
   ErrorSummary,
@@ -21,7 +22,9 @@ import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router";
 import { z } from "zod";
 
+import { paths } from "../app/paths";
 import { useApi } from "../app/services";
+import { GoogleSignIn } from "../auth/GoogleSignIn";
 import { applyFieldErrors, describeApiError, translator } from "../forms/api-errors";
 import {
   EMAIL_PATTERN,
@@ -74,6 +77,7 @@ export function SignUpPage() {
   const [attempt, setAttempt] = useState(0);
   const [formError, setFormError] = useState<string | null>(null);
   const [sentTo, setSentTo] = useState<string | null>(null);
+  const [ready, setReady] = useState(false); // test server: no email, sign in now
   const stepChanged = useRef(false);
   const headingRef = useRef<HTMLDivElement>(null);
 
@@ -117,7 +121,7 @@ export function SignUpPage() {
   const onValid = async (values: Values) => {
     setFormError(null);
     try {
-      await api.patientAuth.register({
+      const result = await api.patientAuth.register({
         full_name: values.full_name,
         email: values.email,
         password: values.password,
@@ -126,6 +130,7 @@ export function SignUpPage() {
         accepted_privacy_version: PRIVACY_VERSION,
         research_consent: values.research_consent,
       });
+      setReady(result.email_verification === false);
       setSentTo(values.email.trim());
     } catch (error) {
       if (isApiError(error) && error.isValidationError) {
@@ -146,6 +151,22 @@ export function SignUpPage() {
       setAttempt((n) => n + 1);
     }
   };
+
+  if (sentTo !== null && ready) {
+    return (
+      <AuthLayout>
+        <div className="flex flex-col gap-5">
+          <AuthTitle title={t("signup.readyTitle")} />
+          <Alert tone="success" role="status" title={t("signup.readyTitle")}>
+            {t("signup.readyBody", { email: sentTo })}
+          </Alert>
+          <Link to="/login" className={buttonClassName({ size: "lg", fullWidth: true })}>
+            {t("signup.login")}
+          </Link>
+        </div>
+      </AuthLayout>
+    );
+  }
 
   if (sentTo !== null) {
     return (
@@ -331,6 +352,7 @@ export function SignUpPage() {
             </div>
           </div>
         </form>
+        {step === 1 && <GoogleSignIn returnTo={paths.overview} text="signup_with" />}
 
         <div aria-hidden="true" className="border-t border-border" />
         <p className="m-0 text-center text-body-sm text-fg-secondary">

@@ -55,6 +55,8 @@ export interface PatientProfileDetail {
   no_known_allergies: boolean | null;
   has_care_consent: boolean;
   completion: ProfileCompletion;
+  /** Profile photo set (2026-11-05); `photoLink` gives a 5-minute link. */
+  has_photo?: boolean;
   version: number;
 }
 
@@ -155,6 +157,18 @@ export function createProfileApi(client: ApiClient) {
     get: (id: Uuid) => client.get<PatientProfileDetail>(profilePaths.profile(id)),
     update: (id: Uuid, body: ProfileUpdateInput) =>
       client.request<PatientProfileDetail>("PATCH", profilePaths.profile(id), { body }),
+
+    /** Profile photo: seen by the patient's accounts and staff where they have a record. */
+    uploadPhoto: (id: Uuid, file: Blob) =>
+      uploadFile<PatientProfileDetail>(client, {
+        path: profilePaths.profileAction(id, "photo"),
+        file,
+        filename: "photo.jpg",
+      }),
+    removePhoto: (id: Uuid) =>
+      client.request<PatientProfileDetail>("DELETE", profilePaths.profileAction(id, "photo")),
+    photoLink: (id: Uuid) =>
+      client.post<DownloadLink>(`${profilePaths.profileAction(id, "photo")}download-links/`),
 
     identifiers: (id: Uuid) =>
       client.get<{ results: Identifier[] }>(profilePaths.profileAction(id, "identifiers")),

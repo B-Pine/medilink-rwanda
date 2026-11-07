@@ -47,15 +47,23 @@ export function defineAppEnv({ apiBaseUrl, useMocks, mapTilesUrl = DEFAULT_MAP_T
  * set headers; when they do, send the same policy as a header and add `frame-ancestors 'none'`).
  * Not applied in dev: the Vite dev server injects inline scripts for hot reload.
  *
- * @param {{ apiBaseUrl: string, mapTilesUrl?: string }} options
+ * `googleSignIn` (patient app only, upgrade 17) allows Google Identity Services: its one script,
+ * its sign-in frame and button styles, all under https://accounts.google.com/gsi/.
+ *
+ * @param {{ apiBaseUrl: string, mapTilesUrl?: string, googleSignIn?: boolean }} options
  */
-export function contentSecurityPolicy({ apiBaseUrl, mapTilesUrl = DEFAULT_MAP_TILES_URL }) {
+export function contentSecurityPolicy({
+  apiBaseUrl,
+  mapTilesUrl = DEFAULT_MAP_TILES_URL,
+  googleSignIn = false,
+}) {
   const api = new URL(apiBaseUrl);
   const tiles = new URL(mapTilesUrl.replace(/\{[a-z]\}/g, "0")).origin;
   const ws = `${api.protocol === "https:" ? "wss:" : "ws:"}//${api.host}`;
+  const gsi = googleSignIn ? " https://accounts.google.com/gsi/" : "";
   return [
     "default-src 'self'",
-    "script-src 'self'",
+    `script-src 'self'${googleSignIn ? " https://accounts.google.com/gsi/client" : ""}`,
     // Scripts never run inline. Styles still need 'unsafe-inline' (reviewed in R1, #83):
     // - Radix Dialog / DropdownMenu lock page scroll through react-remove-scroll-bar, which injects
     //   a <style> element with computed values at runtime;
@@ -64,11 +72,12 @@ export function contentSecurityPolicy({ apiBaseUrl, mapTilesUrl = DEFAULT_MAP_TI
     // so neither a nonce nor a hash works. Inline styles can't run script; the risk left is CSS
     // injection, which React's escaping and the strict script-src keep low. Revisit if the apps
     // move behind a server that can send a nonce header.
-    "style-src 'self' 'unsafe-inline'",
+    `style-src 'self' 'unsafe-inline'${googleSignIn ? " https://accounts.google.com/gsi/style" : ""}`,
     // map tiles come from one configured origin (upgrade 03 §2, OD-3)
     `img-src 'self' data: ${tiles}`,
     "font-src 'self'",
-    `connect-src 'self' ${api.origin} ${ws}`,
+    `connect-src 'self' ${api.origin} ${ws}${gsi}`,
+    ...(googleSignIn ? [`frame-src${gsi}`] : []),
     "worker-src 'self'",
     "manifest-src 'self'",
     "object-src 'none'",

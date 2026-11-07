@@ -32,5 +32,27 @@
   "date": "Date",
   "facility": "Facility",
   "doctorLabel": "Doctor",
-  "signedOn": "Signed"
+  "signedOn": "Signed",
+  "lab": {
+    "title": "Lab results",
+    "failed": "We couldn't load your lab results.",
+    "intro": "Your test results appear here once your doctor has read them, with their note.",
+    "item": "Test",
+    "value": "Result",
+    "normal": "Normal range",
+    "note": "Your doctor says:",
+    "flags": {
+      "low": "Below normal",
+      "high": "Above normal",
+      "abnormal": "Not as expected"
+    },
+    "choices": {
+      "negative": "Negative",
+      "positive": "Positive",
+      "invalid": "Could not be read",
+      "trace": "Trace",
+      "none_seen": "None seen",
+      "seen": "Seen"
+    }
+  }
 }

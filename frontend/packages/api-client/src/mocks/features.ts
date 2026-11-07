@@ -33,6 +33,7 @@ import { bookingMocks } from "./features/booking";
 // [/S5 imports]
 // [S6 imports]
 import { clinicalMocks } from "./features/clinical";
+import { labMocks } from "./features/lab";
 // [/S6 imports]
 // [S7 imports]
 import { documentsMocks } from "./features/documents";
@@ -44,6 +45,9 @@ import { billingMocks } from "./features/billing";
 // [S11 imports]
 import { consoleMocks } from "./features/console";
 // [/S11 imports]
+// [W7 imports]
+import { careScheduleMocks } from "./features/care-schedule";
+// [/W7 imports]
 
 /** A feature's MSW handlers, plus how to reset its in-memory state between tests. */
 export interface FeatureMock {
@@ -90,6 +94,7 @@ export const FEATURE_MOCKS: FeatureMockFactory[] = [
   // [/S5]
   // [S6]
   clinicalMocks,
+  labMocks, // upgrade 06 §3 (#201)
   // [/S6]
   // [S7]
   pharmacyMocks,
@@ -101,4 +106,7 @@ export const FEATURE_MOCKS: FeatureMockFactory[] = [
   // [S11]
   consoleMocks,
   // [/S11]
+  // [W7]
+  careScheduleMocks,
+  // [/W7]
 ];

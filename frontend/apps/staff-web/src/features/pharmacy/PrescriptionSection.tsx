@@ -2,12 +2,15 @@ import {
   defaultQuantity,
   DRUG_ROUTES,
   FREQUENCY_CODES,
+  MEAL_TIMINGS,
   isApiError,
   OPEN_ITEM_STATUSES,
   type Consultation,
   type DrugRoute,
   type DrugRow,
+  type FavouriteMedicine,
   type FrequencyCode,
+  type MealTiming,
   type Prescription,
   type PrescriptionAlert,
   type PrescriptionItem,
@@ -39,8 +42,10 @@ import { useDeferredValue, useId, useRef, useState, type FormEvent } from "react
 import { useTranslation } from "react-i18next";
 
 import { useApi } from "../../app/services";
+import { favouriteRank, useFavourites } from "../clinical/Favourites";
 import { useStepUp } from "../lock";
 import { ItemFlags, ItemLine } from "./DispensePage";
+import { FrequentMedicines } from "./FrequentMedicines";
 import { errorText, ITEM_TONE, pharmacyKeys, STATUS_TONE, useCan, useWhen } from "./shared";
 
 /**
@@ -333,6 +338,7 @@ function AlertLine({
         frequency_code: item.frequency_code,
         route: item.route,
         duration_days: item.duration_days,
+        meal_timing: item.meal_timing,
         quantity: item.quantity,
         instructions: item.instructions,
         substitution_allowed: item.substitution_allowed,
@@ -434,6 +440,7 @@ function AddItem({
   const [frequency, setFrequency] = useState<FrequencyCode>(replaces?.frequency_code ?? "tds");
   const [route, setRoute] = useState<DrugRoute>(replaces?.route ?? "oral");
   const [days, setDays] = useState(replaces?.duration_days ? String(replaces.duration_days) : "");
+  const [meal, setMeal] = useState<MealTiming | "">(replaces?.meal_timing ?? "");
   const [quantity, setQuantity] = useState("");
   const [instructions, setInstructions] = useState(replaces?.instructions ?? "");
   const [substitution, setSubstitution] = useState(true);
@@ -444,6 +451,35 @@ function AddItem({
     queryFn: () => api.pharmacy.drugs(q),
     enabled: q.length >= 2 && !picked && !freeText,
   });
+  // W3: my frequent medicines first; one click fills the dosing of my latest use
+  const frequent = useFavourites().data?.medicines ?? [];
+  const found = [...(drugs.data ?? [])].sort(
+    (a, b) =>
+      favouriteRank(frequent, (f) => f.drug_code === a.code) -
+      favouriteRank(frequent, (f) => f.drug_code === b.code),
+  );
+  const pickFrequent = (m: FavouriteMedicine) => {
+    if (m.drug_code)
+      setPicked({
+        code: m.drug_code,
+        display: m.drug_display,
+        generic_name: "",
+        strength: "",
+        form: "",
+        is_controlled: m.is_controlled,
+        available_here: m.available_here,
+        stock_level: null, // W5: favourites carry availability only
+      });
+    else {
+      setSearch(m.free_text_drug || m.drug_display);
+      setFreeText(true);
+    }
+    setDose(m.dose);
+    setFrequency(m.frequency_code as FrequencyCode);
+    setRoute(m.route as DrugRoute);
+    setDays(m.duration_days ? String(m.duration_days) : "");
+    setQuantity("");
+  };
   const durationDays = days ? Number(days) : null;
   const computed = defaultQuantity(dose, frequency, durationDays);
   const add = useMutation({
@@ -455,6 +491,7 @@ function AddItem({
           frequency_code: frequency,
           route,
           duration_days: durationDays,
+          meal_timing: meal,
           quantity: quantity ? Number(quantity) : computed,
           instructions: instructions.trim(),
           substitution_allowed: substitution,
@@ -496,6 +533,11 @@ function AddItem({
               {t("pharmacy.flag.notInStock")}
             </Badge>
           )}
+          {picked.stock_level === "low" && (
+            <Badge tone="warning" icon={Storefront}>
+              {t("pharmacy.flag.lowStock")}
+            </Badge>
+          )}
           <Button variant="ghost" size="sm" className="ms-auto" onClick={() => setPicked(null)}>
             {t("pharmacy.prescription.changeDrug")}
           </Button>
@@ -514,13 +556,16 @@ function AddItem({
             error={tried && drugMissing ? t("pharmacy.prescription.drugRequired") : undefined}
             aria-controls={`${ids}-results`}
           />
+          {!search.trim() && !freeText && (
+            <FrequentMedicines items={frequent} onPick={pickFrequent} />
+          )}
           {q.length >= 2 && !freeText && (
             <div id={`${ids}-results`} aria-live="polite" className="flex flex-col gap-1">
               {drugs.isPending ? (
                 <LoadingState label={t("pharmacy.loading")} />
               ) : (
                 <ul className="m-0 flex list-none flex-col gap-1 p-0">
-                  {(drugs.data ?? []).map((d) => (
+                  {found.map((d) => (
                     <li key={d.code}>
                       <button
                         type="button"
@@ -534,6 +579,11 @@ function AddItem({
                         {!d.available_here && (
                           <Badge tone="danger" icon={Storefront}>
                             {t("pharmacy.flag.notInStock")}
+                          </Badge>
+                        )}
+                        {d.stock_level === "low" && (
+                          <Badge tone="warning" icon={Storefront}>
+                            {t("pharmacy.flag.lowStock")}
                           </Badge>
                         )}
                       </button>
@@ -598,6 +648,19 @@ function AddItem({
           value={days}
           onChange={(event) => setDays(event.target.value)}
         />
+        <SelectField
+          label={t("pharmacy.prescription.meal")}
+          hint={t("pharmacy.prescription.mealHint")}
+          value={meal}
+          onChange={(event) => setMeal(event.target.value as MealTiming | "")}
+        >
+          <option value="">{t("pharmacy.meal.any")}</option>
+          {MEAL_TIMINGS.map((code) => (
+            <option key={code} value={code}>
+              {t(`pharmacy.meal.${code}`)}
+            </option>
+          ))}
+        </SelectField>
         <TextField
           type="number"
           inputMode="numeric"

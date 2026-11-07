@@ -8,6 +8,272 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Email and Sign in with Google (2026-11-06, upgrade 17)
+
+- Fixed: `GOOGLE_OAUTH_WEB_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_IDS`, `EMAIL_URL` and
+  `DEFAULT_FROM_EMAIL` are trimmed, so a trailing newline pasted into the host's variable editor
+  no longer breaks Google sign-in (wrong audience) or email headers.
+
+- Added: `GET`/`POST /api/v1/patient/auth/google/` (patients only). The ID token is verified with
+  PyJWT (new dependency: RS256 against Google's keys, issuer, audience, expiry); `GoogleIdentity`
+  keeps Google's account ID (migration `accounts.0010`). A verified matching email links the
+  patient account; a new person gets 409 `consent_required`, then an account without a password;
+  staff accounts get 403 `staff_account`. Audit actions `auth.google.linked`, `auth.google.refused`.
+  Settings `GOOGLE_OAUTH_WEB_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_IDS`, `GOOGLE_JWKS_URL`.
+- Added: one branded email layout (`medilink.core.mail`); account emails in rw/en/fr by the
+  account language; notification emails use it; `BrandedSMTPBackend` adds it to plain
+  `send_mail()` messages. `manage.py send_test_email <address>` checks the mail settings.
+  Deploy checks `medilink.W006` (EMAIL_URL is the local catcher) and `medilink.W007` (Gmail sender
+  differs from the login). `.env.example` documents Gmail.
+
+### Patient profile photo (2026-11-05)
+
+- Added: `Patient.photo_file` (migration `patients.0006`) and upload purpose `patient_photo`
+  (JPEG/PNG/HEIC, 5 MB, data class C3, scanned before use).
+- Added: `POST`/`DELETE /api/v1/patient/profiles/{id}/photo/` and
+  `POST .../photo/download-links/` for the patient (self or guardian); profiles show `has_photo`.
+- Added: `POST /api/v1/staff/patients/{fp_id}/photo/download-links/` (`patients.view`, record at
+  this facility) and `has_photo` on the facility patient record. Each staff view is audited.
+
+### Patient passwords (2026-11-05)
+
+- Changed: patient passwords need at least 8 characters (was 15; product decision, security 03
+  §2). Staff and platform admins stay at 12. A patient who turns on two-step verification keeps 8.
+- Added: `POST /api/v1/patient/auth/password/` changes the password while signed in. The current
+  password is checked like a login (a wrong one counts towards lockout); success ends every
+  other session, rotates this one, emails the owner and audits `auth.password.changed`.
+
+### Sign-up email switch for testing (2026-11-05)
+
+- Added: `PATIENT_SIGNUP_EMAIL_VERIFICATION` (default `true`). Set to `false` on a test
+  deployment only: patient sign-up sends no email, the account can sign in straight away, and
+  accounts still waiting for their link can sign in too. The `202` sign-up body gains
+  `email_verification` (`false` while the switch is off) so the web and app show "account ready".
+
+### Patient mobile app sessions (2026-11-05, upgrade 15)
+
+- Added: the patient mobile app carries its patient session in a header. Requests with
+  `X-MediLink-Client: app` send `Authorization: Bearer <session key>` and never read or set a
+  cookie, so CSRF does not apply to them; login, rotation and logout return the new key (empty
+  when ended) in `X-Session-Token`. Patients only: staff and admin paths stay anonymous for app
+  requests. App sessions idle out after `PATIENT_APP_SESSION_IDLE_TIMEOUT` (default 30 days; the
+  app locks itself with a PIN). Security 03 §5 records the decision.
+
+### Railway deployment (2026-11-04)
+
+- Fixed: `railway.json` runs `migrate` as the owner role (`MEDILINK_DB_ROLE=owner`); the app
+  role cannot create tables. The pre-deploy and start commands run through `/bin/sh -c`, so
+  `&&` and `${PORT}` work.
+- Fixed: Railway's healthcheck host `healthcheck.railway.app` is allowed when
+  `RAILWAY_ENVIRONMENT_NAME` is set.
+- Fixed: `scripts/railway_bootstrap_db.py` refuses when `DATABASE_URL` or `DATABASE_OWNER_URL`
+  uses the Postgres admin user (it would have demoted it) or both use one role, and says to
+  remove `BOOTSTRAP_DATABASE_URL` afterwards; `check --deploy` warns while it is set
+  (`medilink.W005`).
+- Added: `railway.worker.json` and `railway.beat.json` for the Celery worker and beat (beat keeps
+  its schedule file in `/tmp`; the app directory is read-only). Runbook:
+  `docs/operations/railway.md`.
+
+### National aggregate report (2026-11-04, #208)
+
+- Added: `GET /api/v1/platform/reports/national/` for platform admins: load by facility and
+  district (visits, median and 90th-percentile wait to the doctor, medicines out now), the wait
+  trend by day, week or month, top diagnoses by district and stock-outs now. Each facility is read
+  in its own RLS context with the W6 report helpers; aggregates only, never a patient.
+- Added: small-group protection (k = 10, `platform_admin/national_report.py`). Visits of 1-9 are
+  suppressed; inside a district the next smallest facilities are suppressed too until the hidden
+  ones add up to 10, so the district total can't give a small facility away; a district of 1-9
+  is suppressed, and the national total when the suppressed districts add up to 1-9. Waits are
+  hidden below 10 patients called; diagnoses are listed only at 10 or more visits per district,
+  sensitive ones never.
+- Added: `GET /api/v1/platform/reports/national/export/?table=` (facilities, districts, waits,
+  diagnoses, stockouts) as CSV, hidden cells reading `suppressed`; audit
+  `platform.report.exported`.
+- Changed: the W6 report shares its period parsing (`report.parse_period`), wait samples
+  (`report.wait_samples`) and CSV writer (`report.csv_text`) with the national report; behaviour
+  unchanged.
+
+### Patient follow-through (2026-11-04, #206)
+
+- Added: reminders through the notification engine (`notifications/reminders.py`, beat task
+  `notifications.send_reminders` every 5 minutes). Booked visits at each recipient's reminder
+  offsets (default 24 hours and 2 hours before); follow-up dates without a booking and planned
+  care-schedule dates the day before at 08:00 and on the morning at 07:00 (Kigali). One dedupe key
+  per item and moment, so nothing is sent twice; a moment from before the item existed is skipped,
+  and after a gap only the latest passed moment goes out. Channel choices, quiet hours and alerts
+  switched off for a dependant are the engine's.
+- Added: the care schedule. `scheduling_care_schedule_entry` (forced facility RLS, encrypted
+  optional note; scheduling migrations 0008 and 0009), permission `care_schedule.manage` for
+  doctors, `GET`/`POST /api/v1/staff/care-schedule/patients/{facility_patient_id}/`, `POST
+  /api/v1/staff/care-schedule/{id}/cancel/` (audit `scheduling.care_schedule.create` and
+  `.cancel`) and `GET /api/v1/patient/care-schedule/` (planned dates and follow-up dates without a
+  booking; SECURITY DEFINER `scheduling_patient_care_schedule`, self and guardian only).
+- Added: events `clinical.lab_result.ready` (sent after a doctor releases a result; one per visit
+  and hour; never the test name; delegates hear nothing of a restricted consultation),
+  `scheduling.booking.reminder`, `scheduling.follow_up.due`, `scheduling.care_schedule.due` and
+  `queue.ticket.called_desk` (a call with no room to name), each in rw, en and fr. Texts are
+  generic: no test, vaccine or visit-type names on lock screens.
+- Changed: "almost your turn" (`queue.ticket.almost`) now follows every queue move that brings a
+  ticket forward (call, cancel, left, transfer, no response, reorder, priority, emergency,
+  pass-over), not only a call, and reaches each ticket with 2 or 3 people ahead once.
+
+### Patients without a phone (2026-11-04, #207)
+
+- Added: `meal_timing` on prescription items (`before_food`, `with_food`, `after_food` or blank;
+  pharmacy migration 0005). The item lock trigger also locks it once the prescription is issued.
+- Added: dosing labels carry `frequency_code`, `times` (morning, noon, evening, night from the
+  frequency) and `meal_timing` with `meal` in the label language, for the pictograms.
+- Added: the staff visit (`GET /api/v1/staff/visits/{id}/`) carries `follow_up`: the date the
+  doctor set, the booked time and booking code when it was booked, and the doctor, for the
+  printed next-visit card.
+
+### Facility reports (2026-11-04, #205)
+
+- Added: `GET /api/v1/staff/reports/facility/` for `reports.view`: the facility report for a
+  period (`from`, `to`, at most 366 days; `group=day|week|month`). Patients per period
+  (completed, left without service, emergencies, no-shows), by source and service; waits per
+  stage (median and 90th percentile, from joining the stage on site to the first `call` event);
+  top ICD-10 diagnoses from signed notes and referrals out; money by payment method and insurer,
+  exemptions, voids, credit notes and refunds; laboratory tests done and turnaround by test;
+  stock out and low now, units received and dispensed, expiring batches. Built from existing
+  tables (`medilink/visits/report.py`); aggregates only, never a patient name; sensitive
+  diagnoses are counted, never named.
+- Added: `GET /api/v1/staff/reports/facility/export/?table=…` returns one table as CSV (UTF-8
+  with BOM, formula-safe cells, `no-store`) and records the audit action
+  `visits.report.exported`.
+
+### Pharmacy stock, lite (2026-11-04, #204)
+
+- Added: stock per medicine, batch and expiry at each facility: `pharmacy_stock_item` (one card
+  per medicine, with a low-stock threshold), `pharmacy_stock_batch` (batch number, expiry, units
+  on hand, optional supplier; never below zero) and the append-only `pharmacy_stock_movement`
+  ledger (received, dispensed, adjusted with a reason). Forced facility RLS on all three
+  (pharmacy migrations 0003 and 0004).
+- Added: permission `pharmacy.stock` for pharmacists and facility admins, and endpoints under
+  `/api/v1/staff/pharmacy/stock/`: the list (`q`, `level=low|out|short`), `receive/`, one
+  medicine's batches and last 50 movements (`{drug_code}/`; `PUT` sets the threshold),
+  `batches/{id}/adjust/` (count correction, damaged or expired), `expiring/` (60 days by
+  default, expired first) and `movements/`. Audit `pharmacy.stock.received`, `.adjusted` and
+  `.threshold_changed`.
+- Changed: dispensing takes the units from the earliest-expiring usable batches, in the same
+  transaction and under a row lock on the stock card. When the usable stock is short, the whole
+  dispensing is refused (`422`, "Only N left"): give that many as part, or correct the count
+  first. There is no override. Expired batches are never dispensed. Medicines without stock are
+  dispensed as before.
+- Changed: once a medicine has stock, its availability follows the count: out of stock at zero
+  usable units, `stock_level` `low` below the threshold. Drug search, prescription items and
+  availability rows carry `stock_level` (null when the medicine has no stock card); availability
+  rows also carry `follows_stock`, and the manual switch returns `422` for such a medicine.
+  Pharmacist Today adds `low_stock` and `expiring_soon`; `out_of_stock` counts both kinds. Drug
+  search is also open to `pharmacy.stock`.
+
+### Cashier and insurance finish (2026-11-04, #203)
+
+- Added: the monthly claim list per insurer. `GET /staff/insurance-claims/?insurer=&month=YYYY-MM`
+  lists the month's bills whose insurance was verified and where the insurer owes something (not
+  void): member number, visit date, ICD-10 codes of the signed notes (primary first), lines,
+  insurer and patient shares, and the claim status, with totals. `GET .../insurers/` lists the
+  insurers to choose from; `GET .../export/?kind=csv|pdf` downloads it (CSV UTF-8 with BOM and
+  formula-safe cells; PDF A4 landscape with reportlab). Viewing needs `billing.approve` or
+  `reports.view`; lists and downloads are audited (`billing.claims.listed`,
+  `billing.claims.exported`).
+- Added: `POST /staff/bills/{id}/claim/` marks a claim `paid` (optional payment reference) or
+  `rejected` with the insurer's reason (`billing.approve`; optimistic `version`, 0 for the first
+  mark; audit `billing.claim.marked` with the from and to status). New table
+  `billing_insurance_claim` (billing migrations 0006–0007): forced facility RLS, never deleted,
+  keeps its bill.
+- Added: `by_method` on every cash shift: payments, received, refunds paid back, expected (cash
+  with the opening float), counted and difference per payment method; `GET /staff/cash-shifts/`
+  takes `mine=true`.
+- Added: `billing.bills.add_tariff_line(visit, tariff_code=…)` and `remove_tariff_line(line_id,
+  reason=…)`, the one way for other apps (lab tests, procedures) to put a priced item on a visit's
+  bill and take it off again before payment.
+
+### Doctor's quick note: order sets and favourites (2026-11-04, #202)
+
+- Added: `GET /staff/clinical/favourites/`: the doctor's most used diagnoses and medicines at this
+  facility, derived from their own signed consultations and issued prescriptions (last 180 days,
+  used twice or more, 8 each; cancelled lines left out; sensitive diagnoses never listed). Each
+  medicine carries the dosing of its latest use and `available_here`. Nothing is stored.
+- Added: templates (order sets) return `diagnoses`, each code labelled in the request language
+  with `is_sensitive` and `is_known` (an inactive or unknown code is flagged so applying skips it
+  instead of failing the autosave).
+- Added: `tests` on templates (`[{code, name}]`, max 10; accounts migration 0009), the extension
+  point for W2 lab orders: stored and returned, not ordered yet.
+
+### Laboratory loop and the lab technician (2026-11-04, #201)
+
+- Added: role `lab_technician` with the new permissions `lab.operate` and `lab.result.enter`
+  (plus `disputes.comment`, `reports.view_own`); never diagnoses, notes, bills or the release of a
+  result (tenancy migration 0012). Seeded demo technician `lab@demo.medilink.test`.
+- Added: `LabOrder` (`clinical_lab_order`, clinical migrations 0005 and 0006), one row per test:
+  `ordered → sample_taken → resulted → reviewed → released` (`cancelled` before the sample). The
+  request reason, the result and the doctor's note are field-encrypted (C3); forced facility RLS;
+  never deleted; a result never changes once entered; released rows are locked. A constant
+  catalogue of eight outpatient tests (malaria RDT, full blood count, urinalysis, blood glucose,
+  HIV, pregnancy, stool, typhoid) with ranges and expected answers.
+- Added: queue stage `lab` (visits migration 0007) and ticket action `send-to-lab`: the doctor's
+  patient goes to the lab while the consultation stays a draft. The visit's last sample puts the
+  lab ticket on hold; its last result sends the patient back to the ordering doctor with return
+  priority, assigned to that doctor.
+- Added: `GET /staff/lab/tests/`, `GET|POST /staff/consultations/{id}/lab-orders/`,
+  `GET /staff/lab/queue/`, `POST /staff/lab-orders/{id}/sample|result|review|release|cancel/`,
+  `GET /staff/lab/results/` (the doctor's lab inbox) and `GET /patient/results/` (released only,
+  through the SECURITY DEFINER function `clinical_patient_lab_results`). Audit
+  `clinical.lab_order.*` with a patient link.
+- Added: a test whose code has a tariff item (`procedure` or `other`) adds a line to the visit's
+  bill; cancelling it removes the line while nothing is paid. The lab sees whether the bill is
+  paid.
+- Changed: `GET /queue/mine/?stage=lab` is the technician's queue; a technician's board shows lab
+  queues only; lab ticket rows carry no patient words or symptoms.
+
+### Triage nurse and the triage stage (2026-11-04, #200)
+
+- Added: role `triage_nurse` with the new permission `triage.operate` (plus `vitals.record`,
+  `visit.reason.view`, `disputes.comment`, `reports.view_own`); never diagnoses, notes,
+  prescriptions or bills (tenancy migration 0011). Seeded demo nurse `triage@demo.medilink.test`.
+- Added: queue stage `triage` and queue setting `triage_enabled` (off by default). With it on,
+  check-in and remote joiners start at triage instead of the doctor; emergencies skip it; moving a
+  ticket forward offers triage until the patient was triaged.
+- Added: ticket action `triage` (urgency `normal`, `priority` with a class, `emergency` with a
+  reason; a short note; vitals first or `no_vitals_reason`), which moves the patient to the
+  doctor's queue; the visit keeps `triaged_at`, `triaged_by`, `triage_urgency` and the encrypted
+  note (visits migration 0006); audit `visits.ticket.triage`.
+- Changed: `GET /queue/mine/?stage=triage` is the nurse's queue; a nurse's board shows triage
+  queues only; triage ticket rows carry the patient's `allergies`; the consultation's
+  `reason_for_visit.nurse_triage` gives the doctor the nurse's decision.
+
+### Super admin user management (2026-11-04, #198)
+
+- Changed: `GET /platform/users/` filters in the database (the list no longer loads every account)
+  and takes `facility`, `role` and `verification=pending`; `q` also finds a phone (0788… finds
+  +250788…); `mfa=off` lists staff and platform admins only.
+- Added: `GET /platform/users/summary/` (counts and the facilities that have staff) and
+  `GET /platform/users/export/` (staff and platform accounts as CSV, never patients; audit
+  `platform.user.list_exported`).
+- Changed: `GET /platform/users/{id}/` adds `verification_pending`, `preferred_language`,
+  `sign_in_blocked_for`, pending `invitations` and admin `changes`; memberships carry
+  `deactivated_at` and `deactivation_reason`.
+- Added: `PATCH /platform/users/{id}/` corrects the name, work phone or language (never the email
+  or password; no phone for patients); `send-password-reset/`, `resend-verification/` and
+  `clear-sign-in-block/`; `facilities/{facility_id}/remove/` and `restore/`, which keep the last
+  facility admin. All need a step-up and a reason, never on yourself, and are audited.
+- Changed: facility admins on the platform facility rows carry `user_id`; restoring a membership
+  records the reason when one is given.
+
+### Super admin pages show what MediLink holds (2026-11-03)
+
+- Changed: `POST /platform/facility-applications/` also takes `proposed_admin` and
+  `claimed_insurer_codes`, so an application created on a facility's behalf holds everything known.
+- Changed: application rows carry `district_name`, `proposed_admin_name`, `documents_count` and
+  `missing_count`.
+- Changed: facility rows and detail carry the profile (phone, email, address, map pin, photo count,
+  level of care), the place (province to village), the facility admins, staff, doctor and
+  attested-doctor counts, and staff by profession. New filters `ownership` and `missing_code`.
+- Added: `GET /api/v1/platform/facilities/export/`: the facility list as CSV for the Ministry of
+  Health (same filters, UTF-8 with BOM, formula-safe; audit `facility.list_exported`).
+- Changed: platform user rows carry `phone`, `profession` and `licence_state`.
+
 ### Clinician profile: full professional details (2026-11-03)
 
 - Added: on `ClinicianProfile`, `profession` (13 cadres), `specialty_code` (a fixed list of 21; `specialty`

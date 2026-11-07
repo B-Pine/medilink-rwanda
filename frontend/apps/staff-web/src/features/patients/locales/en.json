@@ -67,7 +67,6 @@
     "results": "Search results",
     "noResults": "No patient at this facility matches. Check the spelling, or search by phone or ID.",
     "register": "Register walk-in",
-    "shortcuts": "Press / to search and N for a new walk-in.",
     "button": "Search",
     "noResultsTitle": "No patient found"
   },
@@ -119,6 +118,10 @@
     }
   },
   "record": {
+    "photoHint": "The patient added a photo to help you recognise them. Each view is logged.",
+    "showPhoto": "Show photo",
+    "photoAlt": "Photo of {{name}}",
+    "photoUnavailable": "The photo is not available right now.",
     "merged": "Merged",
     "staffMember": "Staff member",
     "hasAccount": "Has a MediLink account",
@@ -309,5 +312,26 @@
     "newPhone": "New phone (leave empty to keep it)",
     "relationship": "Relationship",
     "relationshipHint": "For example: daughter, neighbour, community health worker"
+  },
+  "careSchedule": {
+    "tab": "Care schedule",
+    "title": "Planned vaccinations and antenatal visits",
+    "intro": "The patient gets a reminder the day before and on the morning. The reminder never says what the visit is for; the note shows only in the patient's app.",
+    "empty": "Nothing planned.",
+    "failed": "We couldn't load the care schedule.",
+    "add": "Plan a date",
+    "kind": "What",
+    "kinds": {
+      "vaccination": "Vaccination",
+      "antenatal": "Antenatal visit"
+    },
+    "dueOn": "Date",
+    "note": "Note (optional)",
+    "noteHint": "For example: second dose. Up to 80 characters.",
+    "save": "Add to the schedule",
+    "saved": "Added. The patient will get reminders.",
+    "cancel": "Cancel date",
+    "cancelTitle": "Cancel this planned date?",
+    "cancelConsequences": "The patient gets no reminder for {{date}}. To move the date, cancel it and add the new one."
   }
 }

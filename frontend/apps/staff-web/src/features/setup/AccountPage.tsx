@@ -19,7 +19,7 @@ export function AccountPage() {
   const { data: me } = useStaffMe();
   return (
     <div className="flex max-w-2xl flex-col gap-6">
-      <PageHeader title={t("setup.account.title")} description={t("setup.account.intro")} />
+      <PageHeader title={t("setup.account.title")} />
       {me && <AccountForm me={me} />}
     </div>
   );

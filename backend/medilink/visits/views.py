@@ -40,18 +40,26 @@ from medilink.visits.models import (
 from medilink.visits.services import Actor
 
 TAGS = ["queue"]
-OPERATE, CALL, DISPENSE, CONFIGURE = (
+OPERATE, CALL, DISPENSE, CONFIGURE, TRIAGE, LAB = (
     "queue.operate",
     "queue.call",
     "pharmacy.dispense",
     "facility.configure",
+    "triage.operate",
+    "lab.operate",
 )
 STAGE_PERMISSION: dict[str, tuple[str, ...]] = {
     Stage.CONSULTATION: (CALL,),
     Stage.RECEPTION: (OPERATE,),
     Stage.PAYMENT: (OPERATE,),
+    Stage.TRIAGE: (TRIAGE,),
+    Stage.LAB: (LAB,),
     Stage.PHARMACY: (DISPENSE,),
 }
+# Stations that serve one stage only see that stage on the board (upgrade 06 §2-3)
+SINGLE_STAGE = ((TRIAGE, Stage.TRIAGE), (LAB, Stage.LAB))
+# The queues of /queue/mine/: the doctor's, the triage nurse's (#200) and the lab's (#201)
+MINE_STAGES = (Stage.CONSULTATION, Stage.TRIAGE, Stage.LAB)
 OPERATE_ACTIONS = (
     "transfer",
     "cancel",
@@ -62,7 +70,17 @@ OPERATE_ACTIONS = (
     "reorder",
     "confirm-arrival",
 )
-SERVE_ACTIONS = ("recall", "no-response", "start", "hold", "return", "complete", "next-stage")
+SERVE_ACTIONS = (
+    "recall",
+    "no-response",
+    "start",
+    "hold",
+    "return",
+    "complete",
+    "next-stage",
+    "triage",
+    "send-to-lab",
+)
 
 
 def short_name(full_name: str) -> str:
@@ -160,8 +178,10 @@ def ticket_rows(
                 "is_remote": t.is_remote,
                 "remote_arrival_claimed_at": t.remote_arrival_claimed_at,
                 "remote_arrival_confirmed_at": t.remote_arrival_confirmed_at,
-                "reason_text": extra.get("reason_text", ""),
-                "symptoms": extra.get("symptoms", []),
+                # the lab reads the doctor's request reason instead (upgrade 06 §3, #201)
+                "reason_text": extra.get("reason_text", "") if t.stage != Stage.LAB else "",
+                "symptoms": extra.get("symptoms", []) if t.stage != Stage.LAB else [],
+                "allergies": extra.get("allergies", []) if t.stage == Stage.TRIAGE else [],
                 "version": t.version,
             }
         )
@@ -198,6 +218,17 @@ def _front_desk_extras(tickets: list[Ticket]) -> dict[Any, dict[str, Any]]:
         .exclude(status=InsuranceStatus.VERIFIED)
         .values_list("pk", flat=True)
     )
+    triage = {t.visit.patient_id: t.visit_id for t in tickets if t.stage == Stage.TRIAGE}
+    if triage:
+        from medilink.patients.models import Allergy, Verification
+
+        for patient_id, substance in (
+            Allergy.objects.filter(patient_id__in=triage, entered_in_error_at__isnull=True)
+            .exclude(verification_status=Verification.REFUTED)
+            .order_by("-severity", "substance_text")
+            .values_list("patient_id", "substance_text")
+        ):
+            out[triage[patient_id]].setdefault("allergies", []).append(substance)
     for vid, visit in visits.items():
         if visit.insurance_profile_id in unverified:
             out[vid]["insurance_unverified"] = True
@@ -309,7 +340,7 @@ class CheckInView(QueueView):
 
 
 class BoardView(QueueView):
-    permission_classes = [Needs(OPERATE, CALL, DISPENSE)]
+    permission_classes = [Needs(OPERATE, CALL, DISPENSE, TRIAGE, LAB)]
 
     @extend_schema(
         operation_id="staff_queue_board",
@@ -325,8 +356,13 @@ class BoardView(QueueView):
             tickets = [
                 t for t in tickets if str(t.service_id) == request.query_params["service_id"]
             ]
-        if request.query_params.get("stage"):
-            tickets = [t for t in tickets if t.stage == request.query_params["stage"]]
+        stage = request.query_params.get("stage")
+        if not self.can(OPERATE, CALL, DISPENSE):
+            # a triage nurse or lab technician sees their own stage only (upgrade 06 §2-3)
+            stages = [st for code, st in SINGLE_STAGE if self.can(code)]
+            stage = stage if stage in stages else stages[0]
+        if stage:
+            tickets = [t for t in tickets if t.stage == stage]
         groups: dict[tuple[Any, str], list[Ticket]] = {}
         for t in tickets:
             groups.setdefault((t.service_id, t.stage), []).append(t)
@@ -384,22 +420,50 @@ def doctor_services(facility_id: Any, membership: Any) -> list[Any]:
 
 
 class MineView(QueueView):
-    permission_classes = [Needs(CALL)]
+    permission_classes = [Needs(CALL, TRIAGE, LAB)]
 
-    @extend_schema(operation_id="staff_queue_mine", tags=TAGS, responses={200: s.MineSerializer})
+    @extend_schema(
+        operation_id="staff_queue_mine",
+        tags=TAGS,
+        parameters=[
+            OpenApiParameter(
+                "stage",
+                str,
+                enum=list(MINE_STAGES),
+                description=(
+                    "`triage` for the triage nurse (#200), `lab` for the lab technician (#201); "
+                    "default the doctor's queue"
+                ),
+            )
+        ],
+        responses={200: s.MineSerializer},
+    )
     def get(self, request: Request) -> Response:
         facility_id = self.facility_id()
         membership = self.principal().membership
-        service_ids = doctor_services(facility_id, membership)
+        stage = request.query_params.get("stage") or Stage.CONSULTATION
+        if stage not in MINE_STAGES:
+            raise exceptions.ValidationError({"stage": ["Use consultation, triage or lab."]})
+        if not self.can(*STAGE_PERMISSION[stage]):
+            raise exceptions.PermissionDenied()
+        if stage != Stage.CONSULTATION:
+            # the nurse and the lab serve every service of the facility
+            service_ids = list(
+                Service.objects.filter(facility_id=facility_id, is_active=True).values_list(
+                    "pk", flat=True
+                )
+            )
+        else:
+            service_ids = doctor_services(facility_id, membership)
         current = services._serving(facility_id, membership.pk if membership else None)
         waiting: list[Ticket] = []
         for service_id in service_ids:
             # The order Call next takes (S5 interleave and grace window), queue by queue
             waiting.extend(
-                services.calling_order(
-                    facility_id, service_id, Stage.CONSULTATION, membership_id=membership.pk
-                )
+                services.calling_order(facility_id, service_id, stage, membership_id=membership.pk)
             )
+        if stage != Stage.CONSULTATION:
+            waiting.sort(key=lambda t: (t.priority_rank, services.queue_key(t)))
         duty = [d for d in duty_rows(facility_id) if d["membership_id"] == membership.pk]
         current_row = None
         if current is not None:
@@ -416,7 +480,7 @@ class MineView(QueueView):
 
 
 class CallNextView(QueueView):
-    permission_classes = [Needs(CALL, OPERATE, DISPENSE)]
+    permission_classes = [Needs(CALL, OPERATE, DISPENSE, TRIAGE, LAB)]
 
     @extend_schema(
         operation_id="staff_queue_call_next",
@@ -452,7 +516,7 @@ class CallNextView(QueueView):
 
 
 class TicketActionView(QueueView):
-    permission_classes = [Needs(OPERATE, CALL, DISPENSE)]
+    permission_classes = [Needs(OPERATE, CALL, DISPENSE, TRIAGE, LAB)]
 
     @extend_schema(
         operation_id="staff_ticket_action",
@@ -533,8 +597,33 @@ class VisitDetailView(QueueView):
                     }
                     for e in events
                 ],
+                "follow_up": next_visit(visit),
             }
         )
+
+
+def next_visit(visit: Visit) -> dict[str, Any] | None:
+    """The follow-up the doctor set in this visit, for the printed card (upgrade 13 W8, #207):
+    its date, and the booked time and code when it was booked. None when there is none."""
+    from medilink.scheduling.models import BookingStatus, FollowUp, FollowUpStatus
+
+    follow_up = (
+        FollowUp.objects.filter(visit=visit)
+        .exclude(status=FollowUpStatus.CANCELLED)
+        .select_related("booking", "membership__user")
+        .first()
+    )
+    if follow_up is None:
+        return None
+    booking = follow_up.booking
+    booked = booking is not None and booking.status == BookingStatus.CONFIRMED
+    return {
+        "due_on": booking.service_date if booked and booking else follow_up.due_on,
+        "service_id": follow_up.service_id,
+        "starts_at": booking.starts_at if booked and booking else None,
+        "booking_code": booking.booking_code if booked and booking else "",
+        "doctor_name": (str(follow_up.membership.user.full_name) if follow_up.membership else ""),
+    }
 
 
 class DutyView(QueueView):

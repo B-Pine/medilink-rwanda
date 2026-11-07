@@ -16,6 +16,10 @@ export const platformFeature: FeatureRoutes = {
     },
     { path: "/platform/users", lazy: lazy(() => import("../console/UsersPage"), "UsersPage") },
     {
+      path: "/platform/users/:id",
+      lazy: lazy(() => import("../console/UserPage"), "UserPage"),
+    },
+    {
       path: "/platform/security-log",
       lazy: lazy(() => import("../console/LogsPage"), "SecurityLogPage"),
     },
@@ -32,8 +36,16 @@ export const platformFeature: FeatureRoutes = {
       lazy: lazy(() => import("./ApplicationsPage"), "ApplicationsPage"),
     },
     {
+      path: "/platform/applications/new",
+      lazy: lazy(() => import("./ApplicationFormPage"), "ApplicationNewPage"),
+    },
+    {
       path: "/platform/applications/:id",
       lazy: lazy(() => import("./ApplicationReviewPage"), "ApplicationReviewPage"),
+    },
+    {
+      path: "/platform/applications/:id/edit",
+      lazy: lazy(() => import("./ApplicationFormPage"), "ApplicationEditPage"),
     },
     {
       path: "/platform/facilities",
@@ -56,5 +68,10 @@ export const platformFeature: FeatureRoutes = {
       lazy: lazy(() => import("./MasterDataPages"), "ImportPage"),
     },
     { path: "/platform/feature-flags", lazy: lazy(() => import("./FlagsPage"), "FlagsPage") },
+    // W9 (#208): the national aggregate report
+    {
+      path: "/platform/reports",
+      lazy: lazy(() => import("../console/NationalReportPage"), "NationalReportPage"),
+    },
   ],
 };

@@ -54,7 +54,6 @@
   },
   "checklist": {
     "title": "Liste de mise en service",
-    "intro": "Les patients peuvent réserver et rejoindre les files dès que chaque étape est faite et que l’établissement est en service.",
     "progress": "{{done}} étapes sur {{total}} faites",
     "nextStep": "Ensuite : {{step}}",
     "allDone": "Toutes les étapes sont faites. Vous pouvez passer en service.",
@@ -106,7 +105,6 @@
   },
   "settings": {
     "title": "Paramètres",
-    "intro": "Le fonctionnement de votre établissement : offre, horaires, prix et personnel.",
     "checklistLink": "Liste de mise en service",
     "sections": {
       "profile": {
@@ -154,7 +152,6 @@
     }
   },
   "profile": {
-    "intro": "Les patients voient ces informations sur votre page publique.",
     "identity": "Enregistrement",
     "name": "Nom",
     "type": "Type",
@@ -194,7 +191,6 @@
     "emergencyHint": "Activez seulement si vous recevez les urgences jour et nuit. Votre établissement apparaît alors en premier sur la page publique Urgences."
   },
   "catalogue": {
-    "intro": "Les services sont ce que les patients réservent ou attendent. Chacun a un préfixe de ticket, comme G pour G-023.",
     "services": "Services",
     "departments": "Départements",
     "points": "Salles et guichets",
@@ -242,7 +238,6 @@
     "noPoints": "Ajoutez les salles et guichets où les patients sont reçus."
   },
   "hours": {
-    "intro": "Fixez vos horaires hebdomadaires, puis ajoutez les fermetures. L’aperçu montre ce que voient les patients.",
     "scope": "Horaires pour",
     "wholeFacility": "Tout l’établissement",
     "week": "Horaires hebdomadaires",
@@ -282,7 +277,6 @@
     "dateOrder": "La date de fin doit être égale ou après la date de début."
   },
   "schedules": {
-    "intro": "Les séances hebdomadaires de chaque médecin. Les créneaux réservables en découlent.",
     "doctors": "Médecins",
     "weeklyHours": "Heures par semaine",
     "sessions": "Séances hebdomadaires",
@@ -337,7 +331,6 @@
   },
   "mine": {
     "title": "Mon horaire",
-    "intro": "Vos séances de la semaine et vos demandes de congé.",
     "week": "Ma semaine",
     "requestLeave": "Demander un congé",
     "requestHint": "L’administrateur de l’établissement l’approuve ou le refuse.",
@@ -351,7 +344,6 @@
     "noSchedule": "L’administrateur n’a pas encore planifié vos séances."
   },
   "tariffs": {
-    "intro": "Prix en francs rwandais. Un changement commence à la date choisie ; les visites antérieures gardent l’ancien prix.",
     "add": "Ajouter un prix",
     "all": "Tous",
     "item": "Article",
@@ -381,7 +373,6 @@
     "empty": "Ajoutez un prix par service pour que les patients voient les coûts avant de venir."
   },
   "insurers": {
-    "intro": "Pour chaque assureur : ce qu’il couvre ici et ce que paie le patient.",
     "add": "Ajouter une règle d’assureur",
     "insurer": "Assureur",
     "since": "À partir du {{date}}",
@@ -404,7 +395,6 @@
     "empty": "Ajoutez les assureurs acceptés, ou activez « aucun assureur » dans les règles de facturation."
   },
   "rules": {
-    "intro": "Ajustez le fonctionnement des files, réservations, paiements, documents et rappels.",
     "sections": {
       "queue": "File",
       "booking": "Réservation",
@@ -424,7 +414,8 @@
         "ticket_reset": "Recommencer les numéros de ticket",
         "show_names_on_display": "Afficher les noms sur l’écran de la salle d’attente",
         "call_repeat_seconds": "Répéter un appel après (secondes)",
-        "priority_elderly_age": "Priorité à partir de l’âge"
+        "priority_elderly_age": "Priorité à partir de l’âge",
+        "triage_enabled": "Les patients passent au triage avant le médecin"
       },
       "booking": {
         "enabled": "Réservation en ligne",
@@ -452,7 +443,6 @@
     "footer": "Texte du pied de page"
   },
   "history": {
-    "intro": "Chaque changement de configuration, le plus récent en premier. Aucune donnée personnelle n’y figure.",
     "entity": "Afficher les changements de",
     "entities": {
       "all": "Tout",
@@ -477,7 +467,6 @@
   },
   "staff": {
     "title": "Personnel",
-    "intro": "Qui travaille ici, ce que chacun peut faire, et les invitations en attente.",
     "invite": "Inviter du personnel",
     "inviteHint": "La personne reçoit un lien par e-mail valable 7 jours.",
     "activeMembers": "Membres actifs",
@@ -568,7 +557,6 @@
   },
   "clinician": {
     "title": "Mon profil professionnel",
-    "intro": "Votre profession, votre licence et vos diplômes. L’administrateur de votre établissement vérifie votre licence avant que vous puissiez être planifié ou signer ; le Ministère de la Santé compte le personnel par profession.",
     "council": "Conseil",
     "licence": "Numéro de licence",
     "specialty": "Spécialité",
@@ -634,7 +622,6 @@
   "account": {
     "menu": "Mes informations",
     "title": "Mes informations",
-    "intro": "Votre nom, votre téléphone professionnel et votre langue. L’administrateur de votre établissement voit votre téléphone dans la liste de l’équipe.",
     "email": "E-mail",
     "emailHint": "Vous vous connectez avec cette adresse. Demandez au support MediLink pour la changer.",
     "fullName": "Nom complet",

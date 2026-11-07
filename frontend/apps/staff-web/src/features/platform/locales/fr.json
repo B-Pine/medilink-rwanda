@@ -93,11 +93,17 @@
     "review": "Examiner",
     "back": "Retour aux demandes",
     "byPlatform": "Créées par la plateforme",
-    "create": "Créer pour un établissement",
+    "create": "Enregistrer un établissement",
     "createHint": "Pour les établissements qui ont fait la demande par téléphone ou sur place. Ils la complètent avec le lien envoyé par e-mail.",
     "createSubmit": "Créer la demande",
     "createRequired": "Saisissez le nom de l'établissement, le nom du demandeur et un e-mail valide.",
-    "sendLink": "Envoyer au demandeur un lien pour la compléter"
+    "sendLink": "Envoyer au demandeur un lien pour la compléter",
+    "adminIs": "Administrateur : {{name}}",
+    "progress": "Avancement",
+    "documents_one": "{{count}} document",
+    "documents_other": "{{count}} documents",
+    "missing_one": "{{count}} élément manquant",
+    "missing_other": "{{count}} éléments manquants"
   },
   "review": {
     "start": "Commencer l'examen",
@@ -257,7 +263,24 @@
     "identifiers": "Identifiants officiels",
     "identifiersHint": "Le code de l’établissement au Ministère de la Santé (FOSA ID) et le numéro fiscal RRA. Ils figurent dans la liste des établissements pour le gouvernement.",
     "saveIdentifiers": "Enregistrer",
-    "identifiersSaved": "Enregistré."
+    "identifiersSaved": "Enregistré.",
+    "noCode": "Pas encore de FOSA ID",
+    "place": "Lieu",
+    "inCharge": "Responsable",
+    "noAdmin": "Pas encore d’administrateur",
+    "staff": "Personnel",
+    "seeStaff": "Voir le personnel dans la liste des utilisateurs",
+    "staffCount_one": "{{count}} membre actif",
+    "staffCount_other": "{{count}} membres actifs",
+    "doctorsChecked_one": "Licence vérifiée pour {{checked}} médecin sur {{count}}",
+    "doctorsChecked_other": "Licences vérifiées pour {{checked}} médecins sur {{count}}",
+    "missingCode": "Sans FOSA ID",
+    "export": "Exporter en CSV",
+    "exportFailed": "L’export a échoué. Réessayez.",
+    "photos": "Photos",
+    "identity": "Identité",
+    "contact": "Contact et lieu",
+    "professionUnknown": "Profession non indiquée"
   },
   "licences": {
     "add": "Ajouter une licence",
@@ -276,7 +299,6 @@
   },
   "flags": {
     "title": "Fonctionnalités",
-    "intro": "Les valeurs par défaut s'appliquent à tous les établissements, sauf réglage propre à un établissement.",
     "names": {
       "security.pin_unlock": "Déverrouillage par code PIN"
     },
@@ -395,12 +417,59 @@
     "errorLine": "Ligne {{line}} ({{field}}) : {{message}}",
     "samples": "Exemples de changements",
     "confirm": "Appliquer les changements",
-    "descriptionHint": "Ce qu’est le service, en mots simples. Affichée sur la page publique du service."
+    "descriptionHint": "Ce qu’est le service, en mots simples. Affichée sur la page publique du service.",
+    "level": "Niveau",
+    "parent": "Code parent"
   },
   "upload": {
     "drop": "Glissez un fichier ici, ou",
     "browse": "Choisir un fichier",
     "remove": "Retirer",
     "uploading": "Envoi en cours…"
+  },
+  "form": {
+    "newTitle": "Enregistrer un établissement",
+    "editTitle": "Modifier {{name}}",
+    "back": "Retour aux demandes",
+    "facility": "Établissement",
+    "facilityName": "Nom de l’établissement",
+    "choose": "Choisir…",
+    "phone": "Téléphone",
+    "email": "E-mail",
+    "location": "Emplacement",
+    "locationHint": "Le village, l’adresse et l’entrée sur la carte (les patients s’en servent pour l’itinéraire).",
+    "address": "Adresse",
+    "mapLabel": "Carte : touchez pour placer l’établissement",
+    "pinLabel": "Entrée de l’établissement (glissez pour déplacer)",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "levels": {
+      "province": "Province",
+      "district": "District",
+      "sector": "Secteur",
+      "cell": "Cellule",
+      "village": "Village"
+    },
+    "applicant": "Demandeur",
+    "applicantHint": "La personne qui parle au nom de l’établissement. Elle reçoit le lien.",
+    "name": "Nom complet",
+    "position": "Fonction",
+    "admin": "Administrateur de l’établissement",
+    "adminHint": "La personne qui gère MediLink dans l’établissement. Elle reçoit une invitation à l’approbation.",
+    "nextSteps": "Ensuite : le demandeur envoie la licence et les documents d’enregistrement (ou vous les ajoutez sur la page de la demande), accepte les conditions et envoie.",
+    "save": "Enregistrer",
+    "editDetails": "Modifier les informations",
+    "required": "Remplissez ce champ.",
+    "email_invalid": "Saisissez une adresse e-mail valide.",
+    "tin": "Un NIF compte 9 chiffres.",
+    "mohCode": "Utilisez des lettres, des chiffres et / . _ - uniquement.",
+    "outsideRwanda": "Cette position est hors du Rwanda.",
+    "fix": "Certains champs sont à corriger.",
+    "addDocument": "Ajouter un document pour l’établissement",
+    "documentKind": "Document",
+    "licenceNumber": "Numéro de licence",
+    "expires": "Date d’expiration",
+    "chooseFile": "Choisir un fichier",
+    "uploaded": "{{name}} envoyé. Il est vérifié contre les virus avant toute ouverture."
   }
 }

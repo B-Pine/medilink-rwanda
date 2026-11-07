@@ -14,6 +14,7 @@ from rest_framework.test import APIClient
 
 from medilink.accounts.models import User, UserSession
 from medilink.accounts.tasks import (
+    TEXTS,
     build_reset_link,
     send_password_changed_email,
     send_password_reset_email,
@@ -64,7 +65,8 @@ def test_reset_flow_revokes_all_sessions(
     assert patient_session.get("/api/v1/patient/auth/me/").status_code == 401
     staff_user.refresh_from_db()
     assert staff_user.check_password(NEW_PASSWORD)
-    assert mailoutbox[-1].subject == "Your MediLink password was changed"
+    # in the account's language (upgrade 17)
+    assert mailoutbox[-1].subject == TEXTS["changed"][staff_user.preferred_language][0]
     entry = AuditEntry.objects.get(action=actions.PASSWORD_RESET_COMPLETED)
     assert entry.metadata == {"sessions_revoked": 2}
     requested = AuditEntry.objects.get(action=actions.PASSWORD_RESET_REQUESTED)
@@ -89,7 +91,7 @@ def test_patient_reset_link_points_to_patient_app(patient_user: Any) -> None:
 def test_reset_rejects_weak_new_password(api: APIClient, patient_user: Any) -> None:
     uid = urlsafe_base64_encode(force_bytes(str(patient_user.pk)))
     token = default_token_generator.make_token(patient_user)
-    response = api.post(CONFIRM, {"uid": uid, "token": token, "new_password": "too short"})
+    response = api.post(CONFIRM, {"uid": uid, "token": token, "new_password": "short7!"})
     assert response.status_code == 400
     assert "new_password" in response.json()["error"]["fields"]
 

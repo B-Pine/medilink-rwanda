@@ -34,10 +34,7 @@ export function AvailabilityPage() {
 
   return (
     <div className="flex max-w-3xl flex-col gap-5">
-      <PageHeader
-        title={t("pharmacy.availability.title")}
-        description={t("pharmacy.availability.description")}
-      />
+      <PageHeader title={t("pharmacy.availability.title")} />
       <TextField
         type="search"
         label={t("pharmacy.availability.search")}
@@ -93,14 +90,21 @@ function AvailabilityItem({ row, canChange }: { row: AvailabilityRow; canChange:
       <SwitchField
         label={row.display}
         hint={
-          row.updated_at && !row.is_available
-            ? t("pharmacy.availability.since", { date: when.date(row.updated_at) })
-            : undefined
+          row.follows_stock
+            ? t("pharmacy.availability.followsStock")
+            : row.updated_at && !row.is_available
+              ? t("pharmacy.availability.since", { date: when.date(row.updated_at) })
+              : undefined
         }
         checked={row.is_available}
-        disabled={!canChange || change.isPending}
+        // W5: a medicine with stock follows its count; receive or adjust it on the stock page
+        disabled={!canChange || change.isPending || row.follows_stock}
         stateLabel={
-          row.is_available ? t("pharmacy.availability.in") : t("pharmacy.availability.out")
+          row.stock_level
+            ? t(`pharmacy.stock.level.${row.stock_level}`)
+            : row.is_available
+              ? t("pharmacy.availability.in")
+              : t("pharmacy.availability.out")
         }
         onCheckedChange={(value) => change.mutate(value)}
       />

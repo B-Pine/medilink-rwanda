@@ -24,7 +24,7 @@
     "emailRequired": "Saisissez votre adresse e-mail",
     "emailInvalid": "Saisissez une adresse e-mail au bon format, par exemple nom@example.rw",
     "passwordRequired": "Saisissez votre mot de passe",
-    "passwordLength": "Utilisez au moins 15 caractères",
+    "passwordLength": "Utilisez au moins 8 caractères",
     "nameRequired": "Saisissez vos noms",
     "termsRequired": "Acceptez les conditions d’utilisation pour créer un compte",
     "privacyRequired": "Acceptez l’avis de confidentialité pour créer un compte"
@@ -131,7 +131,6 @@
     "dataInRwanda": "Données de santé hébergées au Rwanda"
   },
   "authAside": {
-    "eyebrow": "Votre compte MediLink",
     "title": "Moins de temps à attendre, plus de temps pour guérir.",
     "lead": "Un seul compte pour vous et votre famille, dans chaque établissement sur MediLink.",
     "points": {
@@ -166,6 +165,13 @@
     "invalidCredentials": "L’e-mail ou le mot de passe n’est pas correct. Vérifiez-les et réessayez.",
     "guest": "Trouver des soins sans compte"
   },
+  "google": {
+    "or": "ou",
+    "failed": "La connexion avec Google n'a pas fonctionné. Réessayez.",
+    "consentTitle": "Créer votre compte avec Google",
+    "create": "Créer mon compte",
+    "cancel": "Annuler"
+  },
   "signup": {
     "title": "Créer votre compte",
     "intro": "Cela prend environ une minute. Vous pourrez ajouter votre assurance et votre famille plus tard.",
@@ -174,8 +180,8 @@
     "fullNameHint": "Comme sur votre pièce d’identité.",
     "email": "E-mail",
     "password": "Mot de passe",
-    "passwordHint": "Utilisez au moins 15 caractères. Une courte phrase est facile à retenir et difficile à deviner.",
-    "passwordRule": "Au moins 15 caractères",
+    "passwordHint": "Utilisez au moins 8 caractères. Une courte phrase est facile à retenir et difficile à deviner.",
+    "passwordRule": "Au moins 8 caractères",
     "passwordRuleMet": "fait",
     "passwordRuleNotMet": "pas encore",
     "language": "Langue des messages",
@@ -197,7 +203,9 @@
     "login": "Se connecter",
     "checkEmailTitle": "Consultez vos e-mails",
     "checkEmailBody": "Nous avons envoyé un message à {{email}}. Ouvrez le lien qu’il contient pour terminer la création de votre compte. Le lien est valable 3 jours.",
-    "checkEmailHint": "Pas d’e-mail après quelques minutes ? Regardez dans les indésirables, ou inscrivez-vous à nouveau pour recevoir un nouveau lien."
+    "checkEmailHint": "Pas d’e-mail après quelques minutes ? Regardez dans les indésirables, ou inscrivez-vous à nouveau pour recevoir un nouveau lien.",
+    "readyTitle": "Votre compte est prêt",
+    "readyBody": "Connectez-vous avec {{email}} et votre mot de passe."
   },
   "verifyEmail": {
     "title": "Confirmer votre e-mail",
@@ -337,7 +345,7 @@
   "reset": {
     "title": "Choisir un nouveau mot de passe",
     "newPassword": "Nouveau mot de passe",
-    "hint": "Au moins 15 caractères. Une courte phrase est facile à retenir et difficile à deviner.",
+    "hint": "Au moins 8 caractères. Une courte phrase est facile à retenir et difficile à deviner.",
     "submit": "Enregistrer le mot de passe",
     "doneTitle": "Mot de passe modifié",
     "doneBody": "Votre mot de passe a été modifié et vous avez été déconnecté partout. Connectez-vous avec le nouveau mot de passe.",

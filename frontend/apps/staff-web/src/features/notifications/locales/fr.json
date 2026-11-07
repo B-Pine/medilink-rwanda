@@ -61,7 +61,6 @@
   "settings": {
     "link": "Paramètres",
     "title": "Paramètres des notifications",
-    "intro": "Comment MediLink vous signale les nouvelles notifications sur cet appareil.",
     "conflictTitle": "Ces paramètres ont été modifiés ailleurs",
     "conflict": "Vos choix sont conservés. Chargez la dernière version, puis enregistrez à nouveau.",
     "reload": "Charger la dernière version",

@@ -31,7 +31,7 @@ function LanguageSelect({ className }: { className?: string }) {
         id={id}
         value={current}
         onChange={(event) => void i18n.changeLanguage(event.target.value)}
-        className="h-11 w-[5.25rem] cursor-pointer appearance-none rounded-full border border-border bg-surface pr-3 pl-9 text-body-sm font-semibold text-transparent uppercase transition-colors duration-150 ease-out-quint hover:border-border-input [&>option]:text-fg [&>option]:normal-case"
+        className="h-10 w-[4.75rem] cursor-pointer appearance-none rounded-full border-0 bg-transparent pr-3 pl-9 text-body-sm font-semibold text-transparent uppercase transition-colors duration-150 ease-out-quint hover:bg-subtle [&>option]:text-fg [&>option]:normal-case"
       >
         {SUPPORTED_LANGUAGES.map((language) => (
           <option key={language} value={language} lang={language}>
@@ -57,25 +57,25 @@ function LanguageSelect({ className }: { className?: string }) {
 function EmergencyStrip() {
   const { t } = useTranslation();
   return (
-    <div className="border-b border-danger/15 bg-danger-bg print:hidden">
-      <div className="mx-auto flex min-h-10 max-w-[88rem] flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-1.5 text-body-sm sm:px-6">
-        <p className="m-0 flex items-center gap-2 text-fg">
-          <Siren aria-hidden="true" weight="bold" className="size-4 shrink-0 text-danger" />
+    <div className="ml-site-strip border-b border-danger/10 bg-danger-bg/70 print:hidden">
+      <div className="mx-auto flex min-h-9 max-w-[88rem] flex-wrap items-center justify-between gap-x-4 px-4 text-caption sm:px-6">
+        <p className="m-0 flex items-center gap-2 text-fg-secondary">
+          <Siren aria-hidden="true" weight="bold" className="size-3.5 shrink-0 text-danger" />
           <span className="hidden sm:inline">{t("nav.strip.long")}</span>
           <span className="sm:hidden">{t("nav.strip.short")}</span>
           <a
             href="tel:912"
-            className="inline-flex min-h-target items-center gap-1 font-bold text-danger underline-offset-4 hover:underline"
+            className="inline-flex min-h-9 items-center gap-1 font-bold text-danger underline-offset-4 hover:underline"
           >
-            <Phone aria-hidden="true" weight="bold" className="size-3.5" />
+            <Phone aria-hidden="true" weight="bold" className="size-3" />
             {t("nav.strip.call")}
           </a>
-          <span className="hidden text-fg-secondary md:inline">{t("nav.strip.free")}</span>
+          <span className="hidden md:inline">{t("nav.strip.free")}</span>
         </p>
         <Link
           to="/emergency"
           viewTransition
-          className="inline-flex min-h-target items-center gap-1 font-semibold text-danger no-underline hover:underline"
+          className="inline-flex min-h-9 items-center gap-1 font-semibold text-danger no-underline hover:underline"
         >
           {t("nav.strip.guide")}
           <ArrowRight aria-hidden="true" weight="bold" className="size-3.5" />
@@ -86,11 +86,11 @@ function EmergencyStrip() {
 }
 
 /**
- * Public header (redesign "clinical calm"): an emergency strip, then one solid 72 px bar with the
- * logo, five links, a compact language select and Sign in. Below 1200 px the bar keeps the logo,
- * an emergency icon and the menu button; everything else lives in a slide-out sheet of 48 px rows.
- * The active page is brand text with a 2 px underline. The theme switch lives in the sheet and the
- * footer.
+ * Public header (second pass, 2026-11-04): a slim emergency line, then a translucent 64 px bar on
+ * a hairline: the logo, the five pages as one segmented group (the current page is the raised
+ * pill), a quiet language control and Sign in as the one solid button. Below 1200 px the bar keeps
+ * the logo, an emergency icon and the menu button; everything else lives in a slide-out sheet.
+ * The theme switch lives in the sheet and the footer.
  */
 export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
   const { t } = useTranslation();
@@ -123,24 +123,25 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
   return (
     <>
       <EmergencyStrip />
-      <header className="ml-site-header ml-glass sticky top-0 z-30 border-b border-border bg-surface print:hidden">
+      <header className="ml-site-header sticky top-0 z-30 border-b border-hairline bg-surface/80 backdrop-blur-xl backdrop-saturate-150 print:hidden">
         {/* route loading: a thin bar while the next page's code or data loads */}
         <div
           aria-hidden="true"
           data-loading={navigation.state !== "idle"}
           className="ml-route-progress absolute inset-x-0 top-0 h-0.5 origin-left bg-primary"
         />
-        <div className="mx-auto flex h-[4.5rem] max-w-[88rem] items-center gap-6 px-4 sm:px-6">
+        <div className="mx-auto grid h-16 max-w-[88rem] grid-cols-[auto_1fr_auto] items-center gap-6 px-4 sm:px-6">
           <Link
             to="/"
             viewTransition
             aria-label={t("nav.homeLabel")}
             className="inline-flex min-h-target shrink-0 items-center rounded-sm no-underline"
           >
-            <Logo className="h-9" />
+            <Logo className="h-8" />
           </Link>
-          <nav aria-label={t("nav.label")} className="hidden min-w-0 xl:block">
-            <ul className="m-0 flex list-none items-center gap-1 p-0">
+          <nav aria-label={t("nav.label")} className="hidden min-w-0 justify-self-center xl:block">
+            {/* one segmented group; the current page is the raised pill */}
+            <ul className="m-0 flex list-none items-center gap-0.5 rounded-full bg-subtle/70 p-1 shadow-[inset_0_0_0_1px_var(--site-hairline)]">
               {PUBLIC_NAV.map((item) => (
                 <li key={item.to}>
                   <NavLink
@@ -148,21 +149,21 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
                     end={item.end}
                     viewTransition
                     className={cx(
-                      "relative inline-flex h-11 items-center rounded-full px-3.5 text-body-sm font-semibold whitespace-nowrap text-fg-secondary no-underline",
-                      "transition-[color,background-color] duration-150 ease-out-quint hover:bg-subtle hover:text-fg",
-                      "aria-[current=page]:text-primary aria-[current=page]:hover:bg-brand-subtle",
+                      "relative inline-flex h-9 items-center rounded-full px-4 text-body-sm font-medium whitespace-nowrap text-fg-secondary no-underline",
+                      "transition-colors duration-200 ease-out-quint hover:text-fg",
+                      "aria-[current=page]:font-semibold aria-[current=page]:text-fg",
                     )}
                   >
                     {({ isActive }) => (
                       <>
-                        {t(item.key)}
-                        {/* one indicator on the page: it glides to the next link (base.css) */}
+                        {/* the raised pill of the current page glides between items */}
                         {isActive && (
                           <span
                             aria-hidden="true"
-                            className="ml-nav-indicator absolute inset-x-3.5 -bottom-[0.9rem] h-0.5 rounded-full bg-primary"
+                            className="ml-nav-pill absolute inset-0 rounded-full bg-surface shadow-[var(--site-edge),var(--shadow-e1)]"
                           />
                         )}
+                        <span className="relative">{t(item.key)}</span>
                       </>
                     )}
                   </NavLink>
@@ -170,13 +171,13 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
               ))}
             </ul>
           </nav>
-          <div className="ml-auto flex shrink-0 items-center gap-2">
+          <div className="col-start-3 flex shrink-0 items-center gap-1.5">
             <LanguageSelect className="hidden xl:inline-flex" />
             {showLogin && (
               <Link
                 to="/login"
                 viewTransition
-                className="hidden h-11 items-center gap-2 rounded-full border border-border px-4 text-body-sm font-semibold whitespace-nowrap text-fg no-underline transition-colors duration-150 ease-out-quint hover:border-primary hover:text-primary xl:inline-flex"
+                className="hidden h-10 items-center gap-2 rounded-full bg-forest px-5 text-body-sm font-semibold whitespace-nowrap text-on-forest no-underline shadow-e1 transition-[filter,box-shadow] duration-200 ease-out-quint hover:shadow-e2 hover:brightness-110 xl:inline-flex"
               >
                 <SignIn aria-hidden="true" weight="bold" className="size-4" />
                 {t("nav.login")}
@@ -216,9 +217,9 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
             ref={sheet}
             id="site-menu"
             aria-label={t("nav.label")}
-            className="absolute inset-y-0 right-0 flex w-[min(22rem,100%)] animate-enter flex-col overflow-y-auto bg-surface shadow-raised"
+            className="absolute inset-y-0 right-0 flex w-[min(22rem,100%)] animate-enter flex-col overflow-y-auto bg-surface shadow-e3"
           >
-            <div className="flex h-[4.5rem] shrink-0 items-center justify-between border-b border-border px-4">
+            <div className="flex h-16 shrink-0 items-center justify-between border-b border-hairline px-4">
               <Logo className="h-8" />
               <button
                 type="button"
@@ -243,12 +244,12 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
                 </li>
               ))}
             </ul>
-            <div className="mt-auto flex flex-col gap-3 border-t border-border p-4">
+            <div className="mt-auto flex flex-col gap-3 border-t border-hairline p-4">
               {showLogin && (
                 <Link
                   to="/login"
                   viewTransition
-                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-border px-4 font-semibold text-fg no-underline hover:border-primary hover:text-primary"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-forest px-4 font-semibold text-on-forest no-underline shadow-e1 hover:brightness-110"
                 >
                   <SignIn aria-hidden="true" weight="bold" className="size-4" />
                   {t("nav.login")}

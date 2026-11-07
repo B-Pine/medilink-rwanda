@@ -32,21 +32,18 @@ export function SupportPage() {
   const { t } = useTranslation();
   return (
     <div className="flex w-full max-w-[48rem] flex-col gap-6">
-      <PageHeader title={t("dashboard.help.title")} subtitle={t("dashboard.help.subtitle")} />
+      <PageHeader title={t("dashboard.help.title")} />
       <EmergencyNotice />
 
       {/* [S10] searchable help articles and support requests (sprint-10 S10-D5) */}
       <HelpCenter />
       {/* [/S10] */}
 
-      <Card as="section" aria-labelledby="support-desk" className="flex gap-4">
+      <Card as="section" aria-labelledby="support-desk" className="flex items-center gap-4">
         <Storefront aria-hidden="true" weight="duotone" className="size-8 shrink-0 text-brand" />
-        <div className="flex flex-col gap-1">
-          <h2 id="support-desk" className="m-0 text-h3">
-            {t("support.deskTitle")}
-          </h2>
-          <p className="m-0 text-fg-secondary">{t("support.deskBody")}</p>
-        </div>
+        <h2 id="support-desk" className="m-0 text-h3">
+          {t("support.deskTitle")}
+        </h2>
       </Card>
 
       <nav aria-label={t("support.more")}>

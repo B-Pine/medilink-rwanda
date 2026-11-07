@@ -31,7 +31,8 @@ def register_patient(
     *,
     full_name: str,
     email: str,
-    password: str,
+    # None: Sign in with Google (upgrade 17); the account has no usable password until reset
+    password: str | None,
     preferred_language: str,
     accepted_terms_version: str,
     accepted_privacy_version: str,

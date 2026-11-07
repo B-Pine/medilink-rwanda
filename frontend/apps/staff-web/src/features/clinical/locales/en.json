@@ -1,4 +1,64 @@
 {
+  "lab": {
+    "title": "Tests",
+    "none": "No test ordered for this visit.",
+    "order": "Order tests",
+    "choose": "Tests to order",
+    "chooseOne": "Choose at least one test.",
+    "reason": "Why these tests? (the lab sees this)",
+    "reasonHint": "For example: fever for 3 days, rule out malaria.",
+    "reasonShort": "Why:",
+    "submit": "Order",
+    "send": "Send to lab",
+    "sendHint": "The patient goes to the lab. Your notes stay open, and the patient comes back to your queue when every result is in.",
+    "sent": "{{name}} is on the way to the lab and comes back to your queue when the results are in.",
+    "orderedBy": "Ordered by {{name}} at {{time}}",
+    "resultedBy": "Result by {{name}} at {{time}}",
+    "labComment": "Lab comment:",
+    "note": "Note for the patient",
+    "noteHint": "The patient reads it with the result.",
+    "review": "Mark reviewed",
+    "release": "Release to the patient",
+    "releaseHint": "From now on the patient sees this result in their record.",
+    "cancel": "Cancel test",
+    "range": "{{low}}–{{high}} {{unit}}",
+    "table": {
+      "item": "Test",
+      "value": "Result",
+      "reference": "Normal range"
+    },
+    "states": {
+      "ordered": "Ordered",
+      "sample_taken": "Sample taken",
+      "resulted": "Result ready",
+      "reviewed": "Reviewed",
+      "released": "Released",
+      "cancelled": "Cancelled"
+    },
+    "specimens": {
+      "blood": "Blood",
+      "urine": "Urine",
+      "stool": "Stool"
+    },
+    "flags": {
+      "low": "Low",
+      "high": "High",
+      "abnormal": "Abnormal"
+    },
+    "choices": {
+      "negative": "Negative",
+      "positive": "Positive",
+      "invalid": "Invalid",
+      "trace": "Trace",
+      "none_seen": "None seen",
+      "seen": "Seen"
+    },
+    "inbox": {
+      "title": "Lab results",
+      "lead": "Results of the tests you ordered. Review each one, then release it to the patient.",
+      "open": "Open the consultation"
+    }
+  },
   "nav": {
     "consultation": "Consultation",
     "unsigned": "Unsigned records",
@@ -34,7 +94,6 @@
   },
   "start": {
     "title": "Consultation",
-    "description": "The patient you are seeing now, from My queue.",
     "open": "Open consultation",
     "none": "No patient with you right now",
     "noneBody": "Call the next patient from My queue, then open the consultation here.",
@@ -229,7 +288,6 @@
   },
   "unsigned": {
     "title": "Unsigned records",
-    "description": "Drafts waiting for a signature. Clear them every day: a visit cannot finish while its draft is open.",
     "mineOnly": "Only my drafts",
     "started": "{{name}} · started {{time}}",
     "overdue": "Over 24 hours",
@@ -274,6 +332,13 @@
     "results_other": "{{count}} outside results to review"
   },
   "reasonForVisit": {
+    "nurse": "Triage: {{urgency}}",
+    "nurseBy": "by {{name}} at {{time}}",
+    "nurseUrgency": {
+      "normal": "normal",
+      "priority": "priority",
+      "emergency": "emergency"
+    },
     "title": "Why the patient came",
     "short": "Reason",
     "none": "No reason was recorded at booking or check-in. Ask the patient.",
@@ -299,7 +364,6 @@
   "toQueue": "My queue",
   "results": {
     "title": "Results",
-    "intro": "Outside lab and imaging results assigned to you. Open each one, then mark it reviewed.",
     "tabs": {
       "pending": "To review",
       "reviewed": "Reviewed"
@@ -345,7 +409,6 @@
   },
   "questions": {
     "title": "Pharmacy questions",
-    "intro": "Questions from the pharmacy about your prescriptions. Your answer is added to the record as a signed note.",
     "tabs": {
       "open": "Waiting for you",
       "answered": "Answered"
@@ -371,7 +434,6 @@
   },
   "followUps": {
     "title": "Follow-ups",
-    "intro": "Patients you asked to come back. Missed ones need a call from reception or a new booking.",
     "state": {
       "missed": "Missed",
       "today": "Today",
@@ -400,7 +462,6 @@
   },
   "activity": {
     "title": "My activity",
-    "intro": "Your own numbers, for you. No patient names here.",
     "period": "Period",
     "days_one": "{{count}} day",
     "days_other": "{{count}} days",
@@ -421,7 +482,6 @@
   },
   "templates": {
     "title": "Templates",
-    "intro": "Your notes, diagnoses and usual prescriptions for common visits. One click fills the consultation.",
     "new": "New template",
     "edit": "Edit template",
     "delete": "Delete",
@@ -452,8 +512,29 @@
     "emptyTitle": "No templates yet",
     "empty": "Create one here, or save a consultation as a template while you write it.",
     "use": "Use a template",
-    "useHint": "Text goes into empty sections or after what you wrote. Diagnoses are added as provisional; medicines go to the prescription.",
-    "saveAs": "Save as template",
-    "itemsFailed": "These medicines need your attention in the prescription: {{names}}"
+    "useHint": "One click adds the diagnosis, plan, instructions and medicines. Text goes into empty sections or after what you wrote; diagnoses are added as provisional. You can still change everything before you sign.",
+    "saveAs": "Save as template"
+  },
+  "orderSet": {
+    "applied": "“{{name}}” added to the note",
+    "review": "Check it for this patient, then sign.",
+    "listLabel": "What the template changed",
+    "diagnosesAdded": "Diagnosis added as provisional: {{names}}",
+    "diagnosesAlready": "Already in the note, not added twice: {{names}}",
+    "diagnosesSkipped": "Not added, not a known ICD-10 code or too many diagnoses: {{names}}. Search for the right code.",
+    "sections": "Text added to: {{names}}",
+    "medicinesAdded": "Added to the prescription: {{names}}",
+    "medicinesAlready": "Already on the prescription, not added twice: {{names}}",
+    "medicinesFailed": "Not added, add them in the prescription yourself: {{names}}",
+    "tests": "Lab tests are not ordered from templates yet. Order them yourself: {{names}}",
+    "adding": "Adding the medicines…",
+    "needsYou": "Some items need you. The note is not signed until you sign it.",
+    "stillSign": "Nothing was skipped. The note is not signed until you sign it.",
+    "done": "Back to the note",
+    "another": "Use another template"
+  },
+  "favourites": {
+    "diagnoses": "Your frequent diagnoses",
+    "add": "Add {{name}}"
   }
 }

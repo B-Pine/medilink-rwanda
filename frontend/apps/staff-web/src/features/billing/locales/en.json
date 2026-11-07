@@ -88,7 +88,23 @@
     "expected": "Expected {{amount}}",
     "difference": "Difference {{amount}}",
     "note": "Note",
-    "needed": "Open a cash shift before recording payments."
+    "needed": "Open a cash shift before recording payments.",
+    "byMethod": {
+      "title": "By payment method",
+      "method": "Method",
+      "payments": "Payments",
+      "received": "Received",
+      "paidOut": "Refunds paid",
+      "expected": "In the drawer",
+      "counted": "Counted",
+      "difference": "Difference",
+      "total": "Total"
+    },
+    "last": {
+      "title": "Your last shift",
+      "waiting": "Waiting for review",
+      "accepted": "Accepted by {{name}}"
+    }
   },
   "approvals": {
     "title": "Approvals",
@@ -103,7 +119,6 @@
     "reject": "Reject",
     "rejectNote": "Why reject?",
     "viewBill": "View bill",
-    "intro": "Requests from your team and closed cash shifts. Every decision is recorded.",
     "tabs": {
       "requests": "Requests",
       "shifts": "Cash shifts"
@@ -136,6 +151,47 @@
     "payments": "Payments this shift",
     "collected": "Collected this shift",
     "next": "Next to pay",
-    "nothing": "No bill waits for payment. New bills appear here after the visit."
+    "nothing": "No bill waits for payment. New bills appear here after the visit.",
+    "inDrawer": "{{amount}} in the drawer"
+  },
+  "nav": {
+    "claims": "Insurance claims"
+  },
+  "claims": {
+    "title": "Insurance claims",
+    "insurer": "Insurer",
+    "month": "Month of the visits",
+    "totals": "Claims this month",
+    "visits_one": "{{count}} visit to claim",
+    "visits_other": "{{count}} visits to claim",
+    "toClaim": "Insurer share",
+    "claimsCount_one": "{{count}} claim",
+    "claimsCount_other": "{{count}} claims",
+    "status": {
+      "pending": "Not settled",
+      "paid": "Paid",
+      "rejected": "Rejected"
+    },
+    "all": "All",
+    "filter": "Claims by status",
+    "empty": "No insured visits for this insurer in this month",
+    "downloadCsv": "Download CSV",
+    "downloadPdf": "Download PDF",
+    "downloadFailed": "The download did not work. Try again.",
+    "member": "Member number {{number}}",
+    "icd10": "ICD-10",
+    "noDiagnosis": "No signed diagnosis",
+    "lines_one": "{{count}} service or item",
+    "lines_other": "{{count}} services and items",
+    "notCovered": "Not covered",
+    "markedBy": "Marked by {{name}}",
+    "referenceIs": "Reference {{reference}}",
+    "reason": "The insurer's reason",
+    "reference": "Payment reference",
+    "referenceHint": "Optional: the insurer's transfer or batch number",
+    "confirmPaid": "Mark paid",
+    "confirmRejected": "Mark rejected",
+    "markPaid": "Paid",
+    "markRejected": "Rejected"
   }
 }

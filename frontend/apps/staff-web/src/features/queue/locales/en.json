@@ -1,6 +1,89 @@
 {
   "nav": {
-    "reorders": "Queue reviews"
+    "reorders": "Queue reviews",
+    "triage": "Triage",
+    "lab": "Laboratory"
+  },
+  "lab": {
+    "title": "Laboratory",
+    "lead": "Call the next patient, take the samples and enter the results. The patient goes back to the doctor when every result is in.",
+    "open": "Open the lab",
+    "current": "Patient with you",
+    "start": "Start",
+    "inLab": "At the lab",
+    "nobody": "Nobody is waiting for the lab.",
+    "waiting": "Waiting for a sample",
+    "inProgress": "Results to enter",
+    "inProgressNone": "No sample is waiting for a result.",
+    "doneToday": "Done today",
+    "identity": "Check who the patient is",
+    "fullName": "Full name",
+    "born": "Date of birth",
+    "medilinkNumber": "MediLink number",
+    "payment": "Payment",
+    "paid": "Paid",
+    "unpaid": "Not paid",
+    "samples": "Samples",
+    "sample": "Sample taken",
+    "orderedBy": "Ordered by {{name}}",
+    "request": "Doctor's request:",
+    "loadingTests": "Loading the tests…",
+    "samplesDone": "Samples taken for {{name}}. Enter the results when they are ready.",
+    "enter": "Enter the result",
+    "choose": "Choose…",
+    "required": "Enter this result.",
+    "comment": "Comment for the doctor (optional)",
+    "save": "Save result",
+    "saved": "Result saved: {{test}}.",
+    "backToDoctor": "Every result is in. {{name}} goes back to the doctor.",
+    "today": {
+      "waiting": "Waiting for a sample",
+      "results": "Results to enter",
+      "done": "Done today"
+    }
+  },
+  "triage": {
+    "title": "Triage",
+    "lead": "Take vitals, decide how urgent it is, and send the patient to the doctor.",
+    "open": "Open triage",
+    "current": "Patient with you",
+    "start": "Start triage",
+    "inTriage": "In triage",
+    "nobody": "Nobody is waiting for triage.",
+    "waiting": "Waiting for triage",
+    "waitingCount_one": "{{count}} waiting for triage",
+    "waitingCount_other": "{{count}} waiting for triage",
+    "longest_one": "Longest wait {{count}} min",
+    "longest_other": "Longest wait {{count}} min",
+    "words": "In their words",
+    "noWords": "Nothing written at check-in.",
+    "symptoms": "Symptoms",
+    "allergies": "Allergies",
+    "noAllergies": "None recorded. Ask the patient.",
+    "vitals": "Vitals",
+    "decision": "Send to the doctor",
+    "urgency": "How urgent?",
+    "urgencies": {
+      "normal": "Normal",
+      "priority": "Priority",
+      "emergency": "Emergency"
+    },
+    "urgencyHints": {
+      "normal": "Waits in turn.",
+      "priority": "Seen before the normal queue.",
+      "emergency": "Seen next. The doctor sees it first."
+    },
+    "why": "Why priority?",
+    "danger": "What is dangerous?",
+    "dangerHint": "For example: chest pain with sweating, SpO₂ 88%.",
+    "dangerRequired": "Say what makes it an emergency.",
+    "note": "Note for the doctor",
+    "noteHint": "Optional. What the doctor should know first.",
+    "noVitals": "Why no vitals?",
+    "noVitalsHint": "Take at least one vital sign, or say why you could not.",
+    "noVitalsRequired": "Record a vital sign above, or say why none could be taken.",
+    "send": "Send to the doctor",
+    "sent": "{{number}} is waiting for the doctor."
   },
   "loading": "Loading the queue…",
   "loadFailed": "The queue could not load. It retries by itself.",
@@ -37,7 +120,9 @@
   "stages": {
     "reception": "Reception",
     "payment": "Payment",
+    "triage": "Triage",
     "consultation": "Consultation",
+    "lab": "Laboratory",
     "pharmacy": "Pharmacy"
   },
   "flags": {
@@ -91,6 +176,7 @@
     "return": "Back in the queue",
     "complete": "Completed",
     "next_stage": "Moved to the next stage",
+    "triage": "Triaged",
     "opened": "New ticket",
     "transfer": "Transferred",
     "cancel": "Cancelled",
@@ -120,7 +206,6 @@
   },
   "board": {
     "title": "Queue",
-    "intro": "Everyone on site, in calling order. Select a ticket for actions.",
     "checkIn": "Check in patient",
     "services": "Services",
     "allServices": "All services",
@@ -219,7 +304,6 @@
   },
   "reorders": {
     "title": "Queue reviews",
-    "intro": "Every time someone moved a patient up the queue, with the reason. Review them to keep the queue fair.",
     "onlyOpen": "Show only moves not yet reviewed",
     "columns": {
       "when": "When",
@@ -241,7 +325,6 @@
   },
   "displays": {
     "title": "Waiting-room screens",
-    "intro": "Open a link on the waiting-room TV. It shows ticket numbers and rooms, never names.",
     "add": "Add screen",
     "label": "Screen name",
     "services": "Services shown",
@@ -266,7 +349,9 @@
     "spoken": "Ticket {{number}}",
     "spokenRoom": "Ticket {{number}}, please go to {{room}}",
     "invalid": "This screen link is not valid. Ask the facility for a new one.",
-    "footer": "Listen for your number. Book online: medilink.rw"
+    "footer": "Listen for your number. Book online: medilink.rw",
+    "testSound": "Test sound",
+    "testRoom": "Room 1"
   },
   "today": {
     "title": "On site now",
@@ -358,20 +443,137 @@
   },
   "reports": {
     "title": "Reports",
-    "intro": "How your facility is doing: patients, waits and when people arrive. Figures follow the MediLink metric definitions.",
-    "period": "Last 14 days",
-    "patientsPerDay": "Patients per day",
-    "patients": "Patients",
     "waitToBeSeen": "Wait to be seen (minutes)",
     "median": "Median",
     "p90": "9 in 10 seen within",
     "arrivals": "When patients arrive (last 4 weeks)",
     "less": "Fewer",
-    "more": "More",
-    "patients14": "Patients, 14 days",
-    "avgConsult": "Average consultation today",
-    "leftRate": "Left without being seen today",
-    "emergencies": "Emergencies, 14 days"
+    "more": "More"
+  },
+  "report": {
+    "noNames": "Totals only, no patient names",
+    "periodLabel": "Report period",
+    "range": "Period",
+    "presets": {
+      "7": "Last 7 days",
+      "30": "Last 30 days",
+      "90": "Last 90 days",
+      "thisMonth": "This month",
+      "lastMonth": "Last month",
+      "custom": "Choose dates"
+    },
+    "from": "From",
+    "to": "To",
+    "groupBy": "Show by",
+    "groups": {
+      "day": "Day",
+      "week": "Week",
+      "month": "Month"
+    },
+    "updating": "Updating…",
+    "periodText": "{{from}} to {{to}}",
+    "failed": "The report could not be loaded. Check the dates and try again.",
+    "weekOf": "Week of {{date}}",
+    "minutes_one": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "empty": "Nothing in this period.",
+    "download": "CSV",
+    "downloadNamed": "Download {{name}} as CSV",
+    "downloadFailed": "The download failed. Try again.",
+    "kpi": {
+      "patients": "Patients",
+      "completed_one": "{{count}} visit completed",
+      "completed_other": "{{count}} visits completed",
+      "consultWait": "Median wait for the doctor",
+      "p90": "9 in 10 within {{minutes}} min",
+      "collected": "Collected",
+      "billed": "{{amount}} billed",
+      "noShows": "Booking no-shows",
+      "noShowCount_one": "{{count}} of {{expected}} bookings",
+      "noShowCount_other": "{{count}} of {{expected}} bookings"
+    },
+    "visits": {
+      "title": "Patients seen",
+      "chart": "Patients over the period",
+      "patients": "Patients",
+      "completed": "Completed",
+      "left": "Left without service",
+      "emergencies": "Emergencies",
+      "expected": "Bookings expected",
+      "noShows": "No-shows"
+    },
+    "sources": {
+      "title": "How patients came"
+    },
+    "source": {
+      "walk_in": "Walk-in",
+      "online_booking": "Online booking",
+      "phone_booking": "Phone booking",
+      "follow_up": "Follow-up",
+      "remote_join": "Joined the queue from home",
+      "referral": "Referral",
+      "emergency": "Emergency"
+    },
+    "services": {
+      "title": "By service"
+    },
+    "waits": {
+      "title": "Waiting time by stage",
+      "median": "Median",
+      "p90": "9 in 10",
+      "tickets_one": "{{count}} ticket",
+      "tickets_other": "{{count}} tickets"
+    },
+    "diagnoses": {
+      "title": "Top diagnoses",
+      "intro_one": "ICD-10, from {{count}} signed note.",
+      "intro_other": "ICD-10, from {{count}} signed notes.",
+      "referrals": "Referred out",
+      "sensitive": "Sensitive, not named",
+      "referredTo": "Referred to: {{list}}"
+    },
+    "lab": {
+      "title": "Laboratory",
+      "resulted": "Tests done",
+      "waiting": "Still waiting",
+      "turnaround": "Median turnaround",
+      "turnaroundP90": "9 in 10 within",
+      "byTest": "Tests done by test",
+      "test": "Test",
+      "count": "Done",
+      "abnormal": "Abnormal",
+      "median": "Median turnaround"
+    },
+    "money": {
+      "title": "Money",
+      "byMethod": "Collected by payment method",
+      "payments_one": "{{count}} payment",
+      "payments_other": "{{count}} payments",
+      "byInsurer": "Insured visits by insurer",
+      "insurer": "Insurer",
+      "bills": "Bills",
+      "insurerShare": "Insurer share",
+      "patientShare": "Patient share",
+      "exemptions": "Exemptions",
+      "voidedPayments": "Payments voided",
+      "voidedBills": "Bills voided",
+      "refunds": "Refunds paid",
+      "creditNotes_one": "{{count}} credit note",
+      "creditNotes_other": "{{count}} credit notes"
+    },
+    "stock": {
+      "title": "Pharmacy stock",
+      "out": "Out of stock now",
+      "low": "Low on stock now",
+      "received": "Units received",
+      "dispensed": "Units dispensed",
+      "expiring": "Expired or expiring within {{days}} days",
+      "medicine": "Medicine",
+      "batch": "Batch",
+      "expiry": "Expiry",
+      "units": "Units left",
+      "expired": "expired"
+    }
   },
   "flow": {
     "label": "Patients in each stage",
@@ -418,8 +620,6 @@
     "title": "Front desk",
     "openBoard": "Open the queue board",
     "numbers": "Today at the front desk",
-    "waiting": "Waiting now",
-    "expected": "Still expected",
     "claims": "\"I'm here\" to confirm",
     "missed": "Missed today",
     "late_one": "{{count}} booking running late",
@@ -443,6 +643,10 @@
     "code": "Booking code",
     "bring": "Bring this card, your insurance card and your medicines.",
     "slip": "Print ticket slip",
-    "card": "Print appointment card"
+    "card": "Print appointment card",
+    "nextCard": "Print next-visit card",
+    "nextVisit": "Your next visit",
+    "comeMorning": "Come in the morning; reception will give you a number.",
+    "noFollowUp": "The doctor has not set a next visit for this patient."
   }
 }

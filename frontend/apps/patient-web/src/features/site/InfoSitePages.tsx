@@ -1,23 +1,12 @@
 import { ApiError } from "@medilink/api-client";
 import {
   ArrowRight,
-  BellRinging,
-  Buildings,
   ChatCircleText,
   CheckCircle,
   Crosshair,
-  Heartbeat,
-  HourglassMedium,
-  MagnifyingGlass,
   NavigationArrow,
   Phone,
-  ShieldCheck,
   Siren,
-  Ticket,
-  UserCheck,
-  UsersThree,
-  WarningCircle,
-  type Icon,
 } from "@phosphor-icons/react";
 import { Alert, Button, buttonClassName, cx, TextareaField, TextField } from "@medilink/ui";
 import { useQuery } from "@tanstack/react-query";
@@ -30,7 +19,6 @@ import { PublicLayout } from "../../layout/PublicLayout";
 import { directionsUrl, pick } from "../booking/discovery";
 import { sortResults, useNearMe } from "../booking/Places";
 import { EMERGENCY, isHospital, mapSearchUrl, REFERRAL_HOSPITALS } from "./data";
-import { EmergencyIllustration } from "./illustrations";
 import {
   EmptyState,
   Faq,
@@ -47,17 +35,26 @@ const DOCS_UPDATED = "2026-11-02";
 
 /**
  * Legal text still carries "[To confirm]" markers for the legal review in the locale files; the
- * public page never shows draft markers (redesign: no draft content on public pages).
+ * public page never shows draft markers (redesign: no draft content on public pages), nor the
+ * holes they leave: a marker in brackets goes with its brackets, one opening a sentence goes
+ * alone, and a sentence that only makes sense with the missing fact (a contact "at [To confirm]")
+ * is left out until the fact is confirmed.
  */
 function Confirm({ children }: { children: string }) {
-  return (
-    <>
-      {children
-        .replaceAll("[To confirm]", "")
-        .replace(/\s{2,}/g, " ")
-        .trim()}
-    </>
-  );
+  return <>{withoutDraftMarkers(children)}</>;
+}
+
+const MARKER = "[To confirm]";
+
+function withoutDraftMarkers(text: string): string {
+  return text
+    .replaceAll(` (${MARKER})`, "")
+    .split(/(?<=[.!?;])\s+/)
+    .map((sentence) => (sentence.startsWith(MARKER) ? sentence.slice(MARKER.length) : sentence))
+    .filter((sentence) => !sentence.includes(MARKER))
+    .join(" ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
 }
 
 function Updated() {
@@ -93,84 +90,75 @@ function DocSection({
   return (
     <section id={id} className="flex scroll-mt-28 flex-col gap-2">
       <h2 className="m-0 text-h3">{title}</h2>
-      <div className="text-fg-secondary">{children}</div>
+      <div className="max-w-[68ch] text-fg">{children}</div>
     </section>
   );
 }
 
 // ---- /about ----
 
-const ABOUT: { key: "what" | "problem" | "how" | "access" | "privacy"; icon: Icon }[] = [
-  { key: "what", icon: Heartbeat },
-  { key: "problem", icon: HourglassMedium },
-  { key: "how", icon: Buildings },
-  { key: "access", icon: UsersThree },
-  { key: "privacy", icon: ShieldCheck },
-];
+const ABOUT = ["what", "problem", "how", "access", "privacy"] as const;
 
 // ---- /how-it-works ----
 
-const JOURNEY: { key: string; icon: Icon }[] = [
-  { key: "search", icon: MagnifyingGlass },
-  { key: "select", icon: Buildings },
-  { key: "join", icon: Ticket },
-  { key: "confirm", icon: CheckCircle },
-  { key: "arrive", icon: UserCheck },
-  { key: "follow", icon: BellRinging },
-];
+const JOURNEY = ["search", "select", "join", "confirm", "arrive", "follow"] as const;
 
+/**
+ * How it works (public design brief 2026-11-04): read mode. The journey as a numbered
+ * step-by-step list in one readable column (GOV.UK step-by-step), then what is good to know as a
+ * plain list, then the one next step. No icon tiles, no cards per step.
+ */
 export function HowItWorksPage() {
   const { t } = useTranslation();
   return (
     <PublicLayout>
-      <PageContainer className="pb-16">
-        <PageHeader
-          crumbs={[{ label: t("nav.howItWorks") }]}
-          title={t("site.how.title")}
-          lead={t("site.how.lead")}
-        />
-        <div className="flex flex-col gap-14">
-          {/* the journey as one connected path; each step rises as it comes into view */}
-          <ol className="relative m-0 flex max-w-3xl list-none flex-col gap-4 p-0">
-            <span
-              aria-hidden="true"
-              className="absolute top-8 bottom-8 left-[1.75rem] w-0.5 rounded-full bg-gradient-to-b from-primary via-primary/40 to-border sm:left-[2.25rem]"
-            />
-            {JOURNEY.map(({ key, icon: StepIcon }, index) => (
-              <li key={key} className="ml-reveal relative flex items-start gap-4 sm:gap-6">
-                <span className="relative z-10 grid size-14 shrink-0 place-items-center rounded-2xl bg-surface text-primary shadow-card ring-4 ring-page sm:size-[4.5rem]">
-                  <StepIcon aria-hidden="true" weight="duotone" className="size-7" />
-                  <span className="absolute -top-2 -right-2 grid size-6 place-items-center rounded-full bg-primary text-caption font-bold text-on-primary tabular-nums">
-                    {index + 1}
-                  </span>
+      <PageContainer narrow className="pb-16">
+        <PageHeader crumbs={[{ label: t("nav.howItWorks") }]} title={t("site.how.title")} />
+        <div className="flex flex-col gap-12">
+          <ol className="m-0 flex list-none flex-col p-0">
+            {JOURNEY.map((key, index) => (
+              <li key={key} className="relative flex gap-5 pb-5 last:pb-0">
+                {/* the line that joins the steps, stopping at the last one */}
+                {index < JOURNEY.length - 1 && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute top-12 bottom-0 left-[1.4375rem] w-0.5 rounded-full bg-[color-mix(in_srgb,var(--color-primary)_22%,transparent)]"
+                  />
+                )}
+                <span
+                  aria-hidden="true"
+                  className="relative grid size-12 shrink-0 place-items-center rounded-full bg-primary font-heading text-body font-bold text-on-primary tabular-nums shadow-[0_0_0_4px_var(--color-page),0_0_0_5px_var(--site-hairline-strong)]"
+                >
+                  {index + 1}
                 </span>
-                <div className="flex flex-1 flex-col gap-1 rounded-2xl bg-surface p-5 shadow-card transition-shadow duration-300 hover:shadow-raised">
-                  <h2 className="m-0 text-h3">{t(`site.how.steps.${key}.title`)}</h2>
+                {/* each step on its own card (upgrade 14 §3) */}
+                <div className="ml-card flex flex-1 flex-col gap-1 rounded-panel bg-surface px-5 py-4">
+                  <h2 className="m-0 text-h3">
+                    <span className="sr-only">{t("site.home2.stepLabel", { n: index + 1 })}: </span>
+                    {t(`site.how.steps.${key}.title`)}
+                  </h2>
                   <p className="m-0 text-fg-secondary">{t(`site.how.steps.${key}.body`)}</p>
                 </div>
               </li>
             ))}
           </ol>
-          <section
-            aria-labelledby="good"
-            className="ml-reveal grid gap-6 rounded-3xl bg-brand-subtle/70 p-6 sm:p-8 lg:grid-cols-[16rem_minmax(0,1fr)]"
-          >
-            <h2 id="good" className="m-0 text-h2 tracking-tight">
+          <Panel aria-labelledby="good" className="flex flex-col gap-4 p-6 sm:p-8">
+            <h2 id="good" className="m-0 font-heading text-title font-bold">
               {t("site.how.goodTitle")}
             </h2>
-            <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2">
+            <ul className="m-0 grid list-none gap-3 p-0 text-fg sm:grid-cols-2">
               {(["noAccount", "walkIn", "reception", "noPhone"] as const).map((key) => (
-                <li key={key} className="flex gap-3">
+                <li key={key} className="flex items-start gap-2.5">
                   <CheckCircle
                     aria-hidden="true"
                     weight="fill"
                     className="mt-0.5 size-5 shrink-0 text-primary"
                   />
-                  <span className="text-fg">{t(`site.how.good.${key}`)}</span>
+                  {t(`site.how.good.${key}`)}
                 </li>
               ))}
             </ul>
-          </section>
+          </Panel>
           <Link
             to="/find-care"
             viewTransition
@@ -206,7 +194,7 @@ function ReferralFallback({ failed, onRetry }: { failed: boolean; onRetry: () =>
       {failed && (
         <div
           role="status"
-          className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 bg-attention-bg/50 px-5 py-3 text-body-sm"
+          className="flex flex-wrap items-center justify-between gap-3 border-b border-hairline bg-attention-bg/50 px-5 py-3 text-body-sm"
         >
           <span>{t("site.emergency.loadFailed", { number: EMERGENCY.number })}</span>
           <Button variant="ghost" pill onClick={onRetry}>
@@ -214,14 +202,14 @@ function ReferralFallback({ failed, onRetry }: { failed: boolean; onRetry: () =>
           </Button>
         </div>
       )}
-      <p className="m-0 px-5 pt-4 text-caption font-semibold tracking-wide text-fg-secondary uppercase">
+      <p className="m-0 px-5 pt-4 text-body-sm font-semibold text-fg-secondary">
         {t("site.emergency.referral")}
       </p>
       <ul className="m-0 list-none p-0">
         {REFERRAL_HOSPITALS.map((h) => (
           <li
             key={h.name}
-            className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-border/50 px-5 py-3.5 last:border-b-0"
+            className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-hairline px-5 py-3.5 last:border-b-0"
           >
             <span className="min-w-0 flex-1 font-semibold text-fg">
               {h.name}
@@ -254,9 +242,11 @@ function ReferralFallback({ failed, onRetry }: { failed: boolean; onRetry: () =>
 }
 
 /**
- * Emergency (upgrade 11 §5): call first, then the nearest places with directions. Facilities whose
- * admin declares a 24-hour emergency department come first, with a badge; other hospitals follow,
- * listed as hospitals only. Only the configured national number is shown.
+ * Emergency (upgrade 11 §5; public design brief 2026-11-04): an urgent care card first (NHS
+ * pattern: a red heading bar over the signs as a plain list and the call), then the nearest
+ * places with directions. Facilities whose admin declares a 24-hour emergency department come
+ * first; other hospitals follow, listed as hospitals only. Only the configured national number is
+ * shown. Nothing on this page moves.
  */
 export function EmergencyPage() {
   const { t } = useTranslation();
@@ -285,44 +275,53 @@ export function EmergencyPage() {
           title={t("site.emergency.title")}
           lead={t("site.emergency.lead")}
         />
-        <div className="ml-stagger grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
-          <div className="flex flex-col gap-6">
-            <a
-              href={`tel:${EMERGENCY.number}`}
-              className="group relative isolate flex animate-rise items-center gap-5 overflow-hidden rounded-3xl bg-danger-solid p-6 text-on-danger-solid no-underline shadow-raised transition-transform duration-150 ease-out-quint hover:brightness-105 active:scale-[0.99] sm:p-8"
+        <div className="grid gap-x-10 gap-y-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
+          <div className="flex min-w-0 flex-col gap-8">
+            {/* the urgent care card: what to look for, and the call */}
+            <section
+              aria-labelledby="signs"
+              className="overflow-hidden rounded-lg border border-danger-solid bg-surface"
             >
-              <span
-                aria-hidden="true"
-                className="absolute -top-16 -right-16 -z-10 size-56 rounded-full bg-on-danger-solid/10"
-              />
-              <span className="relative grid size-16 shrink-0 place-items-center rounded-2xl bg-on-danger-solid/15">
-                <span
-                  aria-hidden="true"
-                  className="absolute inset-0 animate-ping rounded-2xl bg-on-danger-solid/20 [animation-duration:2s] motion-reduce:hidden"
-                />
-                <Phone aria-hidden="true" weight="fill" className="relative size-8" />
-              </span>
-              <span className="flex flex-col">
-                <span className="font-heading text-[2rem] leading-tight font-bold">
-                  {t("site.emergency.callNow", { number: EMERGENCY.number })}
-                </span>
-                <span className="text-body-sm opacity-90">{t("site.emergency.callNote")}</span>
-              </span>
-            </a>
+              <h2
+                id="signs"
+                className="m-0 flex items-center gap-2 bg-danger-solid px-5 py-3.5 text-h3 text-on-danger-solid sm:px-6"
+              >
+                <Siren aria-hidden="true" weight="bold" className="size-5 shrink-0" />
+                {t("site.emergency.signsTitle")}
+              </h2>
+              <div className="flex flex-col gap-6 px-5 py-5 sm:px-6">
+                <ul className="m-0 grid list-disc gap-x-10 gap-y-2 pl-5 text-fg marker:text-danger sm:grid-cols-2">
+                  {SIGNS.map((sign) => (
+                    <li key={sign}>{t(`public.emergency.signs.${sign}`)}</li>
+                  ))}
+                </ul>
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-hairline pt-5">
+                  <a
+                    href={`tel:${EMERGENCY.number}`}
+                    className="inline-flex min-h-14 items-center gap-3 rounded-md bg-danger-solid px-6 font-heading text-[1.375rem] font-bold text-on-danger-solid no-underline transition-[filter] duration-150 hover:brightness-110"
+                  >
+                    <Phone aria-hidden="true" weight="fill" className="size-6" />
+                    {t("site.emergency.callNow", { number: EMERGENCY.number })}
+                  </a>
+                  <span className="text-body-sm text-fg-secondary">
+                    {t("site.emergency.callNote")}
+                  </span>
+                </div>
+              </div>
+            </section>
 
-            <Panel aria-labelledby="hospitals" className="overflow-hidden">
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 px-5 py-4">
-                <div>
-                  <h2 id="hospitals" className="m-0 text-h3">
+            <section aria-labelledby="hospitals" className="flex flex-col gap-3">
+              <div className="flex flex-wrap items-end justify-between gap-3">
+                <div className="flex flex-col gap-1">
+                  <h2 id="hospitals" className="m-0 text-h2">
                     {t("site.emergency.nearest")}
                   </h2>
-                  <p className="m-0 text-body-sm text-fg-muted">
+                  <p className="m-0 text-body-sm text-fg-secondary">
                     {t("site.emergency.nearestNote")}
                   </p>
                 </div>
                 <Button
                   variant="secondary"
-
                   pill
                   onClick={locate}
                   loading={locating === "busy"}
@@ -331,109 +330,81 @@ export function EmergencyPage() {
                   {near ? t("home.nearYou") : t("site.emergency.nearMe")}
                 </Button>
               </div>
-              {hospitals.isPending ? (
-                <LoadingRows rows={3} />
-              ) : hospitals.isError || !hospitals.data?.length ? (
-                <ReferralFallback
-                  failed={hospitals.isError}
-                  onRetry={() => void hospitals.refetch()}
-                />
-              ) : (
-                <ul className="m-0 list-none p-0">
-                  {hospitals.data.map((h) => (
-                    <li
-                      key={h.slug}
-                      className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-border/50 px-5 py-4 last:border-b-0"
-                    >
-                      <Link
-                        to={`/facilities/${h.slug}`}
-                        viewTransition
-                        className="min-w-0 flex-1 font-semibold text-fg"
+              <Panel as="div" className="overflow-hidden">
+                {hospitals.isPending ? (
+                  <LoadingRows rows={3} />
+                ) : hospitals.isError || !hospitals.data?.length ? (
+                  <ReferralFallback
+                    failed={hospitals.isError}
+                    onRetry={() => void hospitals.refetch()}
+                  />
+                ) : (
+                  <ul className="m-0 list-none p-0">
+                    {hospitals.data.map((h) => (
+                      <li
+                        key={h.slug}
+                        className="flex flex-col items-start gap-x-6 gap-y-3 border-b border-hairline px-5 py-4 last:border-b-0 sm:flex-row sm:items-center sm:px-6"
                       >
-                        {h.name}
-                        <span className="block text-body-sm font-normal text-fg-secondary">
-                          {t(`booking.types.${h.type}`, { defaultValue: h.type })} · {h.district}
-                        </span>
-                        {h.emergency_department && (
-                          <span className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-danger-bg px-2.5 py-0.5 text-caption font-semibold text-danger">
-                            <Siren aria-hidden="true" weight="bold" className="size-3.5" />
-                            {t("site.emergency.department")}
+                        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                          <Link
+                            to={`/facilities/${h.slug}`}
+                            viewTransition
+                            className="font-semibold text-link no-underline hover:underline"
+                          >
+                            {h.name}
+                          </Link>
+                          <span className="text-body-sm text-fg-secondary">
+                            {t(`booking.types.${h.type}`, { defaultValue: h.type })} · {h.district}
+                            {h.distance_km !== null && (
+                              <span className="font-semibold text-fg tabular-nums">
+                                {" · "}
+                                {t("booking.search.km", { km: h.distance_km })}
+                              </span>
+                            )}
                           </span>
+                          {h.emergency_department && (
+                            <span className="inline-flex items-center gap-1.5 text-body-sm font-semibold text-danger">
+                              <Siren aria-hidden="true" weight="bold" className="size-4" />
+                              {t("site.emergency.department")}
+                            </span>
+                          )}
+                        </div>
+                        {h.lat !== null && h.lng !== null && (
+                          <a
+                            href={directionsUrl(h.lat, h.lng)}
+                            target="_blank"
+                            rel="noreferrer"
+                            aria-label={`${t("site.facility.directions")}: ${h.name}`}
+                            className={buttonClassName({ variant: "secondary", pill: true })}
+                          >
+                            <NavigationArrow aria-hidden="true" className="size-4" />
+                            {t("site.facility.directions")}
+                          </a>
                         )}
-                      </Link>
-                      {h.distance_km !== null && (
-                        <span className="text-body-sm font-semibold tabular-nums">
-                          {t("booking.search.km", { km: h.distance_km })}
-                        </span>
-                      )}
-                      {h.lat !== null && h.lng !== null && (
-                        <a
-                          href={directionsUrl(h.lat, h.lng)}
-                          target="_blank"
-                          rel="noreferrer"
-                          className={buttonClassName({
-                            variant: "secondary",
-
-                            pill: true,
-                          })}
-                        >
-                          <NavigationArrow aria-hidden="true" className="size-4" />
-                          {t("site.facility.directions")}
-                        </a>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </Panel>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Panel>
+            </section>
           </div>
 
-          <div className="flex flex-col gap-6">
-            <Panel aria-labelledby="signs" className="p-6">
-              <EmergencyIllustration className="mb-4 h-24 w-auto" />
-              <h2 id="signs" className="m-0 flex items-center gap-2 text-h3">
-                <Siren aria-hidden="true" weight="bold" className="size-5 text-danger" />
-                {t("site.emergency.signsTitle")}
-              </h2>
-              <ul className="m-0 mt-4 flex list-none flex-col gap-2 p-0">
-                {SIGNS.map((sign) => (
-                  <li
-                    key={sign}
-                    className="flex items-start gap-2.5 rounded-xl bg-danger-bg/60 px-3 py-2 text-body-sm text-fg"
-                  >
-                    <WarningCircle
-                      aria-hidden="true"
-                      weight="fill"
-                      className="mt-0.5 size-4 shrink-0 text-danger"
-                    />
-                    {t(`public.emergency.signs.${sign}`)}
-                  </li>
-                ))}
-              </ul>
-            </Panel>
-            <Panel aria-labelledby="guidance" className="p-6">
-              <h2 id="guidance" className="m-0 text-h3">
-                {t("site.emergency.guidanceTitle")}
-              </h2>
-              <ol className="m-0 mt-4 flex list-none flex-col gap-3 p-0 text-body-sm text-fg-secondary">
-                {[
-                  t("site.emergency.guidance.call", { number: EMERGENCY.number }),
-                  t("site.emergency.guidance.nearest"),
-                  t("site.emergency.guidance.bring"),
-                ].map((line, index) => (
-                  <li key={line} className="flex items-start gap-3">
-                    <span
-                      aria-hidden="true"
-                      className="grid size-6 shrink-0 place-items-center rounded-full bg-forest text-caption font-bold text-on-forest tabular-nums"
-                    >
-                      {index + 1}
-                    </span>
-                    <span className="pt-0.5">{line}</span>
-                  </li>
-                ))}
-              </ol>
-            </Panel>
-          </div>
+          <aside aria-labelledby="guidance" className="flex flex-col gap-3">
+            <h2 id="guidance" className="m-0 text-h3">
+              {t("site.emergency.guidanceTitle")}
+            </h2>
+            <ol className="m-0 flex list-decimal flex-col gap-3 pl-5 text-fg marker:font-semibold">
+              {[
+                t("site.emergency.guidance.call", { number: EMERGENCY.number }),
+                t("site.emergency.guidance.nearest"),
+                t("site.emergency.guidance.bring"),
+              ].map((line) => (
+                <li key={line} className="pl-1">
+                  {line}
+                </li>
+              ))}
+            </ol>
+          </aside>
         </div>
       </PageContainer>
     </PublicLayout>
@@ -478,13 +449,9 @@ export function HelpPage() {
   return (
     <PublicLayout>
       <PageContainer className="pb-16">
-        <PageHeader
-          crumbs={[{ label: t("footer.help") }]}
-          title={t("site.help.title")}
-          lead={t("site.help.lead")}
-        />
+        <PageHeader crumbs={[{ label: t("footer.help") }]} title={t("site.help.title")} />
         <div className="flex flex-col gap-8">
-          <div className="flex animate-rise flex-col gap-4 rounded-3xl bg-surface p-4 shadow-card sm:p-5">
+          <div className="flex flex-col gap-4 rounded-panel bg-surface shadow-e2 p-4 sm:p-5">
             <SearchBar
               id="help-search"
               label={t("site.help.search")}
@@ -499,7 +466,7 @@ export function HelpPage() {
                     <li key={group.key}>
                       <a
                         href={`#help-${group.key}`}
-                        className="inline-flex min-h-target items-center rounded-full border border-border bg-page px-3.5 text-body-sm font-semibold text-fg no-underline transition-colors duration-150 hover:border-primary hover:bg-brand-subtle hover:text-on-brand-subtle"
+                        className="inline-flex min-h-10 items-center rounded-full bg-page px-4 text-body-sm font-semibold text-fg-secondary no-underline shadow-e1 transition-[background-color,color,box-shadow] duration-200 ease-out-quint hover:bg-brand-subtle hover:text-on-brand-subtle hover:shadow-e2"
                       >
                         {group.title}
                       </a>
@@ -523,7 +490,7 @@ export function HelpPage() {
                 >
                   <h2
                     id={`help-${group.key}`}
-                    className="m-0 border-b border-border/60 px-5 py-4 text-h3"
+                    className="m-0 border-b border-hairline px-5 py-4 text-h3"
                   >
                     {group.title}
                   </h2>
@@ -538,7 +505,7 @@ export function HelpPage() {
           )}
           {articles.isSuccess && articles.data.results.length > 0 && (
             <Panel aria-labelledby="articles" className="overflow-hidden">
-              <h2 id="articles" className="m-0 border-b border-border/60 px-5 py-4 text-h3">
+              <h2 id="articles" className="m-0 border-b border-hairline px-5 py-4 text-h3">
                 {t("site.help.articles")}
               </h2>
               <ul className="m-0 list-none p-0">
@@ -555,10 +522,10 @@ export function HelpPage() {
           )}
           <section
             aria-labelledby="still"
-            className="flex flex-col items-start gap-4 rounded-3xl bg-brand-subtle/70 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8"
+            className="flex flex-col items-start gap-4 rounded-panel bg-surface shadow-e2 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8"
           >
             <div>
-              <h2 id="still" className="m-0 text-h2 tracking-tight">
+              <h2 id="still" className="m-0 text-h2">
                 {t("site.help.contactTitle")}
               </h2>
               <p className="m-0 mt-1 text-fg-secondary">{t("site.help.contactLead")}</p>
@@ -580,39 +547,38 @@ export function AboutPage() {
   const { t } = useTranslation();
   return (
     <PublicLayout>
-      <PageContainer className="pb-20">
+      <PageContainer narrow className="pb-20">
         <PageHeader
           crumbs={[{ label: t("footer.about") }]}
           title={t("site.about.title")}
           lead={t("site.about.lead")}
         />
-        {/* what MediLink is first and wide, then the four themes as cards */}
-        <div className="grid gap-4 md:grid-cols-2">
-          {ABOUT.map(({ key, icon: SectionIcon }, index) => (
-            <section
+        {/* read mode: one column, the five themes each on its own card, numbered (upgrade 14 §3) */}
+        <div className="ml-stagger flex flex-col gap-4">
+          {ABOUT.map((key, index) => (
+            <Panel
               key={key}
               aria-labelledby={`about-${key}`}
-              className={cx(
-                "ml-reveal flex flex-col gap-3 rounded-3xl bg-surface p-6 shadow-card sm:p-8",
-                index === 0 && "md:col-span-2 md:flex-row md:items-start md:gap-6",
-              )}
+              className="grid gap-x-6 gap-y-2 p-6 sm:grid-cols-[3rem_minmax(0,1fr)] sm:p-8"
             >
               <span
                 aria-hidden="true"
-                className="grid size-12 shrink-0 place-items-center rounded-2xl bg-brand-subtle text-primary"
+                className="font-heading text-title font-bold text-primary tabular-nums"
               >
-                <SectionIcon weight="duotone" className="size-6" />
+                {String(index + 1).padStart(2, "0")}
               </span>
               <div className="flex flex-col gap-2">
-                <h2 id={`about-${key}`} className="m-0 text-h3">
+                <h2 id={`about-${key}`} className="m-0 font-heading text-h3 font-bold">
                   {t(`site.about.sections.${key}.title`)}
                 </h2>
-                <p className="m-0 text-fg-secondary">{t(`site.about.sections.${key}.body`)}</p>
+                <p className="m-0 max-w-[68ch] leading-relaxed text-fg-secondary">
+                  {t(`site.about.sections.${key}.body`)}
+                </p>
               </div>
-            </section>
+            </Panel>
           ))}
         </div>
-        <div className="ml-reveal mt-6 flex flex-wrap gap-3">
+        <div className="mt-6 flex flex-wrap gap-3">
           <Link
             to="/for-facilities"
             viewTransition
@@ -707,12 +673,8 @@ export function ContactPage() {
   return (
     <PublicLayout>
       <PageContainer className="pb-16">
-        <PageHeader
-          crumbs={[{ label: t("footer.contact") }]}
-          title={t("site.contact.title")}
-          lead={t("site.contact.lead")}
-        />
-        <div className="ml-stagger grid gap-6 lg:grid-cols-[20rem_minmax(0,1fr)]">
+        <PageHeader crumbs={[{ label: t("footer.contact") }]} title={t("site.contact.title")} />
+        <div className="grid gap-6 lg:grid-cols-[20rem_minmax(0,1fr)]">
           <Panel as="aside" className="flex flex-col gap-4 self-start p-6">
             <h2 className="m-0 text-h3">{t("site.contact.infoTitle")}</h2>
             <p className="m-0 text-fg-secondary">{t("site.contact.infoBody")}</p>
@@ -801,7 +763,6 @@ export function AccessibilityPage() {
         <PageHeader
           crumbs={[{ label: t("footer.accessibility") }]}
           title={t("site.accessibility.title")}
-          lead={t("site.accessibility.lead")}
         />
         <Document>
           <Updated />
@@ -836,19 +797,14 @@ function LegalPage({ doc }: { doc: "privacy" | "terms" }) {
         />
         {/* the text beside a contents list that stays in view on wide screens */}
         <div className="grid items-start gap-8 lg:grid-cols-[15rem_minmax(0,1fr)]">
-          <nav
-            aria-label={t("site.onThisPage")}
-            className="hidden rounded-2xl bg-surface p-4 shadow-card lg:sticky lg:top-24 lg:block"
-          >
-            <p className="m-0 mb-2 text-caption font-semibold tracking-wider text-fg-muted uppercase">
-              {t("site.onThisPage")}
-            </p>
-            <ol className="m-0 flex list-none flex-col gap-0.5 p-0">
+          <nav aria-label={t("site.onThisPage")} className="hidden lg:sticky lg:top-24 lg:block">
+            <p className="m-0 mb-2 text-body-sm font-semibold text-fg">{t("site.onThisPage")}</p>
+            <ol className="m-0 flex list-none flex-col border-l border-border p-0">
               {LEGAL_SECTIONS[doc].map((key) => (
                 <li key={key}>
                   <a
                     href={`#${doc}-${key}`}
-                    className="block rounded-lg px-2.5 py-1.5 text-body-sm text-fg-secondary no-underline transition-colors duration-150 hover:bg-brand-subtle hover:text-on-brand-subtle"
+                    className="-ml-px block border-l border-transparent py-1.5 pl-4 text-body-sm text-link no-underline hover:border-fg-muted hover:underline"
                   >
                     {t(`public.${doc}.sections.${key}.title`)}
                   </a>

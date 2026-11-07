@@ -88,7 +88,23 @@
     "expected": "Attendu {{amount}}",
     "difference": "Écart {{amount}}",
     "note": "Note",
-    "needed": "Ouvrez une session de caisse avant d’enregistrer un paiement."
+    "needed": "Ouvrez une session de caisse avant d’enregistrer un paiement.",
+    "byMethod": {
+      "title": "Par mode de paiement",
+      "method": "Mode",
+      "payments": "Paiements",
+      "received": "Reçu",
+      "paidOut": "Remboursements versés",
+      "expected": "En caisse",
+      "counted": "Compté",
+      "difference": "Écart",
+      "total": "Total"
+    },
+    "last": {
+      "title": "Votre dernière session",
+      "waiting": "En attente de vérification",
+      "accepted": "Validée par {{name}}"
+    }
   },
   "approvals": {
     "title": "Approbations",
@@ -103,7 +119,6 @@
     "reject": "Refuser",
     "rejectNote": "Motif du refus",
     "viewBill": "Voir la facture",
-    "intro": "Demandes de l’équipe et caisses clôturées. Chaque décision est enregistrée.",
     "tabs": {
       "requests": "Demandes",
       "shifts": "Caisses"
@@ -136,6 +151,47 @@
     "payments": "Paiements de la session",
     "collected": "Encaissé pendant la session",
     "next": "Prochaines à payer",
-    "nothing": "Aucune facture en attente. Les nouvelles factures arrivent ici après la visite."
+    "nothing": "Aucune facture en attente. Les nouvelles factures arrivent ici après la visite.",
+    "inDrawer": "{{amount}} en caisse"
+  },
+  "nav": {
+    "claims": "Demandes aux assureurs"
+  },
+  "claims": {
+    "title": "Demandes aux assureurs",
+    "insurer": "Assureur",
+    "month": "Mois des visites",
+    "totals": "Demandes du mois",
+    "visits_one": "{{count}} visite à réclamer",
+    "visits_other": "{{count}} visites à réclamer",
+    "toClaim": "Part de l’assureur",
+    "claimsCount_one": "{{count}} demande",
+    "claimsCount_other": "{{count}} demandes",
+    "status": {
+      "pending": "Non réglée",
+      "paid": "Payée",
+      "rejected": "Refusée"
+    },
+    "all": "Toutes",
+    "filter": "Demandes par statut",
+    "empty": "Aucune visite assurée pour cet assureur ce mois-ci",
+    "downloadCsv": "Télécharger en CSV",
+    "downloadPdf": "Télécharger en PDF",
+    "downloadFailed": "Le téléchargement a échoué. Réessayez.",
+    "member": "Numéro d’affilié {{number}}",
+    "icd10": "CIM-10",
+    "noDiagnosis": "Aucun diagnostic signé",
+    "lines_one": "{{count}} prestation ou article",
+    "lines_other": "{{count}} prestations et articles",
+    "notCovered": "Non couvert",
+    "markedBy": "Indiqué par {{name}}",
+    "referenceIs": "Référence {{reference}}",
+    "reason": "Motif de l’assureur",
+    "reference": "Référence du paiement",
+    "referenceHint": "Facultatif : numéro de virement ou de lot de l’assureur",
+    "confirmPaid": "Indiquer payée",
+    "confirmRejected": "Indiquer refusée",
+    "markPaid": "Payée",
+    "markRejected": "Refusée"
   }
 }

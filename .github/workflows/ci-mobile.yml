@@ -1,0 +1,53 @@
+name: CI · mobile
+
+# Analyze and test the patient Android app (mobile/, Flutter; docs/upgrade/15-mobile-app.md).
+# Third-party actions are pinned by commit SHA (docs/security/09-secure-development-lifecycle.md).
+
+on:
+  pull_request:
+    paths:
+      - "mobile/**"
+      - ".github/workflows/ci-mobile.yml"
+  push:
+    branches: [main]
+    paths:
+      - "mobile/**"
+      - ".github/workflows/ci-mobile.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-mobile-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mobile:
+    name: analyze · test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version: 3.44.8
+          cache: true
+
+      - name: Install packages
+        run: flutter pub get --enforce-lockfile
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test

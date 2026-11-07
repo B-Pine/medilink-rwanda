@@ -24,7 +24,7 @@
     "emailRequired": "Andika imeyili yawe",
     "emailInvalid": "Andika imeyili yanditse neza, urugero: izina@example.rw",
     "passwordRequired": "Andika ijambo ry’ibanga",
-    "passwordLength": "Koresha nibura inyuguti 15",
+    "passwordLength": "Koresha nibura inyuguti 8",
     "nameRequired": "Andika amazina yawe",
     "termsRequired": "Emera amabwiriza yo gukoresha kugira ngo ufungure konti",
     "privacyRequired": "Emera itangazo ry’ibanga kugira ngo ufungure konti"
@@ -131,7 +131,6 @@
     "dataInRwanda": "Amakuru y'ubuzima abikwa mu Rwanda"
   },
   "authAside": {
-    "eyebrow": "Konti yawe ya MediLink",
     "title": "Tegereza igihe gito, ubone umwanya wo gukira.",
     "lead": "Konti imwe yawe n’umuryango wawe, mu kigo cyose kiri kuri MediLink.",
     "points": {
@@ -166,6 +165,13 @@
     "invalidCredentials": "Imeyili cyangwa ijambo ry’ibanga si byo. Bisuzume wongere ugerageze.",
     "guest": "Shaka ubuvuzi nta konti"
   },
+  "google": {
+    "or": "cyangwa",
+    "failed": "Kwinjira ukoresheje Google ntibyakunze. Ongera ugerageze.",
+    "consentTitle": "Fungura konti yawe ukoresheje Google",
+    "create": "Fungura konti yanjye",
+    "cancel": "Reka"
+  },
   "signup": {
     "title": "Fungura konti yawe",
     "intro": "Bifata nk’umunota umwe. Ubwishingizi n’abagize umuryango wabyongeraho nyuma.",
@@ -174,8 +180,8 @@
     "fullNameHint": "Nk’uko yanditse ku ndangamuntu yawe.",
     "email": "Imeyili",
     "password": "Ijambo ry’ibanga",
-    "passwordHint": "Koresha nibura inyuguti 15. Interuro ngufi yoroshye kwibuka kandi igoye gukeka.",
-    "passwordRule": "Nibura inyuguti 15",
+    "passwordHint": "Koresha nibura inyuguti 8. Interuro ngufi yoroshye kwibuka kandi igoye gukeka.",
+    "passwordRule": "Nibura inyuguti 8",
     "passwordRuleMet": "byuzuye",
     "passwordRuleNotMet": "ntibiruzura",
     "language": "Ururimi rw’ubutumwa",
@@ -197,7 +203,9 @@
     "login": "Injira",
     "checkEmailTitle": "Reba imeyili yawe",
     "checkEmailBody": "Twohereje ubutumwa kuri {{email}}. Fungura ihuriro riri muri ubwo butumwa kugira ngo urangize gufungura konti. Iryo huriro rimara iminsi 3.",
-    "checkEmailHint": "Nta meyili wabonye nyuma y’iminota mike? Reba mu butumwa bwa spam, cyangwa wongere wiyandikishe ubone irindi huriro."
+    "checkEmailHint": "Nta meyili wabonye nyuma y’iminota mike? Reba mu butumwa bwa spam, cyangwa wongere wiyandikishe ubone irindi huriro.",
+    "readyTitle": "Konti yawe yiteguye",
+    "readyBody": "Injira ukoresheje {{email}} n’ijambo ry’ibanga ryawe."
   },
   "verifyEmail": {
     "title": "Emeza imeyili yawe",
@@ -337,7 +345,7 @@
   "reset": {
     "title": "Shyiraho ijambo ry’ibanga rishya",
     "newPassword": "Ijambo ry’ibanga rishya",
-    "hint": "Nibura inyuguti 15. Interuro ngufi yoroshye kwibuka kandi igoye gukeka.",
+    "hint": "Nibura inyuguti 8. Interuro ngufi yoroshye kwibuka kandi igoye gukeka.",
     "submit": "Bika ijambo ry’ibanga rishya",
     "doneTitle": "Ijambo ry’ibanga ryahinduwe",
     "doneBody": "Ijambo ry’ibanga ryahinduwe kandi wasohowe ahantu hose. Injira ukoresheje ijambo ry’ibanga rishya.",

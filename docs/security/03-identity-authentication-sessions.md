@@ -8,17 +8,32 @@ Status: v0.1 · Standards: NIST SP 800-63B-4 (final, July 2025), OWASP ASVS 5.0 
 |---|---|---|
 | **Super admin** | Password + **passkey / FIDO2 security key (mandatory)**; access only via VPN or admin IP allowlist | Highest (phishing-resistant, AAL3-like) |
 | **Facility staff** (admin, receptionist, doctor, pharmacist) | Password + **MFA mandatory**: passkey preferred, TOTP authenticator app as fallback | AAL2 (phishing-resistant where passkeys are used) |
-| **Patient** | Password **or** email magic link; optional TOTP / passkey; phone OTP from P3 | AAL1, with step-up for sensitive actions |
+| **Patient** | Password **or** Sign in with Google (upgrade 17) **or** email magic link; optional TOTP / passkey; phone OTP from P3 | AAL1, with step-up for sensitive actions |
 | **Display device** | Revocable, read-only device token scoped to one facility / service | Not a user |
 
 TOTP can be phished: a fake login page can relay the code. That's why **passkeys are the target for all staff**. Synced passkeys are recognised at AAL2 in NIST 800-63B-4.
+
+### 1a. Sign in with Google (patients only, decision 2026-11-05)
+
+| Rule | Value |
+|---|---|
+| Who | Patients on the website and the app. **Staff and platform accounts are refused** (403 `staff_account`): their sign-in needs MFA, which Google sign-in would skip |
+| What the client sends | Only Google's **ID token** (`POST /api/v1/patient/auth/google/`). No access token is requested, no Google scope beyond the basic profile |
+| What the API checks | RS256 signature against Google's published keys (cached 1 h), issuer `accounts.google.com`, audience = our OAuth client IDs (`GOOGLE_OAUTH_WEB_CLIENT_ID` [+ `GOOGLE_OAUTH_CLIENT_IDS`]), expiry with 60 s leeway, and an email Google has verified (`PyJWT`, not hand-written) |
+| What is stored | Google's stable account ID (`sub`) on `GoogleIdentity`, one per account, plus last use. Never a Google token |
+| Same email | A verified Google email that matches a patient account **links it automatically** (decision 2026-11-05), audited `auth.google.linked`, and confirms a pending sign-up email. An account already tied to another Google account is never re-pointed. An unverified Google email never links or creates |
+| New person | 409 `consent_required` first: the client shows the sign-up consents (terms, privacy required; research optional), then sends the token again. The account has no usable password; "Forgot password" sets one |
+| Refusals | Invalid, forged, expired or foreign tokens answer 401 and are audited `auth.google.refused`; throttled like login |
+| Browser | Google Identity Services script, frame and styles allowed only under `https://accounts.google.com/gsi/` and only on the patient site's CSP |
+| Off switch | Empty `GOOGLE_OAUTH_WEB_CLIENT_ID`: the button is hidden and the endpoint answers 404 |
 
 ## 2. Passwords
 
 | Rule | Value | Source |
 |---|---|---|
-| Minimum length, password-only accounts (patients without 2FA) | **15 characters** (passphrase encouraged: "three words you can remember") | NIST 800-63B-4 |
-| Minimum length with MFA (staff, patients with 2FA) | **12 characters** | NIST allows 8; we choose 12 |
+| Minimum length, patients | **8 characters** (decision 2026-11-05: 15 was too hard to type on a phone; NIST 800-63B-4 recommends 15 for single-factor accounts, so this is an accepted risk, offset by the breached/context blocklists, login throttling and lockout) | Product decision |
+| Minimum length, staff and platform admins (MFA mandatory) | **12 characters** | NIST allows 8; we choose 12 |
+| Change while signed in | Patients: current password + new one (`POST /api/v1/patient/auth/password/`). A wrong current password counts as a failed login (same lockout); success ends every other session, rotates this one and emails the owner | |
 | Maximum length | ≥ 64 characters accepted | NIST |
 | Composition rules (must have symbol, etc.) | **None** | NIST says verifiers shall not impose them |
 | Forced periodic change | **No**; change only on evidence of compromise | NIST |
@@ -35,7 +50,7 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.PBKDF2PasswordHasher",  # only to upgrade legacy hashes
 ]
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "medilink.security.validators.ContextualMinimumLengthValidator"},  # 15 or 12 depending on MFA
+    {"NAME": "medilink.security.validators.ContextualMinimumLengthValidator"},  # 12 for staff/admins, 8 for patients
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "medilink.security.validators.BreachedPasswordValidator"},          # offline list
 ]
@@ -73,7 +88,8 @@ Recent strong authentication (≤ 5 minutes) is required for:
 | Concurrent sessions | Visible list; "sign out other sessions" | same |
 | Logout / deactivation | Server-side session deleted; WebSocket connections closed immediately | same |
 
-- **No JWT in `localStorage`** for web apps: browser storage is readable by any XSS. The mobile app (P3) will use short-lived access tokens + refresh tokens in the platform's secure storage.
+- **No JWT in `localStorage`** for web apps: browser storage is readable by any XSS.
+- **Patient mobile app** ([upgrade 15](../upgrade/15-mobile-app.md), decision 2026-11-05): the app uses the *same server-side patient session*, carried in a header instead of a cookie. Requests marked `X-MediLink-Client: app` send `Authorization: Bearer <session key>`; a login, rotation or logout returns the new key (or an empty one) in `X-Session-Token`. These requests never read or set a cookie, so there is no ambient credential and CSRF does not apply; browsers cannot add the custom header cross-site (the CORS allowlist refuses it in the preflight). The key lives in the Android Keystore (`flutter_secure_storage`); the app locks itself with a PIN or fingerprint. Idle timeout `PATIENT_APP_SESSION_IDLE_TIMEOUT` (default 30 days), absolute 30 days, rotated on login, deleted on logout, revocable server-side like any session. This replaces the earlier plan of access + refresh tokens: one revocable session is simpler and keeps one audit and logout path. Staff and admin sessions never accept the header.
 - **CSRF:** Django's CSRF middleware. The SPA reads the CSRF cookie and sends `X-CSRFToken`. `CSRF_TRUSTED_ORIGINS` lists only our app origins.
 - **The PIN unlock** (4–6 digits, staff only) unlocks an *existing* session on the same device for the same user. It's rate-limited (5 tries → full login) and never replaces MFA at login.
 
@@ -84,7 +100,7 @@ Recent strong authentication (≤ 5 minutes) is required for:
 | Credential stuffing | Per-account and per-device throttling with progressive delays; breached-password checks; MFA |
 | Brute force | After 5 failures: delay grows; after 10: account soft-locked 15 min + email to owner; staff lock alerts the facility admin |
 | Shared IPs (mobile carrier NAT, a whole facility behind one IP) | **IP limits are high and only one signal**; account, device and behaviour signals carry more weight, so a busy facility isn't blocked |
-| Account enumeration | Same response and timing for "wrong password" and "no account" on login and reset; sign-up says "check your email" in both cases |
+| Account enumeration | Same response and timing for "wrong password" and "no account" on login and reset; sign-up says "check your email" in both cases. A test deployment may set `PATIENT_SIGNUP_EMAIL_VERIFICATION=false` (decision 2026-11-05, testing only): no sign-up email is sent and the reply says "your account is ready", which gives up this protection; production keeps it `true` |
 | Magic-link abuse | Single use, 15-minute expiry, bound to the requesting browser (state cookie), stored hashed, invalidated after use or new request |
 | Invite links | Single use, 7-day expiry, bound to the invited email, hashed at rest |
 | Password reset | Single-use token, 30-minute expiry, all sessions revoked after reset, notification email |

@@ -12,7 +12,7 @@ import type {
  * Documented in frontend/README.md ("Mock accounts").
  */
 
-/** Password of every seeded mock account (staff min 12, patient min 15 characters). */
+/** Password of every seeded mock account (staff min 12, patient min 8 characters). */
 export const MOCK_PASSWORD = "MediLink-demo-2026";
 /** The only valid authenticator code in the mocks. */
 export const MOCK_TOTP_CODE = "123456";
@@ -81,6 +81,16 @@ export const ROLE_PERMISSIONS: Record<RoleCode, PermissionCode[]> = {
   pharmacist: ["disputes.comment", "pharmacy.dispense", "prescription.view", "reports.view_own"],
   // upgrade 06 §4: payments only
   cashier: ["billing.record_payment", "disputes.comment", "reports.view_own"],
+  // upgrade 06 §2 (#200): triage only, no diagnoses, notes or bills
+  triage_nurse: [
+    "disputes.comment",
+    "reports.view_own",
+    "triage.operate",
+    "visit.reason.view",
+    "vitals.record",
+  ],
+  // upgrade 06 §3 (#201): samples and results only, no diagnoses, notes, bills or release
+  lab_technician: ["disputes.comment", "lab.operate", "lab.result.enter", "reports.view_own"],
 };
 
 /**
@@ -178,6 +188,24 @@ export const STAFF_USERS: MockStaffUser[] = [
     is_platform_admin: false,
     mfa_enabled: true,
     memberships: [{ facility: FACILITIES.kigaliClinic, roles: ["cashier"] }],
+  },
+  {
+    id: "7a1e0b2c-0000-4000-8000-000000000010",
+    email: "triage@medilink.test",
+    full_name: "Mukeshimana Odette",
+    preferred_language: "rw",
+    is_platform_admin: false,
+    mfa_enabled: true,
+    memberships: [{ facility: FACILITIES.kigaliClinic, roles: ["triage_nurse"] }],
+  },
+  {
+    id: "7a1e0b2c-0000-4000-8000-000000000011",
+    email: "lab@medilink.test",
+    full_name: "Habyarimana Theogene",
+    preferred_language: "rw",
+    is_platform_admin: false,
+    mfa_enabled: true,
+    memberships: [{ facility: FACILITIES.kigaliClinic, roles: ["lab_technician"] }],
   },
   {
     id: "7a1e0b2c-0000-4000-8000-000000000005",

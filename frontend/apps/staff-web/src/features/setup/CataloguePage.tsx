@@ -55,7 +55,6 @@ export function CataloguePage() {
       <div className="flex flex-col gap-6">
         <PageHeader
           title={t("setup.settings.sections.services.title")}
-          description={t("setup.catalogue.intro")}
           back={{ to: "/settings", label: t("setup.settings.title") }}
         />
         <Tabs defaultValue="services">

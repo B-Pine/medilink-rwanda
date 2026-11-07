@@ -1,13 +1,19 @@
 import { http, HttpResponse } from "msw";
 
 import type {
+  AccountAction,
+  AccountUpdate,
   BreakGlassSession,
   CommandCenter,
   ConsoleEvent,
   ConsoleUser,
   ConsoleUserDetail,
+  UserSummary,
 } from "../../features/console";
+import { NATIONAL_TABLES, type NationalTable } from "../../features/console";
 import type { FeatureMockFactory } from "../features";
+import { nationalReportCsv, nationalReportMock } from "./national-report";
+import { reportPeriod } from "./report";
 import { id, page } from "./s1-common";
 
 /**
@@ -93,6 +99,14 @@ const FACILITIES = [
   },
 ];
 
+/** Kigali Clinic's facility admin: the platform facility page (onboarding mocks) links here. */
+export const MOCK_FACILITY_ADMIN_ID = "0190f1a2-7c3d-7e4f-8a5b-6c7d8e9f0a11";
+/** The same IDs as the platform facility mocks, so the facility filter and links agree. */
+const FACILITY_IDS: Record<string, string> = {
+  "Kigali Clinic": "4f0c1d2e-5b6a-4c7d-8e9f-0a1b2c3d4e01",
+};
+const facilityId = (name: string) => (FACILITY_IDS[name] ??= id());
+
 function seedUsers(): ConsoleUserDetail[] {
   const row = (
     full_name: string,
@@ -104,26 +118,53 @@ function seedUsers(): ConsoleUserDetail[] {
     id: id(),
     full_name,
     email,
+    phone: kind === "patient" ? "" : `+25078810${String(email.length).padStart(4, "0")}`,
+    profession: facilities.some(([, roles]) => roles.includes("doctor")) ? "medical_doctor" : "",
+    licence_state: facilities.some(([, roles]) => roles.includes("doctor")) ? "valid" : null,
     kind,
     is_active: true,
     mfa_enabled: kind !== "patient",
     facilities: facilities.map(([facility_name, roles]) => ({
-      facility_id: id(),
+      facility_id: facilityId(facility_name),
       facility_name,
       roles,
       is_active: true,
+      deactivated_at: null,
+      deactivation_reason: "",
     })),
     last_login: minutesAgo(Math.floor(Math.random() * 600) + 5),
     created_at: daysAgo(Math.floor(Math.random() * 200) + 10),
     email_verified: true,
+    verification_pending: false,
+    preferred_language: "rw",
+    sign_in_blocked_for: 0,
     sessions: [],
+    invitations: [],
     events: [],
+    changes: [],
     ...extra,
   });
   return [
     row("Mugisha Eric", "admin@medilink.test", "platform", []),
-    row("Ingabire Diane", "diane.ingabire@medilink.rw", "platform", []),
-    row("Uwimana Grace", "reception@medilink.test", "staff", [["Kigali Clinic", ["receptionist"]]]),
+    row("Ingabire Diane", "diane.ingabire@medilink.rw", "platform", [], {
+      preferred_language: "en",
+    }),
+    row(
+      "Mutesi Diane",
+      "facility.admin@medilink.test",
+      "staff",
+      [["Kigali Clinic", ["facility_admin"]]],
+      { id: MOCK_FACILITY_ADMIN_ID },
+    ),
+    row(
+      "Uwimana Grace",
+      "reception@medilink.test",
+      "staff",
+      [["Kigali Clinic", ["receptionist"]]],
+      {
+        sign_in_blocked_for: 11 * 60,
+      },
+    ),
     row("Dr Habimana Jean", "doctor@medilink.test", "staff", [
       ["Kigali Clinic", ["doctor"]],
       ["Remera Health Center", ["doctor", "facility_admin"]],
@@ -134,6 +175,15 @@ function seedUsers(): ConsoleUserDetail[] {
     ]),
     row("Umutoni Claire", "claire.u@chuk.rw", "staff", [["CHUK", ["doctor"]]], {
       mfa_enabled: false,
+      invitations: [
+        {
+          facility_id: facilityId("Kibagabaga Hospital"),
+          facility_name: "Kibagabaga Hospital",
+          roles: ["doctor"],
+          invited_at: daysAgo(2),
+          expires_at: daysAgo(-5),
+        },
+      ],
     }),
     row(
       "Habyarimana Joseph",
@@ -146,10 +196,24 @@ function seedUsers(): ConsoleUserDetail[] {
     ),
     row("Uwase Aline", "aline.uwase@gmail.com", "patient", []),
     row("Mukamana Jeanne", "jeanne.m@gmail.com", "patient", []),
-    row("Niyonsaba Claudine", "claudine.n@yahoo.fr", "patient", [], { email_verified: false }),
+    row("Niyonsaba Claudine", "claudine.n@yahoo.fr", "patient", [], {
+      email_verified: false,
+      verification_pending: true,
+      last_login: null,
+    }),
     row("Iradukunda Kevin", "kevin.ira@gmail.com", "patient", []),
   ];
 }
+
+const AUDIT_ACTION: Record<AccountAction, string> = {
+  lock: "platform.user.locked",
+  unlock: "platform.user.unlocked",
+  "reset-mfa": "platform.user.mfa_reset",
+  "revoke-sessions": "platform.user.sessions_revoked",
+  "send-password-reset": "platform.user.password_reset_sent",
+  "resend-verification": "platform.user.verification_resent",
+  "clear-sign-in-block": "platform.user.sign_in_unblocked",
+};
 
 const ACTIONS: [string, ConsoleEvent["outcome"]][] = [
   ["auth.login.success", "success"],
@@ -286,9 +350,120 @@ export const consoleMocks: FeatureMockFactory = (context) => {
     return { lang, me: result.me };
   };
   const row = (u: ConsoleUserDetail): ConsoleUser => {
-    const { sessions: _s, events: _e, email_verified: _v, ...rest } = u;
+    const {
+      sessions: _s,
+      events: _e,
+      email_verified: _v,
+      verification_pending: _p,
+      preferred_language: _l,
+      sign_in_blocked_for: _b,
+      invitations: _i,
+      changes: _c,
+      ...rest
+    } = u;
     return rest;
   };
+  const listed = (url: URL) => {
+    const q = (url.searchParams.get("q") ?? "").toLowerCase();
+    const digits = q.replace(/\D/g, "").replace(/^0/, "250");
+    const get = (key: string) => url.searchParams.get(key) ?? "";
+    return db.users
+      .filter(
+        (u) =>
+          !q ||
+          `${u.full_name} ${u.email}`.toLowerCase().includes(q) ||
+          (digits.length >= 4 && u.phone.replace(/\D/g, "").includes(digits)),
+      )
+      .filter((u) => !get("kind") || u.kind === get("kind"))
+      .filter((u) => !get("status") || (get("status") === "active" ? u.is_active : !u.is_active))
+      .filter(
+        (u) =>
+          !get("mfa") ||
+          (get("mfa") === "on" ? u.mfa_enabled : !u.mfa_enabled && u.kind !== "patient"),
+      )
+      .filter((u) => !get("verification") || u.verification_pending)
+      .filter(
+        (u) =>
+          (!get("facility") && !get("role")) ||
+          u.facilities.some(
+            (f) =>
+              (!get("facility") || f.facility_id === get("facility")) &&
+              (!get("role") || f.roles.includes(get("role"))),
+          ),
+      );
+  };
+  /** Account actions: the reason rule, never on yourself, and an audit line on the account. */
+  const audited = async (
+    request: Request,
+    userId: unknown,
+    action: string,
+  ): Promise<{ error: Response } | { user: ConsoleUserDetail; reason: string }> => {
+    const ok = guard(request);
+    if ("error" in ok) return { error: ok.error as Response };
+    const user = db.users.find((u) => u.id === userId);
+    if (!user)
+      return {
+        error: context.errorResponse(404, "not_found", context.message("notFound", ok.lang)),
+      };
+    const body = (await request.json()) as { reason?: string };
+    if (!body.reason || body.reason.trim().length < 5)
+      return {
+        error: context.errorResponse(
+          400,
+          "validation_error",
+          "Give a reason of 5 characters or more.",
+          { fields: { reason: ["Give a reason of 5 characters or more."] } },
+        ),
+      };
+    if (user.email === ok.me.email)
+      return {
+        error: context.errorResponse(
+          422,
+          "business_rule_violation",
+          "You can't change your own account here.",
+        ),
+      };
+    const entry: ConsoleEvent = {
+      id: id(),
+      occurred_at: new Date().toISOString(),
+      action,
+      outcome: "info",
+      actor_id: null,
+      actor_name: ok.me.full_name,
+      actor_email: ok.me.email,
+      actor_role: "platform_admin",
+      facility_name: "",
+      object_type: "user",
+      object_ref: user.id.slice(0, 8),
+      reason: body.reason,
+      ip: "41.186.1.10",
+      device: "Chrome · Windows",
+    };
+    db.security.unshift(entry);
+    user.changes.unshift(entry);
+    return { user, reason: body.reason };
+  };
+  const detail = (user: ConsoleUserDetail): ConsoleUserDetail => ({
+    ...user,
+    sessions:
+      user.is_active && user.last_login
+        ? [
+            {
+              ref: "3f9a1c07be",
+              audience: user.kind === "patient" ? "patient" : "staff",
+              created_at: minutesAgo(42),
+              expires_at: minutesAgo(-480),
+            },
+            {
+              ref: "8d02e45a11",
+              audience: user.kind === "patient" ? "patient" : "staff",
+              created_at: minutesAgo(1300),
+              expires_at: minutesAgo(-60),
+            },
+          ]
+        : [],
+    events: db.security.filter((e) => e.actor_id === user.id).slice(0, 12),
+  });
   const filterEvents = (rows: ConsoleEvent[], url: URL) => {
     const q = (url.searchParams.get("q") ?? "").toLowerCase();
     const action = url.searchParams.get("action") ?? "";
@@ -357,17 +532,77 @@ export const consoleMocks: FeatureMockFactory = (context) => {
       const ok = guard(request);
       if ("error" in ok) return ok.error;
       const url = new URL(request.url);
-      const q = (url.searchParams.get("q") ?? "").toLowerCase();
-      const kind = url.searchParams.get("kind");
-      const status = url.searchParams.get("status");
-      const mfa = url.searchParams.get("mfa");
-      const rows = db.users
-        .filter((u) => !q || `${u.full_name} ${u.email}`.toLowerCase().includes(q))
-        .filter((u) => !kind || u.kind === kind)
-        .filter((u) => !status || (status === "active" ? u.is_active : !u.is_active))
-        .filter((u) => !mfa || u.mfa_enabled === (mfa === "on"))
-        .map(row);
-      return HttpResponse.json(page(rows, url));
+      return HttpResponse.json(page(listed(url).map(row), url));
+    }),
+    http.get(`${PL}/users/summary/`, ({ request }) => {
+      const ok = guard(request);
+      if ("error" in ok) return ok.error;
+      const count = (test: (u: ConsoleUserDetail) => boolean) => db.users.filter(test).length;
+      const facilities = new Map<string, string>();
+      for (const u of db.users)
+        for (const f of u.facilities) facilities.set(f.facility_id, f.facility_name);
+      return HttpResponse.json({
+        total: db.users.length,
+        platform: count((u) => u.kind === "platform"),
+        staff: count((u) => u.kind === "staff"),
+        patient: count((u) => u.kind === "patient"),
+        locked: count((u) => !u.is_active),
+        without_mfa: count((u) => u.kind !== "patient" && !u.mfa_enabled),
+        verification_pending: count((u) => u.verification_pending),
+        facilities: [...facilities]
+          .map(([facilityId, name]) => ({ id: facilityId, name }))
+          .sort((a, b) => a.name.localeCompare(b.name)),
+      } satisfies UserSummary);
+    }),
+    // W9 (#208): the national aggregate report
+    http.get(`${PL}/reports/national/`, ({ request }) => {
+      const ok = guard(request);
+      if ("error" in ok) return ok.error;
+      const period = reportPeriod(new URL(request.url));
+      if ("errors" in period)
+        return context.errorResponse(400, "validation_error", "Some fields need attention.", {
+          fields: Object.fromEntries(Object.entries(period.errors).map(([k, v]) => [k, [v]])),
+        });
+      return HttpResponse.json(nationalReportMock(period.from, period.to, period.group));
+    }),
+    http.get(`${PL}/reports/national/export/`, ({ request }) => {
+      const ok = guard(request);
+      if ("error" in ok) return ok.error;
+      const url = new URL(request.url);
+      const period = reportPeriod(url);
+      const table = url.searchParams.get("table") as NationalTable | null;
+      if ("errors" in period || !table || !NATIONAL_TABLES.includes(table))
+        return context.errorResponse(400, "validation_error", "Some fields need attention.");
+      const report = nationalReportMock(period.from, period.to, period.group);
+      return new HttpResponse(nationalReportCsv(report, table), {
+        headers: {
+          "Content-Type": "text/csv; charset=utf-8",
+          "Content-Disposition": `attachment; filename="national-${table}-${period.from}-${period.to}.csv"`,
+        },
+      });
+    }),
+    http.get(`${PL}/users/export/`, ({ request }) => {
+      const ok = guard(request);
+      if ("error" in ok) return ok.error;
+      const rows = listed(new URL(request.url)).filter((u) => u.kind !== "patient");
+      const cell = (value: string) => `"${value.replace(/"/g, '""')}"`;
+      const csv = [
+        ["Name", "Email", "Work phone", "Account", "Facilities and roles", "Status"],
+        ...rows.map((u) => [
+          u.full_name,
+          u.email,
+          u.phone,
+          u.kind,
+          u.facilities.map((f) => `${f.facility_name} (${f.roles.join(", ")})`).join("; "),
+          u.is_active ? "active" : "locked",
+        ]),
+      ]
+        .map((line) => line.map(cell).join(","))
+        .join("\r\n");
+      // UTF-8 byte order mark, as the API sends: spreadsheets then read Kinyarwanda names
+      return new HttpResponse(String.fromCharCode(0xfeff) + csv, {
+        headers: { "Content-Type": "text/csv; charset=utf-8" },
+      });
     }),
     http.get(`${PL}/users/:id/`, ({ request, params }) => {
       const ok = guard(request);
@@ -375,65 +610,92 @@ export const consoleMocks: FeatureMockFactory = (context) => {
       const user = db.users.find((u) => u.id === params.id);
       if (!user)
         return context.errorResponse(404, "not_found", context.message("notFound", ok.lang));
-      return HttpResponse.json({
-        ...user,
-        sessions: user.is_active
-          ? [
-              {
-                ref: "3f9a1c07be",
-                audience: user.kind === "patient" ? "patient" : "staff",
-                created_at: minutesAgo(42),
-                expires_at: minutesAgo(-480),
-              },
-              {
-                ref: "8d02e45a11",
-                audience: user.kind === "patient" ? "patient" : "staff",
-                created_at: minutesAgo(1300),
-                expires_at: minutesAgo(-60),
-              },
-            ]
-          : [],
-        events: db.security.filter((e) => e.actor_id === user.id).slice(0, 12),
-      } satisfies ConsoleUserDetail);
+      return HttpResponse.json(detail(user));
     }),
-    http.post(`${PL}/users/:id/:action/`, async ({ request, params }) => {
-      const ok = guard(request);
-      if ("error" in ok) return ok.error;
-      const user = db.users.find((u) => u.id === params.id);
-      if (!user)
-        return context.errorResponse(404, "not_found", context.message("notFound", ok.lang));
-      const body = (await request.json()) as { reason?: string };
-      if (!body.reason || body.reason.trim().length < 5)
+    http.patch(`${PL}/users/:id/`, async ({ request, params }) => {
+      const body = (await request.clone().json()) as AccountUpdate;
+      const target = db.users.find((u) => u.id === params.id);
+      if (body.phone !== undefined && target?.kind === "patient")
         return context.errorResponse(
           400,
           "validation_error",
-          "Give a reason of 5 characters or more.",
+          "A patient's phone is kept on their patient record, not on the account.",
+          {
+            fields: {
+              phone: ["A patient's phone is kept on their patient record, not on the account."],
+            },
+          },
         );
-      if (user.email === ok.me.email)
+      const done = await audited(request, params.id, "platform.user.updated");
+      if ("error" in done) return done.error;
+      const { user } = done;
+      if (body.full_name !== undefined) user.full_name = body.full_name.trim();
+      if (body.phone !== undefined)
+        user.phone = body.phone.replace(/\s/g, "").replace(/^0/, "+250");
+      if (body.preferred_language) user.preferred_language = body.preferred_language;
+      return HttpResponse.json(detail(user));
+    }),
+    http.post(`${PL}/users/:id/facilities/:facilityId/:access/`, async ({ request, params }) => {
+      const done = await audited(
+        request,
+        params.id,
+        params.access === "remove" ? "staff.membership.deactivated" : "staff.membership.updated",
+      );
+      if ("error" in done) return done.error;
+      const { user, reason } = done;
+      const membership = user.facilities.find((f) => f.facility_id === params.facilityId);
+      if (!membership) return context.errorResponse(404, "not_found", "Not found.");
+      const admins = db.users.filter((u) =>
+        u.facilities.some(
+          (f) =>
+            f.facility_id === membership.facility_id &&
+            f.is_active &&
+            f.roles.includes("facility_admin"),
+        ),
+      );
+      if (
+        params.access === "remove" &&
+        membership.roles.includes("facility_admin") &&
+        admins.length <= 1
+      ) {
+        user.changes.shift();
         return context.errorResponse(
           422,
           "business_rule_violation",
-          "You can't change your own account here.",
+          "The facility needs at least one active facility admin.",
         );
-      if (params.action === "lock") user.is_active = false;
-      if (params.action === "unlock") user.is_active = true;
-      if (params.action === "reset-mfa") user.mfa_enabled = false;
-      db.security.unshift({
-        id: id(),
-        occurred_at: new Date().toISOString(),
-        action: `platform.user.${String(params.action).replace("-", "_")}`,
-        outcome: "info",
-        actor_id: null,
-        actor_name: ok.me.full_name,
-        actor_email: ok.me.email,
-        actor_role: "platform_admin",
-        facility_name: "",
-        object_type: "user",
-        object_ref: user.id.slice(0, 8),
-        reason: body.reason,
-        ip: "41.186.1.10",
-        device: "Chrome · Windows",
-      });
+      }
+      membership.is_active = params.access !== "remove";
+      membership.deactivated_at = membership.is_active ? null : new Date().toISOString();
+      membership.deactivation_reason = membership.is_active ? "" : reason;
+      user.changes[0]!.facility_name = membership.facility_name;
+      return HttpResponse.json(detail(user));
+    }),
+    http.post(`${PL}/users/:id/:action/`, async ({ request, params }) => {
+      const action = String(params.action) as AccountAction;
+      if (!(action in AUDIT_ACTION)) return context.errorResponse(404, "not_found", "Not found.");
+      const target = db.users.find((u) => u.id === params.id);
+      if (action === "resend-verification" && target && !target.verification_pending)
+        return context.errorResponse(
+          422,
+          "business_rule_violation",
+          "This person has already confirmed their email.",
+        );
+      if (action === "send-password-reset" && target && !target.is_active)
+        return context.errorResponse(422, "business_rule_violation", "Unlock the account first.");
+      if (action === "send-password-reset" && target?.verification_pending)
+        return context.errorResponse(
+          422,
+          "business_rule_violation",
+          "This person hasn't confirmed their email yet: resend the confirmation email.",
+        );
+      const done = await audited(request, params.id, AUDIT_ACTION[action]);
+      if ("error" in done) return done.error;
+      const { user } = done;
+      if (action === "lock") user.is_active = false;
+      if (action === "unlock") user.is_active = true;
+      if (action === "reset-mfa") user.mfa_enabled = false;
+      if (action === "clear-sign-in-block") user.sign_in_blocked_for = 0;
       return HttpResponse.json(row(user));
     }),
     http.get(`${PL}/security-events/`, ({ request }) => {

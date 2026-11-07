@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../data/session.dart';
+import 'theme.dart';
 import '../screens/auth/forgot_screen.dart';
 import '../screens/auth/pin_screen.dart';
 import '../screens/auth/sign_in_screen.dart';
@@ -53,20 +54,13 @@ final routerProvider = Provider<GoRouter>((ref) {
     ..listen(authProvider, (_, next) => phase.value = next)
     ..onDispose(phase.dispose);
 
+  // Every pushed page uses the theme's one transition (Motion.sharedAxis).
   Page<void> slide(GoRouterState state, Widget child) => CustomTransitionPage<void>(
         key: state.pageKey,
         child: child,
-        transitionsBuilder: (context, animation, secondary, child) {
-          final curve = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
-          final out = CurvedAnimation(parent: secondary, curve: Curves.easeOutCubic);
-          return SlideTransition(
-            position: Tween(begin: const Offset(1, 0), end: Offset.zero).animate(curve),
-            child: SlideTransition(
-              position: Tween(begin: Offset.zero, end: const Offset(-0.25, 0)).animate(out),
-              child: child,
-            ),
-          );
-        },
+        transitionDuration: Motion.slow,
+        reverseTransitionDuration: Motion.normal,
+        transitionsBuilder: Motion.sharedAxis,
       );
 
   return GoRouter(

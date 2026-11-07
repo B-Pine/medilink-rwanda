@@ -165,6 +165,30 @@ class FieldButton extends StatelessWidget {
       );
 }
 
+/// A live value (people ahead, a wait) that rolls up into place when it changes, like a
+/// counter. Swaps without motion when animations are off.
+class Rolling extends StatelessWidget {
+  const Rolling({super.key, required this.value, required this.child});
+
+  /// What identifies the shown value; a change starts the roll.
+  final Object value;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => AnimatedSwitcher(
+        duration: Motion.of(context, Motion.slow),
+        switchInCurve: Motion.ease,
+        switchOutCurve: Curves.easeIn,
+        transitionBuilder: (child, animation) => ClipRect(
+          child: SlideTransition(
+            position: Tween(begin: const Offset(0, 0.6), end: Offset.zero).animate(animation),
+            child: FadeTransition(opacity: animation, child: child),
+          ),
+        ),
+        child: KeyedSubtree(key: ValueKey(value), child: child),
+      );
+}
+
 /// The bar title of a detail page (doctor, facility): hidden while the header shows the name,
 /// shown once the header has collapsed into the bar.
 class CollapsedTitle extends StatelessWidget {

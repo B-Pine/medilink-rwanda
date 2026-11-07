@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../app/theme.dart';
 import 'icons.dart';
@@ -230,6 +231,11 @@ class GroupedSwitchRow extends StatelessWidget {
   /// It can never change here: the row is muted.
   final bool locked;
 
+  void _toggle(bool on) {
+    HapticFeedback.selectionClick();
+    onChanged!(on);
+  }
+
   @override
   Widget build(BuildContext context) => MergeSemantics(
         child: GroupedRow(
@@ -237,8 +243,8 @@ class GroupedSwitchRow extends StatelessWidget {
           title: title,
           subtitle: subtitle,
           enabled: !locked,
-          onTap: onChanged == null ? null : () => onChanged!(!value),
-          trailing: Switch(value: value, onChanged: onChanged),
+          onTap: onChanged == null ? null : () => _toggle(!value),
+          trailing: Switch(value: value, onChanged: onChanged == null ? null : _toggle),
         ),
       );
 }

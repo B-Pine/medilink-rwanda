@@ -81,7 +81,7 @@ class SegmentedControl<T> extends StatelessWidget {
             child: AnimatedContainer(
               duration: duration,
               curve: Motion.ease,
-              constraints: const BoxConstraints(minHeight: 40),
+              constraints: const BoxConstraints(minHeight: 48),
               alignment: Alignment.center,
               padding: EdgeInsets.symmetric(horizontal: padding),
               decoration: BoxDecoration(

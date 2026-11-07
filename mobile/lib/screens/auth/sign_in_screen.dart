@@ -62,10 +62,29 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       title: s.signIn,
       leading: Align(
         alignment: Alignment.centerRight,
-        child: TextButton(
-          onPressed: () => ref.read(languageProvider.notifier).set(language == 'rw' ? 'en' : 'rw'),
-          style: TextButton.styleFrom(foregroundColor: Colors.white),
-          child: Text(language == 'rw' ? 'English' : 'Kinyarwanda'),
+        // The three languages, each in its own name.
+        child: PopupMenuButton<String>(
+          tooltip: s.language,
+          initialValue: language,
+          onSelected: (code) => ref.read(languageProvider.notifier).set(code),
+          itemBuilder: (_) => [
+            for (final (code, name) in Strings.languages) PopupMenuItem(value: code, child: Text(name)),
+          ],
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 48),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(PhosphorIconsRegular.translate, color: Colors.white, size: 18),
+                const SizedBox(width: Space.xs),
+                Text(
+                  Strings.languages.firstWhere((l) => l.$1 == language, orElse: () => Strings.languages.first).$2,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(color: Colors.white),
+                ),
+                const Icon(PhosphorIconsRegular.caretDown, color: Colors.white, size: 16),
+              ],
+            ),
+          ),
         ),
       ),
       children: [

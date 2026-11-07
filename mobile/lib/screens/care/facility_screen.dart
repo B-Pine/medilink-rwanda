@@ -113,7 +113,7 @@ class FacilityScreen extends ConsumerWidget {
                     if (f.doctors.isNotEmpty) ...[
                       SectionLabel(s.doctors),
                       SizedBox(
-                        height: 128,
+                        height: context.scaled(128),
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           clipBehavior: Clip.none,
@@ -188,11 +188,25 @@ class _Actions extends StatelessWidget {
       ),
       if (facility.phone.isNotEmpty) (s.call, PhosphorIconsRegular.phone, () => call(facility.phone)),
     ];
+    Widget button(String label, IconData icon, VoidCallback onTap) =>
+        OutlinedButton.icon(onPressed: onTap, icon: Icon(icon, size: 20), label: Text(label, maxLines: 1));
+    // Side by side; stacked when the text is large, so no word breaks.
+    if (context.largeText) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final (i, (label, icon, onTap)) in actions.indexed) ...[
+            if (i > 0) const SizedBox(height: Space.sm),
+            button(label, icon, onTap),
+          ],
+        ],
+      );
+    }
     return Row(
       children: [
         for (final (i, (label, icon, onTap)) in actions.indexed) ...[
           if (i > 0) const SizedBox(width: Space.md),
-          Expanded(child: OutlinedButton.icon(onPressed: onTap, icon: Icon(icon, size: 20), label: Text(label))),
+          Expanded(child: button(label, icon, onTap)),
         ],
       ],
     );

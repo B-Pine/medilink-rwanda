@@ -100,7 +100,7 @@ class FacilityMiniCard extends StatelessWidget {
                   ),
                 ],
                 const SizedBox(height: Space.sm),
-                SizedBox(height: 22, child: InsurerPills(codes: f.insurers, max: 2)),
+                SizedBox(height: context.scaled(22), child: InsurerPills(codes: f.insurers, max: 2)),
               ],
             ),
           ),

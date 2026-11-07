@@ -56,11 +56,13 @@ class DoctorScreen extends ConsumerWidget {
             );
           }
           final services = f.services.where((x) => doctor.serviceIds.contains(x.id)).toList();
+          // Larger text needs a taller header (name, specialty and the pill grow with it).
+          final grow = (MediaQuery.textScalerOf(context).scale(100) - 100).clamp(0, 200) * 2.0;
           return CustomScrollView(
             slivers: [
               SliverAppBar(
                 pinned: true,
-                expandedHeight: _headerHeight,
+                expandedHeight: _headerHeight + grow,
                 backgroundColor: Palette.forest,
                 foregroundColor: Colors.white,
                 systemOverlayStyle: SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent),

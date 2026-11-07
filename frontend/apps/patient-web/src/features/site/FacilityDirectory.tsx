@@ -410,7 +410,11 @@ export function FacilityExplorer({
           )}
         >
           {inBrowser ? (
-            <Suspense fallback={<Skeleton className="h-[28rem] rounded-panel lg:h-[34rem]" />}>
+            <Suspense
+              fallback={
+                <Skeleton className="h-[28rem] rounded-panel lg:h-[calc(100dvh-7rem)] lg:max-h-[52rem]" />
+              }
+            >
               <FacilityMap
                 points={points}
                 selectedId={selected}
@@ -419,12 +423,12 @@ export function FacilityExplorer({
                 tilesUrl={env.mapTilesUrl}
                 attribution={t("home.mapAttribution")}
                 label={t("home.mapLabel")}
-                className="h-[28rem] overflow-hidden rounded-panel shadow-e2 lg:h-[34rem]"
+                className="h-[28rem] overflow-hidden rounded-panel shadow-e2 lg:h-[calc(100dvh-7rem)] lg:max-h-[52rem]"
                 card={chosen ? <MapCard result={chosen} /> : undefined}
               />
             </Suspense>
           ) : (
-            <Skeleton className="h-[28rem] rounded-panel lg:h-[34rem]" />
+            <Skeleton className="h-[28rem] rounded-panel lg:h-[calc(100dvh-7rem)] lg:max-h-[52rem]" />
           )}
         </div>
       </div>

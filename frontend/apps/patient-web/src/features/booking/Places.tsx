@@ -100,6 +100,38 @@ function textOf(node: ReactNode): string {
     .join("");
 }
 
+/** Sort: open first, shortest wait, or nearest (once the location is shared). */
+export function SortSelect({
+  id,
+  value,
+  onChange,
+  near,
+}: {
+  id: string;
+  value: Sort;
+  onChange: (value: Sort) => void;
+  near: boolean;
+}) {
+  const { t } = useTranslation();
+  const options: { value: Sort; label: string }[] = [
+    { value: "open", label: t("site.sort.open") },
+    { value: "soonest", label: t("site.sort.soonest") },
+    ...(near ? [{ value: "nearest" as const, label: t("site.sort.nearest") }] : []),
+  ];
+  return (
+    <Select<Sort>
+      id={id}
+      label={t("home.sort.label")}
+      hideLabel
+      shape="pill"
+      value={value === "nearest" && !near ? "open" : value}
+      onChange={onChange}
+      options={options}
+      className="min-w-[11rem] [&>button]:min-h-10 [&>button]:text-body-sm [&>button]:font-semibold"
+    />
+  );
+}
+
 /** Facility types offered as a filter (S1 types; upgrade 03 §3). */
 export const TYPES = [
   "health_post",
@@ -111,7 +143,7 @@ export const TYPES = [
   "referral_hospital",
 ] as const;
 
-export type Sort = "soonest" | "nearest" | "name";
+export type Sort = "soonest" | "nearest" | "name" | "open";
 
 const INSURER_KEY_BY_CODE: Record<string, InsurerKey> = Object.fromEntries(
   INSURER_KEYS.filter((key) => INSURER_CODES[key]).map((key) => [INSURER_CODES[key], key]),
@@ -133,6 +165,11 @@ export function sortResults(results: FacilityResult[], sort: Sort): FacilityResu
   const far = (r: FacilityResult) => r.distance_km ?? Number.POSITIVE_INFINITY;
   if (sort === "name") return copy.sort((a, b) => a.name.localeCompare(b.name));
   if (sort === "nearest") return copy.sort((a, b) => far(a) - far(b));
+  if (sort === "open")
+    return copy.sort(
+      (a, b) =>
+        Number(b.open_now) - Number(a.open_now) || soonest(a) - soonest(b) || far(a) - far(b),
+    );
   return copy.sort((a, b) => soonest(a) - soonest(b) || far(a) - far(b));
 }
 

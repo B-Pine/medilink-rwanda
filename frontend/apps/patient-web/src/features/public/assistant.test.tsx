@@ -38,9 +38,9 @@ describe("AI symptom assistant (switched on)", () => {
     expect(await screen.findByText(/You may have malaria/)).toBeInTheDocument();
     expect(screen.getByText("Possible cause: malaria")).toBeInTheDocument();
     expect(screen.getByText("See a doctor today")).toBeInTheDocument();
-    const places = await screen.findByRole("list", { name: "Places that can help" });
+    const places = await screen.findByRole("list", { name: "Facilities that can help" });
     expect(within(places).getAllByRole("listitem").length).toBeGreaterThan(0);
-    expect(screen.getByRole("link", { name: "See more places" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "See more facilities" })).toHaveAttribute(
       "href",
       "/find-care?service=general_consultation",
     );

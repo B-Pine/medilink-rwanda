@@ -465,5 +465,16 @@
       "action": "Suzuma ibimenyetso byawe"
     },
     "howLine": "Ni ubwa mbere uje?"
+  },
+  "filters": {
+    "button": "Iyungurura",
+    "show": "Reba ibyavuye mu ishakisha",
+    "active": "Iyungurura rikora",
+    "remove": "Kuraho iyungurura: {{name}}"
+  },
+  "sort": {
+    "open": "Ibikora mbere",
+    "soonest": "Gutegereza bike",
+    "nearest": "Ibikwegereye"
   }
 }

@@ -255,7 +255,7 @@
     "callNow": "Call {{number}} now",
     "callNote": "National ambulance service (SAMU)",
     "nearest": "Hospitals near you",
-    "nearestNote": "Places that receive emergencies come first. Use Near me to sort by distance.",
+    "nearestNote": "Facilities that receive emergencies come first. Use Near me to sort by distance.",
     "nearMe": "Near me",
     "none": "No hospitals listed for this area",
     "signsTitle": "Go now if someone has",
@@ -440,12 +440,12 @@
   "home3": {
     "titleA": "Find the right care,",
     "titleB": "without the long wait.",
-    "openNow_one": "{{count}} place open now",
-    "openNow_other": "{{count}} places open now",
+    "openNow_one": "{{count}} facility open now",
+    "openNow_other": "{{count}} facilities open now",
     "waitingNow_one": "{{count}} person waiting",
     "waitingNow_other": "{{count}} people waiting",
     "live": "Live",
-    "seePlaces": "See the places",
+    "seePlaces": "See the facilities",
     "openTitle": "Facilities near you",
     "allClosed": "All facilities are closed now",
     "nextOpeningToday": "next opening {{time}} at {{name}}",
@@ -453,8 +453,8 @@
     "openLead": "Places on MediLink with their live wait. Tap Near me to sort by distance.",
     "kpi": {
       "open": "Open now",
-      "openHint_one": "of {{count}} place on MediLink",
-      "openHint_other": "of {{count}} places on MediLink",
+      "openHint_one": "of {{count}} facility on MediLink",
+      "openHint_other": "of {{count}} facilities on MediLink",
       "waiting": "People waiting",
       "typical": "Typical wait",
       "minutes_one": "{{count}} min",
@@ -465,5 +465,16 @@
       "action": "Check your symptoms"
     },
     "howLine": "New here?"
+  },
+  "filters": {
+    "button": "Filters",
+    "show": "Show results",
+    "active": "Active filters",
+    "remove": "Remove filter: {{name}}"
+  },
+  "sort": {
+    "open": "Open first",
+    "soonest": "Shortest wait",
+    "nearest": "Nearest"
   }
 }

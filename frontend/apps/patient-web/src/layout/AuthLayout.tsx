@@ -1,8 +1,10 @@
 import { Phone, ShieldCheck } from "@phosphor-icons/react";
-import { cx, LanguageSwitcher, Logo, MAIN_CONTENT_ID, SkipLink, ThemeSwitch } from "@medilink/ui";
+import { cx, Logo, MAIN_CONTENT_ID, SkipLink, ThemeSwitch } from "@medilink/ui";
 import { useEffect, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
+
+import { LanguageSelect } from "./PublicHeader";
 
 import { PageHeading } from "../components/PageHeading";
 
@@ -100,8 +102,8 @@ export function AuthLayout({
               <span className="hidden sm:inline">{t("nav.emergency")}</span>
               <span className="sm:hidden">912</span>
             </a>
-            {/* phones: no globe in the select, so the bar fits 360 px */}
-            <LanguageSwitcher pill className="max-sm:[&_select]:pl-4 max-sm:[&>svg]:hidden" />
+            {/* the language as a code (RW / EN / FR), as in the site header: fits a 320 px phone */}
+            <LanguageSelect />
             {/* phones keep 912 and the language; the theme follows the system there */}
             <span className="hidden sm:inline-flex">
               <ThemeSwitch />

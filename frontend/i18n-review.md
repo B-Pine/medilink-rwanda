@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5948.
+Keys: 5955.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -446,8 +446,8 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `home.nearYou` | Hafi yawe | Near you | needs native-speaker review |
 | `home.locationDenied` | Aho uri ntibibonetse · Hitamo akarere | Location unavailable · Pick a district | needs native-speaker review |
 | `home.places` | Aho wavurirwa | Places | needs native-speaker review |
-| `home.count_one` | Ahantu {{count}} | {{count}} place | needs native-speaker review |
-| `home.count_other` | Ahantu {{count}} | {{count}} places | needs native-speaker review |
+| `home.count_one` | Ikigo {{count}} | {{count}} facility | needs native-speaker review |
+| `home.count_other` | Ibigo {{count}} | {{count}} facilities | needs native-speaker review |
 | `home.sort.label` | Tondeka | Sort | needs native-speaker review |
 | `home.sort.soonest` | Uzakirwa vuba | Soonest seen | needs native-speaker review |
 | `home.sort.nearest` | Hafi cyane | Nearest | needs native-speaker review |
@@ -5563,7 +5563,7 @@ File: `apps/patient-web/src/features/public/locales/rw.json`
 | `checker.reason.see_clinician` | Umuganga yabireba mu minsi mike. | A clinician can look at this in the next few days. | needs native-speaker review |
 | `checker.reason.safety_age` | Ku bana bato cyane n'abasaza, buri gihe tugira inama yo kujya kwa muganga. | For the very young and the elderly we always suggest a visit. | needs native-speaker review |
 | `checker.reason.safety_duration` | Kubera ko bimaze icyumweru, umuganga agomba kubona uruhinja uyu munsi. | Because it has lasted a week, a clinician should see the baby today. | needs native-speaker review |
-| `checker.findPlaces` | Reba aho wajya hafi yanjye | See places near me | needs native-speaker review |
+| `checker.findPlaces` | Reba aho wajya hafi yanjye | See facilities near me | needs native-speaker review |
 | `checker.selfCareWhen` | Jya kwa muganga vuba niba ufite umuriro mwinshi, udashobora kunywa, cyangwa urushijeho kuremba. | Come in sooner if you get a high fever, cannot drink, or feel much worse. | needs native-speaker review |
 | `checker.notSignedOff` | Aya mategeko arimo gusuzumwa n'abaganga mbere y'igerageza. | These rules are being reviewed by clinicians before the pilot. | needs native-speaker review |
 | `checker.restart` | Ongera utangire | Start again | needs native-speaker review |
@@ -5674,9 +5674,9 @@ File: `apps/patient-web/src/features/public/locales/rw.json`
 | `assistant.urgency.soon` | Jya kwa muganga mu minsi mike | See a doctor in the next few days | needs native-speaker review |
 | `assistant.possible` | Impamvu ishoboka: {{condition}} | Possible cause: {{condition}} | needs native-speaker review |
 | `assistant.notDiagnosis` | Iri si isuzuma. Muganga ukusuzumye ni we wenyine ushobora kubimenya. | This is not a diagnosis. Only a doctor who examines you can tell what it is. | needs native-speaker review |
-| `assistant.placesTitle` | Aho bagufasha | Places that can help | needs native-speaker review |
+| `assistant.placesTitle` | Aho bagufasha | Facilities that can help | needs native-speaker review |
 | `assistant.noPlaces` | Nta kigo kiri hafi gitanga iyi serivisi ubu. | No facility offers this service nearby yet. | needs native-speaker review |
-| `assistant.morePlaces` | Reba ahandi hantu | See more places | needs native-speaker review |
+| `assistant.morePlaces` | Reba ahandi hantu | See more facilities | needs native-speaker review |
 | `assistant.tryIt` | Wahitamo kubisobanura mu magambo yawe? Gerageza umufasha wa AI (igerageza) | Prefer to describe it in your own words? Try the AI assistant (test) | needs native-speaker review |
 | `assistant.launcher` | Fungura umufasha wa AI | Open the AI assistant | needs native-speaker review |
 | `assistant.launcherShort` | Umufasha wa AI | AI assistant | needs native-speaker review |
@@ -5948,7 +5948,7 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `emergency.callNow` | Hamagara {{number}} ubu | Call {{number}} now | needs native-speaker review |
 | `emergency.callNote` | Serivisi y’imbangukiragutabara y’igihugu (SAMU) | National ambulance service (SAMU) | needs native-speaker review |
 | `emergency.nearest` | Ibitaro biri hafi yawe | Hospitals near you | needs native-speaker review |
-| `emergency.nearestNote` | Ahakira indembe haza mbere. Koresha Hafi yanjye kugira ngo utondeke ukurikije intera. | Places that receive emergencies come first. Use Near me to sort by distance. | needs native-speaker review |
+| `emergency.nearestNote` | Ahakira indembe haza mbere. Koresha Hafi yanjye kugira ngo utondeke ukurikije intera. | Facilities that receive emergencies come first. Use Near me to sort by distance. | needs native-speaker review |
 | `emergency.nearMe` | Hafi yanjye | Near me | needs native-speaker review |
 | `emergency.none` | Nta bitaro byanditswe aha | No hospitals listed for this area | needs native-speaker review |
 | `emergency.signsTitle` | Genda ubu niba umuntu afite | Go now if someone has | needs native-speaker review |
@@ -6075,20 +6075,20 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `home2.facilitiesAction` | MediLink ku bigo by'ubuvuzi | MediLink for facilities | needs native-speaker review |
 | `home3.titleA` | Bona ubuvuzi bukwiye, | Find the right care, | needs native-speaker review |
 | `home3.titleB` | udategereje igihe kirekire. | without the long wait. | needs native-speaker review |
-| `home3.openNow_one` | Ikigo {{count}} gifunguye ubu | {{count}} place open now | needs native-speaker review |
-| `home3.openNow_other` | Ibigo {{count}} bifunguye ubu | {{count}} places open now | needs native-speaker review |
+| `home3.openNow_one` | Ikigo {{count}} gifunguye ubu | {{count}} facility open now | needs native-speaker review |
+| `home3.openNow_other` | Ibigo {{count}} bifunguye ubu | {{count}} facilities open now | needs native-speaker review |
 | `home3.waitingNow_one` | Umuntu {{count}} ategereje | {{count}} person waiting | needs native-speaker review |
 | `home3.waitingNow_other` | Abantu {{count}} bategereje | {{count}} people waiting | needs native-speaker review |
 | `home3.live` | Ako kanya | Live | needs native-speaker review |
-| `home3.seePlaces` | Reba aho bitangirwa | See the places | needs native-speaker review |
+| `home3.seePlaces` | Reba aho bitangirwa | See the facilities | needs native-speaker review |
 | `home3.openTitle` | Ibigo bikwegereye | Facilities near you | needs native-speaker review |
 | `home3.allClosed` | Ibigo byose bifunze ubu | All facilities are closed now | needs native-speaker review |
 | `home3.nextOpeningToday` | ikizafungura mbere: {{name}}, {{time}} | next opening {{time}} at {{name}} | needs native-speaker review |
 | `home3.nextOpening` | ikizafungura mbere: {{name}}, {{day}} {{time}} | next opening {{day}} {{time}} at {{name}} | needs native-speaker review |
 | `home3.openLead` | Ibigo biri kuri MediLink n'igihe cyo gutegereza ako kanya. Kanda "Hafi yanjye" ubitondeke ukurikije intera. | Places on MediLink with their live wait. Tap Near me to sort by distance. | needs native-speaker review |
 | `home3.kpi.open` | Bifunguye ubu | Open now | needs native-speaker review |
-| `home3.kpi.openHint_one` | mu kigo {{count}} kiri kuri MediLink | of {{count}} place on MediLink | needs native-speaker review |
-| `home3.kpi.openHint_other` | mu bigo {{count}} biri kuri MediLink | of {{count}} places on MediLink | needs native-speaker review |
+| `home3.kpi.openHint_one` | mu kigo {{count}} kiri kuri MediLink | of {{count}} facility on MediLink | needs native-speaker review |
+| `home3.kpi.openHint_other` | mu bigo {{count}} biri kuri MediLink | of {{count}} facilities on MediLink | needs native-speaker review |
 | `home3.kpi.waiting` | Abategereje | People waiting | needs native-speaker review |
 | `home3.kpi.typical` | Igihe gisanzwe cyo gutegereza | Typical wait | needs native-speaker review |
 | `home3.kpi.minutes_one` | Umunota {{count}} | {{count}} min | needs native-speaker review |
@@ -6096,6 +6096,13 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `home3.symptoms.title` | Ntuzi aho wajya? | Not sure where to go? | needs native-speaker review |
 | `home3.symptoms.action` | Suzuma ibimenyetso byawe | Check your symptoms | needs native-speaker review |
 | `home3.howLine` | Ni ubwa mbere uje? | New here? | needs native-speaker review |
+| `filters.button` | Iyungurura | Filters | needs native-speaker review |
+| `filters.show` | Reba ibyavuye mu ishakisha | Show results | needs native-speaker review |
+| `filters.active` | Iyungurura rikora | Active filters | needs native-speaker review |
+| `filters.remove` | Kuraho iyungurura: {{name}} | Remove filter: {{name}} | needs native-speaker review |
+| `sort.open` | Ibikora mbere | Open first | needs native-speaker review |
+| `sort.soonest` | Gutegereza bike | Shortest wait | needs native-speaker review |
+| `sort.nearest` | Ibikwegereye | Nearest | needs native-speaker review |
 
 ## patient-web feature: tracker (namespace tracker)
 

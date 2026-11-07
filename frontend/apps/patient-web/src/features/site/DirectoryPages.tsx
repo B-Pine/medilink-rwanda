@@ -22,7 +22,15 @@ import { Link, useParams } from "react-router";
 import { useApi } from "../../app/services";
 import { PublicLayout } from "../../layout/PublicLayout";
 import { DISTRICT_CODES, day, pick, time, type DistrictKey } from "../booking/discovery";
-import { FILTER, FilterSelect, TYPES, useNearMe } from "../booking/Places";
+import {
+  FILTER,
+  FilterSelect,
+  sortResults,
+  SortSelect,
+  TYPES,
+  useNearMe,
+  type Sort,
+} from "../booking/Places";
 import { FacilityEntries, FacilityExplorer } from "./FacilityDirectory";
 import {
   categoryOf,
@@ -38,8 +46,10 @@ import {
   useFacilityPages,
 } from "./data";
 import {
+  type ActiveFilter,
   EmptyState,
   ErrorState,
+  FilterBar,
   LoadingRows,
   LocationSelector,
   NotFoundState,
@@ -102,7 +112,8 @@ export function FacilitiesPage() {
   const [type, setType] = useState("");
   const [service, setService] = useState("");
   const [openNow, setOpenNow] = useState(false);
-  const { near, locating, locate } = useNearMe();
+  const [sort, setSort] = useState<Sort>("open");
+  const { near, setNear, locating, locate } = useNearMe(() => setSort("nearest"));
   const catalogue = useCatalogue(lang);
   const pages = useFacilityPages({
     district_code: !near && where ? DISTRICT_CODES[where] : undefined,
@@ -111,18 +122,36 @@ export function FacilitiesPage() {
     near,
   });
   const words = text.trim().toLowerCase();
-  const rows = (pages.data?.pages.flatMap((p) => p.results) ?? []).filter(
-    (r) => (!type || r.type === type) && (!words || r.name.toLowerCase().includes(words)),
+  const rows = sortResults(
+    (pages.data?.pages.flatMap((p) => p.results) ?? []).filter(
+      (r) => (!type || r.type === type) && (!words || r.name.toLowerCase().includes(words)),
+    ),
+    sort === "nearest" && !near ? "open" : sort,
   );
   const total = pages.data?.pages[0]?.count ?? 0;
-  const filtered = Boolean(text || where || type || service || openNow);
   const clear = () => {
     setText("");
     setWhere("");
     setType("");
     setService("");
     setOpenNow(false);
+    setNear(null);
   };
+  const serviceName = catalogue.data?.find((s) => s.code === service)?.name ?? service;
+  // what is filtering the list now, each removable on its own
+  const active: ActiveFilter[] = [
+    ...(near ? [{ key: "near", label: t("home.nearYou"), onRemove: () => setNear(null) }] : []),
+    ...(where
+      ? [{ key: "where", label: t(`landing.districts.${where}`), onRemove: () => setWhere("") }]
+      : []),
+    ...(type
+      ? [{ key: "type", label: t(`booking.types.${type}`), onRemove: () => setType("") }]
+      : []),
+    ...(service ? [{ key: "service", label: serviceName, onRemove: () => setService("") }] : []),
+    ...(openNow
+      ? [{ key: "open", label: t("home.openNow"), onRemove: () => setOpenNow(false) }]
+      : []),
+  ];
 
   return (
     <PublicLayout>
@@ -133,91 +162,86 @@ export function FacilitiesPage() {
           title={t("site.facilities.title")}
         />
         <div className="flex flex-col gap-6">
-          {/* search and every filter in one card above the results */}
-          <div className="flex flex-col gap-3 rounded-panel bg-surface shadow-e2 p-4 sm:p-5">
-            <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_14rem]">
-              <SearchBar
-                id="facility-search"
-                label={t("site.searchLabel")}
-                value={text}
-                onChange={setText}
-                placeholder={t("site.searchPlaceholder")}
-              />
-              <LocationSelector id="facility-location" value={where} onChange={setWhere} />
-            </div>
-            <div
-              role="group"
-              aria-label={t("care.filters")}
-              className="flex flex-wrap items-center gap-2"
-            >
-              <button
-                type="button"
-                aria-pressed={near !== null}
-                onClick={locate}
-                disabled={locating === "busy"}
-                className={cx(FILTER, "inline-flex items-center gap-1.5")}
-              >
-                <Crosshair
-                  aria-hidden="true"
-                  className={cx("size-4", locating === "busy" && "animate-spin")}
+          <FilterBar
+            search={
+              <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_14rem]">
+                <SearchBar
+                  id="facility-search"
+                  label={t("site.searchLabel")}
+                  value={text}
+                  onChange={setText}
+                  placeholder={t("site.searchPlaceholder")}
                 />
-                {near ? t("home.nearYou") : t("home.nearMe")}
-              </button>
-              <FilterSelect
-                id="facility-type"
-                label={t("site.facilities.type")}
-                value={type}
-                onChange={setType}
-              >
-                <option value="">{t("home.anyType")}</option>
-                {TYPES.map((key) => (
-                  <option key={key} value={key}>
-                    {t(`booking.types.${key}`)}
-                  </option>
-                ))}
-              </FilterSelect>
-              <FilterSelect
-                id="facility-service"
-                label={t("site.facilities.service")}
-                value={service}
-                onChange={setService}
-              >
-                <option value="">{t("site.facilities.anyService")}</option>
-                {(catalogue.data ?? []).map((s) => (
-                  <option key={s.code} value={s.code}>
-                    {s.name}
-                  </option>
-                ))}
-              </FilterSelect>
-              <button
-                type="button"
-                aria-pressed={openNow}
-                onClick={() => setOpenNow((on) => !on)}
-                className={FILTER}
-              >
-                {t("home.openNow")}
-              </button>
-              {filtered && (
+                <LocationSelector id="facility-location" value={where} onChange={setWhere} />
+              </div>
+            }
+            filters={
+              <>
                 <button
                   type="button"
-                  onClick={clear}
-                  className="min-h-target cursor-pointer rounded-full px-3 text-body-sm font-semibold text-link hover:underline"
+                  aria-pressed={near !== null}
+                  onClick={locate}
+                  disabled={locating === "busy"}
+                  className={cx(FILTER, "inline-flex items-center gap-1.5")}
                 >
-                  {t("site.facilities.clear")}
+                  <Crosshair
+                    aria-hidden="true"
+                    className={cx("size-4", locating === "busy" && "animate-spin")}
+                  />
+                  {near ? t("home.nearYou") : t("home.nearMe")}
                 </button>
-              )}
-              {pages.isSuccess && (
-                <span role="status" className="ml-auto text-body-sm text-fg-muted tabular-nums">
-                  {t("site.facilities.count", { count: type || words ? rows.length : total })}
-                </span>
-              )}
-            </div>
-            {locating === "denied" && (
-              <p role="status" className="m-0 text-body-sm text-fg-secondary">
-                {t("home.locationDenied")}
-              </p>
-            )}
-          </div>
+                <FilterSelect
+                  id="facility-type"
+                  label={t("site.facilities.type")}
+                  value={type}
+                  onChange={setType}
+                >
+                  <option value="">{t("home.anyType")}</option>
+                  {TYPES.map((key) => (
+                    <option key={key} value={key}>
+                      {t(`booking.types.${key}`)}
+                    </option>
+                  ))}
+                </FilterSelect>
+                <FilterSelect
+                  id="facility-service"
+                  label={t("site.facilities.service")}
+                  value={service}
+                  onChange={setService}
+                >
+                  <option value="">{t("site.facilities.anyService")}</option>
+                  {(catalogue.data ?? []).map((s) => (
+                    <option key={s.code} value={s.code}>
+                      {s.name}
+                    </option>
+                  ))}
+                </FilterSelect>
+                <button
+                  type="button"
+                  aria-pressed={openNow}
+                  onClick={() => setOpenNow((on) => !on)}
+                  className={FILTER}
+                >
+                  {t("home.openNow")}
+                </button>
+              </>
+            }
+            active={active}
+            onClear={clear}
+            count={
+              pages.isSuccess
+                ? t("site.facilities.count", { count: type || words ? rows.length : total })
+                : undefined
+            }
+            sort={
+              <SortSelect id="facility-sort" value={sort} onChange={setSort} near={near !== null} />
+            }
+          />
+          {locating === "denied" && (
+            <p role="status" className="m-0 text-body-sm text-fg-secondary">
+              {t("home.locationDenied")}
+            </p>
+          )}
 
           <FacilityExplorer
             headingLevel={2}

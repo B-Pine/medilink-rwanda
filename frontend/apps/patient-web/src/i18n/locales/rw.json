@@ -262,8 +262,8 @@
     "nearYou": "Hafi yawe",
     "locationDenied": "Aho uri ntibibonetse · Hitamo akarere",
     "places": "Aho wavurirwa",
-    "count_one": "Ahantu {{count}}",
-    "count_other": "Ahantu {{count}}",
+    "count_one": "Ikigo {{count}}",
+    "count_other": "Ibigo {{count}}",
     "sort": {
       "label": "Tondeka",
       "soonest": "Uzakirwa vuba",

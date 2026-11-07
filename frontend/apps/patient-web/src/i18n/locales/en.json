@@ -262,8 +262,8 @@
     "nearYou": "Near you",
     "locationDenied": "Location unavailable · Pick a district",
     "places": "Places",
-    "count_one": "{{count}} place",
-    "count_other": "{{count}} places",
+    "count_one": "{{count}} facility",
+    "count_other": "{{count}} facilities",
     "sort": {
       "label": "Sort",
       "soonest": "Soonest seen",

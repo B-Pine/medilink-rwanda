@@ -8,6 +8,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### API image vulnerabilities (2026-11-07, #106)
+
+- Fixed: the runtime image no longer carries pip (its vendored msgpack, urllib3 and setuptools had
+  fixable high CVEs); the venv's pip is removed after the hash-checked install. the base's
+  Debian packages take their pending security updates (apt, zlib). The image scan in `security.yml` blocks again.
+
 ### Email and Sign in with Google (2026-11-06, upgrade 17)
 
 - Fixed: `GOOGLE_OAUTH_WEB_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_IDS`, `EMAIL_URL` and

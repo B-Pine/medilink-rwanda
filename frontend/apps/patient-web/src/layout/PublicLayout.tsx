@@ -1,14 +1,18 @@
 import { cx, MAIN_CONTENT_ID, SkipLink } from "@medilink/ui";
 import { CloudSlash } from "@phosphor-icons/react";
-import { useEffect, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 import { env } from "../env";
-import { AssistantLauncher } from "../features/public/AssistantLauncher";
 import { useInDashboard } from "./DashboardContext";
 import { PublicFooter } from "./PublicFooter";
 import { PublicHeader } from "./PublicHeader";
 import { useOnline } from "./useOnline";
+
+// loaded only when the assistant is on the public site (it is off by default, phase 3)
+const AssistantLauncher = lazy(() =>
+  import("../features/public/AssistantLauncher").then((m) => ({ default: m.AssistantLauncher })),
+);
 
 /** Public pages and auth screens: header, <main>, footer with the emergency notice. */
 export function PublicLayout({
@@ -66,7 +70,11 @@ export function PublicLayout({
       </main>
       <PublicFooter />
       {/* the AI assistant stays off the public site until it is ready (env.publicAssistant) */}
-      {env.publicAssistant && <AssistantLauncher />}
+      {env.publicAssistant && (
+        <Suspense fallback={null}>
+          <AssistantLauncher />
+        </Suspense>
+      )}
     </div>
   );
 }

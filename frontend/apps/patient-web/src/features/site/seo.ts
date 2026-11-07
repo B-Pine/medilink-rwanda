@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
 import { env } from "../../env";
-import { isHospital } from "./data";
 
 /**
  * Search and share tags for a public page (audit 2026-11-07, phase 5): one description, the
@@ -60,7 +59,8 @@ export function facilityJsonLd(
   url: string,
   description: string,
 ): Record<string, unknown> {
-  const kind = isHospital(f.type) ? "Hospital" : "MedicalClinic";
+  // as data.ts isHospital; not imported, so every page's heading stays free of the data layer
+  const kind = f.type.endsWith("hospital") ? "Hospital" : "MedicalClinic";
   return {
     "@context": "https://schema.org",
     "@type": f.emergency_department ? [kind, "EmergencyService"] : kind,

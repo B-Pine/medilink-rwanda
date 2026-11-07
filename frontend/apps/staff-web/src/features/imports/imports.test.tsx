@@ -46,8 +46,12 @@ describe("patient import wizard (S6-F7)", () => {
     // 2 ready, 1 problem (no sex), 1 likely duplicate (already registered)
     const ready = screen.getByText("Ready", { selector: "dt" });
     expect(ready.nextElementSibling).toHaveTextContent("2");
-    expect(screen.getByText("With problems", { selector: "dt" }).nextElementSibling).toHaveTextContent("1");
-    expect(screen.getByText("Likely duplicates", { selector: "dt" }).nextElementSibling).toHaveTextContent("1");
+    expect(
+      screen.getByText("With problems", { selector: "dt" }).nextElementSibling,
+    ).toHaveTextContent("1");
+    expect(
+      screen.getByText("Likely duplicates", { selector: "dt" }).nextElementSibling,
+    ).toHaveTextContent("1");
     const rows = await screen.findByRole("table", { name: "Rows" });
     expect(within(rows).getByRole("rowheader", { name: "Kayitesi Rose" })).toBeInTheDocument();
     expect(within(rows).getByText("Sex: not valid")).toBeInTheDocument();

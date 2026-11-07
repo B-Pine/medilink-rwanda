@@ -95,7 +95,7 @@ describe("front-end security rules (F6)", () => {
       /<html lang="rw" data-density="staff">/,
     );
     expect(read(resolve(frontend, "apps/patient-web/index.html"))).toMatch(
-      /<html lang="rw" data-density="patient">/,
+      /<html lang="rw" data-density="patient" data-surface="site">/,
     );
   });
 });

@@ -233,6 +233,32 @@
  * Set on <html> while the dashboard shell is mounted (menus and drawers render in portals).
  * Text size Large / Extra large still scale it, as every size is in rem.
  */
+/*
+ * Public site (audit 2026-11-07): the patient app's scale in rem, so Text size still scales it.
+ * Six steps: display 40, h1 32, h2 24, h3 18, body 16, small 14 (caption 13 for fine print).
+ * Radii are the app's three: 8, 12, 20.
+ */
+:root[data-density="patient"][data-surface="site"] {
+  --ml-font-size-display: 2.5rem; /* 40px */
+  --ml-line-height-display: 3rem; /* 48px */
+  --ml-font-size-h1: 2rem; /* 32px */
+  --ml-line-height-h1: 2.5rem; /* 40px */
+  --ml-font-size-h2: 1.5rem; /* 24px */
+  --ml-line-height-h2: 2rem; /* 32px */
+  --ml-font-size-h3: 1.125rem; /* 18px */
+  --ml-line-height-h3: 1.625rem; /* 26px */
+  --ml-font-size-body: 1rem; /* 16px */
+  --ml-line-height-body: 1.625rem; /* 26px */
+  --ml-font-size-body-sm: 0.875rem; /* 14px */
+  --ml-line-height-body-sm: 1.375rem; /* 22px */
+  --ml-font-size-caption: 0.8125rem; /* 13px */
+  --ml-line-height-caption: 1.125rem; /* 18px */
+  --ml-radius-sm: 0.5rem; /* 8px */
+  --ml-radius-md: 0.75rem; /* 12px */
+  --ml-radius-lg: 1.25rem; /* 20px */
+  --ml-radius-card: 0.75rem; /* 12px */
+}
+
 :root[data-density="patient"][data-surface="app"] {
   --ml-font-size-display: 2rem; /* 32px */
   --ml-line-height-display: 2.5rem; /* 40px */

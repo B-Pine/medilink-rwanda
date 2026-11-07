@@ -9,6 +9,21 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Public site audit, phase 2: one design system with the app (2026-11-07)
+
+- Changed: the public site uses the patient app's system. Radii are 8 / 12 / 20; cards are white
+  with a hairline and no shadow, and only floating things (menus, sheets, the map card) cast one
+  soft shadow; the type scale has six steps (body 16 px, h1 32 px) with tabular figures for
+  numbers. Pre-rendered pages carry the site scale, so nothing shifts on load.
+- Added (`@medilink/ui`): `StatusPill`, `SegmentedControl`, `Select` (replaces native selects),
+  `Sheet`, `Accordion` (first answer open), `GroupedList`, `StickyActionBar`.
+- Changed: Find care, Facilities, Doctors, Services and How it works open on the app's forest band
+  (Imigongo texture, rounded foot). Facility cards have one action (Join or Book while open, else
+  the next free time); the map icon and arrow are gone, the whole card opens the facility. District,
+  type, service and facility filters use the shared select. List / Map is a segmented control.
+- Removed: the hero gradient glow, the lit card edges and the icon tiles on link rows.
+- Docs: `apps/patient-web/DESIGN.md` rewritten for the system.
+
 ### Public site audit, phase 1: what was broken (2026-11-07)
 
 - Fixed: doctor links from facility, service and Doctors pages open the doctor (15 of 17 said

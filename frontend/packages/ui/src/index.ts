@@ -174,3 +174,19 @@ export type { AutosaveState, AutosaveStatusProps } from "./components/AutosaveSt
 export { SectionAnchors } from "./components/SectionAnchors";
 export type { SectionAnchor, SectionAnchorsProps } from "./components/SectionAnchors";
 // [/S6]
+// [public-site] audit 2026-11-07: the public site's system, shared with the app's look
+export { Accordion } from "./components/Accordion";
+export type { AccordionItem, AccordionProps } from "./components/Accordion";
+export { GroupedList, GroupedRow } from "./components/GroupedList";
+export type { GroupedListProps, GroupedRowProps } from "./components/GroupedList";
+export { SegmentedControl } from "./components/SegmentedControl";
+export type { SegmentedControlProps, SegmentedOption } from "./components/SegmentedControl";
+export { Select } from "./components/Select";
+export type { SelectOption, SelectProps } from "./components/Select";
+export { Sheet } from "./components/Sheet";
+export type { SheetProps } from "./components/Sheet";
+export { StatusPill } from "./components/StatusPill";
+export type { StatusPillProps, StatusTone } from "./components/StatusPill";
+export { StickyActionBar, StickyActionBarSpacer } from "./components/StickyActionBar";
+export type { StickyActionBarProps } from "./components/StickyActionBar";
+// [/public-site]

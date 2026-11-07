@@ -4,15 +4,26 @@
 @source "./";
 
 /*
- * Public site tokens (2026-11-04, second pass): clean means ordered, not bare.
- * A layered elevation scale, hairlines instead of heavy borders, fluid display type and one
- * brand glow. Colours stay the brand greens and neutrals of @medilink/ui.
+ * Public site design system (audit 2026-11-07, phase 2): the patient app's system
+ * (mobile/lib/app/theme.dart), so app and site read as one product.
+ *
+ *  - Palette: the app's (tokens.css, data-surface="site").
+ *  - Depth, three levels only: the flat page; a card (white, hairline, no shadow); and one soft
+ *    shadow for what floats over content (menus, sheets, the map card, the search over a band).
+ *    `shadow-e1` and `shadow-e2` are the card hairline, `shadow-e3` the floating shadow; the names
+ *    stay so every page follows without a markup change.
+ *  - Radii: 8 (small: chips inside cards, tiles), 12 (cards, buttons, inputs), 20 (sheets, bands).
+ *  - Type: six steps. Figtree for headings and big numbers, Inter for text, tabular figures for
+ *    times, waits and counts. Reading text at most 68 characters wide (`ml-measure`).
+ *  - Motion: 150–240 ms ease-out; press 0.98, a small lift on pointer devices only; nothing with
+ *    reduced motion or data saver.
  */
 :root {
-  --site-hairline: color-mix(in srgb, var(--color-fg) 9%, transparent);
-  --site-hairline-strong: color-mix(in srgb, var(--color-fg) 14%, transparent);
-  --site-glow: color-mix(in srgb, var(--color-primary) 14%, transparent);
-  --site-shadow-ink: 14 31 24;
+  --site-hairline: color-mix(in srgb, var(--color-fg) 11%, transparent);
+  --site-hairline-strong: color-mix(in srgb, var(--color-fg) 20%, transparent);
+  --site-shadow-ink: 18 61 43; /* forest, as the app's shadows */
+  /* the lit top edge of earlier passes is gone: a card is a hairline and nothing else */
+  --site-edge: 0 0 #0000;
 }
 :root[data-theme="dark"] {
   --site-shadow-ink: 0 0 0;
@@ -27,59 +38,54 @@
   --color-hairline: var(--site-hairline);
   --color-hairline-strong: var(--site-hairline-strong);
 
-  /* elevation: each level adds a softer, wider layer */
-  --shadow-e1: 0 1px 2px rgb(var(--site-shadow-ink) / 0.05), 0 0 0 1px var(--site-hairline);
-  --shadow-e2:
-    0 0 0 1px var(--site-hairline), 0 1px 2px rgb(var(--site-shadow-ink) / 0.04),
-    0 4px 12px -2px rgb(var(--site-shadow-ink) / 0.06);
-  --shadow-e3:
-    0 0 0 1px var(--site-hairline), 0 2px 4px rgb(var(--site-shadow-ink) / 0.04),
-    0 12px 24px -6px rgb(var(--site-shadow-ink) / 0.08),
-    0 32px 64px -24px rgb(var(--site-shadow-ink) / 0.16);
+  /* depth: card = hairline only; floating = hairline + one soft shadow (app Shadows.floating) */
+  --shadow-e1: 0 0 0 1px var(--site-hairline);
+  --shadow-e2: 0 0 0 1px var(--site-hairline);
+  --shadow-e3: 0 0 0 1px var(--site-hairline), 0 6px 24px rgb(var(--site-shadow-ink) / 0.09);
 
-  --radius-panel: 1.25rem;
-  --radius-shell: 1.75rem;
+  --radius-panel: 0.75rem; /* 12: cards and panels */
+  --radius-shell: 1.25rem; /* 20: sheets, bands, the hero art */
 
-  /* fluid display type */
-  --text-hero: clamp(2.5rem, 1.55rem + 3.4vw, 4.25rem);
-  --text-hero--line-height: 1.02;
-  --text-hero--letter-spacing: -0.035em;
-  --text-section: clamp(1.75rem, 1.35rem + 1.3vw, 2.5rem);
-  --text-section--line-height: 1.1;
-  --text-section--letter-spacing: -0.025em;
-  --text-kpi: clamp(2rem, 1.6rem + 1.2vw, 2.75rem);
-  --text-kpi--line-height: 1;
-  --text-kpi--letter-spacing: -0.03em;
-  /* upgrade 14 G4: the page title of every inner page and the title of a block inside it */
-  --text-page-title: clamp(2.25rem, 1.7rem + 2vw, 3.25rem);
-  --text-page-title--line-height: 1.05;
-  --text-page-title--letter-spacing: -0.03em;
-  --text-title: 1.625rem;
+  /* six steps: hero, page title, section title (= title), headline (h3), body, small */
+  --text-hero: clamp(2.25rem, 1.75rem + 1.9vw, 3.25rem);
+  --text-hero--line-height: 1.06;
+  --text-hero--letter-spacing: -0.03em;
+  --text-page-title: clamp(2rem, 1.7rem + 1.1vw, 2.625rem);
+  --text-page-title--line-height: 1.1;
+  --text-page-title--letter-spacing: -0.025em;
+  --text-section: clamp(1.5rem, 1.35rem + 0.6vw, 1.875rem);
+  --text-section--line-height: 1.2;
+  --text-section--letter-spacing: -0.02em;
+  --text-title: clamp(1.5rem, 1.35rem + 0.6vw, 1.875rem);
   --text-title--line-height: 1.2;
   --text-title--letter-spacing: -0.02em;
+  /* big numbers (counts, waits) sit on the page-title step */
+  --text-kpi: clamp(2rem, 1.7rem + 1.1vw, 2.625rem);
+  --text-kpi--line-height: 1;
+  --text-kpi--letter-spacing: -0.03em;
 }
 
-/*
- * Upgrade 14 (2026-11-04): the same colours in cleaner combinations, richer surfaces and smooth
- * movement. Everything below only changes the look; reduced motion and data saver keep it still.
- */
+/* Reading pages: lines of at most 68 characters. */
+.ml-measure {
+  max-width: 68ch;
+}
 
-/* A 1 px light along the top edge of a raised surface: paper with a lit edge (light theme). */
-:root {
-  --site-edge: inset 0 1px 0 rgb(255 255 255 / 0.7);
-}
-:root[data-theme="dark"] {
-  --site-edge: inset 0 1px 0 rgb(255 255 255 / 0.04);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --site-edge: inset 0 1px 0 rgb(255 255 255 / 0.04);
+/* Press feedback for every tappable card and button-like link on the site. */
+@media (prefers-reduced-motion: no-preference) {
+  :root:not([data-data-saver="on"]) .ml-press {
+    transition: transform var(--ml-motion-fast, 150ms) var(--ml-ease-out, ease-out);
+  }
+  :root:not([data-data-saver="on"]) .ml-press:active {
+    transform: scale(0.98);
   }
 }
 
-/* Facility cards (§4): lift under the pointer, the drawing leans in, a selected card is ringed. */
+/*
+ * Facility cards: a hairline card; under a pointer the hairline darkens and the card rises 2 px,
+ * the drawing leans in; pressed, it scales to 0.98. A selected card is ringed in brand.
+ */
 .ml-card {
-  box-shadow: var(--site-edge), var(--shadow-e2);
+  box-shadow: var(--shadow-e2);
   transition:
     transform var(--ml-motion-base, 240ms) var(--ml-ease-out, ease-out),
     box-shadow var(--ml-motion-base, 240ms) var(--ml-ease-out, ease-out);
@@ -88,25 +94,24 @@
   transition: transform 600ms var(--ml-ease-out, ease-out);
 }
 .ml-card-selected {
-  box-shadow:
-    var(--site-edge),
-    0 0 0 2px var(--color-primary),
-    var(--shadow-e2);
+  box-shadow: 0 0 0 2px var(--color-primary);
 }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   :root:not([data-data-saver="on"]) .ml-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--site-edge), var(--shadow-e3);
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 1px var(--site-hairline-strong);
   }
   :root:not([data-data-saver="on"]) .ml-card:hover .ml-card-art {
-    transform: scale(1.04);
+    transform: scale(1.03);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  :root:not([data-data-saver="on"]) .ml-card:active {
+    transform: scale(0.98);
   }
 }
 .ml-card:focus-within {
-  box-shadow:
-    var(--site-edge),
-    0 0 0 2px var(--color-focus),
-    var(--shadow-e3);
+  box-shadow: 0 0 0 2px var(--color-focus);
 }
 
 /* Inner pages (G3): the page header sits on a white band the width of the screen, with a
@@ -215,16 +220,39 @@
   }
 }
 
-/* one quiet brand glow behind the hero */
+/* The hero ground: flat white, no gradient glow (decoration that added nothing, audit 2026-11-07). */
 .site-glow {
-  background:
-    radial-gradient(60% 70% at 85% 0%, var(--site-glow), transparent 70%),
-    radial-gradient(
-      40% 50% at 0% 100%,
-      color-mix(in srgb, var(--color-primary) 6%, transparent),
-      transparent 70%
-    ),
-    linear-gradient(180deg, var(--color-surface), var(--color-page));
+  background: var(--color-surface);
+}
+
+/*
+ * The forest band of the main pages (as the app's tab headers): deep green, the Imigongo texture
+ * faint on the right, and one rounded foot, the same on every page.
+ */
+.ml-forest-band {
+  position: relative;
+  isolation: isolate;
+  color: var(--color-on-forest);
+}
+.ml-forest-band::before {
+  content: "";
+  position: absolute;
+  inset: 0 50%;
+  margin-inline: -50vw;
+  z-index: -1;
+  background: var(--color-forest);
+  border-radius: 0 0 var(--radius-shell) var(--radius-shell);
+}
+.ml-forest-band::after {
+  content: "";
+  position: absolute;
+  inset: 0 -50vw 0 50%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.09;
+  border-bottom-right-radius: var(--radius-shell);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='24' viewBox='0 0 48 24'%3E%3Cpath d='M0 12 12 0l12 12 12-12 12 12M0 24l12-12 12 12 12-12 12 12' fill='none' stroke='%23ffffff' stroke-width='1.5'/%3E%3C/svg%3E");
+  mask-image: linear-gradient(90deg, transparent, #000 50%);
 }
 
 /* sections ease in as they scroll into view; without support or with reduced motion they are

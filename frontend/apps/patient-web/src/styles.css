@@ -24,13 +24,17 @@
   --site-shadow-ink: 18 61 43; /* forest, as the app's shadows */
   /* the lit top edge of earlier passes is gone: a card is a hairline and nothing else */
   --site-edge: 0 0 #0000;
+  /* first stop of the hero's gradient words: forest on light; the page text on dark */
+  --site-hero-ink: var(--color-forest);
 }
 :root[data-theme="dark"] {
   --site-shadow-ink: 0 0 0;
+  --site-hero-ink: var(--color-fg);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --site-shadow-ink: 0 0 0;
+    --site-hero-ink: var(--color-fg);
   }
 }
 

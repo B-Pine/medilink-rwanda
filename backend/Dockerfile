@@ -26,12 +26,11 @@ ENV PATH="/opt/venv/bin:${PATH}" \
     DJANGO_SETTINGS_MODULE=config.settings.prod \
     DJANGO_READ_DOT_ENV=false
 # #106: nothing installs packages at runtime, so the image carries no pip (its vendored msgpack,
-# urllib3 and setuptools had fixable CVEs), and apt gets its security fix ahead of the next base
-# digest. Versions come from the Debian security archive of the pinned base.
-# hadolint ignore=DL3008
+# urllib3 and setuptools had fixable CVEs), and the base's Debian packages take their pending
+# security updates (apt, zlib…) without waiting for the next base digest. No new packages.
 RUN python -m pip uninstall --yes pip setuptools wheel || true \
  && apt-get update \
- && apt-get install --yes --no-install-recommends --only-upgrade apt libapt-pkg7.0 \
+ && apt-get upgrade --yes --no-install-recommends \
  && rm -rf /var/lib/apt/lists/*
 RUN groupadd --system --gid 10001 medilink \
  && useradd --system --uid 10001 --gid medilink --home-dir /app --no-create-home \

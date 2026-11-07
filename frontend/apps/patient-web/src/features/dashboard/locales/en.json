@@ -40,7 +40,8 @@
       "appointments": "Visits",
       "records": "Records"
     },
-    "bills": "Bills"
+    "bills": "Bills",
+    "disputes": "Disputes"
   },
   "account": {
     "label": "Account menu for {{name}}",
@@ -180,7 +181,9 @@
     "readResult": "Read it",
     "planned": "{{what}} is coming up",
     "bill": "{{amount}} left to pay",
-    "seeBill": "See the bill"
+    "seeBill": "See the bill",
+    "disputeQuestion": "The facility asked you about your dispute",
+    "disputeAnswer": "Your dispute has an answer"
   },
   "comingUp": {
     "title": "Planned by your clinic",

@@ -1,0 +1,75 @@
+{
+  "title": "Disputes",
+  "failed": "We couldn't load your disputes.",
+  "empty": "No disputes",
+  "notFound": "Dispute not found",
+  "report": "Report a problem",
+  "subject": {
+    "visit": "Visit",
+    "ticket": "Queue ticket",
+    "booking": "Booking",
+    "no_show_strike": "Missed visit",
+    "prescription": "Prescription",
+    "bill": "Bill",
+    "document": "Document"
+  },
+  "status": {
+    "open": "Sent",
+    "acknowledged": "Received",
+    "under_review": "Under review",
+    "info_requested": "Your reply needed",
+    "resolved": "Answered",
+    "escalated": "With MediLink",
+    "final_decision": "Final decision",
+    "closed": "Closed",
+    "reopened": "Reopened"
+  },
+  "outcome": {
+    "no_show_reversed": "Missed visit removed",
+    "record_corrected": "Record to be corrected",
+    "correction_refused": "Correction refused",
+    "refund": "Refund agreed",
+    "bill_correction": "Bill to be corrected",
+    "rebooking": "New appointment agreed",
+    "rejected": "Not upheld"
+  },
+  "new": {
+    "title": "Report a problem",
+    "fromSubject": "Open the bill, prescription or document concerned and choose Report a problem.",
+    "what": "What went wrong?",
+    "hint": "At least {{min}} characters.",
+    "send": "Send"
+  },
+  "facts": {
+    "facility": "Facility",
+    "raised": "Sent",
+    "answerBy": "Answer by",
+    "decisionBy": "Decision by",
+    "what": "What you wrote"
+  },
+  "actions": {
+    "accept": "Accept",
+    "escalate": "Disagree: send to MediLink",
+    "reopen": "Reopen"
+  },
+  "done": {
+    "accept": "Closed.",
+    "escalate": "Sent to MediLink.",
+    "reopen": "Reopened.",
+    "statement": "Statement added to your record.",
+    "message": "Message sent."
+  },
+  "statement": {
+    "label": "Your statement",
+    "hint": "Kept with your record next to the facility's.",
+    "send": "Add statement",
+    "yours": "Your statement"
+  },
+  "thread": {
+    "title": "Messages",
+    "you": "You",
+    "reply": "Message",
+    "send": "Send",
+    "infoRequested": "The facility asked you a question."
+  }
+}

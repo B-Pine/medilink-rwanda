@@ -42,6 +42,9 @@ import { pharmacyMocks } from "./features/pharmacy";
 // [S8 imports]
 import { billingMocks } from "./features/billing";
 // [/S8 imports]
+// [S10b imports]
+import { disputesMocks } from "./features/disputes";
+// [/S10b imports]
 // [S11 imports]
 import { consoleMocks } from "./features/console";
 // [/S11 imports]
@@ -103,6 +106,9 @@ export const FEATURE_MOCKS: FeatureMockFactory[] = [
   // [S8]
   billingMocks,
   // [/S8]
+  // [S10b]
+  disputesMocks,
+  // [/S10b]
   // [S11]
   consoleMocks,
   // [/S11]

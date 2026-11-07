@@ -1,10 +1,10 @@
 import type { PatientPrescriptionItem, PatientPrescriptionRow } from "@medilink/api-client";
 import { Alert, Badge, cx, EmptyState, SelectField, Skeleton, type BadgeTone } from "@medilink/ui";
-import { Pill } from "@phosphor-icons/react";
+import { Pill, Scales } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 
 import { paths } from "../../app/paths";
 import { useApi } from "../../app/services";
@@ -18,6 +18,7 @@ import {
   RowsSkeleton,
   SegmentedTabs,
 } from "../dashboard/kit";
+import { reportProblemTo } from "../disputes";
 import { useProfiles } from "../profile/ProfileLayout";
 import { useDate } from "../records/RecordsPages";
 import { medicinesKeys, STATUS_TONE } from "./shared";
@@ -174,6 +175,13 @@ export function MedicineDetailPage() {
               {t("medicines.codeHint", { date: date(p.expires_at) })}
             </span>
           </div>
+          <Link
+            to={reportProblemTo("prescription", p.id, p.patient_id)}
+            className="inline-flex items-center gap-1.5 self-start text-body-sm font-semibold text-link"
+          >
+            <Scales aria-hidden="true" className="size-4" />
+            {t("disputes.report")}
+          </Link>
         </aside>
       </div>
     </div>

@@ -4,16 +4,16 @@ import 'package:flutter/services.dart';
 import '../ui/icons.dart';
 
 /// MediLink colours (docs/upgrade/15-mobile-app.md §1): the website palette, nothing new.
-/// Light and dark come from the website's tokens (frontend/packages/ui/src/styles/tokens.css,
-/// `prefers-color-scheme: dark`). [dark] follows the phone (main.dart); read the colours in
-/// build so they follow it too.
+/// Dark mode uses neutral charcoal surfaces; green stays for buttons, links and accents (the
+/// website's dark brand, frontend/packages/ui/src/styles/tokens.css). [dark] is set by main.dart
+/// (Me → Settings → Appearance, default: like the phone); read the colours in build.
 abstract final class Palette {
   static bool dark = false;
   static Color _pick(Color light, Color night) => dark ? night : light;
 
   /// The band and other forest backgrounds.
-  static Color get forest => _pick(const Color(0xFF123D2B), const Color(0xFF111915));
-  static Color get forestRaised => _pick(const Color(0xFF1A4D37), const Color(0xFF19231E));
+  static Color get forest => _pick(const Color(0xFF123D2B), const Color(0xFF17191B));
+  static Color get forestRaised => _pick(const Color(0xFF1A4D37), const Color(0xFF212427));
 
   /// Dark-green text and icons on light surfaces (ticket number, insurer pills). Light green in
   /// dark mode, where [forest] is a background.
@@ -25,23 +25,23 @@ abstract final class Palette {
 
   /// Text and icons on a [brand] fill.
   static Color get onBrand => _pick(const Color(0xFFFFFFFF), const Color(0xFF0E2219));
-  static Color get brandSubtle => _pick(const Color(0xFFE7F3ED), const Color(0xFF1C2E25));
-  static Color get onForestMuted => _pick(const Color(0xFFB9D6C4), const Color(0xFFA9B8B0));
+  static Color get brandSubtle => _pick(const Color(0xFFE7F3ED), const Color(0xFF1F2925));
+  static Color get onForestMuted => _pick(const Color(0xFFB9D6C4), const Color(0xFFA7ADB2));
   static Color get onForestAccent => _pick(const Color(0xFF6EE7B7), const Color(0xFF5FC59A));
   static Color get ochre => const Color(0xFFFBBF24);
   static Color get ochreText => _pick(const Color(0xFF8A5A00), const Color(0xFFF6C66C));
-  static Color get ochreSubtle => _pick(const Color(0xFFFEF3C7), const Color(0xFF393623));
-  static Color get page => _pick(const Color(0xFFF6F8F7), const Color(0xFF141A17));
-  static Color get surface => _pick(const Color(0xFFFFFFFF), const Color(0xFF1B221E));
-  static Color get ink => _pick(const Color(0xFF14231C), const Color(0xFFDCE4DF));
-  static Color get muted => _pick(const Color(0xFF5B6B63), const Color(0xFFAAB6AF));
-  static Color get hairline => _pick(const Color(0xFFE3E9E6), const Color(0xFF2C3631));
-  static Color get skeleton => _pick(const Color(0xFFE9EEEB), const Color(0xFF212924));
+  static Color get ochreSubtle => _pick(const Color(0xFFFEF3C7), const Color(0xFF38321F));
+  static Color get page => _pick(const Color(0xFFF6F8F7), const Color(0xFF111315));
+  static Color get surface => _pick(const Color(0xFFFFFFFF), const Color(0xFF1B1E21));
+  static Color get ink => _pick(const Color(0xFF14231C), const Color(0xFFE6E8EA));
+  static Color get muted => _pick(const Color(0xFF5B6B63), const Color(0xFFA3A9AE));
+  static Color get hairline => _pick(const Color(0xFFE3E9E6), const Color(0xFF2D3135));
+  static Color get skeleton => _pick(const Color(0xFFE9EEEB), const Color(0xFF24282B));
   static Color get danger => _pick(const Color(0xFFB42318), const Color(0xFFF87171));
 
   /// Text on a [danger] fill.
   static Color get onDanger => _pick(const Color(0xFFFFFFFF), const Color(0xFF0F172A));
-  static Color get dangerSubtle => _pick(const Color(0xFFFDECEA), const Color(0xFF3A2D2A));
+  static Color get dangerSubtle => _pick(const Color(0xFFFDECEA), const Color(0xFF3A2A2A));
 }
 
 abstract final class Fonts {

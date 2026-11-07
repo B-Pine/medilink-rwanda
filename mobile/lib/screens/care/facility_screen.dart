@@ -55,7 +55,7 @@ class FacilityScreen extends ConsumerWidget {
                 fit: StackFit.expand,
                 children: [
                   // The drawing's sky continues above it, so nothing is cropped at the top.
-                  const ColoredBox(color: FacilityBuilding.sky),
+                  ColoredBox(color: FacilityBuilding.sky),
                   Hero(
                     tag: 'building-$slug',
                     child: FacilityBuilding(type: type, emergency: emergency, fit: BoxFit.fitWidth),

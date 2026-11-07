@@ -8,6 +8,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:go_router/go_router.dart';
 import 'package:medilink/app/strings.dart';
 import 'package:medilink/app/theme.dart';
@@ -25,6 +26,7 @@ import 'package:medilink/data/profile.dart';
 import 'package:medilink/screens/me/claim_screen.dart';
 import 'package:medilink/screens/me/family_screen.dart';
 import 'package:medilink/screens/me/me_screen.dart';
+import 'package:medilink/screens/me/settings_screen.dart';
 import 'package:medilink/screens/me/notification_settings_screen.dart';
 import 'package:medilink/screens/me/profile_screen.dart';
 
@@ -128,10 +130,14 @@ void main() {
   setUpAll(() async {
     // flutter_map's tile cache asks path_provider for a folder; there is no plugin in tests.
     final cache = Directory.systemTemp.createTempSync('medilink-shots');
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
-      const MethodChannel('plugins.flutter.io/path_provider'),
-      (_) async => cache.path,
-    );
+    final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(const MethodChannel('plugins.flutter.io/path_provider'), (_) async => cache.path);
+    // Settings reads the phone's saved choices and fingerprint support; nothing is saved here.
+    // ignore: invalid_use_of_visible_for_testing_member (this folder is a test, outside test/)
+    SharedPreferences.setMockInitialValues({});
+    for (final channel in ['plugins.it_nomads.com/flutter_secure_storage', 'plugins.flutter.io/local_auth_android']) {
+      messenger.setMockMethodCallHandler(MethodChannel(channel), (_) async => null);
+    }
     await _loadFonts();
   });
 
@@ -351,6 +357,11 @@ void main() {
   for (final (name, screen, overrides) in keyScreens) {
     testWidgets('$name (dark)', (tester) async {
       await _shoot(tester, '$name-dark', screen, overrides, lang: 'en', dark: true);
+    }, skip: _out.isEmpty);
+  }
+  for (final dark in [false, true]) {
+    testWidgets('settings${dark ? ' (dark)' : ''}', (tester) async {
+      await _shoot(tester, dark ? 'settings-dark' : 'settings', const SettingsScreen(), profile, lang: 'en', dark: dark);
     }, skip: _out.isEmpty);
   }
   testWidgets('map (dark)', (tester) async {

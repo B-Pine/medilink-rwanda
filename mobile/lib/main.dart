@@ -9,6 +9,7 @@ import 'app/config.dart';
 import 'app/router.dart';
 import 'app/strings.dart';
 import 'app/theme.dart';
+import 'data/appearance.dart';
 import 'data/session.dart';
 
 void main() {
@@ -35,15 +36,25 @@ class _MediLinkAppState extends ConsumerState<MediLinkApp> with WidgetsBindingOb
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _quickActions.initialize(_onShortcut);
-    Palette.dark = WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark;
+    Palette.dark = _wantsDark(ref.read(appearanceProvider));
+    // Me → Settings → Appearance: like the phone, light or dark.
+    ref.listenManual(appearanceProvider, (_, next) => _applyDark(_wantsDark(next)));
   }
 
-  /// Dark mode follows the phone, like the staff website. Screens read [Palette] in build, so
-  /// every element rebuilds once (state, scroll and the open page stay as they are).
+  bool _wantsDark(Appearance appearance) => switch (appearance) {
+        Appearance.light => false,
+        Appearance.dark => true,
+        Appearance.system => WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark,
+      };
+
+  /// By default dark mode follows the phone, like the staff website.
   @override
-  void didChangePlatformBrightness() {
-    final dark = WidgetsBinding.instance.platformDispatcher.platformBrightness == Brightness.dark;
-    if (dark == Palette.dark) return;
+  void didChangePlatformBrightness() => _applyDark(_wantsDark(ref.read(appearanceProvider)));
+
+  /// Screens read [Palette] in build, so every element rebuilds once (state, scroll and the open
+  /// page stay as they are).
+  void _applyDark(bool dark) {
+    if (dark == Palette.dark || !mounted) return;
     Palette.dark = dark;
     setState(() {});
     void rebuild(Element element) {

@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 ## [Unreleased]
 
+### 1.1.1 (2026-11-07)
+
+- Added: Me → Settings → Appearance: Like the phone (default), Light or Dark. The choice is
+  kept on the phone.
+- Changed: dark mode uses neutral charcoal instead of dark green; green stays for buttons,
+  links and accents.
+- Changed: in dark mode the facility drawings are shown at night (dark sky and walls, dim
+  windows) instead of the bright day drawing.
+
 ### 1.1.0 (2026-11-07)
 
 Design polish (#260), no API or data changes:

@@ -53,7 +53,6 @@ export function SegmentedControl<T extends string>({
     <div
       role="radiogroup"
       aria-label={label}
-      onKeyDown={onKeyDown}
       className={cx(
         "inline-flex gap-1 rounded-full bg-subtle p-1",
         fullWidth && "flex w-full",
@@ -72,6 +71,7 @@ export function SegmentedControl<T extends string>({
             role="radio"
             aria-checked={selected}
             tabIndex={selected ? 0 : -1}
+            onKeyDown={onKeyDown}
             onClick={() => onChange(option.value)}
             className={cx(
               "inline-flex min-h-10 cursor-pointer items-center justify-center gap-1.5 rounded-full px-4 text-body-sm font-semibold",

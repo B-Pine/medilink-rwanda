@@ -59,6 +59,7 @@ import {
   SearchBar,
   SectionTitle,
 } from "./kit";
+import { canonicalUrl, siteOrigin } from "./seo";
 
 const WEEKDAY_BASE = Date.UTC(2024, 0, 1); // a Monday
 
@@ -558,6 +559,12 @@ export function DoctorPage() {
   const activeDay =
     days.find((d) => d.date === picked) ?? days.find((d) => d.slots.length > 0) ?? days[0];
   const free = (list: PublicSlot[]) => list.filter((s) => s.open_places > 0);
+  const lead = doctor
+    ? [doctor.specialty, ...doctor.services.map((s) => pick(s.name, lang))]
+        .filter(Boolean)
+        .join(" · ")
+    : undefined;
+  const at = profile.data;
 
   return (
     <PublicLayout>
@@ -565,12 +572,19 @@ export function DoctorPage() {
         <PageHeader
           crumbs={[{ to: "/doctors", label: t("nav.doctors") }, { label: doctor?.name ?? "…" }]}
           title={doctor?.name ?? "…"}
-          lead={
-            doctor
-              ? [doctor.specialty, ...doctor.services.map((s) => pick(s.name, lang))]
-                  .filter(Boolean)
-                  .join(" · ")
-              : undefined
+          lead={lead}
+          description={doctor && at ? `${lead ? `${lead} · ` : ""}${at.name}` : undefined}
+          jsonLd={
+            doctor && at
+              ? {
+                  "@context": "https://schema.org",
+                  "@type": "Physician",
+                  name: doctor.name,
+                  ...(doctor.specialty && { medicalSpecialty: doctor.specialty }),
+                  url: canonicalUrl(siteOrigin(), `/doctors/${slug}`),
+                  worksFor: { "@type": "MedicalOrganization", name: at.name },
+                }
+              : null
           }
         />
         {profile.isPending || !doctor ? (

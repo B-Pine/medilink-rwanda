@@ -13,4 +13,6 @@ export const env = {
   get publicAssistant(): boolean {
     return import.meta.env.VITE_PUBLIC_ASSISTANT === "true";
   },
+  /** The public address (canonical links, Open Graph), e.g. https://medilink.rw. */
+  siteUrl: import.meta.env.VITE_SITE_URL || "",
 };

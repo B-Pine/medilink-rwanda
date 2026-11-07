@@ -476,5 +476,21 @@
     "open": "Open first",
     "soonest": "Shortest wait",
     "nearest": "Nearest"
+  },
+  "meta": {
+    "findCare": "Search facilities in Rwanda by service, place and insurance. See who is open and the wait now.",
+    "facilities": "Every health facility on MediLink: open now, live waits, insurance accepted, hours and directions.",
+    "doctors": "Doctors at MediLink facilities: their service, the days they work and where to book.",
+    "services": "Health services on MediLink, from consultations to lab tests, and the facilities that offer them.",
+    "how": "Search, join the queue or book, follow your turn on your phone, arrive when it is nearly time.",
+    "emergency": "Life-threatening emergency in Rwanda: call 912 for SAMU, free, 24 hours. Hospitals with an emergency department.",
+    "help": "Answers about accounts, bookings, the queue, insurance and your records on MediLink.",
+    "about": "MediLink connects patients in Rwanda with health facilities: live waits, queues and bookings in one place.",
+    "contact": "Contact the MediLink team by email or phone.",
+    "accessibility": "How MediLink works with screen readers, keyboards, larger text and slow connections.",
+    "privacy": "What MediLink collects, why, where it is stored and your rights under Rwanda's data protection law.",
+    "terms": "The terms for using MediLink as a patient or a facility.",
+    "forFacilities": "Put your facility on MediLink: live queue, bookings and walk-ins in one day plan, records in one place.",
+    "checkSymptoms": "Answer a few questions to find which service and facility fit your symptoms."
   }
 }

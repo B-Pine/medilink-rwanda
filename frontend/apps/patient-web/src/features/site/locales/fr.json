@@ -476,5 +476,21 @@
     "open": "Ouverts d’abord",
     "soonest": "Attente la plus courte",
     "nearest": "Les plus proches"
+  },
+  "meta": {
+    "findCare": "Cherchez un établissement au Rwanda par service, lieu et assurance. Voyez qui est ouvert et l’attente.",
+    "facilities": "Tous les établissements de santé sur MediLink : ouverts maintenant, attente en direct, assurances, horaires et itinéraire.",
+    "doctors": "Les médecins des établissements MediLink : leur service, leurs jours de travail et où réserver.",
+    "services": "Les services de santé sur MediLink, des consultations aux analyses, et les établissements qui les offrent.",
+    "how": "Cherchez, rejoignez la file ou réservez, suivez votre tour sur votre téléphone, arrivez quand c’est presque l’heure.",
+    "emergency": "Urgence vitale au Rwanda : appelez le 912 (SAMU), gratuit, 24 h/24. Hôpitaux avec un service d’urgence.",
+    "help": "Réponses sur les comptes, les réservations, la file, l’assurance et vos dossiers sur MediLink.",
+    "about": "MediLink relie les patients au Rwanda aux établissements de santé : attente en direct, files et réservations au même endroit.",
+    "contact": "Contactez l’équipe MediLink par e-mail ou téléphone.",
+    "accessibility": "MediLink avec un lecteur d’écran, un clavier, un texte plus grand et une connexion lente.",
+    "privacy": "Ce que MediLink collecte, pourquoi, où c’est stocké et vos droits selon la loi rwandaise sur la protection des données.",
+    "terms": "Les conditions d’utilisation de MediLink pour les patients et les établissements.",
+    "forFacilities": "Mettez votre établissement sur MediLink : file en direct, rendez-vous et patients sans rendez-vous dans un seul planning.",
+    "checkSymptoms": "Répondez à quelques questions pour trouver le service et l’établissement adaptés à vos symptômes."
   }
 }

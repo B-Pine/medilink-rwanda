@@ -1,5 +1,5 @@
 import type { PublicFacility } from "@medilink/api-client";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { routes } from "../app/routes";
 import { prerender } from "./prerender";
@@ -60,6 +60,29 @@ describe("prerender (build time)", () => {
     expect(result!.html).not.toMatch(/\d RWF/);
     expect(result!.html).toContain(name);
     expect(result!.head?.title).toContain(name);
+    // phase 5: schema.org data for search engines, static facts only (no waits or times)
+    const ld = [...result!.head!.elements].find((e) => e.props.type === "application/ld+json");
+    const json = JSON.parse(ld!.props.textContent!) as Record<string, unknown>;
+    expect(json).toMatchObject({ "@context": "https://schema.org", name });
+    expect(JSON.stringify(json)).not.toMatch(/waiting|next_slot|queue/);
+  });
+
+  it("gives each reading page its own description, and a canonical address when the site URL is set", async () => {
+    vi.stubEnv("VITE_SITE_URL", "https://medilink.example");
+    try {
+      const how = await prerender({ url: "/how-it-works" });
+      const help = await prerender({ url: "/help" });
+      const desc = (r: typeof how) =>
+        [...r!.head!.elements].find((e) => e.props.name === "description")!.props.content;
+      expect(desc(how)).not.toBe(desc(help));
+      expect([...how!.head!.elements]).toContainEqual({
+        type: "link",
+        props: { rel: "canonical", href: "https://medilink.example/how-it-works" },
+      });
+      expect([...how!.head!.elements].some((e) => e.props.property === "og:title")).toBe(true);
+    } finally {
+      vi.unstubAllEnvs();
+    }
   });
 
   it("skips private pages and unknown facilities", async () => {

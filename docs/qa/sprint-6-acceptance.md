@@ -42,7 +42,7 @@ Evidence collected on 2026-11-01 on PostgreSQL 16, suite run as the runtime role
 | S6-F4 | History drawer with filters and problem summary | "the history drawer opens beside the record with filters and the problem summary" (axe clean) | Pending |
 | S6-F5 | Reason-for-access blocks the record until a reason is given | "a patient not in care is blocked until a reason is given" | Pending |
 | S6-F6 | `clinical` text in rw/en/fr; dates through `dateFormat()`; axe clean | `tests/i18n.test.ts` parity and review list; axe in the staff and patient tests. Patient records (PR1, PR2): `records.test.tsx`, never private notes or examination | Pending |
-| S6-F7 | (S6b) | Not started | Not in S6a |
+| S6-F7 | (S6b) Import wizard: upload, suggested columns, row check (problems, likely duplicates), import the ready rows (step-up), undo within the window | `apps/staff-web/src/features/imports/imports.test.tsx` (mocks, axe) | Pass (mocks) |
 
 ## Integration checks
 

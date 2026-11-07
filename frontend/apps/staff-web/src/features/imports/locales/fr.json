@@ -1,0 +1,98 @@
+{
+  "nav": "Importer des patients",
+  "title": "Importer des patients",
+  "failed": "Un problème est survenu. Réessayez.",
+  "retry": "Réessayer",
+  "notFound": "Import introuvable",
+  "earlier": "Imports précédents",
+  "none": "Aucun import",
+  "rows_one": "{{count}} ligne",
+  "rows_other": "{{count}} lignes",
+  "upload": {
+    "label": "Fichier du registre (CSV)",
+    "drop": "Déposez le CSV ici",
+    "browse": "Choisir un fichier",
+    "hint": "Un patient par ligne, une ligne d’en-tête d’abord. Au plus 5 Mo et 5 000 lignes.",
+    "remove": "Retirer",
+    "working": "Envoi…",
+    "scanning": "Vérification du fichier…",
+    "infected": "Le fichier a été bloqué.",
+    "rejected": "Le fichier a été refusé.",
+    "tooLarge": "Le fichier dépasse 5 Mo.",
+    "wrongType": "Choisissez un fichier CSV."
+  },
+  "status": {
+    "uploaded": "Colonnes à associer",
+    "previewed": "Vérifié",
+    "confirmed": "Importé",
+    "rolled_back": "Annulé",
+    "failed": "Échec"
+  },
+  "mapping": {
+    "title": "Quelle colonne contient quoi ?",
+    "required": "Obligatoire",
+    "none": "Absent du fichier",
+    "check": "Vérifier les lignes"
+  },
+  "field": {
+    "full_name": "Nom complet",
+    "sex": "Sexe",
+    "date_of_birth": "Date de naissance",
+    "phone": "Téléphone",
+    "file_number": "Numéro de dossier",
+    "national_id": "N° d’identité nationale"
+  },
+  "count": {
+    "rows": "Lignes",
+    "valid": "Prêtes",
+    "error": "Avec problèmes",
+    "duplicate": "Doublons probables",
+    "created": "Importées"
+  },
+  "confirmHint_one": "{{count}} patient est prêt. Les lignes avec problèmes et les doublons probables sont exclus.",
+  "confirmHint_other": "{{count}} patients sont prêts. Les lignes avec problèmes et les doublons probables sont exclus.",
+  "nothingReady": "Aucune ligne n’est prête. Corrigez le fichier ou les colonnes et renvoyez-le.",
+  "confirm_one": "Importer {{count}} patient",
+  "confirm_other": "Importer {{count}} patients",
+  "rollbackHint": "Vous pouvez annuler cet import jusqu’au {{date}}, tant qu’aucun patient importé n’a de visite.",
+  "rollbackClosed": "Cet import ne peut plus être annulé.",
+  "rollback": "Annuler cet import",
+  "rolledBackOn": "Annulé le {{date}}.",
+  "done": {
+    "checked": "Lignes vérifiées.",
+    "confirmed_one": "{{count}} patient importé.",
+    "confirmed_other": "{{count}} patients importés.",
+    "rolledBack": "Import annulé."
+  },
+  "rowsTitle": "Lignes",
+  "filter": "Afficher les lignes",
+  "filters": {
+    "all": "Toutes",
+    "error": "Problèmes",
+    "duplicate": "Doublons",
+    "valid": "Prêtes"
+  },
+  "col": {
+    "row": "Ligne",
+    "status": "Statut"
+  },
+  "rowStatus": {
+    "pending": "Non vérifiée",
+    "valid": "Prête",
+    "error": "Problème",
+    "duplicate": "Doublon probable",
+    "created": "Importée",
+    "rolled_back": "Annulée"
+  },
+  "problem": {
+    "required": "manquant",
+    "invalid": "non valide",
+    "out_of_range": "impossible",
+    "taken": "en double"
+  },
+  "sex": {
+    "male": "Homme",
+    "female": "Femme"
+  },
+  "noRows": "Aucune ligne ici."
+}

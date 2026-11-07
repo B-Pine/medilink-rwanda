@@ -34,6 +34,7 @@ import { bookingMocks } from "./features/booking";
 // [S6 imports]
 import { clinicalMocks } from "./features/clinical";
 import { labMocks } from "./features/lab";
+import { patientImportsMocks } from "./features/patient-imports";
 // [/S6 imports]
 // [S7 imports]
 import { documentsMocks } from "./features/documents";
@@ -95,6 +96,7 @@ export const FEATURE_MOCKS: FeatureMockFactory[] = [
   // [S6]
   clinicalMocks,
   labMocks, // upgrade 06 §3 (#201)
+  patientImportsMocks, // S6b legacy register import
   // [/S6]
   // [S7]
   pharmacyMocks,

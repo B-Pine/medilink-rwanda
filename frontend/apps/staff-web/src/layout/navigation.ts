@@ -47,6 +47,7 @@ import {
   Notebook,
   Notepad,
   Signature,
+  UploadSimple,
 } from "@phosphor-icons/react";
 // [/S6 imports]
 // [S7 imports]
@@ -404,6 +405,15 @@ export const NAV_ITEMS: readonly NavItem[] = [
     group: "facility",
     labelKey: "clinical.nav.templates",
     visible: hasAny("clinical.write"),
+  },
+  {
+    // S6b: legacy register import (FR-PAT-10)
+    key: "patientImport",
+    path: "/settings/patient-import",
+    icon: UploadSimple,
+    group: "facility",
+    labelKey: "imports.nav",
+    visible: hasAny("records.import"),
   },
   // [/S6]
   // [S7]

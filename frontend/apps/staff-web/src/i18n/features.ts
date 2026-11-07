@@ -43,6 +43,9 @@ import bookingsRw from "../features/bookings/locales/rw.json";
 import clinicalEn from "../features/clinical/locales/en.json";
 import clinicalFr from "../features/clinical/locales/fr.json";
 import clinicalRw from "../features/clinical/locales/rw.json";
+import importsEn from "../features/imports/locales/en.json";
+import importsFr from "../features/imports/locales/fr.json";
+import importsRw from "../features/imports/locales/rw.json";
 // [/S6 imports]
 // [S7 imports]
 import pharmacyEn from "../features/pharmacy/locales/en.json";
@@ -92,6 +95,7 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   // [/S5]
   // [S6]
   clinical: { rw: clinicalRw, en: clinicalEn, fr: clinicalFr },
+  imports: { rw: importsRw, en: importsEn, fr: importsFr },
   // [/S6]
   // [S7]
   pharmacy: { rw: pharmacyRw, en: pharmacyEn, fr: pharmacyFr },

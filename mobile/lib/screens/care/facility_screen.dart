@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../ui/icons.dart';
 
 import '../../app/format.dart' as fmt;
 import '../../app/strings.dart';
@@ -9,8 +9,12 @@ import '../../app/strings_more.dart';
 import '../../app/theme.dart';
 import '../../data/models.dart';
 import '../../data/providers.dart';
+import '../../ui/band.dart';
 import '../../ui/building.dart';
+import '../../ui/controls.dart';
 import '../../ui/feedback.dart';
+import '../../ui/grouped.dart';
+import '../../ui/icons.dart';
 import '../../ui/insurers.dart';
 import 'directions.dart';
 
@@ -23,6 +27,7 @@ class FacilityScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final s = S.of(context);
+    final theme = Theme.of(context);
     final facility = ref.watch(facilityProvider(slug));
     final summary = ref
         .watch(facilitySearchProvider(const SearchQuery()))
@@ -40,13 +45,23 @@ class FacilityScreen extends ConsumerWidget {
             pinned: true,
             expandedHeight: 230,
             backgroundColor: Palette.forest,
-            leading: const BackButton(color: Colors.white),
-            title: Text(f?.name ?? summary?.name ?? ''),
+            foregroundColor: Colors.white,
+            systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent),
+            leading: const HeaderBackButton(),
+            title: CollapsedTitle(f?.name ?? summary?.name ?? ''),
             flexibleSpace: FlexibleSpaceBar(
               collapseMode: CollapseMode.parallax,
-              background: Hero(
-                tag: 'building-$slug',
-                child: FacilityBuilding(type: type, emergency: emergency),
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  // The drawing's sky continues above it, so nothing is cropped at the top.
+                  const ColoredBox(color: Palette.brandSubtle),
+                  Hero(
+                    tag: 'building-$slug',
+                    child: FacilityBuilding(type: type, emergency: emergency, fit: BoxFit.fitWidth),
+                  ),
+                  const Positioned(left: 0, right: 0, bottom: -1, child: BandFoot()),
+                ],
               ),
             ),
           ),
@@ -62,53 +77,46 @@ class FacilityScreen extends ConsumerWidget {
             ],
             data: (f) => [
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(Space.lg, Space.xl, Space.lg, 120),
+                padding: const EdgeInsets.fromLTRB(Space.lg, Space.sm, Space.lg, Space.xxl),
                 sliver: SliverList.list(
                   children: [
-                    Row(
+                    Wrap(
+                      spacing: Space.sm,
+                      runSpacing: Space.sm,
                       children: [
-                        StatusPill(text: f.openNow ? s.openNow : s.closed, tone: f.openNow ? PillTone.brand : PillTone.muted),
-                        if (f.emergency) ...[
-                          const SizedBox(width: Space.sm),
-                          StatusPill(text: s.emergency, tone: PillTone.danger),
-                        ],
+                        StatusPill.open(open: f.openNow, text: f.openNow ? s.openNow : s.closed),
+                        if (f.emergency) StatusPill(text: s.emergency, tone: PillTone.danger, icon: PhosphorIconsFill.firstAid),
                       ],
                     ),
                     const SizedBox(height: Space.md),
-                    Text(f.name, style: Theme.of(context).textTheme.headlineSmall),
+                    Text(f.name, style: theme.textTheme.headlineMedium),
                     const SizedBox(height: Space.xs),
-                    Text(f.address.isNotEmpty ? f.address : f.place, style: Theme.of(context).textTheme.bodySmall),
+                    Text(f.address.isNotEmpty ? f.address : f.place, style: theme.textTheme.bodyMedium?.copyWith(color: Palette.muted)),
                     const SizedBox(height: Space.xl),
                     _Actions(facility: f),
                     const SizedBox(height: Space.xl),
-                    _SectionTitle(s.t('insuranceAccepted')),
-                    SoftCard(
-                      child: Padding(
-                        padding: const EdgeInsets.all(Space.lg),
-                        child: InsurerPills(codes: f.insurers, wrap: true),
-                      ),
-                    ),
-                    const SizedBox(height: Space.xl),
-                    if (f.services.isNotEmpty) ...[
-                      _SectionTitle(s.services),
-                      Card(
-                        child: Column(
-                          children: [
-                            for (final (i, service) in f.services.indexed) ...[
-                              if (i > 0) const Divider(indent: Space.lg, endIndent: Space.lg),
-                              _ServiceRow(slug: slug, service: service),
-                            ],
-                          ],
+                    GroupedSection(
+                      label: s.t('insuranceAccepted'),
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(Space.lg),
+                          child: InsurerPills(codes: f.insurers, wrap: true),
                         ),
+                      ],
+                    ),
+                    if (f.services.isNotEmpty)
+                      GroupedSection(
+                        label: s.services,
+                        inset: Space.lg,
+                        children: [for (final service in f.services) _ServiceRow(slug: slug, service: service)],
                       ),
-                      const SizedBox(height: Space.xl),
-                    ],
                     if (f.doctors.isNotEmpty) ...[
-                      _SectionTitle(s.doctors),
+                      SectionLabel(s.doctors),
                       SizedBox(
-                        height: 116,
+                        height: 128,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
+                          clipBehavior: Clip.none,
                           itemCount: f.doctors.length,
                           separatorBuilder: (_, _) => const SizedBox(width: Space.md),
                           itemBuilder: (context, i) => _DoctorCard(
@@ -119,28 +127,29 @@ class FacilityScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: Space.xl),
                     ],
-                    if (f.hours.isNotEmpty) ...[
-                      _SectionTitle(s.hours),
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(Space.lg),
-                          child: Column(
-                            children: [
-                              for (final row in f.hours)
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 3),
-                                  child: Row(
-                                    children: [
-                                      Expanded(child: Text(row.isNotEmpty ? row.first : '')),
-                                      Text(row.skip(1).join(' · '), style: Theme.of(context).textTheme.bodySmall),
-                                    ],
+                    if (f.hours.isNotEmpty)
+                      GroupedSection(
+                        label: s.hours,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(Space.lg),
+                            child: Column(
+                              children: [
+                                for (final row in f.hours)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 3),
+                                    child: Row(
+                                      children: [
+                                        Expanded(child: Text(row.isNotEmpty ? row.first : '')),
+                                        Text(row.skip(1).join(' · '), style: theme.textTheme.bodySmall?.tabular),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
+                        ],
                       ),
-                    ],
                   ],
                 ),
               ),
@@ -150,29 +159,18 @@ class FacilityScreen extends ConsumerWidget {
       ),
       bottomNavigationBar: f == null || !f.services.any((x) => x.bookable)
           ? null
-          : SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(Space.lg, Space.sm, Space.lg, Space.md),
-                child: FilledButton.icon(
-                  onPressed: () => context.go('/care/$slug/book'),
-                  icon: const Icon(PhosphorIconsRegular.calendarPlus),
-                  label: Text(s.book),
-                ),
+          : BottomActionBar(
+              child: FilledButton.icon(
+                onPressed: () {
+                  HapticFeedback.selectionClick();
+                  context.go('/care/$slug/book');
+                },
+                icon: const Icon(PhosphorIconsRegular.calendarPlus),
+                label: Text(s.book),
               ),
             ),
     );
   }
-}
-
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle(this.text);
-  final String text;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(left: Space.xs, bottom: Space.md),
-        child: Text(text, style: Theme.of(context).textTheme.titleMedium),
-      );
 }
 
 class _Actions extends StatelessWidget {
@@ -192,13 +190,10 @@ class _Actions extends StatelessWidget {
     ];
     return Row(
       children: [
-        for (final (label, icon, onTap) in actions)
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: Space.xs),
-              child: OutlinedButton.icon(onPressed: onTap, icon: Icon(icon, size: 20), label: Text(label)),
-            ),
-          ),
+        for (final (i, (label, icon, onTap)) in actions.indexed) ...[
+          if (i > 0) const SizedBox(width: Space.md),
+          Expanded(child: OutlinedButton.icon(onPressed: onTap, icon: Icon(icon, size: 20), label: Text(label))),
+        ],
       ],
     );
   }
@@ -212,23 +207,15 @@ class _ServiceRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
-    final theme = Theme.of(context);
     final next = service.nextSlotAt;
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: 2),
-      title: Text(s.pick(service.name), style: theme.textTheme.titleSmall),
+    return GroupedRow(
+      title: s.pick(service.name),
       subtitle: next == null && service.waiting == null
           ? null
-          : Text(
-              [
-                if (service.waiting != null) '${service.waiting} ${s.waiting}',
-                if (next != null) '${fmt.day(next, s)} ${fmt.time(next)}',
-              ].join(' · '),
-              style: theme.textTheme.bodySmall,
-            ),
-      trailing: service.bookable
-          ? const Icon(PhosphorIconsRegular.caretRight, color: Palette.muted, size: 18)
-          : null,
+          : [
+              if (service.waiting != null) '${service.waiting} ${s.waiting}',
+              if (next != null) '${fmt.day(next, s)} ${fmt.time(next)}',
+            ].join(' · '),
       onTap: service.bookable ? () => context.go('/care/$slug/book?service=${service.id}') : null,
     );
   }
@@ -242,28 +229,20 @@ class _DoctorCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final initials = doctor.initials;
     return SizedBox(
-      width: 150,
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
+      width: 156,
+      child: SoftCard(
+        onTap: onTap,
+        child: Padding(
           padding: const EdgeInsets.all(Space.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundColor: Palette.brandSubtle,
-                child: Text(initials, style: theme.textTheme.titleSmall?.copyWith(color: Palette.brand)),
-              ),
+              Avatar(name: doctor.name, initials: doctor.initials),
               const Spacer(),
-              Text(doctor.name, style: theme.textTheme.titleSmall, maxLines: 1, overflow: TextOverflow.ellipsis),
+              Text(doctor.name, style: theme.textTheme.titleSmall, maxLines: 2, overflow: TextOverflow.ellipsis),
               Text(doctor.specialty, style: theme.textTheme.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
             ],
-          ),
           ),
         ),
       ),

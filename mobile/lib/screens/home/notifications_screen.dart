@@ -118,7 +118,6 @@ class NotificationsScreen extends ConsumerWidget {
           if (anyUnread)
             TextButton(
               onPressed: () => _readAll(ref),
-              style: TextButton.styleFrom(foregroundColor: Colors.white),
               child: Text(s.t('markAllRead')),
             ),
         ],

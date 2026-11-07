@@ -75,6 +75,9 @@ class _TicketScreenState extends ConsumerState<TicketScreen> {
     return Scaffold(
       backgroundColor: Palette.forest,
       appBar: AppBar(
+        backgroundColor: Palette.forest,
+        foregroundColor: Colors.white,
+        systemOverlayStyle: SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent),
         leading: const BackButton(),
         actions: [
           if (visits.value?.offline ?? false)
@@ -102,7 +105,7 @@ class _TicketScreenState extends ConsumerState<TicketScreen> {
                     tag: 'ticket-${visit.id}',
                     child: Material(
                       color: called ? Palette.ochre : Palette.surface,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(Space.radiusXl),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: Space.xxl, horizontal: Space.xl),
                         child: Column(
@@ -124,7 +127,7 @@ class _TicketScreenState extends ConsumerState<TicketScreen> {
                             const SizedBox(height: Space.md),
                             Text(
                               visit.ticket,
-                              style: theme.textTheme.displayLarge?.copyWith(fontSize: 64, color: Palette.forest),
+                              style: theme.textTheme.displayLarge?.copyWith(color: Palette.forest),
                             ),
                             const SizedBox(height: Space.sm),
                             Text(
@@ -198,10 +201,10 @@ class _Stat extends StatelessWidget {
                   key: ValueKey(value),
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         color: accent ? Palette.ochre : Colors.white,
-                      ),
+                      ).tabular,
                 ),
               ),
-              Text(label, style: const TextStyle(color: Palette.onForestMuted)),
+              Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Palette.onForestMuted)),
             ],
           ),
         ),
@@ -222,7 +225,7 @@ class _InfoRow extends StatelessWidget {
             children: [
               Icon(icon, color: Palette.onForestMuted, size: 20),
               const SizedBox(width: Space.md),
-              Expanded(child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 15))),
+              Expanded(child: Text(text, style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.white))),
             ],
           ),
         );

@@ -12,6 +12,7 @@ abstract final class PhosphorIconsRegular {
   static const bell = IconData(0xe0ce, fontFamily: 'PhosphorRegular');
   static const buildings = IconData(0xe102, fontFamily: 'PhosphorRegular');
   static const cake = IconData(0xe780, fontFamily: 'PhosphorRegular');
+  static const calendarBlank = IconData(0xe10a, fontFamily: 'PhosphorRegular');
   static const calendarCheck = IconData(0xe712, fontFamily: 'PhosphorRegular');
   static const calendarPlus = IconData(0xe714, fontFamily: 'PhosphorRegular');
   static const calendarX = IconData(0xe10c, fontFamily: 'PhosphorRegular');
@@ -57,6 +58,7 @@ abstract final class PhosphorIconsRegular {
   static const usersThree = IconData(0xe68e, fontFamily: 'PhosphorRegular');
   static const warningCircle = IconData(0xe4e2, fontFamily: 'PhosphorRegular');
   static const wifiSlash = IconData(0xe4f2, fontFamily: 'PhosphorRegular');
+  static const x = IconData(0xe4f6, fontFamily: 'PhosphorRegular');
   static const xCircle = IconData(0xe4f8, fontFamily: 'PhosphorRegular');
 }
 

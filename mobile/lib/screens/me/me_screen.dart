@@ -11,6 +11,7 @@ import '../../data/providers.dart';
 import '../../data/session.dart';
 import '../../ui/band.dart';
 import '../../ui/feedback.dart';
+import '../../ui/grouped.dart';
 import 'profile_screen.dart';
 
 /// Everything a sidebar would hold, as one clean list under the profile (upgrade 15 §1).
@@ -97,21 +98,34 @@ class MeScreen extends ConsumerWidget {
             ],
           ),
           if (self != null && self.percent < 100) _CompleteBanner(percent: self.percent),
-          _Group(items: mine),
-          _Group(items: health),
-          _Group(items: account),
           Padding(
-            padding: const EdgeInsets.fromLTRB(Space.lg, 0, Space.lg, Space.xxl),
-            child: Card(
-              child: ListTile(
-                leading: const Icon(PhosphorIconsRegular.signOut, color: Palette.danger),
-                title: Text(s.signOut, style: const TextStyle(color: Palette.danger, fontWeight: FontWeight.w600)),
-                onTap: () async {
-                  if (await confirmDanger(context, title: s.signOutConfirm, action: s.signOut)) {
-                    await ref.read(authProvider.notifier).signOut();
-                  }
-                },
-              ),
+            padding: const EdgeInsets.fromLTRB(Space.lg, Space.lg, Space.lg, Space.xxl),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (final group in [mine, health, account])
+                  GroupedSection(
+                    children: [
+                      for (final (label, icon, onTap) in group) GroupedRow(icon: icon, title: label, onTap: onTap),
+                    ],
+                  ),
+                GroupedSection(
+                  margin: EdgeInsets.zero,
+                  children: [
+                    GroupedRow(
+                      icon: PhosphorIconsRegular.signOut,
+                      title: s.signOut,
+                      danger: true,
+                      chevron: false,
+                      onTap: () async {
+                        if (await confirmDanger(context, title: s.signOutConfirm, action: s.signOut)) {
+                          await ref.read(authProvider.notifier).signOut();
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ],
@@ -150,7 +164,7 @@ class _CompleteBanner extends StatelessWidget {
                       backgroundColor: Colors.white,
                       strokeCap: StrokeCap.round,
                     ),
-                    Center(child: Text('$percent%', style: theme.textTheme.labelSmall)),
+                    Center(child: Text('$percent%', style: theme.textTheme.labelSmall?.copyWith(color: Palette.forest).tabular)),
                   ],
                 ),
               ),
@@ -159,34 +173,6 @@ class _CompleteBanner extends StatelessWidget {
               const Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.brand),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _Group extends StatelessWidget {
-  const _Group({required this.items});
-
-  final List<(String, IconData, VoidCallback)> items;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(Space.lg, Space.lg, Space.lg, 0),
-      child: Card(
-        child: Column(
-          children: [
-            for (final (i, (label, icon, onTap)) in items.indexed) ...[
-              if (i > 0) const Divider(indent: 56),
-              ListTile(
-                leading: Icon(icon, color: Palette.brand),
-                title: Text(label, style: Theme.of(context).textTheme.titleSmall),
-                trailing: const Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.muted),
-                onTap: onTap,
-              ),
-            ],
-          ],
         ),
       ),
     );

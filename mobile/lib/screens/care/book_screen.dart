@@ -12,6 +12,7 @@ import '../../data/api.dart';
 import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../data/session.dart';
+import '../../ui/controls.dart';
 import '../../ui/feedback.dart';
 
 /// Book: service → day → time, then confirm in a bottom sheet (hold the slot, then book it).
@@ -70,7 +71,7 @@ class _BookScreenState extends ConsumerState<BookScreen> {
                       backgroundColor: Palette.brand,
                       child: Text(
                         doctor.initials,
-                        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Colors.white),
                       ),
                     ),
                     label: Text(doctor.name),
@@ -133,7 +134,7 @@ class _Step extends StatelessWidget {
             CircleAvatar(
               radius: 13,
               backgroundColor: Palette.brand,
-              child: Text('$number', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 13)),
+              child: Text('$number', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w700)),
             ),
             const SizedBox(width: Space.sm),
             Text(title, style: Theme.of(context).textTheme.titleMedium),
@@ -208,11 +209,11 @@ class _Slots extends ConsumerWidget {
                             children: [
                               Text(
                                 fmt.monthShort(d, s),
-                                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: on ? Colors.white70 : Palette.muted),
+                                style: Theme.of(context).textTheme.labelSmall?.copyWith(color: on ? Palette.brandSubtle : Palette.muted),
                               ),
                               Text(
                                 '${d.day}',
-                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: on ? Colors.white : Palette.ink),
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(color: on ? Colors.white : Palette.ink).tabular,
                               ),
                             ],
                           ),
@@ -229,9 +230,8 @@ class _Slots extends ConsumerWidget {
                     for (final slot in selected.slots)
                       ActionChip(
                         label: Text(fmt.time(slot.startsAt)),
-                        backgroundColor: Palette.surface,
-                        side: const BorderSide(color: Palette.hairline),
-                        labelStyle: const TextStyle(fontWeight: FontWeight.w600),
+                        labelStyle: Theme.of(context).textTheme.titleSmall?.tabular,
+                        padding: const EdgeInsets.symmetric(horizontal: Space.sm, vertical: Space.sm),
                         onPressed: () => _confirm(context, ref, slot),
                       ),
                   ],
@@ -331,14 +331,16 @@ class _ConfirmSheetState extends ConsumerState<_ConfirmSheet> {
             ...catalogue.take(_shortList),
             ...catalogue.skip(_shortList).where((x) => _chosen.contains(x.code)),
           ];
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(
-          Space.xl,
-          0,
-          Space.xl,
-          Space.xl + MediaQuery.viewInsetsOf(context).bottom,
-        ),
+    final ready = _patientId != null && _chosen.isNotEmpty;
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Flexible(
+            child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(Space.xl, 0, Space.xl, Space.lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -436,15 +438,17 @@ class _ConfirmSheetState extends ConsumerState<_ConfirmSheet> {
             ),
             if (_error != null) ...[
               const SizedBox(height: Space.md),
-              Text(_error!, style: const TextStyle(color: Palette.danger), textAlign: TextAlign.center),
+              Text(_error!, style: theme.textTheme.bodyMedium?.copyWith(color: Palette.danger), textAlign: TextAlign.center),
             ],
-            const SizedBox(height: Space.lg),
-            LoadingButton(
-              label: s.confirm,
-              onPressed: _patientId == null || _chosen.isEmpty ? null : _book,
-            ),
           ],
         ),
+            ),
+          ),
+          BottomActionBar(
+            note: ready ? null : s.t('pickSymptom'),
+            child: LoadingButton(label: s.confirm, onPressed: ready ? _book : null),
+          ),
+        ],
       ),
     );
   }
@@ -472,14 +476,15 @@ class _PickChip extends StatelessWidget {
             HapticFeedback.selectionClick();
             onTap();
           },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-            child: Text(
-              label,
-              style: TextStyle(
-                color: selected ? Colors.white : (danger ? Palette.danger : Palette.ink),
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 44),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: Space.sm + 2),
+              child: Text(
+                label,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: selected ? Colors.white : (danger ? Palette.danger : Palette.ink),
+                    ),
               ),
             ),
           ),

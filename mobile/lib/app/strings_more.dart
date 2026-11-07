@@ -239,6 +239,10 @@ const _more = <String, Map<String, String>>{
     'resetTitle': 'Reset password',
     'resetSent': 'If this email has an account, a link is on its way.',
     'sendLink': 'Send link',
+    'appearance': 'Appearance',
+    'appearance.system': 'Like the phone',
+    'appearance.light': 'Light',
+    'appearance.dark': 'Dark',
   },
   'rw': {
     'markAllRead': 'Byose byasomwe',
@@ -469,6 +473,10 @@ const _more = <String, Map<String, String>>{
     'resetTitle': 'Hindura ijambo ry’ibanga',
     'resetSent': 'Niba iyi meyili ifite konti, umurongo uroherejwe.',
     'sendLink': 'Ohereza umurongo',
+    'appearance': 'Uko igaragara',
+    'appearance.system': 'Nka telefone',
+    'appearance.light': 'Urumuri',
+    'appearance.dark': 'Umwijima',
   },
   // French: the website's wording where it exists; the rest needs a native-speaker review.
   'fr': {
@@ -700,5 +708,9 @@ const _more = <String, Map<String, String>>{
     'resetTitle': 'Réinitialiser le mot de passe',
     'resetSent': 'Si cet e-mail a un compte, un lien est en route.',
     'sendLink': 'Envoyer le lien',
+    'appearance': 'Apparence',
+    'appearance.system': 'Comme le téléphone',
+    'appearance.light': 'Clair',
+    'appearance.dark': 'Sombre',
   },
 };

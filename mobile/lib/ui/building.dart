@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../app/theme.dart';
+
 /// Facility buildings, the same drawings as the website (upgrade 14 §4,
 /// frontend/apps/patient-web/src/features/site/buildings.tsx): one flat drawing per facility
-/// type on a quiet hillside; a 24-hour emergency department adds the red cross sign.
+/// type on a quiet hillside; a 24-hour emergency department adds the red cross sign. In dark
+/// mode the same drawing is shown at night (dark sky and walls, dim windows).
 class FacilityBuilding extends StatelessWidget {
   const FacilityBuilding({super.key, required this.type, this.emergency = false, this.fit = BoxFit.cover});
 
-  /// The drawing's sky (the same in dark mode: the drawings keep their colours), for extending
-  /// it above the picture.
-  static const sky = Color(0xFFE7F3ED);
+  /// The drawing's sky, for extending it above the picture.
+  static Color get sky => Palette.dark ? const Color(0xFF22272A) : const Color(0xFFE7F3ED);
 
   final String type;
   final bool emergency;
@@ -18,20 +20,23 @@ class FacilityBuilding extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ExcludeSemantics(
         child: SvgPicture.string(
-          _svg(type, emergency),
+          _svg(type, emergency, night: Palette.dark),
           fit: fit,
           alignment: Alignment.bottomCenter,
         ),
       );
 }
 
-const _forest = '#123d2b';
-const _forestRaised = '#1a4d37';
-const _emerald = '#17694d';
-const _mint = '#e7f3ed';
-const _surface = '#ffffff';
-const _glass = '#b9d6c4';
-const _danger = '#b42318';
+// The drawing's colours by day and at night (set by _svg while it draws).
+var _night = false;
+String get _forest => _night ? '#2f6b53' : '#123d2b';
+String get _forestRaised => _night ? '#285a46' : '#1a4d37';
+String get _emerald => _night ? '#2a7d5d' : '#17694d';
+String get _sky => _night ? '#22272a' : '#e7f3ed';
+String get _window => _night ? '#4d5f57' : '#e7f3ed';
+String get _surface => _night ? '#30373b' : '#ffffff';
+String get _glass => _night ? '#41534b' : '#b9d6c4';
+String get _danger => _night ? '#d64545' : '#b42318';
 
 enum _Kind { referral, district, centre, poly, clinic }
 
@@ -43,8 +48,8 @@ _Kind _kind(String type) {
   return _Kind.clinic;
 }
 
-String _windows(num x, num y, int n, {num w = 12, num h = 10, num gap = 8, String fill = _mint}) {
-  final b = StringBuffer('<g fill="$fill">');
+String _windows(num x, num y, int n, {num w = 12, num h = 10, num gap = 8}) {
+  final b = StringBuffer('<g fill="$_window">');
   for (var i = 0; i < n; i++) {
     b.write('<rect x="${x + i * (w + gap)}" y="$y" width="$w" height="$h" rx="1.5"/>');
   }
@@ -59,7 +64,7 @@ String _sign(num x, num y) => '<rect x="$x" y="$y" width="18" height="18" rx="3"
     '<path d="M${x + 9} ${y + 4.5}v9M${x + 4.5} ${y + 9}h9" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>';
 
 String _plaque(num x, num y) => '<rect x="$x" y="$y" width="14" height="14" rx="7" fill="$_emerald"/>'
-    '<path d="M${x + 7} ${y + 3.5}v7M${x + 3.5} ${y + 7}h7" stroke="$_surface" stroke-width="2.2" stroke-linecap="round"/>';
+    '<path d="M${x + 7} ${y + 3.5}v7M${x + 3.5} ${y + 7}h7" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>';
 
 String _rect(num x, num y, num w, num h, String fill, {num rx = 0, double? opacity}) =>
     '<rect x="$x" y="$y" width="$w" height="$h"${rx > 0 ? ' rx="$rx"' : ''} fill="$fill"'
@@ -141,11 +146,12 @@ const _signAt = {
 
 final _cache = <String, String>{};
 
-String _svg(String type, bool emergency) => _cache.putIfAbsent('$type/$emergency', () {
+String _svg(String type, bool emergency, {bool night = false}) => _cache.putIfAbsent('$type/$emergency/$night', () {
+      _night = night;
       final kind = _kind(type);
       final (sx, sy) = _signAt[kind]!;
       return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 140">'
-          '<rect width="320" height="140" fill="$_mint"/>'
+          '<rect width="320" height="140" fill="$_sky"/>'
           '<circle cx="268" cy="30" r="16" fill="$_surface" opacity="0.55"/>'
           '<path d="M0 100c56-14 112-8 168-14s112-6 152 4v50H0z" fill="$_emerald" opacity="0.16"/>'
           '${_tree(30, 104, 10)}${_tree(290, 106, 8)}'

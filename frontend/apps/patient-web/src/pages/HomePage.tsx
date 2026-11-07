@@ -705,6 +705,8 @@ function LatestMeasurementsCard() {
       ].filter((tile) => tile.value != null && tile.value !== "")
     : [];
   const loading = profiles.isPending || records.isPending || (Boolean(latest) && record.isPending);
+  // nothing measured yet: no card on the overview (an empty "No measurements yet" took the space)
+  if (!loading && !records.isError && !record.isError && !(tiles.length && latest)) return null;
 
   return (
     <WidgetCard
@@ -886,10 +888,13 @@ export function HomePage() {
       </header>
 
       {!me.email_verified && (
-        <Alert tone="info" title={t("dashboard.overview.verifyTitle")}>
+        <Alert tone="warning" title={t("dashboard.overview.verifyTitle")}>
           {t("dashboard.overview.verifyBody", { email: me.email })}
         </Alert>
       )}
+
+      {/* full width: in the 22 rem side column its text wrapped one or two words per line */}
+      <PushOffBanner />
 
       <div className="grid items-stretch gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
         <Journey />
@@ -904,7 +909,6 @@ export function HomePage() {
           <RecentVisitsCard />
         </div>
         <aside className="flex min-w-0 flex-col gap-6" aria-label={t("dashboard.overview.aside")}>
-          <PushOffBanner />
           <LatestMeasurementsCard />
           <MedicinesCard />
           <FamilyCard />

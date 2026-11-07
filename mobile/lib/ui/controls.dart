@@ -14,7 +14,7 @@ class BottomActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => DecoratedBox(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Palette.surface,
           border: Border(top: BorderSide(color: Palette.hairline)),
         ),
@@ -92,7 +92,7 @@ class SegmentedControl<T> extends StatelessWidget {
                 label,
                 maxLines: 1,
                 softWrap: false,
-                style: style?.copyWith(color: option == value ? Colors.white : Palette.ink),
+                style: style?.copyWith(color: option == value ? Palette.onBrand : Palette.ink),
               ),
             ),
           ),
@@ -228,7 +228,7 @@ class HeaderBackButton extends StatelessWidget {
                 child: Container(
                   width: 40,
                   height: 40,
-                  decoration: const BoxDecoration(color: Palette.surface, shape: BoxShape.circle),
+                  decoration: BoxDecoration(color: Palette.surface, shape: BoxShape.circle),
                   child: Icon(
                     PhosphorIconsRegular.arrowLeft,
                     color: Palette.ink,

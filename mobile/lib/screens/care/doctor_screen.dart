@@ -86,7 +86,7 @@ class DoctorScreen extends ConsumerWidget {
                             width: Avatar.medium,
                             height: Avatar.medium,
                             decoration: BoxDecoration(color: Palette.brandSubtle, borderRadius: BorderRadius.circular(Space.radius)),
-                            child: const Icon(PhosphorIconsRegular.buildings, color: Palette.brand, size: 22),
+                            child: Icon(PhosphorIconsRegular.buildings, color: Palette.brand, size: 22),
                           ),
                           title: f.name,
                           subtitle: f.place,
@@ -133,7 +133,7 @@ class DoctorScreen extends ConsumerWidget {
                         children: [
                           for (final code in doctor.languages)
                             Chip(
-                              avatar: const Icon(PhosphorIconsRegular.translate, size: 16, color: Palette.brand),
+                              avatar: Icon(PhosphorIconsRegular.translate, size: 16, color: Palette.brand),
                               label: Text(_languageName(code)),
                             ),
                         ],

@@ -70,6 +70,7 @@ Future<void> _shoot(
   tester.view.devicePixelRatio = 3;
   // flutter_test paints shadows without blur (a solid strip); show them as a phone does.
   debugDisableShadows = false;
+  Palette.dark = dark;
   final key = GlobalKey();
   final router = GoRouter(
     initialLocation: '/x',
@@ -112,6 +113,7 @@ Future<void> _shoot(
   await tester.pumpWidget(const SizedBox());
   await tester.pump(const Duration(seconds: 1));
   debugDisableShadows = true;
+  Palette.dark = false;
 }
 
 /// Lets in-flight animations (a button's colour, a sheet) finish before the picture.
@@ -345,6 +347,37 @@ void main() {
       }, skip: _out.isEmpty);
     }
   }
+  // Dark mode (follows the phone) on the key screens and the booking sheet.
+  for (final (name, screen, overrides) in keyScreens) {
+    testWidgets('$name (dark)', (tester) async {
+      await _shoot(tester, '$name-dark', screen, overrides, lang: 'en', dark: true);
+    }, skip: _out.isEmpty);
+  }
+  testWidgets('map (dark)', (tester) async {
+    await _shoot(tester, 'map-dark', const MapScreen(), base, lang: 'en', dark: true);
+  }, skip: _out.isEmpty);
+  testWidgets('profile (dark)', (tester) async {
+    await _shoot(tester, 'profile-dark', const ProfileScreen(patientId: 'p1'), profile, lang: 'en', dark: true);
+  }, skip: _out.isEmpty);
+  testWidgets('book confirm sheet (dark)', (tester) async {
+    await _shoot(
+      tester,
+      'book-confirm-dark',
+      const BookScreen(slug: 'kibagabaga-hospital', serviceId: 's-gp'),
+      facility,
+      lang: 'en',
+      dark: true,
+      act: (tester) async {
+        await tester.tap(find.text('08:00'));
+        for (var i = 0; i < 6; i++) {
+          await tester.pump(const Duration(milliseconds: 300));
+        }
+        await tester.tap(find.text('Fever'));
+        await _settle(tester);
+      },
+    );
+  }, skip: _out.isEmpty);
+
   testWidgets('book confirm sheet (fr)', (tester) async {
     await _shoot(
       tester,

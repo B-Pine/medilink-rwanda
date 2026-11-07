@@ -324,7 +324,7 @@ class FacilityCard extends StatelessWidget {
                   const SizedBox(height: Space.xs),
                   Row(
                     children: [
-                      const Icon(PhosphorIconsRegular.mapPin, size: 16, color: Palette.muted),
+                      Icon(PhosphorIconsRegular.mapPin, size: 16, color: Palette.muted),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(

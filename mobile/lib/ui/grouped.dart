@@ -177,7 +177,7 @@ class GroupedRow extends StatelessWidget {
               if (trailing != null) ...[const SizedBox(width: Space.md), trailing!],
               if (showChevron) ...[
                 const SizedBox(width: Space.sm),
-                const Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.muted),
+                Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.muted),
               ],
             ],
           ),
@@ -211,7 +211,7 @@ class Avatar extends StatelessWidget {
           width: size,
           height: size,
           alignment: Alignment.center,
-          decoration: const BoxDecoration(color: Palette.brandSubtle, shape: BoxShape.circle),
+          decoration: BoxDecoration(color: Palette.brandSubtle, shape: BoxShape.circle),
           child: Text(
             initials ?? initialsOf(name),
             style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Palette.brand, fontWeight: FontWeight.w700),

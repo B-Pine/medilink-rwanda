@@ -152,8 +152,8 @@ class _RoundButton extends StatelessWidget {
               width: 48,
               height: 48,
               child: busy
-                  ? const Center(child: DefaultTextStyle(style: TextStyle(color: Palette.brand), child: LoadingDots()))
-                  : Icon(icon, color: Palette.forest),
+                  ? Center(child: DefaultTextStyle(style: TextStyle(color: Palette.brand), child: LoadingDots()))
+                  : Icon(icon, color: Palette.forestInk),
             ),
           ),
         ),

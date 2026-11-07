@@ -111,7 +111,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
             helperText: s.passwordRule,
             prefixIcon: const Icon(PhosphorIconsRegular.lockKey),
             suffixIcon: _password.text.length >= AppConfig.passwordMin
-                ? const Icon(PhosphorIconsFill.checkCircle, color: Palette.brand)
+                ? Icon(PhosphorIconsFill.checkCircle, color: Palette.brand)
                 : null,
           ),
         ),
@@ -126,7 +126,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               IconButton(
                 tooltip: s.privacy,
                 onPressed: () => context.push('/legal/privacy'),
-                icon: const Icon(PhosphorIconsRegular.info, color: Palette.muted),
+                icon: Icon(PhosphorIconsRegular.info, color: Palette.muted),
               ),
             ],
           ),
@@ -134,7 +134,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         if (_error != null)
           Padding(
             padding: const EdgeInsets.only(bottom: Space.md),
-            child: Text(_error!, style: const TextStyle(color: Palette.danger)),
+            child: Text(_error!, style: TextStyle(color: Palette.danger)),
           ),
         const SizedBox(height: Space.sm),
         LoadingButton(label: s.createAccount, onPressed: _ready ? _submit : null),

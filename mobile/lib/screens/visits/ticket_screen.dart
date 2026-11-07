@@ -82,7 +82,7 @@ class _TicketScreenState extends ConsumerState<TicketScreen> {
         leading: const BackButton(),
         actions: [
           if (visits.value?.offline ?? false)
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(right: Space.lg),
               child: Icon(PhosphorIconsRegular.wifiSlash, color: Palette.onForestMuted),
             ),
@@ -114,13 +114,13 @@ class _TicketScreenState extends ConsumerState<TicketScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const LiveDot(color: Palette.brand),
+                                LiveDot(color: Palette.brand),
                                 const SizedBox(width: 6),
                                 Text(
                                   called ? s.yourTurn.toUpperCase() : s.ticket.toUpperCase(),
                                   style: theme.textTheme.labelSmall?.copyWith(
                                     letterSpacing: 1.4,
-                                    color: called ? Palette.forest : Palette.muted,
+                                    color: called ? Palette.forestInk : Palette.muted,
                                   ),
                                 ),
                               ],
@@ -128,14 +128,14 @@ class _TicketScreenState extends ConsumerState<TicketScreen> {
                             const SizedBox(height: Space.md),
                             Text(
                               visit.ticket,
-                              style: theme.textTheme.displayLarge?.copyWith(color: Palette.forest),
+                              style: theme.textTheme.displayLarge?.copyWith(color: Palette.forestInk),
                             ),
                             const SizedBox(height: Space.sm),
                             Text(
                               called && visit.servicePoint != null
                                   ? visit.servicePoint!
                                   : s.state(visit.state),
-                              style: theme.textTheme.titleMedium?.copyWith(color: Palette.forest),
+                              style: theme.textTheme.titleMedium?.copyWith(color: Palette.forestInk),
                             ),
                           ],
                         ),
@@ -164,7 +164,7 @@ class _TicketScreenState extends ConsumerState<TicketScreen> {
                     OutlinedButton(
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        side: const BorderSide(color: Palette.forestRaised),
+                        side: BorderSide(color: Palette.forestRaised),
                       ),
                       onPressed: () => _leave(visit),
                       child: Text(s.leaveQueue.replaceAll('?', '')),

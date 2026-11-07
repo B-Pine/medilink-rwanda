@@ -18,7 +18,7 @@ class SubPage extends StatefulWidget {
     this.bottomBar,
     this.onRefresh,
     this.busy = false,
-    this.backgroundColor = Palette.page,
+    this.backgroundColor,
   }) : assert(children != null || slivers != null);
 
   final String title;
@@ -37,7 +37,9 @@ class SubPage extends StatefulWidget {
 
   /// A thin progress line under the bar (saving).
   final bool busy;
-  final Color backgroundColor;
+
+  /// The page colour when null.
+  final Color? backgroundColor;
 
   @override
   State<SubPage> createState() => _SubPageState();
@@ -95,7 +97,7 @@ class _SubPageState extends State<SubPage> {
       ),
     );
     return Scaffold(
-      backgroundColor: widget.backgroundColor,
+      backgroundColor: widget.backgroundColor ?? Palette.page,
       body: widget.onRefresh == null ? scroll : HeartbeatRefresh(onRefresh: widget.onRefresh!, child: scroll),
       bottomNavigationBar: widget.bottomBar,
     );

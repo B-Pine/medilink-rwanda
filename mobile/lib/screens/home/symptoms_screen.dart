@@ -156,8 +156,8 @@ class _SymptomsScreenState extends ConsumerState<SymptomsScreen> {
                       Container(
                         width: 64,
                         height: 64,
-                        decoration: const BoxDecoration(color: Palette.brandSubtle, shape: BoxShape.circle),
-                        child: const Icon(PhosphorIconsRegular.stethoscope, color: Palette.brand, size: 30),
+                        decoration: BoxDecoration(color: Palette.brandSubtle, shape: BoxShape.circle),
+                        child: Icon(PhosphorIconsRegular.stethoscope, color: Palette.brand, size: 30),
                       ),
                       const SizedBox(height: Space.lg),
                       Text(s.t('symptomsTitle'), style: theme.textTheme.headlineSmall),
@@ -219,12 +219,12 @@ class _EmergencyStrip extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: Space.sm),
           child: Row(
             children: [
-              const Icon(PhosphorIconsFill.phoneCall, color: Palette.danger, size: 18),
+              Icon(PhosphorIconsFill.phoneCall, color: Palette.danger, size: 18),
               const SizedBox(width: Space.sm),
               Expanded(
-                child: Text(s.emergency, style: const TextStyle(color: Palette.danger, fontWeight: FontWeight.w600)),
+                child: Text(s.emergency, style: TextStyle(color: Palette.danger, fontWeight: FontWeight.w600)),
               ),
-              const Text(AppConfig.emergencyNumber, style: TextStyle(color: Palette.danger, fontWeight: FontWeight.w800)),
+              Text(AppConfig.emergencyNumber, style: TextStyle(color: Palette.danger, fontWeight: FontWeight.w800)),
             ],
           ),
         ),
@@ -273,7 +273,7 @@ class _Bubble extends StatelessWidget {
               Text(turn.condition!, style: theme.textTheme.titleMedium?.copyWith(color: Palette.brand)),
               const SizedBox(height: Space.xs),
             ],
-            Text(turn.text, style: theme.textTheme.bodyLarge?.copyWith(color: mine ? Colors.white : Palette.ink)),
+            Text(turn.text, style: theme.textTheme.bodyLarge?.copyWith(color: mine ? Palette.onBrand : Palette.ink)),
             if (turn.kind == 'answer') ...[
               const SizedBox(height: Space.sm),
               Text(s.t('seeDoctor'), style: theme.textTheme.bodySmall),
@@ -318,7 +318,7 @@ class _QuickReplies extends StatelessWidget {
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(0, 44),
                 foregroundColor: Palette.brand,
-                side: const BorderSide(color: Palette.brand),
+                side: BorderSide(color: Palette.brand),
                 shape: const StadiumBorder(),
               ),
             ),
@@ -396,7 +396,7 @@ class _UrgentCard extends StatelessWidget {
         color: Palette.dangerSubtle,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(Space.radius),
-          side: const BorderSide(color: Palette.danger),
+          side: BorderSide(color: Palette.danger),
         ),
         margin: const EdgeInsets.only(bottom: Space.sm),
         child: Padding(
@@ -406,7 +406,7 @@ class _UrgentCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(PhosphorIconsFill.warningCircle, color: Palette.danger),
+                  Icon(PhosphorIconsFill.warningCircle, color: Palette.danger),
                   const SizedBox(width: Space.sm),
                   Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Palette.danger)),
                 ],
@@ -437,7 +437,7 @@ class _Typing extends StatelessWidget {
           border: Border.all(color: Palette.hairline),
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const DefaultTextStyle(style: TextStyle(color: Palette.brand), child: LoadingDots()),
+        child: DefaultTextStyle(style: TextStyle(color: Palette.brand), child: LoadingDots()),
       );
 }
 

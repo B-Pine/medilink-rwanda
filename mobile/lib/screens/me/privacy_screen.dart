@@ -90,7 +90,7 @@ class PrivacyScreen extends ConsumerWidget {
                                 for (final (i, r) in rows.take(20).indexed) ...[
                                   if (i > 0) const Divider(indent: 56),
                                   ListTile(
-                                    leading: const Icon(PhosphorIconsRegular.eye, color: Palette.brand),
+                                    leading: Icon(PhosphorIconsRegular.eye, color: Palette.brand),
                                     title: Text(
                                       [
                                         (r['facility'] as Map?)?['name'] ?? '',
@@ -118,7 +118,7 @@ class PrivacyScreen extends ConsumerWidget {
                         color: Palette.brand,
                       ),
                       title: Text((legal?[doc] as Map?)?['title'] as String? ?? doc),
-                      trailing: const Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.muted),
+                      trailing: Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.muted),
                       onTap: () => context.push('/legal/$doc'),
                     ),
                   ],
@@ -230,7 +230,7 @@ class LegalScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(all['summaryTitle'] as String? ?? '', style: theme.textTheme.titleSmall?.copyWith(color: Palette.forest)),
+                      Text(all['summaryTitle'] as String? ?? '', style: theme.textTheme.titleSmall?.copyWith(color: Palette.forestInk)),
                       const SizedBox(height: Space.sm),
                       Text(d['summary'] as String? ?? '', style: theme.textTheme.bodyLarge),
                     ],

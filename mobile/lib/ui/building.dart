@@ -7,6 +7,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 class FacilityBuilding extends StatelessWidget {
   const FacilityBuilding({super.key, required this.type, this.emergency = false, this.fit = BoxFit.cover});
 
+  /// The drawing's sky (the same in dark mode: the drawings keep their colours), for extending
+  /// it above the picture.
+  static const sky = Color(0xFFE7F3ED);
+
   final String type;
   final bool emergency;
   final BoxFit fit;

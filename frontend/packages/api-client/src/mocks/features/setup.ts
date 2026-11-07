@@ -803,7 +803,7 @@ export const setupMocks: FeatureMockFactory = (context) => {
         const data = await body(request);
         if (str(data.starts_at) >= str(data.ends_at))
           return fieldError(context, ok.lang, { ends_at: "The end must be after the start." });
-        const event = { ...(data as Omit<CalendarEvent, "id">), id: id() } as CalendarEvent;
+        const event = { ...(data as Omit<CalendarEvent, "id">), id: id() };
         db.events.push(event);
         return HttpResponse.json(event, { status: 201 });
       }),

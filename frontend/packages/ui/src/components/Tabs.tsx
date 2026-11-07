@@ -1,5 +1,5 @@
 import * as RadixTabs from "@radix-ui/react-tabs";
-import type { ComponentPropsWithoutRef } from "react";
+import { useLayoutEffect, useRef, type ComponentPropsWithoutRef } from "react";
 
 import { cx } from "../utils/cx";
 
@@ -22,8 +22,17 @@ export function TabsTrigger({
   className,
   ...props
 }: ComponentPropsWithoutRef<typeof RadixTabs.Trigger>) {
+  const ref = useRef<HTMLButtonElement>(null);
+  // Tabs used as filters have no panel: `aria-controls` must not point at a missing element
+  // (axe aria-valid-attr-value). A trigger without it is still a valid tab.
+  useLayoutEffect(() => {
+    const el = ref.current;
+    const target = el?.getAttribute("aria-controls");
+    if (el && target && !document.getElementById(target)) el.removeAttribute("aria-controls");
+  });
   return (
     <RadixTabs.Trigger
+      ref={ref}
       className={cx(
         "inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-full px-4 text-body-sm font-semibold whitespace-nowrap text-fg-secondary",
         "transition-[background-color,color,box-shadow] duration-200 ease-out-quint",

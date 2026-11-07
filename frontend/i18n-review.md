@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 5936.
+Keys: 5944.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -54,6 +54,9 @@ File: `packages/ui/src/i18n/locales/rw.json`
 | `chart.hideTable` | Hisha imbonerahamwe | Hide table | needs native-speaker review |
 | `chart.keyboardHint` | Koresha utubuto tw’imyambi y’ibumoso n’iburyo kugira ngo usome agaciro kamwe kamwe. | Use the left and right arrow keys to read each value. | needs native-speaker review |
 | `chart.tableOf` | Imibare y’igishushanyo: {{title}} | Data of the chart: {{title}} | needs native-speaker review |
+| `dateParts.day` | Umunsi | Day | needs native-speaker review |
+| `dateParts.month` | Ukwezi | Month | needs native-speaker review |
+| `dateParts.year` | Umwaka | Year | needs native-speaker review |
 
 ## Staff app
 
@@ -204,6 +207,7 @@ File: `apps/staff-web/src/i18n/locales/rw.json`
 | `today.greeting_afternoon` | Mwiriwe, {{name}} | Good afternoon, {{name}} | needs native-speaker review |
 | `today.greeting_evening` | Muraho, {{name}} | Good evening, {{name}} | needs native-speaker review |
 | `today.quickActions` | Ibikorwa byihuse | Quick actions | needs native-speaker review |
+| `today.moreActions` | Ibindi ({{count}}) | More ({{count}}) | needs native-speaker review |
 | `placeholder.title` | {{section}} | {{section}} | needs native-speaker review |
 | `placeholder.body` | Iki gice kizakorwa mu cyiciro gikurikira. | This workspace is planned for a later sprint. | needs native-speaker review |
 | `placeholder.back` | Subira ku Uyu munsi | Back to Today | needs native-speaker review |
@@ -2138,6 +2142,9 @@ File: `apps/staff-web/src/features/patients/locales/rw.json`
 | `search.register` | Andika umurwayi mushya | Register walk-in | needs native-speaker review |
 | `search.button` | Shakisha | Search | needs native-speaker review |
 | `search.noResultsTitle` | Nta murwayi wabonetse | No patient found | needs native-speaker review |
+| `search.startTitle` | Shaka umurwayi kugira ngo utangire | Find a patient to begin | needs native-speaker review |
+| `search.startBody` | Shakisha ukoresheje izina, telefoni, indangamuntu, nimero ya dosiye cyangwa nimero ya MediLink. Kanda N kwandika umurwayi uje atateganyijwe. | Search by name, phone, national ID, file or MediLink number. Press N to register a walk-in. | needs native-speaker review |
+| `search.startQueue` | Fungura umurongo w'uyu munsi | Open today's queue | needs native-speaker review |
 | `external.title` | Asanzwe kuri MediLink | Already on MediLink | needs native-speaker review |
 | `external.hint` | Uyu muntu yanditswe mu kindi kigo. Musabe nomero ye ya MediLink kugira ngo umwongere hano. | This person is registered at another facility. Ask for their MediLink number to add them here. | needs native-speaker review |
 | `external.add` | Mwongere kuri iki kigo | Add to this facility | needs native-speaker review |
@@ -3365,6 +3372,7 @@ File: `apps/staff-web/src/features/queue/locales/rw.json`
 | `mine.nextUp` | Ukurikiyeho | Next up | needs native-speaker review |
 | `mine.openRecord` | Fungura dosiye | Open record | needs native-speaker review |
 | `mine.finishAndNext` | Soza uhamagare ukurikira | Finish and call next | needs native-speaker review |
+| `mine.more` | Ibindi | More | needs native-speaker review |
 | `reorders.title` | Igenzura ry’umurongo | Queue reviews | needs native-speaker review |
 | `reorders.onlyOpen` | Erekana gusa ibitaragenzurwa | Show only moves not yet reviewed | needs native-speaker review |
 | `reorders.columns.when` | Ryari | When | needs native-speaker review |

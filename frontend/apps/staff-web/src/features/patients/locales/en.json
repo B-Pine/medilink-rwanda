@@ -68,7 +68,10 @@
     "noResults": "No patient at this facility matches. Check the spelling, or search by phone or ID.",
     "register": "Register walk-in",
     "button": "Search",
-    "noResultsTitle": "No patient found"
+    "noResultsTitle": "No patient found",
+    "startTitle": "Find a patient to begin",
+    "startBody": "Search by name, phone, national ID, file or MediLink number. Press N to register a walk-in.",
+    "startQueue": "Open today's queue"
   },
   "external": {
     "title": "Already on MediLink",

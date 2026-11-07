@@ -1,3 +1,4 @@
+import { mockId } from "../ids";
 import { http, HttpResponse } from "msw";
 
 import type {
@@ -532,7 +533,7 @@ export const patientsMocks: FeatureMockFactory = (context) => {
         if (found.matches.some((m) => m.level !== "possible") && !body.confirm_not_duplicate)
           return fieldConflict(context, lang, "non_field_errors", "duplicate");
         const seed = s.nextSeed++;
-        const patientId = crypto.randomUUID();
+        const patientId = mockId();
         const patient: MockPatient = {
           id: patientId,
           medilink_number: medilinkNumber(seed),
@@ -555,7 +556,7 @@ export const patientsMocks: FeatureMockFactory = (context) => {
           medications: [],
           consents: [
             {
-              id: crypto.randomUUID(),
+              id: mockId(),
               kind: "care",
               patient_id: patientId,
               granted: true,
@@ -571,7 +572,7 @@ export const patientsMocks: FeatureMockFactory = (context) => {
             .replace(/[\s\-.]/g, "")
             .toUpperCase();
           patient.identifiers.push({
-            id: crypto.randomUUID(),
+            id: mockId(),
             kind: ident.kind as MockPatient["identifiers"][number]["kind"],
             issuing_country:
               ident.kind === "national_id"
@@ -585,7 +586,7 @@ export const patientsMocks: FeatureMockFactory = (context) => {
         }
         s.patients.set(patient.id, patient);
         const rec: MockFacilityRecord = {
-          id: crypto.randomUUID(),
+          id: mockId(),
           facility_id: facilityId,
           patient_id: patient.id,
           file_number: fileNumber,
@@ -628,7 +629,7 @@ export const patientsMocks: FeatureMockFactory = (context) => {
         if (care?.granted && care.version !== MOCK_CONSENT_VERSION)
           return outdated(lang, "care_consent");
         const rec: MockFacilityRecord = {
-          id: crypto.randomUUID(),
+          id: mockId(),
           facility_id: facilityId,
           patient_id: patient.id,
           file_number: normalizeFileNumber(body.file_number),
@@ -756,7 +757,7 @@ export const patientsMocks: FeatureMockFactory = (context) => {
         const patient = s.patients.get(rec.patient_id)!;
         patient.identifiers = patient.identifiers.filter((i) => i.kind !== kind);
         const identifier = {
-          id: crypto.randomUUID(),
+          id: mockId(),
           kind: kind as MockPatient["identifiers"][number]["kind"],
           issuing_country: kind === "national_id" ? "RW" : str(body.issuing_country).toUpperCase(),
           masked_value: mask(value.slice(-4)),
@@ -851,7 +852,7 @@ export const patientsMocks: FeatureMockFactory = (context) => {
           const side = form.get("side") === "back" ? "back" : "front";
           profile.card_images = {
             ...profile.card_images,
-            [side]: { upload_id: crypto.randomUUID(), scan_status: "clean" },
+            [side]: { upload_id: mockId(), scan_status: "clean" },
           };
           return HttpResponse.json(profile);
         },
@@ -956,7 +957,7 @@ export const patientsMocks: FeatureMockFactory = (context) => {
           );
         if (str(body.version) !== MOCK_CONSENT_VERSION) return outdated(auth.lang, "version");
         const consent = {
-          id: crypto.randomUUID(),
+          id: mockId(),
           kind: str(body.kind),
           patient_id: rec.patient_id,
           granted: Boolean(body.granted),
@@ -1050,7 +1051,7 @@ export const patientsMocks: FeatureMockFactory = (context) => {
             ? "cross_facility"
             : "facility";
         const merge: PatientsStore["merges"][number] = {
-          id: crypto.randomUUID(),
+          id: mockId(),
           scope,
           status: "requested",
           is_escalated: false,
@@ -1319,7 +1320,7 @@ export function addInsurance(
       fields: { member_number: [s1("conflict", lang)] },
     });
   const profile: InsuranceProfile = {
-    id: crypto.randomUUID(),
+    id: mockId(),
     insurer_code: code,
     insurer_display: INSURERS[code],
     member_number: number,
@@ -1385,7 +1386,7 @@ export function addHealthItem(
 ): HealthItem {
   const item = {
     ...(body as Partial<HealthItem>),
-    id: crypto.randomUUID(),
+    id: mockId(),
     kind: HEALTH_KIND[kind],
     source,
     verification_status: source === "clinician" ? "verified" : "unverified",

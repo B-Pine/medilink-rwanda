@@ -63,6 +63,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               here: here.point,
               selected: _selected,
               onPin: (f) => _select(list, list.indexOf(f), fromPin: true),
+              // Under the top bar (8 + 48 + 8), clear of the cards at the bottom.
+              attributionTop: Space.sm + 48 + Space.xs,
             ),
           ),
           Positioned(
@@ -81,7 +83,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                     decoration: BoxDecoration(
                       color: Palette.surface,
                       borderRadius: BorderRadius.circular(24),
-                      boxShadow: Shadows.card,
+                      boxShadow: Shadows.floating,
                     ),
                     child: Text(s.t('map'), style: Theme.of(context).textTheme.titleMedium),
                   ),
@@ -105,8 +107,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             Positioned(
               left: 0,
               right: 0,
-              // Above the map attribution line.
-              bottom: MediaQuery.paddingOf(context).bottom + Space.xl + Space.sm,
+              bottom: MediaQuery.paddingOf(context).bottom + Space.lg,
               height: 272,
               child: PageView.builder(
                 controller: _pages,
@@ -114,7 +115,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 onPageChanged: (i) => _select(list, i),
                 itemBuilder: (context, i) => Padding(
                   padding: const EdgeInsets.symmetric(horizontal: Space.xs + 2),
-                  child: FacilityMiniCard(facility: list[i]),
+                  child: FacilityMiniCard(facility: list[i], raised: true),
                 ),
               ),
             ),
@@ -140,7 +141,7 @@ class _RoundButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => DecoratedBox(
-        decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: Shadows.card),
+        decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: Shadows.floating),
         child: Material(
           color: Palette.surface,
           shape: const CircleBorder(),

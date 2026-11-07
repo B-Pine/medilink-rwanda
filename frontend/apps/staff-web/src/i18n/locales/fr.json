@@ -176,7 +176,8 @@
     "greeting_morning": "Bonjour, {{name}}",
     "greeting_afternoon": "Bon après-midi, {{name}}",
     "greeting_evening": "Bonsoir, {{name}}",
-    "quickActions": "Actions rapides"
+    "quickActions": "Actions rapides",
+    "moreActions": "Plus ({{count}})"
   },
   "placeholder": {
     "title": "{{section}}",

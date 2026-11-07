@@ -20,9 +20,12 @@ export const STALE_AFTER_SECONDS = 30;
 export function LiveBadge({
   className,
   announce = false,
+  compact = false,
 }: {
   className?: string;
   announce?: boolean;
+  /** Below md, show the icon only (the label stays for assistive tech). */
+  compact?: boolean;
 }) {
   const { t } = useTranslation();
   const { status, updatedAt, pending } = useLiveState();
@@ -46,7 +49,8 @@ export function LiveBadge({
       <span
         data-state={offline ? "offline" : stale ? "stale" : "live"}
         className={cx(
-          "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-caption font-semibold",
+          "inline-flex items-center gap-1.5 rounded-full py-0.5 text-caption font-semibold whitespace-nowrap",
+          compact ? "px-1.5 md:px-2.5" : "px-2.5",
           offline
             ? "bg-danger-bg text-danger"
             : stale
@@ -56,7 +60,7 @@ export function LiveBadge({
         )}
       >
         <Icon aria-hidden="true" weight="bold" className="size-3.5" />
-        {label}
+        <span className={compact ? "sr-only md:not-sr-only" : undefined}>{label}</span>
       </span>
       {announce && (
         <span role="status" className="sr-only">
@@ -71,5 +75,7 @@ export function LiveBadge({
 export function QueueHeaderLive() {
   const allowed = useCan("queue.operate", "queue.call", "pharmacy.dispense");
   useQueueSocket(allowed);
-  return allowed ? <LiveBadge className="hidden md:inline-flex" announce /> : null;
+  // phones: the icon only (the chip wrapped over three lines in the crowded top bar); the state
+  // is still announced and named for assistive tech
+  return allowed ? <LiveBadge compact announce /> : null;
 }

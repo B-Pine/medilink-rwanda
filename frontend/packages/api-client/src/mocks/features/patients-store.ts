@@ -1,3 +1,4 @@
+import { mockId } from "../ids";
 import type {
   ConsentRecord,
   HealthItem,
@@ -236,7 +237,7 @@ export function completeClaim(store: PatientsStore, claim: MockClaim): MockLink 
   if (!own) return null;
   claim.status = "completed";
   own.revoked = true;
-  const link: MockLink = { ...own, id: crypto.randomUUID(), patient_id: claim.patient_id };
+  const link: MockLink = { ...own, id: mockId(), patient_id: claim.patient_id };
   store.links.push(link);
   return link;
 }
@@ -311,7 +312,7 @@ export function createPatientsStore(): PatientsStore {
     if (index === 1) patient.phone_e164 = "+250788100001"; // the duplicate pair shares a phone
     if (index === 0) {
       patient.identifiers.push({
-        id: crypto.randomUUID(),
+        id: mockId(),
         kind: "national_id",
         issuing_country: "RW",
         masked_value: mask("5678"),
@@ -320,7 +321,7 @@ export function createPatientsStore(): PatientsStore {
         value: "1198470012345678",
       });
       patient.insurance.push({
-        id: crypto.randomUUID(),
+        id: mockId(),
         insurer_code: "mutuelle",
         insurer_display: "Mutuelle de Santé",
         member_number: "1234567/01",
@@ -358,7 +359,7 @@ export function createPatientsStore(): PatientsStore {
   // open reception claim for Ntwari Paul (index 9)
   const paul = [...store.patients.values()][9]!;
   store.claims.push({
-    id: crypto.randomUUID(),
+    id: mockId(),
     account_email: "paul@example.test",
     patient_id: paul.id,
     status: "awaiting_reception",
@@ -379,7 +380,7 @@ export function createPatientsStore(): PatientsStore {
     relationship: "spouse",
   };
   self.history.push({
-    id: crypto.randomUUID(),
+    id: mockId(),
     occurred_at: now(),
     action: "patients.record.viewed",
     actor_kind: "staff",
@@ -410,7 +411,7 @@ export function createPatientsStore(): PatientsStore {
   const granted = now();
   store.links.push(
     {
-      id: crypto.randomUUID(),
+      id: mockId(),
       account_email: email,
       holder_name: ACCOUNT.full_name,
       patient_id: self.id,
@@ -420,7 +421,7 @@ export function createPatientsStore(): PatientsStore {
       revoked: false,
     },
     {
-      id: crypto.randomUUID(),
+      id: mockId(),
       account_email: email,
       holder_name: ACCOUNT.full_name,
       patient_id: child.id,
@@ -430,7 +431,7 @@ export function createPatientsStore(): PatientsStore {
       revoked: false,
     },
     {
-      id: crypto.randomUUID(),
+      id: mockId(),
       account_email: email,
       holder_name: ACCOUNT.full_name,
       patient_id: parent.id,
@@ -440,7 +441,7 @@ export function createPatientsStore(): PatientsStore {
       revoked: false,
     },
     {
-      id: crypto.randomUUID(),
+      id: mockId(),
       account_email: "anne@example.test",
       holder_name: "Mukarugwiza Anne",
       patient_id: parent.id,

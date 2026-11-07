@@ -8,8 +8,9 @@ import '../../app/theme.dart';
 import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../ui/feedback.dart';
-import '../../ui/heartbeat_refresh.dart';
+import '../../ui/grouped.dart';
 import '../../ui/secure_screen.dart';
+import '../../ui/sub_page.dart';
 
 /// A secure list page: no screenshots, skeletons, empty and error states, pull to refresh.
 class _SecureList<T> extends ConsumerWidget {
@@ -33,32 +34,22 @@ class _SecureList<T> extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final s = S.of(context);
     return SecureScreen(
-      child: Scaffold(
-        appBar: AppBar(title: Text(title)),
-        body: HeartbeatRefresh(
-          onRefresh: () async => onRefresh(),
-          child: ListView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: EdgeInsets.zero,
-            children: [
-              if (offline) const OfflineBar(),
-              Padding(
-                padding: const EdgeInsets.all(Space.lg),
-                child: value.when(
-                  loading: () => const SkeletonList(),
-                  error: (e, _) => ErrorState(error: e, onRetry: onRefresh),
-                  data: (items) => items.isEmpty
-                      ? EmptyState(icon: emptyIcon, text: s.empty)
-                      : Column(
-                          children: [
-                            for (final item in items) ...[itemBuilder(context, item), const SizedBox(height: Space.sm)],
-                          ],
-                        ),
-                ),
-              ),
-            ],
+      child: SubPage(
+        title: title,
+        onRefresh: () async => onRefresh(),
+        children: [
+          if (offline) ...[const OfflineBar(), const SizedBox(height: Space.lg)],
+          value.when(
+            loading: () => const SkeletonList(),
+            error: (e, _) => ErrorState(error: e, onRetry: onRefresh),
+            data: (items) => items.isEmpty
+                ? EmptyState(icon: emptyIcon, text: s.empty)
+                : GroupedSection(
+                    inset: Space.lg + Avatar.medium + Space.lg,
+                    children: [for (final item in items) itemBuilder(context, item)],
+                  ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -72,36 +63,17 @@ class _Row extends StatelessWidget {
   final Widget? trailing;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(Space.md),
-        child: Row(
-          children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(color: Palette.brandSubtle, borderRadius: BorderRadius.circular(10)),
-              child: Icon(icon, color: Palette.brand),
-            ),
-            const SizedBox(width: Space.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: theme.textTheme.titleSmall, maxLines: 2, overflow: TextOverflow.ellipsis),
-                  const SizedBox(height: 2),
-                  Text(subtitle, style: theme.textTheme.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
-                ],
-              ),
-            ),
-            if (trailing != null) ...[const SizedBox(width: Space.sm), trailing!],
-          ],
+  Widget build(BuildContext context) => GroupedRow(
+        leading: Container(
+          width: Avatar.medium,
+          height: Avatar.medium,
+          decoration: BoxDecoration(color: Palette.brandSubtle, borderRadius: BorderRadius.circular(Space.radius)),
+          child: Icon(icon, color: Palette.brand, size: 22),
         ),
-      ),
-    );
-  }
+        title: title,
+        subtitle: subtitle,
+        trailing: trailing,
+      );
 }
 
 String _when(DateTime? d, Strings s) => d == null ? '' : fmt.day(d, s, relative: false);

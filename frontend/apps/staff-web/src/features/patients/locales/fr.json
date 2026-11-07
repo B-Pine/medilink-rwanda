@@ -68,7 +68,10 @@
     "noResults": "Aucun patient de cet établissement ne correspond. Vérifiez l'orthographe ou cherchez par téléphone ou identité.",
     "register": "Enregistrer un patient",
     "button": "Rechercher",
-    "noResultsTitle": "Aucun patient trouvé"
+    "noResultsTitle": "Aucun patient trouvé",
+    "startTitle": "Trouvez un patient pour commencer",
+    "startBody": "Cherchez par nom, téléphone, carte d’identité, numéro de dossier ou numéro MediLink. Appuyez sur N pour enregistrer un patient sans rendez-vous.",
+    "startQueue": "Ouvrir la file du jour"
   },
   "external": {
     "title": "Déjà sur MediLink",

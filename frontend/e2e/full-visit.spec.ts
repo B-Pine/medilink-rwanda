@@ -27,7 +27,7 @@ async function logIn(page: Page, email: string) {
 }
 
 async function logOut(page: Page) {
-  await page.getByRole("button", { name: /^Account menu: / }).click();
+  await page.getByRole("button", { name: /Account menu$/ }).click();
   await page.getByRole("menuitem", { name: "Log out" }).click();
   await expect(page.getByLabel("Email")).toBeVisible();
 }
@@ -100,7 +100,11 @@ test("full visit: reception, triage, doctor, laboratory, doctor again, pharmacy"
   await page.getByRole("button", { name: "Sample taken: Malaria rapid test (RDT)" }).click();
   await page.getByRole("button", { name: "Sample taken: Full blood count" }).click();
   const graceRdt = page.getByRole("form", { name: "Enter the result: Malaria rapid test (RDT)" });
-  await graceRdt.getByLabel("Result").selectOption("negative");
+  // a few result choices are pills (a radio group), clicked like the technician would
+  await graceRdt
+    .getByRole("group", { name: "Result" })
+    .locator("label", { hasText: /^Negative$/ })
+    .click();
   await graceRdt.getByRole("button", { name: "Save result" }).click();
   const fbc = page.getByRole("form", { name: "Enter the result: Full blood count" });
   await fbc.getByLabel("Haemoglobin (g/dL)").fill("12.8");
@@ -114,7 +118,10 @@ test("full visit: reception, triage, doctor, laboratory, doctor again, pharmacy"
   await page.getByRole("button", { name: "Start", exact: true }).click();
   await page.getByRole("button", { name: "Sample taken: Malaria rapid test (RDT)" }).click();
   const rdt = page.getByRole("form", { name: "Enter the result: Malaria rapid test (RDT)" });
-  await rdt.getByLabel("Result").selectOption("positive");
+  await rdt
+    .getByRole("group", { name: "Result" })
+    .locator("label", { hasText: /^Positive$/ })
+    .click();
   await rdt.getByRole("button", { name: "Save result" }).click();
   await expect(page.getByText(/Every result is in. .* goes back to the doctor./)).toBeVisible();
   await expect(doneToday.getByRole("listitem")).toHaveCount(2);

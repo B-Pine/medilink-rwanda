@@ -33,6 +33,43 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   emergency strip and the sign-in brand panel are `<aside>` landmarks; facility and doctor cards
   on Facilities and Doctors are `<h2>` under the page `<h1>`; map credit links are underlined.
 
+### Dashboards · work screens (#262)
+
+- Changed: the doctor's current patient shows three main actions (Open record, Finish and call
+  next, Complete visit); sending to pharmacy or payment and waiting for results are under "More"
+  (there were seven buttons of equal weight).
+- Added: `ChoiceGroup` (a short list of choices as pills, a native radio group). Lab results with
+  up to six choices (Negative, Trace, +, ++, +++) are one tap each instead of a drop-down.
+- Added: `DateParts` (Day / Month / Year in every language). The walk-in date of birth uses it; a
+  native date input showed the browser's region order (mm/dd/yyyy), easy to swap at the desk.
+- Changed: Patients opens with what to search by, the "N" walk-in shortcut and a link to today's
+  queue instead of an empty page.
+- Changed: patient dashboard: the AI assistant button is icon-only so it covers less, and the
+  account button is avatar-only (the sidebar card already shows whose portal it is).
+
+### Dashboards · fixes and accessibility (#262)
+
+- Fixed: mock records keep the same id on every page load (`mocks/ids.ts`), so refreshing or
+  opening a link to a bill, consultation, appointment, application or queue ticket works in mock
+  mode and e2e.
+- Fixed: the platform Command centre no longer links "Escalated disputes" to a missing page (the
+  disputes screens are #263).
+- Fixed (WCAG 2.5.3): the search button, account menu and profile switcher are named by their
+  visible text; tabs used as filters no longer point `aria-controls` at missing panels; the year
+  on patient date badges meets contrast; map credit links are underlined.
+- Changed: the signed-in apps load into an outline of the dashboard (`ShellSkeleton`) instead of a
+  blank page with "Loading…".
+- Fixed: `Skeleton` no longer forces `height: 1em` over height classes, so sized placeholders
+  (cards, lists) show at their real size.
+- Fixed: on phones the staff top bar fits: the "Live" chip shows its icon only (its own
+  `inline-flex` beat `hidden`, so it wrapped over three lines), and the menu button is icon-only.
+- Changed: staff Today opens with a calm header (date, greeting, neutral role chips) instead of
+  the green banner; at most three actions are in view (one primary) and the rest are under
+  "More" (the facility admin had 12 pills).
+- Changed: patient overview: the alerts prompt is a full-width bar (it wrapped one word per line
+  in the side column); "Confirm your email" uses the attention style; the measurements card is
+  left out until there is something measured.
+
 ### Fewer words on the staff dashboards (2026-11-06)
 
 - Changed: staff pages read like the app. The 45 page-header subtitles and the report section

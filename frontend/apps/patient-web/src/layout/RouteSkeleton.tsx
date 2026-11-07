@@ -1,4 +1,4 @@
-import { LoadingState, Skeleton } from "@medilink/ui";
+import { Skeleton, ShellSkeleton } from "@medilink/ui";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
@@ -12,7 +12,7 @@ import { PublicLayout } from "./PublicLayout";
 export function RouteSkeleton() {
   const { t } = useTranslation();
   const { pathname } = useLocation();
-  if (pathname.startsWith("/dashboard")) return <LoadingState className="min-h-dvh" />;
+  if (pathname.startsWith("/dashboard")) return <ShellSkeleton />;
   return (
     <PublicLayout>
       <div

@@ -108,7 +108,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    ForestBand(height: bandHeight + top, curve: 34, parallax: _offset),
+                    ForestBand(height: bandHeight + top, parallax: _offset),
                     Positioned(
                       left: Space.xl,
                       right: Space.lg,
@@ -186,7 +186,7 @@ class _Greeting extends ConsumerWidget {
                   ? const Skeleton(width: 140, height: 26, onForest: true)
                   : Text(
                       me!.firstName,
-                      style: theme.textTheme.headlineMedium?.copyWith(color: Colors.white, fontSize: 28),
+                      style: theme.textTheme.headlineMedium?.copyWith(color: Colors.white),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -263,7 +263,7 @@ class _FamilySwitcher extends ConsumerWidget {
             const SizedBox(width: 6),
             Text(
               current?.displayName ?? S.of(context).family,
-              style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
             ),
             const Icon(PhosphorIconsRegular.caretDown, size: 14, color: Palette.onForestMuted),
           ],
@@ -343,7 +343,7 @@ class _Footer extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         color: Palette.page,
         padding: const EdgeInsets.symmetric(horizontal: Space.xl, vertical: Space.md + 2),
-        child: Row(children: children),
+        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: children),
       );
 }
 
@@ -405,7 +405,7 @@ class TicketCard extends StatelessWidget {
                         FittedBox(
                           fit: BoxFit.scaleDown,
                           alignment: Alignment.centerLeft,
-                          child: Text(visit.ticket, style: theme.textTheme.displayMedium?.copyWith(fontSize: 42, color: Palette.forest)),
+                          child: Text(visit.ticket, style: theme.textTheme.displayMedium?.copyWith(color: Palette.forest)),
                         ),
                         Text(
                           s.pick(visit.service),
@@ -425,14 +425,22 @@ class TicketCard extends StatelessWidget {
                 const Icon(PhosphorIconsRegular.mapPin, size: 18, color: Palette.brand),
                 const SizedBox(width: 6),
                 Expanded(
-                  child: Text(
-                    visit.facilityName,
-                    style: theme.textTheme.titleSmall,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        visit.facilityName,
+                        style: theme.textTheme.titleSmall,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (wait != null && !called) ...[
+                        const SizedBox(height: Space.xs),
+                        _WaitChip(text: wait),
+                      ],
+                    ],
                   ),
                 ),
-                if (wait != null && !called) _WaitChip(text: wait),
               ],
             ),
           ],
@@ -468,7 +476,7 @@ class _AheadRing extends StatelessWidget {
               position: Tween(begin: const Offset(0, 0.6), end: Offset.zero).animate(animation),
               child: FadeTransition(opacity: animation, child: child),
             ),
-            child: Text('$ahead', key: ValueKey(ahead), style: theme.textTheme.headlineMedium?.copyWith(color: Palette.forest)),
+            child: Text('$ahead', key: ValueKey(ahead), style: theme.textTheme.headlineMedium?.copyWith(color: Palette.forest).tabular),
           ),
         ),
         const SizedBox(height: 4),
@@ -483,18 +491,7 @@ class _WaitChip extends StatelessWidget {
   final String text;
 
   @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(color: const Color(0xFFFEF3C7), borderRadius: BorderRadius.circular(99)),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(PhosphorIconsRegular.clock, size: 14, color: Palette.ochreText),
-            const SizedBox(width: 4),
-            Text(text, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: Palette.ochreText)),
-          ],
-        ),
-      );
+  Widget build(BuildContext context) => StatusPill(text: text, tone: PillTone.ochre, icon: PhosphorIconsRegular.clock);
 }
 
 class _NextVisitCard extends StatelessWidget {
@@ -520,12 +517,12 @@ class _NextVisitCard extends StatelessWidget {
                 Container(
                   width: 64,
                   height: 72,
-                  decoration: BoxDecoration(color: Palette.forest, borderRadius: BorderRadius.circular(14)),
+                  decoration: BoxDecoration(color: Palette.forest, borderRadius: BorderRadius.circular(Space.radius)),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(fmt.monthShort(d, s), style: theme.textTheme.labelSmall?.copyWith(color: Palette.onForestAccent, letterSpacing: 1)),
-                      Text('${d.day}', style: theme.textTheme.headlineMedium?.copyWith(color: Colors.white, height: 1.1)),
+                      Text('${d.day}', style: theme.textTheme.headlineMedium?.copyWith(color: Colors.white, height: 1.1).tabular),
                     ],
                   ),
                 ),
@@ -536,7 +533,7 @@ class _NextVisitCard extends StatelessWidget {
                     children: [
                       _Eyebrow(s.nextVisit),
                       const SizedBox(height: 2),
-                      Text(fmt.time(d), style: theme.textTheme.displayMedium?.copyWith(fontSize: 36, color: Palette.brand)),
+                      Text(fmt.time(d), style: theme.textTheme.displayMedium?.copyWith(color: Palette.brand)),
                       Text(fmt.day(d, s), style: theme.textTheme.bodySmall),
                     ],
                   ),
@@ -549,11 +546,13 @@ class _NextVisitCard extends StatelessWidget {
               const Icon(PhosphorIconsRegular.mapPin, size: 18, color: Palette.brand),
               const SizedBox(width: 6),
               Expanded(
-                child: Text(booking.facilityName, style: theme.textTheme.titleSmall, maxLines: 1, overflow: TextOverflow.ellipsis),
-              ),
-              const SizedBox(width: Space.sm),
-              Flexible(
-                child: Text(s.pick(booking.service), style: theme.textTheme.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(booking.facilityName, style: theme.textTheme.titleSmall, maxLines: 2, overflow: TextOverflow.ellipsis),
+                    Text(s.pick(booking.service), style: theme.textTheme.bodySmall, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  ],
+                ),
               ),
             ],
           ),
@@ -612,7 +611,7 @@ class _FindCareCard extends StatelessWidget {
   }
 }
 
-/// Four actions, bank-app style: an icon tile and a short label under it.
+/// Four actions in one quiet row inside a single card: an icon and a one-line label each.
 class _QuickActions extends StatelessWidget {
   const _QuickActions();
 
@@ -626,42 +625,48 @@ class _QuickActions extends StatelessWidget {
       (s.records, PhosphorIconsRegular.clipboardText, () => context.go('/me/records')),
     ];
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Space.md),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (final (label, icon, onTap) in actions)
-            Expanded(
-              child: InkWell(
-                borderRadius: BorderRadius.circular(Space.radius),
-                onTap: onTap,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: Space.xs),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 58,
-                        height: 58,
-                        decoration: BoxDecoration(
-                          color: Palette.surface,
-                          borderRadius: BorderRadius.circular(18),
-                          boxShadow: Shadows.card,
+      padding: const EdgeInsets.symmetric(horizontal: Space.lg),
+      child: SoftCard(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: Space.xs, vertical: Space.xs),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (final (label, icon, onTap) in actions)
+                Expanded(
+                  child: Semantics(
+                    button: true,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(Space.radius),
+                      onTap: onTap,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 72),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: Space.md),
+                          child: Column(
+                            children: [
+                              Icon(icon, size: 26, color: Palette.brand),
+                              const SizedBox(height: Space.sm),
+                              // One line always; a long word shrinks a little instead of breaking.
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  label,
+                                  maxLines: 1,
+                                  softWrap: false,
+                                  style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Palette.ink),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        child: Icon(icon, size: 26, color: Palette.brand),
                       ),
-                      const SizedBox(height: Space.sm),
-                      Text(
-                        label,
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Palette.ink, height: 1.2),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-        ],
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -675,7 +680,8 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(Space.xl, 0, Space.md, Space.md),
+        // Title and link line up with the cards' 16 px edges.
+        padding: const EdgeInsets.fromLTRB(Space.lg, 0, Space.xs, Space.sm),
         child: Row(
           children: [
             Expanded(child: Text(title, style: Theme.of(context).textTheme.titleLarge)),
@@ -701,14 +707,6 @@ class _NearYou extends ConsumerStatefulWidget {
 }
 
 class _NearYouState extends ConsumerState<_NearYou> {
-  final _pages = PageController(viewportFraction: 0.74);
-
-  @override
-  void dispose() {
-    _pages.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
@@ -741,20 +739,56 @@ class _NearYouState extends ConsumerState<_NearYou> {
             error: (e, _) => ErrorState(error: e, onRetry: () => ref.invalidate(facilitySearchProvider)),
             data: (list) => list.isEmpty
                 ? EmptyState(icon: PhosphorIconsRegular.buildings, text: s.noResults)
-                : PageView.builder(
-                    controller: _pages,
-                    padEnds: false,
-                    itemCount: list.take(10).length,
-                    itemBuilder: (context, i) => Padding(
-                      padding: EdgeInsets.fromLTRB(i == 0 ? Space.lg : Space.xs + 2, 2, Space.xs + 2, Space.md),
-                      child: FacilityMiniCard(facility: list[i]),
-                    ),
+                : LayoutBuilder(
+                    builder: (context, box) {
+                      // The next card peeks past the right edge; 16 px at both ends of the row.
+                      final width = (box.maxWidth - 2 * Space.lg) * 0.82;
+                      return ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        clipBehavior: Clip.none,
+                        physics: const _SnapPhysics(),
+                        padding: const EdgeInsets.fromLTRB(Space.lg, 2, Space.lg, Space.md),
+                        itemCount: list.take(10).length,
+                        separatorBuilder: (_, _) => const SizedBox(width: Space.md),
+                        itemBuilder: (context, i) => SizedBox(width: width, child: FacilityMiniCard(facility: list[i])),
+                      );
+                    },
                   ),
           ),
         ),
       ],
     );
   }
+}
+
+/// Lets the carousel settle with a card's left edge at the 16 px gutter.
+class _SnapPhysics extends ScrollPhysics {
+  const _SnapPhysics({super.parent});
+
+  @override
+  _SnapPhysics applyTo(ScrollPhysics? ancestor) => _SnapPhysics(parent: buildParent(ancestor));
+
+  @override
+  Simulation? createBallisticSimulation(ScrollMetrics position, double velocity) {
+    final extent = position.viewportDimension;
+    // Card width + gap, as laid out in _NearYou.
+    final step = (extent - 2 * Space.lg) * 0.82 + Space.md;
+    final tolerance = toleranceFor(position);
+    var page = position.pixels / step;
+    if (velocity < -tolerance.velocity) {
+      page = page.floorToDouble();
+    } else if (velocity > tolerance.velocity) {
+      page = page.ceilToDouble();
+    } else {
+      page = page.roundToDouble();
+    }
+    final target = (page * step).clamp(position.minScrollExtent, position.maxScrollExtent);
+    if ((target - position.pixels).abs() < tolerance.distance) return super.createBallisticSimulation(position, velocity);
+    return ScrollSpringSimulation(spring, position.pixels, target, velocity, tolerance: tolerance);
+  }
+
+  @override
+  bool get allowImplicitScrolling => false;
 }
 
 class _LocationPrompt extends ConsumerWidget {
@@ -938,7 +972,6 @@ class BookingTile extends StatelessWidget {
     final theme = Theme.of(context);
     final cancelled = booking.status.contains('cancel') || booking.status == 'no_show';
     return SoftCard(
-      radius: 16,
       onTap: () => context.go('/visits/booking/${booking.id}'),
       child: Padding(
         padding: const EdgeInsets.all(Space.md),
@@ -1022,11 +1055,10 @@ class _CollapsedBar extends StatelessWidget {
                     if (!visit!.isCalled) ...[const LiveDot(), const SizedBox(width: 6)],
                     Text(
                       visit!.isCalled ? '${visit!.ticket} · ${s.yourTurn}' : '${visit!.ticket} · ${visit!.ahead} ${s.ahead}',
-                      style: TextStyle(
-                        color: visit!.isCalled ? Palette.forest : Colors.white,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13,
-                      ),
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            color: visit!.isCalled ? Palette.forest : Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ).tabular,
                     ),
                   ],
                 ),

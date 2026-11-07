@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../app/theme.dart';
 
 /// The forest band (upgrade 15 §1): forest green with the website's faint zigzag and a soft
-/// curve at its foot. The pattern moves at half the scroll speed when [parallax] is given.
+/// curve at its foot, the same [Space.curve] on every main tab. The pattern moves at half the
+/// scroll speed when [parallax] is given. The status bar icons turn light over it.
 class ForestBand extends StatelessWidget {
-  const ForestBand({super.key, required this.height, this.curve = 28, this.parallax = 0});
+  const ForestBand({super.key, required this.height, this.curve = Space.curve, this.parallax = 0});
 
   final double height;
   final double curve;
@@ -13,15 +15,57 @@ class ForestBand extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: height,
-      width: double.infinity,
-      child: ClipPath(
-        clipper: _CurveClipper(curve),
-        child: CustomPaint(painter: _ZigzagPainter(offset: parallax * 0.5)),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent),
+      child: SizedBox(
+        height: height,
+        width: double.infinity,
+        child: ClipPath(
+          clipper: _CurveClipper(curve),
+          child: CustomPaint(painter: _ZigzagPainter(offset: parallax * 0.5)),
+        ),
       ),
     );
   }
+}
+
+/// The band's curved foot in the page colour, laid over the bottom of a picture or a coloured
+/// header (doctor, facility) so detail pages end in the same curve as the main tabs.
+class BandFoot extends StatelessWidget {
+  const BandFoot({super.key, this.depth = Space.curve, this.color = Palette.page});
+
+  final double depth;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) => IgnorePointer(
+        child: SizedBox(
+          height: depth,
+          width: double.infinity,
+          child: CustomPaint(painter: _FootPainter(color)),
+        ),
+      );
+}
+
+class _FootPainter extends CustomPainter {
+  const _FootPainter(this.color);
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // The area under the band's curve (see _CurveClipper), filled with the page colour.
+    final d = size.height;
+    final path = Path()
+      ..moveTo(0, 0)
+      ..quadraticBezierTo(size.width / 2, d * 1.6, size.width, 0)
+      ..lineTo(size.width, d + 1)
+      ..lineTo(0, d + 1)
+      ..close();
+    canvas.drawPath(path, Paint()..color = color);
+  }
+
+  @override
+  bool shouldRepaint(_FootPainter oldDelegate) => oldDelegate.color != color;
 }
 
 class _CurveClipper extends CustomClipper<Path> {

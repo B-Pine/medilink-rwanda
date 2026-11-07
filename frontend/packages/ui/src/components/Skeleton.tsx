@@ -14,7 +14,9 @@ export interface SkeletonProps {
  * Placeholder that matches the final layout (design 01 §3). Decorative: pair it with a
  * LoadingState or an aria-busy region so screen readers know content is loading.
  */
-export function Skeleton({ className, width, height = "1em", round = false }: SkeletonProps) {
+export function Skeleton({ className, width, height, round = false }: SkeletonProps) {
+  // a height class (h-*, size-*) wins; the inline 1em default used to override every one of them
+  const sized = /(^|\s)(h|size|min-h)-/.test(className ?? "");
   return (
     <span
       aria-hidden="true"
@@ -23,7 +25,7 @@ export function Skeleton({ className, width, height = "1em", round = false }: Sk
         round ? "rounded-full" : "rounded-sm",
         className,
       )}
-      style={{ width, height }}
+      style={{ width, height: height ?? (sized ? undefined : "1em") }}
     />
   );
 }

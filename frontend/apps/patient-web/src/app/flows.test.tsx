@@ -95,7 +95,7 @@ describe("email-first login", () => {
     expect(router.state.location.pathname).toBe("/dashboard");
     expect(screen.getByText("Confirm your email")).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /^Account menu for/ }));
+    await user.click(screen.getByRole("button", { name: /Account menu$/ }));
     await user.click(await screen.findByRole("menuitem", { name: "Log out" }));
     expect(
       await screen.findByRole("heading", { level: 1, name: "Log in or create an account" }),

@@ -1,5 +1,5 @@
 import { isApiError } from "@medilink/api-client";
-import { Alert, Button, LoadingState } from "@medilink/ui";
+import { Alert, Button, ShellSkeleton } from "@medilink/ui";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Navigate, Outlet, useLocation } from "react-router";
@@ -30,7 +30,7 @@ export function RequireStaff({ requireFacility = true }: { requireFacility?: boo
     if (autoSelectId && isIdle) mutate(autoSelectId);
   }, [autoSelectId, isIdle, mutate]);
 
-  if (me.isPending) return <LoadingState className="min-h-dvh" />;
+  if (me.isPending) return <ShellSkeleton />;
 
   if (me.isError) {
     // S1: a reload while locked shows only the lock screen (contract §6.1).
@@ -74,7 +74,7 @@ export function RequireStaff({ requireFacility = true }: { requireFacility?: boo
         </main>
       );
     }
-    return <LoadingState className="min-h-dvh" />;
+    return <ShellSkeleton />;
   }
 
   return <Outlet />;

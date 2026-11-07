@@ -68,7 +68,10 @@
     "noResults": "Nta murwayi wo muri iki kigo uhuye n'ibi. Reba uko wanditse, cyangwa ushakishe ukoresheje telefoni cyangwa indangamuntu.",
     "register": "Andika umurwayi mushya",
     "button": "Shakisha",
-    "noResultsTitle": "Nta murwayi wabonetse"
+    "noResultsTitle": "Nta murwayi wabonetse",
+    "startTitle": "Shaka umurwayi kugira ngo utangire",
+    "startBody": "Shakisha ukoresheje izina, telefoni, indangamuntu, nimero ya dosiye cyangwa nimero ya MediLink. Kanda N kwandika umurwayi uje atateganyijwe.",
+    "startQueue": "Fungura umurongo w'uyu munsi"
   },
   "external": {
     "title": "Asanzwe kuri MediLink",

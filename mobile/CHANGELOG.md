@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 ## [Unreleased]
 
+### 1.1.3 (2026-11-08)
+
+- Fixed: the "+" steps on the profile to-do (details, ID, emergency contact, consent,
+  insurance, allergies) did nothing; each opens the form for that step. The allergies step also
+  offers "I have no known allergies".
+
 ### 1.1.2 (2026-11-07)
 
 Everything the patient dashboard on the website shows, the app shows too:

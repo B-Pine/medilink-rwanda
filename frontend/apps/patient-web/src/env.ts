@@ -7,11 +7,11 @@ export const env = {
     import.meta.env.VITE_MAP_TILES_URL || "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
   /**
    * The AI symptom assistant on the public pages (the /assistant page and the floating button).
-   * Off until the assistant is ready for the public (public site audit 2026-11-07): it runs on a
-   * test model. Signed-in patients keep it in the dashboard. A getter, so tests can switch it.
+   * On by default (product owner, 2026-11-08); `VITE_PUBLIC_ASSISTANT=false` hides it. Signed-in
+   * patients keep it in the dashboard either way. A getter, so tests can switch it.
    */
   get publicAssistant(): boolean {
-    return import.meta.env.VITE_PUBLIC_ASSISTANT === "true";
+    return import.meta.env.VITE_PUBLIC_ASSISTANT !== "false";
   },
   /** The public address (canonical links, Open Graph), e.g. https://medilink.rw. */
   siteUrl: import.meta.env.VITE_SITE_URL || "",

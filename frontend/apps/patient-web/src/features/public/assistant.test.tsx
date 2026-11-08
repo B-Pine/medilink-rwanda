@@ -6,7 +6,10 @@ import { renderApp } from "../../test/render";
 
 /** AI symptom assistant, test phase (issue #159), against the scripted mock. */
 
-describe("the public site without the assistant (the default)", () => {
+describe("the public site with the assistant switched off", () => {
+  beforeEach(() => vi.stubEnv("VITE_PUBLIC_ASSISTANT", "false"));
+  afterEach(() => vi.unstubAllEnvs());
+
   it("/assistant opens the guided questions; no floating button, no link to it", async () => {
     renderApp("/assistant");
     expect(
@@ -17,10 +20,7 @@ describe("the public site without the assistant (the default)", () => {
   });
 });
 
-describe("AI symptom assistant (switched on)", () => {
-  beforeEach(() => vi.stubEnv("VITE_PUBLIC_ASSISTANT", "true"));
-  afterEach(() => vi.unstubAllEnvs());
-
+describe("AI symptom assistant (on by default)", () => {
   it("asks a follow-up, then names a possible cause and shows places for the service", async () => {
     const { user, container } = renderApp("/assistant");
     expect(

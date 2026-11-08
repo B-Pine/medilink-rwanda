@@ -1,5 +1,5 @@
 import type { StaffMe } from "@medilink/api-client";
-import { cx, Logo } from "@medilink/ui";
+import { cx, Logo, NavGroup } from "@medilink/ui";
 import { SidebarSimple } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import { NavLink, useLocation } from "react-router";
@@ -83,19 +83,6 @@ function NavList({
   );
 }
 
-function SectionLabel({ children, collapsed }: { children: string; collapsed: boolean }) {
-  return (
-    <p
-      className={cx(
-        "m-0 px-2.5 pt-5 pb-1.5 text-[0.6875rem] font-semibold tracking-[0.08em] text-fg-muted uppercase",
-        collapsed && "lg:sr-only",
-      )}
-    >
-      {children}
-    </p>
-  );
-}
-
 /**
  * Sidebar (design 04 §2, staff redesign 2026-11-02): a white panel in the light theme and the dark
  * surface in the dark theme (tokens only). The logo and the person's workspace on top; daily work
@@ -128,6 +115,12 @@ export function Sidebar({
   const manage = facility.filter((item) => navSection(item) === "manage");
   const help = facility.filter((item) => navSection(item) === "help");
   const platform = items.filter((item) => item.group === "platform");
+  const groups = [
+    { key: "work", title: t("shell.section.work"), list: work },
+    { key: "practice", title: t("shell.section.practice"), list: practice },
+    { key: "manage", title: t("shell.section.manage"), list: manage },
+    { key: "platform", title: t("shell.platformAdmin"), list: platform },
+  ].filter((group) => group.list.length > 0);
   const membership = me.memberships.find((m) => m.facility.id === me.active_facility_id);
 
   return (
@@ -173,40 +166,19 @@ export function Sidebar({
       )}
 
       <div className="-mx-1.5 flex flex-1 flex-col overflow-y-auto px-1.5 py-1">
-        {work.length > 0 && (
-          <div className="flex flex-col">
-            <SectionLabel collapsed={collapsed}>{t("shell.section.work")}</SectionLabel>
-            <NavList items={work} active={active} collapsed={collapsed} onNavigate={onNavigate} />
-          </div>
-        )}
-        {practice.length > 0 && (
-          <div className="flex flex-col">
-            <SectionLabel collapsed={collapsed}>{t("shell.section.practice")}</SectionLabel>
-            <NavList
-              items={practice}
-              active={active}
-              collapsed={collapsed}
-              onNavigate={onNavigate}
-            />
-          </div>
-        )}
-        {manage.length > 0 && (
-          <div className="flex flex-col">
-            <SectionLabel collapsed={collapsed}>{t("shell.section.manage")}</SectionLabel>
-            <NavList items={manage} active={active} collapsed={collapsed} onNavigate={onNavigate} />
-          </div>
-        )}
-        {platform.length > 0 && (
-          <div className="flex flex-col">
-            <SectionLabel collapsed={collapsed}>{t("shell.platformAdmin")}</SectionLabel>
-            <NavList
-              items={platform}
-              active={active}
-              collapsed={collapsed}
-              onNavigate={onNavigate}
-            />
-          </div>
-        )}
+        {/* each group can be hidden and shown again; the choice stays on this device */}
+        {groups.map(({ key, title, list }) => (
+          <NavGroup
+            key={key}
+            id={`staff.${key}`}
+            title={title}
+            railed={collapsed}
+            railedAt="lg"
+            containsActive={list.some((item) => item.path === active)}
+          >
+            <NavList items={list} active={active} collapsed={collapsed} onNavigate={onNavigate} />
+          </NavGroup>
+        ))}
       </div>
 
       <div className="-mx-1.5 flex flex-col gap-2 border-t border-border/70 px-1.5 pt-3">

@@ -21,6 +21,7 @@
     "language": "Langue",
     "groups": {
       "care": "Soins",
+      "health": "Ma santé",
       "account": "Compte"
     },
     "overview": "Accueil",

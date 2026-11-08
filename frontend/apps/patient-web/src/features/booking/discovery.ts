@@ -20,13 +20,38 @@ export const SERVICE_CODES = {
 export type ServiceKey = keyof typeof SERVICE_CODES;
 export const SERVICE_KEYS = Object.keys(SERVICE_CODES) as ServiceKey[];
 
+/** All 30 districts of Rwanda (NISR 2019 codes, as in masterdata), A to Z. */
 export const DISTRICT_CODES = {
+  bugesera: "57",
+  burera: "44",
+  gakenke: "42",
   gasabo: "12",
-  kicukiro: "13",
-  nyarugenge: "11",
-  musanze: "43",
+  gatsibo: "53",
+  gicumbi: "45",
+  gisagara: "22",
   huye: "24",
+  kamonyi: "28",
+  karongi: "31",
+  kayonza: "54",
+  kicukiro: "13",
+  kirehe: "55",
+  muhanga: "27",
+  musanze: "43",
+  ngoma: "56",
+  ngororero: "35",
+  nyabihu: "34",
+  nyagatare: "52",
+  nyamagabe: "25",
+  nyamasheke: "37",
+  nyanza: "21",
+  nyarugenge: "11",
+  nyaruguru: "23",
   rubavu: "33",
+  ruhango: "26",
+  rulindo: "41",
+  rusizi: "36",
+  rutsiro: "32",
+  rwamagana: "51",
 } as const;
 export type DistrictKey = keyof typeof DISTRICT_CODES;
 export const DISTRICT_KEYS = Object.keys(DISTRICT_CODES) as DistrictKey[];

@@ -190,3 +190,6 @@ export type { StatusPillProps, StatusTone } from "./components/StatusPill";
 export { StickyActionBar, StickyActionBarSpacer } from "./components/StickyActionBar";
 export type { StickyActionBarProps } from "./components/StickyActionBar";
 // [/public-site]
+// 2026-11-08: sidebar groups the person can hide (patient and staff dashboards)
+export { NavGroup } from "./components/NavGroup";
+export type { NavGroupProps } from "./components/NavGroup";

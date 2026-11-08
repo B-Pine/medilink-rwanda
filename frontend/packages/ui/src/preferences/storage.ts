@@ -25,6 +25,8 @@ const KEYS = {
   // public audit 2026-11-07: the site path (e.g. /dashboard/book/<slug>?service=<id>) to open
   // after sign-up confirms by email; read once, then removed. A path, nothing personal.
   returnTo: "medilink.returnTo",
+  // 2026-11-08: sidebar groups the person hid (comma-separated group ids, e.g. "patient.health")
+  navHidden: "medilink.navHidden",
 } as const;
 
 export type PreferenceKey = keyof typeof KEYS;

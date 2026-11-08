@@ -9,6 +9,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Assistant back, all 30 districts, sidebar groups you can hide (2026-11-08)
+
+- Fixed: the AI assistant is back on the public site (the floating button, `/assistant` and the
+  link on the symptom checker). It is on by default; `VITE_PUBLIC_ASSISTANT=false` hides it.
+- Fixed: the district choice on the home page, Find care and the directories listed 6 districts;
+  it lists all 30 (NISR codes, A to Z).
+- Added: the patient and staff sidebars are in groups (patient: Care, My health, Account; staff:
+  Work, Practice, Manage, Platform). Each group's title hides or shows its links; the choice is
+  kept on the device (`medilink.navHidden`), and a hidden group opens again when its page is
+  opened. `NavGroup` in `@medilink/ui`.
+
 ### Dark mode like the app, cards that read as cards (2026-11-07)
 
 - Changed: dark mode on both web apps uses the patient app's palette (`mobile/lib/app/theme.dart`):

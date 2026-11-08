@@ -21,6 +21,7 @@
     "language": "Language",
     "groups": {
       "care": "Care",
+      "health": "My health",
       "account": "Account"
     },
     "overview": "Overview",

@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 6244.
+Keys: 6269.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -301,12 +301,36 @@ File: `apps/patient-web/src/i18n/locales/rw.json`
 | `landing.services.women` | Ubuzima bw’abagore | Women’s health | needs native-speaker review |
 | `landing.services.chronic` | Indwara zidakira | Chronic care | needs native-speaker review |
 | `landing.services.vaccination` | Inkingo | Vaccination | needs native-speaker review |
+| `landing.districts.bugesera` | Bugesera | Bugesera | needs native-speaker review |
+| `landing.districts.burera` | Burera | Burera | needs native-speaker review |
+| `landing.districts.gakenke` | Gakenke | Gakenke | needs native-speaker review |
 | `landing.districts.gasabo` | Gasabo | Gasabo | needs native-speaker review |
-| `landing.districts.kicukiro` | Kicukiro | Kicukiro | needs native-speaker review |
-| `landing.districts.nyarugenge` | Nyarugenge | Nyarugenge | needs native-speaker review |
-| `landing.districts.musanze` | Musanze | Musanze | needs native-speaker review |
+| `landing.districts.gatsibo` | Gatsibo | Gatsibo | needs native-speaker review |
+| `landing.districts.gicumbi` | Gicumbi | Gicumbi | needs native-speaker review |
+| `landing.districts.gisagara` | Gisagara | Gisagara | needs native-speaker review |
 | `landing.districts.huye` | Huye | Huye | needs native-speaker review |
+| `landing.districts.kamonyi` | Kamonyi | Kamonyi | needs native-speaker review |
+| `landing.districts.karongi` | Karongi | Karongi | needs native-speaker review |
+| `landing.districts.kayonza` | Kayonza | Kayonza | needs native-speaker review |
+| `landing.districts.kicukiro` | Kicukiro | Kicukiro | needs native-speaker review |
+| `landing.districts.kirehe` | Kirehe | Kirehe | needs native-speaker review |
+| `landing.districts.muhanga` | Muhanga | Muhanga | needs native-speaker review |
+| `landing.districts.musanze` | Musanze | Musanze | needs native-speaker review |
+| `landing.districts.ngoma` | Ngoma | Ngoma | needs native-speaker review |
+| `landing.districts.ngororero` | Ngororero | Ngororero | needs native-speaker review |
+| `landing.districts.nyabihu` | Nyabihu | Nyabihu | needs native-speaker review |
+| `landing.districts.nyagatare` | Nyagatare | Nyagatare | needs native-speaker review |
+| `landing.districts.nyamagabe` | Nyamagabe | Nyamagabe | needs native-speaker review |
+| `landing.districts.nyamasheke` | Nyamasheke | Nyamasheke | needs native-speaker review |
+| `landing.districts.nyanza` | Nyanza | Nyanza | needs native-speaker review |
+| `landing.districts.nyarugenge` | Nyarugenge | Nyarugenge | needs native-speaker review |
+| `landing.districts.nyaruguru` | Nyaruguru | Nyaruguru | needs native-speaker review |
 | `landing.districts.rubavu` | Rubavu | Rubavu | needs native-speaker review |
+| `landing.districts.ruhango` | Ruhango | Ruhango | needs native-speaker review |
+| `landing.districts.rulindo` | Rulindo | Rulindo | needs native-speaker review |
+| `landing.districts.rusizi` | Rusizi | Rusizi | needs native-speaker review |
+| `landing.districts.rutsiro` | Rutsiro | Rutsiro | needs native-speaker review |
+| `landing.districts.rwamagana` | Rwamagana | Rwamagana | needs native-speaker review |
 | `landing.insurers.mutuelle` | Mituweli (Mutuelle de Santé) | Mutuelle de Santé (CBHI) | needs native-speaker review |
 | `landing.insurers.rama` | RAMA (RSSB) | RAMA (RSSB) | needs native-speaker review |
 | `landing.insurers.mmi` | MMI | MMI | needs native-speaker review |
@@ -4689,6 +4713,7 @@ File: `apps/patient-web/src/features/dashboard/locales/rw.json`
 | `nav.more` | Ibindi | More | needs native-speaker review |
 | `nav.language` | Ururimi | Language | needs native-speaker review |
 | `nav.groups.care` | Ubuvuzi | Care | needs native-speaker review |
+| `nav.groups.health` | Ubuzima bwanjye | My health | needs native-speaker review |
 | `nav.groups.account` | Konti | Account | needs native-speaker review |
 | `nav.overview` | Ahabanza | Overview | needs native-speaker review |
 | `nav.findCare` | Shaka ubuvuzi | Find care | needs native-speaker review |

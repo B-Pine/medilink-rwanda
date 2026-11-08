@@ -9,7 +9,7 @@ import { PublicFooter } from "./PublicFooter";
 import { PublicHeader } from "./PublicHeader";
 import { useOnline } from "./useOnline";
 
-// loaded only when the assistant is on the public site (it is off by default, phase 3)
+// loaded only when the assistant is on the public site (on unless VITE_PUBLIC_ASSISTANT=false)
 const AssistantLauncher = lazy(() =>
   import("../features/public/AssistantLauncher").then((m) => ({ default: m.AssistantLauncher })),
 );
@@ -69,7 +69,7 @@ export function PublicLayout({
         {children}
       </main>
       <PublicFooter />
-      {/* the AI assistant stays off the public site until it is ready (env.publicAssistant) */}
+      {/* the AI assistant's floating button (env.publicAssistant) */}
       {env.publicAssistant && (
         <Suspense fallback={null}>
           <AssistantLauncher />

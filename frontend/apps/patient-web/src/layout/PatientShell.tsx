@@ -35,6 +35,7 @@ import {
   MenuRadioItem,
   MenuSeparator,
   MenuTrigger,
+  NavGroup,
   ProfileSwitcher,
   readPreference,
   SidePanel,
@@ -94,6 +95,13 @@ const ACCOUNT_NAV: NavItem[] = [
   { to: paths.help, key: "help", icon: Lifebuoy },
   { to: paths.settings, key: "settings", icon: Gear, also: [paths.privacy] },
 ];
+
+/** Sidebar groups (2026-11-08): each can be hidden and shown again; Help stays at the foot. */
+const NAV_GROUPS = [
+  { key: "care", keys: ["overview", "findCare", "appointments", "queue"] },
+  { key: "health", keys: ["records", "medications", "documents", "bills"] },
+  { key: "account", keys: ["family", "notifications", "settings"] },
+] as const;
 
 /** Phones (upgrade 12 §2C): four places in the tab bar, the rest under More. */
 const TAB_NAV: NavItem[] = [MAIN_NAV[0]!, MAIN_NAV[1]!, MAIN_NAV[2]!, MAIN_NAV[5]!];
@@ -296,19 +304,12 @@ function Sidebar({
 }) {
   const { t } = useTranslation();
   const { data: me } = usePatientMe();
-  const sectionLabel = (key: "care" | "account") => (
-    <p
-      className={cx(
-        "m-0 px-2.5 pt-5 pb-1.5 text-[0.6875rem] font-semibold tracking-[0.08em] text-fg-muted uppercase",
-        collapsed && "sr-only",
-      )}
-    >
-      {t(`dashboard.nav.groups.${key}`)}
-    </p>
-  );
-  // Help sits at the foot, as in the staff app; the other account places stay in the list
-  const account = ACCOUNT_NAV.filter((item) => item.key !== "help");
+  const { pathname } = useLocation();
+  // Help sits at the foot, as in the staff app; the other places are in groups the person can hide
   const help = ACCOUNT_NAV.filter((item) => item.key === "help");
+  const byKey = (keys: readonly string[]) =>
+    keys.map((key) => [...MAIN_NAV, ...ACCOUNT_NAV].find((item) => item.key === key)!);
+  const groups = NAV_GROUPS.map((group) => ({ ...group, items: byKey(group.keys) }));
   return (
     <aside
       aria-label={t("dashboard.nav.label")}
@@ -353,20 +354,21 @@ function Sidebar({
       {/* full-bleed (-mx-3) so the active item's accent bar meets the sidebar edge unclipped */}
       <div className="-mx-3 flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto px-3 py-1 [scrollbar-width:thin] [scrollbar-color:var(--color-border)_transparent]">
         <nav aria-label={t("dashboard.nav.main")}>
-          {sectionLabel("care")}
-          <ul className="m-0 flex list-none flex-col gap-0.5 p-0">
-            {MAIN_NAV.map((item) => (
-              <SidebarLink key={item.key} item={item} collapsed={collapsed} />
-            ))}
-          </ul>
-        </nav>
-        <nav aria-label={t("dashboard.nav.account")}>
-          {sectionLabel("account")}
-          <ul className="m-0 flex list-none flex-col gap-0.5 p-0">
-            {account.map((item) => (
-              <SidebarLink key={item.key} item={item} collapsed={collapsed} />
-            ))}
-          </ul>
+          {groups.map((group) => (
+            <NavGroup
+              key={group.key}
+              id={`patient.${group.key}`}
+              title={t(`dashboard.nav.groups.${group.key}`)}
+              railed={collapsed}
+              containsActive={group.items.some((item) => matches(item, pathname))}
+            >
+              <ul className="m-0 flex list-none flex-col gap-0.5 p-0">
+                {group.items.map((item) => (
+                  <SidebarLink key={item.key} item={item} collapsed={collapsed} />
+                ))}
+              </ul>
+            </NavGroup>
+          ))}
         </nav>
       </div>
 

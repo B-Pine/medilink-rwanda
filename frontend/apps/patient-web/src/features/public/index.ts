@@ -15,8 +15,8 @@ export const publicFeature: FeatureRoutes = {
       path: "/check-symptoms",
       lazy: lazy(() => import("./SymptomCheckerPage"), "SymptomCheckerPage"),
     },
-    // AI symptom assistant, test phase (issue #159): off the public site unless switched on; the
-    // address then opens the guided questions, so old links keep working
+    // AI symptom assistant (issue #159): when switched off (VITE_PUBLIC_ASSISTANT=false) the
+    // address opens the guided questions, so old links keep working
     {
       path: "/assistant",
       loader: () => (env.publicAssistant ? null : redirect("/check-symptoms")),

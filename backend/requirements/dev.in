@@ -5,10 +5,10 @@ pytest>=9.2.0
 pytest-django>=4.11
 pytest-cov>=7.0
 factory-boy>=3.3
-ruff>=0.17.3
+ruff>=0.17.4
 mypy>=2.4.1
 django-stubs[compatible-mypy]>=5.2
-djangorestframework-stubs>=3.16
+djangorestframework-stubs>=3.18.2
 pip-audit>=2.9
 pip-tools>=7.5
 # Self-hosted Swagger UI assets for the dev-only docs page (no CDN, CSP-friendly).

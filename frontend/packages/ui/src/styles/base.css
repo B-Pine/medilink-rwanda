@@ -117,6 +117,14 @@
     transform: translateX(24px);
   }
 }
+@keyframes ml-sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
 @keyframes ml-fade {
   from {
     opacity: 0;
@@ -480,19 +488,44 @@ html:has(.ml-soft) {
  * hairline borders instead of glowing shadows, no tinted glow behind the page. Tailwind's rounded-xl
  * / 2xl / 3xl read these variables, so every public page follows without a markup change.
  */
+/* Public site radii, the app's three (audit 2026-11-07): 8 small, 12 cards and controls, 20 sheets
+   and bands. */
 :root[data-surface="site"] {
-  --radius-xl: 0.5rem;
-  --radius-2xl: 0.5rem;
-  --radius-3xl: 0.625rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 0.75rem;
+  --radius-3xl: 1.25rem;
 }
+/* Depth on the site: a card is a hairline; only floating things (menus, sheets) cast one soft
+   shadow, as in the app. */
 :root[data-surface="site"] .ml-soft {
-  --ml-shadow-card: 0 0 0 0 transparent;
-  --ml-shadow-raised: 0 1px 2px rgb(14 31 24 / 0.06), 0 6px 16px -8px rgb(14 31 24 / 0.16);
+  --ml-shadow-card: 0 0 0 1px color-mix(in srgb, var(--ml-text-primary) 11%, transparent);
+  --ml-shadow-raised:
+    0 0 0 1px color-mix(in srgb, var(--ml-text-primary) 8%, transparent),
+    0 6px 24px rgb(18 61 43 / 0.09);
   background-image: none;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-surface="site"]:not([data-theme="light"]) .ml-soft {
+    --ml-shadow-raised: 0 0 0 1px rgb(255 255 255 / 0.06), 0 8px 24px rgb(0 0 0 / 0.5);
+  }
+}
+:root[data-surface="site"][data-theme="dark"] .ml-soft {
+  --ml-shadow-raised: 0 0 0 1px rgb(255 255 255 / 0.06), 0 8px 24px rgb(0 0 0 / 0.5);
 }
 
 /* Map credit links: underlined, so they read as links next to the credit text (WCAG 1.4.1). */
 .leaflet-control-attribution a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+/* The credit strip takes the theme's solid surface and text, so it stays readable over any tile in
+   both themes (WCAG 1.4.3). The container prefix outweighs leaflet.css, which loads later. */
+.leaflet-container .leaflet-control-attribution {
+  background: var(--color-surface);
+  color: var(--color-fg-secondary);
+}
+.leaflet-container .leaflet-control-attribution a {
+  color: var(--color-link);
   text-decoration: underline;
   text-underline-offset: 2px;
 }

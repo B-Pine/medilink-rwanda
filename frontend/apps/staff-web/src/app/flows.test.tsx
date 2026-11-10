@@ -322,6 +322,7 @@ describe("shell: user menu, language, theme, logout", () => {
       "Record access log",
       "National report",
       "Feature flags",
+      "Disputes",
     ];
     expect(links).toEqual(expect.arrayContaining(expected));
     expect(links).toHaveLength(expected.length);

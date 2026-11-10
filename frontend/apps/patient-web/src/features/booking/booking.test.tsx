@@ -27,11 +27,17 @@ describe("facility search (S5-F2)", () => {
     expect(
       await screen.findByRole("heading", { level: 1, name: "Find healthcare" }),
     ).toBeInTheDocument();
-    expect(await screen.findByText(/^\d+ places?$/)).toBeInTheDocument();
+    expect(await screen.findByText(/^\d+ facilit(y|ies)$/)).toBeInTheDocument();
     expect(screen.getAllByText("Kigali Clinic").length).toBeGreaterThan(0);
-    const openNow = screen.getByRole("button", { name: "Open now" });
+    // a phone-width screen: the filters sit in the Filters sheet; the chosen ones show as chips
+    expect(screen.getByRole("button", { name: /Remove filter: RAMA/ })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /^Filters/ }));
+    const sheet = await screen.findByRole("dialog", { name: "Filters" });
+    const openNow = within(sheet).getByRole("button", { name: "Open now" });
     await user.click(openNow);
     expect(openNow).toHaveAttribute("aria-pressed", "true");
+    await user.click(within(sheet).getByRole("button", { name: "Close" }));
+    expect(screen.getByRole("button", { name: /Remove filter: Open now/ })).toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });
 });

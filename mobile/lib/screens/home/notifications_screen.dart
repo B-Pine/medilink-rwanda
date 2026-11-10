@@ -38,6 +38,11 @@ class AppNotification {
     if (booking != null) return '/visits/booking/${booking.group(1)}';
     final ticket = RegExp(r'/queue/([0-9a-fA-F-]{8,})').firstMatch(path);
     if (ticket != null) return '/visits/ticket/${ticket.group(1)}';
+    // v1.1.2: the detail pages the dashboard links to
+    final detail = RegExp(r'/dashboard/(medications|records|bills|disputes)/([0-9a-fA-F-]{8,})').firstMatch(path);
+    if (detail != null) return '/me/${detail.group(1)}/${detail.group(2)}';
+    if (path.contains('/bills')) return '/me/bills';
+    if (path.contains('/disputes')) return '/me/disputes';
     if (path.contains('prescription') || path.contains('medication') || path.contains('medicine')) {
       return '/me/medications';
     }
@@ -210,7 +215,7 @@ class _Row extends StatelessWidget {
                 margin: const EdgeInsets.only(left: Space.sm, top: 6),
                 width: 8,
                 height: 8,
-                decoration: const BoxDecoration(color: Palette.brand, shape: BoxShape.circle),
+                decoration: BoxDecoration(color: Palette.brand, shape: BoxShape.circle),
               ),
           ],
         ),

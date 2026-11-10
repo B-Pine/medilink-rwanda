@@ -21,6 +21,7 @@
     "language": "Language",
     "groups": {
       "care": "Care",
+      "health": "My health",
       "account": "Account"
     },
     "overview": "Overview",
@@ -39,7 +40,9 @@
       "findCare": "Find care",
       "appointments": "Visits",
       "records": "Records"
-    }
+    },
+    "bills": "Bills",
+    "disputes": "Disputes"
   },
   "account": {
     "label": "Account menu for {{name}}",
@@ -177,7 +180,12 @@
     "open": "Open ticket",
     "result": "A new result is ready",
     "readResult": "Read it",
-    "planned": "{{what}} is coming up"
+    "planned": "{{what}} is coming up",
+    "bill": "{{amount}} left to pay",
+    "seeBill": "See the bill",
+    "disputeQuestion": "The facility asked you about your dispute",
+    "disputeAnswer": "Your dispute has an answer",
+    "openDispute": "Open"
   },
   "comingUp": {
     "title": "Planned by your clinic",

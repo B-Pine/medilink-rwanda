@@ -4,25 +4,44 @@ import 'package:flutter/services.dart';
 import '../ui/icons.dart';
 
 /// MediLink colours (docs/upgrade/15-mobile-app.md §1): the website palette, nothing new.
+/// Dark mode uses neutral charcoal surfaces; green stays for buttons, links and accents (the
+/// website's dark brand, frontend/packages/ui/src/styles/tokens.css). [dark] is set by main.dart
+/// (Me → Settings → Appearance, default: like the phone); read the colours in build.
 abstract final class Palette {
-  static const forest = Color(0xFF123D2B);
-  static const forestRaised = Color(0xFF1A4D37);
-  static const brand = Color(0xFF17694D);
-  static const brandPressed = Color(0xFF0F4F3A);
-  static const brandSubtle = Color(0xFFE7F3ED);
-  static const onForestMuted = Color(0xFFB9D6C4);
-  static const onForestAccent = Color(0xFF6EE7B7);
-  static const ochre = Color(0xFFFBBF24);
-  static const ochreText = Color(0xFF8A5A00);
-  static const ochreSubtle = Color(0xFFFEF3C7);
-  static const page = Color(0xFFF6F8F7);
-  static const surface = Color(0xFFFFFFFF);
-  static const ink = Color(0xFF14231C);
-  static const muted = Color(0xFF5B6B63);
-  static const hairline = Color(0xFFE3E9E6);
-  static const skeleton = Color(0xFFE9EEEB);
-  static const danger = Color(0xFFB42318);
-  static const dangerSubtle = Color(0xFFFDECEA);
+  static bool dark = false;
+  static Color _pick(Color light, Color night) => dark ? night : light;
+
+  /// The band and other forest backgrounds.
+  static Color get forest => _pick(const Color(0xFF123D2B), const Color(0xFF17191B));
+  static Color get forestRaised => _pick(const Color(0xFF1A4D37), const Color(0xFF212427));
+
+  /// Dark-green text and icons on light surfaces (ticket number, insurer pills). Light green in
+  /// dark mode, where [forest] is a background.
+  static Color get forestInk => _pick(const Color(0xFF123D2B), const Color(0xFF8FDBB8));
+
+  /// Brand fills (buttons, selected chips) and brand text or icons.
+  static Color get brand => _pick(const Color(0xFF17694D), const Color(0xFF5FC59A));
+  static Color get brandPressed => _pick(const Color(0xFF0F4F3A), const Color(0xFF7FD3AE));
+
+  /// Text and icons on a [brand] fill.
+  static Color get onBrand => _pick(const Color(0xFFFFFFFF), const Color(0xFF0E2219));
+  static Color get brandSubtle => _pick(const Color(0xFFE7F3ED), const Color(0xFF1F2925));
+  static Color get onForestMuted => _pick(const Color(0xFFB9D6C4), const Color(0xFFA7ADB2));
+  static Color get onForestAccent => _pick(const Color(0xFF6EE7B7), const Color(0xFF5FC59A));
+  static Color get ochre => const Color(0xFFFBBF24);
+  static Color get ochreText => _pick(const Color(0xFF8A5A00), const Color(0xFFF6C66C));
+  static Color get ochreSubtle => _pick(const Color(0xFFFEF3C7), const Color(0xFF38321F));
+  static Color get page => _pick(const Color(0xFFF6F8F7), const Color(0xFF111315));
+  static Color get surface => _pick(const Color(0xFFFFFFFF), const Color(0xFF1B1E21));
+  static Color get ink => _pick(const Color(0xFF14231C), const Color(0xFFE6E8EA));
+  static Color get muted => _pick(const Color(0xFF5B6B63), const Color(0xFFA3A9AE));
+  static Color get hairline => _pick(const Color(0xFFE3E9E6), const Color(0xFF2D3135));
+  static Color get skeleton => _pick(const Color(0xFFE9EEEB), const Color(0xFF24282B));
+  static Color get danger => _pick(const Color(0xFFB42318), const Color(0xFFF87171));
+
+  /// Text on a [danger] fill.
+  static Color get onDanger => _pick(const Color(0xFFFFFFFF), const Color(0xFF0F172A));
+  static Color get dangerSubtle => _pick(const Color(0xFFFDECEA), const Color(0xFF3A2A2A));
 }
 
 abstract final class Fonts {
@@ -46,6 +65,14 @@ abstract final class TypeScale {
   static const body = 15.0; // text, list titles, buttons
   static const label = 13.0; // chips, pills, section labels
   static const caption = 12.0; // secondary lines
+}
+
+extension TextSize on BuildContext {
+  /// [size] grown with the phone's text size, for boxes that hold text and need a fixed height.
+  double scaled(double size) => MediaQuery.textScalerOf(this).scale(size);
+
+  /// True when the phone's text is large (1.3x or more): layouts stack instead of squeezing.
+  bool get largeText => MediaQuery.textScalerOf(this).scale(10) >= 13;
 }
 
 extension Tabular on TextStyle {
@@ -114,14 +141,95 @@ abstract final class Motion {
 
   /// [d], or zero when animations are off.
   static Duration of(BuildContext context, Duration d) => off(context) ? Duration.zero : d;
+
+  /// The one page transition (shared axis): the new page slides in a little from the right
+  /// while it fades in; the page underneath drifts left. Nothing moves when animations are off.
+  static Widget sharedAxis(BuildContext context, Animation<double> animation, Animation<double> secondary, Widget child) {
+    if (off(context)) return child;
+    final enter = CurvedAnimation(parent: animation, curve: ease, reverseCurve: Curves.easeInCubic);
+    final fade = CurvedAnimation(parent: animation, curve: const Interval(0, 0.6, curve: Curves.easeOut));
+    final leave = CurvedAnimation(parent: secondary, curve: ease, reverseCurve: Curves.easeInCubic);
+    return SlideTransition(
+      position: Tween(begin: Offset.zero, end: const Offset(-0.06, 0)).animate(leave),
+      child: FadeTransition(
+        opacity: fade,
+        child: SlideTransition(
+          position: Tween(begin: const Offset(0.08, 0), end: Offset.zero).animate(enter),
+          child: child,
+        ),
+      ),
+    );
+  }
 }
 
-/// A white surface at [Depth.card] (hairline, no shadow) or, with [raised], [Depth.floating].
-class SoftCard extends StatelessWidget {
-  const SoftCard({super.key, required this.child, this.onTap, this.raised = false, this.radius = Space.radiusLg, this.color});
+/// [Motion.sharedAxis] for routes built by the theme (MaterialPageRoute).
+class SharedAxisPageTransitionsBuilder extends PageTransitionsBuilder {
+  const SharedAxisPageTransitionsBuilder();
+
+  @override
+  Duration get transitionDuration => Motion.slow;
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) =>
+      Motion.sharedAxis(context, animation, secondaryAnimation, child);
+}
+
+/// Cards and tiles: shrink to 0.98 while pressed (120 ms, ease out) instead of an ink ripple.
+/// Keeps keyboard focus and semantics from [InkWell].
+class Pressable extends StatefulWidget {
+  const Pressable({super.key, required this.child, required this.onTap, this.onLongPress, this.borderRadius});
 
   final Widget child;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
+  final BorderRadius? borderRadius;
+
+  @override
+  State<Pressable> createState() => _PressableState();
+}
+
+class _PressableState extends State<Pressable> {
+  bool _down = false;
+
+  @override
+  Widget build(BuildContext context) => AnimatedScale(
+        scale: _down ? 0.98 : 1,
+        duration: Motion.of(context, Motion.fast),
+        curve: Curves.easeOut,
+        child: InkWell(
+          onTap: widget.onTap,
+          onLongPress: widget.onLongPress,
+          borderRadius: widget.borderRadius,
+          splashFactory: NoSplash.splashFactory,
+          highlightColor: Colors.transparent,
+          onHighlightChanged: (down) => setState(() => _down = down),
+          child: widget.child,
+        ),
+      );
+}
+
+/// A white surface at [Depth.card] (hairline, no shadow) or, with [raised], [Depth.floating].
+/// Tappable cards shrink a little while pressed ([Pressable]).
+class SoftCard extends StatelessWidget {
+  const SoftCard({
+    super.key,
+    required this.child,
+    this.onTap,
+    this.onLongPress,
+    this.raised = false,
+    this.radius = Space.radiusLg,
+    this.color,
+  });
+
+  final Widget child;
+  final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
   final bool raised;
   final double radius;
   final Color? color;
@@ -131,40 +239,45 @@ class SoftCard extends StatelessWidget {
     final fill = color ?? Palette.surface;
     final shape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(radius),
-      side: raised || fill != Palette.surface ? BorderSide.none : const BorderSide(color: Palette.hairline),
+      side: raised || fill != Palette.surface ? BorderSide.none : BorderSide(color: Palette.hairline),
     );
-    return DecoratedBox(
+    final card = DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(radius),
         boxShadow: Shadows.of(raised ? Depth.floating : Depth.card),
       ),
-      child: Material(
-        color: fill,
-        shape: shape,
-        clipBehavior: Clip.antiAlias,
-        child: onTap == null ? child : InkWell(onTap: onTap, child: child),
-      ),
+      child: Material(color: fill, shape: shape, clipBehavior: Clip.antiAlias, child: child),
     );
+    if (onTap == null && onLongPress == null) return card;
+    return Pressable(onTap: onTap, onLongPress: onLongPress, borderRadius: BorderRadius.circular(radius), child: card);
   }
 }
 
+/// The theme for the current [Palette.dark]: set it first, then build.
 ThemeData buildTheme() {
-  const scheme = ColorScheme.light(
+  final scheme = ColorScheme(
+    brightness: Palette.dark ? Brightness.dark : Brightness.light,
     primary: Palette.brand,
-    onPrimary: Colors.white,
+    onPrimary: Palette.onBrand,
     primaryContainer: Palette.brandSubtle,
-    onPrimaryContainer: Palette.forest,
-    secondary: Palette.forest,
-    onSecondary: Colors.white,
+    onPrimaryContainer: Palette.forestInk,
+    secondary: Palette.forestInk,
+    onSecondary: Palette.surface,
     tertiary: Palette.ochre,
+    onTertiary: Palette.forest,
     error: Palette.danger,
-    onError: Colors.white,
+    onError: Palette.onDanger,
     surface: Palette.surface,
     onSurface: Palette.ink,
     onSurfaceVariant: Palette.muted,
     outline: Palette.hairline,
     outlineVariant: Palette.hairline,
     surfaceContainerHighest: Palette.skeleton,
+    surfaceContainerHigh: Palette.surface,
+    surfaceContainer: Palette.surface,
+    surfaceContainerLow: Palette.surface,
+    inverseSurface: Palette.forest,
+    onInverseSurface: Colors.white,
   );
 
   TextStyle h(double size, FontWeight weight, {double height = 1.2}) => TextStyle(
@@ -175,12 +288,12 @@ ThemeData buildTheme() {
         color: Palette.ink,
         letterSpacing: -0.2,
       );
-  TextStyle b(double size, FontWeight weight, {Color color = Palette.ink, double height = 1.4}) => TextStyle(
+  TextStyle b(double size, FontWeight weight, {Color? color, double height = 1.4}) => TextStyle(
         fontFamily: Fonts.body,
         fontSize: size,
         fontWeight: weight,
         height: height,
-        color: color,
+        color: color ?? Palette.ink,
       );
 
   // Every text style is one of the six sizes of [TypeScale].
@@ -217,7 +330,9 @@ ThemeData buildTheme() {
     scaffoldBackgroundColor: Palette.page,
     fontFamily: Fonts.body,
     textTheme: text,
-    splashFactory: InkSparkle.splashFactory,
+    // No ink ripples: rows tint softly while pressed, cards shrink (Pressable), buttons darken.
+    splashFactory: NoSplash.splashFactory,
+    highlightColor: Palette.forest.withValues(alpha: 0.05),
     materialTapTargetSize: MaterialTapTargetSize.padded,
     // The website's arrow, also where the Material icon font is not loaded (screen renders).
     actionIconTheme: ActionIconThemeData(
@@ -234,7 +349,8 @@ ThemeData buildTheme() {
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: false,
-      systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(statusBarColor: Colors.transparent),
+      systemOverlayStyle: (Palette.dark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark)
+          .copyWith(statusBarColor: Colors.transparent),
       // No titleTextStyle: the bar title is titleLarge (18) and a large title headlineMedium (24).
     ),
     cardTheme: CardThemeData(
@@ -243,7 +359,7 @@ ThemeData buildTheme() {
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(Space.radiusLg),
-        side: const BorderSide(color: Palette.hairline),
+        side: BorderSide(color: Palette.hairline),
       ),
     ),
     // Enabled: white on brand, darker while pressed. Disabled: clearly grey.
@@ -271,7 +387,7 @@ ThemeData buildTheme() {
       style: OutlinedButton.styleFrom(
         minimumSize: const Size.fromHeight(Space.action),
         shape: shape,
-        side: const BorderSide(color: Palette.hairline),
+        side: BorderSide(color: Palette.hairline),
         backgroundColor: Palette.surface,
         foregroundColor: Palette.ink,
         textStyle: b(TypeScale.body, FontWeight.w600),
@@ -322,13 +438,13 @@ ThemeData buildTheme() {
     ),
     checkboxTheme: CheckboxThemeData(
       fillColor: WidgetStateColor.resolveWith((s) => s.contains(WidgetState.selected) ? Palette.brand : Colors.transparent),
-      side: const BorderSide(color: Palette.muted, width: 1.5),
+      side: BorderSide(color: Palette.muted, width: 1.5),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
     ),
     chipTheme: ChipThemeData(
       backgroundColor: Palette.surface,
       selectedColor: Palette.brand,
-      side: const BorderSide(color: Palette.hairline),
+      side: BorderSide(color: Palette.hairline),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Space.pill)),
       labelStyle: b(TypeScale.label, FontWeight.w600),
       padding: const EdgeInsets.symmetric(horizontal: Space.sm, vertical: Space.xs),
@@ -366,10 +482,13 @@ ThemeData buildTheme() {
       titleTextStyle: headline,
       contentTextStyle: text.bodyMedium,
     ),
-    dividerTheme: const DividerThemeData(color: Palette.hairline, space: 1, thickness: 1),
-    progressIndicatorTheme: const ProgressIndicatorThemeData(color: Palette.brand, linearTrackColor: Palette.brandSubtle),
+    dividerTheme: DividerThemeData(color: Palette.hairline, space: 1, thickness: 1),
+    progressIndicatorTheme: ProgressIndicatorThemeData(color: Palette.brand, linearTrackColor: Palette.brandSubtle),
     pageTransitionsTheme: const PageTransitionsTheme(
-      builders: {TargetPlatform.android: PredictiveBackPageTransitionsBuilder()},
+      builders: {
+        TargetPlatform.android: SharedAxisPageTransitionsBuilder(),
+        TargetPlatform.iOS: SharedAxisPageTransitionsBuilder(),
+      },
     ),
     snackBarTheme: SnackBarThemeData(
       behavior: SnackBarBehavior.floating,

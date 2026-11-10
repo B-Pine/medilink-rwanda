@@ -79,7 +79,8 @@
     "clear": "Kuraho ibyatoranyijwe"
   },
   "facility": {
-    "notFound": "Iki kigo ntikiri kuri MediLink",
+    "notFound": "Iki kigo ntikibonetse",
+    "notFoundReason": "Iyi link ishobora kuba ishaje, cyangwa iki kigo cyavuye kuri MediLink.",
     "back": "Subira ku bigo",
     "verified": "Cyemejwe",
     "directions": "Inzira",
@@ -105,6 +106,9 @@
     "noDescription": "Ikigo ntikirashyiraho ibisobanuro.",
     "photos": "Amafoto",
     "photoAlt": "{{name}}, ifoto ya {{n}} kuri {{total}}",
+    "openPhoto": "Fungura ifoto ya {{n}} kuri {{total}}",
+    "previousPhoto": "Ifoto ibanza",
+    "nextPhoto": "Ifoto ikurikira",
     "contact": "Itumanaho",
     "address": "Aderesi",
     "phone": "Telefoni",
@@ -154,7 +158,9 @@
     "places_other": "{{name}} n'ahandi {{count}}"
   },
   "doctor": {
-    "notFound": "Uyu muganga ntagaragara",
+    "notFound": "Uyu muganga ntabonetse",
+    "notFoundReason": "Iyi link ishobora kuba ishaje, cyangwa uyu muganga ntagikora hano.",
+    "allDoctors": "Abaganga bose",
     "at": "Kuri {{facility}}",
     "worksIn": "Serivisi",
     "presentDays": "Iminsi ari kuri iki kigo",
@@ -193,7 +199,9 @@
     "jump": "Jya ku cyiciro"
   },
   "service": {
-    "notFound": "Iyi serivisi ntiri ku rutonde",
+    "notFound": "Iyi serivisi ntibonetse",
+    "notFoundReason": "Iyi link ishobora kuba ishaje, cyangwa izina ryarahindutse.",
+    "allServices": "Serivisi zose",
     "about": "Ibyerekeye iyi serivisi",
     "aboutGeneric": "Serivisi itangwa n’ibigo biri kuri MediLink. Baza ikigo uko isura igenda.",
     "offering": "Ibigo bitanga iyi serivisi",
@@ -217,36 +225,27 @@
     "title": "Uko MediLink ikora",
     "steps": {
       "search": {
-        "title": "Shakisha ubuvuzi",
-        "body": "Shakisha ukurikije serivisi, ikigo cyangwa uko wumva umeze."
-      },
-      "select": {
-        "title": "Hitamo ikigo",
-        "body": "Gereranya intera, igihe cyo gutegereza n’ubwishingizi."
+        "title": "Shakisha",
+        "body": "Ukurikije serivisi, ikigo cyangwa uko wumva umeze."
       },
       "join": {
         "title": "Jya ku murongo cyangwa ufate igihe",
-        "body": "Jya ku murongo w’uyu munsi cyangwa uhitemo igihe cya gahunda."
-      },
-      "confirm": {
-        "title": "Bona icyemezo",
-        "body": "Uhabwa nimero y’itike cyangwa kode ya gahunda."
-      },
-      "arrive": {
-        "title": "Gera ku kigo wiyandikishe",
-        "body": "Abakira abantu bemeza ko wahageze."
+        "body": "Umurongo w’uyu munsi, cyangwa igihe kikunogeye."
       },
       "follow": {
-        "title": "Kurikira isura yawe",
-        "body": "Reba umwanya wawe ku murongo n’igihe cyo kwinjira."
+        "title": "Kurikira umwanya wawe",
+        "body": "Reba abakuri imbere n’igihe cyo kugenda."
+      },
+      "arrive": {
+        "title": "Gera ku kigo igihe cyawe kigeze",
+        "body": "Abakira abantu bemeza ko wahageze."
       }
     },
     "goodTitle": "Ni byiza kumenya",
     "good": {
-      "noAccount": "Gushakisha ntibisaba konti.",
-      "walkIn": "Abaje batafashe gahunda barakirwa.",
-      "reception": "Abakira abantu bemeza ko wahageze.",
-      "noPhone": "Nta telefoni? Uhabwa itike yanditse, nimero yawe igahamagarwa."
+      "noAccount": "Kureba ntibisaba konti.",
+      "walkIn": "Abaje batafashe gahunda baracyakirwa.",
+      "noPhone": "Ntibisaba telefoni igezweho: uhabwa itike yanditse, nimero yawe igahamagarwa."
     },
     "start": "Shaka ubuvuzi ubu"
   },
@@ -276,7 +275,6 @@
     "none": "Nta bisubizo bihuye n’ibyo washatse",
     "articles": "Izindi nyandiko z’ubufasha",
     "contactTitle": "Uracyakeneye ubufasha?",
-    "contactLead": "Twandikire tuzagusubiza.",
     "contactAction": "Vugana n’ubufasha",
     "categories": {
       "finding": {
@@ -335,31 +333,28 @@
         "q2": "Sinakira imenyesha.",
         "a2": "Emerera MediLink kohereza imenyesha muri mushakisha yawe kandi ufungure imenyesha mu igenamiterere."
       }
-    }
+    },
+    "top": "Ibibazo bibazwa cyane",
+    "more": "Ibindi bibazo",
+    "results_one": "Igisubizo {{count}}",
+    "results_other": "Ibisubizo {{count}}"
   },
   "about": {
     "title": "Ibyerekeye MediLink",
-    "lead": "Ibigo by’ubuvuzi byo mu Rwanda ahantu hamwe.",
-    "sections": {
-      "what": {
-        "title": "MediLink ni iki",
-        "body": "Shaka ibigo, serivisi n’abaganga. Reba igihe cyo gutegereza. Jya ku murongo cyangwa ufate gahunda."
+    "body": "MediLink ihuriza hamwe ibigo by’ubuvuzi byo mu Rwanda: aho biri, serivisi bitanga, ubwishingizi byemera n’igihe cyo gutegereza ubu. Abarwayi bajya ku murongo cyangwa bagafata igihe; ibigo bigategura umunsi wabyo muri sisitemu imwe.",
+    "facts": {
+      "facilities": "Ibigo biri kuri MediLink",
+      "languages": {
+        "label": "Indimi",
+        "value": "Kinyarwanda, English, Français"
       },
-      "problem": {
-        "title": "Ikibazo ikemura",
-        "body": "Ntukongere kugenda utazi niba ikigo gifunguye, igihe uzategereza cyangwa niba cyemera ubwishingizi bwawe."
+      "data": {
+        "label": "Amakuru yawe",
+        "value": "Abikwa mu Rwanda, hakurikijwe itegeko 058/2021"
       },
-      "how": {
-        "title": "Uko ihuza abarwayi n’ibigo",
-        "body": "Ibigo bitangaza amasaha, serivisi n’umurongo w’ako kanya. Abakira abantu bemeza buri wese uhageze."
-      },
-      "access": {
-        "title": "Igera kuri buri wese",
-        "body": "Gushakisha ntibisaba konti. Indimi eshatu. Ikora no kuri telefoni nto. Nta telefoni? Itike yanditse n’ihamagarwa mu ijwi."
-      },
-      "privacy": {
-        "title": "Kurinda amakuru y’abarwayi",
-        "body": "Birinzwe n’itegeko ryo kurinda amakuru bwite (058/2021). Abakozi babona gusa ibikenewe mu kukuvura; buri gufungura kurandikwa."
+      "account": {
+        "label": "Konti",
+        "value": "Ikenewe gusa kujya ku murongo cyangwa gufata igihe"
       }
     }
   },
@@ -412,6 +407,7 @@
   },
   "onThisPage": "Kuri iyi paji",
   "card": {
+    "nextTime": "Igihe gikurikira: {{day}} {{time}}",
     "open": "Irakora",
     "busy": "Hari benshi",
     "closed": "Ifunze ubu",
@@ -436,22 +432,7 @@
     "facilityCount_one": "Ikigo {{count}}",
     "facilityCount_other": "Ibigo {{count}}",
     "nearTitle": "Ibikora biri hafi yawe",
-    "howTitle": "Kuva gushakisha kugeza kwakirwa, mu ntambwe eshatu",
     "stepLabel": "Intambwe ya {{n}}",
-    "steps": {
-      "search": {
-        "title": "Shakisha kandi ugereranye",
-        "body": "Ibikora, igihe, intera, ubwishingizi."
-      },
-      "join": {
-        "title": "Injira ku murongo cyangwa ufate gahunda",
-        "body": "Umurongo w'uyu munsi cyangwa isaha."
-      },
-      "arrive": {
-        "title": "Ngwino igihe cyawe kigeze",
-        "body": "Uza igihe cyawe kiri hafi."
-      }
-    },
     "facilitiesTitle": "Icyumba cyo gutegereza gituje.",
     "facilitiesLead": "Abarwayi babona igihe cyo gutegereza mbere yo kuza.",
     "facilitiesAction": "MediLink ku bigo by'ubuvuzi"
@@ -465,25 +446,11 @@
     "waitingNow_other": "Abantu {{count}} bategereje",
     "live": "Ako kanya",
     "seePlaces": "Reba aho bitangirwa",
-    "openTitle": "Bifunguye ubu",
+    "openTitle": "Ibigo bikwegereye",
+    "allClosed": "Ibigo byose bifunze ubu",
+    "nextOpeningToday": "ikizafungura mbere: {{name}}, {{time}}",
+    "nextOpening": "ikizafungura mbere: {{name}}, {{day}} {{time}}",
     "openLead": "Ibigo biri kuri MediLink n'igihe cyo gutegereza ako kanya. Kanda \"Hafi yanjye\" ubitondeke ukurikije intera.",
-    "trustLabel": "Ibyo wakwizera",
-    "trust": {
-      "noAccount": {
-        "title": "Nta konti ikenewe kugira ngo urebe"
-      },
-      "languages": {
-        "title": "Kinyarwanda, English, Français"
-      },
-      "dataHome": {
-        "title": "Amakuru y'ubuzima bwawe aguma mu Rwanda"
-      }
-    },
-    "facilityPoints": {
-      "queue": "Umurongo abarwayi bakurikirana bari mu rugo",
-      "bookings": "Gahunda na ba nyakuza mu igenamigambi rimwe ry'umunsi",
-      "records": "Amadosiye, imiti yandikiwe n'ubwishyu ahantu hamwe"
-    },
     "kpi": {
       "open": "Bifunguye ubu",
       "openHint_one": "mu kigo {{count}} kiri kuri MediLink",
@@ -496,6 +463,35 @@
     "symptoms": {
       "title": "Ntuzi aho wajya?",
       "action": "Suzuma ibimenyetso byawe"
-    }
-  }
+    },
+    "howLine": "Ni ubwa mbere uje?"
+  },
+  "filters": {
+    "button": "Iyungurura",
+    "show": "Reba ibyavuye mu ishakisha",
+    "active": "Iyungurura rikora",
+    "remove": "Kuraho iyungurura: {{name}}"
+  },
+  "sort": {
+    "open": "Ibikora mbere",
+    "soonest": "Gutegereza bike",
+    "nearest": "Ibikwegereye"
+  },
+  "meta": {
+    "findCare": "Shaka ivuriro mu Rwanda ukurikije serivisi, aho riri n’ubwishingizi. Reba afunguye n’igihe cyo gutegereza.",
+    "facilities": "Amavuriro yose ari kuri MediLink: afunguye ubu, igihe cyo gutegereza, ubwishingizi yakira, amasaha n’inzira.",
+    "doctors": "Abaganga bo ku mavuriro ya MediLink: serivisi batanga, iminsi bakora n’aho wafata gahunda.",
+    "services": "Serivisi z’ubuzima kuri MediLink, kuva ku kwisuzumisha kugeza ku bizamini, n’amavuriro azitanga.",
+    "how": "Shaka, jya ku murongo cyangwa ufate gahunda, kurikira igihe cyawe kuri telefoni, uze igihe cyawe cyegereje.",
+    "emergency": "Ubutabazi bwihutirwa mu Rwanda: hamagara 912 (SAMU), ni ubuntu, amasaha 24. Ibitaro bifite serivisi y’ubutabazi.",
+    "help": "Ibisubizo ku makonti, gahunda, umurongo, ubwishingizi n’amadosiye yawe kuri MediLink.",
+    "about": "MediLink ihuza abarwayi bo mu Rwanda n’amavuriro: igihe cyo gutegereza, imirongo na gahunda ahantu hamwe.",
+    "contact": "Vugana n’itsinda rya MediLink ukoresheje imeri cyangwa telefoni.",
+    "accessibility": "Uko MediLink ikora hamwe na porogaramu isoma ecran, mwandikisho, inyandiko nini na interineti itihuta.",
+    "privacy": "Ibyo MediLink ikusanya, impamvu, aho bibikwa n’uburenganzira bwawe hakurikijwe itegeko ryo kurinda amakuru mu Rwanda.",
+    "terms": "Amabwiriza yo gukoresha MediLink ku barwayi no ku mavuriro.",
+    "forFacilities": "Shyira ivuriro ryawe kuri MediLink: umurongo uhita ugaragara, gahunda n’abaje batayifite mu igenamigambi rimwe.",
+    "checkSymptoms": "Subiza ibibazo bike umenye serivisi n’ivuriro bijyanye n’ibimenyetso byawe."
+  },
+  "offline": "Nta interineti ufite. Urabona ibyaherukaga kugera."
 }

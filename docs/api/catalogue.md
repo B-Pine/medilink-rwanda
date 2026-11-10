@@ -509,10 +509,12 @@ Requirements: FR-CLN-01..09; FR-PAT-10..12; FR-SEC-03, 09. Prescription drafting
 | `POST` | `/api/v1/staff/lab-orders/{id}/release/` | Release a reviewed result to the patient | `clinical.write`; treatment relationship | FR-CLN-11 (proposed) | Ver; `422` unless reviewed; locked afterwards (trigger); Audit | Implemented (#201) |
 | `POST` | `/api/v1/staff/lab-orders/{id}/cancel/` | Take back a test the lab has not sampled | `clinical.write` (ordering doctor) | FR-CLN-11 (proposed) | Ver; its bill line goes while nothing is paid; Audit | Implemented (#201) |
 | `GET` | `/api/v1/staff/lab/results/` | Results of the tests I ordered, waiting for my review or release (out of range first) | `clinical.write` | FR-CLN-11 (proposed), FR-CLN-09 | Shown above the outside results on `/clinical/results` | Implemented (#201) |
-| `GET`, `POST` | `/api/v1/staff/import-batches/` | Upload a patient register (CSV/Excel) → preview | `records.import` | FR-PAT-10 | Step-up; `multipart`; Async | Planned |
-| `GET`, `PATCH` | `/api/v1/staff/import-batches/{id}/` | Preview: column mapping, validation errors, likely duplicates | `records.import` | FR-PAT-10 | Ver | Planned |
-| `POST` | `/api/v1/staff/import-batches/{id}/confirm/` | Import the previewed rows | `records.import` | FR-PAT-10 | Idem; Audit | Planned |
-| `POST` | `/api/v1/staff/import-batches/{id}/rollback/` | Roll back within 7 days if no visits are attached | `records.import` | FR-PAT-10 | Step-up; Audit | Planned |
+| `GET`, `POST` | `/api/v1/staff/patient-imports/` | List imports; start one from an uploaded CSV with a suggested column mapping (L1) | `records.import` | FR-PAT-10 | S1 upload (`patient_import`, CSV ≤ 5 MB, ≤ 5,000 rows); raw rows encrypted | Implemented (S6b) |
+| `GET` | `/api/v1/staff/patient-imports/{id}/` | Import with its counts (L1) | `records.import` | FR-PAT-10 | | Implemented (S6b) |
+| `PUT` | `/api/v1/staff/patient-imports/{id}/mapping/` | Map columns → preview: validation errors and likely duplicates (L1) | `records.import` | FR-PAT-10 | Ver; nothing saved before confirm; S3 matching | Implemented (S6b) |
+| `GET` | `/api/v1/staff/patient-imports/{id}/rows/` | Preview rows with problems and matches (L1) | `records.import` | FR-PAT-10 | `status` | Implemented (S6b) |
+| `POST` | `/api/v1/staff/patient-imports/{id}/confirm/` | Create patients and facility records for the valid rows (L1) | `records.import` | FR-PAT-10 | Step-up; Ver; one transaction; no patient notified; Audit | Implemented (S6b) |
+| `POST` | `/api/v1/staff/patient-imports/{id}/rollback/` | Roll back within 7 days if no visit is attached (L1) | `records.import` | FR-PAT-10 | Step-up; Ver; Audit; raw rows purged daily after the window | Implemented (S6b) |
 
 ### Patient
 
@@ -715,14 +717,14 @@ Requirements: FR-DSP-01..11; FR-RPT-01..05; FR-SEC-12, 13. Retention jobs (FR-SE
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `POST` | `/api/v1/patient/disputes/` | Raise a dispute from a visit, bill, receipt, prescription, ticket, record entry or strike | Linked account (incl. guardians) | FR-DSP-01, FR-DSP-09, FR-DSP-10 | Context and audit events attached automatically; max 5 open; duplicate check | Implemented (S10b backend) |
-| `GET` | `/api/v1/patient/disputes/` | My disputes | Patient session | FR-DSP-03 | Filter `patient_id` | Implemented (S10b backend) |
-| `GET` | `/api/v1/patient/disputes/{id}/` | Dispute with timeline and deadlines | Linked account | FR-DSP-03 | No internal notes | Implemented (S10b backend) |
-| `GET`, `POST` | `/api/v1/patient/disputes/{id}/messages/` | Conversation thread | Linked account | FR-DSP-04 | | Implemented (S10b backend) |
+| `POST` | `/api/v1/patient/disputes/` | Raise a dispute from a visit, bill, receipt, prescription, ticket, record entry or strike | Linked account (incl. guardians) | FR-DSP-01, FR-DSP-09, FR-DSP-10 | Context and audit events attached automatically; max 5 open; duplicate check | Implemented (S10b; screens in patient-web and staff-web) |
+| `GET` | `/api/v1/patient/disputes/` | My disputes | Patient session | FR-DSP-03 | Filter `patient_id` | Implemented (S10b; screens in patient-web and staff-web) |
+| `GET` | `/api/v1/patient/disputes/{id}/` | Dispute with timeline and deadlines | Linked account | FR-DSP-03 | No internal notes | Implemented (S10b; screens in patient-web and staff-web) |
+| `GET`, `POST` | `/api/v1/patient/disputes/{id}/messages/` | Conversation thread | Linked account | FR-DSP-04 | | Implemented (S10b; screens in patient-web and staff-web) |
 | `POST` | `/api/v1/patient/disputes/{id}/evidence/` | Add photos or receipts | Linked account | FR-DSP-01 | `multipart`; append-only | Planned |
-| `POST` | `/api/v1/patient/disputes/{id}/accept/` | Accept the resolution → closed | Linked account | FR-DSP-03 | | Implemented (S10b backend) |
-| `POST` | `/api/v1/patient/disputes/{id}/escalate/` | Disagree within 14 days → super admin | Linked account | FR-DSP-02, FR-DSP-03 | | Implemented (S10b backend) |
-| `POST` | `/api/v1/patient/disputes/{id}/reopen/` | Reopen with new evidence (within 30 days, once) | Linked account | FR-DSP-03 | | Implemented (S10b backend) |
+| `POST` | `/api/v1/patient/disputes/{id}/accept/` | Accept the resolution → closed | Linked account | FR-DSP-03 | | Implemented (S10b; screens in patient-web and staff-web) |
+| `POST` | `/api/v1/patient/disputes/{id}/escalate/` | Disagree within 14 days → super admin | Linked account | FR-DSP-02, FR-DSP-03 | | Implemented (S10b; screens in patient-web and staff-web) |
+| `POST` | `/api/v1/patient/disputes/{id}/reopen/` | Reopen with new evidence (within 30 days, once) | Linked account | FR-DSP-03 | | Implemented (S10b; screens in patient-web and staff-web) |
 | `GET`, `POST` | `/api/v1/patient/support-requests/` | Own support requests (`?status`); open one | Patient session | FR-DSP-11 | No clinical words; 5 open at most; RL: support_write | Implemented (S10 part 1 backend) |
 | `GET` | `/api/v1/patient/support-requests/{id}/` | One request with its messages | Patient session (own) | FR-DSP-11 | Support shown as "MediLink support" | Implemented (S10 part 1 backend) |
 | `POST` | `/api/v1/patient/support-requests/{id}/messages/` | Reply | Patient session (own) | FR-DSP-11 | 422 when closed | Implemented (S10 part 1 backend) |
@@ -741,17 +743,17 @@ Rectification of personal details uses `PATCH /api/v1/patient/profiles/{patient_
 | `GET`, `POST` | `/api/v1/staff/support-requests/` | Own requests, or the facility's with `?scope=facility`; open one | Member; facility scope needs `support.view_facility` | FR-DSP-11 | Carries the active facility | Implemented (S10 part 1 backend) |
 | `GET` | `/api/v1/staff/support-requests/{id}/` | One request | Own, or `support.view_facility` | FR-DSP-11 | Facility admin: read-only | Implemented (S10 part 1 backend) |
 | `POST` | `/api/v1/staff/support-requests/{id}/messages/`, `…/close/` | Reply; close | Own only | FR-DSP-11 | | Implemented (S10 part 1 backend) |
-| `GET` | `/api/v1/staff/disputes/` | Facility disputes by status, type, deadline | `disputes.handle`; others: assigned for comment | FR-DSP-02, FR-DSP-03 | Filter `overdue=true` | Implemented (S10b backend) |
-| `POST` | `/api/v1/staff/disputes/` | Raise a dispute at the counter for a patient | `queue.operate` | FR-DSP-09 | Marked "raised at the counter"; see note below | Implemented (S10b backend) |
-| `GET` | `/api/v1/staff/disputes/{id}/` | Dispute with thread and internal notes | `disputes.handle` | FR-DSP-04 | | Implemented (S10b backend) |
+| `GET` | `/api/v1/staff/disputes/` | Facility disputes by status, type, deadline | `disputes.handle`; others: assigned for comment | FR-DSP-02, FR-DSP-03 | Filter `overdue=true` | Implemented (S10b; screens in patient-web and staff-web) |
+| `POST` | `/api/v1/staff/disputes/` | Raise a dispute at the counter for a patient | `queue.operate` | FR-DSP-09 | Marked "raised at the counter"; see note below | Implemented (S10b; screens in patient-web and staff-web) |
+| `GET` | `/api/v1/staff/disputes/{id}/` | Dispute with thread and internal notes | `disputes.handle` | FR-DSP-04 | | Implemented (S10b; screens in patient-web and staff-web) |
 | `GET` | `/api/v1/staff/disputes/{id}/evidence/` | Audit trail of the disputed item, in order | `disputes.handle` | FR-DSP-05 | Frozen copy with hash | Planned |
-| `POST` | `/api/v1/staff/disputes/{id}/acknowledge/` | Acknowledge (starts the decision deadline) | `disputes.handle` | FR-DSP-03 | | Implemented (S10b backend) |
-| `POST` | `/api/v1/staff/disputes/{id}/messages/` | Reply to the patient | `disputes.handle` | FR-DSP-04 | | Implemented (S10b backend) |
-| `POST` | `/api/v1/staff/disputes/{id}/internal-notes/` | Note visible to handlers only | `disputes.handle` | FR-DSP-04 | | Implemented (S10b backend) |
-| `POST` | `/api/v1/staff/disputes/{id}/comment-requests/` | Ask involved staff for comments | `disputes.handle` | FR-DSP-04 | | Implemented (S10b backend) |
-| `POST` | `/api/v1/staff/disputes/{id}/comments/` | Involved staff member responds | `disputes.comment` | FR-DSP-04, FR-DSP-08 | Involved staff can comment, never decide | Implemented (S10b backend) |
-| `POST` | `/api/v1/staff/disputes/{id}/request-info/` | Ask the patient for more information | `disputes.handle` | FR-DSP-03 | | Implemented (S10b backend) |
-| `POST` | `/api/v1/staff/disputes/{id}/resolve/` | Decide and create linked actions (refund, bill correction, addendum request, strike removal, rebooking, disagreement statement) | `disputes.handle` | FR-DSP-06, FR-DSP-07, FR-DSP-08 | Step-up; conflict-of-interest check; Audit | Implemented (S10b backend) |
+| `POST` | `/api/v1/staff/disputes/{id}/acknowledge/` | Acknowledge (starts the decision deadline) | `disputes.handle` | FR-DSP-03 | | Implemented (S10b; screens in patient-web and staff-web) |
+| `POST` | `/api/v1/staff/disputes/{id}/messages/` | Reply to the patient | `disputes.handle` | FR-DSP-04 | | Implemented (S10b; screens in patient-web and staff-web) |
+| `POST` | `/api/v1/staff/disputes/{id}/internal-notes/` | Note visible to handlers only | `disputes.handle` | FR-DSP-04 | | Implemented (S10b; screens in patient-web and staff-web) |
+| `POST` | `/api/v1/staff/disputes/{id}/comment-requests/` | Ask involved staff for comments | `disputes.handle` | FR-DSP-04 | | Implemented (S10b; screens in patient-web and staff-web) |
+| `POST` | `/api/v1/staff/disputes/{id}/comments/` | Involved staff member responds | `disputes.comment` | FR-DSP-04, FR-DSP-08 | Involved staff can comment, never decide | Implemented (S10b; screens in patient-web and staff-web) |
+| `POST` | `/api/v1/staff/disputes/{id}/request-info/` | Ask the patient for more information | `disputes.handle` | FR-DSP-03 | | Implemented (S10b; screens in patient-web and staff-web) |
+| `POST` | `/api/v1/staff/disputes/{id}/resolve/` | Decide and create linked actions (refund, bill correction, addendum request, strike removal, rebooking, disagreement statement) | `disputes.handle` | FR-DSP-06, FR-DSP-07, FR-DSP-08 | Step-up; conflict-of-interest check; Audit | Implemented (S10b; screens in patient-web and staff-web) |
 | `POST` | `/api/v1/staff/platform-disputes/` | Facility raises a dispute against the platform | `facility.configure` | FR-DSP-02 | Verification, suspension, subscription | Planned |
 | `GET` | `/api/v1/staff/reports/operations/` | Facility command centre: today vs same day last week, 14-day trend, live load by service, arrivals heatmap; `attention` (approvals, closed shifts, queue moves, unsigned records, open disputes, pending invitations, staff without two-step sign-in, licence days left), `finance` (collected today, payments, bills, open balances), `bookings` (expected, arrived, no-shows, rate) and `on_duty` (staff names, state, room) | `reports.view` + `facility.configure` | FR-RPT-02 | Aggregates only, never a patient name; polled or pushed via the queue socket | Implemented (S4, upgrade 05 §5) |
 | `GET` | `/api/v1/staff/reports/facility/` | Facility report for a period (`from`, `to`, at most 366 days; `group=day\|week\|month`): patients per period (completed, left without service, emergencies, no-shows), by source and service; waits per stage (median, 90th percentile, from joining the stage on site to the first call); top ICD-10 diagnoses from signed notes and referrals out; money (collected by method, insured visits by insurer, exemptions, voids, credit notes, refunds); laboratory (tests done, turnaround by test); stock (out and low now, units received and dispensed, expiring batches) | `reports.view` | FR-RPT-01, FR-RPT-03, FR-RPT-06 | Aggregates only, never a patient name; sensitive diagnoses counted, never named; 400 on bad dates | Implemented (W6, #205) |
@@ -776,10 +778,10 @@ Note: the permission matrix in analysis 02 §3 gives the receptionist no "raise 
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `GET` | `/api/v1/platform/disputes/` | Escalated and platform-level disputes | Platform admin | FR-DSP-02 | | Implemented (S10b backend) |
-| `GET` | `/api/v1/platform/disputes/{id}/` | Dispute with attached evidence | Platform admin | FR-DSP-05 | Clinical data only as attached evidence | Implemented (S10b backend) |
-| `POST` | `/api/v1/platform/disputes/{id}/messages/` | Ask the facility or patient for information | Platform admin | FR-DSP-04 | | Implemented (S10b backend) |
-| `POST` | `/api/v1/platform/disputes/{id}/final-decision/` | Final decision with written reasons | Platform admin | FR-DSP-02, FR-DSP-06 | Step-up; corrections are still made by the facility | Implemented (S10b backend) |
+| `GET` | `/api/v1/platform/disputes/` | Escalated and platform-level disputes | Platform admin | FR-DSP-02 | | Implemented (S10b; screens in patient-web and staff-web) |
+| `GET` | `/api/v1/platform/disputes/{id}/` | Dispute with attached evidence | Platform admin | FR-DSP-05 | Clinical data only as attached evidence | Implemented (S10b; screens in patient-web and staff-web) |
+| `POST` | `/api/v1/platform/disputes/{id}/messages/` | Ask the facility or patient for information | Platform admin | FR-DSP-04 | | Implemented (S10b; screens in patient-web and staff-web) |
+| `POST` | `/api/v1/platform/disputes/{id}/final-decision/` | Final decision with written reasons | Platform admin | FR-DSP-02, FR-DSP-06 | Step-up; corrections are still made by the facility | Implemented (S10b; screens in patient-web and staff-web) |
 | `POST` | `/api/v1/platform/facilities/{id}/warnings/` | Record a warning on a facility | Platform admin | FR-DSP-06 | | Planned |
 | `GET` | `/api/v1/platform/contact-messages/` | Contact page inbox (`status=new|handled`, `q` reference, name or subject) | Platform admin | Upgrade 11 §13 | Newest first | Implemented (upgrade U2) |
 | `POST` | `/api/v1/platform/contact-messages/{id}/handled/` | Mark a Contact page message handled, with an optional note | Platform admin | Upgrade 11 §13 | 409 when already handled | Implemented (upgrade U2) |

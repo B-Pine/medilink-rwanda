@@ -1,29 +1,10 @@
 {
   "public": {
     "title": "MediLink for health facilities",
-    "problem": "Patients waste hours in queues and carry paper records between facilities. MediLink gives your facility online booking, a live queue, digital records and insurance claims in one system, in Kinyarwanda, English and French.",
+    "problem": "Booking, a live queue and records in one system.",
     "register": "Register your facility",
     "continue": "Continue an application",
     "sessionEnded": "Your application is saved. We emailed you a link to continue it later.",
-    "rolesTitle": "What each team gets",
-    "roles": {
-      "admin": {
-        "title": "Facility administrators",
-        "body": "Set up services, schedules and staff accounts, and follow the facility's performance."
-      },
-      "reception": {
-        "title": "Reception",
-        "body": "Check patients in, run the queue and record payments and insurance."
-      },
-      "doctor": {
-        "title": "Doctors and nurses",
-        "body": "See today's patients, their history and write consultations and prescriptions."
-      },
-      "pharmacy": {
-        "title": "Pharmacy",
-        "body": "Receive electronic prescriptions and record what was dispensed."
-      }
-    },
     "howTitle": "How onboarding works",
     "phases": {
       "apply": {
@@ -61,6 +42,12 @@
         "q": "Who can see our patients' data?",
         "a": "Only your staff, and the patients themselves. Data stays in Rwanda and access is logged."
       }
+    },
+    "benefitsTitle": "What changes for you",
+    "benefits": {
+      "queue": "Patients see your wait before they come",
+      "day": "Bookings and walk-ins in one day plan",
+      "records": "Records, prescriptions and payments in one place"
     }
   },
   "start": {

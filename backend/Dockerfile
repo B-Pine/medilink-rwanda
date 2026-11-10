@@ -16,7 +16,8 @@ WORKDIR /build
 COPY requirements/prod.txt requirements/prod.txt
 RUN python -m venv /opt/venv \
  && /opt/venv/bin/pip install --require-hashes --no-deps -r requirements/prod.txt \
- && /opt/venv/bin/pip check
+ && /opt/venv/bin/pip check \
+ && /opt/venv/bin/python -m pip uninstall --yes pip
 
 FROM ${PYTHON_IMAGE} AS runtime
 ENV PATH="/opt/venv/bin:${PATH}" \
@@ -24,6 +25,13 @@ ENV PATH="/opt/venv/bin:${PATH}" \
     PYTHONUNBUFFERED=1 \
     DJANGO_SETTINGS_MODULE=config.settings.prod \
     DJANGO_READ_DOT_ENV=false
+# #106: nothing installs packages at runtime, so the image carries no pip (its vendored msgpack,
+# urllib3 and setuptools had fixable CVEs), and the base's Debian packages take their pending
+# security updates (apt, zlib…) without waiting for the next base digest. No new packages.
+RUN python -m pip uninstall --yes pip setuptools wheel || true \
+ && apt-get update \
+ && apt-get upgrade --yes --no-install-recommends \
+ && rm -rf /var/lib/apt/lists/*
 RUN groupadd --system --gid 10001 medilink \
  && useradd --system --uid 10001 --gid medilink --home-dir /app --no-create-home \
       --shell /usr/sbin/nologin medilink

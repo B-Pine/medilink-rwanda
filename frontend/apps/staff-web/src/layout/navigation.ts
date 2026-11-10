@@ -47,6 +47,7 @@ import {
   Notebook,
   Notepad,
   Signature,
+  UploadSimple,
 } from "@phosphor-icons/react";
 // [/S6 imports]
 // [S7 imports]
@@ -61,6 +62,9 @@ import { Files } from "@phosphor-icons/react";
 // [W9 imports]
 import { MapTrifold } from "@phosphor-icons/react";
 // [/W9 imports]
+// [S10b imports]
+import { Gavel, Scales } from "@phosphor-icons/react";
+// [/S10b imports]
 
 /** Sections of the Sprint 0 shell (labels in `shell.nav.<key>`). Features use their own keys. */
 export type CoreNavKey =
@@ -405,6 +409,15 @@ export const NAV_ITEMS: readonly NavItem[] = [
     labelKey: "clinical.nav.templates",
     visible: hasAny("clinical.write"),
   },
+  {
+    // S6b: legacy register import (FR-PAT-10)
+    key: "patientImport",
+    path: "/settings/patient-import",
+    icon: UploadSimple,
+    group: "facility",
+    labelKey: "imports.nav",
+    visible: hasAny("records.import"),
+  },
   // [/S6]
   // [S7]
   {
@@ -495,6 +508,24 @@ export const NAV_ITEMS: readonly NavItem[] = [
     visible: hasAny("billing.approve", "reports.view"),
   },
   // [/S8]
+  // [S10b]
+  {
+    key: "disputes",
+    path: "/disputes",
+    icon: Scales,
+    group: "facility",
+    labelKey: "disputes.nav.disputes",
+    visible: hasAny("disputes.handle"),
+  },
+  {
+    key: "platformDisputes",
+    path: "/platform/disputes",
+    icon: Gavel,
+    group: "platform",
+    labelKey: "disputes.nav.platform",
+    visible: (me: StaffMe) => me.is_platform_admin,
+  },
+  // [/S10b]
 ];
 
 /** Translation key of a nav item's label. */

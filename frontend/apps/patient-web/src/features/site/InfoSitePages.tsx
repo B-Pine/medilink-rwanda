@@ -1,7 +1,6 @@
 import { ApiError } from "@medilink/api-client";
 import {
   ArrowRight,
-  ChatCircleText,
   CheckCircle,
   Crosshair,
   NavigationArrow,
@@ -9,6 +8,7 @@ import {
   Siren,
 } from "@phosphor-icons/react";
 import { Alert, Button, buttonClassName, cx, TextareaField, TextField } from "@medilink/ui";
+import { dateFormat } from "@medilink/ui/i18n";
 import { useQuery } from "@tanstack/react-query";
 import { useState, type FormEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -18,7 +18,8 @@ import { useApi } from "../../app/services";
 import { PublicLayout } from "../../layout/PublicLayout";
 import { directionsUrl, pick } from "../booking/discovery";
 import { sortResults, useNearMe } from "../booking/Places";
-import { EMERGENCY, isHospital, mapSearchUrl, REFERRAL_HOSPITALS } from "./data";
+import { EMERGENCY, isHospital, mapSearchUrl, REFERRAL_HOSPITALS, useAllFacilities } from "./data";
+import { StepIllustration } from "./illustrations";
 import {
   EmptyState,
   Faq,
@@ -59,12 +60,9 @@ function withoutDraftMarkers(text: string): string {
 
 function Updated() {
   const { t, i18n } = useTranslation();
-  const date = new Intl.DateTimeFormat(
-    i18n.resolvedLanguage === "rw" ? "en" : i18n.resolvedLanguage,
-    {
-      dateStyle: "long",
-    },
-  ).format(new Date(`${DOCS_UPDATED}T12:00:00Z`));
+  const date = dateFormat(i18n.resolvedLanguage ?? "rw", { dateStyle: "long" }).format(
+    new Date(`${DOCS_UPDATED}T12:00:00Z`),
+  );
   return <p className="m-0 text-body-sm text-fg-muted">{t("site.lastUpdated", { date })}</p>;
 }
 
@@ -95,60 +93,51 @@ function DocSection({
   );
 }
 
-// ---- /about ----
-
-const ABOUT = ["what", "problem", "how", "access", "privacy"] as const;
-
 // ---- /how-it-works ----
 
-const JOURNEY = ["search", "select", "join", "confirm", "arrive", "follow"] as const;
+const JOURNEY = ["search", "join", "follow", "arrive"] as const;
+const GOOD = ["noAccount", "walkIn", "noPhone"] as const;
 
 /**
- * How it works (public design brief 2026-11-04): read mode. The journey as a numbered
- * step-by-step list in one readable column (GOV.UK step-by-step), then what is good to know as a
- * plain list, then the one next step. No icon tiles, no cards per step.
+ * How it works: the one place for the patient journey (audit 2026-11-07, said once on the site).
+ * Four steps, each a small drawing, a title and one line; then "Good to know" and one action.
  */
 export function HowItWorksPage() {
   const { t } = useTranslation();
   return (
     <PublicLayout>
-      <PageContainer narrow className="pb-16">
-        <PageHeader crumbs={[{ label: t("nav.howItWorks") }]} title={t("site.how.title")} />
-        <div className="flex flex-col gap-12">
-          <ol className="m-0 flex list-none flex-col p-0">
+      <PageContainer className="pb-16">
+        <PageHeader
+          tone="forest"
+          crumbs={[{ label: t("nav.howItWorks") }]}
+          title={t("site.how.title")}
+        />
+        <div className="flex flex-col gap-10">
+          <ol className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
             {JOURNEY.map((key, index) => (
-              <li key={key} className="relative flex gap-5 pb-5 last:pb-0">
-                {/* the line that joins the steps, stopping at the last one */}
-                {index < JOURNEY.length - 1 && (
-                  <span
-                    aria-hidden="true"
-                    className="absolute top-12 bottom-0 left-[1.4375rem] w-0.5 rounded-full bg-[color-mix(in_srgb,var(--color-primary)_22%,transparent)]"
-                  />
-                )}
-                <span
-                  aria-hidden="true"
-                  className="relative grid size-12 shrink-0 place-items-center rounded-full bg-primary font-heading text-body font-bold text-on-primary tabular-nums shadow-[0_0_0_4px_var(--color-page),0_0_0_5px_var(--site-hairline-strong)]"
-                >
-                  {index + 1}
-                </span>
-                {/* each step on its own card (upgrade 14 §3) */}
-                <div className="ml-card flex flex-1 flex-col gap-1 rounded-panel bg-surface px-5 py-4">
-                  <h2 className="m-0 text-h3">
-                    <span className="sr-only">{t("site.home2.stepLabel", { n: index + 1 })}: </span>
-                    {t(`site.how.steps.${key}.title`)}
-                  </h2>
-                  <p className="m-0 text-fg-secondary">{t(`site.how.steps.${key}.body`)}</p>
-                </div>
+              <li key={key} className="flex flex-col gap-3 rounded-panel bg-surface p-5 shadow-e1">
+                <StepIllustration step={key} className="h-28 w-auto self-start" />
+                <h2 className="m-0 flex items-baseline gap-2 font-heading text-h3 font-bold">
+                  <span aria-hidden="true" className="text-primary tabular-nums">
+                    {index + 1}
+                  </span>
+                  <span className="sr-only">{t("site.home2.stepLabel", { n: index + 1 })}: </span>
+                  {t(`site.how.steps.${key}.title`)}
+                </h2>
+                <p className="m-0 text-fg-secondary">{t(`site.how.steps.${key}.body`)}</p>
               </li>
             ))}
           </ol>
-          <Panel aria-labelledby="good" className="flex flex-col gap-4 p-6 sm:p-8">
+          <section aria-labelledby="good" className="flex flex-col gap-4">
             <h2 id="good" className="m-0 font-heading text-title font-bold">
               {t("site.how.goodTitle")}
             </h2>
-            <ul className="m-0 grid list-none gap-3 p-0 text-fg sm:grid-cols-2">
-              {(["noAccount", "walkIn", "reception", "noPhone"] as const).map((key) => (
-                <li key={key} className="flex items-start gap-2.5">
+            <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-3">
+              {GOOD.map((key) => (
+                <li
+                  key={key}
+                  className="flex items-start gap-2.5 rounded-panel bg-surface p-4 text-fg shadow-e1"
+                >
                   <CheckCircle
                     aria-hidden="true"
                     weight="fill"
@@ -158,11 +147,15 @@ export function HowItWorksPage() {
                 </li>
               ))}
             </ul>
-          </Panel>
+          </section>
           <Link
             to="/find-care"
             viewTransition
-            className={buttonClassName({ size: "lg", pill: true, className: "self-start px-7" })}
+            className={buttonClassName({
+              size: "lg",
+              pill: true,
+              className: "ml-press self-start px-7",
+            })}
           >
             {t("site.how.start")}
             <ArrowRight aria-hidden="true" className="size-5" />
@@ -277,7 +270,18 @@ export function EmergencyPage() {
         />
         <div className="grid gap-x-10 gap-y-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
           <div className="flex min-w-0 flex-col gap-8">
-            {/* the urgent care card: what to look for, and the call */}
+            {/* the call first and largest on the page (audit 2026-11-07) */}
+            <div className="flex flex-col gap-2">
+              <a
+                href={`tel:${EMERGENCY.number}`}
+                className="ml-press inline-flex min-h-20 w-full items-center justify-center gap-3 rounded-shell bg-danger-solid px-6 font-heading text-[1.75rem] leading-tight font-extrabold whitespace-nowrap sm:gap-4 sm:px-8 sm:text-display text-on-danger-solid no-underline tabular-nums transition-[filter] duration-150 hover:brightness-110 sm:w-auto sm:self-start"
+              >
+                <Phone aria-hidden="true" weight="fill" className="size-9 shrink-0" />
+                {t("site.emergency.callNow", { number: EMERGENCY.number })}
+              </a>
+              <span className="text-body-sm text-fg-secondary">{t("site.emergency.callNote")}</span>
+            </div>
+            {/* the urgent care card: what to look for */}
             <section
               aria-labelledby="signs"
               className="overflow-hidden rounded-lg border border-danger-solid bg-surface"
@@ -295,18 +299,6 @@ export function EmergencyPage() {
                     <li key={sign}>{t(`public.emergency.signs.${sign}`)}</li>
                   ))}
                 </ul>
-                <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-hairline pt-5">
-                  <a
-                    href={`tel:${EMERGENCY.number}`}
-                    className="inline-flex min-h-14 items-center gap-3 rounded-md bg-danger-solid px-6 font-heading text-[1.375rem] font-bold text-on-danger-solid no-underline transition-[filter] duration-150 hover:brightness-110"
-                  >
-                    <Phone aria-hidden="true" weight="fill" className="size-6" />
-                    {t("site.emergency.callNow", { number: EMERGENCY.number })}
-                  </a>
-                  <span className="text-body-sm text-fg-secondary">
-                    {t("site.emergency.callNote")}
-                  </span>
-                </div>
               </div>
             </section>
 
@@ -424,7 +416,11 @@ const HELP_CATEGORIES = [
   "technical",
 ] as const;
 
-/** Help centre (upgrade 11 §5): search, FAQ by category, published help articles, contact. */
+/**
+ * Help centre (audit 2026-11-07): the search first; the five questions people ask most with their
+ * answers in view; the rest grouped by topic and folded; published articles; then Contact. While
+ * searching, every match shows its answer.
+ */
 export function HelpPage() {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage ?? "rw";
@@ -435,73 +431,102 @@ export function HelpPage() {
     queryKey: ["discovery", "help-articles", words],
     queryFn: () => api.help.public.articles(words ? { q: words } : {}),
   });
-  const groups = HELP_CATEGORIES.map((key) => ({
+  const all = HELP_CATEGORIES.map((key) => ({
     key,
     title: t(`site.help.categories.${key}.title`),
-    items: ([1, 2] as const)
-      .map((n) => ({
-        q: t(`site.help.categories.${key}.q${n}`),
-        a: t(`site.help.categories.${key}.a${n}`),
-      }))
-      .filter((item) => !words || `${item.q} ${item.a}`.toLowerCase().includes(words)),
-  })).filter((group) => group.items.length);
+    items: ([1, 2] as const).map((n) => ({
+      q: t(`site.help.categories.${key}.q${n}`),
+      a: t(`site.help.categories.${key}.a${n}`),
+    })),
+  }));
+  // the first question of the first five topics: finding, queue, booking, arrival, insurance
+  const top = all.slice(0, 5).map((group) => group.items[0]!);
+  const rest = all
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) => !top.includes(item)),
+    }))
+    .filter((group) => group.items.length);
+  const matches = words
+    ? all.flatMap((group) =>
+        group.items.filter((item) => `${item.q} ${item.a}`.toLowerCase().includes(words)),
+      )
+    : [];
+
+  const answers = (items: { q: string; a: string }[]) => (
+    <dl className="m-0 flex flex-col overflow-hidden rounded-panel bg-surface shadow-e1">
+      {items.map((item) => (
+        <div
+          key={item.q}
+          className="flex flex-col gap-1.5 border-b border-hairline px-5 py-4 last:border-b-0"
+        >
+          <dt className="font-semibold text-fg">{item.q}</dt>
+          <dd className="ml-measure m-0 leading-relaxed text-fg-secondary">{item.a}</dd>
+        </div>
+      ))}
+    </dl>
+  );
 
   return (
     <PublicLayout>
       <PageContainer className="pb-16">
         <PageHeader crumbs={[{ label: t("footer.help") }]} title={t("site.help.title")} />
-        <div className="flex flex-col gap-8">
-          <div className="flex flex-col gap-4 rounded-panel bg-surface shadow-e2 p-4 sm:p-5">
-            <SearchBar
-              id="help-search"
-              label={t("site.help.search")}
-              value={text}
-              onChange={setText}
-              placeholder={t("site.help.search")}
-            />
-            {groups.length > 1 && (
-              <nav aria-label={t("site.services.jump")}>
-                <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
-                  {groups.map((group) => (
-                    <li key={group.key}>
-                      <a
-                        href={`#help-${group.key}`}
-                        className="inline-flex min-h-10 items-center rounded-full bg-page px-4 text-body-sm font-semibold text-fg-secondary no-underline shadow-e1 transition-[background-color,color,box-shadow] duration-200 ease-out-quint hover:bg-brand-subtle hover:text-on-brand-subtle hover:shadow-e2"
+        <div className="flex max-w-[56rem] flex-col gap-10">
+          <SearchBar
+            id="help-search"
+            label={t("site.help.search")}
+            value={text}
+            onChange={setText}
+            placeholder={t("site.help.search")}
+          />
+          {words ? (
+            <section aria-labelledby="help-results" className="flex flex-col gap-4">
+              <h2 id="help-results" className="m-0 font-heading text-title font-bold">
+                {t("site.help.results", { count: matches.length })}
+              </h2>
+              {matches.length ? (
+                answers(matches)
+              ) : (
+                <Panel as="div">
+                  <EmptyState title={t("site.help.none")} />
+                </Panel>
+              )}
+            </section>
+          ) : (
+            <>
+              <section aria-labelledby="help-top" className="flex flex-col gap-4">
+                <h2 id="help-top" className="m-0 font-heading text-title font-bold">
+                  {t("site.help.top")}
+                </h2>
+                {answers(top)}
+              </section>
+              <section aria-labelledby="help-more" className="flex flex-col gap-4">
+                <h2 id="help-more" className="m-0 font-heading text-title font-bold">
+                  {t("site.help.more")}
+                </h2>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {rest.map((group) => (
+                    <Panel
+                      key={group.key}
+                      aria-labelledby={`help-${group.key}`}
+                      className="overflow-hidden"
+                    >
+                      <h3
+                        id={`help-${group.key}`}
+                        className="m-0 border-b border-hairline px-5 py-3.5 text-h3"
                       >
                         {group.title}
-                      </a>
-                    </li>
+                      </h3>
+                      {group.items.map((item) => (
+                        <Faq key={item.q} question={item.q}>
+                          {item.a}
+                        </Faq>
+                      ))}
+                    </Panel>
                   ))}
-                </ul>
-              </nav>
-            )}
-          </div>
-          {groups.length === 0 ? (
-            <Panel as="div">
-              <EmptyState title={t("site.help.none")} />
-            </Panel>
-          ) : (
-            <div className="grid gap-6 lg:grid-cols-2">
-              {groups.map((group) => (
-                <Panel
-                  key={group.key}
-                  aria-labelledby={`help-${group.key}`}
-                  className="scroll-mt-28 overflow-hidden"
-                >
-                  <h2
-                    id={`help-${group.key}`}
-                    className="m-0 border-b border-hairline px-5 py-4 text-h3"
-                  >
-                    {group.title}
-                  </h2>
-                  {group.items.map((item) => (
-                    <Faq key={item.q} question={item.q}>
-                      {item.a}
-                    </Faq>
-                  ))}
-                </Panel>
-              ))}
-            </div>
+                </div>
+              </section>
+            </>
           )}
           {articles.isSuccess && articles.data.results.length > 0 && (
             <Panel aria-labelledby="articles" className="overflow-hidden">
@@ -509,32 +534,23 @@ export function HelpPage() {
                 {t("site.help.articles")}
               </h2>
               <ul className="m-0 list-none p-0">
-                {articles.data.results.slice(0, 8).map((a) => (
+                {articles.data.results.slice(0, 8).map((article) => (
                   <LinkRow
-                    key={a.id}
-                    to={`/support/articles/${a.slug}`}
-                    title={pick(a.title_i18n, lang)}
-                    detail={pick(a.summary_i18n, lang)}
+                    key={article.id}
+                    to={`/support/articles/${article.slug}`}
+                    title={pick(article.title_i18n, lang)}
+                    detail={pick(article.summary_i18n, lang)}
                   />
                 ))}
               </ul>
             </Panel>
           )}
-          <section
-            aria-labelledby="still"
-            className="flex flex-col items-start gap-4 rounded-panel bg-surface shadow-e2 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8"
-          >
-            <div>
-              <h2 id="still" className="m-0 text-h2">
-                {t("site.help.contactTitle")}
-              </h2>
-              <p className="m-0 mt-1 text-fg-secondary">{t("site.help.contactLead")}</p>
-            </div>
-            <Link to="/contact" viewTransition className={buttonClassName({ pill: true })}>
-              <ChatCircleText aria-hidden="true" className="size-5" />
+          <p className="m-0 text-body text-fg-secondary">
+            {t("site.help.contactTitle")}{" "}
+            <Link to="/contact" viewTransition className="font-semibold text-link">
               {t("site.help.contactAction")}
             </Link>
-          </section>
+          </p>
         </div>
       </PageContainer>
     </PublicLayout>
@@ -543,57 +559,62 @@ export function HelpPage() {
 
 // ---- /about ----
 
+const ABOUT_FACTS = ["languages", "data", "account"] as const;
+
+/**
+ * About: one short paragraph and the facts (audit 2026-11-07). The journey lives on How it works;
+ * it is not told again here.
+ */
 export function AboutPage() {
   const { t } = useTranslation();
+  const all = useAllFacilities();
+  const count = new Set((all.data ?? []).map((r) => r.slug)).size;
   return (
     <PublicLayout>
       <PageContainer narrow className="pb-20">
-        <PageHeader
-          crumbs={[{ label: t("footer.about") }]}
-          title={t("site.about.title")}
-          lead={t("site.about.lead")}
-        />
-        {/* read mode: one column, the five themes each on its own card, numbered (upgrade 14 §3) */}
-        <div className="ml-stagger flex flex-col gap-4">
-          {ABOUT.map((key, index) => (
-            <Panel
-              key={key}
-              aria-labelledby={`about-${key}`}
-              className="grid gap-x-6 gap-y-2 p-6 sm:grid-cols-[3rem_minmax(0,1fr)] sm:p-8"
-            >
-              <span
-                aria-hidden="true"
-                className="font-heading text-title font-bold text-primary tabular-nums"
-              >
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <div className="flex flex-col gap-2">
-                <h2 id={`about-${key}`} className="m-0 font-heading text-h3 font-bold">
-                  {t(`site.about.sections.${key}.title`)}
-                </h2>
-                <p className="m-0 max-w-[68ch] leading-relaxed text-fg-secondary">
-                  {t(`site.about.sections.${key}.body`)}
-                </p>
+        <PageHeader crumbs={[{ label: t("footer.about") }]} title={t("site.about.title")} />
+        <div className="flex flex-col gap-8">
+          <p className="ml-measure m-0 text-body leading-relaxed text-fg">{t("site.about.body")}</p>
+          <dl className="m-0 grid gap-px overflow-hidden rounded-panel bg-[var(--site-hairline)] shadow-e1 sm:grid-cols-2">
+            <div className="flex flex-col gap-1 bg-surface p-5">
+              <dt className="text-body-sm text-fg-secondary">{t("site.about.facts.facilities")}</dt>
+              <dd className="m-0 font-heading text-kpi font-bold tabular-nums">
+                {all.data ? count : "–"}
+              </dd>
+            </div>
+            {ABOUT_FACTS.map((key) => (
+              <div key={key} className="flex flex-col gap-1 bg-surface p-5">
+                <dt className="text-body-sm text-fg-secondary">
+                  {t(`site.about.facts.${key}.label`)}
+                </dt>
+                <dd className="m-0 font-semibold text-fg">{t(`site.about.facts.${key}.value`)}</dd>
               </div>
-            </Panel>
-          ))}
-        </div>
-        <div className="mt-6 flex flex-wrap gap-3">
-          <Link
-            to="/for-facilities"
-            viewTransition
-            className={buttonClassName({ variant: "secondary", pill: true })}
-          >
-            {t("public.about.forFacilities")}
-            <ArrowRight aria-hidden="true" className="size-4" />
-          </Link>
-          <Link
-            to="/privacy"
-            viewTransition
-            className={buttonClassName({ variant: "ghost", pill: true })}
-          >
-            {t("public.about.privacy")}
-          </Link>
+            ))}
+          </dl>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              to="/how-it-works"
+              viewTransition
+              className={buttonClassName({ variant: "secondary", pill: true })}
+            >
+              {t("nav.howItWorks")}
+              <ArrowRight aria-hidden="true" className="size-4" />
+            </Link>
+            <Link
+              to="/for-facilities"
+              viewTransition
+              className={buttonClassName({ variant: "ghost", pill: true })}
+            >
+              {t("public.about.forFacilities")}
+            </Link>
+            <Link
+              to="/privacy"
+              viewTransition
+              className={buttonClassName({ variant: "ghost", pill: true })}
+            >
+              {t("public.about.privacy")}
+            </Link>
+          </div>
         </div>
       </PageContainer>
     </PublicLayout>

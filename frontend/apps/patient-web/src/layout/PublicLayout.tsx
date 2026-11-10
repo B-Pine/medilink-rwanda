@@ -1,10 +1,18 @@
 import { cx, MAIN_CONTENT_ID, SkipLink } from "@medilink/ui";
-import { useEffect, type ReactNode } from "react";
+import { CloudSlash } from "@phosphor-icons/react";
+import { lazy, Suspense, useEffect, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
-import { AssistantLauncher } from "../features/public/AssistantLauncher";
+import { env } from "../env";
 import { useInDashboard } from "./DashboardContext";
 import { PublicFooter } from "./PublicFooter";
 import { PublicHeader } from "./PublicHeader";
+import { useOnline } from "./useOnline";
+
+// loaded only when the assistant is on the public site (on unless VITE_PUBLIC_ASSISTANT=false)
+const AssistantLauncher = lazy(() =>
+  import("../features/public/AssistantLauncher").then((m) => ({ default: m.AssistantLauncher })),
+);
 
 /** Public pages and auth screens: header, <main>, footer with the emergency notice. */
 export function PublicLayout({
@@ -19,6 +27,8 @@ export function PublicLayout({
 }) {
   // Inside the dashboard the shell already has the header, <main> and navigation
   const inDashboard = useInDashboard();
+  const online = useOnline();
+  const { t } = useTranslation();
   // the public site's "clinical calm" palette (tokens.css, data-surface="site")
   useEffect(() => {
     if (inDashboard) return;
@@ -38,6 +48,15 @@ export function PublicLayout({
     <div className="ml-soft flex min-h-dvh flex-col bg-page">
       <SkipLink />
       <PublicHeader showLogin={showLogin} />
+      {!online && (
+        <p
+          role="status"
+          className="m-0 flex items-center justify-center gap-2 bg-warning-bg px-4 py-2 text-body-sm font-semibold text-fg"
+        >
+          <CloudSlash aria-hidden="true" className="size-5 shrink-0" />
+          {t("site.offline")}
+        </p>
+      )}
       <main
         id={MAIN_CONTENT_ID}
         tabIndex={-1}
@@ -50,7 +69,12 @@ export function PublicLayout({
         {children}
       </main>
       <PublicFooter />
-      <AssistantLauncher />
+      {/* the AI assistant's floating button (env.publicAssistant) */}
+      {env.publicAssistant && (
+        <Suspense fallback={null}>
+          <AssistantLauncher />
+        </Suspense>
+      )}
     </div>
   );
 }

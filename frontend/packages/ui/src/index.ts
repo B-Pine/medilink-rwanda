@@ -78,6 +78,8 @@ export type {
 } from "./components/CommandPalette";
 export { ConfirmDialog, Dialog } from "./components/Dialog";
 export type { ConfirmDialogProps, DialogProps } from "./components/Dialog";
+export { Lightbox } from "./components/Lightbox";
+export type { LightboxImage, LightboxProps } from "./components/Lightbox";
 export { DocumentViewer } from "./components/DocumentViewer";
 export { EmptyState } from "./components/EmptyState";
 export type { EmptyStateProps } from "./components/EmptyState";
@@ -172,3 +174,22 @@ export type { AutosaveState, AutosaveStatusProps } from "./components/AutosaveSt
 export { SectionAnchors } from "./components/SectionAnchors";
 export type { SectionAnchor, SectionAnchorsProps } from "./components/SectionAnchors";
 // [/S6]
+// [public-site] audit 2026-11-07: the public site's system, shared with the app's look
+export { Accordion } from "./components/Accordion";
+export type { AccordionItem, AccordionProps } from "./components/Accordion";
+export { GroupedList, GroupedRow } from "./components/GroupedList";
+export type { GroupedListProps, GroupedRowProps } from "./components/GroupedList";
+export { SegmentedControl } from "./components/SegmentedControl";
+export type { SegmentedControlProps, SegmentedOption } from "./components/SegmentedControl";
+export { Select } from "./components/Select";
+export type { SelectOption, SelectProps } from "./components/Select";
+export { Sheet } from "./components/Sheet";
+export type { SheetProps } from "./components/Sheet";
+export { StatusPill } from "./components/StatusPill";
+export type { StatusPillProps, StatusTone } from "./components/StatusPill";
+export { StickyActionBar, StickyActionBarSpacer } from "./components/StickyActionBar";
+export type { StickyActionBarProps } from "./components/StickyActionBar";
+// [/public-site]
+// 2026-11-08: sidebar groups the person can hide (patient and staff dashboards)
+export { NavGroup } from "./components/NavGroup";
+export type { NavGroupProps } from "./components/NavGroup";

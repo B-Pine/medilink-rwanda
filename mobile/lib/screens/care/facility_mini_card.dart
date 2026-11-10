@@ -13,7 +13,7 @@ import '../../ui/insurers.dart';
 /// A facility as a compact card (Home "Near you", the map): its building, name, distance,
 /// open or closed, the queue right now, and the insurers it accepts.
 class FacilityMiniCard extends StatelessWidget {
-  const FacilityMiniCard({super.key, required this.facility, this.onTap, this.raised = false, this.hero = true});
+  const FacilityMiniCard({super.key, required this.facility, this.onTap, this.raised = false, this.hero = false});
 
   final FacilitySummary facility;
   final VoidCallback? onTap;
@@ -21,7 +21,9 @@ class FacilityMiniCard extends StatelessWidget {
   /// Over the map: floating depth.
   final bool raised;
 
-  /// Whether the drawing flies into the facility page (one card per facility on a page).
+  /// Whether the drawing flies into the facility page. Off on Home and the map: Home opens the
+  /// facility in the Care tab (another navigator), and the map sits over Home, whose cards
+  /// would otherwise fly into the map's.
   final bool hero;
 
   @override
@@ -84,7 +86,7 @@ class FacilityMiniCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Row(
                     children: [
-                      const Icon(PhosphorIconsRegular.clock, size: 16, color: Palette.muted),
+                      Icon(PhosphorIconsRegular.clock, size: 16, color: Palette.muted),
                       const SizedBox(width: Space.xs),
                       Flexible(
                         child: Text(
@@ -98,7 +100,7 @@ class FacilityMiniCard extends StatelessWidget {
                   ),
                 ],
                 const SizedBox(height: Space.sm),
-                SizedBox(height: 22, child: InsurerPills(codes: f.insurers, max: 2)),
+                SizedBox(height: context.scaled(22), child: InsurerPills(codes: f.insurers, max: 2)),
               ],
             ),
           ),

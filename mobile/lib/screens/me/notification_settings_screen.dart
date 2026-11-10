@@ -30,7 +30,6 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
   static const _reminderChoices = [60, 120, 1440, 2880];
 
   Future<void> _save(NotificationPrefs prefs, Json change) async {
-    HapticFeedback.selectionClick();
     setState(() => _saving = true);
     try {
       await ref
@@ -151,12 +150,13 @@ class _NotificationSettingsScreenState extends ConsumerState<NotificationSetting
                     selected: p.reminders.contains(minutes),
                     showCheckmark: false,
                     labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color: p.reminders.contains(minutes) ? Colors.white : Palette.ink,
+                          color: p.reminders.contains(minutes) ? Palette.onBrand : Palette.ink,
                           fontWeight: FontWeight.w600,
                         ),
                     onSelected: _saving
                         ? null
                         : (on) {
+                            HapticFeedback.selectionClick();
                             final next = [...p.reminders];
                             on ? next.add(minutes) : next.remove(minutes);
                             if (next.length <= 5) _save(p, {'reminder_offsets_minutes': next..sort()});

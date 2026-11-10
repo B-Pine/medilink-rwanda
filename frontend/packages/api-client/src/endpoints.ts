@@ -38,6 +38,7 @@ import { createBookingApi } from "./features/booking";
 // [/S5 imports]
 // [S6 imports]
 import { createClinicalApi } from "./features/clinical";
+import { createPatientImportsApi } from "./features/patient-imports";
 // [/S6 imports]
 // [S7 imports]
 import { createDocumentsApi } from "./features/documents";
@@ -46,6 +47,9 @@ import { createPharmacyApi } from "./features/pharmacy";
 // [S8 imports]
 import { createBillingApi } from "./features/billing";
 // [/S8 imports]
+// [S10b imports]
+import { createDisputesApi } from "./features/disputes";
+// [/S10b imports]
 // [S11 imports]
 import { createConsoleApi } from "./features/console";
 // [/S11 imports]
@@ -193,6 +197,7 @@ export function createMediLinkApi(client: ApiClient) {
     // [/S5]
     // [S6]
     clinical: createClinicalApi(client),
+    patientImports: createPatientImportsApi(client),
     // [/S6]
     // [S7]
     pharmacy: createPharmacyApi(client),
@@ -201,6 +206,9 @@ export function createMediLinkApi(client: ApiClient) {
     // [S8]
     billing: createBillingApi(client),
     // [/S8]
+    // [S10b]
+    disputes: createDisputesApi(client),
+    // [/S10b]
     // [S11]
     console: createConsoleApi(client),
     // [/S11]

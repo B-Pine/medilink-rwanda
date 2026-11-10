@@ -56,11 +56,13 @@ class DoctorScreen extends ConsumerWidget {
             );
           }
           final services = f.services.where((x) => doctor.serviceIds.contains(x.id)).toList();
+          // Larger text needs a taller header (name, specialty and the pill grow with it).
+          final grow = (MediaQuery.textScalerOf(context).scale(100) - 100).clamp(0, 200) * 2.0;
           return CustomScrollView(
             slivers: [
               SliverAppBar(
                 pinned: true,
-                expandedHeight: _headerHeight,
+                expandedHeight: _headerHeight + grow,
                 backgroundColor: Palette.forest,
                 foregroundColor: Colors.white,
                 systemOverlayStyle: SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent),
@@ -84,7 +86,7 @@ class DoctorScreen extends ConsumerWidget {
                             width: Avatar.medium,
                             height: Avatar.medium,
                             decoration: BoxDecoration(color: Palette.brandSubtle, borderRadius: BorderRadius.circular(Space.radius)),
-                            child: const Icon(PhosphorIconsRegular.buildings, color: Palette.brand, size: 22),
+                            child: Icon(PhosphorIconsRegular.buildings, color: Palette.brand, size: 22),
                           ),
                           title: f.name,
                           subtitle: f.place,
@@ -131,7 +133,7 @@ class DoctorScreen extends ConsumerWidget {
                         children: [
                           for (final code in doctor.languages)
                             Chip(
-                              avatar: const Icon(PhosphorIconsRegular.translate, size: 16, color: Palette.brand),
+                              avatar: Icon(PhosphorIconsRegular.translate, size: 16, color: Palette.brand),
                               label: Text(_languageName(code)),
                             ),
                         ],

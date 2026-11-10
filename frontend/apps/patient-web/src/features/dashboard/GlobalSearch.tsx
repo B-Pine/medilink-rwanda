@@ -13,6 +13,8 @@ import {
   Ticket,
   UsersThree,
   type Icon,
+  Receipt,
+  Scales,
 } from "@phosphor-icons/react";
 import { CommandPalette, type CommandGroup, type CommandRow } from "@medilink/ui";
 import { useQuery } from "@tanstack/react-query";
@@ -35,6 +37,8 @@ const PAGES: { key: string; to: string; icon: Icon }[] = [
   { key: "records", to: paths.records, icon: FileText },
   { key: "medications", to: paths.medications, icon: Pill },
   { key: "documents", to: paths.documents, icon: Files },
+  { key: "bills", to: paths.bills, icon: Receipt },
+  { key: "disputes", to: paths.disputes, icon: Scales },
   { key: "notifications", to: paths.notifications, icon: Bell },
   { key: "help", to: paths.help, icon: Lifebuoy },
   { key: "settings", to: paths.settings, icon: Gear },

@@ -28,7 +28,7 @@ Evidence collected on 2026-11-01 on PostgreSQL 16, suite run as the runtime role
 | S6-B16 | Text stored encrypted | `test_sign_needs_step_up_and_primary_and_stores_hash`, `test_addenda_by_author_and_other_doctor` | | | Pending |
 | S6-B17 | Migrations reversible; suites green; coverage ≥ 90 % | `migrate clinical zero` and back on the dev database; `makemigrations --check` clean; full suite and coverage in the Evidence log below | | | Pending |
 | S6-B18 | (S6b) Results inbox | `test_outside_result_goes_to_the_uploading_doctor_and_is_reviewed`, `test_result_uploaded_by_reception_goes_to_the_last_doctor` (assignment, review, per-doctor inbox, lock trigger) | | | Pending |
-| S6-B19 | (S6b) Legacy import | Not started | | | Not in S6a |
+| S6-B19 | (S6b) Legacy import | `test_upload_map_preview_confirm_and_rollback` (mapping, errors, duplicates, nothing saved before confirm, step-up, national ID kept out of the preview), `test_rollback_refused_with_a_visit_or_after_the_window`, `test_bad_files_permissions_and_isolation`, `test_parse_helpers_and_purge` | | | Pending |
 | S6-B20 | (S6b) Scans and back-entry | `test_scan_rules_timeline_and_audited_download`, `test_history_back_entry_labelled_historical`, `test_back_entry_can_cite_its_scan`, `test_blood_group_and_pregnancy_flag` (health attributes) | | | Pending |
 | S6-B21 | (S6b) Break-glass | `test_break_glass_open_read_review` (super admin only, step-up, reason, read-only read, own-session refused, review by another, lock trigger, access history), `test_break_glass_window_expires_and_reminder` | | | Pending |
 
@@ -42,7 +42,7 @@ Evidence collected on 2026-11-01 on PostgreSQL 16, suite run as the runtime role
 | S6-F4 | History drawer with filters and problem summary | "the history drawer opens beside the record with filters and the problem summary" (axe clean) | Pending |
 | S6-F5 | Reason-for-access blocks the record until a reason is given | "a patient not in care is blocked until a reason is given" | Pending |
 | S6-F6 | `clinical` text in rw/en/fr; dates through `dateFormat()`; axe clean | `tests/i18n.test.ts` parity and review list; axe in the staff and patient tests. Patient records (PR1, PR2): `records.test.tsx`, never private notes or examination | Pending |
-| S6-F7 | (S6b) | Not started | Not in S6a |
+| S6-F7 | (S6b) Import wizard: upload, suggested columns, row check (problems, likely duplicates), import the ready rows (step-up), undo within the window | `apps/staff-web/src/features/imports/imports.test.tsx` (mocks, axe) | Pass (mocks) |
 
 ## Integration checks
 

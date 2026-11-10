@@ -10,7 +10,15 @@ import { useApi } from "../../app/services";
 import { useInDashboard } from "../../layout/DashboardContext";
 import { PublicLayout } from "../../layout/PublicLayout";
 import { isHospital } from "../site/data";
-import { EmptyState, PageContainer, PageHeader, SearchBar } from "../site/kit";
+import { FacilityExplorer } from "../site/FacilityDirectory";
+import {
+  type ActiveFilter,
+  EmptyState,
+  FilterBar,
+  PageContainer,
+  PageHeader,
+  SearchBar,
+} from "../site/kit";
 import {
   DISTRICT_CODES,
   DISTRICT_KEYS,
@@ -20,7 +28,16 @@ import {
   SERVICE_KEYS,
   type ServiceKey,
 } from "./discovery";
-import { FILTER, PlacesView, sortResults, TYPES, useNearMe, type Sort } from "./Places";
+import {
+  FILTER,
+  FilterSelect,
+  PlacesView,
+  sortResults,
+  SortSelect,
+  TYPES,
+  useNearMe,
+  type Sort,
+} from "./Places";
 
 const LEVELS: LevelOfCare[] = ["primary", "secondary", "tertiary"];
 const DISTANCES = [2, 5, 10, 25] as const;
@@ -38,7 +55,7 @@ export function CarePage() {
   const api = useApi();
   const inDashboard = useInDashboard();
   const [params, setParams] = useSearchParams();
-  const [sort, setSort] = useState<Sort>("soonest");
+  const [sort, setSort] = useState<Sort>("open");
   const { near, setNear, locating, locate } = useNearMe(() => setSort("nearest"));
   const [panel, setPanel] = useState(false);
   // what is typed before Enter; the URL keeps the submitted search
@@ -252,7 +269,7 @@ export function CarePage() {
     </div>
   );
 
-  const search = (className: string) => (
+  const searchBox = (className: string) => (
     <SearchBar
       id="care-search"
       label={t("site.searchLabel")}
@@ -267,90 +284,202 @@ export function CarePage() {
     />
   );
 
-  return (
-    <PublicLayout>
-      <PageContainer>
-        <PageHeader crumbs={[{ label: t("nav.findCare") }]} title={t("site.care.title")} />
-        {inDashboard ? (
-          // Dashboard: one search card (search, near me, filters, then the one-tap filters),
-          // since the sidebar leaves no room for a filter column (upgrade 12 §7)
-          <div className="flex flex-col gap-3 rounded-panel bg-surface shadow-e2 p-3 sm:p-4">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-              {search("flex-1")}
-              <div className="flex shrink-0 gap-2">
-                {!near && (
-                  <Button
-                    variant="secondary"
-                    pill
-                    onClick={locate}
-                    loading={locating === "busy"}
-                    iconStart={<Crosshair aria-hidden="true" className="size-4" />}
+  if (!inDashboard) {
+    // Find care searches by need (Facilities browses them all): the same filter bar, cards and map
+    const active: ActiveFilter[] = chips.map((chip) => ({
+      key: chip.key,
+      label: chip.label,
+      onRemove: chip.remove,
+    }));
+    const insurers = INSURER_KEYS.filter((key) => INSURER_CODES[key]);
+    return (
+      <PublicLayout>
+        <PageContainer className="pb-16">
+          <PageHeader
+            tone="forest"
+            crumbs={[{ label: t("nav.findCare") }]}
+            title={t("site.care.title")}
+          />
+          <div className="flex flex-col gap-6">
+            <FilterBar
+              search={searchBox("w-full")}
+              filters={
+                <>
+                  <button
+                    type="button"
+                    aria-pressed={near !== null}
+                    onClick={near ? () => setNear(null) : locate}
+                    disabled={locating === "busy"}
+                    className={cx(FILTER, "inline-flex items-center gap-1.5")}
                   >
-                    {t("home.nearMe")}
-                  </Button>
-                )}
-                <Button
-                  variant="secondary"
-                  pill
-                  onClick={() => setPanel(true)}
-                  iconStart={<Faders aria-hidden="true" className="size-4" />}
-                >
-                  {chips.length
-                    ? t("care.filtersCount", { count: chips.length })
-                    : t("care.filters")}
-                </Button>
-              </div>
-            </div>
-            <div
-              role="group"
-              aria-label={t("care.quick")}
-              className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-0.5 [scrollbar-width:none]"
-            >
-              <Toggle on={openNow} onChange={(on) => set("open", on ? "1" : "")}>
-                {t("home.openNow")}
-              </Toggle>
-              <Toggle on={emergency} onChange={(on) => set("emergency", on ? "1" : "")}>
-                {t("site.care.emergencyFilter")}
-              </Toggle>
-              <Toggle on={today} onChange={(on) => set("today", on ? "1" : "")}>
-                {t("care.availability.today")}
-              </Toggle>
-              <Toggle on={remote} onChange={(on) => set("remote", on ? "1" : "")}>
-                {t("care.availability.remote")}
-              </Toggle>
-            </div>
+                    <Crosshair
+                      aria-hidden="true"
+                      className={cx("size-4", locating === "busy" && "animate-spin")}
+                    />
+                    {near ? t("home.nearYou") : t("home.nearMe")}
+                  </button>
+                  <FilterSelect
+                    id="care-service"
+                    label={t("care.service")}
+                    value={service}
+                    onChange={(value) => set("service", value)}
+                  >
+                    <option value="">{t("care.anyService")}</option>
+                    {SERVICE_KEYS.map((key) => (
+                      <option key={key} value={key}>
+                        {t(`landing.services.${key}`)}
+                      </option>
+                    ))}
+                  </FilterSelect>
+                  <FilterSelect
+                    id="care-insurer"
+                    label={t("home.insurance")}
+                    value={insurer}
+                    onChange={(value) => set("insurer", value)}
+                  >
+                    <option value="">{t("home.anyInsurance")}</option>
+                    {insurers.map((key) => (
+                      <option key={key} value={key}>
+                        {t(`landing.insurersShort.${key}`)}
+                      </option>
+                    ))}
+                  </FilterSelect>
+                  <FilterSelect
+                    id="care-district"
+                    label={t("home.district")}
+                    value={near ? "" : district}
+                    disabled={near !== null}
+                    onChange={(value) => set("district", value)}
+                  >
+                    <option value="">{near ? t("home.nearYou") : t("home.anyDistrict")}</option>
+                    {DISTRICT_KEYS.map((key) => (
+                      <option key={key} value={key}>
+                        {t(`landing.districts.${key}`)}
+                      </option>
+                    ))}
+                  </FilterSelect>
+                  <FilterSelect
+                    id="care-type"
+                    label={t("home.type")}
+                    value={type}
+                    onChange={(value) => set("type", value)}
+                  >
+                    <option value="">{t("home.anyType")}</option>
+                    {TYPES.map((key) => (
+                      <option key={key} value={key}>
+                        {t(`booking.types.${key}`)}
+                      </option>
+                    ))}
+                  </FilterSelect>
+                  <Toggle on={openNow} onChange={(on) => set("open", on ? "1" : "")}>
+                    {t("home.openNow")}
+                  </Toggle>
+                  <Toggle on={today} onChange={(on) => set("today", on ? "1" : "")}>
+                    {t("care.availability.today")}
+                  </Toggle>
+                  <Toggle on={emergency} onChange={(on) => set("emergency", on ? "1" : "")}>
+                    {t("site.care.emergencyFilter")}
+                  </Toggle>
+                </>
+              }
+              active={active}
+              onClear={clearAll}
+              count={results.isSuccess ? t("home.count", { count: rows.length }) : undefined}
+              sort={
+                <SortSelect id="care-sort" value={sort} onChange={setSort} near={near !== null} />
+              }
+            />
             {locating === "denied" && (
               <p role="status" className="m-0 text-body-sm text-fg-secondary">
                 {t("home.locationDenied")}
               </p>
             )}
+            {level && level !== "primary" && insurer === "mutuelle" && (
+              <p className="m-0 text-body-sm text-fg-secondary">{t("care.transferHint")}</p>
+            )}
+            <section aria-labelledby="care-results" className="flex flex-col gap-4">
+              <h2 id="care-results" className="sr-only">
+                {t("site.care.results")}
+              </h2>
+              <FacilityExplorer
+                headingLevel={3}
+                label={t("site.care.results")}
+                rows={rows}
+                loading={results.isPending}
+                fetching={results.isPlaceholderData}
+                failed={results.isError}
+                onRetry={() => void results.refetch()}
+                near={near}
+                empty={<NoMatch service={activeService} query={q} onClear={clearAll} />}
+              />
+            </section>
           </div>
-        ) : (
-          search("max-w-2xl")
-        )}
-      </PageContainer>
-      <div
-        className={cx(
-          "ml-stagger grid gap-6",
-          // Inside the dashboard the sidebar takes the width a filter column would need:
-          // filters open in the drawer instead (upgrade 12 §7)
-          inDashboard
-            ? "pt-6"
-            : "mx-auto max-w-[88rem] px-4 pt-6 pb-16 sm:px-6 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-8",
-        )}
-      >
-        {!inDashboard && (
-          <aside
-            aria-labelledby="filters"
-            className="hidden self-start rounded-3xl bg-surface p-6 shadow-card lg:sticky lg:top-4 lg:block"
-          >
-            <h2 id="filters" className="mt-0 mb-4 text-h3">
-              {t("care.filters")}
-            </h2>
-            {filters}
-          </aside>
-        )}
+        </PageContainer>
+      </PublicLayout>
+    );
+  }
 
+  return (
+    <PublicLayout>
+      <PageContainer>
+        <PageHeader
+          tone="forest"
+          crumbs={[{ label: t("nav.findCare") }]}
+          title={t("site.care.title")}
+        />
+        {/* Dashboard: one search card (search, near me, filters, then the one-tap filters),
+            since the sidebar leaves no room for a filter column (upgrade 12 §7) */}
+        <div className="flex flex-col gap-3 rounded-panel bg-surface shadow-e2 p-3 sm:p-4">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            {searchBox("flex-1")}
+            <div className="flex shrink-0 gap-2">
+              {!near && (
+                <Button
+                  variant="secondary"
+                  pill
+                  onClick={locate}
+                  loading={locating === "busy"}
+                  iconStart={<Crosshair aria-hidden="true" className="size-4" />}
+                >
+                  {t("home.nearMe")}
+                </Button>
+              )}
+              <Button
+                variant="secondary"
+                pill
+                onClick={() => setPanel(true)}
+                iconStart={<Faders aria-hidden="true" className="size-4" />}
+              >
+                {chips.length ? t("care.filtersCount", { count: chips.length }) : t("care.filters")}
+              </Button>
+            </div>
+          </div>
+          <div
+            role="group"
+            aria-label={t("care.quick")}
+            className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-0.5 [scrollbar-width:none]"
+          >
+            <Toggle on={openNow} onChange={(on) => set("open", on ? "1" : "")}>
+              {t("home.openNow")}
+            </Toggle>
+            <Toggle on={emergency} onChange={(on) => set("emergency", on ? "1" : "")}>
+              {t("site.care.emergencyFilter")}
+            </Toggle>
+            <Toggle on={today} onChange={(on) => set("today", on ? "1" : "")}>
+              {t("care.availability.today")}
+            </Toggle>
+            <Toggle on={remote} onChange={(on) => set("remote", on ? "1" : "")}>
+              {t("care.availability.remote")}
+            </Toggle>
+          </div>
+          {locating === "denied" && (
+            <p role="status" className="m-0 text-body-sm text-fg-secondary">
+              {t("home.locationDenied")}
+            </p>
+          )}
+        </div>
+      </PageContainer>
+      <div className="ml-stagger grid gap-6 pt-6">
         <div className="flex min-w-0 flex-col gap-3">
           {chips.length > 0 && (
             <ul
@@ -391,24 +520,6 @@ export function CarePage() {
             near={near}
             sort={sort}
             onSort={setSort}
-            toolbar={
-              // the dashboard has the Filters button in its search card
-              !inDashboard && (
-                <span className="lg:hidden">
-                  <Button
-                    variant="secondary"
-
-                    pill
-                    onClick={() => setPanel(true)}
-                    iconStart={<Faders aria-hidden="true" className="size-4" />}
-                  >
-                    {chips.length
-                      ? t("care.filtersCount", { count: chips.length })
-                      : t("care.filters")}
-                  </Button>
-                </span>
-              )
-            }
             empty={<NoMatch service={activeService} query={q} onClear={clearAll} />}
             directory
           />

@@ -79,20 +79,21 @@ describe("design tokens (F2): values equal design research 02", () => {
     expect(hex(light["--ml-action-primary-text"])).toBe("#ffffff");
     expect(hex(light["--ml-text-muted"])).toBe("#5d6a62");
     expect(hex(light["--ml-border-input"])).toBe("#7b8a83");
-    expect(hex(light["--ml-bg-page"])).toBe("#f7f9f7");
+    expect(hex(light["--ml-bg-page"])).toBe("#eef2ef");
     expect(hex(light["--ml-text-primary"])).toBe("#17231d");
     expect(hex(light["--ml-focus-ring"])).toBe("#059669");
     expect(hex(light["--ml-forest"])).toBe("#123d2b");
   });
 
   it("dark theme spot checks", () => {
-    // Softer dark (product owner, 2026-11-02): charcoal green, off-white text, muted emerald
-    expect(hex(dark["--ml-bg-page"])).toBe("#141a17");
-    expect(hex(dark["--ml-bg-surface"])).toBe("#1b221e");
+    // The app's dark palette (mobile/lib/app/theme.dart, 2026-11-07): neutral charcoal surfaces,
+    // off-white text, green only for actions and accents
+    expect(hex(dark["--ml-bg-page"])).toBe("#111315");
+    expect(hex(dark["--ml-bg-surface"])).toBe("#1b1e21");
     expect(hex(dark["--ml-action-primary"])).toBe("#5fc59a");
     expect(hex(dark["--ml-action-primary-text"])).toBe("#0e2219");
-    expect(hex(dark["--ml-border-input"])).toBe("#66756d");
-    expect(hex(dark["--ml-text-muted"])).toBe("#8c9891");
+    expect(hex(dark["--ml-border-input"])).toBe("#737a80");
+    expect(hex(dark["--ml-text-muted"])).toBe("#979da2");
   });
 
   it("system-dark and explicit-dark blocks are identical", () => {

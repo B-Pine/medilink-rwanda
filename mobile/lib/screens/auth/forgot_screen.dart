@@ -73,7 +73,7 @@ class _ForgotScreenState extends ConsumerState<ForgotScreen> {
               if (_error != null)
                 Padding(
                   padding: const EdgeInsets.only(top: Space.md),
-                  child: Text(_error!, style: const TextStyle(color: Palette.danger)),
+                  child: Text(_error!, style: TextStyle(color: Palette.danger)),
                 ),
               const SizedBox(height: Space.xl),
               LoadingButton(label: s.t('sendLink'), onPressed: _email.text.contains('@') ? _send : null),

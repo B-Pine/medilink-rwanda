@@ -9,13 +9,10 @@ import {
   HandHeart,
   Hourglass,
   MagnifyingGlass,
-  ShieldCheck,
   Sparkle,
   Stethoscope,
   Syringe,
   Tooth,
-  Translate,
-  UserCircleCheck,
   UsersThree,
   type Icon,
 } from "@phosphor-icons/react";
@@ -28,6 +25,7 @@ import { Link, useNavigate } from "react-router";
 import { useApi } from "../app/services";
 import { PageHeading } from "../components/PageHeading";
 import {
+  day,
   DISTRICT_CODES,
   SERVICE_CODES,
   type DistrictKey,
@@ -35,13 +33,9 @@ import {
 } from "../features/booking/discovery";
 import { FILTER, sortResults, useNearMe, waitText, type Sort } from "../features/booking/Places";
 import { FacilityBuilding } from "../features/site/buildings";
-import { useAllFacilities } from "../features/site/data";
+import { kigaliNow, nextOpening, useAllFacilities, useProfiles } from "../features/site/data";
 import { FacilityExplorer, WaitMeter } from "../features/site/FacilityDirectory";
-import {
-  FacilityBoardIllustration,
-  HillsideCareIllustration,
-  StepIllustration,
-} from "../features/site/illustrations";
+import { HillsideCareIllustration } from "../features/site/illustrations";
 import { LocationSelector, PageContainer, SearchBar } from "../features/site/kit";
 import { PublicLayout } from "../layout/PublicLayout";
 
@@ -59,14 +53,6 @@ const CARE: { key: ServiceKey; icon: Icon }[] = [
   { key: "dental", icon: Tooth },
   { key: "eye", icon: Eye },
   { key: "vaccination", icon: Syringe },
-];
-
-const STEPS = ["search", "join", "arrive"] as const;
-
-const TRUST: { key: string; icon: Icon }[] = [
-  { key: "noAccount", icon: UserCircleCheck },
-  { key: "languages", icon: Translate },
-  { key: "dataHome", icon: ShieldCheck },
 ];
 
 /** How many open places the live panel shows. */
@@ -128,6 +114,44 @@ function typicalWait(rows: FacilityResult[]): number | null {
     .sort((a, b) => a - b);
   if (!mids.length) return null;
   return Math.round(mids[Math.floor(mids.length / 2)]! / 5) * 5;
+}
+
+/**
+ * Nothing open anywhere (nights, weekends): one plain line instead of zeros as headlines, with the
+ * next place to open when the hours are published.
+ */
+function ClosedNotice({ rows, className }: { rows: FacilityResult[]; className?: string }) {
+  const { t, i18n } = useTranslation();
+  const lang = i18n.resolvedLanguage ?? "rw";
+  const profiles = useProfiles(rows.map((r) => r.slug));
+  const next = nextOpening(profiles.data);
+  const today = kigaliNow().slice(0, 10);
+  return (
+    <div
+      role="status"
+      className={cx(
+        "flex flex-wrap items-center gap-x-3 gap-y-1 rounded-panel bg-surface px-6 py-5 shadow-e2",
+        className,
+      )}
+    >
+      <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-fg-muted" />
+      <span className="font-semibold text-fg">{t("site.home3.allClosed")}</span>
+      {next && (
+        <span className="text-fg-secondary tabular-nums">
+          {"· "}
+          <Link to={`/facilities/${next.slug}`} viewTransition className="text-link">
+            {next.date === today
+              ? t("site.home3.nextOpeningToday", { time: next.time, name: next.name })
+              : t("site.home3.nextOpening", {
+                  day: day(next.date, lang, "short"),
+                  time: next.time,
+                  name: next.name,
+                })}
+          </Link>
+        </span>
+      )}
+    </div>
+  );
 }
 
 /** A live figure in the bento: icon and label, one large number, and what it counts. */
@@ -229,12 +253,10 @@ function LivePanel({
 }
 
 /**
- * Home `/` (second pass, 2026-11-04): clean means ordered, not bare. A two-column hero (one
- * command search beside an illustration of care on Rwanda's hills), then a bento of live
- * figures and the places open now; services with their icons; everything open on a list or a
- * map; the three steps as small pictures; and a forest band for facilities. Built on the site
- * tokens (elevation e1–e3, hairlines, fluid display type); brand greens with one ochre for long
- * waits; every number is real or not shown.
+ * Home `/`: the hero with the search and what is open (or one honest line when nothing is), the
+ * kinds of care, the facilities near you on a list or a map, one line to How it works, and a slim
+ * forest band for facilities. The journey is told once, on How it works (audit 2026-11-07).
+ * Every number is real or not shown.
  */
 export function LandingPage() {
   const { t } = useTranslation();
@@ -266,6 +288,7 @@ export function LandingPage() {
   const openNow = everywhere.filter((r) => r.open_now).length;
   const waitingNow = everywhere.reduce((sum, r) => sum + (r.open_now ? (r.waiting ?? 0) : 0), 0);
   const typical = typicalWait(everywhere);
+  const allClosed = Boolean(all.data) && everywhere.length > 0 && openNow === 0;
   const countFor = (key: ServiceKey) =>
     new Set(
       (all.data ?? []).filter((r) => r.service_code === SERVICE_CODES[key]).map((r) => r.slug),
@@ -297,10 +320,10 @@ export function LandingPage() {
               <PageHeading
                 id="hero-title"
                 title={`${t("site.home3.titleA")} ${t("site.home3.titleB")}`}
-                className="m-0 max-w-[14ch] font-heading text-hero font-bold text-balance text-fg"
+                className="m-0 max-w-[24ch] font-heading text-hero font-bold text-balance text-fg"
               >
                 {t("site.home3.titleA")}{" "}
-                <span className="bg-[linear-gradient(100deg,var(--color-forest),var(--color-primary))] bg-clip-text text-transparent">
+                <span className="bg-[linear-gradient(100deg,var(--site-hero-ink),var(--color-primary))] bg-clip-text text-transparent">
                   {t("site.home3.titleB")}
                 </span>
               </PageHeading>
@@ -353,29 +376,47 @@ export function LandingPage() {
             </div>
           </div>
 
-          {/* the bento: live figures, places open now, and help choosing */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 lg:grid-rows-[auto_auto]">
-            <Figure
-              icon={Buildings}
-              label={t("site.home3.kpi.open")}
-              value={all.data ? String(openNow) : "–"}
-              hint={t("site.home3.kpi.openHint", { count: everywhere.length })}
-            />
-            <Figure
-              icon={UsersThree}
-              label={t("site.home3.kpi.waiting")}
-              value={all.data ? String(waitingNow) : "–"}
-            />
-            <LivePanel
-              rows={live}
-              loading={results.isPending}
-              className="md:col-span-2 lg:row-span-2"
-            />
-            <Figure
-              icon={Hourglass}
-              label={t("site.home3.kpi.typical")}
-              value={typical === null ? "–" : t("site.home3.kpi.minutes", { count: typical })}
-            />
+          {/*
+           * the bento: live figures, places open now, and help choosing. Big numbers only while
+           * something is open; when everything is closed, one honest line says so instead.
+           */}
+          <div
+            className={cx(
+              "grid gap-4",
+              allClosed
+                ? "md:grid-cols-[minmax(0,3fr)_minmax(0,1fr)]"
+                : "md:grid-cols-2 lg:grid-cols-4 lg:grid-rows-[auto_auto]",
+            )}
+          >
+            {allClosed ? (
+              <ClosedNotice rows={everywhere} />
+            ) : (
+              <>
+                <Figure
+                  icon={Buildings}
+                  label={t("site.home3.kpi.open")}
+                  value={all.data ? String(openNow) : "–"}
+                  hint={t("site.home3.kpi.openHint", { count: everywhere.length })}
+                />
+                <Figure
+                  icon={UsersThree}
+                  label={t("site.home3.kpi.waiting")}
+                  value={all.data ? String(waitingNow) : "–"}
+                />
+                <LivePanel
+                  rows={live}
+                  loading={results.isPending}
+                  className="md:col-span-2 lg:row-span-2"
+                />
+                {typical !== null && (
+                  <Figure
+                    icon={Hourglass}
+                    label={t("site.home3.kpi.typical")}
+                    value={t("site.home3.kpi.minutes", { count: typical })}
+                  />
+                )}
+              </>
+            )}
             <Link
               to="/check-symptoms"
               viewTransition
@@ -486,61 +527,16 @@ export function LandingPage() {
           />
         </section>
 
-        {/* 4 · Three steps, each a small picture */}
-        <section aria-labelledby="how-title" className="site-reveal flex flex-col gap-10">
-          <SectionHead
-            id="how-title"
-            title={t("site.home2.howTitle")}
-            action={<MoreLink to="/how-it-works">{t("site.home.how")}</MoreLink>}
-          />
-          <ol className="relative m-0 grid list-none gap-4 p-0 md:grid-cols-3">
-            <span
-              aria-hidden="true"
-              className="absolute top-[5.25rem] right-[17%] left-[17%] -z-10 hidden border-t-2 border-dashed border-primary/25 md:block"
-            />
-            {STEPS.map((key, index) => (
-              <li
-                key={key}
-                className="flex flex-col items-center gap-3 rounded-panel bg-surface px-6 pt-5 pb-7 text-center shadow-e1"
-              >
-                <StepIllustration step={key} className="h-32 w-auto" />
-                <span
-                  aria-hidden="true"
-                  className="grid size-7 place-items-center rounded-full bg-forest font-heading text-caption font-bold text-on-forest tabular-nums"
-                >
-                  {index + 1}
-                </span>
-                <h3 className="m-0 font-heading text-h3 font-bold">
-                  <span className="sr-only">{t("site.home2.stepLabel", { n: index + 1 })}: </span>
-                  {t(`site.home2.steps.${key}.title`)}
-                </h3>
-                <p className="m-0 max-w-[30ch] text-fg-secondary">
-                  {t(`site.home2.steps.${key}.body`)}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        {/* 5 · What people can count on */}
-        <ul
-          aria-label={t("site.home3.trustLabel")}
-          className="site-reveal m-0 grid list-none gap-px overflow-hidden rounded-panel bg-hairline p-0 shadow-e1 sm:grid-cols-3"
-        >
-          {TRUST.map(({ key, icon: TrustIcon }) => (
-            <li key={key} className="flex items-center gap-4 bg-surface p-6">
-              <TrustIcon
-                aria-hidden="true"
-                weight="duotone"
-                className="size-6 shrink-0 text-primary"
-              />
-              <span className="font-semibold text-fg">{t(`site.home3.trust.${key}.title`)}</span>
-            </li>
-          ))}
-        </ul>
+        {/* the journey is told once, on How it works: one line here */}
+        <p className="m-0 text-body text-fg-secondary">
+          {t("site.home3.howLine")}{" "}
+          <Link to="/how-it-works" viewTransition className="font-semibold text-link">
+            {t("site.home.how")}
+          </Link>
+        </p>
       </PageContainer>
 
-      {/* 6 · For facilities: the forest band */}
+      {/* 4 · For facilities: one slim forest band, one line and one button */}
       <section
         aria-labelledby="facilities-title"
         className="relative isolate overflow-hidden bg-forest text-on-forest"
@@ -548,47 +544,27 @@ export function LandingPage() {
         <div aria-hidden="true" className="absolute inset-0 -z-10 text-on-forest-accent">
           <ImigongoPattern opacity={0.06} />
         </div>
-        <div
-          aria-hidden="true"
-          className="absolute -top-40 right-0 -z-10 size-[36rem] rounded-full bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--color-on-forest-accent)_18%,transparent),transparent)]"
-        />
-        <PageContainer className="grid items-center gap-12 py-20 lg:grid-cols-[minmax(0,1fr)_minmax(0,28rem)] lg:py-24">
-          <div className="site-reveal flex max-w-[38rem] flex-col items-start gap-5">
+        <PageContainer className="flex flex-wrap items-center justify-between gap-6 py-12">
+          <div className="flex max-w-[40rem] flex-col gap-2">
             <h2
               id="facilities-title"
               className="m-0 font-heading text-section font-bold text-on-forest"
             >
               {t("site.home2.facilitiesTitle")}
             </h2>
-            <p className="m-0 text-[1.125rem] leading-relaxed text-on-forest-muted">
-              {t("site.home2.facilitiesLead")}
-            </p>
-            <ul className="m-0 flex list-none flex-col gap-2.5 p-0 text-on-forest">
-              {(["queue", "bookings", "records"] as const).map((key) => (
-                <li key={key} className="flex items-center gap-3">
-                  <span
-                    aria-hidden="true"
-                    className="grid size-5 place-items-center rounded-full bg-on-forest/10"
-                  >
-                    <span className="size-1.5 rounded-full bg-on-forest-accent" />
-                  </span>
-                  {t(`site.home3.facilityPoints.${key}`)}
-                </li>
-              ))}
-            </ul>
-            <Link
-              to="/for-facilities"
-              viewTransition
-              className="group mt-3 inline-flex min-h-12 items-center gap-2 rounded-full bg-on-forest px-6 font-semibold text-forest no-underline transition-[filter] duration-150 hover:brightness-95"
-            >
-              {t("site.home2.facilitiesAction")}
-              <ArrowRight
-                aria-hidden="true"
-                className="size-4 transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5"
-              />
-            </Link>
+            <p className="m-0 text-body text-on-forest-muted">{t("site.home2.facilitiesLead")}</p>
           </div>
-          <FacilityBoardIllustration className="site-reveal hidden h-auto w-full lg:block" />
+          <Link
+            to="/for-facilities"
+            viewTransition
+            className="ml-press group inline-flex min-h-12 items-center gap-2 rounded-full bg-on-forest px-6 font-semibold text-forest no-underline transition-[filter] duration-150 hover:brightness-95"
+          >
+            {t("site.home2.facilitiesAction")}
+            <ArrowRight
+              aria-hidden="true"
+              className="size-4 transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5"
+            />
+          </Link>
         </PageContainer>
       </section>
     </PublicLayout>

@@ -10,7 +10,8 @@
     "logout": "Log out",
     "loggingOut": "Logging out…",
     "opensInNewTab": "(opens in a new tab)",
-    "comingSoon": "Coming soon"
+    "comingSoon": "Coming soon",
+    "close": "Close"
   },
   "errors": {
     "generic": "Something went wrong. Try again.",
@@ -46,6 +47,7 @@
     "closeMenu": "Close menu",
     "homeLabel": "MediLink Rwanda home",
     "strip": {
+      "label": "Emergency",
       "long": "Life-threatening emergency?",
       "short": "Emergency?",
       "call": "Call 912",
@@ -76,12 +78,36 @@
       "vaccination": "Vaccination"
     },
     "districts": {
+      "bugesera": "Bugesera",
+      "burera": "Burera",
+      "gakenke": "Gakenke",
       "gasabo": "Gasabo",
-      "kicukiro": "Kicukiro",
-      "nyarugenge": "Nyarugenge",
-      "musanze": "Musanze",
+      "gatsibo": "Gatsibo",
+      "gicumbi": "Gicumbi",
+      "gisagara": "Gisagara",
       "huye": "Huye",
-      "rubavu": "Rubavu"
+      "kamonyi": "Kamonyi",
+      "karongi": "Karongi",
+      "kayonza": "Kayonza",
+      "kicukiro": "Kicukiro",
+      "kirehe": "Kirehe",
+      "muhanga": "Muhanga",
+      "musanze": "Musanze",
+      "ngoma": "Ngoma",
+      "ngororero": "Ngororero",
+      "nyabihu": "Nyabihu",
+      "nyagatare": "Nyagatare",
+      "nyamagabe": "Nyamagabe",
+      "nyamasheke": "Nyamasheke",
+      "nyanza": "Nyanza",
+      "nyarugenge": "Nyarugenge",
+      "nyaruguru": "Nyaruguru",
+      "rubavu": "Rubavu",
+      "ruhango": "Ruhango",
+      "rulindo": "Rulindo",
+      "rusizi": "Rusizi",
+      "rutsiro": "Rutsiro",
+      "rwamagana": "Rwamagana"
     },
     "insurers": {
       "mutuelle": "Mutuelle de Santé (CBHI)",
@@ -110,11 +136,12 @@
     "copyright": "© {{year}} MediLink Rwanda",
     "about": "About MediLink",
     "emergency": "Emergency",
-    "checkSymptoms": "Check symptoms",
+    "checkSymptoms": "Not sure where to go?",
     "groups": {
       "explore": "Explore",
       "information": "Information",
-      "legal": "Legal"
+      "legal": "Legal",
+      "support": "Help"
     },
     "tagline": "Connecting people to healthcare facilities across Rwanda.",
     "trust": "Search without an account. Your location is used only for your search and never stored.",
@@ -131,6 +158,7 @@
     "dataInRwanda": "Health data stored in Rwanda"
   },
   "authAside": {
+    "label": "Why an account",
     "title": "Spend less time waiting and more time getting better.",
     "lead": "One account for you and your family, at every facility on MediLink.",
     "points": {
@@ -150,6 +178,14 @@
     "trust": "Your health data is protected under Rwanda’s data protection law and is only shared when you allow it."
   },
   "login": {
+    "intent": {
+      "book": "Sign in to book {{service}} at {{facility}}",
+      "bookAt": "Sign in to book at {{facility}}",
+      "bookAny": "Sign in to book",
+      "join": "Sign in to join the queue for {{service}} at {{facility}}",
+      "joinAt": "Sign in to join the queue at {{facility}}",
+      "joinAny": "Sign in to join the queue"
+    },
     "title": "Log in or create an account",
     "intro": "Book care and skip the long wait.",
     "email": "Email",
@@ -250,8 +286,8 @@
     "nearYou": "Near you",
     "locationDenied": "Location unavailable · Pick a district",
     "places": "Places",
-    "count_one": "{{count}} place",
-    "count_other": "{{count}} places",
+    "count_one": "{{count}} facility",
+    "count_other": "{{count}} facilities",
     "sort": {
       "label": "Sort",
       "soonest": "Soonest seen",

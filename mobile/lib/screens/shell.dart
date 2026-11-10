@@ -61,7 +61,7 @@ class AppShell extends ConsumerWidget {
       body = Scaffold(
         body: shell,
         bottomNavigationBar: DecoratedBox(
-          decoration: const BoxDecoration(border: Border(top: BorderSide(color: Palette.hairline))),
+          decoration: BoxDecoration(border: Border(top: BorderSide(color: Palette.hairline))),
           child: NavigationBar(
             selectedIndex: shell.currentIndex,
             onDestinationSelected: _go,
@@ -114,7 +114,10 @@ class _FadeThroughBranchesState extends State<FadeThroughBranches> with SingleTi
   @override
   void didUpdateWidget(FadeThroughBranches oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.index != widget.index) _fade.forward(from: 0);
+    if (oldWidget.index != widget.index) {
+      // Tabs fade through; no motion when the system asks for none.
+      Motion.off(context) ? _fade.value = 1 : _fade.forward(from: 0);
+    }
   }
 
   @override

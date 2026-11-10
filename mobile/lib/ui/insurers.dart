@@ -32,7 +32,7 @@ class InsurerPills extends StatelessWidget {
     if (codes.isEmpty) {
       return Row(
         children: [
-          const Icon(PhosphorIconsRegular.shieldCheck, size: 15, color: Palette.muted),
+          Icon(PhosphorIconsRegular.shieldCheck, size: 15, color: Palette.muted),
           const SizedBox(width: 4),
           Expanded(
             child: Text(
@@ -54,7 +54,7 @@ class InsurerPills extends StatelessWidget {
     if (wrap) return Wrap(spacing: Space.sm, runSpacing: Space.sm, children: pills);
     return Row(
       children: [
-        const Icon(PhosphorIconsRegular.shieldCheck, size: 15, color: Palette.brand),
+        Icon(PhosphorIconsRegular.shieldCheck, size: 15, color: Palette.brand),
         const SizedBox(width: 6),
         Expanded(
           child: ClipRect(
@@ -82,7 +82,7 @@ class _Pill extends StatelessWidget {
           text,
           maxLines: 1,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: quiet ? Palette.muted : Palette.forest,
+                color: quiet ? Palette.muted : Palette.forestInk,
                 fontWeight: FontWeight.w600,
               ),
         ),

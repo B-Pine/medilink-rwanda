@@ -21,6 +21,8 @@ abstract final class PhosphorIconsRegular {
   static const chatsCircle = IconData(0xe17e, fontFamily: 'PhosphorRegular');
   static const clipboardText = IconData(0xe198, fontFamily: 'PhosphorRegular');
   static const clock = IconData(0xe19a, fontFamily: 'PhosphorRegular');
+  static const receipt = IconData(0xe3ec, fontFamily: 'PhosphorRegular');
+  static const scales = IconData(0xe750, fontFamily: 'PhosphorRegular');
   static const crosshair = IconData(0xe1d6, fontFamily: 'PhosphorRegular');
   static const envelopeOpen = IconData(0xe216, fontFamily: 'PhosphorRegular');
   static const envelopeSimple = IconData(0xe218, fontFamily: 'PhosphorRegular');

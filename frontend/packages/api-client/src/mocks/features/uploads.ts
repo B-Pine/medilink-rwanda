@@ -58,7 +58,7 @@ export function uploadStore(context: MockContext): MockUploadStore {
 
   const store: MockUploadStore = {
     async receive(file, purpose, owner, lang) {
-      const csvOnly = purpose === "masterdata_import";
+      const csvOnly = purpose === "masterdata_import" || purpose === "patient_import";
       if (file.size > MOCK_UPLOAD_MAX_BYTES) {
         return { error: fieldError(context, lang, { file: s1("fileSize", lang) }) };
       }

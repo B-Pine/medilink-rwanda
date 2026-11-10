@@ -1,6 +1,6 @@
 import { isApiError, type CashShift, type ShiftMethodRow } from "@medilink/api-client";
 import { Badge, cx } from "@medilink/ui";
-import { formatMoney } from "@medilink/ui/i18n";
+import { dateFormat, formatMoney } from "@medilink/ui/i18n";
 import { CashRegister } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -145,7 +145,7 @@ export function LastShiftSummary() {
   if (!shift || shift.difference_rwf === null) return null;
   const when = (iso: string | null) =>
     iso
-      ? new Intl.DateTimeFormat(i18n.resolvedLanguage === "rw" ? "en" : i18n.resolvedLanguage, {
+      ? dateFormat(i18n.resolvedLanguage ?? "rw", {
           dateStyle: "medium",
           timeStyle: "short",
           timeZone: "Africa/Kigali",

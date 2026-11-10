@@ -148,7 +148,7 @@ class _ConsentSheetState extends State<_ConsentSheet> {
               secondary: IconButton(
                 tooltip: s.privacy,
                 onPressed: () => context.push('/legal/privacy'),
-                icon: const Icon(PhosphorIconsRegular.info, color: Palette.muted),
+                icon: Icon(PhosphorIconsRegular.info, color: Palette.muted),
               ),
             ),
             CheckboxListTile(

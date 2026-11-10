@@ -109,7 +109,7 @@ Source: [04 · Patient identity and medical history](../analysis/04-patient-iden
 | FR-PAT-07 | Identifiers: national ID, passport, insurance, file no., MediLink no. | P1 | S3 | Backend | UT, API | In progress |
 | FR-PAT-08 | Health profile with verified / unverified status | P1 | S3 | Both | API, CMP | In progress |
 | FR-PAT-09 | History timeline, filters, problem summary, search | P1 | S3, S6* | Both | API, PERF, E2E | In progress |
-| FR-PAT-10 | Legacy register import: preview, validation, duplicates, rollback | P1 | S6b | Both | BR, API, E2E | Not started |
+| FR-PAT-10 | Legacy register import: preview, validation, duplicates, rollback | P1 | S6b | Both | BR, API, E2E | In progress (backend L1 with `test_s6b_import.py`; staff import wizard `imports.test.tsx`; staging open) |
 | FR-PAT-11 | Scanned legacy records attached to patients | P1 | S6b | Both | API | In progress |
 | FR-PAT-12 | Structured back-entry labelled as historical | P1 | S6b | Both | API, CMP | In progress |
 | FR-PAT-13 | Patient sees own and dependents' records except private notes | P1 | S3, S6* | Both | AZ, E2E | In progress |
@@ -124,9 +124,9 @@ Source: [05 · Discovery, calendars, scheduling, booking](../analysis/05-discove
 
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
-| FR-SCH-01 | Facility search with filters; list and map | P1 | S5 | Both | API, E2E | In progress |
-| FR-SCH-02 | Facility profile: services, insurers, hours, doctors, load, admin photos and contacts (no fees, U-01) | P1 | S5 | Both | API, E2E | In progress |
-| FR-SCH-03 | Public facility pages indexable by search engines | P1 | S5 | Frontend | INS, E2E | In progress (R8: pre-rendered at build time, ADR 0008) |
+| FR-SCH-01 | Facility search with filters; list and map | P1 | S5 | Both | API, E2E | In progress (public audit 2026-11-07: e2e search → facility → book signed out → sign in → back on the booking, `public-pages.spec.ts`) |
+| FR-SCH-02 | Facility profile: services, insurers, hours, doctors, load, admin photos and contacts (no fees, U-01) | P1 | S5 | Both | API, E2E | In progress (public audit 2026-11-07: every doctor and service link opens its page, e2e `public-pages.spec.ts`; photos in a lightbox) |
+| FR-SCH-03 | Public facility pages indexable by search engines | P1 | S5 | Frontend | INS, E2E | In progress (R8: pre-rendered at build time, ADR 0008; public audit 2026-11-07: per-page description, canonical, Open Graph, schema.org Hospital/MedicalClinic/Physician, `prerender.test.tsx`) |
 | FR-SCH-04 | Referral pathway hint for Mutuelle patients | P1 | S5 | Both | BR, CMP | In progress |
 | FR-SCH-05 | Facility calendar: hours, closures, holidays, Umuganda | P1 | S2, S5 | Both | UT, API | In progress |
 | FR-SCH-06 | Doctor weekly templates and exceptions | P1 | S2, S5 | Both | API, CMP | In progress |
@@ -234,7 +234,7 @@ Source: [08 · Billing, payments, insurance](../analysis/08-billing-payments-and
 | FR-BIL-09 | Voids, refunds, credit notes with approval and separation of duties | P1 | S8 | Both | BR, AZ | In progress |
 | FR-BIL-10 | Shift open/close with expected vs counted totals | P1 | S8, W4 | Both | BR | In progress (W4: end-of-shift summary by payment method) |
 | FR-BIL-11 | Exemptions and waivers with approval thresholds | P1 | S8 | Both | BR | In progress |
-| FR-BIL-12 | Unpaid balances per patient per facility | P1 | S8 | Both | API, RLS | In progress |
+| FR-BIL-12 | Unpaid balances per patient per facility | P1 | S8 | Both | API, RLS | In progress (patient My bills and overview reminder, `bills.test.tsx`; staging S8-I1 open) |
 | FR-BIL-13 | Optional EBM receipt number on payments | P1 | S8 | Both | API | In progress |
 | FR-BIL-14 | Monthly insurance claim list with claim status | P2 | W4 (#203) | Both | API | In progress (CSV and PDF; paid or rejected with a reason; electronic submission stays FR-BIL-18) |
 | FR-BIL-15 | Platform subscriptions, invoices, grace and listing rules | P2 | — | Both | BR | Not started |
@@ -269,16 +269,16 @@ Source: [10 · Disputes, complaints, support](../analysis/10-disputes-complaints
 
 | ID | Requirement (short) | Phase | Sprint | Side | Verification | Status |
 |---|---|---|---|---|---|---|
-| FR-DSP-01 | Raise a dispute from an item, with context and audit events | P1 | S10 | Both | API, E2E | In progress (S10b backend) |
-| FR-DSP-02 | Dispute types, routing and escalation | P1 | S10 | Backend | BR | In progress (S10b backend) |
-| FR-DSP-03 | Lifecycle with deadlines and auto-escalation | P1 | S10 | Backend | BR | In progress (S10b backend) |
-| FR-DSP-04 | Thread, internal notes, staff comments | P1 | S10 | Both | AZ, API | In progress (S10b backend) |
-| FR-DSP-05 | Evidence view of the audit trail | P1 | S10 | Both | API | In progress (S10b backend) |
-| FR-DSP-06 | Outcomes create linked actions | P1 | S10 | Backend | BR | In progress (S10b backend) |
-| FR-DSP-07 | Disagreement statement attached when correction is refused | P1 | S10 | Both | API | In progress (S10b backend) |
-| FR-DSP-08 | Conflict of interest; one-person facility to super admin | P1 | S10 | Backend | BR | In progress (S10b backend) |
-| FR-DSP-09 | Disputes raised by guardians and at the counter | P1 | S10 | Both | AZ, API | In progress (S10b backend) |
-| FR-DSP-10 | Abuse protection: limits, duplicates, flags | P1 | S10 | Backend | BR | In progress (S10b backend) |
+| FR-DSP-01 | Raise a dispute from an item, with context and audit events | P1 | S10 | Both | API, E2E | In progress (S10b backend and screens on mocks; staging open) |
+| FR-DSP-02 | Dispute types, routing and escalation | P1 | S10 | Backend | BR | In progress (S10b backend and screens on mocks; staging open) |
+| FR-DSP-03 | Lifecycle with deadlines and auto-escalation | P1 | S10 | Backend | BR | In progress (S10b backend and screens on mocks; staging open) |
+| FR-DSP-04 | Thread, internal notes, staff comments | P1 | S10 | Both | AZ, API | In progress (S10b backend and screens on mocks; staging open) |
+| FR-DSP-05 | Evidence view of the audit trail | P1 | S10 | Both | API | In progress (S10b backend and screens on mocks; staging open) |
+| FR-DSP-06 | Outcomes create linked actions | P1 | S10 | Backend | BR | In progress (S10b backend and screens on mocks; staging open) |
+| FR-DSP-07 | Disagreement statement attached when correction is refused | P1 | S10 | Both | API | In progress (S10b backend and screens on mocks; staging open) |
+| FR-DSP-08 | Conflict of interest; one-person facility to super admin | P1 | S10 | Backend | BR | In progress (S10b backend and screens on mocks; staging open) |
+| FR-DSP-09 | Disputes raised by guardians and at the counter | P1 | S10 | Both | AZ, API | In progress (S10b backend and screens on mocks; staging open) |
+| FR-DSP-10 | Abuse protection: limits, duplicates, flags | P1 | S10 | Backend | BR | In progress (S10b backend and screens on mocks; staging open) |
 | FR-DSP-11 | Help center, support requests and the public Contact page inbox | P1 | S10 (part 1) | Both | API, E2E | In progress |
 | FR-DSP-12 | Ratings with one reply, moderation, completed-visit rule | P2 | — | Both | BR | Not started |
 | FR-DSP-13 | Complaints flow | P2 | — | Both | API | Not started |

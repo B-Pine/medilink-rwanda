@@ -63,6 +63,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               here: here.point,
               selected: _selected,
               onPin: (f) => _select(list, list.indexOf(f), fromPin: true),
+              // Under the top bar (8 + 48 + 8), clear of the cards at the bottom.
+              attributionTop: Space.sm + 48 + Space.xs,
             ),
           ),
           Positioned(
@@ -105,16 +107,15 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             Positioned(
               left: 0,
               right: 0,
-              // Above the map attribution line.
-              bottom: MediaQuery.paddingOf(context).bottom + Space.xl + Space.sm,
-              height: 272,
+              bottom: MediaQuery.paddingOf(context).bottom + Space.lg,
+              height: 160 + context.scaled(112),
               child: PageView.builder(
                 controller: _pages,
                 itemCount: list.length,
                 onPageChanged: (i) => _select(list, i),
                 itemBuilder: (context, i) => Padding(
                   padding: const EdgeInsets.symmetric(horizontal: Space.xs + 2),
-                  child: FacilityMiniCard(facility: list[i]),
+                  child: FacilityMiniCard(facility: list[i], raised: true),
                 ),
               ),
             ),
@@ -151,8 +152,8 @@ class _RoundButton extends StatelessWidget {
               width: 48,
               height: 48,
               child: busy
-                  ? const Center(child: DefaultTextStyle(style: TextStyle(color: Palette.brand), child: LoadingDots()))
-                  : Icon(icon, color: Palette.forest),
+                  ? Center(child: DefaultTextStyle(style: TextStyle(color: Palette.brand), child: LoadingDots()))
+                  : Icon(icon, color: Palette.forestInk),
             ),
           ),
         ),

@@ -284,7 +284,7 @@ function Attention({ data }: { data: Operations }) {
     },
     n("disputes_open") > 0 && {
       key: "disputes",
-      to: "/support",
+      to: "/disputes",
       icon: Scales,
       urgent: false,
       label: t("queue.ops.disputesOpen", { count: n("disputes_open") }),

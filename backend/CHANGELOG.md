@@ -8,6 +8,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### API image vulnerabilities (2026-11-07, #106)
+
+- Fixed: the runtime image no longer carries pip (its vendored msgpack, urllib3 and setuptools had
+  fixable high CVEs); the venv's pip is removed after the hash-checked install. the base's
+  Debian packages take their pending security updates (apt, zlib). The image scan in `security.yml` blocks again.
+
 ### Email and Sign in with Google (2026-11-06, upgrade 17)
 
 - Fixed: `GOOGLE_OAUTH_WEB_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_IDS`, `EMAIL_URL` and
@@ -817,6 +823,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   reversal with a reason (`patient_was_present`, `facility_delay`, `other`).
 - No-show job with strikes; jobs and the dev seed; `booking_concurrency_check` (DEBUG only).
 - `TIME_ZONE` is `Africa/Kigali` (was UTC; contract D-8).
+
+### Sprint 6b · Legacy register import (part 2)
+
+- Import a facility's paper register from CSV (contract sprint-06 §3.3 L1, FR-PAT-10): upload
+  (`patient_import`), suggested column mapping (English, Kinyarwanda and French headers), preview
+  with per-row problems (name, sex, dates, Rwandan phone numbers, 16-digit national IDs, file
+  numbers already used) and likely duplicates from the S3 matching; nothing is created before
+  confirm (step-up). Confirm creates patients and facility records in one transaction; rollback
+  within 7 days unless an imported patient has a visit. No patient is notified.
+- Raw rows are encrypted and purged daily after the rollback window (`purge_import_rows`, through
+  the SECURITY DEFINER `patients_import_purge_facilities()`); the preview never holds a national
+  ID. Tables `patients_import_batch` and `patients_import_row` with forced facility RLS.
 
 ### Sprint 6b · Results inbox, scans, back-entry and break-glass (part 1)
 

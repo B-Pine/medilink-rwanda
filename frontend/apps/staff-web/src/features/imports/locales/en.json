@@ -1,0 +1,98 @@
+{
+  "nav": "Import patients",
+  "title": "Import patients",
+  "failed": "Something went wrong. Try again.",
+  "retry": "Try again",
+  "notFound": "Import not found",
+  "earlier": "Earlier imports",
+  "none": "No imports yet",
+  "rows_one": "{{count}} row",
+  "rows_other": "{{count}} rows",
+  "upload": {
+    "label": "Register file (CSV)",
+    "drop": "Drop the CSV here",
+    "browse": "Choose a file",
+    "hint": "One patient per row, a header row first. At most 5 MB and 5,000 rows.",
+    "remove": "Remove",
+    "working": "Uploading…",
+    "scanning": "Checking the file…",
+    "infected": "The file was blocked.",
+    "rejected": "The file was refused.",
+    "tooLarge": "The file is larger than 5 MB.",
+    "wrongType": "Choose a CSV file."
+  },
+  "status": {
+    "uploaded": "Columns to map",
+    "previewed": "Checked",
+    "confirmed": "Imported",
+    "rolled_back": "Rolled back",
+    "failed": "Failed"
+  },
+  "mapping": {
+    "title": "Which column holds what?",
+    "required": "Required",
+    "none": "Not in the file",
+    "check": "Check the rows"
+  },
+  "field": {
+    "full_name": "Full name",
+    "sex": "Sex",
+    "date_of_birth": "Date of birth",
+    "phone": "Phone",
+    "file_number": "File number",
+    "national_id": "National ID"
+  },
+  "count": {
+    "rows": "Rows",
+    "valid": "Ready",
+    "error": "With problems",
+    "duplicate": "Likely duplicates",
+    "created": "Imported"
+  },
+  "confirmHint_one": "{{count}} patient is ready. Rows with problems and likely duplicates are left out.",
+  "confirmHint_other": "{{count}} patients are ready. Rows with problems and likely duplicates are left out.",
+  "nothingReady": "No row is ready. Fix the file or the columns and upload again.",
+  "confirm_one": "Import {{count}} patient",
+  "confirm_other": "Import {{count}} patients",
+  "rollbackHint": "You can undo this import until {{date}}, while no imported patient has a visit.",
+  "rollbackClosed": "This import can no longer be undone.",
+  "rollback": "Undo this import",
+  "rolledBackOn": "Undone on {{date}}.",
+  "done": {
+    "checked": "Rows checked.",
+    "confirmed_one": "{{count}} patient imported.",
+    "confirmed_other": "{{count}} patients imported.",
+    "rolledBack": "Import undone."
+  },
+  "rowsTitle": "Rows",
+  "filter": "Show rows",
+  "filters": {
+    "all": "All",
+    "error": "Problems",
+    "duplicate": "Duplicates",
+    "valid": "Ready"
+  },
+  "col": {
+    "row": "Row",
+    "status": "Status"
+  },
+  "rowStatus": {
+    "pending": "Not checked",
+    "valid": "Ready",
+    "error": "Problem",
+    "duplicate": "Likely duplicate",
+    "created": "Imported",
+    "rolled_back": "Undone"
+  },
+  "problem": {
+    "required": "missing",
+    "invalid": "not valid",
+    "out_of_range": "not possible",
+    "taken": "used twice"
+  },
+  "sex": {
+    "male": "Male",
+    "female": "Female"
+  },
+  "noRows": "No rows here."
+}

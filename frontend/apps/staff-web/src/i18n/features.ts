@@ -43,6 +43,9 @@ import bookingsRw from "../features/bookings/locales/rw.json";
 import clinicalEn from "../features/clinical/locales/en.json";
 import clinicalFr from "../features/clinical/locales/fr.json";
 import clinicalRw from "../features/clinical/locales/rw.json";
+import importsEn from "../features/imports/locales/en.json";
+import importsFr from "../features/imports/locales/fr.json";
+import importsRw from "../features/imports/locales/rw.json";
 // [/S6 imports]
 // [S7 imports]
 import pharmacyEn from "../features/pharmacy/locales/en.json";
@@ -57,6 +60,11 @@ import billingEn from "../features/billing/locales/en.json";
 import billingFr from "../features/billing/locales/fr.json";
 import billingRw from "../features/billing/locales/rw.json";
 // [/S8 imports]
+// [S10b imports]
+import disputesEn from "../features/disputes/locales/en.json";
+import disputesFr from "../features/disputes/locales/fr.json";
+import disputesRw from "../features/disputes/locales/rw.json";
+// [/S10b imports]
 // [S11 imports]
 import consoleEn from "../features/console/locales/en.json";
 import consoleFr from "../features/console/locales/fr.json";
@@ -92,6 +100,7 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   // [/S5]
   // [S6]
   clinical: { rw: clinicalRw, en: clinicalEn, fr: clinicalFr },
+  imports: { rw: importsRw, en: importsEn, fr: importsFr },
   // [/S6]
   // [S7]
   pharmacy: { rw: pharmacyRw, en: pharmacyEn, fr: pharmacyFr },
@@ -100,6 +109,9 @@ export const FEATURE_LOCALES: Record<string, AppResources> = {
   // [S8]
   billing: { rw: billingRw, en: billingEn, fr: billingFr },
   // [/S8]
+  // [S10b]
+  disputes: { rw: disputesRw, en: disputesEn, fr: disputesFr },
+  // [/S10b]
   // [S11]
   console: { rw: consoleRw, en: consoleEn, fr: consoleFr },
   // [/S11]

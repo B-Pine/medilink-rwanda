@@ -15,6 +15,7 @@ import '../../data/models.dart';
 import '../../data/providers.dart';
 import '../../data/session.dart';
 import '../../ui/band.dart';
+import '../../ui/controls.dart';
 import '../../ui/feedback.dart';
 
 /// The live tracker: the ticket grows into this page. Refreshes every 15 s while open.
@@ -81,7 +82,7 @@ class _TicketScreenState extends ConsumerState<TicketScreen> {
         leading: const BackButton(),
         actions: [
           if (visits.value?.offline ?? false)
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(right: Space.lg),
               child: Icon(PhosphorIconsRegular.wifiSlash, color: Palette.onForestMuted),
             ),
@@ -113,13 +114,13 @@ class _TicketScreenState extends ConsumerState<TicketScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const LiveDot(color: Palette.brand),
+                                LiveDot(color: Palette.brand),
                                 const SizedBox(width: 6),
                                 Text(
                                   called ? s.yourTurn.toUpperCase() : s.ticket.toUpperCase(),
                                   style: theme.textTheme.labelSmall?.copyWith(
                                     letterSpacing: 1.4,
-                                    color: called ? Palette.forest : Palette.muted,
+                                    color: called ? Palette.forestInk : Palette.muted,
                                   ),
                                 ),
                               ],
@@ -127,14 +128,14 @@ class _TicketScreenState extends ConsumerState<TicketScreen> {
                             const SizedBox(height: Space.md),
                             Text(
                               visit.ticket,
-                              style: theme.textTheme.displayLarge?.copyWith(color: Palette.forest),
+                              style: theme.textTheme.displayLarge?.copyWith(color: Palette.forestInk),
                             ),
                             const SizedBox(height: Space.sm),
                             Text(
                               called && visit.servicePoint != null
                                   ? visit.servicePoint!
                                   : s.state(visit.state),
-                              style: theme.textTheme.titleMedium?.copyWith(color: Palette.forest),
+                              style: theme.textTheme.titleMedium?.copyWith(color: Palette.forestInk),
                             ),
                           ],
                         ),
@@ -163,7 +164,7 @@ class _TicketScreenState extends ConsumerState<TicketScreen> {
                     OutlinedButton(
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        side: const BorderSide(color: Palette.forestRaised),
+                        side: BorderSide(color: Palette.forestRaised),
                       ),
                       onPressed: () => _leave(visit),
                       child: Text(s.leaveQueue.replaceAll('?', '')),
@@ -190,15 +191,10 @@ class _Stat extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 350),
-                transitionBuilder: (child, a) => SlideTransition(
-                  position: Tween(begin: const Offset(0, 0.5), end: Offset.zero).animate(a),
-                  child: FadeTransition(opacity: a, child: child),
-                ),
+              Rolling(
+                value: value,
                 child: Text(
                   value,
-                  key: ValueKey(value),
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         color: accent ? Palette.ochre : Colors.white,
                       ).tabular,

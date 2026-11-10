@@ -1,6 +1,5 @@
 import type { FacilityResult } from "@medilink/api-client";
 import {
-  ArrowRight,
   Eye,
   FirstAidKit,
   Flask,
@@ -12,13 +11,13 @@ import {
   Stethoscope,
   Tooth,
 } from "@phosphor-icons/react";
-import { Button, cx, Skeleton, type MapPoint } from "@medilink/ui";
+import { Button, cx, SegmentedControl, Skeleton, StatusPill, type MapPoint } from "@medilink/ui";
 import { lazy, Suspense, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
 import { FacilityBuilding } from "./buildings";
-import { pinKind } from "../booking/discovery";
+import { day, pinKind, time } from "../booking/discovery";
 import { env } from "../../env";
 import { insurerNames, MapCard, useWide, waitText } from "../booking/Places";
 
@@ -62,30 +61,18 @@ export function WaitMeter({ result, className }: { result: FacilityResult; class
   );
 }
 
-/** Open, busy or closed: a word in a soft pill with a mark, never colour alone. */
+/** Open, busy or closed: the shared status pill, a word and a dot, never colour alone. */
 function Status({ result }: { result: FacilityResult }) {
   const { t } = useTranslation();
   const busy = result.open_now && result.queue_load === "high";
   return (
-    <span
-      className={cx(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-caption font-semibold",
-        !result.open_now
-          ? "bg-subtle text-fg-secondary"
-          : busy
-            ? "bg-attention-bg text-attention"
-            : "bg-success-bg text-success",
-      )}
+    <StatusPill
+      tone={!result.open_now ? "closed" : busy ? "busy" : "open"}
+      live={result.open_now && !busy}
+      className="bg-surface"
     >
-      <span
-        aria-hidden="true"
-        className={cx(
-          "size-1.5 rounded-full",
-          !result.open_now ? "bg-fg-muted" : busy ? "bg-attention-solid" : "bg-success",
-        )}
-      />
       {!result.open_now ? t("site.card.closed") : busy ? t("site.card.busy") : t("site.card.open")}
-    </span>
+    </StatusPill>
   );
 }
 
@@ -101,15 +88,15 @@ export function FacilityEntry({
   result,
   selected = false,
   onActivate,
-  onShowOnMap,
+  headingLevel = 3,
 }: {
   result: FacilityResult;
+  /** 2 when the list sits right under the page's <h1>, so no heading level is skipped. */
+  headingLevel?: 2 | 3;
   /** Its pin is selected on the map beside. */
   selected?: boolean;
   /** Pointer or focus on the row: the map highlights the pin. */
   onActivate?: () => void;
-  /** "Show on map" (only when the facility has coordinates). */
-  onShowOnMap?: () => void;
 }) {
   const { t, i18n } = useTranslation();
   const lang = i18n.resolvedLanguage ?? "rw";
@@ -117,8 +104,17 @@ export function FacilityEntry({
   const insurers = insurerNames(result.insurers, t);
   const place = [result.sector, result.district].filter(Boolean).join(", ");
   const join = result.allows_remote_join && result.open_now;
-  const book = Boolean(result.next_slot_at);
+  // closed now: no "Book a time" on the card, the next free time instead (the facility page books)
+  const book = Boolean(result.next_slot_at) && result.open_now;
+  const nextTime =
+    !result.open_now && result.next_slot_at
+      ? t("site.card.nextTime", {
+          day: day(result.next_slot_at, lang, "short"),
+          time: time(result.next_slot_at, lang),
+        })
+      : "";
   const more = insurers.length - SHOWN_INSURERS;
+  const Heading = headingLevel === 2 ? "h2" : "h3";
   return (
     // Pointer and focus only highlight the map pin; the links and buttons inside are the controls.
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
@@ -137,7 +133,7 @@ export function FacilityEntry({
           className="ml-card-art size-full"
           style={{ viewTransitionName: `facility-art-${result.slug}` }}
         />
-        <span className="absolute top-3 left-3 rounded-full shadow-e1">
+        <span className="absolute top-3 left-3">
           <Status result={result} />
         </span>
       </div>
@@ -149,7 +145,7 @@ export function FacilityEntry({
           </span>
           {t(`booking.types.${result.type}`, { defaultValue: result.type })}
         </p>
-        <h3
+        <Heading
           id={`place-${result.slug}`}
           className="m-0 font-heading text-[1.1875rem] leading-snug font-bold text-balance"
         >
@@ -161,7 +157,7 @@ export function FacilityEntry({
           >
             {result.name}
           </Link>
-        </h3>
+        </Heading>
         {(place || result.distance_km !== null) && (
           <p className="m-0 -mt-1 inline-flex flex-wrap items-center gap-x-1.5 text-body-sm text-fg-secondary">
             <MapPin aria-hidden="true" weight="duotone" className="size-4 shrink-0 text-fg-muted" />
@@ -206,37 +202,25 @@ export function FacilityEntry({
         </p>
       </div>
 
-      {/* the controls sit above the card's link layer */}
-      <div className="relative z-10 flex items-center gap-2 border-t border-hairline px-5 py-3.5">
-        {(join || book) && (
-          <Link
-            to={`/book/${result.slug}`}
-            viewTransition
-            className="group inline-flex min-h-10 items-center gap-1.5 rounded-full bg-surface px-4 text-body-sm font-semibold whitespace-nowrap text-link no-underline shadow-e1 transition-[box-shadow,background-color] duration-200 hover:bg-brand-subtle/50 hover:shadow-e2"
-          >
-            {join ? t("booking.facility.join") : t("booking.facility.book")}
-            <ArrowRight
-              aria-hidden="true"
-              className="size-4 transition-transform duration-150 ease-out-quint group-hover:translate-x-0.5"
-            />
-          </Link>
-        )}
-        {onShowOnMap && result.lat !== null && result.lng !== null && (
-          <button
-            type="button"
-            onClick={onShowOnMap}
-            aria-label={`${t("site.home.showOnMap")}: ${result.name}`}
-            title={t("site.home.showOnMap")}
-            className="grid size-10 shrink-0 cursor-pointer place-items-center rounded-full bg-surface text-fg-secondary shadow-e1 transition-[box-shadow,color] duration-200 hover:text-primary hover:shadow-e2"
-          >
-            <MapTrifold aria-hidden="true" className="size-[1.125rem]" />
-          </button>
-        )}
-        <ArrowRight
-          aria-hidden="true"
-          className="ml-auto size-5 text-fg-muted transition-[transform,color] duration-200 ease-out-quint group-hover/row:translate-x-1 group-hover/row:text-primary"
-        />
-      </div>
+      {/*
+       * one next step: the whole card opens the facility; the one button above the card's link
+       * layer joins or books while it is open, or the next free time says when it can
+       */}
+      {(join || book || nextTime) && (
+        <div className="relative z-10 flex min-h-14 items-center gap-3 border-t border-hairline px-5 py-2.5">
+          {join || book ? (
+            <Link
+              to={`/book/${result.slug}`}
+              viewTransition
+              className="ml-press inline-flex min-h-11 items-center rounded-full bg-primary px-4 text-body-sm font-semibold whitespace-nowrap text-on-primary no-underline transition-colors duration-150 hover:bg-primary-hover"
+            >
+              {join ? t("booking.facility.join") : t("booking.facility.book")}
+            </Link>
+          ) : (
+            <span className="text-body-sm text-fg-secondary tabular-nums">{nextTime}</span>
+          )}
+        </div>
+      )}
     </li>
   );
 }
@@ -248,15 +232,15 @@ export function FacilityEntries({
   loading,
   selected,
   onSelect,
-  onShowOnMap,
   className,
+  headingLevel,
 }: {
   label: string;
   rows: FacilityResult[];
   loading: boolean;
+  headingLevel?: 2 | 3;
   selected?: string | null;
   onSelect?: (slug: string) => void;
-  onShowOnMap?: (slug: string) => void;
   className?: string;
 }) {
   const { t } = useTranslation();
@@ -287,9 +271,9 @@ export function FacilityEntries({
           <FacilityEntry
             key={result.slug}
             result={result}
+            headingLevel={headingLevel}
             selected={selected === result.slug}
             onActivate={onSelect && (() => onSelect(result.slug))}
-            onShowOnMap={onShowOnMap && (() => onShowOnMap(result.slug))}
           />
         ))}
       </ul>
@@ -315,7 +299,10 @@ export function FacilityExplorer({
   near = null,
   empty,
   switchable = false,
+  headingLevel,
 }: {
+  /** See FacilityEntry: 2 right under the page's <h1>. */
+  headingLevel?: 2 | 3;
   label: string;
   rows: FacilityResult[];
   loading: boolean;
@@ -372,28 +359,24 @@ export function FacilityExplorer({
   return (
     <div className="flex flex-col gap-4">
       {/* phones and tablets: one view at a time */}
-      <div
-        role="group"
-        aria-label={t("home.view.label")}
-        className={cx("flex self-start rounded-full bg-subtle p-1", besides && "lg:hidden")}
-      >
-        {(["list", "map"] as const).map((key) => (
-          <button
-            key={key}
-            type="button"
-            aria-pressed={view === key}
-            onClick={() => setView(key)}
-            className="inline-flex min-h-10 cursor-pointer items-center gap-1.5 rounded-full px-4 text-body-sm font-semibold text-fg-secondary transition-[background-color,color,box-shadow] duration-200 ease-out-quint hover:text-fg aria-pressed:bg-surface aria-pressed:text-fg aria-pressed:shadow-e1"
-          >
-            {key === "list" ? (
-              <ListIcon aria-hidden="true" className="size-4" />
-            ) : (
-              <MapTrifold aria-hidden="true" className="size-4" />
-            )}
-            {t(`home.view.${key}`)}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl
+        label={t("home.view.label")}
+        value={view}
+        onChange={setView}
+        className={cx("self-start", besides && "lg:hidden")}
+        options={[
+          {
+            value: "list",
+            label: t("home.view.list"),
+            icon: <ListIcon aria-hidden="true" className="size-4" />,
+          },
+          {
+            value: "map",
+            label: t("home.view.map"),
+            icon: <MapTrifold aria-hidden="true" className="size-4" />,
+          },
+        ]}
+      />
       {/* wide screens: the list beside a map that stays in view */}
       <div
         className={cx(
@@ -413,13 +396,9 @@ export function FacilityExplorer({
             label={label}
             rows={rows}
             loading={loading}
+            headingLevel={headingLevel}
             selected={selected}
             onSelect={setSelected}
-            onShowOnMap={(slug) => {
-              setSelected(slug);
-              setView("map");
-              map.current?.scrollIntoView({ block: "nearest" });
-            }}
           />
         </div>
         <div
@@ -431,7 +410,11 @@ export function FacilityExplorer({
           )}
         >
           {inBrowser ? (
-            <Suspense fallback={<Skeleton className="h-[28rem] rounded-panel lg:h-[34rem]" />}>
+            <Suspense
+              fallback={
+                <Skeleton className="h-[28rem] rounded-panel lg:h-[calc(100dvh-7rem)] lg:max-h-[52rem]" />
+              }
+            >
               <FacilityMap
                 points={points}
                 selectedId={selected}
@@ -440,12 +423,12 @@ export function FacilityExplorer({
                 tilesUrl={env.mapTilesUrl}
                 attribution={t("home.mapAttribution")}
                 label={t("home.mapLabel")}
-                className="h-[28rem] overflow-hidden rounded-panel shadow-e2 lg:h-[34rem]"
+                className="h-[28rem] overflow-hidden rounded-panel shadow-e2 lg:h-[calc(100dvh-7rem)] lg:max-h-[52rem]"
                 card={chosen ? <MapCard result={chosen} /> : undefined}
               />
             </Suspense>
           ) : (
-            <Skeleton className="h-[28rem] rounded-panel lg:h-[34rem]" />
+            <Skeleton className="h-[28rem] rounded-panel lg:h-[calc(100dvh-7rem)] lg:max-h-[52rem]" />
           )}
         </div>
       </div>

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../app/theme.dart';
 import 'icons.dart';
@@ -107,6 +108,7 @@ class GroupedRow extends StatelessWidget {
     required this.title,
     this.subtitle,
     this.trailing,
+    this.action,
     this.onTap,
     this.onLongPress,
     this.chevron,
@@ -120,6 +122,9 @@ class GroupedRow extends StatelessWidget {
   final String title;
   final String? subtitle;
   final Widget? trailing;
+
+  /// A text button ("Stop sharing"): on the right, or under the text when the text is large.
+  final Widget? action;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
 
@@ -135,8 +140,9 @@ class GroupedRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final color = danger ? Palette.danger : (enabled ? Palette.ink : Palette.muted);
-    final showChevron = chevron ?? (onTap != null && trailing == null);
+    final showChevron = chevron ?? (onTap != null && trailing == null && action == null);
     final lead = leading ?? (icon == null ? null : Icon(icon, size: 22, color: danger ? Palette.danger : (enabled ? (iconColor ?? Palette.brand) : Palette.muted)));
+    final actionBelow = action != null && context.largeText;
     return InkWell(
       onTap: onTap,
       onLongPress: onLongPress,
@@ -153,18 +159,25 @@ class GroupedRow extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(title, style: theme.textTheme.titleSmall?.copyWith(color: color), maxLines: 2, overflow: TextOverflow.ellipsis),
+                    Text(
+                      title,
+                      style: theme.textTheme.titleSmall?.copyWith(color: color),
+                      maxLines: context.largeText ? 3 : 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                     if (subtitle != null && subtitle!.isNotEmpty) ...[
                       const SizedBox(height: 2),
                       Text(subtitle!, style: theme.textTheme.bodySmall),
                     ],
+                    if (actionBelow) Transform.translate(offset: const Offset(-Space.sm, 0), child: action!),
                   ],
                 ),
               ),
+              if (action != null && !actionBelow) ...[const SizedBox(width: Space.sm), action!],
               if (trailing != null) ...[const SizedBox(width: Space.md), trailing!],
               if (showChevron) ...[
                 const SizedBox(width: Space.sm),
-                const Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.muted),
+                Icon(PhosphorIconsRegular.caretRight, size: 18, color: Palette.muted),
               ],
             ],
           ),
@@ -198,7 +211,7 @@ class Avatar extends StatelessWidget {
           width: size,
           height: size,
           alignment: Alignment.center,
-          decoration: const BoxDecoration(color: Palette.brandSubtle, shape: BoxShape.circle),
+          decoration: BoxDecoration(color: Palette.brandSubtle, shape: BoxShape.circle),
           child: Text(
             initials ?? initialsOf(name),
             style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Palette.brand, fontWeight: FontWeight.w700),
@@ -230,6 +243,11 @@ class GroupedSwitchRow extends StatelessWidget {
   /// It can never change here: the row is muted.
   final bool locked;
 
+  void _toggle(bool on) {
+    HapticFeedback.selectionClick();
+    onChanged!(on);
+  }
+
   @override
   Widget build(BuildContext context) => MergeSemantics(
         child: GroupedRow(
@@ -237,8 +255,8 @@ class GroupedSwitchRow extends StatelessWidget {
           title: title,
           subtitle: subtitle,
           enabled: !locked,
-          onTap: onChanged == null ? null : () => onChanged!(!value),
-          trailing: Switch(value: value, onChanged: onChanged),
+          onTap: onChanged == null ? null : () => _toggle(!value),
+          trailing: Switch(value: value, onChanged: onChanged == null ? null : _toggle),
         ),
       );
 }

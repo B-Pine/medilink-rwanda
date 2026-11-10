@@ -6,11 +6,20 @@ import {
   cx,
   FacilityList,
   FacilityRow,
+  Select,
   type MapPoint,
   Skeleton,
 } from "@medilink/ui";
 import type { TFunction } from "i18next";
-import { lazy, Suspense, useState, useSyncExternalStore, type ReactNode } from "react";
+import {
+  Children,
+  isValidElement,
+  lazy,
+  Suspense,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 
@@ -51,21 +60,75 @@ export function FilterSelect({
   disabled?: boolean;
   children: ReactNode;
 }) {
+  // the shared select (same look in every browser); callers keep writing <option>s
+  const options = Children.toArray(children).flatMap((child) =>
+    isValidElement<{ value?: string; children?: ReactNode }>(child)
+      ? [{ value: String(child.props.value ?? ""), label: textOf(child.props.children) }]
+      : [],
+  );
+  if (disabled) {
+    const current = options.find((o) => o.value === value) ?? options[0];
+    return (
+      <span aria-disabled="true" className={cx(FILTER, "inline-flex items-center opacity-60")}>
+        <span className="sr-only">{label}: </span>
+        {current?.label}
+      </span>
+    );
+  }
   return (
-    <>
-      <label htmlFor={id} className="sr-only">
-        {label}
-      </label>
-      <select
-        id={id}
-        value={value}
-        disabled={disabled}
-        onChange={(event) => onChange(event.target.value)}
-        className={cx(FILTER, value && "border-primary bg-brand-subtle text-on-brand-subtle")}
-      >
-        {children}
-      </select>
-    </>
+    <Select
+      id={id}
+      label={label}
+      hideLabel
+      shape="pill"
+      value={value}
+      onChange={onChange}
+      options={options}
+      className={cx(
+        "min-w-[10rem] [&>button]:min-h-11 [&>button]:text-body-sm [&>button]:font-semibold",
+        value &&
+          "[&>button]:bg-brand-subtle [&>button]:text-on-brand-subtle [&>button]:shadow-[0_0_0_1px_var(--color-primary)]",
+      )}
+    />
+  );
+}
+
+/** The text of an <option>'s children (strings and numbers). */
+function textOf(node: ReactNode): string {
+  return Children.toArray(node)
+    .map((part) => (typeof part === "string" || typeof part === "number" ? String(part) : ""))
+    .join("");
+}
+
+/** Sort: open first, shortest wait, or nearest (once the location is shared). */
+export function SortSelect({
+  id,
+  value,
+  onChange,
+  near,
+}: {
+  id: string;
+  value: Sort;
+  onChange: (value: Sort) => void;
+  near: boolean;
+}) {
+  const { t } = useTranslation();
+  const options: { value: Sort; label: string }[] = [
+    { value: "open", label: t("site.sort.open") },
+    { value: "soonest", label: t("site.sort.soonest") },
+    ...(near ? [{ value: "nearest" as const, label: t("site.sort.nearest") }] : []),
+  ];
+  return (
+    <Select<Sort>
+      id={id}
+      label={t("home.sort.label")}
+      hideLabel
+      shape="pill"
+      value={value === "nearest" && !near ? "open" : value}
+      onChange={onChange}
+      options={options}
+      className="min-w-[11rem] [&>button]:min-h-10 [&>button]:text-body-sm [&>button]:font-semibold"
+    />
   );
 }
 
@@ -80,7 +143,7 @@ export const TYPES = [
   "referral_hospital",
 ] as const;
 
-export type Sort = "soonest" | "nearest" | "name";
+export type Sort = "soonest" | "nearest" | "name" | "open";
 
 const INSURER_KEY_BY_CODE: Record<string, InsurerKey> = Object.fromEntries(
   INSURER_KEYS.filter((key) => INSURER_CODES[key]).map((key) => [INSURER_CODES[key], key]),
@@ -102,6 +165,11 @@ export function sortResults(results: FacilityResult[], sort: Sort): FacilityResu
   const far = (r: FacilityResult) => r.distance_km ?? Number.POSITIVE_INFINITY;
   if (sort === "name") return copy.sort((a, b) => a.name.localeCompare(b.name));
   if (sort === "nearest") return copy.sort((a, b) => far(a) - far(b));
+  if (sort === "open")
+    return copy.sort(
+      (a, b) =>
+        Number(b.open_now) - Number(a.open_now) || soonest(a) - soonest(b) || far(a) - far(b),
+    );
   return copy.sort((a, b) => soonest(a) - soonest(b) || far(a) - far(b));
 }
 
@@ -366,10 +434,6 @@ export function PlacesView({
               loading={false}
               selected={selected}
               onSelect={setSelected}
-              onShowOnMap={(slug) => {
-                setSelected(slug);
-                setView("map");
-              }}
             />
           ) : (
             <FacilityList

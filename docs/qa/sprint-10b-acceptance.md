@@ -2,7 +2,7 @@
 
 Contract: [sprint-10b-disputes.md](../architecture/contracts/sprint-10b-disputes.md) §6 · Pull request: S10 part 2a backend · Releases: none yet
 
-Status: **Open**. The backend is implemented with tests. The screens (S10b-F1..F3) follow in the next pull request. A verifier who did not write the code fills **Verified by**, **Date** and **Result** (QA README §4).
+Status: **Open**. The backend is implemented with tests. The screens (S10b-F1..F3) are built against the mocks (pre-launch cleanup, #263); staging checks remain. A verifier who did not write the code fills **Verified by**, **Date** and **Result** (QA README §4).
 
 | # | Check | Evidence | Verified by | Date | Result |
 |---|---|---|---|---|---|
@@ -14,4 +14,6 @@ Status: **Open**. The backend is implemented with tests. The screens (S10b-F1..F
 | S10b-B6 | Conflict of interest | `test_conflict_of_interest_and_one_person_facility` | | | Pending |
 | S10b-B7 | `no_show_reversed` reverses the strike; pending actions; statement only after a refused correction | `test_no_show_reversed_outcome_removes_the_strike` | | | Pending |
 | S10b-B8 | Forced RLS, append-only, encrypted text, audit IDs only, notices | `tests/test_rls_coverage.py`; description encrypted (raise test); S9 registry checks | | | Pending |
-| S10b-F1..F3 | Screens and mocks | Next pull request | | | Not started |
+| S10b-F1 | patient-web: list, Report a problem from a bill or prescription, thread without internal notes, accept / disagree / reopen once, statement after a refused correction; axe clean | `apps/patient-web/src/features/disputes/disputes.test.tsx` | | | Pass (mocks) |
+| S10b-F2 | staff-web: queue (Open, Overdue, All) with flags; detail with evidence, history, internal notes, comment requests, acknowledge, ask the patient, resolve (outcomes that fit the subject); platform cases and final decision with step-up; axe clean | `apps/staff-web/src/features/disputes/disputes.test.tsx` | | | Pass (mocks) |
+| S10b-F3 | MSW mocks for every endpoint (the backend state machine); `disputes` namespaces in rw/en/fr | `packages/api-client/src/mocks/features/disputes.ts`; `i18n-review.md` | | | Pass |

@@ -66,7 +66,7 @@ class FamilySharing extends ConsumerWidget {
                     icon: mine ? PhosphorIconsFill.paperPlaneRight : PhosphorIconsRegular.usersThree,
                     title: '${r['profile_name'] ?? ''}',
                     subtitle: mine ? '${s.t('sharedWith')} ${r['holder_name'] ?? ''}' : s.t('sharedWithMe'),
-                    trailing: r['can_revoke'] == true
+                    action: r['can_revoke'] == true
                         ? TextButton(
                             style: TextButton.styleFrom(foregroundColor: Palette.danger),
                             onPressed: () async {
@@ -192,7 +192,7 @@ class _InviteSheetState extends ConsumerState<_InviteSheet> {
                   for (final p in profiles)
                     ChoiceChip(
                       label: Text(p.displayName,
-                          style: TextStyle(color: p.patientId == _patientId ? Colors.white : Palette.ink, fontWeight: FontWeight.w600)),
+                          style: TextStyle(color: p.patientId == _patientId ? Palette.onBrand : Palette.ink, fontWeight: FontWeight.w600)),
                       selected: p.patientId == _patientId,
                       showCheckmark: false,
                       selectedColor: Palette.brand,
@@ -211,7 +211,7 @@ class _InviteSheetState extends ConsumerState<_InviteSheet> {
             ),
             if (_error != null) ...[
               const SizedBox(height: Space.md),
-              Text(_error!, style: const TextStyle(color: Palette.danger)),
+              Text(_error!, style: TextStyle(color: Palette.danger)),
             ],
             const SizedBox(height: Space.xl),
             LoadingButton(
@@ -277,7 +277,7 @@ class _AcceptSheetState extends ConsumerState<_AcceptSheet> {
         ),
         if (_error != null) ...[
           const SizedBox(height: Space.md),
-          Text(_error!, style: const TextStyle(color: Palette.danger)),
+          Text(_error!, style: TextStyle(color: Palette.danger)),
         ],
         const SizedBox(height: Space.xl),
         LoadingButton(label: s.t('confirm'), onPressed: _code.text.trim().length >= 4 ? _accept : null),

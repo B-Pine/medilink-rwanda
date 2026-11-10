@@ -21,6 +21,7 @@
     "language": "Ururimi",
     "groups": {
       "care": "Ubuvuzi",
+      "health": "Ubuzima bwanjye",
       "account": "Konti"
     },
     "overview": "Ahabanza",
@@ -39,7 +40,9 @@
       "findCare": "Ubuvuzi",
       "appointments": "Gahunda",
       "records": "Amadosiye"
-    }
+    },
+    "bills": "Inyemezabuguzi",
+    "disputes": "Ibirego"
   },
   "account": {
     "label": "Menyu ya konti ya {{name}}",
@@ -177,7 +180,12 @@
     "open": "Fungura tike",
     "result": "Igisubizo gishya kiriteguye",
     "readResult": "Gisome",
-    "planned": "{{what}} iregereje"
+    "planned": "{{what}} iregereje",
+    "bill": "Usigaje kwishyura {{amount}}",
+    "seeBill": "Reba inyemezabuguzi",
+    "disputeQuestion": "Ivuriro rifite icyo rikubaza ku kirego cyawe",
+    "disputeAnswer": "Ikirego cyawe cyasubijwe",
+    "openDispute": "Fungura"
   },
   "comingUp": {
     "title": "Byateganyijwe n'ivuriro ryawe",

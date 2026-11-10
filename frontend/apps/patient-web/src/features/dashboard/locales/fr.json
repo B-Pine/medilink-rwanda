@@ -21,6 +21,7 @@
     "language": "Langue",
     "groups": {
       "care": "Soins",
+      "health": "Ma santé",
       "account": "Compte"
     },
     "overview": "Accueil",
@@ -39,7 +40,9 @@
       "findCare": "Soins",
       "appointments": "Visites",
       "records": "Dossier"
-    }
+    },
+    "bills": "Factures",
+    "disputes": "Litiges"
   },
   "account": {
     "label": "Menu du compte de {{name}}",
@@ -177,7 +180,12 @@
     "open": "Ouvrir le ticket",
     "result": "Un nouveau résultat est prêt",
     "readResult": "Le lire",
-    "planned": "{{what}} approche"
+    "planned": "{{what}} approche",
+    "bill": "{{amount}} restent à payer",
+    "seeBill": "Voir la facture",
+    "disputeQuestion": "L’établissement vous pose une question sur votre litige",
+    "disputeAnswer": "Votre litige a une réponse",
+    "openDispute": "Ouvrir"
   },
   "comingUp": {
     "title": "Prévu par votre établissement",

@@ -79,7 +79,8 @@
     "clear": "Clear filters"
   },
   "facility": {
-    "notFound": "This facility is not on MediLink",
+    "notFound": "Facility not found",
+    "notFoundReason": "The link may be old, or the facility has left MediLink.",
     "back": "Back to facilities",
     "verified": "Verified",
     "directions": "Directions",
@@ -105,6 +106,9 @@
     "noDescription": "The facility has not added a description yet.",
     "photos": "Photos",
     "photoAlt": "{{name}}, photo {{n}} of {{total}}",
+    "openPhoto": "Open photo {{n}} of {{total}}",
+    "previousPhoto": "Previous photo",
+    "nextPhoto": "Next photo",
     "contact": "Contact",
     "address": "Address",
     "phone": "Phone",
@@ -154,7 +158,9 @@
     "places_other": "{{name}} + {{count}} more"
   },
   "doctor": {
-    "notFound": "This doctor is not listed",
+    "notFound": "Doctor not found",
+    "notFoundReason": "The link may be old, or the doctor no longer works here.",
+    "allDoctors": "All doctors",
     "at": "At {{facility}}",
     "worksIn": "Services",
     "presentDays": "Days at this facility",
@@ -193,7 +199,9 @@
     "jump": "Jump to a category"
   },
   "service": {
-    "notFound": "This service is not in the catalogue",
+    "notFound": "Service not found",
+    "notFoundReason": "The link may be old, or the name has changed.",
+    "allServices": "All services",
     "about": "About this service",
     "aboutGeneric": "A service offered by facilities on MediLink. Ask the facility what the visit involves.",
     "offering": "Facilities offering this service",
@@ -217,36 +225,27 @@
     "title": "How MediLink works",
     "steps": {
       "search": {
-        "title": "Search for healthcare",
-        "body": "Search by service, facility or what you feel."
-      },
-      "select": {
-        "title": "Select a facility",
-        "body": "Compare distance, live waiting time and insurance."
+        "title": "Search",
+        "body": "By service, facility or what you feel."
       },
       "join": {
-        "title": "Join a queue or book",
-        "body": "Join today’s queue or pick an appointment time."
-      },
-      "confirm": {
-        "title": "Receive confirmation",
-        "body": "You get a ticket number or a booking code."
-      },
-      "arrive": {
-        "title": "Arrive and check in",
-        "body": "Reception confirms that you have arrived."
+        "title": "Join or book",
+        "body": "Today's queue, or a time that suits you."
       },
       "follow": {
-        "title": "Follow your visit",
-        "body": "See your place in the queue and when to go in."
+        "title": "Follow your place",
+        "body": "See how many are ahead and when to leave."
+      },
+      "arrive": {
+        "title": "Arrive when it's your turn",
+        "body": "Reception confirms you're there."
       }
     },
     "goodTitle": "Good to know",
     "good": {
-      "noAccount": "No account needed to search.",
+      "noAccount": "No account needed to look.",
       "walkIn": "Walk-ins are still welcome.",
-      "reception": "Reception confirms you've arrived.",
-      "noPhone": "No phone? You get a printed ticket and your number is called."
+      "noPhone": "No smartphone needed: a printed ticket and your number called."
     },
     "start": "Find care now"
   },
@@ -256,7 +255,7 @@
     "callNow": "Call {{number}} now",
     "callNote": "National ambulance service (SAMU)",
     "nearest": "Hospitals near you",
-    "nearestNote": "Places that receive emergencies come first. Use Near me to sort by distance.",
+    "nearestNote": "Facilities that receive emergencies come first. Use Near me to sort by distance.",
     "nearMe": "Near me",
     "none": "No hospitals listed for this area",
     "signsTitle": "Go now if someone has",
@@ -276,7 +275,6 @@
     "none": "No answers match your search",
     "articles": "More help articles",
     "contactTitle": "Still need help?",
-    "contactLead": "Send us a message and we will answer.",
     "contactAction": "Contact support",
     "categories": {
       "finding": {
@@ -335,31 +333,28 @@
         "q2": "I do not receive alerts.",
         "a2": "Allow notifications for MediLink in your browser and turn alerts on in your settings."
       }
-    }
+    },
+    "top": "Most asked",
+    "more": "More questions",
+    "results_one": "{{count}} answer",
+    "results_other": "{{count}} answers"
   },
   "about": {
     "title": "About MediLink",
-    "lead": "Rwanda's health facilities, in one place.",
-    "sections": {
-      "what": {
-        "title": "What MediLink is",
-        "body": "Find facilities, services and doctors. See the wait. Join a queue or book."
+    "body": "MediLink puts Rwanda's health facilities in one place: where they are, what they offer, which insurance they take and how long the wait is now. Patients join a queue or book a time; facilities run their day from the same system.",
+    "facts": {
+      "facilities": "Facilities on MediLink",
+      "languages": {
+        "label": "Languages",
+        "value": "Kinyarwanda, English, Français"
       },
-      "problem": {
-        "title": "The problem it addresses",
-        "body": "No more travelling without knowing if it's open, how long the wait is, or if your insurance works."
+      "data": {
+        "label": "Your data",
+        "value": "Stored in Rwanda, under Law 058/2021"
       },
-      "how": {
-        "title": "How it connects patients and facilities",
-        "body": "Facilities publish hours, services and their live queue. Reception confirms every arrival."
-      },
-      "access": {
-        "title": "Accessible to everyone",
-        "body": "No account to search. Three languages. Works on small phones. No phone? A printed ticket and spoken calls."
-      },
-      "privacy": {
-        "title": "Protecting patient information",
-        "body": "Covered by Rwanda's data protection law (058/2021). Staff see only what your care needs; every access is logged."
+      "account": {
+        "label": "Account",
+        "value": "Only to join a queue or book"
       }
     }
   },
@@ -412,6 +407,7 @@
   },
   "onThisPage": "On this page",
   "card": {
+    "nextTime": "Next time {{day}} {{time}}",
     "open": "Open",
     "busy": "Busy",
     "closed": "Closed now",
@@ -436,22 +432,7 @@
     "facilityCount_one": "{{count}} facility",
     "facilityCount_other": "{{count}} facilities",
     "nearTitle": "Open near you",
-    "howTitle": "From search to seen, in three steps",
     "stepLabel": "Step {{n}}",
-    "steps": {
-      "search": {
-        "title": "Search and compare",
-        "body": "Open now, wait, distance, insurance."
-      },
-      "join": {
-        "title": "Join the queue or book",
-        "body": "Today's queue or a set time."
-      },
-      "arrive": {
-        "title": "Arrive when it's your turn",
-        "body": "Come when you're near the front."
-      }
-    },
     "facilitiesTitle": "Run a calmer waiting room.",
     "facilitiesLead": "Patients see your wait before they come.",
     "facilitiesAction": "MediLink for facilities"
@@ -459,35 +440,21 @@
   "home3": {
     "titleA": "Find the right care,",
     "titleB": "without the long wait.",
-    "openNow_one": "{{count}} place open now",
-    "openNow_other": "{{count}} places open now",
+    "openNow_one": "{{count}} facility open now",
+    "openNow_other": "{{count}} facilities open now",
     "waitingNow_one": "{{count}} person waiting",
     "waitingNow_other": "{{count}} people waiting",
     "live": "Live",
-    "seePlaces": "See the places",
-    "openTitle": "Open right now",
+    "seePlaces": "See the facilities",
+    "openTitle": "Facilities near you",
+    "allClosed": "All facilities are closed now",
+    "nextOpeningToday": "next opening {{time}} at {{name}}",
+    "nextOpening": "next opening {{day}} {{time}} at {{name}}",
     "openLead": "Places on MediLink with their live wait. Tap Near me to sort by distance.",
-    "trustLabel": "What you can count on",
-    "trust": {
-      "noAccount": {
-        "title": "No account to look"
-      },
-      "languages": {
-        "title": "Kinyarwanda, English, Français"
-      },
-      "dataHome": {
-        "title": "Your health data stays in Rwanda"
-      }
-    },
-    "facilityPoints": {
-      "queue": "A live queue patients can follow from home",
-      "bookings": "Bookings and walk-ins in one day plan",
-      "records": "Records, prescriptions and payments in one place"
-    },
     "kpi": {
       "open": "Open now",
-      "openHint_one": "of {{count}} place on MediLink",
-      "openHint_other": "of {{count}} places on MediLink",
+      "openHint_one": "of {{count}} facility on MediLink",
+      "openHint_other": "of {{count}} facilities on MediLink",
       "waiting": "People waiting",
       "typical": "Typical wait",
       "minutes_one": "{{count}} min",
@@ -496,6 +463,35 @@
     "symptoms": {
       "title": "Not sure where to go?",
       "action": "Check your symptoms"
-    }
-  }
+    },
+    "howLine": "New here?"
+  },
+  "filters": {
+    "button": "Filters",
+    "show": "Show results",
+    "active": "Active filters",
+    "remove": "Remove filter: {{name}}"
+  },
+  "sort": {
+    "open": "Open first",
+    "soonest": "Shortest wait",
+    "nearest": "Nearest"
+  },
+  "meta": {
+    "findCare": "Search facilities in Rwanda by service, place and insurance. See who is open and the wait now.",
+    "facilities": "Every health facility on MediLink: open now, live waits, insurance accepted, hours and directions.",
+    "doctors": "Doctors at MediLink facilities: their service, the days they work and where to book.",
+    "services": "Health services on MediLink, from consultations to lab tests, and the facilities that offer them.",
+    "how": "Search, join the queue or book, follow your turn on your phone, arrive when it is nearly time.",
+    "emergency": "Life-threatening emergency in Rwanda: call 912 for SAMU, free, 24 hours. Hospitals with an emergency department.",
+    "help": "Answers about accounts, bookings, the queue, insurance and your records on MediLink.",
+    "about": "MediLink connects patients in Rwanda with health facilities: live waits, queues and bookings in one place.",
+    "contact": "Contact the MediLink team by email or phone.",
+    "accessibility": "How MediLink works with screen readers, keyboards, larger text and slow connections.",
+    "privacy": "What MediLink collects, why, where it is stored and your rights under Rwanda's data protection law.",
+    "terms": "The terms for using MediLink as a patient or a facility.",
+    "forFacilities": "Put your facility on MediLink: live queue, bookings and walk-ins in one day plan, records in one place.",
+    "checkSymptoms": "Answer a few questions to find which service and facility fit your symptoms."
+  },
+  "offline": "You are offline. Showing what was last loaded."
 }

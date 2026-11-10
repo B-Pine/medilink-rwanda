@@ -28,6 +28,7 @@ import { bookingsFeature } from "../features/bookings";
 // [/S5 imports]
 // [S6 imports]
 import { clinicalFeature } from "../features/clinical";
+import { importsFeature } from "../features/imports";
 // [/S6 imports]
 // [S7 imports]
 import { documentsFeature } from "../features/documents";
@@ -36,6 +37,9 @@ import { pharmacyFeature } from "../features/pharmacy";
 // [S8 imports]
 import { billingFeature } from "../features/billing";
 // [/S8 imports]
+// [S10b imports]
+import { disputesFeature } from "../features/disputes";
+// [/S10b imports]
 
 /** What a feature module contributes (each feature lives in `src/features/<feature>/`). */
 export interface FeatureRoutes {
@@ -98,6 +102,7 @@ export const FEATURES: FeatureRoutes[] = [
   // [/S5]
   // [S6]
   clinicalFeature,
+  importsFeature,
   // [/S6]
   // [S7]
   pharmacyFeature,
@@ -106,4 +111,7 @@ export const FEATURES: FeatureRoutes[] = [
   // [S8]
   billingFeature,
   // [/S8]
+  // [S10b]
+  disputesFeature,
+  // [/S10b]
 ];

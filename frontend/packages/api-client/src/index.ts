@@ -38,6 +38,7 @@ export * from "./features/booking";
 // [/S5]
 // [S6]
 export * from "./features/clinical";
+export * from "./features/patient-imports";
 // [/S6]
 // [S7]
 export * from "./features/documents";
@@ -46,6 +47,9 @@ export * from "./features/pharmacy";
 // [S8]
 export * from "./features/billing";
 // [/S8]
+// [S10b]
+export * from "./features/disputes";
+// [/S10b]
 // [S11]
 export * from "./features/console";
 // [/S11]

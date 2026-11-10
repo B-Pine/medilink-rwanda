@@ -1,10 +1,7 @@
-import { ArrowUpRight, Phone, ShieldCheck } from "@phosphor-icons/react";
+import { Phone, ShieldCheck } from "@phosphor-icons/react";
 import { LanguageSwitcher, Logo, ThemeSwitch } from "@medilink/ui";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
-
-/** The brand wordmark: decorative, hidden from assistive tech, the same in every language. */
-const WORDMARK = "MediLink";
 
 const GROUPS = [
   {
@@ -24,24 +21,28 @@ const GROUPS = [
       { to: "/about", key: "footer.about" },
       { to: "/for-facilities", key: "footer.forFacilities" },
       { to: "/verify", key: "footer.verify" },
+    ],
+  },
+  {
+    key: "support",
+    links: [
       { to: "/help", key: "footer.help" },
       { to: "/contact", key: "footer.contact" },
     ],
   },
-  {
-    key: "legal",
-    links: [
-      { to: "/privacy", key: "footer.privacy" },
-      { to: "/terms", key: "footer.terms" },
-      { to: "/accessibility", key: "footer.accessibility" },
-    ],
-  },
+] as const;
+
+/** Legal links sit in the bottom bar, small, beside the copyright. */
+const LEGAL = [
+  { to: "/privacy", key: "footer.privacy" },
+  { to: "/terms", key: "footer.terms" },
+  { to: "/accessibility", key: "footer.accessibility" },
 ] as const;
 
 /**
- * Public footer (second pass, 2026-11-04): a hairline top, the brand column (logo, one line, the
- * 912 line) beside three quiet link columns, a slim bottom bar (copyright, data in Rwanda,
- * language, theme), and the MediLink wordmark set very large and faint as the signature.
+ * Public footer (audit 2026-11-07): the brand (logo, one line, the 912 number once), three short
+ * link groups, and a bottom bar with the legal links, language and theme. Nothing repeats the
+ * header's navigation as a second menu; no giant wordmark.
  */
 export function PublicFooter() {
   const { t } = useTranslation();
@@ -75,10 +76,7 @@ export function PublicFooter() {
           <nav aria-label={t("footer.label")} className="grid grid-cols-2 gap-8 sm:grid-cols-3">
             {GROUPS.map((group) => (
               <div key={group.key} className="flex flex-col gap-3">
-                <h2
-                  id={`footer-${group.key}`}
-                  className="m-0 text-caption font-semibold tracking-[0.12em] text-fg-muted uppercase"
-                >
+                <h2 id={`footer-${group.key}`} className="m-0 text-body-sm font-semibold text-fg">
                   {t(`footer.groups.${group.key}`)}
                 </h2>
                 <ul
@@ -90,13 +88,9 @@ export function PublicFooter() {
                       <Link
                         viewTransition
                         to={link.to}
-                        className="group inline-flex min-h-10 items-center gap-1 text-body-sm text-fg-secondary no-underline transition-colors duration-150 ease-out-quint hover:text-fg"
+                        className="inline-flex min-h-10 items-center text-body-sm text-fg-secondary no-underline transition-colors duration-150 ease-out-quint hover:text-fg"
                       >
                         {t(link.key)}
-                        <ArrowUpRight
-                          aria-hidden="true"
-                          className="size-3.5 -translate-x-1 opacity-0 transition-[opacity,transform] duration-200 ease-out-quint group-hover:translate-x-0 group-hover:opacity-100"
-                        />
                       </Link>
                     </li>
                   ))}
@@ -113,6 +107,22 @@ export function PublicFooter() {
               <ShieldCheck aria-hidden="true" weight="duotone" className="size-4 text-primary" />
               {t("footer.dataInRwanda")}
             </p>
+            <ul
+              aria-label={t("footer.groups.legal")}
+              className="m-0 flex list-none flex-wrap gap-x-4 p-0"
+            >
+              {LEGAL.map((link) => (
+                <li key={link.to}>
+                  <Link
+                    viewTransition
+                    to={link.to}
+                    className="inline-flex min-h-10 items-center text-body-sm text-fg-secondary no-underline hover:text-fg hover:underline"
+                  >
+                    {t(link.key)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
           <div className="flex items-center gap-2">
             <LanguageSwitcher pill />
@@ -120,13 +130,6 @@ export function PublicFooter() {
           </div>
         </div>
       </div>
-      {/* the signature: the wordmark, large and quiet, engraved in one flat tint (upgrade 14 G10) */}
-      <p
-        aria-hidden="true"
-        className="pointer-events-none m-0 px-4 pb-6 text-center font-heading text-[clamp(4rem,13vw,12rem)] leading-[0.9] font-bold tracking-[-0.05em] text-[color-mix(in_srgb,var(--color-primary)_9%,transparent)] select-none"
-      >
-        {WORDMARK}
-      </p>
     </footer>
   );
 }

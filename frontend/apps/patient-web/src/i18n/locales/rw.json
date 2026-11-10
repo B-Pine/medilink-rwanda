@@ -10,7 +10,8 @@
     "logout": "Sohoka",
     "loggingOut": "Urasohoka…",
     "opensInNewTab": "(bifungukira mu idirishya rishya)",
-    "comingSoon": "Biraza vuba"
+    "comingSoon": "Biraza vuba",
+    "close": "Funga"
   },
   "errors": {
     "generic": "Hari ikitagenze neza. Ongera ugerageze.",
@@ -46,6 +47,7 @@
     "closeMenu": "Funga ibikubiyemo",
     "homeLabel": "Ahabanza ha MediLink Rwanda",
     "strip": {
+      "label": "Ubutabazi bwihuse",
       "long": "Ubuzima buri mu kaga?",
       "short": "Byihutirwa?",
       "call": "Hamagara 912",
@@ -76,12 +78,36 @@
       "vaccination": "Inkingo"
     },
     "districts": {
+      "bugesera": "Bugesera",
+      "burera": "Burera",
+      "gakenke": "Gakenke",
       "gasabo": "Gasabo",
-      "kicukiro": "Kicukiro",
-      "nyarugenge": "Nyarugenge",
-      "musanze": "Musanze",
+      "gatsibo": "Gatsibo",
+      "gicumbi": "Gicumbi",
+      "gisagara": "Gisagara",
       "huye": "Huye",
-      "rubavu": "Rubavu"
+      "kamonyi": "Kamonyi",
+      "karongi": "Karongi",
+      "kayonza": "Kayonza",
+      "kicukiro": "Kicukiro",
+      "kirehe": "Kirehe",
+      "muhanga": "Muhanga",
+      "musanze": "Musanze",
+      "ngoma": "Ngoma",
+      "ngororero": "Ngororero",
+      "nyabihu": "Nyabihu",
+      "nyagatare": "Nyagatare",
+      "nyamagabe": "Nyamagabe",
+      "nyamasheke": "Nyamasheke",
+      "nyanza": "Nyanza",
+      "nyarugenge": "Nyarugenge",
+      "nyaruguru": "Nyaruguru",
+      "rubavu": "Rubavu",
+      "ruhango": "Ruhango",
+      "rulindo": "Rulindo",
+      "rusizi": "Rusizi",
+      "rutsiro": "Rutsiro",
+      "rwamagana": "Rwamagana"
     },
     "insurers": {
       "mutuelle": "Mituweli (Mutuelle de Santé)",
@@ -110,11 +136,12 @@
     "copyright": "© {{year}} MediLink Rwanda",
     "about": "Ibyerekeye MediLink",
     "emergency": "Ibyihutirwa",
-    "checkSymptoms": "Suzuma ibimenyetso",
+    "checkSymptoms": "Ntuzi aho wajya?",
     "groups": {
       "explore": "Shakisha",
       "information": "Amakuru",
-      "legal": "Amategeko"
+      "legal": "Amategeko",
+      "support": "Ubufasha"
     },
     "tagline": "Duhuza abantu n’ibigo by’ubuvuzi mu Rwanda hose.",
     "trust": "Shakisha udafite konti. Aho uri bikoreshwa mu gushakisha gusa kandi ntibibikwa.",
@@ -131,6 +158,7 @@
     "dataInRwanda": "Amakuru y'ubuzima abikwa mu Rwanda"
   },
   "authAside": {
+    "label": "Akamaro ka konti",
     "title": "Tegereza igihe gito, ubone umwanya wo gukira.",
     "lead": "Konti imwe yawe n’umuryango wawe, mu kigo cyose kiri kuri MediLink.",
     "points": {
@@ -150,6 +178,14 @@
     "trust": "Amakuru yawe y’ubuzima arinzwe n’itegeko ry’u Rwanda rirengera amakuru bwite, kandi asangizwa gusa ubyemeye."
   },
   "login": {
+    "intent": {
+      "book": "Injira ufate igihe cya {{service}} kuri {{facility}}",
+      "bookAt": "Injira ufate igihe kuri {{facility}}",
+      "bookAny": "Injira ufate igihe",
+      "join": "Injira ujye ku murongo wa {{service}} kuri {{facility}}",
+      "joinAt": "Injira ujye ku murongo kuri {{facility}}",
+      "joinAny": "Injira ujye ku murongo"
+    },
     "title": "Injira cyangwa ufungure konti",
     "intro": "Fata igihe cyo kwivuza wirinde gutegereza igihe kirekire.",
     "email": "Imeyili",
@@ -250,8 +286,8 @@
     "nearYou": "Hafi yawe",
     "locationDenied": "Aho uri ntibibonetse · Hitamo akarere",
     "places": "Aho wavurirwa",
-    "count_one": "Ahantu {{count}}",
-    "count_other": "Ahantu {{count}}",
+    "count_one": "Ikigo {{count}}",
+    "count_other": "Ibigo {{count}}",
     "sort": {
       "label": "Tondeka",
       "soonest": "Uzakirwa vuba",

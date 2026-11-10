@@ -203,7 +203,9 @@ class _Appear extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => TweenAnimationBuilder<double>(
+  Widget build(BuildContext context) => Motion.off(context)
+      ? child
+      : TweenAnimationBuilder<double>(
         tween: Tween(begin: 0, end: 1),
         duration: Duration(milliseconds: 260 + 50 * index.clamp(0, 6)),
         curve: Curves.easeOutCubic,
@@ -291,9 +293,7 @@ class FacilityCard extends StatelessWidget {
     final s = S.of(context);
     final theme = Theme.of(context);
     final wait = facility.waitRange == null ? null : fmt.waitRange(facility.waitRange!.min, facility.waitRange!.max, s);
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
+    return SoftCard(
         onTap: () => context.go('/care/${facility.slug}'),
         onLongPress: () => _menu(context),
         child: Column(
@@ -324,7 +324,7 @@ class FacilityCard extends StatelessWidget {
                   const SizedBox(height: Space.xs),
                   Row(
                     children: [
-                      const Icon(PhosphorIconsRegular.mapPin, size: 16, color: Palette.muted),
+                      Icon(PhosphorIconsRegular.mapPin, size: 16, color: Palette.muted),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
@@ -340,17 +340,18 @@ class FacilityCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: Space.md),
-                  SizedBox(height: 22, child: InsurerPills(codes: facility.insurers)),
+                  SizedBox(height: context.scaled(22), child: InsurerPills(codes: facility.insurers)),
                   if (facility.waiting != null || wait != null) ...[
                     const SizedBox(height: Space.md),
-                    Row(
+                    Wrap(
+                      spacing: Space.sm,
+                      runSpacing: Space.xs,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         if (facility.waiting != null)
                           StatusPill(text: '${facility.waiting} ${s.waiting}', tone: PillTone.ochre),
-                        if (wait != null) ...[
-                          const SizedBox(width: Space.sm),
-                          Text('~$wait', style: theme.textTheme.bodySmall?.copyWith(color: Palette.ochreText)),
-                        ],
+                        if (wait != null)
+                          Text('~$wait', style: theme.textTheme.bodySmall?.copyWith(color: Palette.ochreText).tabular),
                       ],
                     ),
                   ],
@@ -359,7 +360,6 @@ class FacilityCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
     );
   }
 }

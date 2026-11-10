@@ -6,7 +6,45 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 ## [Unreleased]
 
+### 1.1.3 (2026-11-08)
+
+- Fixed: the "+" steps on the profile to-do (details, ID, emergency contact, consent,
+  insurance, allergies) did nothing; each opens the form for that step. The allergies step also
+  offers "I have no known allergies".
+
+### 1.1.2 (2026-11-07)
+
+Everything the patient dashboard on the website shows, the app shows too:
+
+- Added: Me → **Bills**: what is left to pay, bills with a balance first; each bill with its
+  items (insurance and your share), payments and receipt numbers.
+- Added: Me → **Disputes**: Report a problem from a bill or a prescription, follow the
+  facility's answer, reply, accept, disagree (sent to MediLink) or reopen once, and add your
+  statement after a refused correction.
+- Added: tap a record for the visit: diagnoses in plain words, what to do, vitals and later
+  additions.
+- Added: tap a prescription for the code to show at the pharmacy and each medicine in words
+  (dose, how often, how long, what was given, instructions).
+- Added: tap a document to open it (a 5-minute link from the API, in the phone's viewer).
+- Changed: notification links open the bill, dispute, record or prescription they are about.
+- All new text in Kinyarwanda, English and French.
+
+### 1.1.1 (2026-11-07)
+
+- Added: Me → Settings → Appearance: Like the phone (default), Light or Dark. The choice is
+  kept on the phone.
+- Changed: dark mode uses neutral charcoal instead of dark green; green stays for buttons,
+  links and accents.
+- Changed: in dark mode the facility drawings are shown at night (dark sky and walls, dim
+  windows) instead of the bright day drawing.
+
+### 1.1.0 (2026-11-07)
+
 Design polish (#260), no API or data changes:
+
+- Added: dark mode. The app follows the phone's light or dark setting, like the staff website,
+  with the website's dark colours (forest surfaces, light text, light-green buttons with dark
+  text). The facility drawings and map tiles keep their colours.
 
 - Changed: three depth levels only. Cards are white with a hairline and no shadow; only what
   floats over content (the card over the band, the map overlays, sheets) has one soft shadow.
@@ -32,6 +70,29 @@ Design polish (#260), no API or data changes:
 - Fixed: the doctor's days show the full day names, "Here" on their days and "Today" on today.
 - Fixed: Family "Stop sharing" is a labelled action (it asks first, as before).
 - Fixed: facility cards allow two lines for the name and put the wait on its own line.
+- Fixed: Home ticket and next-visit cards no longer cut the facility name; the wait sits on its
+  own line under it.
+- Changed: Home quick actions are plain icons with one-line labels in a single card (no boxed
+  tiles); "Near you" cards keep 16 px at both ends, the next card peeks, and the title and
+  "See all" line up with the cards.
+- Fixed: the OpenStreetMap credit stays visible on the map (top right, under the bar) and also
+  shows on the Home map preview, as the licence asks.
+- Fixed: back arrows on the doctor and facility pages are the app's own icon on a white circle.
+- Changed: cards and quick actions shrink slightly while pressed (no ink ripple); rows tint
+  softly; primary buttons darken. Toggles, chips and main buttons give a light tap.
+- Changed: one page transition everywhere (the new page slides in a little and fades in).
+- Changed: people ahead and wait times roll into place when they change (Home ticket, ticket
+  page); a facility's drawing flies from the Care list into its page.
+- Changed: every animation, including loading dots and the live dot, stops when the phone's
+  "remove animations" setting is on.
+- Added: French. Choose Français in Me → Settings or on the sign-in screen; dates, days and the
+  date picker follow, and an account set to French opens the app in French. (Wording needs a
+  native-speaker check.)
+- Fixed: large text (1.3x, 1.6x) no longer cuts or overlaps: card heights, insurer pills and the
+  doctor header grow with the text, quick actions go two by two, facility actions stack, a long
+  sub-page title wraps, and "Stop sharing" moves under the name.
+- Fixed: every tap target is at least 48 × 48 (notifications bell, family switcher, segments).
+- Checked: all text colours reach 4.5:1 on their backgrounds (now a test).
 
 ### 1.0.8 (2026-11-06)
 

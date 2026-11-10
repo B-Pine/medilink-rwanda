@@ -34,7 +34,7 @@ describe("symptom checker (PT-F3)", () => {
 
     expect(await screen.findByText("See a clinician today")).toBeInTheDocument();
     expect(screen.getByText("A fever needs a malaria test the same day.")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /See places near me/ })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /See facilities near me/ })).toHaveAttribute(
       "href",
       "/find-care?service=general",
     );
@@ -46,13 +46,35 @@ describe("symptom checker (PT-F3)", () => {
 });
 
 describe("information pages (PT-F4, PT-F5)", () => {
-  it("about explains what MediLink is, section by section", async () => {
+  it("about is one paragraph and the facts; the journey stays on How it works", async () => {
     const { container } = renderApp("/about");
     expect(
       await screen.findByRole("heading", { level: 1, name: "About MediLink" }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "What MediLink is" })).toBeInTheDocument();
+    expect(screen.getByText(/puts Rwanda's health facilities in one place/)).toBeInTheDocument();
+    expect(screen.getByText("Stored in Rwanda, under Law 058/2021")).toBeInTheDocument();
+    expect(
+      within(screen.getByRole("main")).getByRole("link", { name: /how it works/i }),
+    ).toHaveAttribute("href", "/how-it-works");
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("how it works tells the journey in four steps, then what is good to know", async () => {
+    renderApp("/how-it-works");
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "How MediLink works" }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole("heading", { level: 2, name: /^Step \d/ })).toHaveLength(4);
+    expect(screen.getByText("Walk-ins are still welcome.")).toBeInTheDocument();
+  });
+
+  it("help shows the most asked answers in view and folds the rest", async () => {
+    const { user } = renderApp("/help");
+    const top = await screen.findByRole("region", { name: "Most asked" });
+    expect(within(top).getAllByRole("definition")).toHaveLength(5);
+    expect(screen.getByRole("region", { name: "More questions" })).toBeInTheDocument();
+    await user.type(screen.getByLabelText("Search help"), "zzzz-nothing");
+    expect(await screen.findByText("0 answers")).toBeInTheDocument();
   });
 
   it("a service page shows the description written in master data", async () => {
@@ -98,14 +120,15 @@ describe("information pages (PT-F4, PT-F5)", () => {
 describe("care near you on the home page (PT-F1)", () => {
   it("the home page lists facilities with the live queue and accepted insurers", async () => {
     const { container } = renderApp("/");
-    const section = await screen.findByRole("region", { name: "Open right now" });
-    const list = await within(section).findByRole("list", { name: "Open right now" });
+    // named for what it holds at any hour: open places first, closed ones too (audit 2026-11-07)
+    const section = await screen.findByRole("region", { name: "Facilities near you" });
+    const list = await within(section).findByRole("list", { name: "Facilities near you" });
     const rows = within(list).getAllByRole("heading", { level: 3 });
     expect(rows.length).toBeGreaterThan(0);
     expect(within(section).getAllByText(/RAMA/).length).toBeGreaterThan(0);
-    expect(screen.getByRole("link", { name: "View all facilities" })).toHaveAttribute(
+    expect(within(rows[0]!).getByRole("link")).toHaveAttribute(
       "href",
-      "/facilities",
+      expect.stringMatching(/^\/facilities\//),
     );
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -119,7 +142,7 @@ describe("care near you on the home page (PT-F1)", () => {
     const footer = screen.getByRole("navigation", { name: "Site links" });
     for (const [name, href] of [
       ["About MediLink", "/about"],
-      ["Check symptoms", "/check-symptoms"],
+      ["Not sure where to go?", "/check-symptoms"],
     ]) {
       expect(within(footer).getByRole("link", { name })).toHaveAttribute("href", href);
     }

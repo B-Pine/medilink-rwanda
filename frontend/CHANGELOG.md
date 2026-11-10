@@ -9,6 +9,143 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Assistant back, all 30 districts, sidebar groups you can hide (2026-11-08)
+
+- Fixed: the AI assistant is back on the public site (the floating button, `/assistant` and the
+  link on the symptom checker). It is on by default; `VITE_PUBLIC_ASSISTANT=false` hides it.
+- Fixed: the district choice on the home page, Find care and the directories listed 6 districts;
+  it lists all 30 (NISR codes, A to Z).
+- Added: the patient and staff sidebars are in groups (patient: Care, My health, Account; staff:
+  Work, Practice, Manage, Platform). Each group's title hides or shows its links; the choice is
+  kept on the device (`medilink.navHidden`), and a hidden group opens again when its page is
+  opened. `NavGroup` in `@medilink/ui`.
+
+### Dark mode like the app, cards that read as cards (2026-11-07)
+
+- Changed: dark mode on both web apps uses the patient app's palette (`mobile/lib/app/theme.dart`):
+  neutral charcoal (page #111315, cards #1b1e21, lines #2d3135) instead of green-tinted
+  charcoal; green only for actions and accents. Browser theme colour follows.
+- Fixed: in light mode the dashboards' cards blended into the page. The page is now a clear step
+  below white (#eef2ef), card edges are stronger, and the patient dashboard's panels take the
+  soft card shadow (as the staff app's).
+- Fixed: the overview's dispute reminder said "Open ticket"; it says "Open".
+
+### Pre-launch cleanup (2026-11-07)
+
+- Added: **disputes** screens (S10b-F1..F3, FR-DSP-01..10). Patients: Disputes list; "Report a
+  problem" on a bill and a prescription; the thread (never the facility's internal notes);
+  accept, disagree (sent to MediLink) and reopen once; a statement after a refused correction; an
+  overview reminder when a dispute waits for an answer. Staff (`disputes.handle`): the queue (Open,
+  Overdue, All) with flagged patients; a dispute with its audit trail, history, internal notes,
+  comment requests, acknowledge, ask the patient, and resolve with only the outcomes that fit the
+  subject; a colleague asked for a comment answers in place. Platform: escalated cases and the
+  final decision (step-up). The Command centre's "Escalated disputes" and the facility Operations
+  "disputes open" now open these screens (were a dead counter and the Help page). API client
+  `disputes` module and MSW mocks with the backend's state machine.
+- Added: **Import patients** (S6-F7, FR-PAT-10) at `/settings/patient-import` for members with
+  `records.import`: upload a register CSV (scanned), columns suggested from the header row, check
+  every row (problems per field, likely duplicates; nothing created), import the ready rows
+  (step-up), undo within 7 days while no imported patient has a visit; earlier imports listed.
+  API client `patientImports` and MSW mocks that parse the real file with the backend's rules.
+
+- Added: patient **Bills** (S8-F6, FR-BIL-12) at `/dashboard/bills`: what is left to pay across
+  facilities, bills with a balance first, then the newest; the bill with its lines (insurer and
+  patient share), payments and receipt numbers; an overview reminder for each unpaid bill. In the
+  sidebar, the phone More menu and search; `/bills` redirects. API client `billing.patient` and
+  mocks for PB1 and PB2 (stable ids, two earlier bills at other facilities).
+- Fixed: eight screens showed English day and month names on Kinyarwanda screens (doctor days,
+  legal page date, receipt, payment times, claims, shift summary, doctor's day, console); they use
+  `dateFormat()` now (#9).
+
+### Public site audit, phase 5: quality bar (2026-11-07)
+
+- Changed: the public pages and the patient dashboard follow the system dark mode (as the staff
+  app); Settings can still pin light or dark. The map credit and the hero words read in both.
+- Added: each page has its own search description (rw/en/fr), a canonical address and Open Graph
+  tags; facility pages carry schema.org `Hospital` or `MedicalClinic` data and doctor pages
+  `Physician` (static facts only, no waits or times). `VITE_SITE_URL` sets the canonical origin.
+- Added: How it works, Help, Privacy, Terms and Accessibility are pre-rendered with their tags.
+- Added: an offline line on the public pages, as in the dashboard.
+- Fixed: the document check said nothing when sent empty; it now shows an inline error, and the
+  details request can't be sent twice.
+- Changed: the assistant button's code loads only when the public assistant is on (108 kB less
+  on every public page).
+- Tests: e2e search → facility → book signed out → sign in → back on the booking; the home page
+  when everything is closed; the phone menu (Escape, focus return, no sideways scroll).
+
+### Public site audit, phase 4: page by page (2026-11-07)
+
+- Changed: Find care and Facilities share one filter bar: search and place; filters inline on wide
+  screens and in a Filters sheet on phones; removable active-filter chips; the count; sort by open
+  first, shortest wait or nearest. Both show the same cards beside a full-height map.
+- Changed: the facility page opens on the forest band (drawing, status, Directions, Join or Book;
+  Join only while open). Today is a compact table; insurance has its own section of chips; doctors
+  are whole-row links; on phones Join or Book sits in a bar at the bottom.
+- Changed: doctors are compact rows on phones; services fill the width in three columns; For
+  facilities has a short hero, three benefits, four steps and the first answer open; Emergency puts
+  "Call 912" first and largest; the home headline fits two lines.
+- Changed: the header shows the emergency strip on wide screens and one emergency button on phones;
+  the menu is a full-height sheet with a focus trap. Sign-in pages use the RW / EN / FR code select,
+  so nothing is cut off at 390 px.
+- Changed: "facility" instead of "place" in counts and labels (en, fr, rw).
+
+### Public site audit, phase 3: say each thing once (2026-11-07)
+
+- Changed: the patient journey is told once, on How it works: four steps with drawings (search,
+  join or book, follow your place, arrive), then three "Good to know" points. Home drops its
+  three-step band and trust strip for one line ("New here? How MediLink works"); About is one
+  paragraph and the facts (live facility count, languages, data in Rwanda, when an account is
+  needed).
+- Changed: home is four bands: hero, kinds of care, facilities near you, and a slim For facilities
+  band with one line and one button.
+- Changed: Help opens with the search, then the five most asked questions with their answers in
+  view; the rest are grouped and folded. While searching, every match shows its answer.
+- Changed: the footer has three short groups (Explore, Information, Help); legal links sit in the
+  bottom bar; no hover arrows. "Check symptoms" is named "Not sure where to go?" everywhere.
+- Changed: the AI assistant is off the public site (`VITE_PUBLIC_ASSISTANT`, off by default): it
+  runs on a test model. `/assistant` opens the guided questions; the floating button and the
+  "Try the AI assistant" link are hidden. Signed-in patients keep it in the dashboard.
+- Changed: shorter leads on For facilities and the symptom checker.
+
+### Public site audit, phase 2: one design system with the app (2026-11-07)
+
+- Changed: the public site uses the patient app's system. Radii are 8 / 12 / 20; cards are white
+  with a hairline and no shadow, and only floating things (menus, sheets, the map card) cast one
+  soft shadow; the type scale has six steps (body 16 px, h1 32 px) with tabular figures for
+  numbers. Pre-rendered pages carry the site scale, so nothing shifts on load.
+- Added (`@medilink/ui`): `StatusPill`, `SegmentedControl`, `Select` (replaces native selects),
+  `Sheet`, `Accordion` (first answer open), `GroupedList`, `StickyActionBar`.
+- Changed: Find care, Facilities, Doctors, Services and How it works open on the app's forest band
+  (Imigongo texture, rounded foot). Facility cards have one action (Join or Book while open, else
+  the next free time); the map icon and arrow are gone, the whole card opens the facility. District,
+  type, service and facility filters use the shared select. List / Map is a segmented control.
+- Removed: the hero gradient glow, the lit card edges and the icon tiles on link rows.
+- Docs: `apps/patient-web/DESIGN.md` rewritten for the system.
+
+### Public site audit, phase 1: what was broken (2026-11-07)
+
+- Fixed: doctor links from facility, service and Doctors pages open the doctor (15 of 17 said
+  "not listed"). The mock gave doctors, services and slots new random ids on every page load;
+  they are now derived from the facility and service, so a link survives a reload.
+- Fixed: dental care, eye care and the other services facilities offer open their page. The mock
+  catalogue had 4 of the 16 seeded services; it now mirrors the backend seed, and a service page
+  still opens from facility data when the catalogue lags.
+- Fixed: home no longer shows "Open now 0", "People waiting 0" and "Typical wait —" at night. When
+  every facility is closed, one line says so with the next opening; the list below is now
+  "Facilities near you", open ones first.
+- Fixed: facility cards hide "Book a time" while the facility is closed and show the next free
+  time instead.
+- Added: signing in from a booking says what was being booked ("Sign in to book General
+  consultation at Kigali Clinic") and returns there after sign-in, Google sign-in, sign-up and the
+  email link, with the service, doctor and day kept. A browser known to be signed out goes
+  straight to sign-in, so no 401 is logged.
+- Added: facility photos open in a lightbox (`Lightbox` in `@medilink/ui`: Esc, arrow keys, alt
+  text, focus back to the thumbnail). Photos that fail to load are left out, no grey tiles.
+- Fixed: doctor, service and facility "not found" pages have an `<h1>`, a reason and a link back.
+- Fixed (accessibility): the footer's faint giant wordmark is gone (contrast 1.13:1); the
+  emergency strip and the sign-in brand panel are `<aside>` landmarks; facility and doctor cards
+  on Facilities and Doctors are `<h2>` under the page `<h1>`; map credit links are underlined.
+
 ### Dashboards · work screens (#262)
 
 - Changed: the doctor's current patient shows three main actions (Open record, Finish and call

@@ -9,6 +9,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Home fits small phones (2026-11-16)
+
+- Fixed: on 360 px phones the hero search fields ran past their white card (a grid without a base
+  column grew to the inputs); the symptom link wrapped into three lines around the floating
+  assistant; the live figures were three columns with labels over four lines. The search card
+  now has one shrinking column, the link wraps normally at body-small size, and below 640 px the
+  figures are three rows (label left, number right).
+
 ### Home hero redesigned like a poster (2026-11-16)
 
 - Changed: the hero photo now melts into the page colour instead of sitting under a dark wash:

@@ -157,24 +157,18 @@
   }
 }
 
-/* The current page in the header: its raised pill glides to the next item (view transition). */
+/* The current page in the header: its green underline glides to the next item (view transition). */
 .ml-nav-pill {
   view-transition-name: nav-indicator;
 }
 
-/* The emergency line and the footer keep their place while a page changes; only the content
-   moves. */
-.ml-site-strip {
-  view-transition-name: site-strip;
-}
+/* The footer keeps its place while a page changes; only the content moves. */
 .ml-site-footer {
   view-transition-name: site-footer;
 }
-::view-transition-group(site-strip),
 ::view-transition-group(site-footer) {
   animation: none;
 }
-::view-transition-old(site-strip),
 ::view-transition-old(site-footer) {
   display: none;
 }
@@ -253,5 +247,23 @@
       animation-timeline: view();
       animation-range: entry 0% entry 30%;
     }
+  }
+}
+
+/* Home hero photo (2026-11-16): a slow settle from a slight zoom, once; still under reduced motion */
+.ml-hero-photo {
+  animation: ml-hero-settle 2.4s var(--ease-out-quint) both;
+}
+@keyframes ml-hero-settle {
+  from {
+    transform: scale(1.06);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ml-hero-photo {
+    animation: none;
   }
 }

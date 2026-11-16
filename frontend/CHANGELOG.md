@@ -9,6 +9,25 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Cleaner public navbar (2026-11-16)
+
+- Changed: the red emergency strip above the header is gone; emergency lives in the bar itself
+  (a red "Emergency" link on wide screens, a red icon below), and the phone menu adds a
+  "Call 912" button. One 64 px bar: the logo, the pages as plain text links with a green
+  underline on the current one (it glides between pages), then emergency, the language code and
+  a green Sign in button.
+
+### Home hero: a health centre photo (2026-11-16)
+
+- Changed: the home hero is a full-width photo of a health centre on Rwanda's hills (a nurse
+  welcoming a mother and baby, an older man waiting) under a dark green wash, with a larger white
+  headline, the search card, frosted need chips and the symptom link on it; the live figures
+  overlap its foot. The illustration it replaces stays in the kit. The photo settles from a slight
+  zoom once (off under reduced motion), is served as WebP in two widths with a JPEG fallback
+  (`public/images/hero/`), and loads with high priority.
+- Note: the image is AI-generated and illustrative (owner-supplied): not a real MediLink facility,
+  staff or patients; it carries no text, signs or logos.
+
 ### Patient dashboard audit: one top bar, one picker, a shorter Overview (2026-11-16)
 
 - Fixed: the Settings section links were a row cut off in the side column ("Langu…"); they are a

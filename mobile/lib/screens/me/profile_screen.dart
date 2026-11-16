@@ -315,6 +315,25 @@ class _Completion extends StatelessWidget {
     'allergies_reviewed': 'stepAllergies',
   };
 
+  void _open(BuildContext context, String key) {
+    final s = S.of(context);
+    final id = profile.patientId;
+    switch (key) {
+      case 'details':
+        _sheet(context, _DetailsSheet(profile: profile));
+      case 'identifier':
+        _sheet(context, _IdentifierSheet(patientId: id));
+      case 'emergency_contact':
+        _sheet(context, _EmergencySheet(profile: profile));
+      case 'care_consent':
+        context.go('/me/privacy');
+      case 'insurance':
+        _sheet(context, _InsuranceSheet(patientId: id));
+      case 'allergies_reviewed':
+        _sheet(context, _HealthSheet(patientId: id, kind: 'allergies', title: s.t('allergies'), profile: profile));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
@@ -345,21 +364,36 @@ class _Completion extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: Space.md),
+              // each missing step opens the same form as its section's Edit / Add
               Wrap(
                 spacing: Space.sm,
                 runSpacing: Space.sm,
                 children: [
                   for (final key in missing)
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      decoration: BoxDecoration(color: Palette.page, borderRadius: BorderRadius.circular(Space.radiusSm)),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(PhosphorIconsRegular.plus, size: 14, color: Palette.ochreText),
-                          const SizedBox(width: 4),
-                          Text(s.t(_labels[key] ?? key), style: theme.textTheme.labelMedium),
-                        ],
+                    Semantics(
+                      button: true,
+                      child: Material(
+                        color: Palette.page,
+                        borderRadius: BorderRadius.circular(Space.radiusSm),
+                        child: InkWell(
+                          key: ValueKey('todo-$key'),
+                          borderRadius: BorderRadius.circular(Space.radiusSm),
+                          onTap: () => _open(context, key),
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(minHeight: 40),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(PhosphorIconsRegular.plus, size: 14, color: Palette.ochreText),
+                                  const SizedBox(width: 4),
+                                  Text(s.t(_labels[key] ?? key), style: theme.textTheme.labelMedium),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                 ],
@@ -1069,8 +1103,11 @@ class _InsuranceSheetState extends ConsumerState<_InsuranceSheet> with _Saving {
 }
 
 class _HealthSheet extends ConsumerStatefulWidget {
-  const _HealthSheet({required this.patientId, required this.kind, required this.title});
+  const _HealthSheet({required this.patientId, required this.kind, required this.title, this.profile});
   final String patientId, kind, title;
+
+  /// Given from the profile to-do: allergies also offer "I have no known allergies".
+  final ProfileDetail? profile;
 
   @override
   ConsumerState<_HealthSheet> createState() => _HealthSheetState();
@@ -1118,6 +1155,19 @@ class _HealthSheetState extends ConsumerState<_HealthSheet> with _Saving {
                     });
                   }),
         ),
+        if (widget.kind == 'allergies' && widget.profile != null) ...[
+          const SizedBox(height: Space.sm),
+          TextButton(
+            key: const ValueKey('no-known-allergies'),
+            onPressed: () => save(widget.patientId, (api) async {
+              await api.patch('/api/v1/patient/profiles/${widget.patientId}/', {
+                'version': widget.profile!.version,
+                'no_known_allergies': true,
+              });
+            }),
+            child: Text(s.t('noKnownAllergies')),
+          ),
+        ],
       ],
     );
   }

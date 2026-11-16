@@ -34,7 +34,6 @@ import {
 import { FILTER, sortResults, useNearMe, type Sort } from "../features/booking/Places";
 import { kigaliNow, nextOpening, useAllFacilities, useProfiles } from "../features/site/data";
 import { FacilityExplorer } from "../features/site/FacilityDirectory";
-import { HillsideCareIllustration } from "../features/site/illustrations";
 import { LocationSelector, PageContainer, SearchBar } from "../features/site/kit";
 import { PublicLayout } from "../layout/PublicLayout";
 
@@ -152,6 +151,9 @@ function ClosedNotice({ rows, className }: { rows: FacilityResult[]; className?:
   );
 }
 
+/** The hero photo, served from /public in three widths (WebP, with a JPEG fallback). */
+const HERO = `${import.meta.env.BASE_URL}images/hero/health-centre`;
+
 /** One live figure in the strip under the hero: a label, one number, and what it counts. */
 function Figure({
   icon: FigureIcon,
@@ -232,29 +234,45 @@ export function LandingPage() {
 
   return (
     <PublicLayout>
-      {/* 1 · The question, the search, and what is open right now */}
-      <section aria-labelledby="hero-title" className="site-glow relative isolate overflow-hidden">
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 -z-10 text-primary"
-          style={{ maskImage: "radial-gradient(60% 70% at 90% 10%, black, transparent 75%)" }}
-        >
-          <ImigongoPattern opacity={0.05} />
-        </div>
-        <PageContainer className="flex flex-col gap-12 pt-12 pb-16 lg:gap-16 lg:pt-20 lg:pb-24">
-          <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-16">
-            <div className="flex min-w-0 animate-rise flex-col items-start gap-7">
+      {/* 1 · The question, the search, and what is open right now, over a health centre scene */}
+      <section aria-labelledby="hero-title" className="relative isolate">
+        <PageContainer className="pt-4 sm:pt-6">
+          <div className="relative isolate overflow-hidden rounded-shell bg-forest shadow-e3">
+            {/*
+             * An illustrative, AI-generated scene (a health centre on Rwanda's hills): not a real
+             * MediLink facility, staff or patients. Owner-supplied, 2026-11-16.
+             */}
+            <picture>
+              <source
+                type="image/webp"
+                srcSet={`${HERO}-960.webp 960w, ${HERO}-1672.webp 1672w`}
+                sizes="(min-width: 88rem) 86rem, 100vw"
+              />
+              <img
+                src={`${HERO}-1672.jpg`}
+                alt=""
+                width={1672}
+                height={941}
+                fetchPriority="high"
+                decoding="async"
+                className="ml-hero-photo absolute inset-0 -z-20 size-full object-cover object-[65%_50%]"
+              />
+            </picture>
+            {/* a dark wash, deepest under the words, so white text reads on any part of the photo */}
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(4_24_16/0.55)_0%,rgb(4_24_16/0.35)_45%,rgb(4_24_16/0.78)_100%)] md:bg-[linear-gradient(90deg,rgb(4_24_16/0.82)_0%,rgb(4_24_16/0.55)_48%,rgb(4_24_16/0.12)_100%)]"
+            />
+            <div className="flex min-h-[34rem] animate-rise flex-col items-start justify-center gap-6 px-5 py-14 sm:px-10 md:min-h-[38rem] lg:px-14 lg:py-20">
               <PageHeading
                 id="hero-title"
                 title={`${t("site.home3.titleA")} ${t("site.home3.titleB")}`}
-                className="m-0 max-w-[24ch] font-heading text-hero font-bold text-balance text-fg"
+                className="m-0 max-w-[18ch] font-heading text-[clamp(2.25rem,5.2vw,4.25rem)] leading-[1.04] font-bold tracking-[-0.025em] text-balance text-[#fff]"
               >
                 {t("site.home3.titleA")}{" "}
-                <span className="bg-[linear-gradient(100deg,var(--site-hero-ink),var(--color-primary))] bg-clip-text text-transparent">
-                  {t("site.home3.titleB")}
-                </span>
+                <span className="text-[#8fe3b5]">{t("site.home3.titleB")}</span>
               </PageHeading>
-              <p className="m-0 max-w-[32rem] text-[1.1875rem] leading-relaxed text-fg-secondary">
+              <p className="m-0 max-w-[34rem] text-[1.1875rem] leading-relaxed text-[rgb(255_255_255/0.86)]">
                 {t("site.home2.lead")}
               </p>
               <form
@@ -276,18 +294,19 @@ export function LandingPage() {
                 </Button>
               </form>
               <nav aria-labelledby="needs-title" className="flex flex-wrap items-center gap-2">
-                <p id="needs-title" className="m-0 me-1 text-body-sm text-fg-muted">
+                <p id="needs-title" className="m-0 me-1 text-body-sm text-[rgb(255_255_255/0.78)]">
                   {t("home.chipsLabel")}
                 </p>
                 <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
                   {COMMON_NEEDS.map(({ key, to, icon: NeedIcon }) => (
                     <li key={key}>
+                      {/* frosted chips on the photo */}
                       <Link
                         to={to}
                         viewTransition
-                        className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-surface px-3 text-body-sm font-medium text-fg no-underline shadow-e1 transition-shadow duration-200 hover:shadow-e2"
+                        className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-[rgb(255_255_255/0.28)] bg-[rgb(255_255_255/0.12)] px-3 text-body-sm font-medium text-[#fff] no-underline backdrop-blur-md transition-colors duration-200 hover:bg-[rgb(255_255_255/0.22)]"
                       >
-                        <NeedIcon aria-hidden="true" className="size-4 text-primary" />
+                        <NeedIcon aria-hidden="true" className="size-4" />
                         {t(`site.home2.chips.${key}`)}
                       </Link>
                     </li>
@@ -298,9 +317,9 @@ export function LandingPage() {
               <Link
                 to="/check-symptoms"
                 viewTransition
-                className="group inline-flex items-center gap-2 font-semibold text-link no-underline hover:underline"
+                className="group inline-flex items-center gap-2 font-semibold text-[#fff] no-underline hover:underline"
               >
-                <Sparkle aria-hidden="true" weight="duotone" className="size-5" />
+                <Sparkle aria-hidden="true" weight="duotone" className="size-5 text-[#8fe3b5]" />
                 {t("site.home3.symptoms.title")} {t("site.home3.symptoms.action")}
                 <ArrowRight
                   aria-hidden="true"
@@ -308,40 +327,36 @@ export function LandingPage() {
                 />
               </Link>
             </div>
-
-            <div className="relative min-w-0 animate-rise [animation-delay:80ms]">
-              <div className="overflow-hidden rounded-shell shadow-e3">
-                <HillsideCareIllustration className="block aspect-[5/4] h-auto w-full" />
-              </div>
-            </div>
           </div>
 
           {/*
-           * one strip of live figures, read left to right. Numbers only while something is open;
-           * when everything is closed, one honest line says so instead.
+           * one strip of live figures, read left to right, lifted over the photo's foot. Numbers
+           * only while something is open; when everything is closed, one honest line says so.
            */}
-          {allClosed ? (
-            <ClosedNotice rows={everywhere} />
-          ) : (
-            <dl className="m-0 grid animate-rise divide-y divide-hairline rounded-panel bg-surface shadow-e2 sm:grid-cols-3 sm:divide-x sm:divide-y-0 [animation-delay:120ms]">
-              <Figure
-                icon={Buildings}
-                label={t("site.home3.kpi.open")}
-                value={all.data ? String(openNow) : "–"}
-                hint={t("site.home3.kpi.openHint", { count: everywhere.length })}
-              />
-              <Figure
-                icon={UsersThree}
-                label={t("site.home3.kpi.waiting")}
-                value={all.data ? String(waitingNow) : "–"}
-              />
-              <Figure
-                icon={Hourglass}
-                label={t("site.home3.kpi.typical")}
-                value={typical !== null ? t("site.home3.kpi.minutes", { count: typical }) : "–"}
-              />
-            </dl>
-          )}
+          <div className="relative z-10 -mt-10 px-3 sm:px-8 lg:px-12">
+            {allClosed ? (
+              <ClosedNotice rows={everywhere} />
+            ) : (
+              <dl className="m-0 grid animate-rise divide-y divide-hairline rounded-panel bg-surface shadow-e3 sm:grid-cols-3 sm:divide-x sm:divide-y-0 [animation-delay:120ms]">
+                <Figure
+                  icon={Buildings}
+                  label={t("site.home3.kpi.open")}
+                  value={all.data ? String(openNow) : "–"}
+                  hint={t("site.home3.kpi.openHint", { count: everywhere.length })}
+                />
+                <Figure
+                  icon={UsersThree}
+                  label={t("site.home3.kpi.waiting")}
+                  value={all.data ? String(waitingNow) : "–"}
+                />
+                <Figure
+                  icon={Hourglass}
+                  label={t("site.home3.kpi.typical")}
+                  value={typical !== null ? t("site.home3.kpi.minutes", { count: typical }) : "–"}
+                />
+              </dl>
+            )}
+          </div>
         </PageContainer>
       </section>
 

@@ -39,7 +39,6 @@ import { Link } from "react-router";
 
 import { useApi } from "../../app/services";
 import { queueKeys, usePollInterval, useQueueSocket } from "./live";
-import { LiveBadge } from "./LiveIndicator";
 import { useTodayBookings } from "./ExpectedList";
 import { BottleneckCallout, useFlowModel } from "./FrontDesk";
 import { useCan } from "./shared";
@@ -581,7 +580,6 @@ export function OperationsTodayCard() {
             className="m-0 flex items-center gap-3 font-heading text-h2 tracking-tight"
           >
             {t("queue.ops.title")}
-            <LiveBadge />
           </h2>
           <p className="m-0 text-body-sm text-fg-secondary">
             {t("queue.ops.subtitle")}
@@ -590,23 +588,25 @@ export function OperationsTodayCard() {
             )}
           </p>
         </div>
-        <Link to="/reports" className={buttonClassName({ variant: "secondary", pill: true })}>
+        <Link to="/reports" className={buttonClassName({ variant: "ghost", size: "sm" })}>
           <ChartLineUp aria-hidden="true" />
           {t("queue.ops.allReports")}
         </Link>
       </div>
-      {board.data && (
-        <div className="flex flex-col gap-3">
-          <FlowStrip stages={flow.stages} label={t("queue.flow.label")} />
-          <BottleneckCallout bottleneck={flow.bottleneck} />
-        </div>
-      )}
+      {/* the day's numbers first, then the live flow (audit 2026-11-16); the live state is in
+          the top bar */}
       {!ops.data ? (
         <DashboardSkeleton />
       ) : (
         <div className="ml-stagger flex flex-col gap-4">
           <KpiRow data={ops.data} />
-          <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+          {board.data && (
+            <div className="flex flex-col gap-3">
+              <FlowStrip stages={flow.stages} label={t("queue.flow.label")} />
+              <BottleneckCallout bottleneck={flow.bottleneck} />
+            </div>
+          )}
+          <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
             <LiveByService data={ops.data} />
             <Attention data={ops.data} />
           </div>

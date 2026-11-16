@@ -109,6 +109,7 @@ function Facilities() {
       {
         accessorKey: "name",
         header: t("platform.facilities.name"),
+        meta: { cellClassName: "min-w-52 whitespace-nowrap" },
         enableSorting: false,
         cell: ({ row }) => (
           <span className="flex flex-col">
@@ -124,12 +125,14 @@ function Facilities() {
       {
         accessorKey: "status",
         header: t("platform.applications.status"),
+        meta: { cellClassName: "whitespace-nowrap" },
         enableSorting: false,
         cell: ({ row }) => <StatusBadge kind="facility" value={row.original.status} />,
       },
       {
         accessorKey: "facility_type",
         header: t("platform.review.type"),
+        meta: { cellClassName: "whitespace-nowrap" },
         enableSorting: false,
         cell: ({ row }) => (
           <span className="flex flex-col">
@@ -149,6 +152,7 @@ function Facilities() {
       {
         id: "district",
         header: t("platform.facilities.place"),
+        meta: { cellClassName: "whitespace-nowrap" },
         enableSorting: false,
         cell: ({ row }) => (
           <span className="flex flex-col">
@@ -162,6 +166,7 @@ function Facilities() {
       {
         id: "in_charge",
         header: t("platform.facilities.inCharge"),
+        meta: { cellClassName: "whitespace-nowrap" },
         enableSorting: false,
         cell: ({ row }) => {
           const admin = row.original.admins[0];
@@ -178,6 +183,7 @@ function Facilities() {
       {
         id: "staff",
         header: t("platform.facilities.staff"),
+        meta: { cellClassName: "min-w-44" },
         enableSorting: false,
         cell: ({ row }) => (
           <span className="flex flex-col text-body-sm">
@@ -196,12 +202,14 @@ function Facilities() {
       {
         accessorKey: "licence_state",
         header: t("platform.facilities.licence"),
+        meta: { cellClassName: "whitespace-nowrap" },
         enableSorting: false,
         cell: ({ row }) => <StatusBadge kind="licence" value={row.original.licence_state} />,
       },
       {
         accessorKey: "next_licence_expiry",
         header: t("platform.facilities.nextExpiry"),
+        meta: { cellClassName: "whitespace-nowrap" },
         enableSorting: false,
         cell: ({ row }) => formatDate(row.original.next_licence_expiry, locale),
       },

@@ -9,6 +9,20 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Home hero redesigned like a poster (2026-11-16)
+
+- Changed: the hero photo now melts into the page colour instead of sitting under a dark wash:
+  on phones and tablets it is a banner at the top in its own shape (the people stay in view)
+  fading into the page; from 1280 px it fills the right of the card and fades left into the page,
+  so no word sits on the photo. Dark words, one green accent phrase with a hand-drawn brush stroke
+  (drawn once), a soft brand haze behind the headline, a live "n facilities open now" label with a
+  pulsing dot, and a frosted card on the photo with the open facility that has the shortest wait
+  (live data only). Light and dark themes follow the page tokens.
+- Removed: the "Common needs" chips and the Imigongo texture from the hero (the care types follow
+  right below), so the hero holds one label, one headline, one paragraph, one search, one link.
+- Changed: the headline rotates only on computers; phones and tablets show its first phrase (a
+  wrapped longer phrase left a gap).
+
 ### A shorter, calmer home page and a hero that explains more (2026-11-16)
 
 - Changed: the hero's second line changes every few seconds ("without the long wait", "close to

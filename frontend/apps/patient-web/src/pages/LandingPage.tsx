@@ -5,7 +5,6 @@ import {
   Buildings,
   Crosshair,
   Eye,
-  Flask,
   HandHeart,
   Hourglass,
   MagnifyingGlass,
@@ -31,18 +30,11 @@ import {
   type DistrictKey,
   type ServiceKey,
 } from "../features/booking/discovery";
-import { sortResults, useNearMe, type Sort } from "../features/booking/Places";
+import { sortResults, useNearMe, waitText, type Sort } from "../features/booking/Places";
 import { kigaliNow, nextOpening, useAllFacilities, useProfiles } from "../features/site/data";
 import { FacilityExplorer } from "../features/site/FacilityDirectory";
 import { Faq, LocationSelector, PageContainer, SearchBar } from "../features/site/kit";
 import { PublicLayout } from "../layout/PublicLayout";
-
-const COMMON_NEEDS: { key: string; to: string; icon: Icon }[] = [
-  { key: "general", to: "/find-care?service=general", icon: Stethoscope },
-  { key: "maternal", to: "/find-care?service=antenatal", icon: HandHeart },
-  { key: "lab", to: "/find-care?q=lab", icon: Flask },
-  { key: "dental", to: "/find-care?service=dental", icon: Tooth },
-];
 
 const CARE: { key: ServiceKey; icon: Icon }[] = [
   { key: "general", icon: Stethoscope },
@@ -87,6 +79,27 @@ function SectionHead({
  * longest and nothing below jumps. Screen readers and reduced motion get the first phrase only;
  * the change pauses while the tab is hidden.
  */
+/** A hand-drawn mint stroke under the hero's green phrase, drawn once (still under reduced motion). */
+function BrushStroke() {
+  return (
+    <svg
+      viewBox="0 0 300 14"
+      preserveAspectRatio="none"
+      className="ml-brush pointer-events-none absolute inset-x-0 -bottom-[0.06em] h-[0.22em] w-full overflow-visible"
+    >
+      <path
+        d="M3 9.5C48 4.5 96 3 150 4.6c48 1.4 94 3.6 147 1.4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="5"
+        strokeLinecap="round"
+        opacity="0.3"
+        pathLength={1}
+      />
+    </svg>
+  );
+}
+
 function RotatingWords({ words }: { words: string[] }) {
   const [index, setIndex] = useState(0);
   const [still] = useState(
@@ -104,18 +117,24 @@ function RotatingWords({ words }: { words: string[] }) {
   return (
     <>
       <span className="sr-only">{words[0]}</span>
-      <span aria-hidden="true" className="grid text-[#8fe3b5]">
+      {/* phones and tablets: the first phrase only (a wrapped longer one left a gap) */}
+      <span aria-hidden="true" className="relative inline-block pb-[0.12em] text-primary xl:hidden">
+        {words[0]}
+        <BrushStroke />
+      </span>
+      <span aria-hidden="true" className="relative hidden pb-[0.12em] text-primary xl:grid">
         {words.map((word, i) => (
           <span
             key={word}
             className={cx(
-              "col-start-1 row-start-1 transition-[opacity,translate,filter] duration-500 ease-out-quint",
+              "relative col-start-1 row-start-1 w-fit transition-[opacity,translate,filter] duration-500 ease-out-quint xl:whitespace-nowrap",
               i === index
                 ? "translate-y-0 opacity-100 blur-0"
                 : "pointer-events-none translate-y-3 opacity-0 blur-[2px]",
             )}
           >
             {word}
+            <BrushStroke />
           </span>
         ))}
       </span>
@@ -242,7 +261,7 @@ function Figure({
  * Every number is real or not shown.
  */
 export function LandingPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const api = useApi();
   const navigate = useNavigate();
   const [text, setText] = useState("");
@@ -268,6 +287,10 @@ export function LandingPage() {
   // real numbers only, from the live listing
   const everywhere = unique(all.data ?? []);
   const openNow = everywhere.filter((r) => r.open_now).length;
+  // the hero's callout: the open facility with the shortest wait, from the live listing
+  const spotlight = everywhere
+    .filter((r) => r.open_now && r.waiting !== null && r.waiting !== undefined)
+    .sort((a, b) => (a.waiting ?? 0) - (b.waiting ?? 0))[0];
   const waitingNow = everywhere.reduce((sum, r) => sum + (r.open_now ? (r.waiting ?? 0) : 0), 0);
   const typical = typicalWait(everywhere);
   const allClosed = Boolean(all.data) && everywhere.length > 0 && openNow === 0;
@@ -290,7 +313,7 @@ export function LandingPage() {
       {/* 1 · The question, the search, and what is open right now, over a health centre scene */}
       <section aria-labelledby="hero-title" className="relative isolate">
         <PageContainer className="pt-4 sm:pt-6">
-          <div className="relative isolate overflow-hidden rounded-shell bg-forest shadow-e3">
+          <div className="relative isolate overflow-hidden rounded-shell border border-hairline bg-surface shadow-e2">
             {/*
              * An illustrative, AI-generated scene (a health centre on Rwanda's hills): not a real
              * MediLink facility, staff or patients. Owner-supplied, 2026-11-16.
@@ -308,19 +331,64 @@ export function LandingPage() {
                 height={941}
                 fetchPriority="high"
                 decoding="async"
-                className="ml-hero-photo absolute inset-0 -z-20 size-full object-cover object-[65%_50%]"
+                // phones and tablets: a banner at the top in the photo's own shape; computers:
+                // from 1280 px the right part of the card, beside the words, never under them
+                className="ml-hero-photo absolute inset-x-0 top-0 -z-20 aspect-[16/10] w-full object-cover object-[68%_60%] md:aspect-[2/1] xl:inset-y-0 xl:right-0 xl:left-auto xl:aspect-auto xl:h-full xl:w-[66%] xl:object-[64%_50%]"
               />
             </picture>
+            {/* the poster's atmosphere: one soft brand haze behind the headline; decoration only */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute top-[38vw] -left-24 -z-[5] size-[30rem] rounded-full bg-[radial-gradient(circle,color-mix(in_oklab,var(--color-primary)_16%,transparent)_0%,color-mix(in_oklab,var(--color-primary)_6%,transparent)_45%,transparent_70%)] blur-2xl md:top-[34vw] xl:top-0 xl:-left-16 xl:size-[38rem]"
+            />
+            {/* computers: one real facility's live wait, floating on the photo like a poster's
+                callout; shows only with live data */}
+            {spotlight && (
+              <div
+                aria-hidden="true"
+                className="absolute right-10 bottom-24 z-10 hidden w-72 animate-rise flex-col gap-2.5 rounded-2xl border border-[color-mix(in_oklab,var(--color-surface)_55%,transparent)] bg-[color-mix(in_oklab,var(--color-surface)_80%,transparent)] p-4 shadow-e3 backdrop-blur-xl [animation-delay:400ms] xl:flex"
+              >
+                <span className="inline-flex items-center gap-2 text-caption font-semibold text-success">
+                  <span className="size-1.5 rounded-full bg-success" />
+                  {t("site.card.open")}
+                </span>
+                <span className="font-heading text-[1.0625rem] leading-tight font-bold text-fg">
+                  {spotlight.name}
+                </span>
+                <span className="text-body-sm font-semibold text-fg-secondary tabular-nums">
+                  {waitText(spotlight, t, i18n.resolvedLanguage ?? "rw")}
+                </span>
+                <span className="h-1.5 overflow-hidden rounded-full bg-subtle">
+                  <span
+                    className="block h-full rounded-full bg-primary"
+                    style={{
+                      width: `${Math.min(100, Math.max(12, (spotlight.waiting ?? 0) * 9))}%`,
+                    }}
+                  />
+                </span>
+              </div>
+            )}
             {/* a dark wash, deepest under the words, so white text reads on any part of the photo */}
             <div
               aria-hidden="true"
-              className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgb(4_24_16/0.55)_0%,rgb(4_24_16/0.35)_45%,rgb(4_24_16/0.78)_100%)] md:bg-[linear-gradient(90deg,rgb(4_24_16/0.82)_0%,rgb(4_24_16/0.55)_48%,rgb(4_24_16/0.12)_100%)]"
+              // the photo fades into the page colour, where dark words sit calm (light and dark theme)
+              className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,transparent_0%,transparent_26vw,var(--color-surface)_58vw)] md:bg-[linear-gradient(180deg,transparent_0%,transparent_20vw,var(--color-surface)_46vw)] xl:bg-[linear-gradient(90deg,var(--color-surface)_0%,var(--color-surface)_34%,color-mix(in_oklab,var(--color-surface)_70%,transparent)_46%,transparent_64%)]"
             />
-            <div className="flex min-h-[34rem] animate-rise flex-col items-start justify-center gap-6 px-5 py-14 sm:px-10 md:min-h-[38rem] lg:px-14 lg:py-20">
+            <div className="flex animate-rise flex-col items-start justify-center gap-6 px-5 pt-[44vw] pb-12 sm:px-10 md:pt-[40vw] lg:px-14 xl:min-h-[36rem] xl:w-[50%] xl:py-16">
+              {/* a live label, the way a poster names its subject before the headline */}
+              {openNow > 0 && (
+                <p className="m-0 inline-flex items-center gap-2 rounded-full border border-hairline bg-[color-mix(in_oklab,var(--color-surface)_80%,transparent)] py-1.5 pr-3.5 pl-2.5 text-caption font-semibold tracking-wide text-fg-secondary shadow-e1 backdrop-blur-md">
+                  <span aria-hidden="true" className="relative grid size-2 place-items-center">
+                    <span className="absolute inline-flex size-2 animate-ping rounded-full bg-primary opacity-50 motion-reduce:hidden" />
+                    <span className="relative inline-flex size-2 rounded-full bg-primary" />
+                  </span>
+                  {t("site.home3.openNow", { count: openNow })}
+                </p>
+              )}
               <PageHeading
                 id="hero-title"
                 title={`${t("site.home3.titleA")} ${t("site.home3.titleB")}`}
-                className="m-0 max-w-[18ch] font-heading text-[clamp(2.25rem,5.2vw,4.25rem)] leading-[1.04] font-bold tracking-[-0.025em] text-balance text-[#fff]"
+                className="m-0 max-w-[20ch] font-heading text-[clamp(1.875rem,4.6vw,3.5rem)] leading-[1.05] font-bold tracking-[-0.028em] text-balance text-fg"
               >
                 {t("site.home3.titleA")}{" "}
                 <RotatingWords
@@ -332,7 +400,7 @@ export function LandingPage() {
                   ]}
                 />
               </PageHeading>
-              <p className="m-0 max-w-[34rem] text-[1.1875rem] leading-relaxed text-[rgb(255_255_255/0.86)]">
+              <p className="m-0 max-w-[34rem] text-[1.0625rem] leading-[1.65] text-fg-secondary sm:text-[1.1875rem]">
                 {/* phones: the short line keeps the search in the first screen */}
                 <span className="sm:hidden">{t("site.home2.lead")}</span>
                 <span className="hidden sm:inline">{t("site.home3.leadLong")}</span>
@@ -340,7 +408,7 @@ export function LandingPage() {
               <form
                 onSubmit={onSearch}
                 role="search"
-                className="grid w-full max-w-[40rem] gap-2 rounded-shell bg-surface p-2 shadow-e3 sm:grid-cols-[minmax(0,1fr)_auto] [&>:first-child]:sm:col-span-2"
+                className="grid w-full max-w-[40rem] gap-2 rounded-shell border border-hairline bg-surface p-2 shadow-e3 sm:grid-cols-[minmax(0,1fr)_auto] [&>:first-child]:sm:col-span-2"
               >
                 <SearchBar
                   id="home-search"
@@ -355,37 +423,13 @@ export function LandingPage() {
                   {t("site.home2.search")}
                 </Button>
               </form>
-              <nav
-                aria-labelledby="needs-title"
-                className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center"
-              >
-                <p id="needs-title" className="m-0 me-1 text-body-sm text-[rgb(255_255_255/0.78)]">
-                  {t("home.chipsLabel")}
-                </p>
-                {/* phones: one row that swipes sideways, not three wrapped rows */}
-                <ul className="-mx-5 m-0 flex list-none gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0 [&::-webkit-scrollbar]:hidden">
-                  {COMMON_NEEDS.map(({ key, to, icon: NeedIcon }) => (
-                    <li key={key} className="shrink-0">
-                      {/* frosted chips on the photo */}
-                      <Link
-                        to={to}
-                        viewTransition
-                        className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-[rgb(255_255_255/0.28)] bg-[rgb(255_255_255/0.12)] px-3 text-body-sm font-medium text-[#fff] no-underline backdrop-blur-md transition-colors duration-200 hover:bg-[rgb(255_255_255/0.22)]"
-                      >
-                        <NeedIcon aria-hidden="true" className="size-4" />
-                        {t(`site.home2.chips.${key}`)}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
               {/* the second way in, quieter than the search */}
               <Link
                 to="/check-symptoms"
                 viewTransition
-                className="group inline-flex max-w-[calc(100%-3.5rem)] items-center gap-2 font-semibold text-[#fff] no-underline hover:underline sm:max-w-none"
+                className="group inline-flex max-w-[calc(100%-3.5rem)] items-center gap-2 font-semibold text-link no-underline hover:underline sm:max-w-none"
               >
-                <Sparkle aria-hidden="true" weight="duotone" className="size-5 text-[#8fe3b5]" />
+                <Sparkle aria-hidden="true" weight="duotone" className="size-5" />
                 {t("site.home3.symptoms.title")} {t("site.home3.symptoms.action")}
                 <ArrowRight
                   aria-hidden="true"

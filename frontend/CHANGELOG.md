@@ -9,6 +9,22 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Patient dashboard audit: one top bar, one picker, a shorter Overview (2026-11-16)
+
+- Fixed: the Settings section links were a row cut off in the side column ("Langu…"); they are a
+  vertical list there (`SectionAnchors` `orientation="vertical"`).
+- Fixed: the assistant button no longer floats over cards on tablets and laptops: it sits in the
+  top bar (a portal keeps its answer links in the dashboard); phones keep the floating button,
+  with more room at the foot of each page.
+- Changed: the top bar drops the breadcrumb (the title is right below) and the sidebar drops the
+  name card (the account menu and profile switcher already say who and whose).
+- Changed: one "Whose …" picker (`WhoseFilter`) beside the title on Medical records,
+  Medications, Documents and Bills, instead of a labelled select in a different place on each.
+- Changed: Overview shows one banner at a time (confirm the email first, then the alerts), greets
+  by first name, uses the staff date line, keeps "Book appointment" as its only header action,
+  and "Needs your attention" shows the three most pressing items with a small button each and
+  "Show N more".
+
 ### Calmer facility-admin Today and readable admin tables (2026-11-16)
 
 - Changed: on the facility admin's Today, the setup checklist and leave requests are one-line

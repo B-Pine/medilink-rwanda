@@ -1,5 +1,5 @@
 import type { BillStatus, PatientBill, PatientBillRow } from "@medilink/api-client";
-import { Alert, Badge, cx, EmptyState, SelectField, Skeleton, type BadgeTone } from "@medilink/ui";
+import { Alert, Badge, cx, EmptyState, Skeleton, type BadgeTone } from "@medilink/ui";
 import { Receipt, Scales } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -16,6 +16,7 @@ import {
   RowLink,
   RowList,
   RowsSkeleton,
+  WhoseFilter,
 } from "../dashboard/kit";
 import { useProfiles } from "../profile/ProfileLayout";
 import { reportProblemTo } from "../disputes";
@@ -57,22 +58,18 @@ export function BillsPage() {
   const toPay = rows.reduce((sum, row) => sum + row.balance_rwf, 0);
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title={t("bills.title")} />
-      {people.length > 1 && (
-        <SelectField
-          label={t("bills.whose")}
-          value={patientId}
-          onChange={(e) => setPatientId(e.target.value)}
-          className="sm:w-72"
-        >
-          <option value="">{t("bills.everyone")}</option>
-          {people.map((p) => (
-            <option key={p.patient_id} value={p.patient_id}>
-              {p.display_name}
-            </option>
-          ))}
-        </SelectField>
-      )}
+      <PageHeader
+        title={t("bills.title")}
+        actions={
+          <WhoseFilter
+            label={t("bills.whose")}
+            everyone={t("bills.everyone")}
+            value={patientId}
+            onChange={setPatientId}
+            people={people}
+          />
+        }
+      />
       {list.isPending ? (
         <RowsSkeleton />
       ) : list.isError ? (

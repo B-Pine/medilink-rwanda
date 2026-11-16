@@ -42,6 +42,7 @@ import {
   RowsSkeleton,
   SegmentedTabs,
   WidgetCard,
+  WhoseFilter,
 } from "../dashboard/kit";
 import { useProfiles } from "../profile/ProfileLayout";
 import { useDate } from "../records/RecordsPages";
@@ -102,50 +103,38 @@ export function DocumentsPage() {
       <PageHeader
         title={t("documents.title")}
         actions={
-          all.length > 0 && (
-            <Button
-              variant="secondary"
-              loading={archive.isPending}
-              onClick={() => archive.mutate()}
-            >
-              <FolderSimple aria-hidden="true" className="size-4" />
-              {t("documents.downloadAll")}
-            </Button>
-          )
+          <>
+            <WhoseFilter
+              label={t("documents.whose")}
+              everyone={t("documents.everyone")}
+              value={patientId}
+              onChange={setPatientId}
+              people={people}
+            />
+            {all.length > 0 && (
+              <Button
+                variant="secondary"
+                loading={archive.isPending}
+                onClick={() => archive.mutate()}
+              >
+                <FolderSimple aria-hidden="true" className="size-4" />
+                {t("documents.downloadAll")}
+              </Button>
+            )}
+          </>
         }
       />
-      {(kinds.length > 1 || people.length > 1) && (
-        // one toolbar: the type switch and, for families, whose documents
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          {kinds.length > 1 ? (
-            <SegmentedTabs
-              label={t("dashboard.documents.kinds")}
-              value={kind}
-              onChange={setKind}
-              options={[
-                { value: "all" as const, label: t("dashboard.documents.all") },
-                ...kinds.map((k) => ({ value: k, label: t(`documents.kind.${k}`) })),
-              ]}
-            />
-          ) : (
-            <span />
-          )}
-          {people.length > 1 && (
-            <SelectField
-              label={t("documents.whose")}
-              value={patientId}
-              onChange={(e) => setPatientId(e.target.value)}
-              className="sm:w-72"
-            >
-              <option value="">{t("documents.everyone")}</option>
-              {people.map((p) => (
-                <option key={p.patient_id} value={p.patient_id}>
-                  {p.display_name}
-                </option>
-              ))}
-            </SelectField>
-          )}
-        </div>
+      {/* the type switch; whose documents is beside the title, as on every page */}
+      {kinds.length > 1 && (
+        <SegmentedTabs
+          label={t("dashboard.documents.kinds")}
+          value={kind}
+          onChange={setKind}
+          options={[
+            { value: "all" as const, label: t("dashboard.documents.all") },
+            ...kinds.map((k) => ({ value: k, label: t(`documents.kind.${k}`) })),
+          ]}
+        />
       )}
       {archive.isError && (
         <Alert tone="danger" role="alert">

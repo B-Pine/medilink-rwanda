@@ -128,7 +128,9 @@
     "attention": {
       "title": "Needs your attention",
       "allSet": "You're all set",
-      "allSetBody": "Nothing needs an answer from you right now."
+      "allSetBody": "Nothing needs an answer from you right now.",
+      "more_one": "Show {{count}} more",
+      "more_other": "Show {{count}} more"
     },
     "glance": {
       "label": "At a glance",

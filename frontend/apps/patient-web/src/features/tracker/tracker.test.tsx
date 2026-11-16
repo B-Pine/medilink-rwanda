@@ -17,7 +17,7 @@ async function signIn() {
   await app.user.click(screen.getByRole("button", { name: "Log in" }));
   await screen.findByRole("heading", {
     level: 1,
-    name: /^Good (morning|afternoon|evening), Mukamana Jeanne$/,
+    name: /^Good (morning|afternoon|evening), Mukamana$/,
   });
   return app;
 }

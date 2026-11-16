@@ -255,3 +255,21 @@
     }
   }
 }
+
+/* Home hero photo (2026-11-16): a slow settle from a slight zoom, once; still under reduced motion */
+.ml-hero-photo {
+  animation: ml-hero-settle 2.4s var(--ease-out-quint) both;
+}
+@keyframes ml-hero-settle {
+  from {
+    transform: scale(1.06);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ml-hero-photo {
+    animation: none;
+  }
+}

@@ -48,7 +48,7 @@ export function UnsignedPage() {
   });
   if (!allowed) return <NoAccessContent />;
   return (
-    <div className="flex max-w-5xl flex-col gap-5">
+    <div className="flex w-full flex-col gap-5">
       <PageHeader title={t("clinical.unsigned.title")} />
       {isAdmin && (
         <SwitchField

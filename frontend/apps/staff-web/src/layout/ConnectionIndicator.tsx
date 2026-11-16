@@ -46,12 +46,17 @@ export function ConnectionIndicator({
             ? "bg-on-forest/10 text-on-forest-accent"
             : "bg-danger-solid text-on-danger-solid"
           : online
-            ? "bg-success-bg text-success"
+            ? // online is the normal state: a quiet line, not a badge (staff clean-up 2026-11-16)
+              "px-1.5 font-medium text-fg-muted"
             : "bg-danger-bg text-danger",
         className,
       )}
     >
-      <StatusIcon aria-hidden="true" weight="bold" className="size-4" />
+      <StatusIcon
+        aria-hidden="true"
+        weight="bold"
+        className={cx("size-4", online && !onDark && "text-success")}
+      />
       <span className={cx(compact && "lg:sr-only")}>
         {online ? t("shell.connection.online") : t("shell.connection.offline")}
       </span>

@@ -7,8 +7,6 @@ import {
   CashRegister,
   HandWaving,
   MagnifyingGlass,
-  Phone,
-  Plus,
   UserMinus,
   type Icon,
 } from "@phosphor-icons/react";
@@ -112,9 +110,6 @@ export function ReceptionTodayCard() {
   // payments only: the expected totals also hold the opening float
   const collected: number | null = myShift ? shiftCollected(myShift) : null;
 
-  const deskLink =
-    "inline-flex min-h-11 items-center gap-2 rounded-xl px-4 font-semibold no-underline transition-[transform,filter,background-color] duration-150 active:scale-[0.97]";
-
   return (
     <section aria-labelledby="reception-today" className="flex flex-col gap-4 lg:col-span-3">
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -127,36 +122,18 @@ export function ReceptionTodayCard() {
         </Link>
       </div>
 
-      {/* the desk bar: find a patient, new walk-in, book by phone (they open on the board) */}
-      <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-forest p-3.5 text-on-forest">
-        <Link
-          to="/queue?find=1"
-          className={cx(
-            deskLink,
-            "min-w-0 flex-1 basis-72 border border-on-forest/15 bg-on-forest/[0.07] font-normal text-on-forest-muted hover:bg-on-forest/[0.11]",
-          )}
-        >
-          <MagnifyingGlass aria-hidden="true" weight="bold" className="size-5 shrink-0" />
-          <span className="truncate">{t("queue.board.findPatient")}</span>
-        </Link>
-        <Link
-          to="/queue?find=1"
-          className={cx(deskLink, "bg-on-forest-accent text-forest hover:brightness-105")}
-        >
-          <Plus aria-hidden="true" weight="bold" className="size-4" />
-          {t("queue.board.checkIn")}
-        </Link>
-        <Link
-          to="/queue?book=new"
-          className={cx(
-            deskLink,
-            "border border-on-forest/25 text-on-forest hover:bg-on-forest/[0.08]",
-          )}
-        >
-          <Phone aria-hidden="true" weight="bold" className="size-4" />
-          {t("bookings.phone.open")}
-        </Link>
-      </div>
+      {/* find a patient (opens on the board); walk-in and phone booking are the page's own
+          actions above, so they are not repeated here */}
+      <Link
+        to="/queue?find=1"
+        className={cx(
+          "flex min-h-12 items-center gap-3 rounded-2xl bg-surface px-4 text-fg-muted no-underline shadow-card",
+          "transition-[color,box-shadow] duration-150 ease-out-quint hover:text-fg hover:shadow-raised",
+        )}
+      >
+        <MagnifyingGlass aria-hidden="true" className="size-5 shrink-0" />
+        <span className="truncate">{t("queue.board.findPatient")}</span>
+      </Link>
 
       <DeskFlow queues={queues} expected={bookings.data?.results} />
 

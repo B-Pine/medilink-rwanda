@@ -68,7 +68,7 @@ function Merges({ platform }: { platform: boolean }) {
   });
   const title = platform ? t("patients.nav.platformMerges") : t("patients.nav.merges");
   return (
-    <div className="flex max-w-5xl flex-col gap-5">
+    <div className="flex w-full flex-col gap-5">
       <PageHeader title={title} />
       <div role="group" aria-label={t("patients.merges.filter")} className="flex flex-wrap gap-2">
         {STATUSES.map((s) => (

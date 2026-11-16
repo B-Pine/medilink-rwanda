@@ -127,7 +127,7 @@ function Checklist() {
   });
 
   return (
-    <div className="flex max-w-4xl flex-col gap-6">
+    <div className="flex max-w-3xl flex-col gap-6">
       <PageHeader title={t("setup.checklist.title")} />
       <QueryState query={checklist}>
         {(data) => (

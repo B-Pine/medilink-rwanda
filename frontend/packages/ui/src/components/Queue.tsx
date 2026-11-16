@@ -63,7 +63,8 @@ export type QueueFlag = "emergency" | "priority" | "return" | "stepped_out" | "n
 
 const FLAGS: Record<QueueFlag, { tone: BadgeTone; variant: BadgeVariant; icon: Icon }> = {
   emergency: { tone: "danger", variant: "solid", icon: Siren },
-  priority: { tone: "violet", variant: "solid", icon: Star },
+  // only an emergency is solid: priority is a soft badge like the other flags (2026-11-16)
+  priority: { tone: "violet", variant: "tint", icon: Star },
   return: { tone: "brand", variant: "tint", icon: ArrowUUpLeft },
   stepped_out: { tone: "neutral", variant: "tint", icon: PersonSimpleWalk },
   no_response: { tone: "danger", variant: "outline", icon: UserMinus },

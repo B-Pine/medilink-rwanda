@@ -65,7 +65,7 @@ function SettingsForm({ saved }: { saved: StaffNotificationPreferences }) {
   };
 
   return (
-    <form onSubmit={submit} className="flex max-w-2xl flex-col gap-5" noValidate>
+    <form onSubmit={submit} className="flex max-w-3xl flex-col gap-5" noValidate>
       {save.isError &&
         (isConflict(save.error) ? (
           <Alert tone="warning" title={t("notifications.settings.conflictTitle")} role="alert">

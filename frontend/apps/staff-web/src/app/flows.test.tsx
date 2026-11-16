@@ -44,8 +44,11 @@ describe("staff login → MFA verify → facility picker → shell", () => {
       screen.getByRole("button", { name: /Current facility: Remera Health Center/ }),
     ).toBeInTheDocument();
     const nav = screen.getByRole("navigation", { name: "Main menu" });
+    // a link may carry its live count ("Queue, 7")
     for (const name of ["Today", "Queue", "Patients", "Reports", "Staff", "Settings"]) {
-      expect(within(nav).getByRole("link", { name })).toBeInTheDocument();
+      expect(
+        within(nav).getByRole("link", { name: new RegExp(`^${name}(,\\s*\\d+)?$`) }),
+      ).toBeInTheDocument();
     }
     // Sections without a built page stay out of the menu (design 04 §2: no dead ends)
     for (const name of ["Pharmacy", "Audit log"]) {
@@ -58,7 +61,7 @@ describe("staff login → MFA verify → facility picker → shell", () => {
     expect(screen.getByRole("status", { name: "Connection" })).toHaveTextContent("Online");
   });
 
-  it("switches facility from the top bar and reloads permissions", async () => {
+  it("switches facility from the sidebar card and reloads permissions", async () => {
     const { user } = renderApp("/login");
     await logIn(user, "doctor@medilink.test", MOCK_PASSWORD);
     await user.type(await screen.findByLabelText("6-digit code"), MOCK_TOTP_CODE);
@@ -78,7 +81,7 @@ describe("staff login → MFA verify → facility picker → shell", () => {
     await waitFor(() =>
       expect(within(nav).queryByRole("link", { name: "Approvals" })).not.toBeInTheDocument(),
     );
-    expect(within(nav).getByRole("link", { name: "Queue" })).toBeInTheDocument();
+    expect(within(nav).getByRole("link", { name: /^Queue(,\s*\d+)?$/ })).toBeInTheDocument();
   });
 
   it("single-facility receptionist: recovery code, straight to Today, no pharmacy access", async () => {
@@ -96,7 +99,7 @@ describe("staff login → MFA verify → facility picker → shell", () => {
     ).toBeInTheDocument();
     expect(screen.getAllByText("Kigali Clinic").length).toBeGreaterThan(0);
     const nav = screen.getByRole("navigation", { name: "Main menu" });
-    expect(within(nav).getByRole("link", { name: "Queue" })).toBeInTheDocument();
+    expect(within(nav).getByRole("link", { name: /^Queue(,\s*\d+)?$/ })).toBeInTheDocument();
     expect(within(nav).queryByRole("link", { name: "Pharmacy" })).not.toBeInTheDocument();
     // reception also takes payments (upgrade 05 §2)
     expect(within(nav).getByRole("link", { name: "Payments" })).toBeInTheDocument();

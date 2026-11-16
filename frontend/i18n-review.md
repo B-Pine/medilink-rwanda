@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 6272.
+Keys: 6277.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -200,6 +200,11 @@ File: `apps/staff-web/src/i18n/locales/rw.json`
 | `shell.section.work` | Akazi k’umunsi | Daily work | needs native-speaker review |
 | `shell.section.manage` | Gucunga ikigo | Manage | needs native-speaker review |
 | `shell.section.practice` | Akazi kanjye | My practice | needs native-speaker review |
+| `shell.section.platform.overview` | Incamake | Overview | needs native-speaker review |
+| `shell.section.platform.facilities` | Ibigo | Facilities | needs native-speaker review |
+| `shell.section.platform.people` | Abantu n’umutekano | People and security | needs native-speaker review |
+| `shell.section.platform.support` | Ubufasha n’ibikubiyemo | Support and content | needs native-speaker review |
+| `shell.section.platform.system` | Sisitemu | System | needs native-speaker review |
 | `today.title` | Uyu munsi | Today | needs native-speaker review |
 | `today.greeting` | Muraho, {{name}} | Hello, {{name}} | needs native-speaker review |
 | `today.rolesLabel` | Inshingano zawe hano | Your roles here | needs native-speaker review |

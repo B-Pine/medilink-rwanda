@@ -289,7 +289,7 @@ function WhatStep({
     create.mutate(new FormData(event.currentTarget));
   };
   return (
-    <form onSubmit={submit} className="flex max-w-2xl flex-col gap-4" noValidate>
+    <form onSubmit={submit} className="flex max-w-3xl flex-col gap-4" noValidate>
       <SelectField
         label={t("bookings.disruptions.kindLabel")}
         name="kind"

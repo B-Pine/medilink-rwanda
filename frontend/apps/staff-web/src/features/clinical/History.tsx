@@ -480,7 +480,7 @@ export function HistoryPage() {
   const allowed = useCan("clinical.view");
   if (!allowed) return <NoAccessContent />;
   return (
-    <div className="flex max-w-5xl flex-col gap-5">
+    <div className="flex w-full flex-col gap-5">
       <PageHeader
         title={t("clinical.history.title")}
         back={{ to: `/patients/${fpId}`, label: t("clinical.history.backToRecord") }}

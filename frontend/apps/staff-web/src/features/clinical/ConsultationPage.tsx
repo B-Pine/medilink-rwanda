@@ -802,7 +802,7 @@ export function ConsultationPage() {
     const fp = search.get("fp");
     if (isReasonRequired(consultation.error) && fp)
       return (
-        <div className="flex max-w-5xl flex-col gap-5">
+        <div className="flex w-full flex-col gap-5">
           <PageHeader title={t("clinical.title")} />
           <AccessReasonPrompt fpId={fp} onGranted={() => void consultation.refetch()} />
         </div>
@@ -843,7 +843,7 @@ export function ConsultationPage() {
     ...(isDraft ? [] : [{ id: "addenda", label: t("clinical.sections.addenda") }]),
   ];
   return (
-    <div className="flex max-w-5xl flex-col gap-5">
+    <div className="flex w-full flex-col gap-5">
       <PageHeader
         title={t("clinical.headerTitle", { name: p.display_name })}
         description={facts}

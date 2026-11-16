@@ -74,7 +74,7 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
           data-loading={navigation.state !== "idle"}
           className="ml-route-progress absolute inset-x-0 top-0 h-0.5 origin-left bg-primary"
         />
-        <div className="mx-auto flex h-16 max-w-[88rem] items-center gap-8 px-4 sm:px-6">
+        <div className="mx-auto flex h-16 max-w-[88rem] items-center gap-3 px-4 sm:gap-8 sm:px-6">
           <Link
             to="/"
             viewTransition
@@ -116,6 +116,20 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
             </ul>
           </nav>
           <div className="ml-auto flex shrink-0 items-center gap-1">
+            {/* phones and tablets: the way in stays in sight, not behind the menu */}
+            <span className="mr-0.5 inline-flex xl:hidden">
+              <Link
+                to="/find-care"
+                viewTransition
+                className={buttonClassName({
+                  pill: true,
+                  size: "sm",
+                  className: "ml-press h-10 px-4",
+                })}
+              >
+                {t("nav.findCare")}
+              </Link>
+            </span>
             {/* emergency stays one tap away on every screen, now in the bar instead of a strip */}
             <Link
               to="/emergency"
@@ -127,20 +141,25 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
               <span className="hidden xl:inline">{t("nav.strip.label")}</span>
             </Link>
             <span aria-hidden="true" className="mx-1.5 hidden h-6 w-px bg-hairline xl:block" />
-            <LanguageSelect className="hidden xl:inline-flex" />
+            <span className="hidden xl:inline-flex">
+              <LanguageSelect />
+            </span>
+            {/* the wrapper holds the breakpoint: the button's own inline-flex beats a "hidden" */}
             {showLogin && (
-              <Link
-                to="/login"
-                viewTransition
-                className={buttonClassName({
-                  pill: true,
-                  size: "sm",
-                  className: "ml-press ml-1.5 hidden h-10 px-5 xl:inline-flex",
-                })}
-              >
-                <SignIn aria-hidden="true" weight="bold" className="size-4" />
-                {t("nav.login")}
-              </Link>
+              <span className="ml-1.5 hidden xl:inline-flex">
+                <Link
+                  to="/login"
+                  viewTransition
+                  className={buttonClassName({
+                    pill: true,
+                    size: "sm",
+                    className: "ml-press h-10 px-5",
+                  })}
+                >
+                  <SignIn aria-hidden="true" weight="bold" className="size-4" />
+                  {t("nav.login")}
+                </Link>
+              </span>
             )}
             <button
               type="button"

@@ -9,6 +9,19 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Home FAQ, a closing invitation and Find Care in the phone header (2026-11-16)
+
+- Added: "Most asked" on the home page: five questions from the help centre (account to search,
+  how the wait is worked out, insurers, cancelling, no smartphone), the first open, with
+  "More questions" to Help. Same translated answers as the help centre, no new strings.
+- Added: a closing call-to-action before the facilities band: "Ready to find healthcare?", one
+  line, and Find Care / Create account.
+- Added: a green Find Care button in the header on phones and tablets, beside emergency and the
+  menu.
+- Fixed: below 1200 px, Sign In and the language select showed in the header (the button's own
+  `inline-flex` beat `hidden`), pushing it past a phone's width; the breakpoint now sits on a
+  wrapper.
+
 ### Cleaner public navbar (2026-11-16)
 
 - Changed: the red emergency strip above the header is gone; emergency lives in the bar itself

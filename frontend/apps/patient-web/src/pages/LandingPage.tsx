@@ -152,7 +152,7 @@ function ClosedNotice({ rows, className }: { rows: FacilityResult[]; className?:
 }
 
 /** The hero photo, served from /public in three widths (WebP, with a JPEG fallback). */
-const HERO = `${import.meta.env.BASE_URL}images/hero/kigali-district-hospital`;
+const HERO = `${import.meta.env.BASE_URL}images/hero/health-centre`;
 
 /** One live figure in the strip under the hero: a label, one number, and what it counts. */
 function Figure({
@@ -234,28 +234,28 @@ export function LandingPage() {
 
   return (
     <PublicLayout>
-      {/* 1 · The question, the search, and what is open right now, over a Rwandan hospital */}
+      {/* 1 · The question, the search, and what is open right now, over a health centre scene */}
       <section aria-labelledby="hero-title" className="relative isolate">
         <PageContainer className="pt-4 sm:pt-6">
           <div className="relative isolate overflow-hidden rounded-shell bg-forest shadow-e3">
             {/*
-             * Nyarugenge District Hospital, Kigali, by Benji1909, CC0 1.0 (public domain),
-             * Wikimedia Commons: https://commons.wikimedia.org/w/index.php?curid=150239055
+             * An illustrative, AI-generated scene (a health centre on Rwanda's hills): not a real
+             * MediLink facility, staff or patients. Owner-supplied, 2026-11-16.
              */}
             <picture>
               <source
                 type="image/webp"
-                srcSet={`${HERO}-960.webp 960w, ${HERO}-1600.webp 1600w, ${HERO}-2400.webp 2400w`}
+                srcSet={`${HERO}-960.webp 960w, ${HERO}-1672.webp 1672w`}
                 sizes="(min-width: 88rem) 86rem, 100vw"
               />
               <img
-                src={`${HERO}-1600.jpg`}
+                src={`${HERO}-1672.jpg`}
                 alt=""
-                width={1600}
-                height={1067}
+                width={1672}
+                height={941}
                 fetchPriority="high"
                 decoding="async"
-                className="ml-hero-photo absolute inset-0 -z-20 size-full object-cover object-[70%_55%]"
+                className="ml-hero-photo absolute inset-0 -z-20 size-full object-cover object-[65%_50%]"
               />
             </picture>
             {/* a dark wash, deepest under the words, so white text reads on any part of the photo */}

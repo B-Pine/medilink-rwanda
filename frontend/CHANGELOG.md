@@ -9,15 +9,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
-### Home hero: a real Rwandan hospital photo (2026-11-16)
+### Home hero: a health centre photo (2026-11-16)
 
-- Changed: the home hero is a full-width photo of Nyarugenge District Hospital, Kigali, under a
-  dark green wash, with a larger white headline, the search card, frosted need chips and the
-  symptom link on it; the live figures overlap its foot. The illustration it replaces stays in the
-  kit. The photo settles from a slight zoom once (off under reduced motion), is served in three
-  widths as WebP with a JPEG fallback (`public/images/hero/`), and loads with high priority.
-- Credit: "DT9A7636" (Nyarugenge District Hospital) by Benji1909, CC0 1.0 (public domain), via
-  Wikimedia Commons, https://commons.wikimedia.org/w/index.php?curid=150239055.
+- Changed: the home hero is a full-width photo of a health centre on Rwanda's hills (a nurse
+  welcoming a mother and baby, an older man waiting) under a dark green wash, with a larger white
+  headline, the search card, frosted need chips and the symptom link on it; the live figures
+  overlap its foot. The illustration it replaces stays in the kit. The photo settles from a slight
+  zoom once (off under reduced motion), is served as WebP in two widths with a JPEG fallback
+  (`public/images/hero/`), and loads with high priority.
+- Note: the image is AI-generated and illustrative (owner-supplied): not a real MediLink facility,
+  staff or patients; it carries no text, signs or logos.
 
 ### Patient dashboard audit: one top bar, one picker, a shorter Overview (2026-11-16)
 

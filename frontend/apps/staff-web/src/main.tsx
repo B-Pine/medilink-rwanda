@@ -1,6 +1,6 @@
 import "./styles.css";
 
-import { applyTheme } from "@medilink/ui";
+import { initTheme } from "@medilink/ui";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter } from "react-router";
@@ -17,8 +17,8 @@ async function enableMocks() {
 }
 
 async function bootstrap() {
-  // staff screens follow the device: light or dark as the system is set (2026-11-06)
-  applyTheme("system");
+  // staff screens follow the device until someone picks light or dark; the choice is remembered
+  initTheme("system");
   await enableMocks();
   const services = createServices();
   // Served under a path prefix on Vercel (/staff/, vite --base); "/" everywhere else.

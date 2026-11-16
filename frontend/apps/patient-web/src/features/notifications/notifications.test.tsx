@@ -187,9 +187,17 @@ describe("push opt-in (S9-F7)", () => {
 });
 
 describe("push-off banner (S9-F8)", () => {
-  it("shows on Home and the inbox while push is off; Not now hides it for 7 days", async () => {
+  it("shows on the inbox while push is off; Not now hides it for 7 days", async () => {
     setPushClient(createFakePushClient());
-    const { user, unmount } = await signIn();
+    // Home shows one banner at a time: an unconfirmed email comes before the alerts
+    const home = await signIn();
+    expect(await screen.findByText("Confirm your email")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("region", { name: "Turn on alerts so we can tell you when to leave" }),
+    ).not.toBeInTheDocument();
+    home.unmount();
+
+    const { user, unmount } = await signIn("/notifications");
     const banner = await screen.findByRole("region", {
       name: "Turn on alerts so we can tell you when to leave",
     });
@@ -199,7 +207,7 @@ describe("push-off banner (S9-F8)", () => {
     ).not.toBeInTheDocument();
     unmount();
 
-    // A new page load within 7 days: still dismissed (also on the inbox).
+    // A new page load within 7 days: still dismissed.
     await signIn("/notifications");
     await screen.findByRole("list", { name: "Notifications" });
     expect(

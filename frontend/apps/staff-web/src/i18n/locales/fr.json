@@ -166,7 +166,14 @@
     "section": {
       "work": "Travail du jour",
       "manage": "Gestion",
-      "practice": "Ma pratique"
+      "practice": "Ma pratique",
+      "platform": {
+        "overview": "Vue d’ensemble",
+        "facilities": "Établissements",
+        "people": "Personnes et sécurité",
+        "support": "Assistance et contenu",
+        "system": "Système"
+      }
     }
   },
   "today": {

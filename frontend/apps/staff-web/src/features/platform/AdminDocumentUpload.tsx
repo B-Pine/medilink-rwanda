@@ -60,7 +60,7 @@ export function AdminDocumentUpload({ app }: { app: PlatformApplication }) {
   return (
     <div className="flex flex-col gap-3 rounded-2xl border border-dashed border-border p-4">
       <h3 className="m-0 font-heading text-h4 font-bold">{t("platform.form.addDocument")}</h3>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2">
         <SelectField
           label={t("platform.form.documentKind")}
           value={kind}

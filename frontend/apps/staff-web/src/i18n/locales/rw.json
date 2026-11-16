@@ -166,7 +166,14 @@
     "section": {
       "work": "Akazi k’umunsi",
       "manage": "Gucunga ikigo",
-      "practice": "Akazi kanjye"
+      "practice": "Akazi kanjye",
+      "platform": {
+        "overview": "Incamake",
+        "facilities": "Ibigo",
+        "people": "Abantu n’umutekano",
+        "support": "Ubufasha n’ibikubiyemo",
+        "system": "Sisitemu"
+      }
     }
   },
   "today": {

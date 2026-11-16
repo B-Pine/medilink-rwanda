@@ -369,7 +369,7 @@ export function HistoryTimeline({ fpId }: { fpId: string }) {
   return (
     <section aria-label={t("clinical.history.title")} className="flex flex-col gap-4">
       <div
-        className="grid gap-3 sm:grid-cols-4"
+        className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-4"
         role="group"
         aria-label={t("clinical.history.filters")}
       >
@@ -480,7 +480,7 @@ export function HistoryPage() {
   const allowed = useCan("clinical.view");
   if (!allowed) return <NoAccessContent />;
   return (
-    <div className="flex max-w-5xl flex-col gap-5">
+    <div className="flex w-full flex-col gap-5">
       <PageHeader
         title={t("clinical.history.title")}
         back={{ to: `/patients/${fpId}`, label: t("clinical.history.backToRecord") }}

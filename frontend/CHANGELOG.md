@@ -9,6 +9,131 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Patient dashboard audit: one top bar, one picker, a shorter Overview (2026-11-16)
+
+- Fixed: the Settings section links were a row cut off in the side column ("Langu…"); they are a
+  vertical list there (`SectionAnchors` `orientation="vertical"`).
+- Fixed: the assistant button no longer floats over cards on tablets and laptops: it sits in the
+  top bar (a portal keeps its answer links in the dashboard); phones keep the floating button,
+  with more room at the foot of each page.
+- Changed: the top bar drops the breadcrumb (the title is right below) and the sidebar drops the
+  name card (the account menu and profile switcher already say who and whose).
+- Changed: one "Whose …" picker (`WhoseFilter`) beside the title on Medical records,
+  Medications, Documents and Bills, instead of a labelled select in a different place on each.
+- Changed: Overview shows one banner at a time (confirm the email first, then the alerts), greets
+  by first name, uses the staff date line, keeps "Book appointment" as its only header action,
+  and "Needs your attention" shows the three most pressing items with a small button each and
+  "Show N more".
+
+### Calmer facility-admin Today and readable admin tables (2026-11-16)
+
+- Changed: on the facility admin's Today, the setup checklist and leave requests are one-line
+  notices (progress and next step, or who asks and when, with a single link) instead of two big
+  cards; the command centre shows the day's numbers first, then the live flow, without a second
+  live chip; its panels align to the top instead of stretching to the tallest.
+- Changed: `DataTable` columns take width rules (`meta.cellClassName`), so Facilities and
+  Applications keep names, dates, types and statuses on one line; the first column's name is
+  black and turns green on hover, like every name in the app.
+
+### Staff dashboard audit: bugs fixed, one style per pattern (2026-11-16)
+
+- Fixed: phone-width pages no longer scroll sideways (grids without a base column grew to their
+  content: Today, Reports and 60+ other grids now use `grid-cols-[minmax(0,1fr)]`).
+- Fixed: patient search runs as you type (350 ms pause, from 2 characters; Enter still searches
+  at once) instead of waiting silently for Enter (`PersonSearch` `searchAsYouType`, default on).
+- Fixed: the "Often rejected" badge on Disputes, the cut last date on chart axes, the wrong icons
+  in Import patients.
+- Changed: disabled buttons are grey, not a lighter green that still looked pressable.
+- Changed: one filter control everywhere (grey track, white chosen chip; `components/filters.ts`),
+  replacing the outlined pills, solid-green buttons and Day/Week button pairs; one search box
+  (every `type="search"` field shows a magnifier; list searches are compact with the label kept
+  for screen readers); one small stat card (`MiniStat`) beside the big `StatTile`; long money
+  values stay on one line; uppercase table headers on Staff; event codes and raw ids leave the
+  Security and Access logs; Merge requests gets the standard empty state; Master data cards open
+  as a whole card.
+- Changed: Today headers keep actions only (no role chips, no buttons that repeat a sidebar page
+  or the card below, "⋯" instead of "More (n)"); "Urgent" is the only label in Needs your
+  attention; the queue's left column is wider; the chosen dispense outcome is filled; the setup
+  checklist banner is a white card with a visible to-do step number; calendar shift titles wrap
+  to two lines; the Users export hint is a tooltip; "Only my drafts" sits beside its title.
+
+### Cleaner scrollbars (2026-11-16)
+
+- Changed: every scrolling area in both web apps (page, sidebar, menus, tables) has a thin, rounded,
+  quiet scrollbar in the theme's colours: a soft pill thumb on a clear track, no arrow buttons,
+  darker while hovered; light and dark follow the tokens (`@medilink/ui` base styles). Chrome,
+  Edge and Safari use the WebKit pseudo-elements; Firefox the standard `scrollbar-*` properties.
+
+### Cleaner staff dashboard: one shell, one page frame (2026-11-16)
+
+- Changed: the facility switcher is the workspace card at the top of the sidebar (facility and
+  role; staff of several facilities open it to switch). The top bar no longer repeats the facility.
+- Changed: one top bar on every screen. Phones get the menu button and logo in it (no second bar)
+  and the menu opens as a panel over the page (closes with Escape, the backdrop or ✕); the theme
+  moves to the account menu on phones.
+- Added: live counts beside sidebar links (Queue waiting; Unsigned records, Results, Pharmacy
+  questions, Follow-ups for clinicians), reusing the board and My day queries; collapsed, a dot.
+- Changed: the platform console's 16 links are grouped (Overview, Facilities, People and security,
+  Support and content, System).
+- Changed: "Online" is a quiet line (a badge only when offline); Queue shows the live state once,
+  in the top bar.
+- Changed: two page widths: work pages and lists fill the content area; settings and forms use
+  one reading width (`max-w-3xl`) instead of five.
+- Changed: the front desk bar is a white card with a normal search field and standard buttons
+  (no dark band); on reception's Today it is the patient search only, since walk-in and phone
+  booking are already the page's actions. Pharmacy puts its tabs and search on one toolbar.
+- Changed: only an emergency flag is a solid badge; priority is a soft violet badge. The booking
+  code box shows its example in normal text.
+
+### Light and dark switch in the staff dashboard (2026-11-16)
+
+- Added: a one-click light / dark switch in the staff top bar, next to the account menu, and a
+  Theme choice (Light, Dark, System) in the account menu. The staff app still follows the device
+  until someone chooses; the choice is remembered on that device (`initTheme` replaces the fixed
+  `applyTheme("system")`).
+
+### Cleaner public site: one header, one spine, calmer motion (2026-11-13)
+
+- Changed: every public page uses the same light page header (breadcrumb, title, one line); the
+  dark green band with a rounded foot is gone. Header actions are the standard primary and
+  secondary buttons (`HEADER_PRIMARY` / `HEADER_SECONDARY` replace `ON_FOREST_*` in the site kit).
+- Changed: reading pages (About, Help, legal) start at the same left edge as every other page;
+  only their text column is narrower.
+- Changed: the home page leads with the search; under it one strip of three live figures instead
+  of five competing tiles. The symptom checker is one link under the search; the duplicate
+  "open near you" panel is gone (the facilities list below shows the same).
+- Added: Home in the desktop navigation bar (it was only in the phone menu).
+- Fixed: in light mode cards blended into the page. The site ground is a step below white
+  (#edf2ef) and cards carry a soft forest-tinted shadow under the hairline.
+- Fixed: the AI assistant button is a round icon on the public site, so it no longer covers
+  list rows; facility names in the live list no longer cut off on phones; the About page links
+  are all the same button; the resume form's email field has room under its paragraph.
+- Changed: the facility page's services read in tiers (name, how to get it as tags, insurers; the
+  wait and next time on the right; real buttons to join or book). Insurance and About sit in
+  cards; doctor rows use dark names and a caret.
+- Changed: the doctor page has a profile card (initials, here today, facts with icons) and an
+  availability calendar: a week strip with the date large and a count per day, the chosen day
+  filled, full days stepped back, and free times grouped into morning and afternoon.
+- Changed: the services index is one card per category (its own icon and count) packed in two
+  columns; the symptom checker uses the shared page header; a page header with only a title is
+  shorter.
+- Changed (motion): dialogs, sheets and the side panel animate out (quicker than in) instead of
+  snapping shut; select menus grow from their field; Tailwind's `ease-out` uses the site curve;
+  card hovers are 200–300 ms; with reduced motion, page changes still cross-fade (no movement).
+
+### Tappable times, redesigned help, contact, emergency and how it works (2026-11-13)
+
+- Added: each free time on a doctor's page is a link into booking. Booking opens on that day,
+  rings the time and offers "Continue with this time" (one tap holds it); if it was taken
+  meanwhile it says so. Sign-in keeps the choice. Kinyarwanda strings are in `i18n-review.md`.
+- Changed: Help has a sticky side column ("Still need help?" with a contact button, and a
+  one-tap 912 card); topics are cards with their own icons, packed in two columns.
+- Changed: Contact puts the form first, with the help card and the 912 card (and the "not watched
+  around the clock" note) beside it.
+- Changed: Emergency's warning signs sit on a softer card with an icon per sign; what to do is a
+  numbered card that stays in view; hospital names follow the dark-name style.
+- Changed: How it works shows each step number as a badge on its card.
+
 ### Assistant back, all 30 districts, sidebar groups you can hide (2026-11-08)
 
 - Fixed: the AI assistant is back on the public site (the floating button, `/assistant` and the

@@ -112,7 +112,7 @@ export function HoursPage() {
                 </button>
               ))}
             </div>
-            <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
               <WeekEditor key={serviceId ?? "facility"} serviceId={serviceId} />
               <CalendarPreview serviceId={serviceId} />
             </div>
@@ -236,7 +236,7 @@ function WeekForm({
           return (
             <li
               key={weekday}
-              className="grid gap-3 py-3 first:pt-0 last:pb-0 lg:grid-cols-[9rem_minmax(0,1fr)] lg:items-start"
+              className="grid grid-cols-[minmax(0,1fr)] gap-3 py-3 first:pt-0 last:pb-0 lg:grid-cols-[9rem_minmax(0,1fr)] lg:items-start"
             >
               <SwitchField
                 label={long[weekday]}

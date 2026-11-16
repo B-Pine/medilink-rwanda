@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 6269.
+Keys: 6279.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -200,6 +200,11 @@ File: `apps/staff-web/src/i18n/locales/rw.json`
 | `shell.section.work` | Akazi k’umunsi | Daily work | needs native-speaker review |
 | `shell.section.manage` | Gucunga ikigo | Manage | needs native-speaker review |
 | `shell.section.practice` | Akazi kanjye | My practice | needs native-speaker review |
+| `shell.section.platform.overview` | Incamake | Overview | needs native-speaker review |
+| `shell.section.platform.facilities` | Ibigo | Facilities | needs native-speaker review |
+| `shell.section.platform.people` | Abantu n’umutekano | People and security | needs native-speaker review |
+| `shell.section.platform.support` | Ubufasha n’ibikubiyemo | Support and content | needs native-speaker review |
+| `shell.section.platform.system` | Sisitemu | System | needs native-speaker review |
 | `today.title` | Uyu munsi | Today | needs native-speaker review |
 | `today.greeting` | Muraho, {{name}} | Hello, {{name}} | needs native-speaker review |
 | `today.rolesLabel` | Inshingano zawe hano | Your roles here | needs native-speaker review |
@@ -4614,6 +4619,8 @@ File: `apps/patient-web/src/features/booking/locales/rw.json`
 | `flow.failed` | Ntitwashoboye gufata iyi gahunda. | We couldn't book this visit. | needs native-speaker review |
 | `flow.joinTitle` | Ukeneye kuvurwa uyu munsi? | Need care today? | needs native-speaker review |
 | `flow.joinBody` | Jya ku murongo w’uyu munsi uri hano ukurikirane igihe cyawe. Wiyandikishe ku bakira abarwayi nugera. | Join today's queue from here and follow your turn. Check in at reception when you arrive. | needs native-speaker review |
+| `flow.pickedTitle` | Igihe wahisemo | The time you chose | needs native-speaker review |
+| `flow.pickedKeep` | Komeza n’iki gihe | Continue with this time | needs native-speaker review |
 | `flow.takenTitle` | Undi muntu amaze gufata iyi saha | Someone just took this time | needs native-speaker review |
 | `flow.takenBody` | Aya masaha ari hafi yayo aracyari ubusa: | These times close to it are still free: | needs native-speaker review |
 | `flow.takenNone` | Hitamo indi saha hepfo. | Choose another time below. | needs native-speaker review |
@@ -4803,6 +4810,8 @@ File: `apps/patient-web/src/features/dashboard/locales/rw.json`
 | `overview.attention.title` | Ibikeneye ko ubyitaho | Needs your attention | needs native-speaker review |
 | `overview.attention.allSet` | Nta kibazo | You're all set | needs native-speaker review |
 | `overview.attention.allSetBody` | Nta kintu gikeneye igisubizo cyawe ubu. | Nothing needs an answer from you right now. | needs native-speaker review |
+| `overview.attention.more_one` | Erekana {{count}} gisigaye | Show {{count}} more | needs native-speaker review |
+| `overview.attention.more_other` | Erekana {{count}} bisigaye | Show {{count}} more | needs native-speaker review |
 | `overview.glance.label` | Muri make | At a glance | needs native-speaker review |
 | `overview.glance.upcoming` | Gahunda ziri imbere | Upcoming | needs native-speaker review |
 | `overview.glance.next` | Ikurikira: {{when}} | Next: {{when}} | needs native-speaker review |
@@ -6216,6 +6225,7 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `doctor.full` | Byuzuye | Full | needs native-speaker review |
 | `doctor.away` | — | — | needs native-speaker review |
 | `doctor.noTimes` | Nta gihe kiboneka uyu munsi | No free times this day | needs native-speaker review |
+| `doctor.bookAt` | Fata gahunda: {{time}} | Book at {{time}} | needs native-speaker review |
 | `doctor.book` | Fata gahunda kuri uyu muganga | Book with this doctor | needs native-speaker review |
 | `doctor.pickDay` | Hitamo umunsi | Choose a day | needs native-speaker review |
 | `doctor.privacy` | Hagaragazwa gusa ibihe biboneka, ntihagaragazwa abafashe gahunda. | Only free times are shown, never who has booked. | needs native-speaker review |

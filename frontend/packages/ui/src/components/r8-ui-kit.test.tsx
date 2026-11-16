@@ -28,7 +28,7 @@ describe("queue colours (design 02 §4)", () => {
     expect(badge("Done")).toHaveClass("bg-subtle", "text-fg-secondary");
   });
 
-  it("priority is violet solid, emergency red solid, no response a red outline", async () => {
+  it("priority is a soft violet badge, emergency red solid, no response a red outline", async () => {
     const { container } = renderWithProviders(
       <>
         <QueueFlagChip flag="priority">Priority</QueueFlagChip>
@@ -36,7 +36,7 @@ describe("queue colours (design 02 §4)", () => {
         <QueueFlagChip flag="no_response">No response</QueueFlagChip>
       </>,
     );
-    expect(screen.getByText("Priority")).toHaveClass("bg-violet-solid", "text-on-violet-solid");
+    expect(screen.getByText("Priority")).toHaveClass("bg-violet-bg", "text-violet");
     expect(screen.getByText("Emergency")).toHaveClass("bg-danger-solid", "text-on-danger-solid");
     expect(screen.getByText("No response")).toHaveClass("bg-surface", "text-danger");
     expect(await axe(container)).toHaveNoViolations();

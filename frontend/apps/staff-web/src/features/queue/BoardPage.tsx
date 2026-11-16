@@ -33,14 +33,13 @@ import { Link, useSearchParams } from "react-router";
 
 import { useApi } from "../../app/services";
 import { PhoneBookingPanel, type PhoneBookingMode } from "../bookings";
-import { PageHeading } from "../../components/PageHeading";
+import { PageHeader } from "../../components/PageHeader";
 import { PatientPicker } from "../patients";
 import { queueKeys, usePollInterval, useQueueSocket } from "./live";
 import { CodeCheckIn } from "./CodeCheckIn";
 import { ExpectedList, MissedList, useTodayBookings } from "./ExpectedList";
 import { DeskBar, DeskFlow, ServiceFilter, ticketTone } from "./FrontDesk";
 import { RemoteList, useConfirmArrival } from "./RemoteList";
-import { LiveBadge } from "./LiveIndicator";
 import {
   actionError,
   Flags,
@@ -153,10 +152,8 @@ export function BoardPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-        <PageHeading title={t("queue.board.title")}>{t("queue.board.title")}</PageHeading>
-        <LiveBadge />
-      </div>
+      {/* the live state is in the top bar; one copy is enough */}
+      <PageHeader title={t("queue.board.title")} />
 
       <DeskBar
         onFind={() => setCheckingIn(true)}
@@ -221,7 +218,7 @@ export function BoardPage() {
         </section>
       )}
 
-      <div className="grid gap-5 xl:grid-cols-[21rem_minmax(0,1fr)]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-5 xl:grid-cols-[24rem_minmax(0,1fr)]">
         <section aria-labelledby="expected" className="flex flex-col gap-3 self-start">
           {canBook && <CodeCheckIn />}
           <h2 id="expected" className="m-0 flex items-center gap-2 font-heading text-h3">

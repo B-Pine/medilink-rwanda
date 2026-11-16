@@ -89,7 +89,7 @@ describe("email-first login", () => {
     expect(
       await screen.findByRole("heading", {
         level: 1,
-        name: /^Good (morning|afternoon|evening), Mukamana Jeanne$/,
+        name: /^Good (morning|afternoon|evening), Mukamana$/,
       }),
     ).toBeInTheDocument();
     expect(router.state.location.pathname).toBe("/dashboard");
@@ -220,7 +220,7 @@ describe("sign-up with consent", () => {
     expect(
       await screen.findByRole("heading", {
         level: 1,
-        name: /^Good (morning|afternoon|evening), Uwera Diane$/,
+        name: /^Good (morning|afternoon|evening), Uwera$/,
       }),
     ).toBeInTheDocument();
     expect(router.state.location.pathname).toBe("/dashboard");
@@ -267,7 +267,7 @@ describe("other pages", () => {
     await user.click(screen.getByRole("button", { name: "Log in" }));
     await screen.findByRole("heading", {
       level: 1,
-      name: /^Good (morning|afternoon|evening), Mukamana Jeanne$/,
+      name: /^Good (morning|afternoon|evening), Mukamana$/,
     });
     const keys = Object.keys(window.localStorage);
     expect(keys.every((key) => ["medilink.theme", "medilink.language"].includes(key))).toBe(true);

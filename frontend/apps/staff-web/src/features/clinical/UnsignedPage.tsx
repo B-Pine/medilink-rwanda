@@ -48,19 +48,24 @@ export function UnsignedPage() {
   });
   if (!allowed) return <NoAccessContent />;
   return (
-    <div className="flex max-w-5xl flex-col gap-5">
-      <PageHeader title={t("clinical.unsigned.title")} />
-      {isAdmin && (
-        <SwitchField
-          label={t("clinical.unsigned.mineOnly")}
-          checked={mineOnly}
-          stateLabel={mineOnly ? t("clinical.restricted.on") : t("clinical.restricted.off")}
-          onCheckedChange={(value) => {
-            setPage(1);
-            setMineOnly(value);
-          }}
-        />
-      )}
+    <div className="flex w-full flex-col gap-5">
+      {/* the filter sits with the title, not alone on a full-width row (audit 2026-11-16) */}
+      <PageHeader
+        title={t("clinical.unsigned.title")}
+        actions={
+          isAdmin && (
+            <SwitchField
+              label={t("clinical.unsigned.mineOnly")}
+              checked={mineOnly}
+              stateLabel={mineOnly ? t("clinical.restricted.on") : t("clinical.restricted.off")}
+              onCheckedChange={(value) => {
+                setPage(1);
+                setMineOnly(value);
+              }}
+            />
+          )
+        }
+      />
       {list.isPending ? (
         <LoadingState label={t("clinical.loading")} />
       ) : list.isError ? (

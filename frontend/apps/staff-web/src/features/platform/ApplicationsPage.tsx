@@ -85,17 +85,20 @@ function Applications() {
       {
         accessorKey: "facility_name",
         header: t("platform.applications.facility"),
+        meta: { cellClassName: "min-w-44" },
         enableSorting: false,
       },
       {
         accessorKey: "status",
         header: t("platform.applications.status"),
+        meta: { cellClassName: "whitespace-nowrap" },
         enableSorting: false,
         cell: ({ row }) => <StatusBadge kind="application" value={row.original.status} />,
       },
       {
         accessorKey: "facility_type",
         header: t("platform.review.type"),
+        meta: { cellClassName: "whitespace-nowrap" },
         enableSorting: false,
         cell: ({ row }) =>
           row.original.facility_type ? facilityTypeLabel(row.original.facility_type, t) : "—",
@@ -103,12 +106,14 @@ function Applications() {
       {
         accessorKey: "district_name",
         header: t("platform.facilities.district"),
+        meta: { cellClassName: "whitespace-nowrap" },
         enableSorting: false,
         cell: ({ row }) => row.original.district_name || "—",
       },
       {
         accessorKey: "applicant_name",
         header: t("platform.applications.applicant"),
+        meta: { cellClassName: "min-w-48" },
         enableSorting: false,
         cell: ({ row }) => (
           <span className="flex flex-col">
@@ -124,6 +129,7 @@ function Applications() {
       {
         id: "progress",
         header: t("platform.applications.progress"),
+        meta: { cellClassName: "whitespace-nowrap" },
         enableSorting: false,
         cell: ({ row }) => (
           <span className="flex flex-col text-body-sm">
@@ -141,11 +147,13 @@ function Applications() {
       {
         accessorKey: "submitted_at",
         header: t("platform.applications.submitted"),
+        meta: { cellClassName: "whitespace-nowrap" },
         cell: ({ row }) => formatDate(row.original.submitted_at, locale),
       },
       {
         accessorKey: "last_activity_at",
         header: t("platform.applications.lastActivity"),
+        meta: { cellClassName: "whitespace-nowrap" },
         cell: ({ row }) => formatDate(row.original.last_activity_at, locale),
       },
     ],

@@ -1,5 +1,5 @@
 import type { PatientPrescriptionItem, PatientPrescriptionRow } from "@medilink/api-client";
-import { Alert, Badge, cx, EmptyState, SelectField, Skeleton, type BadgeTone } from "@medilink/ui";
+import { Alert, Badge, cx, EmptyState, Skeleton, type BadgeTone } from "@medilink/ui";
 import { Pill, Scales } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -17,6 +17,7 @@ import {
   RowList,
   RowsSkeleton,
   SegmentedTabs,
+  WhoseFilter,
 } from "../dashboard/kit";
 import { reportProblemTo } from "../disputes";
 import { useProfiles } from "../profile/ProfileLayout";
@@ -41,22 +42,18 @@ export function MedicinesPage() {
   const nameOf = (id: string) => people.find((p) => p.patient_id === id)?.display_name;
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title={t("dashboard.medications.title")} />
-      {people.length > 1 && (
-        <SelectField
-          label={t("medicines.whose")}
-          value={patientId}
-          onChange={(e) => setPatientId(e.target.value)}
-          className="sm:w-72"
-        >
-          <option value="">{t("medicines.everyone")}</option>
-          {people.map((p) => (
-            <option key={p.patient_id} value={p.patient_id}>
-              {p.display_name}
-            </option>
-          ))}
-        </SelectField>
-      )}
+      <PageHeader
+        title={t("dashboard.medications.title")}
+        actions={
+          <WhoseFilter
+            label={t("medicines.whose")}
+            everyone={t("medicines.everyone")}
+            value={patientId}
+            onChange={setPatientId}
+            people={people}
+          />
+        }
+      />
       <SegmentedTabs
         label={t("medicines.which")}
         value={tab}

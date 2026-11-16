@@ -166,7 +166,14 @@
     "section": {
       "work": "Daily work",
       "manage": "Manage",
-      "practice": "My practice"
+      "practice": "My practice",
+      "platform": {
+        "overview": "Overview",
+        "facilities": "Facilities",
+        "people": "People and security",
+        "support": "Support and content",
+        "system": "System"
+      }
     }
   },
   "today": {

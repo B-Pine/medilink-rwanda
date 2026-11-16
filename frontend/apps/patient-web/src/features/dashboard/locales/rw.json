@@ -128,7 +128,9 @@
     "attention": {
       "title": "Ibikeneye ko ubyitaho",
       "allSet": "Nta kibazo",
-      "allSetBody": "Nta kintu gikeneye igisubizo cyawe ubu."
+      "allSetBody": "Nta kintu gikeneye igisubizo cyawe ubu.",
+      "more_one": "Erekana {{count}} gisigaye",
+      "more_other": "Erekana {{count}} bisigaye"
     },
     "glance": {
       "label": "Muri make",

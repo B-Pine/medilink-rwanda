@@ -128,7 +128,7 @@ function OrderForm({ consultationId, open }: { consultationId: string; open: Lab
       </h3>
       <fieldset className="m-0 border-0 p-0">
         <legend className="mb-2 p-0 text-body-sm font-semibold">{t("clinical.lab.choose")}</legend>
-        <div className="grid gap-x-4 gap-y-2 sm:grid-cols-2">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-x-4 gap-y-2 sm:grid-cols-2">
           {(tests.data ?? []).map((test) => (
             <CheckboxField
               key={test.code}

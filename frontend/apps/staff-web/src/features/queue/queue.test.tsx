@@ -21,19 +21,22 @@ async function signIn(email: string, path: string, facility?: string) {
   if (facility) {
     await app.user.click(await screen.findByRole("button", { name: `Work at ${facility}` }));
     const nav = await screen.findByRole("navigation", { name: "Main menu" });
-    await app.user.click(within(nav).getByRole("link", { name: "Queue" }));
+    await app.user.click(within(nav).getByRole("link", { name: /^Queue(,\s*\d+)?$/ }));
   }
   return app;
 }
 
 describe("reception today (upgrade 05 §2)", () => {
-  it("shows the front desk: desk bar, numbers, next arrivals and check-in by code", async () => {
+  it("shows the front desk: patient search, numbers, next arrivals and check-in by code", async () => {
     const { user, container } = await signIn("reception@medilink.test", "/today");
     const desk = await screen.findByRole("region", { name: "Front desk" });
-    expect(within(desk).getByRole("link", { name: /Book by phone|Book/ })).toHaveAttribute(
+    expect(within(desk).getByRole("link", { name: /Find a patient/ })).toHaveAttribute(
       "href",
-      "/queue?book=new",
+      "/queue?find=1",
     );
+    // walk-in and phone booking are the page's own actions, not repeated in the desk
+    expect(within(desk).queryByRole("link", { name: /Book by phone/ })).not.toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: /Book by phone/ }).length).toBeGreaterThan(0);
     expect(within(desk).getByRole("list", { name: "Today at the front desk" })).toBeInTheDocument();
     expect(within(desk).getByRole("region", { name: "Next arrivals" })).toBeInTheDocument();
     const byCode = within(desk).getByRole("region", { name: "Check in by booking code" });

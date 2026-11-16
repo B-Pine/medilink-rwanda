@@ -52,7 +52,7 @@ export function StockPage() {
   const [receiving, setReceiving] = useState(false);
   if (!canView) return <NoAccessContent />;
   return (
-    <div className="flex max-w-5xl flex-col gap-5">
+    <div className="flex w-full flex-col gap-5">
       <PageHeader
         title={t("pharmacy.stock.title")}
         actions={
@@ -113,6 +113,8 @@ function CardList({ short }: { short: boolean }) {
       <TextField
         type="search"
         label={t("pharmacy.stock.search")}
+        hideLabel
+        placeholder={t("pharmacy.stock.search")}
         value={search}
         onChange={(event) => {
           setPage(1);
@@ -485,7 +487,7 @@ function ReceiveDialog({
             )}
           </div>
         )}
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
           <TextField
             label={t("pharmacy.stock.receive.batch")}
             value={batch}
@@ -574,7 +576,7 @@ export function StockDetailPage() {
     );
   const d = card.data;
   return (
-    <div className="flex max-w-5xl flex-col gap-5">
+    <div className="flex w-full flex-col gap-5">
       {back}
       <PageHeader
         title={d.display}

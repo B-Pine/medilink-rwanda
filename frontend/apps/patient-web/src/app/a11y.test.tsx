@@ -65,7 +65,7 @@ describe("accessibility (axe)", () => {
     await user.click(screen.getByRole("button", { name: "Log in" }));
     await screen.findByRole("heading", {
       level: 1,
-      name: /^Good (morning|afternoon|evening), Mukamana Jeanne$/,
+      name: /^Good (morning|afternoon|evening), Mukamana$/,
     });
     expect(await axe(container)).toHaveNoViolations();
   });

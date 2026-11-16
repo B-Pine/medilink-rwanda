@@ -19,7 +19,7 @@ async function signIn(path = "/home") {
   await app.user.click(screen.getByRole("button", { name: "Log in" }));
   await screen.findByRole("heading", {
     level: 1,
-    name: /^Good (morning|afternoon|evening), Mukamana Jeanne$/,
+    name: /^Good (morning|afternoon|evening), Mukamana$/,
   });
   if (path !== "/home") await app.router.navigate(path);
   return app;

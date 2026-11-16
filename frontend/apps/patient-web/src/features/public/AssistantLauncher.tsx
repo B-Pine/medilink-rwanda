@@ -1,5 +1,6 @@
 import { Sparkle } from "@phosphor-icons/react";
 import { cx, SidePanel } from "@medilink/ui";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 
@@ -14,11 +15,18 @@ import { useAssistantPanel } from "./assistantState";
 export function AssistantLauncher({
   raised = false,
   compact = false,
+  slot = null,
 }: {
   /** Above the phone tab bar of the dashboard. */
   raised?: boolean;
   /** Icon only (the dashboard): the labelled pill covered tiles and list rows. */
   compact?: boolean;
+  /**
+   * An element in the top bar: the button sits there instead of floating over the page (the
+   * dashboard on tablets and up, audit 2026-11-16). A portal keeps it in this React tree, so links
+   * in the answer still open the in-shell pages.
+   */
+  slot?: HTMLElement | null;
 }) {
   const { t } = useTranslation();
   const { pathname } = useLocation();
@@ -29,36 +37,50 @@ export function AssistantLauncher({
   const open = assistant.openPath === pathname;
   const setOpen = (value: boolean) => assistant.setOpenPath(value ? pathname : null);
 
+  const button = (
+    <button
+      type="button"
+      onClick={() => setOpen(true)}
+      aria-haspopup="dialog"
+      aria-expanded={open}
+      aria-label={t("public.assistant.launcher")}
+      className={
+        slot
+          ? // in the top bar: a quiet round button like its neighbours
+            "relative inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl text-violet transition-colors duration-150 ease-out hover:bg-subtle"
+          : cx(
+              // small (48 px) so it covers as little of the page as it can; still a 44 px target
+              "group fixed right-4 z-30 inline-flex min-h-12 cursor-pointer items-center gap-1.5 rounded-full bg-primary p-2 text-on-primary shadow-raised",
+              "transition-[translate,box-shadow] duration-200 ease-out hover:-translate-y-0.5 motion-reduce:transition-none",
+              "sm:right-6",
+              raised ? "bottom-[calc(5rem+env(safe-area-inset-bottom))]" : "bottom-4 sm:bottom-6",
+            )
+      }
+    >
+      <span aria-hidden="true" className="relative grid size-8 place-items-center rounded-full">
+        <Sparkle weight="fill" className="size-5" />
+        {/* a conversation is waiting */}
+        {chat.messages.length > 0 && (
+          <span
+            className={cx(
+              "absolute top-0.5 right-0.5 size-2.5 rounded-full bg-attention-solid ring-2",
+              slot ? "ring-surface" : "ring-primary",
+            )}
+          />
+        )}
+      </span>
+      {/* the label folds away once the page scrolls, so the button stops covering content */}
+      {!compact && !slot && (
+        <span className="ml-fab-label hidden overflow-hidden pr-3 font-semibold whitespace-nowrap sm:inline-block">
+          {t("public.assistant.launcherShort")}
+        </span>
+      )}
+    </button>
+  );
+
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-haspopup="dialog"
-        aria-expanded={open}
-        aria-label={t("public.assistant.launcher")}
-        className={cx(
-          // small (48 px) so it covers as little of the page as it can; still a 44 px target
-          "group fixed right-4 z-30 inline-flex min-h-12 cursor-pointer items-center gap-1.5 rounded-full bg-primary p-2 text-on-primary shadow-raised",
-          "transition-[translate,box-shadow] duration-200 ease-out hover:-translate-y-0.5 motion-reduce:transition-none",
-          "sm:right-6",
-          raised ? "bottom-[calc(5rem+env(safe-area-inset-bottom))]" : "bottom-4 sm:bottom-6",
-        )}
-      >
-        <span aria-hidden="true" className="relative grid size-8 place-items-center rounded-full">
-          <Sparkle weight="fill" className="size-5" />
-          {/* a conversation is waiting */}
-          {chat.messages.length > 0 && (
-            <span className="absolute top-0.5 right-0.5 size-2.5 rounded-full bg-attention-solid ring-2 ring-primary" />
-          )}
-        </span>
-        {/* the label folds away once the page scrolls, so the button stops covering content */}
-        {!compact && (
-          <span className="ml-fab-label hidden overflow-hidden pr-3 font-semibold whitespace-nowrap sm:inline-block">
-            {t("public.assistant.launcherShort")}
-          </span>
-        )}
-      </button>
+      {slot ? createPortal(button, slot) : button}
 
       <SidePanel
         open={open}

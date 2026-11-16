@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 6277.
+Keys: 6279.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -4810,6 +4810,8 @@ File: `apps/patient-web/src/features/dashboard/locales/rw.json`
 | `overview.attention.title` | Ibikeneye ko ubyitaho | Needs your attention | needs native-speaker review |
 | `overview.attention.allSet` | Nta kibazo | You're all set | needs native-speaker review |
 | `overview.attention.allSetBody` | Nta kintu gikeneye igisubizo cyawe ubu. | Nothing needs an answer from you right now. | needs native-speaker review |
+| `overview.attention.more_one` | Erekana {{count}} gisigaye | Show {{count}} more | needs native-speaker review |
+| `overview.attention.more_other` | Erekana {{count}} bisigaye | Show {{count}} more | needs native-speaker review |
 | `overview.glance.label` | Muri make | At a glance | needs native-speaker review |
 | `overview.glance.upcoming` | Gahunda ziri imbere | Upcoming | needs native-speaker review |
 | `overview.glance.next` | Ikurikira: {{when}} | Next: {{when}} | needs native-speaker review |

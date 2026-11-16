@@ -9,6 +9,23 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### A shorter, calmer home page and a hero that explains more (2026-11-16)
+
+- Changed: the hero's second line changes every few seconds ("without the long wait", "close to
+  home", "with your insurance", "for your whole family"), in one grid cell so nothing below moves;
+  screen readers and reduced motion get the first phrase only, and it pauses in a hidden tab. A
+  longer lead says what MediLink does (who is open, the wait now, queue from home or book, which
+  insurance); phones keep the short lead.
+- Changed: "Facilities near you" shows three compact cards (no drawing, status beside the type;
+  `FacilityExplorer` `compact`) with "Near me" and "View all facilities" as plain links.
+- Changed: one ending: the forest "for facilities" band is a quiet line under "Ready to find
+  healthcare?"; "New here? How MediLink works" sits with the FAQ; one gap between sections.
+- Changed: every live figure has a sub-line; on phones the three sit in one row; the care types
+  are two columns; the common needs swipe sideways in one row.
+- Changed: on wide screens the assistant button sits in the public header instead of floating
+  over the right edge of every page (opening hours, cards); phones keep the floating button,
+  with the symptom link clear of it.
+
 ### Home FAQ, a closing invitation and Find Care in the phone header (2026-11-16)
 
 - Added: "Most asked" on the home page: five questions from the help centre (account to search,

@@ -459,13 +459,19 @@
       "waiting": "Abategereje",
       "typical": "Igihe gisanzwe cyo gutegereza",
       "minutes_one": "Umunota {{count}}",
-      "minutes_other": "Iminota {{count}}"
+      "minutes_other": "Iminota {{count}}",
+      "waitingHint": "mu bigo bikora ubu",
+      "typicalHint": "mbere yo kwakirwa, uyu munsi"
     },
     "symptoms": {
       "title": "Ntuzi aho wajya?",
       "action": "Suzuma ibimenyetso byawe"
     },
-    "howLine": "Ni ubwa mbere uje?"
+    "howLine": "Ni ubwa mbere uje?",
+    "rotate2": "hafi y'aho utuye.",
+    "rotate3": "ukoresheje ubwishingizi bwawe.",
+    "rotate4": "ku muryango wawe wose.",
+    "leadLong": "Reba ibigo by'ubuvuzi bikora n'igihe cyo gutegereza ubu. Injira ku murongo uri mu rugo cyangwa ufate isaha, kandi urebe ubwishingizi buri kigo cyemera."
   },
   "filters": {
     "button": "Iyungurura",

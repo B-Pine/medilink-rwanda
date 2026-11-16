@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 6279.
+Keys: 6285.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -6430,9 +6430,15 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `home3.kpi.typical` | Igihe gisanzwe cyo gutegereza | Typical wait | needs native-speaker review |
 | `home3.kpi.minutes_one` | Umunota {{count}} | {{count}} min | needs native-speaker review |
 | `home3.kpi.minutes_other` | Iminota {{count}} | {{count}} min | needs native-speaker review |
+| `home3.kpi.waitingHint` | mu bigo bikora ubu | in open facilities now | needs native-speaker review |
+| `home3.kpi.typicalHint` | mbere yo kwakirwa, uyu munsi | to be seen, today | needs native-speaker review |
 | `home3.symptoms.title` | Ntuzi aho wajya? | Not sure where to go? | needs native-speaker review |
 | `home3.symptoms.action` | Suzuma ibimenyetso byawe | Check your symptoms | needs native-speaker review |
 | `home3.howLine` | Ni ubwa mbere uje? | New here? | needs native-speaker review |
+| `home3.rotate2` | hafi y'aho utuye. | close to home. | needs native-speaker review |
+| `home3.rotate3` | ukoresheje ubwishingizi bwawe. | with your insurance. | needs native-speaker review |
+| `home3.rotate4` | ku muryango wawe wose. | for your whole family. | needs native-speaker review |
+| `home3.leadLong` | Reba ibigo by'ubuvuzi bikora n'igihe cyo gutegereza ubu. Injira ku murongo uri mu rugo cyangwa ufate isaha, kandi urebe ubwishingizi buri kigo cyemera. | See which health facilities are open and how long the wait is right now. Join the queue from home or book a time, and check which insurance each one takes. | needs native-speaker review |
 | `filters.button` | Iyungurura | Filters | needs native-speaker review |
 | `filters.show` | Reba ibyavuye mu ishakisha | Show results | needs native-speaker review |
 | `filters.active` | Iyungurura rikora | Active filters | needs native-speaker review |

@@ -9,6 +9,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Cleaner public navbar (2026-11-16)
+
+- Changed: the red emergency strip above the header is gone; emergency lives in the bar itself
+  (a red "Emergency" link on wide screens, a red icon below), and the phone menu adds a
+  "Call 912" button. One 64 px bar: the logo, the pages as plain text links with a green
+  underline on the current one (it glides between pages), then emergency, the language code and
+  a green Sign in button.
+
 ### Home hero: a health centre photo (2026-11-16)
 
 - Changed: the home hero is a full-width photo of a health centre on Rwanda's hills (a nurse

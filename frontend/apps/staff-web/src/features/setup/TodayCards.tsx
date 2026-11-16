@@ -20,35 +20,32 @@ export function LeaveTodayCard() {
   });
   const rows = pending.data?.results ?? [];
   if (!allowed || rows.length === 0) return null;
+  const first = rows[0]!;
+  // one quiet line on Today, like the setup notice (audit 2026-11-16)
   return (
     <section
       aria-labelledby="today-leave"
-      className="flex flex-col gap-3 rounded-2xl bg-surface p-5 shadow-card"
+      className="flex flex-wrap items-center gap-x-4 gap-y-3 rounded-2xl bg-surface px-4 py-3 shadow-card lg:col-span-3"
     >
-      <div className="flex items-center gap-3">
-        <span className="inline-flex size-10 items-center justify-center rounded-xl bg-attention-bg text-attention">
-          <AirplaneTilt aria-hidden="true" weight="duotone" className="size-5" />
-        </span>
-        <div className="flex min-w-0 flex-1 flex-col">
-          <h2 id="today-leave" className="m-0 font-heading text-h3">
-            {t("setup.today.leaveTitle")}
-          </h2>
-          <p className="m-0 text-body-sm text-fg-secondary tabular-nums">
-            {t("setup.today.leaveCount", { count: rows.length })}
-          </p>
-        </div>
+      <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-attention-bg text-attention">
+        <AirplaneTilt aria-hidden="true" weight="duotone" className="size-5" />
+      </span>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <h2 id="today-leave" className="m-0 text-body font-semibold">
+          {t("setup.today.leaveTitle")}
+        </h2>
+        <p className="m-0 truncate text-body-sm text-fg-secondary tabular-nums">
+          <span>{t("setup.today.leaveCount", { count: rows.length })}</span>
+          <span>
+            {" · "}
+            {first.member_name}, {formatDate(first.starts_at, locale)}
+          </span>
+        </p>
       </div>
-      <ul className="m-0 flex list-none flex-col gap-1 p-0">
-        {rows.slice(0, 3).map((e) => (
-          <li key={e.id} className="flex items-center justify-between gap-3 text-body-sm">
-            <span className="font-semibold">{e.member_name}</span>
-            <span className="text-fg-secondary tabular-nums">
-              {formatDate(e.starts_at, locale)}
-            </span>
-          </li>
-        ))}
-      </ul>
-      <Link to="/settings/schedules" className={buttonClassName({ variant: "secondary" })}>
+      <Link
+        to="/settings/schedules"
+        className={buttonClassName({ variant: "secondary", size: "sm" })}
+      >
         {t("setup.today.review")}
         <CaretRight aria-hidden="true" />
       </Link>

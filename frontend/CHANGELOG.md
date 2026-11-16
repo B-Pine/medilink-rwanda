@@ -9,6 +9,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Calmer facility-admin Today and readable admin tables (2026-11-16)
+
+- Changed: on the facility admin's Today, the setup checklist and leave requests are one-line
+  notices (progress and next step, or who asks and when, with a single link) instead of two big
+  cards; the command centre shows the day's numbers first, then the live flow, without a second
+  live chip; its panels align to the top instead of stretching to the tallest.
+- Changed: `DataTable` columns take width rules (`meta.cellClassName`), so Facilities and
+  Applications keep names, dates, types and statuses on one line; the first column's name is
+  black and turns green on hover, like every name in the app.
+
 ### Staff dashboard audit: bugs fixed, one style per pattern (2026-11-16)
 
 - Fixed: phone-width pages no longer scroll sideways (grids without a base column grew to their

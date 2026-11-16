@@ -16,7 +16,7 @@ import {
   UsersThree,
   type Icon,
 } from "@phosphor-icons/react";
-import { Button, cx, ImigongoPattern } from "@medilink/ui";
+import { Button, buttonClassName, cx, ImigongoPattern } from "@medilink/ui";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -34,7 +34,7 @@ import {
 import { FILTER, sortResults, useNearMe, type Sort } from "../features/booking/Places";
 import { kigaliNow, nextOpening, useAllFacilities, useProfiles } from "../features/site/data";
 import { FacilityExplorer } from "../features/site/FacilityDirectory";
-import { LocationSelector, PageContainer, SearchBar } from "../features/site/kit";
+import { Faq, LocationSelector, PageContainer, SearchBar } from "../features/site/kit";
 import { PublicLayout } from "../layout/PublicLayout";
 
 const COMMON_NEEDS: { key: string; to: string; icon: Icon }[] = [
@@ -150,6 +150,12 @@ function ClosedNotice({ rows, className }: { rows: FacilityResult[]; className?:
     </div>
   );
 }
+
+/**
+ * The home FAQ: the help centre's most asked questions, as `category.n` (question qn, answer an),
+ * so the answers stay one text, already translated (audit 2026-11-16).
+ */
+const HOME_FAQ = ["finding.1", "finding.2", "insurance.1", "booking.2", "arrival.2"] as const;
 
 /** The hero photo, served from /public in three widths (WebP, with a JPEG fallback). */
 const HERO = `${import.meta.env.BASE_URL}images/hero/health-centre`;
@@ -447,9 +453,87 @@ export function LandingPage() {
             {t("site.home.how")}
           </Link>
         </p>
+
+        {/* 3 · The questions people ask first, answered on the page (the help centre's own answers) */}
+        <section
+          aria-labelledby="faq-title"
+          className="site-reveal grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:gap-16"
+        >
+          <div className="flex flex-col items-start gap-4">
+            <h2 id="faq-title" className="m-0 font-heading text-section font-bold text-balance">
+              {t("site.help.top")}
+            </h2>
+            <Link
+              to="/help"
+              viewTransition
+              className="group inline-flex items-center gap-2 font-semibold text-link no-underline hover:underline"
+            >
+              {t("site.help.more")}
+              <ArrowRight
+                aria-hidden="true"
+                className="size-4 transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5"
+              />
+            </Link>
+          </div>
+          <div className="overflow-hidden rounded-panel bg-surface shadow-e1">
+            {HOME_FAQ.map((entry, index) => {
+              const [category, n] = entry.split(".");
+              return (
+                <Faq
+                  key={entry}
+                  question={t(`site.help.categories.${category}.q${n}`)}
+                  open={index === 0}
+                >
+                  {t(`site.help.categories.${category}.a${n}`)}
+                </Faq>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* 4 · One last invitation before the footer, with one way in and one way to stay */}
+        <section
+          aria-labelledby="cta-title"
+          className="site-reveal relative isolate overflow-hidden rounded-shell bg-surface px-6 py-14 text-center shadow-e2 sm:px-10 lg:py-20"
+        >
+          <div aria-hidden="true" className="absolute inset-0 -z-10 text-primary">
+            <ImigongoPattern opacity={0.05} />
+          </div>
+          <div className="mx-auto flex max-w-[40rem] flex-col items-center gap-5">
+            <h2
+              id="cta-title"
+              className="m-0 font-heading text-[clamp(2rem,4vw,3.25rem)] leading-[1.08] font-bold tracking-[-0.02em] text-balance text-fg"
+            >
+              {t("site.home.readyTitle")}
+            </h2>
+            <p className="m-0 text-body text-fg-secondary">{t("site.home.accountLead")}</p>
+            <div className="flex flex-wrap justify-center gap-3 pt-2">
+              <Link
+                to="/find-care"
+                viewTransition
+                className={buttonClassName({ pill: true, size: "lg", className: "ml-press px-8" })}
+              >
+                <MagnifyingGlass aria-hidden="true" weight="bold" />
+                {t("nav.findCare")}
+              </Link>
+              <Link
+                to="/signup"
+                viewTransition
+                className={buttonClassName({
+                  variant: "secondary",
+                  pill: true,
+                  size: "lg",
+                  className: "ml-press px-8",
+                })}
+              >
+                {t("signup.submit")}
+              </Link>
+            </div>
+          </div>
+        </section>
       </PageContainer>
 
-      {/* 4 · For facilities: one slim forest band, one line and one button */}
+      {/* 5 · For facilities: one slim forest band, one line and one button */}
       <section
         aria-labelledby="facilities-title"
         className="relative isolate overflow-hidden bg-forest text-on-forest"

@@ -277,7 +277,7 @@ function LetterForm({
             onChange={(e) => setTo(e.target.value)}
             error={missing(to)}
           />
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2">
             <TextField
               label={t("documents.form.specialty")}
               value={specialty}
@@ -320,7 +320,7 @@ function LetterForm({
         />
       ) : (
         <>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2">
             <TextField
               type="date"
               label={t("documents.form.from")}

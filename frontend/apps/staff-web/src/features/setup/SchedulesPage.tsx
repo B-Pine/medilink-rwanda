@@ -46,6 +46,7 @@ import {
   useLocale,
   useLocalName,
 } from "./shared";
+import { MiniStat } from "../../components/MiniStat";
 
 const initials = (name: string) =>
   name
@@ -248,7 +249,7 @@ function DoctorWeeks({
           );
         })}
       </div>
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-3">
         {[
           [t("setup.schedules.weeklyHours"), hours.toFixed(1)],
           [t("setup.schedules.sessions"), String(own.length)],
@@ -263,13 +264,7 @@ function DoctorWeeks({
             ),
           ],
         ].map(([label, value]) => (
-          <div
-            key={label}
-            className="flex flex-col gap-1 rounded-2xl bg-surface shadow-card px-4 py-3"
-          >
-            <span className="text-body-sm font-semibold text-fg-secondary">{label}</span>
-            <span className="font-heading text-h1 tabular-nums">{value}</span>
-          </div>
+          <MiniStat key={label} label={label} value={value} />
         ))}
       </div>
       {unattested && (

@@ -18,6 +18,7 @@ import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
 import { SetupGate, useDayNames, useLocalName } from "../setup/shared";
 import { kigaliDate, slotDay, slotTime } from "./time";
+import { FILTER_BUTTON, FILTER_GROUP } from "../../components/filters";
 
 export const calendarKeys = {
   all: ["bookings", "calendar"] as const,
@@ -206,16 +207,17 @@ function Calendar() {
         title={data?.only_own ? t("bookings.calendar.mineTitle") : t("bookings.calendar.title")}
       />
       <div className="flex flex-wrap items-end gap-3">
-        <div role="group" aria-label={t("bookings.calendar.view")} className="flex gap-1">
+        <div role="group" aria-label={t("bookings.calendar.view")} className={FILTER_GROUP}>
           {(["day", "week"] as const).map((v) => (
-            <Button
+            <button
               key={v}
-              variant={view === v ? "primary" : "secondary"}
+              type="button"
               aria-pressed={view === v}
               onClick={() => setView(v)}
+              className={FILTER_BUTTON}
             >
               {t(`bookings.calendar.${v}View`)}
-            </Button>
+            </button>
           ))}
         </div>
         <div className="flex items-center gap-1">

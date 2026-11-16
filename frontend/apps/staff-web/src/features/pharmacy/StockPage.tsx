@@ -113,6 +113,8 @@ function CardList({ short }: { short: boolean }) {
       <TextField
         type="search"
         label={t("pharmacy.stock.search")}
+        hideLabel
+        placeholder={t("pharmacy.stock.search")}
         value={search}
         onChange={(event) => {
           setPage(1);
@@ -485,7 +487,7 @@ function ReceiveDialog({
             )}
           </div>
         )}
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
           <TextField
             label={t("pharmacy.stock.receive.batch")}
             value={batch}

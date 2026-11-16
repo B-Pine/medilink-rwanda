@@ -9,6 +9,28 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Staff dashboard audit: bugs fixed, one style per pattern (2026-11-16)
+
+- Fixed: phone-width pages no longer scroll sideways (grids without a base column grew to their
+  content: Today, Reports and 60+ other grids now use `grid-cols-[minmax(0,1fr)]`).
+- Fixed: patient search runs as you type (350 ms pause, from 2 characters; Enter still searches
+  at once) instead of waiting silently for Enter (`PersonSearch` `searchAsYouType`, default on).
+- Fixed: the "Often rejected" badge on Disputes, the cut last date on chart axes, the wrong icons
+  in Import patients.
+- Changed: disabled buttons are grey, not a lighter green that still looked pressable.
+- Changed: one filter control everywhere (grey track, white chosen chip; `components/filters.ts`),
+  replacing the outlined pills, solid-green buttons and Day/Week button pairs; one search box
+  (every `type="search"` field shows a magnifier; list searches are compact with the label kept
+  for screen readers); one small stat card (`MiniStat`) beside the big `StatTile`; long money
+  values stay on one line; uppercase table headers on Staff; event codes and raw ids leave the
+  Security and Access logs; Merge requests gets the standard empty state; Master data cards open
+  as a whole card.
+- Changed: Today headers keep actions only (no role chips, no buttons that repeat a sidebar page
+  or the card below, "⋯" instead of "More (n)"); "Urgent" is the only label in Needs your
+  attention; the queue's left column is wider; the chosen dispense outcome is filled; the setup
+  checklist banner is a white card with a visible to-do step number; calendar shift titles wrap
+  to two lines; the Users export hint is a tooltip; "Only my drafts" sits beside its title.
+
 ### Cleaner scrollbars (2026-11-16)
 
 - Changed: every scrolling area in both web apps (page, sidebar, menus, tables) has a thin, rounded,

@@ -251,7 +251,7 @@ export function MemberWork({
   return (
     <section className="flex flex-col gap-3 rounded-2xl border border-border/60 p-4">
       <h3 className="m-0 font-heading text-h3">{t("setup.staff.work")}</h3>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2">
         <SelectField
           label={t("setup.staff.department")}
           value={department}

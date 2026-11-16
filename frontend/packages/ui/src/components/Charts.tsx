@@ -126,7 +126,15 @@ export function StatTile({
       ) : (
         <>
           <div className="flex items-end justify-between gap-3">
-            <p className="m-0 flex items-baseline gap-1 font-heading text-display leading-none font-semibold text-fg tabular-nums">
+            <p
+              className={cx(
+                "m-0 flex items-baseline gap-1 font-heading leading-none font-semibold whitespace-nowrap text-fg tabular-nums",
+                // long money values ("1,066,400 RWF") stay on one line at a smaller size
+                (typeof value === "string" || typeof value === "number") && String(value).length > 7
+                  ? "text-h1"
+                  : "text-display",
+              )}
+            >
               {value}
               {unit && <span className="text-body font-semibold text-fg-secondary">{unit}</span>}
             </p>
@@ -336,7 +344,8 @@ export function TrendChart({
                 key={l + i}
                 x={x(i)}
                 y={height - 6}
-                textAnchor="middle"
+                // the end labels sit inside the chart, never cut by its edge
+                textAnchor={i === 0 ? "start" : i === last ? "end" : "middle"}
                 className="fill-fg-muted text-caption"
               >
                 {l}

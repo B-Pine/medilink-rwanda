@@ -50,6 +50,7 @@ import {
   setupKeys,
   useLocale,
 } from "./shared";
+import { FILTER_BUTTON, FILTER_GROUP } from "../../components/filters";
 
 const ROLES = [
   "facility_admin",
@@ -190,6 +191,7 @@ export function StaffPage() {
             <div className="mt-4 flex flex-col gap-3">
               <div className="flex flex-wrap items-end gap-3">
                 <TextField
+                  type="search"
                   label={t("setup.staff.search")}
                   hideLabel
                   placeholder={t("setup.staff.search")}
@@ -197,18 +199,14 @@ export function StaffPage() {
                   onChange={(e) => setQuery(e.target.value)}
                   className="w-full max-w-xs"
                 />
-                <div
-                  className="flex flex-wrap gap-2"
-                  role="group"
-                  aria-label={t("setup.staff.roles")}
-                >
+                <div className={FILTER_GROUP} role="group" aria-label={t("setup.staff.roles")}>
                   {["", ...ROLES].map((r) => (
                     <button
                       key={r || "all"}
                       type="button"
                       aria-pressed={role === r}
                       onClick={() => setRole(r)}
-                      className="min-h-9 cursor-pointer rounded-full border border-border bg-surface px-3.5 text-body-sm font-semibold text-fg-secondary hover:text-fg aria-pressed:border-primary aria-pressed:bg-brand-subtle aria-pressed:text-on-brand-subtle"
+                      className={FILTER_BUTTON}
                     >
                       {r ? roleLabel(r as RoleCode, t) : t("setup.staff.allRoles")}
                     </button>
@@ -227,7 +225,7 @@ export function StaffPage() {
                     <div className="overflow-x-auto rounded-2xl bg-surface shadow-card">
                       <table className="w-full border-collapse text-left">
                         <caption className="sr-only">{t("setup.staff.members")}</caption>
-                        <thead className="bg-subtle text-body-sm text-fg-secondary">
+                        <thead className="bg-subtle text-caption tracking-wider text-fg-muted uppercase">
                           <tr>
                             {["person", "roles", "mfa", "licence", "lastActive", "status"].map(
                               (col) => (
@@ -260,7 +258,7 @@ export function StaffPage() {
                                     {initials(m.full_name)}
                                   </span>
                                   <span className="flex flex-col">
-                                    <span className="font-semibold text-link underline-offset-2 hover:underline">
+                                    <span className="font-semibold text-fg underline-offset-2 hover:underline">
                                       {m.full_name}
                                     </span>
                                     <span className="text-body-sm text-fg-secondary">
@@ -551,7 +549,7 @@ function InviteDialog({ points, onClose }: { points: ServicePoint[]; onClose: ()
           onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
           error={errors.email}
         />
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
           <TextField
             label={t("setup.staff.inviteName")}
             hint={t("setup.staff.optional")}

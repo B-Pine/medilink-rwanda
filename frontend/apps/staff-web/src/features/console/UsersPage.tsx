@@ -397,24 +397,22 @@ function ExportButton({ filters }: { filters: UserListParams }) {
     }
   }
   return (
+    // the hint is the button's tooltip, so the header stays one line (audit 2026-11-16)
     <div className="flex flex-col items-end gap-1">
       <Button
         variant="secondary"
         loading={busy}
         onClick={() => void download()}
+        title={t("console.users.exportHint")}
         iconStart={<DownloadSimple aria-hidden="true" className="size-4" />}
       >
         {t("console.users.export")}
       </Button>
-      <span className="text-caption text-fg-muted">
-        {failed ? (
-          <span role="alert" className="text-danger">
-            {t("console.users.exportFailed")}
-          </span>
-        ) : (
-          t("console.users.exportHint")
-        )}
-      </span>
+      {failed && (
+        <span role="alert" className="text-caption text-danger">
+          {t("console.users.exportFailed")}
+        </span>
+      )}
     </div>
   );
 }

@@ -32,6 +32,7 @@ import { useStaffMe } from "../../auth/queries";
 import { PageHeader } from "../../components/PageHeader";
 import { useStepUp } from "../lock/StepUp";
 import { PlatformOnly } from "../platform/shared";
+import { FILTER_BUTTON, FILTER_GROUP } from "../../components/filters";
 
 /**
  * S10b-F2 disputes (contract sprint-10b §5): the facility queue (Open, Overdue, All) and a dispute
@@ -122,8 +123,7 @@ function Rows({ rows, base }: { rows: StaffDisputeRow[]; base: string }) {
                 <span className="flex flex-wrap items-center gap-2 font-semibold">
                   {row.patient_display_name}
                   {row.flagged && (
-                    <Badge tone="warning">
-                      <Flag aria-hidden="true" className="size-3.5" />
+                    <Badge tone="warning" icon={Flag}>
                       {t("disputes.flagged")}
                     </Badge>
                   )}
@@ -173,14 +173,14 @@ export function DisputesQueuePage() {
   return (
     <div className="flex flex-col gap-5">
       <PageHeader title={t("disputes.title")} />
-      <div role="group" aria-label={t("disputes.tabs.label")} className="flex flex-wrap gap-2">
+      <div role="group" aria-label={t("disputes.tabs.label")} className={FILTER_GROUP}>
         {TABS.map((key) => (
           <button
             key={key}
             type="button"
             aria-pressed={tab === key}
             onClick={() => setParams(key === "open" ? {} : { tab: key }, { replace: true })}
-            className="inline-flex min-h-target cursor-pointer items-center rounded-full border border-border-input bg-surface px-4 text-body-sm font-semibold text-fg hover:bg-subtle aria-pressed:border-primary aria-pressed:bg-brand-subtle aria-pressed:text-on-brand-subtle"
+            className={FILTER_BUTTON}
           >
             {t(`disputes.tabs.${key}`)}
           </button>

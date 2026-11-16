@@ -609,7 +609,7 @@ function AddItem({
           )}
         </div>
       )}
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2">
         <TextField
           label={t("pharmacy.prescription.dose")}
           hint={t("pharmacy.prescription.doseHint")}

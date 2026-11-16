@@ -369,7 +369,7 @@ export function HistoryTimeline({ fpId }: { fpId: string }) {
   return (
     <section aria-label={t("clinical.history.title")} className="flex flex-col gap-4">
       <div
-        className="grid gap-3 sm:grid-cols-4"
+        className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-4"
         role="group"
         aria-label={t("clinical.history.filters")}
       >

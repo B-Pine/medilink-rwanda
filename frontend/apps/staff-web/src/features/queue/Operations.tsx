@@ -341,14 +341,12 @@ function Attention({ data }: { data: Operations }) {
                 </span>
                 <span className="flex min-w-0 flex-1 flex-col">
                   <span className="text-body-sm font-semibold">{label}</span>
-                  <span
-                    className={cx(
-                      "text-caption font-semibold tracking-wide uppercase",
-                      urgent ? "text-danger" : "text-fg-muted",
-                    )}
-                  >
-                    {urgent ? t("queue.ops.urgent") : t("queue.ops.review")}
-                  </span>
+                  {/* only "Urgent" is worth a word; every row here is to review (audit 2026-11-16) */}
+                  {urgent && (
+                    <span className="text-caption font-semibold text-danger">
+                      {t("queue.ops.urgent")}
+                    </span>
+                  )}
                 </span>
                 <CaretRight
                   aria-hidden="true"
@@ -538,7 +536,7 @@ function DashboardSkeleton() {
           <Skeleton key={i} height="9rem" className="rounded-2xl" />
         ))}
       </div>
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-3">
         <Skeleton height="16rem" className="rounded-2xl lg:col-span-2" />
         <Skeleton height="16rem" className="rounded-2xl" />
       </div>
@@ -608,11 +606,11 @@ export function OperationsTodayCard() {
       ) : (
         <div className="ml-stagger flex flex-col gap-4">
           <KpiRow data={ops.data} />
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
             <LiveByService data={ops.data} />
             <Attention data={ops.data} />
           </div>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-2 xl:grid-cols-3">
             <BookingsPanel data={ops.data} />
             <MoneyPanel data={ops.data} />
             <TeamPanel data={ops.data} />
@@ -642,7 +640,7 @@ export function ArrivalsPanel() {
   );
   const hours = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
   return (
-    <div className="grid gap-6 xl:grid-cols-2">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-6 xl:grid-cols-2">
       <div className="rounded-2xl bg-surface shadow-card p-5">
         <HeatMap
           title={t("queue.reports.arrivals")}

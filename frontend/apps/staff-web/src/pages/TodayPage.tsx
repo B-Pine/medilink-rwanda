@@ -1,14 +1,13 @@
 import { buttonClassName, Menu, MenuContent, MenuItem, MenuTrigger } from "@medilink/ui";
-import { CaretDown } from "@phosphor-icons/react";
+import { DotsThree } from "@phosphor-icons/react";
 import { dateFormat } from "@medilink/ui/i18n";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 
 import { BUILT_PATHS, FEATURE_COMMANDS, FEATURE_TODAY_CARDS } from "../app/features";
+import { visibleNavItems } from "../layout/navigation";
 import { useStaffMe } from "../auth/queries";
 import { PageHeading } from "../components/PageHeading";
-import { roleLabel } from "../facility/labels";
-import { navLabelKey, navSection, visibleNavItems } from "../layout/navigation";
 
 function kigali(language: string, options: Intl.DateTimeFormatOptions): string {
   const date = new Date();
@@ -42,31 +41,26 @@ export function TodayPage() {
   if (!me) return null;
 
   const language = i18n.resolvedLanguage ?? "en";
-  const membership = me.memberships.find((m) => m.facility.id === me.active_facility_id);
   const title = t("today.title");
+  // a plain page link is already in the sidebar; the header keeps actions (a walk-in, a phone
+  // booking, a call), so "Pharmacy" no longer sits above "Open the pharmacy queue"
+  const pages = new Set(visibleNavItems(me, BUILT_PATHS()).map((item) => item.path));
   const actions = FEATURE_COMMANDS()
     .flatMap((provider) => provider.actions?.(me, t) ?? [])
-    .filter((action) => !NOT_ON_TODAY.has(action.id));
-  // a shortcut that repeats an action (same page or same label) is left out
-  const taken = new Set(actions.flatMap((a) => [a.to.split("?")[0], a.label]));
-  const shortcuts = visibleNavItems(me, BUILT_PATHS())
-    .filter((item) => item.key !== "today" && navSection(item) === "work")
-    .filter((item) => !taken.has(item.path) && !taken.has(t(navLabelKey(item))))
-    .slice(0, Math.max(0, 5 - actions.length));
+    .filter((action) => !NOT_ON_TODAY.has(action.id) && !pages.has(action.to));
+  // the header holds actions only: pages are in the sidebar and each card opens its own page, so
+  // a "Laboratory" button above "Open the lab" was the same link twice (audit 2026-11-16)
   const cards = FEATURE_TODAY_CARDS();
 
-  const quick = [
-    ...actions.map((a) => ({ id: a.id, to: a.to, label: a.label, icon: a.icon })),
-    ...shortcuts.map((s) => ({ id: s.key, to: s.path, label: t(navLabelKey(s)), icon: s.icon })),
-  ];
+  const quick = actions.map((a) => ({ id: a.id, to: a.to, label: a.label, icon: a.icon }));
   // one primary and two secondary actions in view; the rest in "More" (the facility admin had 12)
   const shown = quick.slice(0, MAX_VISIBLE_ACTIONS);
   const more = quick.slice(MAX_VISIBLE_ACTIONS);
 
   return (
     <div className="flex flex-col gap-6">
-      {/* a calm header: date, greeting and roles; at most three actions, the rest under "More" */}
-      <header className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4 border-b border-border/70 pb-5">
+      {/* a calm header: date and greeting; at most three actions, the rest under "⋯" */}
+      <header className="flex flex-wrap items-center justify-between gap-x-8 gap-y-4 border-b border-border/70 pb-5">
         <div className="flex min-w-0 flex-col gap-1">
           <p className="m-0 text-caption font-semibold tracking-wider text-fg-muted uppercase">
             {kigali(language, { dateStyle: "full" })}
@@ -76,21 +70,6 @@ export function TodayPage() {
               name: me.full_name.split(" ")[0] ?? me.full_name,
             })}
           </PageHeading>
-          {membership && (
-            <ul
-              aria-label={t("today.rolesLabel")}
-              className="m-0 mt-1 flex list-none flex-wrap gap-1.5 p-0"
-            >
-              {membership.roles.map((role) => (
-                <li
-                  key={role}
-                  className="rounded-full bg-subtle px-2.5 py-0.5 text-caption font-semibold text-fg-secondary"
-                >
-                  {roleLabel(role, t)}
-                </li>
-              ))}
-            </ul>
-          )}
         </div>
 
         {quick.length > 0 && (
@@ -113,9 +92,16 @@ export function TodayPage() {
             ))}
             {more.length > 0 && (
               <Menu>
-                <MenuTrigger className={buttonClassName({ variant: "secondary", size: "sm" })}>
-                  {t("today.moreActions", { count: more.length })}
-                  <CaretDown aria-hidden="true" className="size-4" />
+                <MenuTrigger
+                  aria-label={t("today.moreActions", { count: more.length })}
+                  title={t("today.moreActions", { count: more.length })}
+                  className={buttonClassName({
+                    variant: "secondary",
+                    size: "sm",
+                    className: "px-2",
+                  })}
+                >
+                  <DotsThree aria-hidden="true" weight="bold" className="size-5" />
                 </MenuTrigger>
                 <MenuContent align="end">
                   {more.map(({ id, to, label, icon: ActionIcon }) => (
@@ -132,7 +118,7 @@ export function TodayPage() {
       </header>
 
       {cards.length > 0 && (
-        <div className="ml-stagger grid gap-5 lg:grid-cols-3 [&:empty]:hidden">
+        <div className="ml-stagger grid grid-cols-[minmax(0,1fr)] gap-5 lg:grid-cols-3 [&:empty]:hidden">
           {cards.map((Card, index) => (
             <Card key={index} />
           ))}

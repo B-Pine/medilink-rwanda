@@ -58,14 +58,17 @@ export function ActivityPage() {
           {errorText(activity.error, t("errors.generic"))}
         </Alert>
       ) : !a ? (
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-busy="true">
+        <div
+          className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2 xl:grid-cols-4"
+          aria-busy="true"
+        >
           {[0, 1, 2, 3].map((i) => (
             <Skeleton key={i} height="8rem" className="rounded-2xl" />
           ))}
         </div>
       ) : (
         <div className="ml-stagger flex flex-col gap-4">
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <StatTile
               label={t("clinical.activity.seen")}
               value={a.seen}
@@ -96,7 +99,7 @@ export function ActivityPage() {
               icon={<CalendarCheck aria-hidden="true" className="size-5" />}
             />
           </div>
-          <div className="grid gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
             <div className="rounded-2xl bg-surface p-5 shadow-card">
               <TrendChart
                 title={t("clinical.activity.chart")}

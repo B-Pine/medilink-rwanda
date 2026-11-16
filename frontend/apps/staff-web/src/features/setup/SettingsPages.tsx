@@ -319,7 +319,7 @@ function ProfileForm({ profile, onReload }: { profile: FacilityProfile; onReload
 
       <section className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5">
         <h2 className="m-0 font-heading text-h3">{t("setup.profile.contact")}</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
           <TextField
             label={t("setup.profile.phone")}
             type="tel"
@@ -405,7 +405,7 @@ function ProfileForm({ profile, onReload }: { profile: FacilityProfile; onReload
         <p className="m-0 -mt-2 text-body-sm text-fg-secondary">
           {t("setup.profile.descriptionHint")}
         </p>
-        <div className="grid gap-4 lg:grid-cols-3">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-3">
           {(["rw", "en", "fr"] as const).map((lang) => (
             <TextareaField
               key={lang}

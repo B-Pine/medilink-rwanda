@@ -9,6 +9,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Cleaner scrollbars (2026-11-16)
+
+- Changed: every scrolling area in both web apps (page, sidebar, menus, tables) has a thin, rounded,
+  quiet scrollbar in the theme's colours: a soft pill thumb on a clear track, no arrow buttons,
+  darker while hovered; light and dark follow the tokens (`@medilink/ui` base styles). Chrome,
+  Edge and Safari use the WebKit pseudo-elements; Firefox the standard `scrollbar-*` properties.
+
 ### Cleaner staff dashboard: one shell, one page frame (2026-11-16)
 
 - Changed: the facility switcher is the workspace card at the top of the sidebar (facility and

@@ -9,6 +9,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Light and dark switch in the staff dashboard (2026-11-16)
+
+- Added: a one-click light / dark switch in the staff top bar, next to the account menu, and a
+  Theme choice (Light, Dark, System) in the account menu. The staff app still follows the device
+  until someone chooses; the choice is remembered on that device (`initTheme` replaces the fixed
+  `applyTheme("system")`).
+
 ### Cleaner public site: one header, one spine, calmer motion (2026-11-13)
 
 - Changed: every public page uses the same light page header (breadcrumb, title, one line); the

@@ -1,5 +1,13 @@
 import { List, MagnifyingGlass, X } from "@phosphor-icons/react";
-import { cx, Logo, MAIN_CONTENT_ID, readPreference, SkipLink, writePreference } from "@medilink/ui";
+import {
+  cx,
+  Logo,
+  MAIN_CONTENT_ID,
+  readPreference,
+  SkipLink,
+  ThemeSwitch,
+  writePreference,
+} from "@medilink/ui";
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router";
@@ -109,6 +117,7 @@ export function AppShell() {
             {FEATURE_HEADER_ITEMS().map((Item, index) => (
               <Item key={index} />
             ))}
+            <ThemeSwitch tone="ghost" />
             <span aria-hidden="true" className="mx-1.5 hidden h-7 w-px bg-border sm:block" />
             <UserMenu me={me} />
           </div>

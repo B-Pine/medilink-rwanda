@@ -269,17 +269,35 @@ describe("shell: user menu, language, theme, logout", () => {
     return screen.findByRole("menu");
   }
 
-  it("changes language from the user menu (html lang follows); the theme follows the system", async () => {
+  it("changes language from the user menu (html lang follows)", async () => {
     const { user } = await signIn();
-    let menu = await openUserMenu(user);
+    const menu = await openUserMenu(user);
     await user.click(within(menu).getByRole("menuitemradio", { name: "Français" }));
     expect(document.documentElement.lang).toBe("fr");
     expect(
       await screen.findByRole("heading", { level: 1, name: /^(Bonjour|Bon après-midi|Bonsoir)/ }),
     ).toBeInTheDocument();
+  });
 
-    menu = await openUserMenu(user, /Menu du compte/);
-    expect(within(menu).queryByRole("menuitemradio", { name: "Sombre" })).not.toBeInTheDocument();
+  it("follows the system until light or dark is chosen, from the top bar or the user menu", async () => {
+    const { user } = await signIn();
+    expect(document.documentElement.dataset.theme).toBeUndefined();
+
+    const toggle = screen.getByRole("button", { name: "Dark" });
+    await user.click(toggle);
+    expect(document.documentElement.dataset.theme).toBe("dark");
+    expect(toggle).toHaveAttribute("aria-pressed", "true");
+
+    let menu = await openUserMenu(user);
+    expect(within(menu).getByRole("menuitemradio", { name: "Dark" })).toHaveAttribute(
+      "aria-checked",
+      "true",
+    );
+    await user.click(within(menu).getByRole("menuitemradio", { name: "Light" }));
+    expect(document.documentElement.dataset.theme).toBe("light");
+
+    menu = await openUserMenu(user);
+    await user.click(within(menu).getByRole("menuitemradio", { name: "System" }));
     expect(document.documentElement.dataset.theme).toBeUndefined();
   });
 

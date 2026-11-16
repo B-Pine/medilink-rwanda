@@ -234,9 +234,9 @@ function Figure({
   hint?: string | undefined;
 }) {
   return (
-    // three narrow columns on phones too: the icon and the hint wait for room
-    <div className="flex min-w-0 flex-col gap-1.5 px-3 py-4 sm:gap-2 sm:px-6 sm:py-5">
-      <dt className="inline-flex items-center gap-2 text-caption font-semibold text-fg-secondary sm:text-body-sm">
+    // phones: one row per figure, the label left and the number right; from 640 px three columns
+    <div className="flex min-w-0 items-center justify-between gap-4 px-4 py-3 sm:flex-col sm:items-start sm:justify-start sm:gap-2 sm:px-6 sm:py-5">
+      <dt className="inline-flex min-w-0 items-center gap-2 text-body-sm font-semibold text-fg-secondary">
         <FigureIcon
           aria-hidden="true"
           weight="duotone"
@@ -244,8 +244,8 @@ function Figure({
         />
         {label}
       </dt>
-      <dd className="m-0 flex flex-col gap-1">
-        <span className="font-heading text-h3 leading-none font-bold text-fg tabular-nums sm:text-h1">
+      <dd className="m-0 flex shrink-0 flex-col items-end gap-1 sm:items-start">
+        <span className="font-heading text-h3 leading-none font-bold whitespace-nowrap text-fg tabular-nums sm:text-h1">
           {value}
         </span>
         {hint && <span className="hidden text-body-sm text-fg-secondary sm:block">{hint}</span>}
@@ -408,7 +408,7 @@ export function LandingPage() {
               <form
                 onSubmit={onSearch}
                 role="search"
-                className="grid w-full max-w-[40rem] gap-2 rounded-shell border border-hairline bg-surface p-2 shadow-e3 sm:grid-cols-[minmax(0,1fr)_auto] [&>:first-child]:sm:col-span-2"
+                className="grid w-full max-w-[40rem] grid-cols-[minmax(0,1fr)] gap-2 rounded-shell border border-hairline bg-surface p-2 shadow-e3 sm:grid-cols-[minmax(0,1fr)_auto] [&>*]:min-w-0 [&>:first-child]:sm:col-span-2"
               >
                 <SearchBar
                   id="home-search"
@@ -427,7 +427,7 @@ export function LandingPage() {
               <Link
                 to="/check-symptoms"
                 viewTransition
-                className="group inline-flex max-w-[calc(100%-3.5rem)] items-center gap-2 font-semibold text-link no-underline hover:underline sm:max-w-none"
+                className="group inline-flex items-center gap-2 text-body-sm font-semibold text-link no-underline hover:underline sm:text-body"
               >
                 <Sparkle aria-hidden="true" weight="duotone" className="size-5" />
                 {t("site.home3.symptoms.title")} {t("site.home3.symptoms.action")}
@@ -447,7 +447,7 @@ export function LandingPage() {
             {allClosed ? (
               <ClosedNotice rows={everywhere} />
             ) : (
-              <dl className="m-0 grid animate-rise grid-cols-3 divide-x divide-hairline rounded-panel bg-surface shadow-e3 [animation-delay:120ms]">
+              <dl className="m-0 grid animate-rise divide-y divide-hairline rounded-panel bg-surface shadow-e3 [animation-delay:120ms] sm:grid-cols-3 sm:divide-x sm:divide-y-0">
                 <Figure
                   icon={Buildings}
                   label={t("site.home3.kpi.open")}

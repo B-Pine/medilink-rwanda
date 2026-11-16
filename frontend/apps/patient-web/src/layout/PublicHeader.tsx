@@ -58,7 +58,14 @@ export function LanguageSelect({ className }: { className?: string }) {
  * word on wide screens, an icon below), the language code and Sign in. Below 1200 px the pages
  * move into a full-height menu that also offers "Call 912".
  */
-export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
+export function PublicHeader({
+  showLogin = true,
+  assistantSlot,
+}: {
+  showLogin?: boolean;
+  /** Where the assistant button sits on wide screens (PublicLayout portals it here). */
+  assistantSlot?: (element: HTMLElement | null) => void;
+}) {
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const navigation = useNavigation();
@@ -140,6 +147,7 @@ export function PublicHeader({ showLogin = true }: { showLogin?: boolean }) {
               <Siren aria-hidden="true" weight="bold" className="size-5 xl:size-4" />
               <span className="hidden xl:inline">{t("nav.strip.label")}</span>
             </Link>
+            {assistantSlot && <span ref={assistantSlot} className="hidden xl:contents" />}
             <span aria-hidden="true" className="mx-1.5 hidden h-6 w-px bg-hairline xl:block" />
             <span className="hidden xl:inline-flex">
               <LanguageSelect />

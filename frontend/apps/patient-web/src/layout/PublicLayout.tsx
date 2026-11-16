@@ -1,6 +1,6 @@
 import { cx, MAIN_CONTENT_ID, SkipLink } from "@medilink/ui";
 import { CloudSlash } from "@phosphor-icons/react";
-import { lazy, Suspense, useEffect, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 import { env } from "../env";
@@ -13,6 +13,19 @@ import { useOnline } from "./useOnline";
 const AssistantLauncher = lazy(() =>
   import("../features/public/AssistantLauncher").then((m) => ({ default: m.AssistantLauncher })),
 );
+
+const WIDE = "(min-width: 75rem)";
+function useWideHeader(): boolean {
+  return useSyncExternalStore(
+    (onChange) => {
+      const list = window.matchMedia?.(WIDE);
+      list?.addEventListener?.("change", onChange);
+      return () => list?.removeEventListener?.("change", onChange);
+    },
+    () => window.matchMedia?.(WIDE).matches ?? false,
+    () => false,
+  );
+}
 
 /** Public pages and auth screens: header, <main>, footer with the emergency notice. */
 export function PublicLayout({
@@ -29,6 +42,9 @@ export function PublicLayout({
   const inDashboard = useInDashboard();
   const online = useOnline();
   const { t } = useTranslation();
+  // wide screens: the assistant sits in the header instead of floating over the page's right edge
+  const wide = useWideHeader();
+  const [assistantSlot, setAssistantSlot] = useState<HTMLElement | null>(null);
   // the public site's "clinical calm" palette (tokens.css, data-surface="site")
   useEffect(() => {
     if (inDashboard) return;
@@ -47,7 +63,7 @@ export function PublicLayout({
   return (
     <div className="ml-soft flex min-h-dvh flex-col bg-page">
       <SkipLink />
-      <PublicHeader showLogin={showLogin} />
+      <PublicHeader showLogin={showLogin} assistantSlot={setAssistantSlot} />
       {!online && (
         <p
           role="status"
@@ -72,7 +88,7 @@ export function PublicLayout({
       {/* the AI assistant's floating button (env.publicAssistant) */}
       {env.publicAssistant && (
         <Suspense fallback={null}>
-          <AssistantLauncher compact />
+          <AssistantLauncher compact slot={wide ? assistantSlot : null} />
         </Suspense>
       )}
     </div>

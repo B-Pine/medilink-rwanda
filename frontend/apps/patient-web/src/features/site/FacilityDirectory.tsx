@@ -89,8 +89,11 @@ export function FacilityEntry({
   selected = false,
   onActivate,
   headingLevel = 3,
+  compact = false,
 }: {
   result: FacilityResult;
+  /** No drawing (the home page, under the photo hero): the status sits beside the type. */
+  compact?: boolean;
   /** 2 when the list sits right under the page's <h1>, so no heading level is skipped. */
   headingLevel?: 2 | 3;
   /** Its pin is selected on the map beside. */
@@ -126,25 +129,30 @@ export function FacilityEntry({
         selected && "ml-card-selected",
       )}
     >
-      <div className="relative aspect-[16/7] overflow-hidden border-b border-hairline">
-        <FacilityBuilding
-          type={result.type}
-          emergency={result.emergency_department}
-          className="ml-card-art size-full"
-          style={{ viewTransitionName: `facility-art-${result.slug}` }}
-        />
-        <span className="absolute top-3 left-3">
-          <Status result={result} />
-        </span>
-      </div>
+      {!compact && (
+        <div className="relative aspect-[16/7] overflow-hidden border-b border-hairline">
+          <FacilityBuilding
+            type={result.type}
+            emergency={result.emergency_department}
+            className="ml-card-art size-full"
+            style={{ viewTransitionName: `facility-art-${result.slug}` }}
+          />
+          <span className="absolute top-3 left-3">
+            <Status result={result} />
+          </span>
+        </div>
+      )}
 
       <div className="flex flex-1 flex-col gap-3 p-5">
-        <p className="m-0 inline-flex items-center gap-1.5 text-caption font-semibold tracking-[0.06em] text-fg-muted uppercase">
-          <span aria-hidden="true" className="text-primary">
-            <TypeMark type={result.type} />
-          </span>
-          {t(`booking.types.${result.type}`, { defaultValue: result.type })}
-        </p>
+        <div className="flex items-center justify-between gap-3">
+          <p className="m-0 inline-flex items-center gap-1.5 text-caption font-semibold tracking-[0.06em] text-fg-muted uppercase">
+            <span aria-hidden="true" className="text-primary">
+              <TypeMark type={result.type} />
+            </span>
+            {t(`booking.types.${result.type}`, { defaultValue: result.type })}
+          </p>
+          {compact && <Status result={result} />}
+        </div>
         <Heading
           id={`place-${result.slug}`}
           className="m-0 font-heading text-[1.1875rem] leading-snug font-bold text-balance"
@@ -234,11 +242,13 @@ export function FacilityEntries({
   onSelect,
   className,
   headingLevel,
+  compact = false,
 }: {
   label: string;
   rows: FacilityResult[];
   loading: boolean;
   headingLevel?: 2 | 3;
+  compact?: boolean;
   selected?: string | null;
   onSelect?: (slug: string) => void;
   className?: string;
@@ -253,7 +263,7 @@ export function FacilityEntries({
         <div className={grid}>
           {Array.from({ length: 4 }, (_, i) => (
             <div key={i} className="ml-card flex flex-col overflow-hidden rounded-panel bg-surface">
-              <Skeleton className="aspect-[16/7] h-auto w-full rounded-none" />
+              {!compact && <Skeleton className="aspect-[16/7] h-auto w-full rounded-none" />}
               <div className="flex flex-col gap-2.5 p-5">
                 <Skeleton className="h-3 w-1/3 rounded-sm" />
                 <Skeleton className="h-5 w-3/5 rounded-sm" />
@@ -272,6 +282,7 @@ export function FacilityEntries({
             key={result.slug}
             result={result}
             headingLevel={headingLevel}
+            compact={compact}
             selected={selected === result.slug}
             onActivate={onSelect && (() => onSelect(result.slug))}
           />
@@ -300,7 +311,10 @@ export function FacilityExplorer({
   empty,
   switchable = false,
   headingLevel,
+  compact = false,
 }: {
+  /** Cards without the drawing (home). */
+  compact?: boolean;
   /** See FacilityEntry: 2 right under the page's <h1>. */
   headingLevel?: 2 | 3;
   label: string;
@@ -397,6 +411,7 @@ export function FacilityExplorer({
             rows={rows}
             loading={loading}
             headingLevel={headingLevel}
+            compact={compact}
             selected={selected}
             onSelect={setSelected}
           />

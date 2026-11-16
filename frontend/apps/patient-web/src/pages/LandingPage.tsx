@@ -18,7 +18,7 @@ import {
 } from "@phosphor-icons/react";
 import { Button, buttonClassName, cx, ImigongoPattern } from "@medilink/ui";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 
@@ -31,7 +31,7 @@ import {
   type DistrictKey,
   type ServiceKey,
 } from "../features/booking/discovery";
-import { FILTER, sortResults, useNearMe, type Sort } from "../features/booking/Places";
+import { sortResults, useNearMe, type Sort } from "../features/booking/Places";
 import { kigaliNow, nextOpening, useAllFacilities, useProfiles } from "../features/site/data";
 import { FacilityExplorer } from "../features/site/FacilityDirectory";
 import { Faq, LocationSelector, PageContainer, SearchBar } from "../features/site/kit";
@@ -78,6 +78,48 @@ function SectionHead({
       </div>
       {action}
     </div>
+  );
+}
+
+/**
+ * The hero's second line: one phrase at a time, each telling another reason to use MediLink
+ * (2026-11-16). Every phrase sits in the same grid cell, so the line keeps the height of the
+ * longest and nothing below jumps. Screen readers and reduced motion get the first phrase only;
+ * the change pauses while the tab is hidden.
+ */
+function RotatingWords({ words }: { words: string[] }) {
+  const [index, setIndex] = useState(0);
+  const [still] = useState(
+    () =>
+      typeof window === "undefined" ||
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true,
+  );
+  useEffect(() => {
+    if (still || words.length < 2) return;
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === "visible") setIndex((i) => (i + 1) % words.length);
+    }, 3200);
+    return () => window.clearInterval(timer);
+  }, [still, words.length]);
+  return (
+    <>
+      <span className="sr-only">{words[0]}</span>
+      <span aria-hidden="true" className="grid text-[#8fe3b5]">
+        {words.map((word, i) => (
+          <span
+            key={word}
+            className={cx(
+              "col-start-1 row-start-1 transition-[opacity,translate,filter] duration-500 ease-out-quint",
+              i === index
+                ? "translate-y-0 opacity-100 blur-0"
+                : "pointer-events-none translate-y-3 opacity-0 blur-[2px]",
+            )}
+          >
+            {word}
+          </span>
+        ))}
+      </span>
+    </>
   );
 }
 
@@ -173,16 +215,21 @@ function Figure({
   hint?: string | undefined;
 }) {
   return (
-    <div className="flex flex-col gap-2 px-6 py-5">
-      <dt className="inline-flex items-center gap-2 text-body-sm font-semibold text-fg-secondary">
-        <FigureIcon aria-hidden="true" weight="duotone" className="size-5 text-primary" />
+    // three narrow columns on phones too: the icon and the hint wait for room
+    <div className="flex min-w-0 flex-col gap-1.5 px-3 py-4 sm:gap-2 sm:px-6 sm:py-5">
+      <dt className="inline-flex items-center gap-2 text-caption font-semibold text-fg-secondary sm:text-body-sm">
+        <FigureIcon
+          aria-hidden="true"
+          weight="duotone"
+          className="hidden size-5 shrink-0 text-primary sm:block"
+        />
         {label}
       </dt>
       <dd className="m-0 flex flex-col gap-1">
-        <span className="font-heading text-h1 leading-none font-bold text-fg tabular-nums">
+        <span className="font-heading text-h3 leading-none font-bold text-fg tabular-nums sm:text-h1">
           {value}
         </span>
-        {hint && <span className="text-body-sm text-fg-secondary">{hint}</span>}
+        {hint && <span className="hidden text-body-sm text-fg-secondary sm:block">{hint}</span>}
       </dd>
     </div>
   );
@@ -276,10 +323,19 @@ export function LandingPage() {
                 className="m-0 max-w-[18ch] font-heading text-[clamp(2.25rem,5.2vw,4.25rem)] leading-[1.04] font-bold tracking-[-0.025em] text-balance text-[#fff]"
               >
                 {t("site.home3.titleA")}{" "}
-                <span className="text-[#8fe3b5]">{t("site.home3.titleB")}</span>
+                <RotatingWords
+                  words={[
+                    t("site.home3.titleB"),
+                    t("site.home3.rotate2"),
+                    t("site.home3.rotate3"),
+                    t("site.home3.rotate4"),
+                  ]}
+                />
               </PageHeading>
               <p className="m-0 max-w-[34rem] text-[1.1875rem] leading-relaxed text-[rgb(255_255_255/0.86)]">
-                {t("site.home2.lead")}
+                {/* phones: the short line keeps the search in the first screen */}
+                <span className="sm:hidden">{t("site.home2.lead")}</span>
+                <span className="hidden sm:inline">{t("site.home3.leadLong")}</span>
               </p>
               <form
                 onSubmit={onSearch}
@@ -299,13 +355,17 @@ export function LandingPage() {
                   {t("site.home2.search")}
                 </Button>
               </form>
-              <nav aria-labelledby="needs-title" className="flex flex-wrap items-center gap-2">
+              <nav
+                aria-labelledby="needs-title"
+                className="flex w-full flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center"
+              >
                 <p id="needs-title" className="m-0 me-1 text-body-sm text-[rgb(255_255_255/0.78)]">
                   {t("home.chipsLabel")}
                 </p>
-                <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
+                {/* phones: one row that swipes sideways, not three wrapped rows */}
+                <ul className="-mx-5 m-0 flex list-none gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0 [&::-webkit-scrollbar]:hidden">
                   {COMMON_NEEDS.map(({ key, to, icon: NeedIcon }) => (
-                    <li key={key}>
+                    <li key={key} className="shrink-0">
                       {/* frosted chips on the photo */}
                       <Link
                         to={to}
@@ -323,7 +383,7 @@ export function LandingPage() {
               <Link
                 to="/check-symptoms"
                 viewTransition
-                className="group inline-flex items-center gap-2 font-semibold text-[#fff] no-underline hover:underline"
+                className="group inline-flex max-w-[calc(100%-3.5rem)] items-center gap-2 font-semibold text-[#fff] no-underline hover:underline sm:max-w-none"
               >
                 <Sparkle aria-hidden="true" weight="duotone" className="size-5 text-[#8fe3b5]" />
                 {t("site.home3.symptoms.title")} {t("site.home3.symptoms.action")}
@@ -343,7 +403,7 @@ export function LandingPage() {
             {allClosed ? (
               <ClosedNotice rows={everywhere} />
             ) : (
-              <dl className="m-0 grid animate-rise divide-y divide-hairline rounded-panel bg-surface shadow-e3 sm:grid-cols-3 sm:divide-x sm:divide-y-0 [animation-delay:120ms]">
+              <dl className="m-0 grid animate-rise grid-cols-3 divide-x divide-hairline rounded-panel bg-surface shadow-e3 [animation-delay:120ms]">
                 <Figure
                   icon={Buildings}
                   label={t("site.home3.kpi.open")}
@@ -354,11 +414,13 @@ export function LandingPage() {
                   icon={UsersThree}
                   label={t("site.home3.kpi.waiting")}
                   value={all.data ? String(waitingNow) : "–"}
+                  hint={t("site.home3.kpi.waitingHint")}
                 />
                 <Figure
                   icon={Hourglass}
                   label={t("site.home3.kpi.typical")}
                   value={typical !== null ? t("site.home3.kpi.minutes", { count: typical }) : "–"}
+                  hint={t("site.home3.kpi.typicalHint")}
                 />
               </dl>
             )}
@@ -366,7 +428,7 @@ export function LandingPage() {
         </PageContainer>
       </section>
 
-      <PageContainer className="flex flex-col gap-24 py-20 lg:gap-28 lg:py-24">
+      <PageContainer className="flex flex-col gap-20 pt-16 pb-20 lg:gap-24 lg:pt-20 lg:pb-24">
         {/* 2 · The services */}
         <section aria-labelledby="care-title" className="site-reveal flex flex-col gap-8">
           <SectionHead
@@ -374,13 +436,14 @@ export function LandingPage() {
             title={t("site.home2.careTitle")}
             action={<MoreLink to="/services">{t("site.home2.allServices")}</MoreLink>}
           />
-          <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
+          {/* two columns on phones too: six full-width rows were a long scroll */}
+          <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 sm:gap-4 lg:grid-cols-3">
             {CARE.map(({ key, icon: CareIcon }) => (
-              <li key={key}>
+              <li key={key} className="flex">
                 <Link
                   to={`/find-care?service=${key}`}
                   viewTransition
-                  className="group flex items-center gap-4 rounded-panel bg-surface p-5 no-underline shadow-e1 transition-[box-shadow,transform] duration-200 ease-out-quint hover:-translate-y-0.5 hover:shadow-e3 motion-reduce:hover:translate-y-0"
+                  className="group flex w-full flex-col items-start gap-3 rounded-panel bg-surface p-4 no-underline shadow-e1 transition-[box-shadow,transform] duration-200 ease-out-quint hover:-translate-y-0.5 hover:shadow-e3 motion-reduce:hover:translate-y-0 sm:flex-row sm:items-center sm:gap-4 sm:p-5"
                 >
                   <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-[linear-gradient(140deg,var(--color-brand-subtle),var(--color-surface))] text-on-brand-subtle shadow-e1">
                     <CareIcon aria-hidden="true" weight="duotone" className="size-6" />
@@ -395,7 +458,7 @@ export function LandingPage() {
                   </span>
                   <ArrowRight
                     aria-hidden="true"
-                    className="size-5 text-fg-muted transition-[transform,color] duration-200 ease-out-quint group-hover:translate-x-1 group-hover:text-primary"
+                    className="hidden size-5 text-fg-muted transition-[transform,color] duration-200 ease-out-quint group-hover:translate-x-1 group-hover:text-primary sm:block"
                   />
                 </Link>
               </li>
@@ -418,24 +481,29 @@ export function LandingPage() {
               ) : undefined
             }
             action={
-              <button
-                type="button"
-                aria-pressed={near !== null}
-                onClick={locate}
-                disabled={locating === "busy"}
-                className={cx(FILTER, "inline-flex items-center gap-1.5")}
-              >
-                <Crosshair
-                  aria-hidden="true"
-                  className={cx("size-4", locating === "busy" && "animate-spin")}
-                />
-                {near ? t("home.nearYou") : t("home.nearMe")}
-              </button>
+              // the same quiet link style as "All services"; Near me sorts, View all leaves
+              <div className="flex flex-wrap items-center gap-x-6">
+                <button
+                  type="button"
+                  aria-pressed={near !== null}
+                  onClick={locate}
+                  disabled={locating === "busy"}
+                  className="inline-flex min-h-target cursor-pointer items-center gap-1.5 border-0 bg-transparent p-0 font-semibold text-link aria-pressed:text-fg"
+                >
+                  <Crosshair
+                    aria-hidden="true"
+                    className={cx("size-4", locating === "busy" && "animate-spin")}
+                  />
+                  {near ? t("home.nearYou") : t("home.nearMe")}
+                </button>
+                <MoreLink to="/facilities">{t("site.home.viewAll")}</MoreLink>
+              </div>
             }
           />
           <FacilityExplorer
             label={t("site.home3.openTitle")}
-            rows={listed.slice(0, 6)}
+            rows={listed.slice(0, 3)}
+            compact
             loading={results.isPending}
             fetching={results.isFetching}
             failed={results.isError}
@@ -445,14 +513,6 @@ export function LandingPage() {
             switchable
           />
         </section>
-
-        {/* the journey is told once, on How it works: one line here */}
-        <p className="m-0 text-body text-fg-secondary">
-          {t("site.home3.howLine")}{" "}
-          <Link to="/how-it-works" viewTransition className="font-semibold text-link">
-            {t("site.home.how")}
-          </Link>
-        </p>
 
         {/* 3 · The questions people ask first, answered on the page (the help centre's own answers) */}
         <section
@@ -474,6 +534,13 @@ export function LandingPage() {
                 className="size-4 transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5"
               />
             </Link>
+            {/* the journey is told once, on How it works: one line here, with the questions */}
+            <p className="m-0 text-body text-fg-secondary">
+              {t("site.home3.howLine")}{" "}
+              <Link to="/how-it-works" viewTransition className="font-semibold text-link">
+                {t("site.home.how")}
+              </Link>
+            </p>
           </div>
           <div className="overflow-hidden rounded-panel bg-surface shadow-e1">
             {HOME_FAQ.map((entry, index) => {
@@ -529,41 +596,20 @@ export function LandingPage() {
                 {t("signup.submit")}
               </Link>
             </div>
+            {/* the facilities' own invitation, one quiet line instead of a second band */}
+            <p className="m-0 mt-4 border-t border-hairline pt-5 text-body-sm text-fg-secondary">
+              {t("site.home2.facilitiesTitle")}{" "}
+              <Link
+                to="/for-facilities"
+                viewTransition
+                className="font-semibold text-link no-underline hover:underline"
+              >
+                {t("site.home2.facilitiesAction")} →
+              </Link>
+            </p>
           </div>
         </section>
       </PageContainer>
-
-      {/* 5 · For facilities: one slim forest band, one line and one button */}
-      <section
-        aria-labelledby="facilities-title"
-        className="relative isolate overflow-hidden bg-forest text-on-forest"
-      >
-        <div aria-hidden="true" className="absolute inset-0 -z-10 text-on-forest-accent">
-          <ImigongoPattern opacity={0.06} />
-        </div>
-        <PageContainer className="flex flex-wrap items-center justify-between gap-6 py-12">
-          <div className="flex max-w-[40rem] flex-col gap-2">
-            <h2
-              id="facilities-title"
-              className="m-0 font-heading text-section font-bold text-on-forest"
-            >
-              {t("site.home2.facilitiesTitle")}
-            </h2>
-            <p className="m-0 text-body text-on-forest-muted">{t("site.home2.facilitiesLead")}</p>
-          </div>
-          <Link
-            to="/for-facilities"
-            viewTransition
-            className="ml-press group inline-flex min-h-12 items-center gap-2 rounded-full bg-on-forest px-6 font-semibold text-forest no-underline transition-[filter] duration-150 hover:brightness-95"
-          >
-            {t("site.home2.facilitiesAction")}
-            <ArrowRight
-              aria-hidden="true"
-              className="size-4 transition-transform duration-200 ease-out-quint group-hover:translate-x-0.5"
-            />
-          </Link>
-        </PageContainer>
-      </section>
     </PublicLayout>
   );
 }

@@ -2,7 +2,6 @@ import {
   Bell,
   CalendarCheck,
   CaretDown,
-  CaretRight,
   CloudSlash,
   DotsThreeOutline,
   FileText,
@@ -53,7 +52,7 @@ import { paths } from "../app/paths";
 import { useLogout, usePatientMe } from "../auth/queries";
 import { GlobalSearch } from "../features/dashboard/GlobalSearch";
 import { AssistantLauncher } from "../features/public/AssistantLauncher";
-import { Avatar, initials } from "../features/dashboard/kit";
+import { Avatar } from "../features/dashboard/kit";
 import { useUnreadCount } from "../features/notifications/api";
 import {
   rememberProfile,
@@ -120,9 +119,6 @@ const matches = (item: NavItem, pathname: string) =>
     : [item.to, ...(item.also ?? [])].some(
         (base) => pathname === base || pathname.startsWith(`${base}/`),
       );
-
-const activeItem = (pathname: string) =>
-  [...MAIN_NAV, ...ACCOUNT_NAV].find((item) => matches(item, pathname));
 
 function useMedia(query: string): boolean {
   return useSyncExternalStore(
@@ -303,7 +299,6 @@ function Sidebar({
   onToggle: () => void;
 }) {
   const { t } = useTranslation();
-  const { data: me } = usePatientMe();
   const { pathname } = useLocation();
   // Help sits at the foot, as in the staff app; the other places are in groups the person can hide
   const help = ACCOUNT_NAV.filter((item) => item.key === "help");
@@ -334,25 +329,11 @@ function Sidebar({
         </Link>
       </div>
 
-      {/* whose portal this is, like the staff workspace card */}
-      {!collapsed && me && (
-        <div className="mb-2 flex shrink-0 items-center gap-3 rounded-2xl border border-border/70 bg-page px-3 py-2.5">
-          <span
-            aria-hidden="true"
-            className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary font-heading text-body-sm font-bold text-on-primary"
-          >
-            {initials(me.full_name)}
-          </span>
-          <span className="flex min-w-0 flex-col">
-            <span className="truncate text-body-sm font-semibold text-fg">{me.full_name}</span>
-            <span className="truncate text-caption text-fg-muted">{t("dashboard.nav.portal")}</span>
-          </span>
-        </div>
-      )}
-
+      {/* who is signed in is the account menu, and whose pages these are the profile switcher, both
+          in the top bar: no third copy of the name here (audit 2026-11-16) */}
       {/* only the places scroll on short windows; help and collapse stay pinned */}
       {/* full-bleed (-mx-3) so the active item's accent bar meets the sidebar edge unclipped */}
-      <div className="-mx-3 flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto px-3 py-1 [scrollbar-width:thin] [scrollbar-color:var(--color-border)_transparent]">
+      <div className="-mx-3 flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto px-3 py-1">
         <nav aria-label={t("dashboard.nav.main")}>
           {groups.map((group) => (
             <NavGroup
@@ -432,51 +413,6 @@ function SearchButton({ onOpen, wide }: { onOpen: () => void; wide: boolean }) {
         {t("dashboard.search.shortcut")}
       </kbd>
     </button>
-  );
-}
-
-function Breadcrumb() {
-  const { t } = useTranslation();
-  const { pathname } = useLocation();
-  const item = activeItem(pathname);
-  if (!item) return null;
-  const deeper = pathname !== item.to;
-  const ItemIcon = item.icon;
-  return (
-    <nav aria-label={t("dashboard.nav.breadcrumb")} className="min-w-0 shrink-0">
-      <ol className="m-0 flex list-none items-center gap-2 p-0 text-body-sm">
-        <li className="flex min-w-0 items-center gap-2">
-          <span
-            aria-hidden="true"
-            className="grid size-7 shrink-0 place-items-center rounded-lg bg-brand-subtle text-brand"
-          >
-            <ItemIcon weight="fill" className="size-4" />
-          </span>
-          {deeper ? (
-            <Link
-              to={item.to}
-              className="truncate font-semibold text-fg-secondary no-underline hover:text-fg"
-            >
-              {t(`dashboard.nav.${item.key}`)}
-            </Link>
-          ) : (
-            <span aria-current="page" className="truncate font-semibold text-fg">
-              {t(`dashboard.nav.${item.key}`)}
-            </span>
-          )}
-        </li>
-        {deeper && (
-          <>
-            <li aria-hidden="true" className="flex text-fg-muted">
-              <CaretRight weight="bold" className="size-3" />
-            </li>
-            <li aria-current="page" className="truncate font-semibold text-fg">
-              {t("dashboard.nav.details")}
-            </li>
-          </>
-        )}
-      </ol>
-    </nav>
   );
 }
 
@@ -659,6 +595,7 @@ export function PatientShell() {
   const [tabletOpen, setTabletOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [assistantSlot, setAssistantSlot] = useState<HTMLElement | null>(null);
   const collapsed = lg ? userCollapsed : !tabletOpen;
 
   // the signed-in app uses the calmer type scale (tokens.css, data-surface="app")
@@ -732,9 +669,8 @@ export function PatientShell() {
             {/* the staff top bar: context left, search centred, theme · alerts | account right */}
             <header className="sticky top-0 z-20 border-b border-border/70 bg-surface">
               <div className="flex min-h-16 items-center gap-4 px-4 sm:px-6 lg:px-8">
-                {md ? (
-                  <Breadcrumb />
-                ) : (
+                {/* the page title is right below; a breadcrumb repeated it (audit 2026-11-16) */}
+                {!md && (
                   <Link
                     to={paths.overview}
                     className="inline-flex min-h-target items-center rounded-sm no-underline"
@@ -747,9 +683,11 @@ export function PatientShell() {
                 ) : (
                   <span className="ml-auto" />
                 )}
-                <div className="flex shrink-0 items-center gap-1.5">
+                <div className="ml-auto flex shrink-0 items-center gap-1.5">
                   {md && <HeaderProfileSwitcher />}
                   {!lg && <SearchButton onOpen={() => setSearchOpen(true)} wide={false} />}
+                  {/* tablets and up: the assistant sits here instead of floating over the page */}
+                  {md && <span ref={setAssistantSlot} className="contents" />}
                   <ThemeSwitch tone="ghost" />
                   {FEATURE_HEADER_ITEMS().map((Item, index) => (
                     <Item key={index} />
@@ -789,13 +727,13 @@ export function PatientShell() {
                 event.stopPropagation();
                 void navigate(to);
               }}
-              className="mx-auto flex w-full max-w-[80rem] flex-1 flex-col px-4 pt-6 pb-28 sm:px-6 md:pt-8 md:pb-16 lg:px-8"
+              className="mx-auto flex w-full max-w-[80rem] flex-1 flex-col px-4 pt-6 pb-36 sm:px-6 md:pt-8 md:pb-16 lg:px-8"
             >
               <div key={pathname} className="flex flex-1 flex-col animate-enter">
                 <Outlet />
               </div>
               {/* inside <main> so links from the answer open the in-shell pages */}
-              <AssistantLauncher raised={!md} compact />
+              <AssistantLauncher raised={!md} compact slot={md ? assistantSlot : null} />
             </main>
           </div>
 

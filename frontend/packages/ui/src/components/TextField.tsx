@@ -1,3 +1,4 @@
+import { MagnifyingGlass } from "@phosphor-icons/react";
 import type { ComponentPropsWithRef, ReactNode } from "react";
 
 import { cx } from "../utils/cx";
@@ -15,7 +16,10 @@ export interface TextFieldProps extends Omit<ComponentPropsWithRef<"input">, "id
   inputClassName?: string;
 }
 
-/** Text input with visible label, hint and linked inline error. Never blocks paste. */
+/**
+ * Text input with visible label, hint and linked inline error. Never blocks paste. A `search`
+ * field shows a magnifier at its start, so every search box in the apps looks the same.
+ */
 export function TextField({
   id,
   label,
@@ -39,16 +43,28 @@ export function TextField({
       hideLabel={hideLabel}
       className={className}
     >
-      {(control) => (
-        <input
-          ref={ref}
-          type={type}
-          aria-required={!optional || undefined}
-          className={cx(inputClassName, inputClass)}
-          {...control}
-          {...inputProps}
-        />
-      )}
+      {(control) => {
+        const input = (
+          <input
+            ref={ref}
+            type={type}
+            aria-required={!optional || undefined}
+            className={cx(inputClassName, type === "search" && "pl-9", inputClass)}
+            {...control}
+            {...inputProps}
+          />
+        );
+        if (type !== "search") return input;
+        return (
+          <span className="relative flex items-center">
+            <MagnifyingGlass
+              aria-hidden="true"
+              className="pointer-events-none absolute left-3 size-4 text-fg-muted"
+            />
+            {input}
+          </span>
+        );
+      }}
     </Field>
   );
 }

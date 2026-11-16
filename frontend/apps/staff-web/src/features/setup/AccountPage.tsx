@@ -18,7 +18,7 @@ export function AccountPage() {
   const { t } = useTranslation();
   const { data: me } = useStaffMe();
   return (
-    <div className="flex max-w-2xl flex-col gap-6">
+    <div className="flex max-w-3xl flex-col gap-6">
       <PageHeader title={t("setup.account.title")} />
       {me && <AccountForm me={me} />}
     </div>

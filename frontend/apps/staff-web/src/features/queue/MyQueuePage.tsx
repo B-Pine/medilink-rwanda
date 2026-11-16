@@ -219,7 +219,7 @@ export function MyQueuePage() {
 
       {myDay.data && <MyDayStrip data={myDay.data} compact />}
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_24rem]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-5 lg:grid-cols-[minmax(0,1fr)_24rem]">
         <section aria-labelledby="current" className="flex flex-col gap-4">
           <h2 id="current" className="sr-only">
             {t("queue.mine.current")}

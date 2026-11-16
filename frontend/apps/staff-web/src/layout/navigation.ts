@@ -562,6 +562,31 @@ export const navSection = (item: Pick<NavItem, "key">): NavSection =>
         ? "practice"
         : "work";
 
+/** The platform console's sections (staff clean-up 2026-11-16), labels in `shell.section.platform.*`. */
+export const PLATFORM_SECTIONS = ["overview", "facilities", "people", "support", "system"] as const;
+export type PlatformSection = (typeof PLATFORM_SECTIONS)[number];
+const PLATFORM_SECTION_OF: Record<string, PlatformSection> = {
+  platformOverview: "overview",
+  platformNationalReport: "overview",
+  platformApplications: "facilities",
+  platformFacilities: "facilities",
+  platformDisputes: "facilities",
+  platformUsers: "people",
+  platformBreakGlass: "people",
+  platformSecurityLog: "people",
+  platformAccessLog: "people",
+  platformMerges: "people",
+  platformSupport: "support",
+  platformContact: "support",
+  platformHelpArticles: "support",
+  platformAnnouncements: "support",
+  platformMasterData: "system",
+  platformFeatureFlags: "system",
+};
+/** Platform items not listed fall under System, so a new page is never lost. */
+export const platformSection = (item: Pick<NavItem, "key">): PlatformSection =>
+  PLATFORM_SECTION_OF[item.key] ?? "system";
+
 /** Reached from the queue with a patient, never on its own, so not in the menu. */
 const NOT_IN_MENU = new Set<string>(["clinicalConsultation"]);
 

@@ -520,7 +520,7 @@ function Composer({ scope, row }: { scope: AnnouncementScope; row: Announcement 
             : describeApiError(failed, t)}
         </Alert>
       )}
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <form onSubmit={submit} noValidate className="flex flex-col gap-5">
           <Card className="flex flex-col gap-4">
             <RadioGroup
@@ -538,7 +538,7 @@ function Composer({ scope, row }: { scope: AnnouncementScope; row: Announcement 
               </p>
             )}
             {draft.audience === "patients_in_range" && (
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
                 <TextField
                   id={fieldId("range_starts_on")}
                   type="date"

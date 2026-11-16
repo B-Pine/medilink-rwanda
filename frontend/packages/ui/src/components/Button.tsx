@@ -49,8 +49,16 @@ export function buttonClassName({
     pill ? "rounded-full" : "rounded-xl",
     "transition-[background-color,color,box-shadow,transform] duration-150 ease-out cursor-pointer select-none",
     "enabled:active:scale-[0.97] motion-reduce:enabled:active:scale-100",
-    "aria-disabled:cursor-not-allowed aria-disabled:opacity-70 disabled:cursor-not-allowed disabled:opacity-70",
     VARIANTS[variant],
+    // unavailable reads as grey, not as a lighter green that still looks pressable (audit 2026-11-16)
+    "disabled:cursor-not-allowed aria-disabled:cursor-not-allowed",
+    variant === "ghost"
+      ? "disabled:text-fg-muted aria-disabled:text-fg-muted disabled:hover:bg-transparent aria-disabled:hover:bg-transparent"
+      : cx(
+          "disabled:border-border/70 disabled:bg-subtle disabled:text-fg-muted disabled:shadow-none",
+          "aria-disabled:border-border/70 aria-disabled:bg-subtle aria-disabled:text-fg-muted aria-disabled:shadow-none",
+          "disabled:hover:bg-subtle aria-disabled:hover:bg-subtle",
+        ),
     SIZES[size],
     fullWidth && "w-full",
     className,

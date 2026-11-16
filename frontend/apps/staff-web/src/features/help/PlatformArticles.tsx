@@ -385,7 +385,11 @@ function Editor({
       <p role="status" aria-live="polite" className="m-0 text-body-sm">
         {notice ?? ""}
       </p>
-      <form onSubmit={submit} noValidate className="grid gap-5 lg:grid-cols-[1fr_24rem]">
+      <form
+        onSubmit={submit}
+        noValidate
+        className="grid grid-cols-[minmax(0,1fr)] gap-5 lg:grid-cols-[1fr_24rem]"
+      >
         <div className="flex flex-col gap-4">
           {summary.length > 0 && (
             <ErrorSummary
@@ -399,7 +403,7 @@ function Editor({
               {errorText(failed, t("help.loadFailed"))}
             </Alert>
           )}
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-2">
             <TextField
               id="article-slug"
               label={t("help.editor.slug")}

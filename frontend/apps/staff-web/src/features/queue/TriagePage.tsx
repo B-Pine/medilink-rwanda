@@ -305,7 +305,7 @@ function Workspace({ ticket, onSent }: { ticket: TicketRow; onSent: (number: str
           <legend className="mb-2 p-0 text-body-sm font-semibold">
             {t("queue.triage.urgency")}
           </legend>
-          <div className="grid gap-2 sm:grid-cols-3">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-2 sm:grid-cols-3">
             {URGENCIES.map((value) => (
               <label
                 key={value}

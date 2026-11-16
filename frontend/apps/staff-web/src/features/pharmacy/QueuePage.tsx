@@ -84,19 +84,8 @@ export function QueuePage() {
   );
 
   return (
-    <div className="flex max-w-4xl flex-col gap-5">
+    <div className="flex w-full flex-col gap-5">
       <PageHeader title={t("pharmacy.queue.title")} />
-      <TextField
-        type="search"
-        label={t("pharmacy.queue.search")}
-        hint={t("pharmacy.queue.searchHint")}
-        value={search}
-        onChange={(event) => {
-          setPage(1);
-          setSearch(event.target.value);
-        }}
-        className="w-full sm:w-80"
-      />
       <Tabs
         value={tab}
         onValueChange={(value) => {
@@ -104,13 +93,28 @@ export function QueuePage() {
           setTab(value as PharmacyQueueTab);
         }}
       >
-        <TabsList aria-label={t("pharmacy.queue.tabs")}>
-          {TABS.map((key) => (
-            <TabsTrigger key={key} value={key}>
-              {t(`pharmacy.queue.tab.${key}`)}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+        {/* one toolbar: the lists on the left, the search on the right */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <TabsList aria-label={t("pharmacy.queue.tabs")}>
+            {TABS.map((key) => (
+              <TabsTrigger key={key} value={key}>
+                {t(`pharmacy.queue.tab.${key}`)}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          <TextField
+            type="search"
+            label={t("pharmacy.queue.search")}
+            hideLabel
+            placeholder={t("pharmacy.queue.searchHint")}
+            value={search}
+            onChange={(event) => {
+              setPage(1);
+              setSearch(event.target.value);
+            }}
+            className="w-full sm:w-80"
+          />
+        </div>
         {TABS.map((key) => (
           <TabsContent key={key} value={key} className="mt-4">
             {key === tab && results}

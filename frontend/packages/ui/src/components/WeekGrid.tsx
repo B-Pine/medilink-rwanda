@@ -182,7 +182,9 @@ export function WeekGrid({
                     const tone = b.tone ?? "brand";
                     const content = (
                       <>
-                        <span className="block truncate text-body-sm font-semibold">{b.title}</span>
+                        <span className="line-clamp-2 block text-body-sm leading-snug font-semibold break-words">
+                          {b.title}
+                        </span>
                         <span className="block text-caption tabular-nums opacity-90">
                           {b.start}–{b.end}
                         </span>

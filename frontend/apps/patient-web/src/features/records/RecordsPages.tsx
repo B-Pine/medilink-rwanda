@@ -1,5 +1,5 @@
 import type { PatientLabResult } from "@medilink/api-client";
-import { Badge, cx, EmptyState, SelectField, Skeleton, TextField } from "@medilink/ui";
+import { Badge, cx, EmptyState, Skeleton, TextField } from "@medilink/ui";
 import { dateFormat } from "@medilink/ui/i18n";
 import { FileText, ListChecks, SealCheck, Stethoscope, TestTube } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
@@ -19,6 +19,7 @@ import {
   RowList,
   RowsSkeleton,
   WidgetCard,
+  WhoseFilter,
 } from "../dashboard/kit";
 import { useProfiles } from "../profile/ProfileLayout";
 
@@ -71,30 +72,28 @@ export function RecordsPage() {
   const years = [...new Set(rows.map((r) => r.service_date.slice(0, 4)))];
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader title={t("records.title")} />
+      <PageHeader
+        title={t("records.title")}
+        actions={
+          <WhoseFilter
+            label={t("records.whose")}
+            everyone={t("records.everyone")}
+            value={patientId}
+            onChange={setPatientId}
+            people={people}
+          />
+        }
+      />
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
         <TextField
           type="search"
           label={t("dashboard.records.search")}
+          hideLabel
+          placeholder={t("dashboard.records.search")}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="flex-1"
         />
-        {people.length > 1 && (
-          <SelectField
-            label={t("records.whose")}
-            value={patientId}
-            onChange={(e) => setPatientId(e.target.value)}
-            className="sm:w-64"
-          >
-            <option value="">{t("records.everyone")}</option>
-            {people.map((p) => (
-              <option key={p.patient_id} value={p.patient_id}>
-                {p.display_name}
-              </option>
-            ))}
-          </SelectField>
-        )}
       </div>
       {/* W7: released results first, they are what the patient waits for */}
       <LabResults patientId={patientId} showWhose={people.length > 1} nameOf={nameOf} />

@@ -104,7 +104,7 @@ function NationalBody({ data, query }: { data: NationalReport; query: ReportQuer
   const shownTrend = data.wait_trend.filter((r) => r.median_min !== null);
   return (
     <div className="ml-stagger flex flex-col gap-6">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatTile
           label={t("console.national.kpi.visits")}
           value={f.count(data.totals.visits)}
@@ -219,7 +219,7 @@ function NationalBody({ data, query }: { data: NationalReport; query: ReportQuer
         )}
       </Section>
 
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 xl:grid-cols-2">
         <Section
           title={t("console.national.diagnoses.title")}
           table="diagnoses"

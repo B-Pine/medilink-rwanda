@@ -128,7 +128,9 @@
     "attention": {
       "title": "À traiter",
       "allSet": "Tout est en ordre",
-      "allSetBody": "Rien n’attend votre réponse pour le moment."
+      "allSetBody": "Rien n’attend votre réponse pour le moment.",
+      "more_one": "Voir {{count}} de plus",
+      "more_other": "Voir {{count}} de plus"
     },
     "glance": {
       "label": "En un coup d’œil",

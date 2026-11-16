@@ -182,7 +182,7 @@ export function DispensePage() {
   const given = p.dispense_records.length > 0;
 
   return (
-    <div className="flex max-w-4xl flex-col gap-5">
+    <div className="flex w-full flex-col gap-5">
       <PageHeader
         title={p.patient_display_name}
         description={meta}
@@ -236,7 +236,7 @@ export function DispensePage() {
             <p className="clear-both m-0 text-body-sm text-fg-muted">
               {t("pharmacy.identity.hint")}
             </p>
-            <div className="grid gap-2 sm:grid-cols-2">
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-2 sm:grid-cols-2">
               {(["ticket_name_dob", "verification_code"] as const).map((method) => (
                 <label
                   key={method}
@@ -384,11 +384,15 @@ function ItemPlan({
               key={o}
               className={cx(
                 "inline-flex min-h-target cursor-pointer items-center gap-2 rounded-full border px-4 text-body-sm font-semibold focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-focus has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus",
+                // the choice reads at a glance: a real outcome is filled, "Not now" (the default)
+                // stays quiet, and "Not available" is red (audit 2026-11-16)
                 plan.outcome === o
                   ? o === "not_available"
                     ? "border-danger bg-danger-bg text-danger"
-                    : "border-primary bg-brand-subtle text-on-brand-subtle"
-                  : "border-border-input bg-surface text-fg",
+                    : o === "skip"
+                      ? "border-fg-muted bg-subtle text-fg"
+                      : "border-primary bg-primary text-on-primary"
+                  : "border-border-input bg-surface text-fg hover:bg-subtle",
               )}
             >
               <input

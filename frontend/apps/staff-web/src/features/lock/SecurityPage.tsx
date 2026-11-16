@@ -57,7 +57,7 @@ export function SecurityPage() {
   }
 
   return (
-    <div className="flex max-w-2xl flex-col gap-6">
+    <div className="flex max-w-3xl flex-col gap-6">
       <PageHeader title={t("lock.security.title")} />
       {notice && (
         <Alert tone="success" role="status">

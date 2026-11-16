@@ -26,6 +26,7 @@ import { useApi } from "../../app/services";
 import { useStaffMe } from "../../auth/queries";
 import { PageHeader } from "../../components/PageHeader";
 import { env } from "../../env";
+import { MiniStat } from "../../components/MiniStat";
 
 const STATUS_TONE: Record<ClaimStatus, "warning" | "success" | "danger"> = {
   pending: "warning",
@@ -111,27 +112,31 @@ export function ClaimsPage() {
           aria-label={t("billing.claims.totals")}
           className="m-0 grid list-none grid-cols-2 gap-3 p-0 md:grid-cols-4"
         >
-          <Figure
+          <MiniStat
+            as="li"
             label={t("billing.claims.visits", { count: summary.count })}
             value={money(summary.insurer_share_rwf)}
             hint={t("billing.claims.toClaim")}
           />
-          <Figure
+          <MiniStat
+            as="li"
             label={t("billing.claims.status.pending")}
             value={String(summary.pending_count)}
             tone="warning"
           />
-          <Figure
+          <MiniStat
+            as="li"
             label={t("billing.claims.status.paid")}
             value={money(summary.paid_rwf)}
             hint={t("billing.claims.claimsCount", { count: summary.paid_count })}
             tone="success"
           />
-          <Figure
+          <MiniStat
+            as="li"
             label={t("billing.claims.status.rejected")}
             value={money(summary.rejected_rwf)}
             hint={t("billing.claims.claimsCount", { count: summary.rejected_count })}
-            tone="danger"
+            tone={summary.rejected_count > 0 ? "danger" : undefined}
           />
         </ul>
       )}
@@ -179,35 +184,6 @@ export function ClaimsPage() {
         </ul>
       )}
     </div>
-  );
-}
-
-function Figure({
-  label,
-  value,
-  hint,
-  tone,
-}: {
-  label: string;
-  value: string;
-  hint?: string;
-  tone?: "warning" | "success" | "danger";
-}) {
-  return (
-    <li className="flex flex-col gap-0.5 rounded-xl bg-surface px-4 py-3 shadow-card">
-      <span className="text-caption text-fg-secondary">{label}</span>
-      <span
-        className={cx(
-          "font-heading text-h3 leading-tight font-semibold tabular-nums",
-          tone === "success" && "text-success",
-          tone === "danger" && "text-danger",
-          tone === "warning" && "text-attention",
-        )}
-      >
-        {value}
-      </span>
-      {hint && <span className="text-caption text-fg-muted">{hint}</span>}
-    </li>
   );
 }
 

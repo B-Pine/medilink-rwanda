@@ -1,7 +1,7 @@
-import { Buildings, CaretUpDown } from "@phosphor-icons/react";
+import { CaretUpDown } from "@phosphor-icons/react";
 import type { StaffMe } from "@medilink/api-client";
 import {
-  Badge,
+  cx,
   Menu,
   MenuContent,
   MenuLabel,
@@ -14,43 +14,76 @@ import { useNavigate } from "react-router";
 
 import { HOME_PATH } from "../auth/destination";
 import { useSetActiveFacility } from "../auth/queries";
-import { facilityTypeLabel } from "../facility/labels";
+import { facilityTypeLabel, roleLabel } from "../facility/labels";
+
+function initialsOf(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0]!)
+    .join("")
+    .toUpperCase();
+}
 
 /**
- * Facility switcher, top-left and always visible for multi-facility staff so they always know
- * where they are acting (design 04 §2). Switching rotates the session server-side and reloads
- * permissions; the user lands on Today of the new facility.
+ * The workspace card at the top of the sidebar (design 04 §2, staff clean-up 2026-11-16): where
+ * the person is acting and as whom. For staff of more than one facility the card is the facility
+ * switcher; switching rotates the session server-side and lands on Today of the new facility.
+ * Collapsed, only the initials tile shows.
  */
-export function FacilitySwitcher({ me }: { me: StaffMe }) {
+export function FacilitySwitcher({ me, collapsed = false }: { me: StaffMe; collapsed?: boolean }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const setActiveFacility = useSetActiveFacility();
-  const active = me.memberships.find((m) => m.facility.id === me.active_facility_id)?.facility;
+  const membership = me.memberships.find((m) => m.facility.id === me.active_facility_id);
+  const name =
+    membership?.facility.name ??
+    (me.is_platform_admin ? t("shell.platformAdmin") : t("facility.noFacility"));
+  const detail = membership
+    ? membership.roles.map((role) => roleLabel(role, t)).join(" · ")
+    : me.memberships.length > 0
+      ? t("facility.noFacility")
+      : null;
+  const switchable = me.memberships.length > 1;
 
-  if (me.memberships.length === 0) {
-    return me.is_platform_admin ? <Badge tone="brand">{t("shell.platformAdmin")}</Badge> : null;
-  }
-
-  const label = (
-    <span className="flex min-w-0 items-center gap-2">
-      <Buildings aria-hidden="true" className="size-icon shrink-0 text-fg-muted" />
-      <span className="truncate font-semibold">{active?.name ?? t("facility.noFacility")}</span>
-    </span>
+  const body = (
+    <>
+      <span
+        aria-hidden="true"
+        className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary font-heading text-body-sm font-bold text-on-primary"
+      >
+        {initialsOf(name)}
+      </span>
+      <span className={cx("flex min-w-0 flex-1 flex-col text-left", collapsed && "lg:sr-only")}>
+        <span className="truncate text-body-sm font-semibold text-fg">{name}</span>
+        {detail && <span className="truncate text-caption text-fg-muted">{detail}</span>}
+      </span>
+    </>
+  );
+  const shape = cx(
+    "flex w-full min-w-0 items-center gap-3 rounded-2xl border border-border/70 bg-page px-2.5 py-2",
+    collapsed && "lg:justify-center lg:border-transparent lg:bg-transparent lg:px-0",
   );
 
-  if (me.memberships.length === 1) return <div className="min-w-0 text-fg">{label}</div>;
+  if (!switchable) return <div className={shape}>{body}</div>;
 
   return (
-    <div className="flex min-w-0 items-center gap-3">
+    <div className="flex flex-col gap-1">
       <Menu>
         <MenuTrigger
-          aria-label={t("facility.switcherLabel", {
-            name: active?.name ?? t("facility.noFacility"),
-          })}
-          className="inline-flex min-h-target max-w-full min-w-0 cursor-pointer items-center gap-2 rounded-xl border border-border-input bg-surface px-3 text-fg hover:bg-subtle"
+          aria-label={t("facility.switcherLabel", { name })}
+          title={collapsed ? name : undefined}
+          className={cx(
+            shape,
+            "cursor-pointer transition-[background-color,border-color] duration-150 ease-out-quint hover:border-border-input hover:bg-subtle",
+          )}
         >
-          {label}
-          <CaretUpDown aria-hidden="true" className="size-4 shrink-0 text-fg-muted" />
+          {body}
+          <CaretUpDown
+            aria-hidden="true"
+            className={cx("size-4 shrink-0 text-fg-muted", collapsed && "lg:hidden")}
+          />
         </MenuTrigger>
         <MenuContent align="start">
           <MenuLabel>{t("facility.switchHeading")}</MenuLabel>
@@ -75,7 +108,7 @@ export function FacilitySwitcher({ me }: { me: StaffMe }) {
         </MenuContent>
       </Menu>
       {setActiveFacility.isError && (
-        <p role="alert" className="m-0 text-body-sm font-semibold text-danger">
+        <p role="alert" className="m-0 px-1 text-body-sm font-semibold text-danger">
           {t("facility.switchFailed")}
         </p>
       )}

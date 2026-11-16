@@ -106,6 +106,7 @@ export function SettingsPage() {
             id: `settings-${id}`,
             label: t(`dashboard.settings.${id}.title`),
           }))}
+          orientation="vertical"
           className="hidden lg:sticky lg:top-24 lg:block"
         />
         <div className="flex min-w-0 max-w-[44rem] flex-col gap-6">

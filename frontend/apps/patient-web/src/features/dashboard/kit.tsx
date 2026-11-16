@@ -7,7 +7,7 @@ import {
   WarningCircle,
   type Icon,
 } from "@phosphor-icons/react";
-import { Badge, Button, cx, Skeleton, type BadgeTone } from "@medilink/ui";
+import { Badge, Button, cx, SelectField, Skeleton, type BadgeTone } from "@medilink/ui";
 import { formatDate } from "@medilink/ui/i18n";
 import { useQuery } from "@tanstack/react-query";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
@@ -591,4 +591,41 @@ export function useFacilityProfile(slug: string | undefined) {
     enabled: Boolean(slug),
     staleTime: 60_000,
   });
+}
+
+/**
+ * "Whose …" for families (audit 2026-11-16): one compact picker, always beside the page title,
+ * instead of a labelled select in a different place on every page. The label stays for screen
+ * readers; the first option reads "Everyone".
+ */
+export function WhoseFilter({
+  label,
+  everyone,
+  value,
+  onChange,
+  people,
+}: {
+  label: string;
+  everyone: string;
+  value: string;
+  onChange: (patientId: string) => void;
+  people: { patient_id: string; display_name: string }[];
+}) {
+  if (people.length < 2) return null;
+  return (
+    <SelectField
+      label={label}
+      hideLabel
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="w-full sm:w-60"
+    >
+      <option value="">{everyone}</option>
+      {people.map((p) => (
+        <option key={p.patient_id} value={p.patient_id}>
+          {p.display_name}
+        </option>
+      ))}
+    </SelectField>
+  );
 }

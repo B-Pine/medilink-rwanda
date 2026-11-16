@@ -1,10 +1,14 @@
 import {
   CaretDown,
+  Desktop,
   IdentificationBadge,
   LockKey,
+  Moon,
   ShieldCheck,
   SignOut,
+  Sun,
   UserCircle,
+  type Icon,
 } from "@phosphor-icons/react";
 import { hasPermission, type StaffMe } from "@medilink/api-client";
 import {
@@ -16,6 +20,9 @@ import {
   MenuRadioItem,
   MenuSeparator,
   MenuTrigger,
+  THEME_PREFERENCES,
+  useTheme,
+  type ThemePreference,
 } from "@medilink/ui";
 import { SUPPORTED_LANGUAGES } from "@medilink/ui/i18n";
 import { useTranslation } from "react-i18next";
@@ -24,6 +31,8 @@ import { useNavigate } from "react-router";
 import { useApi, useServices } from "../app/services";
 import { useAuthFlow } from "../auth/auth-flow";
 import { useLogout } from "../auth/queries";
+
+const THEME_ICONS: Record<ThemePreference, Icon> = { light: Sun, dark: Moon, system: Desktop };
 
 function initials(name: string): string {
   return name
@@ -42,6 +51,7 @@ export function UserMenu({ me }: { me: StaffMe }) {
   const { setPending } = useAuthFlow();
   const api = useApi();
   const { lock } = useServices();
+  const { theme, setTheme } = useTheme();
 
   const onLogout = () => {
     logout.mutate(undefined, {
@@ -85,6 +95,19 @@ export function UserMenu({ me }: { me: StaffMe }) {
               {t(`language.names.${language}`, { ns: "ui" })}
             </MenuRadioItem>
           ))}
+        </MenuRadioGroup>
+        <MenuSeparator />
+        <MenuLabel>{t("theme.label", { ns: "ui" })}</MenuLabel>
+        <MenuRadioGroup value={theme} onValueChange={(value) => setTheme(value as ThemePreference)}>
+          {THEME_PREFERENCES.map((option) => {
+            const OptionIcon = THEME_ICONS[option];
+            return (
+              <MenuRadioItem key={option} value={option}>
+                <OptionIcon aria-hidden="true" className="size-icon" />
+                {t(`theme.${option}`, { ns: "ui" })}
+              </MenuRadioItem>
+            );
+          })}
         </MenuRadioGroup>
         <MenuSeparator />
         <MenuItem onSelect={() => void navigate("/account")}>

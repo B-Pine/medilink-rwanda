@@ -257,7 +257,7 @@ export function ArticlePage() {
   const title = pickText(article.data.title_i18n, lang);
   const body = pickText(article.data.body_i18n, lang);
   return (
-    <div className="flex max-w-[48rem] flex-col gap-5">
+    <div className="flex max-w-3xl flex-col gap-5">
       <PageHeader title={title.text} back={back} />
       <FallbackNote text={article.data.body_i18n} />
       <Card as="article" aria-label={title.text}>
@@ -436,7 +436,7 @@ export function RequestPage() {
     fieldErrors(send.error).body ??
     (send.isError ? errorText(send.error, t("help.loadFailed")) : undefined);
   return (
-    <div className="flex max-w-[48rem] flex-col gap-5">
+    <div className="flex max-w-3xl flex-col gap-5">
       <PageHeader
         title={r.subject}
         back={own ? back : { to: "/support?tab=facility", label: t("help.support.facility") }}

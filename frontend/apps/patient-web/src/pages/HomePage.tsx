@@ -50,6 +50,7 @@ import {
   StatCard,
   useFacilityProfile,
   WidgetCard,
+  firstName,
 } from "../features/dashboard/kit";
 import { arrivalKey, QueueTicketCard } from "../features/dashboard/visits";
 import { medicinesKeys } from "../features/medicines/shared";
@@ -498,30 +499,53 @@ function useReminders(): Reminder[] {
 function Attention() {
   const { t } = useTranslation();
   const reminders = useReminders();
+  // the three most pressing first; the rest one tap away, so the card stays short (audit 2026-11-16)
+  const [all, setAll] = useState(false);
+  const shown = all ? reminders : reminders.slice(0, 3);
+  const hidden = reminders.length - shown.length;
   return (
     <WidgetCard id="attention" title={t("dashboard.overview.attention.title")} className="h-full">
       {reminders.length ? (
-        <ul className="m-0 flex list-none flex-col divide-y divide-border p-0">
-          {reminders.map((r) => (
-            <li key={r.id} className="flex items-start gap-3 px-4 py-4 sm:px-5">
-              <span
-                aria-hidden="true"
-                className="grid size-9 shrink-0 place-items-center rounded-lg bg-attention-bg text-attention"
-              >
-                <r.icon weight="bold" className="size-5" />
-              </span>
-              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                <p className="m-0 text-body-sm font-semibold text-pretty text-fg">{r.title}</p>
-                <p className="m-0 text-caption text-fg-secondary tabular-nums">
-                  {[r.when, r.who].filter(Boolean).join(" · ")}
-                </p>
-                <Link to={r.to} className="mt-1 self-start text-body-sm font-semibold text-link">
+        <>
+          <ul className="m-0 flex list-none flex-col divide-y divide-border p-0">
+            {shown.map((r) => (
+              <li key={r.id} className="flex items-center gap-3 px-4 py-3.5 sm:px-5">
+                <span
+                  aria-hidden="true"
+                  className="grid size-9 shrink-0 place-items-center rounded-lg bg-attention-bg text-attention"
+                >
+                  <r.icon weight="bold" className="size-5" />
+                </span>
+                <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                  <p className="m-0 text-body-sm font-semibold text-pretty text-fg">{r.title}</p>
+                  <p className="m-0 text-caption text-fg-secondary tabular-nums">
+                    {[r.when, r.who].filter(Boolean).join(" · ")}
+                  </p>
+                </div>
+                {/* one small button per row, not an underlined link under the text */}
+                <Link
+                  to={r.to}
+                  className={buttonClassName({
+                    variant: "secondary",
+                    size: "sm",
+                    className: "shrink-0",
+                  })}
+                >
                   {r.action}
                 </Link>
-              </div>
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+          {hidden > 0 && (
+            <button
+              type="button"
+              onClick={() => setAll(true)}
+              className="m-0 cursor-pointer border-0 border-t border-border bg-transparent px-5 py-3 text-left text-body-sm font-semibold text-link hover:bg-subtle"
+            >
+              {t("dashboard.overview.attention.more", { count: hidden })}
+            </button>
+          )}
+        </>
       ) : (
         <div className="flex flex-1 flex-col items-center justify-center gap-2 px-5 py-8 text-center">
           <span
@@ -895,22 +919,19 @@ export function HomePage() {
     <div className="ml-stagger flex flex-col gap-6 lg:gap-8">
       <header className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
         <div className="flex min-w-0 flex-col gap-2">
-          <p className="m-0 inline-flex items-center gap-2 self-start rounded-full border border-border bg-surface px-3 py-1 text-caption font-semibold text-fg-secondary">
-            <span aria-hidden="true" className="size-1.5 rounded-full bg-brand" />
+          {/* the same date line as the staff Today (audit 2026-11-16) */}
+          <p className="m-0 text-caption font-semibold tracking-wider text-fg-muted uppercase">
             {today}
           </p>
           <PageHeading
             title={t("dashboard.nav.overview")}
             className="font-heading text-h1 font-bold tracking-tight text-balance text-fg"
           >
-            {t(`dashboard.overview.greeting_${partOfDay(now)}`, { name: me.full_name })}
+            {t(`dashboard.overview.greeting_${partOfDay(now)}`, { name: firstName(me.full_name) })}
           </PageHeading>
         </div>
+        {/* Find care is in the menu; the header keeps the one action people come for */}
         <div className="hidden shrink-0 gap-2 md:flex">
-          <Link to={paths.findCare} className={buttonClassName({ variant: "secondary" })}>
-            <MagnifyingGlass aria-hidden="true" weight="bold" className="size-4" />
-            {t("dashboard.findCare")}
-          </Link>
           <Link
             to={`${paths.findCare}?mode=booking`}
             className={buttonClassName({ className: "shadow-card" })}
@@ -927,8 +948,8 @@ export function HomePage() {
         </Alert>
       )}
 
-      {/* full width: in the 22 rem side column its text wrapped one or two words per line */}
-      <PushOffBanner />
+      {/* one banner at a time: confirm the email first, then the alerts (audit 2026-11-16) */}
+      {me.email_verified && <PushOffBanner />}
 
       <div className="grid items-stretch gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
         <Journey />

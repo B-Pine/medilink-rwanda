@@ -26,6 +26,8 @@ declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {
     align?: "left" | "right" | "center";
     label?: string;
+    /** Width rules for the column's cells, e.g. "min-w-56" or "whitespace-nowrap". */
+    cellClassName?: string;
   }
 }
 
@@ -366,12 +368,14 @@ export function DataTable<T>({
                               "border-b border-border/50 px-5 py-2 align-middle text-fg-secondary",
                               index === 0 && "font-semibold text-fg",
                               alignClass(cell.column),
+                              cell.column.columnDef.meta?.cellClassName,
                             )}
                           >
                             {index === 0 && onRowClick ? (
                               <button
                                 type="button"
-                                className="cursor-pointer border-0 bg-transparent p-0 text-left font-semibold text-link underline-offset-2 hover:underline"
+                                // a name reads as a name; it turns green when it can be opened
+                                className="cursor-pointer border-0 bg-transparent p-0 text-left font-semibold text-fg underline-offset-2 hover:text-link hover:underline"
                                 onClick={(event) => {
                                   event.stopPropagation();
                                   onRowClick(row.original);

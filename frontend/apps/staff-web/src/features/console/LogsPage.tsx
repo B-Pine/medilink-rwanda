@@ -70,9 +70,9 @@ function LogPage({ kind }: { kind: LogKind }) {
           <span className="flex items-center gap-3">
             <OutcomeIcon outcome={row.original.outcome} />
             <span className="flex min-w-0 flex-col">
-              <span className="truncate font-semibold text-fg">{label(row.original.action)}</span>
-              <span className="truncate font-mono text-caption font-normal text-fg-muted">
-                {row.original.action}
+              {/* the readable event only; the technical code stays in the row's detail panel */}
+              <span className="truncate font-semibold text-fg" title={row.original.action}>
+                {label(row.original.action)}
               </span>
             </span>
           </span>

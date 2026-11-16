@@ -31,6 +31,7 @@ import { useStaffMe } from "../../auth/queries";
 import { PageHeader } from "../../components/PageHeader";
 import { PlatformOnly, useTableLabels } from "../platform/shared";
 import { errorText, fieldErrors, helpKeys, isStatus, StatusBadge, Thread, useWhen } from "./shared";
+import { FILTER_BUTTON, FILTER_GROUP } from "../../components/filters";
 
 const STATUS_TABS = ["active", "open", "answered", "closed"] as const;
 
@@ -178,14 +179,14 @@ function Queue() {
   return (
     <div className="flex flex-col gap-5">
       <PageHeader title={t("help.queue.title")} />
-      <div role="group" aria-label={t("help.queue.statusTabs")} className="flex flex-wrap gap-2">
+      <div role="group" aria-label={t("help.queue.statusTabs")} className={FILTER_GROUP}>
         {STATUS_TABS.map((s) => (
           <button
             key={s}
             type="button"
             aria-pressed={filters.status === s}
             onClick={() => update({ status: s })}
-            className="inline-flex min-h-target cursor-pointer items-center rounded-full border border-border-input bg-surface px-4 text-body-sm font-semibold text-fg hover:bg-subtle aria-pressed:border-primary aria-pressed:bg-brand-subtle aria-pressed:text-on-brand-subtle"
+            className={FILTER_BUTTON}
           >
             {t(`help.queue.tabs.${s}`)}
           </button>
@@ -306,7 +307,7 @@ function Request() {
           </>
         }
       />
-      <div className="grid gap-5 lg:grid-cols-[1fr_22rem]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-5 lg:grid-cols-[1fr_22rem]">
         <div className="flex flex-col gap-4">
           <Thread
             messages={r.messages}

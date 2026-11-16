@@ -127,7 +127,7 @@ function Checklist() {
   });
 
   return (
-    <div className="flex max-w-4xl flex-col gap-6">
+    <div className="flex max-w-3xl flex-col gap-6">
       <PageHeader title={t("setup.checklist.title")} />
       <QueryState query={checklist}>
         {(data) => (
@@ -204,7 +204,9 @@ function Checklist() {
                         aria-hidden="true"
                         className={cx(
                           "absolute -top-1 -right-1 grid size-5 place-items-center rounded-full text-[0.625rem] font-bold tabular-nums ring-2 ring-surface",
-                          item.done ? "bg-success text-on-primary" : "bg-surface text-fg-secondary",
+                          item.done
+                            ? "bg-success text-on-primary"
+                            : "bg-attention-bg text-attention",
                         )}
                       >
                         {item.done ? <CheckCircle weight="fill" className="size-3.5" /> : index + 1}
@@ -253,26 +255,23 @@ function ChecklistSummary({ data }: { data: SetupChecklist }) {
   return (
     <section
       aria-label={t("setup.checklist.progress", { done, total: data.items.length })}
-      className="relative flex flex-wrap items-center gap-5 overflow-hidden rounded-2xl bg-forest p-5 text-on-forest"
+      className="relative flex flex-wrap items-center gap-5 overflow-hidden rounded-2xl bg-surface p-5 shadow-card"
     >
-      <div className="text-on-forest-accent">
+      <div className="text-primary">
         <ProgressRing done={done} total={data.items.length} size={84} />
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <p className="m-0 font-heading text-h2 tabular-nums">
           {t("setup.checklist.progress", { done, total: data.items.length })}
         </p>
-        <p className="m-0 text-on-forest-muted">
+        <p className="m-0 text-fg-secondary">
           {next
             ? t("setup.checklist.nextStep", { step: t(`setup.checklist.items.${next.code}`) })
             : t("setup.checklist.allDone")}
         </p>
       </div>
       {next && (
-        <Link
-          to={next.link}
-          className="inline-flex min-h-target items-center gap-2 rounded-xl bg-on-forest px-4 font-semibold text-forest no-underline hover:bg-on-forest-muted"
-        >
+        <Link to={next.link} className={buttonClassName({})}>
           {t("setup.checklist.continue")}
           <CaretRight aria-hidden="true" weight="bold" />
         </Link>
@@ -289,49 +288,37 @@ export function SetupTodayCard() {
   const data = checklist.data;
   if (!allowed || !data || data.status === "live") return null;
   const done = data.items.filter((i) => i.done).length;
-  const left = data.items.filter((i) => !i.done);
+  const next = data.items.find((i) => !i.done);
+  // one quiet line on Today, not a big card (audit 2026-11-16): progress, the next step, a link
   return (
     <section
       aria-labelledby="today-setup"
-      className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5 lg:col-span-2"
+      className="flex flex-wrap items-center gap-x-4 gap-y-3 rounded-2xl bg-surface px-4 py-3 shadow-card lg:col-span-3"
     >
-      <div className="flex items-center gap-4">
-        <div className="text-primary">
-          <ProgressRing done={done} total={data.items.length} size={56} />
-        </div>
-        <div className="flex min-w-0 flex-1 flex-col">
-          <h2 id="today-setup" className="m-0 font-heading text-h3">
-            {t("setup.today.title")}
-          </h2>
-          <p className="m-0 text-body-sm text-fg-secondary tabular-nums">
-            {t("setup.checklist.progress", { done, total: data.items.length })}
-          </p>
-        </div>
-        <Link to="/setup" className={buttonClassName({ variant: "secondary" })}>
-          {t("setup.today.open")}
-        </Link>
+      <div className="text-primary">
+        <ProgressRing done={done} total={data.items.length} size={40} />
       </div>
-      {left.length > 0 && (
-        <ul className="m-0 grid list-none gap-2 p-0 sm:grid-cols-2">
-          {left.slice(0, 4).map((item) => {
-            const ItemIcon = CHECKLIST_ICONS[item.code];
-            return (
-              <li key={item.code}>
-                <Link
-                  to={item.link}
-                  className="flex min-h-target items-center gap-3 rounded-2xl border border-border/60 px-3 py-2 text-fg no-underline hover:border-border-input hover:bg-subtle"
-                >
-                  <ItemIcon aria-hidden="true" className="size-5 shrink-0 text-warning" />
-                  <span className="flex-1 font-medium">
-                    {t(`setup.checklist.items.${item.code}`)}
-                  </span>
-                  <CaretRight aria-hidden="true" className="size-4 text-fg-muted" />
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+      <div className="flex min-w-0 flex-1 flex-col">
+        <h2 id="today-setup" className="m-0 text-body font-semibold">
+          {t("setup.today.title")}
+        </h2>
+        <p className="m-0 text-body-sm text-fg-secondary tabular-nums">
+          {t("setup.checklist.progress", { done, total: data.items.length })}
+          {next && (
+            <>
+              {" · "}
+              {t("setup.checklist.nextStep", { step: t(`setup.checklist.items.${next.code}`) })}
+            </>
+          )}
+        </p>
+      </div>
+      <Link to={next?.link ?? "/setup"} className={buttonClassName({ size: "sm" })}>
+        {t("setup.checklist.continue")}
+        <CaretRight aria-hidden="true" weight="bold" />
+      </Link>
+      <Link to="/setup" className={buttonClassName({ variant: "ghost", size: "sm" })}>
+        {t("setup.today.open")}
+      </Link>
     </section>
   );
 }

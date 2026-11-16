@@ -33,11 +33,13 @@ export function AvailabilityPage() {
   const out = rows.filter((r) => !r.is_available).length;
 
   return (
-    <div className="flex max-w-3xl flex-col gap-5">
+    <div className="flex w-full flex-col gap-5">
       <PageHeader title={t("pharmacy.availability.title")} />
       <TextField
         type="search"
         label={t("pharmacy.availability.search")}
+        hideLabel
+        placeholder={t("pharmacy.availability.search")}
         value={search}
         onChange={(event) => {
           setPage(1);

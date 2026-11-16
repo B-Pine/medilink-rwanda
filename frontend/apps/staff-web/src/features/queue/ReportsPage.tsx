@@ -246,7 +246,7 @@ export function PeriodText({ from, to }: { from: string; to: string }) {
 export function ReportSkeleton() {
   return (
     <div className="flex flex-col gap-4" aria-hidden="true">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {[0, 1, 2, 3].map((i) => (
           <Skeleton key={i} height="8.5rem" className="rounded-2xl" />
         ))}
@@ -272,7 +272,7 @@ function ReportBody({ data, query }: { data: FacilityReport; query: ReportQuery 
     value === null ? DASH : t("queue.report.minutes", { count: value });
   return (
     <div className="ml-stagger flex flex-col gap-6">
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatTile
           label={t("queue.report.kpi.patients")}
           value={v.totals.patients}
@@ -341,7 +341,7 @@ function ReportBody({ data, query }: { data: FacilityReport; query: ReportQuery 
         />
       </Section>
 
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 xl:grid-cols-2">
         <Section title={t("queue.report.sources.title")} tables={["sources"]} query={query}>
           <BarList
             label={t("queue.report.sources.title")}
@@ -373,7 +373,7 @@ function ReportBody({ data, query }: { data: FacilityReport; query: ReportQuery 
         <WaitTable data={data} min={min} />
       </Section>
 
-      <div className="grid gap-6 xl:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 xl:grid-cols-2">
         <Section
           title={t("queue.report.diagnoses.title")}
           description={t("queue.report.diagnoses.intro", {
@@ -446,7 +446,7 @@ function ReportBody({ data, query }: { data: FacilityReport; query: ReportQuery 
         query={query}
         icon={<Wallet aria-hidden="true" weight="bold" />}
       >
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-2">
           <BarList
             label={t("queue.report.money.byMethod")}
             heading

@@ -96,7 +96,7 @@ export function CommandCenterPage() {
         </Button>
       </header>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Kpi
           label={t("console.cc.live")}
           value={d.live_facilities}
@@ -129,12 +129,12 @@ export function CommandCenterPage() {
         />
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
         <NetworkMap data={d} />
         <ActionInbox data={d} />
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-3">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 xl:grid-cols-3">
         <Pipeline data={d} />
         <Districts data={d} />
         <Activity data={d} />

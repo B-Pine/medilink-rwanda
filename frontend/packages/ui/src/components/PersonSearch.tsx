@@ -42,6 +42,11 @@ export interface PersonSearchProps {
   /** Focus the input when `/` is pressed outside a text field (NFR-UX-05). */
   slashShortcut?: boolean;
   busy?: boolean;
+  /**
+   * Search while typing (after a short pause, from 2 characters); Enter still searches at once.
+   * Default on: a search that waits for Enter looked broken (staff audit 2026-11-16).
+   */
+  searchAsYouType?: boolean;
 }
 
 /**
@@ -57,6 +62,7 @@ export function PersonSearch({
   labels,
   slashShortcut = true,
   busy,
+  searchAsYouType = true,
 }: PersonSearchProps) {
   const id = useId();
   const listId = `${id}-list`;
@@ -71,6 +77,18 @@ export function PersonSearch({
     setListed(results);
     setActive(-1);
   }
+
+  // search after a 350 ms pause in typing; the latest onSearch is used without restarting the timer
+  const searchRef = useRef(onSearch);
+  useEffect(() => {
+    searchRef.current = onSearch;
+  });
+  useEffect(() => {
+    const query = value.trim();
+    if (!searchAsYouType || query.length < 2) return;
+    const timer = setTimeout(() => searchRef.current(query, detectSearchType(query)), 350);
+    return () => clearTimeout(timer);
+  }, [value, searchAsYouType]);
 
   useEffect(() => {
     if (!slashShortcut) return;

@@ -666,7 +666,7 @@ function CardPhotos({
   const images = profile.card_images;
   return (
     <div className="flex flex-col gap-2">
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-2 sm:grid-cols-2">
         {(["front", "back"] as const).map((side) => {
           const image = images[side];
           const inputId = `card-${profile.id}-${side}`;

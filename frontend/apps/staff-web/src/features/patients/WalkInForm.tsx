@@ -153,7 +153,7 @@ export function WalkInForm({ onRegistered }: WalkInFormProps) {
   const strongMatches = duplicates?.matches.filter((m) => m.level !== "possible") ?? [];
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
       <form
         onSubmit={submit}
         noValidate

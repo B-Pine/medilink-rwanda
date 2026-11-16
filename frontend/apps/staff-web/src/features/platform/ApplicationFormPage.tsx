@@ -233,7 +233,7 @@ function ApplicationForm({ app }: { app?: PlatformApplication }) {
             onChange={setFacility("name")}
             error={field("facility.name")}
           />
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
             <SelectField
               label={t("platform.review.type")}
               value={values.facility.facility_type}
@@ -338,7 +338,7 @@ function ApplicationForm({ app }: { app?: PlatformApplication }) {
               pinLabel={t("platform.form.pinLabel")}
             />
           </Suspense>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
             <TextField
               label={t("platform.form.latitude")}
               inputMode="decimal"
@@ -356,7 +356,7 @@ function ApplicationForm({ app }: { app?: PlatformApplication }) {
         </Section>
 
         <Section title={t("platform.form.applicant")} hint={t("platform.form.applicantHint")}>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
             <TextField
               label={t("platform.form.name")}
               value={values.applicant.name}
@@ -386,7 +386,7 @@ function ApplicationForm({ app }: { app?: PlatformApplication }) {
         </Section>
 
         <Section title={t("platform.form.admin")} hint={t("platform.form.adminHint")}>
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-3">
             <TextField
               label={t("platform.form.name")}
               value={values.admin.name}
@@ -409,7 +409,7 @@ function ApplicationForm({ app }: { app?: PlatformApplication }) {
         </Section>
 
         <Section title={t("platform.review.insurers")}>
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-2 sm:grid-cols-2">
             {(insurers.data?.results ?? []).map((insurer: LocalisedItem) => {
               const code = String(insurer.code);
               return (
@@ -511,7 +511,7 @@ function VillagePicker({
   }
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
       {LEVELS.map((level, i) => {
         if (i > 0 && !picked[LEVELS[i - 1]!]) return null;
         return (

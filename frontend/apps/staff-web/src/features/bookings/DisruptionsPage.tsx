@@ -324,7 +324,7 @@ function WhatStep({
           </option>
         ))}
       </SelectField>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
         <TextField
           label={t("bookings.disruptions.from")}
           name="starts_at"

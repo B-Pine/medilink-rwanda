@@ -324,7 +324,7 @@ export function DoctorTodayCard() {
         {t("clinical.today.title")}
       </h2>
       {!data ? (
-        <div className="grid gap-4 lg:grid-cols-3" aria-busy="true">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-3" aria-busy="true">
           <Skeleton height="12rem" className="rounded-2xl" />
           <Skeleton height="12rem" className="rounded-2xl" />
           <Skeleton height="12rem" className="rounded-2xl" />
@@ -332,7 +332,7 @@ export function DoctorTodayCard() {
       ) : (
         <div className="ml-stagger flex flex-col gap-4">
           <MyDayStrip data={data} />
-          <div className="grid gap-4 lg:grid-cols-3">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-3">
             <InTheRoom />
             <NeedsYou data={data} />
             <StatTile

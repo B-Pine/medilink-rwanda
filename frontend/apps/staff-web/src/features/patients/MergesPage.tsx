@@ -1,9 +1,11 @@
+import { GitMerge } from "@phosphor-icons/react";
 import type { MergeRequest, MergeSide, MergeStatus } from "@medilink/api-client";
 import {
   Alert,
   Badge,
   Button,
   ConfirmDialog,
+  EmptyState,
   LoadingState,
   SidePanel,
   type BadgeTone,
@@ -18,6 +20,7 @@ import { PageHeading } from "../../components/PageHeading";
 import { PageHeader } from "../../components/PageHeader";
 import { useStepUp } from "../lock";
 import { actionError, formatDate, Gate, useCan, useLocale } from "./shared";
+import { FILTER_BUTTON, FILTER_GROUP } from "../../components/filters";
 
 const STATUSES: (MergeStatus | "")[] = [
   "requested",
@@ -70,21 +73,22 @@ function Merges({ platform }: { platform: boolean }) {
   return (
     <div className="flex w-full flex-col gap-5">
       <PageHeader title={title} />
-      <div role="group" aria-label={t("patients.merges.filter")} className="flex flex-wrap gap-2">
+      <div role="group" aria-label={t("patients.merges.filter")} className={FILTER_GROUP}>
         {STATUSES.map((s) => (
-          <Button
+          <button
             key={s || "all"}
-            variant={status === s ? "primary" : "secondary"}
+            type="button"
             aria-pressed={status === s}
             onClick={() => setStatus(s)}
+            className={FILTER_BUTTON}
           >
             {s ? t(`patients.merges.status.${s}`) : t("patients.merges.all")}
-          </Button>
+          </button>
         ))}
       </div>
       {list.isPending && <LoadingState />}
       {list.data && list.data.results.length === 0 && (
-        <p className="m-0">{t("patients.merges.none")}</p>
+        <EmptyState icon={GitMerge} title={t("patients.merges.none")} />
       )}
       <ul className="m-0 flex list-none flex-col gap-2 p-0">
         {list.data?.results.map((merge) => (

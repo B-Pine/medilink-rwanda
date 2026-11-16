@@ -259,7 +259,7 @@ function CloseShiftDialog({ shift, onClose }: { shift: CashShift; onClose: () =>
         {close.isError && (
           <Alert tone="danger">{errorText(close.error, t("billing.failed"))}</Alert>
         )}
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
           {PAYMENT_METHODS.map((method) => (
             <TextField
               key={method}
@@ -333,6 +333,8 @@ export function BillsPage() {
         <TextField
           type="search"
           label={t("billing.search")}
+          hideLabel
+          placeholder={t("billing.search")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full sm:w-80"
@@ -433,7 +435,7 @@ export function BillPage() {
           </span>
         }
       />
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <div className="flex min-w-0 flex-col gap-6">
           <section
             aria-labelledby="lines"

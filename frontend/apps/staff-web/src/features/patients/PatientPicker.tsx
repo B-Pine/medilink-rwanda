@@ -1,11 +1,12 @@
 import type { FacilityPatientDetail, PatientSummary } from "@medilink/api-client";
-import { Button, PersonSearch } from "@medilink/ui";
+import { PersonSearch } from "@medilink/ui";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useApi } from "../../app/services";
 import { WalkInForm } from "./WalkInForm";
+import { FILTER_BUTTON, FILTER_GROUP } from "../../components/filters";
 
 export interface PickedPatient {
   /** The facility record (S3 `FacilityPatient`) used by check-in and phone booking. */
@@ -32,21 +33,18 @@ export function PatientPicker({ onPicked }: { onPicked: (patient: PickedPatient)
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex gap-2" role="group" aria-label={t("patients.picker.mode")}>
-        <Button
-          variant={mode === "find" ? "primary" : "secondary"}
-          aria-pressed={mode === "find"}
-          onClick={() => setMode("find")}
-        >
-          {t("patients.picker.find")}
-        </Button>
-        <Button
-          variant={mode === "new" ? "primary" : "secondary"}
-          aria-pressed={mode === "new"}
-          onClick={() => setMode("new")}
-        >
-          {t("patients.picker.new")}
-        </Button>
+      <div className={FILTER_GROUP} role="group" aria-label={t("patients.picker.mode")}>
+        {(["find", "new"] as const).map((m) => (
+          <button
+            key={m}
+            type="button"
+            aria-pressed={mode === m}
+            onClick={() => setMode(m)}
+            className={FILTER_BUTTON}
+          >
+            {t(`patients.picker.${m}`)}
+          </button>
+        ))}
       </div>
       {mode === "find" ? (
         <>

@@ -538,7 +538,7 @@ function FacilityOverview({ facility }: { facility: PlatformFacilityDetail }) {
   ];
   const professions = Object.entries(facility.staff_by_profession);
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-2">
       <Card padding="md" className="flex flex-col gap-3">
         <h2 className="m-0 font-heading text-h4 font-bold">{t("platform.facilities.identity")}</h2>
         <Facts rows={rows} />
@@ -662,7 +662,7 @@ function IdentifiersForm({ facility }: { facility: PlatformFacilityDetail }) {
       <form
         noValidate
         onSubmit={submit}
-        className="grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
+        className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
       >
         <TextField
           label={t("platform.review.mohCode")}

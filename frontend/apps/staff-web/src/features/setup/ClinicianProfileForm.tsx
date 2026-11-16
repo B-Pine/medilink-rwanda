@@ -177,7 +177,7 @@ export function ClinicianProfileForm({ profile }: { profile: ClinicianProfile })
         <legend className="mb-2 p-0 font-heading text-h4 font-bold">
           {t("setup.clinician.professionTitle")}
         </legend>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
           <SelectField
             label={t("setup.clinician.profession")}
             value={form.profession}
@@ -236,7 +236,7 @@ export function ClinicianProfileForm({ profile }: { profile: ClinicianProfile })
             </Badge>
           )}
         </legend>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
           <SelectField
             label={t("setup.clinician.council")}
             value={form.council}
@@ -288,7 +288,10 @@ export function ClinicianProfileForm({ profile }: { profile: ClinicianProfile })
           {t("setup.clinician.qualifications")}
         </legend>
         {qualifications.map((q, index) => (
-          <div key={index} className="grid gap-3 sm:grid-cols-[1fr_1fr_8rem_auto] sm:items-end">
+          <div
+            key={index}
+            className="grid grid-cols-[minmax(0,1fr)] gap-3 sm:grid-cols-[1fr_1fr_8rem_auto] sm:items-end"
+          >
             <TextField
               label={t("setup.clinician.degree")}
               value={q.degree}

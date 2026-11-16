@@ -218,7 +218,7 @@ export function BoardPage() {
         </section>
       )}
 
-      <div className="grid gap-5 xl:grid-cols-[21rem_minmax(0,1fr)]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-5 xl:grid-cols-[24rem_minmax(0,1fr)]">
         <section aria-labelledby="expected" className="flex flex-col gap-3 self-start">
           {canBook && <CodeCheckIn />}
           <h2 id="expected" className="m-0 flex items-center gap-2 font-heading text-h3">

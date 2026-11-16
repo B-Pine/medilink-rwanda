@@ -22,7 +22,7 @@ import {
   type FileUploadItem,
 } from "@medilink/ui";
 import { dateFormat } from "@medilink/ui/i18n";
-import { UsersThree } from "@phosphor-icons/react";
+import { FileX, UploadSimple } from "@phosphor-icons/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -31,6 +31,7 @@ import { Link, useSearchParams } from "react-router";
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
 import { useStepUp } from "../lock/StepUp";
+import { FILTER_BUTTON, FILTER_GROUP } from "../../components/filters";
 
 /**
  * /settings/patient-import (S6-F7, FR-PAT-10): bring a paper or spreadsheet register in. Upload a
@@ -194,7 +195,7 @@ function Start({ onStarted }: { onStarted: (id: string) => void }) {
             ))}
           </ul>
         ) : (
-          <EmptyState icon={UsersThree} title={t("imports.none")} />
+          <EmptyState icon={UploadSimple} title={t("imports.none")} />
         )}
       </section>
     </>
@@ -233,7 +234,7 @@ function Batch({ id }: { id: string }) {
     },
   });
   if (batch.isPending) return <LoadingState />;
-  if (batch.isError) return <EmptyState icon={UsersThree} title={t("imports.notFound")} />;
+  if (batch.isError) return <EmptyState icon={FileX} title={t("imports.notFound")} />;
   const b = batch.data;
   const counts: [string, number, BadgeTone][] = [
     [t("imports.count.rows"), b.row_count, "neutral"],
@@ -364,7 +365,7 @@ function Mapping({
       <h2 id="imports-mapping" className="m-0 text-h3">
         {t("imports.mapping.title")}
       </h2>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {PATIENT_IMPORT_FIELDS.map((field) => (
           <SelectField
             key={field}
@@ -411,14 +412,14 @@ function Rows({ batch: b }: { batch: PatientImportBatch }) {
       <h2 id="imports-rows" className="m-0 text-h3">
         {t("imports.rowsTitle")}
       </h2>
-      <div role="group" aria-label={t("imports.filter")} className="flex flex-wrap gap-2">
+      <div role="group" aria-label={t("imports.filter")} className={FILTER_GROUP}>
         {FILTERS.map((key) => (
           <button
             key={key}
             type="button"
             aria-pressed={filter === key}
             onClick={() => setFilter(key)}
-            className="inline-flex min-h-target cursor-pointer items-center rounded-full border border-border-input bg-surface px-4 text-body-sm font-semibold text-fg hover:bg-subtle aria-pressed:border-primary aria-pressed:bg-brand-subtle aria-pressed:text-on-brand-subtle"
+            className={FILTER_BUTTON}
           >
             {t(`imports.filters.${key}`)}
           </button>

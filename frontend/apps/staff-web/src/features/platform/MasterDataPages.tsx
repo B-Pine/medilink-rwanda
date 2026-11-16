@@ -1,3 +1,4 @@
+import { CaretRight } from "@phosphor-icons/react";
 import {
   ALL_LANGUAGE_KINDS,
   IMPORTABLE_KINDS,
@@ -80,12 +81,18 @@ function KindCard({ kind }: { kind: MasterDataKind }) {
     enabled: ALL_LANGUAGE_KINDS.includes(kind) || kind === "diagnosis-codes",
   });
   return (
-    <Card as="li" padding="md" className="flex flex-col gap-2">
+    // the whole card opens the list, like the Settings cards (audit 2026-11-16)
+    <Card
+      as="li"
+      padding="md"
+      className="relative flex flex-col gap-2 transition-shadow duration-200 ease-out-quint hover:shadow-raised"
+    >
       <Link
         to={`/platform/master-data/${kind}`}
-        className="font-heading text-h3 text-link underline-offset-2 hover:underline"
+        className="flex items-center justify-between gap-2 font-heading text-h3 text-fg no-underline after:absolute after:inset-0 after:rounded-[inherit]"
       >
         {t(`platform.masterData.kinds.${kind}`)}
+        <CaretRight aria-hidden="true" className="size-4 shrink-0 text-fg-muted" />
       </Link>
       <span className="text-fg-secondary">
         {t("platform.masterData.count", { count: all.data?.count ?? 0 })}

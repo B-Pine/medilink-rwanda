@@ -19,6 +19,7 @@ import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
 import { PlatformOnly } from "../platform/shared";
 import { errorText, helpKeys, useWhen } from "./shared";
+import { FILTER_BUTTON, FILTER_GROUP } from "../../components/filters";
 
 const TABS = ["new", "handled", "all"] as const;
 type Tab = (typeof TABS)[number];
@@ -68,15 +69,15 @@ function Inbox() {
   return (
     <div className="flex w-full flex-col gap-5">
       <PageHeader title={t("help.contact.title")} />
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div role="group" aria-label={t("help.contact.tabs.label")} className="flex gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div role="group" aria-label={t("help.contact.tabs.label")} className={FILTER_GROUP}>
           {TABS.map((s) => (
             <button
               key={s}
               type="button"
               aria-pressed={tab === s}
               onClick={() => set({ status: s === "new" ? "" : s })}
-              className="inline-flex min-h-target cursor-pointer items-center rounded-full border border-border-input bg-surface px-4 text-body-sm font-semibold text-fg hover:bg-subtle aria-pressed:border-primary aria-pressed:bg-brand-subtle aria-pressed:text-on-brand-subtle"
+              className={FILTER_BUTTON}
             >
               {t(`help.contact.tabs.${s}`)}
             </button>
@@ -88,15 +89,19 @@ function Inbox() {
             e.preventDefault();
             set({ q: search.trim() });
           }}
-          className="flex items-end gap-2"
+          className="flex items-center gap-1"
         >
+          {/* one search box like every list; Enter searches (the button stays for touch) */}
           <TextField
+            type="search"
             label={t("help.contact.search")}
+            hideLabel
+            placeholder={t("help.contact.search")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-64"
+            className="w-full sm:w-80"
           />
-          <Button type="submit" variant="secondary" aria-label={t("help.contact.searchGo")}>
+          <Button type="submit" variant="ghost" aria-label={t("help.contact.searchGo")}>
             <MagnifyingGlass aria-hidden="true" />
           </Button>
         </form>

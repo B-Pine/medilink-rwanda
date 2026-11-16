@@ -201,7 +201,7 @@ function Overview() {
               </Link>
             </Alert>
           )}
-          <div className="grid gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
             <Pipeline counts={data.applications} />
             <Network rows={data.facilities_by_district} />
           </div>

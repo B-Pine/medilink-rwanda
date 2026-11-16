@@ -165,7 +165,7 @@ function Review() {
         <p className="m-0 text-body-sm text-fg-secondary">{t("platform.review.acceptAllFirst")}</p>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-2">
         <Card className="flex flex-col gap-3">
           <h2 className="m-0 font-heading text-h3">{t("platform.review.details")}</h2>
           <dl className="m-0 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">

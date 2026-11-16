@@ -177,7 +177,7 @@ export function ProfilePage() {
   const [reloads, setReloads] = useState(0);
   return (
     <SetupGate codes={["facility.configure"]}>
-      <div className="flex max-w-4xl flex-col gap-6">
+      <div className="flex max-w-3xl flex-col gap-6">
         <PageHeader
           title={t("setup.settings.sections.profile.title")}
           back={back(t)}
@@ -558,7 +558,7 @@ export function RulesPage() {
   const [reloads, setReloads] = useState(0);
   return (
     <SetupGate codes={["facility.configure"]}>
-      <div className="flex max-w-4xl flex-col gap-6">
+      <div className="flex max-w-3xl flex-col gap-6">
         <PageHeader title={t("setup.settings.sections.rules.title")} back={back(t)} />
         <QueryState query={settings}>
           {(data) => (

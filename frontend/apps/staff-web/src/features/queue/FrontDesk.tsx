@@ -1,5 +1,5 @@
 import type { QueueGroup, StaffBooking, TicketRow } from "@medilink/api-client";
-import { cx, FlowStrip, type FlowStage, type TicketTone } from "@medilink/ui";
+import { buttonClassName, cx, FlowStrip, type FlowStage, type TicketTone } from "@medilink/ui";
 import {
   CalendarCheck,
   MagnifyingGlass,
@@ -45,20 +45,21 @@ export function DeskBar({
 }) {
   const { t } = useTranslation();
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-forest p-3.5 text-on-forest">
+    // a calm card, not a dark band: the numbers below are the loudest thing on the board
+    <div className="flex flex-wrap items-center gap-2.5 rounded-2xl bg-surface p-2.5 shadow-card">
       <button
         type="button"
         onClick={onFind}
         aria-keyshortcuts={SHORTCUT_FIND}
         className={cx(
           "flex min-h-11 min-w-0 flex-1 basis-72 cursor-pointer items-center gap-3 rounded-xl px-3.5 text-left",
-          "border border-on-forest/15 bg-on-forest/[0.07] text-on-forest-muted",
-          "transition-colors duration-150 hover:border-on-forest/30 hover:bg-on-forest/[0.11]",
+          "border border-border/70 bg-page text-fg-muted",
+          "transition-[border-color,color] duration-150 ease-out-quint hover:border-fg-muted hover:text-fg",
         )}
       >
-        <MagnifyingGlass aria-hidden="true" weight="bold" className="size-5 shrink-0" />
+        <MagnifyingGlass aria-hidden="true" className="size-5 shrink-0" />
         <span className="min-w-0 flex-1 truncate">{t("queue.board.findPatient")}</span>
-        <kbd className="hidden rounded-sm border border-on-forest/25 px-1.5 font-sans text-caption sm:inline">
+        <kbd className="hidden rounded-md border border-border/70 bg-surface px-1.5 py-0.5 font-sans text-caption font-semibold sm:inline">
           {SHORTCUT_FIND}
         </kbd>
       </button>
@@ -66,15 +67,11 @@ export function DeskBar({
         type="button"
         onClick={onCheckIn}
         aria-keyshortcuts={SHORTCUT_NEW}
-        className={cx(
-          "inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl px-4 font-semibold",
-          "bg-on-forest-accent text-forest transition-[transform,filter] duration-150",
-          "hover:brightness-105 active:scale-[0.97]",
-        )}
+        className={buttonClassName({ className: "min-h-11 gap-2" })}
       >
         <Plus aria-hidden="true" weight="bold" className="size-4" />
         {t("queue.board.checkIn")}
-        <kbd className="rounded-sm border border-forest/30 px-1 font-sans text-caption">
+        <kbd className="hidden rounded-sm border border-on-primary/30 px-1 font-sans text-caption sm:inline">
           {SHORTCUT_NEW}
         </kbd>
       </button>
@@ -82,11 +79,7 @@ export function DeskBar({
         <button
           type="button"
           onClick={onBookByPhone}
-          className={cx(
-            "inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl px-4 font-semibold",
-            "border border-on-forest/25 text-on-forest transition-colors duration-150",
-            "hover:bg-on-forest/[0.08] active:scale-[0.97]",
-          )}
+          className={buttonClassName({ variant: "secondary", className: "min-h-11 gap-2" })}
         >
           <Phone aria-hidden="true" weight="bold" className="size-4" />
           {t("bookings.phone.open")}

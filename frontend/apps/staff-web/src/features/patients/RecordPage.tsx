@@ -84,7 +84,7 @@ function Record() {
   if (record.isPending) return <LoadingState />;
   if (isAccessReasonRequired(record.error))
     return (
-      <div className="flex max-w-5xl flex-col gap-5">
+      <div className="flex w-full flex-col gap-5">
         <PageHeader
           title={t("patients.accessReason.heading")}
           back={{ to: "/patients", label: t("patients.search.title") }}
@@ -96,7 +96,7 @@ function Record() {
     return <PageHeading title={t("patients.notFound")}>{t("patients.notFound")}</PageHeading>;
   const p = record.data;
   return (
-    <div className="flex max-w-5xl flex-col gap-5">
+    <div className="flex w-full flex-col gap-5">
       <PageHeader
         title={p.full_name}
         back={{ to: "/patients", label: t("patients.search.title") }}

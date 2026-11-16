@@ -1,13 +1,21 @@
 import type { StaffMe } from "@medilink/api-client";
 import { cx, Logo, NavGroup } from "@medilink/ui";
-import { SidebarSimple } from "@phosphor-icons/react";
+import { SidebarSimple, X } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 import { NavLink, useLocation } from "react-router";
 
 import { BUILT_PATHS } from "../app/features";
-import { roleLabel } from "../facility/labels";
 import { ConnectionIndicator } from "./ConnectionIndicator";
-import { navLabelKey, navSection, visibleNavItems, type NavItem } from "./navigation";
+import { FacilitySwitcher } from "./FacilitySwitcher";
+import { useNavCounts } from "./useNavCounts";
+import {
+  navLabelKey,
+  navSection,
+  PLATFORM_SECTIONS,
+  platformSection,
+  visibleNavItems,
+  type NavItem,
+} from "./navigation";
 
 /**
  * The one menu item for the current address: the longest path that matches it, so /queue/mine
@@ -24,11 +32,13 @@ function NavList({
   items,
   active,
   collapsed,
+  counts = {},
   onNavigate,
 }: {
   items: NavItem[];
   active: string | undefined;
   collapsed: boolean;
+  counts?: Record<string, number>;
   onNavigate?: (() => void) | undefined;
 }) {
   const { t } = useTranslation();
@@ -63,7 +73,7 @@ function NavList({
                   "grid size-7 shrink-0 place-items-center rounded-lg transition-colors duration-200 ease-out-quint",
                   isActive
                     ? "bg-primary text-on-primary shadow-card"
-                    : "text-fg-muted group-hover:text-fg",
+                    : "text-fg-secondary group-hover:text-fg",
                 )}
               >
                 <ItemIcon
@@ -72,9 +82,23 @@ function NavList({
                   className="size-[1.0625rem]"
                 />
               </span>
-              <span className={cx("truncate", collapsed && "lg:sr-only")}>
+              <span className={cx("min-w-0 flex-1 truncate", collapsed && "lg:sr-only")}>
                 {t(navLabelKey({ key, labelKey }))}
               </span>
+              {(counts[key] ?? 0) > 0 && (
+                <span
+                  className={cx(
+                    "ml-auto inline-flex min-w-6 items-center justify-center rounded-full px-1.5 text-caption font-semibold tabular-nums",
+                    isActive ? "bg-primary text-on-primary" : "bg-subtle text-fg-secondary",
+                    // collapsed: a dot on the icon; the number stays for assistive tech
+                    collapsed &&
+                      "lg:absolute lg:top-1 lg:right-1.5 lg:size-2 lg:min-w-0 lg:bg-primary lg:p-0 lg:text-[0]",
+                  )}
+                >
+                  <span className="sr-only">, </span>
+                  {counts[key]}
+                </span>
+              )}
             </NavLink>
           </li>
         );
@@ -109,6 +133,7 @@ export function Sidebar({
   const { pathname } = useLocation();
   const items = visibleNavItems(me, BUILT_PATHS());
   const active = activePath(items, pathname);
+  const counts = useNavCounts(me);
   const facility = items.filter((item) => item.group === "facility");
   const work = facility.filter((item) => navSection(item) === "work");
   const practice = facility.filter((item) => navSection(item) === "practice");
@@ -119,9 +144,13 @@ export function Sidebar({
     { key: "work", title: t("shell.section.work"), list: work },
     { key: "practice", title: t("shell.section.practice"), list: practice },
     { key: "manage", title: t("shell.section.manage"), list: manage },
-    { key: "platform", title: t("shell.platformAdmin"), list: platform },
+    // the MediLink console, split by job so 16 links never read as one long list
+    ...PLATFORM_SECTIONS.map((section) => ({
+      key: `platform.${section}`,
+      title: t(`shell.section.platform.${section}`),
+      list: platform.filter((item) => platformSection(item) === section),
+    })),
   ].filter((group) => group.list.length > 0);
-  const membership = me.memberships.find((m) => m.facility.id === me.active_facility_id);
 
   return (
     <nav
@@ -129,41 +158,34 @@ export function Sidebar({
       aria-label={t("shell.navLabel")}
       className={cx(
         "flex-col gap-1 border-r border-border/70 bg-surface px-3 py-4 print:hidden",
-        "lg:sticky lg:top-0 lg:flex lg:h-dvh",
+        // phones and tablets: a panel over the page, opened from the top bar
+        "fixed inset-y-0 left-0 z-50 w-[min(18rem,86vw)] shadow-e3 animate-enter",
+        "lg:sticky lg:top-0 lg:z-auto lg:flex lg:h-dvh lg:w-auto lg:animate-none lg:shadow-none",
         open ? "flex" : "hidden",
       )}
     >
       <div
         className={cx(
-          "hidden items-center pb-3 lg:flex",
-          collapsed ? "justify-center" : "justify-between px-1.5",
+          "flex items-center justify-between px-1.5 pb-4",
+          collapsed && "lg:justify-center lg:px-0",
         )}
       >
         {collapsed ? <Logo variant="symbol" className="h-8" /> : <Logo className="h-8" />}
+        {onNavigate && (
+          <button
+            type="button"
+            onClick={onNavigate}
+            aria-label={t("shell.closeMenu")}
+            className="inline-flex size-9 cursor-pointer items-center justify-center rounded-xl text-fg-muted transition-colors duration-150 ease-out-quint hover:bg-subtle hover:text-fg lg:hidden"
+          >
+            <X aria-hidden="true" className="size-[1.125rem]" />
+          </button>
+        )}
       </div>
 
-      {!collapsed && (
-        <div className="mb-2 hidden items-center gap-3 rounded-2xl border border-border/70 bg-page px-3 py-2.5 lg:flex">
-          <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary font-heading text-body-sm font-bold text-on-primary">
-            {(membership?.facility.name ?? t("shell.platformAdmin"))
-              .split(/\s+/)
-              .slice(0, 2)
-              .map((word) => word[0])
-              .join("")
-              .toUpperCase()}
-          </span>
-          <span className="flex min-w-0 flex-col">
-            <span className="truncate text-body-sm font-semibold text-fg">
-              {membership?.facility.name ?? t("shell.platformAdmin")}
-            </span>
-            {membership && (
-              <span className="truncate text-caption text-fg-muted">
-                {membership.roles.map((role) => roleLabel(role, t)).join(" · ")}
-              </span>
-            )}
-          </span>
-        </div>
-      )}
+      <div className="mb-2">
+        <FacilitySwitcher me={me} collapsed={collapsed} />
+      </div>
 
       <div className="-mx-1.5 flex flex-1 flex-col overflow-y-auto px-1.5 py-1">
         {/* each group can be hidden and shown again; the choice stays on this device */}
@@ -176,7 +198,13 @@ export function Sidebar({
             railedAt="lg"
             containsActive={list.some((item) => item.path === active)}
           >
-            <NavList items={list} active={active} collapsed={collapsed} onNavigate={onNavigate} />
+            <NavList
+              items={list}
+              active={active}
+              collapsed={collapsed}
+              counts={counts}
+              onNavigate={onNavigate}
+            />
           </NavGroup>
         ))}
       </div>

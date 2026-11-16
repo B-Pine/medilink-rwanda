@@ -80,7 +80,7 @@ export function CodeCheckIn({ className }: { className?: string }) {
           maxLength={12}
           onChange={(e) => setCode(e.target.value)}
           className="min-w-0 flex-1 basis-40"
-          inputClassName="font-heading font-bold tracking-[0.2em] uppercase"
+          inputClassName="font-heading font-bold tracking-[0.2em] uppercase placeholder:font-sans placeholder:font-normal placeholder:tracking-normal placeholder:normal-case"
         />
         <Button type="submit" pill loading={find.isPending} disabled={code.trim().length < 4}>
           {t("queue.code.find")}

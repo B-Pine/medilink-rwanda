@@ -9,6 +9,27 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Cleaner staff dashboard: one shell, one page frame (2026-11-16)
+
+- Changed: the facility switcher is the workspace card at the top of the sidebar (facility and
+  role; staff of several facilities open it to switch). The top bar no longer repeats the facility.
+- Changed: one top bar on every screen. Phones get the menu button and logo in it (no second bar)
+  and the menu opens as a panel over the page (closes with Escape, the backdrop or ✕); the theme
+  moves to the account menu on phones.
+- Added: live counts beside sidebar links (Queue waiting; Unsigned records, Results, Pharmacy
+  questions, Follow-ups for clinicians), reusing the board and My day queries; collapsed, a dot.
+- Changed: the platform console's 16 links are grouped (Overview, Facilities, People and security,
+  Support and content, System).
+- Changed: "Online" is a quiet line (a badge only when offline); Queue shows the live state once,
+  in the top bar.
+- Changed: two page widths: work pages and lists fill the content area; settings and forms use
+  one reading width (`max-w-3xl`) instead of five.
+- Changed: the front desk bar is a white card with a normal search field and standard buttons
+  (no dark band); on reception's Today it is the patient search only, since walk-in and phone
+  booking are already the page's actions. Pharmacy puts its tabs and search on one toolbar.
+- Changed: only an emergency flag is a solid badge; priority is a soft violet badge. The booking
+  code box shows its example in normal text.
+
 ### Light and dark switch in the staff dashboard (2026-11-16)
 
 - Added: a one-click light / dark switch in the staff top bar, next to the account menu, and a

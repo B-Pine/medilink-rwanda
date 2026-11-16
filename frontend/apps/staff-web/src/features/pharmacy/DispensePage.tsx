@@ -182,7 +182,7 @@ export function DispensePage() {
   const given = p.dispense_records.length > 0;
 
   return (
-    <div className="flex max-w-4xl flex-col gap-5">
+    <div className="flex w-full flex-col gap-5">
       <PageHeader
         title={p.patient_display_name}
         description={meta}

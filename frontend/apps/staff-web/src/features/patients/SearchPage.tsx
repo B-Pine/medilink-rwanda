@@ -72,7 +72,7 @@ function Search() {
   });
 
   return (
-    <div className="flex max-w-5xl flex-col gap-5">
+    <div className="flex w-full flex-col gap-5">
       <PageHeader
         title={t("patients.search.title")}
         actions={

@@ -52,7 +52,7 @@ export function StockPage() {
   const [receiving, setReceiving] = useState(false);
   if (!canView) return <NoAccessContent />;
   return (
-    <div className="flex max-w-5xl flex-col gap-5">
+    <div className="flex w-full flex-col gap-5">
       <PageHeader
         title={t("pharmacy.stock.title")}
         actions={
@@ -574,7 +574,7 @@ export function StockDetailPage() {
     );
   const d = card.data;
   return (
-    <div className="flex max-w-5xl flex-col gap-5">
+    <div className="flex w-full flex-col gap-5">
       {back}
       <PageHeader
         title={d.display}

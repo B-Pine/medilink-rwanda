@@ -8,14 +8,13 @@ import {
   ThemeSwitch,
   writePreference,
 } from "@medilink/ui";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router";
 
 import { useStaffMe } from "../auth/queries";
 import { FEATURE_HEADER_ITEMS, FEATURE_SHELL_OVERLAYS } from "../app/features";
 import { CommandPalette, useCommandPaletteShortcut } from "./CommandPalette";
-import { FacilitySwitcher } from "./FacilitySwitcher";
 import { Sidebar } from "./Sidebar";
 import { UserMenu } from "./UserMenu";
 
@@ -43,6 +42,13 @@ export function AppShell() {
   const [collapsed, toggleCollapsed] = useSidebarCollapsed();
   const [paletteOpen, setPaletteOpen] = useState(false);
   useCommandPaletteShortcut(useCallback(() => setPaletteOpen((open) => !open), []));
+  // the phone menu closes with Escape, like any panel over the page
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (event: KeyboardEvent) => event.key === "Escape" && setMenuOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
 
   if (!me) return null; // RequireStaff guarantees the user; this only narrows the type.
 
@@ -58,26 +64,13 @@ export function AppShell() {
     >
       <SkipLink />
       <div className="lg:contents">
-        <div className="flex items-center justify-between border-b border-border/70 bg-surface px-3 py-2 print:hidden lg:hidden">
-          <Logo className="h-8" />
-          <button
-            type="button"
-            aria-expanded={menuOpen}
-            aria-controls={SIDEBAR_ID}
-            onClick={() => setMenuOpen((open) => !open)}
-            className="inline-flex min-h-target min-w-target cursor-pointer items-center justify-center gap-2 rounded-full px-3 font-semibold text-fg transition-colors duration-150 ease-out-quint hover:bg-subtle"
-          >
-            {menuOpen ? (
-              <X aria-hidden="true" className="size-icon" />
-            ) : (
-              <List aria-hidden="true" className="size-icon" />
-            )}
-            {/* icon only on phones (the bar is crowded); the name stays for assistive tech */}
-            <span className="sr-only sm:not-sr-only">
-              {menuOpen ? t("shell.closeMenu") : t("shell.openMenu")}
-            </span>
-          </button>
-        </div>
+        {menuOpen && (
+          <div
+            aria-hidden="true"
+            onClick={() => setMenuOpen(false)}
+            className="fixed inset-0 z-40 bg-fg/30 animate-fade lg:hidden"
+          />
+        )}
         <Sidebar
           me={me}
           id={SIDEBAR_ID}
@@ -88,17 +81,38 @@ export function AppShell() {
         />
       </div>
       <div className="flex min-w-0 flex-col">
-        <header className="ml-site-header sticky top-0 z-30 flex min-h-16 items-center gap-4 border-b border-border/70 bg-surface px-4 print:hidden lg:px-8">
-          <FacilitySwitcher me={me} />
+        {/* one bar on every screen: menu and logo on phones; search; then alerts, theme, account */}
+        <header className="ml-site-header sticky top-0 z-30 flex min-h-16 items-center gap-2 border-b border-border/70 bg-surface px-3 print:hidden sm:gap-4 sm:px-4 lg:px-8">
+          <button
+            type="button"
+            aria-expanded={menuOpen}
+            aria-controls={SIDEBAR_ID}
+            aria-label={menuOpen ? t("shell.closeMenu") : t("shell.openMenu")}
+            onClick={() => setMenuOpen((open) => !open)}
+            className="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-xl text-fg transition-colors duration-150 ease-out-quint hover:bg-subtle lg:hidden"
+          >
+            {menuOpen ? (
+              <X aria-hidden="true" className="size-icon" />
+            ) : (
+              <List aria-hidden="true" className="size-icon" />
+            )}
+          </button>
+          {/* the Logo picks its own light/dark image, so the breakpoints sit on wrappers */}
+          <span className="inline-flex shrink-0 sm:hidden">
+            <Logo variant="symbol" className="h-8" />
+          </span>
+          <span className="hidden shrink-0 sm:inline-flex lg:hidden">
+            <Logo className="h-7" />
+          </span>
           <button
             type="button"
             onClick={() => setPaletteOpen(true)}
             aria-keyshortcuts="Control+K Meta+K"
             className={cx(
               "ml-auto inline-flex min-h-10 min-w-10 cursor-pointer items-center justify-center gap-2.5 rounded-xl",
-              "border border-border/70 bg-page px-3.5 text-body-sm text-fg-muted",
+              "border border-border/70 bg-page px-3 text-body-sm text-fg-muted",
               "transition-[border-color,color,box-shadow] duration-200 ease-out-quint hover:border-fg-muted hover:text-fg hover:shadow-card",
-              "md:mx-auto md:w-full md:max-w-md md:justify-start",
+              "md:ml-0 md:w-full md:max-w-md md:justify-start md:px-3.5 lg:max-w-lg",
             )}
           >
             <MagnifyingGlass aria-hidden="true" className="size-[1.125rem] shrink-0" />
@@ -113,11 +127,12 @@ export function AppShell() {
               {t("shell.palette.shortcut")}
             </kbd>
           </button>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1 sm:gap-1.5 md:ml-auto">
             {FEATURE_HEADER_ITEMS().map((Item, index) => (
               <Item key={index} />
             ))}
-            <ThemeSwitch tone="ghost" />
+            {/* phones: the theme is in the account menu */}
+            <ThemeSwitch tone="ghost" className="hidden sm:inline-flex" />
             <span aria-hidden="true" className="mx-1.5 hidden h-7 w-px bg-border sm:block" />
             <UserMenu me={me} />
           </div>

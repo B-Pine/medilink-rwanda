@@ -60,4 +60,12 @@ describe("PWA configuration", () => {
   it("does not precache the MSW worker", () => {
     expect(workbox.globIgnores).toContain("**/mockServiceWorker.js");
   });
+
+  it("activates a new version at once, so a deploy reaches open pages without clearing the cache", () => {
+    // registered by hand (injectRegister: false): the plugin does not add these then
+    expect(pwaOptions.injectRegister).toBe(false);
+    expect(pwaOptions.registerType).toBe("autoUpdate");
+    expect(workbox.skipWaiting).toBe(true);
+    expect(workbox.clientsClaim).toBe(true);
+  });
 });

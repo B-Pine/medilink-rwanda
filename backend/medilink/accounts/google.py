@@ -12,8 +12,11 @@ to recognise the person next time.
 from __future__ import annotations
 
 import logging
+import re
 from dataclasses import dataclass
 from functools import lru_cache
+from typing import Any
+from urllib.parse import urlsplit
 
 import jwt
 from django.conf import settings
@@ -33,6 +36,7 @@ class GoogleClaims:
     email: str
     email_verified: bool
     name: str
+    picture: str = ""  # the Google profile photo, https on googleusercontent.com, else ""
 
 
 def web_client_id() -> str:
@@ -84,4 +88,25 @@ def verify_id_token(token: str) -> GoogleClaims:
         raise GoogleTokenError("no email in token")
     verified = claims.get("email_verified") in (True, "true")
     name = " ".join(str(claims.get("name") or "").split())[:150]
-    return GoogleClaims(sub=str(claims["sub"]), email=email, email_verified=verified, name=name)
+    return GoogleClaims(
+        sub=str(claims["sub"]),
+        email=email,
+        email_verified=verified,
+        name=name,
+        picture=picture_url(claims.get("picture")),
+    )
+
+
+def picture_url(value: Any) -> str:
+    """Google's profile photo URL, only from Google's own image host (Cloudinary fetches it), in
+    a larger size than the 96 px default; "" for anything else."""
+    url = str(value or "").strip()
+    if len(url) > 1000:
+        return ""
+    parts = urlsplit(url)
+    host = (parts.hostname or "").lower()
+    if parts.scheme != "https" or not (
+        host == "googleusercontent.com" or host.endswith(".googleusercontent.com")
+    ):
+        return ""
+    return re.sub(r"=s\d+(-c)?$", "=s400-c", url)

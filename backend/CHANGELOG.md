@@ -30,6 +30,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Added: `UPLOADS_STORAGE=cloudinary`: the scanned upload pipeline can keep its files on Cloudinary
   as private (authenticated) raw assets with signed, expiring download links (`CLOUDINARY_URL` or
   the credentials above).
+- Added: Sign in with Google brings the Google profile photo (`picture`, only from
+  `*.googleusercontent.com`, asked at 400 px): after the sign-in commits, a Celery task copies it
+  to Cloudinary (patient avatars folder) and sets it as the patient's own photo, only while they
+  have none; a failure never affects the sign-in.
 - Added: feature flag `security.staff_mfa` (on, platform-wide, no facility overrides, migration
   `onboarding.0004`). A platform admin can turn it off for testing: staff then sign in and step up
   with the password alone; the login audit entry says `mfa_method: off_by_admin`.

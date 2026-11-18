@@ -220,6 +220,17 @@ class StaffLoginView(_AuthView):
         return Response(LoginResultSerializer({"status": str(stage), "user": None}).data)
 
 
+def _import_google_photo(user: User, claims: google.GoogleClaims) -> None:
+    """The Google profile photo becomes the patient's photo when they have none (in the
+    background, after the sign-in is committed: it never slows or fails the sign-in)."""
+    if not claims.picture:
+        return
+    from medilink.images.tasks import import_google_photo
+
+    user_id, picture = str(user.pk), claims.picture
+    transaction.on_commit(lambda: import_google_photo.delay(user_id, picture))
+
+
 def dev_skip_staff_mfa() -> bool:
     """True only in DEBUG with DEV_SKIP_STAFF_MFA on (never in staging or production)."""
     return bool(settings.DEBUG and getattr(settings, "DEV_SKIP_STAFF_MFA", False))
@@ -726,6 +737,7 @@ class PatientGoogleView(_AuthView):
             verification.mark_verified(user)
         login_policy().reset(user.email)
         complete_patient_login(request, user)
+        _import_google_photo(user, claims)
         record(
             actions.LOGIN_SUCCESS,
             request=request,
@@ -795,6 +807,7 @@ class PatientGoogleView(_AuthView):
         )
         record(actions.GOOGLE_LINKED, request=request, actor=user, actor_role="patient")
         complete_patient_login(request, user)
+        _import_google_photo(user, claims)
         record(
             actions.LOGIN_SUCCESS,
             request=request,

@@ -23,6 +23,7 @@ from typing import Any
 import cloudinary
 import cloudinary.api
 import cloudinary.exceptions
+import cloudinary.uploader
 import cloudinary.utils
 from django.conf import settings
 
@@ -131,3 +132,17 @@ def image_url(
         opts["height"] = h
     url: str = cloudinary.utils.cloudinary_url(public_id, **opts)[0]
     return url
+
+
+def import_remote(url: str, kind: str) -> str:
+    """Server-side signed upload of an image Cloudinary fetches from `url` (e.g. a Google profile
+    photo), into the kind's folder with the same preset as browser uploads; its public id."""
+    cfg = _apply_config()
+    result: dict[str, Any] = cloudinary.uploader.upload(
+        url,
+        upload_preset=cfg.get("upload_preset", "medilink_signed"),
+        asset_folder=folder_for(kind),
+        tags=f"medilink,{kind},google",
+        resource_type="image",
+    )
+    return str(result["public_id"])

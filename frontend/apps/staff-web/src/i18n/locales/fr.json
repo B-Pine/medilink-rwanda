@@ -46,7 +46,6 @@
   },
   "mfaSetup": {
     "title": "Configurer la connexion en deux étapes",
-    "intro": "Les comptes du personnel demandent une deuxième étape à la connexion pour protéger les données des patients.",
     "preparing": "Préparation de la configuration…",
     "setupFailed": "Impossible de démarrer la configuration. Reconnectez-vous.",
     "step1Title": "1. Installez une application d’authentification",
@@ -85,7 +84,6 @@
   },
   "facility": {
     "title": "Choisissez votre établissement",
-    "intro": "Vous travaillez dans plusieurs établissements. Choisissez celui où vous travaillez maintenant. Vous pouvez changer à tout moment depuis la barre du haut.",
     "choose": "Travailler à {{name}}",
     "rolesLabel": "Vos rôles",
     "switcherLabel": "Établissement actuel : {{name}}. Changer d’établissement",
@@ -209,7 +207,7 @@
   "reset": {
     "title": "Choisir un nouveau mot de passe",
     "newPassword": "Nouveau mot de passe",
-    "hint": "Au moins 12 caractères. Une courte phrase est facile à retenir et difficile à deviner.",
+    "hint": "12 caractères au moins.",
     "submit": "Enregistrer le mot de passe",
     "doneTitle": "Mot de passe modifié",
     "doneBody": "Votre mot de passe a été modifié et vous avez été déconnecté partout. Connectez-vous avec le nouveau mot de passe.",

@@ -400,11 +400,6 @@ function Editor({
                 <legend className="px-1 font-semibold">
                   {t(`platform.masterData.fields.${field}`, { defaultValue: field })}
                 </legend>
-                {field === "description_i18n" && (
-                  <p className="m-0 text-body-sm text-fg-secondary">
-                    {t("platform.masterData.descriptionHint")}
-                  </p>
-                )}
                 {LANGS.map((lang) =>
                   field === "description_i18n" ? (
                     <TextareaField

@@ -101,7 +101,6 @@
     "findThem": "Mushakire mu ishakisha",
     "submit": "Andika",
     "suggestions": "Abashobora kuba ari we",
-    "suggestionsHint": "Abasa na we bagaragara hano iyo amazina n'imyaka, cyangwa telefoni, byujujwe.",
     "noMatches": "Nta murwayi usa na we uri hano.",
     "levels": {
       "exact_identifier": "Icyangombwa kimwe",
@@ -319,7 +318,6 @@
   "careSchedule": {
     "tab": "Gahunda y'ubuvuzi",
     "title": "Inkingo n'isuzuma ry'ababyeyi batwite biteganyijwe",
-    "intro": "Umurwayi yibutswa umunsi ubanziriza n'icyo gitondo. Ubutumwa ntibuvuga icyo gahunda igamije; icyitonderwa kigaragara gusa muri porogaramu y'umurwayi.",
     "empty": "Nta gahunda iteganyijwe.",
     "failed": "Ntibyakunze kubona gahunda y'ubuvuzi.",
     "add": "Teganya itariki",

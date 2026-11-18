@@ -715,7 +715,6 @@ function CommentForm({ dispute: d, onDone }: Omit<ActionProps, "onStale">) {
     >
       <TextareaField
         label={t("disputes.colleague.yourComment")}
-        hint={t("disputes.colleague.commentHint")}
         value={text}
         rows={3}
         maxLength={DISPUTE_LIMITS.message[1]}

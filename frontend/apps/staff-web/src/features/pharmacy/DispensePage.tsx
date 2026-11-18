@@ -294,7 +294,6 @@ export function DispensePage() {
             <div className="rounded-2xl bg-attention-bg p-4">
               <CheckboxField
                 label={t("pharmacy.dispense.controlled")}
-                hint={t("pharmacy.dispense.controlledHint")}
                 checked={controlled}
                 onChange={(event) => setControlled(event.target.checked)}
                 error={tried && !controlled ? t("pharmacy.dispense.controlledRequired") : undefined}

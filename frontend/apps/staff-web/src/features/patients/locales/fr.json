@@ -101,7 +101,6 @@
     "findThem": "Le retrouver dans la recherche",
     "submit": "Enregistrer",
     "suggestions": "Correspondances possibles",
-    "suggestionsHint": "Les correspondances s'affichent dès que les noms et un âge, ou un téléphone, sont saisis.",
     "noMatches": "Aucun patient similaire ici.",
     "levels": {
       "exact_identifier": "Même document",
@@ -319,7 +318,6 @@
   "careSchedule": {
     "tab": "Calendrier de soins",
     "title": "Vaccinations et consultations prénatales prévues",
-    "intro": "Le patient reçoit un rappel la veille et le matin même. Le rappel ne dit jamais à quoi sert la visite ; la note n'apparaît que dans l'application du patient.",
     "empty": "Rien de prévu.",
     "failed": "Impossible de charger le calendrier de soins.",
     "add": "Prévoir une date",

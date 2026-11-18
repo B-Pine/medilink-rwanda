@@ -97,7 +97,6 @@ function ItemForm({ onAdd }: { onAdd: (item: NoteTemplateItem) => void }) {
           <TextField
             type="search"
             label={t("clinical.templates.drug")}
-            hint={t("clinical.templates.drugHint")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             error={tried && !search.trim() ? t("clinical.templates.drugRequired") : undefined}

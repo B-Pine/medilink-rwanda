@@ -650,7 +650,6 @@ function AddItem({
         />
         <SelectField
           label={t("pharmacy.prescription.meal")}
-          hint={t("pharmacy.prescription.mealHint")}
           value={meal}
           onChange={(event) => setMeal(event.target.value as MealTiming | "")}
         >
@@ -810,7 +809,6 @@ function QueryAnswer({
               />
               <TextareaField
                 label={t("pharmacy.query.body")}
-                hint={t("pharmacy.query.bodyHint")}
                 rows={3}
                 value={body}
                 onChange={(event) => setBody(event.target.value)}

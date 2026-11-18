@@ -209,7 +209,6 @@ function ExpiringList() {
   if (!rows.length) return <EmptyState icon={CalendarX} title={t("pharmacy.stock.expiringNone")} />;
   return (
     <section className="flex flex-col gap-3">
-      <p className="m-0 text-body-sm text-fg-muted">{t("pharmacy.stock.expiringIntro")}</p>
       <div className="overflow-x-auto rounded-2xl bg-surface shadow-card">
         <table className="w-full border-collapse text-left">
           <caption className="sr-only">{t("pharmacy.stock.tab.expiring")}</caption>

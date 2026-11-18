@@ -151,7 +151,7 @@
     "payments": "Paiements de la session",
     "collected": "Encaissé pendant la session",
     "next": "Prochaines à payer",
-    "nothing": "Aucune facture en attente. Les nouvelles factures arrivent ici après la visite.",
+    "nothing": "Aucune ordonnance en attente.",
     "inDrawer": "{{amount}} en caisse"
   },
   "nav": {

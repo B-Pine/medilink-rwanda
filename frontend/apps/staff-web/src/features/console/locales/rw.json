@@ -151,10 +151,8 @@
       "lastLogin": "Aheruka kwinjira",
       "since": "Konti yafunguwe"
     },
-    "patientNote": "This is a patient account. MediLink shows only the account here: the patient's records stay with the facilities that care for them.",
     "access": {
       "title": "Uburenganzira ku bigo",
-      "lead": "Aho uyu muntu akora n'ibyo ashobora gukora aho. Ushobora guhindura inshingano ze, cyangwa kumukuraho no kumusubiza uburenganzira.",
       "none": "Nta kigo afitiye uburenganzira.",
       "active": "Arakora",
       "removed": "Uburenganzira bwakuweho",
@@ -165,7 +163,6 @@
       "restoreConfirm": "{{name}} can work at {{facility}} again, with the roles they had.",
       "roles": "Hindura inshingano",
       "rolesTitle": "Inshingano muri {{facility}}",
-      "rolesLead": "Ibyo {{name}} ashobora gukora aho. Ikigo gihora gifite nibura umuyobozi umwe.",
       "rolesLegend": "Inshingano",
       "saveRoles": "Bika inshingano"
     },
@@ -180,12 +177,11 @@
     "started": "Started {{time}}",
     "events": "Recent security events",
     "edit": "Kosora amakuru",
-    "editLead": "Correct the name, work phone or language. The email address and the password can't be changed here.",
     "fullName": "Amazina yose",
     "phoneHint": "Nimero ya telefoni yo mu Rwanda, urugero 0788 123 456.",
     "save": "Bika",
     "reason": "Impamvu",
-    "reasonHint": "Recorded in the audit log. At least 5 characters.",
+    "reasonHint": "Nibura inyuguti 5.",
     "actionsTitle": "Ibikorwa kuri konti",
     "actionsNote": "Each action asks you to confirm your identity again and is recorded with your reason.",
     "notice": {
@@ -271,12 +267,10 @@
     },
     "security": {
       "title": "Igitabo cy’umutekano",
-      "lead": "Sign-ins, two-step login, lockouts and admin actions on accounts.",
       "noun": "events"
     },
     "access": {
       "title": "Igitabo cyo gufungura amadosiye",
-      "lead": "Who opened which record, with the reason given. Records are shown by reference only.",
       "noun": "accesses"
     }
   },

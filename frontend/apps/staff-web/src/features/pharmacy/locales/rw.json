@@ -139,7 +139,6 @@
     "noSubstitute": "Nta muti ufite umuti n'urugero bimwe mu rutonde.",
     "substituteReason": "Impamvu usimbuza",
     "controlled": "Nagenzuye amategeko y'imiti igenzurwa",
-    "controlledHint": "Umwirondoro, umubare n'iyandikwa mu gitabo.",
     "controlledRequired": "Emeza igenzura ry'umuti ugenzurwa.",
     "controlledChecked": "umuti ugenzurwa wagenzuwe",
     "chooseOne": "Hitamo ibyo utanga nibura ku muti umwe.",
@@ -173,7 +172,6 @@
     "reason": "Impamvu y'inyongera",
     "reasonRequired": "Andika impamvu.",
     "body": "Igisubizo cyawe",
-    "bodyHint": "Kibikwa nk'inyongera yasinywe kuri iri suzuma.",
     "bodyRequired": "Andika igisubizo.",
     "answer": "Ohereza igisubizo"
   },
@@ -249,8 +247,7 @@
     "cancelConsequences": "Farumasi ntizawutanga. Umurwayi azabona ko wahagaritswe.",
     "changeTitle": "Hindura {{name}}?",
     "changeConsequences": "Uyu urahagarikwa n'impamvu yawe, hanyuma wongeremo mushya.",
-    "meal": "Bijyanye no kurya?",
-    "mealHint": "Bigaragara nk’ishusho ku kirango."
+    "meal": "Bijyanye no kurya?"
   },
   "pages": "Amapaji",
   "previous": "Ibibanza",
@@ -267,7 +264,7 @@
     "dispensed_other": "Byatanzwe uyu munsi ({{count}} nanjye)",
     "outOfStock": "Imiti itabonetse",
     "next": "Ibikurikira gutangwa",
-    "nothing": "Nta rupapuro rw'imiti rutegereje. Inshya ziza hano abaganga bamaze gusinya.",
+    "nothing": "Nta rupapuro rw'imiti rutegereje.",
     "items_one": "Umuti {{count}}",
     "items_other": "Imiti {{count}}",
     "lowStock_one": "Ububiko buke (icyiciro {{count}} kirarangira vuba)",
@@ -317,7 +314,6 @@
     "issued": "Rwatanzwe ku wa",
     "validUntil": "Rugifite agaciro kugeza",
     "born": "Itariki y'amavuko y'umurwayi",
-    "bornHint": "Ifungura imiti; irinda ubuzima bwite bw'umurwayi.",
     "open": "Erekana imiti",
     "bornWrong": "Itariki y'amavuko ntihuye."
   },
@@ -353,7 +349,6 @@
     },
     "expired": "Yarangije igihe",
     "expiringNone": "Nta cyiciro kirangira mu minsi 60 iri imbere.",
-    "expiringIntro": "Ibyiciro bifite imiti isigaye birangira mu minsi 60, ibyarangiye mbere. Bitange mbere, cyangwa ukure ibyarangiye ku gipangu.",
     "columns": {
       "medicine": "Umuti",
       "batch": "Icyiciro",

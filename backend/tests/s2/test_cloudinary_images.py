@@ -159,3 +159,40 @@ def test_patient_avatar(api: APIClient) -> None:
     assert api.put(url, {"public_id": "invented"}, format="json").status_code == 400
     removed = api.delete(url)
     assert removed.status_code == 200 and removed.json()["avatar_url"] is None
+
+
+def test_cards_show_a_scanned_photo_and_refresh_at_once(
+    admin_client: Any, setup_facility: Any, django_capture_on_commit_callbacks: Any
+) -> None:
+    """A photo from before Cloudinary (scanned upload) is the card's cover too, and saving photos
+    updates the search listing right away."""
+    import io
+
+    from django.core.files.uploadedfile import SimpleUploadedFile
+    from PIL import Image
+
+    make_catalogue(admin_client)
+    setup_facility.status = FacilityStatus.LIVE
+    setup_facility.save(update_fields=["status"])
+    refresh_facility(str(setup_facility.pk))
+    buffer = io.BytesIO()
+    Image.new("RGB", (30, 20), (10, 120, 200)).save(buffer, format="PNG")
+    png = SimpleUploadedFile("p.png", buffer.getvalue(), content_type="image/png")
+    with (
+        override_settings(UPLOADS={"storage": "local", "scanner": "fake"}),
+        django_capture_on_commit_callbacks(execute=True),
+    ):
+        added = admin_client.post(f"{F}photos/", {"file": png}, format="multipart")
+    assert added.status_code == 201, added.content
+    photo_id = added.json()["photos"][0]
+    found = APIClient().post("/api/v1/public/facilities/search/", {}, format="json").json()
+    card = next(r for r in found["results"] if r["slug"] == "remera-test")
+    assert card["cover_url"] == f"/api/v1/public/facilities/remera-test/photos/{photo_id}/"
+
+    # a Cloudinary photo takes over as soon as it is saved
+    version = admin_client.get(F).json()["version"]
+    with django_capture_on_commit_callbacks(execute=True):
+        admin_client.patch(F, {"version": version, "photo_public_ids": ["photo-z"]}, format="json")
+    found = APIClient().post("/api/v1/public/facilities/search/", {}, format="json").json()
+    card = next(r for r in found["results"] if r["slug"] == "remera-test")
+    assert card["cover_url"].endswith("/photo-z")

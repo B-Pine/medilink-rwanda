@@ -54,7 +54,6 @@ export function RemoteList({
       <h3 id="remote-joiners" className="m-0 font-heading text-body font-semibold">
         {t("queue.board.remote", { count: rows.length })}
       </h3>
-      <p className="m-0 text-body-sm text-fg-muted">{t("queue.board.remoteHint")}</p>
       {confirm.isError && (
         <Alert tone="danger" role="alert">
           {actionError(confirm.error, t("queue.board.remoteError"))}

@@ -10,7 +10,6 @@
     "reasonShort": "Why:",
     "submit": "Order",
     "send": "Send to lab",
-    "sendHint": "The patient goes to the lab. Your notes stay open, and the patient comes back to your queue when every result is in.",
     "sent": "{{name}} is on the way to the lab and comes back to your queue when the results are in.",
     "orderedBy": "Ordered by {{name}} at {{time}}",
     "resultedBy": "Result by {{name}} at {{time}}",
@@ -55,7 +54,6 @@
     },
     "inbox": {
       "title": "Lab results",
-      "lead": "Results of the tests you ordered. Review each one, then release it to the patient.",
       "open": "Open the consultation"
     }
   },
@@ -421,7 +419,6 @@
     "from": "From {{name}} · {{time}}",
     "medicines": "Medicines on this prescription",
     "answer": "Your answer",
-    "answerHint": "Clear and short. It becomes a signed note on the record.",
     "answerRequired": "Write an answer first.",
     "send": "Send answer",
     "openRecord": "Open record",
@@ -502,7 +499,6 @@
     "codesHint": "Separated by commas, for example B54, J06.9",
     "medicines": "Usual prescription",
     "drug": "Medicine",
-    "drugHint": "Search the catalogue, or type a name",
     "drugRequired": "Choose or type a medicine.",
     "change": "Change",
     "addMedicine": "Add medicine",
@@ -512,7 +508,6 @@
     "emptyTitle": "No templates yet",
     "empty": "Create one here, or save a consultation as a template while you write it.",
     "use": "Use a template",
-    "useHint": "One click adds the diagnosis, plan, instructions and medicines. Text goes into empty sections or after what you wrote; diagnoses are added as provisional. You can still change everything before you sign.",
     "saveAs": "Save as template"
   },
   "orderSet": {

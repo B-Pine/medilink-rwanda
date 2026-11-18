@@ -507,7 +507,6 @@ function TemplateEditor({
           />
           <TextField
             label={t("setup.schedules.share")}
-            hint={t("setup.schedules.shareHint")}
             type="number"
             min={0}
             max={100}

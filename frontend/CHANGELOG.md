@@ -9,6 +9,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Less explanatory text in the staff app (2026-11-18)
+
+- Changed: intro lines under page and card titles, long field hints and dialog descriptions that
+  repeated the title are gone (about 50 strings in three languages); some hints are shorter. Kept:
+  privacy and consent notes, confirmations before risky actions, and hints that state a rule.
+- Fixed: images may also come from Cloudinary's download host (scanned facility photos stored on
+  Cloudinary), allowed by the Content-Security-Policy.
+
 ### Facility and user management, cleaner (2026-11-18)
 
 - Added: the facility list has status tabs with counts and a "Needs attention" line (no facility

@@ -45,7 +45,6 @@
     "redFlagAlert": "Il peut s’agir d’une urgence. Dites au patient de venir maintenant ou d’appeler le 912.",
     "text": "Notes pour le médecin",
     "phone": "Téléphone de contact",
-    "phoneHint": "Pour les rappels et changements. Laissez vide pour utiliser le numéro du dossier.",
     "phoneInvalid": "Saisissez un numéro mobile rwandais, par exemple 0788 123 456."
   },
   "review": {

@@ -74,7 +74,6 @@ export function CareSchedule({ record }: { record: FacilityPatientDetail }) {
       <Card padding="md" className="flex flex-col gap-3">
         <div className="flex flex-col gap-1">
           <h2 className="m-0 text-h3">{t("patients.careSchedule.title")}</h2>
-          <p className="m-0 text-body-sm text-fg-secondary">{t("patients.careSchedule.intro")}</p>
         </div>
         {list.isPending ? (
           <LoadingState />

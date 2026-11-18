@@ -335,7 +335,6 @@ function CalendarPreview({ serviceId }: { serviceId: string | null }) {
       <h2 id="preview" className="m-0 font-heading text-h3">
         {t("setup.hours.preview")}
       </h2>
-      <p className="m-0 text-body-sm text-fg-secondary">{t("setup.hours.previewHint")}</p>
       <QueryState query={calendar}>
         {(data) => (
           <>
@@ -437,7 +436,6 @@ function EventsSection() {
           <h2 id="events" className="m-0 font-heading text-h2">
             {t("setup.hours.events")}
           </h2>
-          <p className="m-0 text-body-sm text-fg-secondary">{t("setup.hours.eventsHint")}</p>
         </div>
         <Button variant="secondary" onClick={() => setAdding(true)}>
           <Plus aria-hidden="true" weight="bold" />

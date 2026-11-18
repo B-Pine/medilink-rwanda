@@ -204,7 +204,6 @@ function SendToLab({ c, ordered }: { c: Consultation; ordered: boolean }) {
   if (!ticket || !ordered) return null;
   return (
     <div className="flex flex-col gap-3 border-t border-border/60 pt-4">
-      <p className="m-0 text-body-sm text-fg-secondary">{t("clinical.lab.sendHint")}</p>
       {send.isError && (
         <Alert tone="danger" role="alert">
           {errorText(send.error, t("errors.generic"))}

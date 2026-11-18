@@ -46,7 +46,6 @@
   },
   "mfaSetup": {
     "title": "Shyiraho kwinjira mu ntambwe ebyiri",
-    "intro": "Konti z’abakozi zisaba intambwe ya kabiri mu kwinjira kugira ngo amakuru y’abarwayi arindwe.",
     "preparing": "Turimo gutegura…",
     "setupFailed": "Ntitwashoboye gutangira. Ongera winjire.",
     "step1Title": "1. Shyira porogaramu yo kwemeza muri telefoni",
@@ -85,7 +84,6 @@
   },
   "facility": {
     "title": "Hitamo ikigo cyawe",
-    "intro": "Ukora mu bigo birenze kimwe. Hitamo aho ukorera ubu. Ushobora guhindura igihe icyo ari cyo cyose uhereye hejuru.",
     "choose": "Korera kuri {{name}}",
     "rolesLabel": "Inshingano zawe",
     "switcherLabel": "Ikigo urimo: {{name}}. Hindura ikigo",
@@ -209,7 +207,7 @@
   "reset": {
     "title": "Shyiraho ijambo ry’ibanga rishya",
     "newPassword": "Ijambo ry’ibanga rishya",
-    "hint": "Nibura inyuguti 12. Interuro ngufi yoroshye kwibuka kandi igoye gukeka.",
+    "hint": "Nibura inyuguti 12.",
     "submit": "Bika ijambo ry’ibanga rishya",
     "doneTitle": "Ijambo ry’ibanga ryahinduwe",
     "doneBody": "Ijambo ry’ibanga ryahinduwe kandi wasohowe ahantu hose. Injira ukoresheje ijambo ry’ibanga rishya.",

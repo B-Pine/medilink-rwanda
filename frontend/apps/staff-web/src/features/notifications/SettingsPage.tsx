@@ -94,7 +94,6 @@ function SettingsForm({ saved }: { saved: StaffNotificationPreferences }) {
         <h2 className="m-0 text-h3">{t("notifications.settings.soundTitle")}</h2>
         <SwitchField
           label={t("notifications.settings.sound")}
-          hint={t("notifications.settings.soundHint")}
           checked={draft.sound_enabled}
           onCheckedChange={(sound_enabled) => update({ sound_enabled })}
           stateLabel={draft.sound_enabled ? t("notifications.on") : t("notifications.off")}
@@ -121,7 +120,6 @@ function SettingsForm({ saved }: { saved: StaffNotificationPreferences }) {
         <h2 className="m-0 text-h3">{t("notifications.settings.generalTitle")}</h2>
         <SelectField
           label={t("notifications.settings.language")}
-          hint={t("notifications.settings.languageHint")}
           value={draft.language}
           onChange={(event) => update({ language: event.target.value as Language })}
         >
@@ -134,7 +132,6 @@ function SettingsForm({ saved }: { saved: StaffNotificationPreferences }) {
         {showDigest && (
           <SelectField
             label={t("notifications.settings.digest")}
-            hint={t("notifications.settings.digestHint")}
             value={draft.approvals_digest}
             onChange={(event) =>
               update({ approvals_digest: event.target.value as ApprovalsDigest })

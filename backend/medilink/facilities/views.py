@@ -76,6 +76,23 @@ def profile_data(facility: Any) -> dict[str, Any]:
     ).data
 
 
+def _refresh_listing_now(facility: Any) -> None:
+    """Photos show on the public search cards at once, without waiting for the background
+    refresh (the Celery task still runs from the save signal)."""
+    from django.db import transaction
+
+    from medilink.scheduling import listing
+    from medilink.tenancy.context import rls_context
+
+    fid = facility.pk
+
+    def run() -> None:
+        with rls_context(facility_id=fid):
+            listing.refresh(fid)
+
+    transaction.on_commit(run)
+
+
 class ProfileView(FacilityView):
     permission_classes = [Needs(methods={"PATCH": (CONFIGURE,)})]
 
@@ -108,6 +125,8 @@ class ProfileView(FacilityView):
         services.update_profile(
             facility, dict(body.validated_data), actor=request.user, request=request
         )
+        if {"photo_public_ids", "logo_public_id"} & set(body.validated_data):
+            _refresh_listing_now(facility)
         return Response(profile_data(facility))
 
 
@@ -143,6 +162,7 @@ class PhotoView(FacilityView):
         services.set_photos(
             facility, [*profile.photo_file_ids, file.pk], actor=request.user, request=request
         )
+        _refresh_listing_now(facility)
         return Response(profile_data(facility), status=status.HTTP_201_CREATED)
 
 
@@ -161,6 +181,7 @@ class PhotoDeleteView(FacilityView):
             actor=request.user,
             request=request,
         )
+        _refresh_listing_now(facility)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

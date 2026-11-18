@@ -52,7 +52,7 @@ import { env } from "../../env";
 import { useStepUp } from "../lock";
 import { staffMeKey } from "../../auth/queries";
 import { useChecklist } from "./ChecklistPage";
-import { imageErrorText, isUploadsUnavailable, useImageUpload } from "./images";
+import { imageErrorText, useImageUpload } from "./images";
 import {
   ConflictNotice,
   errorText,
@@ -454,18 +454,12 @@ function Photos({ profile }: { profile: FacilityProfile }) {
   const count = profile.photo_public_ids.length + profile.photos.length;
   const add = useMutation({
     mutationFn: async (file: File) => {
-      try {
-        const publicId = await photo.upload(file);
-        const current = latest();
-        return await api.setup.updateFacility({
-          version: current.version,
-          photo_public_ids: [...current.photo_public_ids, publicId],
-        });
-      } catch (failure) {
-        // no Cloudinary account on this server: the scanned upload pipeline takes the photo
-        if (isUploadsUnavailable(failure)) return api.setup.addPhoto(file);
-        throw failure;
-      }
+      const publicId = await photo.upload(file);
+      const current = latest();
+      return api.setup.updateFacility({
+        version: current.version,
+        photo_public_ids: [...current.photo_public_ids, publicId],
+      });
     },
     onSuccess: update,
   });

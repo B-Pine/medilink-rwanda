@@ -17,6 +17,7 @@ class CloudinaryImageField(serializers.CharField):
     default_error_messages = {
         "not_found": _("We couldn't find that image. Upload it again."),
         "unavailable": _("Image uploads aren't set up on this server."),
+        "unreachable": _("We couldn't check the image just now. Try again in a moment."),
     }
 
     def __init__(self, kind: str, **kwargs: Any) -> None:
@@ -38,4 +39,6 @@ class CloudinaryImageField(serializers.CharField):
             services.verify_asset(value, self.kind)
         except services.AssetNotFound:
             self.fail("not_found")
+        except services.CloudinaryUnavailable:
+            self.fail("unreachable")
         return value

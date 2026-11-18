@@ -124,3 +124,51 @@ def test_deploy_check_wants_all_three_credentials() -> None:
         assert [m.id for m in check_deploy_cloudinary()] == ["medilink.images.E001"]
     with override_settings(CLOUDINARY={"cloud_name": "", "api_key": "", "api_secret": ""}):
         assert check_deploy_cloudinary() == []
+
+
+def test_cloudinary_errors_become_a_clear_field_error() -> None:
+    with (
+        mock.patch(
+            "cloudinary.api.resource",
+            side_effect=cloudinary.exceptions.AuthorizationRequired("bad key"),
+        ),
+        pytest.raises(services.CloudinaryUnavailable),
+    ):
+        services.verify_asset("abc", "facility_photo")
+
+
+def test_patient_avatar_answers_400_not_500_when_cloudinary_fails(api: APIClient) -> None:
+    login_patient(api, make_patient_user())
+    patient_id = api.get("/api/v1/patient/profiles/").json()["results"][0]["patient_id"]
+    with mock.patch("cloudinary.api.resource", side_effect=RuntimeError("timeout")):
+        response = api.put(
+            f"/api/v1/patient/profiles/{patient_id}/avatar/", {"public_id": "abc"}, format="json"
+        )
+    assert response.status_code == 400
+    assert "Try again" in str(response.json()["error"]["fields"])
+
+
+def test_asset_in_a_subfolder_of_the_kind_counts() -> None:
+    found = {"asset_folder": "medilink/patients/avatars/2026", "resource_type": "image"}
+    with mock.patch("cloudinary.api.resource", return_value=found):
+        assert services.verify_asset("x1", "patient_avatar") == found
+
+
+def test_cloudinary_check_command() -> None:
+    from django.core.management import CommandError, call_command
+
+    with (
+        mock.patch("cloudinary.api.ping", return_value={"status": "ok"}),
+        mock.patch(
+            "cloudinary.api.upload_preset", return_value={"unsigned": False, "settings": {}}
+        ),
+    ):
+        call_command("cloudinary_check")
+    with (
+        mock.patch("cloudinary.api.ping", return_value={"status": "ok"}),
+        mock.patch("cloudinary.api.upload_preset", return_value={"unsigned": True}),
+        pytest.raises(CommandError),
+    ):
+        call_command("cloudinary_check")
+    with override_settings(CLOUDINARY={**CFG, "api_secret": ""}), pytest.raises(CommandError):
+        call_command("cloudinary_check")

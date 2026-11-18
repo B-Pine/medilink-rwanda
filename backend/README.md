@@ -81,7 +81,9 @@ login is audited (`mfa_method: off_by_admin`). Switch it back on when testing is
 `CLOUDINARY_API_SECRET` (and the signed preset in `CLOUDINARY_UPLOAD_PRESET`). The browser uploads
 facility photos and logos, doctor and patient photos straight to Cloudinary with a signature from
 the API; only the public id is stored. The secret stays on the server: never in a `VITE_*`
-variable.
+variable. `CLOUDINARY_URL` (the console's one-line form) works too. To check a server's setup, run
+`python manage.py cloudinary_check` there: it says which credential is missing, whether Cloudinary
+answers and whether the preset is signed (never printing the secret).
 
 **Testing without an authenticator app (dev only):** add `DEV_SKIP_STAFF_MFA=true` to `backend/.env`
 and restart the server. Staff then log in with email and password only; the audit log records

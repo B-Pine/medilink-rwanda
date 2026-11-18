@@ -17,6 +17,7 @@ documents and prescriptions stay in the scanned upload pipeline (medilink.upload
 
 from __future__ import annotations
 
+import logging
 import time
 from typing import Any
 
@@ -37,10 +38,16 @@ UPLOAD_KINDS: dict[str, str] = {
 STAFF_KINDS = ("facility_photo", "facility_logo", "provider_avatar")
 PATIENT_KINDS = ("patient_avatar",)
 UPLOAD_HOST = "https://api.cloudinary.com/v1_1"
+logger = logging.getLogger(__name__)
 
 
 class AssetNotFound(Exception):
     """The public id is unknown to Cloudinary, or wasn't uploaded for this kind."""
+
+
+class CloudinaryUnavailable(Exception):
+    """Cloudinary answered with an error other than "not found" (credentials, rate limit, outage):
+    the image can't be checked now. Logged with Cloudinary's message."""
 
 
 def config() -> dict[str, str]:
@@ -106,9 +113,20 @@ def verify_asset(public_id: str, kind: str) -> dict[str, Any]:
         resource: dict[str, Any] = cloudinary.api.resource(public_id)
     except cloudinary.exceptions.NotFound:
         raise AssetNotFound(public_id) from None
+    except Exception as exc:  # any other Cloudinary or network failure: say so, never a 500
+        logger.warning("Cloudinary asset check failed: %s: %s", type(exc).__name__, exc)
+        raise CloudinaryUnavailable(str(exc)) from exc
     folder = folder_for(kind)
-    in_folder = resource.get("asset_folder") == folder or public_id.startswith(f"{folder}/")
+    asset_folder = str(resource.get("asset_folder") or resource.get("folder") or "")
+    in_folder = (
+        asset_folder == folder
+        or asset_folder.startswith(f"{folder}/")
+        or public_id.startswith(f"{folder}/")
+    )
     if not in_folder or resource.get("resource_type", "image") != "image":
+        logger.warning(
+            "Cloudinary asset %s is in folder %r, expected %r", public_id, asset_folder, folder
+        )
         raise AssetNotFound(public_id)
     return resource
 
@@ -146,3 +164,46 @@ def import_remote(url: str, kind: str) -> str:
         resource_type="image",
     )
     return str(result["public_id"])
+
+
+def diagnose() -> list[tuple[str, bool, str]]:
+    """Checks for `manage.py cloudinary_check`: credentials, API reachable, preset signed."""
+    cfg = config()
+    results: list[tuple[str, bool, str]] = []
+    have = {k: bool(cfg.get(k)) for k in ("cloud_name", "api_key", "api_secret")}
+    results.append(
+        (
+            "credentials",
+            is_configured(),
+            ", ".join(f"{k}={'set' if v else 'MISSING'}" for k, v in have.items())
+            + (
+                " (secret is the placeholder)"
+                if cfg.get("api_secret") == PLACEHOLDER_SECRET
+                else ""
+            ),
+        )
+    )
+    if not is_configured():
+        return results
+    _apply_config()
+    try:
+        cloudinary.api.ping()
+        results.append(("api", True, f"cloud {cfg['cloud_name']} answers"))
+    except Exception as exc:
+        results.append(("api", False, f"{type(exc).__name__}: {exc}"))
+        return results
+    preset = cfg.get("upload_preset", "")
+    try:
+        found = cloudinary.api.upload_preset(preset)
+        unsigned = bool(found.get("unsigned"))
+        results.append(
+            (
+                "preset",
+                not unsigned,
+                f"{preset}: {'UNSIGNED (should be signed)' if unsigned else 'signed'}, "
+                f"settings {found.get('settings', {})}",
+            )
+        )
+    except Exception as exc:
+        results.append(("preset", False, f"{preset}: {type(exc).__name__}: {exc}"))
+    return results

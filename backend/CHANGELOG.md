@@ -30,6 +30,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Added: `UPLOADS_STORAGE=cloudinary`: the scanned upload pipeline can keep its files on Cloudinary
   as private (authenticated) raw assets with signed, expiring download links (`CLOUDINARY_URL` or
   the credentials above).
+- Fixed: a Cloudinary error while checking an uploaded photo (credentials, rate limit, outage)
+  answered 500; it is now a field error ("Try again in a moment") and is logged with Cloudinary's
+  message. `CLOUDINARY_URL` fills the `CLOUDINARY_*` credentials left empty. New
+  `manage.py cloudinary_check` (credentials, API reachable, preset signed).
 - Added: Sign in with Google brings the Google profile photo (`picture`, only from
   `*.googleusercontent.com`, asked at 400 px): after the sign-in commits, a Celery task copies it
   to Cloudinary (patient avatars folder) and sets it as the patient's own photo, only while they

@@ -22,6 +22,9 @@ void main() {
     final card = FacilitySummary.fromJson({'slug': 'kigali', 'cover_url': '/api/v1/public/facilities/kigali/photos/1/'});
     expect(card.coverUrl, startsWith('/api/'));
     expect(absoluteImageUrl(card.coverUrl!), '${AppConfig.apiBaseUrl}/api/v1/public/facilities/kigali/photos/1/');
+    expect(card.logoUrl, isNull);
+    final branded = FacilitySummary.fromJson({'slug': 'kigali', 'logo_url': 'https://res.cloudinary.com/x/logo'});
+    expect(branded.logoUrl, 'https://res.cloudinary.com/x/logo');
     expect(absoluteImageUrl('https://res.cloudinary.com/a.jpg'), 'https://res.cloudinary.com/a.jpg');
 
     final facility = Facility.fromJson({

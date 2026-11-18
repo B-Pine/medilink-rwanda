@@ -305,6 +305,17 @@ class FacilityProfileView(PublicView):
         with rls_context(facility_id=facility.pk):
             profile = Profile.objects.filter(facility_id=facility.pk).first()
             photos = _clean_photos(facility.pk, profile.photo_file_ids if profile else [])
+            # Self-heal the search card: a photo saved before the listing was rebuilt (or while the
+            # background refresh was down) would leave the card on the drawing.
+            cover_now = listing.cover_of(facility.pk, profile)
+            logo_now = profile.logo_public_id if profile else ""
+            if any(
+                (r.cover_public_id, r.logo_public_id) != (cover_now, logo_now)
+                for r in rows.values()
+            ):
+                PublicListing.objects.filter(facility_id=facility.pk).update(
+                    cover_public_id=cover_now, logo_public_id=logo_now
+                )
             services = list(
                 Service.objects.filter(facility_id=facility.pk, is_active=True).order_by(
                     "catalogue_item_code"

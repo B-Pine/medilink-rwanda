@@ -80,6 +80,8 @@ export interface FacilityResult {
   lng: number | null;
   /** The facility's own cover photo (Cloudinary); the card draws one without it. */
   cover_url?: string | null;
+  /** The facility's logo (Cloudinary, padded square), or null. */
+  logo_url?: string | null;
 }
 
 /** Minutes a new arrival can expect to wait. */

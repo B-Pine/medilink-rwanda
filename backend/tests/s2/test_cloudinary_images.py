@@ -90,6 +90,7 @@ def test_facility_photos_and_logo(admin_client: Any, setup_facility: Any, admin_
     found = APIClient().post("/api/v1/public/facilities/search/", {}, format="json").json()
     card = next(r for r in found["results"] if r["slug"] == "remera-test")
     assert card["cover_url"].endswith("/photo-b")
+    assert card["logo_url"].endswith("/logo-1")  # the logo sits on the card too
 
 
 def test_facility_refuses_invented_or_misplaced_ids(admin_client: Any) -> None:
@@ -196,3 +197,36 @@ def test_cards_show_a_scanned_photo_and_refresh_at_once(
     found = APIClient().post("/api/v1/public/facilities/search/", {}, format="json").json()
     card = next(r for r in found["results"] if r["slug"] == "remera-test")
     assert card["cover_url"].endswith("/photo-z")
+
+
+def test_opening_the_facility_page_heals_a_stale_card(
+    admin_client: Any, setup_facility: Any
+) -> None:
+    """A photo saved while the listing was not rebuilt (old deploy, background refresh down) left
+    the card on the drawing; the facility's own page puts the photo back on the card."""
+    from medilink.facilities.models import PublicListing
+    from medilink.tenancy.context import rls_context
+
+    make_catalogue(admin_client)
+    setup_facility.status = FacilityStatus.LIVE
+    setup_facility.save(update_fields=["status"])
+    version = admin_client.get(F).json()["version"]
+    admin_client.patch(
+        F,
+        {"version": version, "photo_public_ids": ["photo-k"], "logo_public_id": "logo-k"},
+        format="json",
+    )
+    refresh_facility(str(setup_facility.pk))
+    with rls_context(facility_id=setup_facility.pk):  # the stale listing of the bug report
+        PublicListing.objects.filter(facility_id=setup_facility.pk).update(
+            cover_public_id="", logo_public_id=""
+        )
+
+    def card() -> Any:
+        found = APIClient().post("/api/v1/public/facilities/search/", {}, format="json").json()
+        return next(r for r in found["results"] if r["slug"] == "remera-test")
+
+    assert card()["cover_url"] is None and card()["logo_url"] is None
+    assert APIClient().get("/api/v1/public/facilities/remera-test/").status_code == 200
+    assert card()["cover_url"].endswith("/photo-k")
+    assert card()["logo_url"].endswith("/logo-k")

@@ -125,6 +125,7 @@ class FacilitySummary {
         lat = (j['lat'] as num?)?.toDouble(),
         lng = (j['lng'] as num?)?.toDouble(),
         coverUrl = j['cover_url'] as String?,
+        logoUrl = j['logo_url'] as String?,
         insurers = _strings(j['insurers']).where((c) => c.isNotEmpty).toList();
   final String slug, name, type, district, sector;
   final bool emergency, openNow;
@@ -132,6 +133,9 @@ class FacilitySummary {
 
   /// The facility's own cover photo; null: the drawing.
   final String? coverUrl;
+
+  /// The facility's logo, or null.
+  final String? logoUrl;
   final int? waiting;
   final Estimate? waitRange;
   final String? queueLoad;

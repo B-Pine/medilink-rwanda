@@ -414,7 +414,15 @@ class FacilityCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(facility.name, style: theme.textTheme.titleLarge),
+                Row(
+                  children: [
+                    if (facility.logoUrl != null) ...[
+                      FacilityLogo(url: facility.logoUrl, size: 40),
+                      const SizedBox(width: Space.md),
+                    ],
+                    Expanded(child: Text(facility.name, style: theme.textTheme.titleLarge)),
+                  ],
+                ),
                 const SizedBox(height: Space.xs),
                 Row(
                   children: [

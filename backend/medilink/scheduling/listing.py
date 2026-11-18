@@ -149,7 +149,7 @@ def _hours(facility_id: Any, start: dt.date) -> list[list[Any]]:
 UPLOAD_COVER = "upload:"
 
 
-def _cover(facility_id: Any, profile: Profile | None) -> str:
+def cover_of(facility_id: Any, profile: Profile | None) -> str:
     """The card's cover: the first Cloudinary photo, else the first clean scanned photo (stored as
     "upload:<id>"), else "" (the card draws the facility)."""
     if profile is None:
@@ -228,7 +228,8 @@ def refresh(facility_id: Any) -> int:
                 level_of_care=(profile.level_of_care if profile else "")
                 or LEVEL_BY_TYPE.get(str(facility.facility_type), ""),
                 emergency_department=bool(profile and profile.emergency_department),
-                cover_public_id=_cover(facility_id, profile),
+                cover_public_id=cover_of(facility_id, profile),
+                logo_public_id=profile.logo_public_id if profile else "",
                 latitude=profile.latitude if profile else None,
                 longitude=profile.longitude if profile else None,
                 service_id=service.pk,
@@ -417,6 +418,7 @@ def search(query: Query) -> dict[str, Any]:
                 "lng": float(row.longitude) if row.longitude is not None else None,
                 # the facility's own cover photo (Cloudinary); the cards draw one without it
                 "cover_url": cover_url(row.facility_slug, row.cover_public_id),
+                "logo_url": image_url(row.logo_public_id, w=160, h=160, crop="pad"),
             }
         )
     if query.near:

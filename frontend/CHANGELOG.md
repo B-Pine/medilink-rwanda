@@ -11,6 +11,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 ### Photos on Cloudinary, two-step switch (2026-11-18)
 
+- Fixed: the production Content-Security-Policy blocked the browser's upload to
+  `https://api.cloudinary.com` ("The connection dropped during the upload") and would have hidden
+  every Cloudinary photo; `connect-src` and `img-src` now allow Cloudinary's upload and delivery
+  hosts (both apps).
+
 - Added: `api.images.{staff,patient}.upload(file, kind, onProgress)`: type and size check (JPG,
   PNG, WebP, HEIC, up to 8 MB), a signature from the API, then the file straight to Cloudinary
   with progress. Mocked in `dev:mock` (images kept in memory).

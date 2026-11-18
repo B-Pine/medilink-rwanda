@@ -10,7 +10,6 @@
     "reasonShort": "Impamvu:",
     "submit": "Saba",
     "send": "Ohereza muri laboratwari",
-    "sendHint": "Umurwayi ajya muri laboratwari. Inyandiko zawe zikomeza gufunguye, umurwayi akagaruka ku murongo wawe ibisubizo byose nibimara kuboneka.",
     "sent": "{{name}} agiye muri laboratwari; azagaruka ku murongo wawe ibisubizo nibimara kuboneka.",
     "orderedBy": "Byasabwe na {{name}} saa {{time}}",
     "resultedBy": "Igisubizo cyatanzwe na {{name}} saa {{time}}",
@@ -55,7 +54,6 @@
     },
     "inbox": {
       "title": "Ibisubizo bya laboratwari",
-      "lead": "Ibisubizo by’ibizamini wasabye. Soma buri gisubizo, hanyuma ucyohereze ku murwayi.",
       "open": "Fungura isuzuma"
     }
   },
@@ -421,7 +419,6 @@
     "from": "Kivuye kuri {{name}} · {{time}}",
     "medicines": "Imiti iri kuri uru rupapuro",
     "answer": "Igisubizo cyawe",
-    "answerHint": "Gisobanutse kandi kigufi. Kiba inyandiko isinywe muri dosiye.",
     "answerRequired": "Banza wandike igisubizo.",
     "send": "Ohereza igisubizo",
     "openRecord": "Fungura dosiye",
@@ -502,7 +499,6 @@
     "codesHint": "Zitandukanywa n'akitso, urugero B54, J06.9",
     "medicines": "Imiti usanzwe utanga",
     "drug": "Umuti",
-    "drugHint": "Shakira mu rutonde, cyangwa wandike izina",
     "drugRequired": "Hitamo cyangwa wandike umuti.",
     "change": "Hindura",
     "addMedicine": "Ongeraho umuti",
@@ -512,7 +508,6 @@
     "emptyTitle": "Nta nyandiko ngenderwaho uragira",
     "empty": "Yikore hano, cyangwa ubike isuzuma nk'inyandiko ngenderwaho uri kuryandika.",
     "use": "Koresha inyandiko ngenderwaho",
-    "useHint": "Gukanda rimwe byongeramo isuzuma, gahunda, amabwiriza n'imiti. Inyandiko ijya mu bice birimo ubusa cyangwa nyuma y'ibyo wanditse; amasuzuma yongerwamo nk'ay'agateganyo. Ushobora guhindura byose mbere yo gusinya.",
     "saveAs": "Bika nk'inyandiko ngenderwaho"
   },
   "orderSet": {

@@ -121,7 +121,6 @@ export function TemplateTools({
           />
         ) : (
           <div className="flex flex-col gap-3">
-            <p className="m-0 text-body-sm text-fg-secondary">{t("clinical.templates.useHint")}</p>
             {templates.isPending ? (
               <Skeleton height="8rem" className="rounded-2xl" />
             ) : rows.length === 0 ? (

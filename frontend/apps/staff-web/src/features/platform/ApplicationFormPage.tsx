@@ -309,7 +309,7 @@ function ApplicationForm({ app }: { app?: PlatformApplication }) {
           </div>
         </Section>
 
-        <Section title={t("platform.form.location")} hint={t("platform.form.locationHint")}>
+        <Section title={t("platform.form.location")}>
           <VillagePicker
             value={values.location.village_code}
             path={app?.location.path ?? []}
@@ -355,7 +355,7 @@ function ApplicationForm({ app }: { app?: PlatformApplication }) {
           </div>
         </Section>
 
-        <Section title={t("platform.form.applicant")} hint={t("platform.form.applicantHint")}>
+        <Section title={t("platform.form.applicant")}>
           <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
             <TextField
               label={t("platform.form.name")}

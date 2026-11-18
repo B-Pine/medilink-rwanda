@@ -89,8 +89,7 @@
     "ask": "Ask for a comment",
     "answered": "answered",
     "waiting": "waiting",
-    "yourComment": "Your comment",
-    "commentHint": "You were asked for a comment. Only staff see it."
+    "yourComment": "Your comment"
   },
   "decide": {
     "title": "Decision",

@@ -130,11 +130,7 @@ function UserDetail() {
       <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <div className="flex min-w-0 flex-col gap-5">
           <AccountCard user={u} />
-          {u.kind === "patient" ? (
-            <Card padding="md">
-              <p className="m-0 text-body-sm text-fg-secondary">{t("console.users.patientNote")}</p>
-            </Card>
-          ) : (
+          {u.kind !== "patient" && (
             <AccessCard
               user={u}
               canAct={canAct}
@@ -392,7 +388,6 @@ function AccessCard({
         <SectionTitle count={user.facilities.length}>
           {t("console.users.access.title")}
         </SectionTitle>
-        <p className="m-0 text-body-sm text-fg-secondary">{t("console.users.access.lead")}</p>
       </div>
       {user.facilities.length === 0 ? (
         <p className="m-0 text-body-sm text-fg-muted">{t("console.users.access.none")}</p>
@@ -699,7 +694,6 @@ function RolesDialog({
       open
       onOpenChange={(open) => !open && onClose()}
       title={t("console.users.access.rolesTitle", { facility: membership.facility_name })}
-      description={t("console.users.access.rolesLead", { name: user.full_name })}
       closeLabel={t("console.close")}
       footer={
         <Button type="submit" form="roles-form" loading={save.isPending} disabled={!ready}>
@@ -887,7 +881,6 @@ function EditDialog({ user, onClose }: { user: ConsoleUserDetail; onClose: () =>
       open
       onOpenChange={(open) => !open && onClose()}
       title={t("console.users.edit")}
-      description={t("console.users.editLead")}
       closeLabel={t("console.close")}
       footer={
         <Button

@@ -101,7 +101,6 @@
     "findThem": "Find them in search",
     "submit": "Register",
     "suggestions": "Possible matches",
-    "suggestionsHint": "Matches appear here once names and an age, or a phone number, are filled in.",
     "noMatches": "No similar patients here.",
     "levels": {
       "exact_identifier": "Same document",
@@ -319,7 +318,6 @@
   "careSchedule": {
     "tab": "Care schedule",
     "title": "Planned vaccinations and antenatal visits",
-    "intro": "The patient gets a reminder the day before and on the morning. The reminder never says what the visit is for; the note shows only in the patient's app.",
     "empty": "Nothing planned.",
     "failed": "We couldn't load the care schedule.",
     "add": "Plan a date",

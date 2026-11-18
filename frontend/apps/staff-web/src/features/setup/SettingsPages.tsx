@@ -405,9 +405,6 @@ function ProfileForm({ profile, onReload }: { profile: FacilityProfile; onReload
 
       <section className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5">
         <h2 className="m-0 font-heading text-h3">{t("setup.profile.description")}</h2>
-        <p className="m-0 -mt-2 text-body-sm text-fg-secondary">
-          {t("setup.profile.descriptionHint")}
-        </p>
         <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-3">
           {(["rw", "en", "fr"] as const).map((lang) => (
             <TextareaField
@@ -569,7 +566,6 @@ function Photos({ profile }: { profile: FacilityProfile }) {
         </span>
         <div className="flex min-w-0 flex-1 flex-col">
           <h3 className="m-0 text-body font-semibold">{t("setup.profile.logo")}</h3>
-          <p className="m-0 text-body-sm text-fg-secondary">{t("setup.profile.logoHint")}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <FilePick
@@ -759,9 +755,6 @@ function SectionForm({
       className="mt-4 flex flex-col gap-5 rounded-2xl bg-surface shadow-card p-5"
     >
       {isConflict(save.error) && <ConflictNotice onReload={onReload} />}
-      {section === "billing" && (
-        <p className="m-0 text-body-sm text-fg-secondary">{t("setup.rules.billingStepUp")}</p>
-      )}
       <div className="flex flex-col divide-y divide-border/60">
         {fields.map(([name, spec]) => {
           const value = values[name] ?? spec.default;
@@ -858,7 +851,6 @@ function BrandingForm() {
           }}
           className="mt-4 flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5"
         >
-          <p className="m-0 text-body-sm text-fg-secondary">{t("setup.rules.brandingHint")}</p>
           <TextareaField
             label={t("setup.rules.footer")}
             rows={3}

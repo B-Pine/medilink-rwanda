@@ -46,7 +46,6 @@ export function FacilityPickerPage() {
       >
         <div className="flex flex-col gap-2">
           <PageHeading title={title}>{title}</PageHeading>
-          <p className="m-0 max-w-2xl text-fg-secondary">{t("facility.intro")}</p>
         </div>
         {setActiveFacility.isError && (
           <Alert tone="danger" role="alert" title={t("facility.switchFailed")}>

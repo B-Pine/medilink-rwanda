@@ -81,9 +81,6 @@ function Form({ profile }: { profile: ClinicianPublicProfile }) {
           <div className="flex min-w-0 flex-1 flex-col gap-2">
             <div>
               <h3 className="m-0 text-body font-semibold">{t("setup.publicProfile.photo")}</h3>
-              <p className="m-0 text-body-sm text-fg-secondary">
-                {t("setup.publicProfile.photoHint")}
-              </p>
             </div>
             <div className="flex flex-wrap gap-2">
               <label className="inline-flex min-h-target cursor-pointer items-center gap-2 rounded-xl border border-border-input px-4 font-semibold hover:bg-subtle has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-60">
@@ -125,7 +122,6 @@ function Form({ profile }: { profile: ClinicianPublicProfile }) {
         </div>
         <SwitchField
           label={t("setup.publicProfile.visible")}
-          hint={t("setup.publicProfile.visibleHint")}
           checked={isPublic}
           stateLabel={isPublic ? t("setup.publicProfile.on") : t("setup.publicProfile.off")}
           onCheckedChange={setIsPublic}
@@ -235,7 +231,6 @@ export function PublicProfileCard() {
         <h2 id="public-profile" className="m-0 font-heading text-h3 tracking-tight">
           {t("setup.publicProfile.title")}
         </h2>
-        <p className="m-0 text-body-sm text-fg-secondary">{t("setup.publicProfile.intro")}</p>
       </div>
       {profile.isPending ? null : profile.isError ? (
         <p className="m-0 text-body-sm text-fg-muted">{t("setup.publicProfile.needLicence")}</p>

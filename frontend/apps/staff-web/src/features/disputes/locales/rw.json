@@ -89,8 +89,7 @@
     "ask": "Saba igitekerezo",
     "answered": "yasubije",
     "waiting": "aracyategerejwe",
-    "yourComment": "Igitekerezo cyawe",
-    "commentHint": "Wasabwe igitekerezo. Abakozi ni bo bonyine bakibona."
+    "yourComment": "Igitekerezo cyawe"
   },
   "decide": {
     "title": "Icyemezo",

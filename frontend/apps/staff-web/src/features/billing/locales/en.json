@@ -151,7 +151,7 @@
     "payments": "Payments this shift",
     "collected": "Collected this shift",
     "next": "Next to pay",
-    "nothing": "No bill waits for payment. New bills appear here after the visit.",
+    "nothing": "No prescription waits.",
     "inDrawer": "{{amount}} in the drawer"
   },
   "nav": {

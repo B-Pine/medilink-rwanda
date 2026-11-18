@@ -178,7 +178,6 @@ function LabInbox() {
         <h2 id="lab-inbox" className="m-0 font-heading text-h2 tracking-tight">
           {t("clinical.lab.inbox.title")}
         </h2>
-        <p className="m-0 text-fg-secondary">{t("clinical.lab.inbox.lead")}</p>
       </div>
       <ul className="m-0 grid list-none gap-3 p-0 xl:grid-cols-2">
         {inbox.data.map(({ order, patient, facility_patient_id }) => (

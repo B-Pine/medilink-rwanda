@@ -473,7 +473,6 @@ export function VerifyPrescriptionPage() {
               <TextField
                 type="date"
                 label={t("pharmacy.verify.born")}
-                hint={t("pharmacy.verify.bornHint")}
                 value={born}
                 onChange={(e) => setBorn(e.target.value)}
               />

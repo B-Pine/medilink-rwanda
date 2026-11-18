@@ -865,9 +865,6 @@ function IdentifiersForm({ facility }: { facility: PlatformFacilityDetail }) {
   return (
     <Card padding="md" className="flex flex-col gap-3">
       <h2 className="m-0 font-heading text-h4 font-bold">{t("platform.facilities.identifiers")}</h2>
-      <p className="m-0 text-body-sm text-fg-secondary">
-        {t("platform.facilities.identifiersHint")}
-      </p>
       <form
         noValidate
         onSubmit={submit}
@@ -1267,9 +1264,6 @@ function StaffTab({ facility }: { facility: PlatformFacilityDetail }) {
             <h2 className="m-0 font-heading text-h4 font-bold">
               {t("platform.facilities.staffTitle")}
             </h2>
-            <p className="m-0 text-body-sm text-fg-secondary">
-              {t("platform.facilities.staffHint")}
-            </p>
           </div>
           {canInvite && (
             <Button onClick={() => setInviting(true)}>
@@ -1428,7 +1422,6 @@ function InviteDialog({
       open
       onOpenChange={(o) => !o && onClose()}
       title={t("platform.facilities.inviteTitle", { name: facility.name })}
-      description={t("platform.facilities.inviteHint")}
       closeLabel={t("platform.table.close", { defaultValue: "Close" })}
       footer={
         <>
@@ -1486,7 +1479,6 @@ function InviteDialog({
         </fieldset>
         <TextareaField
           label={t("platform.reason.text")}
-          hint={t("platform.facilities.reasonHint")}
           rows={2}
           value={reason}
           onChange={(e) => setReason(e.target.value)}
@@ -1541,7 +1533,6 @@ function EditDetailsDialog({
       open
       onOpenChange={(o) => !o && onClose()}
       title={t("platform.facilities.editTitle")}
-      description={t("platform.facilities.editHint")}
       closeLabel={t("platform.table.close", { defaultValue: "Close" })}
       footer={
         <>
@@ -1615,7 +1606,6 @@ function EditDetailsDialog({
         </p>
         <TextareaField
           label={t("platform.reason.text")}
-          hint={t("platform.facilities.reasonHint")}
           rows={2}
           value={reason}
           onChange={(e) => setReason(e.target.value)}

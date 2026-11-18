@@ -156,7 +156,7 @@
     "name": "Nom",
     "type": "Type",
     "status": "Statut",
-    "platformManaged": "Le nom, le type et le niveau de soins viennent de votre demande approuvée. Demandez au support MediLink pour les changer.",
+    "platformManaged": "Demandez au support MediLink pour les modifier.",
     "contact": "Contact",
     "phone": "Téléphone",
     "email": "E-mail",
@@ -169,10 +169,9 @@
     "locationUnavailable": "Votre position n’est pas disponible. Saisissez les coordonnées.",
     "outsideRwanda": "Ces coordonnées sont hors du Rwanda. Vérifiez-les.",
     "description": "Description",
-    "descriptionHint": "Quelques phrases par langue : ce que vous soignez et comment vous trouver.",
     "photos": "Photos",
-    "photosHint_one": "{{count}} photo sur 6. JPG, PNG, WebP ou HEIC, 8 Mo au plus. La première sert de couverture sur votre page publique.",
-    "photosHint_other": "{{count}} photos sur 6. JPG, PNG, WebP ou HEIC, 8 Mo au plus. La première sert de couverture sur votre page publique.",
+    "photosHint_one": "{{count}} sur 6. La première sert de couverture.",
+    "photosHint_other": "{{count}} sur 6. La première sert de couverture.",
     "addPhoto": "Ajouter une photo",
     "photoN": "Photo {{n}}",
     "removePhotoN": "Supprimer la photo {{n}}",
@@ -188,10 +187,9 @@
     "cover": "Couverture",
     "emergencyTitle": "Urgences",
     "emergency": "Service d’urgences 24 h/24",
-    "emergencyHint": "Activez seulement si vous recevez les urgences jour et nuit. Votre établissement apparaît alors en premier sur la page publique Urgences.",
+    "emergencyHint": "Seulement si vous recevez les urgences jour et nuit.",
     "uploading": "Envoi… {{percent}} %",
     "logo": "Logo",
-    "logoHint": "Affiché sur votre page publique. Une image carrée convient le mieux.",
     "addLogo": "Ajouter le logo",
     "changeLogo": "Changer le logo",
     "removeLogo": "Retirer le logo"
@@ -263,11 +261,9 @@
     "closed": "Fermé",
     "save": "Enregistrer les horaires",
     "preview": "Quatre prochaines semaines",
-    "previewHint": "Horaires moins fermetures, jours fériés et Umuganda.",
     "legendOpen": "Ouvert",
     "umuganda": "Umuganda",
     "events": "Fermetures et jours spéciaux",
-    "eventsHint": "Changements ponctuels des horaires hebdomadaires.",
     "addEvent": "Ajouter une fermeture ou un jour spécial",
     "noEventsTitle": "Aucune fermeture prévue",
     "noEvents": "Ajoutez une fermeture pour une formation, un inventaire ou un jour férié non ouvré.",
@@ -306,7 +302,6 @@
     "slot": "Minutes par créneau",
     "capacity": "Patients par créneau",
     "share": "Part en ligne %",
-    "shareHint": "Le reste est pour les patients sans rendez-vous",
     "overlap": "Cela chevauche une autre séance du même médecin.",
     "unattestedTitle": "Licence pas encore attestée",
     "unattested": "Attestez la licence de ce médecin avant d’ajouter des séances.",
@@ -410,7 +405,6 @@
       "branding": "En-tête"
     },
     "range": "De {{min}} à {{max}}",
-    "billingStepUp": "Les changements de facturation demandent de confirmer votre identité.",
     "choices": {
       "daily": "Chaque jour",
       "never": "Jamais"
@@ -445,7 +439,6 @@
         "sms_enabled": "Envoyer des rappels SMS"
       }
     },
-    "brandingHint": "Le pied de page imprimé sur les reçus, ordonnances et lettres.",
     "footer": "Texte du pied de page"
   },
   "history": {
@@ -605,14 +598,12 @@
   },
   "publicProfile": {
     "title": "Profil public",
-    "intro": "Ce que les patients lisent sur vous sur les pages de l’établissement et du médecin. Votre numéro de licence n’est jamais affiché.",
     "visible": "Montrer mon profil aux patients",
-    "visibleHint": "Désactivé : les patients voient votre nom et vos jours, sans le texte ci-dessous.",
     "on": "Visible",
     "off": "Masqué",
     "bioLanguage": "Langue du texte",
     "bio": "À propos de vous",
-    "bioHint": "{{count}} caractères restants. Des mots simples : ce que vous soignez, qui vous voyez, comment vous travaillez.",
+    "bioHint": "{{count}} caractères restants.",
     "languages": "Langues parlées avec les patients",
     "spoken": {
       "rw": "Kinyarwanda",
@@ -625,7 +616,6 @@
     "hidden": "Masqué aux patients.",
     "needLicence": "Enregistrez d’abord votre licence ; le profil public suit.",
     "photo": "Photo",
-    "photoHint": "Les patients la voient sur votre profil public. JPG, PNG, WebP ou HEIC, 8 Mo au plus.",
     "addPhoto": "Ajouter une photo",
     "changePhoto": "Changer la photo",
     "removePhoto": "Retirer la photo"

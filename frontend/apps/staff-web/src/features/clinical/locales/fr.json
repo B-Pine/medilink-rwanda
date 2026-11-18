@@ -10,7 +10,6 @@
     "reasonShort": "Pourquoi :",
     "submit": "Demander",
     "send": "Envoyer au laboratoire",
-    "sendHint": "Le patient va au laboratoire. Vos notes restent ouvertes et le patient revient dans votre file quand tous les résultats sont prêts.",
     "sent": "{{name}} va au laboratoire et revient dans votre file quand les résultats sont prêts.",
     "orderedBy": "Demandé par {{name}} à {{time}}",
     "resultedBy": "Résultat par {{name}} à {{time}}",
@@ -55,7 +54,6 @@
     },
     "inbox": {
       "title": "Résultats de laboratoire",
-      "lead": "Résultats des examens que vous avez demandés. Lisez chacun, puis transmettez-le au patient.",
       "open": "Ouvrir la consultation"
     }
   },
@@ -421,7 +419,6 @@
     "from": "De {{name}} · {{time}}",
     "medicines": "Médicaments de cette ordonnance",
     "answer": "Votre réponse",
-    "answerHint": "Claire et courte. Elle devient une note signée du dossier.",
     "answerRequired": "Écrivez d’abord une réponse.",
     "send": "Envoyer la réponse",
     "openRecord": "Ouvrir le dossier",
@@ -502,7 +499,6 @@
     "codesHint": "Séparés par des virgules, par exemple B54, J06.9",
     "medicines": "Ordonnance habituelle",
     "drug": "Médicament",
-    "drugHint": "Cherchez dans le catalogue, ou tapez un nom",
     "drugRequired": "Choisissez ou tapez un médicament.",
     "change": "Changer",
     "addMedicine": "Ajouter le médicament",
@@ -512,7 +508,6 @@
     "emptyTitle": "Aucun modèle",
     "empty": "Créez-en un ici, ou enregistrez une consultation comme modèle pendant que vous l’écrivez.",
     "use": "Utiliser un modèle",
-    "useHint": "Un clic ajoute le diagnostic, le plan, les consignes et les médicaments. Le texte va dans les sections vides ou après ce que vous avez écrit ; les diagnostics sont ajoutés comme provisoires. Vous pouvez tout modifier avant de signer.",
     "saveAs": "Enregistrer comme modèle"
   },
   "orderSet": {

@@ -151,10 +151,8 @@
       "lastLogin": "Last sign-in",
       "since": "Account created"
     },
-    "patientNote": "This is a patient account. MediLink shows only the account here: the patient's records stay with the facilities that care for them.",
     "access": {
       "title": "Facility access",
-      "lead": "Where this person works and what they can do there. You can change their roles, or remove and restore access.",
       "none": "No facility access.",
       "active": "Active",
       "removed": "Access removed",
@@ -165,7 +163,6 @@
       "restoreConfirm": "{{name}} can work at {{facility}} again, with the roles they had.",
       "roles": "Change roles",
       "rolesTitle": "Roles at {{facility}}",
-      "rolesLead": "What {{name}} can do there. The facility always keeps at least one facility admin.",
       "rolesLegend": "Roles",
       "saveRoles": "Save roles"
     },
@@ -180,12 +177,11 @@
     "started": "Started {{time}}",
     "events": "Recent security events",
     "edit": "Correct details",
-    "editLead": "Correct the name, work phone or language. The email address and the password can't be changed here.",
     "fullName": "Full name",
     "phoneHint": "A Rwandan mobile number, for example 0788 123 456.",
     "save": "Save",
     "reason": "Reason",
-    "reasonHint": "Recorded in the audit log. At least 5 characters.",
+    "reasonHint": "At least 5 characters.",
     "actionsTitle": "Account actions",
     "actionsNote": "Each action asks you to confirm your identity again and is recorded with your reason.",
     "notice": {
@@ -271,12 +267,10 @@
     },
     "security": {
       "title": "Security log",
-      "lead": "Sign-ins, two-step login, lockouts and admin actions on accounts.",
       "noun": "events"
     },
     "access": {
       "title": "Record access log",
-      "lead": "Who opened which record, with the reason given. Records are shown by reference only.",
       "noun": "accesses"
     }
   },

@@ -151,10 +151,8 @@
       "lastLogin": "Dernière connexion",
       "since": "Compte créé"
     },
-    "patientNote": "C’est un compte patient. MediLink n’affiche ici que le compte : le dossier du patient reste dans les établissements qui le soignent.",
     "access": {
       "title": "Accès aux établissements",
-      "lead": "Où cette personne travaille et ce qu'elle peut y faire. Vous pouvez changer ses rôles, ou retirer et rétablir son accès.",
       "none": "Aucun accès à un établissement.",
       "active": "Actif",
       "removed": "Accès retiré",
@@ -165,7 +163,6 @@
       "restoreConfirm": "{{name}} pourra de nouveau travailler à {{facility}}, avec ses anciens rôles.",
       "roles": "Changer les rôles",
       "rolesTitle": "Rôles à {{facility}}",
-      "rolesLead": "Ce que {{name}} peut y faire. L'établissement garde toujours au moins un administrateur.",
       "rolesLegend": "Rôles",
       "saveRoles": "Enregistrer les rôles"
     },
@@ -180,12 +177,11 @@
     "started": "Ouverte {{time}}",
     "events": "Événements de sécurité récents",
     "edit": "Corriger les informations",
-    "editLead": "Corrigez le nom, le téléphone professionnel ou la langue. L’adresse e-mail et le mot de passe ne se changent pas ici.",
     "fullName": "Nom complet",
     "phoneHint": "Un numéro mobile rwandais, par exemple 0788 123 456.",
     "save": "Enregistrer",
     "reason": "Motif",
-    "reasonHint": "Inscrit au journal d’audit. 5 caractères minimum.",
+    "reasonHint": "5 caractères au moins.",
     "actionsTitle": "Actions sur le compte",
     "actionsNote": "Chaque action vous demande de confirmer à nouveau votre identité et est enregistrée avec votre motif.",
     "notice": {
@@ -271,12 +267,10 @@
     },
     "security": {
       "title": "Journal de sécurité",
-      "lead": "Sign-ins, two-step login, lockouts and admin actions on accounts.",
       "noun": "events"
     },
     "access": {
       "title": "Journal d’accès aux dossiers",
-      "lead": "Who opened which record, with the reason given. Records are shown by reference only.",
       "noun": "accesses"
     }
   },

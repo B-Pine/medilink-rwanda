@@ -136,7 +136,8 @@
     },
     "map": "Aho biri ku ikarita",
     "insurance": "Ubwishingizi bwemewe",
-    "emergencyOpen": "Serivisi y'ubutabazi ikora ku manywa na nijoro. Hamagara {{number}} niba ubuzima buri mu kaga."
+    "emergencyOpen": "Serivisi y'ubutabazi ikora ku manywa na nijoro. Hamagara {{number}} niba ubuzima buri mu kaga.",
+    "logo": "Ikirango cya {{name}}"
   },
   "doctors": {
     "title": "Abaganga",

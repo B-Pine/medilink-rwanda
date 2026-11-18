@@ -30,6 +30,12 @@ import {
   type MockStaffUser,
 } from "./data";
 import { FEATURE_MOCKS } from "./features";
+import {
+  mockFacilityLogos,
+  mockImageUrl,
+  mockPatientAvatars,
+  mockStaffAvatars,
+} from "./features/images";
 import { languageFrom, message, type MessageKey } from "./messages";
 import { createMemoryStore, type MockSessionStore } from "./session-store";
 
@@ -182,7 +188,10 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
   const pendingSignUps: string[] = []; // emails waiting for the verification link
   const pins = new Map<string, string>();
   const featureFlags: MockFeatureFlags = {
-    defaults: new Map([["security.pin_unlock", true]]),
+    defaults: new Map([
+      ["security.pin_unlock", true],
+      ["security.staff_mfa", true],
+    ]),
     overrides: new Map(),
     enabledFor(facilityId) {
       const overrides =
@@ -215,11 +224,22 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
     const user = findStaff(session.email);
     if (!user) return null;
     const until = recentAuthUntil(session);
-    return toStaffMe(user, session.activeFacilityId, mfaEnabled(user), {
+    const me = toStaffMe(user, session.activeFacilityId, mfaEnabled(user), {
       feature_flags: featureFlags.enabledFor(session.activeFacilityId),
       pin_set: pins.has(user.email),
       step_up_valid_until: until ? new Date(until).toISOString() : null,
     });
+    // images (Cloudinary): own photo, and the active facility's logo
+    const logo = session.activeFacilityId && mockFacilityLogos.get(session.activeFacilityId);
+    return {
+      ...me,
+      photo_url: mockImageUrl(mockStaffAvatars.get(user.email)),
+      memberships: me.memberships.map((m) =>
+        m.facility.id === session.activeFacilityId && logo
+          ? { ...m, facility: { ...m.facility, logo_url: mockImageUrl(logo) } }
+          : m,
+      ),
+    };
   }
 
   /** Session rotation: the CSRF secret changes, the client must fetch a new token. */
@@ -378,6 +398,18 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
       rotate();
       const activeFacilityId =
         user.memberships.length === 1 ? user.memberships[0]!.facility.id : null;
+      if (featureFlags.defaults.get("security.staff_mfa") === false) {
+        // a platform admin turned staff two-step sign-in off: the password alone signs in
+        const next: StaffSession = {
+          email,
+          stage: "authenticated",
+          activeFacilityId,
+          mfaAt: Date.now(),
+        };
+        setStaffSession(next);
+        const result: StaffAuthenticatedResult = { status: "authenticated", user: staffMe(next)! };
+        return HttpResponse.json(result);
+      }
       const stage: StaffStage = mfaEnabled(user) ? "mfa_verify" : "mfa_setup";
       setStaffSession({ email, stage, activeFacilityId });
       const result: StaffLoginResult = {
@@ -643,7 +675,14 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
           message("notAuthenticated", languageFrom(request)),
         );
       }
-      return HttpResponse.json(session.me);
+      // images (Cloudinary): each profile's photo
+      return HttpResponse.json({
+        ...session.me,
+        profiles: session.me.profiles.map((p) => ({
+          ...p,
+          avatar_url: mockImageUrl(mockPatientAvatars.get(p.patient_id)),
+        })),
+      });
     }),
 
     http.post(`${API}/patient/auth/password/`, async ({ request }) => {
@@ -719,7 +758,10 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
       pendingSignUps.length = 0;
       pins.clear();
       featureFlags.overrides.clear();
-      featureFlags.defaults = new Map([["security.pin_unlock", true]]);
+      featureFlags.defaults = new Map([
+        ["security.pin_unlock", true],
+        ["security.staff_mfa", true],
+      ]);
       setStaffSession(null);
       setPatientSession(null);
     },

@@ -24,7 +24,13 @@
     "change": "Change photo",
     "remove": "Remove",
     "alt": "Photo of {{name}}",
-    "tooBig": "Choose a photo smaller than 5 MB."
+    "uploading": "Uploading… {{percent}}%",
+    "errors": {
+      "type": "Use a JPG, PNG, WebP or HEIC photo.",
+      "size": "Choose a photo smaller than 8 MB.",
+      "upload": "The upload didn't work. Try again.",
+      "network": "The connection dropped during the upload. Try again."
+    }
   },
   "sections": {
     "details": "My details",

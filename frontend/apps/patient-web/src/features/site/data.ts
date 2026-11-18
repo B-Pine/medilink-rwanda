@@ -148,6 +148,8 @@ export interface PublicDoctor {
   specialty: string;
   bio: Partial<Record<"rw" | "en" | "fr", string>>;
   languages: string[];
+  /** The doctor's own photo (Cloudinary), else the initials show. */
+  photoUrl: string | null;
   facility: Pick<PublicFacility, "slug" | "name" | "district" | "type">;
   /** Every facility this doctor works at (one card per doctor, redesign 2026-11). */
   facilities: Pick<PublicFacility, "slug" | "name" | "district" | "type">[];
@@ -172,6 +174,7 @@ export function doctorsOf(profile: PublicFacility): PublicDoctor[] {
     specialty: doctor.specialty ?? "",
     bio: doctor.bio_i18n ?? {},
     languages: doctor.languages ?? [],
+    photoUrl: doctor.photo_url ?? null,
     facility: {
       slug: profile.slug,
       name: profile.name,

@@ -89,6 +89,8 @@ export interface FacilitySummary {
   name: string;
   slug: string;
   facility_type: FacilityType;
+  /** Cloudinary logo; given for the active facility only. */
+  logo_url?: string | null;
 }
 
 export interface FacilityMembership {
@@ -105,6 +107,8 @@ export interface StaffMe {
   preferred_language: LanguageCode;
   is_platform_admin: boolean;
   mfa_enabled: boolean;
+  /** Own photo (Cloudinary, set on the public doctor profile); initials without one. */
+  photo_url?: string | null;
   memberships: FacilityMembership[];
   active_facility_id: Uuid | null;
   /** Permissions for the active facility. */
@@ -126,6 +130,8 @@ export interface PatientProfile {
   patient_id: Uuid;
   display_name: string;
   relationship: "self" | "guardian" | "delegate";
+  /** Cloudinary photo of this profile; initials without one. */
+  avatar_url?: string | null;
 }
 
 export interface PatientMe {

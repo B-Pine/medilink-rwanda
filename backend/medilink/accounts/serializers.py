@@ -95,6 +95,8 @@ class FacilitySummarySerializer(serializers.Serializer):
     name = serializers.CharField()
     slug = serializers.SlugField()
     facility_type = serializers.ChoiceField(choices=FacilityType.choices)
+    # Cloudinary logo, given for the active facility (the workspace card shows it)
+    logo_url = serializers.URLField(allow_null=True, required=False)
 
 
 class MembershipSerializer(serializers.Serializer):
@@ -116,6 +118,8 @@ class StaffMeSerializer(serializers.Serializer):
     preferred_language = serializers.ChoiceField(choices=Language.choices)
     is_platform_admin = serializers.BooleanField()
     mfa_enabled = serializers.BooleanField()
+    # own Cloudinary photo (clinicians set it on their public profile), else null
+    photo_url = serializers.URLField(allow_null=True, required=False)
     memberships = MembershipSerializer(many=True)
     active_facility_id = serializers.UUIDField(allow_null=True)
     permissions = serializers.ListField(
@@ -188,6 +192,7 @@ class PatientProfileSerializer(serializers.Serializer):
     patient_id = serializers.UUIDField()
     display_name = serializers.CharField()
     relationship = serializers.ChoiceField(choices=Relationship.choices)
+    avatar_url = serializers.URLField(allow_null=True, required=False)  # Cloudinary photo
 
 
 class PatientMeSerializer(serializers.Serializer):

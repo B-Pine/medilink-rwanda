@@ -196,13 +196,15 @@ class StaffLoginView(_AuthView):
             return _login_failure(request, email, "staff", "not_staff")
 
         login_policy().reset(email)
-        if dev_skip_staff_mfa():
-            # Local development only (DEBUG + DEV_SKIP_STAFF_MFA): no second factor.
-            principal = complete_staff_login(request, user, mfa_method="dev_skip")
+        skip = staff_mfa_skip_method()
+        if skip:
+            # No second factor: local development (DEBUG + DEV_SKIP_STAFF_MFA), or a platform
+            # admin turned staff two-step sign-in off (feature flag security.staff_mfa).
+            principal = complete_staff_login(request, user, mfa_method=skip)
             record(
                 actions.LOGIN_SUCCESS,
                 request=request,
-                metadata={"audience": "staff", "mfa_method": "dev_skip"},
+                metadata={"audience": "staff", "mfa_method": skip},
             )
             return Response(
                 LoginResultSerializer(
@@ -221,6 +223,18 @@ class StaffLoginView(_AuthView):
 def dev_skip_staff_mfa() -> bool:
     """True only in DEBUG with DEV_SKIP_STAFF_MFA on (never in staging or production)."""
     return bool(settings.DEBUG and getattr(settings, "DEV_SKIP_STAFF_MFA", False))
+
+
+def staff_mfa_skip_method() -> str | None:
+    """Why staff sign in without a second factor, or None when the code is required:
+    "dev_skip" (local development) or "off_by_admin" (flag security.staff_mfa turned off)."""
+    if dev_skip_staff_mfa():
+        return "dev_skip"
+    from medilink.onboarding.flags import staff_mfa_off
+
+    if staff_mfa_off():
+        return "off_by_admin"
+    return None
 
 
 class StaffMfaSetupView(_AuthView):

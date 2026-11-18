@@ -1,5 +1,6 @@
 import { mockId } from "../ids";
 import { http, HttpResponse } from "msw";
+import { mockImageExists, mockImageUrl, mockPatientAvatars } from "./images";
 
 import type { HealthKind, InsuranceProfile } from "../../features/patients";
 import type { ConsentState, PatientProfileDetail, ProfileSummary } from "../../features/profile";
@@ -251,6 +252,29 @@ export const profileMocks: FeatureMockFactory = (context) => {
       http.get(`${p}/profiles/:id/`, async ({ request, params }) => {
         const a = await withLink(request, str(params.id));
         if (a.error) return a.error;
+        return HttpResponse.json(detailOf(a.link, a.patient));
+      }),
+
+      http.put(`${p}/profiles/:id/avatar/`, async ({ request, params }) => {
+        const a = await withLink(request, str(params.id), undefined, true);
+        if (a.error) return a.error;
+        const publicId = str((await context.readJson(request)).public_id);
+        if (publicId !== a.patient.avatar_public_id && !mockImageExists(publicId, "patient_avatar"))
+          return context.errorResponse(400, "validation_error", "Check the fields.", {
+            fields: { public_id: ["We couldn't find that image. Upload it again."] },
+          });
+        a.patient.avatar_public_id = publicId;
+        mockPatientAvatars.set(a.patient.id, publicId);
+        a.patient.version += 1;
+        return HttpResponse.json(detailOf(a.link, a.patient));
+      }),
+
+      http.delete(`${p}/profiles/:id/avatar/`, async ({ request, params }) => {
+        const a = await withLink(request, str(params.id), undefined, true);
+        if (a.error) return a.error;
+        a.patient.avatar_public_id = "";
+        mockPatientAvatars.delete(a.patient.id);
+        a.patient.version += 1;
         return HttpResponse.json(detailOf(a.link, a.patient));
       }),
 
@@ -835,6 +859,7 @@ export const profileMocks: FeatureMockFactory = (context) => {
       medilink_number: patient.medilink_number,
       date_of_birth: patient.date_of_birth,
       completion_percent: Math.round((100 * done.filter(Boolean).length) / done.length),
+      avatar_url: mockImageUrl(patient.avatar_public_id),
     };
   }
 
@@ -855,6 +880,7 @@ export const profileMocks: FeatureMockFactory = (context) => {
       no_known_allergies: patient.no_known_allergies,
       has_care_consent: hasCareConsent(patient),
       completion: completion(patient),
+      avatar_url: mockImageUrl(patient.avatar_public_id),
       version: patient.version,
     };
   }

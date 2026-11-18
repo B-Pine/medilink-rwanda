@@ -152,6 +152,8 @@ export interface FacilityPatientDetail extends PatientSummary {
   merged_into_facility_patient_id: Uuid | null;
   /** The patient's own profile photo (2026-11-05); `photoLink` gives a 5-minute link. */
   has_photo?: boolean;
+  /** The patient's Cloudinary photo, shown before the scanned one. */
+  avatar_url?: string | null;
   version: number;
   patient_version: number;
 }

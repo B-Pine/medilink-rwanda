@@ -1,21 +1,22 @@
 import { Camera, Trash } from "@phosphor-icons/react";
-import { isApiError, type PatientProfileDetail } from "@medilink/api-client";
+import {
+  IMAGE_ACCEPT,
+  isApiError,
+  isImageUploadError,
+  type PatientProfileDetail,
+} from "@medilink/api-client";
 import { Alert, Button } from "@medilink/ui";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useApi } from "../../app/services";
+import { patientMeKey } from "../../auth/queries";
 import { Avatar } from "../dashboard/kit";
 import { errorText } from "./shared";
 
-function photoError(error: unknown, fallback: string): string {
-  // the file field says what is wrong (type, size); the general message only "check the fields"
-  return (isApiError(error) && error.fieldError("file")) || errorText(error, fallback);
-}
-
-const ACCEPT = "image/jpeg,image/png,image/heic,image/heif";
-const MAX_BYTES = 5 * 1024 * 1024;
+/** 503 `uploads_unavailable`: no Cloudinary account on this server; the scanned pipeline takes it. */
+const uploadsUnavailable = (error: unknown) => isApiError(error) && error.status === 503;
 
 /**
  * Profile photo (decision 2026-11-05): shown to the patient, people they share the profile with,
@@ -28,42 +29,63 @@ export function ProfilePhotoCard({ profile }: { profile: PatientProfileDetail })
   const input = useRef<HTMLInputElement>(null);
   const hintId = useId();
   const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState<number | null>(null);
+  const photoError = (failure: unknown, fallback: string): string => {
+    if (isImageUploadError(failure)) return t(`profile.photo.errors.${failure.code}`);
+    // the file field says what is wrong (type, size); the general message only "check the fields"
+    return (
+      (isApiError(failure) && (failure.fieldError("file") ?? failure.fieldError("public_id"))) ||
+      errorText(failure, fallback)
+    );
+  };
   const id = profile.patient_id;
   const name = profile.preferred_name ?? profile.full_name;
 
   const link = useQuery({
     queryKey: ["profile", "photo", id],
     queryFn: () => api.profile.photoLink(id),
-    enabled: Boolean(profile.has_photo),
+    enabled: Boolean(profile.has_photo) && !profile.avatar_url,
     staleTime: 4 * 60_000, // links last 5 minutes
     retry: false,
   });
   const refresh = () => {
-    void queryClient.invalidateQueries({ queryKey: ["profile", "detail", id] });
+    void queryClient.invalidateQueries({ queryKey: patientMeKey }); // the header's photo
+    void queryClient.invalidateQueries({ queryKey: ["profile"] }); // lists show it too
     void queryClient.invalidateQueries({ queryKey: ["profile", "photo", id] });
   };
   const upload = useMutation({
-    mutationFn: (file: File) => api.profile.uploadPhoto(id, file),
+    mutationFn: async (file: File) => {
+      setProgress(0);
+      try {
+        // signed direct upload to Cloudinary, then the profile keeps the public id
+        const image = await api.images.patient.upload(file, "patient_avatar", setProgress);
+        return await api.profile.setAvatar(id, image.public_id);
+      } catch (failure) {
+        if (uploadsUnavailable(failure)) return api.profile.uploadPhoto(id, file);
+        throw failure;
+      } finally {
+        setProgress(null);
+      }
+    },
     onSuccess: refresh,
     onError: (e) => setError(photoError(e, t("profile.error"))),
   });
   const remove = useMutation({
-    mutationFn: () => api.profile.removePhoto(id),
+    mutationFn: async () => {
+      if (profile.avatar_url) await api.profile.removeAvatar(id);
+      if (profile.has_photo) await api.profile.removePhoto(id);
+    },
     onSuccess: refresh,
     onError: (e) => setError(photoError(e, t("profile.error"))),
   });
 
   const onFile = (file: File | undefined) => {
     setError(null);
-    if (!file) return;
-    if (file.size > MAX_BYTES) {
-      setError(t("profile.photo.tooBig"));
-      return;
-    }
-    upload.mutate(file);
+    if (file) upload.mutate(file);
   };
 
-  const url = profile.has_photo ? link.data?.url : undefined;
+  const url = profile.avatar_url ?? (profile.has_photo ? link.data?.url : undefined);
+  const hasPhoto = Boolean(profile.avatar_url) || Boolean(profile.has_photo);
   return (
     <section
       aria-labelledby="profile-photo"
@@ -94,7 +116,7 @@ export function ProfilePhotoCard({ profile }: { profile: PatientProfileDetail })
           <input
             ref={input}
             type="file"
-            accept={ACCEPT}
+            accept={IMAGE_ACCEPT}
             // the button below opens it; hidden, so it is not a second, unlabelled control
             hidden
             aria-label={t("profile.photo.add")}
@@ -111,9 +133,13 @@ export function ProfilePhotoCard({ profile }: { profile: PatientProfileDetail })
             onClick={() => input.current?.click()}
           >
             <Camera aria-hidden="true" className="size-4" />
-            {profile.has_photo ? t("profile.photo.change") : t("profile.photo.add")}
+            {progress !== null
+              ? t("profile.photo.uploading", { percent: progress })
+              : hasPhoto
+                ? t("profile.photo.change")
+                : t("profile.photo.add")}
           </Button>
-          {profile.has_photo && (
+          {hasPhoto && (
             <Button
               size="sm"
               variant="ghost"

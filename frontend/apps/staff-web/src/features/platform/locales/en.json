@@ -300,7 +300,8 @@
   "flags": {
     "title": "Feature flags",
     "names": {
-      "security.pin_unlock": "PIN unlock"
+      "security.pin_unlock": "PIN unlock",
+      "security.staff_mfa": "Staff two-step sign-in"
     },
     "on": "On",
     "off": "Off",
@@ -310,7 +311,8 @@
     "overridden": "Set for this facility.",
     "useDefault": "Use the default",
     "overrides_one": "{{count}} facility has its own setting",
-    "overrides_other": "{{count}} facilities have their own setting"
+    "overrides_other": "{{count}} facilities have their own setting",
+    "staffMfaOff": "Two-step sign-in is off: staff sign in with a password only. Turn it back on when testing is done."
   },
   "masterData": {
     "title": "Master data",

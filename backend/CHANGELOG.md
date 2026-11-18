@@ -8,6 +8,32 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Images on Cloudinary and the staff two-step switch (2026-11-18)
+
+- Added: `medilink.images`: signed direct image uploads to Cloudinary (official `cloudinary` SDK,
+  new dependency). `POST /api/v1/staff/uploads/signature/` (kinds `facility_photo` and
+  `facility_logo` need `facility.configure`; `provider_avatar` any staff) and
+  `POST /api/v1/patient/uploads/signature/` (`patient_avatar`); 503 `uploads_unavailable` without
+  credentials, throttle 30/hour (`THROTTLE_RATE_UPLOAD_SIGNATURE`). Settings `CLOUDINARY_CLOUD_NAME`,
+  `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, `CLOUDINARY_UPLOAD_PRESET`,
+  `CLOUDINARY_ROOT_FOLDER`; deploy check `medilink.images.E001` wants all three credentials.
+- Added: public ids are checked with the Admin API (the asset exists and sits in the kind's
+  folder) and only they are stored: facility `photo_public_ids` (up to 6 with the scanned photos)
+  and `logo_public_id` on `PATCH /staff/facility/` (migration `facilities.0006`), the doctor's
+  `avatar_public_id` on `PATCH /staff/clinician-profile/public/` (`accounts.0011`; a PATCH with the
+  photo changes only what it sends), the patient's photo on `PUT`/`DELETE
+  /patient/profiles/{id}/avatar/` (`patients.0007`). Delivery URLs are built when read:
+  `photo_images`, `logo_url`, `photo_url`, `avatar_url`; the public facility profile lists the
+  Cloudinary photos first and gives `logo_url` and each doctor's `photo_url`; search results give
+  `cover_url` (listing column, `facilities.0007`); StaffMe gives `photo_url` and the active
+  facility's `logo_url`; PatientMe and profile summaries give `avatar_url`.
+- Added: `UPLOADS_STORAGE=cloudinary`: the scanned upload pipeline can keep its files on Cloudinary
+  as private (authenticated) raw assets with signed, expiring download links (`CLOUDINARY_URL` or
+  the credentials above).
+- Added: feature flag `security.staff_mfa` (on, platform-wide, no facility overrides, migration
+  `onboarding.0004`). A platform admin can turn it off for testing: staff then sign in and step up
+  with the password alone; the login audit entry says `mfa_method: off_by_admin`.
+
 ### API image vulnerabilities (2026-11-07, #106)
 
 - Fixed: the runtime image no longer carries pip (its vendored msgpack, urllib3 and setuptools had

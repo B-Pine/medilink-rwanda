@@ -302,11 +302,11 @@ def test_step_up_needs_both_factors(staff_client: APIClient, staff_user: User) -
 @pytest.mark.acceptance("S1-B17")
 def test_staff_me_flags_and_security(staff_client: APIClient, facility: Any) -> None:
     me = staff_client.get(ME).json()
-    assert me["feature_flags"] == ["security.pin_unlock"]
+    assert me["feature_flags"] == ["security.pin_unlock", "security.staff_mfa"]
     assert me["security"]["pin_set"] is False and me["security"]["lock_after_seconds"] == 900
     FacilityFeatureFlag.objects.create(
         flag=FeatureFlag.objects.get(code="security.pin_unlock"),
         facility=facility,
         is_enabled=False,
     )
-    assert staff_client.get(ME).json()["feature_flags"] == []
+    assert staff_client.get(ME).json()["feature_flags"] == ["security.staff_mfa"]

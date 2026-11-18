@@ -138,7 +138,7 @@ export function FamilyPage() {
                         )}
                       >
                         <span className="flex items-start justify-between gap-3">
-                          <Avatar name={p.display_name} size="lg" />
+                          <Avatar name={p.display_name} src={p.avatar_url} size="lg" />
                           <Badge tone={self ? "brand" : "neutral"}>
                             {self
                               ? t("dashboard.family.you")

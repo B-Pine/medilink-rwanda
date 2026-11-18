@@ -43,10 +43,13 @@ export function firstName(name: string): string {
 
 export function Avatar({
   name,
+  src,
   size = "md",
   className,
 }: {
   name: string;
+  /** The person's photo (Cloudinary); the initials show without one. */
+  src?: string | null;
   size?: "sm" | "md" | "lg";
   className?: string;
 }) {
@@ -54,16 +57,27 @@ export function Avatar({
     <span
       aria-hidden="true"
       className={cx(
-        "inline-flex shrink-0 items-center justify-center rounded-full bg-brand-subtle font-heading font-bold text-on-brand-subtle",
+        "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-subtle font-heading font-bold text-on-brand-subtle",
         size === "sm" && "size-8 text-caption",
         size === "md" && "size-10 text-body-sm",
         size === "lg" && "size-14 text-h3",
         className,
       )}
     >
-      {initials(name)}
+      {src ? (
+        <img src={src} alt="" loading="lazy" className="size-full object-cover" />
+      ) : (
+        initials(name)
+      )}
     </span>
   );
+}
+
+/** The signed-in person's own photo (their "self" profile), if any. */
+export function ownAvatar(me: {
+  profiles: { relationship: string; avatar_url?: string | null }[];
+}): string | null {
+  return me.profiles.find((p) => p.relationship === "self")?.avatar_url ?? null;
 }
 
 /** Page title block: a modest h1, one line of context, the page's main action on the right. */

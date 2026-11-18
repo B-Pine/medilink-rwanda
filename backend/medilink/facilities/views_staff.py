@@ -365,13 +365,27 @@ class ClinicianPublicProfileView(SetupAPIView):
     )
     def patch(self, request: Request) -> Response:
         profile = self.profile()
-        body = s.ClinicianPublicProfileSerializer(data=request.data)
+        body = s.ClinicianPublicProfileSerializer(
+            data=request.data, context={"keep_public_ids": {profile.avatar_public_id} - {""}}
+        )
         body.is_valid(raise_exception=True)
         data = body.validated_data
-        profile.bio_i18n = {k: v.strip() for k, v in data["bio_i18n"].items() if v.strip()}
-        profile.languages = sorted(set(data["languages"]))
-        profile.is_public = data["is_public"]
-        profile.save(update_fields=["bio_i18n", "languages", "is_public", "updated_at"])
+        sent = set(request.data) if isinstance(request.data, dict) else set()
+        fields = ["updated_at"]
+        # a PATCH changes only what it sends (a photo alone keeps the bio and languages)
+        if "bio_i18n" in sent or not sent & {"avatar_public_id"}:
+            profile.bio_i18n = {k: v.strip() for k, v in data["bio_i18n"].items() if v.strip()}
+            fields.append("bio_i18n")
+        if "languages" in sent or not sent & {"avatar_public_id"}:
+            profile.languages = sorted(set(data["languages"]))
+            fields.append("languages")
+        if "is_public" in sent or not sent & {"avatar_public_id"}:
+            profile.is_public = data["is_public"]
+            fields.append("is_public")
+        if "avatar_public_id" in data:
+            profile.avatar_public_id = data["avatar_public_id"]
+            fields.append("avatar_public_id")
+        profile.save(update_fields=fields)
         record(
             "staff.clinician_profile.public_updated",
             request=request,
@@ -457,10 +471,11 @@ class InvitationAcceptView(_InvitationAuthView):
         user = staff.accept_new_account(
             token, full_name=full_name, password=data["password"], request=request
         )
-        from medilink.accounts.views import dev_skip_staff_mfa
+        from medilink.accounts.views import staff_mfa_skip_method
 
-        if dev_skip_staff_mfa():
-            principal = complete_staff_login(request, user, mfa_method="dev_skip")
+        skip = staff_mfa_skip_method()
+        if skip:
+            principal = complete_staff_login(request, user, mfa_method=skip)
             return Response(
                 LoginResultSerializer(
                     {"status": "authenticated", "user": staff_me_data(principal, request.session)}

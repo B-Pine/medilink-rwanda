@@ -171,8 +171,8 @@
     "description": "Description",
     "descriptionHint": "A few sentences in each language: what you treat and how to find you.",
     "photos": "Photos",
-    "photosHint_one": "{{count}} of 6 photos. JPEG, PNG or WebP. The first is the cover on your public page.",
-    "photosHint_other": "{{count}} of 6 photos. JPEG, PNG or WebP. The first is the cover on your public page.",
+    "photosHint_one": "{{count}} of 6 photos. JPG, PNG, WebP or HEIC, up to 8 MB. The first is the cover on your public page.",
+    "photosHint_other": "{{count}} of 6 photos. JPG, PNG, WebP or HEIC, up to 8 MB. The first is the cover on your public page.",
     "addPhoto": "Add photo",
     "photoN": "Photo {{n}}",
     "removePhotoN": "Remove photo {{n}}",
@@ -188,7 +188,13 @@
     "cover": "Cover",
     "emergencyTitle": "Emergency care",
     "emergency": "24-hour emergency department",
-    "emergencyHint": "Turn on only if you receive emergencies day and night. Your facility is then listed first on the public Emergency page."
+    "emergencyHint": "Turn on only if you receive emergencies day and night. Your facility is then listed first on the public Emergency page.",
+    "uploading": "Uploading… {{percent}}%",
+    "logo": "Logo",
+    "logoHint": "Shown on your public page. A square image works best.",
+    "addLogo": "Upload logo",
+    "changeLogo": "Change logo",
+    "removeLogo": "Remove logo"
   },
   "catalogue": {
     "services": "Services",
@@ -617,7 +623,12 @@
     "preview": "What patients see",
     "noBio": "No text yet.",
     "hidden": "Hidden from patients.",
-    "needLicence": "Save your licence first; the public profile follows."
+    "needLicence": "Save your licence first; the public profile follows.",
+    "photo": "Photo",
+    "photoHint": "Patients see it on your public profile. JPG, PNG, WebP or HEIC, up to 8 MB.",
+    "addPhoto": "Upload photo",
+    "changePhoto": "Change photo",
+    "removePhoto": "Remove photo"
   },
   "account": {
     "menu": "My details",
@@ -698,5 +709,12 @@
     "dentistry": "Dentistry",
     "public_health": "Public health",
     "other": "Other"
+  },
+  "images": {
+    "type": "Use a JPG, PNG, WebP or HEIC image.",
+    "size": "The image must be under 8 MB.",
+    "upload": "The upload didn't work. Try again.",
+    "network": "The connection dropped during the upload. Try again.",
+    "unavailable": "Photo uploads aren't set up on this server yet."
   }
 }

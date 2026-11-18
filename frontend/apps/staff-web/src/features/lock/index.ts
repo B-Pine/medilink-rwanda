@@ -14,4 +14,10 @@ export const lockFeature: FeatureRoutes = {
 
 export { LockScreen } from "./LockScreen";
 export { createLockStore, useLocked, type LockStore } from "./store";
-export { isStepUpCancelled, StepUpCancelled, StepUpProvider, useStepUp } from "./StepUp";
+export {
+  isStepUpCancelled,
+  STAFF_MFA_FLAG,
+  StepUpCancelled,
+  StepUpProvider,
+  useStepUp,
+} from "./StepUp";

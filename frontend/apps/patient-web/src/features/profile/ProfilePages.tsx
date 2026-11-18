@@ -136,7 +136,7 @@ function Hub({ profile }: { profile: PatientProfileDetail }) {
             aria-labelledby="whose"
             className="flex flex-col gap-3 rounded-2xl border border-brand/25 bg-brand-subtle p-4 sm:flex-row sm:items-center"
           >
-            <Avatar name={name} size="lg" />
+            <Avatar name={name} src={profile.avatar_url} size="lg" />
             <div className="flex min-w-0 flex-1 flex-col">
               <h2 id="whose" className="m-0 text-body font-bold text-on-brand-subtle">
                 {t("dashboard.family.viewing", { name })}

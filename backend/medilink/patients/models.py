@@ -82,6 +82,9 @@ class Patient(TimeStampedModel):
     photo_file = models.ForeignKey(
         "uploads.UploadedFile", on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
     )
+    # the same photo on Cloudinary (medilink.images, kind patient_avatar): public id only; wins
+    # over photo_file when both are set
+    avatar_public_id = models.CharField(max_length=255, blank=True, default="")
 
     class Meta:
         indexes = [

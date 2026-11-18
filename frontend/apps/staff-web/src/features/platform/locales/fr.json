@@ -300,7 +300,8 @@
   "flags": {
     "title": "Fonctionnalités",
     "names": {
-      "security.pin_unlock": "Déverrouillage par code PIN"
+      "security.pin_unlock": "Déverrouillage par code PIN",
+      "security.staff_mfa": "Connexion en deux étapes du personnel"
     },
     "on": "Activée",
     "off": "Désactivée",
@@ -310,7 +311,8 @@
     "overridden": "Réglée pour cet établissement.",
     "useDefault": "Revenir à la valeur par défaut",
     "overrides_one": "{{count}} établissement a son propre réglage",
-    "overrides_other": "{{count}} établissements ont leur propre réglage"
+    "overrides_other": "{{count}} établissements ont leur propre réglage",
+    "staffMfaOff": "La connexion en deux étapes est désactivée : le personnel se connecte avec le seul mot de passe. Réactivez-la après les tests."
   },
   "masterData": {
     "title": "Données de référence",

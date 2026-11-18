@@ -892,7 +892,7 @@ function FamilyCard() {
                   ? paths.profileOf(p.patient_id)
                   : paths.member(p.patient_id)
               }
-              leading={<Avatar name={p.display_name} />}
+              leading={<Avatar name={p.display_name} src={p.avatar_url} />}
               title={p.display_name}
               meta={t(`profile.relationship.${p.relationship}`)}
             />

@@ -1830,6 +1830,67 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedAccessHistoryList'
           description: ''
+  /api/v1/patient/profiles/{patient_id}/avatar/:
+    put:
+      operationId: patient_profile_avatar_set
+      description: |-
+        The profile photo on Cloudinary: upload it with a signature from
+        POST /patient/uploads/signature/ (kind patient_avatar), then send the public id here.
+      summary: Set the profile photo from a Cloudinary upload (self or guardian)
+      parameters:
+      - in: path
+        name: patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvatarRequest'
+        required: true
+      security:
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientProfileDetail'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: validation_error
+    delete:
+      operationId: patient_profile_avatar_remove
+      description: |-
+        The profile photo on Cloudinary: upload it with a signature from
+        POST /patient/uploads/signature/ (kind patient_avatar), then send the public id here.
+      summary: Remove the Cloudinary profile photo
+      parameters:
+      - in: path
+        name: patient_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - patient-profiles
+      security:
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientProfileDetail'
+          description: ''
   /api/v1/patient/profiles/{patient_id}/health-profile/:
     get:
       operationId: patient_health_profile
@@ -2698,6 +2759,46 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: The file isn't clean (yet)
+  /api/v1/patient/uploads/signature/:
+    post:
+      operationId: patient_upload_signature
+      summary: Sign a direct image upload to Cloudinary (profile photo)
+      tags:
+      - uploads
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientSignatureRequestRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Signature'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
   /api/v1/patient/visits/{visit_id}/arrived/:
     post:
       operationId: patient_visit_arrived
@@ -17741,6 +17842,47 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
           description: The file isn't clean (yet)
+  /api/v1/staff/uploads/signature/:
+    post:
+      operationId: staff_upload_signature
+      summary: Sign a direct image upload to Cloudinary (facility photo or logo, own
+        avatar)
+      tags:
+      - uploads
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffSignatureRequestRequest'
+        required: true
+      security:
+      - staffSession: []
+      - patientSession: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Signature'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ''
   /api/v1/staff/visits/{visit_id}/:
     get:
       operationId: staff_visit_detail
@@ -19380,6 +19522,16 @@ components:
           type: boolean
       required:
       - is_available
+    AvatarRequest:
+      type: object
+      description: Rejects unknown fields instead of silently ignoring them.
+      properties:
+        public_id:
+          type: string
+          minLength: 1
+          maxLength: 255
+      required:
+      - public_id
     Balances:
       type: object
       properties:
@@ -21041,7 +21193,15 @@ components:
         specialty:
           type: string
           readOnly: true
+        avatar_public_id:
+          type: string
+          maxLength: 255
+        photo_url:
+          type: string
+          nullable: true
+          readOnly: true
       required:
+      - photo_url
       - specialty
     CloseShiftRequest:
       type: object
@@ -24314,6 +24474,10 @@ components:
           nullable: true
         has_photo:
           type: boolean
+        avatar_url:
+          type: string
+          format: uri
+          nullable: true
         version:
           type: integer
         patient_version:
@@ -24321,6 +24485,7 @@ components:
       required:
       - address
       - age_years
+      - avatar_url
       - date_of_birth
       - email
       - emergency_contact
@@ -24406,6 +24571,20 @@ components:
           items:
             type: string
             format: uuid
+        photo_public_ids:
+          type: array
+          items:
+            type: string
+        photo_images:
+          type: array
+          items:
+            $ref: '#/components/schemas/Image'
+        logo_public_id:
+          type: string
+        logo_url:
+          type: string
+          format: uri
+          nullable: true
         level_of_care:
           type: string
         emergency_department:
@@ -24425,9 +24604,13 @@ components:
       - id
       - latitude
       - level_of_care
+      - logo_public_id
+      - logo_url
       - longitude
       - name
       - phone
+      - photo_images
+      - photo_public_ids
       - photos
       - slug
       - status
@@ -24598,9 +24781,14 @@ components:
           type: number
           format: double
           nullable: true
+        cover_url:
+          type: string
+          format: uri
+          nullable: true
       required:
       - accepts_insurance
       - allows_remote_join
+      - cover_url
       - distance_km
       - district
       - emergency_department
@@ -24658,6 +24846,10 @@ components:
           pattern: ^[-a-zA-Z0-9_]+$
         facility_type:
           $ref: '#/components/schemas/FacilityTypeEnum'
+        logo_url:
+          type: string
+          format: uri
+          nullable: true
       required:
       - facility_type
       - id
@@ -25812,6 +26004,23 @@ components:
       description: |-
         * `ticket_name_dob` - Ticket, name and date of birth
         * `verification_code` - Prescription code
+    Image:
+      type: object
+      properties:
+        public_id:
+          type: string
+        url:
+          type: string
+          format: uri
+          nullable: true
+        thumb_url:
+          type: string
+          format: uri
+          nullable: true
+      required:
+      - public_id
+      - thumb_url
+      - url
     ImportCreateRequest:
       type: object
       properties:
@@ -30165,6 +30374,9 @@ components:
         is_public:
           type: boolean
           default: true
+        avatar_public_id:
+          type: string
+          maxLength: 255
     PatchedConsultationUpdateRequest:
       type: object
       description: Reject unknown input fields (mass-assignment protection, security
@@ -30350,6 +30562,16 @@ components:
           maxLength: 40
         emergency_department:
           type: boolean
+        photo_public_ids:
+          type: array
+          items:
+            type: string
+            minLength: 1
+            maxLength: 255
+          maxItems: 6
+        logo_public_id:
+          type: string
+          maxLength: 255
     PatchedFacilityTypesPlatformItemRequest:
       type: object
       properties:
@@ -31828,6 +32050,10 @@ components:
           type: string
         relationship:
           $ref: '#/components/schemas/PatientRelationshipEnum'
+        avatar_url:
+          type: string
+          format: uri
+          nullable: true
       required:
       - display_name
       - patient_id
@@ -31879,10 +32105,15 @@ components:
           $ref: '#/components/schemas/Completion'
         has_photo:
           type: boolean
+        avatar_url:
+          type: string
+          format: uri
+          nullable: true
         version:
           type: integer
       required:
       - address
+      - avatar_url
       - completion
       - date_of_birth
       - email
@@ -32055,6 +32286,18 @@ components:
         * `female` - Female
         * `male` - Male
         * `other` - Other
+    PatientSignatureRequestKindEnum:
+      enum:
+      - patient_avatar
+      type: string
+      description: '* `patient_avatar` - patient_avatar'
+    PatientSignatureRequestRequest:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/PatientSignatureRequestKindEnum'
+      required:
+      - kind
     PatientSummary:
       type: object
       properties:
@@ -33687,7 +33930,12 @@ components:
           nullable: true
         completion_percent:
           type: integer
+        avatar_url:
+          type: string
+          format: uri
+          nullable: true
       required:
+      - avatar_url
       - completion_percent
       - date_of_birth
       - display_name
@@ -33783,6 +34031,10 @@ components:
           items:
             type: string
             format: uri
+        logo_url:
+          type: string
+          format: uri
+          nullable: true
         district:
           type: string
         sector:
@@ -33827,6 +34079,7 @@ components:
       - lat
       - level_of_care
       - lng
+      - logo_url
       - name
       - open_now
       - ownership
@@ -33865,12 +34118,17 @@ components:
           type: array
           items:
             type: string
+        photo_url:
+          type: string
+          format: uri
+          nullable: true
       required:
       - bio_i18n
       - days
       - languages
       - membership_id
       - name
+      - photo_url
       - service_ids
       - specialty
     PublicFacilityService:
@@ -36124,6 +36382,35 @@ components:
       description: |-
         * `front` - front
         * `back` - back
+    Signature:
+      type: object
+      properties:
+        timestamp:
+          type: integer
+        upload_preset:
+          type: string
+        asset_folder:
+          type: string
+        tags:
+          type: string
+        signature:
+          type: string
+        api_key:
+          type: string
+        cloud_name:
+          type: string
+        upload_url:
+          type: string
+          format: uri
+      required:
+      - api_key
+      - asset_folder
+      - cloud_name
+      - signature
+      - tags
+      - timestamp
+      - upload_preset
+      - upload_url
     SignupAccepted:
       type: object
       properties:
@@ -36794,6 +37081,10 @@ components:
           type: boolean
         mfa_enabled:
           type: boolean
+        photo_url:
+          type: string
+          format: uri
+          nullable: true
         memberships:
           type: array
           items:
@@ -36983,6 +37274,23 @@ components:
       - lock_after_seconds
       - pin_set
       - step_up_valid_until
+    StaffSignatureRequestKindEnum:
+      enum:
+      - facility_photo
+      - facility_logo
+      - provider_avatar
+      type: string
+      description: |-
+        * `facility_photo` - facility_photo
+        * `facility_logo` - facility_logo
+        * `provider_avatar` - provider_avatar
+    StaffSignatureRequestRequest:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/StaffSignatureRequestKindEnum'
+      required:
+      - kind
     StageEnum:
       enum:
       - reception
@@ -37095,10 +37403,8 @@ components:
           maxLength: 4096
         code:
           type: string
-          minLength: 1
           maxLength: 10
       required:
-      - code
       - method
       - password
     StepUpResult:

@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 ## [Unreleased]
 
+### 1.2.3 (2026-11-18)
+
+- Changed: the facility logo is round, like a profile picture, at the start of the facility's
+  name; the photo stays the cover where the drawing was.
+
 ### 1.2.2 (2026-11-18)
 
 - Added: the facility's logo next to its name on the Care cards, the Home "Near you" cards and

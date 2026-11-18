@@ -97,7 +97,7 @@ class FacilityScreen extends ConsumerWidget {
                     Row(
                       children: [
                         if (f.logoUrl != null) ...[
-                          FacilityLogo(url: f.logoUrl, size: 48),
+                          FacilityLogo(url: f.logoUrl, size: 56),
                           const SizedBox(width: Space.md),
                         ],
                         Expanded(child: Text(f.name, style: theme.textTheme.headlineMedium)),

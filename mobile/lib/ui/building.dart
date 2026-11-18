@@ -31,7 +31,7 @@ class FacilityBuilding extends StatelessWidget {
 /// A photo URL from the API, made absolute: search cards may give a path on the API host.
 String absoluteImageUrl(String url) => url.startsWith('/') ? '${AppConfig.apiBaseUrl}$url' : url;
 
-/// The facility's logo on a white tile, or nothing when it has none (or it can't load).
+/// The facility's logo in a white circle (like a profile picture), placed before its name; or nothing when it has none (or it can't load).
 class FacilityLogo extends StatelessWidget {
   const FacilityLogo({super.key, required this.url, this.size = 40});
 
@@ -45,16 +45,21 @@ class FacilityLogo extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
+        shape: BoxShape.circle,
         border: Border.all(color: Palette.hairline),
       ),
-      child: Image.network(
-        absoluteImageUrl(src),
-        fit: BoxFit.contain,
-        errorBuilder: (context, _, _) => const SizedBox.shrink(),
+      // Round, like a profile picture; the logo keeps its proportions inside the circle.
+      child: ClipOval(
+        child: Padding(
+          padding: EdgeInsets.all(size * 0.08),
+          child: Image.network(
+            absoluteImageUrl(src),
+            fit: BoxFit.contain,
+            errorBuilder: (context, _, _) => const SizedBox.shrink(),
+          ),
+        ),
       ),
     );
   }

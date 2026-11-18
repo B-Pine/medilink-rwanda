@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 ## [Unreleased]
 
+### 1.2.1 (2026-11-18)
+
+- Added: search by insurance on Care. Filter chips for Mutuelle, RAMA, MMI and Private, plus
+  "My insurance" from your own card; typing an insurer ("rama kicukiro") works too. A line above
+  the results says whether only those places are shown, with a link to show the others.
+- Changed: the search box now searches on the server (name, place and services), not only the
+  names already loaded.
+
 ### 1.2.0 (2026-11-18)
 
 - Added: real photos. Facility cards and the facility page show the facility's own cover photo

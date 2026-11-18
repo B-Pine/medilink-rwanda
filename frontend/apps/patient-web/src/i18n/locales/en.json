@@ -477,6 +477,11 @@
     "withinKm": "Within {{km}} km",
     "none": "No places match these filters",
     "tryInstead": "Nearest: {{name}}",
-    "close": "Close"
+    "close": "Close",
+    "myInsurance": "My insurance: {{name}}",
+    "insurerOnly": "Only places that take {{name}}.",
+    "insurerAll": "Places that take {{name}} come first.",
+    "insurerAllLink": "Show the others too",
+    "insurerOnlyLink": "Only {{name}}"
   }
 }

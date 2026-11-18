@@ -9,6 +9,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Search by insurance (2026-11-18)
+
+- Added: Find care (public and dashboard) searches on the server, so "rama kicukiro" or
+  "mutuelle" works; a typed insurer lists only places that take it, with "Show the others too".
+  The dashboard adds a "My insurance" filter from the patient's own card.
+
 ### Less explanatory text in the staff app (2026-11-18)
 
 - Changed: intro lines under page and card titles, long field hints and dialog descriptions that

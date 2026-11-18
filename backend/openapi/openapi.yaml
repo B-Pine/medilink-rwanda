@@ -25028,6 +25028,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FacilitySearchResult'
+        insurer_code:
+          type: string
+          nullable: true
       required:
       - count
       - page
@@ -25069,6 +25072,12 @@ components:
           maximum: 50
           minimum: 1
           default: 1
+        q:
+          type: string
+          maxLength: 100
+        insured_only:
+          type: boolean
+          default: false
     FacilitySearchResult:
       type: object
       properties:

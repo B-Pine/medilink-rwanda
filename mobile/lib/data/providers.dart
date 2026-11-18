@@ -59,16 +59,12 @@ final activeVisitsProvider = FutureProvider<Cached<List<ActiveVisit>>>(
 
 /// `upcoming` or `past`.
 final bookingsProvider = FutureProvider.family<Cached<List<Booking>>, String>(
-  (ref, when) => _cached(
-    ref,
-    'bookings.$when',
-    (api) => api.get('/api/v1/patient/bookings/', query: {'when': when}),
-    (data) {
-      final list = resultsOf(data).map(Booking.fromJson).toList()
-        ..sort((a, b) => when == 'past' ? b.startsAt.compareTo(a.startsAt) : a.startsAt.compareTo(b.startsAt));
-      return list;
-    },
-  ),
+  (ref, when) =>
+      _cached(ref, 'bookings.$when', (api) => api.get('/api/v1/patient/bookings/', query: {'when': when}), (data) {
+        final list = resultsOf(data).map(Booking.fromJson).toList()
+          ..sort((a, b) => when == 'past' ? b.startsAt.compareTo(a.startsAt) : a.startsAt.compareTo(b.startsAt));
+        return list;
+      }),
 );
 
 final unreadProvider = FutureProvider<int>((ref) async {
@@ -84,6 +80,9 @@ class SearchQuery {
     this.lat,
     this.lng,
     this.serviceCode,
+    this.insurerCode,
+    this.insuredOnly = false,
+    this.q = '',
   });
   final bool openNow, emergency, availableToday;
 
@@ -93,6 +92,15 @@ class SearchQuery {
   /// Only facilities offering this service (e.g. the symptom assistant's suggestion).
   final String? serviceCode;
 
+  /// Places that take this insurer come first; only those when [insuredOnly].
+  final String? insurerCode;
+  final bool insuredOnly;
+
+  /// Words typed in the search box (name, place, service); the server matches them.
+  final String q;
+
+  static const _keep = Object();
+
   SearchQuery copyWith({
     bool? openNow,
     bool? emergency,
@@ -100,23 +108,31 @@ class SearchQuery {
     double? lat,
     double? lng,
     String? serviceCode,
-  }) =>
-      SearchQuery(
-        openNow: openNow ?? this.openNow,
-        emergency: emergency ?? this.emergency,
-        availableToday: availableToday ?? this.availableToday,
-        lat: lat ?? this.lat,
-        lng: lng ?? this.lng,
-        serviceCode: serviceCode ?? this.serviceCode,
-      );
+    Object? insurerCode = _keep,
+    bool? insuredOnly,
+    String? q,
+  }) => SearchQuery(
+    openNow: openNow ?? this.openNow,
+    emergency: emergency ?? this.emergency,
+    availableToday: availableToday ?? this.availableToday,
+    lat: lat ?? this.lat,
+    lng: lng ?? this.lng,
+    serviceCode: serviceCode ?? this.serviceCode,
+    insurerCode: identical(insurerCode, _keep) ? this.insurerCode : insurerCode as String?,
+    insuredOnly: insuredOnly ?? this.insuredOnly,
+    q: q ?? this.q,
+  );
 
   Json toJson() => {
-        if (openNow) 'open_now': true,
-        if (emergency) 'emergency': true,
-        if (availableToday) 'available_today': true,
-        if (lat != null && lng != null) 'near': {'lat': lat, 'lng': lng},
-        if (serviceCode != null && serviceCode!.isNotEmpty) 'service_code': serviceCode,
-      };
+    if (openNow) 'open_now': true,
+    if (emergency) 'emergency': true,
+    if (availableToday) 'available_today': true,
+    if (lat != null && lng != null) 'near': {'lat': lat, 'lng': lng},
+    if (serviceCode != null && serviceCode!.isNotEmpty) 'service_code': serviceCode,
+    if (insurerCode != null && insurerCode!.isNotEmpty) 'insurer_code': insurerCode,
+    if (insuredOnly) 'insured_only': true,
+    if (q.trim().isNotEmpty) 'q': q.trim(),
+  };
 
   @override
   bool operator ==(Object other) =>
@@ -126,10 +142,43 @@ class SearchQuery {
       other.availableToday == availableToday &&
       other.lat == lat &&
       other.lng == lng &&
-      other.serviceCode == serviceCode;
+      other.serviceCode == serviceCode &&
+      other.insurerCode == insurerCode &&
+      other.insuredOnly == insuredOnly &&
+      other.q == q;
 
   @override
-  int get hashCode => Object.hash(openNow, emergency, availableToday, lat, lng, serviceCode);
+  int get hashCode =>
+      Object.hash(openNow, emergency, availableToday, lat, lng, serviceCode, insurerCode, insuredOnly, q);
+}
+
+/// Words people type for an insurer (any language), to its code; the same list as the server.
+const insurerWords = {
+  'mutuelle': 'mutuelle',
+  'mituweli': 'mutuelle',
+  'cbhi': 'mutuelle',
+  'rama': 'rama',
+  'rssb': 'rama',
+  'mmi': 'mmi',
+  'military': 'mmi',
+  'private': 'private_other',
+  'prive': 'private_other',
+  'privé': 'private_other',
+};
+
+/// An insurer named in [text], and the other words.
+({String? insurer, String rest}) insurerInText(String text) {
+  String? insurer;
+  final rest = <String>[];
+  for (final word in text.toLowerCase().split(RegExp(r'\s+')).where((w) => w.isNotEmpty)) {
+    final code = insurerWords[word];
+    if (code != null && insurer == null) {
+      insurer = code;
+    } else {
+      rest.add(word);
+    }
+  }
+  return (insurer: insurer, rest: rest.join(' '));
 }
 
 /// Facilities sorted by distance when the phone's location is known (Home "Near you", Care).

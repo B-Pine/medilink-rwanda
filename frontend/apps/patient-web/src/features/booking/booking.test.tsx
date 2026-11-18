@@ -42,6 +42,19 @@ describe("facility search (S5-F2)", () => {
   });
 });
 
+describe("search by insurance (2026-11-18)", () => {
+  it("typing an insurer lists only the places that take it; the others on request", async () => {
+    const { user } = renderApp("/find-care?q=mutuelle");
+    expect(
+      await screen.findByText("Only places that take Mutuelle.", undefined, { timeout: 10_000 }),
+    ).toBeInTheDocument();
+    expect(screen.queryAllByText("Kigali Clinic")).toHaveLength(0); // RAMA and MMI only
+    await user.click(screen.getByRole("button", { name: "Show the others too" }));
+    expect((await screen.findAllByText("Kigali Clinic")).length).toBeGreaterThan(0);
+    expect(screen.getByText("Places that take Mutuelle come first.")).toBeInTheDocument();
+  });
+});
+
 describe("booking flow (S5-F3)", () => {
   it("one decision per screen: who, what, when, reason, review; then the booking code", async () => {
     const { user, container } = await signIn("/book/kigali-clinic");

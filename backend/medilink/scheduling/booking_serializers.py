@@ -37,6 +37,10 @@ class FacilitySearchSerializer(serializers.Serializer):
     # only facilities whose admin declares a 24-hour emergency department
     emergency = serializers.BooleanField(required=False, default=False)
     page = serializers.IntegerField(required=False, min_value=1, max_value=50, default=1)
+    # free text: a facility, place, service or an insurer's name ("rama", "mutuelle")
+    q = serializers.CharField(max_length=100, required=False, allow_blank=True)
+    # with an insurer: only facilities that accept it
+    insured_only = serializers.BooleanField(required=False, default=False)
 
 
 class WaitRangeSerializer(serializers.Serializer):
@@ -77,6 +81,8 @@ class FacilitySearchPageSerializer(serializers.Serializer):
     count = serializers.IntegerField()
     page = serializers.IntegerField()
     results = FacilitySearchResultSerializer(many=True)
+    # the insurer the results were checked against (chosen, or typed in `q`)
+    insurer_code = serializers.CharField(allow_null=True, required=False)
 
 
 class PublicFacilityServiceSerializer(serializers.Serializer):

@@ -284,6 +284,8 @@ class SearchView(PublicView):
             available_today=data["available_today"],
             emergency=data["emergency"],
             page=data["page"],
+            q=data.get("q") or None,
+            insured_only=data["insured_only"],
         )
         response = Response(listing.search(query))
         response["Cache-Control"] = "no-store"

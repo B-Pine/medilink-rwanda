@@ -31,7 +31,7 @@ catalog:
   i18next: ^26.5.11
   jsdom: ^30.1.3
   leaflet: 1.9.4
-  msw: ^2.15.0
+  msw: ^3.0.4
   pdfjs-dist: ^6.4.299
   prettier: ^3.9.10
   qrcode.react: ^4.2.0

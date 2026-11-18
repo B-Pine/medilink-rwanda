@@ -198,12 +198,13 @@ class _Header extends StatelessWidget {
                   width: 84,
                   height: 84,
                   alignment: Alignment.center,
+                  clipBehavior: Clip.antiAlias,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Palette.forestRaised,
                     border: Border.all(color: Palette.onForestAccent, width: 2),
                   ),
-                  child: Text(doctor.initials, style: theme.textTheme.headlineMedium?.copyWith(color: Colors.white)),
+                  child: _Face(doctor: doctor, style: theme.textTheme.headlineMedium?.copyWith(color: Colors.white)),
                 ),
                 const SizedBox(height: Space.md),
                 Text(
@@ -285,6 +286,28 @@ class _DayRow extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// The doctor's photo, or their initials while it loads, when it can't, or without one.
+class _Face extends StatelessWidget {
+  const _Face({required this.doctor, this.style});
+  final Doctor doctor;
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context) {
+    final letters = Text(doctor.initials, style: style);
+    final url = doctor.photoUrl;
+    if (url == null || url.isEmpty) return letters;
+    return Image.network(
+      url,
+      width: 84,
+      height: 84,
+      fit: BoxFit.cover,
+      frameBuilder: (context, child, frame, sync) => sync || frame != null ? child : letters,
+      errorBuilder: (context, _, _) => letters,
     );
   }
 }

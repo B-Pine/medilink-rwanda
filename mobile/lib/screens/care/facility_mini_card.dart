@@ -32,7 +32,7 @@ class FacilityMiniCard extends StatelessWidget {
     final theme = Theme.of(context);
     final f = facility;
     final wait = f.waitRange == null ? null : fmt.waitRange(f.waitRange!.min, f.waitRange!.max, s);
-    final building = FacilityBuilding(type: f.type, emergency: f.emergency);
+    final building = FacilityCover(url: f.coverUrl, type: f.type, emergency: f.emergency);
     return SoftCard(
       raised: raised,
       onTap: onTap ?? () => context.go('/care/${f.slug}'),

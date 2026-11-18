@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../app/config.dart';
 import '../app/theme.dart';
 
 /// Facility buildings, the same drawings as the website (upgrade 14 §4,
@@ -25,6 +26,40 @@ class FacilityBuilding extends StatelessWidget {
           alignment: Alignment.bottomCenter,
         ),
       );
+}
+
+/// A photo URL from the API, made absolute: search cards may give a path on the API host.
+String absoluteImageUrl(String url) => url.startsWith('/') ? '${AppConfig.apiBaseUrl}$url' : url;
+
+/// The facility's own cover photo when it has one; the drawing otherwise, and while the photo
+/// loads or when it can't.
+class FacilityCover extends StatelessWidget {
+  const FacilityCover({super.key, required this.url, required this.type, this.emergency = false, this.fit = BoxFit.cover});
+
+  final String? url;
+  final String type;
+  final bool emergency;
+
+  /// How the drawing fits (the photo always covers).
+  final BoxFit fit;
+
+  @override
+  Widget build(BuildContext context) {
+    final drawing = FacilityBuilding(type: type, emergency: emergency, fit: fit);
+    final src = url;
+    if (src == null || src.isEmpty) return drawing;
+    return ExcludeSemantics(
+      child: Image.network(
+        absoluteImageUrl(src),
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+        gaplessPlayback: true,
+        frameBuilder: (context, child, frame, sync) => sync || frame != null ? child : drawing,
+        errorBuilder: (context, _, _) => drawing,
+      ),
+    );
+  }
 }
 
 // The drawing's colours by day and at night (set by _svg while it draws).

@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 
 ## [Unreleased]
 
+### 1.2.0 (2026-11-18)
+
+- Added: real photos. Facility cards and the facility page show the facility's own cover photo
+  (the drawing stays for facilities without one, and while a photo loads), with its logo next to
+  the name; doctors show their photo on the facility and doctor pages.
+- Added: the profile photo goes to Cloudinary like on the website, and the photo set on the
+  website or brought from Google sign-in shows on Me, My profile and Family. Removing it removes
+  both kinds of photo. Without Cloudinary on the server the photo goes through the scanned upload
+  as before.
+
 ### 1.1.3 (2026-11-08)
 
 - Fixed: the "+" steps on the profile to-do (details, ID, emergency contact, consent,

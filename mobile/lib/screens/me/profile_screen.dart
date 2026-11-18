@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart' show FormData, MultipartFile;
+import 'package:dio/dio.dart' show DioException, FormData, MultipartFile;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +10,7 @@ import '../../app/strings.dart';
 import '../../app/strings_more.dart';
 import '../../app/theme.dart';
 import '../../data/api.dart';
+import '../../data/images.dart';
 import '../../data/profile.dart';
 import '../../data/providers.dart';
 import '../../data/session.dart';
@@ -106,6 +107,7 @@ class _Header extends ConsumerWidget {
               patientId: profile.patientId,
               name: profile.fullName,
               hasPhoto: profile.hasPhoto,
+              avatarUrl: profile.avatarUrl,
               size: 76,
               onTap: () => _sheet(context, _PhotoSheet(profile: profile)),
               editable: true,
@@ -163,19 +165,23 @@ class ProfilePhoto extends ConsumerWidget {
     required this.patientId,
     required this.name,
     required this.hasPhoto,
+    this.avatarUrl,
     this.size = 56,
     this.onTap,
     this.editable = false,
   });
 
   final String patientId, name;
+
+  /// The Cloudinary photo (uploaded here or on the website, or from Google); shown first.
+  final String? avatarUrl;
   final bool hasPhoto, editable;
   final double size;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final url = hasPhoto ? ref.watch(photoUrlProvider(patientId)).value : null;
+    final url = avatarUrl ?? (hasPhoto ? ref.watch(photoUrlProvider(patientId)).value : null);
     final initials = name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).take(2).map((p) => p[0].toUpperCase()).join();
     final circle = Container(
       width: size,
@@ -242,13 +248,26 @@ class _PhotoSheetState extends ConsumerState<_PhotoSheet> {
       _busy = true;
       _error = null;
     });
+    final api = ref.read(apiProvider);
+    final id = widget.profile.patientId;
     try {
-      final form = FormData.fromMap({'file': await MultipartFile.fromFile(picked.path, filename: 'photo.jpg')});
-      await ref.read(apiProvider).post('/api/v1/patient/profiles/${widget.profile.patientId}/photo/', form);
-      refreshProfile(ref, widget.profile.patientId);
+      try {
+        // signed upload to Cloudinary; the profile keeps the public id
+        final publicId = await uploadToCloudinary(api, picked.path);
+        await api.put('/api/v1/patient/profiles/$id/avatar/', {'public_id': publicId});
+      } on ApiException catch (e) {
+        if (!uploadsUnavailable(e)) rethrow;
+        // no Cloudinary on this server: the scanned upload takes the photo
+        final form = FormData.fromMap({'file': await MultipartFile.fromFile(picked.path, filename: 'photo.jpg')});
+        await api.post('/api/v1/patient/profiles/$id/photo/', form);
+      }
+      refreshProfile(ref, id);
+      ref.invalidate(meProvider);
       if (mounted) Navigator.pop(context);
     } on ApiException catch (e) {
       setState(() => _error = e.detail.isNotEmpty ? e.detail : s.somethingWrong);
+    } on DioException {
+      setState(() => _error = s.somethingWrong);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -257,8 +276,12 @@ class _PhotoSheetState extends ConsumerState<_PhotoSheet> {
   Future<void> _remove() async {
     setState(() => _busy = true);
     try {
-      await ref.read(apiProvider).delete('/api/v1/patient/profiles/${widget.profile.patientId}/photo/');
-      refreshProfile(ref, widget.profile.patientId);
+      final api = ref.read(apiProvider);
+      final id = widget.profile.patientId;
+      if (widget.profile.avatarUrl != null) await api.delete('/api/v1/patient/profiles/$id/avatar/');
+      if (widget.profile.hasPhoto) await api.delete('/api/v1/patient/profiles/$id/photo/');
+      refreshProfile(ref, id);
+      ref.invalidate(meProvider);
       if (mounted) Navigator.pop(context);
     } on ApiException catch (e) {
       setState(() => _error = e.detail);
@@ -287,7 +310,7 @@ class _PhotoSheetState extends ConsumerState<_PhotoSheet> {
             title: Text(s.t('choosePhoto')),
             onTap: () => _pick(ImageSource.gallery),
           ),
-          if (widget.profile.hasPhoto)
+          if (widget.profile.hasPhoto || widget.profile.avatarUrl != null)
             ListTile(
               leading: Icon(PhosphorIconsRegular.xCircle, color: Palette.danger),
               title: Text(s.t('removePhoto'), style: TextStyle(color: Palette.danger)),

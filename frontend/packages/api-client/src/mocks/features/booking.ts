@@ -30,6 +30,17 @@ import { MEMBERSHIP_BY_EMAIL, SETUP_IDS } from "./setup";
  * upcoming booking for Mukamana and two of today's bookings at Kigali Clinic for reception.
  * Deterministic: no randomness, so tests are stable.
  */
+/** Words people type for an insurer (the API knows the same ones). */
+const MOCK_INSURER_WORDS: Record<string, string> = {
+  mutuelle: "mutuelle",
+  mituweli: "mutuelle",
+  cbhi: "mutuelle",
+  rama: "rama",
+  rssb: "rama",
+  mmi: "mmi",
+  military: "mmi",
+};
+
 export const MOCK_TAKEN_SLOT_HOUR = 9; // 09:00 on the first bookable day is "just taken"
 const MOCK_PATIENT_ID = "9b2f1c3d-1111-4000-8000-000000000001";
 const HOLD_MS = 5 * 60_000;
@@ -900,7 +911,17 @@ export const bookingMocks: FeatureMockFactory = (context) => {
         const body = (await context.readJson(request)) ?? {};
         const service = str(body.service_code);
         const district = str(body.district_code);
-        const insurer = str(body.insurer_code);
+        // an insurer typed in the search ("rama", "mutuelle") counts as chosen, and narrows
+        const words = str(body.q)
+          .trim()
+          .toLowerCase()
+          .split(/[\s,;/]+/)
+          .filter(Boolean);
+        const typedIndex = words.findIndex((w) => MOCK_INSURER_WORDS[w]);
+        const typed = typedIndex >= 0 ? MOCK_INSURER_WORDS[words[typedIndex]!]! : "";
+        const text = words.filter((_, i) => i !== typedIndex);
+        const insurer = str(body.insurer_code) || typed;
+        const insuredOnly = body.insured_only === true || (typed !== "" && !str(body.insurer_code));
         const level = str(body.level_of_care);
         const emergency = body.emergency === true;
         const near = body.near as { lat: number; lng: number } | null | undefined;
@@ -909,6 +930,16 @@ export const bookingMocks: FeatureMockFactory = (context) => {
           if (district && f.district_code !== district) continue;
           if (level && f.level_of_care !== level) continue;
           if (emergency && !hasEmergency(f)) continue;
+          if (insurer && insuredOnly && !(insurer in f.insurers)) continue;
+          const haystack = [
+            f.name,
+            f.sector,
+            f.district,
+            ...f.services.flatMap((x) => Object.values(x.name_i18n)),
+          ]
+            .join(" ")
+            .toLowerCase();
+          if (text.some((w) => !haystack.includes(w))) continue;
           const s = service ? f.services.find((x) => x.code === service) : f.services[0];
           if (!s) continue;
           const km = near
@@ -941,7 +972,17 @@ export const bookingMocks: FeatureMockFactory = (context) => {
           });
         }
         if (near) results.sort((a, b) => (a.distance_km ?? 0) - (b.distance_km ?? 0));
-        return HttpResponse.json({ count: results.length, page: 1, results });
+        // places that take the insurance first
+        if (insurer)
+          results.sort(
+            (a, b) => Number(b.accepts_insurance === "yes") - Number(a.accepts_insurance === "yes"),
+          );
+        return HttpResponse.json({
+          count: results.length,
+          page: 1,
+          results,
+          insurer_code: insurer || null,
+        });
       }),
       http.get(`${api}/public/facilities/:slug/slots/`, async ({ request, params }) => {
         await context.settle();

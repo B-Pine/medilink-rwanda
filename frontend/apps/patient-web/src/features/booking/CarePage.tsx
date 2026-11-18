@@ -1,5 +1,5 @@
 import type { FacilitySearchInput, LevelOfCare } from "@medilink/api-client";
-import { Crosshair, Faders, X } from "@phosphor-icons/react";
+import { Crosshair, Faders, ShieldCheck, X } from "@phosphor-icons/react";
 import { Button, cx, Dialog, SelectField } from "@medilink/ui";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useSearchParams } from "react-router";
 
 import { useApi } from "../../app/services";
+import { usePatientMe } from "../../auth/queries";
 import { useInDashboard } from "../../layout/DashboardContext";
 import { PublicLayout } from "../../layout/PublicLayout";
 import { isHospital } from "../site/data";
@@ -24,6 +25,8 @@ import {
   DISTRICT_KEYS,
   INSURER_CODES,
   INSURER_KEYS,
+  insurerInText,
+  type InsurerKey,
   SERVICE_CODES,
   SERVICE_KEYS,
   type ServiceKey,
@@ -72,9 +75,12 @@ export function CarePage() {
   const km = Number(params.get("km")) || 0;
   const emergency = params.get("emergency") === "1";
   const q = params.get("q") ?? "";
-  // A service word in the search ("dentist", "pregnancy") selects that service; other words
-  // match facility and service names.
-  const words = q.trim().toLowerCase();
+  // also places that don't take the chosen insurer (shown after those that do)
+  const showAll = params.get("all") === "1";
+  // An insurer in the search ("rama", "mutuelle") picks that insurance; a service word
+  // ("dentist", "pregnancy") selects that service; other words match names.
+  const typed = insurerInText(q);
+  const words = typed.rest;
   const keywordService =
     !service && words
       ? SERVICE_KEYS.find((key) =>
@@ -84,6 +90,8 @@ export function CarePage() {
         )
       : undefined;
   const activeService = service || keywordService || "";
+  const activeInsurer = insurer || typed.insurer;
+  const insurerCode = activeInsurer ? INSURER_CODES[activeInsurer] || undefined : undefined;
 
   // Choices live in the URL so a search can be shared; never the location (S5 D-2).
   const set = (key: string, value: string) =>
@@ -104,12 +112,15 @@ export function CarePage() {
   const body: FacilitySearchInput = {
     service_code: activeService ? SERVICE_CODES[activeService] : undefined,
     district_code: near ? undefined : district ? DISTRICT_CODES[district] : undefined,
-    insurer_code: insurer ? INSURER_CODES[insurer] || undefined : undefined,
+    insurer_code: insurerCode,
+    // with an insurer: only places that take it, unless asked to show the others too
+    insured_only: insurerCode && !showAll ? true : undefined,
     open_now: openNow || undefined,
     level_of_care: level || undefined,
     available_today: today || undefined,
     near,
   };
+  const myInsurer = useMyInsurer(inDashboard);
   const results = useQuery({
     queryKey: ["discovery", "care", body],
     queryFn: () => api.booking.search(body),
@@ -408,6 +419,13 @@ export function CarePage() {
                 near={near}
                 empty={<NoMatch service={activeService} query={q} onClear={clearAll} />}
               />
+              {insurerCode && results.isSuccess && (
+                <InsurerScope
+                  name={t(`landing.insurersShort.${activeInsurer}`)}
+                  showAll={showAll}
+                  onToggle={() => set("all", showAll ? "" : "1")}
+                />
+              )}
             </section>
           </div>
         </PageContainer>
@@ -451,6 +469,15 @@ export function CarePage() {
             aria-label={t("care.quick")}
             className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-0.5 [scrollbar-width:none]"
           >
+            {myInsurer && (
+              <Toggle
+                on={insurer === myInsurer}
+                onChange={(on) => set("insurer", on ? myInsurer : "")}
+              >
+                <ShieldCheck aria-hidden="true" className="mr-1.5 size-4" />
+                {t("care.myInsurance", { name: t(`landing.insurersShort.${myInsurer}`) })}
+              </Toggle>
+            )}
             <Toggle on={openNow} onChange={(on) => set("open", on ? "1" : "")}>
               {t("home.openNow")}
             </Toggle>
@@ -515,6 +542,13 @@ export function CarePage() {
             empty={<NoMatch service={activeService} query={q} onClear={clearAll} />}
             directory
           />
+          {insurerCode && results.isSuccess && (
+            <InsurerScope
+              name={t(`landing.insurersShort.${activeInsurer}`)}
+              showAll={showAll}
+              onToggle={() => set("all", showAll ? "" : "1")}
+            />
+          )}
         </div>
       </div>
 
@@ -606,5 +640,48 @@ function NoMatch({
         </div>
       }
     />
+  );
+}
+
+/** The insurer on the signed-in patient's own profile (first active card), for "My insurance". */
+function useMyInsurer(enabled: boolean): InsurerKey | "" {
+  const api = useApi();
+  const me = usePatientMe();
+  const selfId = me.data?.profiles.find((p) => p.relationship === "self")?.patient_id;
+  const cards = useQuery({
+    queryKey: ["profile", "insurance", selfId],
+    queryFn: () => api.profile.insurance(selfId!),
+    enabled: enabled && Boolean(selfId),
+    staleTime: 5 * 60_000,
+  });
+  const code = cards.data?.results.find(
+    (c) => !c.is_expired && c.is_active !== false,
+  )?.insurer_code;
+  const key = INSURER_KEYS.find((k) => INSURER_CODES[k] && INSURER_CODES[k] === code);
+  return key ?? "";
+}
+
+/** Which places the list shows for the chosen insurer, and the switch to the others. */
+function InsurerScope({
+  name,
+  showAll,
+  onToggle,
+}: {
+  name: string;
+  showAll: boolean;
+  onToggle: () => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <p className="m-0 flex flex-wrap items-center gap-x-2 text-body-sm text-fg-secondary">
+      {showAll ? t("care.insurerAll", { name }) : t("care.insurerOnly", { name })}
+      <button
+        type="button"
+        onClick={onToggle}
+        className="cursor-pointer font-semibold text-link underline-offset-2 hover:underline"
+      >
+        {showAll ? t("care.insurerOnlyLink", { name }) : t("care.insurerAllLink")}
+      </button>
+    </p>
   );
 }

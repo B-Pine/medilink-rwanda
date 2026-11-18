@@ -8,6 +8,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Search by insurance (2026-11-18)
+
+- Added: facility search takes `q` (name, sector, district, type, service) and `insured_only`. An
+  insurer named in `q` in any language (mutuelle, mituweli, cbhi, rama, rssb, mmi, military,
+  private, privé) becomes the insurer filter and narrows to places that take it; places that take
+  the chosen insurer always come first. The page echoes `insurer_code`.
+
 ### Platform management of facilities and people (2026-11-18)
 
 - Fixed: facility photos didn't show on the public search cards. The listing's cover is now the

@@ -477,6 +477,11 @@
     "withinKm": "Muri km {{km}}",
     "none": "Nta hantu hahuye n’ibi byatoranyijwe",
     "tryInstead": "Hafi cyane: {{name}}",
-    "close": "Funga"
+    "close": "Funga",
+    "myInsurance": "Ubwishingizi bwanjye: {{name}}",
+    "insurerOnly": "Ahakira {{name}} gusa.",
+    "insurerAll": "Ahakira {{name}} haza mbere.",
+    "insurerAllLink": "Erekana n'ahandi",
+    "insurerOnlyLink": "{{name}} gusa"
   }
 }

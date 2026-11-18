@@ -15,7 +15,7 @@ import { patientMeKey } from "../../auth/queries";
 import { Avatar } from "../dashboard/kit";
 import { errorText } from "./shared";
 
-/** 503 `uploads_unavailable`: no Cloudinary account on this server; the scanned pipeline takes it. */
+/** 503 `uploads_unavailable`: the server has no Cloudinary account set up. */
 const uploadsUnavailable = (error: unknown) => isApiError(error) && error.status === 503;
 
 /**
@@ -32,6 +32,7 @@ export function ProfilePhotoCard({ profile }: { profile: PatientProfileDetail })
   const [progress, setProgress] = useState<number | null>(null);
   const photoError = (failure: unknown, fallback: string): string => {
     if (isImageUploadError(failure)) return t(`profile.photo.errors.${failure.code}`);
+    if (uploadsUnavailable(failure)) return t("profile.photo.errors.unavailable");
     // the file field says what is wrong (type, size); the general message only "check the fields"
     return (
       (isApiError(failure) && (failure.fieldError("file") ?? failure.fieldError("public_id"))) ||
@@ -60,9 +61,6 @@ export function ProfilePhotoCard({ profile }: { profile: PatientProfileDetail })
         // signed direct upload to Cloudinary, then the profile keeps the public id
         const image = await api.images.patient.upload(file, "patient_avatar", setProgress);
         return await api.profile.setAvatar(id, image.public_id);
-      } catch (failure) {
-        if (uploadsUnavailable(failure)) return api.profile.uploadPhoto(id, file);
-        throw failure;
       } finally {
         setProgress(null);
       }

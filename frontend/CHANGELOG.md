@@ -20,7 +20,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
   profile; it shows on doctor cards and pages and in the staff user menu. The sidebar workspace
   card shows the facility logo. Patients' profile photo goes to Cloudinary and shows in the header,
   family, privacy and booking lists; staff see it on the patient record. Without Cloudinary on the
-  server the facility and patient photos fall back to the scanned upload.
+  server the photo screens say uploads aren't set up yet (no silent fallback to the scanned
+  upload, which hid the cause and failed with "Something went wrong").
 - Added: Feature flags names "Staff two-step sign-in" and warns while it is off; the "Confirm it's
   you" dialog asks only for the password then.
 

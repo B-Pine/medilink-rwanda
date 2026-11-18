@@ -29,7 +29,8 @@
       "type": "Use a JPG, PNG, WebP or HEIC photo.",
       "size": "Choose a photo smaller than 8 MB.",
       "upload": "The upload didn't work. Try again.",
-      "network": "The connection dropped during the upload. Try again."
+      "network": "The connection dropped during the upload. Try again.",
+      "unavailable": "Photo uploads aren't set up on the server yet. Try again later."
     }
   },
   "sections": {

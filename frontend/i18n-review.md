@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 6310.
+Keys: 6311.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -5687,6 +5687,7 @@ File: `apps/patient-web/src/features/profile/locales/rw.json`
 | `photo.errors.size` | Hitamo ifoto iri munsi ya MB 8. | Choose a photo smaller than 8 MB. | needs native-speaker review |
 | `photo.errors.upload` | Kohereza ntibyakunze. Ongera ugerageze. | The upload didn't work. Try again. | needs native-speaker review |
 | `photo.errors.network` | Umuyoboro wacitse mu gihe cyo kohereza. Ongera ugerageze. | The connection dropped during the upload. Try again. | needs native-speaker review |
+| `photo.errors.unavailable` | Kohereza amafoto ntibirashyirwaho kuri seriveri. Ongera ugerageze nyuma. | Photo uploads aren't set up on the server yet. Try again later. | needs native-speaker review |
 | `sections.details` | Amakuru yanjye | My details | needs native-speaker review |
 | `sections.identifiers` | Ibyangombwa | Identity documents | needs native-speaker review |
 | `sections.insurance` | Ubwishingizi | Insurance | needs native-speaker review |

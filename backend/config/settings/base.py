@@ -252,6 +252,17 @@ CLOUDINARY = {
     "upload_preset": env("CLOUDINARY_UPLOAD_PRESET", default="medilink_signed"),
     "root_folder": env("CLOUDINARY_ROOT_FOLDER", default="medilink"),
 }
+# CLOUDINARY_URL (cloudinary://<api_key>:<api_secret>@<cloud_name>, the console's one-line form)
+# fills whatever the three variables above leave empty.
+_cloudinary_url = urlsplit(env("CLOUDINARY_URL", default="").strip())
+if _cloudinary_url.scheme == "cloudinary":
+    for _key, _value in (
+        ("cloud_name", _cloudinary_url.hostname),
+        ("api_key", unquote(_cloudinary_url.username or "")),
+        ("api_secret", unquote(_cloudinary_url.password or "")),
+    ):
+        if not CLOUDINARY[_key] and _value:
+            CLOUDINARY[_key] = _value
 
 OTP_TOTP_ISSUER = env("MFA_TOTP_ISSUER", default="MediLink Rwanda")
 # TOTP secrets are encrypted at rest (medilink.accounts.totp_crypto): "1:<base64url 32 bytes>,…"

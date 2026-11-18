@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
-import { useStepUp } from "../lock";
+import { STAFF_MFA_FLAG, useStepUp } from "../lock";
 import { actionError, PlatformOnly } from "./shared";
 
 /** /platform/feature-flags: the flag catalogue and defaults (NFR-OPS-07). */
@@ -61,6 +61,9 @@ function Flags() {
             }
             onCheckedChange={(on) => toggle.mutate({ flag, on })}
           />
+          {flag.code === STAFF_MFA_FLAG && !flag.default_enabled && (
+            <Alert tone="warning">{t("platform.flags.staffMfaOff")}</Alert>
+          )}
         </Card>
       ))}
     </div>

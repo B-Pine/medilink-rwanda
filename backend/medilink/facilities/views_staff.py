@@ -457,10 +457,11 @@ class InvitationAcceptView(_InvitationAuthView):
         user = staff.accept_new_account(
             token, full_name=full_name, password=data["password"], request=request
         )
-        from medilink.accounts.views import dev_skip_staff_mfa
+        from medilink.accounts.views import staff_mfa_skip_method
 
-        if dev_skip_staff_mfa():
-            principal = complete_staff_login(request, user, mfa_method="dev_skip")
+        skip = staff_mfa_skip_method()
+        if skip:
+            principal = complete_staff_login(request, user, mfa_method=skip)
             return Response(
                 LoginResultSerializer(
                     {"status": "authenticated", "user": staff_me_data(principal, request.session)}

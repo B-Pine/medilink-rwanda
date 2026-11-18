@@ -12,9 +12,19 @@ from rest_framework.permissions import BasePermission
 
 from medilink.onboarding.models import FacilityFeatureFlag, FeatureFlag
 
+STAFF_MFA_FLAG = "security.staff_mfa"
+STAFF_MFA_DESCRIPTION = (
+    "Staff sign in with a password and an authenticator code. Turn off only while testing: "
+    "staff then sign in with the password alone."
+)
+
+# Flags with one platform-wide value: facilities can't override them.
+PLATFORM_ONLY = frozenset({STAFF_MFA_FLAG})
+
 # Catalogue seeded by migration; later sprints add their flags in their own data migrations.
 CATALOGUE: tuple[tuple[str, str, bool], ...] = (
     ("security.pin_unlock", "Unlock an idle-locked session with a PIN", True),
+    ("security.staff_mfa", STAFF_MFA_DESCRIPTION, True),
 )
 
 
@@ -59,3 +69,14 @@ def RequiresFeatureFlag(code: str) -> type[BasePermission]:
 
     _RequiresFeatureFlag.__name__ = f"RequiresFeatureFlag[{code}]"
     return _RequiresFeatureFlag
+
+
+def staff_mfa_off() -> bool:
+    """True when a platform admin turned staff two-step sign-in off (the flag's default, platform
+    wide; per-facility overrides don't apply: sign-in happens before a facility is chosen).
+
+    A missing or retired flag counts as on, so two-step stays required unless someone turned it
+    off on purpose."""
+    return FeatureFlag.objects.filter(
+        code=STAFF_MFA_FLAG, is_active=True, default_enabled=False
+    ).exists()

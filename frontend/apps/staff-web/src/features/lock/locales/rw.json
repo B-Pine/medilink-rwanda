@@ -30,7 +30,9 @@
     "code": "Kode y'umutekano",
     "codeHint": "Imibare 6 iva muri porogaramu yawe y'umutekano",
     "confirm": "Emeza",
-    "required": "Andika ijambo ry'ibanga na kode."
+    "required": "Andika ijambo ry'ibanga na kode.",
+    "descriptionPassword": "Iki gikorwa gisaba ijambo ry'ibanga.",
+    "requiredPassword": "Andika ijambo ry'ibanga."
   },
   "security": {
     "title": "Umutekano",

@@ -30,7 +30,9 @@
     "code": "Code d'authentification",
     "codeHint": "6 chiffres de votre application d'authentification",
     "confirm": "Confirmer",
-    "required": "Saisissez votre mot de passe et le code."
+    "required": "Saisissez votre mot de passe et le code.",
+    "descriptionPassword": "Cette action demande votre mot de passe.",
+    "requiredPassword": "Saisissez votre mot de passe."
   },
   "security": {
     "title": "Sécurité",

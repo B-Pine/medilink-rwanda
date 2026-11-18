@@ -300,7 +300,8 @@
   "flags": {
     "title": "Imikorere",
     "names": {
-      "security.pin_unlock": "Gufungura ukoresheje PIN"
+      "security.pin_unlock": "Gufungura ukoresheje PIN",
+      "security.staff_mfa": "Kwinjira mu ntambwe ebyiri ku bakozi"
     },
     "on": "Irakora",
     "off": "Ntikora",
@@ -310,7 +311,8 @@
     "overridden": "Yashyiriweho iki kigo.",
     "useDefault": "Koresha agaciro gasanzwe",
     "overrides_one": "Ikigo {{count}} gifite icyo cyihariye",
-    "overrides_other": "Ibigo {{count}} bifite icyo byihariye"
+    "overrides_other": "Ibigo {{count}} bifite icyo byihariye",
+    "staffMfaOff": "Kwinjira mu ntambwe ebyiri byahagaritswe: abakozi binjira bakoresheje ijambo ry'ibanga gusa. Bisubizeho nimurangiza igerageza."
   },
   "masterData": {
     "title": "Amakuru shingiro",

@@ -41,7 +41,7 @@ const pdf = (name = "licence.pdf") =>
 describe("lock, PIN and step-up", () => {
   it("StaffMe carries flags and security; lock answers session_locked; PIN unlock works", async () => {
     const { user } = await signIn("reception@medilink.test");
-    expect(user.feature_flags).toEqual(["security.pin_unlock"]);
+    expect(user.feature_flags).toEqual(["security.pin_unlock", "security.staff_mfa"]);
     expect(user.security.lock_after_seconds).toBe(900);
     expect(user.security.step_up_valid_until).not.toBeNull();
 

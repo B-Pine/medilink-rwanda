@@ -174,7 +174,8 @@ export const securityMocks: FeatureMockFactory = (context) => {
         const body = await context.readJson(request);
         if (
           body.password === MOCK_PASSWORD &&
-          str(body.code ?? "").replace(/\s+/g, "") === MOCK_TOTP_CODE
+          (context.featureFlags.defaults.get("security.staff_mfa") === false ||
+            str(body.code ?? "").replace(/\s+/g, "") === MOCK_TOTP_CODE)
         ) {
           stepUpFailures = 0;
           context.markStepUp();

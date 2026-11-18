@@ -43,6 +43,8 @@ const TRANSITIONS: Record<string, [FacilityStatus[], FacilityStatus]> = {
   reactivate: [["suspended"], "live"],
   deactivate: [["approved", "setup", "live", "suspended"], "deactivated"],
 };
+/** Flags with one platform-wide value: no facility overrides (sign-in comes before a facility). */
+const PLATFORM_ONLY_FLAGS = new Set(["security.staff_mfa"]);
 const STEP_UP_ACTIONS = new Set(["go-live", "suspend", "reactivate", "deactivate"]);
 const REASON_ACTIONS = new Set(["suspend", "reactivate", "deactivate"]);
 
@@ -1138,14 +1140,16 @@ export const onboardingMocks: FeatureMockFactory = (context: MockContext) => {
         const overrides =
           context.featureFlags.overrides.get(entry.facility.id) ?? new Map<string, boolean>();
         return HttpResponse.json(
-          [...context.featureFlags.defaults.entries()].map(([code, on]) => ({
-            code,
-            is_enabled: overrides.get(code) ?? on,
-            source: overrides.has(code) ? "override" : "default",
-            note: "",
-            set_by: null,
-            updated_at: null,
-          })),
+          [...context.featureFlags.defaults.entries()]
+            .filter(([code]) => !PLATFORM_ONLY_FLAGS.has(code))
+            .map(([code, on]) => ({
+              code,
+              is_enabled: overrides.get(code) ?? on,
+              source: overrides.has(code) ? "override" : "default",
+              note: "",
+              set_by: null,
+              updated_at: null,
+            })),
         );
       }
       return notFound(l);
@@ -1256,7 +1260,11 @@ export const onboardingMocks: FeatureMockFactory = (context: MockContext) => {
       const stepUp = stepUpFailure(context, l);
       if (stepUp) return stepUp;
       const code = str(params.code);
-      if (!context.featureFlags.defaults.has(code) || !facilities.has(str(params.id)))
+      if (
+        !context.featureFlags.defaults.has(code) ||
+        PLATFORM_ONLY_FLAGS.has(code) ||
+        !facilities.has(str(params.id))
+      )
         return notFound(l);
       const body = await context.readJson(request);
       const overrides =

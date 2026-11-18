@@ -182,7 +182,10 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
   const pendingSignUps: string[] = []; // emails waiting for the verification link
   const pins = new Map<string, string>();
   const featureFlags: MockFeatureFlags = {
-    defaults: new Map([["security.pin_unlock", true]]),
+    defaults: new Map([
+      ["security.pin_unlock", true],
+      ["security.staff_mfa", true],
+    ]),
     overrides: new Map(),
     enabledFor(facilityId) {
       const overrides =
@@ -378,6 +381,18 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
       rotate();
       const activeFacilityId =
         user.memberships.length === 1 ? user.memberships[0]!.facility.id : null;
+      if (featureFlags.defaults.get("security.staff_mfa") === false) {
+        // a platform admin turned staff two-step sign-in off: the password alone signs in
+        const next: StaffSession = {
+          email,
+          stage: "authenticated",
+          activeFacilityId,
+          mfaAt: Date.now(),
+        };
+        setStaffSession(next);
+        const result: StaffAuthenticatedResult = { status: "authenticated", user: staffMe(next)! };
+        return HttpResponse.json(result);
+      }
       const stage: StaffStage = mfaEnabled(user) ? "mfa_verify" : "mfa_setup";
       setStaffSession({ email, stage, activeFacilityId });
       const result: StaffLoginResult = {
@@ -719,7 +734,10 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
       pendingSignUps.length = 0;
       pins.clear();
       featureFlags.overrides.clear();
-      featureFlags.defaults = new Map([["security.pin_unlock", true]]);
+      featureFlags.defaults = new Map([
+        ["security.pin_unlock", true],
+        ["security.staff_mfa", true],
+      ]);
       setStaffSession(null);
       setPatientSession(null);
     },

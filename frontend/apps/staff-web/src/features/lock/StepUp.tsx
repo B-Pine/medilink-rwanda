@@ -1,4 +1,4 @@
-import { isApiError } from "@medilink/api-client";
+import { isApiError, type StaffMe } from "@medilink/api-client";
 import { Alert, Button, Dialog, PasswordField, TextField } from "@medilink/ui";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -15,6 +15,8 @@ import { useTranslation } from "react-i18next";
 
 import { useApi } from "../../app/services";
 import { staffMeKey } from "../../auth/queries";
+
+export const STAFF_MFA_FLAG = "security.staff_mfa";
 
 /** Thrown when the user closes the step-up dialog: the action stays undone. */
 export class StepUpCancelled extends Error {
@@ -60,6 +62,10 @@ export function StepUpProvider({ children }: { children: ReactNode }) {
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | undefined>();
   const [busy, setBusy] = useState(false);
+  // a platform admin can turn staff two-step sign-in off (flag security.staff_mfa) for testing:
+  // then the password alone confirms it's you
+  const twoStep =
+    queryClient.getQueryData<StaffMe>(staffMeKey)?.feature_flags.includes(STAFF_MFA_FLAG) ?? true;
 
   const ask = useCallback(
     () =>
@@ -94,13 +100,13 @@ export function StepUpProvider({ children }: { children: ReactNode }) {
 
   async function submit(event: FormEvent) {
     event.preventDefault();
-    if (!password || !code) {
-      setError(t("lock.stepUp.required"));
+    if (!password || (twoStep && !code)) {
+      setError(t(twoStep ? "lock.stepUp.required" : "lock.stepUp.requiredPassword"));
       return;
     }
     setBusy(true);
     try {
-      await api.security.stepUp({ password, code: code.replace(/\s+/g, "") });
+      await api.security.stepUp({ password, code: twoStep ? code.replace(/\s+/g, "") : "" });
       void queryClient.invalidateQueries({ queryKey: staffMeKey });
       const current = pending.current;
       close(false);
@@ -126,7 +132,7 @@ export function StepUpProvider({ children }: { children: ReactNode }) {
         open={open}
         onOpenChange={(next) => !next && close(true)}
         title={t("lock.stepUp.title")}
-        description={t("lock.stepUp.description")}
+        description={t(twoStep ? "lock.stepUp.description" : "lock.stepUp.descriptionPassword")}
         closeLabel={t("lock.close")}
         footer={
           <>
@@ -151,14 +157,16 @@ export function StepUpProvider({ children }: { children: ReactNode }) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <TextField
-            label={t("lock.stepUp.code")}
-            hint={t("lock.stepUp.codeHint")}
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-          />
+          {twoStep && (
+            <TextField
+              label={t("lock.stepUp.code")}
+              hint={t("lock.stepUp.codeHint")}
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+            />
+          )}
           {error && (
             <Alert tone="danger" role="alert">
               {error}

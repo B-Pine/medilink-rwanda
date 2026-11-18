@@ -27,6 +27,7 @@ from medilink.core.throttling import BurstRateThrottle
 from medilink.masterdata.serializers import request_language
 from medilink.onboarding import serializers as s
 from medilink.onboarding import services
+from medilink.onboarding.flags import PLATFORM_ONLY
 from medilink.onboarding.models import (
     Application,
     ApplicationDocument,
@@ -761,7 +762,12 @@ class LicenceView(_StepUp):
 
 
 def _flag(code: str) -> FeatureFlag:
-    flag = FeatureFlag.objects.filter(code=code, is_active=True).first()
+    """A flag a facility may override (platform-wide flags such as staff two-step have none)."""
+    flag = (
+        FeatureFlag.objects.filter(code=code, is_active=True)
+        .exclude(code__in=PLATFORM_ONLY)
+        .first()
+    )
     if flag is None:
         raise Http404
     return flag
@@ -779,7 +785,11 @@ class FacilityFlagsView(_Platform):
             o.flag_id: o
             for o in FacilityFeatureFlag.objects.filter(facility=facility).select_related("set_by")
         }
-        flags = FeatureFlag.objects.filter(is_active=True).order_by("code")
+        flags = (
+            FeatureFlag.objects.filter(is_active=True)
+            .exclude(code__in=PLATFORM_ONLY)
+            .order_by("code")
+        )
         return Response([s.facility_flag_data(f, overrides.get(f.pk)) for f in flags])
 
 

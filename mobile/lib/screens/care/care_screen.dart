@@ -305,7 +305,7 @@ class FacilityCard extends StatelessWidget {
                   aspectRatio: 16 / 7,
                   child: Hero(
                     tag: 'building-${facility.slug}',
-                    child: FacilityBuilding(type: facility.type, emergency: facility.emergency),
+                    child: FacilityCover(url: facility.coverUrl, type: facility.type, emergency: facility.emergency),
                   ),
                 ),
                 Positioned(

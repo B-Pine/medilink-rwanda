@@ -34,12 +34,16 @@ class ProfileDetail {
         hasCareConsent = j['has_care_consent'] as bool? ?? false,
         completion = _map(j['completion']).map((k, v) => MapEntry(k, v == true)),
         hasPhoto = j['has_photo'] as bool? ?? false,
+        avatarUrl = j['avatar_url'] as String?,
         version = j['version'] as int? ?? 1;
 
   final String patientId, relationship, fullName;
   final String? medilinkNumber, preferredName, sex, phone, email, address;
   final DateTime? dateOfBirth;
   final bool birthEstimated, hasCareConsent, hasPhoto;
+
+  /// The photo on Cloudinary; shown before the scanned one.
+  final String? avatarUrl;
   final Json? emergency;
   final bool? noKnownAllergies;
   final Map<String, bool> completion;

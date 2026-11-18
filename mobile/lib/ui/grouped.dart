@@ -187,9 +187,9 @@ class GroupedRow extends StatelessWidget {
   }
 }
 
-/// Initials in a mint circle, one size everywhere (no faces for doctors, upgrade 05 §3).
+/// The person's photo when they have one, else their initials in a mint circle.
 class Avatar extends StatelessWidget {
-  const Avatar({super.key, required this.name, this.size = Avatar.medium, this.initials});
+  const Avatar({super.key, required this.name, this.size = Avatar.medium, this.initials, this.photoUrl});
 
   static const medium = 40.0;
 
@@ -199,6 +199,9 @@ class Avatar extends StatelessWidget {
   /// Overrides the initials worked out from [name].
   final String? initials;
 
+  /// A photo (Cloudinary); the initials show while it loads or when it can't.
+  final String? photoUrl;
+
   static String initialsOf(String name) {
     final parts = name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
     if (parts.isEmpty) return '?';
@@ -206,18 +209,32 @@ class Avatar extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) => ExcludeSemantics(
-        child: Container(
-          width: size,
-          height: size,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(color: Palette.brandSubtle, shape: BoxShape.circle),
-          child: Text(
-            initials ?? initialsOf(name),
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Palette.brand, fontWeight: FontWeight.w700),
-          ),
-        ),
-      );
+  Widget build(BuildContext context) {
+    final letters = Text(
+      initials ?? initialsOf(name),
+      style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Palette.brand, fontWeight: FontWeight.w700),
+    );
+    final url = photoUrl;
+    return ExcludeSemantics(
+      child: Container(
+        width: size,
+        height: size,
+        alignment: Alignment.center,
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(color: Palette.brandSubtle, shape: BoxShape.circle),
+        child: url == null || url.isEmpty
+            ? letters
+            : Image.network(
+                url,
+                width: size,
+                height: size,
+                fit: BoxFit.cover,
+                frameBuilder: (context, child, frame, sync) => sync || frame != null ? child : letters,
+                errorBuilder: (context, _, _) => letters,
+              ),
+      ),
+    );
+  }
 }
 
 /// A row with a switch; tapping anywhere on the row toggles it.

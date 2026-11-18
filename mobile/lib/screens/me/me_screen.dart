@@ -66,6 +66,7 @@ class MeScreen extends ConsumerWidget {
                         patientId: selfId,
                         name: me.fullName,
                         hasPhoto: self?.hasPhoto ?? false,
+                        avatarUrl: self?.avatarUrl ?? me.avatarUrl,
                         size: 60,
                         editable: true,
                         onTap: () => context.go('/me/profile'),

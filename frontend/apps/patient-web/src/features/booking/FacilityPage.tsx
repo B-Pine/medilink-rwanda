@@ -149,6 +149,15 @@ export function FacilityPage() {
           description={summary}
           jsonLd={facilityJsonLd(f, canonicalUrl(siteOrigin(), `/facilities/${f.slug}`), summary)}
           titleTransition={`facility-name-${f.slug}`}
+          titleStart={
+            f.logo_url ? (
+              <img
+                src={f.logo_url}
+                alt={t("site.facility.logo", { name: f.name })}
+                className="size-14 shrink-0 rounded-full bg-white object-contain p-1 shadow-e2 ring-1 ring-hairline sm:size-16"
+              />
+            ) : undefined
+          }
           art={
             // the admin's cover photo when there is one (the first photo), else the drawing
             f.photos[0] ? (
@@ -170,13 +179,6 @@ export function FacilityPage() {
           }
           lead={
             <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
-              {f.logo_url && (
-                <img
-                  src={f.logo_url}
-                  alt={t("site.facility.logo", { name: f.name })}
-                  className="size-8 rounded-lg bg-surface object-contain ring-1 ring-hairline"
-                />
-              )}
               <span>{t(`booking.types.${f.type}`, { defaultValue: f.type })}</span>
               {place && (
                 <span className="inline-flex items-center gap-1">

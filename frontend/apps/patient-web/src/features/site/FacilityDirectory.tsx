@@ -172,7 +172,7 @@ export function FacilityEntry({
               alt=""
               loading="lazy"
               decoding="async"
-              className="size-11 shrink-0 rounded-lg border border-hairline bg-white object-contain p-1"
+              className="size-11 shrink-0 rounded-full bg-white object-contain p-0.5 ring-1 ring-hairline"
             />
           )}
           <Heading

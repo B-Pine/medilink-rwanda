@@ -8,6 +8,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Logos and covers on every facility card (2026-11-18)
+
+- Added: search results carry the facility's `logo_url` (listing field `logo_public_id`,
+  migration `facilities 0008`).
+- Fixed: a card could stay on the drawing when its photo was saved before the listing was rebuilt.
+  Opening the facility's page now corrects that facility's card, and every Railway deploy runs
+  `refresh_listing` after `migrate` (a failure there does not stop the deploy).
+
 ### Search by insurance (2026-11-18)
 
 - Added: facility search takes `q` (name, sector, district, type, service) and `insured_only`. An

@@ -31,6 +31,35 @@ class FacilityBuilding extends StatelessWidget {
 /// A photo URL from the API, made absolute: search cards may give a path on the API host.
 String absoluteImageUrl(String url) => url.startsWith('/') ? '${AppConfig.apiBaseUrl}$url' : url;
 
+/// The facility's logo on a white tile, or nothing when it has none (or it can't load).
+class FacilityLogo extends StatelessWidget {
+  const FacilityLogo({super.key, required this.url, this.size = 40});
+
+  final String? url;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    final src = url;
+    if (src == null || src.isEmpty) return const SizedBox.shrink();
+    return Container(
+      width: size,
+      height: size,
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Palette.hairline),
+      ),
+      child: Image.network(
+        absoluteImageUrl(src),
+        fit: BoxFit.contain,
+        errorBuilder: (context, _, _) => const SizedBox.shrink(),
+      ),
+    );
+  }
+}
+
 /// The facility's own cover photo when it has one; the drawing otherwise, and while the photo
 /// loads or when it can't.
 class FacilityCover extends StatelessWidget {

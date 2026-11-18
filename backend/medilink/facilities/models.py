@@ -273,6 +273,7 @@ class PublicListing(UUIDModel):
     emergency_department = models.BooleanField(default=False)
     # the facility's cover photo on Cloudinary (its first photo), for the result cards
     cover_public_id = models.CharField(max_length=255, blank=True, default="")
+    logo_public_id = models.CharField(max_length=255, blank=True, default="")
     district_code = models.CharField(max_length=20, blank=True)
     district = models.CharField(max_length=120, blank=True)
     sector_code = models.CharField(max_length=20, blank=True)

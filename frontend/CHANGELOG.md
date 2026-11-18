@@ -9,6 +9,20 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Facility and user management, cleaner (2026-11-18)
+
+- Added: the facility list has status tabs with counts and a "Needs attention" line (no facility
+  admin, licences expired or expiring, no FOSA ID) like the user list; each row shows the
+  facility's logo or initials, and a facility without an admin says so in amber.
+- Changed: a facility's page opens with an identity band (cover photo, logo, name, status, type,
+  place, FOSA ID) and its actions in the header: "Edit details", the next status step, and
+  Suspend / Deactivate under "More actions" (they used to sit at the bottom of the page).
+- Added: a Staff tab: everyone with access, roles, two-step state and last sign-in, pending
+  invitations with Cancel, and "Invite" (email, roles, reason; facility admin chosen when the
+  facility has none). "Edit details" corrects name, type, ownership and level of care with a reason.
+- Added: on a person's page, "Change roles" for each facility and a "Platform team" card to add or
+  remove a platform admin; each asks for a reason after confirming identity.
+
 ### Updates reach open pages (2026-11-18)
 
 - Fixed: a new deploy of the patient app waited in the browser until every tab closed, so people

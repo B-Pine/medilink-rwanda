@@ -522,6 +522,8 @@ class FacilitiesView(GenericAPIView):
         state = request.query_params.get("licence_state")
         if state:
             rows = [r for r in rows if r["licence_state"] == state]
+        if request.query_params.get("no_admin") == "true":  # nobody to run the facility
+            rows = [r for r in rows if not r["admins"]]
         if request.query_params.get("ordering") == "next_licence_expiry":
             rows.sort(
                 key=lambda r: (r["next_licence_expiry"] is None, r["next_licence_expiry"] or "")
@@ -536,6 +538,7 @@ class FacilitiesView(GenericAPIView):
             OpenApiParameter("facility_type", str),
             OpenApiParameter("ownership", str),
             OpenApiParameter("missing_code", bool, description="Only facilities without a FOSA ID"),
+            OpenApiParameter("no_admin", bool, description="Only facilities without an admin"),
             OpenApiParameter("district", str),
             OpenApiParameter(
                 "licence_state", str, enum=["valid", "expiring", "expired", "missing"]
@@ -635,6 +638,247 @@ class FacilityView(_Platform):
                 object_id=facility.pk,
                 metadata={"fields": changed},
             )
+        return Response(s.facility_data(facility, detail=True))
+
+
+class FacilitiesSummaryView(_Platform):
+    """Counts for the "needs attention" strip above the facility list."""
+
+    @extend_schema(
+        tags=TAG,
+        operation_id="platform_facilities_summary",
+        responses={200: s.FacilityAttentionSerializer},
+    )
+    def get(self, request: Request) -> Response:
+        # Reviewed: the platform admin summary covers every facility by design.
+        rows = [
+            s.facility_data(f) for f in Facility.objects.all()
+        ]  # nosemgrep: medilink-objects-all-in-view
+        by_status: dict[str, int] = {}
+        for r in rows:
+            by_status[r["status"]] = by_status.get(r["status"], 0) + 1
+        open_rows = [r for r in rows if r["status"] != "deactivated"]
+        return Response(
+            {
+                "total": len(rows),
+                "by_status": by_status,
+                "no_admin": sum(1 for r in open_rows if not r["admins"]),
+                "licence_expiring": sum(1 for r in open_rows if r["licence_state"] == "expiring"),
+                "licence_expired": sum(1 for r in open_rows if r["licence_state"] == "expired"),
+                "licence_missing": sum(1 for r in open_rows if r["licence_state"] == "missing"),
+                "missing_code": sum(1 for r in open_rows if not r["moh_facility_code"]),
+            }
+        )
+
+
+def _staff_data(facility: Facility) -> dict[str, Any]:
+    from django.utils import timezone
+
+    from medilink.accounts.mfa import has_confirmed_mfa
+    from medilink.tenancy.context import rls_context
+    from medilink.tenancy.models import FacilityMembership, Invitation
+
+    with rls_context(facility_id=facility.pk):
+        memberships = list(
+            FacilityMembership.objects.filter(facility=facility)
+            .select_related("user")
+            .prefetch_related("roles")
+            .order_by("-is_active", "user__full_name")
+        )
+        invitations = list(
+            Invitation.objects.filter(
+                facility=facility,
+                accepted_at__isnull=True,
+                revoked_at__isnull=True,
+                expired_at__isnull=True,
+                expires_at__gt=timezone.now(),
+            )
+            .select_related("invited_by")
+            .order_by("-created_at")
+        )
+    return {
+        "members": [
+            {
+                "membership_id": m.pk,
+                "user_id": m.user_id,
+                "name": m.user.full_name,
+                "email": m.user.email,
+                "roles": sorted(r.code for r in m.roles.all()),
+                "is_active": m.is_active,
+                "mfa_enabled": has_confirmed_mfa(m.user),
+                "last_login": m.user.last_login,
+                "joined_at": m.created_at,
+            }
+            for m in memberships
+        ],
+        "invitations": [
+            {
+                "id": i.pk,
+                "email": i.email,
+                "full_name": i.full_name,
+                "role_codes": list(i.role_codes or []),
+                "status": "pending",
+                "invited_by": i.invited_by.full_name if i.invited_by else "",
+                "created_at": i.created_at,
+                "expires_at": i.expires_at,
+            }
+            for i in invitations
+        ],
+    }
+
+
+class FacilityStaffView(_Platform):
+    """Everyone with access to the facility (active and removed) and pending invitations."""
+
+    @extend_schema(
+        tags=TAG,
+        operation_id="platform_facility_staff",
+        responses={200: s.FacilityStaffSerializer, 404: _err("Not found")},
+    )
+    def get(self, request: Request, facility_id: Any) -> Response:
+        return Response(s.FacilityStaffSerializer(_staff_data(_facility(facility_id))).data)
+
+
+class FacilityInvitationsView(_Platform):
+    """Invite someone to the facility, typically a new facility admin when the last one left."""
+
+    permission_classes = [PlatformAdmin, RecentAuthRequired()]
+
+    @extend_schema(
+        tags=TAG,
+        operation_id="platform_facility_invite",
+        request=s.FacilityInviteInput,
+        responses={
+            201: s.FacilityStaffSerializer,
+            400: _err("Invalid input"),
+            403: _err("step_up_required"),
+            409: _err("Already a member or invited"),
+            422: _err("Deactivated facility"),
+        },
+        summary="Invite a person to the facility (email link); step-up, reason, audit-logged",
+    )
+    def post(self, request: Request, facility_id: Any) -> Response:
+        from medilink.facilities import staff
+        from medilink.tenancy.context import rls_context
+
+        body = s.FacilityInviteInput(data=request.data)
+        body.is_valid(raise_exception=True)
+        data = body.validated_data
+        facility = _facility(facility_id)
+        with rls_context(facility_id=facility.pk):
+            invitation = staff.invite(
+                facility,
+                email=data["email"],
+                full_name=data.get("full_name", ""),
+                role_codes=sorted(set(data["role_codes"])),
+                service_point_ids=[],
+                actor=request.user,
+                request=request,
+                source_ref="platform",
+            )
+        record(
+            "facility.staff_invited",
+            request=request,
+            facility_id=facility.pk,
+            object_type="invitation",
+            object_id=invitation.pk,
+            reason=data["reason"],
+            metadata={"role_codes": sorted(set(data["role_codes"]))},
+        )
+        return Response(
+            s.FacilityStaffSerializer(_staff_data(facility)).data, status=status.HTTP_201_CREATED
+        )
+
+
+class FacilityInvitationView(_Platform):
+    permission_classes = [PlatformAdmin, RecentAuthRequired()]
+
+    @extend_schema(
+        tags=TAG,
+        operation_id="platform_facility_invitation_revoke",
+        request=None,
+        responses={200: s.FacilityStaffSerializer, 404: _err("Not found")},
+        summary="Cancel a pending invitation; audit-logged",
+    )
+    def delete(self, request: Request, facility_id: Any, invitation_id: Any) -> Response:
+        from medilink.facilities import staff
+        from medilink.tenancy.context import rls_context
+        from medilink.tenancy.models import Invitation
+
+        facility = _facility(facility_id)
+        with rls_context(facility_id=facility.pk):
+            invitation = Invitation.objects.filter(
+                pk=invitation_id,
+                facility=facility,
+                accepted_at__isnull=True,
+                revoked_at__isnull=True,
+                expired_at__isnull=True,
+            ).first()
+            if invitation is None:
+                raise Http404
+            staff.revoke(invitation, actor=request.user, request=request)
+        return Response(s.FacilityStaffSerializer(_staff_data(facility)).data)
+
+
+class FacilityDetailsView(_Platform):
+    """Correct the platform-managed facts (name, type, ownership, level of care)."""
+
+    permission_classes = [PlatformAdmin, RecentAuthRequired()]
+
+    @extend_schema(
+        tags=TAG,
+        operation_id="platform_facility_details_update",
+        request=s.FacilityDetailsInput,
+        responses={
+            200: s.PlatformFacilityDetailSerializer,
+            400: _err("Invalid input"),
+            403: _err("step_up_required"),
+            404: _err("Not found"),
+        },
+        summary="Correct name, type, ownership or level of care; step-up, reason, audit-logged",
+    )
+    def patch(self, request: Request, facility_id: Any) -> Response:
+        from django.db import transaction
+
+        from medilink.facilities.models import Profile
+        from medilink.tenancy.context import rls_context
+
+        body = s.FacilityDetailsInput(data=request.data)
+        body.is_valid(raise_exception=True)
+        data = dict(body.validated_data)
+        reason = data.pop("reason")
+        facility = _facility(facility_id)
+        before: dict[str, Any] = {}
+        after: dict[str, Any] = {}
+        for name in ("name", "facility_type", "ownership"):
+            if name in data and getattr(facility, name) != data[name]:
+                before[name], after[name] = getattr(facility, name), data[name]
+                setattr(facility, name, data[name])
+        if after:
+            facility.save(update_fields=[*after, "updated_at"])
+        if "level_of_care" in data:
+            with rls_context(facility_id=facility.pk):
+                profile, _ = Profile.objects.get_or_create(facility=facility)
+                if profile.level_of_care != data["level_of_care"]:
+                    before["level_of_care"] = profile.level_of_care
+                    after["level_of_care"] = data["level_of_care"]
+                    profile.level_of_care = data["level_of_care"]
+                    profile.save(update_fields=["level_of_care", "updated_at"])
+        if after:
+            record(
+                "facility.details_updated",
+                request=request,
+                facility_id=facility.pk,
+                object_type="facility",
+                object_id=facility.pk,
+                reason=reason,
+                metadata={"fields": sorted(after)},
+            )
+            from medilink.scheduling.tasks import refresh_facility
+
+            # the public listing shows the name and type: rebuild it
+            fid = str(facility.pk)
+            transaction.on_commit(lambda: refresh_facility.delay(fid))
         return Response(s.facility_data(facility, detail=True))
 
 

@@ -154,7 +154,7 @@
     "patientNote": "This is a patient account. MediLink shows only the account here: the patient's records stay with the facilities that care for them.",
     "access": {
       "title": "Facility access",
-      "lead": "Where this person works and what they can do there. Facility admins manage roles; you can remove or restore access.",
+      "lead": "Where this person works and what they can do there. You can change their roles, or remove and restore access.",
       "none": "No facility access.",
       "active": "Active",
       "removed": "Access removed",
@@ -162,7 +162,12 @@
       "remove": "Remove access",
       "restore": "Restore access",
       "removeConfirm": "{{name}} can no longer work at {{facility}}. Their other facilities and their account stay as they are.",
-      "restoreConfirm": "{{name}} can work at {{facility}} again, with the roles they had."
+      "restoreConfirm": "{{name}} can work at {{facility}} again, with the roles they had.",
+      "roles": "Change roles",
+      "rolesTitle": "Roles at {{facility}}",
+      "rolesLead": "What {{name}} can do there. The facility always keeps at least one facility admin.",
+      "rolesLegend": "Roles",
+      "saveRoles": "Save roles"
     },
     "invitations": "Invitations not accepted yet",
     "invited": "Sent {{sent}} · expires {{expires}}",
@@ -222,7 +227,16 @@
       "send-password-reset": "Sent to {{email}}. Ask the person to check their inbox and spam folder.",
       "resend-verification": "Sent to {{email}}. Ask the person to check their inbox and spam folder."
     },
-    "clinician": "Clinician"
+    "clinician": "Clinician",
+    "team": {
+      "title": "Platform team",
+      "member": "This person runs the MediLink console: facilities, users and the logs.",
+      "notMember": "Platform admins run the MediLink console. Add only people who work for MediLink.",
+      "grant": "Add to platform team",
+      "revoke": "Remove from platform team",
+      "grantConfirm": "{{name}} gets full access to the MediLink console. They sign in with two-step login.",
+      "revokeConfirm": "{{name}} loses access to the console and is signed out everywhere."
+    }
   },
   "logs": {
     "event": "Event",

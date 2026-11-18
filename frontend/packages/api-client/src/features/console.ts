@@ -297,6 +297,15 @@ export function createConsoleApi(client: ApiClient) {
       client.post<ConsoleUserDetail>(`${PL}/users/${id}/facilities/${facilityId}/${action}/`, {
         reason,
       }),
+    /** Set a person's roles at one facility (step-up, reason; keeps the last facility admin). */
+    setRoles: (id: Uuid, facilityId: Uuid, roleCodes: string[], reason: string) =>
+      client.post<ConsoleUserDetail>(`${PL}/users/${id}/facilities/${facilityId}/roles/`, {
+        role_codes: roleCodes,
+        reason,
+      }),
+    /** Add to or take off the platform team (step-up, reason; never yourself or the last one). */
+    platformTeam: (id: Uuid, action: "grant" | "revoke", reason: string) =>
+      client.post<ConsoleUserDetail>(`${PL}/users/${id}/platform-admin/${action}/`, { reason }),
     securityEvents: (params: LogParams = {}) =>
       client.get<Paginated<ConsoleEvent>>(`${PL}/security-events/${query({ ...params })}`),
     accessEvents: (params: LogParams = {}) =>

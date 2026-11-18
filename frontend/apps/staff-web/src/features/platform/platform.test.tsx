@@ -82,7 +82,9 @@ describe("platform console", () => {
     expect(
       await screen.findByRole("heading", { level: 1, name: "Kigali Clinic" }),
     ).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Suspend" }));
+    // risky actions sit under "More actions", away from the everyday buttons
+    await user.click(screen.getByRole("button", { name: "More actions" }));
+    await user.click(await screen.findByRole("menuitem", { name: "Suspend" }));
     const dialog = await screen.findByRole("dialog", { name: "Suspend" });
     await user.click(within(dialog).getByRole("button", { name: "Suspend" }));
     expect(await within(dialog).findByText("Choose a reason.")).toBeInTheDocument();
@@ -105,6 +107,52 @@ describe("platform console", () => {
       ),
     );
     expect(await screen.findByRole("button", { name: "Use the default" })).toBeInTheDocument();
+  });
+
+  it("lists the facility's staff and invites a new facility admin", async () => {
+    const { user } = await signIn("admin@medilink.test", "/platform/facilities");
+    expect(await screen.findByRole("button", { name: /^Live/ })).toBeInTheDocument();
+    await user.click(
+      await screen.findAllByRole("link", { name: "Open: Kigali Clinic" }).then((l) => l[0]!),
+    );
+    await screen.findByRole("heading", { level: 1, name: "Kigali Clinic" });
+    await user.click(screen.getByRole("tab", { name: /Staff/ }));
+    expect(await screen.findByRole("link", { name: "Habimana Eric" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Invite" }));
+    const dialog = await screen.findByRole("dialog", { name: /Invite someone/ });
+    await user.type(within(dialog).getByLabelText("Email"), "new.admin@kigaliclinic.rw");
+    // no active facility admin there: the role is chosen already
+    expect(within(dialog).getByRole("button", { name: "Facility admin" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await user.type(
+      within(dialog).getByLabelText(/Explanation/),
+      "The facility admin left the clinic.",
+    );
+    await user.click(within(dialog).getByRole("button", { name: "Send invitation" }));
+    expect(await screen.findByText("new.admin@kigaliclinic.rw")).toBeInTheDocument();
+    expect(screen.getByText("1 pending invitation")).toBeInTheDocument();
+  });
+
+  it("corrects the platform-managed details with a reason", async () => {
+    const { user } = await signIn("admin@medilink.test", "/platform/facilities");
+    await user.click(
+      await screen.findAllByRole("link", { name: "Open: Kigali Clinic" }).then((l) => l[0]!),
+    );
+    await screen.findByRole("heading", { level: 1, name: "Kigali Clinic" });
+    await user.click(screen.getByRole("button", { name: "Edit details" }));
+    const dialog = await screen.findByRole("dialog", { name: "Edit facility details" });
+    const name = within(dialog).getByLabelText("Name");
+    await user.clear(name);
+    await user.type(name, "Kigali Family Clinic");
+    const save = within(dialog).getByRole("button", { name: "Save changes" });
+    expect(save).toBeDisabled(); // a reason first
+    await user.type(within(dialog).getByLabelText(/Explanation/), "Renamed per the MoH register.");
+    await user.click(save);
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "Kigali Family Clinic" }),
+    ).toBeInTheDocument();
   });
 
   it("sets the facility's government identifiers", async () => {
@@ -246,6 +294,28 @@ describe("platform admin data (2026-11-03)", () => {
     await waitFor(() =>
       expect(within(staff).queryByText("Umutoni Claire")).not.toBeInTheDocument(),
     );
+  }, 45_000);
+
+  it("a person's page changes their roles and adds them to the platform team", async () => {
+    const { user } = await signIn("admin@medilink.test", "/platform/users");
+    const table = await screen.findByRole("table", { name: "Users" });
+    await user.click(await within(table).findByRole("button", { name: /^Uwimana Grace/ }));
+    await screen.findByRole("heading", { level: 1, name: "Uwimana Grace" });
+
+    await user.click(screen.getByRole("button", { name: "Change roles" }));
+    let dialog = await screen.findByRole("dialog", { name: "Roles at Kigali Clinic" });
+    await user.click(within(dialog).getByRole("button", { name: "Facility admin" }));
+    await user.type(within(dialog).getByLabelText(/^Reason/), "Covering for the admin on leave.");
+    await user.click(within(dialog).getByRole("button", { name: "Save roles" }));
+    expect(await screen.findByText(/Receptionist · Facility admin/)).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Add to platform team" }));
+    dialog = await screen.findByRole("dialog", { name: "Add to platform team" });
+    await user.type(within(dialog).getByLabelText(/^Reason/), "Joins the MediLink support team.");
+    await user.click(within(dialog).getByRole("button", { name: "Add to platform team" }));
+    expect(
+      await screen.findByRole("button", { name: "Remove from platform team" }),
+    ).toBeInTheDocument();
   }, 45_000);
 
   it("a person's page clears a sign-in block, sends a reset link and removes facility access", async () => {

@@ -8,6 +8,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Platform management of facilities and people (2026-11-18)
+
+- Added: `GET /api/v1/platform/facilities/summary/` (counts by status, without a facility admin,
+  licences expiring, expired or missing, without a FOSA ID) and the list filter `no_admin=true`;
+  facility rows give `cover_url` and `logo_url`.
+- Added: `GET /platform/facilities/{id}/staff/` (everyone with access, active or removed, with
+  roles, two-step state and last sign-in, plus pending invitations);
+  `POST /platform/facilities/{id}/invitations/` (invite by email with roles; step-up and a reason;
+  audit `facility.staff_invited`) and `DELETE .../invitations/{invitation_id}/`.
+- Added: `PATCH /platform/facilities/{id}/details/` corrects the platform-managed facts (name,
+  type, ownership, level of care; never the slug); step-up and a reason; audit
+  `facility.details_updated` (field names only); the public listing is rebuilt.
+- Added: `POST /platform/users/{id}/facilities/{facility_id}/roles/` sets a person's roles at a
+  facility (step-up, reason, the facility keeps one active facility admin; audit
+  `platform.user.roles_changed`), and `POST /platform/users/{id}/platform-admin/{grant|revoke}/`
+  (step-up, reason; never yourself, never the last platform admin, never a patient account;
+  revoking ends the person's sessions; audit `platform.user.platform_admin_granted` / `_revoked`).
+
 ### Images on Cloudinary and the staff two-step switch (2026-11-18)
 
 - Added: `medilink.images`: signed direct image uploads to Cloudinary (official `cloudinary` SDK,

@@ -9,6 +9,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Updates reach open pages (2026-11-18)
+
+- Fixed: a new deploy of the patient app waited in the browser until every tab closed, so people
+  kept the old version unless they cleared the cache. The service worker is registered by hand
+  (`injectRegister: false`), and vite-plugin-pwa then leaves out `skipWaiting` and `clientsClaim`;
+  both are now set, so a new version takes over at once and the open page reloads itself
+  (`registerType: "autoUpdate"`, checked on focus and hourly). Browsers holding the old worker pick
+  this one up on their next visit, without clearing anything.
+
 ### Photos on Cloudinary, two-step switch (2026-11-18)
 
 - Fixed: the production Content-Security-Policy blocked the browser's upload to

@@ -248,6 +248,8 @@ class ClinicianProfile(models.Model):
     photo_file = models.ForeignKey(
         "uploads.UploadedFile", on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
     )
+    # C0 avatar on Cloudinary (medilink.images, kind provider_avatar): public id only
+    avatar_public_id = models.CharField(max_length=255, blank=True, default="")
     # [{"degree": "MBChB", "institution": "University of Rwanda", "year": 2015}], up to 5
     qualifications = models.JSONField(default=list, blank=True)
     # upgrade 05 §3: what patients read on the public doctor page (no licence data there)

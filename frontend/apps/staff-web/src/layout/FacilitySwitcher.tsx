@@ -49,12 +49,21 @@ export function FacilitySwitcher({ me, collapsed = false }: { me: StaffMe; colla
 
   const body = (
     <>
-      <span
-        aria-hidden="true"
-        className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary font-heading text-body-sm font-bold text-on-primary"
-      >
-        {initialsOf(name)}
-      </span>
+      {membership?.facility.logo_url ? (
+        // the facility's own logo; the initials tile without one
+        <img
+          src={membership.facility.logo_url}
+          alt=""
+          className="size-9 shrink-0 rounded-xl bg-surface object-contain ring-1 ring-border/70"
+        />
+      ) : (
+        <span
+          aria-hidden="true"
+          className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary font-heading text-body-sm font-bold text-on-primary"
+        >
+          {initialsOf(name)}
+        </span>
+      )}
       <span className={cx("flex min-w-0 flex-1 flex-col text-left", collapsed && "lg:sr-only")}>
         <span className="truncate text-body-sm font-semibold text-fg">{name}</span>
         {detail && <span className="truncate text-caption text-fg-muted">{detail}</span>}

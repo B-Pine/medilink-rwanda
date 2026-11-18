@@ -15,6 +15,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from rest_framework import exceptions
 
+from medilink.images.services import image_url
 from medilink.patients import consents, identity
 from medilink.patients.audit import record_patient_event
 from medilink.patients.audit_actions import ACCESS_HISTORY_ACTORS
@@ -125,6 +126,7 @@ def summary_data(link: PatientLink) -> dict[str, Any]:
         "medilink_number": patient.medilink_number,
         "date_of_birth": patient.date_of_birth,
         "completion_percent": round(100 * sum(done.values()) / len(done)),
+        "avatar_url": image_url(patient.avatar_public_id, w=160, h=160),
     }
 
 
@@ -147,6 +149,7 @@ def profile_data(link: PatientLink) -> dict[str, Any]:
         "has_care_consent": consents.has_care_consent(patient),
         "completion": completion(patient),
         "has_photo": patient.photo_file_id is not None,
+        "avatar_url": image_url(patient.avatar_public_id, w=320, h=320),
         "version": patient.version,
     }
 

@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     # [S1] platform onboarding, master data, uploads
     "django.contrib.postgres",  # trigram indexes and search (master data)
     "medilink.uploads",
+    "medilink.images",  # images on Cloudinary (signed direct uploads)
     "medilink.masterdata",
     "medilink.onboarding",
     # [/S1]
@@ -241,6 +242,16 @@ GOOGLE_OAUTH_CLIENT_IDS = [
     cid.strip() for cid in env.list("GOOGLE_OAUTH_CLIENT_IDS", default=[]) if cid.strip()
 ]
 GOOGLE_JWKS_URL = env("GOOGLE_JWKS_URL", default="https://www.googleapis.com/oauth2/v3/certs")
+
+# Images on Cloudinary (medilink.images): facility photos and logos, clinician and patient avatars,
+# uploaded by the browser with a signature from the API. The secret stays on the server.
+CLOUDINARY = {
+    "cloud_name": env("CLOUDINARY_CLOUD_NAME", default=""),
+    "api_key": env("CLOUDINARY_API_KEY", default=""),
+    "api_secret": env("CLOUDINARY_API_SECRET", default=""),
+    "upload_preset": env("CLOUDINARY_UPLOAD_PRESET", default="medilink_signed"),
+    "root_folder": env("CLOUDINARY_ROOT_FOLDER", default="medilink"),
+}
 
 OTP_TOTP_ISSUER = env("MFA_TOTP_ISSUER", default="MediLink Rwanda")
 # TOTP secrets are encrypted at rest (medilink.accounts.totp_crypto): "1:<base64url 32 bytes>,…"

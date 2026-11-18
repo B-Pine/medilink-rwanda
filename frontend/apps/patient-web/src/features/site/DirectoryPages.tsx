@@ -290,9 +290,13 @@ function DoctorEntry({
     <li className="ml-card group/row relative flex min-w-0 flex-row items-center gap-3 rounded-panel bg-surface p-4 sm:flex-col sm:items-stretch sm:gap-4 sm:p-5">
       <span
         aria-hidden="true"
-        className="grid size-11 shrink-0 place-items-center rounded-full bg-brand-subtle font-heading text-body-sm font-bold text-on-brand-subtle sm:size-14 sm:text-body"
+        className="grid size-11 shrink-0 place-items-center overflow-hidden rounded-full bg-brand-subtle font-heading text-body-sm font-bold text-on-brand-subtle sm:size-14 sm:text-body"
       >
-        {initials}
+        {doctor.photoUrl ? (
+          <img src={doctor.photoUrl} alt="" loading="lazy" className="size-full object-cover" />
+        ) : (
+          initials
+        )}
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-0.5 sm:gap-1">
         {/* h2: the list sits right under the page's <h1> */}
@@ -618,9 +622,13 @@ export function DoctorPage() {
               <div className="flex items-center gap-4 border-b border-hairline bg-[linear-gradient(160deg,var(--color-brand-subtle),var(--color-surface)_70%)] p-6">
                 <span
                   aria-hidden="true"
-                  className="grid size-16 shrink-0 place-items-center rounded-full bg-surface font-heading text-h3 font-bold text-on-brand-subtle shadow-e1"
+                  className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-full bg-surface font-heading text-h3 font-bold text-on-brand-subtle shadow-e1"
                 >
-                  {initialsOf(doctor.name)}
+                  {doctor.photoUrl ? (
+                    <img src={doctor.photoUrl} alt="" className="size-full object-cover" />
+                  ) : (
+                    initialsOf(doctor.name)
+                  )}
                 </span>
                 <div className="flex min-w-0 flex-col gap-1">
                   <p className="m-0 font-heading text-h3 leading-tight font-bold text-fg">

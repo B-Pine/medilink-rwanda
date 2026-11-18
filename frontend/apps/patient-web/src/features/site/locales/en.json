@@ -136,7 +136,8 @@
     },
     "map": "Location on the map",
     "insurance": "Insurance accepted",
-    "emergencyOpen": "Emergency department open day and night. Call {{number}} if life is at risk."
+    "emergencyOpen": "Emergency department open day and night. Call {{number}} if life is at risk.",
+    "logo": "{{name}} logo"
   },
   "doctors": {
     "title": "Doctors",

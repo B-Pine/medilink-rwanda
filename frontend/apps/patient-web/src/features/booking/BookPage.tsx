@@ -815,7 +815,7 @@ export function BookPage() {
                     selected={patientId === p.patient_id}
                     onClick={() => setPatientId(p.patient_id)}
                   >
-                    <Avatar name={p.display_name} />
+                    <Avatar name={p.display_name} src={p.avatar_url} />
                     <span className="flex flex-col">
                       <span className="font-semibold">{p.display_name}</span>
                       <span className="text-body-sm text-fg-muted">

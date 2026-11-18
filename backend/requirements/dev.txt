@@ -704,6 +704,12 @@ click-repl==0.4.1 \
     #   -c requirements/base.txt
     #   -c requirements/prod.txt
     #   celery
+cloudinary==1.41.0 \
+    --hash=sha256:e189739a796a7d2ad15c19971741d33a9300816b16c0282b4b14ccf1dd2948c0
+    # via
+    #   -c requirements/base.txt
+    #   -c requirements/prod.txt
+    #   -r requirements/base.in
 colorama==0.4.6 \
     --hash=sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44 \
     --hash=sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6

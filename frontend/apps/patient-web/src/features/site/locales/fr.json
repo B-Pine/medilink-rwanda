@@ -136,7 +136,8 @@
     },
     "map": "Emplacement sur la carte",
     "insurance": "Assurances acceptées",
-    "emergencyOpen": "Service d’urgences ouvert jour et nuit. Appelez le {{number}} si une vie est en danger."
+    "emergencyOpen": "Service d’urgences ouvert jour et nuit. Appelez le {{number}} si une vie est en danger.",
+    "logo": "Logo de {{name}}"
   },
   "doctors": {
     "title": "Médecins",

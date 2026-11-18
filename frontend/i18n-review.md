@@ -1,6 +1,6 @@
 # Kinyarwanda strings: native-speaker review
 
-Keys: 6285.
+Keys: 6310.
 
 Status: **every Kinyarwanda string below is a draft that needs native-speaker review.** None of
 them is final (docs/design/research/10-accessibility-and-localization.md §3, NFR-UX-01). Medical
@@ -2157,6 +2157,8 @@ File: `apps/staff-web/src/features/lock/locales/rw.json`
 | `stepUp.codeHint` | Imibare 6 iva muri porogaramu yawe y'umutekano | 6 digits from your authenticator app | needs native-speaker review |
 | `stepUp.confirm` | Emeza | Confirm | needs native-speaker review |
 | `stepUp.required` | Andika ijambo ry'ibanga na kode. | Enter your password and the code. | needs native-speaker review |
+| `stepUp.descriptionPassword` | Iki gikorwa gisaba ijambo ry'ibanga. | This action needs your password. | needs native-speaker review |
+| `stepUp.requiredPassword` | Andika ijambo ry'ibanga. | Enter your password. | needs native-speaker review |
 | `security.title` | Umutekano | Security | needs native-speaker review |
 | `security.pinTitle` | PIN yo gufungura | Unlock PIN | needs native-speaker review |
 | `security.pinIsSet` | Ufite PIN. Yikoreshe ufungure ecran vuba. | You have a PIN. Use it to unlock your screen quickly. | needs native-speaker review |
@@ -3192,6 +3194,7 @@ File: `apps/staff-web/src/features/platform/locales/rw.json`
 | `licences.kind.other` | Ibindi | Other | needs native-speaker review |
 | `flags.title` | Imikorere | Feature flags | needs native-speaker review |
 | `flags.names.security.pin_unlock` | Gufungura ukoresheje PIN | PIN unlock | needs native-speaker review |
+| `flags.names.security.staff_mfa` | Kwinjira mu ntambwe ebyiri ku bakozi | Staff two-step sign-in | needs native-speaker review |
 | `flags.on` | Irakora | On | needs native-speaker review |
 | `flags.off` | Ntikora | Off | needs native-speaker review |
 | `flags.onByDefault` | Ikora bisanzwe | On by default | needs native-speaker review |
@@ -3201,6 +3204,7 @@ File: `apps/staff-web/src/features/platform/locales/rw.json`
 | `flags.useDefault` | Koresha agaciro gasanzwe | Use the default | needs native-speaker review |
 | `flags.overrides_one` | Ikigo {{count}} gifite icyo cyihariye | {{count}} facility has its own setting | needs native-speaker review |
 | `flags.overrides_other` | Ibigo {{count}} bifite icyo byihariye | {{count}} facilities have their own setting | needs native-speaker review |
+| `flags.staffMfaOff` | Kwinjira mu ntambwe ebyiri byahagaritswe: abakozi binjira bakoresheje ijambo ry'ibanga gusa. Bisubizeho nimurangiza igerageza. | Two-step sign-in is off: staff sign in with a password only. Turn it back on when testing is done. | needs native-speaker review |
 | `masterData.title` | Amakuru shingiro | Master data | needs native-speaker review |
 | `masterData.back` | Subira ku makuru shingiro | Back to master data | needs native-speaker review |
 | `masterData.count_one` | Ikintu {{count}} | {{count}} item | needs native-speaker review |
@@ -4029,8 +4033,8 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `profile.description` | Ibisobanuro | Description | needs native-speaker review |
 | `profile.descriptionHint` | Interuro nke muri buri rurimi: ibyo muvura n'uko babageraho. | A few sentences in each language: what you treat and how to find you. | needs native-speaker review |
 | `profile.photos` | Amafoto | Photos | needs native-speaker review |
-| `profile.photosHint_one` | Ifoto {{count}} kuri 6. JPEG, PNG cyangwa WebP. Iya mbere ni yo igaragara mbere ku rupapuro rwanyu. | {{count}} of 6 photos. JPEG, PNG or WebP. The first is the cover on your public page. | needs native-speaker review |
-| `profile.photosHint_other` | Amafoto {{count}} kuri 6. JPEG, PNG cyangwa WebP. Iya mbere ni yo igaragara mbere ku rupapuro rwanyu. | {{count}} of 6 photos. JPEG, PNG or WebP. The first is the cover on your public page. | needs native-speaker review |
+| `profile.photosHint_one` | Ifoto {{count}} kuri 6. JPG, PNG, WebP cyangwa HEIC, ntirenze MB 8. Iya mbere igaragara imbere ku rupapuro rwanyu rusange. | {{count}} of 6 photos. JPG, PNG, WebP or HEIC, up to 8 MB. The first is the cover on your public page. | needs native-speaker review |
+| `profile.photosHint_other` | Amafoto {{count}} kuri 6. JPG, PNG, WebP cyangwa HEIC, ntarenze MB 8. Iya mbere igaragara imbere ku rupapuro rwanyu rusange. | {{count}} of 6 photos. JPG, PNG, WebP or HEIC, up to 8 MB. The first is the cover on your public page. | needs native-speaker review |
 | `profile.addPhoto` | Ongeraho ifoto | Add photo | needs native-speaker review |
 | `profile.photoN` | Ifoto ya {{n}} | Photo {{n}} | needs native-speaker review |
 | `profile.removePhotoN` | Kuraho ifoto ya {{n}} | Remove photo {{n}} | needs native-speaker review |
@@ -4045,6 +4049,12 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `profile.emergencyTitle` | Ubutabazi bwihuse | Emergency care | needs native-speaker review |
 | `profile.emergency` | Serivisi y'ubutabazi bwihuse amasaha 24 | 24-hour emergency department | needs native-speaker review |
 | `profile.emergencyHint` | Bikore gusa niba mwakira indembe ku manywa na nijoro. Ivuriro ryanyu rizagaragara mbere ku rupapuro rw'ubutabazi. | Turn on only if you receive emergencies day and night. Your facility is then listed first on the public Emergency page. | needs native-speaker review |
+| `profile.uploading` | Birimo koherezwa… {{percent}}% | Uploading… {{percent}}% | needs native-speaker review |
+| `profile.logo` | Ikirango | Logo | needs native-speaker review |
+| `profile.logoHint` | Kigaragara ku rupapuro rwanyu rusange. Ifoto ifite impande zingana ni yo nziza. | Shown on your public page. A square image works best. | needs native-speaker review |
+| `profile.addLogo` | Shyiraho ikirango | Upload logo | needs native-speaker review |
+| `profile.changeLogo` | Hindura ikirango | Change logo | needs native-speaker review |
+| `profile.removeLogo` | Kuraho ikirango | Remove logo | needs native-speaker review |
 | `catalogue.services` | Serivisi | Services | needs native-speaker review |
 | `catalogue.departments` | Amashami | Departments | needs native-speaker review |
 | `catalogue.points` | Ibyumba n'ameza | Rooms and desks | needs native-speaker review |
@@ -4410,6 +4420,11 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `publicProfile.noBio` | Nta nyandiko iriho. | No text yet. | needs native-speaker review |
 | `publicProfile.hidden` | Byahishwe abarwayi. | Hidden from patients. | needs native-speaker review |
 | `publicProfile.needLicence` | Banza ubike uruhushya rwawe; umwirondoro ugaragara ukurikira. | Save your licence first; the public profile follows. | needs native-speaker review |
+| `publicProfile.photo` | Ifoto | Photo | needs native-speaker review |
+| `publicProfile.photoHint` | Abarwayi bayibona ku mwirondoro wawe rusange. JPG, PNG, WebP cyangwa HEIC, ntirenze MB 8. | Patients see it on your public profile. JPG, PNG, WebP or HEIC, up to 8 MB. | needs native-speaker review |
+| `publicProfile.addPhoto` | Shyiraho ifoto | Upload photo | needs native-speaker review |
+| `publicProfile.changePhoto` | Hindura ifoto | Change photo | needs native-speaker review |
+| `publicProfile.removePhoto` | Kuraho ifoto | Remove photo | needs native-speaker review |
 | `account.menu` | Amakuru yanjye | My details | needs native-speaker review |
 | `account.title` | Amakuru yanjye | My details | needs native-speaker review |
 | `account.email` | Imeyili | Email | needs native-speaker review |
@@ -4476,6 +4491,11 @@ File: `apps/staff-web/src/features/setup/locales/rw.json`
 | `specialties.dentistry` | Amenyo | Dentistry | needs native-speaker review |
 | `specialties.public_health` | Ubuzima rusange | Public health | needs native-speaker review |
 | `specialties.other` | Ibindi | Other | needs native-speaker review |
+| `images.type` | Koresha ifoto ya JPG, PNG, WebP cyangwa HEIC. | Use a JPG, PNG, WebP or HEIC image. | needs native-speaker review |
+| `images.size` | Ifoto igomba kuba munsi ya MB 8. | The image must be under 8 MB. | needs native-speaker review |
+| `images.upload` | Kohereza ntibyakunze. Ongera ugerageze. | The upload didn't work. Try again. | needs native-speaker review |
+| `images.network` | Umuyoboro wacitse mu gihe cyo kohereza. Ongera ugerageze. | The connection dropped during the upload. Try again. | needs native-speaker review |
+| `images.unavailable` | Kohereza amafoto ntibirashyirwaho kuri iyi seriveri. | Photo uploads aren't set up on this server yet. | needs native-speaker review |
 
 ## patient-web feature: bills (namespace bills)
 
@@ -5662,7 +5682,11 @@ File: `apps/patient-web/src/features/profile/locales/rw.json`
 | `photo.change` | Hindura ifoto | Change photo | needs native-speaker review |
 | `photo.remove` | Kuraho | Remove | needs native-speaker review |
 | `photo.alt` | Ifoto ya {{name}} | Photo of {{name}} | needs native-speaker review |
-| `photo.tooBig` | Hitamo ifoto iri munsi ya MB 5. | Choose a photo smaller than 5 MB. | needs native-speaker review |
+| `photo.uploading` | Birimo koherezwa… {{percent}}% | Uploading… {{percent}}% | needs native-speaker review |
+| `photo.errors.type` | Koresha ifoto ya JPG, PNG, WebP cyangwa HEIC. | Use a JPG, PNG, WebP or HEIC photo. | needs native-speaker review |
+| `photo.errors.size` | Hitamo ifoto iri munsi ya MB 8. | Choose a photo smaller than 8 MB. | needs native-speaker review |
+| `photo.errors.upload` | Kohereza ntibyakunze. Ongera ugerageze. | The upload didn't work. Try again. | needs native-speaker review |
+| `photo.errors.network` | Umuyoboro wacitse mu gihe cyo kohereza. Ongera ugerageze. | The connection dropped during the upload. Try again. | needs native-speaker review |
 | `sections.details` | Amakuru yanjye | My details | needs native-speaker review |
 | `sections.identifiers` | Ibyangombwa | Identity documents | needs native-speaker review |
 | `sections.insurance` | Ubwishingizi | Insurance | needs native-speaker review |
@@ -6196,6 +6220,7 @@ File: `apps/patient-web/src/features/site/locales/rw.json`
 | `facility.map` | Aho biri ku ikarita | Location on the map | needs native-speaker review |
 | `facility.insurance` | Ubwishingizi bwemewe | Insurance accepted | needs native-speaker review |
 | `facility.emergencyOpen` | Serivisi y'ubutabazi ikora ku manywa na nijoro. Hamagara {{number}} niba ubuzima buri mu kaga. | Emergency department open day and night. Call {{number}} if life is at risk. | needs native-speaker review |
+| `facility.logo` | Ikirango cya {{name}} | {{name}} logo | needs native-speaker review |
 | `doctors.title` | Abaganga | Doctors | needs native-speaker review |
 | `doctors.searchName` | Shakisha izina ry’umuganga | Search by doctor name | needs native-speaker review |
 | `doctors.specialty` | Serivisi | Service | needs native-speaker review |

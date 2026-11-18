@@ -52,7 +52,7 @@ import { paths } from "../app/paths";
 import { useLogout, usePatientMe } from "../auth/queries";
 import { GlobalSearch } from "../features/dashboard/GlobalSearch";
 import { AssistantLauncher } from "../features/public/AssistantLauncher";
-import { Avatar } from "../features/dashboard/kit";
+import { Avatar, ownAvatar } from "../features/dashboard/kit";
 import { useUnreadCount } from "../features/notifications/api";
 import {
   rememberProfile,
@@ -219,7 +219,7 @@ function AccountMenu() {
       {/* named by its content (WCAG 2.5.3): the visible name first, then "Account menu" */}
       <MenuTrigger className="inline-flex min-h-target cursor-pointer items-center gap-2 rounded-xl px-2 text-fg transition-colors duration-150 hover:bg-subtle data-[state=open]:bg-subtle">
         <span aria-hidden="true" className="contents">
-          <Avatar name={me.full_name} size="sm" />
+          <Avatar name={me.full_name} src={ownAvatar(me)} size="sm" />
         </span>
         {/* avatar only: the sidebar card already shows whose portal this is */}
         <span className="sr-only">{me.full_name}</span>
@@ -442,7 +442,7 @@ function MorePanel({
             onClick={close}
             className="flex items-center gap-3 rounded-2xl border border-border p-3 text-fg no-underline hover:bg-subtle"
           >
-            <Avatar name={me.full_name} size="lg" />
+            <Avatar name={me.full_name} src={ownAvatar(me)} size="lg" />
             <span className="flex min-w-0 flex-col">
               <span className="truncate font-semibold">{me.full_name}</span>
               <span className="truncate text-body-sm text-fg-secondary">

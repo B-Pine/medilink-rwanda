@@ -126,7 +126,9 @@ function Record() {
           </Link>
         </Alert>
       )}
-      {p.has_photo && <PatientPhoto fpId={fpId} name={p.full_name} />}
+      {(p.has_photo || p.avatar_url) && (
+        <PatientPhoto fpId={fpId} name={p.full_name} avatarUrl={p.avatar_url ?? null} />
+      )}
       {/* ?tab=insurance opens that tab (the queue board's "Check insurance") */}
       <Tabs defaultValue={TABS.has(search.get("tab") ?? "") ? search.get("tab")! : "details"}>
         <TabsList aria-label={t("patients.record.sections")}>
@@ -1193,22 +1195,31 @@ function ReportDuplicate({
  * The patient's own profile photo (decision 2026-11-05), to recognise them at the desk. Shown on
  * request only: each view is audited and the link lasts five minutes.
  */
-function PatientPhoto({ fpId, name }: { fpId: string; name: string }) {
+function PatientPhoto({
+  fpId,
+  name,
+  avatarUrl,
+}: {
+  fpId: string;
+  name: string;
+  /** The patient's Cloudinary photo; else a short-lived link to the scanned one. */
+  avatarUrl: string | null;
+}) {
   const { t } = useTranslation();
   const api = useApi();
   const [shown, setShown] = useState(false);
   const link = useQuery({
     queryKey: ["patients", "photo", fpId],
     queryFn: () => api.patients.photoLink(fpId),
-    enabled: shown,
+    enabled: shown && !avatarUrl,
     staleTime: 4 * 60_000,
     retry: false,
   });
   return (
     <Card className="flex items-center gap-4 p-4">
-      {shown && link.data ? (
+      {shown && (avatarUrl ?? link.data) ? (
         <img
-          src={link.data.url}
+          src={avatarUrl ?? link.data?.url}
           alt={t("patients.record.photoAlt", { name })}
           className="size-24 shrink-0 rounded-full object-cover ring-2 ring-brand/30"
         />

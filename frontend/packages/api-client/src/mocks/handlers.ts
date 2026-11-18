@@ -30,6 +30,12 @@ import {
   type MockStaffUser,
 } from "./data";
 import { FEATURE_MOCKS } from "./features";
+import {
+  mockFacilityLogos,
+  mockImageUrl,
+  mockPatientAvatars,
+  mockStaffAvatars,
+} from "./features/images";
 import { languageFrom, message, type MessageKey } from "./messages";
 import { createMemoryStore, type MockSessionStore } from "./session-store";
 
@@ -218,11 +224,22 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
     const user = findStaff(session.email);
     if (!user) return null;
     const until = recentAuthUntil(session);
-    return toStaffMe(user, session.activeFacilityId, mfaEnabled(user), {
+    const me = toStaffMe(user, session.activeFacilityId, mfaEnabled(user), {
       feature_flags: featureFlags.enabledFor(session.activeFacilityId),
       pin_set: pins.has(user.email),
       step_up_valid_until: until ? new Date(until).toISOString() : null,
     });
+    // images (Cloudinary): own photo, and the active facility's logo
+    const logo = session.activeFacilityId && mockFacilityLogos.get(session.activeFacilityId);
+    return {
+      ...me,
+      photo_url: mockImageUrl(mockStaffAvatars.get(user.email)),
+      memberships: me.memberships.map((m) =>
+        m.facility.id === session.activeFacilityId && logo
+          ? { ...m, facility: { ...m.facility, logo_url: mockImageUrl(logo) } }
+          : m,
+      ),
+    };
   }
 
   /** Session rotation: the CSRF secret changes, the client must fetch a new token. */
@@ -658,7 +675,14 @@ export function createMockApi(options: MockHandlerOptions = {}): MockApi {
           message("notAuthenticated", languageFrom(request)),
         );
       }
-      return HttpResponse.json(session.me);
+      // images (Cloudinary): each profile's photo
+      return HttpResponse.json({
+        ...session.me,
+        profiles: session.me.profiles.map((p) => ({
+          ...p,
+          avatar_url: mockImageUrl(mockPatientAvatars.get(p.patient_id)),
+        })),
+      });
     }),
 
     http.post(`${API}/patient/auth/password/`, async ({ request }) => {

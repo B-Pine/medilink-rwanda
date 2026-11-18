@@ -1,10 +1,11 @@
-import type {
-  ChecklistCode,
-  FacilityProfile,
-  FacilitySettings,
-  SettingFieldSpec,
-  SettingsSection,
-  SettingValues,
+import {
+  IMAGE_ACCEPT,
+  type ChecklistCode,
+  type FacilityProfile,
+  type FacilitySettings,
+  type SettingFieldSpec,
+  type SettingsSection,
+  type SettingValues,
 } from "@medilink/api-client";
 import {
   Alert,
@@ -49,7 +50,9 @@ import { useApi } from "../../app/services";
 import { PageHeader } from "../../components/PageHeader";
 import { env } from "../../env";
 import { useStepUp } from "../lock";
+import { staffMeKey } from "../../auth/queries";
 import { useChecklist } from "./ChecklistPage";
+import { imageErrorText, isUploadsUnavailable, useImageUpload } from "./images";
 import {
   ConflictNotice,
   errorText,
@@ -444,70 +447,195 @@ function Photos({ profile }: { profile: FacilityProfile }) {
   const { t } = useTranslation();
   const api = useApi();
   const queryClient = useQueryClient();
+  const photo = useImageUpload(api.images.staff, "facility_photo");
+  const logo = useImageUpload(api.images.staff, "facility_logo");
   const update = (data: FacilityProfile) => queryClient.setQueryData(setupKeys.facility, data);
+  const latest = () => queryClient.getQueryData<FacilityProfile>(setupKeys.facility) ?? profile;
+  const count = profile.photo_public_ids.length + profile.photos.length;
   const add = useMutation({
-    mutationFn: (file: File) => api.setup.addPhoto(file),
+    mutationFn: async (file: File) => {
+      try {
+        const publicId = await photo.upload(file);
+        const current = latest();
+        return await api.setup.updateFacility({
+          version: current.version,
+          photo_public_ids: [...current.photo_public_ids, publicId],
+        });
+      } catch (failure) {
+        // no Cloudinary account on this server: the scanned upload pipeline takes the photo
+        if (isUploadsUnavailable(failure)) return api.setup.addPhoto(file);
+        throw failure;
+      }
+    },
+    onSuccess: update,
+  });
+  const removeCloud = useMutation({
+    mutationFn: (publicId: string) => {
+      const current = latest();
+      return api.setup.updateFacility({
+        version: current.version,
+        photo_public_ids: current.photo_public_ids.filter((p) => p !== publicId),
+      });
+    },
     onSuccess: update,
   });
   const remove = useMutation({
     mutationFn: (uploadId: string) => api.setup.removePhoto(uploadId),
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: setupKeys.facility }),
   });
+  const setLogo = useMutation({
+    mutationFn: async (file: File | null) => {
+      const publicId = file ? await logo.upload(file) : "";
+      return api.setup.updateFacility({ version: latest().version, logo_public_id: publicId });
+    },
+    onSuccess: (data) => {
+      update(data);
+      void queryClient.invalidateQueries({ queryKey: staffMeKey }); // the sidebar card's logo
+    },
+  });
+  const failure = add.error ?? removeCloud.error ?? remove.error ?? setLogo.error;
+  const tiles = [
+    ...profile.photo_images.map((image) => ({
+      key: image.public_id,
+      view: (label: string) => (
+        <img
+          src={image.thumb_url ?? image.url ?? ""}
+          alt={label}
+          loading="lazy"
+          decoding="async"
+          className="block size-full object-cover"
+        />
+      ),
+      onRemove: () => removeCloud.mutate(image.public_id),
+    })),
+    ...profile.photos.map((id) => ({
+      key: id,
+      view: (label: string) => <PhotoThumb id={id} label={label} />,
+      onRemove: () => remove.mutate(id),
+    })),
+  ];
   return (
-    <section className="flex flex-col gap-4 rounded-2xl bg-surface shadow-card p-5">
+    <section className="flex flex-col gap-5 rounded-2xl bg-surface p-5 shadow-card">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
+        <div className="min-w-0">
           <h2 className="m-0 font-heading text-h3">{t("setup.profile.photos")}</h2>
           <p className="m-0 text-body-sm text-fg-secondary">
-            {t("setup.profile.photosHint", { count: profile.photos.length })}
+            {t("setup.profile.photosHint", { count })}
           </p>
         </div>
-        <label className="inline-flex min-h-target cursor-pointer items-center gap-2 rounded-xl border border-border-input px-4 font-semibold hover:bg-subtle has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-60">
-          <UploadSimple aria-hidden="true" className="size-5" />
-          {t("setup.profile.addPhoto")}
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            className="sr-only"
-            disabled={profile.photos.length >= 6 || add.isPending}
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) add.mutate(file);
-              e.target.value = "";
-            }}
-          />
-        </label>
+        <FilePick
+          label={
+            photo.progress !== null
+              ? t("setup.profile.uploading", { percent: photo.progress })
+              : t("setup.profile.addPhoto")
+          }
+          disabled={count >= 6 || add.isPending}
+          onFile={(file) => add.mutate(file)}
+        />
       </div>
-      {profile.photos.length > 0 && (
+      {tiles.length > 0 && (
         <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 sm:grid-cols-3">
-          {profile.photos.map((photo, index) => (
-            <li
-              key={photo}
-              className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border/60 bg-subtle"
-            >
-              <PhotoThumb id={photo} label={t("setup.profile.photoN", { n: index + 1 })} />
-              <span className="absolute top-2 left-2 rounded-full bg-surface/90 px-2 py-0.5 text-caption font-semibold shadow-sm">
-                {index === 0 ? t("setup.profile.cover") : index + 1}
-              </span>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => remove.mutate(photo)}
-                aria-label={t("setup.profile.removePhotoN", { n: index + 1 })}
-                className="absolute right-2 bottom-2 shadow-sm"
+          {tiles.map((tile, index) => {
+            const label = t("setup.profile.photoN", { n: index + 1 });
+            return (
+              <li
+                key={tile.key}
+                className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border/60 bg-subtle"
               >
-                <Trash aria-hidden="true" />
-              </Button>
-            </li>
-          ))}
+                {tile.view(label)}
+                <span className="absolute top-2 left-2 rounded-full bg-surface/90 px-2 py-0.5 text-caption font-semibold shadow-sm">
+                  {index === 0 ? t("setup.profile.cover") : index + 1}
+                </span>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={tile.onRemove}
+                  aria-label={t("setup.profile.removePhotoN", { n: index + 1 })}
+                  className="absolute right-2 bottom-2 shadow-sm"
+                >
+                  <Trash aria-hidden="true" />
+                </Button>
+              </li>
+            );
+          })}
         </ul>
       )}
-      {(add.isError || remove.isError) && (
+
+      <div className="flex flex-wrap items-center gap-4 border-t border-border/60 pt-5">
+        <span className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-2xl border border-border/60 bg-subtle">
+          {profile.logo_url ? (
+            <img
+              src={profile.logo_url}
+              alt={t("setup.profile.logo")}
+              className="block size-full object-contain"
+            />
+          ) : (
+            <ImageSquare aria-hidden="true" className="size-7 text-fg-muted" />
+          )}
+        </span>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <h3 className="m-0 text-body font-semibold">{t("setup.profile.logo")}</h3>
+          <p className="m-0 text-body-sm text-fg-secondary">{t("setup.profile.logoHint")}</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <FilePick
+            label={
+              logo.progress !== null
+                ? t("setup.profile.uploading", { percent: logo.progress })
+                : profile.logo_url
+                  ? t("setup.profile.changeLogo")
+                  : t("setup.profile.addLogo")
+            }
+            disabled={setLogo.isPending}
+            onFile={(file) => setLogo.mutate(file)}
+          />
+          {profile.logo_url && (
+            <Button
+              variant="ghost"
+              onClick={() => setLogo.mutate(null)}
+              disabled={setLogo.isPending}
+            >
+              <Trash aria-hidden="true" />
+              {t("setup.profile.removeLogo")}
+            </Button>
+          )}
+        </div>
+      </div>
+      {failure && (
         <Alert tone="danger" role="alert">
-          {errorText(add.error ?? remove.error, t("setup.failed"))}
+          {imageErrorText(failure, t, t("setup.failed"))}
         </Alert>
       )}
     </section>
+  );
+}
+
+/** A labelled file picker that looks like a secondary button. */
+function FilePick({
+  label,
+  disabled,
+  onFile,
+}: {
+  label: string;
+  disabled?: boolean;
+  onFile: (file: File) => void;
+}) {
+  return (
+    <label className="inline-flex min-h-target cursor-pointer items-center gap-2 rounded-xl border border-border-input px-4 font-semibold hover:bg-subtle has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-60">
+      <UploadSimple aria-hidden="true" className="size-5" />
+      {label}
+      <input
+        type="file"
+        accept={IMAGE_ACCEPT}
+        className="sr-only"
+        disabled={disabled}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) onFile(file);
+          e.target.value = "";
+        }}
+      />
+    </label>
   );
 }
 

@@ -10,6 +10,7 @@ export * from "./types";
 // [S1]
 export * from "./features/masterdata";
 export * from "./features/onboarding";
+export * from "./features/images";
 export * from "./features/security";
 export * from "./features/uploads";
 // [/S1]

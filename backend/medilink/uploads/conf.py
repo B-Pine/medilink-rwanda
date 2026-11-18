@@ -19,7 +19,7 @@ _env = environ.Env()
 class UploadSettings:
     max_bytes: int
     scanner: str  # "fake" | "clamd"
-    storage: str  # "local" | "s3"
+    storage: str  # "local" | "s3" | "cloudinary"
     local_root: str
     link_ttl_seconds: int
     download_base_url: str
@@ -30,6 +30,8 @@ class UploadSettings:
     s3_secret_access_key: str
     s3_quarantine_bucket: str
     s3_documents_bucket: str
+    cloudinary_url: str  # cloudinary://<api_key>:<api_secret>@<cloud_name>
+    cloudinary_folder: str
     clamd_host: str
     clamd_port: int
     clamd_timeout: float
@@ -56,6 +58,8 @@ def _defaults() -> dict[str, Any]:
         "s3_secret_access_key": _env("UPLOADS_S3_SECRET_ACCESS_KEY", default=""),
         "s3_quarantine_bucket": _env("UPLOADS_S3_QUARANTINE_BUCKET", default="medilink-quarantine"),
         "s3_documents_bucket": _env("UPLOADS_S3_DOCUMENTS_BUCKET", default="medilink-documents"),
+        "cloudinary_url": _env("CLOUDINARY_URL", default=""),
+        "cloudinary_folder": _env("UPLOADS_CLOUDINARY_FOLDER", default="medilink"),
         "clamd_host": _env("CLAMD_HOST", default="127.0.0.1"),
         "clamd_port": _env.int("CLAMD_PORT", default=3310),
         "clamd_timeout": _env.float("CLAMD_TIMEOUT", default=30.0),

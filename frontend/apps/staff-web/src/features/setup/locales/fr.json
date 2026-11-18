@@ -171,8 +171,8 @@
     "description": "Description",
     "descriptionHint": "Quelques phrases par langue : ce que vous soignez et comment vous trouver.",
     "photos": "Photos",
-    "photosHint_one": "{{count}} photo sur 6. JPEG, PNG ou WebP. La première sert de couverture sur votre page publique.",
-    "photosHint_other": "{{count}} photos sur 6. JPEG, PNG ou WebP. La première sert de couverture sur votre page publique.",
+    "photosHint_one": "{{count}} photo sur 6. JPG, PNG, WebP ou HEIC, 8 Mo au plus. La première sert de couverture sur votre page publique.",
+    "photosHint_other": "{{count}} photos sur 6. JPG, PNG, WebP ou HEIC, 8 Mo au plus. La première sert de couverture sur votre page publique.",
     "addPhoto": "Ajouter une photo",
     "photoN": "Photo {{n}}",
     "removePhotoN": "Supprimer la photo {{n}}",
@@ -188,7 +188,13 @@
     "cover": "Couverture",
     "emergencyTitle": "Urgences",
     "emergency": "Service d’urgences 24 h/24",
-    "emergencyHint": "Activez seulement si vous recevez les urgences jour et nuit. Votre établissement apparaît alors en premier sur la page publique Urgences."
+    "emergencyHint": "Activez seulement si vous recevez les urgences jour et nuit. Votre établissement apparaît alors en premier sur la page publique Urgences.",
+    "uploading": "Envoi… {{percent}} %",
+    "logo": "Logo",
+    "logoHint": "Affiché sur votre page publique. Une image carrée convient le mieux.",
+    "addLogo": "Ajouter le logo",
+    "changeLogo": "Changer le logo",
+    "removeLogo": "Retirer le logo"
   },
   "catalogue": {
     "services": "Services",
@@ -617,7 +623,12 @@
     "preview": "Ce que voient les patients",
     "noBio": "Pas encore de texte.",
     "hidden": "Masqué aux patients.",
-    "needLicence": "Enregistrez d’abord votre licence ; le profil public suit."
+    "needLicence": "Enregistrez d’abord votre licence ; le profil public suit.",
+    "photo": "Photo",
+    "photoHint": "Les patients la voient sur votre profil public. JPG, PNG, WebP ou HEIC, 8 Mo au plus.",
+    "addPhoto": "Ajouter une photo",
+    "changePhoto": "Changer la photo",
+    "removePhoto": "Retirer la photo"
   },
   "account": {
     "menu": "Mes informations",
@@ -698,5 +709,12 @@
     "dentistry": "Dentisterie",
     "public_health": "Santé publique",
     "other": "Autre"
+  },
+  "images": {
+    "type": "Utilisez une image JPG, PNG, WebP ou HEIC.",
+    "size": "L'image doit faire moins de 8 Mo.",
+    "upload": "L'envoi n'a pas abouti. Réessayez.",
+    "network": "La connexion a été coupée pendant l'envoi. Réessayez.",
+    "unavailable": "L'envoi de photos n'est pas encore configuré sur ce serveur."
   }
 }

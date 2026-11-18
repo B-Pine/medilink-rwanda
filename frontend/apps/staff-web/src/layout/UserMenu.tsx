@@ -68,9 +68,13 @@ export function UserMenu({ me }: { me: StaffMe }) {
       <MenuTrigger className="inline-flex min-h-target cursor-pointer items-center gap-2 rounded-xl px-2 text-fg hover:bg-subtle">
         <span
           aria-hidden="true"
-          className="inline-flex size-8 items-center justify-center rounded-full bg-brand-subtle text-body-sm font-bold text-on-brand-subtle"
+          className="inline-flex size-8 items-center justify-center overflow-hidden rounded-full bg-brand-subtle text-body-sm font-bold text-on-brand-subtle"
         >
-          {initials(me.full_name)}
+          {me.photo_url ? (
+            <img src={me.photo_url} alt="" className="size-full object-cover" />
+          ) : (
+            initials(me.full_name)
+          )}
         </span>
         <span className="sr-only max-w-48 truncate font-semibold sm:not-sr-only">
           {me.full_name}

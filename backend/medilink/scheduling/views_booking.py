@@ -22,6 +22,7 @@ from medilink.core.exceptions import error_payload
 from medilink.facilities.calendar import KIGALI, effective_calendar
 from medilink.facilities.models import Profile, PublicListing, Service, ServicePoint
 from medilink.facilities.views_base import FacilityView, Needs, err, query_date
+from medilink.images.services import image_url
 from medilink.masterdata.models import Symptom
 from medilink.patients.errors import PatientsAPIView
 from medilink.patients.models import FacilityPatient, InsuranceProfile, Patient
@@ -245,11 +246,12 @@ def _clean_photos(facility_id: Any, ids: list[Any]) -> list[Any]:
 
 def _public_profile(profile: Any) -> dict[str, Any]:
     if profile is None:
-        return {"specialty": "", "bio_i18n": {}, "languages": []}
+        return {"specialty": "", "bio_i18n": {}, "languages": [], "photo_url": None}
     return {
         "specialty": profile.specialty,
         "bio_i18n": profile.bio_i18n or {},
         "languages": profile.languages,
+        "photo_url": image_url(profile.avatar_public_id, w=320, h=320),
     }
 
 
@@ -354,11 +356,22 @@ class FacilityProfileView(PublicView):
                 "email": profile.email if profile else "",
                 "website": profile.website if profile else "",
                 "photos": [
-                    request.build_absolute_uri(
-                        reverse("public-facility-photo", args=[facility.slug, pk])
-                    )
-                    for pk in photos
+                    # Cloudinary photos first (C0, public CDN URLs), then scanned uploads
+                    *[
+                        url
+                        for pid in (profile.photo_public_ids if profile else [])
+                        if (url := image_url(pid, w=1200, h=800))
+                    ],
+                    *[
+                        request.build_absolute_uri(
+                            reverse("public-facility-photo", args=[facility.slug, pk])
+                        )
+                        for pk in photos
+                    ],
                 ],
+                "logo_url": image_url(
+                    profile.logo_public_id if profile else "", w=320, h=320, crop="pad"
+                ),
                 "district": place.district if place else "",
                 "sector": place.sector if place else "",
                 "lat": float(profile.latitude) if profile and profile.latitude else None,

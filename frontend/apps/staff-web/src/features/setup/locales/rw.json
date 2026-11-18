@@ -171,8 +171,8 @@
     "description": "Ibisobanuro",
     "descriptionHint": "Interuro nke muri buri rurimi: ibyo muvura n'uko babageraho.",
     "photos": "Amafoto",
-    "photosHint_one": "Ifoto {{count}} kuri 6. JPEG, PNG cyangwa WebP. Iya mbere ni yo igaragara mbere ku rupapuro rwanyu.",
-    "photosHint_other": "Amafoto {{count}} kuri 6. JPEG, PNG cyangwa WebP. Iya mbere ni yo igaragara mbere ku rupapuro rwanyu.",
+    "photosHint_one": "Ifoto {{count}} kuri 6. JPG, PNG, WebP cyangwa HEIC, ntirenze MB 8. Iya mbere igaragara imbere ku rupapuro rwanyu rusange.",
+    "photosHint_other": "Amafoto {{count}} kuri 6. JPG, PNG, WebP cyangwa HEIC, ntarenze MB 8. Iya mbere igaragara imbere ku rupapuro rwanyu rusange.",
     "addPhoto": "Ongeraho ifoto",
     "photoN": "Ifoto ya {{n}}",
     "removePhotoN": "Kuraho ifoto ya {{n}}",
@@ -188,7 +188,13 @@
     "cover": "Ifoto nyamukuru",
     "emergencyTitle": "Ubutabazi bwihuse",
     "emergency": "Serivisi y'ubutabazi bwihuse amasaha 24",
-    "emergencyHint": "Bikore gusa niba mwakira indembe ku manywa na nijoro. Ivuriro ryanyu rizagaragara mbere ku rupapuro rw'ubutabazi."
+    "emergencyHint": "Bikore gusa niba mwakira indembe ku manywa na nijoro. Ivuriro ryanyu rizagaragara mbere ku rupapuro rw'ubutabazi.",
+    "uploading": "Birimo koherezwa… {{percent}}%",
+    "logo": "Ikirango",
+    "logoHint": "Kigaragara ku rupapuro rwanyu rusange. Ifoto ifite impande zingana ni yo nziza.",
+    "addLogo": "Shyiraho ikirango",
+    "changeLogo": "Hindura ikirango",
+    "removeLogo": "Kuraho ikirango"
   },
   "catalogue": {
     "services": "Serivisi",
@@ -617,7 +623,12 @@
     "preview": "Ibyo abarwayi babona",
     "noBio": "Nta nyandiko iriho.",
     "hidden": "Byahishwe abarwayi.",
-    "needLicence": "Banza ubike uruhushya rwawe; umwirondoro ugaragara ukurikira."
+    "needLicence": "Banza ubike uruhushya rwawe; umwirondoro ugaragara ukurikira.",
+    "photo": "Ifoto",
+    "photoHint": "Abarwayi bayibona ku mwirondoro wawe rusange. JPG, PNG, WebP cyangwa HEIC, ntirenze MB 8.",
+    "addPhoto": "Shyiraho ifoto",
+    "changePhoto": "Hindura ifoto",
+    "removePhoto": "Kuraho ifoto"
   },
   "account": {
     "menu": "Amakuru yanjye",
@@ -698,5 +709,12 @@
     "dentistry": "Amenyo",
     "public_health": "Ubuzima rusange",
     "other": "Ibindi"
+  },
+  "images": {
+    "type": "Koresha ifoto ya JPG, PNG, WebP cyangwa HEIC.",
+    "size": "Ifoto igomba kuba munsi ya MB 8.",
+    "upload": "Kohereza ntibyakunze. Ongera ugerageze.",
+    "network": "Umuyoboro wacitse mu gihe cyo kohereza. Ongera ugerageze.",
+    "unavailable": "Kohereza amafoto ntibirashyirwaho kuri iyi seriveri."
   }
 }

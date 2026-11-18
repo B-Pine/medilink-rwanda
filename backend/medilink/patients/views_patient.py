@@ -19,6 +19,7 @@ from medilink.core.exceptions import error_response
 from medilink.core.pagination import DefaultPagination
 from medilink.core.serializers import ErrorSerializer
 from medilink.core.throttling import BurstRateThrottle
+from medilink.images.fields import CloudinaryImageField
 from medilink.patients import claims, health, identity, insurance, photos
 from medilink.patients import self_service as svc
 from medilink.patients import serializers as s
@@ -56,6 +57,7 @@ class ProfileSummarySerializer(serializers.Serializer):
     medilink_number = serializers.CharField(allow_null=True)
     date_of_birth = serializers.DateField(allow_null=True)
     completion_percent = serializers.IntegerField()
+    avatar_url = serializers.URLField(allow_null=True)  # Cloudinary photo, else initials
 
 
 class CompletionSerializer(serializers.Serializer):
@@ -85,6 +87,8 @@ class PatientProfileDetailSerializer(serializers.Serializer):
     completion = CompletionSerializer()
     # a 5-minute link comes from POST .../photo/download-links/ (decision 2026-11-05)
     has_photo = serializers.BooleanField()
+    # the Cloudinary photo (PUT .../avatar/), shown before the scanned one
+    avatar_url = serializers.URLField(allow_null=True)
     version = serializers.IntegerField()
 
 
@@ -294,6 +298,46 @@ class ProfileDetailView(PatientView):
 
 class PhotoUploadSerializer(StrictSerializer):
     file = serializers.FileField()
+
+
+class AvatarSerializer(StrictSerializer):
+    public_id = CloudinaryImageField("patient_avatar", allow_blank=False)
+
+
+class ProfileAvatarView(PatientView):
+    """The profile photo on Cloudinary: upload it with a signature from
+    POST /patient/uploads/signature/ (kind patient_avatar), then send the public id here."""
+
+    @extend_schema(
+        operation_id="patient_profile_avatar_set",
+        tags=TAGS,
+        request=AvatarSerializer,
+        responses={200: PatientProfileDetailSerializer, 400: _err("validation_error")},
+        summary="Set the profile photo from a Cloudinary upload (self or guardian)",
+    )
+    def put(self, request: Request, patient_id: Any) -> Response:
+        link = self.link(patient_id, "edit_contacts")
+        body = AvatarSerializer(
+            data=request.data,
+            context={"keep_public_ids": {link.patient.avatar_public_id} - {""}},
+        )
+        body.is_valid(raise_exception=True)
+        if photos.set_avatar(link.patient, body.validated_data["public_id"]):
+            record_patient_event("patients.photo.updated", request=request, patient=link.patient)
+        return Response(PatientProfileDetailSerializer(svc.profile_data(link)).data)
+
+    @extend_schema(
+        operation_id="patient_profile_avatar_remove",
+        tags=TAGS,
+        request=None,
+        responses={200: PatientProfileDetailSerializer},
+        summary="Remove the Cloudinary profile photo",
+    )
+    def delete(self, request: Request, patient_id: Any) -> Response:
+        link = self.link(patient_id, "edit_contacts")
+        if photos.set_avatar(link.patient, ""):
+            record_patient_event("patients.photo.removed", request=request, patient=link.patient)
+        return Response(PatientProfileDetailSerializer(svc.profile_data(link)).data)
 
 
 class ProfilePhotoView(PatientView):

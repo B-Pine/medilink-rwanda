@@ -36,6 +36,9 @@ class Profile(models.Model):
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     photo_file_ids = ArrayField(models.UUIDField(), default=list, blank=True)
+    # C0 images on Cloudinary (medilink.images): public ids only, URLs are built when read
+    photo_public_ids = ArrayField(models.CharField(max_length=255), default=list, blank=True)
+    logo_public_id = models.CharField(max_length=255, blank=True, default="")
     level_of_care = models.CharField(max_length=40, blank=True)
     # set by the facility admin: shown on the public pages and first on /emergency
     emergency_department = models.BooleanField(default=False)
@@ -268,6 +271,8 @@ class PublicListing(UUIDModel):
     ownership = models.CharField(max_length=16)
     level_of_care = models.CharField(max_length=40, blank=True)
     emergency_department = models.BooleanField(default=False)
+    # the facility's cover photo on Cloudinary (its first photo), for the result cards
+    cover_public_id = models.CharField(max_length=255, blank=True, default="")
     district_code = models.CharField(max_length=20, blank=True)
     district = models.CharField(max_length=120, blank=True)
     sector_code = models.CharField(max_length=20, blank=True)

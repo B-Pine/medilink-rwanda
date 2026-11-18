@@ -150,15 +150,33 @@ export function FacilityPage() {
           jsonLd={facilityJsonLd(f, canonicalUrl(siteOrigin(), `/facilities/${f.slug}`), summary)}
           titleTransition={`facility-name-${f.slug}`}
           art={
-            <FacilityBuilding
-              type={f.type}
-              emergency={f.emergency_department}
-              className="block aspect-[16/7] w-full"
-              style={{ viewTransitionName: `facility-art-${f.slug}` }}
-            />
+            // the admin's cover photo when there is one (the first photo), else the drawing
+            f.photos[0] ? (
+              <img
+                src={f.photos[0]}
+                alt=""
+                decoding="async"
+                className="block aspect-[16/7] w-full object-cover"
+                style={{ viewTransitionName: `facility-art-${f.slug}` }}
+              />
+            ) : (
+              <FacilityBuilding
+                type={f.type}
+                emergency={f.emergency_department}
+                className="block aspect-[16/7] w-full"
+                style={{ viewTransitionName: `facility-art-${f.slug}` }}
+              />
+            )
           }
           lead={
             <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
+              {f.logo_url && (
+                <img
+                  src={f.logo_url}
+                  alt={t("site.facility.logo", { name: f.name })}
+                  className="size-8 rounded-lg bg-surface object-contain ring-1 ring-hairline"
+                />
+              )}
               <span>{t(`booking.types.${f.type}`, { defaultValue: f.type })}</span>
               {place && (
                 <span className="inline-flex items-center gap-1">

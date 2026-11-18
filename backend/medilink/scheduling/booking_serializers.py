@@ -69,6 +69,7 @@ class FacilitySearchResultSerializer(serializers.Serializer):
     referral_hint = serializers.BooleanField()
     lat = serializers.FloatField(allow_null=True)
     lng = serializers.FloatField(allow_null=True)
+    cover_url = serializers.URLField(allow_null=True)
 
 
 class FacilitySearchPageSerializer(serializers.Serializer):
@@ -104,6 +105,7 @@ class PublicFacilityDoctorSerializer(serializers.Serializer):
     specialty = serializers.CharField(allow_blank=True)
     bio_i18n = serializers.DictField(child=serializers.CharField())
     languages = serializers.ListField(child=serializers.CharField())
+    photo_url = serializers.URLField(allow_null=True)  # Cloudinary avatar, when the doctor has one
 
 
 class PublicClosureSerializer(serializers.Serializer):
@@ -125,6 +127,7 @@ class PublicFacilitySerializer(serializers.Serializer):
     email = serializers.CharField()
     website = serializers.CharField()
     photos = serializers.ListField(child=serializers.URLField())
+    logo_url = serializers.URLField(allow_null=True)
     district = serializers.CharField()
     sector = serializers.CharField()
     lat = serializers.FloatField(allow_null=True)

@@ -19,6 +19,7 @@ from medilink.billing.models import InsurerRule
 from medilink.billing.services import current_q, price
 from medilink.facilities.calendar import KIGALI, effective_calendar
 from medilink.facilities.models import Profile, PublicListing, Service
+from medilink.images.services import image_url
 from medilink.masterdata.models import Location, LocationLevel
 from medilink.scheduling.booking import cover
 from medilink.scheduling.slots import bookable
@@ -189,6 +190,7 @@ def refresh(facility_id: Any) -> int:
                 level_of_care=(profile.level_of_care if profile else "")
                 or LEVEL_BY_TYPE.get(str(facility.facility_type), ""),
                 emergency_department=bool(profile and profile.emergency_department),
+                cover_public_id=(profile.photo_public_ids or [""])[0] if profile else "",
                 latitude=profile.latitude if profile else None,
                 longitude=profile.longitude if profile else None,
                 service_id=service.pk,
@@ -313,6 +315,8 @@ def search(query: Query) -> dict[str, Any]:
                 and row.level_of_care in ("secondary", "tertiary"),
                 "lat": float(row.latitude) if row.latitude is not None else None,
                 "lng": float(row.longitude) if row.longitude is not None else None,
+                # the facility's own cover photo (Cloudinary); the cards draw one without it
+                "cover_url": image_url(row.cover_public_id, w=800, h=350),
             }
         )
     if query.near:

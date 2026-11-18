@@ -9,6 +9,21 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Releases 
 
 <!-- Wave 1: each sprint writes ONLY under its own heading; consolidated into Added/Changed/Fixed at release. -->
 
+### Photos on Cloudinary, two-step switch (2026-11-18)
+
+- Added: `api.images.{staff,patient}.upload(file, kind, onProgress)`: type and size check (JPG,
+  PNG, WebP, HEIC, up to 8 MB), a signature from the API, then the file straight to Cloudinary
+  with progress. Mocked in `dev:mock` (images kept in memory).
+- Added: facility settings upload photos and a logo to Cloudinary (the first photo is the cover);
+  the public facility page uses the cover photo and the logo, search cards show the cover photo,
+  and the drawing stays for facilities without one. Doctors set their photo on their public
+  profile; it shows on doctor cards and pages and in the staff user menu. The sidebar workspace
+  card shows the facility logo. Patients' profile photo goes to Cloudinary and shows in the header,
+  family, privacy and booking lists; staff see it on the patient record. Without Cloudinary on the
+  server the facility and patient photos fall back to the scanned upload.
+- Added: Feature flags names "Staff two-step sign-in" and warns while it is off; the "Confirm it's
+  you" dialog asks only for the password then.
+
 ### Home fits small phones (2026-11-16)
 
 - Fixed: on 360 px phones the hero search fields ran past their white card (a grid without a base

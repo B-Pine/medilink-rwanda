@@ -52,3 +52,8 @@ reportlab>=4.2
 # the standard JWT library, so the check is not hand-written.
 PyJWT>=2.10
 # [/Upgrade U17]
+# [Cloudinary]
+# Facility photos, logos and avatars (signed direct uploads): request signing and delivery URLs
+# from Cloudinary's official SDK, so the signature algorithm is not hand-written.
+cloudinary==1.41.0
+# [/Cloudinary]

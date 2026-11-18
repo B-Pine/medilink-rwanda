@@ -95,12 +95,13 @@ Requirements: FR-ONB-01..03, 07, 08, 10; FR-DOC-03, 05 (uploads); FR-SEC-06 (loc
 
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
-| `POST` | `/api/v1/staff/auth/step-up/` | Re-authenticate for sensitive actions | Staff session | FR-SEC-06 | Password + second factor; 5-minute window; RL: mfa | Implemented (#47) |
+| `POST` | `/api/v1/staff/auth/step-up/` | Re-authenticate for sensitive actions | Staff session | FR-SEC-06 | Password + second factor (password alone while `security.staff_mfa` is off); 5-minute window; RL: mfa | Implemented (#47) |
 | `GET`, `POST` | `/api/v1/staff/auth/lock/` | Lock state; lock now | Staff session (locked or not) | FR-SEC-06 | Audit | Implemented (#47) |
 | `POST` | `/api/v1/staff/auth/unlock/` | Unlock with PIN or password | Locked staff session | FR-SEC-06 | 5 failures end the session; RL: unlock | Implemented (#47) |
 | `PUT`, `DELETE` | `/api/v1/staff/auth/pin/` | Set, change or remove the unlock PIN | Staff (`PUT`: step-up) | FR-SEC-06 | Argon2id; Audit | Implemented (#47) |
 | `GET` | `/api/v1/staff/master-data/{kind}/` | All nine kinds, read-only, searchable | Staff | FR-ONB-10 | Trigram search for drugs and diagnosis codes | Implemented (#47) |
 | `POST` | `/api/v1/staff/uploads/` | Upload a file for a purpose | Staff + purpose `can_upload` | FR-DOC-03 | Idem; RL: upload | Implemented (#47) |
+| `POST` | `/api/v1/staff/uploads/signature/` | Sign a direct image upload to Cloudinary (`facility_photo`, `facility_logo`, `provider_avatar`) | Staff (facility kinds: `facility.configure`) | Images 2026-11-18 | Kinds are a whitelist, folder chosen by the server; 503 without credentials; RL: 30/hour | Implemented |
 | `GET` | `/api/v1/staff/uploads/{id}/` | Upload and scan status | Uploader or purpose `can_read` | FR-DOC-03 | | Implemented (#47) |
 | `POST` | `/api/v1/staff/uploads/{id}/download-links/` | 5-minute signed link | As above | FR-DOC-05 | Clean files only; always served as `attachment` (R1 #83); Audit | Implemented (#47) |
 
@@ -109,6 +110,8 @@ Requirements: FR-ONB-01..03, 07, 08, 10; FR-DOC-03, 05 (uploads); FR-SEC-06 (loc
 | Method | Path | Purpose | Permission | Requirements | Notes | Status |
 |---|---|---|---|---|---|---|
 | `POST` | `/api/v1/patient/uploads/` | Upload a file for a purpose (S3: `insurance_card`) | Patient + purpose `can_upload` | FR-DOC-03 | As the staff version | Implemented (#47) |
+| `POST` | `/api/v1/patient/uploads/signature/` | Sign a direct image upload to Cloudinary (`patient_avatar`) | Patient session | Images 2026-11-18 | As the staff version | Implemented |
+| `PUT`, `DELETE` | `/api/v1/patient/profiles/{id}/avatar/` | Set or remove the profile photo from a Cloudinary upload (`{public_id}`) | Self or guardian (`edit_contacts`) | Images 2026-11-18 | Public id checked with the Admin API; audit `patients.photo.updated` / `removed` | Implemented |
 | `GET` | `/api/v1/patient/uploads/{id}/` | Upload and scan status | Uploader or purpose `can_read` | FR-DOC-03 | | Implemented (#47) |
 | `POST` | `/api/v1/patient/uploads/{id}/download-links/` | 5-minute signed link | As above | FR-DOC-05 | | Implemented (#47) |
 

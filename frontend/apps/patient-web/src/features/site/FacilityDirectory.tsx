@@ -131,12 +131,24 @@ export function FacilityEntry({
     >
       {!compact && (
         <div className="relative aspect-[16/7] overflow-hidden border-b border-hairline">
-          <FacilityBuilding
-            type={result.type}
-            emergency={result.emergency_department}
-            className="ml-card-art size-full"
-            style={{ viewTransitionName: `facility-art-${result.slug}` }}
-          />
+          {/* the facility's own cover photo; the drawing for one without a photo */}
+          {result.cover_url ? (
+            <img
+              src={result.cover_url}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              className="ml-card-art size-full object-cover"
+              style={{ viewTransitionName: `facility-art-${result.slug}` }}
+            />
+          ) : (
+            <FacilityBuilding
+              type={result.type}
+              emergency={result.emergency_department}
+              className="ml-card-art size-full"
+              style={{ viewTransitionName: `facility-art-${result.slug}` }}
+            />
+          )}
           <span className="absolute top-3 left-3">
             <Status result={result} />
           </span>

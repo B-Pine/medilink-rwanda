@@ -11,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
 from medilink.accounts.serializers import StrictSerializer
+from medilink.images.services import image_url
 from medilink.patients import consents
 from medilink.patients.models import (
     Allergy,
@@ -389,6 +390,7 @@ class FacilityPatientDetailSerializer(PatientSummarySerializer):
     merged_into_facility_patient_id = serializers.UUIDField(allow_null=True)
     # the patient's own photo (decision 2026-11-05): POST .../photo/download-links/ for a link
     has_photo = serializers.BooleanField()
+    avatar_url = serializers.URLField(allow_null=True)  # Cloudinary photo, shown first
     version = serializers.IntegerField()
     patient_version = serializers.IntegerField()
 
@@ -420,6 +422,7 @@ def facility_patient_detail_data(fp: FacilityPatient) -> dict[str, Any]:
             "is_active": fp.is_active,
             "merged_into_facility_patient_id": fp.merged_into_id,
             "has_photo": patient.photo_file_id is not None,
+            "avatar_url": image_url(patient.avatar_public_id, w=320, h=320),
             "version": fp.version,
             "patient_version": patient.version,
         }
